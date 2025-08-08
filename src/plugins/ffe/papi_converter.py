@@ -29,6 +29,7 @@ from plugins.ffe.papi_mappers import (
     PapiPlayerGender,
     PapiPlayerRatingType,
     PapiPlayerFFELicence,
+    PapiRound,
 )
 from plugins.ffe.utils import FfePlayerPluginData, PlayerFFELicence
 from utils.enum import TournamentRating, PlayerGender, PlayerTitle, PlayerRatingType
@@ -53,13 +54,6 @@ class PapiVariables:
     endDate: str | None = None
     arbiter: str | None = None
     homologation: str | None = None
-
-
-@dataclass
-class PapiRound:
-    color: str
-    opponent: int | None = None
-    result: int = 0
 
 
 @dataclass
@@ -104,7 +98,7 @@ class PapiRating:
     value_field: str
     value: int
     type_field: str
-    type: str
+    type: str | None
     tournament_rating: TournamentRating
 
 
@@ -444,26 +438,33 @@ class PapiConverter:
                     ffe_licence=ffe_licence,
                     ffe_licence_number=papi_player.nrFFE,
                     league=papi_player.league,
-                )
+                ).to_stored_value()
             },
         )
 
     def _read_papi_round(
         self,
-        player_id,
+        player_id: int,
         round_nb: int,
         papi_round: PapiRound,
         max_opponent_id: int,
     ) -> tuple[StoredPairing, StoredBoard | None]:
-        """
+        path = ['players', 'rounds']
         stored_board: StoredBoard | None = None
+        stored_pairing = StoredPairing(
+            tournament_id=0,
+            player_id=player_id,
+            round_=round_nb,
+            result=12,
+            board_id=None,
+        )
+
         if papi_round.opponent is not None:
             if papi_round.opponent > max_opponent_id:
                 raise DictReaderException(
-                    ['players', 'opponent'],
+                    path + ['opponent'],
                     _('Unknown player ID [{player_id}]').format(
                         player_id=papi_round.opponent
                     ),
                 )
-        return ()
-        """
+        return stored_pairing, stored_board

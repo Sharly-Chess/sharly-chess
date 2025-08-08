@@ -1,4 +1,5 @@
 from dataclasses import is_dataclass, fields
+from enum import Enum
 from types import UnionType, GenericAlias
 from typing import Any, get_origin, get_args
 
@@ -85,12 +86,27 @@ def _read_field_value(
             ]
         else:
             raise ValueError(f'Unhandled type [{field_type}]')
+    elif isinstance(field_value, field_type):
+        return field_value
     elif is_dataclass(field_type):
         _check_type(field_name, field_value, dict, path)
         return dict_to_dataclass(field_type, field_value, path + [field_name])
-    else:
-        _check_type(field_name, field_value, field_type, path)
-        return field_value
+    elif issubclass(field_type, Enum):
+        try:
+            return field_type(field_value)
+        except ValueError:
+            raise DictReaderException(
+                path,
+                _(
+                    'Invalid value [{value}] for field [{field}] '
+                    '(expected one of [{expected_values}]).'
+                ).format(
+                    value=field_value,
+                    field=field_name,
+                    expected_values=', '.join(member.value for member in field_type),
+                ),
+            )
+    _check_type(field_name, field_value, field_type, path)
 
 
 def _check_type(
@@ -105,8 +121,8 @@ def _check_type(
             _(
                 'Invalid type [{type}] for field [{field}] (expected: {expected}).'
             ).format(
-                field=field_name,
                 type=type(field_value).__name__,
+                field=field_name,
                 expected=(
                     field_type.__name__ if isinstance(field_type, type) else field_type
                 ),

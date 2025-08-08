@@ -11,10 +11,8 @@ from common.logger import get_logger
 from data.pairings import PairingVariation
 from data.pairings.variations import StandardSwissVariation
 from data.tie_breaks import TieBreak
-from utils.enum import (
-    Result,
-    TournamentRating,
-)
+from plugins.ffe.papi_mappers import PapiResult
+from utils.enum import TournamentRating
 from database.access.access_database import AccessDatabase
 from database.access.papi.papi_template import create_empty_papi_database
 
@@ -182,7 +180,7 @@ class PapiDatabase(AccessDatabase):
                 data |= {
                     rf.color: UNPLAYED_COLOR,
                     rf.opponent: None,
-                    rf.result: Result.NO_RESULT.to_papi_value,
+                    rf.result: PapiResult.NOT_PAIRED,
                 }
             actions: str = ', '.join([f'`{key}` = ?' for key in data])
             query: str = f'UPDATE `joueur` SET {actions} WHERE Ref <> ?'

@@ -5,22 +5,6 @@ from enum import Enum, StrEnum, IntEnum
 
 from common.i18n import _
 
-# TODO (Molrn) Move all Papi Enums to the FFE plugin
-# All from_papi_value / to_papi_value method should be replaced by a mapper
-# in which papi values are mapped to the enum values of the core Enum.
-
-
-class PapiResult(IntEnum):
-    """An enum representing the results in the Papi database"""
-
-    NOT_PAIRED = 0
-    LOSS = 1
-    DRAW_OR_HPB = 2  # HPB = Half-Point Bye
-    GAIN = 3
-    FORFEIT_LOSS = 4
-    DOUBLE_FORFEIT = 5
-    PAB_OR_FORFEIT_GAIN_OR_FPB = 6  # PAB = Pairing-Allocated-Bye, FPB = Full-Point Bye
-
 
 class Result(IntEnum):
     """An enum representing the results in the database. Should be subclassed if the point value is not the default."""
@@ -65,79 +49,6 @@ class Result(IntEnum):
                 return '0-F'
             case _:
                 raise ValueError(f'Unknown value: {self}')
-
-    @classmethod
-    def from_papi_value(
-        cls,
-        value: int,
-        is_point_bye: bool = False,
-        is_pairing_bye: bool = False,
-        is_zero_point_bye: bool = False,
-        is_unrated: bool = False,
-    ) -> 'Result':
-        """Create a `Result` instance from the stored value in the
-        Papi database."""
-        match value:
-            case PapiResult.NOT_PAIRED.value if is_zero_point_bye:
-                return cls.ZERO_POINT_BYE
-            case PapiResult.NOT_PAIRED.value:
-                return cls.NO_RESULT
-            case PapiResult.LOSS.value if is_unrated:
-                return cls.UNRATED_LOSS
-            case PapiResult.LOSS.value:
-                return cls.LOSS
-            case PapiResult.DRAW_OR_HPB.value if is_unrated:
-                return cls.UNRATED_DRAW
-            case PapiResult.DRAW_OR_HPB.value if is_point_bye:
-                return cls.HALF_POINT_BYE
-            case PapiResult.DRAW_OR_HPB.value:
-                return cls.DRAW
-            case PapiResult.GAIN.value if is_unrated:
-                return cls.UNRATED_GAIN
-            case PapiResult.GAIN.value:
-                return cls.GAIN
-            case PapiResult.GAIN.value:
-                return cls.UNRATED_GAIN if is_unrated else cls.GAIN
-            case PapiResult.PAB_OR_FORFEIT_GAIN_OR_FPB.value if is_point_bye:
-                return cls.FULL_POINT_BYE
-            case PapiResult.PAB_OR_FORFEIT_GAIN_OR_FPB.value if is_pairing_bye:
-                return cls.PAIRING_ALLOCATED_BYE
-            case PapiResult.PAB_OR_FORFEIT_GAIN_OR_FPB.value:
-                return cls.FORFEIT_GAIN
-            case PapiResult.FORFEIT_LOSS.value:
-                return cls.FORFEIT_LOSS
-            case PapiResult.DOUBLE_FORFEIT.value:
-                return cls.DOUBLE_FORFEIT
-            case _:
-                raise ValueError(f'Unknown value: {value}')
-
-    @property
-    def to_papi_result(self) -> PapiResult:
-        match self:
-            case Result.GAIN | Result.UNRATED_GAIN:
-                return PapiResult.GAIN
-            case Result.LOSS | Result.UNRATED_LOSS:
-                return PapiResult.LOSS
-            case Result.DRAW | Result.UNRATED_DRAW | Result.HALF_POINT_BYE:
-                return PapiResult.DRAW_OR_HPB
-            case Result.NO_RESULT | Result.ZERO_POINT_BYE | Result.REST_GAME:
-                return PapiResult.NOT_PAIRED
-            case Result.FORFEIT_LOSS:
-                return PapiResult.FORFEIT_LOSS
-            case (
-                Result.FORFEIT_GAIN
-                | Result.PAIRING_ALLOCATED_BYE
-                | Result.FULL_POINT_BYE
-            ):
-                return PapiResult.PAB_OR_FORFEIT_GAIN_OR_FPB
-            case Result.DOUBLE_FORFEIT:
-                return PapiResult.DOUBLE_FORFEIT
-            case _:
-                raise ValueError(f'Unknown value: {self}')
-
-    @property
-    def to_papi_value(self) -> int:
-        return self.to_papi_result.value
 
     @property
     def point_value(self) -> float:
@@ -389,6 +300,20 @@ class Result(IntEnum):
         return self in (
             Result.ZERO_POINT_BYE,
             Result.HALF_POINT_BYE,
+            Result.FULL_POINT_BYE,
+            Result.PAIRING_ALLOCATED_BYE,
+            Result.REST_GAME,
+        )
+
+    @property
+    def unplayed(self) -> bool:
+        return self in (
+            Result.NO_RESULT,
+            Result.FORFEIT_GAIN,
+            Result.FORFEIT_LOSS,
+            Result.DOUBLE_FORFEIT,
+            Result.HALF_POINT_BYE,
+            Result.ZERO_POINT_BYE,
             Result.FULL_POINT_BYE,
             Result.PAIRING_ALLOCATED_BYE,
             Result.REST_GAME,
@@ -812,27 +737,6 @@ class PlayerTitle(IntEnum):
 class BoardColor(StrEnum):
     WHITE = 'W'
     BLACK = 'B'
-
-    @classmethod
-    def from_papi_value(cls, value: str) -> 'BoardColor':
-        """Decode the database value"""
-        match value:
-            case 'B':
-                return BoardColor.WHITE
-            case 'N':
-                return BoardColor.BLACK
-            case _:
-                raise ValueError(f'Unknown value: {value}')
-
-    @property
-    def to_papi_value(self) -> str:
-        match self:
-            case BoardColor.WHITE:
-                return 'B'
-            case BoardColor.BLACK:
-                return 'N'
-            case _:
-                raise ValueError(f'Unknown value:  {self}')
 
     @property
     def to_trf(self) -> str:

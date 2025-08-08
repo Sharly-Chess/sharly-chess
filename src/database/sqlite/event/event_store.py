@@ -119,7 +119,7 @@ class StoredPlayer:
     ratings: dict[int, dict[str, int]]
     fide_id: int | None
     federation: str
-    club: str
+    club: str | None
     fixed: int | None
     check_in: bool
     # TODO (Molrn - multi tournament) move to a list in StoredTournament

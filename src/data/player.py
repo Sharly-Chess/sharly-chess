@@ -208,7 +208,7 @@ class Player:
 
     @property
     def club(self) -> Club:
-        return Club(self.stored_player.club)
+        return Club(self.stored_player.club or '')
 
     @property
     def fixed(self) -> int | None:
