@@ -434,6 +434,12 @@ class PapiConverter:
                 papi_rating.value, rating_type
             ).stored_value
 
+        fide_id: int | None = None
+        if papi_player.fideCode:
+            if not papi_player.fideCode.strip().isdigit():
+                raise_exception('fideCode', _('A positive integer is expected'))
+            fide_id = int(papi_player.fideCode.strip())
+
         ffe_licence = PlayerFFELicence.NONE
         if papi_player.licenceType:
             try:
@@ -455,7 +461,7 @@ class PapiConverter:
             paid=float(papi_player.paid or 0),
             title=title.value,
             ratings=ratings,
-            fide_id=None,
+            fide_id=fide_id,
             federation=papi_player.federation,
             club=papi_player.club,
             fixed=papi_player.fixedBoard,
