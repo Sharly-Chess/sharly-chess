@@ -218,7 +218,13 @@ class ExecutableInstaller(ToolInstaller, ABC):
 
     @property
     def executable_dir(self) -> Path:
-        return BASE_DIR / 'tools' / self.name / self.system_handler.executable_dir
+        return (
+            BASE_DIR
+            / 'tools'
+            / self.name
+            / f'v{self.version}'
+            / self.system_handler.executable_dir
+        )
 
     @property
     def install_dir(self) -> Path:
