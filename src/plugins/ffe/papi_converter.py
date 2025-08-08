@@ -18,6 +18,8 @@ from data.pairings.variations import (
     DoubleBergerRoundRobinVariation,
 )
 from data.player import PlayerRating
+from data.player import Player
+from data.tournament import Tournament
 from database.sqlite.event.event_store import (
     StoredTournament,
     StoredPlayer,
@@ -28,6 +30,7 @@ from database.sqlite.event.event_store import (
 from plugins.ffe import TMP_DIR, PLUGIN_NAME
 from plugins.ffe.papi_mappers import (
     PapiPairingVariation,
+    PapiPlayerCategory,
     PapiTournamentRating,
     PapiTieBreakMapper,
     PapiThreePointsForAWin,
@@ -37,8 +40,13 @@ from plugins.ffe.papi_mappers import (
     PapiRound,
     PapiColor,
     PapiPlayerTitle,
+    PapiPairingSystem,
 )
 from plugins.ffe.utils import FfePlayerPluginData, PlayerFFELicence
+from plugins.pairing_acceleration.pairing_settings import (
+    DualRatingLimitsSetting,
+    RatingLimitSetting,
+)
 from utils.enum import (
     TournamentRating,
     PlayerGender,
@@ -531,3 +539,205 @@ class PapiConverter:
                 last_result_update=None,
             )
         return stored_pairing, stored_board
+
+    def write_papi_file(
+        self,
+        tournament: Tournament,
+        target_file: Path,
+    ) -> bool:
+        """Write the tournament data to a papi file.
+        Converts a Tournament to JSON format that can be sent to papi-converter.
+        Returns True if successful, raises SharlyChessException if conversion fails."""
+        papi_data = self._tournament_to_papi_data(tournament)
+        papi_data_dict = {
+            'variables': papi_data.variables.__dict__,
+            'players': [
+                self._papi_player_to_dict(player) for player in papi_data.players
+            ],
+        }
+
+        # Write JSON to temporary file first
+        temp_json_file = TMP_DIR / 'papi-converter-input.json'
+        try:
+            with open(temp_json_file, 'w', encoding='utf-8') as file:
+                json.dump(papi_data_dict, file, ensure_ascii=False, indent=2)
+
+            # Use papi-converter to convert JSON to papi format
+            result = subprocess.run(
+                [
+                    self.executable_path,
+                    temp_json_file,
+                    target_file,
+                ],
+                capture_output=True,
+                encoding='utf-8',
+            )
+
+            if result.returncode != 0 or not Path(target_file).exists():
+                raise SharlyChessException(
+                    f'JSON to Papi file conversion failed.'
+                    f'PapiConverter failed with status {result.returncode}.\n'
+                    f'stdout: {result.stdout}\nstderr: {result.stderr}'
+                )
+
+            return True
+
+        finally:
+            # Clean up temporary JSON file
+            temp_json_file.unlink(missing_ok=True)
+
+    def _tournament_to_papi_data(self, tournament: Tournament) -> PapiData:
+        """Convert a Tournament object to PapiData."""
+
+        pairing_settings = tournament.pairing_settings
+        if (
+            pairing_settings
+            and (setting_id := RatingLimitSetting.static_id()) in pairing_settings
+        ):
+            min_rating = pairing_settings[setting_id]
+            max_rating = 0
+        elif (
+            pairing_settings
+            and (setting_id := DualRatingLimitsSetting.static_id()) in pairing_settings
+        ):
+            min_rating, max_rating = pairing_settings[setting_id]
+        else:
+            min_rating, max_rating = 0, 0
+
+        # Convert tournament variables
+        variables = PapiVariables(
+            name=tournament.name,
+            type=PapiPairingSystem.get_plugin_value(tournament.pairing_system),
+            rounds=str(tournament.rounds),
+            pairing=PapiPairingVariation.get_plugin_value(tournament.pairing_variation),
+            ratingClass=PapiTournamentRating.get_plugin_value(tournament.rating),
+            venue=tournament.location,
+            startDate=self._format_date_for_papi(tournament.start_timestamp)
+            if tournament.start_timestamp
+            else None,
+            endDate=self._format_date_for_papi(tournament.stop_timestamp)
+            if tournament.stop_timestamp
+            else None,
+            tiebreak1=PapiTieBreakMapper.get_plugin_value(tournament.tie_breaks[0])
+            if tournament.tie_breaks and tournament.tie_breaks[0]
+            else None,
+            tiebreak2=PapiTieBreakMapper.get_plugin_value(tournament.tie_breaks[1])
+            if len(tournament.tie_breaks) > 1 and tournament.tie_breaks[1]
+            else None,
+            tiebreak3=PapiTieBreakMapper.get_plugin_value(tournament.tie_breaks[2])
+            if len(tournament.tie_breaks) > 2 and tournament.tie_breaks[2]
+            else None,
+            pointSystem=PapiThreePointsForAWin.get_plugin_value(
+                tournament.three_points_for_a_win
+            ),
+            arbiter='',
+            timeControl='',
+            minRating=str(min_rating),
+            maxRating=str(max_rating),
+        )
+
+        # Add plugin-specific data if available
+        if tournament.plugin_data and PLUGIN_NAME in tournament.plugin_data:
+            plugin_data = tournament.plugin_data[PLUGIN_NAME]
+            if 'ffe_id' in plugin_data:
+                variables.homologation = plugin_data['ffe_id']
+
+        # Create mapping from internal player ID to index in PapiPlayer list
+        player_id_to_index = {
+            player.id: index for index, player in enumerate(tournament.players)
+        }
+
+        # Convert players
+        papi_players: list[PapiPlayer] = []
+        for player in tournament.players:
+            papi_player = self._player_to_papi_player(
+                player, tournament, player_id_to_index
+            )
+            papi_players.append(papi_player)
+
+        return PapiData(variables=variables, players=papi_players)
+
+    def _player_to_papi_player(
+        self, player: Player, tournament: Tournament, player_id_to_index: dict[int, int]
+    ) -> PapiPlayer:
+        """Convert a Player object to PapiPlayer."""
+
+        plugin_data = player.plugin_data[PLUGIN_NAME]
+        assert isinstance(plugin_data, FfePlayerPluginData)
+
+        papi_player = PapiPlayer(
+            lastName=player.last_name,
+            firstName=player.first_name,
+            birthDate=player.date_of_birth.strftime('%d/%m/%Y')
+            if player.date_of_birth
+            else None,
+            category=PapiPlayerCategory.get_plugin_value(player.category),
+            gender=PapiPlayerGender.get_plugin_value(player.gender),
+            email=player.mail,
+            phone=player.phone,
+            comment=player.comment,
+            owed=player.owed if player.owed != 0 else None,
+            paid=player.paid if player.paid != 0 else None,
+            fideTitle=PapiPlayerTitle.get_plugin_value(player.title),
+            fideCode=str(player.fide_id) if player.fide_id else None,
+            federation=player.federation.name,
+            club=player.club.name,
+            fixedBoard=player.fixed,
+            checkedIn=player.check_in,
+            elo=self._get_papi_elo(player, TournamentRating.STANDARD),
+            fideElo=self._get_papi_elo_type(player, TournamentRating.STANDARD),
+            rapidElo=self._get_papi_elo(player, TournamentRating.RAPID),
+            fideRapidElo=self._get_papi_elo_type(player, TournamentRating.RAPID),
+            blitzElo=self._get_papi_elo(player, TournamentRating.BLITZ),
+            fideBlitzElo=self._get_papi_elo_type(player, TournamentRating.BLITZ),
+            licenceType=PapiPlayerFFELicence.get_plugin_value(plugin_data.ffe_licence),
+            refFFE=plugin_data.ffe_id,
+            nrFFE=plugin_data.ffe_licence_number,
+            league=plugin_data.league,
+        )
+
+        # Convert rounds/pairings
+        for round, pairing in player.pairings_by_round.items():
+            papi_round = PapiRound.from_pairing(pairing)
+
+            # Get opponent index using the mapping from internal player ID to list index
+            opponent_index = None
+            if pairing.opponent_id is not None:
+                opponent_index = player_id_to_index.get(pairing.opponent_id)
+            papi_round.opponent = opponent_index
+            papi_player.rounds[round] = papi_round
+
+        return papi_player
+
+    def _get_papi_elo(self, player: Player, tournament_rating: TournamentRating) -> int:
+        if player.ratings and tournament_rating in player.ratings:
+            return player.ratings[tournament_rating].value
+        return 0
+
+    def _get_papi_elo_type(
+        self, player: Player, tournament_rating: TournamentRating
+    ) -> str:
+        rating = player.ratings.get(tournament_rating, None)
+        default_rating = PapiPlayerRatingType.get_plugin_value(
+            PlayerRatingType.ESTIMATED
+        )
+        assert default_rating is not None
+        if rating:
+            return PapiPlayerRatingType.get_plugin_value(rating.type) or default_rating
+        return default_rating
+
+    def _papi_player_to_dict(self, papi_player: PapiPlayer) -> dict:
+        """Convert PapiPlayer to dictionary for JSON serialization."""
+        player_dict = {k: v for k, v in papi_player.__dict__.items() if v is not None}
+        # Convert rounds dict to proper format
+        rounds_dict = {}
+        for round_nb, papi_round in papi_player.rounds.items():
+            rounds_dict[str(round_nb)] = {
+                k: v for k, v in papi_round.__dict__.items() if v is not None
+            }
+        player_dict['rounds'] = rounds_dict
+        return player_dict
+
+    def _format_date_for_papi(self, timestamp: float) -> str:
+        """Format timestamp to DD/MM/YYYY format for papi."""
+        return datetime.fromtimestamp(timestamp).strftime('%d/%m/%Y')

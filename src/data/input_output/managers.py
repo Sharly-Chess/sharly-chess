@@ -30,8 +30,10 @@ class OnlineDataSourceManager(EntityManager[OnlineDataSource]):
 class TournamentExporterManager(EntityManager[TournamentExporter]):
     @staticmethod
     def entity_types() -> list[type[TournamentExporter]]:
-        return [
+        exporters: list[type[TournamentExporter]] = [
             tournament_exporters.Trf16TournamentExporter,
             tournament_exporters.TrfBxTournamentExporter,
             tournament_exporters.PgnTournamentExporter,
         ]
+        plugin_manager.hook.insert_tournament_exporters(exporters=exporters)
+        return exporters
