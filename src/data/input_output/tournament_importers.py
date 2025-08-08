@@ -52,16 +52,17 @@ class TournamentImporter(IdentifiableEntity, ABC):
             tournament_id = self._write_stored_tournament(
                 stored_tournament, stored_players, database
             )
-
+            database.commit()
             event = EventLoader().reload_event(event.uniq_id)
             tournament = event.tournaments_by_id[tournament_id]
             if self.reorder_boards:
                 for round_ in range(1, tournament.rounds + 1):
+                    tournament.set_for_round(round_)
                     boards = tournament.get_round_boards(round_)
                     for index, board in enumerate(sorted(boards, reverse=True)):
                         board.stored_board.index = index
                         database.update_stored_board(board.stored_board)
-            database.commit()
+                database.commit()
         return tournament
 
     @staticmethod
