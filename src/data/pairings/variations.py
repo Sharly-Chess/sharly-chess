@@ -25,12 +25,17 @@ if TYPE_CHECKING:
 class PairingVariation(IdentifiableEntity, ABC):
     @classmethod
     def static_id(cls) -> str:
+        """Built from the ID of the system and the ID of the variation
+        Example for StandardSwissVariation:
+        - system: SwissSystem -> SWISS
+        - variation: STANDARD
+        result: SWISS_STANDARD"""
         return f'{cls.system().id}_{cls.variation_id()}'
 
     @staticmethod
     @abstractmethod
     def variation_id() -> str:
-        """ID of the pairing variation.
+        """ID of the pairing variation, used to build the ID.
         Should be unique amongst variations of the same system."""
 
     @staticmethod

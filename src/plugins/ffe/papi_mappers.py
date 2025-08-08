@@ -189,6 +189,8 @@ class PapiRound:
                 if PapiColor.BYE:
                     return Result.HALF_POINT_BYE
                 return Result.DRAW
+            case PapiResult.GAIN:
+                return Result.GAIN
             case PapiResult.FORFEIT_LOSS:
                 return Result.FORFEIT_LOSS
             case PapiResult.DOUBLE_FORFEIT:

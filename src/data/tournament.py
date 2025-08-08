@@ -19,7 +19,6 @@ from common.logger import get_logger
 
 from data.board import Board
 from data.family import Family
-from data.pairings.variations import SwissVariation
 from data.player import Player, Federation, Club
 from data.prize.prize_category import PrizeCategory
 from data.prize.prize_group import PrizeGroup
@@ -71,7 +70,6 @@ class Tournament:
         self.players_by_id = self._get_players_by_id()
         self.boards_by_id = self._get_boards_by_id()
         self.prize_groups_by_id = self._get_prize_groups_by_id()
-        self.pairing_system.update_player_results(self)
 
         self.file.touch(exist_ok=True)
         self.stored_file_modified_timestamp: float | None = None
@@ -325,12 +323,7 @@ class Tournament:
     def pairing_variation(self) -> 'PairingVariation':
         from data.pairings import PairingVariationManager
 
-        variation_id = self.stored_tournament.pairing
-        return (
-            PairingVariationManager.get_object(variation_id)
-            if variation_id
-            else SwissVariation()
-        )
+        return PairingVariationManager.get_object(self.stored_tournament.pairing)
 
     @property
     def pairing_system(self) -> 'PairingSystem':

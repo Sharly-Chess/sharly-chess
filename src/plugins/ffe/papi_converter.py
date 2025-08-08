@@ -12,6 +12,11 @@ from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from common.tool_installer import PapiConverterInstaller
 from data.input_output.dict_reader import dict_to_dataclass, DictReaderException
+from data.pairings.engines import DoubleBergerPairingEngine
+from data.pairings.variations import (
+    BergerRoundRobinVariation,
+    DoubleBergerRoundRobinVariation,
+)
 from data.player import PlayerRating
 from database.sqlite.event.event_store import (
     StoredTournament,
@@ -30,9 +35,17 @@ from plugins.ffe.papi_mappers import (
     PapiPlayerRatingType,
     PapiPlayerFFELicence,
     PapiRound,
+    PapiColor,
+    PapiPlayerTitle,
 )
 from plugins.ffe.utils import FfePlayerPluginData, PlayerFFELicence
-from utils.enum import TournamentRating, PlayerGender, PlayerTitle, PlayerRatingType
+from utils.enum import (
+    TournamentRating,
+    PlayerGender,
+    PlayerTitle,
+    PlayerRatingType,
+    Result,
+)
 
 
 @dataclass
@@ -189,9 +202,15 @@ class PapiConverter:
         stored_tournament: StoredTournament | None = None,
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
         """Read the papi file *source_file* into stored objects.
-        If a storedTournament object is provided, add the values to this one,
+        If a StoredTournament object is provided, add the values to this one,
         otherwise creates a new one.
         Raises a SharlyChessException if the conversion fails."""
+        if source_file.suffix != '.papi':
+            raise SharlyChessException(
+                _('File is expected to have the [{suffix}] suffix').format(
+                    suffix='papi'
+                )
+            )
         target_file = TMP_DIR / 'papi-converter-output.json'
         result = subprocess.run(
             [
@@ -217,11 +236,21 @@ class PapiConverter:
         papi_data_dict: dict[str, Any],
         stored_tournament: StoredTournament | None = None,
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
+        """Read a dict in the format of the papi-converter into stored objects."""
         papi_data = dict_to_dataclass(PapiData, papi_data_dict)
 
         stored_tournament = self._read_papi_variables(
             papi_data.variables, stored_tournament
         )
+        is_round_robin = (
+            stored_tournament.pairing == BergerRoundRobinVariation.static_id()
+        )
+
+        if is_round_robin and stored_tournament.rounds == (
+            DoubleBergerPairingEngine().get_round_count(len(papi_data.players))
+        ):
+            stored_tournament.pairing = DoubleBergerRoundRobinVariation.static_id()
+
         next_board_id = 1
         board_id_by_player_id_by_round: dict[int, dict[int, int]] = {
             round_: {} for round_ in range(1, stored_tournament.rounds + 1)
@@ -232,14 +261,14 @@ class PapiConverter:
         stored_players: list[StoredPlayer] = []
         max_opponent_id = len(papi_data.players) - 1
         for player_id, papi_player in enumerate(papi_data.players):
-            stored_player = self._read_papi_player(papi_player)
+            stored_player = self._read_papi_player(player_id, papi_player)
             stored_player.id = player_id
             stored_tournament_player = StoredTournamentPlayer(player_id=player_id)
             for round_nb, papi_round in papi_player.rounds.items():
                 if round_nb > stored_tournament.rounds:
                     continue
                 stored_pairing, stored_board = self._read_papi_round(
-                    player_id, round_nb, papi_round, max_opponent_id
+                    player_id, round_nb, papi_round, max_opponent_id, is_round_robin
                 )
                 if stored_board:
                     if player_id in board_id_by_player_id_by_round[round_nb]:
@@ -252,6 +281,7 @@ class PapiConverter:
                     stored_pairing.board_id = board_id
                 stored_tournament_player.stored_pairings.append(stored_pairing)
             stored_player.stored_tournament_player = stored_tournament_player
+            stored_players.append(stored_player)
         stored_tournament.stored_boards_by_round = stored_boards_by_round
         return stored_tournament, stored_players
 
@@ -327,12 +357,10 @@ class PapiConverter:
             }
         return stored_tournament
 
-    def _read_papi_player(
-        self,
-        papi_player: PapiPlayer,
-    ) -> StoredPlayer:
+    @staticmethod
+    def _read_papi_player(player_id: int, papi_player: PapiPlayer) -> StoredPlayer:
         def raise_exception(field_: str, message: str):
-            raise DictReaderException(['players', field_], message)
+            raise DictReaderException(['players', str(player_id), field_], message)
 
         def raise_unknown_value(field_: str, value: Any):
             raise_exception(field_, _('Unknown value [{value}]').format(value=value))
@@ -363,7 +391,7 @@ class PapiConverter:
         title = PlayerTitle.NONE
         if papi_player.fideTitle:
             try:
-                gender = PapiPlayerGender.get_core_object(papi_player.fideTitle)
+                title = PapiPlayerTitle.get_core_object(papi_player.fideTitle)
             except KeyError:
                 raise_unknown_value('fideTitle', papi_player.fideTitle)
 
@@ -425,7 +453,7 @@ class PapiConverter:
             comment=papi_player.comment,
             owed=float(papi_player.owed or 0),
             paid=float(papi_player.paid or 0),
-            title=title,
+            title=title.value,
             ratings=ratings,
             fide_id=None,
             federation=papi_player.federation,
@@ -442,29 +470,54 @@ class PapiConverter:
             },
         )
 
+    @staticmethod
     def _read_papi_round(
-        self,
         player_id: int,
         round_nb: int,
         papi_round: PapiRound,
         max_opponent_id: int,
+        is_round_robin: bool,
     ) -> tuple[StoredPairing, StoredBoard | None]:
-        path = ['players', 'rounds']
-        stored_board: StoredBoard | None = None
-        stored_pairing = StoredPairing(
-            tournament_id=0,
-            player_id=player_id,
-            round_=round_nb,
-            result=12,
-            board_id=None,
-        )
+        def raise_exception(field_: str, message: str):
+            raise DictReaderException(['players', str(player_id), field_], message)
 
         if papi_round.opponent is not None:
             if papi_round.opponent > max_opponent_id:
-                raise DictReaderException(
-                    path + ['opponent'],
+                raise_exception(
+                    'opponent',
                     _('Unknown player ID [{player_id}]').format(
                         player_id=papi_round.opponent
                     ),
                 )
+        stored_board: StoredBoard | None = None
+        result = papi_round.to_result(is_round_robin)
+        stored_pairing = StoredPairing(
+            tournament_id=0,
+            player_id=player_id,
+            round_=round_nb,
+            result=result.value,
+            board_id=None,
+        )
+
+        color = PapiColor.WHITE if result == Result.REST_GAME else papi_round.color
+        if color in (PapiColor.WHITE or PapiColor.BLACK):
+            if color == PapiColor.WHITE:
+                white_id = player_id
+                black_id = papi_round.opponent
+            else:
+                if papi_round is None:
+                    raise_exception(
+                        'color',
+                        _('Black pairings are supposed to have an opponent'),
+                    )
+                assert papi_round.opponent is not None
+                white_id = papi_round.opponent
+                black_id = player_id
+            stored_board = StoredBoard(
+                id=None,
+                white_player_id=white_id,
+                black_player_id=black_id,
+                index=0,
+                last_result_update=None,
+            )
         return stored_pairing, stored_board
