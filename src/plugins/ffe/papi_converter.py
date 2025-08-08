@@ -16,7 +16,6 @@ from data.pairings.engines import DoubleBergerPairingEngine
 from data.pairings.variations import (
     BergerRoundRobinVariation,
     DoubleBergerRoundRobinVariation,
-    SwissVariation
 )
 from data.player import PlayerRating
 from data.player import Player
@@ -32,7 +31,6 @@ from plugins.ffe import TMP_DIR, PLUGIN_NAME
 from plugins.ffe.papi_mappers import (
     PapiPairingVariation,
     PapiPlayerCategory,
-    PapiPlayerTitle,
     PapiTournamentRating,
     PapiTieBreakMapper,
     PapiThreePointsForAWin,
@@ -42,6 +40,7 @@ from plugins.ffe.papi_mappers import (
     PapiRound,
     PapiColor,
     PapiPlayerTitle,
+    PapiPairingSystem,
 )
 from plugins.ffe.utils import FfePlayerPluginData, PlayerFFELicence
 from plugins.pairing_acceleration.pairing_settings import (
@@ -608,9 +607,7 @@ class PapiConverter:
         # Convert tournament variables
         variables = PapiVariables(
             name=tournament.name,
-            type='Suisse'
-            if isinstance(tournament.pairing_variation, SwissVariation)
-            else 'ToutesRondes',
+            type=PapiPairingSystem.get_plugin_value(tournament.pairing_system),
             rounds=str(tournament.rounds),
             pairing=PapiPairingVariation.get_plugin_value(tournament.pairing_variation),
             ratingClass=PapiTournamentRating.get_plugin_value(tournament.rating),

@@ -4,6 +4,11 @@ from typing import Self
 
 from data.pairing import Pairing
 from data.pairings import PairingVariation, variations
+from data.pairings.systems import (
+    RoundRobinPairingSystem,
+    SwissPairingSystem,
+    PairingSystem,
+)
 from data.tie_breaks import TieBreak, PapiTieBreakManager
 from plugins.ffe.utils import PlayerFFELicence
 from plugins.pairing_acceleration import pairing_variations as accelerations
@@ -40,6 +45,15 @@ class PapiPairingVariation(PluginCoreMapper[str, PairingVariation]):
         if core_object == variations.DoubleBergerRoundRobinVariation():
             core_object = variations.BergerRoundRobinVariation()
         return super().get_plugin_value(core_object)
+
+
+class PapiPairingSystem(PluginCoreMapper[str, PairingSystem]):
+    @staticmethod
+    def _core_object_by_plugin_value() -> dict[str, PairingSystem]:
+        return {
+            'Suisse': SwissPairingSystem(),
+            'ToutesRondes': RoundRobinPairingSystem(),
+        }
 
 
 class PapiTieBreakMapper(PluginCoreMapper[str, TieBreak]):
