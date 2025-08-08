@@ -13,7 +13,7 @@ from packaging.version import Version
 
 from common.exception import SharlyChessException
 from common.i18n import _
-from data.input_output import DataSource
+from data.input_output import DataSource, TournamentExporter
 from data.input_output.data_source import FideDataSource
 from data.pairings.variations import SwissVariation
 from data.print_documents import PlayerSplitter, PrintDocument
@@ -27,6 +27,7 @@ from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
+from plugins.ffe.ffe_papi_exporter import PapiTournamentExporter
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.utils import (
     FFE_DEFAULT_UPLOAD_DELAY,
@@ -166,6 +167,14 @@ class FfePlugin(Plugin):
         ffe: type[LocalSourceDatabase] = FfeDatabase
         fide: type[LocalSourceDatabase] = FideDatabase
         PluginUtils.insert_on_equals(databases, ffe, fide, False)
+
+    # ---------------------------------------------------------------------------------
+    # Exporters
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def insert_tournament_exporters(self, exporters: list[type['TournamentExporter']]):
+        exporters.append(PapiTournamentExporter)
 
     # ---------------------------------------------------------------------------------
     # Players

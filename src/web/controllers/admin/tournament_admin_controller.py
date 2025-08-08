@@ -695,6 +695,7 @@ class TournamentAdminController(BaseEventAdminController):
         temp_file = NamedTemporaryFile(
             delete=False,
             mode='wb' if exporter.is_binary_file else 'w',
+            suffix=f'.{exporter.file_extension}',
             encoding=exporter.file_encoding,
         )
         with temp_file:
