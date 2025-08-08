@@ -200,7 +200,7 @@ class PapiRound:
             case PapiResult.LOSS:
                 return Result.LOSS
             case PapiResult.DRAW_OR_HPB:
-                if PapiColor.BYE:
+                if self.color == PapiColor.BYE:
                     return Result.HALF_POINT_BYE
                 return Result.DRAW
             case PapiResult.GAIN:
