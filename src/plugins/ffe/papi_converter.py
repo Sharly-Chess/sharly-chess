@@ -278,6 +278,7 @@ class PapiConverter:
                         next_board_id += 1
                         stored_board.id = board_id
                         stored_boards_by_round[round_nb].append(stored_board)
+                        board_id_by_player_id_by_round[round_nb][player_id] = board_id
                     stored_pairing.board_id = board_id
                 stored_tournament_player.stored_pairings.append(stored_pairing)
             stored_player.stored_tournament_player = stored_tournament_player
@@ -506,7 +507,7 @@ class PapiConverter:
         )
 
         color = PapiColor.WHITE if result == Result.REST_GAME else papi_round.color
-        if color in (PapiColor.WHITE or PapiColor.BLACK):
+        if color in (PapiColor.WHITE, PapiColor.BLACK):
             if color == PapiColor.WHITE:
                 white_id = player_id
                 black_id = papi_round.opponent

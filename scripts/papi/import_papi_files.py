@@ -19,7 +19,7 @@ for event in EventLoader().events_by_id.values():
                 tournament.log_prefix + f'File [{tournament.file}] does not exist'
             )
         elif tournament.players:
-            logger.warning(tournament.log_prefix + 'Tournament already have players')
+            logger.warning(tournament.log_prefix + 'Tournament already has players')
         else:
             PapiTournamentImporter().load_tournament(tournament.file, event, tournament)
             logger.info(
