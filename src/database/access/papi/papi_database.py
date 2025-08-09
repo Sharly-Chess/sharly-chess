@@ -10,11 +10,9 @@ from typing import Pattern
 from common.logger import get_logger
 from data.pairings import PairingVariation
 from data.pairings.variations import StandardSwissVariation
-from data.tie_breaks import TieBreak, PapiTieBreakManager
-from utils.enum import (
-    Result,
-    TournamentRating,
-)
+from data.tie_breaks import TieBreak
+from plugins.ffe.papi_mappers import PapiResult
+from utils.enum import TournamentRating
 from database.access.access_database import AccessDatabase
 from database.access.papi.papi_template import create_empty_papi_database
 
@@ -116,51 +114,6 @@ class PapiDatabase(AccessDatabase):
         query: str = 'UPDATE `info` SET `Value` = ? WHERE `Variable` = ?'
         self._execute(query, (value, variable.value))
 
-    def read_info(self) -> PapiTournamentInfo:
-        """Reads the database and returns basic information about the
-        tournament."""
-        values = self.read_variables(
-            [
-                PapiVariable.ROUNDS,
-                PapiVariable.PAIRING_VARIATION,
-                PapiVariable.RATING,
-                PapiVariable.RATING_LIMIT1,
-                PapiVariable.RATING_LIMIT2,
-                PapiVariable.TIE_BREAK1,
-                PapiVariable.TIE_BREAK2,
-                PapiVariable.TIE_BREAK3,
-                PapiVariable.THREE_POINTS_FOR_A_WIN,
-                PapiVariable.ARBITER,
-            ]
-        )
-        tie_break_type_by_id = PapiTieBreakManager.type_by_papi_id()
-        tie_breaks: list[TieBreak] = []
-        for variable in (
-            PapiVariable.TIE_BREAK1,
-            PapiVariable.TIE_BREAK2,
-            PapiVariable.TIE_BREAK3,
-        ):
-            papi_id = values[variable]
-            if tie_break_type := tie_break_type_by_id.get(papi_id, None):
-                tie_breaks.append(tie_break_type())
-
-        from plugins.ffe.utils import PapiPairingVariation, PapiThreePointsForAWin
-
-        return PapiTournamentInfo(
-            rounds=int(values[PapiVariable.ROUNDS]),
-            pairing_variation=PapiPairingVariation.get_core_object(
-                values[PapiVariable.PAIRING_VARIATION]
-            ),
-            rating=TournamentRating.from_papi_value(values[PapiVariable.RATING]),
-            rating_limit1=int(values[PapiVariable.RATING_LIMIT1]),
-            rating_limit2=int(values[PapiVariable.RATING_LIMIT2]),
-            tie_breaks=tie_breaks,
-            three_points_for_a_win=PapiThreePointsForAWin.get_core_object(
-                values[PapiVariable.THREE_POINTS_FOR_A_WIN]
-            ),
-            arbiter=values[PapiVariable.ARBITER],
-        )
-
     def write_info(self, info: dict[PapiVariable, str | int]):
         for name, value in info.items():
             self.update_variable(name, value)
@@ -227,7 +180,7 @@ class PapiDatabase(AccessDatabase):
                 data |= {
                     rf.color: UNPLAYED_COLOR,
                     rf.opponent: None,
-                    rf.result: Result.NO_RESULT.to_papi_value,
+                    rf.result: PapiResult.NOT_PAIRED,
                 }
             actions: str = ', '.join([f'`{key}` = ?' for key in data])
             query: str = f'UPDATE `joueur` SET {actions} WHERE Ref <> ?'

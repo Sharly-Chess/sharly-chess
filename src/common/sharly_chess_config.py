@@ -183,6 +183,8 @@ class SharlyChessConfig(metaclass=Singleton):
     # The default console log level, used by default.
     default_console_log_level: int = logging.INFO
 
+    default_pairing_variation_id = 'SWISS_STANDARD'
+
     """ The URL of the project. """
     url: str = 'https://sharly-chess.com'
 

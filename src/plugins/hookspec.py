@@ -18,7 +18,7 @@ from plugins.utils import (
 from utils.enum import ScreenType, TournamentRating
 
 if TYPE_CHECKING:
-    from data.input_output import DataSource
+    from data.input_output import DataSource, TournamentExporter
     from data.pairings.variations import SwissVariation
     from data.player import Player, PlayerRating
     from data.print_documents import PrintDocument, PlayerSplitter
@@ -85,6 +85,14 @@ class AppHookSpecs:
         self, databases: list[type['LocalSourceDatabase']]
     ):
         """Provide extra local source databases."""
+
+    # ---------------------------------------------------------------------------------
+    # Exporters
+    # ---------------------------------------------------------------------------------
+
+    @hookspec
+    def insert_tournament_exporters(self, exporters: list[type['TournamentExporter']]):
+        """Provide extra export options."""
 
     # ---------------------------------------------------------------------------------
     # Players

@@ -70,7 +70,6 @@ class Tournament:
         self.players_by_id = self._get_players_by_id()
         self.boards_by_id = self._get_boards_by_id()
         self.prize_groups_by_id = self._get_prize_groups_by_id()
-        self.pairing_system.update_player_results(self)
 
         self.file.touch(exist_ok=True)
         self.stored_file_modified_timestamp: float | None = None
@@ -1105,7 +1104,9 @@ class Tournament:
             )
 
             board.set_last_result_update(board.white_pairing.result, event_database)
-            self.stored_tournament.last_result_update = event_database.set_tournament_last_result_update(self.id)
+            self.stored_tournament.last_result_update = (
+                event_database.set_tournament_last_result_update(self.id)
+            )
             event_database.commit()
 
         self.clear_cache()
@@ -1133,7 +1134,9 @@ class Tournament:
             board.white_pairing.update_result(event_database, Result.NO_RESULT)
             board.black_pairing.update_result(event_database, Result.NO_RESULT)
             board.set_last_result_update(board.white_pairing.result, event_database)
-            self.stored_tournament.last_result_update = event_database.set_tournament_last_result_update(self.id)
+            self.stored_tournament.last_result_update = (
+                event_database.set_tournament_last_result_update(self.id)
+            )
             event_database.commit()
         self.clear_cache()
         board.white_player.clear_cache()

@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from collections import Counter
 from collections.abc import Callable
 from functools import partial, cached_property
+from pathlib import Path
 from types import UnionType
 from typing import override, Any
 
@@ -16,6 +17,7 @@ from data.input_output.data_source import (
     LocalDataSource,
     OnlineDataSource,
 )
+from data.input_output.tournament_importers import TournamentImporter
 from data.pairings.settings import PairingSetting
 from data.pairings.variations import SwissVariation
 from data.player import Player
@@ -26,11 +28,12 @@ from data.prize.player_filter_options import (
 )
 from data.prize.player_filters import PlayerFilter
 from data.tournament import Tournament
-from database.sqlite.event.event_store import StoredPlayer
+from database.sqlite.event.event_store import StoredPlayer, StoredTournament
 from database.sqlite.local_source_database import LocalSourceDatabase
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_sql_server import FFESqlServer
+from plugins.ffe.papi_converter import PapiConverter
 from plugins.ffe.utils import FFEUtils
 from plugins.pairing_acceleration.pairing_settings import DualRatingLimitsSetting
 from plugins.utils import PluginUtils
@@ -38,6 +41,25 @@ from utils.enum import Result
 from utils.option import OptionError
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
+
+
+class PapiTournamentImporter(TournamentImporter):
+    @staticmethod
+    def static_id() -> str:
+        return 'PAPI'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Papi file')
+
+    @property
+    def reorder_boards(self) -> bool:
+        return True
+
+    def load_stored_tournament(
+        self, source_file: Path, stored_tournament: StoredTournament | None = None
+    ) -> tuple[StoredTournament, list[StoredPlayer]]:
+        return PapiConverter().read_papi_file(source_file, stored_tournament)
 
 
 class FfePlayerComparator(FidePlayerComparator):

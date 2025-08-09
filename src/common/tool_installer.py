@@ -251,7 +251,13 @@ class ExecutableInstaller(ToolInstaller, ABC):
 
     @property
     def executable_dir(self) -> Path:
-        return BASE_DIR / 'tools' / self.name / self.system_handler.executable_dir
+        return (
+            BASE_DIR
+            / 'tools'
+            / self.name
+            / f'v{self.version}'
+            / self.system_handler.executable_dir
+        )
 
     @property
     def install_dir(self) -> Path:
@@ -284,19 +290,19 @@ class BbpPairingsInstaller(ExecutableInstaller):
                 return SystemHandler(
                     executable_dir=f'bbpPairings-v{self.version}',
                     executable_filename='bbpPairings-windows.exe',
-                    archive_filename=f'bbpPairings-Windows.zip',
+                    archive_filename='bbpPairings-Windows.zip',
                 )
             case 'Darwin':
                 return SystemHandler(
                     executable_dir=f'bbpPairings-v{self.version}',
                     executable_filename='bbpPairings-macos',
-                    archive_filename=f'bbpPairings-macOS.zip',
+                    archive_filename='bbpPairings-macOS.zip',
                 )
             case 'Linux':
                 return SystemHandler(
                     executable_dir=f'bbpPairings-v{self.version}',
                     executable_filename='bbpPairings-linux',
-                    archive_filename=f'bbpPairings-Linux.zip',
+                    archive_filename='bbpPairings-Linux.zip',
                 )
             case _:
                 raise OSError(
@@ -324,7 +330,9 @@ class BbpPairingsInstaller(ExecutableInstaller):
             if self.executable_path.exists():
                 # Add execute permission for owner, group, and others
                 current_permissions = self.executable_path.stat().st_mode
-                new_permissions = current_permissions | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+                new_permissions = (
+                    current_permissions | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+                )
                 self.executable_path.chmod(new_permissions)
 
         return self.is_installed
@@ -362,7 +370,7 @@ class PapiConverterInstaller(ExecutableInstaller):
 
     @property
     def _version(self) -> Version:
-        return Version('1.1.1')
+        return Version('1.1.4')
 
     def install(self) -> bool:
         archive_filename = self.system_handler.archive_filename

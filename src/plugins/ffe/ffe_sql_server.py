@@ -9,11 +9,17 @@ from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.player import PlayerRating
 from database.sqlite.event.event_store import StoredPlayer
-from utils.enum import PlayerGender, PlayerTitle, TournamentRating, PlayerRatingType
+from plugins.ffe.papi_mappers import (
+    PapiPlayerTitle,
+    PapiPlayerGender,
+    PapiPlayerRatingType,
+    PapiPlayerFFELicence,
+)
+from utils.enum import TournamentRating, PlayerRatingType
 from database.sql_server.sql_server import SqlServer, SqlServerCredentials
 from plugins import PLUGINS_DIR
 from plugins.ffe import PLUGIN_NAME
-from plugins.ffe.utils import PlayerFFELicence, FfePlayerPluginData
+from plugins.ffe.utils import FfePlayerPluginData
 
 logger: Logger = get_logger()
 
@@ -101,22 +107,22 @@ class FFESqlServer(SqlServer):
             first_name=row['Prenom'].title() if row['Prenom'] else '',
             last_name=row['Nom'].upper(),
             date_of_birth=row['NeLe'],
-            gender=PlayerGender.from_papi_value(row['Sexe']),
+            gender=PapiPlayerGender.get_core_object(row['Sexe']),
             mail='',
             phone='',
             comment='',
             owed=0.0,
             paid=0.0,
-            title=PlayerTitle.from_papi_value(row['FideTitre'] or ''),
+            title=PapiPlayerTitle.get_core_object(row['FideTitre'] or '').value,
             ratings={
                 TournamentRating.STANDARD: PlayerRating(
-                    row['Elo'], PlayerRatingType.from_papi_value(row['Fide'])
+                    row['Elo'], PapiPlayerRatingType.get_core_object(row['Fide'])
                 ).stored_value,
                 TournamentRating.RAPID: PlayerRating(
-                    row['Rapide'], PlayerRatingType.from_papi_value(row['Fide03'])
+                    row['Rapide'], PapiPlayerRatingType.get_core_object(row['Fide03'])
                 ).stored_value,
                 TournamentRating.BLITZ: PlayerRating(
-                    row['Elo06'], PlayerRatingType.from_papi_value(row['Fide06'])
+                    row['Elo06'], PapiPlayerRatingType.get_core_object(row['Fide06'])
                 ).stored_value,
             },
             fide_id=int(row['FideCode'].strip("' ")) if row['FideCode'] else 0,
@@ -127,7 +133,9 @@ class FFESqlServer(SqlServer):
             plugin_data={
                 PLUGIN_NAME: FfePlayerPluginData(
                     ffe_id=row['Ref'],
-                    ffe_licence=PlayerFFELicence.from_papi_value(row['AffType']),
+                    ffe_licence=PapiPlayerFFELicence.get_core_object(
+                        row['AffType'] or ''
+                    ),
                     ffe_licence_number=row['NrFFE'],
                     league=row['ClubLigue'],
                 ).to_stored_value()

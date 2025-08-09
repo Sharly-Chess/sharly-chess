@@ -482,7 +482,7 @@ class PairingsAdminController(BaseEventAdminController):
                     board_id, web_context.admin_filtered_boards
                 )
         else:
-            tournament.add_result(board, Result.from_papi_value(result))
+            tournament.add_result(board, Result(result))
             target_board_id = self._next_board_id(
                 board_id, web_context.admin_filtered_boards
             )

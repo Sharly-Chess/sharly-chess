@@ -3,7 +3,7 @@ All the classes of this module are basic data classes stored in the event databa
 """
 
 from dataclasses import dataclass, field
-from datetime import date, datetime
+from datetime import date
 from typing import Any
 
 from common.sharly_chess_config import SharlyChessConfig
@@ -94,6 +94,7 @@ class StoredBoard:
     index: int
     last_result_update: float | None = None
 
+
 @dataclass
 class StoredTournamentPlayer:
     tournament_id: int = 0
@@ -118,7 +119,7 @@ class StoredPlayer:
     ratings: dict[int, dict[str, int]]
     fide_id: int | None
     federation: str
-    club: str
+    club: str | None
     fixed: int | None
     check_in: bool
     # TODO (Molrn - multi tournament) move to a list in StoredTournament
@@ -149,13 +150,11 @@ class StoredTournament:
     paired_bye_result: int | None = None
     max_byes: int | None = None
     last_rounds_no_byes: int | None = None
-    tie_breaks: list[dict[str, str | dict[str, Any]]] = field(
-        default_factory=list[dict[str, str | dict[str, Any]]]
-    )
+    tie_breaks: list[dict[str, Any]] = field(default_factory=list[dict[str, Any]])
     location: str | None = None
     start: float | None = None
     stop: float | None = None
-    pairing: str | None = None
+    pairing: str = SharlyChessConfig.default_pairing_variation_id
     pairing_settings: dict[str, Any] | None = None
     current_round: int | None = None
     check_in_open: bool = False

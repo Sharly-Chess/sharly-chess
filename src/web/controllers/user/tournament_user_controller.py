@@ -442,7 +442,7 @@ class ResultUserController(BaseInputUserController):
                     request, f'Invalid result [{result}].'
                 )
             board_web_context.tournament.add_result(
-                board_web_context.board, Result.from_papi_value(result)
+                board_web_context.board, Result(result)
             )
         PairingsAdminController.publish_new_user_results(
             channels, event_uniq_id, tournament_id, round_
