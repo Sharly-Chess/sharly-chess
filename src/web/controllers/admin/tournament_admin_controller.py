@@ -1,3 +1,4 @@
+from pathlib import Path
 import random
 import time
 from datetime import datetime
@@ -20,6 +21,7 @@ from data.input_output import (
     TournamentExporter,
     TournamentExporterManager,
 )
+from data.input_output.json_tournament_importer import JsonTournamentImporter
 from data.loader import EventLoader
 from data.pairings import PairingSystem, PairingSystemManager
 from data.pairings.systems import SwissPairingSystem
@@ -513,13 +515,11 @@ class TournamentAdminController(BaseEventAdminController):
                     ]:
                         assert admin_tournament is not None
                         assert admin_tournament.stored_tournament is not None
-                        filename = admin_tournament.stored_tournament.filename
-                        if admin_tournament.file_exists:
-                            tie_breaks = admin_tournament.tie_breaks
-                            tie_break_1, tie_break_2, tie_break_3 = (
-                                tie_breaks.pop(0).id if tie_breaks else None
-                                for __ in range(3)
-                            )
+                        tie_breaks = admin_tournament.tie_breaks
+                        tie_break_1, tie_break_2, tie_break_3 = (
+                            tie_breaks.pop(0).id if tie_breaks else None
+                            for __ in range(3)
+                        )
 
                     per_plugin_form_data = plugin_manager.hook.get_tournament_form_data(
                         event=admin_event,
@@ -835,8 +835,31 @@ class TournamentAdminController(BaseEventAdminController):
                         success_message = _(
                             'Tournament [{tournament_uniq_id}] has been created.'
                         ).format(tournament_uniq_id=stored_tournament.uniq_id)
+
                 tournament_id = stored_tournament.id
             event_database.commit()
+
+            if 'json_filename' in data and data['json_filename']:
+                # This is used to populate the tournaments from a json file for end-to-end tests
+                event_loader.clear_cache(event_uniq_id)
+                event = event_loader.load_event(event_uniq_id)
+                leaf_name = f'{data["json_filename"]}.json'
+
+                start = Path(__file__).parent
+                for parent in [start] + list(start.parents):
+                    if (parent / '.git').exists():
+                        root = parent
+                        break
+                else:
+                    raise RuntimeError('Repo root not found')
+
+                json_path = root / 'tests' / 'json' / leaf_name
+                assert json_path.exists(), f'JSON file [{leaf_name}] not found'
+                tournament = event.tournaments_by_uniq_id[stored_tournament.uniq_id]
+
+                # For the moment the json data format is the same as that produced by papi-converter
+                JsonTournamentImporter().load_tournament(json_path, event, tournament)
+
         event_loader.clear_cache(event_uniq_id)
         if add_other:
             return self._admin_event_tournaments_render(

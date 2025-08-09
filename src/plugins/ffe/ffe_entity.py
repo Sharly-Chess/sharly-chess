@@ -59,6 +59,12 @@ class PapiTournamentImporter(TournamentImporter):
     def load_stored_tournament(
         self, source_file: Path, stored_tournament: StoredTournament | None = None
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
+        if source_file.suffix != '.papi':
+            raise SharlyChessException(
+                _('File is expected to have the [{suffix}] suffix').format(
+                    suffix='papi'
+                )
+            )
         return PapiConverter().read_papi_file(source_file, stored_tournament)
 
 

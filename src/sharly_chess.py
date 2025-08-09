@@ -1,3 +1,5 @@
+from common import TEST_ENV
+
 try:
     import argparse
     import traceback
@@ -69,5 +71,6 @@ except Exception:
     print('An error occurred.')
 from contextlib import suppress
 
-with suppress(UnicodeDecodeError):
-    input('Press Enter to end.')
+if not TEST_ENV:
+    with suppress(UnicodeDecodeError):
+        input('Press Enter to end.')

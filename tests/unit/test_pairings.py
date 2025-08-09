@@ -1,43 +1,68 @@
 # Needs to be imported first to avoid circular import
+from datetime import datetime
 from pathlib import Path
+import time
 from unittest import TestCase
 
 from data.board import Board
 from data.event import Event
+from data.input_output.json_tournament_importer import JsonTournamentImporter
 from data.loader import EventLoader
-from plugins import manager  # Noqa E402
 
 import pytest
 from data.pairings.engines import BergerPairingEngine
 from tests.test_config import TestUtils
+
+EVENT_ID = 'test-pairings-event'
+TOURNAMENT_ID = 'test-pairings-tournament'
 
 
 @pytest.mark.unit
 class PairingTestCase(TestCase):
     event: Event
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        database = TestUtils.create_event_direct('test-pairings-event')
-        database.populate(Path('../unit/test-event.yml'))
-        cls.event = EventLoader().load_event('test-pairings-event')
+    def setUp(self):
+        super().setUp()
+        TestUtils.create_event(
+            EVENT_ID,
+            overrides={
+                'start': time.mktime(
+                    datetime.strptime('2024-12-31 23:59', '%Y-%m-%d %H:%M').timetuple()
+                ),
+                'stop': time.mktime(
+                    datetime.strptime('2025-01-01 00:00', '%Y-%m-%d %H:%M').timetuple()
+                ),
+            },
+        )
+        TestUtils.create_tournament(EVENT_ID, TOURNAMENT_ID)
+        self.event = EventLoader().reload_event(EVENT_ID)
 
-    @classmethod
-    def tearDownClass(cls):
-        TestUtils.delete_event_direct('test-pairings-event')
-        super().tearDownClass()
+    def tearDown(self):
+        TestUtils.delete_event(EVENT_ID)
+        super().tearDown()
 
     """Tests for all the pairing systems."""
 
     def assert_no_pairings_diff_in_tournament(
         self,
-        tournament_uniq_id: str,
+        json_file: str,
         ignore_order: bool = False,
         max_round: int | None = None,
     ):
-        tournament = self.event.tournaments_by_uniq_id[tournament_uniq_id]
+        tournament = self.event.tournaments_by_uniq_id[TOURNAMENT_ID]
+
+        # Import the test players and pairings from the json file
+        leaf_name = f'{json_file}.json'
+        json_path = Path('../json') / leaf_name
+        assert json_path.exists(), f'JSON file [{leaf_name}] not found'
+
+        # For the moment the json data format is the same as that produced by papi-converter
+        JsonTournamentImporter().load_tournament(json_path, self.event, tournament)
+
+        self.event = EventLoader().reload_event(EVENT_ID)
+        tournament = self.event.tournaments_by_uniq_id[TOURNAMENT_ID]
         tournament.set_default_pairing_settings()
+
         diff_display = ''
         for round_ in range(1, (max_round or tournament.rounds) + 1):
             diff = tournament.pairing_variation.engine.pairings_diff(

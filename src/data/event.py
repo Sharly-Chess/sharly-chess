@@ -496,23 +496,13 @@ class Event:
         )
 
     @cached_property
-    def tournaments_with_file_sorted_by_uniq_id(self) -> list[Tournament]:
-        """Returns the tournaments where the Papi file exists
-        (useful to tell the users why adding players is not possible)."""
-        return [
-            tournament
-            for tournament in self.tournaments_sorted_by_uniq_id
-            if tournament.file_exists
-        ]
-
-    @cached_property
-    def not_finished_tournaments_with_file_sorted_by_uniq_id(self) -> list[Tournament]:
+    def not_finished_tournaments_sorted_by_uniq_id(self) -> list[Tournament]:
         """Returns the playing tournaments where the Papi file exists
         (useful not to create players when there is no Papi file)."""
         return [
             tournament
             for tournament in self.tournaments_sorted_by_uniq_id
-            if not tournament.finished and tournament.file_exists
+            if not tournament.finished
         ]
 
     @property
@@ -1035,13 +1025,6 @@ class Event:
         )
         if not self._silent:
             logger.info(event_message.formatted_text)
-
-    @property
-    def download_allowed(self) -> bool:
-        for tournament in self.tournaments_by_id.values():
-            if tournament.download_allowed:
-                return True
-        return False
 
     def __lt__(self, other: 'Event'):
         # p1 < p2 calls p1.__lt__(p2)

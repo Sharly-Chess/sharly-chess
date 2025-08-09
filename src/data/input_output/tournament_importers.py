@@ -36,7 +36,7 @@ class TournamentImporter(IdentifiableEntity, ABC):
     ) -> Tournament:
         """Load a tournament into an event.
         If tournament is provided, update this tournament, otherwise create a new one.
-        Raises if the already has players."""
+        Raises if the tournament already has players."""
         if tournament and tournament.players:
             raise SharlyChessException(
                 'Impossible to import into a tournament already having players.'

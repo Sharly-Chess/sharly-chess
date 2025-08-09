@@ -130,11 +130,7 @@
             </li>
             <li>
                 <span
-                    {% if not tournament.file_exists %}
-                        {{ macros.tooltip_attributes('warning', _('Printing is not possible when the Papi file is not found.'), 'top') }}
-                    {% else %}
-                        {{ macros.tooltip_attributes('info', _('Print players, results, etc.'), 'top') }}
-                    {% endif %}
+                    {{ macros.tooltip_attributes('info', _('Print players, results, etc.'), 'top') }}
                 >
                     <button
                         class="dropdown-item text-nowrap"
@@ -144,9 +140,6 @@
                         preload
                         data-bs-toggle="modal"
                         data-bs-target="#modal-wrapper"
-                        {% if not tournament.file_exists %}
-                            disabled
-                        {% endif %}
                     >
                         <i class="bi bi-printer-fill pe-1"></i>
                         {{ _('Print') }}
@@ -180,9 +173,6 @@
                         hx-get="{{ url_for('admin-random-player', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
-                        {% if not tournament.file_exists %}
-                            disabled
-                        {% endif %}
                     >
                         <i class="bi bi-dice-3-fill pe-1"></i>
                         {{ _('Choose a player at random') }}

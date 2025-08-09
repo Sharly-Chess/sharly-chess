@@ -1,0 +1,217 @@
+{
+  "variables" : {
+    "name" : "Test Tournament",
+    "rounds" : "5",
+    "startDate" : "24/10/2024",
+    "endDate" : "24/10/2024",
+    "timeControl" : "",
+    "venue" : "Sharly-Chess HQ",
+    "ratingClass" : "Elo",
+    "homologation" : "",
+    "arbiter" : "",
+    "type" : "ToutesRondes",
+    "pairing" : "Berger",
+    "tiebreak1" : "",
+    "tiebreak2" : "",
+    "tiebreak3" : "",
+    "minRating" : "0",
+    "maxRating" : "0",
+    "pointSystem" : "NON"
+  },
+  "players" : [ {
+    "federation" : "FRA",
+    "lastName" : "ALYX",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 2200,
+    "owed" : 0,
+    "refFFE" : 798647803,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "2" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 1
+      },
+      "3" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 2
+      },
+      "4" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 3
+      },
+      "5" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 4
+      }
+    },
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "BRUNO",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 2150,
+    "owed" : 0,
+    "refFFE" : 798647864,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "1" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 4
+      },
+      "2" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 0
+      },
+      "4" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 2
+      },
+      "5" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 3
+      }
+    },
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "CHARLINE",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 2100,
+    "owed" : 0,
+    "refFFE" : 798647908,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "1" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 3
+      },
+      "2" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 4
+      },
+      "3" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 0
+      },
+      "4" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 1
+      }
+    },
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "DAVID",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 2050,
+    "owed" : 0,
+    "refFFE" : 798647928,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "1" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 2
+      },
+      "3" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 4
+      },
+      "4" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 0
+      },
+      "5" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 1
+      }
+    },
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "HELENE",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 2000,
+    "owed" : 0,
+    "refFFE" : 798647973,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "1" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 1
+      },
+      "2" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 2
+      },
+      "3" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 3
+      },
+      "5" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 0
+      }
+    },
+    "blitzElo" : 1399
+  } ]
+}

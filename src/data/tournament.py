@@ -13,7 +13,6 @@ from _weakref import ReferenceType
 from trf import Tournament as TrfTournament
 
 from common import format_timestamp_date_time, format_timestamp
-from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
 
@@ -71,41 +70,10 @@ class Tournament:
         self.boards_by_id = self._get_boards_by_id()
         self.prize_groups_by_id = self._get_prize_groups_by_id()
 
-        self.file.touch(exist_ok=True)
-        self.stored_file_modified_timestamp: float | None = None
-        if self.file_exists:
-            self.stored_file_modified_timestamp = self.file_modified_timestamp
         self._players_by_rank: dict[int, Player] | None = None
 
-        self._add_event_warnings()
         # Give plugin the chance to initialise their data
         plugin_manager.hook.on_tournament_init(tournament=self)
-
-    def _add_event_warnings(self):
-        if not self.stored_tournament.path:
-            self.event.add_debug(
-                _('No directory set for the Papi file, by default [{path}].').format(
-                    path=self.path
-                ),
-                tournament=self,
-            )
-        if not self.path.exists():
-            self.event.add_warning(
-                _('Directory [{path}] not found.').format(path=self.path),
-                tournament=self,
-            )
-        elif not self.path.is_dir():
-            self.event.add_error(
-                _('[{path}] is not a directory.').format(path=self.path),
-                tournament=self,
-            )
-        if not self.stored_tournament.filename:
-            self.event.add_info(
-                _(
-                    'The name of the Papi file is not set, by default [{filename}]'
-                ).format(filename=self.filename),
-                tournament=self,
-            )
 
     @property
     def event(self) -> 'Event':
@@ -306,10 +274,6 @@ class Tournament:
     @property
     def last_check_in_update(self) -> float:
         return self.stored_tournament.last_check_in_update
-
-    @property
-    def download_allowed(self) -> bool:
-        return self.file_exists
 
     @property
     def handicap(self) -> bool:
@@ -658,13 +622,9 @@ class Tournament:
     @cached_property
     def can_add_players(self) -> bool:
         """Determines if players can be added to the tournament."""
-        return (
-            self.file_exists
-            and not self.finished
-            and (
-                not self.has_pairings
-                or self.pairing_system.allow_player_addition_once_paired
-            )
+        return not self.finished and (
+            not self.has_pairings
+            or self.pairing_system.allow_player_addition_once_paired
         )
 
     @cached_property
@@ -742,9 +702,6 @@ class Tournament:
             if board.black_player:
                 paired_player_ids.append(board.black_player.id)
         return [player for player in self.players if player.id not in paired_player_ids]
-
-    def update_stored_file_modified_timestamp(self):
-        self.stored_file_modified_timestamp = self.file_modified_timestamp
 
     def clear_cache(self):
         """Clears the cache of the tournament."""

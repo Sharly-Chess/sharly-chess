@@ -55,8 +55,8 @@ class RatingLimitSetting(PairingSetting[int]):
         return math.ceil((ratings[first_b] + ratings[first_b + 1]) / 2)
 
     @classmethod
-    def is_valid(cls, tournament: 'Tournament') -> bool:
-        return cls._check_rating_limit(tournament, cls.get_value(tournament))
+    def check_value(cls, tournament: 'Tournament', value: int):
+        return cls._check_rating_limit(tournament, value)
 
     @staticmethod
     def player_ratings(tournament: 'Tournament') -> list[int]:
@@ -165,8 +165,8 @@ class DualRatingLimitsSetting(PairingSetting[tuple[int, int]]):
         )
 
     @classmethod
-    def is_valid(cls, tournament: 'Tournament') -> bool:
-        group_counts = cls.group_counts(tournament, cls.get_value(tournament))
+    def check_value(cls, tournament: 'Tournament', value: tuple[int, int]):
+        group_counts = cls.group_counts(tournament, value)
         return all(
             cls._check_group_count(group_count, sum(group_counts))
             for group_count in group_counts

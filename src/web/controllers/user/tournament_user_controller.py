@@ -537,7 +537,6 @@ class DownloadUserController(BaseUserController):
         tournament_files: list[Path] = [
             tournament.file
             for tournament in web_context.user_event.tournaments_by_id.values()
-            if tournament.file_exists
         ]
         if not tournament_files:
             return BaseController.redirect_error(
@@ -576,10 +575,6 @@ class DownloadUserController(BaseUserController):
             return web_context.error
         if web_context.tournament is None:
             raise RuntimeError('tournament not defined')
-        if not web_context.tournament.file_exists:
-            return BaseController.redirect_error(
-                request, f'Papi file [{web_context.tournament.file}] not found.'
-            )
         return File(
             path=web_context.tournament.file, filename=web_context.tournament.file.name
         )
