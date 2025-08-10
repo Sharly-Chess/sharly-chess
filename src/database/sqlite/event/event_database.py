@@ -47,9 +47,30 @@ logger: Logger = get_logger()
 class EventDatabase(MigrationDatabase):
     """The SQLite database class for Sharly Chess events."""
 
-    def __init__(self, uniq_id: str, write: bool = False):
-        self.uniq_id = uniq_id
-        super().__init__(self.event_database_path(self.uniq_id), write)
+    def __init__(
+        self,
+        uniq_id: str | None = None,
+        write: bool = False,
+        *,
+        file_path: Path | None = None,
+    ):
+        """Initialize EventDatabase with either a unique ID or a file path."""
+        if uniq_id is not None and file_path is not None:
+            raise ValueError('Cannot specify both uniq_id and file_path')
+        if uniq_id is None and file_path is None:
+            raise ValueError('Must specify either uniq_id or file_path')
+
+        if file_path is not None:
+            # Initialize with file path
+            self.uniq_id = file_path.stem
+            self.update_event_loader = False
+            super().__init__(file_path, write)
+        else:
+            # Traditional initialization with uniq_id
+            assert uniq_id is not None
+            self.uniq_id = uniq_id
+            self.update_event_loader = True
+            super().__init__(self.event_database_path(self.uniq_id), write)
 
     def __exit__(self, exc_type, exc_value, traceback):
         from data.loader import EventLoader
@@ -57,7 +78,7 @@ class EventDatabase(MigrationDatabase):
         super().__exit__(exc_type, exc_value, traceback)
 
         # Inform EventLoader that this event has been updated internally
-        if self.write:
+        if self.update_event_loader and self.write:
             EventLoader.set_last_known_update(
                 self.uniq_id, self.database_modified_timestamp(self.uniq_id)
             )
@@ -988,6 +1009,16 @@ class EventDatabase(MigrationDatabase):
         self.execute(
             f'UPDATE `player` SET `check_in` = ? WHERE `id` IN ({list_set})',
             (check_in,) + tuple(player_ids),
+        )
+
+    def delete_players_personal_data(self):
+        """Delete all personal data (email and phone number) from the database."""
+        self.execute(
+            'UPDATE `player` SET `phone` = ?, `mail`= ?',
+            (
+                '',
+                '',
+            ),
         )
 
     # ---------------------------------------------------------------------------------
