@@ -1021,6 +1021,9 @@ class EventDatabase(MigrationDatabase):
             ),
         )
 
+    def delete_all_stored_players(self):
+        self.execute('DELETE FROM `player`')
+
     # ---------------------------------------------------------------------------------
     # StoredTournamentPlayer
     # ---------------------------------------------------------------------------------
