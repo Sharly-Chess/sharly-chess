@@ -1,0 +1,398 @@
+{
+  "variables" : {
+    "name" : "Test tournament",
+    "rounds" : "5",
+    "startDate" : "24/10/2024",
+    "endDate" : "24/10/2024",
+    "timeControl" : "",
+    "venue" : "Sharly-Chess HQ",
+    "ratingClass" : "Elo",
+    "homologation" : "",
+    "arbiter" : "",
+    "type" : "Suisse",
+    "pairing" : "Standard",
+    "tiebreak1" : "",
+    "tiebreak2" : "",
+    "tiebreak3" : "",
+    "minRating" : "0",
+    "maxRating" : "0",
+    "pointSystem" : "NON"
+  },
+  "players" : [ {
+    "federation" : "FRA",
+    "lastName" : "ALYX",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 2200,
+    "owed" : 0,
+    "refFFE" : 798644332,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "BRUNO",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 2150,
+    "owed" : 0,
+    "refFFE" : 798644543,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "CHARLINE",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 2100,
+    "owed" : 0,
+    "refFFE" : 798644579,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "DAVID",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 2050,
+    "owed" : 0,
+    "refFFE" : 798644605,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "2" : {
+        "result" : 2,
+        "color" : "F"
+      }
+    },
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "HELENE",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 2000,
+    "owed" : 0,
+    "refFFE" : 798644675,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "FRANCK",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 1950,
+    "owed" : 0,
+    "refFFE" : 798644706,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "GENEVIEVE",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 1900,
+    "owed" : 0,
+    "refFFE" : 798644737,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "IRINA",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 1850,
+    "owed" : 0,
+    "refFFE" : 798644782,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "JESSICA",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 1800,
+    "owed" : 0,
+    "refFFE" : 798644818,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "3" : {
+        "result" : 2,
+        "color" : "F"
+      }
+    },
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "LAIS",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 1750,
+    "owed" : 0,
+    "refFFE" : 798644884,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "MARIA",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 1700,
+    "owed" : 0,
+    "refFFE" : 798644904,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "NICK",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 1650,
+    "owed" : 0,
+    "refFFE" : 798644938,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "11" : {
+        "result" : 0,
+        "color" : "F"
+      },
+      "22" : {
+        "result" : 0,
+        "color" : "F"
+      },
+      "12" : {
+        "result" : 0,
+        "color" : "F"
+      },
+      "23" : {
+        "result" : 0,
+        "color" : "F"
+      },
+      "13" : {
+        "result" : 0,
+        "color" : "F"
+      },
+      "24" : {
+        "result" : 0,
+        "color" : "F"
+      },
+      "14" : {
+        "result" : 0,
+        "color" : "F"
+      },
+      "15" : {
+        "result" : 0,
+        "color" : "F"
+      },
+      "16" : {
+        "result" : 0,
+        "color" : "F"
+      },
+      "17" : {
+        "result" : 0,
+        "color" : "F"
+      },
+      "18" : {
+        "result" : 0,
+        "color" : "F"
+      },
+      "19" : {
+        "result" : 0,
+        "color" : "F"
+      },
+      "4" : {
+        "result" : 0,
+        "color" : "F"
+      },
+      "5" : {
+        "result" : 0,
+        "color" : "F"
+      },
+      "6" : {
+        "result" : 0,
+        "color" : "F"
+      },
+      "7" : {
+        "result" : 0,
+        "color" : "F"
+      },
+      "8" : {
+        "result" : 0,
+        "color" : "F"
+      },
+      "9" : {
+        "result" : 0,
+        "color" : "F"
+      },
+      "20" : {
+        "result" : 0,
+        "color" : "F"
+      },
+      "10" : {
+        "result" : 0,
+        "color" : "F"
+      },
+      "21" : {
+        "result" : 0,
+        "color" : "F"
+      }
+    },
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "OPAL",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 1600,
+    "owed" : 0,
+    "refFFE" : 798644961,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "PAUL",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 1550,
+    "owed" : 0,
+    "refFFE" : 798644984,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "4" : {
+        "result" : 0,
+        "color" : "F"
+      }
+    },
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "REINE",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 1500,
+    "owed" : 0,
+    "refFFE" : 798645006,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "STEPHAN",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 1450,
+    "owed" : 0,
+    "refFFE" : 798645022,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "blitzElo" : 1399
+  } ]
+}

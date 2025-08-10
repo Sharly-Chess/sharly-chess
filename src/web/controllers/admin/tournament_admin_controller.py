@@ -1,3 +1,4 @@
+from pathlib import Path
 import random
 import time
 from datetime import datetime
@@ -12,6 +13,7 @@ from litestar.params import Body
 from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
+from common.exception import SharlyChessException
 from common.i18n import _
 from data.board import Board
 from data.event import Event
@@ -19,6 +21,7 @@ from data.input_output import (
     DataSourceManager,
     TournamentExporter,
     TournamentExporterManager,
+    TournamentImporterManager,
 )
 from data.loader import EventLoader
 from data.pairings import PairingSystem, PairingSystemManager
@@ -71,6 +74,10 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
             except KeyError:
                 self._redirect_error(f'Tournament [{tournament_id}] not found.')
                 return
+
+    def get_admin_tournament(self) -> Tournament:
+        assert self.admin_tournament is not None
+        return self.admin_tournament
 
     @property
     def template_context(self) -> dict[str, Any]:
@@ -513,13 +520,11 @@ class TournamentAdminController(BaseEventAdminController):
                     ]:
                         assert admin_tournament is not None
                         assert admin_tournament.stored_tournament is not None
-                        filename = admin_tournament.stored_tournament.filename
-                        if admin_tournament.file_exists:
-                            tie_breaks = admin_tournament.tie_breaks
-                            tie_break_1, tie_break_2, tie_break_3 = (
-                                tie_breaks.pop(0).id if tie_breaks else None
-                                for __ in range(3)
-                            )
+                        tie_breaks = admin_tournament.tie_breaks
+                        tie_break_1, tie_break_2, tie_break_3 = (
+                            tie_breaks.pop(0).id if tie_breaks else None
+                            for __ in range(3)
+                        )
 
                     per_plugin_form_data = plugin_manager.hook.get_tournament_form_data(
                         event=admin_event,
@@ -705,6 +710,35 @@ class TournamentAdminController(BaseEventAdminController):
             filename=f'{exporter.file_name(tournament)}.{exporter.file_extension}',
         )
 
+    @post(
+        path='/admin/tournament-import/{event_uniq_id:str}/{tournament_id:int}/{importer_id:str}',
+        name='admin-tournament-import',
+    )
+    async def admin_tournament_import(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        event_uniq_id: str,
+        tournament_id: int,
+        importer_id: str,
+    ) -> Template | ClientRedirect:
+        web_context = TournamentAdminWebContext(
+            request, event_uniq_id, tournament_id, data
+        )
+        event = web_context.get_admin_event()
+        tournament = web_context.get_admin_tournament()
+        importer = TournamentImporterManager.get_object(importer_id)
+        file_path = Path(data.get('file_path', ''))
+        if not file_path.exists():
+            raise SharlyChessException(f'File [{file_path}] not found.')
+        importer.load_tournament(file_path, event, tournament)
+        return self._admin_event_tournaments_render(
+            request, event_uniq_id=event_uniq_id
+        )
+
     def _admin_tournament_update(
         self,
         request: HTMXRequest,
@@ -835,8 +869,10 @@ class TournamentAdminController(BaseEventAdminController):
                         success_message = _(
                             'Tournament [{tournament_uniq_id}] has been created.'
                         ).format(tournament_uniq_id=stored_tournament.uniq_id)
+
                 tournament_id = stored_tournament.id
             event_database.commit()
+
         event_loader.clear_cache(event_uniq_id)
         if add_other:
             return self._admin_event_tournaments_render(

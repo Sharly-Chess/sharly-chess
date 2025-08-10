@@ -67,10 +67,7 @@ class PairingVariation(IdentifiableEntity, ABC):
         return 0.0
 
     def validate_settings(self, tournament: 'Tournament') -> bool:
-        return all(
-            setting.is_set(tournament) and setting.is_valid(tournament)
-            for setting in self.settings
-        )
+        return all(setting.is_valid(tournament) for setting in self.settings)
 
     def settings_tooltip_message(self, tournament: 'Tournament') -> str | None:
         setting_messages = []

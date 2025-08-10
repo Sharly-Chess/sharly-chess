@@ -18,7 +18,7 @@ from plugins.utils import (
 from utils.enum import ScreenType, TournamentRating
 
 if TYPE_CHECKING:
-    from data.input_output import DataSource, TournamentExporter
+    from data.input_output import DataSource, TournamentExporter, TournamentImporter
     from data.pairings.variations import SwissVariation
     from data.player import Player, PlayerRating
     from data.print_documents import PrintDocument, PlayerSplitter
@@ -73,7 +73,7 @@ class AppHookSpecs:
         """Provide an engine argument"""
 
     # ---------------------------------------------------------------------------------
-    # Data sources
+    # Input-Output
     # ---------------------------------------------------------------------------------
 
     @hookspec
@@ -86,13 +86,13 @@ class AppHookSpecs:
     ):
         """Provide extra local source databases."""
 
-    # ---------------------------------------------------------------------------------
-    # Exporters
-    # ---------------------------------------------------------------------------------
-
     @hookspec
     def insert_tournament_exporters(self, exporters: list[type['TournamentExporter']]):
-        """Provide extra export options."""
+        """Provide extra tournament export options."""
+
+    @hookspec
+    def insert_tournament_importers(self, importers: list[type['TournamentImporter']]):
+        """Provide extra tournament import options."""
 
     # ---------------------------------------------------------------------------------
     # Players

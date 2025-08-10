@@ -112,7 +112,7 @@
                                                     data-bs-target="#modal-wrapper"
                                                 {% endif %}
                                             >
-                                                {% if bp.ref_id != 1 %}
+                                                {% if bp %}
                                                     [{{ bp.points_str }}]
                                                 {% endif %}
                                             </td>
@@ -128,7 +128,7 @@
                                                 data-bs-target="#modal-wrapper"
                                             {% endif %}
                                         >
-                                            {% if bp.ref_id != 1 %}
+                                            {% if bp %}
                                                 {{ bp.vpoints_str }}
                                             {% endif %}
                                         </td>

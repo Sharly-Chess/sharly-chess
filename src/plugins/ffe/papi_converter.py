@@ -213,28 +213,30 @@ class PapiConverter:
         If a StoredTournament object is provided, add the values to this one,
         otherwise creates a new one.
         Raises a SharlyChessException if the conversion fails."""
-        if source_file.suffix != '.papi':
-            raise SharlyChessException(
-                _('File is expected to have the [{suffix}] suffix').format(
-                    suffix='papi'
+        if source_file.suffix == '.papi':
+            target_file = TMP_DIR / 'papi-converter-output.json'
+            result = subprocess.run(
+                [
+                    self.executable_path,
+                    source_file,
+                    target_file,
+                ],
+                capture_output=True,
+                encoding='utf-8',
+            )
+            if not target_file.exists():
+                raise SharlyChessException(
+                    f'Papi file conversion to JSON failed.'
+                    f'PapiConverter failed with status {result.returncode}.\n'
+                    f'stdout: {result.stdout}\nstderr: {result.stderr}'
                 )
-            )
-        target_file = TMP_DIR / 'papi-converter-output.json'
-        result = subprocess.run(
-            [
-                self.executable_path,
-                source_file,
-                target_file,
-            ],
-            capture_output=True,
-            encoding='utf-8',
-        )
-        if not target_file.exists():
+        elif source_file.suffix == '.json':
+            target_file = source_file
+        else:
             raise SharlyChessException(
-                f'Papi file conversion to JSON failed.'
-                f'PapiConverter failed with status {result.returncode}.\n'
-                f'stdout: {result.stdout}\nstderr: {result.stderr}'
+                'PapiConverter only supports .papi and .json files.'
             )
+
         with open(target_file, 'r', encoding='utf-8') as file:
             papi_data_dict = json.load(file)
         return self.read_papi_data(papi_data_dict, stored_tournament)
@@ -272,12 +274,39 @@ class PapiConverter:
             stored_player = self._read_papi_player(player_id, papi_player)
             stored_player.id = player_id
             stored_tournament_player = StoredTournamentPlayer(player_id=player_id)
-            for round_nb, papi_round in papi_player.rounds.items():
-                if round_nb > stored_tournament.rounds:
+            round_keys = papi_player.rounds.keys()
+
+            if is_round_robin:
+                start_round = 1
+                end_round = stored_tournament.rounds
+            else:
+                start_round = min(round_keys) if round_keys else 1
+                end_round = max(round_keys) if round_keys else 0
+            for round_nb in range(start_round, end_round + 1):
+                papi_round = papi_player.rounds.get(round_nb, None)
+                if round_nb > stored_tournament.rounds or (
+                    papi_round is None and not is_round_robin
+                ):
                     continue
-                stored_pairing, stored_board = self._read_papi_round(
-                    player_id, round_nb, papi_round, max_opponent_id, is_round_robin
-                )
+                if papi_round is None:
+                    stored_pairing = StoredPairing(
+                        tournament_id=0,
+                        player_id=player_id,
+                        round_=round_nb,
+                        result=Result.REST_GAME,
+                        board_id=None,
+                    )
+                    stored_board: StoredBoard | None = StoredBoard(
+                        id=None,
+                        white_player_id=player_id,
+                        black_player_id=None,
+                        index=0,
+                        last_result_update=None,
+                    )
+                else:
+                    stored_pairing, stored_board = self._read_papi_round(
+                        player_id, round_nb, papi_round, max_opponent_id, is_round_robin
+                    )
                 if stored_board:
                     if player_id in board_id_by_player_id_by_round[round_nb]:
                         board_id = board_id_by_player_id_by_round[round_nb][player_id]
@@ -286,7 +315,7 @@ class PapiConverter:
                         next_board_id += 1
                         stored_board.id = board_id
                         stored_boards_by_round[round_nb].append(stored_board)
-                        if papi_round.opponent is not None:
+                        if papi_round and papi_round.opponent is not None:
                             board_id_by_player_id_by_round[round_nb][
                                 papi_round.opponent
                             ] = board_id

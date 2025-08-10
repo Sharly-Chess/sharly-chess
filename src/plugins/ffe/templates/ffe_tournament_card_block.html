@@ -1,27 +1,4 @@
 <div class="d-flex flex-column gap-1 card-plugin-block">
-    <div class="">
-        {% if not tournament.file_exists %}
-            {% set text=_('The Papi file for the tournament does not exist (%(papi_file)s).', papi_file=tournament.file) %}
-            {% set type='error' %}
-        {% elif not tournament.rounds %}
-            {% set text=_('The Papi file for the tournament exists but could not be read (%(papi_file)s).', papi_file=tournament.file) %}
-            {% set type='error' %}
-        {% else %}
-            {% set text=_('The Papi file for the tournament was successfully read (%(papi_file)s).', papi_file=tournament.file) %}
-            {% set type='info' %}
-        {% endif %}
-        <span
-            class="d-flex gap-2 "
-            {{ macros.tooltip_attributes(type, text, 'top') }}
-        >
-            {% if not tournament.file_exists or not tournament.rounds %}
-                <i class="bi-file-earmark-excel-fill text-danger"></i>
-            {% else %}
-                <i class="bi-file-check-fill text-success"></i>
-            {% endif %}
-            {{ tournament.filename }}
-        </span>
-    </div>
     <div class="d-flex gap-2 {% if not tournament.plugin_data.ffe.ffe_id %}text-secondary{% endif %}">
         <img
             src="{{ url_for('static', file_path='/images/ffe.png') }}?version={{ sharly_chess_config.version }}"

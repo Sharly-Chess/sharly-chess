@@ -180,7 +180,7 @@ class PapiDatabase(AccessDatabase):
                 data |= {
                     rf.color: UNPLAYED_COLOR,
                     rf.opponent: None,
-                    rf.result: PapiResult.NOT_PAIRED,
+                    rf.result: PapiResult.UNPLAYED_OR_NOT_PAIRED,
                 }
             actions: str = ', '.join([f'`{key}` = ?' for key in data])
             query: str = f'UPDATE `joueur` SET {actions} WHERE Ref <> ?'

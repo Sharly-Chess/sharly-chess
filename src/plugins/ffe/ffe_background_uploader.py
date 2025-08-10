@@ -82,20 +82,6 @@ class FfeBackgroundUploader:
                 _('FFE certification number and password not defined for tournament.'),
             )
             cls.upload_status_messages[result_id] = result
-        elif not tournament.file:
-            result = FfeUploadResult(
-                FfeUploadStatus.SETTINGS_ERROR,
-                _('Papi file not defined for tournament.'),
-            )
-            cls.upload_status_messages[result_id] = result
-        elif not tournament.file_exists:
-            result = FfeUploadResult(
-                FfeUploadStatus.SETTINGS_ERROR,
-                _('Papi file not found [{file}].').format(
-                    file=tournament.file,
-                ),
-            )
-            cls.upload_status_messages[result_id] = result
         elif (
             not FFEUtils.resolve_auto_upload(tournament)
             and cls.ffe_upload_needed(tournament) == NeedsUpload.YES

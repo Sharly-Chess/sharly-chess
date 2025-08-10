@@ -14,11 +14,13 @@ SCREEN_ID = 'test-screen'
 
 @pytest.fixture(scope='module', autouse=True)
 def setup(api_request_context: APIRequestContext):
-    TestUtils.create_event(api_request_context, EVENT_ID)
-    TestUtils.create_tournament(api_request_context, EVENT_ID, TOURNAMENT_ID)
+    TestUtils.create_event(EVENT_ID, via_api_request_context=api_request_context)
+    TestUtils.create_tournament(
+        EVENT_ID, TOURNAMENT_ID, via_api_request_context=api_request_context
+    )
     yield
 
-    TestUtils.delete_event(api_request_context, EVENT_ID)
+    TestUtils.delete_event(EVENT_ID, via_api_request_context=api_request_context)
 
 
 @pytest.mark.e2e

@@ -684,11 +684,11 @@ class PlayerAdminController(BaseEventAdminController):
                         case 'create':
                             if (
                                 len(
-                                    admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id
+                                    admin_event.not_finished_tournaments_sorted_by_uniq_id
                                 )
                                 == 1
                             ):
-                                tournament_id = admin_event.not_finished_tournaments_with_file_sorted_by_uniq_id[
+                                tournament_id = admin_event.not_finished_tournaments_sorted_by_uniq_id[
                                     0
                                 ].id
                         case _:
@@ -1197,20 +1197,6 @@ class PlayerAdminController(BaseEventAdminController):
                         action=action,
                         data=data,
                     )
-                if not tournament.file_exists:
-                    Message.error(
-                        request,
-                        _(
-                            'No Papi file found for tournament [{tournament_uniq_id}], can not add the player.'
-                        ).format(tournament_uniq_id=tournament.uniq_id),
-                    )
-                    return self._admin_event_players_render(
-                        request,
-                        event_uniq_id=event_uniq_id,
-                        modal='player',
-                        action=action,
-                        data=data,
-                    )
                 player_id = event.add_player(stored_player, [tournament])
                 self.set_players_search_results(request, event_uniq_id)
                 if add_other:
@@ -1303,12 +1289,6 @@ class PlayerAdminController(BaseEventAdminController):
                 ).format(
                     player=player.full_name,
                     tournament_uniq_id=src_tournament.uniq_id,
-                ),
-            )
-        if not dst_tournament.file_exists:
-            raise ValueError(
-                _('Papi file [{tournament_file}] not found.').format(
-                    tournament_file=dst_tournament.file
                 ),
             )
         if not dst_tournament.can_add_players:

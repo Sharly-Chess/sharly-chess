@@ -174,7 +174,7 @@ class PapiColor(StrEnum):
 
 
 class PapiResult(IntEnum):
-    NOT_PAIRED = 0
+    UNPLAYED_OR_NOT_PAIRED = 0
     LOSS = 1
     DRAW_OR_HPB = 2  # HPB = Half-Point Bye
     GAIN = 3
@@ -187,14 +187,14 @@ class PapiResult(IntEnum):
 class PapiRound:
     color: PapiColor
     opponent: int | None = None
-    result: PapiResult = PapiResult.NOT_PAIRED
+    result: PapiResult = PapiResult.UNPLAYED_OR_NOT_PAIRED
 
     def to_result(self, is_round_robin: bool = False) -> Result:
         match self.result:
-            case PapiResult.NOT_PAIRED:
+            case PapiResult.UNPLAYED_OR_NOT_PAIRED:
                 if self.color == PapiColor.BYE:
                     return Result.ZERO_POINT_BYE
-                if is_round_robin:
+                if is_round_robin and self.opponent is None:
                     return Result.REST_GAME
                 return Result.NO_RESULT
             case PapiResult.LOSS:
@@ -247,7 +247,7 @@ class PapiRound:
             case Result.DRAW | Result.UNRATED_DRAW | Result.HALF_POINT_BYE:
                 return PapiResult.DRAW_OR_HPB
             case Result.NO_RESULT | Result.ZERO_POINT_BYE | Result.REST_GAME:
-                return PapiResult.NOT_PAIRED
+                return PapiResult.UNPLAYED_OR_NOT_PAIRED
             case Result.FORFEIT_LOSS:
                 return PapiResult.FORFEIT_LOSS
             case (
