@@ -1,12 +1,12 @@
 # Import the papi files of all the tournaments
 
+from plugins.ffe.ffe_tournament_importers import PapiTournamentImporter
 from utils.scripts import init_script
 
 init_script()
 
 from common.logger import get_logger  # Noqa E402
 from data.loader import EventLoader  # Noqa E402
-from plugins.ffe.ffe_entity import PapiTournamentImporter  # Noqa E402
 
 
 logger = get_logger()
