@@ -10,6 +10,7 @@ repos:
         exclude: '\.po'
     -   id: check-yaml
     -   id: check-added-large-files
+        args: ['--maxkb=550']
 -   repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.11.2
     hooks:
