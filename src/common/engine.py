@@ -253,23 +253,10 @@ class Engine(ABC):
                         '',
                         yes_answer,
                     ]:
-                        for event_id in (
-                            file.stem
-                            for file in SharlyChessConfig.example_events_yml_path.glob(
-                                f'*.{SharlyChessConfig.yml_ext}'
-                            )
+                        for file in SharlyChessConfig.example_events_path.glob(
+                            f'*.{SharlyChessConfig.event_database_ext}'
                         ):
-                            EventDatabase(event_id).create()
-                        SharlyChessConfig.default_papi_path.mkdir(
-                            parents=True, exist_ok=True
-                        )
-                        for file in SharlyChessConfig.example_events_papi_path.glob(
-                            f'*.{SharlyChessConfig.papi_ext}'
-                        ):
-                            shutil.copy(
-                                file,
-                                SharlyChessConfig.default_papi_path / file.name,
-                            )
+                            shutil.copy(file, EVENTS_DIR / file.name)
                         break
                     if choice == no_answer:
                         break

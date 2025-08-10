@@ -249,15 +249,6 @@ class SharlyChessConfig(metaclass=Singleton):
     # The path of the files used to generate example event databases.
     example_events_path = BASE_DIR / 'example_events'
 
-    # The path to YAML files (used to create example databases).
-    example_events_yml_path = example_events_path / 'yml'
-
-    # The path to the papi files referenced by the example databases.
-    example_events_papi_path = example_events_path / 'papi'
-
-    # The extension of YAML files.
-    yml_ext: str = 'yml'
-
     # The versions of the libraries for which the version can be easily extracted.
     litestar_version: Version = Version(litestar.__version__.formatted(short=True))
     jinja2_version: Version = Version(jinja2.__version__)
