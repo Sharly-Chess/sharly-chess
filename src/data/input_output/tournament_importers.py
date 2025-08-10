@@ -7,6 +7,7 @@ from data.loader import EventLoader
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredPlayer
+from plugins.ffe.papi_converter import PapiConverter
 from utils.entity import IdentifiableEntity
 
 
@@ -125,3 +126,23 @@ class TournamentImporter(IdentifiableEntity, ABC):
                     ]
             database.add_stored_tournament_player(stored_tournament_player)
         return tournament_id
+
+
+class JsonTournamentImporter(TournamentImporter):
+    @staticmethod
+    def static_id() -> str:
+        return 'Papi JSON'
+
+    @staticmethod
+    def static_name() -> str:
+        return 'PAPI_JSON'
+
+    @property
+    def reorder_boards(self) -> bool:
+        return True
+
+    def load_stored_tournament(
+        self, source_file: Path, stored_tournament: StoredTournament | None = None
+    ) -> tuple[StoredTournament, list[StoredPlayer]]:
+        # For the moment the json data format is the same as that produced by papi-converter
+        return PapiConverter().read_papi_file(source_file, stored_tournament)

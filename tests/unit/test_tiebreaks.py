@@ -5,8 +5,7 @@ from typing import Callable
 from unittest import TestCase
 
 from data.event import Event
-
-from data.input_output.json_tournament_importer import JsonTournamentImporter
+from data.input_output.tournament_importers import JsonTournamentImporter
 from data.loader import EventLoader
 
 import pytest
@@ -65,7 +64,6 @@ class TieBreakTestCase(TestCase, ABC):
                 (exclude_ids and player.id in exclude_ids)
                 or (only_ids and player.id not in only_ids)
             ):
-                print(player)
                 player_values[player.id] = compute_player_value(player)
         return player_values
 

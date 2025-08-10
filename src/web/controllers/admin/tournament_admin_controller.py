@@ -21,7 +21,7 @@ from data.input_output import (
     TournamentExporter,
     TournamentExporterManager,
 )
-from data.input_output.json_tournament_importer import JsonTournamentImporter
+from data.input_output.tournament_importers import JsonTournamentImporter
 from data.loader import EventLoader
 from data.pairings import PairingSystem, PairingSystemManager
 from data.pairings.systems import SwissPairingSystem

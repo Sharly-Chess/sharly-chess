@@ -6,7 +6,7 @@ from unittest import TestCase
 
 from data.board import Board
 from data.event import Event
-from data.input_output.json_tournament_importer import JsonTournamentImporter
+from data.input_output.tournament_importers import JsonTournamentImporter
 from data.loader import EventLoader
 
 import pytest

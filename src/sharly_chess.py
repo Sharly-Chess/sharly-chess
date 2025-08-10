@@ -1,6 +1,5 @@
-from common import TEST_ENV
-
 try:
+    from common import TEST_ENV
     import argparse
     import traceback
     from typing import TYPE_CHECKING
