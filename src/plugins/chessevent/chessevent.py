@@ -67,7 +67,7 @@ class ChessEventPlugin(Plugin):
         return PluginEngineArgument(
             'c',
             'chessevent',
-            'download Papi files from Chess Event',
+            'download tournament data from Chess Event',
             ChessEventEngine,
         )
 

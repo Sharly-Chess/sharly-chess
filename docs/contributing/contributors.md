@@ -23,7 +23,7 @@ Since version 2.0, the source code is open for contributions on _GitHub_, it's u
 
 ## Thanks
 
-Thanks to Dominique RUHLMANN for adapting the _ChessEvent_ platform to allow the creation of _Papi_ files from _Sharly Chess_ and to all the beta testers!
+Thanks to Dominique RUHLMANN for adapting the _ChessEvent_ platform to allow the import from ChessEvent into _Sharly Chess_ and to all the beta testers!
 
 See also:
 - [Copyright](https://sharly-chess.com/copyright)

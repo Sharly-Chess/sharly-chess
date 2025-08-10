@@ -53,8 +53,6 @@
                         {{ macros.tooltip_attributes('info', _('Add a player to the event.'), 'top') }}
                     {% elif admin_event.tournaments_sorted_by_uniq_id %}
                         {{ macros.tooltip_attributes('warning', _('Tournaments are finished, you can not add players any longer.'), 'top') }}
-                    {% elif admin_event.tournaments_by_id %}
-                        {{ macros.tooltip_attributes('warning', _('No Papi file for the tournaments of the event, players can not be added.'), 'top') }}
                     {% else %}
                         {{ macros.tooltip_attributes('warning', _('Add a tournament before adding players.'), 'top') }}
                     {% endif %}

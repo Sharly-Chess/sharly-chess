@@ -190,12 +190,6 @@ class PlayerAdminController(BaseEventAdminController):
         except ValueError:
             errors[field] = _('Invalid mail [{mail}].').format(mail=data[field])
         try:
-            WebContext.form_data_to_phone(data, field := 'phone')
-        except ValueError:
-            errors[field] = _('Invalid phone number [{phone}].').format(
-                phone=data[field]
-            )
-        try:
             WebContext.form_data_to_float(data, field := 'owed')
         except ValueError:
             errors[field] = _('Invalid amount [{amount}].').format(amount=data[field])
