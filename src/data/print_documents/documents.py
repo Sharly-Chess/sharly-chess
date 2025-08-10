@@ -10,6 +10,7 @@ from data.pairings.engines import RoundRobinPairingEngine
 from data.pairings.systems import RoundRobinPairingSystem
 from data.player import Player
 from data.print_documents.options import (
+    PairingStylePrintOption,
     PlayerSplitPrintOption,
     PrintOption,
     RoundPrintOption,
@@ -88,6 +89,14 @@ class PlayerPrintDocument(PrintDocument, ABC):
         return False
 
     @property
+    def is_pairings_list(self) -> bool:
+        return False
+
+    @property
+    def at_round(self) -> int | None:
+        return None
+
+    @property
     def is_player_list(self) -> bool:
         return False
 
@@ -112,6 +121,8 @@ class PlayerPrintDocument(PrintDocument, ABC):
             'crosstable': self.is_crosstable,
             'ranking': self.is_ranking,
             'player_list': self.is_player_list,
+            'pairings_list': self.is_pairings_list,
+            'pairings_round': self.at_round,
             'checkin_list': self.is_player_checkin_list,
             'ranking_round': self.ranking_round,
         }
@@ -391,7 +402,7 @@ class BoardPrintDocument(PrintDocument, ABC):
             )
 
 
-class PairingPrintDocument(BoardPrintDocument):
+class PairingPrintDocument(BoardPrintDocument, PlayerPrintDocument):
     @property
     def title(self) -> str:
         return _('Pairings for round #{round}').format(round=self.at_round)
@@ -403,6 +414,32 @@ class PairingPrintDocument(BoardPrintDocument):
     @staticmethod
     def static_id() -> str:
         return 'pairings'
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [PairingStylePrintOption, RoundPrintOption]
+
+    @override
+    @property
+    def ordered_players(self) -> list[Player]:
+        assert self.tournament is not None
+        return self.tournament.players_by_name_without_unpaired
+
+    @override
+    @property
+    def template_name(self) -> str:
+        return self._get_option(PairingStylePrintOption).pairing_style.template
+
+    @override
+    @property
+    def is_pairings_list(self) -> bool:
+        return True
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return BoardPrintDocument.template_context.fget(
+            self
+        ) | PlayerPrintDocument.template_context.fget(self)
 
 
 class ResultPrintDocument(BoardPrintDocument):

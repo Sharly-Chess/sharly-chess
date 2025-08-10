@@ -254,6 +254,7 @@
                                 label=_('%(string)s:', string=_('Pairing system')),
                                 help_text=_('The system used to generate the pairings.'),
                                 select_options=pairing_system_options,
+                                onchange='updateTieBreaksHelp()',
                                 data=data, errors=errors
                             ) }}
                         </div>

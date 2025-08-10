@@ -17,6 +17,10 @@ msgid "%%s is replaced by the time left before the hour."
 msgstr "%%s est remplacé par le temps restant avant l'horaire."
 
 #, python-format
+msgid "%(color)s *** COLOR FOR PAIRINGS PRINT"
+msgstr "avec les %(color)s"
+
+#, python-format
 msgid "%(count)d boards without result"
 msgstr "%(count)d échiquiers sans résultat"
 
@@ -65,6 +69,12 @@ msgstr "%(player)s - Ronde %(num)s"
 #, python-format
 msgid "%(set_name)s (check-in)"
 msgstr "%(set_name)s (pointage)"
+
+#, python-format
+msgid "%(set_name)s (round #%(round)d, %(remaining)d board remaining)"
+msgid_plural "%(set_name)s (round #%(round)d, %(remaining)d boards remaining)"
+msgstr[0] "%(set_name)s (ronde n°%(round)d, %(remaining)d échiquier restant)"
+msgstr[1] "%(set_name)s (ronde n°%(round)d, %(remaining)d échiquiers restants)"
 
 #, python-format
 msgid "%(set_name)s (round %(round)d)"
@@ -531,9 +541,6 @@ msgstr "Classement blitz"
 msgid "Blitz:"
 msgstr "Blitz :"
 
-msgid "Board"
-msgstr "Éch."
-
 #, python-format
 msgid "Board #%(board_number)d with %(color)s"
 msgstr "Échiquier n°%(board_number)d avec les %(color)s"
@@ -544,6 +551,10 @@ msgstr "Échiquier %(board_number)s"
 
 msgid "Board & color"
 msgstr "Échiquier & couleur"
+
+#, python-format
+msgid "Board (%(remaining)d)"
+msgstr "Éch. (%(remaining)d)"
 
 msgid "Board selection (by number)"
 msgstr "Sélection des échiquiers (par numéro)"
@@ -607,8 +618,9 @@ msgstr "Par ordre alpha."
 msgid "Bye limit (%(limit)d) is already reached for this tournament."
 msgstr "La limite de points joker (%(limit)d) est déjà atteinte pour ce tournoi."
 
-msgid "Byes *** Players with byes"
-msgstr "Absences et points joker"
+#, python-format
+msgid "Byes (%(byes)d) *** Players with byes"
+msgstr "Byes (%(byes)d)"
 
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr "C"
@@ -1256,6 +1268,9 @@ msgstr "Pilotes d'afficheurs ({num})"
 
 msgid "Display controllers allow you to control screens at your event from your main computer."
 msgstr "Les pilotes d'afficheurs vous permettent de contrôler les afficheurs de votre évènement depuis le serveur."
+
+msgid "Display format for pairings."
+msgstr "Méthode d’affichage des appariements."
 
 msgid "Display of a screen exit button:"
 msgstr "Affichage d'un bouton de sortie d'écran :"
@@ -2741,6 +2756,9 @@ msgstr "Aucun critère pour la catégorie générale."
 msgid "No criteria."
 msgstr "Aucun critère."
 
+msgid "No current events (only public events are displayed on clients)."
+msgstr "Aucun évènement en cours (seuls les évènements publics sont montrés sur les afficheurs)."
+
 msgid "No current events."
 msgstr "Aucun évènement en cours."
 
@@ -2776,6 +2794,9 @@ msgstr "Aucun appariement pour ce·tte joueur·euse pour la ronde courante."
 
 msgid "No pairings."
 msgstr "Aucun appariement."
+
+msgid "No passed events (only public events are displayed on clients)."
+msgstr "Aucun évènement passé (seuls les évènements publics sont montrés sur les afficheurs)."
 
 msgid "No passed events."
 msgstr "Aucun évènement passé."
@@ -2875,6 +2896,9 @@ msgstr "Aucun tournoi configuré avec des connexions ChessEvent n’a été trou
 
 msgid "No tournaments."
 msgstr "Aucun tournoi."
+
+msgid "No upcoming events (only public events are displayed on clients)."
+msgstr "Aucun évènement à venir (seuls les évènements publics sont montrés sur les afficheurs)."
 
 msgid "No upcoming events."
 msgstr "Aucun évènement à venir."
@@ -3099,6 +3123,9 @@ msgstr "Sélection des numéros d'appariements"
 msgid "Pairing settings"
 msgstr "Paramètres d'appariements"
 
+msgid "Pairing style:"
+msgstr "Format d’appariement :"
+
 msgid "Pairing system"
 msgstr "Système d'appariements"
 
@@ -3111,11 +3138,17 @@ msgstr "Appariements par échiquier"
 msgid "Pairings by board ({num})"
 msgstr "Appariements par échiquier ({num})"
 
+msgid "Pairings by board ({tournament_name})"
+msgstr "Appariements par échiquier ({tournament_name})"
+
 msgid "Pairings by player"
 msgstr "Appariements par ordre alphabétique"
 
 msgid "Pairings by player ({num})"
 msgstr "Appariements par ordre alphabétique ({num})"
+
+msgid "Pairings by player ({tournament_name})"
+msgstr "Appariements par ordre alphabétique ({tournament_name})"
 
 msgid "Pairings disabled while check-in is open."
 msgstr "Les appariements sont désactivés lorsque le pointage est ouvert."
@@ -3291,6 +3324,10 @@ msgstr "En cours"
 #, python-format
 msgid "Playing in tournament [%(uniq_id)s]"
 msgstr "Participe au tournoi [%(uniq_id)s]"
+
+#, python-format
+msgid "Plays %(board)d *** BOARD STRING FOR PAIRINGS PRINT"
+msgstr "Table %(board)d"
 
 msgid "Please ask the organizer to get the password."
 msgstr "Veuillez demander le mot de passe à l'organisateur·ice."
@@ -3613,6 +3650,9 @@ msgstr "Classement %f-%l"
 msgid "Ranking ({num})"
 msgstr "Classement ({num})"
 
+msgid "Ranking ({tournament_name})"
+msgstr "Classement ({tournament_name})"
+
 #, python-format
 msgid "Ranking after round #%(round)d"
 msgstr "Classement après la ronde %(round)d"
@@ -3747,6 +3787,9 @@ msgstr "Saisie des résultats"
 
 msgid "Results entry ({num})"
 msgstr "Saisie des résultats ({num})"
+
+msgid "Results entry ({tournament_name})"
+msgstr "Saisie des résultats ({tournament_name})"
 
 msgid "Results for round #{round}"
 msgstr "Résultats de la ronde {round}"
@@ -3887,7 +3930,7 @@ msgstr "Lien de mise en ligne du règlement non trouvé, vérifier que le tourno
 msgid "Rules uploaded"
 msgstr "Règlement téléversé"
 
-msgid "S-Berger *** SHORT NAME FOR SONNENBORN-BERGER"
+msgid "S-Berger *** SHORT NAME FOR SONNEBORN-BERGER"
 msgstr "S-Berger"
 
 msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
@@ -4059,11 +4102,11 @@ msgstr "Écrans simples ({num})"
 msgid "Soft Haley system"
 msgstr "Système de Haley dégressif"
 
+msgid "Sonneborn-Berger"
+msgstr "Sonneborn-Berger"
+
 msgid "Sonneborn-Berger (the sum of the scores of the opponents a player has defeated and half the scores of the players with whom he has drawn)."
 msgstr "Sonneborn-Berger (la somme des scores des adversaires que le·la joueur·euse a vaincu·es et la moitié des scores des adversaires contre qui le·la joueur·euse a annulé)."
-
-msgid "Sonnenborn-Berger"
-msgstr "Sonnenborn-Berger"
 
 msgid "Sorry, an unexpected error has occurred."
 msgstr "Désolé, une erreur inattendue s'est produite."
@@ -5049,8 +5092,9 @@ msgstr "Désapparier toutes les rondes du tournoi."
 msgid "Unpair tournament"
 msgstr "Désapparier le tournoi"
 
-msgid "Unpaired"
-msgstr "Non-apparié·es"
+#, python-format
+msgid "Unpaired (%(unpaired)d)"
+msgstr "Non-apparié·es (%(unpaired)d)"
 
 msgid "Unpaired *** FEMALE"
 msgstr "Non appariée"

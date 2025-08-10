@@ -196,9 +196,9 @@ class FfeBackgroundUploader:
         logger.info('Uploading tournament [%s]...', tournament.uniq_id)
 
         def report(
-            tournament: Tournament, status: FfeUploadStatus, message: str
+            tournament_: Tournament, status: FfeUploadStatus, message: str
         ) -> None:
-            cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
+            cls.upload_status_messages[cls.result_id(tournament_)] = FfeUploadResult(
                 status, message
             )
 
@@ -256,19 +256,21 @@ class FfeBackgroundUploader:
                     FfeUploadStatus.IN_PROGRESS, _('Uploading tournament…')
                 )
 
-        def _upload_tournaments(cls: FfeBackgroundUploader) -> None:
+        def _upload_tournaments(cls_: FfeBackgroundUploader) -> None:
             try:
                 # Set the locale (called in a new thread)
                 set_locale(SharlyChessConfig().locale)
-                for tournament in updated_tournaments:
-                    scheduled_upload = cls.timeout_threads.get(
-                        cls.result_id(tournament)
+                for tournament_ in updated_tournaments:
+                    scheduled_upload = cls_.timeout_threads.get(
+                        cls_.result_id(tournament_)
                     )
                     if scheduled_upload and scheduled_upload.is_alive():
                         # Cancel the scheduled upload
                         scheduled_upload.cancel()
-                        cls.timeout_threads.pop(cls.result_id(tournament), None)
-                    cls.upload_tournament(tournament.event.uniq_id, tournament.id, True)
+                        cls_.timeout_threads.pop(cls_.result_id(tournament_), None)
+                    cls_.upload_tournament(
+                        tournament_.event.uniq_id, tournament_.id, True
+                    )
 
             finally:
                 cls.uploading_event = False

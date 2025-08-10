@@ -12,6 +12,7 @@ import requests
 from packaging.version import Version, InvalidVersion
 
 from common.i18n import update_i18n_files
+from utils.file import shutil_delete_onerror
 
 sys.path.extend(
     map(
@@ -411,7 +412,7 @@ def clean(clean_zip: bool):
     ]:
         if Path(d).is_dir():
             logger.info('Deleting folder [%s]...', d)
-            shutil.rmtree(d)
+            shutil.rmtree(d, onerror=shutil_delete_onerror)
     if SPEC_FILE.is_file():
         logger.info('Deleting file [%s]...', SPEC_FILE)
         SPEC_FILE.unlink()
@@ -640,7 +641,9 @@ def build_test():
         TEST_DIR.mkdir(parents=True)
     else:
         logger.info('Updating test environment in [%s]...', TEST_DIR)
-        shutil.rmtree(TEST_DIR / '_internal', ignore_errors=True)
+        shutil.rmtree(
+            TEST_DIR / '_internal', onerror=shutil_delete_onerror, ignore_errors=True
+        )
     with ZipFile(ZIP_FILE, 'r') as zip_file:
         zip_file.extractall(TEST_DIR)
 

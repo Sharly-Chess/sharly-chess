@@ -17,20 +17,9 @@
                 {% if show %}checked{% endif %} /><label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
         </div>
     {% endwith %}
-    <span {{ macros.tooltip_attributes('info', _('Add an event.'), 'top') }}>
-        <button
-            class="btn btn-primary text-nowrap"
-            hx-get="{{ url_for('admin-tab-event-create-modal', admin_tab=admin_tab) }}"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            preload
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-        >
-            <i class="bi-plus-square-fill pe-1"></i>
-            {{ _('Create an event') }}
-        </button>
-    </span>
+    <div class="d-flex gap-2 ms-auto align-items-center">
+        {% include 'create_event_button.html' %}
+    </div>
 {% endblock %}
 
 {% block cards_container_cards %}

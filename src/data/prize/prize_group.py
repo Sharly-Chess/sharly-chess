@@ -132,7 +132,7 @@ class PrizeGroup:
         main_prizes = list(main_category.sorted_prizes) if main_category else []
 
         def calculate_main_category_prizes(
-            sorted_players: list[Player],
+            sorted_players_: list[Player],
         ) -> list[AssignedPrize]:
             """Returns all the players eligible to receive a prize from the main category"""
 
@@ -140,9 +140,9 @@ class PrizeGroup:
                 return []
 
             filtered_players = [
-                player
-                for player in sorted_players
-                if player.id not in removed_from_main_set
+                player_
+                for player_ in sorted_players_
+                if player_.id not in removed_from_main_set
             ]
 
             return main_category.prize_sharing.calculate_prizes(
@@ -188,13 +188,13 @@ class PrizeGroup:
         )
 
         # Find eligible player for a prize
-        def find_eligible_player(prize: Prize):
-            for player in sorted_players:
-                if not prize.prize_category.player_matches_criteria(player):
+        def find_eligible_player(prize_: Prize):
+            for player_ in sorted_players:
+                if not prize_.prize_category.player_matches_criteria(player_):
                     continue
-                current = assigned_prizes.get(player.id)
-                if not current or current.value < prize.value:
-                    return player
+                current_ = assigned_prizes.get(player_.id)
+                if not current_ or current_.value < prize_.value:
+                    return player_
             return None
 
         # Main prize assignment loop

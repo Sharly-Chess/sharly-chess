@@ -17,6 +17,10 @@ msgid "%%s is replaced by the time left before the hour."
 msgstr ""
 
 #, python-format
+msgid "%(color)s *** COLOR FOR PAIRINGS PRINT"
+msgstr "with %(color)s"
+
+#, python-format
 msgid "%(count)d boards without result"
 msgstr ""
 
@@ -65,6 +69,12 @@ msgstr ""
 #, python-format
 msgid "%(set_name)s (check-in)"
 msgstr ""
+
+#, python-format
+msgid "%(set_name)s (round #%(round)d, %(remaining)d board remaining)"
+msgid_plural "%(set_name)s (round #%(round)d, %(remaining)d boards remaining)"
+msgstr[0] ""
+msgstr[1] ""
 
 #, python-format
 msgid "%(set_name)s (round %(round)d)"
@@ -531,9 +541,6 @@ msgstr ""
 msgid "Blitz:"
 msgstr ""
 
-msgid "Board"
-msgstr ""
-
 #, python-format
 msgid "Board #%(board_number)d with %(color)s"
 msgstr ""
@@ -543,6 +550,10 @@ msgid "Board %(board_number)s"
 msgstr ""
 
 msgid "Board & color"
+msgstr ""
+
+#, python-format
+msgid "Board (%(remaining)d)"
 msgstr ""
 
 msgid "Board selection (by number)"
@@ -607,8 +618,9 @@ msgstr ""
 msgid "Bye limit (%(limit)d) is already reached for this tournament."
 msgstr ""
 
-msgid "Byes *** Players with byes"
-msgstr "Byes"
+#, python-format
+msgid "Byes (%(byes)d) *** Players with byes"
+msgstr "Byes (%(byes)d)"
 
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr "C"
@@ -1255,6 +1267,9 @@ msgid "Display controllers ({num})"
 msgstr ""
 
 msgid "Display controllers allow you to control screens at your event from your main computer."
+msgstr ""
+
+msgid "Display format for pairings."
 msgstr ""
 
 msgid "Display of a screen exit button:"
@@ -2741,6 +2756,9 @@ msgstr ""
 msgid "No criteria."
 msgstr ""
 
+msgid "No current events (only public events are displayed on clients)."
+msgstr ""
+
 msgid "No current events."
 msgstr ""
 
@@ -2775,6 +2793,9 @@ msgid "No pairing found for this player in the current round."
 msgstr ""
 
 msgid "No pairings."
+msgstr ""
+
+msgid "No passed events (only public events are displayed on clients)."
 msgstr ""
 
 msgid "No passed events."
@@ -2874,6 +2895,9 @@ msgid "No tournaments configured with ChessEvent connections found."
 msgstr ""
 
 msgid "No tournaments."
+msgstr ""
+
+msgid "No upcoming events (only public events are displayed on clients)."
 msgstr ""
 
 msgid "No upcoming events."
@@ -3099,6 +3123,9 @@ msgstr ""
 msgid "Pairing settings"
 msgstr ""
 
+msgid "Pairing style:"
+msgstr ""
+
 msgid "Pairing system"
 msgstr ""
 
@@ -3111,10 +3138,16 @@ msgstr ""
 msgid "Pairings by board ({num})"
 msgstr ""
 
+msgid "Pairings by board ({tournament_name})"
+msgstr ""
+
 msgid "Pairings by player"
 msgstr ""
 
 msgid "Pairings by player ({num})"
+msgstr ""
+
+msgid "Pairings by player ({tournament_name})"
 msgstr ""
 
 msgid "Pairings disabled while check-in is open."
@@ -3291,6 +3324,10 @@ msgstr ""
 #, python-format
 msgid "Playing in tournament [%(uniq_id)s]"
 msgstr ""
+
+#, python-format
+msgid "Plays %(board)d *** BOARD STRING FOR PAIRINGS PRINT"
+msgstr "Plays on board %(board)d"
 
 msgid "Please ask the organizer to get the password."
 msgstr ""
@@ -3613,6 +3650,9 @@ msgstr ""
 msgid "Ranking ({num})"
 msgstr ""
 
+msgid "Ranking ({tournament_name})"
+msgstr ""
+
 #, python-format
 msgid "Ranking after round #%(round)d"
 msgstr ""
@@ -3746,6 +3786,9 @@ msgid "Results entry"
 msgstr ""
 
 msgid "Results entry ({num})"
+msgstr ""
+
+msgid "Results entry ({tournament_name})"
 msgstr ""
 
 msgid "Results for round #{round}"
@@ -3887,7 +3930,7 @@ msgstr ""
 msgid "Rules uploaded"
 msgstr ""
 
-msgid "S-Berger *** SHORT NAME FOR SONNENBORN-BERGER"
+msgid "S-Berger *** SHORT NAME FOR SONNEBORN-BERGER"
 msgstr "S-Berger"
 
 msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
@@ -4059,10 +4102,10 @@ msgstr ""
 msgid "Soft Haley system"
 msgstr ""
 
-msgid "Sonneborn-Berger (the sum of the scores of the opponents a player has defeated and half the scores of the players with whom he has drawn)."
+msgid "Sonneborn-Berger"
 msgstr ""
 
-msgid "Sonnenborn-Berger"
+msgid "Sonneborn-Berger (the sum of the scores of the opponents a player has defeated and half the scores of the players with whom he has drawn)."
 msgstr ""
 
 msgid "Sorry, an unexpected error has occurred."
@@ -5049,7 +5092,8 @@ msgstr ""
 msgid "Unpair tournament"
 msgstr ""
 
-msgid "Unpaired"
+#, python-format
+msgid "Unpaired (%(unpaired)d)"
 msgstr ""
 
 msgid "Unpaired *** FEMALE"

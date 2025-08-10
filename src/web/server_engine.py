@@ -153,7 +153,7 @@ class ServerEngine(Engine):
         )
         server = uvicorn.Server(config)
 
-        def handle_exit(sig: int, frame: FrameType | None) -> None:
+        def handle_exit(sig_: int, frame: FrameType | None) -> None:
             server.should_exit = True
             server.force_exit = True
             # Close the SSE connections gracefully

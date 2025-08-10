@@ -7,7 +7,7 @@
         hx-swap-oob="true"
     {% endif %}
 >
-    <td class="text-center">{{ board.number }}</td>
+    <td class="text-center text-nowrap">{{ board.number }}{% if board.number != board.id %} ({{ board.id }}){% endif %}</td>
     <td class="text-center">{{ wp.vpoints_str }}</td>
     {% if admin_tournament.print_real_points %}
         <td class="text-start">[{{ wp.points_str }}]</td>

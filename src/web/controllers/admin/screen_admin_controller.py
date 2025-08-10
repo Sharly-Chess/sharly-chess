@@ -203,7 +203,7 @@ class ScreenAdminController(BaseEventAdminController):
                     case ScreenType.BOARDS:
                         pass
                     case ScreenType.INPUT:
-                        input_exit_button = WebContext.form_data_to_bool(
+                        input_exit_button = WebContext.form_data_to_bool_or_none(
                             data, 'input_exit_button'
                         )
                     case ScreenType.PLAYERS:
@@ -303,15 +303,15 @@ class ScreenAdminController(BaseEventAdminController):
 
         assert uniq_id is not None
 
-        id: int | None = None
+        screen_id: int | None = None
         if web_context.admin_screen and action not in [
             'create',
             'clone',
         ]:
-            id = web_context.admin_screen.id
+            screen_id = web_context.admin_screen.id
 
         return StoredScreen(
-            id=id,
+            id=screen_id,
             uniq_id=uniq_id,
             type=type_,
             public=bool(public),

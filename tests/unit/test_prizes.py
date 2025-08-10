@@ -139,8 +139,8 @@ class PrizesTestCase(TestCase):
             )
             return self.tournament.prize_groups_by_id[1].assign_prizes()
 
+    @staticmethod
     def player(
-        self,
         elo: int,
         points: int,
         gender: PlayerGender = PlayerGender.NONE,

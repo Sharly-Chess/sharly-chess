@@ -429,7 +429,9 @@ class Tournament:
             [
                 player
                 for player in self.players
-                if not self.current_round or player.board_id
+                if not self.current_round
+                or player.board_id
+                and player not in self.unpaired_players
             ],
             key=lambda p: (p.last_name, p.first_name),
         )
@@ -504,6 +506,10 @@ class Tournament:
     @property
     def boards(self) -> list[Board]:
         return self.get_round_boards(self.current_round)
+
+    def boards_without_result(self, at_round: int) -> list[Board]:
+        boards = self.get_round_boards(at_round)
+        return [board for board in boards if board.result == Result.NO_RESULT]
 
     @cached_property
     def unpaired_players(self) -> list[Player]:
@@ -891,7 +897,7 @@ class Tournament:
 
         # NOTE(Amaras): Because EM did not take into account HPB in his code,
         # this function must be used instead of Player.points_after
-        def papi_points_after(player: Player, after_round: int) -> float:
+        def papi_points_after(player: Player) -> float:
             return sum(
                 pairing.result.points(self.point_values)
                 for round_index, pairing in player.pairings.items()
@@ -907,13 +913,13 @@ class Tournament:
         # NOTE(Amaras): only points from played games should be counted
         players = sorted(
             players,
-            key=lambda player: papi_points_after(player, after_round),
+            key=lambda player: papi_points_after(player),
         )
         players_by_points: dict[float, list[Player]] = {
             points: list(group)
             for points, group in groupby(
                 players,
-                key=lambda player: papi_points_after(player, after_round),
+                key=lambda player: papi_points_after(player),
             )
         }
 

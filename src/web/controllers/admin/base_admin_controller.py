@@ -357,8 +357,8 @@ class BaseAdminController(BaseController):
                             ).format(uniq_id=uniq_id)
                     case _:
                         raise ValueError(f'action=[{action}]')
-        name: str | None = None
-        federation: str | None = None
+        name: str | None
+        federation: str | None
         start: float | None = None
         stop: float | None = None
         public: bool | None = None

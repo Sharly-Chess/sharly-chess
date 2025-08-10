@@ -24,7 +24,13 @@
             {% endfor %}
         {% else %}
             <div class="col-12 mb-3">
-                {{ empty_str }}
+                no event.
+                admin_auth={{ admin_auth }}
+                {% if admin_auth %}
+                    admin_empty_str={{ admin_empty_str }}
+                {% else %}
+                    empty_str{{ empty_str }}
+                {% endif %}
             </div>
         {% endif %}
     </div>

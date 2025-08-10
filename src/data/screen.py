@@ -482,7 +482,7 @@ class Screen:
 
     @property
     def timer(self) -> Timer | None:
-        timer_id: int | None = None
+        timer_id: int | None
         if self.stored_screen:
             timer_id = self.stored_screen.timer_id
         elif self.family is None:
@@ -659,16 +659,24 @@ class Screen:
         boards: list[Board] = []
         oldest = time.time() - self.results_max_age * 60
         for tournament in self.event.tournaments_by_id.values():
-            if self.results_tournament_ids and not tournament.id in self.results_tournament_ids:
+            if (
+                self.results_tournament_ids
+                and tournament.id not in self.results_tournament_ids
+            ):
                 continue
-            for round_ in range( 1, tournament.current_round + 1):
+            for round_ in range(1, tournament.current_round + 1):
                 for player in tournament.players_by_id.values():
                     pairing = player.pairings[round_]
                     if pairing.board and pairing.board.white_player.id == player.id:
-                        if pairing.board.last_result_update and pairing.board.last_result_update >= oldest:
+                        if (
+                            pairing.board.last_result_update
+                            and pairing.board.last_result_update >= oldest
+                        ):
                             boards.append(pairing.board)
 
-        boards.sort(key=lambda board: board.last_result_update or float('-inf'), reverse=True)
+        boards.sort(
+            key=lambda board: board.last_result_update or float('-inf'), reverse=True
+        )
         return boards
 
     def _clear_results_cache(self):
