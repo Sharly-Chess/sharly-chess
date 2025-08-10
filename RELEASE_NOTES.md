@@ -41,6 +41,7 @@ English version below
 - Génération d'appariements complémentaires (2.8.0)
 - Exécution des opérations non-sécurisées lors du passage en mode non-sécurisé (2.8.0)
 - Correction de la navigation entre les rondes (2.8.1)
+- Correction d'une erreur de duplication d'anciens appariements en cas d'erreurs de BbpPairings (2.8.7)
 
 ### Gestion des écrans
 
@@ -115,6 +116,7 @@ English version below
 - Complementary pairings generation (2.8.0)
 - Unsafe operations execution when switching to unsafe mode (2.8.0)
 - Fixed navigation between rounds (2.8.1)
+- Fixed a previous pairings duplication error in case of a BbpPairings error (2.8.7)
 
 ### Screens management
 

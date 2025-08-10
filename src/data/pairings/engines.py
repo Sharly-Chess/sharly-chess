@@ -163,6 +163,7 @@ class BbpPairings(PairingEngine):
         pairings_dir.mkdir(exist_ok=True)
         trf_file_path = pairings_dir / f'{tournament.uniq_id}.trfx'
         pairings_file_path = pairings_dir / f'{tournament.uniq_id}-pairings.txt'
+        pairings_file_path.unlink(missing_ok=True)
         trf_tournament = tournament.to_trf(
             TrfType.TRF_BX,
             after_round=round_ - 1,
