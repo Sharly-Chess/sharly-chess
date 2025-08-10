@@ -1,6 +1,7 @@
 """Test configuration and utilities."""
 
 import urllib
+from common import BASE_DIR
 from data.pairings.systems import SwissPairingSystem
 from data.pairings.variations import StandardSwissVariation
 from datetime import datetime, timedelta
@@ -218,19 +219,13 @@ class TestUtils:
                 stored_tournament = StoredTournament(**data)
                 event_database.add_stored_tournament(stored_tournament)
                 event_database.commit()
+
         with EventDatabase(event_uniq_id) as event_database:
             tournaments = event_database.load_stored_tournaments()
             stored_tournament = next(t for t in tournaments if t.uniq_id == uniq_id)
-        if via_api_request_context:
-            start = Path(__file__).parent
-            for parent in [start] + list(start.parents):
-                if (parent / '.git').exists():
-                    root = parent
-                    break
-            else:
-                raise RuntimeError('Repo root not found')
 
-            json_path = root / 'tests' / 'json' / f'{json_file}.json'
+        if json_file and via_api_request_context:
+            json_path = BASE_DIR / 'tests' / 'json' / f'{json_file}.json'
             form_data = cls.prepare_form_data({'file_path': str(json_path)})
             res = via_api_request_context.post(
                 f'/admin/tournament-import/{event_uniq_id}/{stored_tournament.id}/PAPI_JSON',
@@ -238,6 +233,7 @@ class TestUtils:
                 data=form_data,
             )
             cls.check_api_response(res)
+
         return stored_tournament
 
     @classmethod
