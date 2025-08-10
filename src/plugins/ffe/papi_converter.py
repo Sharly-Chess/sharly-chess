@@ -339,7 +339,7 @@ class PapiConverter:
 
         if not stored_tournament:
             if not variables.name:
-                raise_exception('name', _('A none empty string is expected'))
+                raise_exception('name', _('A non-empty string is expected'))
             stored_tournament = StoredTournament(
                 id=None,
                 uniq_id=variables.name.lower().replace('/', '-').replace(' ', '-'),
@@ -352,7 +352,7 @@ class PapiConverter:
         rounds = 7
         if variables.rounds:
             if not variables.rounds.isdigit():
-                raise_exception('rounds', _('A positive integer is expected'))
+                raise_exception('rounds', _('A positive integer is expected.'))
             rounds = int(variables.rounds)
         stored_tournament.rounds = rounds
         pairing = SharlyChessConfig.default_pairing_variation_id
@@ -407,7 +407,7 @@ class PapiConverter:
             raise_exception(field_, _('Unknown value [{value}]').format(value=value))
 
         if not papi_player.lastName:
-            raise_exception('name', _('A none empty string is expected'))
+            raise_exception('name', _('A non-empty string is expected'))
 
         date_of_birth: date | None = None
         if papi_player.birthDate:
@@ -463,7 +463,7 @@ class PapiConverter:
         for papi_rating in papi_ratings:
             if papi_rating.value < 0:
                 raise_exception(
-                    papi_rating.value_field, _('A positive integer is expected')
+                    papi_rating.value_field, _('A positive integer is expected.')
                 )
             rating_type = PlayerRatingType.ESTIMATED
             if papi_rating.type:
@@ -478,7 +478,7 @@ class PapiConverter:
         fide_id: int | None = None
         if papi_player.fideCode:
             if not papi_player.fideCode.strip().isdigit():
-                raise_exception('fideCode', _('A positive integer is expected'))
+                raise_exception('fideCode', _('A positive integer is expected.'))
             fide_id = int(papi_player.fideCode.strip())
 
         ffe_licence = PlayerFFELicence.NONE

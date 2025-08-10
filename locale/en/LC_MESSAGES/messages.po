@@ -177,6 +177,9 @@ msgstr ""
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
 msgstr ""
 
+msgid "A non-empty string is expected"
+msgstr ""
+
 #, python-format
 msgid "A password is required to enter results for the event %(event_uniq_id)s."
 msgstr ""
@@ -508,6 +511,9 @@ msgid "Black Wins"
 msgstr ""
 
 msgid "Black games"
+msgstr ""
+
+msgid "Black pairings are supposed to have an opponent"
 msgstr ""
 
 msgid "Black wins"
@@ -908,6 +914,12 @@ msgstr ""
 msgid "Continuously"
 msgstr ""
 
+msgid "Conversion to Papi format failed."
+msgstr ""
+
+msgid "Copying to tmp .sce file failed."
+msgstr ""
+
 msgid "Could not connect to data source [{data_source}]."
 msgstr ""
 
@@ -1085,9 +1097,6 @@ msgid "Date:"
 msgstr ""
 
 msgid "Debug message"
-msgstr ""
-
-msgid "Default directory of the Papi files"
 msgstr ""
 
 msgid "Default directory of the Papi files:"
@@ -1343,6 +1352,12 @@ msgid "Duplicate the timer."
 msgstr ""
 
 msgid "Duplicate the tournament."
+msgstr ""
+
+msgid "Duplicate with players"
+msgstr ""
+
+msgid "Duplicate without players"
 msgstr ""
 
 #, python-format
@@ -1719,6 +1734,9 @@ msgstr ""
 msgid "Export all the games of the last round of the tournament to the PGN format (usage: pairings transfer)."
 msgstr ""
 
+msgid "Export the tournament to the PAPI format."
+msgstr ""
+
 msgid "Export the tournament to the TRF(bx) format (usage: pairings generation)."
 msgstr ""
 
@@ -1904,6 +1922,9 @@ msgid "Fide Master"
 msgstr ""
 
 msgid "File [{file}] not found."
+msgstr ""
+
+msgid "File is expected to have the [{suffix}] suffix"
 msgstr ""
 
 msgid "File name (without extension):"
@@ -2273,6 +2294,9 @@ msgstr ""
 msgid "Invalid date and time [{datetime_str}]."
 msgstr ""
 
+msgid "Invalid date format [{date}] (expected: {format})"
+msgstr ""
+
 msgid "Invalid delay [{delay}] (positive integer expected)."
 msgstr ""
 
@@ -2297,9 +2321,6 @@ msgstr ""
 msgid "Invalid mail [{mail}]."
 msgstr ""
 
-msgid "Invalid phone number [{phone}]."
-msgstr ""
-
 msgid "Invalid range [{first}-{last}]."
 msgstr ""
 
@@ -2309,7 +2330,16 @@ msgstr ""
 msgid "Invalid time [{time_str}]."
 msgstr ""
 
+msgid "Invalid type [{type}] for field [{field}] (expected: {expected})."
+msgstr ""
+
+msgid "Invalid value [{value}] for field [{field}] (expected one of [{expected_values}])."
+msgstr ""
+
 msgid "Invalid value [{value}]."
+msgstr ""
+
+msgid "JSON file (papi-converter format)"
 msgstr ""
 
 msgid "Ka. *** ACRONYM FOR PAPI KASHDAN"
@@ -2574,6 +2604,9 @@ msgstr ""
 msgid "Missing parameter (code: [{code}]): [{error}]."
 msgstr ""
 
+msgid "Missing required field [{field}]."
+msgstr ""
+
 msgid "Mode"
 msgstr ""
 
@@ -2678,16 +2711,6 @@ msgstr ""
 msgid "No FIDE ID."
 msgstr ""
 
-msgid "No Papi file for the tournaments of the event, players can not be added."
-msgstr ""
-
-#, python-format
-msgid "No Papi file for tournament [%(tournament_uniq_id)s]."
-msgstr ""
-
-msgid "No Papi file found for tournament [{tournament_uniq_id}], can not add the player."
-msgstr ""
-
 msgid "No Prize Category"
 msgstr ""
 
@@ -2725,9 +2748,6 @@ msgid "No data received from [{url}]."
 msgstr ""
 
 msgid "No directory set for Papi files, by default [{path}]."
-msgstr ""
-
-msgid "No directory set for the Papi file, by default [{path}]."
 msgstr ""
 
 msgid "No display controllers"
@@ -3125,18 +3145,6 @@ msgstr ""
 msgid "Papi file"
 msgstr ""
 
-msgid "Papi file [{tournament_file}] not found."
-msgstr ""
-
-msgid "Papi file not defined for tournament."
-msgstr ""
-
-msgid "Papi file not found [{file}]."
-msgstr ""
-
-msgid "Papi file not modified since last upload"
-msgstr ""
-
 msgid "Parings by player"
 msgstr ""
 
@@ -3444,9 +3452,6 @@ msgid "Print"
 msgstr ""
 
 msgid "Print players, results, etc."
-msgstr ""
-
-msgid "Printing is not possible when the Papi file is not found."
 msgstr ""
 
 msgid "Private event"
@@ -4189,21 +4194,6 @@ msgstr ""
 msgid "The ID used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
 msgstr ""
 
-#, python-format
-msgid "The Papi file for the tournament does not exist (%(papi_file)s)."
-msgstr ""
-
-#, python-format
-msgid "The Papi file for the tournament exists but could not be read (%(papi_file)s)."
-msgstr ""
-
-#, python-format
-msgid "The Papi file for the tournament was successfully read (%(papi_file)s)."
-msgstr ""
-
-msgid "The Sharly Chess tournaments are deleted but the Papi file is still available on the filesystem."
-msgstr ""
-
 msgid "The URL of the image to display."
 msgstr ""
 
@@ -4367,9 +4357,6 @@ msgid "The minimum time, whatever the ranking difference between the two players
 msgstr ""
 
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
-msgstr ""
-
-msgid "The name of the Papi file is not set, by default [{filename}]"
 msgstr ""
 
 msgid "The name of the Papi file without [.papi] extension (defaults to the unique ID)."
@@ -4878,6 +4865,9 @@ msgstr ""
 msgid "Tournament modified, awaiting auto-upload"
 msgstr ""
 
+msgid "Tournament not modified since last upload"
+msgstr ""
+
 msgid "Tournament not yet uploaded."
 msgstr ""
 
@@ -5032,7 +5022,16 @@ msgstr ""
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 msgstr ""
 
+msgid "Unknown field [{field}]."
+msgstr ""
+
+msgid "Unknown player ID [{player_id}]"
+msgstr ""
+
 msgid "Unknown response code: [{code}] ([{chessevent_string}])."
+msgstr ""
+
+msgid "Unknown value [{value}]"
 msgstr ""
 
 msgid "Unlike single Screens, families can only be used to display information about a single tournament."
@@ -5561,22 +5560,4 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
-
-#~ msgid "Access driver (found)"
-#~ msgstr ""
-
-#~ msgid "Access driver (not found)"
-#~ msgstr ""
-
-#~ msgid "Connection to the database failed."
-#~ msgstr ""
-
-#~ msgid "Connection to the database failed: {error}."
-#~ msgstr ""
-
-#~ msgid "Other ODBC drivers found on the server"
-#~ msgstr ""
-
-#~ msgid "timeout"
-#~ msgstr ""
 

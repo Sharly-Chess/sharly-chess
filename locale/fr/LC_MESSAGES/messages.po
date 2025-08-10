@@ -177,6 +177,9 @@ msgstr "Une URL, ou le chemin du règlement sur le serveur, au format PDF (facul
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
 msgstr "Une URL, ou l'emplacement du règlement sur le serveur, au format PDF (facultatif, par défaut l'emplacement du règlement de l'évènement)."
 
+msgid "A non-empty string is expected"
+msgstr "ne chaîne non vide est attendue"
+
 #, python-format
 msgid "A password is required to enter results for the event %(event_uniq_id)s."
 msgstr "Un mot de passe est requis pour saisir des résultats pour l'évènement %(event_uniq_id)s."
@@ -509,6 +512,9 @@ msgstr "Victoires avec les Noirs"
 
 msgid "Black games"
 msgstr "Parties Noirs"
+
+msgid "Black pairings are supposed to have an opponent"
+msgstr "Les appariements avec les Noirs sont censés avoir un·e adversaire."
 
 msgid "Black wins"
 msgstr "Victoires Noirs"
@@ -908,6 +914,12 @@ msgstr "Continuer"
 msgid "Continuously"
 msgstr "En continu"
 
+msgid "Conversion to Papi format failed."
+msgstr "La conversion au format Papi a échoué."
+
+msgid "Copying to tmp .sce file failed."
+msgstr "La copie vers le fichier .sce temporaire a échoué."
+
 msgid "Could not connect to data source [{data_source}]."
 msgstr "Impossible de se connecter à la source de données [{data_source}]."
 
@@ -1086,9 +1098,6 @@ msgstr "Date :"
 
 msgid "Debug message"
 msgstr "Message de déboggage"
-
-msgid "Default directory of the Papi files"
-msgstr "Répertoire par défaut des fichiers Papi"
 
 msgid "Default directory of the Papi files:"
 msgstr "Répertoire par défaut des fichiers Papi :"
@@ -1344,6 +1353,12 @@ msgstr "Dupliquer le chronomètre."
 
 msgid "Duplicate the tournament."
 msgstr "Dupliquer le tournoi"
+
+msgid "Duplicate with players"
+msgstr "Dupliquer avec les joueur·euses"
+
+msgid "Duplicate without players"
+msgstr "Dupliquer sans les joueur·euses"
 
 #, python-format
 msgid "Duplication of screen family [%(family_uniq_id)s]"
@@ -1719,6 +1734,9 @@ msgstr "Exporter"
 msgid "Export all the games of the last round of the tournament to the PGN format (usage: pairings transfer)."
 msgstr "Exporter toutes les parties de la dernère ronde du tournoi au format PGN (usage : transfert d'appariements)."
 
+msgid "Export the tournament to the PAPI format."
+msgstr "Exporter le tournoi au format PAPI."
+
 msgid "Export the tournament to the TRF(bx) format (usage: pairings generation)."
 msgstr "Exporter le tournoi au format TRF(bx) (usage : génération d'appariements)."
 
@@ -1905,6 +1923,9 @@ msgstr "Maître Fide"
 
 msgid "File [{file}] not found."
 msgstr "Fichier [{file}] non trouvé."
+
+msgid "File is expected to have the [{suffix}] suffix"
+msgstr "e fichier doit avoir le suffixe [{suffix}]."
 
 msgid "File name (without extension):"
 msgstr "Nom du fichier (sans extension) :"
@@ -2273,6 +2294,9 @@ msgstr "Date non valide [{date_str}]."
 msgid "Invalid date and time [{datetime_str}]."
 msgstr "Date et heure non valides [{datetime_str}]."
 
+msgid "Invalid date format [{date}] (expected: {format})"
+msgstr "Format de date invalide [{date}] (attendu : {format})"
+
 msgid "Invalid delay [{delay}] (positive integer expected)."
 msgstr "Délai non valide [{delay}] (entier positif attendu)."
 
@@ -2297,9 +2321,6 @@ msgstr "Langue [{locale}] non valide."
 msgid "Invalid mail [{mail}]."
 msgstr "Mél [{mail}] non valide."
 
-msgid "Invalid phone number [{phone}]."
-msgstr "Numéro de téléphone [{phone}] non valide."
-
 msgid "Invalid range [{first}-{last}]."
 msgstr "Plage invalide [{first}-{last}]. x"
 
@@ -2309,8 +2330,17 @@ msgstr "Réponse non valide du site FFE."
 msgid "Invalid time [{time_str}]."
 msgstr "Heure non valide [{time_str}]."
 
+msgid "Invalid type [{type}] for field [{field}] (expected: {expected})."
+msgstr "Type invalide [{type}] pour le champ [{field}] (attendu : {expected})."
+
+msgid "Invalid value [{value}] for field [{field}] (expected one of [{expected_values}])."
+msgstr "Valeur invalide [{value}] pour le champ [{field}] (attendu : l’une de [{expected_values}])."
+
 msgid "Invalid value [{value}]."
 msgstr "Valeur [{value}] non valide."
+
+msgid "JSON file (papi-converter format)"
+msgstr "Fichier JSON (format papi-converter)"
 
 msgid "Ka. *** ACRONYM FOR PAPI KASHDAN"
 msgstr "Ka."
@@ -2574,6 +2604,9 @@ msgstr "Elo minimum"
 msgid "Missing parameter (code: [{code}]): [{error}]."
 msgstr "Paramètre manquant (code : [{code}]) : [{error}]."
 
+msgid "Missing required field [{field}]."
+msgstr "Champ requis manquant [{field}]."
+
 msgid "Mode"
 msgstr "Mode"
 
@@ -2678,16 +2711,6 @@ msgstr "Pas d'homologation FFE"
 msgid "No FIDE ID."
 msgstr "Identifiant FIDE non défini."
 
-msgid "No Papi file for the tournaments of the event, players can not be added."
-msgstr "Aucun fichier Papi pour les tournois de l'évènement, on ne peut pas ajouter de joueur·euses."
-
-#, python-format
-msgid "No Papi file for tournament [%(tournament_uniq_id)s]."
-msgstr "Pas de fichier Papi pour le tournoi [%(tournament_uniq_id)s]."
-
-msgid "No Papi file found for tournament [{tournament_uniq_id}], can not add the player."
-msgstr "Pas de fichier Papi trouvé pour le tournoi [{tournament_uniq_id}], on ne peut pas y ajouter de joueur·euses."
-
 msgid "No Prize Category"
 msgstr "Aucune catégorie de prix"
 
@@ -2726,9 +2749,6 @@ msgstr "Aucune donnée reçue de [{url}]."
 
 msgid "No directory set for Papi files, by default [{path}]."
 msgstr "Aucun répertoire défini pour les fichiers Papi, par défaut [{path}]."
-
-msgid "No directory set for the Papi file, by default [{path}]."
-msgstr "Aucun répertoire défini pour le fichier Papi, par défaut [{path}]."
 
 msgid "No display controllers"
 msgstr "Aucun pilote d'afficheurs"
@@ -3125,18 +3145,6 @@ msgstr "Appariements : %(pairing_variation)s"
 msgid "Papi file"
 msgstr "Fichier Papi"
 
-msgid "Papi file [{tournament_file}] not found."
-msgstr "Fichier Papi [{tournament_file}] introuvable."
-
-msgid "Papi file not defined for tournament."
-msgstr "Fichier Papi non défini pour le tournoi."
-
-msgid "Papi file not found [{file}]."
-msgstr "Fichier Papi introuvable [{file}]."
-
-msgid "Papi file not modified since last upload"
-msgstr "Le fichier Papi n’a pas été modifié depuis la dernière mise en ligne"
-
 msgid "Parings by player"
 msgstr "Appariements par ordre alphabétique"
 
@@ -3445,9 +3453,6 @@ msgstr "Imprimer"
 
 msgid "Print players, results, etc."
 msgstr "Imprimer les participant·es, les résultats, les classements…"
-
-msgid "Printing is not possible when the Papi file is not found."
-msgstr "Les impressions ne sont pas possibles lorsque le fichier Papi n'est pas trouvé."
 
 msgid "Private event"
 msgstr "Évènement privé"
@@ -4189,21 +4194,6 @@ msgstr "L'identifiant utilisé pour se connecter sur la plateforme ChessEvent (p
 msgid "The ID used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
 msgstr "L'identifiant utilisé pour se connecter à la plateforme ChessEvent (by défaut, peut-être modifié pour chaque tournoi)."
 
-#, python-format
-msgid "The Papi file for the tournament does not exist (%(papi_file)s)."
-msgstr "Le fichier Papi du tournoi n'existe pas (%(papi_file)s)."
-
-#, python-format
-msgid "The Papi file for the tournament exists but could not be read (%(papi_file)s)."
-msgstr "Le fichier Papi du tournoi existe pas n'a pas pu être lu (%(papi_file)s)."
-
-#, python-format
-msgid "The Papi file for the tournament was successfully read (%(papi_file)s)."
-msgstr "Le fichier Papi du tournoi a été lu avec succès (%(papi_file)s)."
-
-msgid "The Sharly Chess tournaments are deleted but the Papi file is still available on the filesystem."
-msgstr "Le tournoi Sharly Chess ets supprimé mais le fichier Papi est conservé sur la système de fichiers."
-
 msgid "The URL of the image to display."
 msgstr "L'URL de l'image à afficher."
 
@@ -4368,9 +4358,6 @@ msgstr "La temps minimal, quelle que soit la différence de classement entre les
 
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
 msgstr "La valeur minimale d'un prix partagé dans cette catégorie (pas de seuil par défaut)."
-
-msgid "The name of the Papi file is not set, by default [{filename}]"
-msgstr "Le nom du fichier papi n'est pas défini, par défaut [{filename}]"
 
 msgid "The name of the Papi file without [.papi] extension (defaults to the unique ID)."
 msgstr "Le nom du fichier Papi sans l'extension [.papi] (par défaut l'identifiant unique)."
@@ -4878,6 +4865,9 @@ msgstr "Tournoi exempt de droits d'homologation."
 msgid "Tournament modified, awaiting auto-upload"
 msgstr "Tournoi mis à jour, en attente de l’envoi automatique"
 
+msgid "Tournament not modified since last upload"
+msgstr "Tournoi non modifié depuis le dernier envoi"
+
 msgid "Tournament not yet uploaded."
 msgstr "Tournoi pas encore mis en ligne."
 
@@ -5032,8 +5022,17 @@ msgstr "Identifiant unique : %(uniq_id)s"
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 msgstr "Type de FFE Licence FFE inconnu [%(ffe_licence)s]."
 
+msgid "Unknown field [{field}]."
+msgstr "Champ inconnu [{field}]."
+
+msgid "Unknown player ID [{player_id}]"
+msgstr "Identifiant de joueur inconnu [{player_id}]."
+
 msgid "Unknown response code: [{code}] ([{chessevent_string}])."
 msgstr "Code de réponse inconnu : [{code}] ([{chessevent_string}])."
+
+msgid "Unknown value [{value}]"
+msgstr "Valeur inconnue [{value}]."
 
 msgid "Unlike single Screens, families can only be used to display information about a single tournament."
 msgstr "Contrairement aux écrans simples, les familles d’écrans ne peuvent être utilisées que pour afficher des informations sur un seul tournoi."
@@ -5561,22 +5560,4 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
-
-#~ msgid "Access driver (found)"
-#~ msgstr "Pilote Access (présent)"
-
-#~ msgid "Access driver (not found)"
-#~ msgstr "Pilote Access (absent)"
-
-#~ msgid "Connection to the database failed."
-#~ msgstr "La connexion à la base a échoué."
-
-#~ msgid "Connection to the database failed: {error}."
-#~ msgstr "La connexion à la base a échoué : {error}."
-
-#~ msgid "Other ODBC drivers found on the server"
-#~ msgstr "Autres pilotes ODBC sur le serveur"
-
-#~ msgid "timeout"
-#~ msgstr "temps dépassé"
 
