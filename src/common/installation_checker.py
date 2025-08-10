@@ -15,6 +15,7 @@ from common.logger import (
 from common.sharly_chess_config import SharlyChessConfig
 from common.tool_installer import ToolInstaller
 from data.pairings.bbp_pairings_installer import BbpPairingsInstaller
+from utils.file import shutil_delete_onerror
 
 
 class WebLibInstaller(ToolInstaller, ABC):
@@ -76,7 +77,7 @@ class WebLibArchiveInstaller(WebLibInstaller, ABC):
             dst_dir.mkdir(parents=True, exist_ok=True)
             shutil.copy(src_file, dst_dir)
         archive_file.unlink(missing_ok=True)
-        shutil.rmtree(archive_dir)
+        shutil.rmtree(archive_dir, onerror=shutil_delete_onerror)
         print_interactive_success('Done.')
         return self.is_installed
 
