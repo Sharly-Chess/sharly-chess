@@ -252,13 +252,10 @@ class Engine(ABC):
                         '',
                         yes_answer,
                     ]:
-                        for event_id in (
-                            file.stem
-                            for file in SharlyChessConfig.example_events_yml_path.glob(
-                                f'*.{SharlyChessConfig.yml_ext}'
-                            )
+                        for file in SharlyChessConfig.example_events_path.glob(
+                            f'*.{SharlyChessConfig.event_database_ext}'
                         ):
-                            EventDatabase(event_id).create()
+                            shutil.copy(file, EVENTS_DIR / file.name)
                         break
                     if choice == no_answer:
                         break
