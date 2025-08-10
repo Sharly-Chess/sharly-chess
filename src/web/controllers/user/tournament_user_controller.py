@@ -538,10 +538,6 @@ class DownloadUserController(BaseUserController):
             tournament.file
             for tournament in web_context.user_event.tournaments_by_id.values()
         ]
-        if not tournament_files:
-            return BaseController.redirect_error(
-                request, f'No Papi file for event [{web_context.user_event.uniq_id}].'
-            )
         archive = BytesIO()
         with ZipFile(archive, 'w') as zip_archive:
             for tournament_file in tournament_files:

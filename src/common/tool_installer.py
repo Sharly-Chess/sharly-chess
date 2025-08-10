@@ -26,7 +26,13 @@ class ToolInstaller(ABC):
     """An abstract class for tools and libs to check installation and install.
     Classes inheriting from this class should just implement methods check_file() and install()."""
 
-    def __init__(self, name: str, version: Version, licence_files: list[str] | None = None, licence_type: str | None = None):
+    def __init__(
+        self,
+        name: str,
+        version: Version,
+        licence_files: list[str] | None = None,
+        licence_type: str | None = None,
+    ):
         self.name: str = name
         self.version: Version = version
         self.licence_files = licence_files or []
@@ -135,7 +141,12 @@ class WebLibArchiveInstaller(WebLibInstaller, ABC):
         licence_type: str | None = None,
     ):
         super().__init__(
-            name, version, lib_install_folder_name, version_folder_name, lib_files, licence_files
+            name,
+            version,
+            lib_install_folder_name,
+            version_folder_name,
+            lib_files,
+            licence_files,
         )
         self.archive_url = archive_url.format(version=self.version)
         self.archive_filename = archive_filename.format(version=self.version)
@@ -170,14 +181,22 @@ class WebLibArchiveInstaller(WebLibInstaller, ABC):
                     try:
                         shutil.copy2(src_file, dst_file)
                         extracted_licence_files.append(licence_file)
-                        logger.debug(f'Extracted licence file: {licence_file} -> {licence_file} for {self.name}')
+                        logger.debug(
+                            f'Extracted licence file: {licence_file} -> {licence_file} for {self.name}'
+                        )
                     except Exception as e:
-                        logger.warning(f'Failed to copy licence file {licence_file}: {e}')
+                        logger.warning(
+                            f'Failed to copy licence file {licence_file}: {e}'
+                        )
                 else:
-                    logger.warning(f'Licence file not found in archive: {licence_file} for {self.name}')
+                    logger.warning(
+                        f'Licence file not found in archive: {licence_file} for {self.name}'
+                    )
 
             if extracted_licence_files:
-                print_interactive_info(f'Extracted licence files for {self.name}: {extracted_licence_files}')
+                print_interactive_info(
+                    f'Extracted licence files for {self.name}: {extracted_licence_files}'
+                )
 
         archive_file.unlink(missing_ok=True)
         shutil.rmtree(archive_dir)
@@ -370,7 +389,7 @@ class PapiConverterInstaller(ExecutableInstaller):
 
     @property
     def _version(self) -> Version:
-        return Version('1.1.4')
+        return Version('1.1.5')
 
     def install(self) -> bool:
         archive_filename = self.system_handler.archive_filename

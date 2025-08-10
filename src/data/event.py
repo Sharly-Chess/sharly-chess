@@ -532,12 +532,15 @@ class Event:
             if property_name in self.__dict__:
                 del self.__dict__[property_name]
 
-    def add_player(self, stored_player: StoredPlayer, tournaments: list[Tournament]):
+    def add_player(
+        self, stored_player: StoredPlayer, tournaments: list[Tournament]
+    ) -> int:
         with EventDatabase(self.uniq_id, True) as database:
             stored_player.id = database.add_stored_player(stored_player)
             for tournament in tournaments:
                 tournament.add_player_to_tournament(stored_player, database)
             database.commit()
+        return stored_player.id
 
     def delete_player(self, player_id: int):
         with EventDatabase(self.uniq_id, True) as database:

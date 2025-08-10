@@ -235,7 +235,7 @@ class FfeBackgroundUploader:
                     cls.upload_status_messages[cls.result_id(tournament)] = (
                         FfeUploadResult(
                             FfeUploadStatus.INFO,
-                            _('Papi file not modified since last upload'),
+                            _('Tournament not modified since last upload'),
                         )
                     )
                     pass
