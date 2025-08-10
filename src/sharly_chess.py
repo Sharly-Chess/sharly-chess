@@ -1,5 +1,4 @@
 try:
-    from common import TEST_ENV
     import argparse
     import traceback
     from typing import TYPE_CHECKING
@@ -8,7 +7,7 @@ try:
 
     arguments = init_script()
 
-    from common import DEVEL_ENV
+    from common import DEVEL_ENV, TEST_ENV
     from common.i18n import _
     from common.logger import (
         get_logger,

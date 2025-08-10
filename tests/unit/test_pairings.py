@@ -6,11 +6,11 @@ from unittest import TestCase
 
 from data.board import Board
 from data.event import Event
-from data.input_output.tournament_importers import JsonTournamentImporter
 from data.loader import EventLoader
 
 import pytest
 from data.pairings.engines import BergerPairingEngine
+from plugins.ffe.ffe_tournament_importers import PapiJsonTournamentImporter
 from tests.test_config import TestUtils
 
 EVENT_ID = 'test-pairings-event'
@@ -56,8 +56,7 @@ class PairingTestCase(TestCase):
         json_path = Path('../json') / leaf_name
         assert json_path.exists(), f'JSON file [{leaf_name}] not found'
 
-        # For the moment the json data format is the same as that produced by papi-converter
-        JsonTournamentImporter().load_tournament(json_path, self.event, tournament)
+        PapiJsonTournamentImporter().load_tournament(json_path, self.event, tournament)
 
         self.event = EventLoader().reload_event(EVENT_ID)
         tournament = self.event.tournaments_by_uniq_id[TOURNAMENT_ID]

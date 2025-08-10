@@ -5,7 +5,6 @@ from typing import Callable
 from unittest import TestCase
 
 from data.event import Event
-from data.input_output.tournament_importers import JsonTournamentImporter
 from data.loader import EventLoader
 
 import pytest
@@ -13,6 +12,7 @@ from data.tie_breaks import tie_breaks, options
 from data.tournament import Tournament
 from data.player import Player
 from plugins.ffe import ffe_tie_breaks
+from plugins.ffe.ffe_tournament_importers import PapiJsonTournamentImporter
 from tests.test_config import TestUtils
 
 EVENT_ID = 'test-pairings-event'
@@ -34,8 +34,9 @@ class TieBreakTestCase(TestCase, ABC):
         json_path = Path('../json') / leaf_name
         assert json_path.exists(), f'JSON file [{leaf_name}] not found'
 
-        # For the moment the json data format is the same as that produced by papi-converter
-        JsonTournamentImporter().load_tournament(json_path, self.event, self.tournament)
+        PapiJsonTournamentImporter().load_tournament(
+            json_path, self.event, self.tournament
+        )
 
         self.event = EventLoader().reload_event(EVENT_ID)
 

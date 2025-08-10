@@ -13,6 +13,7 @@ from litestar.params import Body
 from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
+from common.exception import SharlyChessException
 from common.i18n import _
 from data.board import Board
 from data.event import Event
@@ -20,8 +21,8 @@ from data.input_output import (
     DataSourceManager,
     TournamentExporter,
     TournamentExporterManager,
+    TournamentImporterManager,
 )
-from data.input_output.tournament_importers import JsonTournamentImporter
 from data.loader import EventLoader
 from data.pairings import PairingSystem, PairingSystemManager
 from data.pairings.systems import SwissPairingSystem
@@ -73,6 +74,10 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
             except KeyError:
                 self._redirect_error(f'Tournament [{tournament_id}] not found.')
                 return
+
+    def get_admin_tournament(self) -> Tournament:
+        assert self.admin_tournament is not None
+        return self.admin_tournament
 
     @property
     def template_context(self) -> dict[str, Any]:
@@ -705,6 +710,35 @@ class TournamentAdminController(BaseEventAdminController):
             filename=f'{exporter.file_name(tournament)}.{exporter.file_extension}',
         )
 
+    @post(
+        path='/admin/tournament-import/{event_uniq_id:str}/{tournament_id:int}/{importer_id:str}',
+        name='admin-tournament-import',
+    )
+    async def admin_tournament_import(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        event_uniq_id: str,
+        tournament_id: int,
+        importer_id: str,
+    ) -> Template | ClientRedirect:
+        web_context = TournamentAdminWebContext(
+            request, event_uniq_id, tournament_id, data
+        )
+        event = web_context.get_admin_event()
+        tournament = web_context.get_admin_tournament()
+        importer = TournamentImporterManager.get_object(importer_id)
+        file_path = Path(data.get('file_path', ''))
+        if not file_path.exists():
+            raise SharlyChessException(f'File [{file_path}] not found.')
+        importer.load_tournament(file_path, event, tournament)
+        return self._admin_event_tournaments_render(
+            request, event_uniq_id=event_uniq_id
+        )
+
     def _admin_tournament_update(
         self,
         request: HTMXRequest,
@@ -838,27 +872,6 @@ class TournamentAdminController(BaseEventAdminController):
 
                 tournament_id = stored_tournament.id
             event_database.commit()
-
-            if 'json_filename' in data and data['json_filename']:
-                # This is used to populate the tournaments from a json file for end-to-end tests
-                event_loader.clear_cache(event_uniq_id)
-                event = event_loader.load_event(event_uniq_id)
-                leaf_name = f'{data["json_filename"]}.json'
-
-                start = Path(__file__).parent
-                for parent in [start] + list(start.parents):
-                    if (parent / '.git').exists():
-                        root = parent
-                        break
-                else:
-                    raise RuntimeError('Repo root not found')
-
-                json_path = root / 'tests' / 'json' / leaf_name
-                assert json_path.exists(), f'JSON file [{leaf_name}] not found'
-                tournament = event.tournaments_by_uniq_id[stored_tournament.uniq_id]
-
-                # For the moment the json data format is the same as that produced by papi-converter
-                JsonTournamentImporter().load_tournament(json_path, event, tournament)
 
         event_loader.clear_cache(event_uniq_id)
         if add_other:
