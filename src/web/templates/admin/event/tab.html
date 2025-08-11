@@ -115,17 +115,6 @@
                             {{ _('Public event') if admin_event.public else _('Private event') }}
                         </td>
                     </tr>
-                    <tr>
-                        <th scope="row" class="text-nowrap">{{ _('Default directory of the Papi files') }}</th>
-                        <td class="">
-                            {{ admin_event.path }}
-                            {% if not admin_event.stored_event.path %}
-                                <span class="fst-italic">
-                                    {{ _('(by default)') }}
-                                </span>
-                            {% endif %}
-                        </td>
-                    </tr>
                 {% endif %}
                 <tr>
                     <th scope="row" class="text-nowrap">{{ _('Prize currency') }}</th>
@@ -221,5 +210,4 @@
             </tbody>
         </table>
     </div>
-{% endif %}
 {% endif %}
