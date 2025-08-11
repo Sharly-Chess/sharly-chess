@@ -1,0 +1,1526 @@
+{
+  "variables" : {
+    "name" : "Test tournament",
+    "rounds" : "15",
+    "startDate" : "24/10/2024",
+    "endDate" : "24/10/2024",
+    "timeControl" : "",
+    "venue" : "Sharly-Chess HQ",
+    "ratingClass" : "Elo",
+    "homologation" : "",
+    "arbiter" : "",
+    "type" : "ToutesRondes",
+    "pairing" : "Berger",
+    "tiebreak1" : "",
+    "tiebreak2" : "",
+    "tiebreak3" : "",
+    "minRating" : "0",
+    "maxRating" : "0",
+    "pointSystem" : "NON"
+  },
+  "players" : [ {
+    "federation" : "FRA",
+    "lastName" : "ALYX",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 2200,
+    "owed" : 0,
+    "refFFE" : 798644332,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "11" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 10
+      },
+      "12" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 11
+      },
+      "13" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 12
+      },
+      "14" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 13
+      },
+      "15" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 14
+      },
+      "1" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 15
+      },
+      "2" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 1
+      },
+      "3" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 2
+      },
+      "4" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 3
+      },
+      "5" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 4
+      },
+      "6" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 5
+      },
+      "7" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 6
+      },
+      "8" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 7
+      },
+      "9" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 8
+      },
+      "10" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 9
+      }
+    },
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "BRUNO",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 2150,
+    "owed" : 0,
+    "refFFE" : 798644543,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "11" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 9
+      },
+      "12" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 10
+      },
+      "13" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 11
+      },
+      "14" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 12
+      },
+      "15" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 13
+      },
+      "1" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 14
+      },
+      "2" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 0
+      },
+      "3" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 15
+      },
+      "4" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 2
+      },
+      "5" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 3
+      },
+      "6" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 4
+      },
+      "7" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 5
+      },
+      "8" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 6
+      },
+      "9" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 7
+      },
+      "10" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 8
+      }
+    },
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "CHARLINE",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 2100,
+    "owed" : 0,
+    "refFFE" : 798644579,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "11" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 8
+      },
+      "12" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 9
+      },
+      "13" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 10
+      },
+      "14" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 11
+      },
+      "15" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 12
+      },
+      "1" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 13
+      },
+      "2" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 14
+      },
+      "3" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 0
+      },
+      "4" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 1
+      },
+      "5" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 15
+      },
+      "6" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 3
+      },
+      "7" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 4
+      },
+      "8" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 5
+      },
+      "9" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 6
+      },
+      "10" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 7
+      }
+    },
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "DAVID",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 2050,
+    "owed" : 0,
+    "refFFE" : 798644605,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "11" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 7
+      },
+      "12" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 8
+      },
+      "13" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 9
+      },
+      "14" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 10
+      },
+      "15" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 11
+      },
+      "1" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 12
+      },
+      "2" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 13
+      },
+      "3" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 14
+      },
+      "4" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 0
+      },
+      "5" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 1
+      },
+      "6" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 2
+      },
+      "7" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 15
+      },
+      "8" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 4
+      },
+      "9" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 5
+      },
+      "10" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 6
+      }
+    },
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "HELENE",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 2000,
+    "owed" : 0,
+    "refFFE" : 798644675,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "11" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 6
+      },
+      "12" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 7
+      },
+      "13" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 8
+      },
+      "14" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 9
+      },
+      "15" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 10
+      },
+      "1" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 11
+      },
+      "2" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 12
+      },
+      "3" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 13
+      },
+      "4" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 14
+      },
+      "5" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 0
+      },
+      "6" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 1
+      },
+      "7" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 2
+      },
+      "8" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 3
+      },
+      "9" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 15
+      },
+      "10" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 5
+      }
+    },
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "FRANCK",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 1950,
+    "owed" : 0,
+    "refFFE" : 798644706,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "11" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 15
+      },
+      "12" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 6
+      },
+      "13" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 7
+      },
+      "14" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 8
+      },
+      "15" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 9
+      },
+      "1" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 10
+      },
+      "2" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 11
+      },
+      "3" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 12
+      },
+      "4" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 13
+      },
+      "5" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 14
+      },
+      "6" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 0
+      },
+      "7" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 1
+      },
+      "8" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 2
+      },
+      "9" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 3
+      },
+      "10" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 4
+      }
+    },
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "GENEVIEVE",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 1900,
+    "owed" : 0,
+    "refFFE" : 798644737,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "11" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 4
+      },
+      "12" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 5
+      },
+      "13" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 15
+      },
+      "14" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 7
+      },
+      "15" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 8
+      },
+      "1" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 9
+      },
+      "2" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 10
+      },
+      "3" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 11
+      },
+      "4" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 12
+      },
+      "5" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 13
+      },
+      "6" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 14
+      },
+      "7" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 0
+      },
+      "8" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 1
+      },
+      "9" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 2
+      },
+      "10" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 3
+      }
+    },
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "IRINA",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 1850,
+    "owed" : 0,
+    "refFFE" : 798644782,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "11" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 3
+      },
+      "12" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 4
+      },
+      "13" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 5
+      },
+      "14" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 6
+      },
+      "15" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 15
+      },
+      "1" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 8
+      },
+      "2" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 9
+      },
+      "3" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 10
+      },
+      "4" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 11
+      },
+      "5" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 12
+      },
+      "6" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 13
+      },
+      "7" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 14
+      },
+      "8" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 0
+      },
+      "9" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 1
+      },
+      "10" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 2
+      }
+    },
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "JESSICA",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 1800,
+    "owed" : 0,
+    "refFFE" : 798644818,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "11" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 2
+      },
+      "12" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 3
+      },
+      "13" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 4
+      },
+      "14" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 5
+      },
+      "15" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 6
+      },
+      "1" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 7
+      },
+      "2" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 15
+      },
+      "3" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 9
+      },
+      "4" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 10
+      },
+      "5" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 11
+      },
+      "6" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 12
+      },
+      "7" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 13
+      },
+      "8" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 14
+      },
+      "9" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 0
+      },
+      "10" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 1
+      }
+    },
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "LAIS",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 1750,
+    "owed" : 0,
+    "refFFE" : 798644884,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "11" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 1
+      },
+      "12" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 2
+      },
+      "13" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 3
+      },
+      "14" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 4
+      },
+      "15" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 5
+      },
+      "1" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 6
+      },
+      "2" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 7
+      },
+      "3" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 8
+      },
+      "4" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 15
+      },
+      "5" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 10
+      },
+      "6" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 11
+      },
+      "7" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 12
+      },
+      "8" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 13
+      },
+      "9" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 14
+      },
+      "10" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 0
+      }
+    },
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "MARIA",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 1700,
+    "owed" : 0,
+    "refFFE" : 798644904,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "11" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 0
+      },
+      "12" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 1
+      },
+      "13" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 2
+      },
+      "14" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 3
+      },
+      "15" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 4
+      },
+      "1" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 5
+      },
+      "2" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 6
+      },
+      "3" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 7
+      },
+      "4" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 8
+      },
+      "5" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 9
+      },
+      "6" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 15
+      },
+      "7" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 11
+      },
+      "8" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 12
+      },
+      "9" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 13
+      },
+      "10" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 14
+      }
+    },
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "NICK",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 1650,
+    "owed" : 0,
+    "refFFE" : 798644938,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "11" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 14
+      },
+      "12" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 0
+      },
+      "13" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 1
+      },
+      "14" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 2
+      },
+      "15" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 3
+      },
+      "1" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 4
+      },
+      "2" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 5
+      },
+      "3" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 6
+      },
+      "4" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 7
+      },
+      "5" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 8
+      },
+      "6" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 9
+      },
+      "7" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 10
+      },
+      "8" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 15
+      },
+      "9" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 12
+      },
+      "10" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 13
+      }
+    },
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "OPAL",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 1600,
+    "owed" : 0,
+    "refFFE" : 798644961,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "11" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 13
+      },
+      "12" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 14
+      },
+      "13" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 0
+      },
+      "14" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 1
+      },
+      "15" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 2
+      },
+      "1" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 3
+      },
+      "2" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 4
+      },
+      "3" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 5
+      },
+      "4" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 6
+      },
+      "5" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 7
+      },
+      "6" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 8
+      },
+      "7" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 9
+      },
+      "8" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 10
+      },
+      "9" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 11
+      },
+      "10" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 15
+      }
+    },
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "PAUL",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 1550,
+    "owed" : 0,
+    "refFFE" : 798644984,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "11" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 12
+      },
+      "12" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 15
+      },
+      "13" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 14
+      },
+      "14" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 0
+      },
+      "15" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 1
+      },
+      "1" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 2
+      },
+      "2" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 3
+      },
+      "3" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 4
+      },
+      "4" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 5
+      },
+      "5" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 6
+      },
+      "6" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 7
+      },
+      "7" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 8
+      },
+      "8" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 9
+      },
+      "9" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 10
+      },
+      "10" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 11
+      }
+    },
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "REINE",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 1500,
+    "owed" : 0,
+    "refFFE" : 798645006,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "11" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 11
+      },
+      "12" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 12
+      },
+      "13" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 13
+      },
+      "14" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 15
+      },
+      "15" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 0
+      },
+      "1" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 1
+      },
+      "2" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 2
+      },
+      "3" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 3
+      },
+      "4" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 4
+      },
+      "5" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 5
+      },
+      "6" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 6
+      },
+      "7" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 7
+      },
+      "8" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 8
+      },
+      "9" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 9
+      },
+      "10" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 10
+      }
+    },
+    "blitzElo" : 1399
+  }, {
+    "federation" : "FRA",
+    "lastName" : "STEPHAN",
+    "fixedBoard" : 0,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 1450,
+    "owed" : 0,
+    "refFFE" : 798645022,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1399,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "11" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 5
+      },
+      "12" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 13
+      },
+      "13" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 6
+      },
+      "14" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 14
+      },
+      "15" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 7
+      },
+      "1" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 0
+      },
+      "2" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 8
+      },
+      "3" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 1
+      },
+      "4" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 9
+      },
+      "5" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 2
+      },
+      "6" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 10
+      },
+      "7" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 3
+      },
+      "8" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 11
+      },
+      "9" : {
+        "result" : 0,
+        "color" : "N",
+        "opponent" : 4
+      },
+      "10" : {
+        "result" : 0,
+        "color" : "B",
+        "opponent" : 12
+      }
+    },
+    "blitzElo" : 1399
+  } ]
+}

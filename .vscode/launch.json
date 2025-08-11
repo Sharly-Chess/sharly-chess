@@ -1,0 +1,10 @@
+{
+    "configurations": [
+      {
+        "name": "Sharly Chess",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "${workspaceFolder}/src/sharly_chess.py"
+    }
+  ]
+}

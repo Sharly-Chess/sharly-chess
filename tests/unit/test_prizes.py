@@ -1,11 +1,9 @@
-from datetime import date
+from datetime import date, datetime
 from unittest.mock import patch, PropertyMock
+import time
 
 import pytest
 from unittest import TestCase
-
-# Needs to be imported first to avoid circular import
-from plugins import manager  # Noqa E402
 
 from data.event import Event
 from data.loader import EventLoader
@@ -39,7 +37,7 @@ from data.prize.prize_sharing import (
     PrizeSharing,
 )
 from data.prize.prize_group import AssignedPrize
-from database.access.papi.papi_store import (
+from database.sqlite.event.event_store import (
     StoredPlayer,
     StoredTournamentPlayer,
     StoredPairing,
@@ -72,12 +70,22 @@ class PrizesTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        TestUtils.create_event_direct('test-prizes-event')
-        cls.event = EventLoader().load_event('test-prizes-event')
+        TestUtils.create_event(
+            'test-prizes-event',
+            overrides={
+                'start': time.mktime(
+                    datetime.strptime('2024-12-31 23:59', '%Y-%m-%d %H:%M').timetuple()
+                ),
+                'stop': time.mktime(
+                    datetime.strptime('2025-01-01 00:00', '%Y-%m-%d %H:%M').timetuple()
+                ),
+            },
+        )
+        cls.event = EventLoader().reload_event('test-prizes-event')
 
     @classmethod
     def tearDownClass(cls):
-        TestUtils.delete_event_direct('test-prizes-event')
+        TestUtils.delete_event('test-prizes-event')
         super().tearDownClass()
 
     def setUp(self):
@@ -121,8 +129,6 @@ class PrizesTestCase(TestCase):
                     uniq_id='empty',
                     name='empty',
                     id=1,
-                    path='',
-                    filename='',
                     current_round=ROUNDS,
                     rounds=ROUNDS,
                     stored_prize_groups=[self.stored_prize_group],

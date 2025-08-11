@@ -8,12 +8,18 @@ from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.player import PlayerRating
-from database.access.papi.papi_store import StoredPlayer
-from utils.enum import PlayerGender, PlayerTitle, TournamentRating, PlayerRatingType
+from database.sqlite.event.event_store import StoredPlayer
+from plugins.ffe.papi_mappers import (
+    PapiPlayerTitle,
+    PapiPlayerGender,
+    PapiPlayerRatingType,
+    PapiPlayerFFELicence,
+)
+from utils.enum import TournamentRating, PlayerRatingType
 from database.sql_server.sql_server import SqlServer, SqlServerCredentials
 from plugins import PLUGINS_DIR
 from plugins.ffe import PLUGIN_NAME
-from plugins.ffe.utils import PlayerFFELicence
+from plugins.ffe.utils import FfePlayerPluginData
 
 logger: Logger = get_logger()
 
@@ -101,22 +107,22 @@ class FFESqlServer(SqlServer):
             first_name=row['Prenom'].title() if row['Prenom'] else '',
             last_name=row['Nom'].upper(),
             date_of_birth=row['NeLe'],
-            gender=PlayerGender.from_papi_value(row['Sexe']),
+            gender=PapiPlayerGender.get_core_object(row['Sexe']),
             mail='',
             phone='',
             comment='',
             owed=0.0,
             paid=0.0,
-            title=PlayerTitle.from_papi_value(row['FideTitre'] or ''),
+            title=PapiPlayerTitle.get_core_object(row['FideTitre'] or '').value,
             ratings={
                 TournamentRating.STANDARD: PlayerRating(
-                    row['Elo'], PlayerRatingType.from_papi_value(row['Fide'])
+                    row['Elo'], PapiPlayerRatingType.get_core_object(row['Fide'])
                 ).stored_value,
                 TournamentRating.RAPID: PlayerRating(
-                    row['Rapide'], PlayerRatingType.from_papi_value(row['Fide03'])
+                    row['Rapide'], PapiPlayerRatingType.get_core_object(row['Fide03'])
                 ).stored_value,
                 TournamentRating.BLITZ: PlayerRating(
-                    row['Elo06'], PlayerRatingType.from_papi_value(row['Fide06'])
+                    row['Elo06'], PapiPlayerRatingType.get_core_object(row['Fide06'])
                 ).stored_value,
             },
             fide_id=int(row['FideCode'].strip("' ")) if row['FideCode'] else 0,
@@ -125,12 +131,14 @@ class FFESqlServer(SqlServer):
             fixed=0,
             check_in=False,  # not taken into account when updating/creating/deleting the player
             plugin_data={
-                PLUGIN_NAME: {
-                    'ffe_id': row['Ref'],
-                    'ffe_licence': PlayerFFELicence.from_papi_value(row['AffType']),
-                    'ffe_licence_number': row['NrFFE'],
-                    'league': row['ClubLigue'],
-                }
+                PLUGIN_NAME: FfePlayerPluginData(
+                    ffe_id=row['Ref'],
+                    ffe_licence=PapiPlayerFFELicence.get_core_object(
+                        row['AffType'] or ''
+                    ),
+                    ffe_licence_number=row['NrFFE'],
+                    league=row['ClubLigue'],
+                ).to_stored_value()
             },
         )
 
@@ -197,14 +205,14 @@ class FFESqlServer(SqlServer):
         params: list[Any] = []
         for token in tokens:
             token_expressions: list[str] = [
-                f'(UPPER({field[0]}) LIKE ?)' for field in str_fields
+                f'(UPPER({field[0]}) LIKE %s)' for field in str_fields
             ]
             token_params: list[str | int] = [
                 f'{field[1]}{token}{field[2]}' for field in str_fields
             ]
             with suppress(ValueError):
                 int_value = int(token.strip())
-                token_expressions.append('(joueur.FideCode IN (?, ?))')
+                token_expressions.append('(joueur.FideCode IN (%s, %s))')
                 token_params += [
                     self.remote_fide_id_format_1(int_value),
                     self.remote_fide_id_format_2(int_value),
@@ -216,7 +224,7 @@ class FFESqlServer(SqlServer):
         condition: str = ' AND '.join(map(lambda c: f'({c})', conditions))
         order = ' OR '.join(
             [
-                '(UPPER(joueur.Nom) LIKE ?)',
+                '(UPPER(joueur.Nom) LIKE %s)',
             ]
             * len(tokens)
         )
@@ -228,7 +236,7 @@ class FFESqlServer(SqlServer):
             f'ORDER BY (CASE WHEN {order} THEN 0 ELSE 1 END), Joueur.Nom, Joueur.Prenom'
         )
         if limit:
-            query += ' OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY'
+            query += ' OFFSET 0 ROWS FETCH NEXT %s ROWS ONLY'
             params += [
                 limit,
             ]
@@ -262,7 +270,7 @@ class FFESqlServer(SqlServer):
         player_ffe_id: int,
     ) -> StoredPlayer | None:
         return await self._get_stored_player_by_condition(
-            'joueur.Ref = ?', (player_ffe_id,)
+            'joueur.Ref = %s', (player_ffe_id,)
         )
 
     async def get_stored_player_by_fide_id(
@@ -270,7 +278,7 @@ class FFESqlServer(SqlServer):
         player_fide_id: int,
     ) -> StoredPlayer | None:
         return await self._get_stored_player_by_condition(
-            'joueur.FideCode IN (?, ?)',
+            'joueur.FideCode IN (%s, %s)',
             (
                 self.remote_fide_id_format_1(player_fide_id),
                 self.remote_fide_id_format_2(player_fide_id),
@@ -284,7 +292,7 @@ class FFESqlServer(SqlServer):
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
             f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
-            f'WHERE joueur.NrFFE IN ({", ".join(["?"] * len(player_ffe_licence_numbers))}) '
+            f'WHERE joueur.NrFFE IN ({", ".join(["%s"] * len(player_ffe_licence_numbers))}) '
             f'AND {self.RATING_TYPE_CONDITION}'
         )
         await self.execute(query, tuple(player_ffe_licence_numbers))
@@ -297,7 +305,7 @@ class FFESqlServer(SqlServer):
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
             f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
-            f'WHERE joueur.FideCode IN ({", ".join(["?"] * 2 * len(player_fide_ids))}) '
+            f'WHERE joueur.FideCode IN ({", ".join(["%s"] * 2 * len(player_fide_ids))}) '
             f'AND {self.RATING_TYPE_CONDITION}'
         )
         await self.execute(

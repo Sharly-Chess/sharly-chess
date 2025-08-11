@@ -8,7 +8,6 @@ from utils.enum import BoardColor
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
-    from database.access.papi.papi_database import PapiDatabase
 
 
 class PairingSetting[T](IdentifiableEntity, ABC):
@@ -53,10 +52,19 @@ class PairingSetting[T](IdentifiableEntity, ABC):
         return object_
 
     @classmethod
-    @abstractmethod
     def is_valid(cls, tournament: 'Tournament') -> bool:
-        """Check if the stored value is compatible with type T
-        and is valid for pairing generation."""
+        if not cls.is_set(tournament):
+            return False
+        assert tournament.pairing_settings is not None
+        return cls.check_value(
+            tournament,
+            cls.from_stored_value(tournament.pairing_settings[cls.static_id()]),
+        )
+
+    @classmethod
+    @abstractmethod
+    def check_value(cls, tournament: 'Tournament', value: T) -> bool:
+        """Check if a value of type T is valid for pairing generation for a tournament."""
 
     @classmethod
     def is_set(cls, tournament: 'Tournament'):
@@ -75,14 +83,10 @@ class PairingSetting[T](IdentifiableEntity, ABC):
     @classmethod
     def get_value(cls, tournament: 'Tournament') -> T:
         if tournament.pairing_settings and cls.is_set(tournament):
-            value = tournament.pairing_settings[cls.static_id()]
-            if cls.is_valid(tournament):
-                return cls.from_stored_value(value)
+            value = cls.from_stored_value(tournament.pairing_settings[cls.static_id()])
+            if cls.check_value(tournament, value):
+                return value
         return cls.default_value(tournament)
-
-    def save_to_papi_database(self, papi_database: 'PapiDatabase', object_: T):
-        # TODO remove once papi dependency has been removed
-        pass
 
 
 class ColorSeedSetting(PairingSetting[BoardColor]):
@@ -145,7 +149,7 @@ class ColorSeedSetting(PairingSetting[BoardColor]):
         return object_.value
 
     @classmethod
-    def is_valid(cls, tournament: 'Tournament') -> bool:
+    def check_value(cls, tournament: 'Tournament', value: BoardColor):
         return True
 
     def default_form_data(self, tournament: 'Tournament') -> dict[str, str]:
@@ -230,11 +234,10 @@ class BergerNumbersSetting(PairingSetting[dict[int, int]]):
         }
 
     @classmethod
-    def is_valid(cls, tournament: 'Tournament') -> bool:
-        assert tournament.pairing_settings is not None
-        berger_numbers = cls.from_stored_value(
-            tournament.pairing_settings[cls.static_id()]
-        )
+    def check_value(cls, tournament: 'Tournament', value: dict[int, int]):
+        berger_numbers = value
+        if len(set(berger_numbers.values())) != len(set(berger_numbers.keys())):
+            return False
         for player in tournament.players:
             if player.id not in berger_numbers:
                 return False

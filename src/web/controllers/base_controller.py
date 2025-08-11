@@ -7,20 +7,17 @@ from logging import Logger
 from pathlib import Path
 from typing import Annotated, Any
 
-import phonenumbers
 from httpdate.httpdate import httpdate_to_unixtime, unixtime_to_httpdate
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 from litestar.controller import Controller
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
-from phonenumbers.phonenumberutil import NumberParseException
 
 from common import check_rgb_str, DEVEL_ENV, experimental_features_enabled
 from common.i18n import (
     set_locale,
     locales,
-    get_locale,
 )
 from common.i18n.utils import (
     locale_localized_name,
@@ -272,28 +269,6 @@ class WebContext:
         if re.match(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}$', data[field]):
             return data[field]
         raise ValueError(f'data[{field}]=[{data[field]}] (mail expected)')
-
-    @classmethod
-    def form_data_to_phone(cls, data: dict[str, str] | None, field: str) -> str | None:
-        if data is None:
-            return None
-        data[field] = data.get(field, '')
-        if data[field] is not None:
-            data[field] = data[field].lower().replace(' ', '')
-        if not data[field]:
-            return None
-        try:
-            phonenumbers.parse(data[field])
-            return data[field]
-        except NumberParseException:
-            try:
-                # uppercase the locale to validate the phone number from the corresponding zone
-                phonenumbers.parse(data[field], get_locale().upper())
-                return data[field]
-            except NumberParseException as e:
-                raise ValueError(
-                    f'data[{field}]=[{data[field]}] (phone expected)'
-                ) from e
 
     @staticmethod
     def value_to_form_data(value: Any) -> str:

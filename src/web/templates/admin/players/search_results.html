@@ -8,7 +8,7 @@
                     'admin-player-modal-create-from-search',
                     event_uniq_id=admin_event.uniq_id,
                     data_source_id=data_source.id,
-                    player_source_id=data_source.get_player_source_id(player),
+                    player_source_id=data_source.get_player_source_id(player.stored_player),
                 ) }}"
                 hx-vals='js:{tournament_id: $("#tournament-id").val()}'
                 hx-target="body"

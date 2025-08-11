@@ -4,8 +4,10 @@ from .data_source import (  # Noqa F401
     LocalSourceDatabase,
 )
 from .tournament_exporters import TournamentExporter  # Noqa F401
+from .tournament_importers import TournamentImporter  # Noqa F401
 from .managers import (  # Noqa F401
     DataSourceManager,
     OnlineDataSourceManager,
     TournamentExporterManager,
+    TournamentImporterManager,
 )

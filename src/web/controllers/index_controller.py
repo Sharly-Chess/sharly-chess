@@ -9,6 +9,7 @@ from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.response import Redirect, Template
 from litestar.channels import ChannelsPlugin
 from litestar.response import ServerSentEventMessage, ServerSentEvent
+from litestar.status_codes import HTTP_204_NO_CONTENT
 
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
@@ -101,7 +102,7 @@ class IndexController(BaseController):
     def _error_template(
         request: HTMXRequest,
         status_code: int,
-    ):
+    ) -> HTMXTemplate:
         reload_message: str | None = None
         title: str
         error_message: str
@@ -187,3 +188,12 @@ class IndexController(BaseController):
     @get('/.well-known/appspecific/com.chrome.devtools.json')
     async def chrome_devtools_placeholder(self) -> Response:
         return Response(content='{}', media_type='application/json')
+
+    @get(
+        path=[
+            '/apple-touch-icon.png',
+            '/apple-touch-icon-precomposed.png'
+        ],
+    )
+    async def no_content(self) -> Response:
+        return Response(status_code=HTTP_204_NO_CONTENT, content=None)

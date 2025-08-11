@@ -14,9 +14,9 @@ SCREEN_ID = 'test-screen'
 
 @pytest.fixture(scope='module', autouse=True)
 def setup(api_request_context: APIRequestContext):
-    TestUtils.create_event(api_request_context, EVENT_ID)
+    TestUtils.create_event(EVENT_ID, via_api_request_context=api_request_context)
     yield
-    TestUtils.delete_event(api_request_context, EVENT_ID)
+    TestUtils.delete_event(EVENT_ID, via_api_request_context=api_request_context)
 
 
 @pytest.mark.e2e
@@ -24,10 +24,10 @@ class TestSingleScreensFunctionality:
     @pytest.fixture()
     def unpaired_tournament(self, api_request_context: APIRequestContext):
         tournament = TestUtils.create_tournament(
-            api_request_context,
             EVENT_ID,
             TOURNAMENT_ID,
-            papi_file='test-screens-unpaired',
+            json_file='test-screens-unpaired',
+            via_api_request_context=api_request_context,
         )
         yield tournament
         TestUtils.delete_tournament(api_request_context, EVENT_ID, tournament)
@@ -35,7 +35,10 @@ class TestSingleScreensFunctionality:
     @pytest.fixture()
     def paired_tournament(self, api_request_context: APIRequestContext):
         tournament = TestUtils.create_tournament(
-            api_request_context, EVENT_ID, TOURNAMENT_ID, papi_file='test-screens'
+            EVENT_ID,
+            TOURNAMENT_ID,
+            json_file='test-screens',
+            via_api_request_context=api_request_context,
         )
         yield tournament
         TestUtils.delete_tournament(api_request_context, EVENT_ID, tournament)

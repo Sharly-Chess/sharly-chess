@@ -3,10 +3,10 @@ All the classes of this module are basic data classes stored in the event databa
 """
 
 from dataclasses import dataclass, field
+from datetime import date
 from typing import Any
 
 from common.sharly_chess_config import SharlyChessConfig
-from database.access.papi.papi_store import StoredPlayer, StoredBoard
 
 
 @dataclass
@@ -77,12 +77,66 @@ class StoredPrizeGroup:
 
 
 @dataclass
+class StoredPairing:
+    tournament_id: int
+    player_id: int
+    round_: int
+    result: int
+    board_id: int | None
+    illegal_moves: int = 0
+
+
+@dataclass
+class StoredBoard:
+    id: int | None
+    white_player_id: int
+    black_player_id: int | None
+    index: int
+    last_result_update: float | None = None
+
+
+@dataclass
+class StoredTournamentPlayer:
+    tournament_id: int = 0
+    player_id: int = 0
+    pairing_number: int | None = None
+    stored_pairings: list[StoredPairing] = field(default_factory=list[StoredPairing])
+
+
+@dataclass
+class StoredPlayer:
+    id: int | None
+    last_name: str
+    first_name: str | None
+    date_of_birth: date | None
+    gender: int
+    mail: str | None
+    phone: str | None
+    comment: str | None
+    owed: float
+    paid: float
+    title: int
+    ratings: dict[int, dict[str, int]]
+    fide_id: int | None
+    federation: str
+    club: str | None
+    fixed: int | None
+    check_in: bool
+    # TODO (Molrn - multi tournament) move to a list in StoredTournament
+    stored_tournament_player: StoredTournamentPlayer = field(
+        default_factory=StoredTournamentPlayer
+    )
+
+    plugin_data: dict[str, dict[str, Any]] = field(
+        default_factory=dict[str, dict[str, Any]]
+    )
+
+
+@dataclass
 class StoredTournament:
     id: int | None
     uniq_id: str
     name: str
-    path: str | None
-    filename: str | None
     time_control_initial_time: int | None = None
     time_control_increment: int | None = None
     time_control_handicap_penalty_step: int | None = None
@@ -94,11 +148,11 @@ class StoredTournament:
     paired_bye_result: int | None = None
     max_byes: int | None = None
     last_rounds_no_byes: int | None = None
-    tie_breaks: list[dict[str, str | dict[str, Any]]] | None = None
+    tie_breaks: list[dict[str, Any]] = field(default_factory=list[dict[str, Any]])
     location: str | None = None
     start: float | None = None
     stop: float | None = None
-    pairing: str | None = None
+    pairing: str = SharlyChessConfig.default_pairing_variation_id
     pairing_settings: dict[str, Any] | None = None
     current_round: int | None = None
     check_in_open: bool = False
@@ -108,6 +162,8 @@ class StoredTournament:
     last_result_update: float = 0.0
     last_illegal_move_update: float = 0.0
     last_check_in_update: float = 0.0
+    last_player_update: float = 0.0
+    last_pairing_update: float = 0.0
     three_points_for_a_win: bool = False
     stored_prize_groups: list[StoredPrizeGroup] = field(
         default_factory=list[StoredPrizeGroup]
@@ -237,7 +293,6 @@ class BaseStoredEvent:
     start: float
     stop: float
     public: bool = False
-    path: str | None = None
     location: str | None = None
     hide_background_image: bool = SharlyChessConfig.default_hide_background_image
     background_image: str | None = None
@@ -281,22 +336,3 @@ class EventMetadata(BaseStoredEvent):
     screen_count: int = 0
     family_count: int = 0
     rotator_count: int = 0
-    last_tournament_update: float | None = None
-
-
-@dataclass
-class StoredIllegalMove:
-    id: int | None
-    tournament_id: int
-    round: int
-    player_id: int
-    date: float
-
-
-@dataclass
-class StoredResult:
-    id: int | None
-    tournament_id: int
-    board_id: int
-    result: int
-    date: float

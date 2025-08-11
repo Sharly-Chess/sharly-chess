@@ -17,6 +17,7 @@
 | `launch_browser`     | `INTEGER` |            | Boolean:<br/>- `1`: A browser is automatically opened (default);<br/>- `0`: No browser is opened                             |
 | `federation`         | `TEXT`    |            | The default federation code for events                                                                                       |
 | `locale`             | `TEXT`    |            | The default language used for users                                                                                          |
+| `prize_currency`     | `TEXT`    |            | The currecy used for prizes                                                                                                  |
 | `experimental`       | `INTEGER` |            | Boolean:<br/>- `1`: Experimental features are enabled;<br/>- `0`: Experimental features are disabled (default)               |
 
 ### `local_source_database` (local player databases)
@@ -71,7 +72,6 @@
 | `message_text`             | `TEXT`    |                           |            | The text of the event's alert messages (by default, no alert messages are displayed)                                                                                                                                     |
 | `message_color`            | `TEXT`    |                           |            | The color of the event's alert messages in hexadecimal format `#RRGGBB` (default `#FF0000`)                                                                                                                              |
 | `message_background_color` | `TEXT`    |                           |            | The background color of the event's alert messages in hexadecimal format `#RRGGBB` (default `#FFFF00`)                                                                                                                   |
-| `last_update`              | `FLOAT`   | NOT NULL                  |            | The date the event was last updated (timestamp)                                                                                                                                                                          |
 | `federation`               | `TEXT`    | NOT NULL<br/>DEFAULT 'NO' |            | The event's federation code                                                                                                                                                                                              |
 | `chessevent_user_id`       | `TEXT`    |                           | chessevent | The default login ID for the _ChessEvent_ platform                                                                                                                                                                       |
 | `chessevent_password`      | `TEXT`    |                           | chessevent | The default password for the _ChessEvent_ platform                                                                                                                                                                       |
@@ -113,7 +113,7 @@
 | `time_str`    | `TEXT`    |                                            |     | The time of the schedule in hh:mm format                                                                                              |
 | `text_before` | `TEXT`    |                                            |     | The text to display on the timer before the schedule                                                                                  |
 | `text_after`  | `TEXT`    |                                            |     | The text to display on the timer after the schedule                                                                                   |
-|               |           | UNIQUE(`uniq_id`, `timer_id`)              |     |                                                                                                                                       |
+|               |           | UNIQUE(`uniq_id`, `timer_id`)              |     |                                                                                                                                       |---------------------------------------------------|
 
 ### `tournament` (tournaments)
 
@@ -122,8 +122,6 @@
 | `id`                                  | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT |            | The tournament ID                                                                                                                                          |
 | `uniq_id`                             | `TEXT`    | NOT NULL                                   |            | The unique text ID of the tournament                                                                                                                       |
 | `name`                                | `TEXT`    | NOT NULL                                   |            | The tournament name                                                                                                                                        |
-| `path`                                | `TEXT`    |                                            |            | The absolute or relative path where the tournament file is stored                                                                                          |
-| `filename`                            | `TEXT`    |                                            |            | The name of the tournament's Papi file, without the `.papi` extension                                                                                      |
 | `time_control_initial_time`           | `INTEGER` |                                            |            | The initial time on the clock in seconds (can be zero if incremented)                                                                                      |
 | `time_control_increment`              | `INTEGER` |                                            |            | The time increment gained by the players on each shot                                                                                                      |
 | `time_control_handicap_penalty_step`  | `INTEGER` |                                            |            | The time subtracted from the higher-ranked player, in seconds (this time is multiplied by the number of increments of difference between the two players)  |
@@ -136,6 +134,8 @@
 | `last_illegal_move_update`            | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   |            | The last date illegal moves in the tournament were modified                                                                                                |
 | `last_result_update`                  | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   |            | The last date a tournament result was modified                                                                                                             |
 | `last_check_in_update`                | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   |            | The last date the tournament score was modified                                                                                                            |
+| `last_player_update`.                 | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   |            | The last date a player associated with this tournament was modified                                                                                        |
+| `last_pairing_update`                 | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   |            | The last date a pairing associated with this tournament score was modified                                                                                 |
 | `first_board_number`                  | `INTEGER` |                                            |            | The first board number                                                                                                                                     |
 | `paired_bye_result`                   | `INTEGER` |                                            |            | Result awarded to bye players                                                                                                                              |
 | `max_byes`                            | `INTEGER` |                                            |            | The maximum number of byes a player can claim                                                                                                              |
@@ -146,6 +146,7 @@
 | `pairing`                             | `TEXT`    |                                            |            | The tournament's pairing as a string                                                                                                                       |
 | `pairing_settings`                    | `TEXT`    |                                            |            | The tournament's pairing settings, in JSON format                                                                                                          |
 | `current_round`                       | `INTEGER` |                                            |            | The tournament's current round                                                                                                                             |
+| `three_points_for_a_win`              | `INTEGER` | NOT NULL<br/>DEFAULT 0.0                   |            | True if the tournament uses three points for a win                                                                                                         |
 | `chessevent_user_id`                  | `TEXT`    |                                            | chessevent | The username used to log in to the _ChessEvent_ platform                                                                                                   |
 | `chessevent_password`                 | `TEXT`    |                                            | chessevent | The password used to log in to the _ChessEvent_ platform                                                                                                   |
 | `chessevent_event_id`                 | `TEXT`    |                                            | chessevent | The _ChessEvent_ event ID on the platform                                                                                                                  |
@@ -156,28 +157,57 @@
 | `ffe_last_upload`                     | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   | ffe        | The date the tournament was last uploaded to the FFE federal website                                                                                       |
 | `ffe_last_rules_upload`               | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   | ffe        | The date of the last sending of the tournament rules to the FFE federal website                                                                            |
 
-### `illegal_move` (illegal moves)
+### `player` (players)
 
-| Field           | Type      | Constraint                                 | Ext | Description                                     |
-|-----------------|-----------|--------------------------------------------|-----|-------------------------------------------------|
-| `id`            | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT |     | The ID of the illegal move                      |
-| `tournament_id` | `INTEGER` | NOT NULL<br/>REFERENCES `tournament`(`id`) |     | The tournament ID                               |
-| `round`         | `INTEGER` | NOT NULL                                   |     | The round number                                |
-| `player_id`     | `INTEGER` | NOT NULL                                   |     | The player ID (in the tournament's _Papi_ file) |
-| `date`          | `FLOAT`   | NOT NULL                                   |     | The recording date                              |
+| Field           | Type      | Constraint                                 | Ext | Description                                                                                             |
+|-----------------|-----------|--------------------------------------------|-----|---------------------------------------------------------------------------------------------------------|
+| `id`            | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT |     | The player ID                                                                                           |
+| `last_name`     | `TEXT`    | NOT NULL                                   |     | The player's last name                                                                                  |
+| `first_name`    | `TEXT`    |                                            |     | The player's first name                                                                                 |
+| `date_of_birth` | `TEXT`    |                                            |     | The player's date of birth in YYYY-MM-DD format                                                         |
+| `gender`        | `INTEGER` | NOT NULL                                   |     | The player's gender (1: Male, 2: Female, 9: Other)                                                      |
+| `mail`          | `TEXT`    |                                            |     | The player's email address                                                                              |
+| `phone`         | `TEXT`    |                                            |     | The player's phone number                                                                               |
+| `comment`       | `TEXT`    |                                            |     | Comments about the player                                                                               |
+| `owed`          | `FLOAT`   | NOT NULL                                   |     | Amount of money owed by the player                                                                      |
+| `paid`          | `FLOAT`   | NOT NULL                                   |     | Amount of money paid by the player                                                                      |
+| `title`         | `INTEGER` | NOT NULL                                   |     | The player's chess title                                                                                |
+| `ratings`       | `TEXT`    | NOT NULL                                   |     | The player's ratings in JSON format                                                                     |
+| `fide_id`       | `INTEGER` |                                            |     | The player's FIDE ID                                                                                    |
+| `federation`    | `TEXT`    |                                            |     | The player's federation code                                                                            |
+| `club`          | `TEXT`    |                                            |     | The player's chess club                                                                                 |
+| `fixed`         | `INTEGER` |                                            |     | Boolean: whether the player's is assigned a fixed table                                                 |
+| `check_in`      | `INTEGER` | NOT NULL<br/>DEFAULT 0                     |     | Boolean: whether the player has checked in                                                              |
+| `plugin_data`   | `TEXT`    | NOT NULL                                   |     | Additional data used by plugins, in JSON format                                                         |
 
-### `result` (results)
+### `tournament_player` (tournament player associations)
 
-| Field             | Type      | Constraint                                 | Ext | Description                                                                                                                                                         |
-|-------------------|-----------|--------------------------------------------|-----|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `id`              | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT |     | The result ID                                                                                                                                                       |
-| `tournament_id`   | `INTEGER` | NOT NULL<br/>REFERENCES `tournament`(`id`) |     | The tournament ID                                                                                                                                                   |
-| `round`           | `INTEGER` | NOT NULL                                   |     | The round number                                                                                                                                                    |
-| `board_id`        | `INTEGER` | NOT NULL                                   |     | The board number                                                                                                                                                    |
-| `white_player_id` | `INTEGER` | NOT NULL                                   |     | The number of the White player (in the tournament _Papi_ file)                                                                                                      |
-| `black_player_id` | `INTEGER` | NOT NULL                                   |     | The number of the player with Black (in the tournament's _Papi_ file)                                                                                               |
-| `date`            | `FLOAT`   | NOT NULL                                   |     | The registration date                                                                                                                                               |
-| `value`           | `INTEGER` | NOT NULL                                   |     | The result:<br/>- `1`: Black wins<br/>- `2`: draw<br/>- `3`: White wins<br/>- `4`: Black wins by forfeit<br/>- `5`: double forfeit<br/>- `6`: White wins by forfeit |
+| Field            | Type      | Constraint                                                         | Ext | Description                               |
+|------------------|-----------|--------------------------------------------------------------------|-----|-------------------------------------------|
+| `tournament_id`  | `INTEGER` | NOT NULL<br/>REFERENCES `tournament`(`id`)<br/>PRIMARY KEY         |     | The tournament ID                         |
+| `player_id`      | `INTEGER` | NOT NULL<br/>REFERENCES `player`(`id`)<br/>PRIMARY KEY             |     | The player ID                             |
+| `pairing_number` | `INTEGER` |                                                                    |     | The player's pairing number in tournament |
+
+### `board` (chess boards)
+
+| Field                | Type      | Constraint                                                    | Ext | Description                                   |
+|----------------------|-----------|---------------------------------------------------------------|-----|-----------------------------------------------|
+| `id`                 | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT                    |     | The board ID                                  |
+| `white_player_id`    | `INTEGER` | NOT NULL<br/>REFERENCES `player`(`id`)                        |     | The white player ID                           |
+| `black_player_id`    | `INTEGER` | REFERENCES `player`(`id`)                                     |     | The black player ID (can be NULL for byes)   |
+| `index`              | `INTEGER` | NOT NULL                                                      |     | The board number/index                        |
+| `last_result_update` | `FLOAT`   |                                                               |     | Timestamp of the last result update for board |
+
+### `pairing` (tournament pairings and results)
+
+| Field           | Type      | Constraint                                                                           | Ext | Description                                              |
+|-----------------|-----------|--------------------------------------------------------------------------------------|-----|----------------------------------------------------------|
+| `tournament_id` | `INTEGER` | NOT NULL<br/>REFERENCES `tournament`(`id`)<br/>PRIMARY KEY                           |     | The tournament ID                                        |
+| `player_id`     | `INTEGER` | NOT NULL<br/>REFERENCES `player`(`id`)<br/>PRIMARY KEY                               |     | The player ID                                            |
+| `round`         | `INTEGER` | NOT NULL<br/>PRIMARY KEY                                                             |     | The round number                                         |
+| `result`        | `INTEGER` | NOT NULL                                                                             |     | The game result for the player                           |
+| `board_id`      | `INTEGER` | REFERENCES `board`(`id`)                                                             |     | The board ID where the game is played                   |
+| `illegal_moves` | `INTEGER` | NOT NULL<br/>DEFAULT 0                                                               |     | Number of illegal moves made by the player in the round |
 
 ### `screen` (screens)
 
@@ -263,4 +293,55 @@
 | `family_ids`      | `TEXT`    |                                            |     | The list of screen families to display, in JSON format                                                                                                                                                       |
 | `delay`           | `INTEGER` |                                            |     | The screen rotation delay in seconds, optional (default 15)                                                                                                                                                  |
 | `message_default` | `INTEGER` | NOT NULL<br/>DEFAULT 1                     |     | Boolean:<br/>- `1`: The event alert message is used (unless a message is defined for the screens);<br/>- `0`: The alert message for the rotating screen's screens is used instead of the event alert message |
-| `message_text`    | `TEXT`    |                                            |     | The screen's alert message text (by default, no alert message is displayed)                                                                                                                                  |
+| `message_text`    | `TEXT`    |                                            |     | The screen's alert message text (by default, no alert message is displayed)                                                                                  |
+
+### `display_controller` (display controllers)
+
+| Field        | Type      | Constraint                                 | Ext | Description                                                                                                                           |
+|--------------|-----------|--------------------------------------------|-----|---------------------------------------------------------------------------------------------------------------------------------------|
+| `id`         | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT |     | The display controller ID                                                                                                             |
+| `uniq_id`    | `TEXT`    | NOT NULL<br/>UNIQUE                        |     | The unique text ID of the display controller                                                                                          |
+| `name`       | `TEXT`    | NOT NULL                                   |     | The display controller name                                                                                                           |
+| `public`     | `INTEGER` |                                            |     | Boolean:<br/>- `1`: the controller is public (visible to users on the public interface);<br/>- `0`: the controller is for referees    |
+| `screen_id`  | `INTEGER` | REFERENCES `screen`(`id`)                  |     | The screen ID to display                                                                                                              |
+| `rotator_id` | `INTEGER` | REFERENCES `rotator`(`id`)                 |     | The rotator ID to display                                                                                                             |
+| `last_update`| `FLOAT`   |                                            |     | The date the controller was last updated                                                                                              |
+
+### `prize_group` (prize groups)
+
+| Field           | Type      | Constraint                                                | Ext | Description           |
+|-----------------|-----------|-----------------------------------------------------------|-----|---------------------- |
+| `id`            | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT<br/>UNIQUE     |     | The prize group ID    |
+| `tournament_id` | `INTEGER` | NOT NULL<br/>REFERENCES `tournament`(`id`)                |     | The tournament ID     |
+| `name`          | `TEXT`    | NOT NULL                                                  |     | The prize group name  |
+
+### `prize_category` (prize categories)
+
+| Field               | Type      | Constraint                                                | Ext | Description                                       |
+|---------------------|-----------|-----------------------------------------------------------|-----|---------------------------------------------------|
+| `id`                | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT<br/>UNIQUE     |     | The prize category ID                             |
+| `prize_group_id`    | `INTEGER` | NOT NULL<br/>REFERENCES `prize_group`(`id`)               |     | The prize group ID                                |
+| `name`              | `TEXT`    | NOT NULL                                                  |     | The prize category name                           |
+| `prize_sharing`     | `TEXT`    | NOT NULL                                                  |     | How prizes are shared in this category            |
+| `sharing_threshold` | `FLOAT`   |                                                           |     | The threshold for prize sharing                   |
+| `is_main`           | `INTEGER` | NOT NULL<br/>DEFAULT 0                                    |     | Boolean: whether this is the main prize category  |
+| `index`             | `INTEGER` | NOT NULL                                                  |     | The ordering index of the category                |
+
+### `prize_criterion` (prize criteria)
+
+| Field               | Type      | Constraint                                                | Ext | Description                        |
+|---------------------|-----------|-----------------------------------------------------------|-----|------------------------------------|
+| `id`                | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT<br/>UNIQUE     |     | The prize criterion ID             |
+| `prize_category_id` | `INTEGER` | NOT NULL<br/>REFERENCES `prize_category`(`id`)            |     | The prize category ID              |
+| `type`              | `TEXT`    | NOT NULL                                                  |     | The criterion type                 |
+| `options`           | `TEXT`    |                                                           |     | Criterion options in JSON format   |
+
+### `prize` (prizes)
+
+| Field               | Type      | Constraint                                                | Ext | Description                               |
+|---------------------|-----------|-----------------------------------------------------------|-----|-------------------------------------------|
+| `id`                | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT<br/>UNIQUE     |     | The prize ID                              |
+| `prize_category_id` | `INTEGER` | NOT NULL<br/>REFERENCES `prize_category`(`id`)            |     | The prize category ID                     |
+| `value`             | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                                  |     | The monetary value of the prize           |
+| `is_monetary`       | `INTEGER` | NOT NULL<br/>DEFAULT 1                                    |     | Boolean: whether the prize is monetary    |
+| `description`       | `TEXT`    |                                                           |     | The prize description                     |

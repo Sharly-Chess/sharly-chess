@@ -1,5 +1,6 @@
 from functools import partial
 import re
+import shutil
 import time
 from datetime import datetime
 from logging import Logger
@@ -12,11 +13,12 @@ from requests.exceptions import ConnectionError, Timeout, RequestException, HTTP
 
 from common.i18n import _
 from common.logger import get_logger
+from data.event import Event
 from data.tournament import Tournament
-from database.access.papi.papi_database import PapiDatabase
 from database.sqlite.event.event_database import EventDatabase
 from plugins import ffe
 from plugins.ffe import PLUGIN_NAME
+from plugins.ffe.papi_converter import PapiConverter
 from plugins.utils import PluginUtils
 
 logger: Logger = get_logger()
@@ -390,7 +392,7 @@ class FFESession(Session):
         logger.info(
             'Sending tournament [%d] (%s) to the FFE website...',
             ffe_id,
-            self.tournament.file,
+            self.tournament.uniq_id,
         )
         if not self._ffe_init():
             return
@@ -417,27 +419,64 @@ class FFESession(Session):
             EVENT_VALIDATION_INPUT_ID: self.ffe_state[EVENT_VALIDATION_INPUT_ID],
         }
         date: str = datetime.fromtimestamp(time.time()).strftime('%Y%m%d%H%M%S')
-        tmp_file: Path = (
-            ffe.TMP_DIR
-            / f'{self.tournament.file.stem}-{date}{self.tournament.file.suffix}'
-        )
-        tmp_file.parents[0].mkdir(parents=True, exist_ok=True)
-        logger.debug('Copying [%s] to [%s]...', self.tournament.file, tmp_file)
-        tmp_file.write_bytes(self.tournament.file.read_bytes())
-        with PapiDatabase(tmp_file, write=True) as tmp_database:
+        tmp_papi_file: Path = ffe.TMP_DIR / f'{self.tournament.uniq_id}-{date}.papi'
+        tmp_sce_file: Path = ffe.TMP_DIR / f'{self.tournament.event.uniq_id}-{date}.sce'
+
+        tmp_papi_file.parents[0].mkdir(parents=True, exist_ok=True)
+
+        # Copy the event database to the tmp file
+        with EventDatabase(self.tournament.event.uniq_id) as event_database:
+            try:
+                logger.debug(
+                    'Copying [%s] to [%s]...', event_database.file, tmp_sce_file
+                )
+                shutil.copy(event_database.file, tmp_sce_file)
+            except Exception:
+                self.report_error(_('Copying to tmp .sce file failed.'))
+                return
+
+        # Prepare for upload
+        with EventDatabase(file_path=tmp_sce_file, write=True) as tmp_event_database:
+            tmp_event = Event(tmp_event_database.load_stored_event())
+            tmp_tournament = tmp_event.tournaments_by_id[self.tournament.id]
             logger.debug("Deleting personal players' data...")
-            tmp_database.delete_players_personal_data()
-            logger.debug('Deleting ZPBs if no pairings...')
-            tmp_database.remove_zpbs_if_no_pairings()
-            tmp_database.commit()
+            tmp_event_database.delete_players_personal_data()
+
+            # Delete all ZPBs if no pairings are found (at any round).
+            # This fixes a display issue on the FFE website."""
+            if not tmp_tournament.has_pairings:
+                logger.info('Deleting ZPBs...')
+                for player in tmp_tournament.players:
+                    for pairing in player.pairings.values():
+                        if pairing.zero_point_bye:
+                            tmp_event_database.delete_stored_pairing(
+                                pairing.stored_pairing
+                            )
+
+                logger.info('Done.')
+            else:
+                logger.info('No ZPBs to delete.')
+
+            tmp_event_database.commit()
+
+        try:
+            logger.debug(
+                'Converting [%s] to [%s]...', self.tournament.uniq_id, tmp_papi_file
+            )
+            PapiConverter().write_papi_file(tmp_tournament, tmp_papi_file)
+        except Exception:
+            self.report_error(_('Conversion to Papi format failed.'))
+            return
+
         html: str | None = self._read_url(
             url=url,
             data=post,
             files={
-                UPLOAD_FILE_ID: tmp_file,
+                UPLOAD_FILE_ID: tmp_papi_file,
             },
         )
-        tmp_file.unlink()
+        tmp_papi_file.unlink()
+        tmp_sce_file.unlink()
         if not html:
             return
         __, error = self._parse_html_content(html)

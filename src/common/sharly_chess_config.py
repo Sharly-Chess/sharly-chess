@@ -2,12 +2,11 @@ import logging
 import socket
 import sys
 from pathlib import Path
-from typing import overload, ClassVar
+from typing import overload, ClassVar, TYPE_CHECKING
 
 import jinja2
 import litestar
 import pycountry
-import pyodbc  # type: ignore
 import uvicorn
 from packaging.version import Version
 
@@ -26,10 +25,12 @@ from common.i18n import (
 )
 from common.logger import set_logging_config, get_logger
 from common.singleton import Singleton
-from data.player import Federation
 from utils.enum import Result
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredConfig
+
+if TYPE_CHECKING:
+    from data.player import Federation
 
 logger: logging.Logger = get_logger()
 
@@ -147,7 +148,9 @@ class SharlyChessConfig(metaclass=Singleton):
         return self.stored_config.launch_browser and not TEST_ENV
 
     @property
-    def federation(self) -> Federation:
+    def federation(self) -> 'Federation':
+        from data.player import Federation
+
         return Federation(self.stored_config.federation or self.default_federation)
 
     @property
@@ -179,6 +182,8 @@ class SharlyChessConfig(metaclass=Singleton):
 
     # The default console log level, used by default.
     default_console_log_level: int = logging.INFO
+
+    default_pairing_variation_id = 'SWISS_STANDARD'
 
     """ The URL of the project. """
     url: str = 'https://sharly-chess.com'
@@ -228,36 +233,16 @@ class SharlyChessConfig(metaclass=Singleton):
     # The path to the embedded custom files.
     embedded_custom_path: Path = BASE_DIR / 'src' / custom_folder
 
-    # The name of the default folder for the Papi files,
-    # used to recover Papi files from previous releases.
-    default_papi_folder: str = 'papi'
-
-    # The default path to the Papi files.
-    default_papi_path: Path = Path() / default_papi_folder
-
-    # The extension of Papi files.
-    papi_ext: str = 'papi'
-
     # The path to raw SQL files.
     database_sql_path: Path = BASE_DIR / 'src' / 'database' / 'sql'
 
     # The path of the files used to generate example event databases.
     example_events_path = BASE_DIR / 'example_events'
 
-    # The path to YAML files (used to create example databases).
-    example_events_yml_path = example_events_path / 'yml'
-
-    # The path to the papi files referenced by the example databases.
-    example_events_papi_path = example_events_path / 'papi'
-
-    # The extension of YAML files.
-    yml_ext: str = 'yml'
-
     # The versions of the libraries for which the version can be easily extracted.
     litestar_version: Version = Version(litestar.__version__.formatted(short=True))
     jinja2_version: Version = Version(jinja2.__version__)
     uvicorn_version: Version = Version(uvicorn.__version__)
-    pyodbc_version: Version = Version(pyodbc.version)
 
     # Other library versions, set manually and checked.
     bootstrap_version: Version = Version('5.3.3')

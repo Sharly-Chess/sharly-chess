@@ -36,6 +36,7 @@ class EventLoader:
     _loaded_events_metadata_by_id: dict[str, EventMetadata] = {}
     _loaded_events_by_id: dict[str, Event] = {}
     _loaded_events_expire_at: dict[str, datetime] = {}
+    _loaded_events_last_known_update: dict[str, float] = {}
 
     def __init__(self):
         to_unload: list[str] = []
@@ -63,6 +64,8 @@ class EventLoader:
             del cls._loaded_events_by_id[event_uniq_id]
         with suppress(KeyError):
             del cls._loaded_events_expire_at[event_uniq_id]
+        with suppress(KeyError):
+            del cls._loaded_events_last_known_update[event_uniq_id]
         with suppress(ValueError):
             cls._valid_event_ids.remove(event_uniq_id)
 
@@ -172,12 +175,21 @@ class EventLoader:
     def _load_event(self, uniq_id: str, reload: bool) -> Event:
         cls = self.__class__
         cls._loaded_events_expire_at[uniq_id] = datetime.now() + timedelta(minutes=30)
+        if uniq_id not in cls._loaded_events_last_known_update:
+            cls._loaded_events_last_known_update[uniq_id] = (
+                EventDatabase.database_modified_timestamp(uniq_id)
+            )
         if reload:
             self.clear_cache(uniq_id)
         if uniq_id in self._loaded_events_by_id:
-            event = self._loaded_events_by_id[uniq_id]
-            event.check_update()
-            return event
+            last_modified = EventDatabase.database_modified_timestamp(uniq_id)
+            if last_modified > cls._loaded_events_last_known_update[uniq_id]:
+                # The database has been updated since the last time we loaded the event
+                # This can happen using the ChessEvent engine.
+                self.clear_cache(uniq_id)
+            else:
+                return self._loaded_events_by_id[uniq_id]
+
         self.load_event_ids(uniq_id)
         with EventDatabase(uniq_id) as event_database:
             event = Event(event_database.load_stored_event())
@@ -189,6 +201,10 @@ class EventLoader:
 
     def reload_event(self, uniq_id: str) -> Event:
         return self._load_event(uniq_id, reload=True)
+
+    @classmethod
+    def set_last_known_update(cls, uniq_id: str, last_known_update: float):
+        cls._loaded_events_last_known_update[uniq_id] = last_known_update
 
     @cached_property
     def events_by_id(self) -> dict[str, Event]:

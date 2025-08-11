@@ -3,7 +3,6 @@ from functools import cached_property
 from typing import TYPE_CHECKING
 
 from common.i18n import _
-from data.board import Board
 from data.safety_mode import (
     PairingAction,
     PermissionHandler,
@@ -11,9 +10,7 @@ from data.safety_mode import (
     RoundStatus,
     SafetyMode,
 )
-from database.access.papi.papi_store import StoredBoard
 from utils.entity import IdentifiableEntity, EntityManager
-from utils.enum import Result
 
 if TYPE_CHECKING:
     from data.pairings.variations import PairingVariation
@@ -43,10 +40,6 @@ class PairingSystem(IdentifiableEntity, ABC):
     @abstractmethod
     def default_current_round(self, tournament: 'Tournament') -> int:
         """Get the current round to use as default when it is not defined in the DB."""
-
-    def update_player_results(self, tournament: 'Tournament'):
-        """Update the results of the players right
-        after being fetched from the Papi database."""
 
     @property
     def allow_rounds_update_once_started(self) -> bool:
@@ -310,27 +303,6 @@ class RoundRobinPairingSystem(PairingSystem):
             ),
             1 if tournament.has_pairings else 0,
         )
-
-    def update_player_results(self, tournament: 'Tournament'):
-        if len(tournament.players) % 2 == 0:
-            return
-        for player in tournament.players:
-            if not player.has_real_pairings:
-                break
-            for round_, pairing in player.pairings_by_round.items():
-                if not pairing.board:
-                    board_id = max(tournament.boards_by_id) + 1
-                    tournament.boards_by_id[board_id] = Board(
-                        tournament,
-                        round_,
-                        StoredBoard(
-                            id=board_id,
-                            white_player_id=player.id,
-                            black_player_id=None,
-                            index=len(tournament.get_round_boards(round_)),
-                        ),
-                    )
-                    pairing.stored_pairing.result = Result.REST_GAME.value
 
     @property
     def tie_break_help_html_content(self) -> str:

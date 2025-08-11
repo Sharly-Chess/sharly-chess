@@ -1,8 +1,7 @@
-import copy
+from pathlib import Path
 import random
 import time
 from datetime import datetime
-from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
 import urllib.parse
@@ -14,14 +13,15 @@ from litestar.params import Body
 from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
+from common.exception import SharlyChessException
 from common.i18n import _
-from common.sharly_chess_config import SharlyChessConfig
 from data.board import Board
 from data.event import Event
 from data.input_output import (
     DataSourceManager,
     TournamentExporter,
     TournamentExporterManager,
+    TournamentImporterManager,
 )
 from data.loader import EventLoader
 from data.pairings import PairingSystem, PairingSystemManager
@@ -32,7 +32,6 @@ from data.print_documents.options import PrintOption
 from data.tie_breaks import TieBreak, TieBreakManager, PapiTieBreakManager
 from data.tournament import Tournament
 from utils.enum import TournamentRating
-from database.access.papi.papi_database import PapiDatabase, PapiTournamentInfo
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredScreen
 from plugins.hookspec import ExtraColumn
@@ -76,6 +75,10 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
                 self._redirect_error(f'Tournament [{tournament_id}] not found.')
                 return
 
+    def get_admin_tournament(self) -> Tournament:
+        assert self.admin_tournament is not None
+        return self.admin_tournament
+
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
@@ -97,7 +100,7 @@ class TournamentAdminController(BaseEventAdminController):
             data = {}
         uniq_id: str = WebContext.form_data_to_str(data, 'uniq_id') or ''
         check_in_open: bool = False
-        tie_breaks: list[dict] | None = None
+        tie_breaks: list[dict] = []
         rounds: int | None = None
         pairing: str | None = None
         rating: int | None = None
@@ -217,19 +220,10 @@ class TournamentAdminController(BaseEventAdminController):
                         break
                     tie_breaks.append(tie_break.to_dict())
 
-                create_file = WebContext.form_data_to_bool(data, 'create_file')
-                file_path = cls._extract_papi_file_path(data, web_context.admin_event)
-                if create_file and file_path.exists():
-                    errors['create_file'] = _('File already exists.')
         if action == 'update':
             tournament = web_context.admin_tournament
             assert tournament is not None
-            file_path = cls._extract_papi_file_path(data, web_context.admin_event)
-            if (
-                tournament.file_exists
-                and file_path == tournament.file
-                and tournament.started
-            ):
+            if tournament.started:
                 not_updatable_values: dict[str, str] = {
                     'rating': str(tournament.rating.value),
                     tournament.pairing_system.variation_field_id: tournament.pairing_variation.id,
@@ -242,8 +236,6 @@ class TournamentAdminController(BaseEventAdminController):
                         errors[field] = _(
                             "This field can't be updated once the tournament has started."
                         )
-        path: str | None = None
-        filename: str | None = None
         time_control_initial_time: int | None = None
         time_control_increment: int | None = None
         time_control_handicap_penalty_value: int | None = None
@@ -262,8 +254,6 @@ class TournamentAdminController(BaseEventAdminController):
                 name = WebContext.form_data_to_str(data, 'name') or ''
                 if not name:
                     errors['name'] = _('Please enter the tournament name.')
-                path = WebContext.form_data_to_str(data, 'path')
-                filename = WebContext.form_data_to_str(data, 'filename')
                 time_control_initial_time = WebContext.form_data_to_int(
                     data, 'time_control_initial_time'
                 )
@@ -333,8 +323,6 @@ class TournamentAdminController(BaseEventAdminController):
             else None,
             uniq_id=uniq_id,
             name=name,
-            path=path,
-            filename=filename,
             time_control_initial_time=time_control_initial_time,
             time_control_increment=time_control_increment,
             time_control_handicap_penalty_value=time_control_handicap_penalty_value,
@@ -353,7 +341,7 @@ class TournamentAdminController(BaseEventAdminController):
             stop=stop,
             rounds=rounds or 1,
             rating=rating or TournamentRating.STANDARD.value,
-            pairing=pairing,
+            pairing=pairing or '',
             three_points_for_a_win=three_points_for_a_win,
             errors=errors,
             plugin_data=plugin_data,
@@ -447,8 +435,6 @@ class TournamentAdminController(BaseEventAdminController):
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
-                    path: str | None = None
-                    filename: str | None = None
                     time_control_initial_time: int | None = None
                     time_control_increment: int | None = None
                     time_control_handicap_penalty_value: int | None = None
@@ -477,7 +463,6 @@ class TournamentAdminController(BaseEventAdminController):
                             assert admin_tournament is not None
                             assert admin_tournament.stored_tournament is not None
                             stored_tournament = admin_tournament.stored_tournament
-                            path = stored_tournament.path
                             time_control_initial_time = (
                                 stored_tournament.time_control_initial_time
                             )
@@ -526,13 +511,11 @@ class TournamentAdminController(BaseEventAdminController):
                     ]:
                         assert admin_tournament is not None
                         assert admin_tournament.stored_tournament is not None
-                        filename = admin_tournament.stored_tournament.filename
-                        if admin_tournament.file_exists:
-                            tie_breaks = admin_tournament.tie_breaks
-                            tie_break_1, tie_break_2, tie_break_3 = (
-                                tie_breaks.pop(0).id if tie_breaks else None
-                                for __ in range(3)
-                            )
+                        tie_breaks = admin_tournament.tie_breaks
+                        tie_break_1, tie_break_2, tie_break_3 = (
+                            tie_breaks.pop(0).id if tie_breaks else None
+                            for __ in range(3)
+                        )
 
                     per_plugin_form_data = plugin_manager.hook.get_tournament_form_data(
                         event=admin_event,
@@ -544,15 +527,13 @@ class TournamentAdminController(BaseEventAdminController):
                         for data in per_plugin_form_data
                         for key, value in data.items()
                     }
-                    data = {
+                    data: dict[str, str] = {
                         'start': WebContext.value_to_datetime_form_data(start),
                         'stop': WebContext.value_to_datetime_form_data(stop),
                     } | WebContext.values_dict_to_form_data(
                         {
                             'uniq_id': uniq_id,
                             'name': name,
-                            'path': path,
-                            'filename': filename,
                             'time_control_initial_time': time_control_initial_time,
                             'time_control_increment': time_control_increment,
                             'time_control_handicap_penalty_value': time_control_handicap_penalty_value,
@@ -614,9 +595,6 @@ class TournamentAdminController(BaseEventAdminController):
                     'pairing_systems': pairing_systems,
                     'pairing_system_options': PairingSystemManager.options(),
                     'plugin_form_fields_templates': plugin_form_fields_templates,
-                    'file_exists': cls._extract_papi_file_path(
-                        data, admin_event
-                    ).exists(),
                     'previous_tournament': (
                         web_context.admin_tournament if action == 'create' else None
                     ),
@@ -711,6 +689,7 @@ class TournamentAdminController(BaseEventAdminController):
         temp_file = NamedTemporaryFile(
             delete=False,
             mode='wb' if exporter.is_binary_file else 'w',
+            suffix=f'.{exporter.file_extension}',
             encoding=exporter.file_encoding,
         )
         with temp_file:
@@ -721,10 +700,10 @@ class TournamentAdminController(BaseEventAdminController):
         )
 
     @post(
-        path='/admin/tournament-file-status/{event_uniq_id:str}',
-        name='admin-tournament-file-status',
+        path='/admin/tournament-import/{event_uniq_id:str}/{tournament_id:int}/{importer_id:str}',
+        name='admin-tournament-import',
     )
-    async def admin_tournament_file_status(
+    async def admin_tournament_import(
         self,
         request: HTMXRequest,
         data: Annotated[
@@ -732,53 +711,22 @@ class TournamentAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         event_uniq_id: str,
+        tournament_id: int,
+        importer_id: str,
     ) -> Template | ClientRedirect:
-        web_context = TournamentAdminWebContext(request, event_uniq_id, None, data)
-        assert web_context.admin_event is not None
-        template_context: dict[str, Any] = self._get_admin_event_render_context(
-            web_context
+        web_context = TournamentAdminWebContext(
+            request, event_uniq_id, tournament_id, data
         )
-        file = self._extract_papi_file_path(data, web_context.admin_event)
-        if file.exists():
-            with PapiDatabase(file) as database:
-                papi_tournament_info = database.read_info()
-        else:
-            papi_tournament_info = PapiTournamentInfo()
-        return HTMXTemplate(
-            template_name='admin/tournaments/file_status.html',
-            context=template_context
-            | {
-                'file_exists': file.exists(),
-                'replacement_data': self.papi_tournament_info_to_form_data(
-                    papi_tournament_info
-                ),
-            },
+        event = web_context.get_admin_event()
+        tournament = web_context.get_admin_tournament()
+        importer = TournamentImporterManager.get_object(importer_id)
+        file_path = Path(data.get('file_path', ''))
+        if not file_path.exists():
+            raise SharlyChessException(f'File [{file_path}] not found.')
+        importer.load_tournament(file_path, event, tournament)
+        return self._admin_event_tournaments_render(
+            request, event_uniq_id=event_uniq_id
         )
-
-    @staticmethod
-    def papi_tournament_info_to_form_data(info: PapiTournamentInfo) -> dict[str, str]:
-        tie_breaks = copy.copy(info.tie_breaks)
-        tie_break_1, tie_break_2, tie_break_3 = (
-            tie_breaks.pop(0).id if tie_breaks else '' for __ in range(3)
-        )
-        pairing_system = info.pairing_variation.system()
-        return {
-            'rounds': str(info.rounds),
-            'rating': str(info.rating.value),
-            'pairing_system': pairing_system.id,
-            pairing_system.variation_field_id: info.pairing_variation.id,
-            'tie_break_1': tie_break_1,
-            'tie_break_2': tie_break_2,
-            'tie_break_3': tie_break_3,
-        }
-
-    @staticmethod
-    def _extract_papi_file_path(data: dict[str, str], event: Event) -> Path:
-        dir_path = Path(WebContext.form_data_to_str(data, 'path') or event.path)
-        file_name = WebContext.form_data_to_str(
-            data, 'filename'
-        ) or WebContext.form_data_to_str(data, 'uniq_id', '')
-        return dir_path / f'{file_name}.{SharlyChessConfig.papi_ext}'
 
     def _admin_tournament_update(
         self,
@@ -823,9 +771,6 @@ class TournamentAdminController(BaseEventAdminController):
                 data=data,
                 errors=stored_tournament.errors,
             )
-        if WebContext.form_data_to_bool(data, 'create_file'):
-            file_path = self._extract_papi_file_path(data, web_context.admin_event)
-            PapiDatabase(file_path).create_empty()
 
         event_loader: EventLoader = EventLoader.get(request=request)
         with EventDatabase(
@@ -833,11 +778,10 @@ class TournamentAdminController(BaseEventAdminController):
         ) as event_database:
             if action == 'delete':
                 assert tournament_id is not None
-                assert web_context.admin_tournament is not None
                 event_database.delete_stored_tournament(tournament_id)
                 success_message = _(
                     'Tournament [{tournament_uniq_id}] has been deleted.'
-                ).format(tournament_uniq_id=web_context.admin_tournament.uniq_id)
+                ).format(tournament_uniq_id=web_context.get_admin_tournament().uniq_id)
             else:
                 if action == 'update':
                     stored_tournament = event_database.update_stored_tournament(
@@ -921,11 +865,10 @@ class TournamentAdminController(BaseEventAdminController):
                         success_message = _(
                             'Tournament [{tournament_uniq_id}] has been created.'
                         ).format(tournament_uniq_id=stored_tournament.uniq_id)
+
                 tournament_id = stored_tournament.id
-                Tournament(
-                    web_context.admin_event, stored_tournament
-                ).update_papi_database_from_stored_tournament()
             event_database.commit()
+
         event_loader.clear_cache(event_uniq_id)
         if add_other:
             return self._admin_event_tournaments_render(

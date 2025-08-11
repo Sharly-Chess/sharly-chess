@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 from argparse import ArgumentParser, Namespace
 from asyncio import run
@@ -72,9 +73,8 @@ async def main():
         print_interactive_info('Now testing the remote database...')
         try:
             async with FFESqlServer() as ffe_sql_server:
-                for player in await ffe_sql_server.search_player(
-                    'pascal aubry', limit=8
-                ):
+                players = await ffe_sql_server.search_player('pascal aubry', limit=8)
+                for player in players:
                     print_interactive_info(f'{player=}')
         except SharlyChessException as exception:
             print_interactive_error(f'{exception=}')

@@ -338,6 +338,9 @@ class EventAdminController(BaseEventAdminController):
                 )
                 with EventDatabase(uniq_id, write=True) as event_database:
                     event_database.update_stored_event(stored_event)
+                    if 'with_players' not in data:
+                        event_database.delete_all_stored_players()
+
                     event_database.commit()
                 Message.success(
                     request,

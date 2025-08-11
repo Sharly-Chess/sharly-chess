@@ -1,13 +1,12 @@
 import asyncio
 import base64
 import json
+from typing import Self, Any, NoReturn
 from pathlib import Path
-from typing import Any, Self
 from logging import Logger
 from collections.abc import AsyncIterator
 from common.network import NetworkMonitor
-import pyodbc  # type: ignore
-import aioodbc
+import pytds
 
 from common import DEVEL_ENV
 from common.exception import SharlyChessException
@@ -69,7 +68,7 @@ class SqlServerCredentials:
 
 
 class SqlServer:
-    """Base class for SQL-server databases."""
+    """Base class for SQL-server databases using python-tds."""
 
     DEFAULT_TIMEOUT: int = 3
 
@@ -77,129 +76,130 @@ class SqlServer:
         """Initializes the database object, raises SharlyChessException on error."""
         self.credentials: SqlServerCredentials = SqlServerCredentials(credentials_file)
         self.timeout: int = timeout or self.DEFAULT_TIMEOUT
-        self.database: aioodbc.Connection | None = None
-        self.cursor: aioodbc.Cursor | None = None
+        self.database: pytds.Connection | None = None
+        self.cursor: pytds.Cursor | None = None
         self.error: str | None = None
 
     async def __aenter__(self) -> Self:
         """Opens the database connection, raises SharlyChessException on error."""
-        needed_driver: str = 'SQL Server'
-        if needed_driver not in pyodbc.drivers():
-            logger.error('Installed ODBC drivers are:')
-            for driver in pyodbc.drivers():
-                logger.error(' - %s', driver)
-            logger.error('Needed driver: %s', needed_driver)
-            install_url: str = (
-                'https://learn.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server'
-                '?view=sql-server-ver16#download-for-windows'
-            )
-            logger.error('Install the driver (see %s) and restart.', install_url)
-            self.error = 'SQL server driver not found.'
-            logger.error(self.error)
-            return self
-
-        db_url: str = f'Driver={{{needed_driver}}};Server={self.credentials.host};Database={self.credentials.database};UID={self.credentials.user};PWD={self.credentials.password}'
-        timeout = self.timeout or self.DEFAULT_TIMEOUT
-
-        async def connect_to_server():
-            nonlocal self, db_url
-            self.database = await aioodbc.connect(dsn=db_url)
-
         try:
-            await asyncio.wait_for(connect_to_server(), timeout=timeout)
-        except pyodbc.Error as e:
+            # Connect using python-tds (pure Python, no ODBC needed)
+            self.database = await asyncio.to_thread(
+                pytds.connect,
+                server=self.credentials.host,
+                database=self.credentials.database,
+                user=self.credentials.user,
+                password=self.credentials.password,
+                timeout=self.timeout,
+                autocommit=True,
+            )
+
+            if self.database is not None:
+                self.cursor = self.database.cursor()
+                logger.info('Successfully connected using python-tds')
+        except (pytds.Error, TimeoutError) as e:
             NetworkMonitor.set_connected(False)
             if DEVEL_ENV:
-                error: str = _('Connection to the server failed: {error}.').format(
-                    error=e.args
+                error_msg = _('Connection to the server failed: {error}.').format(
+                    error=str(e)
                 )
             else:
-                error: str = _('Connection to the server failed.')
-            logger.error(error)
-            raise SharlyChessException(error) from e
-        except TimeoutError as e:
+                error_msg = _('Connection to the server failed.')
+            logger.error(error_msg)
+            raise SharlyChessException(error_msg) from e
+        except Exception as e:
             NetworkMonitor.set_connected(False)
-            error: str = _('Connection to the server failed: {error}.').format(
-                error=_('timeout')
-            )
-            logger.error(error)
-            raise SharlyChessException(error) from e
-
-        assert self.database is not None
-        try:
-            self.cursor = await self.database.cursor()
-        except pyodbc.Error as e:
-            self.database = None
             if DEVEL_ENV:
-                error: str = _('Connection to the database failed: {error}.').format(
-                    error=e.args
+                error_msg = _('Connection to the server failed: {error}.').format(
+                    error=str(e)
                 )
             else:
-                error: str = _('Connection to the database failed.')
-            logger.error(error)
-            raise SharlyChessException(error) from e
+                error_msg = _('Connection to the server failed.')
+            logger.error(error_msg)
+            raise SharlyChessException(error_msg) from e
         return self
 
     async def __aexit__(self, exc_type, exc_value, tb):
         """Closes the database connection."""
-        if self.database is not None:
-            if self.cursor is not None:
-                await self.cursor.close()
-                del self.cursor
+        if self.database:
+            if self.cursor:
+                await asyncio.to_thread(self.cursor.close)
                 self.cursor = None
-            await self.database.close()
-            del self.database
+            await asyncio.to_thread(self.database.close)
             self.database = None
 
     def _check_cursor(self):
         """Check that the cursor is available."""
-        if self.cursor is None:
+        if not self.cursor:
             raise RuntimeError('Database connection not established')
 
-    async def execute(self, query: str, params: tuple = ()):
-        """Executes the prepare query with the given parameters."""
+    def _handle_database_error(self, e: Exception) -> NoReturn:
+        """Handle database errors consistently."""
+        NetworkMonitor.set_connected(False)
+        if DEVEL_ENV:
+            error_msg = _('Request to the database failed: {error}.').format(
+                error=str(e)
+            )
+        else:
+            error_msg = _('Request to the database failed.')
+        logger.error(error_msg)
+        raise SharlyChessException(error_msg) from e
+
+    async def execute(self, query: str, params: tuple = ()) -> None:
+        """Executes the prepared query with the given parameters."""
         self._check_cursor()
         assert self.cursor is not None
         try:
-            await self.cursor.execute(query, params)
-        except pyodbc.Error as e:
-            if DEVEL_ENV:
-                error: str = _('Request to the database failed: {error}.').format(
-                    error=e.args
-                )
-            else:
-                error: str = _('Request to the database failed.')
-            logger.error(error)
-            raise SharlyChessException(error) from e
+            await asyncio.to_thread(self.cursor.execute, query, params)
+        except (pytds.Error, TimeoutError) as e:
+            self._handle_database_error(e)
 
     async def fetchall(self) -> AsyncIterator[dict[str, Any]]:
         """Returns an iterator of dictionaries from the last executed query.
         Each dictionary is of the format {column_name : value, ...}."""
         self._check_cursor()
         assert self.cursor is not None
-        columns = [column[0] for column in self.cursor.description]
-        while row := await self.cursor.fetchone():
-            yield dict(zip(columns, row))
 
-    async def fetchone(self) -> dict[str, Any]:
+        try:
+            # Get column names
+            columns = [column[0] for column in self.cursor.description]
+
+            # Fetch all rows and convert to dictionaries
+            rows = await asyncio.to_thread(self.cursor.fetchall)
+            for row in rows:
+                yield dict(zip(columns, row))
+        except (pytds.Error, TimeoutError) as e:
+            self._handle_database_error(e)
+
+    async def fetchone(self) -> dict[str, Any] | None:
         """Returns a dictionary from the last executed query, in the format
         {column_name: value, ...}.
         Repeated applications of this method will advance the database cursor
         and return different row data."""
         self._check_cursor()
         assert self.cursor is not None
-        columns = [column[0] for column in self.cursor.description]
-        row = await self.cursor.fetchone()
-        return dict(zip(columns, row)) if row else {}
+
+        try:
+            # Get column names
+            columns = [column[0] for column in self.cursor.description]
+
+            # Fetch one row
+            row = await asyncio.to_thread(self.cursor.fetchone)
+            return dict(zip(columns, row)) if row else None
+        except (pytds.Error, TimeoutError) as e:
+            self._handle_database_error(e)
 
     async def fetchval(self) -> Any:
         """Returns the next database cursor value."""
         self._check_cursor()
         assert self.cursor is not None
-        return await self.cursor.fetchval()
+        try:
+            row = await asyncio.to_thread(self.cursor.fetchone)
+            return row[0] if row else None
+        except (pytds.Error, TimeoutError) as e:
+            self._handle_database_error(e)
 
     async def commit(self):
         """Commits the pending transaction."""
-        self._check_cursor()
-        assert self.cursor is not None
-        await self.cursor.commit()
+        if self.database:
+            await asyncio.to_thread(self.database.commit)
