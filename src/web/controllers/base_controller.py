@@ -13,7 +13,7 @@ from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 from litestar.controller import Controller
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.response import Template, Redirect
+from litestar.response import Redirect, Template
 
 from common import check_rgb_str, DEVEL_ENV, experimental_features_enabled
 from common.i18n import (
