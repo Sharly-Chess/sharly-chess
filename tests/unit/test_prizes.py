@@ -129,8 +129,6 @@ class PrizesTestCase(TestCase):
                     uniq_id='empty',
                     name='empty',
                     id=1,
-                    path='',
-                    filename='',
                     current_round=ROUNDS,
                     rounds=ROUNDS,
                     stored_prize_groups=[self.stored_prize_group],
