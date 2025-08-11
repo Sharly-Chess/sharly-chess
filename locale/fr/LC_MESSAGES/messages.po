@@ -2191,9 +2191,6 @@ msgstr "Image :"
 msgid "Image: %(image)s"
 msgstr "Image : %(image)s"
 
-msgid "Import of papi file [{file}] failed."
-msgstr "L'import du fichier papi [{file}] a échoué."
-
 msgid "Impossible to add players to tournament [{tournament_uniq_id}]."
 msgstr "Impossible d'ajouter des joueur·euses au tournoi [{tournament_uniq_id}]."
 
@@ -3162,9 +3159,6 @@ msgstr "Appariements : %(pairing_variation)s"
 
 msgid "Papi file"
 msgstr "Fichier Papi"
-
-msgid "Papi file [{file}] successfully imported."
-msgstr "Fichier Papi [{file}] importé avec succès."
 
 msgid "Parings by player"
 msgstr "Appariements par ordre alphabétique"
@@ -5343,9 +5337,6 @@ msgstr "Vous essayez de modifier manuellement les appariements de la ronde en co
 
 msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
 msgstr "Vous essayez de modifier les appariements de la ronde précédente. Cela aura un impact sur les appariements et le classement de toutes les rondes à venir."
-
-msgid "You can try again from the tournament card (Actions > Import > Papi file)."
-msgstr "Vous pouvez essayer à nouveau depuis la carte du tournoi (Actions > Import > Fichier Papi)."
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement…) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans simples seront générés automatiquement."
