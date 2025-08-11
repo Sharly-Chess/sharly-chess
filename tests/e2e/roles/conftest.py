@@ -15,20 +15,20 @@ TOURNAMENT_UNPAIRED_ID = 'tournament-test-roles-unpaired'
 def role_test_events(api_request_context: APIRequestContext):
     # Create a public and private event
     TestUtils.create_event(
-        api_request_context,
         PUBLIC_EVENT_ID,
+        api_request_context,
         {'custom_exec_mode': True, 'public': True},
     )
     TestUtils.create_event(
-        api_request_context,
         PRIVATE_EVENT_ID,
+        api_request_context,
         {'custom_exec_mode': True, 'public': False},
     )
 
     yield
 
-    TestUtils.delete_event(api_request_context, PUBLIC_EVENT_ID)
-    TestUtils.delete_event(api_request_context, PRIVATE_EVENT_ID)
+    TestUtils.delete_event(PUBLIC_EVENT_ID, api_request_context)
+    TestUtils.delete_event(PRIVATE_EVENT_ID, api_request_context)
 
 
 @pytest.fixture(scope='module')
