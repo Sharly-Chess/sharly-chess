@@ -814,6 +814,8 @@ class EventDatabase(MigrationDatabase):
     def _set_tournament_timestamp_field(self, field_: str, tournament_id: int) -> float:
         # TODO (Molrn) replace all these usages with the appropriate SQL triggers
         timestamp = time.time()
+        # FIXME(Amaras): This can can be a SQL injection attack vector.
+        # As such, it needs to be eliminated as quickly as possible.
         self.execute(
             f'UPDATE `tournament` SET `{field_}` = ? WHERE `id` = ?',
             (
