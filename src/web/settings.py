@@ -49,7 +49,6 @@ from web.controllers.user.tournament_user_controller import (
     CheckInUserController,
     IllegalMoveUserController,
     ResultUserController,
-    DownloadUserController,
 )
 
 
@@ -76,7 +75,6 @@ route_handlers: Sequence[ControllerRouterHandler] = [
     ResultUserController,
     CheckInUserController,
     IllegalMoveUserController,
-    DownloadUserController,
     IndexAdminController,
     EventAdminController,
     TournamentAdminController,

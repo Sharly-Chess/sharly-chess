@@ -6,7 +6,6 @@ from functools import cached_property
 from itertools import groupby
 from logging import Logger
 from operator import attrgetter
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, Iterable
 from _weakref import ReferenceType
 
@@ -103,18 +102,6 @@ class Tournament:
             if len(self.event.tournaments_by_id.values()) > 1
             else self.name
         )
-
-    @property
-    def file(self) -> Path:
-        return Path()
-
-    @property
-    def file_exists(self) -> bool:
-        return self.file.exists()
-
-    @property
-    def file_modified_timestamp(self) -> float:
-        return self.file.lstat().st_mtime
 
     @property
     def log_prefix(self) -> str:

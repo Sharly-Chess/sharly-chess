@@ -299,6 +299,17 @@ class Engine(ABC):
             event_database: EventDatabase = EventDatabase(event_uniq_id)
             # copy the event database to its new destination
             shutil.copy(file, event_database.file)
+        if version < Version('3.0.0'):
+            default_papi_dir = 'papi'
+            previous_default_papi_path = version_dir / default_papi_dir
+            default_papi_path = Path(default_papi_dir)
+            default_papi_path.mkdir(parents=True, exist_ok=True)
+            for file in previous_default_papi_path.glob('**/*.papi'):
+                destination_file = default_papi_path / file.relative_to(
+                    previous_default_papi_path
+                )
+                destination_file.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy(file, destination_file)
         logger.info('Recovering misc files...')
         files_to_recover = [
             database.file

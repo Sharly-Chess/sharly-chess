@@ -369,7 +369,7 @@ class PapiConverterInstaller(ExecutableInstaller):
             case 'Windows':
                 return SystemHandler(
                     executable_dir='papi-converter-windows',
-                    executable_filename='papi-converter.bat',
+                    executable_filename='papi-converter.exe',
                     archive_filename='papi-converter-windows.zip',
                 )
             case 'Darwin':
@@ -389,7 +389,7 @@ class PapiConverterInstaller(ExecutableInstaller):
 
     @property
     def _version(self) -> Version:
-        return Version('1.1.5')
+        return Version('1.1.6')
 
     def install(self) -> bool:
         archive_filename = self.system_handler.archive_filename
