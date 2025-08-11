@@ -236,6 +236,8 @@ class BergerNumbersSetting(PairingSetting[dict[int, int]]):
     @classmethod
     def check_value(cls, tournament: 'Tournament', value: dict[int, int]):
         berger_numbers = value
+        if len(set(berger_numbers.values())) != len(set(berger_numbers.keys())):
+            return False
         for player in tournament.players:
             if player.id not in berger_numbers:
                 return False
