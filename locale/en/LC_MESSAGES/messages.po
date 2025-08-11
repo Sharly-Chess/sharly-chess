@@ -29,6 +29,10 @@ msgid "%(count)d players unpaired"
 msgstr ""
 
 #, python-format
+msgid "%(lib)s version"
+msgstr ""
+
+#, python-format
 msgid "%(minutes)d minutes after"
 msgstr ""
 
@@ -210,6 +214,12 @@ msgid "Access"
 msgstr ""
 
 msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
+msgstr ""
+
+msgid "Access from the Sharly Chess server"
+msgstr ""
+
+msgid "Access from the local network (LAN/WAN)"
 msgstr ""
 
 msgid "Account [{username}] already exists."
@@ -564,6 +574,9 @@ msgstr ""
 
 #, python-format
 msgid "Background colour: %(color)s"
+msgstr ""
+
+msgid "Background image and colour"
 msgstr ""
 
 msgid "Background image:"
@@ -982,6 +995,12 @@ msgstr ""
 msgid "Connections ChessEvent"
 msgstr ""
 
+msgid "Console formatting"
+msgstr ""
+
+msgid "Console logging level"
+msgstr ""
+
 msgid "Console logging level: {console_log_level}"
 msgstr ""
 
@@ -1133,6 +1152,9 @@ msgstr ""
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr ""
 
+msgid "Custom"
+msgstr ""
+
 msgid "Customize the permissions"
 msgstr ""
 
@@ -1179,6 +1201,9 @@ msgstr ""
 msgid "Database successfully updated."
 msgstr ""
 
+msgid "Date"
+msgstr ""
+
 msgid "Date of birth"
 msgstr ""
 
@@ -1189,6 +1214,12 @@ msgid "Date:"
 msgstr ""
 
 msgid "Debug message"
+msgstr ""
+
+msgid "Default federation"
+msgstr ""
+
+msgid "Default language"
 msgstr ""
 
 msgid "Default timer configuration"
@@ -1457,6 +1488,9 @@ msgstr ""
 msgid "Draw"
 msgstr ""
 
+msgid "Duplicate"
+msgstr ""
+
 msgid "Duplicate the account."
 msgstr ""
 
@@ -1654,6 +1688,9 @@ msgid "Each group should contain one or more categories (e.g. U12, Best Female) 
 msgstr ""
 
 msgid "Edit"
+msgstr ""
+
+msgid "Edit the Sharly Chess settings."
 msgstr ""
 
 msgid "Edit the hours of the timer"
@@ -2559,6 +2596,9 @@ msgstr ""
 msgid "Launch a browser on startup"
 msgstr ""
 
+msgid "Launching the browser on server startup"
+msgstr ""
+
 msgid "Layout"
 msgstr ""
 
@@ -2578,6 +2618,9 @@ msgid "Leagues"
 msgstr ""
 
 msgid "Leave empty to grant no permissions at all."
+msgstr ""
+
+msgid "Libraries"
 msgstr ""
 
 msgid "Library [{lib}] is missing."
@@ -2680,6 +2723,9 @@ msgstr ""
 
 #, python-format
 msgid "Maximum number of byes: %(max_byes)d"
+msgstr ""
+
+msgid "Maximum number of illegal moves"
 msgstr ""
 
 msgid "Maximum number of illegal moves not set, by default [{record_illegal_moves}]"
@@ -2831,6 +2877,9 @@ msgid "New tournament"
 msgstr ""
 
 msgid "Next round"
+msgstr ""
+
+msgid "No"
 msgstr ""
 
 msgid "No ChessEvent event defined"
@@ -3069,6 +3118,12 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
+msgid "Off"
+msgstr ""
+
+msgid "On"
+msgstr ""
+
 msgid "On a given number of screens:"
 msgstr ""
 
@@ -3149,6 +3204,9 @@ msgid "Organization"
 msgstr ""
 
 msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
+msgstr ""
+
+msgid "Other devices connected to your network can see your public screens. If you have created screens for player check-in and results entry then those features will be enabled."
 msgstr ""
 
 msgid "Other players in this score group are not included since the share would be less than the threshold."
@@ -3580,6 +3638,9 @@ msgstr ""
 msgid "Points: up to %(max)s"
 msgstr ""
 
+msgid "Port"
+msgstr ""
+
 msgid "Port [{port}] already in use."
 msgstr ""
 
@@ -3596,6 +3657,9 @@ msgid "Print"
 msgstr ""
 
 msgid "Print players, results, etc."
+msgstr ""
+
+msgid "Private event"
 msgstr ""
 
 msgid "Prize *** PRIZE FOR TABLE HEADER"
@@ -5166,6 +5230,9 @@ msgstr ""
 msgid "Unauthenticated access has been updated."
 msgstr ""
 
+msgid "Undefined"
+msgstr ""
+
 msgid "Undefined **** PLURAL"
 msgstr "Undefined"
 
@@ -5188,6 +5255,9 @@ msgid "Under 20"
 msgstr ""
 
 msgid "Under 8"
+msgstr ""
+
+msgid "Unique ID"
 msgstr ""
 
 #, python-format
@@ -5313,6 +5383,12 @@ msgstr ""
 msgid "Upper rating limit"
 msgstr ""
 
+msgid "Use connected devices to check-in players and enter results on public screens"
+msgstr ""
+
+msgid "Use customized permissions"
+msgstr ""
+
 msgid "Use log-level specific colors"
 msgstr ""
 
@@ -5341,6 +5417,9 @@ msgid "Variation"
 msgstr ""
 
 msgid "View the files on filebin.net"
+msgstr ""
+
+msgid "Visibility"
 msgstr ""
 
 msgid "Visibility:"
@@ -5494,6 +5573,9 @@ msgstr "YOB"
 msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
 msgstr "YOB"
 
+msgid "Yes"
+msgstr ""
+
 msgid "Yesterday"
 msgstr ""
 
@@ -5619,6 +5701,9 @@ msgid "You can temporarily invalidate devices by turning this switch off."
 msgstr ""
 
 msgid "You can try again from the tournament card (Actions > Import > Papi file)."
+msgstr ""
+
+msgid "You decide which devices and which accounts are allowed to display screens, check-in players, enter results, pair rounds… Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers…"
 msgstr ""
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."

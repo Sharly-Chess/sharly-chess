@@ -29,6 +29,10 @@ msgid "%(count)d players unpaired"
 msgstr "%(count)d joueur·euses non-apparié·es"
 
 #, python-format
+msgid "%(lib)s version"
+msgstr "Version de %(lib)s"
+
+#, python-format
 msgid "%(minutes)d minutes after"
 msgstr "%(minutes)d minutes après"
 
@@ -211,6 +215,12 @@ msgstr "Accès"
 
 msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
 msgstr "Accès refusé (code : [{code}]) à [{user_id}] pour le tournoi [{tournament_name}] ([{chessevent_string}])."
+
+msgid "Access from the Sharly Chess server"
+msgstr "Accès depuis le serveur Sharly Chess"
+
+msgid "Access from the local network (LAN/WAN)"
+msgstr "Accès depuis le réseau local (LAN/WAN)"
 
 msgid "Account [{username}] already exists."
 msgstr "Le compte [{username}] existe déjà."
@@ -565,6 +575,9 @@ msgstr "Couleur de fond :"
 #, python-format
 msgid "Background colour: %(color)s"
 msgstr "Couleur de fond : %(color)s"
+
+msgid "Background image and colour"
+msgstr "Image et couleur de fond"
 
 msgid "Background image:"
 msgstr "Image de fond :"
@@ -982,6 +995,12 @@ msgstr "La connexion au serveur a échoué : {error}."
 msgid "Connections ChessEvent"
 msgstr "Connexions à ChessEvent"
 
+msgid "Console formatting"
+msgstr "Format des logs sur la console"
+
+msgid "Console logging level"
+msgstr "Niveau de log sur la console"
+
 msgid "Console logging level: {console_log_level}"
 msgstr "Niveau de log sur la console : {console_log_level}"
 
@@ -1133,6 +1152,9 @@ msgstr "Affiche actuellement l'écran rotatif [{uniq_id}]"
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr "Affiche actuellement l'écran [{uniq_id}]"
 
+msgid "Custom"
+msgstr "Personnalisé"
+
 msgid "Customize the permissions"
 msgstr "Personnaliser les permissions"
 
@@ -1179,6 +1201,9 @@ msgstr "Base de données [{database}] non trouvée au chemin attendu [{path}]."
 msgid "Database successfully updated."
 msgstr "Base de données mise à jour avec succès."
 
+msgid "Date"
+msgstr "Date"
+
 msgid "Date of birth"
 msgstr "Date de naissance"
 
@@ -1190,6 +1215,12 @@ msgstr "Date :"
 
 msgid "Debug message"
 msgstr "Message de déboggage"
+
+msgid "Default federation"
+msgstr "Fédération par défaut"
+
+msgid "Default language"
+msgstr "Langue par défaut"
 
 msgid "Default timer configuration"
 msgstr "Configuration par défaut des chronomètres"
@@ -1457,6 +1488,9 @@ msgstr "Faites glisser les ensembles pour les ordonner."
 msgid "Draw"
 msgstr "Nulle"
 
+msgid "Duplicate"
+msgstr "Dupliquer"
+
 msgid "Duplicate the account."
 msgstr "Dupliquer le compte."
 
@@ -1655,6 +1689,9 @@ msgstr "Chaque groupe doit contenir une ou plusieurs catégories (par exemple :
 
 msgid "Edit"
 msgstr "Éditer"
+
+msgid "Edit the Sharly Chess settings."
+msgstr "Éditer la configuration de Sharly Chess."
 
 msgid "Edit the hours of the timer"
 msgstr "Éditer les horaires du chronomètre."
@@ -2559,6 +2596,9 @@ msgstr "Dernière mise en ligne"
 msgid "Launch a browser on startup"
 msgstr "Lancer un navigateur web au démarrage"
 
+msgid "Launching the browser on server startup"
+msgstr "lancement automatique du navigateur web"
+
 msgid "Layout"
 msgstr "Présentation"
 
@@ -2579,6 +2619,9 @@ msgstr "Ligues"
 
 msgid "Leave empty to grant no permissions at all."
 msgstr "Laissez vide pour n'accorder aucune permission."
+
+msgid "Libraries"
+msgstr "Bibliothèques"
 
 msgid "Library [{lib}] is missing."
 msgstr "La bibliothèque [{lib}] n'est pas installée."
@@ -2681,6 +2724,9 @@ msgstr "Âge maximum des résultats :"
 #, python-format
 msgid "Maximum number of byes: %(max_byes)d"
 msgstr "Nombre maximum de jokers (byes) : %(max_byes)d"
+
+msgid "Maximum number of illegal moves"
+msgstr "Nombre maximum de coups illégaux"
 
 msgid "Maximum number of illegal moves not set, by default [{record_illegal_moves}]"
 msgstr "Nombre maximum de coups illégaux non défini, par défaut [{record_illegal_moves}]"
@@ -2832,6 +2878,9 @@ msgstr "Nouveau tournoi"
 
 msgid "Next round"
 msgstr "Ronde suivante"
+
+msgid "No"
+msgstr "Non"
 
 msgid "No ChessEvent event defined"
 msgstr "Évènement ChessEvent non défini"
@@ -3069,6 +3118,12 @@ msgstr "Les nombres {first} et {last} ne sont pas compatibles ({first} > {last})
 msgid "OK"
 msgstr "OK"
 
+msgid "Off"
+msgstr "Désactivé"
+
+msgid "On"
+msgstr "Activé"
+
 msgid "On a given number of screens:"
 msgstr "Sur un nombre fixe d'écrans"
 
@@ -3150,6 +3205,9 @@ msgstr "Organisation"
 
 msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
 msgstr "Organisez vos prix en groupes pour gérer leur attribution. Un·e joueur·euse ne peut recevoir qu’un seul prix par groupe, mais peut recevoir des prix dans plusieurs groupes."
+
+msgid "Other devices connected to your network can see your public screens. If you have created screens for player check-in and results entry then those features will be enabled."
+msgstr "Les appareils connectés sur votre réseau peuvent voir vos écrans publics. Si vous avez créé des écrans pour le pointage des joueur·euses et l'entrée des résultats alors ces fonctionnalités seront activées."
 
 msgid "Other players in this score group are not included since the share would be less than the threshold."
 msgstr "Les autres joueur·euses de ce groupe de score n'ont pas été inclus·es, car leur part serait inférieure au seuil."
@@ -3580,6 +3638,9 @@ msgstr "Points : %(min)s à %(max)s"
 msgid "Points: up to %(max)s"
 msgstr "Points: %(max)s ou moins"
 
+msgid "Port"
+msgstr "Port"
+
 msgid "Port [{port}] already in use."
 msgstr "Le port [{port}] est déjà utilisé."
 
@@ -3597,6 +3658,9 @@ msgstr "Imprimer"
 
 msgid "Print players, results, etc."
 msgstr "Imprimer les participant·es, les résultats, les classements…"
+
+msgid "Private event"
+msgstr "Évènement privé"
 
 msgid "Prize *** PRIZE FOR TABLE HEADER"
 msgstr "Prix"
@@ -5166,6 +5230,9 @@ msgstr "Impossible de téléverser le règlement du tournoi."
 msgid "Unauthenticated access has been updated."
 msgstr "L'accès non authentifié a été mis à jour."
 
+msgid "Undefined"
+msgstr "Non défini"
+
 msgid "Undefined **** PLURAL"
 msgstr "Non définis"
 
@@ -5189,6 +5256,9 @@ msgstr "Moins de 20"
 
 msgid "Under 8"
 msgstr "Moins de 8"
+
+msgid "Unique ID"
+msgstr "Identifiant unique"
 
 #, python-format
 msgid "Unique ID: %(uniq_id)s"
@@ -5313,6 +5383,12 @@ msgstr "La limite Elo haute doit être supérieure à la limite Elo basse."
 msgid "Upper rating limit"
 msgstr "Limite Elo haute"
 
+msgid "Use connected devices to check-in players and enter results on public screens"
+msgstr "Utiliser des appareils connectés pour pointer les joueur·euses et entrer les résultats sur des écrans publics"
+
+msgid "Use customized permissions"
+msgstr "Personnalisez les permissions"
+
 msgid "Use log-level specific colors"
 msgstr "Utiliser des couleurs spécifiques au niveau de log"
 
@@ -5342,6 +5418,9 @@ msgstr "Variante"
 
 msgid "View the files on filebin.net"
 msgstr "Voir les fichiers sur filebin.net"
+
+msgid "Visibility"
+msgstr "Visibilité"
 
 msgid "Visibility:"
 msgstr "Visibilité :"
@@ -5494,6 +5573,9 @@ msgstr "An."
 msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
 msgstr "Année de naissance"
 
+msgid "Yes"
+msgstr "Oui"
+
 msgid "Yesterday"
 msgstr "Hier"
 
@@ -5620,6 +5702,9 @@ msgstr "Vous pouvez désactiver temporairement les appareils en décochant cette
 
 msgid "You can try again from the tournament card (Actions > Import > Papi file)."
 msgstr "Vous pouvez essayer à nouveau depuis la carte du tournoi (Actions > Import > Fichier Papi)."
+
+msgid "You decide which devices and which accounts are allowed to display screens, check-in players, enter results, pair rounds… Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers…"
+msgstr "Vous décidez les appareils et les personnes autorisées à afficher les écrans, pointer les joueur·euses, entrer les résultats, apparier les rondes… Sharly Chess offre un système d'autorisation puissant pour facilement déléguer la gestion de votre évènement à des organisateur·ices, des arbitres en chef·fe, des arbitres adjoint·es, des arbitres de secteur, des personnes chargées de l'appariement, du pointage, de la saisie des résultats, de la gestion des écrans…"
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement…) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans simples seront générés automatiquement."
