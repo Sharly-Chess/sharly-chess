@@ -43,7 +43,6 @@ class TestUtils:
         'name': 'Test Event',
         'federation': 'FRA',
         'public': True,
-        'path': '',
         'location': 'Paris',
         'hide_background_image': True,
         'background_image': None,
@@ -214,8 +213,6 @@ class TestUtils:
             cls.check_api_response(res)
         else:
             with EventDatabase(event_uniq_id, write=True) as event_database:
-                data['path'] = None
-                data['filename'] = None
                 stored_tournament = StoredTournament(**data)
                 event_database.add_stored_tournament(stored_tournament)
                 event_database.commit()
