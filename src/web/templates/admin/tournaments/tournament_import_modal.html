@@ -1,0 +1,46 @@
+<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-tournament-edit-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ importer.modal_title or _('Import') }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                hx-post="{{ url_for('admin-tournament-import', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, importer_id=importer.id) }}"
+                enctype="multipart/form-data"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                <div class="row">
+                    <div class="col-12">
+                        {{ admin_macros.file_input(
+                            name='file',
+                            label=_('File:'),
+                            help_text=_('The file to import.'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                data-bs-dismiss="modal"
+                class="btn btn-secondary text-nowrap"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+            >
+                {{ _('Import') }}
+            </button>
+        </div>
+    </div>
+</div>
