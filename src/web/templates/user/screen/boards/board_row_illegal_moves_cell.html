@@ -30,6 +30,7 @@
                 {% if not board.result_str and pairing.illegal_moves < tournament.record_illegal_moves %}
                     <span class="illegal-move-flag-wrapper">
                         <i
+                            data-testid="add-illegal-move-button-{{ player.color.value}}"
                             class="bi-flag illegal-move-flag add player-{{ tournament.id }}-{{ player.id }}"
                             hx-target="body"
                             hx-put="{{ url_for('user-add-illegal-move', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, player_id=player.id) }}"
