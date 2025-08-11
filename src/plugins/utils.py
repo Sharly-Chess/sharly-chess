@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
 from types import ModuleType
-from typing import TYPE_CHECKING, Any, NamedTuple, Protocol
+from typing import TYPE_CHECKING, Any, NamedTuple, Protocol, Self
 
 from packaging.version import Version
 
@@ -91,6 +91,28 @@ class PluginContext:
                 database.insert_stored_plugin(stored_plugin)
                 database.commit()
         self.stored_plugin = stored_plugin
+
+
+class PluginData(ABC):
+    @classmethod
+    @abstractmethod
+    def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
+        """Initialize an object from its stored value."""
+
+    @abstractmethod
+    def to_stored_value(self) -> dict[str, Any]:
+        """The value to store in the database."""
+
+    @classmethod
+    @abstractmethod
+    def from_form_data(
+        cls, data: dict[str, str], previous_object: Self | None = None
+    ) -> Self:
+        """Initialize an object from form data."""
+
+    @abstractmethod
+    def to_form_data(self) -> dict[str, str]:
+        """The values to use in a form."""
 
 
 class Plugin(IdentifiableEntity, ABC):

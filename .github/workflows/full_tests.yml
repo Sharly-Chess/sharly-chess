@@ -36,13 +36,5 @@ jobs:
               run: |
                 python -m playwright install --with-deps chromium
 
-            - name: Download Access Database Engine
-              run: |
-                Invoke-WebRequest -Uri "https://download.microsoft.com/download/3/5/c/35c84c36-661a-44e6-9324-8786b8dbe231/accessdatabaseengine_X64.exe" -OutFile "accessdatabaseengine_X64.exe"
-
-            - name: Install Access Database Engine
-              run: |
-                Start-Process -FilePath ".\accessdatabaseengine_X64.exe" -ArgumentList "/quiet" -Wait
-
             - name: Run all tests
               run: pytest

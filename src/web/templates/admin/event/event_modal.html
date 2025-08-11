@@ -128,15 +128,6 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-12 col-md-12 mb-3">
-                            {{ admin_macros.text_input(
-                                name='path',
-                                label=_('Default directory of the Papi files:'),
-                                placeholder=_('E.g.: c:\\chess\\tournaments'),
-                                help_text=_('The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s).', dir=sharly_chess_config.default_papi_path),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
                         <div class="col-12 col-md-6">
                             {{ admin_macros.text_input(
                                 name='prize_currency',
@@ -318,24 +309,34 @@
                 <i class="bi-x-circle-fill"></i>
                 {{ _('Cancel') }}
             </button>
-            <button
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
-            >
-                {% if action in ['create', 'clone', ] %}
-                    <i class="bi-floppy-fill pe-1"></i>
-                    {{ _('Create') }}
-                {% elif action == 'update' %}
-                    <i class="bi-floppy-fill pe-1"></i>
-                    {{ _('Save') }}
-                {% elif action == 'delete' %}
-                    <i class="bi-trash pe-1"></i>
-                    {{ _('Delete') }}
-                {% else %}
-                    ?
-                {% endif %}
-            </button>
+            {% if action == 'clone' %}
+                {{ admin_macros.split_submit_buttons(
+                    options={
+                        'duplicate': _('Duplicate without players'),
+                        'with_players': _('Duplicate with players'),
+                    },
+                    active_option='duplicate'
+                ) }}
+            {% else %}
+                <button
+                    type="submit"
+                    form="modal-form"
+                    class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                >
+                    {% if action == 'create' %}
+                        <i class="bi-floppy-fill pe-1"></i>
+                        {{ _('Create') }}
+                    {% elif action == 'update' %}
+                        <i class="bi-floppy-fill pe-1"></i>
+                        {{ _('Save') }}
+                    {% elif action == 'delete' %}
+                        <i class="bi-trash pe-1"></i>
+                        {{ _('Delete') }}
+                    {% else %}
+                        ?
+                    {% endif %}
+                </button>
+            {% endif %}
         </div>
     </div>
 </div>

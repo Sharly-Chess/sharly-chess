@@ -8,7 +8,6 @@ from dataclasses import dataclass
 from functools import total_ordering, cached_property
 from logging import Logger
 from operator import attrgetter
-from pathlib import Path
 from types import NotImplementedType
 from typing import Any, Iterable
 
@@ -41,11 +40,10 @@ from utils.enum import (
 )
 from database.sqlite.event.event_store import (
     StoredEvent,
-    StoredTournament,
+    StoredPlayer,
     StoredDevice,
     StoredAccount,
 )
-
 
 logger: Logger = get_logger()
 
@@ -240,77 +238,6 @@ class Event:
     @property
     def formatted_stop_time(self) -> str:
         return format_timestamp_time(self.stop)
-
-    @cached_property
-    def player_count(self) -> int:
-        return len(self.players_by_id)
-
-    @cached_property
-    def players_by_id(self) -> dict[int, Player]:
-        return {
-            player_id: player
-            for tournament_players_id in [
-                tournament.players_by_id
-                for tournament in self.tournaments_by_id.values()
-            ]
-            for player_id, player in tournament_players_id.items()
-        }
-
-    @cached_property
-    def players_sorted_by_name(self) -> list[Player]:
-        return sorted(
-            self.players_by_id.values(),
-            key=lambda player: (player.last_name, player.first_name),
-        )
-
-    @cached_property
-    def gender_counts(self) -> Counter[PlayerGender]:
-        counter: Counter[PlayerGender] = Counter[PlayerGender]()
-        for tournament in self.tournaments_by_id.values():
-            for gender in tournament.gender_counts:
-                counter[gender] += tournament.gender_counts[gender]
-        return counter
-
-    @cached_property
-    def federation_counts(self) -> Counter[Federation]:
-        counter: Counter[Federation] = Counter[Federation]()
-        for tournament in self.tournaments_by_id.values():
-            for federation in tournament.federation_counts:
-                counter[federation] += tournament.federation_counts[federation]
-        return counter
-
-    @cached_property
-    def club_counts(self) -> Counter[Club]:
-        counter: Counter[Club] = Counter[Club]()
-        for tournament in self.tournaments_by_id.values():
-            for club in tournament.club_counts:
-                counter[club] += tournament.club_counts[club]
-        return counter
-
-    @cached_property
-    def check_in_counts(self) -> Counter[bool | None]:
-        counter: Counter[bool | None] = Counter[bool | None]()
-        for tournament in self.tournaments_by_id.values():
-            for check_in in tournament.players_by_check_in_status:
-                counter[check_in] += tournament.check_in_counts[check_in]
-        return counter
-
-    @cached_property
-    def path(self) -> Path:
-        path: Path = SharlyChessConfig.default_papi_path
-        if not self.stored_event.path:
-            self.add_debug(
-                _('No directory set for Papi files, by default [{path}].').format(
-                    path=path
-                )
-            )
-        else:
-            path = Path(self.stored_event.path)
-        if not path.exists():
-            self.add_warning(_('Directory [{path}] not found.').format(path=path))
-        elif not path.is_dir():
-            self.add_error(_('[{path}] is not a directory.').format(path=path))
-        return path
 
     @property
     def location(self) -> str | None:
@@ -538,7 +465,7 @@ class Event:
 
     @property
     def last_update(self) -> float:
-        return EventDatabase(self.uniq_id).file_modified_at
+        return EventDatabase.database_modified_timestamp(self.uniq_id)
 
     @cached_property
     def last_update_str(self) -> str:
@@ -602,23 +529,13 @@ class Event:
         )
 
     @cached_property
-    def tournaments_with_file_sorted_by_uniq_id(self) -> list[Tournament]:
-        """Returns the tournaments where the Papi file exists
-        (useful to tell the arbiters why adding players is not possible)."""
-        return [
-            tournament
-            for tournament in self.tournaments_sorted_by_uniq_id
-            if tournament.file_exists
-        ]
-
-    @cached_property
-    def not_finished_tournaments_with_file_sorted_by_uniq_id(self) -> list[Tournament]:
+    def not_finished_tournaments_sorted_by_uniq_id(self) -> list[Tournament]:
         """Returns the playing tournaments where the Papi file exists
         (useful not to create players when there is no Papi file)."""
         return [
             tournament
             for tournament in self.tournaments_sorted_by_uniq_id
-            if not tournament.finished and tournament.file_exists
+            if not tournament.finished
         ]
 
     @property
@@ -630,30 +547,9 @@ class Event:
             if tournament.can_add_players
         ]
 
-    def check_update(self):
-        """Verify that all the tournaments of the event are up to date.
-        If they are not, update them."""
-        stored_tournaments: list[StoredTournament] = []
-        modified = False
-        with EventDatabase(self.uniq_id) as database:
-            last_updates = database.get_stored_tournament_last_updates()
-            for stored_tournament in self.stored_event.stored_tournaments:
-                id_ = stored_tournament.id
-                assert id_ is not None
-                if stored_tournament.last_update == last_updates[id_]:
-                    stored_tournaments.append(stored_tournament)
-                else:
-                    modified = True
-                    new_stored_tournament = database.get_stored_tournament(id_)
-                    assert new_stored_tournament is not None
-                    stored_tournaments.append(new_stored_tournament)
-                    if tournament := self.tournaments_by_id.get(id_, None):
-                        tournament.stored_tournament = new_stored_tournament
-                        tournament.clear_cache()
-        if modified:
-            self.stored_event.stored_tournaments = stored_tournaments
-        for tournament in self.tournaments:
-            tournament.check_papi_update()
+    # --------------------------------------------------------------------------
+    # Players
+    # --------------------------------------------------------------------------
 
     def clear_player_cache(self):
         player_cached_property_names = [
@@ -668,6 +564,99 @@ class Event:
         for property_name in player_cached_property_names:
             if property_name in self.__dict__:
                 del self.__dict__[property_name]
+
+    def add_player(
+        self, stored_player: StoredPlayer, tournaments: list[Tournament]
+    ) -> int:
+        with EventDatabase(self.uniq_id, True) as database:
+            stored_player.id = database.add_stored_player(stored_player)
+            for tournament in tournaments:
+                tournament.add_player_to_tournament(stored_player, database)
+            database.commit()
+        return stored_player.id
+
+    def delete_player(self, player_id: int):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.delete_stored_player(player_id)
+            database.commit()
+        for tournament in self.tournaments:
+            if player_id in tournament.players_by_id:
+                del tournament.players_by_id[player_id]
+                tournament.clear_cache()
+
+    def update_player(self, player: Player, new_stored_player: StoredPlayer):
+        new_stored_player.id = player.id
+        new_stored_player.check_in = player.check_in
+        player.replace_stored_player(new_stored_player)
+        with EventDatabase(self.uniq_id, True) as database:
+            database.update_stored_player(player.stored_player)
+            database.commit()
+        player.clear_cache()
+        for tournament in self.tournaments:
+            if player.id in tournament.players_by_id:
+                tournament.clear_cache()
+
+    def update_players(self, players: list[Player]):
+        with EventDatabase(self.uniq_id, True) as database:
+            for player in players:
+                database.update_stored_player(player.stored_player)
+            database.commit()
+        for tournament in self.tournaments:
+            tournament.clear_cache()
+
+    @cached_property
+    def player_count(self) -> int:
+        return len(self.players_by_id)
+
+    @cached_property
+    def players_by_id(self) -> dict[int, Player]:
+        return {
+            player_id: player
+            for tournament_players_id in [
+                tournament.players_by_id
+                for tournament in self.tournaments_by_id.values()
+            ]
+            for player_id, player in tournament_players_id.items()
+        }
+
+    @cached_property
+    def players_sorted_by_name(self) -> list[Player]:
+        return sorted(
+            self.players_by_id.values(),
+            key=lambda player: (player.last_name, player.first_name),
+        )
+
+    @cached_property
+    def gender_counts(self) -> Counter[PlayerGender]:
+        counter: Counter[PlayerGender] = Counter[PlayerGender]()
+        for tournament in self.tournaments_by_id.values():
+            for gender in tournament.gender_counts:
+                counter[gender] += tournament.gender_counts[gender]
+        return counter
+
+    @cached_property
+    def federation_counts(self) -> Counter[Federation]:
+        counter: Counter[Federation] = Counter[Federation]()
+        for tournament in self.tournaments_by_id.values():
+            for federation in tournament.federation_counts:
+                counter[federation] += tournament.federation_counts[federation]
+        return counter
+
+    @cached_property
+    def club_counts(self) -> Counter[Club]:
+        counter: Counter[Club] = Counter[Club]()
+        for tournament in self.tournaments_by_id.values():
+            for club in tournament.club_counts:
+                counter[club] += tournament.club_counts[club]
+        return counter
+
+    @cached_property
+    def check_in_counts(self) -> Counter[bool | None]:
+        counter: Counter[bool | None] = Counter[bool | None]()
+        for tournament in self.tournaments_by_id.values():
+            for check_in in tournament.players_by_check_in_status:
+                counter[check_in] += tournament.check_in_counts[check_in]
+        return counter
 
     def get_unused_tournament_uniq_id(
         self,
@@ -1221,13 +1210,6 @@ class Event:
         )
         if not self._silent:
             logger.info(event_message.formatted_text)
-
-    @property
-    def download_allowed(self) -> bool:
-        for tournament in self.tournaments_by_id.values():
-            if tournament.download_allowed:
-                return True
-        return False
 
     def __lt__(self, other: 'Event'):
         # p1 < p2 calls p1.__lt__(p2)

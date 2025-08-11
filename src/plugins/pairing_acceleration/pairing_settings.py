@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 
 from common.i18n import _
 from data.pairings.settings import PairingSetting
-from database.access.papi.papi_database import PapiDatabase, PapiVariable
 from plugins.pairing_acceleration import PLUGIN_NAME
 
 if TYPE_CHECKING:
@@ -48,18 +47,7 @@ class RatingLimitSetting(PairingSetting[int]):
         return {}
 
     @classmethod
-    def get_value(cls, tournament: 'Tournament') -> int:
-        # TODO remove once papi dependency has been removed
-        return tournament.papi_tournament_info.rating_limit1
-
-    @classmethod
     def default_value(cls, tournament: 'Tournament') -> int:
-        if papi_limit := tournament.papi_tournament_info.rating_limit1:
-            return papi_limit
-        return cls.recommended_value(tournament)
-
-    @classmethod
-    def recommended_value(cls, tournament: 'Tournament') -> int:
         ratings = cls.player_ratings(tournament)
         if len(ratings) < 2:
             return 0
@@ -67,10 +55,8 @@ class RatingLimitSetting(PairingSetting[int]):
         return math.ceil((ratings[first_b] + ratings[first_b + 1]) / 2)
 
     @classmethod
-    def is_valid(cls, tournament: 'Tournament') -> bool:
-        return cls._check_rating_limit(
-            tournament, tournament.papi_tournament_info.rating_limit1
-        )
+    def check_value(cls, tournament: 'Tournament', value: int):
+        return cls._check_rating_limit(tournament, value)
 
     @staticmethod
     def player_ratings(tournament: 'Tournament') -> list[int]:
@@ -90,11 +76,6 @@ class RatingLimitSetting(PairingSetting[int]):
         a_group, b_group = cls.group_counts(tournament, rating_limit)
         total = a_group + b_group
         return total < 2 or total / 4 <= b_group <= 3 * total / 4
-
-    def save_to_papi_database(self, papi_database: PapiDatabase, object_: int):
-        with papi_database:
-            papi_database.write_info({PapiVariable.RATING_LIMIT1: object_})
-            papi_database.commit()
 
 
 class DualRatingLimitsSetting(PairingSetting[tuple[int, int]]):
@@ -159,26 +140,7 @@ class DualRatingLimitsSetting(PairingSetting[tuple[int, int]]):
         return {}
 
     @classmethod
-    def papi_limits(cls, tournament: 'Tournament') -> tuple[int, int]:
-        # TODO remove once papi dependency has been removed
-        return (
-            tournament.papi_tournament_info.rating_limit2,
-            tournament.papi_tournament_info.rating_limit1,
-        )
-
-    @classmethod
-    def get_value(cls, tournament: 'Tournament') -> tuple[int, int]:
-        # TODO remove once papi dependency has been removed
-        return cls.papi_limits(tournament)
-
-    @classmethod
     def default_value(cls, tournament: 'Tournament') -> tuple[int, int]:
-        if (papi_limits := cls.papi_limits(tournament)) != (0, 0):
-            return papi_limits
-        return cls.recommended_value(tournament)
-
-    @classmethod
-    def recommended_value(cls, tournament: 'Tournament') -> tuple[int, int]:
         """Recommend the values for an ideal repartition of players.
         Ideal repartition:
             - Group A: closest multiple of 4 to a third of the players
@@ -203,8 +165,8 @@ class DualRatingLimitsSetting(PairingSetting[tuple[int, int]]):
         )
 
     @classmethod
-    def is_valid(cls, tournament: 'Tournament') -> bool:
-        group_counts = cls.group_counts(tournament, cls.papi_limits(tournament))
+    def check_value(cls, tournament: 'Tournament', value: tuple[int, int]):
+        group_counts = cls.group_counts(tournament, value)
         return all(
             cls._check_group_count(group_count, sum(group_counts))
             for group_count in group_counts
@@ -227,15 +189,3 @@ class DualRatingLimitsSetting(PairingSetting[tuple[int, int]]):
     @classmethod
     def _check_group_count(cls, group_count: int, total: int) -> bool:
         return total < 3 or total / 4 <= group_count <= total / 2
-
-    def save_to_papi_database(
-        self, papi_database: PapiDatabase, object_: tuple[int, int]
-    ):
-        with papi_database:
-            papi_database.write_info(
-                {
-                    PapiVariable.RATING_LIMIT1: object_[1],
-                    PapiVariable.RATING_LIMIT2: object_[0],
-                }
-            )
-            papi_database.commit()

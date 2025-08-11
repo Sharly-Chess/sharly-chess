@@ -8,20 +8,17 @@ from logging import Logger
 from pathlib import Path
 from typing import Annotated, Any
 
-import phonenumbers
 from httpdate.httpdate import httpdate_to_unixtime, unixtime_to_httpdate
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 from litestar.controller import Controller
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.response import Redirect, Template
-from phonenumbers.phonenumberutil import NumberParseException
+from litestar.response import Template, Redirect
 
 from common import check_rgb_str, DEVEL_ENV, experimental_features_enabled
 from common.i18n import (
     set_locale,
     locales,
-    get_locale,
 )
 from common.i18n.utils import (
     locale_localized_name,
@@ -59,8 +56,11 @@ class WebContext:
         self.error: ClientRedirect | None = None
         # sets the session locale to the thread
         set_locale(SessionHandler.get_session_locale(request))
-        # tracks the visit of the client
-        ClientTracker().track_client(request.client.host)
+        if request.client:
+            # tracks the visit of the client
+            ClientTracker().track_client(request.client.host)
+        else:
+            logger.warning('Request with no client!')
 
     @cached_property
     def client(self) -> Client:
@@ -284,28 +284,6 @@ class WebContext:
             return data[field]
         raise ValueError(f'data[{field}]=[{data[field]}] (mail expected)')
 
-    @classmethod
-    def form_data_to_phone(cls, data: dict[str, str] | None, field: str) -> str | None:
-        if data is None:
-            return None
-        data[field] = data.get(field, '')
-        if data[field] is not None:
-            data[field] = data[field].lower().replace(' ', '')
-        if not data[field]:
-            return None
-        try:
-            phonenumbers.parse(data[field])
-            return data[field]
-        except NumberParseException:
-            try:
-                # uppercase the locale to validate the phone number from the corresponding zone
-                phonenumbers.parse(data[field], get_locale().upper())
-                return data[field]
-            except NumberParseException as e:
-                raise ValueError(
-                    f'data[{field}]=[{data[field]}] (phone expected)'
-                ) from e
-
     @staticmethod
     def value_to_form_data(value: Any) -> str:
         if value is None:
@@ -395,7 +373,7 @@ class BaseController(Controller):
     @staticmethod
     def redirect_error(
         request: HTMXRequest, errors: str | list[str] | Exception
-    ) -> ClientRedirect:
+    ) -> ClientRedirect | Redirect:
         if request.headers.get('hx-request') == 'true':
             Message.error(request, errors)
             return ClientRedirect(redirect_to=index_url(request))

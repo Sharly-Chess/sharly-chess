@@ -1,15 +1,16 @@
+from dataclasses import dataclass
 from datetime import datetime
 from enum import IntEnum
 from functools import partial
-from typing import Self
+from typing import Self, Any
 
 from common.i18n import _
 from data.event import Event
+from data.player import Player
 from data.tournament import Tournament
-from data.pairings import PairingVariation, PairingSystem, systems, variations
 from plugins.ffe import PLUGIN_NAME
-from plugins.pairing_acceleration import pairing_variations as accelerations
-from plugins.utils import PluginCoreMapper, PluginUtils
+from plugins.utils import PluginUtils, PluginData
+from web.controllers.base_controller import WebContext
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
@@ -37,40 +38,18 @@ class FFEUtils:
             return ffe_auto_upload_delay
         return FFE_DEFAULT_UPLOAD_DELAY
 
+    @staticmethod
+    def get_player_plugin_data(player: Player) -> 'FfePlayerPluginData':
+        plugin_data = player.plugin_data[PLUGIN_NAME]
+        assert isinstance(plugin_data, FfePlayerPluginData)
+        return plugin_data
+
 
 class PlayerFFELicence(IntEnum):
     NONE = 0
     N = 1
     A = 2
     B = 3
-
-    @classmethod
-    def from_papi_value(cls, value: str) -> Self:
-        match value:
-            case '' | None:
-                return cls(cls.NONE)
-            case 'N':
-                return cls(cls.N)
-            case 'A':
-                return cls(cls.A)
-            case 'B':
-                return cls(cls.B)
-            case _:
-                raise ValueError(f'Unknown value: {value}')
-
-    @property
-    def to_papi_value(self) -> str:
-        match self:
-            case PlayerFFELicence.NONE:
-                return ''
-            case PlayerFFELicence.N:
-                return 'N'
-            case PlayerFFELicence.A:
-                return 'A'
-            case PlayerFFELicence.B:
-                return 'B'
-            case _:
-                raise ValueError(f'Unknown value: {self}')
 
     @property
     def name(self) -> str:
@@ -101,46 +80,52 @@ class PlayerFFELicence(IntEnum):
                 raise ValueError(f'Unknown value: {self}')
 
 
-class PapiPairingSystem(PluginCoreMapper[str, PairingSystem]):
+@dataclass
+class FfePlayerPluginData(PluginData):
+    ffe_id: int | None
+    ffe_licence: PlayerFFELicence
+    ffe_licence_number: str | None
+    league: str | None
+
     @classmethod
-    def _core_object_by_plugin_value(cls) -> dict[str, PairingSystem]:
+    def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
+        return cls(
+            ffe_id=stored_value.get('ffe_id', None),
+            ffe_licence=PlayerFFELicence(
+                stored_value.get('ffe_licence', PlayerFFELicence.NONE)
+            ),
+            ffe_licence_number=stored_value.get('ffe_licence_number', None),
+            league=stored_value.get('league', None),
+        )
+
+    def to_stored_value(self) -> dict[str, Any]:
         return {
-            'Suisse': systems.SwissPairingSystem(),
-            'ToutesRondes': systems.RoundRobinPairingSystem(),
-        }
-
-
-class PapiPairingVariation(PluginCoreMapper[str, PairingVariation]):
-    """Mapper of the pairing variations in the Papi database."""
-
-    @classmethod
-    def _core_object_by_plugin_value(cls) -> dict[str, PairingVariation]:
-        from plugins.ffe.ffe_entity import NicoisSwissVariation
-
-        return {
-            'Standard': variations.StandardSwissVariation(),
-            'Haley': accelerations.HaleySwissVariation(),
-            'HaleySoft': accelerations.HaleySoftSwissVariation(),
-            'SAD': accelerations.ProgressiveSwissVariation(),
-            'Nicois': NicoisSwissVariation(),
-            'Berger': variations.BergerRoundRobinVariation(),
-        }
-
-    @classmethod
-    def get_plugin_value(cls, core_object: PairingVariation) -> str | None:
-        if core_object == variations.DoubleBergerRoundRobinVariation():
-            core_object = variations.BergerRoundRobinVariation()
-        return super().get_plugin_value(core_object)
-
-
-class PapiThreePointsForAWin(PluginCoreMapper[str, bool]):
-    @classmethod
-    def _core_object_by_plugin_value(cls) -> dict[str, bool]:
-        return {
-            'OUI': True,
-            'NON': False,
+            'ffe_id': self.ffe_id,
+            'ffe_licence': self.ffe_licence.value,
+            'ffe_licence_number': self.ffe_licence_number,
+            'league': self.league,
         }
 
     @classmethod
-    def get_core_object(cls, plugin_value: str) -> bool:
-        return cls._core_object_by_plugin_value()[plugin_value.upper()]
+    def from_form_data(
+        cls, data: dict[str, str], previous_object: Self | None = None
+    ) -> Self:
+        return cls(
+            ffe_id=WebContext.form_data_to_int(data, 'ffe_id'),
+            ffe_licence=PlayerFFELicence(
+                WebContext.form_data_to_int(data, 'ffe_licence')
+                or PlayerFFELicence.NONE
+            ),
+            ffe_licence_number=WebContext.form_data_to_str(data, 'ffe_licence_number'),
+            league=WebContext.form_data_to_str(data, 'ffe_league'),
+        )
+
+    def to_form_data(self) -> dict[str, str]:
+        return WebContext.values_dict_to_form_data(
+            {
+                'ffe_id': self.ffe_id,
+                'ffe_licence': self.ffe_licence.value,
+                'ffe_licence_number': self.ffe_licence_number,
+                'ffe_league': self.league,
+            }
+        )

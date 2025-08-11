@@ -1,4 +1,5 @@
 import fnmatch
+import time
 import weakref
 from collections.abc import Iterator
 from functools import cached_property
@@ -9,11 +10,10 @@ from common import format_timestamp_date_time
 from common.background import inline_image_url
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
-from data.result import Result
+from data.board import Board
 from data.screen_set import ScreenSet
 from data.timer import Timer
 from utils.enum import ScreenType
-from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredScreen
 
 if TYPE_CHECKING:
@@ -675,17 +675,35 @@ class Screen:
         )
 
     @cached_property
-    def _results(self) -> list[Result]:
-        with EventDatabase(self.event.uniq_id) as event_database:
-            return event_database.get_stored_results(
-                self.results_limit, self.results_tournament_ids, self.results_max_age
-            )
+    def _results(self) -> list[Board]:
+        boards: list[Board] = []
+        oldest = time.time() - self.results_max_age * 60
+        for tournament in self.event.tournaments_by_id.values():
+            if (
+                self.results_tournament_ids
+                and tournament.id not in self.results_tournament_ids
+            ):
+                continue
+            for round_ in range(1, tournament.current_round + 1):
+                for player in tournament.players_by_id.values():
+                    pairing = player.pairings[round_]
+                    if pairing.board and pairing.board.white_player.id == player.id:
+                        if (
+                            pairing.board.last_result_update
+                            and pairing.board.last_result_update >= oldest
+                        ):
+                            boards.append(pairing.board)
+
+        boards.sort(
+            key=lambda board: board.last_result_update or float('-inf'), reverse=True
+        )
+        return boards
 
     def _clear_results_cache(self):
         self.__dict__.pop('_results', None)
 
     @property
-    def results_lists(self) -> Iterator[list[Result]]:
+    def results_lists(self) -> Iterator[list[Board]]:
         column_size: int = (
             self.results_limit if self.results_limit else len(self._results)
         ) // self.columns

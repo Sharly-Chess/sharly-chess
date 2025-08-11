@@ -369,7 +369,6 @@ class BaseAdminController(BaseController):
         start: float | None = None
         stop: float | None = None
         public: bool | None = None
-        path: str | None = None
         location: str | None = None
         hide_background_image: bool | None = None
         background_image: str | None = None
@@ -423,7 +422,6 @@ class BaseAdminController(BaseController):
                 ):
                     errors[field] = _('Please enter a date after the start date.')
                 public = WebContext.form_data_to_bool(data, 'public')
-                path = WebContext.form_data_to_str(data, 'path')
                 location = WebContext.form_data_to_str(data, 'location')
                 field = 'background_image'
                 hide_background_image = WebContext.form_data_to_bool(
@@ -534,7 +532,6 @@ class BaseAdminController(BaseController):
             start=start,
             stop=stop,
             public=bool(public),
-            path=path,
             location=location,
             hide_background_image=bool(hide_background_image),
             background_image=background_image,
@@ -684,7 +681,6 @@ class BaseAdminController(BaseController):
         hide_background_image: bool | None = None
         background_image: str | None = None
         background_color: str | None = None
-        path: str | None = None
         location: str | None = None
         record_illegal_moves: int | None = None
         rules: str | None = None
@@ -703,7 +699,6 @@ class BaseAdminController(BaseController):
                 hide_background_image = stored_event.hide_background_image
                 background_image = stored_event.background_image
                 background_color = stored_event.background_color
-                path = stored_event.path
                 location = stored_event.location
                 record_illegal_moves = stored_event.record_illegal_moves
                 rules = stored_event.rules
@@ -747,7 +742,6 @@ class BaseAdminController(BaseController):
             'background_color_checkbox': WebContext.value_to_form_data(
                 background_color is None
             ),
-            'path': WebContext.value_to_form_data(path),
             'location': WebContext.value_to_form_data(location),
             'record_illegal_moves': WebContext.value_to_form_data(record_illegal_moves),
             'rules': WebContext.value_to_form_data(rules),

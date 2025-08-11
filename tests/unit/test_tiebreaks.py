@@ -5,50 +5,53 @@ from typing import Callable
 from unittest import TestCase
 
 from data.event import Event
-
-# Needs to be imported first to avoid circular import
 from data.loader import EventLoader
-from plugins import manager  # Noqa E402
 
 import pytest
 from data.tie_breaks import tie_breaks, options
 from data.tournament import Tournament
 from data.player import Player
 from plugins.ffe import ffe_tie_breaks
+from plugins.ffe.ffe_tournament_importers import PapiJsonTournamentImporter
 from tests.test_config import TestUtils
 
+EVENT_ID = 'test-pairings-event'
+TOURNAMENT_ID = 'test-pairings-tournament'
 
-@pytest.mark.unit
+
 class TieBreakTestCase(TestCase, ABC):
     event: Event
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        database = TestUtils.create_event_direct('test-tiebreaks-event')
-        database.populate(Path('../unit/test-event.yml'))
-        cls.event = EventLoader().load_event('test-tiebreaks-event')
+    def setUp(self):
+        super().setUp()
+        TestUtils.create_event(EVENT_ID)
+        TestUtils.create_tournament(EVENT_ID, TOURNAMENT_ID)
 
-    @classmethod
-    def tearDownClass(cls):
-        TestUtils.delete_event_direct('test-tiebreaks-event')
-        super().tearDownClass()
+        self.event = EventLoader().reload_event(EVENT_ID)
+
+        # Import the test players and pairings from the json file
+        leaf_name = f'{self.json_file}.json'
+        json_path = Path('../json') / leaf_name
+        assert json_path.exists(), f'JSON file [{leaf_name}] not found'
+
+        PapiJsonTournamentImporter().load_tournament(
+            json_path, self.event, self.tournament
+        )
+
+        self.event = EventLoader().reload_event(EVENT_ID)
+
+    def tearDown(self):
+        TestUtils.delete_event(EVENT_ID)
+        super().tearDown()
 
     @property
     @abstractmethod
-    def tournament_uniq_id(self) -> str:
+    def json_file(self) -> str:
         pass
 
     @property
     def tournament(self) -> Tournament:
-        return self.event.tournaments_by_uniq_id[self.tournament_uniq_id]
-
-    @staticmethod
-    def get_exercise_id(player_id: int):
-        """The 2 tournaments used in these tests are from the TEC
-        'Exercises in Tie-Breaking' document. The id of the players in
-        the papi databases are similar but start from 2 instead of 1."""
-        return Player.player_papi_id_from_sharly_chess_id(player_id) - 1
+        return self.event.tournaments_by_uniq_id[TOURNAMENT_ID]
 
     def get_player_values[T](
         self,
@@ -58,12 +61,11 @@ class TieBreakTestCase(TestCase, ABC):
     ) -> dict[int, T]:
         player_values = {}
         for player in self.tournament.players:
-            id_ = self.get_exercise_id(player.ref_id)
             if not (
-                (exclude_ids and id_ in exclude_ids)
-                or (only_ids and id_ not in only_ids)
+                (exclude_ids and player.id in exclude_ids)
+                or (only_ids and player.id not in only_ids)
             ):
-                player_values[id_] = compute_player_value(player)
+                player_values[player.id] = compute_player_value(player)
         return player_values
 
     def get_tie_break_player_values[T](
@@ -82,7 +84,7 @@ class TieBreakTestCase(TestCase, ABC):
 @pytest.mark.unit
 class SwissTieBreakTestCase(TieBreakTestCase):
     @property
-    def tournament_uniq_id(self) -> str:
+    def json_file(self) -> str:
         return 'tec-swiss'
 
     def test_points(self):
@@ -789,15 +791,12 @@ class SwissTieBreakTestCase(TieBreakTestCase):
 @pytest.mark.unit
 class RoundRobinTieBreakTestCase(TieBreakTestCase):
     @property
-    def tournament_uniq_id(self) -> str:
+    def json_file(self) -> str:
         return 'tec-round-robin'
 
     def test_all_players_met_each_other(self):
         results = self.get_player_values(
-            lambda player: [
-                self.get_exercise_id(pairing.opponent_id)
-                for pairing in player.pairings.values()
-            ]
+            lambda player: [pairing.opponent_id for pairing in player.pairings.values()]
         )
         expected = {
             1: [5, 2, 3, 4, 6],

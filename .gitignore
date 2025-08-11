@@ -20,7 +20,7 @@ __pycache__/
 /export-test/
 /scripts/i18n/models
 /bin/
-/tools/bbpPairings/*/*
+/tools/*
 
 *.egg-info/
 
@@ -55,6 +55,9 @@ __pycache__/
 
 # database credentials
 .credentials
+
+# Environment variables (contains secrets)
+.env
 
 # virtual environments
 /.venv-dev

@@ -127,6 +127,11 @@ def get_logging_config() -> dict[str, Any]:
                 'level': logging.INFO,
                 'propagate': False,
             },
+            'pytds': {
+                'handlers': ['console'],
+                'level': logging.WARNING,
+                'propagate': False,
+            },
         },
     }
     if _LOGGING_CONFIG_VALUES.file_path:

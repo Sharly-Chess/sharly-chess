@@ -3,21 +3,33 @@ from typing import Callable, TYPE_CHECKING
 
 from trf.Player import Game as TrfGame
 
+from logging import Logger
+from common.logger import get_logger
 from data.board import Board
-from database.access.papi.papi_store import StoredPairing
+from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_store import StoredPairing
 from utils.enum import Result, BoardColor
 
 if TYPE_CHECKING:
     from _weakref import ReferenceType
     from data.player import Player
 
+logger: Logger = get_logger()
 
 class Pairing:
     """A pairing (from the point of view of the `Player` class)"""
 
-    def __init__(self, player: 'Player', stored_pairing: StoredPairing):
+    def __init__(
+        self, player: 'Player', stored_pairing: StoredPairing, exists: bool = True
+    ):
         self._player_ref: 'ReferenceType[Player]' = weakref.ref(player)
         self.stored_pairing = stored_pairing
+
+        # NOTE (Molrn) Flag indicating if the stored object exists in the database or not.
+        # Pre-big move, the unpaired rounds had their own *Pairing* objects in the DB
+        # This maintains the legacy usages of the *Pairing* class
+        # TODO Remove all *Pairing* legacy usages (and this flag)
+        self.exists = exists
 
     @property
     def player(self) -> 'Player':
@@ -38,6 +50,38 @@ class Pairing:
     @property
     def result(self) -> Result:
         return Result(self.stored_pairing.result)
+
+    @property
+    def illegal_moves(self) -> int:
+        return self.stored_pairing.illegal_moves
+
+    def update_result(self, event_database: EventDatabase, result: Result):
+        self.stored_pairing.result = result.value
+        self.update(event_database)
+
+    def update(self, event_database: EventDatabase):
+        if self.exists:
+            event_database.update_stored_pairing(self.stored_pairing)
+        else:
+            event_database.add_stored_pairing(self.stored_pairing)
+            self.exists = True
+
+    def add_illegal_move(self, event_database: EventDatabase):
+        if self.illegal_moves < self.player.tournament.record_illegal_moves:
+            self.stored_pairing.illegal_moves += 1
+            self.update(event_database)
+            logger.info('An illegal move has been recorded for player [%s].', self.player.id)
+            return True
+
+    def delete_illegal_move(self, event_database: EventDatabase):
+        if self.illegal_moves > 0:
+            self.stored_pairing.illegal_moves -= 1
+            self.update(event_database)
+            logger.info('An illegal move has been deleted for player [%s].', self.player.id)
+            return True
+        else:
+            logger.info('No illegal move found for player [%s].', self.player.id)
+            return False
 
     @property
     def zero_point_bye(self) -> bool:

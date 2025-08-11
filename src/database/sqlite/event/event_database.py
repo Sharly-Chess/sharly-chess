@@ -1,25 +1,19 @@
 import shutil
 import time
-from collections import Counter
 from collections.abc import Iterator
 from contextlib import suppress
 from datetime import datetime
 from functools import cached_property
 from logging import Logger
 from pathlib import Path
-from sqlite3 import OperationalError
 from typing import Any, TYPE_CHECKING, override, Self, cast
 
-import yaml
 from packaging.version import Version
 
 from common import format_timestamp_date, format_timestamp_time, DEVEL_ENV, EVENTS_DIR
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.auth.entities import Device, Account
-from data.board import Board
-from data.result import Result as DataResult
-from utils.enum import Result as UtilResult
 from database.sqlite.event.event_store import (
     StoredDisplayController,
     StoredTournament,
@@ -28,8 +22,6 @@ from database.sqlite.event.event_store import (
     StoredTimer,
     StoredTimerHour,
     StoredFamily,
-    StoredIllegalMove,
-    StoredResult,
     StoredRotator,
     StoredScreenSet,
     StoredScreen,
@@ -37,6 +29,10 @@ from database.sqlite.event.event_store import (
     StoredPrizeCategory,
     StoredPrizeCriterion,
     StoredPrize,
+    StoredPlayer,
+    StoredTournamentPlayer,
+    StoredPairing,
+    StoredBoard,
     StoredDevice,
     StoredAccount,
 )
@@ -54,9 +50,41 @@ logger: Logger = get_logger()
 class EventDatabase(MigrationDatabase):
     """The SQLite database class for Sharly Chess events."""
 
-    def __init__(self, uniq_id: str, write: bool = False):
-        self.uniq_id = uniq_id
-        super().__init__(self.event_database_path(self.uniq_id), write)
+    def __init__(
+        self,
+        uniq_id: str | None = None,
+        write: bool = False,
+        *,
+        file_path: Path | None = None,
+    ):
+        """Initialize EventDatabase with either a unique ID or a file path."""
+        if uniq_id is not None and file_path is not None:
+            raise ValueError('Cannot specify both uniq_id and file_path')
+        if uniq_id is None and file_path is None:
+            raise ValueError('Must specify either uniq_id or file_path')
+
+        if file_path is not None:
+            # Initialize with file path
+            self.uniq_id = file_path.stem
+            self.update_event_loader = False
+            super().__init__(file_path, write)
+        else:
+            # Traditional initialization with uniq_id
+            assert uniq_id is not None
+            self.uniq_id = uniq_id
+            self.update_event_loader = True
+            super().__init__(self.event_database_path(self.uniq_id), write)
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        from data.loader import EventLoader
+
+        super().__exit__(exc_type, exc_value, traceback)
+
+        # Inform EventLoader that this event has been updated internally
+        if self.update_event_loader and self.write:
+            EventLoader.set_last_known_update(
+                self.uniq_id, self.database_modified_timestamp(self.uniq_id)
+            )
 
     @classmethod
     def create_instance(cls, file: Path, write: bool = False) -> Self:
@@ -101,712 +129,9 @@ class EventDatabase(MigrationDatabase):
     def event_database_path(uniq_id: str) -> Path:
         return EVENTS_DIR / f'{uniq_id}.{SharlyChessConfig.event_database_ext}'
 
-    @staticmethod
-    def _check_populate_dict(
-        yml_file: Path,
-        dict_path: str,
-        supposed_dict: dict,
-        mandatory_fields: list[str] | None = None,
-        optional_fields: list[str] | None = None,
-        field_type: type | None = None,
-        empty_allowed: bool = True,
-    ):
-        """Checks that the given dictionary follows assumptions.
-        - `yml_file` is passed for AssertionError reporting only.
-        - `dict_path` is passed for AssertionError reporting only.
-        - Each field in `mandatory_fields` must appear in the `supposed_dict`
-          keys.
-        - If `field_type` is provided, all values must be of type `field_type`.
-        - If `empty_allowed` is set to False, `supposed_dict` cannot be empty.
-        """
-        assert (supposed_dict is None and empty_allowed) or isinstance(
-            supposed_dict, dict
-        ), f'{yml_file.name}: {dict_path}/ is no dictionary'
-        fields: list[str] = []
-        if mandatory_fields is not None:
-            for k in mandatory_fields:
-                assert k in supposed_dict, (
-                    f'{yml_file.name}: {dict_path}/{k} is not set'
-                )
-            fields += mandatory_fields
-        if optional_fields is not None:
-            fields += optional_fields
-        if fields:
-            for k in supposed_dict:
-                assert k in fields, (
-                    f'{yml_file.name}: invalid key {dict_path}/{k} (valid_keys: {", ".join(fields)})'
-                )
-                if field_type is not None:
-                    assert isinstance(supposed_dict[k], field_type), (
-                        f'{yml_file.name}: {dict_path} should contain only items of type [{field_type}]'
-                    )
-        if not empty_allowed:
-            assert supposed_dict, f'{yml_file.name}: dictionary {dict_path} is empty'
-
-    @staticmethod
-    def _check_populate_list(
-        yml_file: Path,
-        list_path: str,
-        supposed_list: list,
-        item_type: type | None = None,
-        items_number: int | None = None,
-        empty_allowed: bool = True,
-    ):
-        """Checks that the given list follows assumptions.
-        - `yml_file` is passed for AssertionError reporting only.
-        - If `item_path` is passed for AssertionError reporting only.
-        - If `item_type` is provided, all items in `supposed_list` must be of
-          this type.
-        - If `items_number` is passed, `supposed_list` must contain exactly
-          this number of elements.
-        - If `allowed_empty is set to False, `supposed_list` must not be empty.
-        """
-        assert isinstance(supposed_list, list), (
-            f'{yml_file.name}: {list_path} is no list'
-        )
-        if item_type is not None:
-            assert all(isinstance(item, item_type) for item in supposed_list), (
-                f'{yml_file.name}: {list_path} should contain only items of type [{item_type}]'
-            )
-        if items_number is not None:
-            assert len(supposed_list) == items_number, (
-                f'{yml_file.name}: {list_path} should contain exactly {items_number} items'
-            )
-        if not empty_allowed:
-            assert supposed_list, f'{yml_file.name}: list {list_path} is empty'
-
-    def create(self, populate: bool = False):
-        """
-        Create an event database by running the migrations from scratch.
-        The file associated to this database must not exist before calling this method.
-        :param populate: if True, the corresponding file in /database/yml is used to populate the database (this way
-        example databases are created when no event database is found).
-        """
-
-        super().create()
-        if populate:
-            self.populate(
-                SharlyChessConfig.example_events_yml_path / f'{self.uniq_id}.yml'
-            )
-
-    def populate(self, yml_file: Path):
-        try:
-            with EventDatabase(self.uniq_id, write=True) as event_database:
-                event_dict = yaml.safe_load(yml_file.read_text(encoding='utf-8'))
-                self._check_populate_dict(
-                    yml_file,
-                    '',
-                    event_dict,
-                    mandatory_fields=[
-                        'name',
-                        'federation',
-                    ],
-                    optional_fields=[
-                        'start',
-                        'stop',
-                        'path',
-                        'hide_background_image',
-                        'background_image',
-                        'background_color',
-                        'public',
-                        'record_illegal_moves',
-                        'rules',
-                        'tournaments',
-                        'timers',
-                        'screens',
-                        'families',
-                        'rotators',
-                        'timer_colors',
-                        'timer_delays',
-                        'custom_exec_mode',
-                    ],
-                    empty_allowed=False,
-                )
-                timer_delays: dict[int, int | None] | None = None
-                if 'timer_delays' in event_dict:
-                    self._check_populate_list(
-                        yml_file,
-                        '/timer_delays',
-                        event_dict['timer_delays'],
-                        items_number=3,
-                        item_type=int,
-                    )
-                    timer_delays = {
-                        i + 1: event_dict['timer_delays'][i]
-                        for i in range(0, len(event_dict['timer_delays']))
-                    }
-                timer_colors: dict[int, str | None] | None = None
-                if 'timer_colors' in event_dict:
-                    self._check_populate_list(
-                        yml_file,
-                        '/timer_colors',
-                        event_dict['timer_colors'],
-                        items_number=3,
-                        item_type=str,
-                    )
-                    timer_colors = {
-                        i + 1: event_dict['timer_colors'][i]
-                        for i in range(0, len(event_dict['timer_colors']))
-                    }
-                today_str: str = format_timestamp_date()
-                event_start: float = time.mktime(
-                    datetime.strptime(
-                        f'{today_str} 00:00', '%Y-%m-%d %H:%M'
-                    ).timetuple()
-                )
-                event_stop: float = time.mktime(
-                    datetime.strptime(
-                        f'{today_str} 23:59', '%Y-%m-%d %H:%M'
-                    ).timetuple()
-                )
-                if 'start' in event_dict:
-                    event_start = time.mktime(
-                        datetime.strptime(
-                            event_dict['start'], '%Y-%m-%d %H:%M'
-                        ).timetuple()
-                    )
-                if 'stop' in event_dict:
-                    event_stop = time.mktime(
-                        datetime.strptime(
-                            event_dict['stop'], '%Y-%m-%d %H:%M'
-                        ).timetuple()
-                    )
-                event_database.update_stored_event(
-                    StoredEvent(
-                        uniq_id=self.uniq_id,
-                        name=event_dict['name'],
-                        federation=event_dict['federation'],
-                        start=event_start,
-                        stop=event_stop,
-                        path=event_dict.get('path', None),
-                        hide_background_image=event_dict.get(
-                            'hide_background_image',
-                            SharlyChessConfig.default_hide_background_image,
-                        ),
-                        background_image=event_dict.get('background_image', None),
-                        background_color=event_dict.get('background_color', None),
-                        record_illegal_moves=event_dict.get(
-                            'record_illegal_moves', None
-                        ),
-                        rules=event_dict.get('rules', None),
-                        timer_colors=timer_colors,
-                        timer_delays=timer_delays,
-                        public=event_dict.get('public', False),
-                        custom_exec_mode=event_dict.get(
-                            'custom_exec_mode',
-                            SharlyChessConfig.default_custom_exec_mode,
-                        ),
-                    )
-                )
-                timer_ids_by_uniq_id: dict[str, int] = {}
-                if 'timers' in event_dict and event_dict['timers'] is not None:
-                    self._check_populate_dict(yml_file, '/timers', event_dict['timers'])
-                    for timer_uniq_id, timer_dict in event_dict['timers'].items():
-                        self._check_populate_dict(
-                            yml_file,
-                            f'/timers/{timer_uniq_id}',
-                            timer_dict,
-                            mandatory_fields=[
-                                'hours',
-                            ],
-                            optional_fields=[
-                                'delays',
-                                'colors',
-                            ],
-                        )
-                        delays: dict[int, int | None] | None = None
-                        if 'delays' in timer_dict:
-                            self._check_populate_list(
-                                yml_file,
-                                f'/timers/{timer_uniq_id}/delays',
-                                timer_dict['delays'],
-                                items_number=3,
-                                item_type=int,
-                            )
-                            delays = {
-                                i + 1: timer_dict['delays'][i]
-                                for i in range(0, len(timer_dict['delays']))
-                            }
-                        colors: dict[int, str | None] | None = None
-                        if 'colors' in timer_dict:
-                            self._check_populate_list(
-                                yml_file,
-                                f'/timers/{timer_uniq_id}/colors',
-                                timer_dict['colors'],
-                                items_number=3,
-                                item_type=str,
-                            )
-                            colors = {
-                                i + 1: timer_dict['colors'][i]
-                                for i in range(0, len(timer_dict['colors']))
-                            }
-                        stored_timer: StoredTimer = event_database.add_stored_timer(
-                            StoredTimer(
-                                id=None,
-                                uniq_id=timer_uniq_id,
-                                colors=colors,
-                                delays=delays,
-                            )
-                        )
-                        assert stored_timer.id is not None
-                        timer_ids_by_uniq_id[timer_uniq_id] = stored_timer.id
-                        self._check_populate_dict(
-                            yml_file,
-                            f'/timers/{timer_uniq_id}/hours',
-                            timer_dict['hours'],
-                        )
-                        for timer_hour_uniq_id, timer_hour_dict in timer_dict[
-                            'hours'
-                        ].items():
-                            self._check_populate_dict(
-                                yml_file,
-                                f'/timers/{timer_uniq_id}/hours/{timer_hour_uniq_id}',
-                                timer_hour_dict,
-                                mandatory_fields=[
-                                    'time_str',
-                                ],
-                                optional_fields=[
-                                    'date_str',
-                                    'text_before',
-                                    'text_after',
-                                ],
-                            )
-                            stored_timer_hour: StoredTimerHour = (
-                                event_database.add_stored_timer_hour(stored_timer.id)
-                            )
-                            stored_timer_hour.uniq_id = timer_hour_uniq_id
-                            stored_timer_hour.date_str = timer_hour_dict.get(
-                                'date_str', None
-                            )
-                            stored_timer_hour.time_str = timer_hour_dict['time_str']
-                            with suppress(KeyError):
-                                stored_timer_hour.text_before = timer_hour_dict.get(
-                                    'text_before', None
-                                )
-                            with suppress(KeyError):
-                                stored_timer_hour.text_after = timer_hour_dict.get(
-                                    'text_after', None
-                                )
-                            event_database.update_stored_timer_hour(stored_timer_hour)
-                tournament_ids_by_uniq_id: dict[str, int] = {}
-                if (
-                    'tournaments' in event_dict
-                    and event_dict['tournaments'] is not None
-                ):
-                    self._check_populate_dict(
-                        yml_file, '/tournaments', event_dict['tournaments']
-                    )
-                    for tournament_uniq_id, tournament_dict in event_dict[
-                        'tournaments'
-                    ].items():
-                        self._check_populate_dict(
-                            yml_file,
-                            f'/tournaments/{tournament_uniq_id}',
-                            tournament_dict,
-                            mandatory_fields=[
-                                'name',
-                            ],
-                            optional_fields=[
-                                'filename',
-                                'time_control_initial_time',
-                                'time_control_increment',
-                                'time_control_handicap_penalty_value',
-                                'time_control_handicap_penalty_step',
-                                'time_control_handicap_min_time',
-                                'time_control_initial_time',
-                                'time_control_increment',
-                                'time_control_handicap_penalty_value',
-                                'time_control_handicap_penalty_step',
-                                'time_control_handicap_min_time',
-                            ],
-                        )
-                        stored_tournament: StoredTournament = event_database.add_stored_tournament(
-                            StoredTournament(
-                                id=None,
-                                uniq_id=tournament_uniq_id,
-                                path=None,
-                                filename=tournament_dict.get('filename', None),
-                                name=tournament_dict.get('name', None),
-                                time_control_initial_time=tournament_dict.get(
-                                    'time_control_initial_time', None
-                                ),
-                                time_control_increment=tournament_dict.get(
-                                    'time_control_increment', None
-                                ),
-                                time_control_handicap_penalty_value=tournament_dict.get(
-                                    'time_control_handicap_penalty_value', None
-                                ),
-                                time_control_handicap_penalty_step=tournament_dict.get(
-                                    'time_control_handicap_penalty_step', None
-                                ),
-                                time_control_handicap_min_time=tournament_dict.get(
-                                    'time_control_handicap_min_time', None
-                                ),
-                            )
-                        )
-                        assert stored_tournament.id is not None
-                        tournament_ids_by_uniq_id[tournament_uniq_id] = (
-                            stored_tournament.id
-                        )
-                screen_ids_by_uniq_id: dict[str, int] = {}
-                if 'screens' in event_dict and event_dict['screens'] is not None:
-                    self._check_populate_dict(
-                        yml_file, '/screens', event_dict['screens']
-                    )
-                    for screen_uniq_id, screen_dict in event_dict['screens'].items():
-                        self._check_populate_dict(
-                            yml_file,
-                            f'/screens/{screen_uniq_id}',
-                            screen_dict,
-                            mandatory_fields=[
-                                'type',
-                            ],
-                            optional_fields=[
-                                'public',
-                                'timer_uniq_id',
-                                'input_exit_button',
-                                'players_show_unpaired',
-                                'players_show_opponent',
-                                'results_limit',
-                                'results_tournament_uniq_ids',
-                                'ranking_crosstable',
-                                'background_image',
-                                'background_color',
-                                'name',
-                                'columns',
-                                'font_size',
-                                'menu_link',
-                                'menu_text',
-                                'menu',
-                                'sets',
-                            ],
-                        )
-                        assert screen_dict, (
-                            f'{yml_file.name}: dictionary screens.{screen_uniq_id} is empty'
-                        )
-                        timer_uniq_id: str | None = screen_dict.get(
-                            'timer_uniq_id', None
-                        )
-                        timer_id: int | None = (
-                            timer_ids_by_uniq_id[timer_uniq_id]
-                            if timer_uniq_id
-                            else None
-                        )
-                        type_: str = screen_dict.get('type', None)
-                        input_exit_button: bool | None = None
-                        players_show_unpaired: bool | None = None
-                        players_show_opponent: bool | None = None
-                        results_limit: int | None = None
-                        results_max_age: int | None = None
-                        results_tournament_ids: list[int] = []
-                        ranking_crosstable: bool = False
-                        background_image: str | None = None
-                        background_color: str | None = None
-                        match type_:
-                            case 'boards':
-                                pass
-                            case 'input':
-                                input_exit_button = screen_dict.get(
-                                    'input_exit_button', False
-                                )
-                            case 'players':
-                                players_show_unpaired = screen_dict.get(
-                                    'players_show_unpaired',
-                                    SharlyChessConfig.default_players_show_unpaired,
-                                )
-                                players_show_opponent = screen_dict.get(
-                                    'players_show_opponent',
-                                    SharlyChessConfig.default_players_show_opponent,
-                                )
-                            case 'results':
-                                results_limit: int = screen_dict.get(
-                                    'results_limit', None
-                                )
-                                results_max_age: int = screen_dict.get(
-                                    'results_max_age', None
-                                )
-                                if 'results_tournament_uniq_ids' in screen_dict:
-                                    self._check_populate_list(
-                                        yml_file,
-                                        f'/screens/{screen_uniq_id}/results_tournament_uniq_ids',
-                                        screen_dict['results_tournament_uniq_ids'],
-                                    )
-                                    results_tournament_ids = [
-                                        tournament_ids_by_uniq_id[tournament_uniq_id]
-                                        for tournament_uniq_id in screen_dict[
-                                            'results_tournament_uniq_ids'
-                                        ]
-                                    ]
-                                else:
-                                    results_tournament_ids = []
-                            case 'ranking':
-                                ranking_crosstable: bool = screen_dict.get(
-                                    'ranking_crosstable', False
-                                )
-                            case 'image':
-                                background_image: str = screen_dict.get(
-                                    'background_image', None
-                                )
-                                background_color: str = screen_dict.get(
-                                    'background_color', None
-                                )
-                            case _:
-                                raise ValueError
-                        menu_link: bool | None = None
-                        menu_text: str | None = None
-                        menu: str | None = None
-                        match type_:
-                            case 'boards' | 'input' | 'players' | 'results' | 'ranking':
-                                menu_link: bool = screen_dict.get('menu_link', True)
-                                menu_text: str = screen_dict.get('menu_text', '')
-                                menu: str = screen_dict.get('menu', '')
-                            case 'image':
-                                background_image: str = screen_dict.get(
-                                    'background_image', None
-                                )
-                                background_color: str = screen_dict.get(
-                                    'background_color', None
-                                )
-                            case _:
-                                raise ValueError
-                        stored_screen: StoredScreen = event_database.add_stored_screen(
-                            StoredScreen(
-                                id=None,
-                                uniq_id=screen_uniq_id,
-                                name=screen_dict.get('name', None),
-                                type=type_,
-                                public=screen_dict.get('public', True),
-                                columns=screen_dict.get('columns', None),
-                                font_size=screen_dict.get('font_size', None),
-                                menu_link=menu_link,
-                                menu_text=menu_text,
-                                menu=menu,
-                                timer_id=timer_id,
-                                input_exit_button=input_exit_button,
-                                players_show_unpaired=players_show_unpaired,
-                                players_show_opponent=players_show_opponent,
-                                results_limit=results_limit,
-                                results_max_age=results_max_age,
-                                results_tournament_ids=results_tournament_ids,
-                                ranking_crosstable=ranking_crosstable,
-                                background_image=background_image,
-                                background_color=background_color,
-                            )
-                        )
-                        assert stored_screen.id is not None
-                        screen_ids_by_uniq_id[screen_uniq_id] = stored_screen.id
-                        if 'sets' in screen_dict:
-                            self._check_populate_list(
-                                yml_file,
-                                f'/screens/{screen_uniq_id}',
-                                screen_dict['sets'],
-                            )
-                            for screen_set_dict in screen_dict['sets']:
-                                self._check_populate_dict(
-                                    yml_file,
-                                    f'/screens/{screen_uniq_id}/sets',
-                                    screen_set_dict,
-                                    optional_fields=[
-                                        'tournament_uniq_id',
-                                        'name',
-                                        'fixed_boards_str',
-                                        'first',
-                                        'last',
-                                    ],
-                                )
-                                tournament_uniq_id: str = screen_set_dict[
-                                    'tournament_uniq_id'
-                                ]
-                                tournament_id: int = tournament_ids_by_uniq_id[
-                                    tournament_uniq_id
-                                ]
-                                stored_screen_set: StoredScreenSet = (
-                                    event_database.add_stored_screen_set(
-                                        stored_screen.id, tournament_id
-                                    )
-                                )
-                                stored_screen_set.tournament_id = tournament_id
-                                stored_screen_set.name = screen_set_dict.get(
-                                    'name', None
-                                )
-                                stored_screen_set.fixed_boards_str = (
-                                    screen_set_dict.get('fixed_boards_str', None)
-                                )
-                                stored_screen_set.first = screen_set_dict.get(
-                                    'first', None
-                                )
-                                stored_screen_set.last = screen_set_dict.get(
-                                    'last', None
-                                )
-                                event_database.update_stored_screen_set(
-                                    stored_screen_set
-                                )
-                family_ids_by_uniq_id: dict[str, int] = {}
-                if 'families' in event_dict and event_dict['families'] is not None:
-                    self._check_populate_dict(
-                        yml_file, '/families', event_dict['families']
-                    )
-                    for family_uniq_id, family_dict in event_dict['families'].items():
-                        self._check_populate_dict(
-                            yml_file,
-                            f'/families/{family_uniq_id}',
-                            family_dict,
-                            mandatory_fields=[
-                                'type',
-                            ],
-                            optional_fields=[
-                                'public',
-                                'tournament_uniq_id',
-                                'timer_uniq_id',
-                                'input_exit_button',
-                                'players_show_unpaired',
-                                'players_show_opponent',
-                                'ranking_crosstable',
-                                'name',
-                                'columns',
-                                'font_size',
-                                'menu_link',
-                                'menu_text',
-                                'menu',
-                                'first',
-                                'last',
-                                'parts',
-                                'number',
-                            ],
-                        )
-                        timer_uniq_id: str | None = family_dict.get(
-                            'timer_uniq_id', None
-                        )
-                        timer_id: int = (
-                            timer_ids_by_uniq_id[timer_uniq_id]
-                            if timer_uniq_id
-                            else None
-                        )
-                        type_: str = family_dict.get('type', None)
-                        tournament_uniq_id: str = family_dict.get('tournament_uniq_id')
-                        tournament_id: int = tournament_ids_by_uniq_id[
-                            tournament_uniq_id
-                        ]
-                        input_exit_button: bool | None = None
-                        players_show_unpaired: bool | None = None
-                        players_show_opponent: bool | None = None
-                        ranking_crosstable: bool = False
-                        match type_:
-                            case 'boards':
-                                pass
-                            case 'input':
-                                input_exit_button = family_dict.get(
-                                    'input_exit_button', False
-                                )
-                            case 'players':
-                                players_show_unpaired = family_dict.get(
-                                    'players_show_unpaired',
-                                    SharlyChessConfig.default_players_show_unpaired,
-                                )
-                                players_show_opponent = family_dict.get(
-                                    'players_show_opponent',
-                                    SharlyChessConfig.default_players_show_opponent,
-                                )
-                            case 'ranking':
-                                ranking_crosstable = family_dict.get(
-                                    'ranking_crosstable', False
-                                )
-                            case _:
-                                raise ValueError(f'type={type_}')
-                        match type_:
-                            case 'boards' | 'input' | 'players' | 'ranking':
-                                menu_link: bool = family_dict.get('menu_link', True)
-                                menu_text: str = family_dict.get('menu_text', '')
-                                menu: str = family_dict.get('menu', '')
-                            case _:
-                                raise ValueError(f'type={type_}')
-                        stored_family: StoredFamily = event_database.add_stored_family(
-                            StoredFamily(
-                                id=None,
-                                uniq_id=family_uniq_id,
-                                name=family_dict.get('name', None),
-                                tournament_id=tournament_id,
-                                type=type_,
-                                public=family_dict.get('public', True),
-                                columns=family_dict.get('columns', None),
-                                font_size=family_dict.get('font_size', None),
-                                menu_link=bool(menu_link),
-                                menu_text=menu_text or '',
-                                menu=menu or '',
-                                timer_id=timer_id,
-                                input_exit_button=input_exit_button,
-                                players_show_unpaired=players_show_unpaired,
-                                players_show_opponent=players_show_opponent,
-                                ranking_crosstable=ranking_crosstable,
-                                ranking_round=None,
-                                ranking_min_points=None,
-                                ranking_max_points=None,
-                                first=family_dict.get('first', None),
-                                last=family_dict.get('last', None),
-                                parts=family_dict.get('parts', None),
-                                number=family_dict.get('number', None),
-                            )
-                        )
-                        assert stored_family.id
-                        family_ids_by_uniq_id[family_uniq_id] = stored_family.id
-                if 'rotators' in event_dict and event_dict['rotators'] is not None:
-                    self._check_populate_dict(
-                        yml_file, '/rotators', event_dict['rotators']
-                    )
-                    for rotator_uniq_id, rotator_dict in event_dict['rotators'].items():
-                        self._check_populate_dict(
-                            yml_file,
-                            f'/rotators/{rotator_uniq_id}',
-                            rotator_dict,
-                            optional_fields=[
-                                'public',
-                                'delay',
-                                'screen_uniq_ids',
-                                'family_uniq_ids',
-                            ],
-                        )
-                        screen_ids: list[int]
-                        family_ids: list[int]
-                        if 'screen_uniq_ids' in rotator_dict:
-                            self._check_populate_list(
-                                yml_file,
-                                f'/rotator/{rotator_uniq_id}/screen_uniq_ids',
-                                rotator_dict['screen_uniq_ids'],
-                            )
-                            screen_ids = [
-                                screen_ids_by_uniq_id[screen_uniq_id]
-                                for screen_uniq_id in rotator_dict['screen_uniq_ids']
-                            ]
-                        else:
-                            screen_ids = []
-                        if 'family_uniq_ids' in rotator_dict:
-                            self._check_populate_list(
-                                yml_file,
-                                f'/rotator/{rotator_uniq_id}/family_uniq_ids',
-                                rotator_dict['family_uniq_ids'],
-                            )
-                            family_ids = [
-                                family_ids_by_uniq_id[family_uniq_id]
-                                for family_uniq_id in rotator_dict['family_uniq_ids']
-                            ]
-                        else:
-                            family_ids = []
-                        event_database.add_stored_rotator(
-                            StoredRotator(
-                                id=None,
-                                uniq_id=rotator_uniq_id,
-                                public=screen_dict.get('public', True),
-                                delay=rotator_dict.get('delay', None),
-                                screen_ids=screen_ids,
-                                family_ids=family_ids,
-                            )
-                        )
-                event_database.commit()
-            logger.info('Database [%s] has been populated.', self.file)
-        except OperationalError as e:
-            logger.warning('Database [%s] creation failed: %s', self.file, e.args)
-            self.file.unlink(missing_ok=True)
-            raise e
+    @classmethod
+    def database_modified_timestamp(cls, uniq_id: str) -> float:
+        return cls.event_database_path(uniq_id).lstat().st_mtime
 
     def delete(self) -> Path:
         """Soft-deletes the event database file by archiving it."""
@@ -929,7 +254,6 @@ class EventDatabase(MigrationDatabase):
             start=row['start'],
             stop=row['stop'],
             public=self.load_bool_from_database_field(row['public']),
-            path=row['path'],
             location=row['location'],
             hide_background_image=self.load_bool_from_database_field(
                 row.get(
@@ -987,7 +311,6 @@ class EventDatabase(MigrationDatabase):
         metadata.screen_count = self._get_table_count('screen')
         metadata.family_count = self._get_table_count('family')
         metadata.rotator_count = self._get_table_count('rotator')
-        metadata.last_tournament_update = self.get_all_tournaments_last_update()
         return metadata
 
     def update_stored_event(
@@ -1012,7 +335,6 @@ class EventDatabase(MigrationDatabase):
                     'stop',
                     'public',
                     'federation',
-                    'path',
                     'location',
                     'hide_background_image',
                     'background_image',
@@ -1322,14 +644,14 @@ class EventDatabase(MigrationDatabase):
         return self._write_stored_timer(stored_timer)
 
     def delete_stored_timer(self, timer_id: int):
+        # NOTE (Molrn) The table definition of `family` and `screen` are missing
+        # the `ON DELETE SET NULL` clause, so it has to be done manually
         self.execute(
             'UPDATE `family` SET `timer_id` = NULL WHERE `timer_id` = ?;', (timer_id,)
         )
         self.execute(
             'UPDATE `screen` SET `timer_id` = NULL WHERE `timer_id` = ?;', (timer_id,)
         )
-        self._delete_stored_timer_hours(timer_id)
-        # references are not deleted as they should be!
         self.execute('DELETE FROM `timer` WHERE id = ?;', (timer_id,))
 
     # ---------------------------------------------------------------------------------
@@ -1342,8 +664,6 @@ class EventDatabase(MigrationDatabase):
             id=row['id'],
             uniq_id=row['uniq_id'],
             name=row['name'],
-            path=row['path'],
-            filename=row['filename'],
             time_control_initial_time=row['time_control_initial_time'],
             time_control_increment=row['time_control_increment'],
             time_control_handicap_penalty_step=row[
@@ -1369,6 +689,8 @@ class EventDatabase(MigrationDatabase):
             last_result_update=row['last_result_update'],
             last_illegal_move_update=row['last_illegal_move_update'],
             last_check_in_update=row['last_check_in_update'],
+            last_pairing_update=row['last_pairing_update'],
+            last_player_update=row['last_player_update'],
             tie_breaks=cls.load_json_from_database_field(row['tie_breaks']),
             start=row['start'],
             stop=row['stop'],
@@ -1392,20 +714,19 @@ class EventDatabase(MigrationDatabase):
             return self._row_to_stored_tournament(row)
         return None
 
-    def get_stored_tournament_last_updates(self) -> dict[int, float]:
-        """Fetches the timestamp of the last update of each tournament.
-        Returns a dict of timestamp per tournament ID."""
-        self.execute('SELECT `id`, `last_update` FROM `tournament`')
-        return {row['id']: row['last_update'] for row in self.fetchall()}
-
     def load_stored_tournaments(self) -> list[StoredTournament]:
         self.execute('SELECT * FROM `tournament` ORDER BY `uniq_id`')
         stored_tournaments: list[StoredTournament] = []
         for row in self.fetchall():
             stored_tournament = self._row_to_stored_tournament(row)
-            assert stored_tournament.id is not None
+            id_ = stored_tournament.id
+            assert id_ is not None
             stored_tournament.stored_prize_groups = (
-                self.load_tournament_stored_prize_groups(stored_tournament.id)
+                self.load_tournament_stored_prize_groups(id_)
+            )
+            stored_tournament.stored_players = self.load_tournament_stored_players(id_)
+            stored_tournament.stored_boards_by_round = (
+                self.load_tournament_stored_boards_by_round(id_)
             )
             stored_tournaments.append(stored_tournament)
         return stored_tournaments
@@ -1429,8 +750,6 @@ class EventDatabase(MigrationDatabase):
                 [
                     'uniq_id',
                     'name',
-                    'path',
-                    'filename',
                     'time_control_initial_time',
                     'time_control_increment',
                     'time_control_handicap_penalty_step',
@@ -1448,9 +767,6 @@ class EventDatabase(MigrationDatabase):
                     'start',
                     'stop',
                     'last_rounds_no_byes',
-                    'last_result_update',
-                    'last_illegal_move_update',
-                    'last_check_in_update',
                     'three_points_for_a_win',
                 ],
             )
@@ -1504,35 +820,40 @@ class EventDatabase(MigrationDatabase):
     def delete_stored_tournament(self, tournament_id: int):
         self.execute('DELETE FROM `tournament` WHERE `id` = ?;', (tournament_id,))
 
-    def _set_tournament_last_illegal_move_update(self, tournament_id: int):
+    def _set_tournament_timestamp_field(self, field_: str, tournament_id: int) -> float:
+        # TODO (Molrn) replace all these usages with the appropriate SQL triggers
+        timestamp = time.time()
+        # FIXME(Amaras): This can can be a SQL injection attack vector.
+        # As such, it needs to be eliminated as quickly as possible.
         self.execute(
-            'UPDATE `tournament` SET `last_illegal_move_update` = ? WHERE `id` = ?',
+            f'UPDATE `tournament` SET `{field_}` = ? WHERE `id` = ?',
             (
-                time.time(),
+                timestamp,
                 tournament_id,
             ),
         )
+        return timestamp
 
-    def set_tournament_last_check_in_update(self, tournament_id: int):
-        self.execute(
-            'UPDATE `tournament` SET `last_check_in_update` = ? WHERE `id` = ?',
-            (
-                time.time(),
-                tournament_id,
-            ),
+    def set_tournament_last_illegal_move_update(self, tournament_id: int) -> float:
+        return self._set_tournament_timestamp_field(
+            'last_illegal_move_update', tournament_id
+        )
+
+    def set_tournament_last_check_in_update(self, tournament_id: int) -> float:
+        return self._set_tournament_timestamp_field(
+            'last_check_in_update', tournament_id
         )
 
     def set_tournament_last_result_update(self, tournament_id: int) -> float:
-        """Change the last result update of the tournament with the current date and return this date."""
-        date: float = time.time()
-        self.execute(
-            'UPDATE `tournament` SET `last_result_update` = ? WHERE `id` = ?',
-            (
-                date,
-                tournament_id,
-            ),
+        return self._set_tournament_timestamp_field('last_result_update', tournament_id)
+
+    def set_tournament_last_pairing_update(self, tournament_id: int) -> float:
+        return self._set_tournament_timestamp_field(
+            'last_pairing_update', tournament_id
         )
-        return date
+
+    def set_tournament_last_player_update(self, tournament_id: int) -> float:
+        return self._set_tournament_timestamp_field('last_player_update', tournament_id)
 
     def set_tournament_check_in(self, tournament_id: int, o: bool):
         """Opens (o is True) or closes (o is False) the check_in for the tournament."""
@@ -1571,204 +892,362 @@ class EventDatabase(MigrationDatabase):
             ),
         )
 
-    def get_all_tournaments_last_update(self) -> float | None:
-        self.execute('SELECT MAX(`last_update`) AS `last_update` FROM `tournament`')
-        return self.fetchone()['last_update']
-
     # ---------------------------------------------------------------------------------
-    # Illegal moves
+    # StoredPlayer
     # ---------------------------------------------------------------------------------
 
-    @staticmethod
-    def _row_to_stored_illegal_move(row: dict[str, Any]) -> StoredIllegalMove:
-        return StoredIllegalMove(
+    @classmethod
+    def _row_to_stored_player(cls, row: dict[str, Any]) -> StoredPlayer:
+        return StoredPlayer(
             id=row['id'],
+            last_name=row['last_name'],
+            first_name=row['first_name'],
+            date_of_birth=cls.load_date_from_database_field(row['date_of_birth']),
+            gender=row['gender'],
+            mail=row['mail'],
+            phone=row['phone'],
+            comment=row['comment'],
+            owed=row['owed'],
+            paid=row['paid'],
+            title=row['title'],
+            ratings=cls.set_dict_int_keys(
+                cls.load_json_from_database_field(row['ratings'])
+            )
+            or {},
+            fide_id=row['fide_id'],
+            federation=row['federation'],
+            club=row['club'],
+            fixed=row['fixed'],
+            check_in=row['check_in'],
+            plugin_data=cls.load_json_from_database_field(row['plugin_data']),
+        )
+
+    def load_tournament_stored_players(self, tournament_id: int) -> list[StoredPlayer]:
+        self.execute(
+            (
+                'SELECT `player`.* FROM `player` '
+                'INNER JOIN `tournament_player` ON `player`.`id` = `player_id`'
+                'WHERE `tournament_id` = ?'
+            ),
+            (tournament_id,),
+        )
+        stored_players: list[StoredPlayer] = []
+        for row in self.fetchall():
+            player = self._row_to_stored_player(row)
+            assert player.id is not None
+            player.stored_tournament_player = self.load_player_stored_tournament_player(
+                player.id
+            )
+            stored_players.append(player)
+        return stored_players
+
+    @classmethod
+    def _get_player_fields_dict(cls, stored_player: StoredPlayer) -> dict[str, Any]:
+        return cls._get_fields_dict(
+            stored_player,
+            [
+                'first_name',
+                'last_name',
+                'gender',
+                'mail',
+                'phone',
+                'comment',
+                'owed',
+                'paid',
+                'title',
+                'fide_id',
+                'federation',
+                'club',
+                'fixed',
+            ],
+        ) | {
+            'date_of_birth': cls.dump_date_to_database_field(
+                stored_player.date_of_birth
+            ),
+            'ratings': cls.dump_to_json_database_field(stored_player.ratings),
+            'plugin_data': cls.dump_to_json_database_field(stored_player.plugin_data),
+        }
+
+    def add_stored_player(
+        self,
+        stored_player: StoredPlayer,
+    ) -> int:
+        fields = self._get_player_fields_dict(stored_player)
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `player`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        if not (player_id := self._last_inserted_id()):
+            raise RuntimeError('Player insertion failed')
+        return player_id
+
+    def update_stored_player(self, stored_player: StoredPlayer):
+        fields = self._get_player_fields_dict(stored_player)
+        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        self.execute(
+            f'UPDATE `player` SET {field_sets} WHERE `id` = ?',
+            tuple(fields.values()) + (stored_player.id,),
+        )
+
+    def delete_stored_player(self, player_id: int):
+        self.execute('DELETE FROM `player` WHERE `id` = ?;', (player_id,))
+
+    def set_player_check_in(self, player_id: int, check_in: bool):
+        self.execute(
+            'UPDATE `player` SET `check_in` = ? WHERE `id` = ?',
+            (check_in, player_id),
+        )
+
+    def set_players_check_in(self, player_ids: list[int], check_in: bool):
+        list_set = ', '.join(['?'] * len(player_ids))
+        self.execute(
+            f'UPDATE `player` SET `check_in` = ? WHERE `id` IN ({list_set})',
+            (check_in,) + tuple(player_ids),
+        )
+
+    def delete_players_personal_data(self):
+        """Delete all personal data (email and phone number) from the database."""
+        self.execute(
+            'UPDATE `player` SET `phone` = ?, `mail`= ?',
+            (
+                '',
+                '',
+            ),
+        )
+
+    def delete_all_stored_players(self):
+        self.execute('DELETE FROM `player`')
+
+    # ---------------------------------------------------------------------------------
+    # StoredTournamentPlayer
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_tournament_player(
+        cls, row: dict[str, Any]
+    ) -> StoredTournamentPlayer:
+        return StoredTournamentPlayer(
             tournament_id=row['tournament_id'],
-            round=row['round'],
             player_id=row['player_id'],
-            date=row['date'],
+            pairing_number=row['pairing_number'],
         )
 
-    def _get_stored_illegal_move(
-        self,
-        illegal_move_id: int,
-    ) -> StoredIllegalMove | None:
+    def load_player_stored_tournament_player(
+        self, player_id: int
+    ) -> StoredTournamentPlayer:
         self.execute(
-            'SELECT * FROM `illegal_move` WHERE `id` = ?',
-            (illegal_move_id,),
+            'SELECT * FROM `tournament_player` WHERE `player_id` = ?',
+            (player_id,),
         )
-        row: dict[str, Any]
-        if row := self.fetchone():
-            return self._row_to_stored_illegal_move(row)
-        return None
+        tournament_player = self._row_to_stored_tournament_player(self.fetchone())
+        tournament_player.stored_pairings = self.load_tournament_player_stored_pairings(
+            tournament_player.tournament_id, player_id
+        )
+        return tournament_player
 
-    def get_stored_illegal_moves(self, tournament_id: int, round_: int) -> Counter[int]:
+    def add_stored_tournament_player(
+        self, stored_tournament_player: StoredTournamentPlayer
+    ):
+        fields = self._get_fields_dict(
+            stored_tournament_player, ['tournament_id', 'player_id', 'pairing_number']
+        )
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
         self.execute(
-            'SELECT `illegal_move`.* '
-            'FROM `illegal_move` '
-            'JOIN `tournament` ON `illegal_move`.`tournament_id` = `tournament`.`id`'
-            'WHERE `tournament`.`id` = ? AND `round` = ?',
+            f'INSERT INTO `tournament_player`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        for stored_pairing in stored_tournament_player.stored_pairings:
+            self.add_stored_pairing(stored_pairing)
+
+    def set_tournament_player_pairing_number(
+        self, stored_tournament_player: StoredTournamentPlayer
+    ):
+        self.execute(
             (
-                tournament_id,
-                round_,
+                'UPDATE `tournament_player` SET `pairing_number` = ? '
+                'WHERE `tournament_id` = ? AND `player_id` = ?'
+            ),
+            (
+                stored_tournament_player.pairing_number,
+                stored_tournament_player.tournament_id,
+                stored_tournament_player.player_id,
             ),
         )
-        illegal_moves: Counter[int] = Counter[int]()
-        for row in self.fetchall():
-            illegal_moves[int(row['player_id'])] += 1
-        return illegal_moves
 
-    def add_stored_illegal_move(
-        self, tournament_id: int, round_: int, player_id: int
-    ) -> StoredIllegalMove:
-        self._set_tournament_last_illegal_move_update(tournament_id)
-        fields: list[str] = [
-            'tournament_id',
-            'round',
-            'player_id',
-            'date',
-        ]
-        params: list = [tournament_id, round_, player_id, time.time()]
-        protected_fields = [f'`{f}`' for f in fields]
+    def delete_stored_tournament_player(self, tournament_id: int, player_id: int):
         self.execute(
-            f'INSERT INTO `illegal_move`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
-            tuple(params),
-        )
-        illegal_move_id: int | None = self._last_inserted_id()
-        if illegal_move_id is None:
-            raise RuntimeError('Illegal move insertion failed')
-        fetched_stored_illegal_move = self._get_stored_illegal_move(illegal_move_id)
-        if fetched_stored_illegal_move is None:
-            raise RuntimeError('Illegal move write failed')
-        return fetched_stored_illegal_move
-
-    def delete_stored_illegal_move(
-        self, tournament_id: int, round_: int, player_id: int
-    ) -> bool:
-        self._set_tournament_last_illegal_move_update(tournament_id)
-        self.execute(
-            'SELECT `id` FROM `illegal_move` WHERE `tournament_id` = ? AND `round` = ? AND `player_id` = ? LIMIT 1',
             (
-                tournament_id,
-                round_,
-                player_id,
+                'DELETE FROM `tournament_player` '
+                'WHERE `tournament_id` = ? AND `player_id` = ?'
             ),
+            (tournament_id, player_id),
         )
-        row: dict[str, Any] = self.fetchone()
-        if not row:
-            return False
         self.execute(
-            'DELETE FROM `illegal_move` WHERE `id` = ?',
-            (row['id'],),
+            'DELETE FROM `pairing` WHERE `tournament_id` = ? AND `player_id` = ?',
+            (tournament_id, player_id),
         )
-        return True
 
     # ---------------------------------------------------------------------------------
-    # results
+    # StoredPairings
     # ---------------------------------------------------------------------------------
 
-    @staticmethod
-    def _row_to_stored_result(row: dict[str, Any]) -> StoredResult:
-        return StoredResult(
-            id=row['id'],
+    @classmethod
+    def _row_to_stored_pairing(cls, row: dict[str, Any]) -> StoredPairing:
+        return StoredPairing(
             tournament_id=row['tournament_id'],
-            board_id=row['board_id'],
+            player_id=row['player_id'],
+            round_=row['round'],
             result=row['result'],
-            date=row['date'],
+            board_id=row['board_id'],
+            illegal_moves=row['illegal_moves'],
         )
 
-    def _get_stored_result(
-        self,
-        result_id: int,
-    ) -> StoredResult | None:
+    def load_tournament_player_stored_pairings(
+        self, tournament_id: int, player_id: int
+    ) -> list[StoredPairing]:
         self.execute(
-            'SELECT * FROM `result` WHERE `id` = ?',
-            (result_id,),
-        )
-        row: dict[str, Any]
-        if row := self.fetchone():
-            return self._row_to_stored_result(row)
-        return None
-
-    def add_stored_result(
-        self, tournament_id: int, round_: int, board: Board, result: UtilResult
-    ) -> float:
-        """Stores a result and return the date of the update."""
-        assert board.id is not None
-        assert board.white_player is not None
-        assert board.black_player is not None
-        date: float = self.set_tournament_last_result_update(tournament_id)
-        self.execute(
-            'INSERT INTO `result`('
-            '    `tournament_id`, `round`, `board_id`, '
-            '    `white_player_id`, `black_player_id`, '
-            '    `value`, `date`'
-            ') VALUES(?, ?, ?, ?, ?, ?, ?)',
             (
-                tournament_id,
-                round_,
-                board.id,
-                board.white_player.id,
-                board.black_player.id,
-                result,
-                date,
+                'SELECT * FROM `pairing` '
+                'WHERE `tournament_id` = ? AND `player_id` = ? '
+                'ORDER BY `round`'
+            ),
+            (tournament_id, player_id),
+        )
+        return [self._row_to_stored_pairing(row) for row in self.fetchall()]
+
+    def add_stored_pairing(
+        self,
+        stored_pairing: StoredPairing,
+    ):
+        fields = self._get_fields_dict(
+            stored_pairing,
+            ['tournament_id', 'player_id', 'result', 'board_id', 'illegal_moves'],
+        ) | {'round': stored_pairing.round_}
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `pairing`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+
+    def update_stored_pairing(self, stored_pairing: StoredPairing):
+        fields = self._get_fields_dict(
+            stored_pairing, ['result', 'board_id', 'illegal_moves']
+        )
+        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        self.execute(
+            (
+                f'UPDATE `pairing` SET {field_sets} '
+                'WHERE `tournament_id` = ? AND `player_id` = ? AND `round` = ?'
+            ),
+            tuple(fields.values())
+            + (
+                stored_pairing.tournament_id,
+                stored_pairing.player_id,
+                stored_pairing.round_,
             ),
         )
-        return date
 
-    def delete_stored_result(
-        self, tournament_id: int, round_: int, board_id: int
-    ) -> float:
-        """Deletes a result and return the date of the update."""
-        date: float = self.set_tournament_last_result_update(tournament_id)
+    def delete_stored_pairing(self, stored_pairing: StoredPairing):
         self.execute(
-            'DELETE FROM `result` WHERE `tournament_id` = ? AND `round` = ? AND `board_id` = ?',
-            (tournament_id, round_, board_id),
+            (
+                'DELETE FROM `pairing` '
+                'WHERE `tournament_id` = ? AND `player_id` = ? AND `round` = ?'
+            ),
+            (
+                stored_pairing.tournament_id,
+                stored_pairing.player_id,
+                stored_pairing.round_,
+            ),
         )
-        return date
 
-    def get_stored_results(
-        self, limit: int, tournament_ids: list[int], max_age: int
-    ) -> list[DataResult]:
-        params: list = [time.time() - max_age * 60]
-        if not tournament_ids:
-            query: str = (
-                'SELECT     * FROM `result` WHERE `date` > ?ORDER BY `date` DESC'
-            )
-        else:
-            query: str = (
-                'SELECT '
-                '    * '
-                'FROM `result` '
-                f'WHERE `date` > ? AND ({" OR ".join(["`tournament_id` = ?"] * len(tournament_ids))}) '
-                'ORDER BY `date` DESC'
-            )
-            params += tournament_ids
-        if limit:
-            query += ' LIMIT ?'
-            params += [
-                limit,
-            ]
-        self.execute(query, tuple(params))
-        results: list[DataResult] = []
+    # ---------------------------------------------------------------------------------
+    # StoredBoard
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_board(cls, row: dict[str, Any]) -> StoredBoard:
+        return StoredBoard(
+            id=row['id'],
+            white_player_id=row['white_player_id'],
+            black_player_id=row['black_player_id'],
+            index=row['index'],
+            last_result_update=row['last_result_update'],
+        )
+
+    def load_tournament_stored_boards_by_round(
+        self, tournament_id: int
+    ) -> dict[int, list[StoredBoard]]:
+        self.execute(
+            (
+                'SELECT `board`.*, `pairing`.`round` '
+                'FROM `board` INNER JOIN `pairing` '
+                'ON `board`.`id` = `pairing`.`board_id` '
+                'WHERE `pairing`.`tournament_id` = ? '
+                'ORDER BY `pairing`.`round`, `board`.`index`'
+            ),
+            (tournament_id,),
+        )
+        stored_boards_by_round: dict[int, list[StoredBoard]] = {}
         for row in self.fetchall():
-            try:
-                value: UtilResult = UtilResult.from_papi_value(int(row['value']))
-            except ValueError:
-                logger.warning('Invalid result [%s] found in database.', row['value'])
-                continue
-            results.append(
-                DataResult(
-                    row['date'],
-                    row['tournament_id'],
-                    row['round'],
-                    row['board_id'],
-                    row['white_player_id'],
-                    row['black_player_id'],
-                    value,
-                )
+            board = self._row_to_stored_board(row)
+            round_ = row['round']
+            if round_ in stored_boards_by_round:
+                stored_boards_by_round[round_].append(board)
+            else:
+                stored_boards_by_round[round_] = [board]
+        return stored_boards_by_round
+
+    def add_stored_board(self, stored_board: StoredBoard) -> int:
+        fields = self._get_fields_dict(
+            stored_board, ['white_player_id', 'black_player_id', 'index']
+        )
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `board`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        if not (board_id := self._last_inserted_id()):
+            raise RuntimeError('Board insertion failed')
+        return board_id
+
+    def update_stored_board(self, stored_board: StoredBoard):
+        fields = self._get_fields_dict(
+            stored_board, ['white_player_id', 'black_player_id', 'index']
+        )
+        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        self.execute(
+            f'UPDATE `board` SET {field_sets} WHERE `id` = ?',
+            tuple(fields.values()) + (stored_board.id,),
+        )
+
+    def delete_stored_board(self, board_id: int):
+        self.execute('DELETE FROM `board` WHERE `id` = ?;', (board_id,))
+
+    def update_board_last_result_update(
+        self, board_id: int, clear: bool = False
+    ) -> float | None:
+        """Updates board timestamp"""
+
+        if clear:
+            self.execute(
+                'UPDATE `board` SET `last_result_update` = NULL WHERE `id` = ?',
+                (board_id,),
             )
-        return results
+            return None
+        else:
+            date = time.time()
+
+            self.execute(
+                'UPDATE `board` SET `last_result_update` = ? WHERE `id` = ?',
+                (date, board_id),
+            )
+
+            return date
 
     # ---------------------------------------------------------------------------------
     # StoredFamily
@@ -2491,15 +1970,6 @@ class EventDatabase(MigrationDatabase):
             name=row['name'],
         )
 
-    def get_stored_prize_group(self, prize_group_id: int) -> StoredPrizeGroup | None:
-        self.execute(
-            'SELECT * FROM `prize_group` WHERE `id` = ?',
-            (prize_group_id,),
-        )
-        if row := self.fetchone():
-            return self._row_to_stored_prize_group(row)
-        return None
-
     def load_tournament_stored_prize_groups(
         self, tournament_id: int
     ) -> list[StoredPrizeGroup]:
@@ -2517,10 +1987,7 @@ class EventDatabase(MigrationDatabase):
             stored_prize_groups.append(prize_group)
         return stored_prize_groups
 
-    def add_stored_prize_group(
-        self,
-        stored_prize_group: StoredPrizeGroup,
-    ) -> int:
+    def add_stored_prize_group(self, stored_prize_group: StoredPrizeGroup) -> int:
         fields = self._get_fields_dict(stored_prize_group, ['tournament_id', 'name'])
         fields_str = ', '.join(f'`{f}`' for f in fields)
         values_str = ', '.join(['?'] * len(fields))
@@ -2532,10 +1999,7 @@ class EventDatabase(MigrationDatabase):
             raise RuntimeError('Prize group insertion failed')
         return prize_group_id
 
-    def update_stored_prize_group(
-        self,
-        stored_prize_group: StoredPrizeGroup,
-    ):
+    def update_stored_prize_group(self, stored_prize_group: StoredPrizeGroup):
         fields = self._get_fields_dict(stored_prize_group, ['tournament_id', 'name'])
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         self.execute(
@@ -2561,17 +2025,6 @@ class EventDatabase(MigrationDatabase):
             is_main=cls.load_bool_from_database_field(row['is_main']),
             index=row['index'],
         )
-
-    def get_stored_prize_category(
-        self, prize_category_id: int
-    ) -> StoredPrizeCategory | None:
-        self.execute(
-            'SELECT * FROM `prize_category` WHERE `id` = ?',
-            (prize_category_id,),
-        )
-        if row := self.fetchone():
-            return self._row_to_stored_prize_category(row)
-        return None
 
     def load_prize_group_stored_prize_categories(
         self, prize_group_id: int
@@ -2658,17 +2111,6 @@ class EventDatabase(MigrationDatabase):
             options=cls.load_json_from_database_field(row['options']),
         )
 
-    def get_stored_prize_criterion(
-        self, prize_criterion_id: int
-    ) -> StoredPrizeCriterion | None:
-        self.execute(
-            'SELECT * FROM `prize_criterion` WHERE `id` = ?',
-            (prize_criterion_id,),
-        )
-        if row := self.fetchone():
-            return self._row_to_stored_prize_criterion(row)
-        return None
-
     def load_prize_category_stored_prize_criteria(
         self, prize_category_id: int
     ) -> list[StoredPrizeCriterion]:
@@ -2730,15 +2172,6 @@ class EventDatabase(MigrationDatabase):
             is_monetary=cls.load_bool_from_database_field(row['is_monetary']),
             description=row['description'],
         )
-
-    def get_stored_prize(self, prize_id: int) -> StoredPrize | None:
-        self.execute(
-            'SELECT * FROM `prize` WHERE `id` = ?',
-            (prize_id,),
-        )
-        if row := self.fetchone():
-            return self._row_to_stored_prize(row)
-        return None
 
     def load_prize_category_stored_prizes(
         self, prize_category_id: int

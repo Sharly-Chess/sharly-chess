@@ -69,5 +69,14 @@ except Exception:
     print('An error occurred.')
 from contextlib import suppress
 
-with suppress(UnicodeDecodeError):
-    input('Press Enter to end.')
+enter_to_end = True
+try:
+    from common import TEST_ENV
+
+    enter_to_end = not TEST_ENV
+except Exception:
+    pass
+
+if enter_to_end:
+    with suppress(UnicodeDecodeError):
+        input('Press Enter to end.')

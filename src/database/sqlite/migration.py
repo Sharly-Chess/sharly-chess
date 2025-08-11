@@ -1,11 +1,13 @@
 import re
 from abc import abstractmethod, ABC
+from dataclasses import dataclass, field
 from functools import cached_property
 from importlib import import_module
 from logging import Logger
 from pkgutil import iter_modules
 from sqlite3 import OperationalError
 from types import ModuleType
+from typing import Callable, Any
 
 from packaging.version import Version
 
@@ -17,11 +19,26 @@ from database.sqlite.migration_database import MigrationDatabase
 logger: Logger = get_logger()
 
 
+@dataclass
+class PostUpgradeTask:
+    """Class representing a task to execute once the database
+    has been upgraded to its latest version.
+    The function executed by this task can contain imports from the core project."""
+
+    function: Callable
+    args: list = field(default_factory=list)
+    kwargs: dict[str, Any] = field(default_factory=dict[str, Any])
+
+    def execute(self):
+        self.function(*self.args, **self.kwargs)
+
+
 class BaseMigration(ABC):
     """Base class for all migrations."""
 
     def __init__(self, database: MigrationDatabase):
         self.database = database
+        self.post_upgrade_tasks: list[PostUpgradeTask] = []
 
     @abstractmethod
     def forward(self):
@@ -52,6 +69,7 @@ class MigrationManager[T: MigrationDatabase](ABC):
     def __init__(self, database: T, base_migration_module: ModuleType):
         self.database = database
         self.base_migration_module = base_migration_module
+        self.post_upgrade_tasks: list[PostUpgradeTask] = []
 
     @property
     @abstractmethod
@@ -259,7 +277,9 @@ class MigrationManager[T: MigrationDatabase](ABC):
 
     def _upgrade(self, target_migration: str):
         while migration := self._next_migration(self.get_migration(), target_migration):
-            self._get_migration_object(migration).forward()
+            migration_object = self._get_migration_object(migration)
+            migration_object.forward()
+            self.post_upgrade_tasks += migration_object.post_upgrade_tasks
             self.set_migration(migration)
             logger.debug(self.log_prefix + f'\t{migration} applied')
 
@@ -271,7 +291,7 @@ class MigrationManager[T: MigrationDatabase](ABC):
         self.set_migration(target_migration)
 
 
-class DatabaseMigrationManager[MigrationDatabase](MigrationManager):
+class DatabaseMigrationManager(MigrationManager[MigrationDatabase]):
     """Migration manager for full databases,
     where the migrations start from an empty database."""
 

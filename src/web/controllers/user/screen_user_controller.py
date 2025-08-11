@@ -25,23 +25,31 @@ class ScreenUserController(BaseScreenUserController):
         date: float,
     ) -> bool:
         tournament: Tournament = screen_set.tournament
-        if tournament.last_update > date:
-            return True
-        if tournament.last_check_in_update > date:
+        tournament.reload_stored_tournament()
+        if (
+            max(
+                tournament.last_update,
+                tournament.last_check_in_update,
+                tournament.last_player_update,
+            )
+            > date
+        ):
             return True
         match screen_set.type:
             case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.RANKING:
-                if tournament.last_illegal_move_update > date:
-                    return True
-                if tournament.last_result_update > date:
+                if (
+                    max(
+                        tournament.last_illegal_move_update,
+                        tournament.last_result_update,
+                        tournament.last_pairing_update,
+                    )
+                    > date
+                ):
                     return True
             case ScreenType.PLAYERS:
                 pass
             case _:
                 raise ValueError(f'type={screen_set.type}')
-        with suppress(FileNotFoundError):
-            if tournament.file_modified_timestamp > date:
-                return True
         return False
 
     @classmethod

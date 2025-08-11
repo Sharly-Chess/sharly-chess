@@ -233,7 +233,7 @@
     {% if 'tournament' in admin_players_filter_columns and admin_event.tournaments_by_id|length > 1 %}
         <td class="text-nowrap text-start">
             {% if player.has_real_pairings or player_addable_tournaments|length <= 1 %}
-                {{ admin_event.tournaments_by_id[player.tournament_id].uniq_id }}
+                {{ admin_event.tournaments_by_id[player.tournament.id].uniq_id }}
             {% else %}
                 <span class="dropdown">
                     <button
@@ -242,14 +242,14 @@
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
                     >
-                        {{ admin_event.tournaments_by_id[player.tournament_id].uniq_id }}
+                        {{ admin_event.tournaments_by_id[player.tournament.id].uniq_id }}
                     </button>
                     <ul
                         class="dropdown-menu players-set-player-tournament p-0"
                         {{ macros.tooltip_attributes('info', _('Change the player\'s tournament.'), 'left') }}
                     >
                         {% for tournament in player_addable_tournaments %}
-                            {% set enable=player.tournament_id != tournament.id %}
+                            {% set enable=player.tournament.id != tournament.id %}
                             <li
                                 class="dropdown-item btn {% if not enable %}disabled{% endif %} text-start"
                                 {% if enable %}

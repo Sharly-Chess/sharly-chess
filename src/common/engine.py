@@ -5,6 +5,8 @@ import shutil
 import time
 import webbrowser
 import zipfile
+import platform
+import subprocess
 from abc import ABC, abstractmethod
 from datetime import datetime
 from json import JSONDecodeError
@@ -34,7 +36,6 @@ from common.logger import (
 )
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
-from data.event import Event
 from data.loader import EventLoader
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.event.event_database import EventDatabase
@@ -251,23 +252,10 @@ class Engine(ABC):
                         '',
                         yes_answer,
                     ]:
-                        for event_id in (
-                            file.stem
-                            for file in SharlyChessConfig.example_events_yml_path.glob(
-                                f'*.{SharlyChessConfig.yml_ext}'
-                            )
+                        for file in SharlyChessConfig.example_events_path.glob(
+                            f'*.{SharlyChessConfig.event_database_ext}'
                         ):
-                            EventDatabase(event_id).create(populate=True)
-                        SharlyChessConfig.default_papi_path.mkdir(
-                            parents=True, exist_ok=True
-                        )
-                        for file in SharlyChessConfig.example_events_papi_path.glob(
-                            f'*.{SharlyChessConfig.papi_ext}'
-                        ):
-                            shutil.copy(
-                                file,
-                                SharlyChessConfig.default_papi_path / file.name,
-                            )
+                            shutil.copy(file, EVENTS_DIR / file.name)
                         break
                     if choice == no_answer:
                         break
@@ -301,34 +289,24 @@ class Engine(ABC):
                 config_database_file,
             )
         logger.info('Recovering events from release [%s]...', version)
-        tournaments_number: int = 0
         events_dir: Path = version_dir / EVENTS_FOLDER
-        papi_dir: Path = version_dir / SharlyChessConfig.default_papi_folder
         for file in files:
             event_uniq_id: str = file.stem
             logger.info('Recovering event [%s]...', event_uniq_id)
             event_database: EventDatabase = EventDatabase(event_uniq_id)
             # copy the event database to its new destination
             shutil.copy(file, event_database.file)
-            # now open the event database to search for local Papi files
-            event: Event = EventLoader.get(request=None).load_event(event_uniq_id)
-            for tournament in event.tournaments_by_id.values():
-                src_file: Path = (
-                    papi_dir / f'{tournament.filename}.{SharlyChessConfig.papi_ext}'
+        if version < Version('3.0.0'):
+            default_papi_dir = 'papi'
+            previous_default_papi_path = version_dir / default_papi_dir
+            default_papi_path = Path(default_papi_dir)
+            default_papi_path.mkdir(parents=True, exist_ok=True)
+            for file in previous_default_papi_path.glob('**/*.papi'):
+                destination_file = default_papi_path / file.relative_to(
+                    previous_default_papi_path
                 )
-                if (
-                    tournament.path == SharlyChessConfig.default_papi_path
-                    and src_file.exists()
-                ):
-                    # recover the Papi file where stored in the default folder
-                    logger.debug(
-                        'Event [%s]: recovering tournament [%s]...',
-                        event_uniq_id,
-                        tournament.uniq_id,
-                    )
-                    shutil.copy(src_file, tournament.file)
-                    logger.debug('%s > %s', str(src_file), str(tournament.file))
-                    tournaments_number += 1
+                destination_file.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy(file, destination_file)
         logger.info('Recovering misc files...')
         files_to_recover = [
             database.file
@@ -366,11 +344,6 @@ class Engine(ABC):
                         custom_files.append(item)
         logger.info(
             'Events recovered: %d (from directory [%s]).', len(files), events_dir
-        )
-        logger.info(
-            'Tournaments recovered: %d (from directory [%s]).',
-            tournaments_number,
-            papi_dir,
         )
         if misc_files:
             logger.info(
@@ -666,10 +639,14 @@ class Engine(ABC):
                     continue
                 download_url: str | None = None
                 for asset in assets:
-                    valid_asset_names = (
-                        f'sharly-chess-{version}-windows.zip',
-                        f'sharly-chess-{version}.zip',
-                    )
+                    if platform.system() == 'Windows':
+                        valid_asset_names: list[str] = [
+                            f'sharly-chess-{version}-windows.zip',
+                            f'sharly-chess-{version}.zip',
+                        ]
+                    else:
+                        valid_asset_names = [f'sharly-chess-{version}-macos.dmg']
+
                     if (
                         asset_name := asset.get('name', 'undefined')
                     ) == f'papi-web-{version}.zip':
@@ -683,6 +660,7 @@ class Engine(ABC):
                             ),
                         )
                         continue
+
                     if asset_name not in valid_asset_names:
                         logger.debug(
                             '[%s] is not a valid asset name in release [%s] (expected [%s]), asset ignored.',
@@ -756,12 +734,65 @@ class Engine(ABC):
             if response.status_code != 200:
                 logger.error('Downloading failed with code [%d].', response.status_code)
                 return False
-            zip_file = TMP_DIR / f'sharly-chess-{version}.zip'
-            zip_file.write_bytes(response.content)
-            logger.debug('File downloaded: [%s].', zip_file)
-            new_version_dir.mkdir()
-            with zipfile.ZipFile(zip_file, 'r') as zip_ref:
-                zip_ref.extractall(new_version_dir)
+            # Determine downloaded file name based on platform
+            if platform.system() == 'Windows':
+                downloaded_file = TMP_DIR / f'sharly-chess-{version}-windows.zip'
+            else:
+                downloaded_file = TMP_DIR / f'sharly-chess-{version}-macos.dmg'
+            downloaded_file.write_bytes(response.content)
+            logger.debug('File downloaded: [%s].', downloaded_file)
+
+            if platform.system() == 'Windows':
+                # For Windows: Unzip the file
+                new_version_dir.mkdir()
+                with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
+                    zip_ref.extractall(new_version_dir)
+            else:
+                # For Mac: Handle the DMG file
+                mount_point = TMP_DIR / f'mount-{version}'
+                mount_point.mkdir(exist_ok=True)
+                try:
+                    # Mount the DMG
+                    subprocess.run(
+                        [
+                            'hdiutil',
+                            'attach',
+                            str(downloaded_file),
+                            '-mountpoint',
+                            str(mount_point),
+                        ],
+                        check=True,
+                    )
+                    dmg_content = list(mount_point.iterdir())
+                    if len(dmg_content) == 1 and dmg_content[0].is_dir():
+                        # Copy the folder from DMG to the new version directory
+                        # Use cp -R to preserve code signatures and extended attributes
+                        subprocess.run(
+                            [
+                                'cp',
+                                '-R',
+                                str(dmg_content[0]),
+                                str(new_version_dir.parent),
+                            ],
+                            check=True,
+                        )
+                    else:
+                        logger.error(
+                            'DMG does not contain exactly one folder as expected.'
+                        )
+                        return False
+                finally:
+                    # Always try to unmount the DMG, even if copying failed
+                    try:
+                        subprocess.run(
+                            ['hdiutil', 'detach', str(mount_point)], check=True
+                        )
+                    except subprocess.CalledProcessError:
+                        logger.warning('Failed to unmount DMG at [%s]', mount_point)
+                    # Clean up the mount point directory
+                    if mount_point.exists():
+                        shutil.rmtree(mount_point, ignore_errors=True)
+
             logger.info(
                 'New release [%s] has been installed in [%s].',
                 version,
@@ -770,4 +801,10 @@ class Engine(ABC):
             return True
         except RequestException as ex:
             logger.warning('Failed to read [%s]: [%s].', download_url, ex)
+            return False
+        except subprocess.CalledProcessError as ex:
+            logger.error('Failed to process DMG file: [%s]', ex)
+            return False
+        except Exception as ex:
+            logger.error('Unexpected error during installation: [%s]', ex)
             return False

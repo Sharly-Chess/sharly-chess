@@ -52,7 +52,7 @@
                         name='uniq_id',
                         label=_('Enter the tournament ID to confirm its deletion:'),
                         placeholder=_('Enter here the tournament ID'),
-                        help_text=_('The Sharly Chess tournaments are deleted but the Papi file is still available on the filesystem.'),
+                        help_text='',
                         data=data, errors=errors
                     ) }}
                 {% else %}
@@ -88,17 +88,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div
-                            class="file-exists col-12 col-md-6 mb-3"
-                            data-bs-toggle="{%if not file_exists %}tooltip{%endif%}"
-                            {{
-                                macros.tooltip_attributes(
-                                    'info',
-                                    _('Fields relying on the Papi database can\'t be updated if the file does not exist.'),
-                                    'bottom'
-                                )
-                            }}
-                        >
+                        <div class="col-12 col-md-6 mb-3">
                             {{ admin_macros.number_input(
                                 name='rounds',
                                 label=_('%(string)s:', string=_('Rounds')),
@@ -106,17 +96,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div
-                            class="file-exists col-12 col-md-6 mb-3"
-                            data-bs-toggle="{%if not file_exists %}tooltip{%endif%}"
-                            {{
-                                macros.tooltip_attributes(
-                                    'info',
-                                    _('Fields relying on the Papi database can\'t be updated if the file does not exist.'),
-                                    'bottom'
-                                )
-                            }}
-                        >
+                        <div class="col-12 col-md-6 mb-3">
                             {{ admin_macros.select_input(
                                 name='rating',
                                 label=_('Rating:'),
@@ -157,44 +137,6 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                    </div>
-                    <h4>
-                        {{ _('Papi file') }}
-                    </h4>
-                    <div class="row">
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.text_input(
-                                name='path',
-                                label=_('Directory:'),
-                                placeholder=_('E.g.: c:\\chess\\tournaments\\papi'),
-                                help_text=_('The directory of the Papi file (defaults to [%(dir)s]).', dir=admin_event.path),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.text_input(
-                                name='filename',
-                                label=_('File name (without extension):'),
-                                placeholder=_('E.g.: main'),
-                                help_text=_('The name of the Papi file without [.papi] extension (defaults to the unique ID).'),
-                                data=data, errors=errors
-                            ) }}
-                            <div id="file-status" class="mt-2">
-                                {% include 'file_status.html' %}
-                            </div>
-                        </div>
-
-                        <script>
-                            $('#uniq-id,#path,#filename').on('input', debounce((event) => {
-                                const copyElement = $('#'+event.target.id+'-copy')[0];
-                                if(copyElement.value !== event.target.value) {
-                                    copyElement.value = event.target.value;
-                                    if(event.target.id !== 'uniq-id' || $('#filename')[0].value === "") {
-                                        $('#file-form-submit').click();
-                                    }
-                                }
-                            }, 500));
-                        </script>
                     </div>
 
                     {% for form_fields_template in plugin_form_fields_templates %}
@@ -283,17 +225,7 @@
                         {{ _('Pairings') }}
                     </h4>
                     <div class="row">
-                        <div
-                            class="file-exists col-12 col-md-6 mb-3"
-                            data-bs-toggle="{%if not file_exists %}tooltip{%endif%}"
-                            {{
-                                macros.tooltip_attributes(
-                                    'info',
-                                    _('Fields relying on the Papi database can\'t be updated if the file does not exist.'),
-                                    'right'
-                                )
-                            }}
-                        >
+                        <div class="col-12 col-md-6 mb-3">
                             {{ admin_macros.select_input(
                                 name='pairing_system',
                                 label=_('%(string)s:', string=_('Pairing system')),
@@ -305,16 +237,8 @@
                         </div>
                         {% for pairing_system in pairing_systems %}
                             <div
-                                class="file-exists col-12 col-md-6 mb-3"
+                                class="col-12 col-md-6 mb-3"
                                 id="{{ pairing_system.variation_container_id }}"
-                                data-bs-toggle="{%if not file_exists %}tooltip{%endif%}"
-                                {{
-                                    macros.tooltip_attributes(
-                                        'info',
-                                        _('Fields relying on the Papi database can\'t be updated if the file does not exist.'),
-                                        'right'
-                                    )
-                                }}
                                 {% if pairing_system.id != data['pairing_system'] %}
                                     style="display:none"
                                 {% endif %}
@@ -438,17 +362,7 @@
                     {% endfor %}
                     <div class="row">
                         {% for index in [1, 2, 3] %}
-                            <div
-                                class="file-exists col-12 col-md-4 mb-3"
-                                data-bs-toggle="{%if not file_exists %}tooltip{%endif%}"
-                                {{
-                                    macros.tooltip_attributes(
-                                        'info',
-                                        _('Fields relying on the Papi database can\'t be updated if the file does not exist.'),
-                                        'right'
-                                    )
-                                }}
-                            >
+                            <div class="col-12 col-md-4 mb-3">
                                 {{ admin_macros.select_input(
                                     name='tie_break_' ~ index|string,
                                     label=_('Tie-break #%(index)d:', index=index),
@@ -460,22 +374,6 @@
                         {% endfor %}
                     </div>
                 {% endif %}
-            </form>
-            <form
-                id="file-form"
-                hx-post="{{ url_for('admin-tournament-file-status', event_uniq_id=admin_event.uniq_id) }}"
-                hx-target="#file-status"
-                hx-indicator="#please-wait"
-            >
-                {% for field in ['uniq_id', 'path', 'filename'] %}
-                    <input
-                        id="{{ field|replace('_', '-') }}-copy"
-                        type="hidden"
-                        name="{{ field }}"
-                        value="{{ data[field] }}"
-                    />
-                {% endfor %}
-                <button id="file-form-submit" type="submit" style="display:none"></button>
             </form>
         </div>
         <div class="modal-footer">

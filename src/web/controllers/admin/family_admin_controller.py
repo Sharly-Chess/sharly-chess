@@ -74,7 +74,7 @@ class FamilyAdminController(BaseEventAdminController):
         if data is None:
             data = {}
         field: str
-        type_: str
+        type_: str | None = None
         match action:
             case 'create':
                 type_ = web_context.family_type

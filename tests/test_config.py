@@ -1,11 +1,11 @@
 """Test configuration and utilities."""
 
-import shutil
-
 import time
 from urllib import parse
+from common import BASE_DIR
 from common.sharly_chess_config import SharlyChessConfig
-from database.access.papi.papi_database import PapiDatabase
+from data.pairings.systems import SwissPairingSystem
+from data.pairings.variations import StandardSwissVariation
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Callable, Dict, Optional, Any
@@ -46,7 +46,6 @@ class TestUtils:
         'custom_exec_mode': SharlyChessConfig.default_custom_exec_mode,
         'federation': 'FRA',
         'public': True,
-        'path': '',
         'location': 'Paris',
         'hide_background_image': True,
         'background_image': None,
@@ -117,8 +116,8 @@ class TestUtils:
     @classmethod
     def create_event(
         cls,
-        api_request_context: APIRequestContext,
         uniq_id: str,
+        via_api_request_context: APIRequestContext | None = None,
         overrides: Optional[dict] = None,
     ):
         overrides = overrides or {}
@@ -143,74 +142,45 @@ class TestUtils:
         database = EventDatabase(uniq_id)
         database.file.unlink(missing_ok=True)
 
-        res = api_request_context.post(
-            '/admin/config/create-event',
-            headers={'Content-Type': 'application/x-www-form-urlencoded'},
-            data=form_data,
-        )
-        cls.check_api_response(res)
-
-        return database
-
-    @classmethod
-    def delete_event(cls, api_request_context: APIRequestContext, uniq_id: str):
-        form_data = cls.prepare_form_data({'uniq_id': uniq_id})
-        res = api_request_context.post(
-            f'/admin/event-delete/{uniq_id}',
-            headers={'Content-Type': 'application/x-www-form-urlencoded'},
-            data=form_data,
-        )
-        TestUtils.check_api_response(res)
+        if via_api_request_context:
+            res = via_api_request_context.post(
+                '/admin/config/create-event',
+                headers={'Content-Type': 'application/x-www-form-urlencoded'},
+                data=form_data,
+            )
+            cls.check_api_response(res)
+        else:
+            database.create()
+            stored_event = StoredEvent(**data)
+            with EventDatabase(uniq_id, write=True) as event_database:
+                event_database.update_stored_event(stored_event)
+                event_database.commit()
 
     @classmethod
-    def create_event_direct(cls, uniq_id: str, overrides: Optional[dict] = None):
-        overrides = overrides or {}
-
-        now = datetime.now()
-        start_ts = time.mktime(now.timetuple())
-        stop_ts = time.mktime((now + timedelta(hours=1)).timetuple())
-
-        # Provide defaults
-        defaults = {
-            **cls.event_defaults,
-            'uniq_id': uniq_id,
-            'start': start_ts,
-            'stop': stop_ts,
-        }
-
-        # Merge overrides
-        data = {**defaults, **overrides}
-        stored_event = StoredEvent(**data)
-
-        database = EventDatabase(uniq_id)
-        database.file.unlink(missing_ok=True)
-        database.create()
-        with EventDatabase(uniq_id, write=True) as event_database:
-            event_database.update_stored_event(stored_event)
-            event_database.commit()
-        return database
-
-    @staticmethod
-    def delete_event_direct(uniq_id: str):
-        EventDatabase(uniq_id).delete()
-
-    @staticmethod
-    def create_papi_file(name: str):
-        path = SharlyChessConfig.default_papi_path
-        path.mkdir(parents=True, exist_ok=True)
-        file_path = path / f'{name}.papi'
-        file_path.unlink(missing_ok=True)
-        PapiDatabase(file_path).create_empty()
-        return file_path
+    def delete_event(
+        cls,
+        uniq_id: str,
+        via_api_request_context: APIRequestContext | None = None,
+    ):
+        if via_api_request_context:
+            form_data = cls.prepare_form_data({'uniq_id': uniq_id})
+            res = via_api_request_context.post(
+                f'/admin/event-delete/{uniq_id}',
+                headers={'Content-Type': 'application/x-www-form-urlencoded'},
+                data=form_data,
+            )
+            TestUtils.check_api_response(res)
+        else:
+            EventDatabase(uniq_id).delete()
 
     @classmethod
     def create_tournament(
         cls,
-        api_request_context: APIRequestContext,
         event_uniq_id: str,
         uniq_id: str,
+        via_api_request_context: APIRequestContext | None = None,
         overrides: dict | None = None,
-        papi_file: str | None = None,
+        json_file: str | None = None,
     ):
         overrides = overrides or {}
 
@@ -219,8 +189,6 @@ class TestUtils:
             'id': None,
             'uniq_id': uniq_id,
             'name': uniq_id,
-            'path': None,
-            'filename': None,
             'time_control_initial_time': None,
             'time_control_increment': None,
             'time_control_handicap_penalty_step': None,
@@ -236,8 +204,7 @@ class TestUtils:
             'location': None,
             'start': None,
             'stop': None,
-            'pairing': None,
-            'pairing_settings': None,
+            'pairing': SwissPairingSystem.static_id(),
             'current_round': None,
             'check_in_open': False,
             'rounds': 7,
@@ -254,29 +221,35 @@ class TestUtils:
         # Merge overrides
         data = {**defaults, **overrides}
 
-        if papi_file:
-            leaf_name = f'{papi_file}.papi'
-            src_path = Path(__file__).parent / 'papi' / leaf_name
-            assert src_path.exists(), f'Papi file [{papi_file}] not found'
-            path = SharlyChessConfig.default_papi_path
-            path.mkdir(parents=True, exist_ok=True)
-            shutil.copy(src_path, path)
-            data['filename'] = papi_file
+        if via_api_request_context:
+            data['SWISS_pairing_variation'] = StandardSwissVariation.static_id()
+            form_data = cls.prepare_form_data(data)
+            res = via_api_request_context.post(
+                f'/admin/tournament-create/{event_uniq_id}',
+                headers={'Content-Type': 'application/x-www-form-urlencoded'},
+                data=form_data,
+            )
+            cls.check_api_response(res)
         else:
-            cls.create_papi_file(event_uniq_id)
-            data['filename'] = event_uniq_id
-
-        form_data = cls.prepare_form_data(data)
-        res = api_request_context.post(
-            f'/admin/tournament-create/{event_uniq_id}',
-            headers={'Content-Type': 'application/x-www-form-urlencoded'},
-            data=form_data,
-        )
-        cls.check_api_response(res)
+            with EventDatabase(event_uniq_id, write=True) as event_database:
+                stored_tournament = StoredTournament(**data)
+                event_database.add_stored_tournament(stored_tournament)
+                event_database.commit()
 
         with EventDatabase(event_uniq_id) as event_database:
             tournaments = event_database.load_stored_tournaments()
             stored_tournament = next(t for t in tournaments if t.uniq_id == uniq_id)
+
+        if json_file and via_api_request_context:
+            json_path = BASE_DIR / 'tests' / 'json' / f'{json_file}.json'
+            form_data = cls.prepare_form_data({'file_path': str(json_path)})
+            res = via_api_request_context.post(
+                f'/admin/tournament-import/{event_uniq_id}/{stored_tournament.id}/PAPI_JSON',
+                headers={'Content-Type': 'application/x-www-form-urlencoded'},
+                data=form_data,
+            )
+            cls.check_api_response(res)
+
         return stored_tournament
 
     @classmethod

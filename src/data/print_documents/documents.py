@@ -402,22 +402,71 @@ class BoardPrintDocument(PrintDocument, ABC):
             )
 
 
-class PairingPrintDocument(BoardPrintDocument, PlayerPrintDocument):
-    @property
-    def title(self) -> str:
-        return _('Pairings for round #{round}').format(round=self.at_round)
+class PairingPrintDocument(PrintDocument):
+    @staticmethod
+    def static_id() -> str:
+        return 'pairings'
 
     @staticmethod
     def static_name() -> str:
         return _('Pairings')
 
     @staticmethod
-    def static_id() -> str:
-        return 'pairings'
-
-    @staticmethod
     def available_options() -> list[type[PrintOption]]:
         return [PairingStylePrintOption, RoundPrintOption]
+
+    @cached_property
+    def sub_document(self) -> PrintDocument:
+        return self._get_option(
+            PairingStylePrintOption
+        ).pairing_style.print_document_type(
+            options=self.options, tournament=self.tournament
+        )
+
+    @property
+    def title(self) -> str:
+        return self.sub_document.title
+
+    @property
+    def template_name(self) -> str:
+        return self.sub_document.template_name
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return self.sub_document.template_context
+
+
+class BoardPairingPrintDocument(BoardPrintDocument):
+    @staticmethod
+    def static_id() -> str:
+        return 'board-pairings'
+
+    @staticmethod
+    def static_name() -> str:
+        return 'Board Pairings'
+
+    @property
+    def title(self) -> str:
+        return _('Pairings for round #{round}').format(round=self.at_round)
+
+
+class PlayerPairingPrintDocument(PlayerPrintDocument):
+    @staticmethod
+    def static_id() -> str:
+        return 'player-pairings'
+
+    @staticmethod
+    def static_name() -> str:
+        return 'Player pairings'
+
+    @property
+    def title(self) -> str:
+        return _('Pairings for round #{round}').format(round=self.at_round)
+
+    @property
+    def at_round(self) -> int:
+        assert self.tournament is not None
+        return self._get_option(RoundPrintOption).value or self.tournament.current_round
 
     @override
     @property
@@ -427,19 +476,8 @@ class PairingPrintDocument(BoardPrintDocument, PlayerPrintDocument):
 
     @override
     @property
-    def template_name(self) -> str:
-        return self._get_option(PairingStylePrintOption).pairing_style.template
-
-    @override
-    @property
     def is_pairings_list(self) -> bool:
         return True
-
-    @property
-    def template_context(self) -> dict[str, Any]:
-        return BoardPrintDocument.template_context.fget(
-            self
-        ) | PlayerPrintDocument.template_context.fget(self)
 
 
 class ResultPrintDocument(BoardPrintDocument):

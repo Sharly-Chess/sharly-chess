@@ -2,11 +2,12 @@ import hashlib
 import json
 import time
 from collections.abc import Iterator
-from datetime import datetime
+from datetime import datetime, timedelta
 from json import JSONDecodeError
 from logging import Logger
 from pathlib import Path
 from typing import Any
+import zoneinfo
 
 import chardet
 
@@ -23,16 +24,10 @@ from common.logger import (
 from common.singleton import Singleton
 from data.event import Event
 from data.loader import EventLoader
+from data.player import PlayerRating
 from data.tournament import Tournament
-from plugins.ffe.utils import PapiPairingSystem, PapiPairingVariation
-from utils.enum import Result
-from database.access.papi.papi_database import (
-    PapiDatabase,
-    PapiVariable,
-    UNPLAYED_COLOR,
-    BYE_COLOR,
-)
-from database.access.papi.papi_template import create_empty_papi_database
+from database.sqlite.event.event_store import StoredPlayer
+from utils.enum import Result, TournamentRating
 from database.sqlite.event.event_database import EventDatabase
 from plugins import chessevent
 from plugins.chessevent import PLUGIN_NAME
@@ -40,10 +35,14 @@ from plugins.chessevent.data.chessevent_player import ChessEventPlayer
 from plugins.chessevent.data.chessevent_tournament import ChessEventTournament
 from plugins.chessevent.engine.chessevent_session import ChessEventSession
 from plugins.chessevent.utils import ChessEventUtils
-from plugins.ffe.ffe_session import FFESession
+from plugins.ffe import PLUGIN_NAME as FFE_PLUGIN_NAME
+from plugins.ffe.utils import FfePlayerPluginData
 from plugins.utils import PluginUtils
 
 logger: Logger = get_logger()
+
+paris_tz = zoneinfo.ZoneInfo('Europe/Paris')
+epoch = datetime(1970, 1, 1, tzinfo=zoneinfo.ZoneInfo('UTC'))
 
 
 class ActionSelector(metaclass=Singleton):
@@ -52,8 +51,8 @@ class ActionSelector(metaclass=Singleton):
     @classmethod
     def add_chessevent_player(
         cls,
-        database: PapiDatabase,
-        player_papi_id: int,
+        event_database: EventDatabase,
+        tournament: Tournament,
         player: ChessEventPlayer,
         check_in_started: bool,
     ):
@@ -61,95 +60,75 @@ class ActionSelector(metaclass=Singleton):
         If the player is not checked in when `check_in_started` is True,
         removes the player from play for subsequent rounds which are not
         specifically not-played rounds."""
-        data: dict[str, str | int | float | None] = {
-            'Ref': player_papi_id,
-            'RefFFE': player.ffe_id,
-            'NrFFE': player.ffe_license_number if player.ffe_license_number else None,
-            'Nom': player.last_name,
-            'Prenom': player.first_name,
-            'Sexe': player.gender.to_papi_value,
-            'NeLe': database.timestamp_to_papi_date(player.birth),
-            'Cat': player.category.to_papi_value,
-            'AffType': player.ffe_license.to_papi_value,
-            'Elo': player.standard_rating,
-            'Rapide': player.rapid_rating,
-            'Blitz': player.blitz_rating,
-            'Federation': player.federation,
-            'ClubRef': player.ffe_club_id,
-            'Club': player.ffe_club,
-            'Ligue': player.ffe_league,
-            'Fide': player.standard_rating_type.to_papi_value,
-            'RapideFide': player.rapide_rating_type.to_papi_value,
-            'BlitzFide': player.blitz_rating_type.to_papi_value,
-            'FideCode': player.fide_id if player.fide_id else None,
-            'FideTitre': player.title.to_papi_value,
-            'Pointe': check_in_started and player.check_in,
-            'InscriptionRegle': player.paid,
-            'InscriptionDu': player.fee,
-            'Tel': player.phone,
-            'EMail': player.email,
-            'Fixe': player.board,
-            'Flotteur': 'X' * 24,
-            'Pts': 0,
-            'PtA': 0,
-        }
-        for round_ in range(1, 25):
-            data[f'Rd{round_:0>2}Adv'] = None
+
+        ffe_plugin_data = FfePlayerPluginData(
+            player.ffe_id,
+            player.ffe_licence,
+            player.ffe_licence_number if player.ffe_licence_number else None,
+            player.ffe_league,
+        )
+
+        stored_player = StoredPlayer(
+            id=None,
+            last_name=player.last_name,
+            first_name=player.first_name,
+            date_of_birth=(epoch + timedelta(seconds=player.birth)).astimezone(
+                paris_tz
+            ),
+            gender=player.gender.value,
+            mail=player.email,
+            phone=player.phone,
+            comment=None,
+            owed=player.fee,
+            paid=player.paid,
+            title=player.title.value,
+            ratings={
+                TournamentRating.STANDARD: PlayerRating(
+                    value=player.standard_rating,
+                    type=player.standard_rating_type,
+                ).stored_value,
+                TournamentRating.RAPID: PlayerRating(
+                    value=player.rapid_rating,
+                    type=player.rapide_rating_type,
+                ).stored_value,
+                TournamentRating.BLITZ: PlayerRating(
+                    value=player.blitz_rating,
+                    type=player.blitz_rating_type,
+                ).stored_value,
+            },
+            fide_id=player.fide_id if player.fide_id else None,
+            federation=player.federation,
+            club=player.ffe_club,
+            fixed=player.board,
+            check_in=check_in_started and player.check_in,
+            plugin_data={FFE_PLUGIN_NAME: ffe_plugin_data.to_stored_value()},
+        )
+
+        stored_player.id = event_database.add_stored_player(stored_player)
+        tournament.add_player_to_tournament(stored_player, event_database)
+        tournament_player = tournament.players_by_id[stored_player.id]
+
+        for round_ in range(
+            1,
+            tournament.rounds + 1,
+        ):
             if round_ not in player.skipped_rounds:
-                data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
-                if player.check_in or not check_in_started:
-                    data[f'Rd{round_:0>2}Cl'] = UNPLAYED_COLOR
-                else:
-                    data[f'Rd{round_:0>2}Cl'] = BYE_COLOR
+                if not player.check_in and check_in_started:
+                    tournament_player.pairings_by_round[round_].update_result(
+                        event_database, Result.ZERO_POINT_BYE
+                    )
             else:
-                data[f'Rd{round_:0>2}Cl'] = BYE_COLOR
                 match player.skipped_rounds[round_]:
                     case 0.0:
-                        data[f'Rd{round_:0>2}Res'] = Result.NO_RESULT.to_papi_value
+                        tournament_player.pairings_by_round[round_].update_result(
+                            event_database, Result.ZERO_POINT_BYE
+                        )
                     case 0.5:
-                        data[f'Rd{round_:0>2}Res'] = Result.HALF_POINT_BYE.to_papi_value
+                        tournament_player.pairings_by_round[round_].update_result(
+                            event_database, Result.HALF_POINT_BYE
+                        )
                     case _:
                         raise ValueError
-        database.write_player_dict(data)
-
-    @classmethod
-    def write_chessevent_info(
-        cls, database: PapiDatabase, chessevent_tournament: ChessEventTournament
-    ):
-        """Creates the tournament data from the ChessEvent Tournament data."""
-        default_rounds: int = 7
-        if not chessevent_tournament.rounds:
-            logger.warning(
-                'Number of rounds not set in ChessEvent, %d set by default.',
-                default_rounds,
-            )
-            chessevent_tournament.rounds = default_rounds
-        database.write_info(
-            {
-                PapiVariable.NAME: chessevent_tournament.name,
-                PapiVariable.TYPE: PapiPairingSystem.get_plugin_value(
-                    chessevent_tournament.type
-                )
-                or '',
-                PapiVariable.ROUNDS: chessevent_tournament.rounds,
-                PapiVariable.PAIRING_VARIATION: PapiPairingVariation.get_plugin_value(
-                    chessevent_tournament.pairing
-                )
-                or '',
-                PapiVariable.TIME_CONTROL: chessevent_tournament.time_control,
-                PapiVariable.LOCATION: chessevent_tournament.location,
-                PapiVariable.ARBITER: chessevent_tournament.arbiter,
-                PapiVariable.START_DATE: database.timestamp_to_papi_date(
-                    chessevent_tournament.start
-                ),
-                PapiVariable.END_DATE: database.timestamp_to_papi_date(
-                    chessevent_tournament.end
-                ),
-                PapiVariable.RATING: chessevent_tournament.rating.to_papi_value,
-                PapiVariable.FFE_ID: str(chessevent_tournament.ffe_id),
-            }
-        )
-        database.update_tie_breaks(chessevent_tournament.tie_breaks)
 
     @classmethod
     def write_chessevent_info_to_database(
@@ -162,44 +141,34 @@ class ActionSelector(metaclass=Singleton):
         For comparison, also stores `chessevent_download_md5`, so that the tournament is not downloaded unnecessarily.
         Returns the number of players added."""
         players_added: int = 0
-        # write data to a temporary file to limit the time no tournament file is available
-        date: str = datetime.fromtimestamp(time.time()).strftime('%Y%m%d%H%M%S')
-        tmp_file: Path = (
-            chessevent.TMP_DIR
-            / f'{tournament.file.stem}-{date}{tournament.file.suffix}'
-        )
-        logger.debug('Writing ChessEvent data to temporary Papi file [%s]...', tmp_file)
-        tmp_file.parents[0].mkdir(parents=True, exist_ok=True)
-        tournament.file.unlink(missing_ok=True)
-        create_empty_papi_database(tmp_file)
-        with PapiDatabase(file=tmp_file, write=True) as papi_database:
-            with EventDatabase(tournament.event.uniq_id, write=True) as event_database:
-                cls.write_chessevent_info(papi_database, chessevent_tournament)
-                for player_papi_id, chessevent_player in enumerate(
-                    chessevent_tournament.players, start=2
-                ):
-                    cls.add_chessevent_player(
-                        papi_database,
-                        player_papi_id,
-                        chessevent_player,
-                        chessevent_tournament.check_in_started,
-                    )
-                    players_added += 1
-                event_database.execute(
-                    'UPDATE `tournament` SET `chessevent_last_download_md5` = ?, '
-                    '`last_update` = ? WHERE `id` = ?',
-                    (
-                        chessevent_download_md5,
-                        time.time(),
-                        tournament.id,
-                    ),
+
+        with EventDatabase(tournament.event.uniq_id, write=True) as event_database:
+            # Delete all existing players from this tournament
+            for existing_player in tournament.players:
+                event_database.delete_stored_tournament_player(
+                    tournament.id, existing_player.id
                 )
-                event_database.commit()
-                papi_database.commit()
-        logger.debug('Copying [%s] to [%s]...', tmp_file, tournament.file)
-        tournament.file.write_bytes(tmp_file.read_bytes())
-        logger.debug('Removing temporary Papi file [%s]...', tmp_file)
-        tmp_file.unlink(missing_ok=True)
+
+            # Add all players from the chessevent tournament
+            for chessevent_player in chessevent_tournament.players:
+                cls.add_chessevent_player(
+                    event_database,
+                    tournament,
+                    chessevent_player,
+                    chessevent_tournament.check_in_started,
+                )
+                players_added += 1
+            event_database.execute(
+                'UPDATE `tournament` SET `chessevent_last_download_md5` = ?, '
+                '`last_update` = ? WHERE `id` = ?',
+                (
+                    chessevent_download_md5,
+                    time.time(),
+                    tournament.id,
+                ),
+            )
+
+            event_database.commit()
         return players_added
 
     @classmethod
@@ -215,12 +184,6 @@ class ActionSelector(metaclass=Singleton):
                 print_interactive_warning(
                     _(
                         'The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].'
-                    ).format(tournament_uniq_id=tournament.uniq_id)
-                )
-            elif not tournament.file:
-                print_interactive_warning(
-                    _(
-                        'The Papi file is not defined for tournament [{tournament_uniq_id}].'
                     ).format(tournament_uniq_id=tournament.uniq_id)
                 )
             elif tournament.current_round:
@@ -243,7 +206,9 @@ class ActionSelector(metaclass=Singleton):
         print_interactive_info(_('Event: {event_name}').format(event_name=event.name))
         tournaments: list[Tournament] = list(self.__get_chessevent_tournaments(event))
         if not tournaments:
-            print_interactive_error(_('Unable to create Papi files.'))
+            print_interactive_error(
+                _('No tournaments configured with ChessEvent connections found.')
+            )
             return False
         print_interactive_info(
             _('Tournaments: {tournament_names}').format(
@@ -252,13 +217,13 @@ class ActionSelector(metaclass=Singleton):
                 )
             )
         )
-        create_answer: str = _('C *** THE LETTER TO ANSWER CREATE')
-        upload_answer: str = _('U *** THE LETTER TO ANSWER UPLOAD')
+        create_answer: str = _('R *** THE LETTER TO ANSWER REPLACE')
         quit_answer: str = _('Q *** THE LETTER TO ANSWER QUIT')
         default_answer: str = create_answer
         actions1: dict[str, str] = {
-            create_answer: _('Create the Papi files'),
-            upload_answer: _('Create the Papi files and send them to the FFE website'),
+            create_answer: _(
+                'Replace all the players in your tournaments with those from ChessEvent'
+            ),
             quit_answer: _('Quit'),
         }
         print_interactive_input('Actions :')
@@ -281,7 +246,6 @@ class ActionSelector(metaclass=Singleton):
             return False
         if action_choice in [
             create_answer,
-            upload_answer,
         ]:
             once_answer: str = _('1 *** THE LETTER TO ANSWER ONCE')
             always_answer: str = _('C *** THE LETTER TO ANSWER CONTINUOUSLY')
@@ -330,7 +294,7 @@ class ActionSelector(metaclass=Singleton):
                         if not tournaments:
                             print_interactive_error(
                                 _(
-                                    'This action can not be applied to the tournaments of this event.'
+                                    'No tournaments configured with ChessEvent connections found.'
                                 )
                             )
                             return False
@@ -374,14 +338,10 @@ class ActionSelector(metaclass=Singleton):
                                 )
                                 continue
                             data_md5 = hashlib.md5(data.encode('utf-8')).hexdigest()
-                            if (
-                                data_md5
-                                == PluginUtils.get_plugin_data(
-                                    PLUGIN_NAME,
-                                    tournament.plugin_data,
-                                    'chessevent_last_download_md5',
-                                )
-                                and tournament.file.exists()
+                            if data_md5 == PluginUtils.get_plugin_data(
+                                PLUGIN_NAME,
+                                tournament.plugin_data,
+                                'chessevent_last_download_md5',
                             ):
                                 print_interactive_info(
                                     _(
@@ -400,11 +360,9 @@ class ActionSelector(metaclass=Singleton):
                             )
                             print_interactive_success(
                                 _(
-                                    'Papi file [{file}] has been created (players: {num}).'
-                                ).format(file=tournament.file, num=player_count)
+                                    'Tournament [{name}] has been updated, {num} players added.'
+                                ).format(name=tournament.name, num=player_count)
                             )
-                            if action_choice == upload_answer:
-                                FFESession(tournament).upload(set_visible=True)
                         if frequency_choice == once_answer:
                             return True
                         time.sleep(chessevent_timeout)
