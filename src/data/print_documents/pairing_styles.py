@@ -1,14 +1,18 @@
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
 
 from common.i18n import _
 from utils.entity import IdentifiableEntity
+
+if TYPE_CHECKING:
+    from data.print_documents import PrintDocument
 
 
 class PairingStyle(IdentifiableEntity, ABC):
     @property
     @abstractmethod
-    def template(self) -> str:
-        """Returns the print template for the pairing style."""
+    def print_document_type(self) -> type['PrintDocument']:
+        """The type of document to use for printing."""
 
 
 class BoardsPairingStyle(PairingStyle):
@@ -21,8 +25,10 @@ class BoardsPairingStyle(PairingStyle):
         return _('Boards')
 
     @property
-    def template(self) -> str:
-        return '/admin/print/boards.html'
+    def print_document_type(self) -> type['PrintDocument']:
+        from data.print_documents.documents import BoardPairingPrintDocument
+
+        return BoardPairingPrintDocument
 
 
 class PlayersPairingStyleSorter(PairingStyle):
@@ -35,5 +41,7 @@ class PlayersPairingStyleSorter(PairingStyle):
         return _('Players')
 
     @property
-    def template(self) -> str:
-        return '/admin/print/players.html'
+    def print_document_type(self) -> type['PrintDocument']:
+        from data.print_documents.documents import PlayerPairingPrintDocument
+
+        return PlayerPairingPrintDocument
