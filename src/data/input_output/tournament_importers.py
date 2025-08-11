@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 
 from common.exception import SharlyChessException
+from common.i18n import _
 from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
@@ -11,6 +12,16 @@ from utils.entity import IdentifiableEntity
 
 
 class TournamentImporter(IdentifiableEntity, ABC):
+    @property
+    @abstractmethod
+    def display_in_menu(self) -> bool:
+        """Determines if the import is visible in the import menu."""
+
+    @property
+    def modal_title(self) -> str | None:
+        """The title to display in the import modal."""
+        return None
+
     @property
     @abstractmethod
     def reorder_boards(self) -> bool:
@@ -39,7 +50,7 @@ class TournamentImporter(IdentifiableEntity, ABC):
         Raises if the tournament already has players."""
         if tournament and tournament.players:
             raise SharlyChessException(
-                'Impossible to import into a tournament already having players.'
+                _('Impossible to import into a tournament already having players.')
             )
         stored_tournament, stored_players = self.load_stored_tournament(
             source_file, tournament.stored_tournament if tournament else None
@@ -91,7 +102,7 @@ class TournamentImporter(IdentifiableEntity, ABC):
 
         # Boards
         board_id_by_external_id: dict[int, int] = {}
-        for _, stored_boards in stored_tournament.stored_boards_by_round.items():
+        for stored_boards in stored_tournament.stored_boards_by_round.values():
             for stored_board in stored_boards:
                 external_id = stored_board.id
                 stored_board.id = None

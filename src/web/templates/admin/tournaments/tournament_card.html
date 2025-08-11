@@ -146,9 +146,34 @@
                     </button>
                 </span>
             </li>
+            {% if tournament_importers %}
+                <li class="dropdown-submenu">
+                    <button class="dropdown-item d-flex justify-content-between" href="#">
+                        <span><i class="bi-download pe-1"></i>
+                        {{ _('Import') }}</span>
+                        <i class="ps-3 bi bi-caret-right-fill"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        {% for importer in tournament_importers %}
+                            <li
+                                class="dropdown-item text-start cursor-pointer"
+                                hx-get="{{ url_for('admin-tournament-import-modal', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id, importer_id=importer.id) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                preload
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-wrapper"
+                                {{ macros.tooltip_attributes('info', importer.tooltip, 'right') }}
+                            >
+                                {{ importer.name }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endif %}
             <li class="dropdown-submenu">
                 <button class="dropdown-item d-flex justify-content-between" href="#">
-                    <span><i class="bi-download pe-1"></i>
+                    <span><i class="bi-upload pe-1"></i>
                     {{ _('Export') }}</span>
                     <i class="ps-3 bi bi-caret-right-fill"></i>
                 </button>
