@@ -18,7 +18,6 @@ from data.board import Board
 from data.player import Player
 from data.safety_mode import RoundStatus, SafetyMode, PairingAction
 from data.tournament import Tournament
-from database.sqlite.event.event_database import EventDatabase
 from utils.enum import Result
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
@@ -1193,9 +1192,15 @@ class PairingsAdminController(BaseEventAdminController):
         tournament_id: int,
         current_round: int,
     ) -> Template | ClientRedirect:
-        with EventDatabase(event_uniq_id, True) as database:
-            database.set_tournament_current_round(tournament_id, current_round)
-            database.commit()
+        web_context: PairingsAdminWebContext = PairingsAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=current_round,
+            data=None,
+        )
+        web_context.get_admin_tournament().set_current_round(round_=current_round)
+
         return self._admin_event_pairings_render(
             request,
             event_uniq_id=event_uniq_id,

@@ -233,16 +233,6 @@ class SharlyChessConfig(metaclass=Singleton):
     # The path to the embedded custom files.
     embedded_custom_path: Path = BASE_DIR / 'src' / custom_folder
 
-    # The name of the default folder for the Papi files,
-    # used to recover Papi files from previous releases.
-    default_papi_folder: str = 'papi'
-
-    # The default path to the Papi files.
-    default_papi_path: Path = Path() / default_papi_folder
-
-    # The extension of Papi files.
-    papi_ext: str = 'papi'
-
     # The path to raw SQL files.
     database_sql_path: Path = BASE_DIR / 'src' / 'database' / 'sql'
 

@@ -236,8 +236,6 @@ class TournamentAdminController(BaseEventAdminController):
                         errors[field] = _(
                             "This field can't be updated once the tournament has started."
                         )
-        path: str | None = None
-        filename: str | None = None
         time_control_initial_time: int | None = None
         time_control_increment: int | None = None
         time_control_handicap_penalty_value: int | None = None
@@ -256,8 +254,6 @@ class TournamentAdminController(BaseEventAdminController):
                 name = WebContext.form_data_to_str(data, 'name') or ''
                 if not name:
                     errors['name'] = _('Please enter the tournament name.')
-                path = WebContext.form_data_to_str(data, 'path')
-                filename = WebContext.form_data_to_str(data, 'filename')
                 time_control_initial_time = WebContext.form_data_to_int(
                     data, 'time_control_initial_time'
                 )
@@ -327,8 +323,6 @@ class TournamentAdminController(BaseEventAdminController):
             else None,
             uniq_id=uniq_id,
             name=name,
-            path=path,
-            filename=filename,
             time_control_initial_time=time_control_initial_time,
             time_control_increment=time_control_increment,
             time_control_handicap_penalty_value=time_control_handicap_penalty_value,
@@ -347,7 +341,7 @@ class TournamentAdminController(BaseEventAdminController):
             stop=stop,
             rounds=rounds or 1,
             rating=rating or TournamentRating.STANDARD.value,
-            pairing=pairing,
+            pairing=pairing or '',
             three_points_for_a_win=three_points_for_a_win,
             errors=errors,
             plugin_data=plugin_data,
@@ -441,8 +435,6 @@ class TournamentAdminController(BaseEventAdminController):
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
-                    path: str | None = None
-                    filename: str | None = None
                     time_control_initial_time: int | None = None
                     time_control_increment: int | None = None
                     time_control_handicap_penalty_value: int | None = None
@@ -471,7 +463,6 @@ class TournamentAdminController(BaseEventAdminController):
                             assert admin_tournament is not None
                             assert admin_tournament.stored_tournament is not None
                             stored_tournament = admin_tournament.stored_tournament
-                            path = stored_tournament.path
                             time_control_initial_time = (
                                 stored_tournament.time_control_initial_time
                             )
@@ -543,8 +534,6 @@ class TournamentAdminController(BaseEventAdminController):
                         {
                             'uniq_id': uniq_id,
                             'name': name,
-                            'path': path,
-                            'filename': filename,
                             'time_control_initial_time': time_control_initial_time,
                             'time_control_increment': time_control_increment,
                             'time_control_handicap_penalty_value': time_control_handicap_penalty_value,
@@ -789,11 +778,10 @@ class TournamentAdminController(BaseEventAdminController):
         ) as event_database:
             if action == 'delete':
                 assert tournament_id is not None
-                assert web_context.admin_tournament is not None
                 event_database.delete_stored_tournament(tournament_id)
                 success_message = _(
                     'Tournament [{tournament_uniq_id}] has been deleted.'
-                ).format(tournament_uniq_id=web_context.admin_tournament.uniq_id)
+                ).format(tournament_uniq_id=web_context.get_admin_tournament().uniq_id)
             else:
                 if action == 'update':
                     stored_tournament = event_database.update_stored_tournament(

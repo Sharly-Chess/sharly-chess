@@ -111,6 +111,9 @@ class MigrationDatabase(SQLiteDatabase, ABC):
         This may change the structure of the database."""
         for manager in self.migration_managers:
             manager.migrate()
+        for manager in self.migration_managers:
+            for task in manager.post_upgrade_tasks:
+                task.execute()
 
     def create(self):
         """Create a database by running the migrations from scratch.

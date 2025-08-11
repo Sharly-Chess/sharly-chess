@@ -392,7 +392,7 @@ class FFESession(Session):
         logger.info(
             'Sending tournament [%d] (%s) to the FFE website...',
             ffe_id,
-            self.tournament.file,
+            self.tournament.uniq_id,
         )
         if not self._ffe_init():
             return

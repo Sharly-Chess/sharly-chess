@@ -6,7 +6,6 @@ from functools import cached_property
 from itertools import groupby
 from logging import Logger
 from operator import attrgetter
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, Iterable
 from _weakref import ReferenceType
 
@@ -69,7 +68,6 @@ class Tournament:
         self.players_by_id = self._get_players_by_id()
         self.boards_by_id = self._get_boards_by_id()
         self.prize_groups_by_id = self._get_prize_groups_by_id()
-
         self._players_by_rank: dict[int, Player] | None = None
 
         # Give plugin the chance to initialise their data
@@ -104,32 +102,6 @@ class Tournament:
             if len(self.event.tournaments_by_id.values()) > 1
             else self.name
         )
-
-    @property
-    def path(self) -> Path:
-        return (
-            Path(self.stored_tournament.path)
-            if self.stored_tournament.path
-            else self.event.path
-        )
-
-    @property
-    def filename(self) -> str:
-        if self.stored_tournament.filename:
-            return self.stored_tournament.filename
-        return self.uniq_id
-
-    @property
-    def file(self) -> Path:
-        return self.path / f'{self.filename}.{SharlyChessConfig.papi_ext}'
-
-    @property
-    def file_exists(self) -> bool:
-        return self.file.exists()
-
-    @property
-    def file_modified_timestamp(self) -> float:
-        return self.file.lstat().st_mtime
 
     @property
     def log_prefix(self) -> str:
@@ -274,6 +246,14 @@ class Tournament:
     @property
     def last_check_in_update(self) -> float:
         return self.stored_tournament.last_check_in_update
+
+    @property
+    def last_pairing_update(self) -> float:
+        return self.stored_tournament.last_pairing_update
+
+    @property
+    def last_player_update(self) -> float:
+        return self.stored_tournament.last_pairing_update
 
     @property
     def handicap(self) -> bool:
@@ -724,7 +704,14 @@ class Tournament:
             screen.clear_cache_for_tournament(self.id)
         for family in self.dependent_families:
             family.clear_cache()
+        self.reload_stored_tournament()
         self.event.clear_player_cache()
+
+    def reload_stored_tournament(self):
+        with EventDatabase(self.event.uniq_id) as database:
+            stored_tournament = database.get_stored_tournament(self.id)
+            assert stored_tournament is not None
+            self.stored_tournament = stored_tournament
 
     def set_for_round(self, round_: int | None = None):
         """Set the tournament for the given round (defaults to the current round)"""
@@ -994,17 +981,22 @@ class Tournament:
     def store_illegal_move(self, player: Player):
         """Store an illegal move for the given `player`, for the current
         round."""
-        with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            player.pairings[self.current_round].add_illegal_move(event_database)
-            event_database.commit()
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            player.pairings[self.current_round].add_illegal_move(database)
+            self.stored_tournament.last_illegal_move_update = (
+                database.set_tournament_last_illegal_move_update(self.id)
+            )
+            database.commit()
 
     def delete_illegal_move(self, player: Player) -> bool:
         """Deletes one illegal move for the given `player` for the current round."""
-        deleted: bool = False
-        with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            player.pairings[self.current_round].delete_illegal_move(event_database)
-            event_database.commit()
-            deleted = True
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            deleted = player.pairings[self.current_round].delete_illegal_move(database)
+            if deleted:
+                self.stored_tournament.last_illegal_move_update = (
+                    database.set_tournament_last_illegal_move_update(self.id)
+                )
+            database.commit()
         return deleted
 
     def correct_ranking_round(self, ranking_round: int | None = None) -> int:
@@ -1114,10 +1106,12 @@ class Tournament:
 
     def check_in_player(self, player: Player, check_in: bool):
         """Stores the `check_in` status for the given `player`."""
-        with EventDatabase(self.event.uniq_id, write=True) as event_database:
-            event_database.set_player_check_in(player.id, check_in)
-            event_database.set_tournament_last_check_in_update(self.id)
-            event_database.commit()
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            database.set_player_check_in(player.id, check_in)
+            self.stored_tournament.last_check_in_update = (
+                database.set_tournament_last_check_in_update(self.id)
+            )
+            database.commit()
         player.stored_player.check_in = check_in
         player.clear_cache()
         self.clear_cache()

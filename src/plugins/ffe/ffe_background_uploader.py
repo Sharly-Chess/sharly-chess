@@ -17,7 +17,6 @@ from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_session import FFESession
 from plugins.ffe.utils import FFEUtils
 from plugins.utils import PluginUtils
-from utils.enum import NeedsUpload
 from web.channels import channels_plugin
 
 logger = get_logger()
@@ -82,9 +81,8 @@ class FfeBackgroundUploader:
                 _('FFE certification number and password not defined for tournament.'),
             )
             cls.upload_status_messages[result_id] = result
-        elif (
-            not FFEUtils.resolve_auto_upload(tournament)
-            and cls.ffe_upload_needed(tournament) == NeedsUpload.YES
+        elif not FFEUtils.resolve_auto_upload(tournament) and cls.ffe_upload_needed(
+            tournament
         ):
             # For manual updates tell the user that the tournament has been modified
             # For auto uploads, schedule_upload should have already an appropriate message
@@ -121,15 +119,15 @@ class FfeBackgroundUploader:
         return get_data(tournament.plugin_data, 'ffe_last_upload', 0.0)
 
     @classmethod
-    def ffe_upload_needed(cls, tournament: Tournament) -> NeedsUpload:
-        try:
-            ffe_last_upload = cls.ffe_last_upload(tournament)
-            if ffe_last_upload > tournament.file_modified_timestamp:
-                # Last version already uploaded
-                return NeedsUpload.NO_CHANGE
-            return NeedsUpload.YES
-        except FileNotFoundError:
-            return NeedsUpload.NO_CHANGE
+    def ffe_upload_needed(cls, tournament: Tournament) -> bool:
+        tournament.reload_stored_tournament()
+        return cls.ffe_last_upload(tournament) < max(
+            tournament.last_update,
+            tournament.last_check_in_update,
+            tournament.last_result_update,
+            tournament.last_player_update,
+            tournament.last_pairing_update,
+        )
 
     @classmethod
     def publish_upload_event(cls):
@@ -227,18 +225,13 @@ class FfeBackgroundUploader:
         tournaments = cls.update_eligible_tournaments(admin_event)
         updated_tournaments: list[Tournament] = []
         for tournament in tournaments:
-            needs_upload: NeedsUpload = cls.ffe_upload_needed(tournament)
-            match needs_upload:
-                case NeedsUpload.YES:
-                    updated_tournaments.append(tournament)
-                case NeedsUpload.NO_CHANGE:
-                    cls.upload_status_messages[cls.result_id(tournament)] = (
-                        FfeUploadResult(
-                            FfeUploadStatus.INFO,
-                            _('Tournament not modified since last upload'),
-                        )
-                    )
-                    pass
+            if cls.ffe_upload_needed(tournament):
+                updated_tournaments.append(tournament)
+            else:
+                cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
+                    FfeUploadStatus.INFO,
+                    _('Tournament not modified since last upload'),
+                )
 
         if not updated_tournaments:
             cls.uploading_event = False
@@ -288,8 +281,7 @@ class FfeBackgroundUploader:
                 # Skip this tournament if we have a SETTINGS_ERROR
                 return
 
-            ffe_last_upload = cls.ffe_last_upload(tournament)
-            if ffe_last_upload > tournament.file_modified_timestamp:
+            if not cls.ffe_upload_needed(tournament):
                 # Latest version already uploaded
                 return
 
@@ -298,6 +290,7 @@ class FfeBackgroundUploader:
                 # There's already a thread running for this tournament
                 return
 
+        ffe_last_upload = cls.ffe_last_upload(tournament)
         delay = FFEUtils.resolve_auto_upload_delay(tournament.event)
         wait_time = 0.1
         if not force and time() < ffe_last_upload + delay * 60:
