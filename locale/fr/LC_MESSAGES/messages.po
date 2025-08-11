@@ -1111,9 +1111,6 @@ msgstr "Date :"
 msgid "Debug message"
 msgstr "Message de déboggage"
 
-msgid "Default directory of the Papi files:"
-msgstr "Répertoire par défaut des fichiers Papi :"
-
 msgid "Default federation"
 msgstr "Fédération par défaut"
 
@@ -1223,12 +1220,6 @@ msgstr "Détails"
 
 msgid "Direct encounter"
 msgstr "Rencontre directe"
-
-msgid "Directory [{path}] not found."
-msgstr "Répertoire [{path}] non trouvé."
-
-msgid "Directory:"
-msgstr "Répertoire :"
 
 msgid "Disabled"
 msgstr "Désactivé"
@@ -1495,17 +1486,11 @@ msgstr "Exemple : Tournoi A"
 msgid "E.g.: World championship"
 msgstr "Exemple: Championnat du monde"
 
-msgid "E.g.: c:\\chess\\tournaments"
-msgstr "E.g.: c:\\echecs\\tournois"
-
 msgid "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
 msgstr "Exemple : c:\\echecs\\tournois\\principal\\reglement.pdf"
 
 msgid "E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf"
 msgstr "Exemple : c:\\echecs\\tournois\\mon_tournoi\\reglement.pdf"
-
-msgid "E.g.: c:\\chess\\tournaments\\papi"
-msgstr "E.g.: c:\\echecs\\tournois\\papi"
 
 msgid "E.g.: https://my.club.us/tournament.jpg"
 msgstr "Exemple : https://mon.club.fr/affiche.jpg"
@@ -1682,6 +1667,9 @@ msgstr "Saisir le résultat"
 
 msgid "Enter the tournament ID to confirm its deletion:"
 msgstr "Entrez l'identifiant du tournoi pour confirmer sa suppression :"
+
+msgid "Error"
+msgstr "Erreur"
 
 msgid "Error message"
 msgstr "Message d'erreur"
@@ -1941,9 +1929,6 @@ msgstr "Fichier [{file}] non trouvé."
 
 msgid "File is expected to have the [{suffix}] suffix"
 msgstr "Le fichier doit avoir l'extension [{suffix}]."
-
-msgid "File name (without extension):"
-msgstr "Nom du fichier (sans extension) :"
 
 msgid "Filter out players with a greater rating."
 msgstr "Exclure les joueur·euses ayant un Elo plus élevé."
@@ -2205,6 +2190,9 @@ msgstr "Image :"
 #, python-format
 msgid "Image: %(image)s"
 msgstr "Image : %(image)s"
+
+msgid "Import of papi file [{file}] failed."
+msgstr "L'import du fichier papi [{file}] a échoué."
 
 msgid "Impossible to add players to tournament [{tournament_uniq_id}]."
 msgstr "Impossible d'ajouter des joueur·euses au tournoi [{tournament_uniq_id}]."
@@ -2765,9 +2753,6 @@ msgstr "Aucun évènement en cours."
 msgid "No data received from [{url}]."
 msgstr "Aucune donnée reçue de [{url}]."
 
-msgid "No directory set for Papi files, by default [{path}]."
-msgstr "Aucun répertoire défini pour les fichiers Papi, par défaut [{path}]."
-
 msgid "No display controllers"
 msgstr "Aucun pilote d'afficheurs"
 
@@ -3177,6 +3162,9 @@ msgstr "Appariements : %(pairing_variation)s"
 
 msgid "Papi file"
 msgstr "Fichier Papi"
+
+msgid "Papi file [{file}] successfully imported."
+msgstr "Fichier Papi [{file}] importé avec succès."
 
 msgid "Parings by player"
 msgstr "Appariements par ordre alphabétique"
@@ -4294,19 +4282,11 @@ msgstr "La source de données dans laquelle rechercher des joueur·euses."
 msgid "The date of the first hour is not defined (mandatory)."
 msgstr "La date du premier horaire n'est pas définie (obligatoire)."
 
-#, python-format
-msgid "The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s)."
-msgstr "Le répertoire des fichiers Papi des tournois (chemin relatif ou absolu, par défaut %(dir)s)."
-
 msgid "The default federation for your events."
 msgstr "La fédération par défaut de vos évènements."
 
 msgid "The default language used."
 msgstr "La langue utilisée par défaut."
-
-#, python-format
-msgid "The directory of the Papi file (defaults to [%(dir)s])."
-msgstr "Le répertoire du fichier Papi ([%(dir)s] par défaut)."
 
 msgid "The end date and time of the event."
 msgstr "La date et l'heure de fin de l'évènement."
@@ -4401,9 +4381,6 @@ msgstr "La temps minimal, quelle que soit la différence de classement entre les
 
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
 msgstr "La valeur minimale d'un prix partagé dans cette catégorie (pas de seuil par défaut)."
-
-msgid "The name of the Papi file without [.papi] extension (defaults to the unique ID)."
-msgstr "Le nom du fichier Papi sans l'extension [.papi] (par défaut l'identifiant unique)."
 
 msgid "The name of the display controller, optional."
 msgstr "Le nom du pilote d'afficheurs, facultatif."
@@ -5367,6 +5344,9 @@ msgstr "Vous essayez de modifier manuellement les appariements de la ronde en co
 msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
 msgstr "Vous essayez de modifier les appariements de la ronde précédente. Cela aura un impact sur les appariements et le classement de toutes les rondes à venir."
 
+msgid "You can try again from the tournament card (Actions > Import > Papi file)."
+msgstr "Vous pouvez essayer à nouveau depuis la carte du tournoi (Actions > Import > Fichier Papi)."
+
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement…) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans simples seront générés automatiquement."
 
@@ -5405,9 +5385,6 @@ msgstr "Absent·e"
 
 msgid "[Sharly Chess {version}] Request for the integration of custom files"
 msgstr "[Sharly Chess {version}] Demande d'intégration de fichiers de personnalisation"
-
-msgid "[{path}] is not a directory."
-msgstr "[{path}] n'est pas un répertoire."
 
 msgid "[{value}] is not a positive value."
 msgstr "[{value}] n'est pas une valeur positive."

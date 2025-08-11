@@ -1111,9 +1111,6 @@ msgstr ""
 msgid "Debug message"
 msgstr ""
 
-msgid "Default directory of the Papi files:"
-msgstr ""
-
 msgid "Default federation"
 msgstr ""
 
@@ -1222,12 +1219,6 @@ msgid "Details"
 msgstr ""
 
 msgid "Direct encounter"
-msgstr ""
-
-msgid "Directory [{path}] not found."
-msgstr ""
-
-msgid "Directory:"
 msgstr ""
 
 msgid "Disabled"
@@ -1495,16 +1486,10 @@ msgstr ""
 msgid "E.g.: World championship"
 msgstr ""
 
-msgid "E.g.: c:\\chess\\tournaments"
-msgstr ""
-
 msgid "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
 msgstr ""
 
 msgid "E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf"
-msgstr ""
-
-msgid "E.g.: c:\\chess\\tournaments\\papi"
 msgstr ""
 
 msgid "E.g.: https://my.club.us/tournament.jpg"
@@ -1681,6 +1666,9 @@ msgid "Enter the result"
 msgstr ""
 
 msgid "Enter the tournament ID to confirm its deletion:"
+msgstr ""
+
+msgid "Error"
 msgstr ""
 
 msgid "Error message"
@@ -1942,9 +1930,6 @@ msgstr ""
 msgid "File is expected to have the [{suffix}] suffix"
 msgstr ""
 
-msgid "File name (without extension):"
-msgstr ""
-
 msgid "Filter out players with a greater rating."
 msgstr ""
 
@@ -2204,6 +2189,9 @@ msgstr ""
 
 #, python-format
 msgid "Image: %(image)s"
+msgstr ""
+
+msgid "Import of papi file [{file}] failed."
 msgstr ""
 
 msgid "Impossible to add players to tournament [{tournament_uniq_id}]."
@@ -2765,9 +2753,6 @@ msgstr ""
 msgid "No data received from [{url}]."
 msgstr ""
 
-msgid "No directory set for Papi files, by default [{path}]."
-msgstr ""
-
 msgid "No display controllers"
 msgstr ""
 
@@ -3176,6 +3161,9 @@ msgid "Pairings: %(pairing_variation)s"
 msgstr ""
 
 msgid "Papi file"
+msgstr ""
+
+msgid "Papi file [{file}] successfully imported."
 msgstr ""
 
 msgid "Parings by player"
@@ -4294,18 +4282,10 @@ msgstr ""
 msgid "The date of the first hour is not defined (mandatory)."
 msgstr ""
 
-#, python-format
-msgid "The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s)."
-msgstr ""
-
 msgid "The default federation for your events."
 msgstr ""
 
 msgid "The default language used."
-msgstr ""
-
-#, python-format
-msgid "The directory of the Papi file (defaults to [%(dir)s])."
 msgstr ""
 
 msgid "The end date and time of the event."
@@ -4400,9 +4380,6 @@ msgid "The minimum time, whatever the ranking difference between the two players
 msgstr ""
 
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
-msgstr ""
-
-msgid "The name of the Papi file without [.papi] extension (defaults to the unique ID)."
 msgstr ""
 
 msgid "The name of the display controller, optional."
@@ -5367,6 +5344,9 @@ msgstr ""
 msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
 msgstr ""
 
+msgid "You can try again from the tournament card (Actions > Import > Papi file)."
+msgstr ""
+
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr ""
 
@@ -5404,9 +5384,6 @@ msgid "Zero-Point Bye"
 msgstr ""
 
 msgid "[Sharly Chess {version}] Request for the integration of custom files"
-msgstr ""
-
-msgid "[{path}] is not a directory."
 msgstr ""
 
 msgid "[{value}] is not a positive value."

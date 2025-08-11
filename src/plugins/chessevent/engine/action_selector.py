@@ -338,14 +338,10 @@ class ActionSelector(metaclass=Singleton):
                                 )
                                 continue
                             data_md5 = hashlib.md5(data.encode('utf-8')).hexdigest()
-                            if (
-                                data_md5
-                                == PluginUtils.get_plugin_data(
-                                    PLUGIN_NAME,
-                                    tournament.plugin_data,
-                                    'chessevent_last_download_md5',
-                                )
-                                and tournament.file.exists()
+                            if data_md5 == PluginUtils.get_plugin_data(
+                                PLUGIN_NAME,
+                                tournament.plugin_data,
+                                'chessevent_last_download_md5',
                             ):
                                 print_interactive_info(
                                     _(

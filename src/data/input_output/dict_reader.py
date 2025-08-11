@@ -1,7 +1,7 @@
 from dataclasses import is_dataclass, fields
 from enum import Enum
 from types import UnionType, GenericAlias
-from typing import Any, get_origin, get_args
+from typing import Any, get_origin, get_args, cast
 
 from common.exception import SharlyChessException
 from common.i18n import _
@@ -29,7 +29,7 @@ def dict_to_dataclass[T](
     if path is None:
         path = []
 
-    field_types: dict[str, type] = {f.name: f.type for f in fields(data_class)}
+    field_types: dict[str, Any] = {f.name: f.type for f in fields(data_class)}
     kwargs = {}
 
     for key, value in dict_obj.items():
@@ -45,7 +45,7 @@ def dict_to_dataclass[T](
             raise DictReaderException(
                 path, _('Missing required field [{field}].').format(field=field.name)
             )
-    return data_class(**kwargs)
+    return cast(T, data_class(**kwargs))
 
 
 def _read_field_value(
