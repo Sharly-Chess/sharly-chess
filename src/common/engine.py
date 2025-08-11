@@ -36,7 +36,6 @@ from common.logger import (
 )
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
-from data.event import Event
 from data.loader import EventLoader
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.event.event_database import EventDatabase
@@ -290,34 +289,13 @@ class Engine(ABC):
                 config_database_file,
             )
         logger.info('Recovering events from release [%s]...', version)
-        tournaments_number: int = 0
         events_dir: Path = version_dir / EVENTS_FOLDER
-        papi_dir: Path = version_dir / SharlyChessConfig.default_papi_folder
         for file in files:
             event_uniq_id: str = file.stem
             logger.info('Recovering event [%s]...', event_uniq_id)
             event_database: EventDatabase = EventDatabase(event_uniq_id)
             # copy the event database to its new destination
             shutil.copy(file, event_database.file)
-            # now open the event database to search for local Papi files
-            event: Event = EventLoader.get(request=None).load_event(event_uniq_id)
-            for tournament in event.tournaments_by_id.values():
-                src_file: Path = (
-                    papi_dir / f'{tournament.filename}.{SharlyChessConfig.papi_ext}'
-                )
-                if (
-                    tournament.path == SharlyChessConfig.default_papi_path
-                    and src_file.exists()
-                ):
-                    # recover the Papi file where stored in the default folder
-                    logger.debug(
-                        'Event [%s]: recovering tournament [%s]...',
-                        event_uniq_id,
-                        tournament.uniq_id,
-                    )
-                    shutil.copy(src_file, tournament.file)
-                    logger.debug('%s > %s', str(src_file), str(tournament.file))
-                    tournaments_number += 1
         logger.info('Recovering misc files...')
         files_to_recover = [
             database.file
@@ -355,11 +333,6 @@ class Engine(ABC):
                         custom_files.append(item)
         logger.info(
             'Events recovered: %d (from directory [%s]).', len(files), events_dir
-        )
-        logger.info(
-            'Tournaments recovered: %d (from directory [%s]).',
-            tournaments_number,
-            papi_dir,
         )
         if misc_files:
             logger.info(

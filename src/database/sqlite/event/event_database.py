@@ -251,7 +251,6 @@ class EventDatabase(MigrationDatabase):
             start=row['start'],
             stop=row['stop'],
             public=self.load_bool_from_database_field(row['public']),
-            path=row['path'],
             location=row['location'],
             hide_background_image=self.load_bool_from_database_field(
                 row.get(
@@ -305,7 +304,6 @@ class EventDatabase(MigrationDatabase):
         metadata.screen_count = self._get_table_count('screen')
         metadata.family_count = self._get_table_count('family')
         metadata.rotator_count = self._get_table_count('rotator')
-        metadata.last_tournament_update = self.get_all_tournaments_last_update()
         return metadata
 
     def update_stored_event(self, stored_event: StoredEvent):
@@ -328,7 +326,6 @@ class EventDatabase(MigrationDatabase):
                     'stop',
                     'public',
                     'federation',
-                    'path',
                     'location',
                     'hide_background_image',
                     'background_image',
@@ -658,8 +655,6 @@ class EventDatabase(MigrationDatabase):
             id=row['id'],
             uniq_id=row['uniq_id'],
             name=row['name'],
-            path=row['path'],
-            filename=row['filename'],
             time_control_initial_time=row['time_control_initial_time'],
             time_control_increment=row['time_control_increment'],
             time_control_handicap_penalty_step=row[
@@ -685,6 +680,8 @@ class EventDatabase(MigrationDatabase):
             last_result_update=row['last_result_update'],
             last_illegal_move_update=row['last_illegal_move_update'],
             last_check_in_update=row['last_check_in_update'],
+            last_pairing_update=row['last_pairing_update'],
+            last_player_update=row['last_player_update'],
             tie_breaks=cls.load_json_from_database_field(row['tie_breaks']),
             start=row['start'],
             stop=row['stop'],
@@ -707,12 +704,6 @@ class EventDatabase(MigrationDatabase):
         if row := self.fetchone():
             return self._row_to_stored_tournament(row)
         return None
-
-    def get_stored_tournament_last_updates(self) -> dict[int, float]:
-        """Fetches the timestamp of the last update of each tournament.
-        Returns a dict of timestamp per tournament ID."""
-        self.execute('SELECT `id`, `last_update` FROM `tournament`')
-        return {row['id']: row['last_update'] for row in self.fetchall()}
 
     def load_stored_tournaments(self) -> list[StoredTournament]:
         self.execute('SELECT * FROM `tournament` ORDER BY `uniq_id`')
@@ -750,8 +741,6 @@ class EventDatabase(MigrationDatabase):
                 [
                     'uniq_id',
                     'name',
-                    'path',
-                    'filename',
                     'time_control_initial_time',
                     'time_control_increment',
                     'time_control_handicap_penalty_step',
@@ -769,9 +758,6 @@ class EventDatabase(MigrationDatabase):
                     'start',
                     'stop',
                     'last_rounds_no_byes',
-                    'last_result_update',
-                    'last_illegal_move_update',
-                    'last_check_in_update',
                     'three_points_for_a_win',
                 ],
             )
@@ -825,35 +811,38 @@ class EventDatabase(MigrationDatabase):
     def delete_stored_tournament(self, tournament_id: int):
         self.execute('DELETE FROM `tournament` WHERE `id` = ?;', (tournament_id,))
 
-    def _set_tournament_last_illegal_move_update(self, tournament_id: int):
+    def _set_tournament_timestamp_field(self, field_: str, tournament_id: int) -> float:
+        # TODO (Molrn) replace all these usages with the appropriate SQL triggers
+        timestamp = time.time()
         self.execute(
-            'UPDATE `tournament` SET `last_illegal_move_update` = ? WHERE `id` = ?',
+            f'UPDATE `tournament` SET `{field_}` = ? WHERE `id` = ?',
             (
-                time.time(),
+                timestamp,
                 tournament_id,
             ),
         )
+        return timestamp
 
-    def set_tournament_last_check_in_update(self, tournament_id: int):
-        self.execute(
-            'UPDATE `tournament` SET `last_check_in_update` = ? WHERE `id` = ?',
-            (
-                time.time(),
-                tournament_id,
-            ),
+    def set_tournament_last_illegal_move_update(self, tournament_id: int) -> float:
+        return self._set_tournament_timestamp_field(
+            'last_illegal_move_update', tournament_id
+        )
+
+    def set_tournament_last_check_in_update(self, tournament_id: int) -> float:
+        return self._set_tournament_timestamp_field(
+            'last_check_in_update', tournament_id
         )
 
     def set_tournament_last_result_update(self, tournament_id: int) -> float:
-        """Change the last result update of the tournament with the current date and return this date."""
-        date: float = time.time()
-        self.execute(
-            'UPDATE `tournament` SET `last_result_update` = ? WHERE `id` = ?',
-            (
-                date,
-                tournament_id,
-            ),
+        return self._set_tournament_timestamp_field('last_result_update', tournament_id)
+
+    def set_tournament_last_pairing_update(self, tournament_id: int) -> float:
+        return self._set_tournament_timestamp_field(
+            'last_pairing_update', tournament_id
         )
-        return date
+
+    def set_tournament_last_player_update(self, tournament_id: int) -> float:
+        return self._set_tournament_timestamp_field('last_player_update', tournament_id)
 
     def set_tournament_check_in(self, tournament_id: int, o: bool):
         """Opens (o is True) or closes (o is False) the check_in for the tournament."""
@@ -891,10 +880,6 @@ class EventDatabase(MigrationDatabase):
                 tournament_id,
             ),
         )
-
-    def get_all_tournaments_last_update(self) -> float | None:
-        self.execute('SELECT MAX(`last_update`) AS `last_update` FROM `tournament`')
-        return self.fetchone()['last_update']
 
     # ---------------------------------------------------------------------------------
     # StoredPlayer

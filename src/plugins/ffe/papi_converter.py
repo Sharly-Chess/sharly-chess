@@ -344,9 +344,6 @@ class PapiConverter:
                 id=None,
                 uniq_id=variables.name.lower().replace('/', '-').replace(' ', '-'),
                 name=variables.name,
-                # TODO (Molrn) remove
-                path=None,
-                filename=None,
             )
 
         rounds = 7

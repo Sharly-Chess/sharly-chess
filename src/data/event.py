@@ -7,7 +7,6 @@ from dataclasses import dataclass
 from functools import total_ordering, cached_property
 from logging import Logger
 from operator import attrgetter
-from pathlib import Path
 from types import NotImplementedType
 from typing import Any, Iterable
 
@@ -218,23 +217,6 @@ class Event:
     @property
     def formatted_stop_time(self) -> str:
         return format_timestamp_time(self.stop)
-
-    @cached_property
-    def path(self) -> Path:
-        path: Path = SharlyChessConfig.default_papi_path
-        if not self.stored_event.path:
-            self.add_debug(
-                _('No directory set for Papi files, by default [{path}].').format(
-                    path=path
-                )
-            )
-        else:
-            path = Path(self.stored_event.path)
-        if not path.exists():
-            self.add_warning(_('Directory [{path}] not found.').format(path=path))
-        elif not path.is_dir():
-            self.add_error(_('[{path}] is not a directory.').format(path=path))
-        return path
 
     @property
     def location(self) -> str | None:

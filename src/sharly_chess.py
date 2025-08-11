@@ -7,7 +7,7 @@ try:
 
     arguments = init_script()
 
-    from common import DEVEL_ENV, TEST_ENV
+    from common import DEVEL_ENV
     from common.i18n import _
     from common.logger import (
         get_logger,
@@ -69,6 +69,14 @@ except Exception:
     print('An error occurred.')
 from contextlib import suppress
 
-if not TEST_ENV:
+enter_to_end = True
+try:
+    from common import TEST_ENV
+
+    enter_to_end = not TEST_ENV
+except Exception:
+    pass
+
+if enter_to_end:
     with suppress(UnicodeDecodeError):
         input('Press Enter to end.')
