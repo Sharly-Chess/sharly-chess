@@ -25,7 +25,7 @@ def dict_to_dataclass[T](
         - a value is of incorrect type"""
 
     if not is_dataclass(data_class):
-        raise ValueError(f'{data_class} is not a dataclass')
+        raise TypeError(f'{data_class} is not a dataclass')
     if path is None:
         path = []
 
