@@ -138,29 +138,6 @@
                             ) }}
                         </div>
                     </div>
-                    <h4>
-                        {{ _('Papi file') }}
-                    </h4>
-                    <div class="row">
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.text_input(
-                                name='path',
-                                label=_('Directory:'),
-                                placeholder=_('E.g.: c:\\chess\\tournaments\\papi'),
-                                help_text=_('The directory of the Papi file (defaults to [%(dir)s]).', dir=admin_event.path),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.text_input(
-                                name='filename',
-                                label=_('File name (without extension):'),
-                                placeholder=_('E.g.: main'),
-                                help_text=_('The name of the Papi file without [.papi] extension (defaults to the unique ID).'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                    </div>
 
                     {% for form_fields_template in plugin_form_fields_templates %}
                         {% include form_fields_template %}

@@ -111,15 +111,6 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-12 col-md-12 mb-3">
-                            {{ admin_macros.text_input(
-                                name='path',
-                                label=_('Default directory of the Papi files:'),
-                                placeholder=_('E.g.: c:\\chess\\tournaments'),
-                                help_text=_('The default directory of the Papi files for the tournaments (absolute or relative path, by default %(dir)s).', dir=sharly_chess_config.default_papi_path),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
                         <div class="col-12 col-md-6">
                             {{ admin_macros.text_input(
                                 name='prize_currency',

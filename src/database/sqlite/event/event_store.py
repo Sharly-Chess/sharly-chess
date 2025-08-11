@@ -137,8 +137,6 @@ class StoredTournament:
     id: int | None
     uniq_id: str
     name: str
-    path: str | None
-    filename: str | None
     time_control_initial_time: int | None = None
     time_control_increment: int | None = None
     time_control_handicap_penalty_step: int | None = None
@@ -164,6 +162,8 @@ class StoredTournament:
     last_result_update: float = 0.0
     last_illegal_move_update: float = 0.0
     last_check_in_update: float = 0.0
+    last_player_update: float = 0.0
+    last_pairing_update: float = 0.0
     three_points_for_a_win: bool = False
     stored_prize_groups: list[StoredPrizeGroup] = field(
         default_factory=list[StoredPrizeGroup]
@@ -293,7 +293,6 @@ class BaseStoredEvent:
     start: float
     stop: float
     public: bool = False
-    path: str | None = None
     location: str | None = None
     hide_background_image: bool = SharlyChessConfig.default_hide_background_image
     background_image: str | None = None
@@ -337,4 +336,3 @@ class EventMetadata(BaseStoredEvent):
     screen_count: int = 0
     family_count: int = 0
     rotator_count: int = 0
-    last_tournament_update: float | None = None
