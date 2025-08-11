@@ -54,7 +54,7 @@ class Migration(BaseMigration):
         )
 
     def import_papi_file(self, tournament_id: int, papi_file_path: Path):
-        from common import get_logger
+        from common.logger import get_logger
         from common.exception import SharlyChessException
         from common.i18n import _
         from data.loader import EventLoader
