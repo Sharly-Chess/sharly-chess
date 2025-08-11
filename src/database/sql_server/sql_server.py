@@ -1,7 +1,7 @@
 import asyncio
 import base64
 import json
-from typing import TYPE_CHECKING, Self, Any, NoReturn
+from typing import Self, Any, NoReturn
 from pathlib import Path
 from logging import Logger
 from collections.abc import AsyncIterator
@@ -100,7 +100,9 @@ class SqlServer:
         except (pytds.Error, TimeoutError) as e:
             NetworkMonitor.set_connected(False)
             if DEVEL_ENV:
-                error_msg = _('Connection to the server failed: {error}.').format(error=str(e))
+                error_msg = _('Connection to the server failed: {error}.').format(
+                    error=str(e)
+                )
             else:
                 error_msg = _('Connection to the server failed.')
             logger.error(error_msg)
@@ -108,7 +110,9 @@ class SqlServer:
         except Exception as e:
             NetworkMonitor.set_connected(False)
             if DEVEL_ENV:
-                error_msg = _('Connection to the server failed: {error}.').format(error=str(e))
+                error_msg = _('Connection to the server failed: {error}.').format(
+                    error=str(e)
+                )
             else:
                 error_msg = _('Connection to the server failed.')
             logger.error(error_msg)
@@ -127,13 +131,15 @@ class SqlServer:
     def _check_cursor(self):
         """Check that the cursor is available."""
         if not self.cursor:
-            raise RuntimeError("Database connection not established")
+            raise RuntimeError('Database connection not established')
 
     def _handle_database_error(self, e: Exception) -> NoReturn:
         """Handle database errors consistently."""
         NetworkMonitor.set_connected(False)
         if DEVEL_ENV:
-            error_msg = _('Request to the database failed: {error}.').format(error=str(e))
+            error_msg = _('Request to the database failed: {error}.').format(
+                error=str(e)
+            )
         else:
             error_msg = _('Request to the database failed.')
         logger.error(error_msg)
