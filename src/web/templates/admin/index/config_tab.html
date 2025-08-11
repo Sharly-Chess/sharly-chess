@@ -190,32 +190,6 @@
                     <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='jsTree') }}</th>
                     <td>{{ sharly_chess_config.jstree_version }}</td>
                 </tr>
-                <tr class="{{ row_cycler() }}">
-                    <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='PyODBC') }}</th>
-                    <td>{{ sharly_chess_config.pyodbc_version }}</td>
-                </tr>
-                <tr class="{{ row_cycler() }}">
-                    <th scope="row" class="text-nowrap">{{
-                        _('Access driver (found)')
-                        if access_driver in odbc_drivers else
-                        _('Access driver (not found)') }}
-                    </th>
-                    <td>{{ access_driver }}</td>
-                </tr>
-                <tr class="{{ row_cycler() }}">
-                    <th scope="row" class="text-nowrap">
-                        {{ _('Other ODBC drivers found on the server') }}
-                    </th>
-                    <td>
-                        {% for odbc_driver in odbc_drivers %}
-                            {% if odbc_driver != access_driver %}
-                                <div class="{% if odbc_driver == access_driver %}access-driver{% endif %}">
-                                    {{ odbc_driver }}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    </td>
-                </tr>
             {% endif %}
         </tbody>
     </table>
