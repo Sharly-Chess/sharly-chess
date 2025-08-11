@@ -127,10 +127,9 @@ class BaseRoleTest:
     ):
         """A fixture to create a paired tournament"""
         tournament = TestUtils.create_tournament(
-            api_request_context,
             PUBLIC_EVENT_ID,
             TOURNAMENT_ID,
-            papi_file='test-screens',
+            api_request_context,
             overrides={'record_illegal_moves': 1},
         )
         self.paired_tournament = tournament
@@ -144,10 +143,10 @@ class BaseRoleTest:
     ):
         """A fixture to create an unpaired tournament"""
         tournament = TestUtils.create_tournament(
-            api_request_context,
             PUBLIC_EVENT_ID,
             TOURNAMENT_UNPAIRED_ID,
-            papi_file='test-screens-unpaired',
+            api_request_context,
+            json_file='test-screens-unpaired',
         )
         self.unpaired_tournament = tournament
         yield tournament
