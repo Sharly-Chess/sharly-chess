@@ -197,12 +197,11 @@ class PapiConverter:
         finally:
             # Clean up the temporary SQL dump file
             sql_dump_file.unlink(missing_ok=True)
-
-        if not target_file.exists():
-            raise SharlyChessException(
-                'Player database conversion error: SQLite database was not created.'
-            )
-        return True
+            if not target_file.exists():
+                raise SharlyChessException(
+                    'Player database conversion error: SQLite database was not created.'
+                )
+            return True
 
     def read_papi_file(
         self,
@@ -576,7 +575,9 @@ class PapiConverter:
         Returns True if successful, raises SharlyChessException if conversion fails."""
         papi_data = self._tournament_to_papi_data(tournament)
         papi_data_dict = {
-            'variables': papi_data.variables.__dict__,
+            'variables': {
+                key: value or '' for key, value in papi_data.variables.__dict__.items()
+            },
             'players': [
                 self._papi_player_to_dict(player) for player in papi_data.players
             ],
@@ -599,18 +600,17 @@ class PapiConverter:
                 encoding='utf-8',
             )
 
-            if result.returncode != 0 or not Path(target_file).exists():
+            if result.returncode != 0 or not target_file.exists():
                 raise SharlyChessException(
                     f'JSON to Papi file conversion failed.'
                     f'PapiConverter failed with status {result.returncode}.\n'
                     f'stdout: {result.stdout}\nstderr: {result.stderr}'
                 )
 
-            return True
-
         finally:
             # Clean up temporary JSON file
             temp_json_file.unlink(missing_ok=True)
+            return target_file.exists()
 
     def _tournament_to_papi_data(self, tournament: Tournament) -> PapiData:
         """Convert a Tournament object to PapiData."""
@@ -660,6 +660,9 @@ class PapiConverter:
             timeControl='',
             minRating=str(min_rating),
             maxRating=str(max_rating),
+            homologation=tournament.plugin_data.get(PLUGIN_NAME, {}).get(
+                'ffe_id', None
+            ),
         )
 
         # Add plugin-specific data if available
