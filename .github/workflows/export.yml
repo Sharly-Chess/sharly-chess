@@ -14,7 +14,10 @@ permissions:
   contents: write
 
 jobs:
+  tests:
+    uses: ./.github/workflows/full_tests.yml
   export-sharly-chess:
+    needs: tests
     strategy:
       matrix:
         include:
