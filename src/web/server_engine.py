@@ -7,12 +7,14 @@ import sys
 from threading import Thread
 from time import sleep
 from types import FrameType
-from typing import ClassVar
+from typing import ClassVar, cast
 from webbrowser import open
 
 import requests
 import uvicorn
+from litestar.types import Scope, HTTPScope
 from litestar import Litestar
+from litestar.exceptions import PermissionDeniedException
 from litestar.plugins.htmx import HTMXRequest
 from litestar.logging import LoggingConfig
 
@@ -126,8 +128,17 @@ class ServerEngine(Engine):
         NetworkMonitor.start_monitoring()
 
         logging_config = set_logging_config(
-            console_log_level=sharly_chess_config.console_log_level
+            console_log_level=sharly_chess_config.console_log_level,
         )
+
+        def log_permission_denied(exc: Exception, scope: Scope) -> None:
+            if isinstance(exc, PermissionDeniedException) and scope['type'] == 'http':
+                http = cast(HTTPScope, scope)
+                logger.warning(
+                    '403 permission denied: %s %s',
+                    http.get('method', '?'),
+                    http.get('path', '?'),
+                )
 
         app: Litestar = Litestar(
             debug=True,
@@ -135,7 +146,11 @@ class ServerEngine(Engine):
             route_handlers=route_handlers,
             exception_handlers=exception_handlers,  # type: ignore
             template_config=template_config,
-            logging_config=LoggingConfig(**logging_config),  # type: ignore
+            logging_config=LoggingConfig(
+                **logging_config,
+                disable_stack_trace={403, PermissionDeniedException},
+            ),  # type: ignore
+            after_exception=[log_permission_denied],
             middleware=middlewares,
             stores=stores,
             pdb_on_exception=self.debug,
