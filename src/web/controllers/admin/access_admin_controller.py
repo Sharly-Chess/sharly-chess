@@ -220,7 +220,6 @@ class AccessAdminController(BaseEventAdminController):
     @get(
         path='/admin/event/{event_uniq_id:str}/accounts',
         name='admin-event-accounts-tab',
-        cache=1,
     )
     async def htmx_admin_event_accounts_tab(
         self,
@@ -234,7 +233,6 @@ class AccessAdminController(BaseEventAdminController):
     @get(
         path='/admin/account-modal/create/{event_uniq_id:str}',
         name='admin-account-create-modal',
-        cache=1,
     )
     async def htmx_admin_account_create_modal(
         self,
@@ -252,7 +250,6 @@ class AccessAdminController(BaseEventAdminController):
     @get(
         path='/admin/account-modal/update/{event_uniq_id:str}/{account_id:int}',
         name='admin-account-update-modal',
-        cache=1,
     )
     async def htmx_admin_account_update_modal(
         self,
@@ -273,7 +270,6 @@ class AccessAdminController(BaseEventAdminController):
     @get(
         path='/admin/account-modal/clone/{event_uniq_id:str}/{account_id:int}',
         name='admin-account-clone-modal',
-        cache=1,
     )
     async def htmx_admin_account_clone_modal(
         self,
@@ -295,7 +291,6 @@ class AccessAdminController(BaseEventAdminController):
     @get(
         path='/admin/account-modal/delete/{event_uniq_id:str}/{account_id:int}',
         name='admin-account-delete-modal',
-        cache=1,
     )
     async def htmx_admin_account_delete_modal(
         self,
@@ -509,7 +504,6 @@ class AccessAdminController(BaseEventAdminController):
     @get(
         path='/admin/event/{event_uniq_id:str}/devices',
         name='admin-event-devices-tab',
-        cache=1,
     )
     async def htmx_admin_event_devices_tab(
         self,
@@ -523,7 +517,6 @@ class AccessAdminController(BaseEventAdminController):
     @get(
         path='/admin/device-modal/create/{event_uniq_id:str}',
         name='admin-device-create-modal',
-        cache=1,
     )
     async def htmx_admin_device_create_modal(
         self,
@@ -541,7 +534,6 @@ class AccessAdminController(BaseEventAdminController):
     @get(
         path='/admin/device-modal/update/{event_uniq_id:str}/{device_id:int}',
         name='admin-device-update-modal',
-        cache=1,
     )
     async def htmx_admin_device_update_modal(
         self,
@@ -562,7 +554,6 @@ class AccessAdminController(BaseEventAdminController):
     @get(
         path='/admin/device-modal/clone/{event_uniq_id:str}/{device_id:int}',
         name='admin-device-clone-modal',
-        cache=1,
     )
     async def htmx_admin_device_clone_modal(
         self,
@@ -584,7 +575,6 @@ class AccessAdminController(BaseEventAdminController):
     @get(
         path='/admin/device-modal/delete/{event_uniq_id:str}/{device_id:int}',
         name='admin-device-delete-modal',
-        cache=1,
     )
     async def htmx_admin_device_delete_modal(
         self,

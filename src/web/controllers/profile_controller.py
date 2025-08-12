@@ -48,7 +48,6 @@ class ProfileController(BaseController):
             '/profile-modal',
         ],
         name='profile-modal',
-        cache=1,
     )
     async def htmx_profile_modal(
         self,

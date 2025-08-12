@@ -550,7 +550,6 @@ class FamilyAdminController(BaseEventAdminController):
     @get(
         path='/admin/event/{event_uniq_id:str}/families',
         name='admin-event-families-tab',
-        cache=1,
     )
     async def htmx_admin_event_families_tab(
         self,
@@ -570,7 +569,6 @@ class FamilyAdminController(BaseEventAdminController):
     @get(
         path='/admin/family-modal/create/{event_uniq_id:str}/{family_type:str}',
         name='admin-family-create-modal',
-        cache=1,
     )
     async def htmx_admin_family_create_modal(
         self,
@@ -590,7 +588,6 @@ class FamilyAdminController(BaseEventAdminController):
     @get(
         path='/admin/family-modal/{action:str}/{event_uniq_id:str}/{family_id:int}',
         name='admin-family-modal',
-        cache=1,
     )
     async def htmx_admin_family_modal(
         self,

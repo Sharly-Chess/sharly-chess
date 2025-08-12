@@ -893,7 +893,6 @@ class PlayerAdminController(BaseEventAdminController):
         path='/admin/event/{event_uniq_id:str}/players',
         name='admin-event-players-tab',
         guards=players_tab_guards,
-        cache=1,
     )
     async def htmx_admin_event_players_tab(
         self,
@@ -1023,7 +1022,6 @@ class PlayerAdminController(BaseEventAdminController):
     @get(
         path='/admin/player-modal/create/{event_uniq_id:str}',
         name='admin-player-create-modal',
-        cache=1,
     )
     async def htmx_admin_player_create_modal(
         self,
@@ -1045,7 +1043,6 @@ class PlayerAdminController(BaseEventAdminController):
             '/{data_source_id:str}/{player_source_id:str}/{tournament_id:str}',
         ],
         name='admin-player-modal-create-from-search',
-        cache=1,
     )
     async def htmx_admin_player_modal_create_from_search(
         self,
@@ -1095,7 +1092,6 @@ class PlayerAdminController(BaseEventAdminController):
     @get(
         path='/admin/player-modal/{action:str}/{event_uniq_id:str}/{player_id:int}',
         name='admin-player-modal',
-        cache=1,
     )
     async def htmx_admin_player_modal(
         self,
@@ -1115,7 +1111,6 @@ class PlayerAdminController(BaseEventAdminController):
     @get(
         path='/admin/record-modal/{event_uniq_id:str}/{player_id:int}',
         name='admin-record-modal',
-        cache=1,
     )
     async def htmx_admin_record_modal(
         self,
@@ -1539,7 +1534,6 @@ class PlayerAdminController(BaseEventAdminController):
     @get(
         path='/admin/tournament-close-check-in-modal/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tournament-close-check-in-modal',
-        cache=1,
     )
     async def htmx_tournament_close_check_in_modal(
         self,

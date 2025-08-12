@@ -857,7 +857,6 @@ class ScreenAdminController(BaseEventAdminController):
     @get(
         path='/admin/event/{event_uniq_id:str}/screens',
         name='admin-event-screens-tab',
-        cache=1,
     )
     async def htmx_admin_event_screens_tab(
         self,
@@ -911,7 +910,6 @@ class ScreenAdminController(BaseEventAdminController):
     @get(
         path='/admin/screen-modal/create/{event_uniq_id:str}/{screen_type:str}',
         name='admin-screen-create-modal',
-        cache=1,
     )
     async def htmx_admin_screen_create_modal(
         self,
@@ -931,7 +929,6 @@ class ScreenAdminController(BaseEventAdminController):
     @get(
         path='/admin/screen-modal/{action:str}/{event_uniq_id:str}/{screen_id:int}',
         name='admin-screen-modal',
-        cache=1,
     )
     async def htmx_admin_screen_modal(
         self,
@@ -1171,7 +1168,6 @@ class ScreenAdminController(BaseEventAdminController):
     @get(
         path='/admin/screen-sets-modal/{event_uniq_id:str}/{screen_id:int}',
         name='admin-screen-sets-modal',
-        cache=1,
     )
     async def htmx_admin_screen_sets_modal(
         self,
@@ -1190,7 +1186,6 @@ class ScreenAdminController(BaseEventAdminController):
     @get(
         path='/admin/screen-sets-set-modal/{event_uniq_id:str}/{screen_id:int}/{screen_set_id:int}',
         name='admin-screen-sets-set-modal',
-        cache=1,
     )
     async def htmx_admin_screen_sets_set_modal(
         self,
@@ -1425,7 +1420,6 @@ class ScreenAdminController(BaseEventAdminController):
     @get(
         path='/admin/event/{event_uniq_id:str}/input-screens',
         name='admin-event-input-screens-tab',
-        cache=1,
     )
     async def htmx_admin_event_input_screens_tab(
         self,
@@ -1441,7 +1435,6 @@ class ScreenAdminController(BaseEventAdminController):
     @get(
         path='/admin/event/{event_uniq_id:str}/boards-screens',
         name='admin-event-boards-screens-tab',
-        cache=1,
     )
     async def htmx_admin_event_boards_screens_tab(
         self,
@@ -1457,7 +1450,6 @@ class ScreenAdminController(BaseEventAdminController):
     @get(
         path='/admin/event/{event_uniq_id:str}/players-screens',
         name='admin-event-players-screens-tab',
-        cache=1,
     )
     async def htmx_admin_event_players_screens_tab(
         self,
@@ -1473,7 +1465,6 @@ class ScreenAdminController(BaseEventAdminController):
     @get(
         path='/admin/event/{event_uniq_id:str}/results-screens',
         name='admin-event-results-screens-tab',
-        cache=1,
     )
     async def htmx_admin_event_results_screens_tab(
         self,
@@ -1489,7 +1480,6 @@ class ScreenAdminController(BaseEventAdminController):
     @get(
         path='/admin/event/{event_uniq_id:str}/ranking-screens',
         name='admin-event-ranking-screens-tab',
-        cache=1,
     )
     async def htmx_admin_event_ranking_screens_tab(
         self,
@@ -1505,7 +1495,6 @@ class ScreenAdminController(BaseEventAdminController):
     @get(
         path='/admin/event/{event_uniq_id:str}/image-screens',
         name='admin-event-image-screens-tab',
-        cache=1,
     )
     async def htmx_admin_event_image_screens_tab(
         self,

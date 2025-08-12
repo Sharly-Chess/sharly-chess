@@ -297,7 +297,6 @@ class RotatorAdminController(BaseEventAdminController):
     @get(
         path='/admin/event/{event_uniq_id:str}/rotators',
         name='admin-event-rotators-tab',
-        cache=1,
     )
     async def htmx_admin_event_rotators_tab(
         self,
@@ -317,7 +316,6 @@ class RotatorAdminController(BaseEventAdminController):
     @get(
         path='/admin/rotator-modal/create/{event_uniq_id:str}',
         name='admin-rotator-create-modal',
-        cache=1,
     )
     async def htmx_admin_rotator_create_modal(
         self,
@@ -335,7 +333,6 @@ class RotatorAdminController(BaseEventAdminController):
     @get(
         path='/admin/rotator-modal/{action:str}/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-modal',
-        cache=1,
     )
     async def htmx_admin_rotator_modal(
         self,

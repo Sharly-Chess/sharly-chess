@@ -377,7 +377,6 @@ class PairingsAdminController(BaseEventAdminController):
         ],
         name='admin-event-pairings-tab',
         guards=pairings_tab_guards,
-        cache=1,
     )
     async def htmx_admin_pairings_tab(
         self,

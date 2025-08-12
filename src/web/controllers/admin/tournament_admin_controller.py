@@ -615,7 +615,6 @@ class TournamentAdminController(BaseEventAdminController):
     @get(
         path='/admin/event/{event_uniq_id:str}/tournaments',
         name='admin-event-tournaments-tab',
-        cache=1,
     )
     async def htmx_admin_event_tournaments_tab(
         self,
@@ -635,7 +634,6 @@ class TournamentAdminController(BaseEventAdminController):
     @get(
         path='/admin/tournament-modal/create/{event_uniq_id:str}',
         name='admin-tournament-create-modal',
-        cache=1,
     )
     async def htmx_admin_tournament_create_modal(
         self,
@@ -653,7 +651,6 @@ class TournamentAdminController(BaseEventAdminController):
     @get(
         path='/admin/tournament-modal/{action:str}/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tournament-modal',
-        cache=1,
     )
     async def htmx_admin_tournament_modal(
         self,

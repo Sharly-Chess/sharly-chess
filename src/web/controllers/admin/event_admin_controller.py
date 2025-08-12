@@ -170,7 +170,6 @@ class EventAdminController(BaseEventAdminController):
     @get(
         path='/admin/event/{event_uniq_id:str}',
         name='admin-event',
-        cache=1,
     )
     async def htmx_admin_event(
         self,
@@ -212,7 +211,8 @@ class EventAdminController(BaseEventAdminController):
                 admin_event_tournaments_url(request, web_context.admin_event.uniq_id)
             )
 
-        # search for screens
+        # Search for screens
+        print('HERE')
         if web_context.client.can_view_public_screens:
             screens_by_screen_type_sorted_by_uniq_id: dict[ScreenType, list[Screen]]
             if web_context.client.can_view_private_screens:
@@ -229,7 +229,7 @@ class EventAdminController(BaseEventAdminController):
                             event_uniq_id=event_uniq_id,
                         )
                     )
-        # search for rotators
+        # Search for rotators
         if web_context.client.can_view_public_screens:
             rotators: list[Rotator]
             if web_context.client.can_view_private_screens:
@@ -274,7 +274,6 @@ class EventAdminController(BaseEventAdminController):
     @get(
         path='/admin/event/{event_uniq_id:str}/config',
         name='admin-event-config-tab',
-        cache=1,
     )
     async def htmx_admin_event_config_tab(
         self,
@@ -289,7 +288,6 @@ class EventAdminController(BaseEventAdminController):
     @get(
         path='/admin/event-modal/{action:str}/{event_uniq_id:str}',
         name='admin-event-modal',
-        cache=1,
     )
     async def htmx_admin_event_modal(
         self,
