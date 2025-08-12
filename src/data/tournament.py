@@ -11,7 +11,7 @@ from _weakref import ReferenceType
 
 from trf import Tournament as TrfTournament
 
-from common import format_timestamp_date_time, format_timestamp
+from common import format_timestamp
 from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
 
@@ -232,27 +232,11 @@ class Tournament:
         return self.stored_tournament.last_update
 
     @property
-    def last_update_str(self) -> str:
-        return format_timestamp_date_time(self.last_update)
-
-    @property
-    def last_illegal_move_update(self) -> float:
-        return self.stored_tournament.last_illegal_move_update
-
-    @property
-    def last_result_update(self) -> float:
-        return self.stored_tournament.last_result_update
-
-    @property
-    def last_check_in_update(self) -> float:
-        return self.stored_tournament.last_check_in_update
+    def last_player_update(self) -> float:
+        return self.stored_tournament.last_player_update
 
     @property
     def last_pairing_update(self) -> float:
-        return self.stored_tournament.last_pairing_update
-
-    @property
-    def last_player_update(self) -> float:
         return self.stored_tournament.last_pairing_update
 
     @property
@@ -965,20 +949,16 @@ class Tournament:
         round."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
             player.pairings[self.current_round].add_illegal_move(database)
-            self.stored_tournament.last_illegal_move_update = (
-                database.set_tournament_last_illegal_move_update(self.id)
-            )
             database.commit()
+        self.reload_stored_tournament()
 
     def delete_illegal_move(self, player: Player) -> bool:
         """Deletes one illegal move for the given `player` for the current round."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
             deleted = player.pairings[self.current_round].delete_illegal_move(database)
             if deleted:
-                self.stored_tournament.last_illegal_move_update = (
-                    database.set_tournament_last_illegal_move_update(self.id)
-                )
-            database.commit()
+                database.commit()
+                self.reload_stored_tournament()
         return deleted
 
     def correct_ranking_round(self, ranking_round: int | None = None) -> int:
@@ -1041,9 +1021,6 @@ class Tournament:
             )
 
             board.set_last_result_update(board.white_pairing.result, event_database)
-            self.stored_tournament.last_result_update = (
-                event_database.set_tournament_last_result_update(self.id)
-            )
             event_database.commit()
 
         logger.info(
@@ -1068,9 +1045,6 @@ class Tournament:
             board.white_pairing.update_result(event_database, Result.NO_RESULT)
             board.black_pairing.update_result(event_database, Result.NO_RESULT)
             board.set_last_result_update(board.white_pairing.result, event_database)
-            self.stored_tournament.last_result_update = (
-                event_database.set_tournament_last_result_update(self.id)
-            )
             event_database.commit()
         logger.info(
             'Removed result: %s %s %d.%d.',
@@ -1084,9 +1058,6 @@ class Tournament:
         """Stores the `check_in` status for the given `player`."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
             database.set_player_check_in(player.id, check_in)
-            self.stored_tournament.last_check_in_update = (
-                database.set_tournament_last_check_in_update(self.id)
-            )
             database.commit()
         player.stored_player.check_in = check_in
 
@@ -1264,7 +1235,6 @@ class Tournament:
     def set_player_byes(self, player: Player, byes: dict[int, Result]):
         """Updates a player's pairings with ZPB, HPB, FPB or not-paired values."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
-            database.set_tournament_last_result_update(player.tournament.id)
             for round_, result in byes.items():
                 player.pairings_by_round[round_].update_result(database, result)
             database.commit()

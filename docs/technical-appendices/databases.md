@@ -131,11 +131,8 @@
 | `rules`                               | `TEXT`    |                                            |            | The URL or server path to the tournament rules, in PDF format (by default, the event rules)                                                                |
 | `check_in_open`                       | `INTEGER` |                                            |            | Boolean:<br/>- `1`: Checking is open;<br/>- `0`: Checking is closed                                                                                        |
 | `last_update`                         | `FLOAT`   | NOT NULL                                   |            | The last date the tournament was modified                                                                                                                  |
-| `last_illegal_move_update`            | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   |            | The last date illegal moves in the tournament were modified                                                                                                |
-| `last_result_update`                  | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   |            | The last date a tournament result was modified                                                                                                             |
-| `last_check_in_update`                | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   |            | The last date the tournament score was modified                                                                                                            |
-| `last_player_update`.                 | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   |            | The last date a player associated with this tournament was modified                                                                                        |
-| `last_pairing_update`                 | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   |            | The last date a pairing associated with this tournament score was modified                                                                                 |
+| `last_player_update`.                 | `TEXT`    | NOT NULL<br/>DEFAULT 0.0                   |            | The last date a player associated with this tournament was modified                                                                                        |
+| `last_pairing_update`                 | `TEXT`    | NOT NULL<br/>DEFAULT 0.0                   |            | The last date a pairing associated with this tournament was modified                                                                                       |
 | `first_board_number`                  | `INTEGER` |                                            |            | The first board number                                                                                                                                     |
 | `paired_bye_result`                   | `INTEGER` |                                            |            | Result awarded to bye players                                                                                                                              |
 | `max_byes`                            | `INTEGER` |                                            |            | The maximum number of byes a player can claim                                                                                                              |
@@ -194,18 +191,18 @@
 |----------------------|-----------|---------------------------------------------------------------|-----|-----------------------------------------------|
 | `id`                 | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT                    |     | The board ID                                  |
 | `white_player_id`    | `INTEGER` | NOT NULL<br/>REFERENCES `player`(`id`)                        |     | The white player ID                           |
-| `black_player_id`    | `INTEGER` | REFERENCES `player`(`id`)                                     |     | The black player ID (can be NULL for byes)   |
+| `black_player_id`    | `INTEGER` | REFERENCES `player`(`id`)                                     |     | The black player ID (can be NULL for byes)    |
 | `index`              | `INTEGER` | NOT NULL                                                      |     | The board number/index                        |
 | `last_result_update` | `FLOAT`   |                                                               |     | Timestamp of the last result update for board |
 
 ### `pairing` (tournament pairings and results)
 
-| Field           | Type      | Constraint                                                                           | Ext | Description                                              |
-|-----------------|-----------|--------------------------------------------------------------------------------------|-----|----------------------------------------------------------|
-| `tournament_id` | `INTEGER` | NOT NULL<br/>REFERENCES `tournament`(`id`)<br/>PRIMARY KEY                           |     | The tournament ID                                        |
-| `player_id`     | `INTEGER` | NOT NULL<br/>REFERENCES `player`(`id`)<br/>PRIMARY KEY                               |     | The player ID                                            |
-| `round`         | `INTEGER` | NOT NULL<br/>PRIMARY KEY                                                             |     | The round number                                         |
-| `result`        | `INTEGER` | NOT NULL                                                                             |     | The game result for the player                           |
+| Field           | Type      | Constraint                                                                           | Ext | Description                                             |
+|-----------------|-----------|--------------------------------------------------------------------------------------|-----|---------------------------------------------------------|
+| `tournament_id` | `INTEGER` | NOT NULL<br/>REFERENCES `tournament`(`id`)<br/>PRIMARY KEY                           |     | The tournament ID                                       |
+| `player_id`     | `INTEGER` | NOT NULL<br/>REFERENCES `player`(`id`)<br/>PRIMARY KEY                               |     | The player ID                                           |
+| `round`         | `INTEGER` | NOT NULL<br/>PRIMARY KEY                                                             |     | The round number                                        |
+| `result`        | `INTEGER` | NOT NULL                                                                             |     | The game result for the player                          |
 | `board_id`      | `INTEGER` | REFERENCES `board`(`id`)                                                             |     | The board ID where the game is played                   |
 | `illegal_moves` | `INTEGER` | NOT NULL<br/>DEFAULT 0                                                               |     | Number of illegal moves made by the player in the round |
 
@@ -310,7 +307,7 @@
 ### `prize_group` (prize groups)
 
 | Field           | Type      | Constraint                                                | Ext | Description           |
-|-----------------|-----------|-----------------------------------------------------------|-----|---------------------- |
+|-----------------|-----------|-----------------------------------------------------------|-----|-----------------------|
 | `id`            | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT<br/>UNIQUE     |     | The prize group ID    |
 | `tournament_id` | `INTEGER` | NOT NULL<br/>REFERENCES `tournament`(`id`)                |     | The tournament ID     |
 | `name`          | `TEXT`    | NOT NULL                                                  |     | The prize group name  |

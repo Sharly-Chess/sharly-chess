@@ -678,11 +678,8 @@ class EventDatabase(MigrationDatabase):
             rounds=row['rounds'],
             rating=row['rating'],
             last_update=row['last_update'],
-            last_result_update=row['last_result_update'],
-            last_illegal_move_update=row['last_illegal_move_update'],
-            last_check_in_update=row['last_check_in_update'],
-            last_pairing_update=row['last_pairing_update'],
             last_player_update=row['last_player_update'],
+            last_pairing_update=row['last_pairing_update'],
             tie_breaks=cls.load_json_from_database_field(row['tie_breaks']),
             start=row['start'],
             stop=row['stop'],
@@ -810,48 +807,12 @@ class EventDatabase(MigrationDatabase):
     def delete_stored_tournament(self, tournament_id: int):
         self.execute('DELETE FROM `tournament` WHERE `id` = ?;', (tournament_id,))
 
-    def _set_tournament_timestamp_field(self, field_: str, tournament_id: int) -> float:
-        # TODO (Molrn) replace all these usages with the appropriate SQL triggers
-        timestamp = time.time()
-        # FIXME(Amaras): This can can be a SQL injection attack vector.
-        # As such, it needs to be eliminated as quickly as possible.
-        self.execute(
-            f'UPDATE `tournament` SET `{field_}` = ? WHERE `id` = ?',
-            (
-                timestamp,
-                tournament_id,
-            ),
-        )
-        return timestamp
-
-    def set_tournament_last_illegal_move_update(self, tournament_id: int) -> float:
-        return self._set_tournament_timestamp_field(
-            'last_illegal_move_update', tournament_id
-        )
-
-    def set_tournament_last_check_in_update(self, tournament_id: int) -> float:
-        return self._set_tournament_timestamp_field(
-            'last_check_in_update', tournament_id
-        )
-
-    def set_tournament_last_result_update(self, tournament_id: int) -> float:
-        return self._set_tournament_timestamp_field('last_result_update', tournament_id)
-
-    def set_tournament_last_pairing_update(self, tournament_id: int) -> float:
-        return self._set_tournament_timestamp_field(
-            'last_pairing_update', tournament_id
-        )
-
-    def set_tournament_last_player_update(self, tournament_id: int) -> float:
-        return self._set_tournament_timestamp_field('last_player_update', tournament_id)
-
     def set_tournament_check_in(self, tournament_id: int, o: bool):
         """Opens (o is True) or closes (o is False) the check_in for the tournament."""
         self.execute(
-            'UPDATE `tournament` SET `check_in_open` = ?, `last_check_in_update` = ? WHERE `id` = ?',
+            'UPDATE `tournament` SET `check_in_open` = ? WHERE `id` = ?',
             (
                 1 if o else 0,
-                time.time(),
                 tournament_id,
             ),
         )
