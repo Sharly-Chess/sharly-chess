@@ -13,7 +13,7 @@
         <td class="text-start">[{{ wp.points_str }}]</td>
     {% endif %}
     {% if admin_tournament.record_illegal_moves %}
-        {% with player=wp %}{% include '/admin/pairings/illegal_moves_cell.html' %}{% endwith %}
+        {% with player=wp, pairing=board.white_pairing %}{% include '/admin/pairings/illegal_moves_cell.html' %}{% endwith %}
     {% endif %}
     <td>{{ wp.full_name }} ({{ wp.rating_str }})</td>
     <td class="text-center" style="width: 3rem;">
@@ -49,7 +49,7 @@
     </td>
     {% if bp %}
         {% if admin_tournament.record_illegal_moves %}
-            {% with player=bp %}{% include '/admin/pairings/illegal_moves_cell.html' %}{% endwith %}
+            {% with player=bp, pairing=board.white_pairing %}{% include '/admin/pairings/illegal_moves_cell.html' %}{% endwith %}
         {% endif %}
         <td>{{ bp.full_name }} ({{ bp.rating_str }})</td>
         {% if admin_tournament.print_real_points %}

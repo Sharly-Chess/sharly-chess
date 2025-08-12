@@ -19,7 +19,6 @@ class TestCheckInRole(BaseRoleTest):
         api_request_context: APIRequestContext,
     ):
         # Admin tabs
-
         super().assert_can_access_players_tab(False, auth_page)
         super().assert_can_access_pairings_tab(False, auth_page)
 

@@ -1,5 +1,6 @@
 from enum import IntEnum
 import re
+
 from data.event import Event
 from database.sqlite.event.event_store import StoredScreen
 import pytest
@@ -28,7 +29,6 @@ class BaseRoleTest:
         self,
         api_request_context: APIRequestContext,
         request,
-        login_page: Page,
         browser: Browser,
     ):
         """A fixture that logs in the user and returns the authenticated page"""
@@ -39,34 +39,49 @@ class BaseRoleTest:
             yield None
             return
 
-        stored_account = cls.create_user(
-            cls, api_request_context, cls.get_roles(cls), cls.get_tournament_ids(cls)
+        stored_account = self.create_user(
+            api_request_context, self.get_roles(), self.get_tournament_ids()
         )
-        cls.do_login(cls, login_page)
-
-        # Store the auth state a tmp file
-        storage = f'auth-{cls.__class__.__name__.lower()}.json'
-        login_page.context.storage_state(path=storage)
 
         config = SharlyChessConfig()
         config.web_port = 9000
         auth_context = browser.new_context(
             base_url=config.lan_url,
-            storage_state=storage,
+            viewport={'width': 1600, 'height': 1000},
         )
         auth_page = auth_context.new_page()
         auth_page.set_default_timeout(15000)
         auth_page.set_default_navigation_timeout(10000)
 
+        auth_page.goto(f'/admin/event/{PUBLIC_EVENT_ID}')
+        auth_page.wait_for_load_state('domcontentloaded')
+        auth_page.get_by_test_id('profile-button').click()
+        auth_page.locator('#username').fill(stored_account.username)
+        auth_page.locator('#password').fill('test-password')
+
+        auth_page.locator('#modal-form button[type=submit]').click()
+
+        expect(
+            auth_page.get_by_text(f'Account: {stored_account.username}')
+        ).to_be_visible()
+
+        # Wait until the server's had time to store the session cookie!
+        TestUtils.poll_expect_with_reload(
+            auth_page,
+            lambda: expect(auth_page.get_by_test_id('profile-button')).to_contain_text(
+                stored_account.username
+            ),
+        )
+
         cls.auth_context = auth_context
         cls.auth_page = auth_page
+        cls.api_request_context = api_request_context
 
-        self.api_request_context = api_request_context
         yield cls.auth_page
 
-        auth_page.close()
-        auth_context.close()
-        cls.delete_user(cls, api_request_context, stored_account.id)
+        cls.auth_page.close()
+        cls.auth_context.close()
+        self.delete_user(api_request_context, stored_account.id)
 
     def create_user(
         self,
@@ -75,7 +90,7 @@ class BaseRoleTest:
         tournament_ids: list[int] | None = None,
     ):
         """Creates a user with the specified roles and tournaments"""
-        username = 'test-account'
+        username = f'test-{self.__class__.__name__.lower()}'
         data = {
             'username': username,
             'password': 'test-password',
@@ -104,15 +119,6 @@ class BaseRoleTest:
         )
         TestUtils.check_api_response(res)
 
-    def do_login(self, login_page: Page):
-        login_page.goto(f'/admin/event/{PUBLIC_EVENT_ID}')
-        login_page.get_by_test_id('profile-button').click()
-        login_page.locator('#username').fill('test-account')
-        login_page.locator('#password').fill('test-password')
-        button = login_page.locator('#modal-form button[type=submit]')
-        button.click()
-        expect(login_page.get_by_text('Account: test-account')).to_be_visible()
-
     def get_roles(self) -> list[type[Role]]:
         """Override this in subclasses to specify the roles to test."""
         raise NotImplementedError
@@ -130,6 +136,7 @@ class BaseRoleTest:
             PUBLIC_EVENT_ID,
             TOURNAMENT_ID,
             api_request_context,
+            json_file='test-screens',
             overrides={'record_illegal_moves': 1},
         )
         self.paired_tournament = tournament
@@ -166,7 +173,7 @@ class BaseRoleTest:
             {
                 'init_set_tournament_id': role_test_tournament.id,
                 'public': True,
-                'name': 'PairedInput Screen',
+                'name': 'Input Screen with pairings',
             },
         )
         self.paired_screen = stored_screen
@@ -187,12 +194,13 @@ class BaseRoleTest:
             {
                 'init_set_tournament_id': role_test_unpaired_tournament.id,
                 'public': True,
-                'name': 'Unpaired Input Screen',
+                'name': 'Input Screen without pairings',
             },
         )
         self.unpaired_screen = stored_screen
         yield stored_screen
         self.unpaired_screen = None
+
         TestUtils.delete_screen(api_request_context, PUBLIC_EVENT_ID, stored_screen.id)
 
     @pytest.fixture(autouse=True)
@@ -404,7 +412,6 @@ class BaseRoleTest:
             api_request_context.put(
                 f'/user/add-illegal-move/{PUBLIC_EVENT_ID}/{self.paired_screen.uniq_id}/{self.paired_tournament.id}/{alyx.id}'
             )
-            self.auth_page.pause()
             expect(illegal_move_icon).to_be_visible()
             expect(illegal_move_icon).not_to_have_attribute(
                 'hx-delete', re.compile(r'.*delete-illegal-move.*')

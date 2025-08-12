@@ -1,10 +1,24 @@
 {
     "configurations": [
-      {
-        "name": "Sharly Chess",
-        "type": "debugpy",
-        "request": "launch",
-        "program": "${workspaceFolder}/src/sharly_chess.py"
-    }
-  ]
+        {
+            "name": "Sharly Chess",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/sharly_chess.py"
+        },
+        {
+            "name": "Sharly Chess Tests",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "tests/e2e/roles/test_deputy_chief_arbitration_role.py::TestDeputyChiefArbitrationRole::test_access",
+                "--headed",
+                "-s",      // optional: show stdout/stderr immediately
+                "-v"       // optional: verbose
+            ],
+            "justMyCode": true,   // set false if you want to step into libraries
+            "console": "integratedTerminal"
+        }
+    ]
 }

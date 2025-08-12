@@ -63,21 +63,25 @@ class TestUtils:
     }
 
     @staticmethod
-    def prepare_form_data(data: dict[str, str]):
-        form_data = {
-            k: (
-                ''
-                if v is None
-                else 'off'
-                if v is False
-                else 'on'
-                if v is True
-                else str(v)
-            )
-            for k, v in data.items()
-        }
+    def prepare_form_data(data: dict[str, object]) -> str:
+        out: dict[str, object] = {}
 
-        return parse.urlencode(form_data)
+        for k, v in data.items():
+            if v is None:
+                continue
+            if isinstance(v, bool):
+                if v:
+                    # HTML checkbox semantics
+                    out[k] = 'on'
+                else:
+                    continue
+            elif isinstance(v, (list, tuple)):
+                # leave as sequence; urlencode(doseq=True) expands it
+                out[k] = [str(x) for x in v]
+            else:
+                out[k] = str(v)
+
+        return parse.urlencode(out, doseq=True)
 
     @staticmethod
     def check_api_response(response: APIResponse):
@@ -95,6 +99,13 @@ class TestUtils:
         errors = [(div_id, text.strip()) for div_id, text in matches]
 
         assert not errors, errors
+
+    @staticmethod
+    def wait_for_htmx_idle(page, timeout=5000):
+        page.wait_for_function(
+            "() => !document.querySelector('.htmx-request, .htmx-swapping')",
+            timeout=timeout,
+        )
 
     @staticmethod
     def poll_expect_with_reload(
