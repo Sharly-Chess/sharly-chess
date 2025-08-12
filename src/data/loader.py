@@ -66,6 +66,11 @@ class EventLoader:
         with suppress(ValueError):
             cls._valid_event_ids.remove(event_uniq_id)
 
+    @classmethod
+    def unload_all_events(cls):
+        for event_uniq_id in cls._valid_event_ids:
+            cls.unload_event(event_uniq_id)
+
     def clear_cache(self, event_uniq_id: str | None = None):
         """If `event_uniq_id` is provided, clears the load cache regarding the
         given event."""

@@ -72,6 +72,10 @@ English version below
 
 - Correction du téléversement manuel des résultats (2.8.2)
 
+## ChessEvent
+
+- Correction d'erreurs liées à l'activation du plugin (2.8.8)
+
 ---
 
 # English
@@ -146,3 +150,7 @@ English version below
 ## FFE
 
 - Fixed the manual results upload (2.8.2)
+
+## ChessEvent
+
+- Fixed errors related to activating the plugin (2.8.8)
