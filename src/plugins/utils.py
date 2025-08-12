@@ -166,7 +166,7 @@ class Plugin(IdentifiableEntity, ABC):
         from data.loader import EventLoader
         from database.sqlite.event.event_database import EventDatabase
 
-        for uniq_id in EventLoader().events_by_id:
+        for uniq_id in EventLoader().event_uniq_ids:
             with EventDatabase(uniq_id, True) as database:
                 if migration_manager := self.get_migration_manager(database):
                     migration_manager.migrate(target_migration)
