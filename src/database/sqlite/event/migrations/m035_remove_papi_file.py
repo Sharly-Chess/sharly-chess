@@ -23,6 +23,7 @@ class Migration(BaseMigration):
                     'pairing': 'SWISS_STANDARD',
                     'rounds': 7,
                     'rating': 1,
+                    'tie_breaks': '[]',
                 }
                 field_sets = ', '.join(f'`{field_}` = ?' for field_ in fields)
                 self.database.execute(

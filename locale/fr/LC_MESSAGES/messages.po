@@ -187,6 +187,9 @@ msgstr "Une URL, ou le chemin du règlement sur le serveur, au format PDF (facul
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
 msgstr "Une URL, ou l'emplacement du règlement sur le serveur, au format PDF (facultatif, par défaut l'emplacement du règlement de l'évènement)."
 
+msgid "A file is expected."
+msgstr "Un fichier est attendu."
+
 msgid "A non-empty string is expected"
 msgstr "Une chaîne de caractères non vide est attendue"
 
@@ -1924,6 +1927,9 @@ msgstr "L'identifiant Fide [{fide_id}] est déjà présent dans le tournoi [{tou
 msgid "Fide Master"
 msgstr "Maître Fide"
 
+msgid "File"
+msgstr "Fichier"
+
 msgid "File [{file}] not found."
 msgstr "Fichier [{file}] non trouvé."
 
@@ -2191,8 +2197,26 @@ msgstr "Image :"
 msgid "Image: %(image)s"
 msgstr "Image : %(image)s"
 
+msgid "Import"
+msgstr "Importer"
+
+msgid "Import Papi file"
+msgstr "Importer un fichier Papi"
+
+msgid "Import a tournament"
+msgstr "Importer un tournoi"
+
+msgid "Import a tournament to the event from an external source."
+msgstr "Importer un tournoi à l'évènement depuis une source externe."
+
+msgid "Import of papi file [{file}] failed."
+msgstr "L'import du fichier papi [{file}] a échoué."
+
 msgid "Impossible to add players to tournament [{tournament_uniq_id}]."
 msgstr "Impossible d'ajouter des joueur·euses au tournoi [{tournament_uniq_id}]."
+
+msgid "Impossible to import into a tournament already having players."
+msgstr "Impossible d'importer vers un tournoi contenant déjà des joueur·euses."
 
 #, python-format
 msgid "Impossible to set a bye in the last %(rounds)d rounds of the tournament"
@@ -4291,6 +4315,9 @@ msgstr "L'horaire de fin du tournoi (par défaut %(datetime)s)."
 
 msgid "The federation that organizes the event."
 msgstr "La fédération qui organise l'évènement."
+
+msgid "The file to import."
+msgstr "Le fichier à importer."
 
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr "Le premier tournoi de l'écran, obligatoire (il est possible d'ajouter ultérieurement des tournois sur l'écran)."
