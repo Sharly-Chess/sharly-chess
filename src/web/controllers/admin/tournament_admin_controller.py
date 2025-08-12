@@ -359,7 +359,6 @@ class TournamentAdminController(BaseEventAdminController):
         modal: str | None = None,
         action: str | None = None,
         tournament_id: int | None = None,
-        importer_id: str | None = None,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
@@ -713,26 +712,29 @@ class TournamentAdminController(BaseEventAdminController):
     @staticmethod
     def _tournament_import_modal_context(
         importer_id: str,
-        data: dict[str, str] = {},
+        data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         importer = TournamentImporterManager.get_object(importer_id)
         return {
-            'data': {} | data,
+            'data': data or {},
             'importer': importer,
             'modal': 'tournament-import',
             'errors': errors or {},
         }
 
     @get(
-        path='/admin/tournament-import-modal/{event_uniq_id:str}/{tournament_id:int}/{importer_id:str}',
+        path=[
+            '/admin/tournament-import-modal/{event_uniq_id:str}/{importer_id:str}',
+            '/admin/tournament-import-modal/{event_uniq_id:str}/{tournament_id:int}/{importer_id:str}',
+        ],
         name='admin-tournament-import-modal',
     )
     async def htmx_admin_tournament_import_modal(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        tournament_id: int,
+        tournament_id: int | None,
         importer_id: str,
     ) -> Template | ClientRedirect:
         web_context: TournamentAdminWebContext = TournamentAdminWebContext(
@@ -748,7 +750,10 @@ class TournamentAdminController(BaseEventAdminController):
         file: UploadFile | None = None
 
     @post(
-        path='/admin/tournament-import/{event_uniq_id:str}/{tournament_id:int}/{importer_id:str}',
+        path=[
+            '/admin/tournament-import/{event_uniq_id:str}//{importer_id:str}',
+            '/admin/tournament-import/{event_uniq_id:str}/{tournament_id:int}/{importer_id:str}',
+        ],
         name='admin-tournament-import',
     )
     async def admin_tournament_import(
@@ -758,31 +763,30 @@ class TournamentAdminController(BaseEventAdminController):
             TournamentImportForm, Body(media_type=RequestEncodingType.MULTI_PART)
         ],
         event_uniq_id: str,
-        tournament_id: int,
+        tournament_id: int | None,
         importer_id: str,
     ) -> Template | ClientRedirect:
         web_context = TournamentAdminWebContext(
             request, event_uniq_id, tournament_id, None
         )
         event = web_context.get_admin_event()
-        tournament = web_context.get_admin_tournament()
         importer = TournamentImporterManager.get_object(importer_id)
 
-        tmp_path: Path | None = None
+        tmp_path: Path
         if data.file is not None:
             suffix = Path(data.file.filename or 'upload').suffix
             fd, tmp_name = tempfile.mkstemp(prefix='tournament-import-', suffix=suffix)
             Path(tmp_name).write_bytes(await data.file.read())
             tmp_path = Path(tmp_name)
         else:
-            errors: dict[str, str] = {'file': _('No file provided.')}
+            errors: dict[str, str] = {'file': _('A file is expected.')}
             template_context: dict[str, Any] = self._get_admin_event_render_context(
                 web_context
             ) | self._tournament_import_modal_context(importer_id, errors=errors)
             return self._admin_event_render(template_context)
 
         try:
-            importer.load_tournament(tmp_path, event, tournament)
+            importer.load_tournament(tmp_path, event, web_context.admin_tournament)
         except SharlyChessException as e:
             errors = {'file': str(e)}
             template_context = self._get_admin_event_render_context(
@@ -795,7 +799,6 @@ class TournamentAdminController(BaseEventAdminController):
                     tmp_path.unlink(missing_ok=True)
                 except OSError:
                     pass
-
         return self._admin_event_tournaments_render(
             request, event_uniq_id=event_uniq_id
         )

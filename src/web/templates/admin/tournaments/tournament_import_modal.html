@@ -8,16 +8,30 @@
         <div class="modal-body">
             <form
                 id="modal-form"
-                hx-post="{{ url_for('admin-tournament-import', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, importer_id=importer.id) }}"
+                hx-post="{{ url_for(
+                    'admin-tournament-import',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    importer_id=importer.id
+                ) if admin_tournament else url_for(
+                    'admin-tournament-import',
+                    event_uniq_id=admin_event.uniq_id,
+                    importer_id=importer.id
+                ) }}"
                 enctype="multipart/form-data"
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
+                {% if admin_tournament %}
+                    <h4>
+                        {{ _('Tournament: %(tournament_name)s', tournament_name=admin_tournament.name) }}
+                    </h4>
+                {% endif %}
                 <div class="row">
                     <div class="col-12">
                         {{ admin_macros.file_input(
                             name='file',
-                            label=_('File:'),
+                            label=_('%(string)s:', string=_('File')),
                             help_text=_('The file to import.'),
                             data=data, errors=errors
                         ) }}
@@ -39,6 +53,7 @@
                 form="modal-form"
                 class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
             >
+                <i class="bi-download pe-1"></i>
                 {{ _('Import') }}
             </button>
         </div>

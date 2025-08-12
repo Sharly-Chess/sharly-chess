@@ -17,10 +17,6 @@ class PapiTournamentImporter(TournamentImporter):
         return _('Papi file')
 
     @property
-    def display_in_menu(self):
-        return True
-
-    @property
     def modal_title(self) -> str | None:
         return _('Import Papi file')
 

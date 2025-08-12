@@ -13,9 +13,9 @@ from utils.entity import IdentifiableEntity
 
 class TournamentImporter(IdentifiableEntity, ABC):
     @property
-    @abstractmethod
     def display_in_menu(self) -> bool:
         """Determines if the import is visible in the import menu."""
+        return True
 
     @property
     def modal_title(self) -> str | None:
@@ -87,7 +87,7 @@ class TournamentImporter(IdentifiableEntity, ABC):
         if stored_tournament.id:
             database.update_stored_tournament(stored_tournament)
         else:
-            stored_tournament = database.add_stored_tournament(stored_tournament)
+            stored_tournament.id = database.add_stored_tournament(stored_tournament).id
         tournament_id = stored_tournament.id
         assert tournament_id is not None
         # Players
