@@ -3184,9 +3184,6 @@ msgstr ""
 msgid "Papi file"
 msgstr ""
 
-msgid "Papi file [{file}] successfully imported."
-msgstr ""
-
 msgid "Parings by player"
 msgstr ""
 
@@ -5366,9 +5363,6 @@ msgid "You are trying to manually edit the pairings of the current round. Pairin
 msgstr ""
 
 msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
-msgstr ""
-
-msgid "You can try again from the tournament card (Actions > Import > Papi file)."
 msgstr ""
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
