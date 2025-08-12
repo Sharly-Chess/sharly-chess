@@ -17,6 +17,10 @@ class PapiTournamentImporter(TournamentImporter):
         return _('Papi file')
 
     @property
+    def modal_title(self) -> str | None:
+        return _('Import Papi file')
+
+    @property
     def reorder_boards(self) -> bool:
         return True
 
@@ -40,6 +44,10 @@ class PapiJsonTournamentImporter(TournamentImporter):
     @staticmethod
     def static_name() -> str:
         return _('JSON file (papi-converter format)')
+
+    @property
+    def display_in_menu(self):
+        return False
 
     @property
     def reorder_boards(self) -> bool:

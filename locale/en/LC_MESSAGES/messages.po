@@ -187,6 +187,9 @@ msgstr ""
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
 msgstr ""
 
+msgid "A file is expected."
+msgstr ""
+
 msgid "A non-empty string is expected"
 msgstr ""
 
@@ -1924,6 +1927,9 @@ msgstr ""
 msgid "Fide Master"
 msgstr ""
 
+msgid "File"
+msgstr ""
+
 msgid "File [{file}] not found."
 msgstr ""
 
@@ -2191,10 +2197,25 @@ msgstr ""
 msgid "Image: %(image)s"
 msgstr ""
 
+msgid "Import"
+msgstr ""
+
+msgid "Import Papi file"
+msgstr ""
+
+msgid "Import a tournament"
+msgstr ""
+
+msgid "Import a tournament to the event from an external source."
+msgstr ""
+
 msgid "Import of papi file [{file}] failed."
 msgstr ""
 
 msgid "Impossible to add players to tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "Impossible to import into a tournament already having players."
 msgstr ""
 
 #, python-format
@@ -4296,6 +4317,9 @@ msgid "The end time of the tournament (defaults to %(datetime)s)."
 msgstr ""
 
 msgid "The federation that organizes the event."
+msgstr ""
+
+msgid "The file to import."
 msgstr ""
 
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
