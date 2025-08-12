@@ -65,14 +65,6 @@ class BaseRoleTest:
             auth_page.get_by_text(f'Account: {stored_account.username}')
         ).to_be_visible()
 
-        # Wait until the server's had time to store the session cookie!
-        TestUtils.poll_expect_with_reload(
-            auth_page,
-            lambda: expect(auth_page.get_by_test_id('profile-button')).to_contain_text(
-                stored_account.username
-            ),
-        )
-
         cls.auth_context = auth_context
         cls.auth_page = auth_page
         cls.api_request_context = api_request_context
