@@ -95,7 +95,7 @@
                                                 [{{ wp.points_str }}]
                                             </td>
                                         {% endif %}
-                                        {% with player=wp, opponent=bp, pairing=board.white_pairing %}
+                                        {% with player=wp, opponent=bp, illegal_moves=board.white_pairing.illegal_moves %}
                                             {% include 'board_row_illegal_moves_cell.html' %}
                                             {% include 'board_row_player_cell.html' %}
                                         {% endwith %}
@@ -113,7 +113,7 @@
                                         >
                                             {% if board.result_str %}{{ board.result_str }}{% else %}{{ _('#%(board_number)d', board_number=board.number) }}{% endif %}
                                         </td>
-                                        {% with player=bp, opponent=wp, pairing=board.black_pairing %}
+                                        {% with player=bp, opponent=wp, illegal_moves=board.black_pairing.illegal_moves if bp else 0 %}
                                             {% include 'board_row_illegal_moves_cell.html' %}
                                             {% include 'board_row_player_cell.html' %}
                                         {% endwith %}

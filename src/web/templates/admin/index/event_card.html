@@ -27,11 +27,19 @@
             ) }}
         </div>
         <div class="{% if not event.tournament_count %}text-secondary{% endif %}">
-            <i class="bi-people pe-1" ></i>
+            <i class="bi-diagram-3 pe-1" ></i>
             {% if event.tournament_count %}
                 {{ _('Tournaments: %(num)d', num=event.tournament_count) }}
             {% else %}
                 {{ _('No tournaments') }}
+            {% endif %}
+        </div>
+        <div class="{% if not event.player_count %}text-secondary{% endif %}">
+            <i class="bi-people pe-1" ></i>
+            {% if event.player_count %}
+                {{ _('Players: %(num)d', num=event.player_count) }}
+            {% else %}
+                {{ _('No players') }}
             {% endif %}
         </div>
 

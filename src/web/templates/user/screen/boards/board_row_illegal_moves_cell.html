@@ -10,7 +10,7 @@
         {% endif %}"
     >
         {% if player %}
-            {% for _ in range([pairing.illegal_moves, tournament.record_illegal_moves]|min) %}
+            {% for _ in range([illegal_moves, tournament.record_illegal_moves]|min) %}
                 <span class="illegal-move-flag-wrapper">
                     <i
                         data-testid="illegal-move-icon-{{ player.color.value}}"
@@ -27,7 +27,7 @@
                 </span>
             {% endfor %}
             {% if client.can_set_illegal_moves(tournament.id) %}
-                {% if not board.result_str and pairing.illegal_moves < tournament.record_illegal_moves %}
+                {% if not board.result_str and illegal_moves < tournament.record_illegal_moves %}
                     <span class="illegal-move-flag-wrapper">
                         <i
                             data-testid="add-illegal-move-button-{{ player.color.value}}"
