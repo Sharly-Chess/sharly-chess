@@ -6,7 +6,7 @@
         {% endif %}"
     >
         {% if player %}
-            {% for _ in range([pairing.illegal_moves, tournament.record_illegal_moves]|min) %}
+            {% for _ in range([illegal_moves, tournament.record_illegal_moves]|min) %}
                 <span class="illegal-move-flag-wrapper">
                     <i
                         class="
@@ -19,7 +19,7 @@
                     ></i>
                 </span>
             {% endfor %}
-            {% if not board.result_str and pairing.illegal_moves < tournament.record_illegal_moves %}
+            {% if not board.result_str and illegal_moves < tournament.record_illegal_moves %}
                 <span class="illegal-move-flag-wrapper">
                     <i
                         class="bi-flag illegal-move-flag add player-{{ tournament.id }}-{{ player.id }}"
