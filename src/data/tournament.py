@@ -1205,8 +1205,10 @@ class Tournament:
         with EventDatabase(self.event.uniq_id, True) as database:
             for board in boards:
                 board.white_player.delete_pairing(board.round, database)
+                board.white_player.reset_board()
                 if board.black_player:
                     board.black_player.delete_pairing(board.round, database)
+                    board.black_player.reset_board()
                 database.delete_stored_board(board.identifier)
                 if board.identifier in self.boards_by_id:
                     del self.boards_by_id[board.identifier]

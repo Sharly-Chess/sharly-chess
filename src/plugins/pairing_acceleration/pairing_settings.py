@@ -54,6 +54,8 @@ class RatingLimitSetting(PairingSetting[int]):
         first_b = len(ratings) // 2 - 1
         return math.ceil((ratings[first_b] + ratings[first_b + 1]) / 2)
 
+    recommended_value = default_value
+
     @classmethod
     def check_value(cls, tournament: 'Tournament', value: int):
         return cls._check_rating_limit(tournament, value)
@@ -163,6 +165,8 @@ class DualRatingLimitsSetting(PairingSetting[tuple[int, int]]):
             math.ceil((ratings[first_c] + ratings[first_c + 1]) / 2),
             math.ceil((ratings[first_b] + ratings[first_b + 1]) / 2),
         )
+
+    recommended_value = default_value
 
     @classmethod
     def check_value(cls, tournament: 'Tournament', value: tuple[int, int]):
