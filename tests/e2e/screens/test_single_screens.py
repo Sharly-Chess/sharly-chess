@@ -89,7 +89,20 @@ class TestSingleScreensFunctionality:
 
         row.click()
         modal = lan_page.locator('.modal-dialog')
+        expect(modal).to_be_hidden()
+
+        api_request_context.patch(
+            f'/admin/tournament-open-check-in/{EVENT_ID}/{unpaired_tournament.id}'
+        )
+
+        # NOTE(Amaras): because the check-in was updated, we either need to refresh the page, or wait
+        # until it refreshes itself
+        lan_page.reload(wait_until='commit')
+
+        row.click()
+        modal = lan_page.locator('.modal-dialog')
         expect(modal).to_be_visible()
+
         button = TestUtils.button_by_text(modal, 'CHECK-IN')
         expect(button).to_contain_text('ALYX')
         button.click()
