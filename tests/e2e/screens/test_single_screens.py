@@ -88,19 +88,20 @@ class TestSingleScreensFunctionality:
         row = rows.filter(has_text='ALYX')
         expect(row.locator('i.bi-square')).to_be_visible()
 
-        row.click()
-        modal = lan_page.locator('.modal-dialog')
-        expect(modal).not_to_have_attribute('hx-get', re.compile('.*result-modal.*'))
+        expect(row.locator('td:nth-child(1)')).not_to_have_attribute(
+            'hx-get', re.compile(r'.*checkin-modal.*')
+        )
 
         api_request_context.patch(
             f'/admin/tournament-open-check-in/{EVENT_ID}/{unpaired_tournament.id}'
         )
 
-        # NOTE(Amaras): because the check-in was updated, we need to refresh the page.
-        # To avoid flaky tests, reload is used instead of waiting for a timeout.
-        lan_page.reload()
+        expect(row.locator('td:nth-child(1)')).to_have_attribute(
+            'hx-get', re.compile(r'.*checkin-modal.*')
+        )
 
         row.click()
+        modal = lan_page.locator('.modal-dialog')
         expect(modal).to_be_visible()
 
         button = TestUtils.button_by_text(modal, 'CHECK-IN')
