@@ -1,3 +1,4 @@
+import re
 from data.event import Event
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament
@@ -89,18 +90,17 @@ class TestSingleScreensFunctionality:
 
         row.click()
         modal = lan_page.locator('.modal-dialog')
-        expect(modal).to_be_hidden()
+        expect(modal).not_to_have_attribute('hx-get', re.compile('.*result-modal.*'))
 
         api_request_context.patch(
             f'/admin/tournament-open-check-in/{EVENT_ID}/{unpaired_tournament.id}'
         )
 
-        # NOTE(Amaras): because the check-in was updated, we either need to refresh the page, or wait
-        # until it refreshes itself
-        lan_page.reload(wait_until='commit')
+        # NOTE(Amaras): because the check-in was updated, we need to refresh the page.
+        # To avoid flaky tests, reload is used instead of waiting for a timeout.
+        lan_page.reload()
 
         row.click()
-        modal = lan_page.locator('.modal-dialog')
         expect(modal).to_be_visible()
 
         button = TestUtils.button_by_text(modal, 'CHECK-IN')
