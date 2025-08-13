@@ -475,6 +475,13 @@ class Player:
             games=games,
         )
 
+    # FIXME(Amaras): this should not be in the Player class
+    def reset_board(self):
+        self.board_id = None
+        self.board_number = None
+        self.color = None
+
+    # FIXME(Amras): this should not be in the Player class
     def set_board(self, board_id: int, board_number: int, color: BoardColor):
         self.board_id = board_id
         self.board_number = board_number
