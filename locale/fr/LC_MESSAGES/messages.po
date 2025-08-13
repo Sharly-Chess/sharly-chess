@@ -186,6 +186,9 @@ msgstr "Une URL, ou le chemin du règlement sur le serveur, au format PDF (facul
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
 msgstr "Une URL, ou l'emplacement du règlement sur le serveur, au format PDF (facultatif, par défaut l'emplacement du règlement de l'évènement)."
 
+msgid "A file is expected."
+msgstr "Un fichier est attendu."
+
 msgid "A non-empty string is expected"
 msgstr "Une chaîne de caractères non vide est attendue"
 
@@ -1855,9 +1858,6 @@ msgstr "Saisir le résultat"
 msgid "Enter the tournament ID to confirm its deletion:"
 msgstr "Entrez l'identifiant du tournoi pour confirmer sa suppression :"
 
-msgid "Error"
-msgstr "Erreur"
-
 msgid "Error message"
 msgstr "Message d'erreur"
 
@@ -2119,6 +2119,9 @@ msgstr "L'identifiant Fide [{fide_id}] est déjà présent dans le tournoi [{tou
 
 msgid "Fide Master"
 msgstr "Maître Fide"
+
+msgid "File"
+msgstr "Fichier"
 
 msgid "File [{file}] not found."
 msgstr "Fichier [{file}] non trouvé."
@@ -2384,11 +2387,23 @@ msgstr "Les écrans d'image affichent une image (locale ou distante)."
 msgid "Image: %(image)s"
 msgstr "Image : %(image)s"
 
-msgid "Import of papi file [{file}] failed."
-msgstr "L'import du fichier papi [{file}] a échoué."
+msgid "Import"
+msgstr "Importer"
+
+msgid "Import Papi file"
+msgstr "Importer un fichier Papi"
+
+msgid "Import a tournament"
+msgstr "Importer un tournoi"
+
+msgid "Import a tournament to the event from an external source."
+msgstr "Importer un tournoi à l'évènement depuis une source externe."
 
 msgid "Impossible to add players to tournament [{tournament_uniq_id}]."
 msgstr "Impossible d'ajouter des joueur·euses au tournoi [{tournament_uniq_id}]."
+
+msgid "Impossible to import into a tournament already having players."
+msgstr "Impossible d'importer vers un tournoi contenant déjà des joueur·euses."
 
 #, python-format
 msgid "Impossible to set a bye in the last %(rounds)d rounds of the tournament"
@@ -3345,9 +3360,6 @@ msgstr "Appariements : %(pairing_variation)s"
 
 msgid "Papi file"
 msgstr "Fichier Papi"
-
-msgid "Papi file [{file}] successfully imported."
-msgstr "Fichier Papi [{file}] importé avec succès."
 
 msgid "Parings by player"
 msgstr "Appariements par ordre alphabétique"
@@ -4492,6 +4504,9 @@ msgstr "L'horaire de fin du tournoi (par défaut %(datetime)s)."
 
 msgid "The federation that organizes the event."
 msgstr "La fédération qui organise l'évènement."
+
+msgid "The file to import."
+msgstr "Le fichier à importer."
 
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr "Le premier tournoi de l'écran, obligatoire (il est possible d'ajouter ultérieurement des tournois sur l'écran)."
@@ -5700,9 +5715,6 @@ msgstr "Vous pouvez désactiver temporairement les comptes en décochant cette c
 msgid "You can temporarily invalidate devices by turning this switch off."
 msgstr "Vous pouvez désactiver temporairement les appareils en décochant cette case."
 
-msgid "You can try again from the tournament card (Actions > Import > Papi file)."
-msgstr "Vous pouvez essayer à nouveau depuis la carte du tournoi (Actions > Import > Fichier Papi)."
-
 msgid "You decide which devices and which accounts are allowed to display screens, check-in players, enter results, pair rounds… Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers…"
 msgstr "Vous décidez les appareils et les personnes autorisées à afficher les écrans, pointer les joueur·euses, entrer les résultats, apparier les rondes… Sharly Chess offre un système d'autorisation puissant pour facilement déléguer la gestion de votre évènement à des organisateur·ices, des arbitres en chef·fe, des arbitres adjoint·es, des arbitres de secteur, des personnes chargées de l'appariement, du pointage, de la saisie des résultats, de la gestion des écrans…"
 
@@ -5943,4 +5955,10 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
+#~ msgid "Error"
+#~ msgstr "Erreur"
+
+#~ msgid "Import of papi file [{file}] failed."
+#~ msgstr "L'import du fichier papi [{file}] a échoué."
 

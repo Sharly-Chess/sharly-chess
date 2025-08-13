@@ -581,7 +581,13 @@ class IndexAdminController(BaseAdminController):
                 config_database.update_stored_plugin(stored_plugin)
             config_database.commit()
         SharlyChessConfig.reload()
-        plugin_manager.reload_register()
+        previous_enabled_plugins = set(
+            plugin.id for plugin in plugin_manager.enabled_plugins
+        )
+        enabled_plugins = set(stored_plugin.name for stored_plugin in stored_plugins)
+        if previous_enabled_plugins != enabled_plugins:
+            plugin_manager.reload_register()
+            EventLoader.unload_all_events()
         Message.success(request, _('Sharly Chess settings have been updated.'))
         return self._admin_render(request=request, data=None, admin_tab='config')
 

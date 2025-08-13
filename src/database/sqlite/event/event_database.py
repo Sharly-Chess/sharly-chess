@@ -805,9 +805,7 @@ class EventDatabase(MigrationDatabase):
         self,
         stored_tournament: StoredTournament,
     ) -> StoredTournament:
-        assert stored_tournament.id is None, (
-            f'stored_tournament.id={stored_tournament.id}'
-        )
+        assert stored_tournament.id is None, f'{stored_tournament.id=}'
         return self._write_stored_tournament(stored_tournament)
 
     def update_stored_tournament(

@@ -1,5 +1,7 @@
+from dataclasses import dataclass
 from pathlib import Path
 import random
+import tempfile
 import time
 from datetime import datetime
 from tempfile import NamedTemporaryFile
@@ -11,6 +13,7 @@ from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template, File
+from litestar.datastructures import UploadFile
 from litestar.status_codes import HTTP_200_OK
 
 from common.exception import SharlyChessException
@@ -23,6 +26,7 @@ from data.input_output import (
     TournamentExporterManager,
     TournamentImporterManager,
 )
+from data.input_output.tournament_importers import TournamentImporter
 from data.loader import EventLoader
 from data.pairings import PairingSystem, PairingSystemManager
 from data.pairings.systems import SwissPairingSystem
@@ -389,6 +393,11 @@ class TournamentAdminController(BaseEventAdminController):
         tournament_action_menu_items = (
             plugin_manager.hook.get_tournament_card_menu_items_template()
         )
+        tournament_importers: list[TournamentImporter] = [
+            importer
+            for importer in TournamentImporterManager.objects()
+            if importer.display_in_menu
+        ]
         tournament_exporters: list[TournamentExporter] = (
             TournamentExporterManager.objects()
         )
@@ -396,6 +405,7 @@ class TournamentAdminController(BaseEventAdminController):
             'admin_event_tab': 'admin-event-tournaments-tab',
             'paired_bye_result_options': cls._get_paired_bye_result_options(),
             'tournament_card_blocks': tournament_card_blocks,
+            'tournament_importers': tournament_importers,
             'tournament_exporters': tournament_exporters,
             'tournament_action_menu_items': tournament_action_menu_items,
             'admin_tournaments_show_details': (
@@ -696,31 +706,96 @@ class TournamentAdminController(BaseEventAdminController):
             filename=f'{exporter.file_name(tournament)}.{exporter.file_extension}',
         )
 
+    @staticmethod
+    def _tournament_import_modal_context(
+        importer_id: str,
+        data: dict[str, str] | None = None,
+        errors: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        importer = TournamentImporterManager.get_object(importer_id)
+        return {
+            'data': data or {},
+            'importer': importer,
+            'modal': 'tournament-import',
+            'errors': errors or {},
+        }
+
+    @get(
+        path=[
+            '/admin/tournament-import-modal/{event_uniq_id:str}/{importer_id:str}',
+            '/admin/tournament-import-modal/{event_uniq_id:str}/{tournament_id:int}/{importer_id:str}',
+        ],
+        name='admin-tournament-import-modal',
+    )
+    async def htmx_admin_tournament_import_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int | None,
+        importer_id: str,
+    ) -> Template | ClientRedirect:
+        web_context: TournamentAdminWebContext = TournamentAdminWebContext(
+            request, event_uniq_id=event_uniq_id, tournament_id=tournament_id, data={}
+        )
+        template_context: dict[str, Any] = self._get_admin_event_render_context(
+            web_context
+        ) | self._tournament_import_modal_context(importer_id=importer_id)
+        return self._admin_event_render(template_context)
+
+    @dataclass
+    class TournamentImportForm:
+        file: UploadFile | None = None
+
     @post(
-        path='/admin/tournament-import/{event_uniq_id:str}/{tournament_id:int}/{importer_id:str}',
+        path=[
+            '/admin/tournament-import/{event_uniq_id:str}//{importer_id:str}',
+            '/admin/tournament-import/{event_uniq_id:str}/{tournament_id:int}/{importer_id:str}',
+        ],
         name='admin-tournament-import',
     )
     async def admin_tournament_import(
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
+            TournamentImportForm, Body(media_type=RequestEncodingType.MULTI_PART)
         ],
         event_uniq_id: str,
-        tournament_id: int,
+        tournament_id: int | None,
         importer_id: str,
     ) -> Template | ClientRedirect:
         web_context = TournamentAdminWebContext(
-            request, event_uniq_id, tournament_id, data
+            request, event_uniq_id, tournament_id, None
         )
         event = web_context.get_admin_event()
-        tournament = web_context.get_admin_tournament()
         importer = TournamentImporterManager.get_object(importer_id)
-        file_path = Path(data.get('file_path', ''))
-        if not file_path.exists():
-            raise SharlyChessException(f'File [{file_path}] not found.')
-        importer.load_tournament(file_path, event, tournament)
+
+        tmp_path: Path
+        if data.file is not None:
+            suffix = Path(data.file.filename or 'upload').suffix
+            fd, tmp_name = tempfile.mkstemp(prefix='tournament-import-', suffix=suffix)
+            Path(tmp_name).write_bytes(await data.file.read())
+            tmp_path = Path(tmp_name)
+        else:
+            errors: dict[str, str] = {'file': _('A file is expected.')}
+            template_context: dict[str, Any] = self._get_admin_event_render_context(
+                web_context
+            ) | self._tournament_import_modal_context(importer_id, errors=errors)
+            return self._admin_event_render(template_context)
+
+        try:
+            importer.load_tournament(tmp_path, event, web_context.admin_tournament)
+        except SharlyChessException as e:
+            errors = {'file': str(e)}
+            template_context = self._get_admin_event_render_context(
+                web_context
+            ) | self._tournament_import_modal_context(importer_id, errors=errors)
+            return self._admin_event_render(template_context)
+        finally:
+            if tmp_path:
+                try:
+                    tmp_path.unlink(missing_ok=True)
+                except OSError:
+                    pass
         return self._admin_event_tournaments_render(
             request, event_uniq_id=event_uniq_id
         )
