@@ -2,7 +2,7 @@
     admin_tournament.record_illegal_moves
 %}
     <td class="illegal-moves-cell text-nowrap w-1">
-        {% for _ in range([pairing.illegal_moves, admin_tournament.record_illegal_moves]|min) %}
+        {% for _ in range([illegal_moves, admin_tournament.record_illegal_moves]|min) %}
             <span class="illegal-move-flag-wrapper">
                 <i
                     data-testid="illegal-move-icon-{{ player.color.value}}"
@@ -19,7 +19,7 @@
             </span>
         {% endfor %}
         {% if client.can_set_illegal_moves(admin_tournament.id) %}
-            {% if not board.result_str and pairing.illegal_moves < admin_tournament.record_illegal_moves %}
+            {% if not board.result_str and illegal_moves < admin_tournament.record_illegal_moves %}
                 <span class="illegal-move-flag-wrapper">
                     <i
                         data-testid="add-illegal-move-button-{{ player.color.value}}"
