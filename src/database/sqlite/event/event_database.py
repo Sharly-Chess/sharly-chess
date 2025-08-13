@@ -300,6 +300,7 @@ class EventDatabase(MigrationDatabase):
             self.fetchone(), EventMetadata
         )
         metadata.tournament_count = self._get_table_count('tournament')
+        metadata.player_count = self._get_table_count('player')
         metadata.timer_count = self._get_table_count('timer')
         metadata.screen_count = self._get_table_count('screen')
         metadata.family_count = self._get_table_count('family')
