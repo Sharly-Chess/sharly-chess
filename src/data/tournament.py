@@ -1156,13 +1156,16 @@ class Tournament:
                 black_pairing.stored_pairing.result = result.value
                 black_pairing.stored_pairing.board_id = board_id
                 black_pairing.update(database)
+                database.update_stored_board(board.stored_board)
             else:
                 result = Result.PAIRING_ALLOCATED_BYE
                 stored_board = StoredBoard(
                     id=None,
                     white_player_id=white_player.id,
                     black_player_id=None,
-                    index=max(board.index for board in self.get_round_boards(round_nb))
+                    index=max(
+                        [board.index for board in self.get_round_boards(round_nb)] + [0]
+                    )
                     + 1,
                 )
                 board_id = database.add_stored_board(stored_board)
