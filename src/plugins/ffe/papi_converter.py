@@ -105,6 +105,12 @@ class PapiPlayer:
     club: str | None = None
     fixedBoard: int | None = None
     checkedIn: bool = False
+
+    # Unused
+    nr: str | None = None
+    address: str | None = None
+    postalCode: str | None = None
+
     rounds: dict[int, PapiRound] = field(default_factory=dict[int, PapiRound])
 
 
