@@ -137,7 +137,7 @@ class EventDatabase(MigrationDatabase):
             try:
                 file.rename(arch)
                 logger.info('Database has been archived (%s).', arch)
-                EventLoader.unload_all_events()
+                EventLoader.unload_event(self.uniq_id)
                 return arch
             except FileExistsError:
                 logger.warning(
@@ -154,15 +154,13 @@ class EventDatabase(MigrationDatabase):
         from data.loader import EventLoader
 
         self.file.rename(EventDatabase(new_uniq_id).file)
-        EventLoader.unload_all_events()
+        EventLoader.unload_event(self.uniq_id)
 
     def clone(self, new_uniq_id: str):
         """Create a copy of the event database file corresponding to an event
         with name `new_uniq_id`."""
-        from data.loader import EventLoader
 
         shutil.copy(self.file, EventDatabase(new_uniq_id).file)
-        EventLoader.unload_all_events()
 
     def create_backup(self) -> 'EventBackup':
         """Creates a backup of the event database.

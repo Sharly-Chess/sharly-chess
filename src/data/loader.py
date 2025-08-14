@@ -42,8 +42,8 @@ class EventLoader:
         return request.state['event_loader']
 
     @classmethod
-    def unload_all_events(cls):
-        cls._valid_event_ids = []
+    def unload_event(cls, uniq_id: str):
+        cls._valid_event_ids.remove(uniq_id)
         cls.load_event_ids()
 
     @classmethod
