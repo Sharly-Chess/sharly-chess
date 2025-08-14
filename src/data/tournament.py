@@ -673,12 +673,6 @@ class Tournament:
                 paired_player_ids.append(board.black_player.id)
         return [player for player in self.players if player.id not in paired_player_ids]
 
-    def reload_stored_tournament(self):
-        with EventDatabase(self.event.uniq_id) as database:
-            stored_tournament = database.get_stored_tournament(self.id)
-            assert stored_tournament is not None
-            self.stored_tournament = stored_tournament
-
     def set_for_round(self, round_: int | None = None):
         """Set the tournament for the given round (defaults to the current round)"""
         if round_ is None:
@@ -950,7 +944,6 @@ class Tournament:
         with EventDatabase(self.event.uniq_id, write=True) as database:
             player.pairings[self.current_round].add_illegal_move(database)
             database.commit()
-        self.reload_stored_tournament()
 
     def delete_illegal_move(self, player: Player) -> bool:
         """Deletes one illegal move for the given `player` for the current round."""
@@ -958,7 +951,6 @@ class Tournament:
             deleted = player.pairings[self.current_round].delete_illegal_move(database)
             if deleted:
                 database.commit()
-                self.reload_stored_tournament()
         return deleted
 
     def correct_ranking_round(self, ranking_round: int | None = None) -> int:
