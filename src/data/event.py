@@ -528,10 +528,6 @@ class Event:
         with EventDatabase(self.uniq_id, True) as database:
             database.delete_stored_player(player_id)
             database.commit()
-        for tournament in self.tournaments:
-            if player_id in tournament.players_by_id:
-                del tournament.players_by_id[player_id]
-                tournament.clear_cache()
 
     def update_player(self, player: Player, new_stored_player: StoredPlayer):
         new_stored_player.id = player.id
@@ -540,18 +536,12 @@ class Event:
         with EventDatabase(self.uniq_id, True) as database:
             database.update_stored_player(player.stored_player)
             database.commit()
-        player.clear_cache()
-        for tournament in self.tournaments:
-            if player.id in tournament.players_by_id:
-                tournament.clear_cache()
 
     def update_players(self, players: list[Player]):
         with EventDatabase(self.uniq_id, True) as database:
             for player in players:
                 database.update_stored_player(player.stored_player)
             database.commit()
-        for tournament in self.tournaments:
-            tournament.clear_cache()
 
     @cached_property
     def player_count(self) -> int:

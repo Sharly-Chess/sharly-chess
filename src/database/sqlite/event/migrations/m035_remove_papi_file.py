@@ -30,8 +30,6 @@ class Migration(BaseMigration):
                     f'UPDATE `tournament` SET {field_sets} WHERE `id` = ?',
                     tuple(fields.values()) + (row['id'],),
                 )
-        if self.post_upgrade_tasks:
-            self.post_upgrade_tasks.append(PostUpgradeTask(function=self.unload_event))
 
         self.database.execute('ALTER TABLE `info` DROP COLUMN `path`')
         self.database.execute('ALTER TABLE `tournament` DROP COLUMN `path`')
@@ -84,8 +82,3 @@ class Migration(BaseMigration):
                 papi_file_path,
                 error,
             )
-
-    def unload_event(self):
-        from data.loader import EventLoader
-
-        EventLoader().unload_event(self.database.file.stem)

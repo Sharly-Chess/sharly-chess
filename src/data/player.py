@@ -637,17 +637,6 @@ class Player:
             + self.starting_rank_sort_key
         )
 
-    def clear_cache(self):
-        """Clears the cache of the player."""
-        cached_property_names = [
-            name
-            for name in dir(self)
-            if isinstance(getattr(type(self), name, None), cached_property)
-        ]
-        for property_name in cached_property_names:
-            if property_name in self.__dict__:
-                del self.__dict__[property_name]
-
     def __le__(self, other: 'Player') -> bool:
         # p1 <= p2 calls p1.__le__(p2)
         if not isinstance(other, Player):

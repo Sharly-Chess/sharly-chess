@@ -4729,9 +4729,6 @@ msgstr "Cet écran est privé (non visible des utilisateur·ices)."
 msgid "This screen is public (visible by the users)."
 msgstr "Cet écran est public (visible des utilisateur·ices)."
 
-msgid "This will cause the table numbers to be reordered."
-msgstr "Cela peut modifier l'ordre des tables."
-
 msgid "Three points for a win"
 msgstr "Victoire à 3 points"
 

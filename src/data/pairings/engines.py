@@ -68,18 +68,13 @@ class PairingEngine(ABC):
         boards = [
             Board(tournament, round_, stored_board) for stored_board in stored_boards
         ]
-        pab_board = tournament.get_round_pab_board(round_)
-        if pab_board:
-            pab_board.stored_board.index += len(stored_boards)
         if self.reorder_boards:
-            index_delta = max(
-                [
-                    board.index
-                    for board in tournament.get_round_boards(round_)
-                    if board.black_player
-                ]
-                or [0]
-            )
+            board_indexes = [
+                board.index
+                for board in tournament.get_round_boards(round_)
+                if board.black_player
+            ]
+            index_delta = max(board_indexes) + 1 if board_indexes else 0
             for index, board in enumerate(sorted(boards, reverse=True)):
                 board.stored_board.index = index_delta + index
         tournament.create_boards(stored_boards, round_, self.pab_result)

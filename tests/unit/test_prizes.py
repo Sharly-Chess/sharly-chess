@@ -81,7 +81,7 @@ class PrizesTestCase(TestCase):
                 ),
             },
         )
-        cls.event = EventLoader().reload_event('test-prizes-event')
+        cls.event = EventLoader().load_event('test-prizes-event')
 
     @classmethod
     def tearDownClass(cls):

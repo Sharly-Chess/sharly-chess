@@ -35,7 +35,7 @@ class PairingTestCase(TestCase):
             },
         )
         TestUtils.create_tournament(EVENT_ID, TOURNAMENT_ID)
-        self.event = EventLoader().reload_event(EVENT_ID)
+        self.event = EventLoader().load_event(EVENT_ID)
 
     def tearDown(self):
         TestUtils.delete_event(EVENT_ID)
@@ -58,7 +58,7 @@ class PairingTestCase(TestCase):
 
         PapiJsonTournamentImporter().load_tournament(json_path, self.event, tournament)
 
-        self.event = EventLoader().reload_event(EVENT_ID)
+        self.event = EventLoader().load_event(EVENT_ID)
         tournament = self.event.tournaments_by_uniq_id[TOURNAMENT_ID]
         tournament.set_default_pairing_settings()
 
