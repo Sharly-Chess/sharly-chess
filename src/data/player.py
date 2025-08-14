@@ -3,7 +3,7 @@ import weakref
 from dataclasses import dataclass
 from datetime import date
 from functools import total_ordering, cached_property
-from typing import Self, Callable, SupportsFloat, TYPE_CHECKING
+from typing import Self, Callable, SupportsFloat, TYPE_CHECKING, cast
 from trf import Player as TrfPlayer
 from trf.Player import Game as TrfGame
 
@@ -237,14 +237,25 @@ class Player:
             for tr_value, rating in self.stored_player.ratings.items()
         }
 
-    def get_rating(self, tournament_rating: TournamentRating) -> PlayerRating:
-        return (
-            self.ratings.get(tournament_rating, None)
-            or plugin_manager.hook.get_player_estimated_rating(
-                self.event.federation, tournament_rating, self
+    def get_rating(self, tournament_rating: int | TournamentRating) -> PlayerRating:
+        # Ensure we have a TournamentRating enum instance
+        if not isinstance(tournament_rating, TournamentRating):
+            # O(1) dict lookup, no EnumMeta.__call__
+            rating_enum = cast(
+                TournamentRating, TournamentRating._value2member_map_[tournament_rating]
             )
-            or PlayerRating(0, PlayerRatingType.ESTIMATED)
-        )
+        else:
+            rating_enum = tournament_rating
+
+        r = self.ratings.get(rating_enum)
+        if r is not None:
+            return r
+
+        r = plugin_manager.hook.get_player_estimated_rating(
+            self.event.federation, rating_enum, self
+        ) or PlayerRating(0, PlayerRatingType.ESTIMATED)
+        self.ratings[rating_enum] = r
+        return r
 
     def update_ratings(self, ratings: dict[TournamentRating, PlayerRating]):
         for tournament_rating, player_rating in ratings.items():

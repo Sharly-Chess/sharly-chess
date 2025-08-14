@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 from common.i18n import _
 from data.pairings.settings import PairingSetting
 from plugins.pairing_acceleration import PLUGIN_NAME
+from utils.enum import TournamentRating
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
@@ -62,7 +63,8 @@ class RatingLimitSetting(PairingSetting[int]):
 
     @staticmethod
     def player_ratings(tournament: 'Tournament') -> list[int]:
-        return sorted(player.rating for player in tournament.players)
+        tr: TournamentRating = tournament.rating_enum  # ensure enum, NOT int
+        return sorted(player.get_rating(tr).value for player in tournament.players)
 
     @classmethod
     def group_counts(
@@ -178,7 +180,8 @@ class DualRatingLimitsSetting(PairingSetting[tuple[int, int]]):
 
     @staticmethod
     def player_ratings(tournament: 'Tournament') -> list[int]:
-        return sorted(player.rating for player in tournament.players)
+        tr: TournamentRating = tournament.rating_enum  # ensure enum, NOT int
+        return sorted(player.get_rating(tr).value for player in tournament.players)
 
     @classmethod
     def group_counts(
