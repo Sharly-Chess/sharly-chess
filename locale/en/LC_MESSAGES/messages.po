@@ -4729,9 +4729,6 @@ msgstr ""
 msgid "This screen is public (visible by the users)."
 msgstr ""
 
-msgid "This will cause the table numbers to be reordered."
-msgstr ""
-
 msgid "Three points for a win"
 msgstr ""
 

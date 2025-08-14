@@ -1159,14 +1159,14 @@ class Tournament:
                 database.update_stored_board(board.stored_board)
             else:
                 result = Result.PAIRING_ALLOCATED_BYE
+                round_boards = self.get_round_boards(round_nb)
                 stored_board = StoredBoard(
                     id=None,
                     white_player_id=white_player.id,
                     black_player_id=None,
-                    index=max(
-                        [board.index for board in self.get_round_boards(round_nb)] + [0]
-                    )
-                    + 1,
+                    index=max(board.index for board in round_boards) + 1
+                    if round_boards
+                    else 0,
                 )
                 board_id = database.add_stored_board(stored_board)
                 stored_board.id = board_id
@@ -1206,7 +1206,10 @@ class Tournament:
                 else:
                     white_stored_pairing.result = pab_result.value
                 board.white_pairing.update(database)
-                database.commit()
+            if pab_board := self.get_round_pab_board(round_):
+                pab_board.stored_board.index += len(stored_boards)
+                database.update_stored_board(pab_board.stored_board)
+            database.commit()
 
     def open_check_in(self):
         """Opens the check-in for the tournament and sets all the present players
