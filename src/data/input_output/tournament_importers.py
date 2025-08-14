@@ -64,7 +64,7 @@ class TournamentImporter(IdentifiableEntity, ABC):
                 stored_tournament, stored_players, database
             )
             database.commit()
-            event = EventLoader().reload_event(event.uniq_id)
+            event = EventLoader().load_event(event.uniq_id)
             tournament = event.tournaments_by_id[tournament_id]
             if self.reorder_boards:
                 for round_ in range(1, tournament.rounds + 1):

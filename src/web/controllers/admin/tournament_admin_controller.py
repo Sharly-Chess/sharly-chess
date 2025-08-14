@@ -27,7 +27,6 @@ from data.input_output import (
     TournamentImporterManager,
 )
 from data.input_output.tournament_importers import TournamentImporter
-from data.loader import EventLoader
 from data.pairings import PairingSystem, PairingSystemManager
 from data.pairings.systems import SwissPairingSystem
 from data.player import Player
@@ -847,7 +846,6 @@ class TournamentAdminController(BaseEventAdminController):
                 errors=stored_tournament.errors,
             )
 
-        event_loader: EventLoader = EventLoader.get(request=request)
         with EventDatabase(
             web_context.admin_event.uniq_id, write=True
         ) as event_database:
@@ -944,7 +942,6 @@ class TournamentAdminController(BaseEventAdminController):
                 tournament_id = stored_tournament.id
             event_database.commit()
 
-        event_loader.clear_cache(event_uniq_id)
         if add_other:
             return self._admin_event_tournaments_render(
                 request,

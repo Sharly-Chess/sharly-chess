@@ -73,15 +73,7 @@ class EventDatabase(MigrationDatabase):
             super().__init__(self.event_database_path(self.uniq_id), write)
 
     def __exit__(self, exc_type, exc_value, traceback):
-        from data.loader import EventLoader
-
         super().__exit__(exc_type, exc_value, traceback)
-
-        # Inform EventLoader that this event has been updated internally
-        if self.update_event_loader and self.write:
-            EventLoader.set_last_known_update(
-                self.uniq_id, self.database_modified_timestamp(self.uniq_id)
-            )
 
     @classmethod
     def create_instance(cls, file: Path, write: bool = False) -> Self:
@@ -132,6 +124,8 @@ class EventDatabase(MigrationDatabase):
 
     def delete(self) -> Path:
         """Soft-deletes the event database file by archiving it."""
+        from data.loader import EventLoader
+
         file: Path = EventDatabase(self.uniq_id).file
         index: int = 0
         date_str: str = datetime.strftime(datetime.now(), '%Y-%m-%d-%H-%M')
@@ -143,6 +137,7 @@ class EventDatabase(MigrationDatabase):
             try:
                 file.rename(arch)
                 logger.info('Database has been archived (%s).', arch)
+                EventLoader.unload_all_events()
                 return arch
             except FileExistsError:
                 logger.warning(
@@ -155,12 +150,19 @@ class EventDatabase(MigrationDatabase):
     def rename(self, new_uniq_id: str):
         """Changes the event file database to the one associated to the
         provided `new_uniq_id`."""
+
+        from data.loader import EventLoader
+
         self.file.rename(EventDatabase(new_uniq_id).file)
+        EventLoader.unload_all_events()
 
     def clone(self, new_uniq_id: str):
         """Create a copy of the event database file corresponding to an event
         with name `new_uniq_id`."""
+        from data.loader import EventLoader
+
         shutil.copy(self.file, EventDatabase(new_uniq_id).file)
+        EventLoader.unload_all_events()
 
     def create_backup(self) -> 'EventBackup':
         """Creates a backup of the event database.

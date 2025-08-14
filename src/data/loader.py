@@ -2,9 +2,7 @@ import re
 import shutil
 import time
 from collections.abc import Callable
-from contextlib import suppress
 from dataclasses import dataclass
-from datetime import datetime, timedelta
 from functools import cached_property
 from logging import Logger
 from pathlib import Path
@@ -33,19 +31,6 @@ class EventLoader:
     id_regex = re.compile(r'^[0-9a-zA-Z_\-]+$')
     _valid_event_ids: list[str] = []
     _invalid_uniq_ids: list[str] = []
-    _loaded_events_metadata_by_id: dict[str, EventMetadata] = {}
-    _loaded_events_by_id: dict[str, Event] = {}
-    _loaded_events_expire_at: dict[str, datetime] = {}
-    _loaded_events_last_known_update: dict[str, float] = {}
-
-    def __init__(self):
-        to_unload: list[str] = []
-        for uniq_id, expires_at in self._loaded_events_expire_at.items():
-            if expires_at < datetime.now():
-                to_unload.append(uniq_id)
-        for uniq_id in to_unload:
-            self.unload_event(uniq_id)
-            logger.debug(f'Cached event [{uniq_id}] expired')
 
     @classmethod
     def get(cls, request: HTMXRequest | None):
@@ -57,36 +42,9 @@ class EventLoader:
         return request.state['event_loader']
 
     @classmethod
-    def unload_event(cls, event_uniq_id: str):
-        with suppress(KeyError):
-            del cls._loaded_events_metadata_by_id[event_uniq_id]
-        with suppress(KeyError):
-            del cls._loaded_events_by_id[event_uniq_id]
-        with suppress(KeyError):
-            del cls._loaded_events_expire_at[event_uniq_id]
-        with suppress(KeyError):
-            del cls._loaded_events_last_known_update[event_uniq_id]
-        with suppress(ValueError):
-            cls._valid_event_ids.remove(event_uniq_id)
-
-    @classmethod
     def unload_all_events(cls):
-        for event_uniq_id in cls._valid_event_ids:
-            cls.unload_event(event_uniq_id)
-
-    def clear_cache(self, event_uniq_id: str | None = None):
-        """If `event_uniq_id` is provided, clears the load cache regarding the
-        given event."""
-        if event_uniq_id:
-            self.unload_event(event_uniq_id)
-        cached_property_names = [
-            name
-            for name in dir(self)
-            if isinstance(getattr(type(self), name, None), cached_property)
-        ]
-        for property_name in cached_property_names:
-            if property_name in self.__dict__:
-                del self.__dict__[property_name]
+        cls._valid_event_ids = []
+        cls.load_event_ids()
 
     @classmethod
     def load_event_ids(cls, uniq_id: str | None = None):
@@ -177,39 +135,11 @@ class EventLoader:
             name = f'{base_name} ({index})'
         return name
 
-    def _load_event(self, uniq_id: str, reload: bool) -> Event:
-        cls = self.__class__
-        cls._loaded_events_expire_at[uniq_id] = datetime.now() + timedelta(minutes=30)
-        if uniq_id not in cls._loaded_events_last_known_update:
-            cls._loaded_events_last_known_update[uniq_id] = (
-                EventDatabase.database_modified_timestamp(uniq_id)
-            )
-        if reload:
-            self.clear_cache(uniq_id)
-        if uniq_id in self._loaded_events_by_id:
-            last_modified = EventDatabase.database_modified_timestamp(uniq_id)
-            if last_modified > cls._loaded_events_last_known_update[uniq_id]:
-                # The database has been updated since the last time we loaded the event
-                # This can happen using the ChessEvent engine.
-                self.clear_cache(uniq_id)
-            else:
-                return self._loaded_events_by_id[uniq_id]
-
+    def load_event(self, uniq_id: str) -> Event:
         self.load_event_ids(uniq_id)
         with EventDatabase(uniq_id) as event_database:
             event = Event(event_database.load_stored_event())
-        cls._loaded_events_by_id[uniq_id] = event
         return event
-
-    def load_event(self, uniq_id: str) -> Event:
-        return self._load_event(uniq_id, reload=False)
-
-    def reload_event(self, uniq_id: str) -> Event:
-        return self._load_event(uniq_id, reload=True)
-
-    @classmethod
-    def set_last_known_update(cls, uniq_id: str, last_known_update: float):
-        cls._loaded_events_last_known_update[uniq_id] = last_known_update
 
     @cached_property
     def events_by_id(self) -> dict[str, Event]:
@@ -233,13 +163,9 @@ class EventLoader:
 
     @classmethod
     def load_event_metadata(cls, uniq_id: str) -> EventMetadata:
-        try:
-            return cls._loaded_events_metadata_by_id[uniq_id]
-        except KeyError:
-            with EventDatabase(uniq_id) as database:
-                event_metadata = database.load_stored_event_metadata()
-            cls._loaded_events_metadata_by_id[uniq_id] = event_metadata
-            return event_metadata
+        with EventDatabase(uniq_id) as database:
+            event_metadata = database.load_stored_event_metadata()
+        return event_metadata
 
     @classmethod
     def get_events_metadata(
