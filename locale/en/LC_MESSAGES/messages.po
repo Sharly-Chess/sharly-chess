@@ -4729,9 +4729,6 @@ msgstr ""
 msgid "This screen is public (visible by the users)."
 msgstr ""
 
-msgid "This will cause the table numbers to be reordered."
-msgstr ""
-
 msgid "Three points for a win"
 msgstr ""
 
@@ -5362,9 +5359,6 @@ msgstr ""
 msgid "You are trying to manually edit the pairings of the current round. Pairings should only be altered to handle unusual situations."
 msgstr ""
 
-msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
-msgstr ""
-
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr ""
 
@@ -5599,4 +5593,3 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
-
