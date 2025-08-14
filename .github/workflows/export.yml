@@ -132,7 +132,6 @@ jobs:
           name: sharly-chess-${{ matrix.platform }}-${{ steps.version.outputs.version }}
           path: |
             export/sharly-chess-${{ steps.version.outputs.version }}.zip
-            export/papi-web-${{ steps.version.outputs.version }}.zip
             export/sharly-chess-${{ steps.version.outputs.version }}-macos.dmg
 
   create-release:
