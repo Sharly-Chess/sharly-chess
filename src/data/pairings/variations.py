@@ -57,8 +57,9 @@ class PairingVariation(IdentifiableEntity, ABC):
     def settings(self) -> list[PairingSetting]:
         """List of pairing settings required for the variation to work."""
 
-    @staticmethod
+    @classmethod
     def compute_virtual_points(
+        cls,
         tournament: 'Tournament',
         player: Player,
         at_round: int,

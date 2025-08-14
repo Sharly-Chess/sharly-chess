@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from collections import Counter
 from collections.abc import Callable
-from functools import partial, cached_property
+from functools import partial, cached_property, cache
 from types import UnionType
 from typing import override, Any
 
@@ -32,7 +32,10 @@ from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.utils import FFEUtils
-from plugins.pairing_acceleration.pairing_settings import DualRatingLimitsSetting
+from plugins.pairing_acceleration.pairing_settings import (
+    DualRatingLimitsSetting,
+    RatingGroup,
+)
 from plugins.utils import PluginUtils
 from utils.enum import Result
 from utils.option import OptionError
@@ -307,46 +310,59 @@ class NicoisSwissVariation(SwissVariation):
     def settings(self) -> list[PairingSetting]:
         return super().settings + [DualRatingLimitsSetting()]
 
-    @staticmethod
+    @classmethod
     def compute_virtual_points(
+        cls,
         tournament: Tournament,
         player: Player,
         at_round: int,
     ) -> float:
-        lower_limit, upper_limit = DualRatingLimitsSetting.get_value(tournament)
-
-        draw_points = Result.DRAW.points(tournament.point_values)
-        gain_points = Result.GAIN.points(tournament.point_values)
-
         if at_round >= tournament.rounds - 1:
             # Before the second to last round, we remove the virtual
             # points, and use a simple Swiss Dutch system.
             return 0.0
+        return cls._compute_virtual_points(
+            rating_group=DualRatingLimitsSetting.get_player_rating_group(
+                tournament, player
+            ),
+            points=player.points_before(at_round),
+            tournament_rounds=tournament.rounds,
+            draw_points=Result.DRAW.points(tournament.point_values),
+            gain_points=Result.GAIN.points(tournament.point_values),
+        )
 
-        points = player.points_before(at_round)
-        if 2 * points >= tournament.rounds * gain_points:
+    @staticmethod
+    @cache
+    def _compute_virtual_points(
+        rating_group: RatingGroup,
+        points: int,
+        tournament_rounds: int,
+        draw_points: float,
+        gain_points: float,
+    ) -> float:
+        if 2 * points >= tournament_rounds * gain_points:
             # If a player gets at least half the possible score,
             # their capital is set at 2 points.
             return 2 * gain_points
 
-        if player.rating >= upper_limit:
-            # Group A: starts with 2 gain points (max)
-            return 2 * gain_points
-
-        if player.rating >= lower_limit:
-            # Group B: starts with 1 gain point
-            # Earns a draw point at 3 real draw points, and a final one at 5
-            vpoints = gain_points
-            if points >= 3 * draw_points:
-                vpoints += draw_points
-                if points >= 5 * draw_points:
+        match rating_group:
+            case RatingGroup.A:
+                # Starts with 2 gain points (max)
+                return 2 * gain_points
+            case RatingGroup.B:
+                # Starts with 1 gain point
+                # Earns a draw point at 3 real draw points, and a final one at 5
+                vpoints = gain_points
+                if points >= 3 * draw_points:
                     vpoints += draw_points
-        else:
-            # Group C: starts with 0 virtual points
-            # Players get a virtual draw points for 2 real draw points
-            vpoints = draw_points * (points // (2 * draw_points))
-
-        # Players cannot have more than 2 virtual points
+                    if points >= 5 * draw_points:
+                        vpoints += draw_points
+            case RatingGroup.C:
+                # Starts with 0 virtual points
+                # Players get a virtual draw points for 2 real draw points
+                vpoints = draw_points * (points // (2 * draw_points))
+            case _:
+                raise ValueError(f'{rating_group=}')
         return min(2 * gain_points, vpoints)
 
 
