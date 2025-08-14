@@ -278,10 +278,6 @@ class Tournament:
             and self.pairing_variation.validate_settings(self)
         )
 
-    @cached_property
-    def rating_enum(self) -> TournamentRating:
-        return TournamentRating(self.stored_tournament.rating)
-
     @property
     def rating(self) -> TournamentRating:
         return TournamentRating(self.stored_tournament.rating)
