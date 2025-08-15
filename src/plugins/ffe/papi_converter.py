@@ -64,8 +64,8 @@ class PapiVariables:
     pairing: str | None = None
     timeControl: str | None = None
     ratingClass: str | None = None
-    minRating: str | None = None
-    maxRating: str | None = None
+    ratingThreshold1: str | None = None
+    ratingThreshold2: str | None = None
     tiebreak1: str | None = None
     tiebreak2: str | None = None
     tiebreak3: str | None = None
@@ -105,6 +105,12 @@ class PapiPlayer:
     club: str | None = None
     fixedBoard: int | None = None
     checkedIn: bool = False
+
+    # Unused
+    nr: str | None = None
+    address: str | None = None
+    postalCode: str | None = None
+
     rounds: dict[int, PapiRound] = field(default_factory=dict[int, PapiRound])
 
 
@@ -197,12 +203,11 @@ class PapiConverter:
         finally:
             # Clean up the temporary SQL dump file
             sql_dump_file.unlink(missing_ok=True)
-
-        if not target_file.exists():
-            raise SharlyChessException(
-                'Player database conversion error: SQLite database was not created.'
-            )
-        return True
+            if not target_file.exists():
+                raise SharlyChessException(
+                    'Player database conversion error: SQLite database was not created.'
+                )
+            return True
 
     def read_papi_file(
         self,
@@ -366,6 +371,30 @@ class PapiConverter:
             except KeyError:
                 raise_unknown_value('ratingClass', variables.ratingClass)
         stored_tournament.rating = rating.value
+        rating_threshold_1 = 0
+        if variables.ratingThreshold1:
+            if not variables.ratingThreshold1.isdigit():
+                raise_exception(
+                    'ratingThreshold1', _('A positive integer is expected.')
+                )
+            rating_threshold_1 = int(variables.ratingThreshold1)
+        rating_threshold_2 = 0
+        if variables.ratingThreshold2:
+            if not variables.ratingThreshold2.isdigit():
+                raise_exception(
+                    'ratingThreshold2', _('A positive integer is expected.')
+                )
+            rating_threshold_2 = int(variables.ratingThreshold2)
+        if (rating_threshold_1, rating_threshold_2) != (0, 0):
+            pairing_settings = stored_tournament.pairing_settings or {}
+            if rating_threshold_1 == rating_threshold_2 or rating_threshold_2 == 0:
+                pairing_settings[RatingLimitSetting.static_id()] = rating_threshold_1
+            else:
+                pairing_settings[DualRatingLimitsSetting.static_id()] = (
+                    rating_threshold_2,
+                    rating_threshold_1,
+                )
+            stored_tournament.pairing_settings = pairing_settings
         tie_breaks: list[dict[str, Any]] = []
         for index, papi_tie_break in enumerate(
             (variables.tiebreak1, variables.tiebreak2, variables.tiebreak3)
@@ -576,7 +605,9 @@ class PapiConverter:
         Returns True if successful, raises SharlyChessException if conversion fails."""
         papi_data = self._tournament_to_papi_data(tournament)
         papi_data_dict = {
-            'variables': papi_data.variables.__dict__,
+            'variables': {
+                key: value or '' for key, value in papi_data.variables.__dict__.items()
+            },
             'players': [
                 self._papi_player_to_dict(player) for player in papi_data.players
             ],
@@ -599,18 +630,17 @@ class PapiConverter:
                 encoding='utf-8',
             )
 
-            if result.returncode != 0 or not Path(target_file).exists():
+            if result.returncode != 0 or not target_file.exists():
                 raise SharlyChessException(
                     f'JSON to Papi file conversion failed.'
                     f'PapiConverter failed with status {result.returncode}.\n'
                     f'stdout: {result.stdout}\nstderr: {result.stderr}'
                 )
 
-            return True
-
         finally:
             # Clean up temporary JSON file
             temp_json_file.unlink(missing_ok=True)
+            return target_file.exists()
 
     def _tournament_to_papi_data(self, tournament: Tournament) -> PapiData:
         """Convert a Tournament object to PapiData."""
@@ -618,17 +648,16 @@ class PapiConverter:
         pairing_settings = tournament.pairing_settings
         if (
             pairing_settings
-            and (setting_id := RatingLimitSetting.static_id()) in pairing_settings
-        ):
-            min_rating = pairing_settings[setting_id]
-            max_rating = 0
-        elif (
-            pairing_settings
             and (setting_id := DualRatingLimitsSetting.static_id()) in pairing_settings
         ):
-            min_rating, max_rating = pairing_settings[setting_id]
+            sharing_thresholds = pairing_settings[setting_id]
+        elif (
+            pairing_settings
+            and (setting_id := RatingLimitSetting.static_id()) in pairing_settings
+        ):
+            sharing_thresholds = (pairing_settings[setting_id],) * 2
         else:
-            min_rating, max_rating = 0, 0
+            sharing_thresholds = 0, 0
 
         # Convert tournament variables
         variables = PapiVariables(
@@ -658,8 +687,11 @@ class PapiConverter:
             ),
             arbiter='',
             timeControl='',
-            minRating=str(min_rating),
-            maxRating=str(max_rating),
+            ratingThreshold1=str(sharing_thresholds[1]),
+            ratingThreshold2=str(sharing_thresholds[0]),
+            homologation=tournament.plugin_data.get(PLUGIN_NAME, {}).get(
+                'ffe_id', None
+            ),
         )
 
         # Add plugin-specific data if available

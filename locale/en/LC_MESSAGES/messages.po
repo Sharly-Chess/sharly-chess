@@ -187,6 +187,9 @@ msgstr ""
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
 msgstr ""
 
+msgid "A file is expected."
+msgstr ""
+
 msgid "A non-empty string is expected"
 msgstr ""
 
@@ -1924,6 +1927,9 @@ msgstr ""
 msgid "Fide Master"
 msgstr ""
 
+msgid "File"
+msgstr ""
+
 msgid "File [{file}] not found."
 msgstr ""
 
@@ -2191,10 +2197,25 @@ msgstr ""
 msgid "Image: %(image)s"
 msgstr ""
 
+msgid "Import"
+msgstr ""
+
+msgid "Import Papi file"
+msgstr ""
+
+msgid "Import a tournament"
+msgstr ""
+
+msgid "Import a tournament to the event from an external source."
+msgstr ""
+
 msgid "Import of papi file [{file}] failed."
 msgstr ""
 
 msgid "Impossible to add players to tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "Impossible to import into a tournament already having players."
 msgstr ""
 
 #, python-format
@@ -3161,9 +3182,6 @@ msgid "Pairings: %(pairing_variation)s"
 msgstr ""
 
 msgid "Papi file"
-msgstr ""
-
-msgid "Papi file [{file}] successfully imported."
 msgstr ""
 
 msgid "Parings by player"
@@ -4298,6 +4316,9 @@ msgstr ""
 msgid "The federation that organizes the event."
 msgstr ""
 
+msgid "The file to import."
+msgstr ""
+
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr ""
 
@@ -4706,9 +4727,6 @@ msgid "This screen is private (not visible by the users)."
 msgstr ""
 
 msgid "This screen is public (visible by the users)."
-msgstr ""
-
-msgid "This will cause the table numbers to be reordered."
 msgstr ""
 
 msgid "Three points for a win"
@@ -5342,9 +5360,6 @@ msgid "You are trying to manually edit the pairings of the current round. Pairin
 msgstr ""
 
 msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
-msgstr ""
-
-msgid "You can try again from the tournament card (Actions > Import > Papi file)."
 msgstr ""
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."

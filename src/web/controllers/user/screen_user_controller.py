@@ -91,11 +91,9 @@ class ScreenUserController(BaseScreenUserController):
         date: float,
     ) -> bool:
         tournament: Tournament = screen_set.tournament
-        tournament.reload_stored_tournament()
         if (
             max(
                 tournament.last_update,
-                tournament.last_check_in_update,
                 tournament.last_player_update,
             )
             > date
@@ -103,14 +101,7 @@ class ScreenUserController(BaseScreenUserController):
             return True
         match screen_set.type:
             case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.RANKING:
-                if (
-                    max(
-                        tournament.last_illegal_move_update,
-                        tournament.last_result_update,
-                        tournament.last_pairing_update,
-                    )
-                    > date
-                ):
+                if tournament.last_pairing_update > date:
                     return True
             case ScreenType.PLAYERS:
                 pass
@@ -157,18 +148,26 @@ class ScreenUserController(BaseScreenUserController):
                                     tournament_id
                                 ]
                             )
-                            if tournament.last_update > date:
-                                return True
-                            if tournament.last_result_update > date:
+                            if (
+                                max(
+                                    tournament.last_update,
+                                    tournament.last_pairing_update,
+                                )
+                                > date
+                            ):
                                 return True
                 case _:
                     raise ValueError(f'type={web_context.screen.type}')
         elif isinstance(web_context, BasicScreenOrFamilyUserWebContext):
             assert web_context.family is not None
             assert web_context.family.event is not None
-            if web_context.family.event.last_update > date:
-                return True
-            if web_context.family.last_update and web_context.family.last_update > date:
+            if (
+                max(
+                    web_context.family.event.last_update,
+                    web_context.family.last_update or 0,
+                )
+                > date
+            ):
                 return True
         return False
 

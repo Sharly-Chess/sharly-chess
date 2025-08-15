@@ -631,6 +631,57 @@ with_indicator: display a loading indicator, optional
     ) }}
 {% endmacro %}
 
+{% macro file_input(
+    name,
+    label='NO LABEL',
+    placeholder='',
+    help_text='NO HELP TEXT',
+    data={},
+    errors={},
+    error=false,
+    valid=false,
+    password_visible=false,
+    disabled=false,
+    with_indicator=false,
+    hx_get='',
+    hx_post='',
+    hx_trigger='',
+    hx_include='',
+    hx_target='',
+    hx_swap='',
+    hx_indicator='',
+    hx_on_before_request='',
+    hx_on_after_request='',
+    hx_sync='',
+    hx_vals=''
+) %}
+    {{ _generic_input(
+        name=name,
+        input_type='file',
+        label=label,
+        placeholder=placeholder,
+        help_text=help_text,
+        data=data,
+        errors=errors,
+        error=error,
+        valid=valid,
+        password_visible=password_visible,
+        disabled=disabled,
+        with_indicator=with_indicator,
+        hx_get=hx_get,
+        hx_post=hx_post,
+        hx_trigger=hx_trigger,
+        hx_target=hx_target,
+        hx_swap=hx_swap,
+        hx_include=hx_include,
+        hx_indicator=hx_indicator,
+        hx_on_before_request=hx_on_before_request,
+        hx_on_after_request=hx_on_after_request,
+        hx_sync=hx_sync,
+        hx_vals=hx_vals
+    ) }}
+{% endmacro %}
+
 {% macro color_input(
     name,
     label='NO LABEL',

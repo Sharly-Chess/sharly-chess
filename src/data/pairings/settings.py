@@ -58,7 +58,7 @@ class PairingSetting[T](IdentifiableEntity, ABC):
         assert tournament.pairing_settings is not None
         return cls.check_value(
             tournament,
-            cls.from_stored_value(tournament.pairing_settings[cls.static_id()]),
+            cls.from_stored_value(tournament.stored_pairing_settings[cls.static_id()]),
         )
 
     @classmethod
@@ -69,7 +69,7 @@ class PairingSetting[T](IdentifiableEntity, ABC):
     @classmethod
     def is_set(cls, tournament: 'Tournament'):
         """Check if the value is set in the stored settings."""
-        settings = tournament.pairing_settings
+        settings = tournament.stored_pairing_settings
         return settings and cls.static_id() in settings
 
     def default_form_data(self, tournament: 'Tournament') -> dict[str, str]:
@@ -82,8 +82,10 @@ class PairingSetting[T](IdentifiableEntity, ABC):
 
     @classmethod
     def get_value(cls, tournament: 'Tournament') -> T:
-        if tournament.pairing_settings and cls.is_set(tournament):
-            value = cls.from_stored_value(tournament.pairing_settings[cls.static_id()])
+        if tournament.stored_pairing_settings and cls.is_set(tournament):
+            value = cls.from_stored_value(
+                tournament.stored_pairing_settings[cls.static_id()]
+            )
             if cls.check_value(tournament, value):
                 return value
         return cls.default_value(tournament)

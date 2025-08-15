@@ -202,7 +202,7 @@ class ActionSelector(metaclass=Singleton):
         event with Unique ID *event_uniq_id*.
         Returns False if an error occurred or if it was interrupted.
         Returns True when the one-shot creation (and possibly upload) was okay"""
-        event: Event = EventLoader.get(request=None).reload_event(event_uniq_id)
+        event: Event = EventLoader.get(request=None).load_event(event_uniq_id)
         print_interactive_info(_('Event: {event_name}').format(event_name=event.name))
         tournaments: list[Tournament] = list(self.__get_chessevent_tournaments(event))
         if not tournaments:
@@ -285,9 +285,7 @@ class ActionSelector(metaclass=Singleton):
                     chessevent_timeout_max: int = 180
                     chessevent_timeout: int = chessevent_timeout_min
                     while True:
-                        event = EventLoader.get(request=None).reload_event(
-                            event_uniq_id
-                        )
+                        event = EventLoader.get(request=None).load_event(event_uniq_id)
                         tournaments: list[Tournament] = list(
                             self.__get_chessevent_tournaments(event)
                         )

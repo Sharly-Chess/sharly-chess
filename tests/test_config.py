@@ -190,10 +190,6 @@ class TestUtils:
             'check_in_open': False,
             'rounds': 7,
             'rating': 1,
-            'last_update': 0.0,
-            'last_result_update': 0.0,
-            'last_illegal_move_update': 0.0,
-            'last_check_in_update': 0.0,
             'stored_prize_groups': [],
             'errors': {},
             'plugin_data': None,
@@ -223,11 +219,19 @@ class TestUtils:
 
         if json_file and via_api_request_context:
             json_path = BASE_DIR / 'tests' / 'json' / f'{json_file}.json'
-            form_data = cls.prepare_form_data({'file_path': str(json_path)})
+            assert json_path.exists(), f'Missing test file: {json_path}'
+
+            # Send as multipart/form-data with a real file field named "file"
             res = via_api_request_context.post(
                 f'/admin/tournament-import/{event_uniq_id}/{stored_tournament.id}/PAPI_JSON',
-                headers={'Content-Type': 'application/x-www-form-urlencoded'},
-                data=form_data,
+                multipart={
+                    # UploadFile field name in your handler is "file"
+                    'file': {
+                        'name': f'{json_file}.json',
+                        'mimeType': 'application/json',
+                        'buffer': json_path.read_bytes(),
+                    },
+                },
             )
             cls.check_api_response(res)
 

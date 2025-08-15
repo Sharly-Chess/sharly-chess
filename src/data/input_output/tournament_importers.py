@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 
 from common.exception import SharlyChessException
+from common.i18n import _
 from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
@@ -11,6 +12,16 @@ from utils.entity import IdentifiableEntity
 
 
 class TournamentImporter(IdentifiableEntity, ABC):
+    @property
+    def display_in_menu(self) -> bool:
+        """Determines if the import is visible in the import menu."""
+        return True
+
+    @property
+    def modal_title(self) -> str | None:
+        """The title to display in the import modal."""
+        return None
+
     @property
     @abstractmethod
     def reorder_boards(self) -> bool:
@@ -39,7 +50,7 @@ class TournamentImporter(IdentifiableEntity, ABC):
         Raises if the tournament already has players."""
         if tournament and tournament.players:
             raise SharlyChessException(
-                'Impossible to import into a tournament already having players.'
+                _('Impossible to import into a tournament already having players.')
             )
         stored_tournament, stored_players = self.load_stored_tournament(
             source_file, tournament.stored_tournament if tournament else None
@@ -53,7 +64,7 @@ class TournamentImporter(IdentifiableEntity, ABC):
                 stored_tournament, stored_players, database
             )
             database.commit()
-            event = EventLoader().reload_event(event.uniq_id)
+            event = EventLoader().load_event(event.uniq_id)
             tournament = event.tournaments_by_id[tournament_id]
             if self.reorder_boards:
                 for round_ in range(1, tournament.rounds + 1):
@@ -76,9 +87,14 @@ class TournamentImporter(IdentifiableEntity, ABC):
         if stored_tournament.id:
             database.update_stored_tournament(stored_tournament)
         else:
-            stored_tournament = database.add_stored_tournament(stored_tournament)
+            stored_tournament.id = database.add_stored_tournament(stored_tournament).id
         tournament_id = stored_tournament.id
         assert tournament_id is not None
+        if stored_tournament.pairing_settings:
+            database.set_tournament_pairing_settings(
+                tournament_id, stored_tournament.pairing_settings
+            )
+
         # Players
         player_id_by_external_id: dict[int, int] = {}
         for stored_player in stored_players:
@@ -91,7 +107,7 @@ class TournamentImporter(IdentifiableEntity, ABC):
 
         # Boards
         board_id_by_external_id: dict[int, int] = {}
-        for _, stored_boards in stored_tournament.stored_boards_by_round.items():
+        for stored_boards in stored_tournament.stored_boards_by_round.values():
             for stored_board in stored_boards:
                 external_id = stored_board.id
                 stored_board.id = None

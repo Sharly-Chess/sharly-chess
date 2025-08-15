@@ -187,6 +187,9 @@ msgstr "Une URL, ou le chemin du règlement sur le serveur, au format PDF (facul
 msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
 msgstr "Une URL, ou l'emplacement du règlement sur le serveur, au format PDF (facultatif, par défaut l'emplacement du règlement de l'évènement)."
 
+msgid "A file is expected."
+msgstr "Un fichier est attendu."
+
 msgid "A non-empty string is expected"
 msgstr "Une chaîne de caractères non vide est attendue"
 
@@ -1924,6 +1927,9 @@ msgstr "L'identifiant Fide [{fide_id}] est déjà présent dans le tournoi [{tou
 msgid "Fide Master"
 msgstr "Maître Fide"
 
+msgid "File"
+msgstr "Fichier"
+
 msgid "File [{file}] not found."
 msgstr "Fichier [{file}] non trouvé."
 
@@ -2191,11 +2197,26 @@ msgstr "Image :"
 msgid "Image: %(image)s"
 msgstr "Image : %(image)s"
 
+msgid "Import"
+msgstr "Importer"
+
+msgid "Import Papi file"
+msgstr "Importer un fichier Papi"
+
+msgid "Import a tournament"
+msgstr "Importer un tournoi"
+
+msgid "Import a tournament to the event from an external source."
+msgstr "Importer un tournoi à l'évènement depuis une source externe."
+
 msgid "Import of papi file [{file}] failed."
 msgstr "L'import du fichier papi [{file}] a échoué."
 
 msgid "Impossible to add players to tournament [{tournament_uniq_id}]."
 msgstr "Impossible d'ajouter des joueur·euses au tournoi [{tournament_uniq_id}]."
+
+msgid "Impossible to import into a tournament already having players."
+msgstr "Impossible d'importer vers un tournoi contenant déjà des joueur·euses."
 
 #, python-format
 msgid "Impossible to set a bye in the last %(rounds)d rounds of the tournament"
@@ -3162,9 +3183,6 @@ msgstr "Appariements : %(pairing_variation)s"
 
 msgid "Papi file"
 msgstr "Fichier Papi"
-
-msgid "Papi file [{file}] successfully imported."
-msgstr "Fichier Papi [{file}] importé avec succès."
 
 msgid "Parings by player"
 msgstr "Appariements par ordre alphabétique"
@@ -4298,6 +4316,9 @@ msgstr "L'horaire de fin du tournoi (par défaut %(datetime)s)."
 msgid "The federation that organizes the event."
 msgstr "La fédération qui organise l'évènement."
 
+msgid "The file to import."
+msgstr "Le fichier à importer."
+
 msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
 msgstr "Le premier tournoi de l'écran, obligatoire (il est possible d'ajouter ultérieurement des tournois sur l'écran)."
 
@@ -4707,9 +4728,6 @@ msgstr "Cet écran est privé (non visible des utilisateur·ices)."
 
 msgid "This screen is public (visible by the users)."
 msgstr "Cet écran est public (visible des utilisateur·ices)."
-
-msgid "This will cause the table numbers to be reordered."
-msgstr "Cela peut modifier l'ordre des tables."
 
 msgid "Three points for a win"
 msgstr "Victoire à 3 points"
@@ -5343,9 +5361,6 @@ msgstr "Vous essayez de modifier manuellement les appariements de la ronde en co
 
 msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
 msgstr "Vous essayez de modifier les appariements de la ronde précédente. Cela aura un impact sur les appariements et le classement de toutes les rondes à venir."
-
-msgid "You can try again from the tournament card (Actions > Import > Papi file)."
-msgstr "Vous pouvez essayer à nouveau depuis la carte du tournoi (Actions > Import > Fichier Papi)."
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement…) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans simples seront générés automatiquement."

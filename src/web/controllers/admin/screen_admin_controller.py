@@ -11,7 +11,6 @@ from litestar.status_codes import HTTP_200_OK
 
 from common import REQUEST_TIMEOUT
 from common.i18n import _
-from data.loader import EventLoader
 from data.screen import Screen
 from data.screen_set import ScreenSet
 from utils.enum import ScreenType
@@ -882,7 +881,6 @@ class ScreenAdminController(BaseEventAdminController):
                 data=data,
                 errors=stored_screen.errors,
             )
-        event_loader: EventLoader = EventLoader.get(request=request)
         with EventDatabase(
             web_context.admin_event.uniq_id, write=True
         ) as event_database:
@@ -963,7 +961,7 @@ class ScreenAdminController(BaseEventAdminController):
                     )
                 case _:
                     raise ValueError(f'action=[{action}]')
-        event_loader.clear_cache(event_uniq_id)
+
         return self._admin_event_screens_render(request, event_uniq_id=event_uniq_id)
 
     @post(
@@ -1128,7 +1126,6 @@ class ScreenAdminController(BaseEventAdminController):
             raise RuntimeError('admin_event not defined')
         if web_context.admin_screen is None:
             raise RuntimeError('admin_screen not defined')
-        event_loader: EventLoader = EventLoader.get(request=request)
         match action:
             case 'delete':
                 if len(web_context.admin_screen.screen_sets_sorted_by_order) <= 1:
@@ -1185,7 +1182,7 @@ class ScreenAdminController(BaseEventAdminController):
                 case _:
                     raise ValueError(f'action=[{action}]')
             event_database.commit()
-        event_loader.clear_cache(event_uniq_id)
+
         return self._admin_event_screens_render(
             request,
             event_uniq_id=event_uniq_id,

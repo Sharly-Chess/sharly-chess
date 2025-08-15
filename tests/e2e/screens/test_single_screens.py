@@ -1,3 +1,4 @@
+import re
 from data.event import Event
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament
@@ -87,9 +88,22 @@ class TestSingleScreensFunctionality:
         row = rows.filter(has_text='ALYX')
         expect(row.locator('i.bi-square')).to_be_visible()
 
+        expect(row.locator('td:nth-child(1)')).not_to_have_attribute(
+            'hx-get', re.compile(r'.*checkin-modal.*')
+        )
+
+        api_request_context.patch(
+            f'/admin/tournament-open-check-in/{EVENT_ID}/{unpaired_tournament.id}'
+        )
+
+        expect(row.locator('td:nth-child(1)')).to_have_attribute(
+            'hx-get', re.compile(r'.*checkin-modal.*')
+        )
+
         row.click()
         modal = lan_page.locator('.modal-dialog')
         expect(modal).to_be_visible()
+
         button = TestUtils.button_by_text(modal, 'CHECK-IN')
         expect(button).to_contain_text('ALYX')
         button.click()

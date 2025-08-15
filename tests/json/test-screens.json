@@ -14,8 +14,8 @@
     "tiebreak1" : "",
     "tiebreak2" : "",
     "tiebreak3" : "",
-    "minRating" : "0",
-    "maxRating" : "0",
+    "ratingThreshold1" : "0",
+    "ratingThreshold2" : "0",
     "pointSystem" : "NON"
   },
   "players" : [ {

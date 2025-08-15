@@ -7,7 +7,7 @@
         {% if screen.type == 'input' %}
             cursor-pointer
         {% endif %}"
-    {% if screen.type == 'input' %}
+    {% if screen.type == 'input' and tournament.check_in_open %}
         hx-get="{{ url_for('user-checkin-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, player_id=player.id) }}"
         hx-target="body"
         hx-indicator="#please-wait"
