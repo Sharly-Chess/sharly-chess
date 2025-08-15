@@ -279,7 +279,7 @@ class BaseAdminController(BaseController):
             else:
                 # Remove quotes around the path if they exist
                 # A user who used "Copy as Path" in the Windows File Explorer will have these quotes.
-                rules = rules.strip('"')
+                rules = rules.strip('"\'')
 
                 if rules.find('..') != -1:
                     errors[field] = _('Incorrect path [{path}].').format(path=rules)
