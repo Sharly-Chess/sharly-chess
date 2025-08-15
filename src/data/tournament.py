@@ -258,27 +258,40 @@ class Tournament:
         return self.pairing_variation.system()
 
     @property
-    def pairing_settings(self) -> dict[str, Any] | None:
+    def stored_pairing_settings(self) -> dict[str, Any] | None:
         return self.stored_tournament.pairing_settings
+
+    @cached_property
+    def pairing_settings(self) -> dict[str, Any]:
+        return {
+            setting.id: setting.get_value(self)
+            for setting in self.pairing_variation.settings
+        }
 
     def set_default_pairing_settings(self):
         stored_settings: dict[str, Any] = {
             setting.id: setting.to_stored_value(setting.default_value(self))
             for setting in self.pairing_variation.settings
         }
-        with EventDatabase(self.event.uniq_id, write=True) as database:
-            database.set_tournament_pairing_settings(self.id, stored_settings)
-            database.commit()
-        self.stored_tournament.pairing_settings = stored_settings
+        self.update_pairing_settings(stored_settings)
 
     @cached_property
     def are_pairing_settings_valid(self) -> bool:
         return not self.pairing_variation.settings or (
-            self.pairing_settings is not None
+            self.stored_pairing_settings is not None
             and self.pairing_variation.validate_settings(self)
         )
 
-    @property
+    def update_pairing_settings(self, pairing_settings: dict[str, Any]):
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            database.set_tournament_pairing_settings(self.id, pairing_settings)
+            database.commit()
+        self.stored_tournament.pairing_settings = pairing_settings
+        property_name = 'pairing_settings'
+        if property_name in self.__dict__:
+            del self.__dict__[property_name]
+
+    @cached_property
     def rating(self) -> TournamentRating:
         return TournamentRating(self.stored_tournament.rating)
 
@@ -1235,9 +1248,3 @@ class Tournament:
         with EventDatabase(self.event.uniq_id, True) as database:
             database.set_tournament_current_round(self.id, round_)
             database.commit()
-
-    def update_pairing_settings(self, pairing_settings: dict[str, Any]):
-        with EventDatabase(self.event.uniq_id, write=True) as database:
-            database.set_tournament_pairing_settings(self.id, pairing_settings)
-            database.commit()
-        self.stored_tournament.pairing_settings = pairing_settings

@@ -1,4 +1,5 @@
 from abc import ABC
+from functools import cache
 
 from common.i18n import _
 from data.pairings.settings import PairingSetting
@@ -9,6 +10,7 @@ from plugins.pairing_acceleration import PLUGIN_NAME
 from plugins.pairing_acceleration.pairing_settings import (
     RatingLimitSetting,
     DualRatingLimitsSetting,
+    RatingGroup,
 )
 from utils.enum import Result
 
@@ -32,15 +34,19 @@ class HaleySwissVariation(AccelerationSwissVariation):
     def settings(self) -> list[PairingSetting]:
         return super().settings + [RatingLimitSetting()]
 
-    @staticmethod
+    @classmethod
     def compute_virtual_points(
+        cls,
         tournament: Tournament,
         player: Player,
         at_round: int,
     ) -> float:
-        rating_limit = RatingLimitSetting.get_value(tournament)
-        if at_round <= 2 and player.rating >= rating_limit:
-            return Result.GAIN.points(tournament.point_values)
+        if at_round <= 2:
+            rating_group = RatingLimitSetting.get_player_rating_group(
+                tournament, player
+            )
+            if rating_group == RatingGroup.A:
+                return Result.GAIN.points(tournament.point_values)
         return 0.0
 
     @staticmethod
@@ -61,23 +67,24 @@ class HaleySoftSwissVariation(AccelerationSwissVariation):
     def settings(self) -> list[PairingSetting]:
         return super().settings + [RatingLimitSetting()]
 
-    @staticmethod
+    @classmethod
     def compute_virtual_points(
+        cls,
         tournament: Tournament,
         player: Player,
         at_round: int,
     ) -> float:
-        # Round 1: All players above rating_limit1 get 1 vpoint
-        # Round 2: All players above rating_limit1 get 1 vpoint
+        # Round 1: Group A gets 1 vpoint
+        # Round 2: Group A gets 1 vpoint, Group B gets .5 vpoints
         # Round 2: All other players get .5 vpoints
-        # bottom of page #138 on
-        # https://dna.ffechecs.fr/wp-content/uploads/sites/2/2023/10/Livre-arbitre-octobre-2023.pdf,
-        # please remove if OK
-        rating_limit = RatingLimitSetting.get_value(tournament)
-        if at_round <= 2 and player.rating >= rating_limit:
-            return Result.GAIN.points(tournament.point_values)
-        elif at_round == 2 and player.rating < rating_limit:
-            return Result.DRAW.points(tournament.point_values)
+        if at_round <= 2:
+            rating_group = RatingLimitSetting.get_player_rating_group(
+                tournament, player
+            )
+            if rating_group == RatingGroup.A:
+                return Result.GAIN.points(tournament.point_values)
+            elif at_round == 2:
+                return Result.DRAW.points(tournament.point_values)
         return 0.0
 
     @staticmethod
@@ -98,49 +105,50 @@ class ProgressiveSwissVariation(AccelerationSwissVariation):
     def settings(self) -> list[PairingSetting]:
         return super().settings + [DualRatingLimitsSetting()]
 
-    @staticmethod
+    @classmethod
     def compute_virtual_points(
+        cls,
         tournament: Tournament,
         player: Player,
         at_round: int,
     ) -> float:
-        return ProgressiveSwissVariation._compute_progressive_virtual_points(
-            tournament, player, at_round
-        )
-
-    @staticmethod
-    def _compute_progressive_virtual_points(
-        tournament: Tournament,
-        player: Player,
-        at_round: int,
-        real_virtual_draw_points_ratio: int = 3,
-    ) -> float:
-        lower_limit, upper_limit = DualRatingLimitsSetting.get_value(tournament)
-
-        draw_points = Result.DRAW.points(tournament.point_values)
-        gain_points = Result.GAIN.points(tournament.point_values)
-
         if at_round >= tournament.rounds - 1:
             # Before the second to last round, we remove the virtual
             # points, and use a simple Swiss Dutch system.
             return 0.0
+        return cls._compute_virtual_points(
+            rating_group=DualRatingLimitsSetting.get_player_rating_group(
+                tournament, player
+            ),
+            tournament_rounds=tournament.rounds,
+            points=player.points_before(at_round),
+            draw_points=Result.DRAW.points(tournament.point_values),
+            gain_points=Result.GAIN.points(tournament.point_values),
+        )
 
-        points = player.points_before(at_round)
-        if 2 * points >= tournament.rounds * gain_points:
+    @staticmethod
+    @cache
+    def _compute_virtual_points(
+        rating_group: RatingGroup,
+        tournament_rounds: int,
+        points: float,
+        draw_points: float,
+        gain_points: float,
+    ) -> float:
+        if 2 * points >= tournament_rounds * gain_points:
             # If a player gets at least half the possible score,
             # their capital is set at 2 points.
             return 2 * gain_points
 
         # Players get a virtual draw points for real draw points
-        vpoints = draw_points * (
-            points // (real_virtual_draw_points_ratio * draw_points)
-        )
+        vpoints = draw_points * (points // (3 * draw_points))
 
         # Starting points: Group A - 2, Group B - 1, Group C - 0
-        if player.rating >= upper_limit:
-            vpoints += 2 * gain_points
-        elif player.rating >= lower_limit:
-            vpoints += gain_points
+        match rating_group:
+            case RatingGroup.A:
+                vpoints += 2 * gain_points
+            case RatingGroup.B:
+                vpoints += gain_points
 
         # Players cannot have more than 2 virtual points
         return min(2 * gain_points, vpoints)

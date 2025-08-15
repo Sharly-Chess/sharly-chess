@@ -1,4 +1,5 @@
 import math
+from enum import auto, Enum
 from typing import TYPE_CHECKING
 
 from common.i18n import _
@@ -7,6 +8,13 @@ from plugins.pairing_acceleration import PLUGIN_NAME
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
+    from data.player import Player
+
+
+class RatingGroup(Enum):
+    A = auto()
+    B = auto()
+    C = auto()
 
 
 class RatingLimitSetting(PairingSetting[int]):
@@ -78,6 +86,13 @@ class RatingLimitSetting(PairingSetting[int]):
         a_group, b_group = cls.group_counts(tournament, rating_limit)
         total = a_group + b_group
         return total < 2 or total / 4 <= b_group <= 3 * total / 4
+
+    @classmethod
+    def get_player_rating_group(
+        cls, tournament: 'Tournament', player: 'Player'
+    ) -> RatingGroup:
+        rating_limit = tournament.pairing_settings[cls.static_id()]
+        return RatingGroup.A if player.rating >= rating_limit else RatingGroup.B
 
 
 class DualRatingLimitsSetting(PairingSetting[tuple[int, int]]):
@@ -193,3 +208,16 @@ class DualRatingLimitsSetting(PairingSetting[tuple[int, int]]):
     @classmethod
     def _check_group_count(cls, group_count: int, total: int) -> bool:
         return total < 3 or total / 4 <= group_count <= total / 2
+
+    @classmethod
+    def get_player_rating_group(
+        cls, tournament: 'Tournament', player: 'Player'
+    ) -> RatingGroup:
+        lower_limit, upper_limit = tournament.pairing_settings[cls.static_id()]
+        rating = player.rating
+        if rating >= upper_limit:
+            return RatingGroup.A
+        elif rating >= lower_limit:
+            return RatingGroup.B
+        else:
+            return RatingGroup.C
