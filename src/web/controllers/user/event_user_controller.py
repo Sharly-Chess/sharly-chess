@@ -206,23 +206,23 @@ class EventUserController(BaseUserController):
             if screen.last_update > date:
                 return True
             for screen_set in screen.screen_sets_by_id.values():
-                if screen_set.last_update and screen_set.last_update > date:
-                    return True
-                if screen_set.tournament.last_update > date:
+                tournament = screen_set.tournament
+                if (
+                    max(
+                        screen_set.last_update or 0,
+                        tournament.last_update,
+                        tournament.last_player_update,
+                    )
+                    > date
+                ):
                     return True
                 if screen.type in [
                     ScreenType.BOARDS,
                     ScreenType.INPUT,
                     ScreenType.RANKING,
                 ]:
-                    if screen_set.tournament.last_illegal_move_update > date:
+                    if tournament.last_pairing_update > date:
                         return True
-                    if screen_set.tournament.last_result_update > date:
-                        return True
-                    if screen_set.tournament.last_update > date:
-                        return True
-                if screen_set.tournament.last_check_in_update > date:
-                    return True
             if screen.type == ScreenType.RESULTS:
                 assert screen.event is not None
                 results_tournament_ids: list[int] = (
@@ -235,25 +235,26 @@ class EventUserController(BaseUserController):
                         if (
                             screen.event.tournaments_by_id[
                                 tournament_id
-                            ].last_result_update
+                            ].last_pairing_update
                             > date
                         ):
                             return True
         for family in event.families_by_id.values():
-            if family.last_update and family.last_update > date:
-                return True
-            if family.tournament.last_update > date:
+            tournament = family.tournament
+            if max(family.last_update or 0, tournament.last_update) > date:
                 return True
             match family.type:
                 case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.RANKING:
-                    if family.tournament.last_illegal_move_update > date:
-                        return True
-                    if family.tournament.last_result_update > date:
-                        return True
-                    if family.tournament.last_check_in_update > date:
+                    if (
+                        max(
+                            tournament.last_pairing_update,
+                            tournament.last_player_update,
+                        )
+                        > date
+                    ):
                         return True
                 case ScreenType.PLAYERS:
-                    if family.tournament.last_check_in_update > date:
+                    if family.tournament.last_player_update > date:
                         return True
                 case _:
                     raise ValueError(f'type={family.type}')

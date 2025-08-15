@@ -159,9 +159,6 @@ class StoredTournament:
     rounds: int = 1
     rating: int = 1
     last_update: float = 0.0
-    last_result_update: float = 0.0
-    last_illegal_move_update: float = 0.0
-    last_check_in_update: float = 0.0
     last_player_update: float = 0.0
     last_pairing_update: float = 0.0
     three_points_for_a_win: bool = False
