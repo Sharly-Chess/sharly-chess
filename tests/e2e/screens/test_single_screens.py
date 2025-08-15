@@ -1,4 +1,5 @@
 import re
+
 from data.event import Event
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament
@@ -111,6 +112,7 @@ class TestSingleScreensFunctionality:
         modal = lan_page.locator('.modal-dialog')
 
         expect(modal).to_be_visible()
+
         button = TestUtils.button_by_text(modal, 'CHECK-IN')
         expect(button).to_contain_text('AMOS')
         button.click()

@@ -9,7 +9,6 @@ from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _
 from data.family import Family
-from data.loader import EventLoader
 from utils.enum import ScreenType
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredFamily
@@ -645,7 +644,6 @@ class FamilyAdminController(BaseEventAdminController):
                 data=data,
                 errors=stored_family.errors,
             )
-        event_loader: EventLoader = EventLoader.get(request=request)
         with EventDatabase(
             web_context.admin_event.uniq_id, write=True
         ) as event_database:
@@ -680,7 +678,7 @@ class FamilyAdminController(BaseEventAdminController):
                     )
                 case _:
                     raise ValueError(f'action=[{action}]')
-        event_loader.clear_cache(event_uniq_id)
+
         return self._admin_event_families_render(request, event_uniq_id=event_uniq_id)
 
     @post(

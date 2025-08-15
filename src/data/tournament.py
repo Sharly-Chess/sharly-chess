@@ -11,7 +11,7 @@ from _weakref import ReferenceType
 
 from trf import Tournament as TrfTournament
 
-from common import format_timestamp_date_time, format_timestamp
+from common import format_timestamp
 from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
 
@@ -232,27 +232,11 @@ class Tournament:
         return self.stored_tournament.last_update
 
     @property
-    def last_update_str(self) -> str:
-        return format_timestamp_date_time(self.last_update)
-
-    @property
-    def last_illegal_move_update(self) -> float:
-        return self.stored_tournament.last_illegal_move_update
-
-    @property
-    def last_result_update(self) -> float:
-        return self.stored_tournament.last_result_update
-
-    @property
-    def last_check_in_update(self) -> float:
-        return self.stored_tournament.last_check_in_update
+    def last_player_update(self) -> float:
+        return self.stored_tournament.last_player_update
 
     @property
     def last_pairing_update(self) -> float:
-        return self.stored_tournament.last_pairing_update
-
-    @property
-    def last_player_update(self) -> float:
         return self.stored_tournament.last_pairing_update
 
     @property
@@ -274,27 +258,40 @@ class Tournament:
         return self.pairing_variation.system()
 
     @property
-    def pairing_settings(self) -> dict[str, Any] | None:
+    def stored_pairing_settings(self) -> dict[str, Any] | None:
         return self.stored_tournament.pairing_settings
+
+    @cached_property
+    def pairing_settings(self) -> dict[str, Any]:
+        return {
+            setting.id: setting.get_value(self)
+            for setting in self.pairing_variation.settings
+        }
 
     def set_default_pairing_settings(self):
         stored_settings: dict[str, Any] = {
             setting.id: setting.to_stored_value(setting.default_value(self))
             for setting in self.pairing_variation.settings
         }
-        with EventDatabase(self.event.uniq_id, write=True) as database:
-            database.set_tournament_pairing_settings(self.id, stored_settings)
-            database.commit()
-        self.stored_tournament.pairing_settings = stored_settings
+        self.update_pairing_settings(stored_settings)
 
     @cached_property
     def are_pairing_settings_valid(self) -> bool:
         return not self.pairing_variation.settings or (
-            self.pairing_settings is not None
+            self.stored_pairing_settings is not None
             and self.pairing_variation.validate_settings(self)
         )
 
-    @property
+    def update_pairing_settings(self, pairing_settings: dict[str, Any]):
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            database.set_tournament_pairing_settings(self.id, pairing_settings)
+            database.commit()
+        self.stored_tournament.pairing_settings = pairing_settings
+        property_name = 'pairing_settings'
+        if property_name in self.__dict__:
+            del self.__dict__[property_name]
+
+    @cached_property
     def rating(self) -> TournamentRating:
         return TournamentRating(self.stored_tournament.rating)
 
@@ -689,30 +686,6 @@ class Tournament:
                 paired_player_ids.append(board.black_player.id)
         return [player for player in self.players if player.id not in paired_player_ids]
 
-    def clear_cache(self):
-        """Clears the cache of the tournament."""
-        cached_property_names = [
-            name
-            for name in dir(self)
-            if isinstance(getattr(type(self), name, None), cached_property)
-        ]
-        for property_name in cached_property_names:
-            if property_name in self.__dict__:
-                del self.__dict__[property_name]
-        self._players_by_rank = None
-        for screen in self.related_screens:
-            screen.clear_cache_for_tournament(self.id)
-        for family in self.dependent_families:
-            family.clear_cache()
-        self.reload_stored_tournament()
-        self.event.clear_player_cache()
-
-    def reload_stored_tournament(self):
-        with EventDatabase(self.event.uniq_id) as database:
-            stored_tournament = database.get_stored_tournament(self.id)
-            assert stored_tournament is not None
-            self.stored_tournament = stored_tournament
-
     def set_for_round(self, round_: int | None = None):
         """Set the tournament for the given round (defaults to the current round)"""
         if round_ is None:
@@ -983,9 +956,6 @@ class Tournament:
         round."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
             player.pairings[self.current_round].add_illegal_move(database)
-            self.stored_tournament.last_illegal_move_update = (
-                database.set_tournament_last_illegal_move_update(self.id)
-            )
             database.commit()
 
     def delete_illegal_move(self, player: Player) -> bool:
@@ -993,10 +963,7 @@ class Tournament:
         with EventDatabase(self.event.uniq_id, write=True) as database:
             deleted = player.pairings[self.current_round].delete_illegal_move(database)
             if deleted:
-                self.stored_tournament.last_illegal_move_update = (
-                    database.set_tournament_last_illegal_move_update(self.id)
-                )
-            database.commit()
+                database.commit()
         return deleted
 
     def correct_ranking_round(self, ranking_round: int | None = None) -> int:
@@ -1059,14 +1026,8 @@ class Tournament:
             )
 
             board.set_last_result_update(board.white_pairing.result, event_database)
-            self.stored_tournament.last_result_update = (
-                event_database.set_tournament_last_result_update(self.id)
-            )
             event_database.commit()
 
-        self.clear_cache()
-        board.white_player.clear_cache()
-        board.black_player.clear_cache()
         logger.info(
             'Added result: %s %s %d.%d %s %s %d %s %s %s %d.',
             self.event.uniq_id,
@@ -1089,13 +1050,7 @@ class Tournament:
             board.white_pairing.update_result(event_database, Result.NO_RESULT)
             board.black_pairing.update_result(event_database, Result.NO_RESULT)
             board.set_last_result_update(board.white_pairing.result, event_database)
-            self.stored_tournament.last_result_update = (
-                event_database.set_tournament_last_result_update(self.id)
-            )
             event_database.commit()
-        self.clear_cache()
-        board.white_player.clear_cache()
-        board.black_player.clear_cache()
         logger.info(
             'Removed result: %s %s %d.%d.',
             self.event.uniq_id,
@@ -1108,13 +1063,8 @@ class Tournament:
         """Stores the `check_in` status for the given `player`."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
             database.set_player_check_in(player.id, check_in)
-            self.stored_tournament.last_check_in_update = (
-                database.set_tournament_last_check_in_update(self.id)
-            )
             database.commit()
         player.stored_player.check_in = check_in
-        player.clear_cache()
-        self.clear_cache()
 
     def add_player_to_tournament(
         self,
@@ -1145,7 +1095,6 @@ class Tournament:
                 database.add_stored_tournament_player(stored_tournament_player)
                 database.commit()
         self.players_by_id[stored_player.id] = Player(self, stored_player)
-        self.clear_cache()
 
     def delete_player_from_tournament(self, player_id: int):
         with EventDatabase(self.event.uniq_id, True) as database:
@@ -1153,7 +1102,6 @@ class Tournament:
             database.commit()
         if player_id in self.players_by_id:
             del self.players_by_id[player_id]
-        self.clear_cache()
 
     def create_round_pairing(
         self, round_nb: int, white_player_id: int, black_player_id: int | None
@@ -1184,14 +1132,17 @@ class Tournament:
                 black_pairing.stored_pairing.result = result.value
                 black_pairing.stored_pairing.board_id = board_id
                 black_pairing.update(database)
+                database.update_stored_board(board.stored_board)
             else:
                 result = Result.PAIRING_ALLOCATED_BYE
+                round_boards = self.get_round_boards(round_nb)
                 stored_board = StoredBoard(
                     id=None,
                     white_player_id=white_player.id,
                     black_player_id=None,
-                    index=max(board.index for board in self.get_round_boards(round_nb))
-                    + 1,
+                    index=max(board.index for board in round_boards) + 1
+                    if round_boards
+                    else 0,
                 )
                 board_id = database.add_stored_board(stored_board)
                 stored_board.id = board_id
@@ -1205,13 +1156,14 @@ class Tournament:
         with EventDatabase(self.event.uniq_id, True) as database:
             for board in boards:
                 board.white_player.delete_pairing(board.round, database)
+                board.white_player.reset_board()
                 if board.black_player:
                     board.black_player.delete_pairing(board.round, database)
+                    board.black_player.reset_board()
                 database.delete_stored_board(board.identifier)
                 if board.identifier in self.boards_by_id:
                     del self.boards_by_id[board.identifier]
             database.commit()
-        self.clear_cache()
 
     def create_boards(
         self, stored_boards: list[StoredBoard], round_: int, pab_result: Result
@@ -1230,8 +1182,10 @@ class Tournament:
                 else:
                     white_stored_pairing.result = pab_result.value
                 board.white_pairing.update(database)
-                database.commit()
-        self.clear_cache()
+            if pab_board := self.get_round_pab_board(round_):
+                pab_board.stored_board.index += len(stored_boards)
+                database.update_stored_board(pab_board.stored_board)
+            database.commit()
 
     def open_check_in(self):
         """Opens the check-in for the tournament and sets all the present players
@@ -1253,7 +1207,6 @@ class Tournament:
             database.set_tournament_check_in(self.id, True)
             database.set_players_check_in(present_player_ids, False)
             database.commit()
-        self.clear_cache()
 
     def close_check_in(self, zpbs_next_round: bool, zpbs_last_rounds: bool):
         """Closes the check-in for the tournament and assigns a ZPB to all the players not checked-in
@@ -1283,27 +1236,15 @@ class Tournament:
                             database, Result.ZERO_POINT_BYE
                         )
             database.commit()
-        self.clear_cache()
 
     def set_player_byes(self, player: Player, byes: dict[int, Result]):
         """Updates a player's pairings with ZPB, HPB, FPB or not-paired values."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
-            database.set_tournament_last_result_update(player.tournament.id)
             for round_, result in byes.items():
                 player.pairings_by_round[round_].update_result(database, result)
             database.commit()
-        self.clear_cache()
-        player.clear_cache()
 
     def set_current_round(self, round_: int):
         with EventDatabase(self.event.uniq_id, True) as database:
             database.set_tournament_current_round(self.id, round_)
             database.commit()
-        self.clear_cache()
-
-    def update_pairing_settings(self, pairing_settings: dict[str, Any]):
-        with EventDatabase(self.event.uniq_id, write=True) as database:
-            database.set_tournament_pairing_settings(self.id, pairing_settings)
-            database.commit()
-        self.stored_tournament.pairing_settings = pairing_settings
-        self.clear_cache()

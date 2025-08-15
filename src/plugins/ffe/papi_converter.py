@@ -64,8 +64,8 @@ class PapiVariables:
     pairing: str | None = None
     timeControl: str | None = None
     ratingClass: str | None = None
-    minRating: str | None = None
-    maxRating: str | None = None
+    ratingThreshold1: str | None = None
+    ratingThreshold2: str | None = None
     tiebreak1: str | None = None
     tiebreak2: str | None = None
     tiebreak3: str | None = None
@@ -105,6 +105,12 @@ class PapiPlayer:
     club: str | None = None
     fixedBoard: int | None = None
     checkedIn: bool = False
+
+    # Unused
+    nr: str | None = None
+    address: str | None = None
+    postalCode: str | None = None
+
     rounds: dict[int, PapiRound] = field(default_factory=dict[int, PapiRound])
 
 
@@ -365,6 +371,30 @@ class PapiConverter:
             except KeyError:
                 raise_unknown_value('ratingClass', variables.ratingClass)
         stored_tournament.rating = rating.value
+        rating_threshold_1 = 0
+        if variables.ratingThreshold1:
+            if not variables.ratingThreshold1.isdigit():
+                raise_exception(
+                    'ratingThreshold1', _('A positive integer is expected.')
+                )
+            rating_threshold_1 = int(variables.ratingThreshold1)
+        rating_threshold_2 = 0
+        if variables.ratingThreshold2:
+            if not variables.ratingThreshold2.isdigit():
+                raise_exception(
+                    'ratingThreshold2', _('A positive integer is expected.')
+                )
+            rating_threshold_2 = int(variables.ratingThreshold2)
+        if (rating_threshold_1, rating_threshold_2) != (0, 0):
+            pairing_settings = stored_tournament.pairing_settings or {}
+            if rating_threshold_1 == rating_threshold_2 or rating_threshold_2 == 0:
+                pairing_settings[RatingLimitSetting.static_id()] = rating_threshold_1
+            else:
+                pairing_settings[DualRatingLimitsSetting.static_id()] = (
+                    rating_threshold_2,
+                    rating_threshold_1,
+                )
+            stored_tournament.pairing_settings = pairing_settings
         tie_breaks: list[dict[str, Any]] = []
         for index, papi_tie_break in enumerate(
             (variables.tiebreak1, variables.tiebreak2, variables.tiebreak3)
@@ -618,17 +648,16 @@ class PapiConverter:
         pairing_settings = tournament.pairing_settings
         if (
             pairing_settings
-            and (setting_id := RatingLimitSetting.static_id()) in pairing_settings
-        ):
-            min_rating = pairing_settings[setting_id]
-            max_rating = 0
-        elif (
-            pairing_settings
             and (setting_id := DualRatingLimitsSetting.static_id()) in pairing_settings
         ):
-            min_rating, max_rating = pairing_settings[setting_id]
+            sharing_thresholds = pairing_settings[setting_id]
+        elif (
+            pairing_settings
+            and (setting_id := RatingLimitSetting.static_id()) in pairing_settings
+        ):
+            sharing_thresholds = (pairing_settings[setting_id],) * 2
         else:
-            min_rating, max_rating = 0, 0
+            sharing_thresholds = 0, 0
 
         # Convert tournament variables
         variables = PapiVariables(
@@ -658,8 +687,8 @@ class PapiConverter:
             ),
             arbiter='',
             timeControl='',
-            minRating=str(min_rating),
-            maxRating=str(max_rating),
+            ratingThreshold1=str(sharing_thresholds[1]),
+            ratingThreshold2=str(sharing_thresholds[0]),
             homologation=tournament.plugin_data.get(PLUGIN_NAME, {}).get(
                 'ffe_id', None
             ),

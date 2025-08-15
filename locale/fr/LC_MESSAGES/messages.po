@@ -4948,9 +4948,6 @@ msgstr "Cet écran est privé (non visible des spectateur·ices)."
 msgid "This screen is public (visible by the spectators)."
 msgstr "Cet écran est public (visible des spectateur·ices)."
 
-msgid "This will cause the table numbers to be reordered."
-msgstr "Cela peut modifier l'ordre des tables."
-
 msgid "Three points for a win"
 msgstr "Victoire à 3 points"
 

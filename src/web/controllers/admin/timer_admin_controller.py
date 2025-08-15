@@ -12,7 +12,6 @@ from litestar.status_codes import HTTP_200_OK
 
 from common.sharly_chess_config import SharlyChessConfig
 from common.i18n import _
-from data.loader import EventLoader
 from data.timer import Timer, TimerHour
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent, StoredTimer, StoredTimerHour
@@ -606,7 +605,6 @@ class TimerAdminController(BaseEventAdminController):
                 data=data,
                 errors=stored_timer.errors,
             )
-        event_loader: EventLoader = EventLoader.get(request=request)
         with EventDatabase(
             web_context.admin_event.uniq_id, write=True
         ) as event_database:
@@ -626,7 +624,7 @@ class TimerAdminController(BaseEventAdminController):
                             timer_uniq_id=stored_timer.uniq_id
                         ),
                     )
-                    event_loader.clear_cache(event_uniq_id)
+
                     return self._admin_event_timers_render(
                         request,
                         event_uniq_id=event_uniq_id,
@@ -652,7 +650,7 @@ class TimerAdminController(BaseEventAdminController):
                             web_context.admin_timer.id, set_datetime=True
                         )
                         event_database.commit()
-                        event_loader.clear_cache(event_uniq_id)
+
                         return self._admin_event_timers_render(
                             request,
                             event_uniq_id=event_uniq_id,
@@ -662,7 +660,7 @@ class TimerAdminController(BaseEventAdminController):
                         )
                     else:
                         event_database.commit()
-                        event_loader.clear_cache(event_uniq_id)
+
                         for (
                             timer_hour
                         ) in web_context.admin_timer.timer_hours_sorted_by_order:
@@ -688,7 +686,7 @@ class TimerAdminController(BaseEventAdminController):
                             timer_uniq_id=web_context.admin_timer.uniq_id
                         ),
                     )
-                    event_loader.clear_cache(event_uniq_id)
+
                     return self._admin_event_timers_render(
                         request, event_uniq_id=event_uniq_id
                     )
@@ -713,7 +711,7 @@ class TimerAdminController(BaseEventAdminController):
                             timer_uniq_id=stored_timer.uniq_id
                         ),
                     )
-                    event_loader.clear_cache(event_uniq_id)
+
                     return self._admin_event_timers_render(
                         request,
                         event_uniq_id=event_uniq_id,
@@ -872,7 +870,6 @@ class TimerAdminController(BaseEventAdminController):
             return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
-        event_loader: EventLoader = EventLoader.get(request=request)
         match action:
             case 'delete':
                 assert web_context.admin_timer is not None
@@ -946,7 +943,7 @@ class TimerAdminController(BaseEventAdminController):
                 case _:
                     raise ValueError(f'action=[{action}]')
             event_database.commit()
-        event_loader.clear_cache(event_uniq_id)
+
         return self._admin_event_timers_render(
             request,
             event_uniq_id=event_uniq_id,

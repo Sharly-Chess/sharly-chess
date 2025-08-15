@@ -10,7 +10,6 @@ from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
 from data.display_controller import DisplayController
-from data.loader import EventLoader
 from data.rotator import Rotator
 from data.screen import Screen
 from database.sqlite.event.event_database import EventDatabase
@@ -373,7 +372,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
                 data=data,
                 errors=stored_display_controller.errors,
             )
-        event_loader: EventLoader = EventLoader.get(request=request)
         with EventDatabase(
             web_context.admin_event.uniq_id, write=True
         ) as event_database:
@@ -424,7 +422,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
                     )
                 case _:
                     raise ValueError(f'action=[{action}]')
-        event_loader.clear_cache(event_uniq_id)
+
         return self._admin_event_display_controllers_render(
             request, event_uniq_id=event_uniq_id
         )
@@ -548,7 +546,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
             case _:
                 raise ValueError(f'type=[{type}]')
 
-        event_loader: EventLoader = EventLoader.get(request=request)
         with EventDatabase(
             web_context.admin_event.uniq_id, write=True
         ) as event_database:
@@ -556,7 +553,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
                 web_context.admin_display_controller.stored_display_controller
             )
             event_database.commit()
-        event_loader.clear_cache(event_uniq_id)
 
         Message.success(
             request,
@@ -596,7 +592,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
 
         web_context.admin_display_controller.screen_id = None
         web_context.admin_display_controller.rotator_id = None
-        event_loader: EventLoader = EventLoader.get(request=request)
         with EventDatabase(
             web_context.admin_event.uniq_id, write=True
         ) as event_database:
@@ -604,7 +599,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
                 web_context.admin_display_controller.stored_display_controller
             )
             event_database.commit()
-        event_loader.clear_cache(event_uniq_id)
+
         return self._admin_event_display_controllers_render(
             request, event_uniq_id=event_uniq_id
         )

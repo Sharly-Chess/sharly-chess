@@ -587,7 +587,6 @@ class IndexAdminController(BaseAdminController):
         enabled_plugins = set(stored_plugin.name for stored_plugin in stored_plugins)
         if previous_enabled_plugins != enabled_plugins:
             plugin_manager.reload_register()
-            EventLoader.unload_all_events()
         Message.success(request, _('Sharly Chess settings have been updated.'))
         return self._admin_render(request=request, data=None, admin_tab='config')
 

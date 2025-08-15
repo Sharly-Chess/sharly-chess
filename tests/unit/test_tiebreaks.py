@@ -27,7 +27,7 @@ class TieBreakTestCase(TestCase, ABC):
         TestUtils.create_event(EVENT_ID)
         TestUtils.create_tournament(EVENT_ID, TOURNAMENT_ID)
 
-        self.event = EventLoader().reload_event(EVENT_ID)
+        self.event = EventLoader().load_event(EVENT_ID)
 
         # Import the test players and pairings from the json file
         leaf_name = f'{self.json_file}.json'
@@ -38,7 +38,7 @@ class TieBreakTestCase(TestCase, ABC):
             json_path, self.event, self.tournament
         )
 
-        self.event = EventLoader().reload_event(EVENT_ID)
+        self.event = EventLoader().load_event(EVENT_ID)
 
     def tearDown(self):
         TestUtils.delete_event(EVENT_ID)

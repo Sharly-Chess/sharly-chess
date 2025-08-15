@@ -475,6 +475,13 @@ class Player:
             games=games,
         )
 
+    # FIXME(Amaras): this should not be in the Player class
+    def reset_board(self):
+        self.board_id = None
+        self.board_number = None
+        self.color = None
+
+    # FIXME(Amras): this should not be in the Player class
     def set_board(self, board_id: int, board_number: int, color: BoardColor):
         self.board_id = board_id
         self.board_number = board_number
@@ -629,17 +636,6 @@ class Player:
             + tie_breaks
             + self.starting_rank_sort_key
         )
-
-    def clear_cache(self):
-        """Clears the cache of the player."""
-        cached_property_names = [
-            name
-            for name in dir(self)
-            if isinstance(getattr(type(self), name, None), cached_property)
-        ]
-        for property_name in cached_property_names:
-            if property_name in self.__dict__:
-                del self.__dict__[property_name]
 
     def __le__(self, other: 'Player') -> bool:
         # p1 <= p2 calls p1.__le__(p2)

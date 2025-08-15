@@ -526,17 +526,6 @@ class Screen:
             key=lambda screen_set: screen_set.order or 0,
         )
 
-    def clear_cache_for_tournament(self, tournament_id: int | None = None):
-        """Clears the screen cache for the given tournament, or all tournaments if no tournament is provided"""
-        for screen_set in self.screen_sets_by_id.values():
-            screen_set.clear_cache(tournament_id)
-        if self.type == ScreenType.RESULTS and (
-            tournament_id is None
-            or not self.results_tournament_ids
-            or tournament_id in self.results_tournament_ids
-        ):
-            self._clear_results_cache()
-
     @property
     def input_exit_button(self) -> bool:
         match self.type:

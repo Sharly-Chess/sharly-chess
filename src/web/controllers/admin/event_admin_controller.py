@@ -16,7 +16,6 @@ from pyexcel_ods3 import save_data
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.display_controller import DisplayController
-from data.loader import EventLoader
 from data.player import Player
 from data.print_documents import (
     PrintDocument,
@@ -212,7 +211,6 @@ class EventAdminController(BaseEventAdminController):
             )
 
         # Search for screens
-        print('HERE')
         if web_context.client.can_view_public_screens:
             screens_by_screen_type_sorted_by_uniq_id: dict[ScreenType, list[Screen]]
             if web_context.client.can_view_private_screens:
@@ -354,14 +352,12 @@ class EventAdminController(BaseEventAdminController):
                 errors=stored_event.errors,
             )
         uniq_id: str = stored_event.uniq_id
-        event_loader = EventLoader.get(request=request)
         match action:
             case 'update':
                 if web_context.admin_event is None:
                     raise RuntimeError(f'{web_context.admin_event=} for [{action=}]')
                 rename: bool = uniq_id != web_context.admin_event.uniq_id
                 if rename:
-                    event_loader.clear_cache(web_context.admin_event.uniq_id)
                     try:
                         EventDatabase(web_context.admin_event.uniq_id).rename(
                             new_uniq_id=uniq_id
@@ -391,7 +387,6 @@ class EventAdminController(BaseEventAdminController):
                             uniq_id=uniq_id
                         ),
                     )
-                event_loader.clear_cache(uniq_id)
                 return self._admin_event_config_render(request, event_uniq_id=uniq_id)
             case 'clone':
                 if web_context.admin_event is None:
@@ -409,7 +404,6 @@ class EventAdminController(BaseEventAdminController):
                     request,
                     _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id),
                 )
-                event_loader.clear_cache(uniq_id)
                 return self._admin_event_config_render(request, event_uniq_id=uniq_id)
             case 'delete':
                 if web_context.admin_event is None:
@@ -420,7 +414,6 @@ class EventAdminController(BaseEventAdminController):
                     return BaseController.redirect_error(
                         request, f'Archiving the database failed: {ex}'
                     )
-                event_loader.clear_cache(web_context.admin_event.uniq_id)
                 Message.success(
                     request,
                     _(

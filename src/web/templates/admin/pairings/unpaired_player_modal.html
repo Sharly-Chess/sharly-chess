@@ -274,8 +274,6 @@
                                         {% set round_played_against = player.round_played_against(exempt_player.id) %}
                                         {% if round_played_against %}
                                             {{ _('Encounter already happened at round #%(round)d', round=round_played_against) }}
-                                        {% else %}
-                                            {{ _('This will cause the table numbers to be reordered.') }}
                                         {% endif %}
                                     </div>
                                 {% else %}

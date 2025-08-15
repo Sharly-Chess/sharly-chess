@@ -8,7 +8,6 @@ from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _
-from data.loader import EventLoader
 from data.rotator import Rotator
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredRotator
@@ -387,7 +386,6 @@ class RotatorAdminController(BaseEventAdminController):
                 data=data,
                 errors=stored_rotator.errors,
             )
-        event_loader: EventLoader = EventLoader.get(request=request)
         with EventDatabase(
             web_context.admin_event.uniq_id, write=True
         ) as event_database:
@@ -427,7 +425,7 @@ class RotatorAdminController(BaseEventAdminController):
                     )
                 case _:
                     raise ValueError(f'action=[{action}]')
-        event_loader.clear_cache(event_uniq_id)
+
         return self._admin_event_rotators_render(request, event_uniq_id=event_uniq_id)
 
     @post(path='/admin/rotator-create/{event_uniq_id:str}', name='admin-rotator-create')
