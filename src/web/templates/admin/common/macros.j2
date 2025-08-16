@@ -853,6 +853,7 @@ with_indicator: display a loading indicator, optional
     >
         <input
             id="{{ id }}-input"
+            data-testid="{{ id }}-input"
             name="{{ name }}"
             type="text"
             class="form-control"
@@ -866,6 +867,7 @@ with_indicator: display a loading indicator, optional
         >
             <button
                 id="{{ id }}-submit-button"
+                data-testid="{{ id }}-submit-button"
                 class="btn btn-primary rounded-0"
                 type="submit"
                 {% if not value %}disabled{% endif %}
@@ -876,6 +878,7 @@ with_indicator: display a loading indicator, optional
         </span>
         <button
             id="{{ id }}-cancel-button"
+            data-testid="{{ id }}-cancel-button"
             class="inline-form-cancel-button btn btn-secondary"
             type="button"
             style="outline-offset: 0px;"

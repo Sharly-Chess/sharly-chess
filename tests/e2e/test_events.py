@@ -1,7 +1,7 @@
 """End-to-end tests for events."""
 
 import pytest
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Page, expect, APIRequestContext
 from tests.test_config import TestUtils
 
 
@@ -16,8 +16,7 @@ class TestEventFunctionality:
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
         modal.get_by_label('Federation:').select_option('FRA')
-        modal.get_by_role('textbox', name='ID (unique):').fill(EVENT_ID)
-        modal.get_by_role('textbox', name='Name:').fill('Test Event')
+        modal.get_by_role('textbox', name='Name:').fill(EVENT_ID)
         modal.locator('button[type=submit]').click()
         expect(page.locator("tr:has(th:text-is('Unique ID')) td")).to_have_text(
             'test-event-e2e'
@@ -34,3 +33,18 @@ class TestEventFunctionality:
         modal.locator('#uniq-id').fill(EVENT_ID)
         modal.locator('button[type=submit]').click()
         expect(page.get_by_text(f'Event [{EVENT_ID}] has been deleted')).to_be_visible()
+
+    def test_rename_event(self, page: Page, api_request_context: APIRequestContext):
+        TestUtils.create_event(EVENT_ID, via_api_request_context=api_request_context)
+        page.goto(f'/admin/event/{EVENT_ID}/config')
+        TestUtils.button_by_text(page, 'Edit').click()
+        modal = page.locator('.modal-dialog')
+        expect(modal).to_be_visible()
+        new_uniq_id = EVENT_ID + '-2'
+        modal.get_by_test_id('uniq-id-update-button').click()
+        modal.get_by_test_id('uniq-id-update-input').fill(new_uniq_id)
+        modal.get_by_test_id('uniq-id-update-submit-button').click()
+
+        page.goto('/admin')
+        card = page.locator(f"div.card:has-text('Unique ID: {new_uniq_id}')")
+        expect(card).to_be_visible()
