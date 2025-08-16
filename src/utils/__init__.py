@@ -1,3 +1,4 @@
+import re
 from decimal import Decimal
 from functools import lru_cache, cache
 from math import floor
@@ -6,6 +7,7 @@ from typing import Callable
 import iso4217parse
 import pycountry
 from babel.numbers import format_currency, format_decimal, get_decimal_symbol
+from text_unidecode import unidecode
 
 
 class StaticUtils:
@@ -159,6 +161,10 @@ class StaticUtils:
     @cache
     def _ordinal_affix_fr(value: int) -> tuple[str, str]:
         return '', 'er' if value == 1 else 'e'
+
+    @staticmethod
+    def name_to_uniq_id(name: str) -> str:
+        return re.sub(r'[^a-zA-Z0-9_\-]', '_', unidecode(name).lower())
 
 
 class SharedUtils:
