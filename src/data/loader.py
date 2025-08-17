@@ -217,32 +217,40 @@ class Archive:
     def date_str(self):
         return format_timestamp_date_time(self.date)
 
+    def restore(self) -> str:
+        event_uniq_id = EventLoader().get_unused_event_uniq_id(self.name.split('#')[0])
+        self.file.rename(EventDatabase.event_database_path(event_uniq_id))
+        return event_uniq_id
+
 
 class ArchiveLoader:
-    """
-    This class help loading archives (deleted events) efficiently.
-    Usage:
-    archive_loader: ArchiveLoader = ArchiveLoader.get(request)
-    archives: list[Archives] = archive_loader.archives_sorted_by_date()
-    """
+    """This class help loading archives (deleted events) efficiently."""
 
-    @classmethod
-    def get(cls, request: HTMXRequest | None):
-        if not request:
-            return cls()
-        archive_loader: ArchiveLoader = request.state.get('archive_loader')
-        if not archive_loader:
-            request.state['archive_loader'] = cls()
-        return request.state['archive_loader']
-
-    @cached_property
-    def archives_sorted_by_date(self) -> list[Archive]:
+    @staticmethod
+    def get_sorted_archives() -> list[Archive]:
         return sorted(
             [
                 Archive(file, file.stem, file.lstat().st_ctime)
-                for file in EVENTS_DIR.glob(f'*.{SharlyChessConfig.event_archive_ext}')
+                for file in SharlyChessConfig.event_archive_base_path.glob(
+                    f'*.{SharlyChessConfig.event_archive_ext}'
+                )
             ],
             key=lambda archive: archive.date,
+        )
+
+    @classmethod
+    def get_archive(cls, archive_name: str) -> Archive | None:
+        """Get an archive by its name if it exists, None if it does not."""
+        arch_file = cls.get_archive_path(archive_name)
+        if not arch_file.exists():
+            return None
+        return Archive(arch_file, arch_file.stem, arch_file.lstat().st_ctime)
+
+    @staticmethod
+    def get_archive_path(archive_name: str) -> Path:
+        return (
+            SharlyChessConfig.event_archive_base_path
+            / f'{archive_name}.{SharlyChessConfig.event_archive_ext}'
         )
 
 

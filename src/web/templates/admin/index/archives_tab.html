@@ -14,7 +14,8 @@
     <thead class="table-dark position-sticky top-0 z-2">
         <tr>
             <th scope="col" class="text-nowrap">{{ _('Archived event') }}</th>
-            <th scope="col" class="">{{ _('Deletion date') }}</th>
+            <th scope="col">{{ _('Deletion date') }}</th>
+            <th>{# Restore button #}</th>
         </tr>
     </thead>
     <tbody>
@@ -23,6 +24,18 @@
                 <tr>
                     <th scope="row" class="text-nowrap">{{ archive.name }}</th>
                     <td>{{ archive.date_str }}</td>
+                    <td>
+                        <span {{ macros.tooltip_attributes('info', _('Restore'), 'right') }}>
+                            <button
+                                class="btn btn-sm btn-outline-primary"
+                                hx-post="{{ url_for('admin-restore-archive', archive_name=archive.name) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                            >
+                                <i class="bi-arrow-counterclockwise"></i>
+                            </button>
+                        </span>
+                    </td>
                 </tr>
             {% endfor %}
         {% else %}
