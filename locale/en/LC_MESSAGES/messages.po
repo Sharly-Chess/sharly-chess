@@ -680,9 +680,6 @@ msgstr ""
 msgid "Category edition"
 msgstr ""
 
-msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
-msgstr ""
-
 msgid "Change the player's tournament."
 msgstr ""
 
@@ -726,16 +723,7 @@ msgstr ""
 msgid "ChessEvent Password:"
 msgstr ""
 
-msgid "ChessEvent connection not defined."
-msgstr ""
-
-msgid "ChessEvent event not set."
-msgstr ""
-
 msgid "ChessEvent event:"
-msgstr ""
-
-msgid "ChessEvent tournament name not set."
 msgstr ""
 
 msgid "ChessEvent tournament:"
@@ -2345,9 +2333,6 @@ msgstr ""
 msgid "Invalid mail [{mail}]."
 msgstr ""
 
-msgid "Invalid range [{first}-{last}]."
-msgstr ""
-
 msgid "Invalid response from the FFE website."
 msgstr ""
 
@@ -2553,16 +2538,10 @@ msgstr ""
 msgid "Maximum number of illegal moves"
 msgstr ""
 
-msgid "Maximum number of illegal moves not set, by default [{record_illegal_moves}]"
-msgstr ""
-
 msgid "Maximum number of points (included):"
 msgstr ""
 
 msgid "Maximum number of results displayed:"
-msgstr ""
-
-msgid "Maximum number of results set to [{results_limit}] to fit on [{columns}] columns."
 msgstr ""
 
 #, python-format
@@ -2747,12 +2726,6 @@ msgstr ""
 msgid "No archived events."
 msgstr ""
 
-msgid "No background colour set, by default [{background_color}]"
-msgstr ""
-
-msgid "No background image set, by default [{background_image}]"
-msgstr ""
-
 msgid "No category"
 msgstr ""
 
@@ -2792,9 +2765,6 @@ msgstr ""
 msgid "No mail defined."
 msgstr ""
 
-msgid "No name set, by default [{name}]"
-msgstr ""
-
 msgid "No pairing found for this player in the current round."
 msgstr ""
 
@@ -2808,9 +2778,6 @@ msgid "No passed events."
 msgstr ""
 
 msgid "No password required"
-msgstr ""
-
-msgid "No password set for the results entry"
 msgstr ""
 
 msgid "No phone defined."
@@ -2873,9 +2840,6 @@ msgstr ""
 msgid "No screen nor family to rotate."
 msgstr ""
 
-msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
-msgstr ""
-
 msgid "No screens"
 msgstr ""
 
@@ -2931,9 +2895,6 @@ msgid "Not connected to internet"
 msgstr ""
 
 msgid "Not connected, impossible to update."
-msgstr ""
-
-msgid "Nothing to display for tournament [{tournament_uniq_id}], one empty screen will be used."
 msgstr ""
 
 msgid "Notification"
@@ -3203,12 +3164,6 @@ msgid "Password to enter results"
 msgstr ""
 
 msgid "Password to enter results:"
-msgstr ""
-
-msgid "Pattern [{pattern}] can be used by screen families only."
-msgstr ""
-
-msgid "Pattern [{pattern}] matches no screen."
 msgstr ""
 
 msgid "Penalty (handicap, seconds):"
@@ -3963,9 +3918,6 @@ msgstr ""
 
 msgid "Score *** PERF IND. FOR TABULAR DISPLAY"
 msgstr "Score"
-
-msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
-msgstr ""
 
 msgid "Screen [{screen_uniq_id}] has been assigned to controller [{display_controller_uniq_id}]."
 msgstr ""

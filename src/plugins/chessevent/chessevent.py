@@ -190,24 +190,6 @@ class ChessEventPlugin(Plugin):
         }
 
     @hookimpl
-    def on_tournament_init(self, tournament: 'Tournament'):
-        pd = tournament.stored_tournament.plugin_data
-        if not self.get_data(pd, 'chessevent_user_id') or not self.get_data(
-            pd, 'chessevent_password'
-        ):
-            tournament.event.add_debug(
-                _('ChessEvent connection not defined.'), tournament=tournament
-            )
-        elif not self.get_data(pd, 'chessevent_event_id'):
-            tournament.event.add_debug(
-                _('ChessEvent event not set.'), tournament=tournament
-            )
-        elif not self.get_data(pd, 'chessevent_tournament_name'):
-            tournament.event.add_warning(
-                _('ChessEvent tournament name not set.'), tournament=tournament
-            )
-
-    @hookimpl
     def get_tournament_form_fields_template_and_data(
         self, event: 'Event', tournament: 'Tournament | None'
     ) -> tuple[str, dict[str, Any]]:

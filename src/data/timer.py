@@ -195,10 +195,9 @@ class Timer:
             timer_hour: TimerHour = TimerHour(self, stored_timer_hour)
             assert timer_hour.id is not None
             self.timer_hours_by_id[timer_hour.id] = timer_hour
+            error: str | None = None
             if not stored_timer_hour.time_str:
                 error = _('Time is not defined.')
-                timer_hour.error = error
-                self.event.add_warning(error, timer_hour=timer_hour)
             else:
                 matches = re.match(
                     '^(?P<hour>[0-9]{1,2}):(?P<minute>[0-9]{1,2})$',
@@ -208,14 +207,10 @@ class Timer:
                     error = _('Invalid time [{time_str}].').format(
                         time_str=stored_timer_hour.time_str
                     )
-                    timer_hour.error = error
-                    self.event.add_warning(error, timer_hour=timer_hour)
                 elif (
                     previous_valid_timer_hour is None and not stored_timer_hour.date_str
                 ):
                     error = _('The date of the first hour is not defined (mandatory).')
-                    timer_hour.error = error
-                    self.event.add_warning(error, timer_hour=timer_hour)
                 else:
                     datetime_str: str
                     if stored_timer_hour.date_str and not re.match(
@@ -225,8 +220,6 @@ class Timer:
                         error = _('Invalid date [{date_str}].').format(
                             date_str=stored_timer_hour.date_str
                         )
-                        timer_hour.error = error
-                        self.event.add_warning(error, timer_hour=timer_hour)
                     else:
                         if stored_timer_hour.date_str:
                             datetime_str = f'{stored_timer_hour.date_str} {stored_timer_hour.time_str}'
@@ -260,14 +253,11 @@ class Timer:
                                     hour=timer_hour.datetime_str,
                                     previous_hour=previous_valid_timer_hour.datetime_str,
                                 )
-                                timer_hour.error = error
-                                self.event.add_warning(error, timer_hour=timer_hour)
                         except ValueError:
                             error = _('Invalid date and time [{datetime_str}].').format(
                                 datetime_str=datetime_str
                             )
-                            timer_hour.error = error
-                            self.event.add_warning(error, timer_hour=timer_hour)
+            timer_hour.error = error
             if not timer_hour.error:
                 previous_valid_timer_hour = timer_hour
         if previous_valid_timer_hour:
@@ -276,9 +266,7 @@ class Timer:
                     timer_hour.last_valid = True
                     break
         else:
-            error = _('No valid hour defined.')
-            self.error = error
-            self.event.add_warning(error, timer=self)
+            self.error = _('No valid hour defined.')
 
     @cached_property
     def colors(self) -> dict[int, str]:

@@ -680,9 +680,6 @@ msgstr "Création d'une catégorie"
 msgid "Category edition"
 msgstr "Édition d'une categorie"
 
-msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
-msgstr "Le numéro d'homologation et le mot de passe FFE ne sont pas définis, les opérations sur le site web FFE ne seront pas disponibles."
-
 msgid "Change the player's tournament."
 msgstr "Changer le joueur de tournoi."
 
@@ -726,17 +723,8 @@ msgstr "ChessEvent"
 msgid "ChessEvent Password:"
 msgstr "Mot de passe ChessEvent :"
 
-msgid "ChessEvent connection not defined."
-msgstr "Connexion à ChessEvent non définie."
-
-msgid "ChessEvent event not set."
-msgstr "Évènement ChessEvent non défini."
-
 msgid "ChessEvent event:"
 msgstr "Évènement ChessEvent :"
-
-msgid "ChessEvent tournament name not set."
-msgstr "Nom du tournoi ChessEvent non défini."
 
 msgid "ChessEvent tournament:"
 msgstr "Nom du tournoi ChessEvent :"
@@ -2345,9 +2333,6 @@ msgstr "Langue [{locale}] non valide."
 msgid "Invalid mail [{mail}]."
 msgstr "Mél [{mail}] non valide."
 
-msgid "Invalid range [{first}-{last}]."
-msgstr "Plage invalide [{first}-{last}]. x"
-
 msgid "Invalid response from the FFE website."
 msgstr "Réponse non valide du site FFE."
 
@@ -2553,17 +2538,11 @@ msgstr "Nombre maximum de jokers (byes) : %(max_byes)d"
 msgid "Maximum number of illegal moves"
 msgstr "Nombre maximum de coups illégaux"
 
-msgid "Maximum number of illegal moves not set, by default [{record_illegal_moves}]"
-msgstr "Nombre maximum de coups illégaux non défini, par défaut [{record_illegal_moves}]"
-
 msgid "Maximum number of points (included):"
 msgstr "Nombre maximum de points (inclus) :"
 
 msgid "Maximum number of results displayed:"
 msgstr "Nombre maximum de résultats affichés :"
-
-msgid "Maximum number of results set to [{results_limit}] to fit on [{columns}] columns."
-msgstr "Nombre maximum de résultats passé à [{results_limit}] pour tenir sur [{columns}] colonnes."
 
 #, python-format
 msgid "Maximum number of results: %(num)d"
@@ -2747,12 +2726,6 @@ msgstr "Pas de message d'alerte"
 msgid "No archived events."
 msgstr "Aucun évènement archivé."
 
-msgid "No background colour set, by default [{background_color}]"
-msgstr "Couleur de fond non définie, par défaut [{background_color}]"
-
-msgid "No background image set, by default [{background_image}]"
-msgstr "Image de fond non définie, par défaut [{background_image}]"
-
 msgid "No category"
 msgstr "Aucune catégorie"
 
@@ -2792,9 +2765,6 @@ msgstr "Aucune connexion à internet"
 msgid "No mail defined."
 msgstr "Mél non défini."
 
-msgid "No name set, by default [{name}]"
-msgstr "Nom non défini, par défaut [{name}]"
-
 msgid "No pairing found for this player in the current round."
 msgstr "Aucun appariement pour ce·tte joueur·euse pour la ronde courante."
 
@@ -2809,9 +2779,6 @@ msgstr "Aucun évènement passé."
 
 msgid "No password required"
 msgstr "Pas de mot de passe demandé"
-
-msgid "No password set for the results entry"
-msgstr "Aucun mot de passe pour la saisie des résultats"
 
 msgid "No phone defined."
 msgstr "Téléphone non défini."
@@ -2873,9 +2840,6 @@ msgstr "Aucun écran ni famille à afficher."
 msgid "No screen nor family to rotate."
 msgstr "Aucun écran ni famille à afficher."
 
-msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
-msgstr "Aucun écran de type [{screen_type}] pour le menu de l'écran [{screen_uniq_id}]."
-
 msgid "No screens"
 msgstr "Aucun écran"
 
@@ -2932,9 +2896,6 @@ msgstr "Aucune connection à internet"
 
 msgid "Not connected, impossible to update."
 msgstr "Échec de la connexion, mise à jour impossible."
-
-msgid "Nothing to display for tournament [{tournament_uniq_id}], one empty screen will be used."
-msgstr "Rien à afficher pour le tournoi [{tournament_uniq_id}], un écran vide sera utilisé."
 
 msgid "Notification"
 msgstr "Notification"
@@ -3204,12 +3165,6 @@ msgstr "Mot de passe de saisie des résultats"
 
 msgid "Password to enter results:"
 msgstr "Mot de passe de saisie des résultats :"
-
-msgid "Pattern [{pattern}] can be used by screen families only."
-msgstr "Le motif [{pattern}] ne peut être utilisé que pour les familles d'écrans."
-
-msgid "Pattern [{pattern}] matches no screen."
-msgstr "Le motif [{pattern}] ne correspond à aucun écran."
 
 msgid "Penalty (handicap, seconds):"
 msgstr "Pénalité (handicap, en secondes) :"
@@ -3964,9 +3919,6 @@ msgstr "Score"
 msgid "Score *** PERF IND. FOR TABULAR DISPLAY"
 msgstr "Score"
 
-msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
-msgstr "Écran [{pattern}] introuvable pour le menu de l'écran [{screen_uniq_id}]."
-
 msgid "Screen [{screen_uniq_id}] has been assigned to controller [{display_controller_uniq_id}]."
 msgstr "L'écran [{screen_uniq_id}] est utilisé par le pilote d'afficheurs [{display_controller_uniq_id}]."
 
@@ -4698,7 +4650,7 @@ msgid "This field allows you to specify the screens whose links will be displaye
 msgstr "Ce champ vous permet de spécifier les écrans dont les liens seront affichés sur le menu des écrans de la famille. Les identifiants d'écrans doivent être séparés par des virgules, les mots-clés @family (tous les écrans de la famille), @boards (tous les écrans d'affichage des échiquiers), @input (tous les écrans de saisie), @players (tous les écrans d'affichage des appariements), @ranking (tous les écrans de classement) ainsi que le joker * peuvent être utilisés. Si ce champ est laissé vide, aucun menu ne sera affiché sur les écrans de la famille."
 
 msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
-msgstr "Ce champ vous permet de spécifier les écrans dont les liens seront affichés sur le menu de l'écran. Les identifiants d'écrans doivent être séparés par des virgules, les mots-clés @family (tous les écrans de la famille), @boards (tous les écrans d'affichage des échiquiers), @input (tous les écrans de saisie), @players (tous les écrans d'affichage des appariements), @ranking (tous les écrans de classement) ainsi que le joker * peuvent être utilisés. Si ce champ est laissé vide, aucun menu ne sera affiché sur l'es 'écran."
+msgstr "Ce champ vous permet de spécifier les écrans dont les liens seront affichés sur le menu de l'écran. Les identifiants d'écrans doivent être séparés par des virgules, les mots-clés @family (tous les écrans de la famille), @boards (tous les écrans d'affichage des échiquiers), @input (tous les écrans de saisie), @players (tous les écrans d'affichage des appariements), @ranking (tous les écrans de classement) ainsi que le joker * peuvent être utilisés. Si ce champ est laissé vide, aucun menu ne sera affiché sur l'écran."
 
 msgid "This field can't be updated once the tournament has started."
 msgstr "Ce champ ne peut être mis à jour après le début du tournoi."

@@ -245,10 +245,6 @@ class AppHookSpecs:
         """Provide addition column data for tournaments when writing to the database"""
 
     @hookspec
-    def on_tournament_init(self, tournament: 'Tournament'):
-        """Do any tournament specific initialisation when a Tournament object is initialised"""
-
-    @hookspec
     def get_tournament_form_fields_template_and_data(
         self, event: 'Event', tournament: 'Tournament | None'
     ) -> tuple[str, dict[str, Any]]:
