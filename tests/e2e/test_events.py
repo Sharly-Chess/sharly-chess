@@ -35,15 +35,12 @@ class TestEventFunctionality:
         expect(page.get_by_text(f'Event [{EVENT_ID}] has been deleted')).to_be_visible()
 
     def test_rename_event(self, page: Page, api_request_context: APIRequestContext):
+        new_uniq_id = EVENT_ID + '-2'
         TestUtils.create_event(EVENT_ID, via_api_request_context=api_request_context)
         page.goto(f'/admin/event/{EVENT_ID}/config')
-        TestUtils.button_by_text(page, 'Edit').click()
-        modal = page.locator('.modal-dialog')
-        expect(modal).to_be_visible()
-        new_uniq_id = EVENT_ID + '-2'
-        modal.get_by_test_id('uniq-id-update-button').click()
-        modal.get_by_test_id('uniq-id-update-input').fill(new_uniq_id)
-        modal.get_by_test_id('uniq-id-update-submit-button').click()
+        page.get_by_test_id('uniq-id-update-button').click()
+        page.get_by_test_id('uniq-id-update-input').fill(new_uniq_id)
+        page.get_by_test_id('uniq-id-update-submit-button').click()
         expect(page.locator("tr:has(th:text-is('Unique ID')) td")).to_have_text(
             new_uniq_id
         )
