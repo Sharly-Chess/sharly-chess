@@ -95,6 +95,12 @@ class FFESqlServer(SqlServer):
 
     @staticmethod
     def _get_player_from_row(row: dict[str, Any]) -> Player:
+        ffe_title_value = row['FideTitre'] or ''
+        title: PlayerTitle = (
+            PlayerTitle.NONE
+            if ffe_title_value in ('c', 'cf')
+            else PlayerTitle.from_papi_value(ffe_title_value)
+        )
         return Player(
             id=0,
             first_name=row['Prenom'].title() if row['Prenom'] else '',
@@ -106,7 +112,7 @@ class FFESqlServer(SqlServer):
             comment='',
             owed=0.0,
             paid=0.0,
-            title=PlayerTitle.from_papi_value(row['FideTitre'] or ''),
+            title=title,
             ratings={
                 TournamentRating.STANDARD: PlayerRating(
                     row['Elo'], PlayerRatingType.from_papi_value(row['Fide'])

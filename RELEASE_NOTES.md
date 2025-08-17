@@ -71,6 +71,7 @@ English version below
 ## FFE
 
 - Correction du téléversement manuel des résultats (2.8.2)
+- Correction de l'importation des joueur·euses avec titres FIDE de candidat·e depuis le serveur en ligne
 
 ## ChessEvent
 
@@ -150,6 +151,7 @@ English version below
 ## FFE
 
 - Fixed the manual results upload (2.8.2)
+- Fixed import of players with FIDE Candidate titles from the online server
 
 ## ChessEvent
 
