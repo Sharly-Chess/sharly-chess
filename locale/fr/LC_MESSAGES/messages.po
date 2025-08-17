@@ -213,9 +213,6 @@ msgstr "Variantes accélérées du système d'appariements suisse."
 msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
 msgstr "Les caractères acceptés sont les lettres, chiffres, souligné (« tiret du 8 ») et moins (« tiret du 6 »)."
 
-msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
-msgstr "Les caractères acceptés sont les lettres, chiffres, souligné (« tiret du 8 ») et moins (« tiret du 6 »)."
-
 msgid "Access"
 msgstr "Accès"
 
@@ -1761,6 +1758,10 @@ msgid "Editing of display controller [%(display_controller_uniq_id)s]"
 msgstr "Édition du pilote d'afficheurs [%(display_controller_uniq_id)s]"
 
 #, python-format
+msgid "Editing of event [%(event_uniq_id)s]"
+msgstr "Édition de l'évènement [%(event_uniq_id)s]"
+
+#, python-format
 msgid "Editing of player [%(player)s]"
 msgstr "Édition du·de la joueur·euse [%(player)s]"
 
@@ -1899,9 +1900,6 @@ msgstr "L'évènement [{uniq_id}] a été modifié."
 
 msgid "Event creation"
 msgstr "Création d'un évènement"
-
-msgid "Event edition"
-msgstr "Édition d'un évènement"
 
 msgid "Event: {event_name}"
 msgstr "Évènement : {event_name}"
@@ -5962,10 +5960,4 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
-
-#~ msgid "Error"
-#~ msgstr "Erreur"
-
-#~ msgid "Import of papi file [{file}] failed."
-#~ msgstr "L'import du fichier papi [{file}] a échoué."
 
