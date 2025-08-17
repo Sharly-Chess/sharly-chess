@@ -59,6 +59,19 @@ Some roles 'include' other roles:
 - Sector Arbitration and Pairing includes Results Entry and Check-in;
 - All the roles include Spectator.
 
+| Role | Scope | Sub roles | Inherited roles |
+|--|--|--|--|
+|Administration|Application|Organization<br/>Chief Arbitration|_all_|
+|Organization|Event|Screen Management|Spectator|
+|Screen Management|Event|Spectator|_none_|
+|Chief Arbitration|Event|Deputy Chief Arbitration|Pairing<br/>Sector arbitration<br/>Check-in via input Screens<br/>Results Entry via public screens<br/>Spectator|
+|Deputy Chief Arbitration|Event|Pairing<br/>Sector arbitration|Check-in via input Screens<br/>Results Entry via public screens<br/>Spectator|
+|Sector arbitration|Tournament|Check-in via input Screens<br/>Results Entry via public screens|Spectator|
+|Pairing|Tournament|Check-in via input Screens|Spectator|
+|Check-in via input Screens|Tournament|Spectator|_none_|
+|Results Entry via public screens|Tournament|Spectator|_none_|
+|Spectator|Event|_none_|_none_|
+
 ## Devices
 
 Devices are defined on the web UI by their IP address.

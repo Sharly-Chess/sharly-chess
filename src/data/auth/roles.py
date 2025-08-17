@@ -38,6 +38,11 @@ class Role(IdentifiableEntity, ABC):
     def scope(self) -> RoleScope:
         """The scope of effect of the role."""
 
+    @property
+    @abstractmethod
+    def order(self) -> int:
+        """The order of the role (used to generate the documentation)."""
+
     @staticmethod
     @abstractmethod
     def direct_sub_roles() -> list[type['Role']]:
@@ -104,6 +109,10 @@ class SpectatorRole(Role):
     def scope(self) -> RoleScope:
         return RoleScope.EVENT
 
+    @property
+    def order(self) -> int:
+        return 10
+
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
         return []
@@ -129,6 +138,10 @@ class ResultsEntryRole(Role):
     @property
     def scope(self) -> RoleScope:
         return RoleScope.TOURNAMENT
+
+    @property
+    def order(self) -> int:
+        return 9
 
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
@@ -158,6 +171,10 @@ class CheckInRole(Role):
     def scope(self) -> RoleScope:
         return RoleScope.TOURNAMENT
 
+    @property
+    def order(self) -> int:
+        return 8
+
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
         return [SpectatorRole]
@@ -176,6 +193,45 @@ class CheckInRole(Role):
         )
 
 
+class SectorArbitrationRole(Role):
+    @staticmethod
+    def static_id() -> str:
+        return 'SECTOR_ARBITRATION'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Sector arbitration')
+
+    @property
+    def scope(self) -> RoleScope:
+        return RoleScope.TOURNAMENT
+
+    @property
+    def order(self) -> int:
+        return 7
+
+    @staticmethod
+    def direct_sub_roles() -> list[type[Role]]:
+        return [
+            CheckInRole,
+            ResultsEntryRole,
+        ]
+
+    @staticmethod
+    def role_actions() -> list[AuthAction]:
+        return [
+            AuthAction.VIEW_EVENT_BASIC_CONFIG,
+            AuthAction.VIEW_PLAYERS_TAB,
+            AuthAction.VIEW_PAIRINGS_TAB,
+            AuthAction.UPDATE_RESULTS,
+            AuthAction.SET_ILLEGAL_MOVES,
+        ]
+
+    @property
+    def help_text(self) -> str:
+        return _('Allows check-in and results entry.')
+
+
 class PairingRole(Role):
     @staticmethod
     def static_id() -> str:
@@ -188,6 +244,10 @@ class PairingRole(Role):
     @property
     def scope(self) -> RoleScope:
         return RoleScope.TOURNAMENT
+
+    @property
+    def order(self) -> int:
+        return 6
 
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
@@ -221,41 +281,6 @@ class PairingRole(Role):
         )
 
 
-class SectorArbitrationRole(Role):
-    @staticmethod
-    def static_id() -> str:
-        return 'SECTOR_ARBITRATION'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('Sector arbitration')
-
-    @property
-    def scope(self) -> RoleScope:
-        return RoleScope.TOURNAMENT
-
-    @staticmethod
-    def direct_sub_roles() -> list[type[Role]]:
-        return [
-            CheckInRole,
-            ResultsEntryRole,
-        ]
-
-    @staticmethod
-    def role_actions() -> list[AuthAction]:
-        return [
-            AuthAction.VIEW_EVENT_BASIC_CONFIG,
-            AuthAction.VIEW_PLAYERS_TAB,
-            AuthAction.VIEW_PAIRINGS_TAB,
-            AuthAction.UPDATE_RESULTS,
-            AuthAction.SET_ILLEGAL_MOVES,
-        ]
-
-    @property
-    def help_text(self) -> str:
-        return _('Allows check-in and results entry.')
-
-
 class DeputyChiefArbitrationRole(Role):
     @staticmethod
     def static_id() -> str:
@@ -268,6 +293,10 @@ class DeputyChiefArbitrationRole(Role):
     @property
     def scope(self) -> RoleScope:
         return RoleScope.EVENT
+
+    @property
+    def order(self) -> int:
+        return 5
 
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
@@ -319,6 +348,10 @@ class ChiefArbitrationRole(Role):
     def scope(self) -> RoleScope:
         return RoleScope.EVENT
 
+    @property
+    def order(self) -> int:
+        return 4
+
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
         return [DeputyChiefArbitrationRole]
@@ -350,6 +383,10 @@ class ScreenManagementRole(Role):
     @property
     def scope(self) -> RoleScope:
         return RoleScope.EVENT
+
+    @property
+    def order(self) -> int:
+        return 3
 
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
@@ -383,6 +420,10 @@ class OrganizationRole(Role):
     @property
     def scope(self) -> RoleScope:
         return RoleScope.EVENT
+
+    @property
+    def order(self) -> int:
+        return 2
 
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
@@ -420,6 +461,10 @@ class AdministrationRole(Role):
     @property
     def scope(self) -> RoleScope:
         return RoleScope.APPLICATION
+
+    @property
+    def order(self) -> int:
+        return 1
 
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
