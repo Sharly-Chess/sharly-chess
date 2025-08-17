@@ -40,7 +40,6 @@ class TestUtils:
     """Utility functions for tests."""
 
     event_defaults = {
-        'name': 'Test Event',
         'federation': 'FRA',
         'public': True,
         'location': 'Paris',
@@ -111,6 +110,7 @@ class TestUtils:
         defaults = {
             **cls.event_defaults,
             'uniq_id': uniq_id,
+            'name': uniq_id,
             'start': start_ts,
             'stop': stop_ts,
         }

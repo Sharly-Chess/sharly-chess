@@ -1,4 +1,3 @@
-import re
 import time
 from datetime import datetime
 from pathlib import Path
@@ -17,6 +16,7 @@ from common.i18n import _, ngettext
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
 from data.loader import EventLoader
+from utils import StaticUtils
 from utils.enum import Result, TournamentRating
 from database.sqlite.event.event_store import StoredEvent
 from plugins.manager import plugin_manager
@@ -315,188 +315,127 @@ class BaseAdminController(BaseController):
     def _admin_validate_event_update_data(
         cls,
         action: str,
-        request: HTMXRequest,
         admin_event: Event | None,
         data: dict[str, str] | None = None,
     ) -> StoredEvent:
         if data is None:
             data = {}
         errors: dict[str, str] = {}
-        uniq_id: str | None = WebContext.form_data_to_str(data, field := 'uniq_id')
-        if action == 'delete':
-            if admin_event is None:
-                raise RuntimeError(f'{admin_event=} for [{action=}]')
-            if not uniq_id:
-                errors[field] = _('Please enter the event ID.')
-            elif uniq_id != admin_event.uniq_id:
-                errors[field] = _('event ID does not match.')
-        else:
-            if not uniq_id:
-                errors[field] = _('Please enter the event ID.')
-            elif not EventLoader.id_regex.match(uniq_id):
-                errors[field] = _(
-                    'Accepted characters are letters, numbers, underscore (_) and minus (-), invalid characters have been replaced by an underscore.'
-                )
-                data[field] = re.sub(r'[^a-zA-Z0-9_\-]', '_', uniq_id)
-            else:
-                event_uniq_ids: list[str] = EventLoader.get(
-                    request=request
-                ).event_uniq_ids
-                match action:
-                    case 'clone' | 'create':
-                        if uniq_id in event_uniq_ids:
-                            errors[field] = _(
-                                'Event [{uniq_id}] already exists.'
-                            ).format(uniq_id=uniq_id)
-                    case 'update':
-                        if admin_event is None:
-                            raise RuntimeError(f'{admin_event=} for [{action=}]')
-                        if uniq_id != admin_event.uniq_id and uniq_id in event_uniq_ids:
-                            errors[field] = _(
-                                'Event [{uniq_id}] already exists.'
-                            ).format(uniq_id=uniq_id)
-                    case _:
-                        raise ValueError(f'action=[{action}]')
-        name: str | None
-        federation: str | None
         start: float | None = None
         stop: float | None = None
-        public: bool | None = None
-        location: str | None = None
-        hide_background_image: bool | None = None
         background_image: str | None = None
-        background_color: str | None = None
-        update_password: str | None = None
-        record_illegal_moves: int | None = None
-        rules: str | None = None
-        message_text: str | None = None
         message_color: str | None = None
         message_background_color: str | None = None
-        prize_currency: str | None = None
-        match action:
-            case 'clone' | 'update' | 'create':
-                name = WebContext.form_data_to_str(data, field := 'name')
-                if not name:
-                    errors[field] = _('Please enter the name of the event.')
-                federation = WebContext.form_data_to_str(
-                    data, field := 'federation', SharlyChessConfig().default_federation
-                )
-                if federation not in SharlyChessConfig.federations:
-                    # should never happen, not translated.
-                    errors[field] = f'Invalid federation value [{data[field]}].'
-                    data[field] = ''
-                start_str: str | None = WebContext.form_data_to_str(
-                    data, field := 'start'
-                )
-                if not start_str:
-                    errors[field] = _('Please enter the start date of the event.')
-                else:
-                    start = time.mktime(
-                        datetime.strptime(start_str, '%Y-%m-%dT%H:%M').timetuple()
-                    )
-                stop_str: str | None = WebContext.form_data_to_str(
-                    data, field := 'stop'
-                )
-                if not stop_str:
-                    errors[field] = _('Please enter the end date of the event.')
-                else:
-                    stop = time.mktime(
-                        datetime.strptime(stop_str, '%Y-%m-%dT%H:%M').timetuple()
-                    )
-                if (
-                    start
-                    and stop
-                    and 'start' not in errors
-                    and 'stop' not in errors
-                    and start > stop
-                ):
-                    errors[field] = _('Please enter a date after the start date.')
-                public = WebContext.form_data_to_bool(data, 'public')
-                location = WebContext.form_data_to_str(data, 'location')
-                update_password = WebContext.form_data_to_str(data, 'update_password')
-                field = 'background_image'
-                hide_background_image = WebContext.form_data_to_bool(
-                    data, field + '_checkbox'
-                )
-                if not hide_background_image:
-                    if background_image := WebContext.form_data_to_str(data, field, ''):
-                        if validators.url(background_image):
-                            try:
-                                response = requests.get(
-                                    background_image, timeout=REQUEST_TIMEOUT
-                                )
-                                if response.status_code != 200:
-                                    errors[field] = _(
-                                        'URL [{url}] responded code [{code}].'
-                                    ).format(
-                                        url=background_image, code=response.status_code
-                                    )
-                            except requests.ConnectionError as ce:
-                                errors[field] = _(
-                                    'URL [{url}] did not respond (error: [{error}]).'
-                                ).format(url=background_image, error=str(ce))
-                        elif Path(background_image).exists():
-                            errors[field] = _(
-                                'Please enter a URL or select an image on the right hand side.'
-                            )
-                        else:
-                            background_image = background_image.strip('/')
-                            if background_image.find('..') != -1:
-                                errors[field] = _('Incorrect path [{path}].').format(
-                                    path=background_image
-                                )
-                                data[field] = ''
-                            elif (
-                                not (
-                                    SharlyChessConfig.custom_path / background_image
-                                ).exists()
-                                and not (
-                                    SharlyChessConfig.embedded_custom_path
-                                    / background_image
-                                ).exists()
-                            ):
-                                errors[field] = _('File [{file}] not found.').format(
-                                    file=background_image
-                                )
-                background_color = cls._admin_validate_background_color_update_data(
-                    data, errors
-                )
-                record_illegal_moves = (
-                    cls._admin_validate_record_illegal_moves_update_data(data, errors)
-                )
-                rules = cls._admin_validate_rules_update_data(data, errors)
-                field = 'message_text'
-                message_text = WebContext.form_data_to_str(data, field)
-                field = 'message_color'
-                if not WebContext.form_data_to_bool(data, field + '_checkbox'):
+
+        name = WebContext.form_data_to_str(data, field := 'name') or ''
+        if not name:
+            errors[field] = _('Please enter the name of the event.')
+        if action == 'update':
+            assert admin_event is not None
+            uniq_id = admin_event.uniq_id
+        else:
+            uniq_id = EventLoader().get_unused_event_uniq_id(
+                StaticUtils.name_to_uniq_id(name)
+            )
+
+        federation = (
+            WebContext.form_data_to_str(
+                data, field := 'federation', SharlyChessConfig().default_federation
+            )
+            or ''
+        )
+        if federation not in SharlyChessConfig.federations:
+            # should never happen, not translated.
+            errors[field] = f'Invalid federation value [{data[field]}].'
+            data[field] = ''
+        start_str: str | None = WebContext.form_data_to_str(data, field := 'start')
+        if not start_str:
+            errors[field] = _('Please enter the start date of the event.')
+        else:
+            start = time.mktime(
+                datetime.strptime(start_str, '%Y-%m-%dT%H:%M').timetuple()
+            )
+        stop_str: str | None = WebContext.form_data_to_str(data, field := 'stop')
+        if not stop_str:
+            errors[field] = _('Please enter the end date of the event.')
+        else:
+            stop = time.mktime(
+                datetime.strptime(stop_str, '%Y-%m-%dT%H:%M').timetuple()
+            )
+        if (
+            start
+            and stop
+            and 'start' not in errors
+            and 'stop' not in errors
+            and start > stop
+        ):
+            errors[field] = _('Please enter a date after the start date.')
+        public = WebContext.form_data_to_bool(data, 'public')
+        location = WebContext.form_data_to_str(data, 'location')
+        update_password = WebContext.form_data_to_str(data, 'update_password')
+        field = 'background_image'
+        hide_background_image = WebContext.form_data_to_bool(data, field + '_checkbox')
+        if not hide_background_image:
+            if background_image := WebContext.form_data_to_str(data, field, ''):
+                if validators.url(background_image):
                     try:
-                        message_color = WebContext.form_data_to_rgb(data, field)
-                    except ValueError:
-                        errors[field] = _(
-                            'Invalid color [{color}] ([#RRGGBB] expected).'
-                        ).format(color={data[field]})
-                field = 'message_background_color'
-                if not WebContext.form_data_to_bool(data, field + '_checkbox'):
-                    try:
-                        message_background_color = WebContext.form_data_to_rgb(
-                            data, field
+                        response = requests.get(
+                            background_image, timeout=REQUEST_TIMEOUT
                         )
-                    except ValueError:
+                        if response.status_code != 200:
+                            errors[field] = _(
+                                'URL [{url}] responded code [{code}].'
+                            ).format(url=background_image, code=response.status_code)
+                    except requests.ConnectionError as ce:
                         errors[field] = _(
-                            'Invalid color [{color}] ([#RRGGBB] expected).'
-                        ).format(color={data[field]})
-                prize_currency = WebContext.form_data_to_str(data, 'prize_currency')
-            case 'delete':
-                if admin_event is None:
-                    raise RuntimeError(f'{admin_event=} for [{action=}]')
-                # Provide the value needed to create a valid StoredEvent
-                uniq_id = uniq_id or ''
-                name = admin_event.stored_event.name
-                federation = admin_event.stored_event.federation
-                start = admin_event.stored_event.start
-                stop = admin_event.stored_event.stop
-            case _:
-                raise ValueError(f'action=[{action}]')
+                            'URL [{url}] did not respond (error: [{error}]).'
+                        ).format(url=background_image, error=str(ce))
+                elif Path(background_image).exists():
+                    errors[field] = _(
+                        'Please enter a URL or select an image on the right hand side.'
+                    )
+                else:
+                    background_image = background_image.strip('/')
+                    if background_image.find('..') != -1:
+                        errors[field] = _('Incorrect path [{path}].').format(
+                            path=background_image
+                        )
+                        data[field] = ''
+                    elif (
+                        not (SharlyChessConfig.custom_path / background_image).exists()
+                        and not (
+                            SharlyChessConfig.embedded_custom_path / background_image
+                        ).exists()
+                    ):
+                        errors[field] = _('File [{file}] not found.').format(
+                            file=background_image
+                        )
+        background_color = cls._admin_validate_background_color_update_data(
+            data, errors
+        )
+        record_illegal_moves = cls._admin_validate_record_illegal_moves_update_data(
+            data, errors
+        )
+        rules = cls._admin_validate_rules_update_data(data, errors)
+        field = 'message_text'
+        message_text = WebContext.form_data_to_str(data, field)
+        field = 'message_color'
+        if not WebContext.form_data_to_bool(data, field + '_checkbox'):
+            try:
+                message_color = WebContext.form_data_to_rgb(data, field)
+            except ValueError:
+                errors[field] = _(
+                    'Invalid color [{color}] ([#RRGGBB] expected).'
+                ).format(color={data[field]})
+        field = 'message_background_color'
+        if not WebContext.form_data_to_bool(data, field + '_checkbox'):
+            try:
+                message_background_color = WebContext.form_data_to_rgb(data, field)
+            except ValueError:
+                errors[field] = _(
+                    'Invalid color [{color}] ([#RRGGBB] expected).'
+                ).format(color={data[field]})
+        prize_currency = WebContext.form_data_to_str(data, 'prize_currency')
 
         # Have plugins validate their fields and return private plugin data
         per_plugin_tournament_data = (
@@ -510,9 +449,6 @@ class BaseAdminController(BaseController):
             for key, value in data.items()
         }
 
-        assert uniq_id is not None
-        assert name is not None
-        assert federation is not None
         assert start is not None
         assert stop is not None
 
@@ -620,8 +556,6 @@ class BaseAdminController(BaseController):
         request: HTMXRequest,
         admin_event: Event | None,
     ) -> dict[str, Any]:
-        uniq_id: str | None = None
-        name: str | None = None
         match action:
             case 'update':
                 if admin_event is None:
@@ -640,12 +574,8 @@ class BaseAdminController(BaseController):
             case 'create':
                 name = EventLoader.get(request).get_unused_event_name(_('New event'))
                 uniq_id = EventLoader.get(request).get_unused_event_uniq_id(_('event'))
-            case 'delete':
-                pass
             case _:
                 raise ValueError(f'action=[{action}]')
-        start: float | None = None
-        stop: float | None = None
         match action:
             case 'update' | 'clone':
                 assert admin_event is not None
@@ -663,13 +593,8 @@ class BaseAdminController(BaseController):
                         f'{today_str} 23:59', '%Y-%m-%d %H:%M'
                     ).timetuple()
                 )
-            case 'delete':
-                pass
             case _:
                 raise ValueError(f'action=[{action}]')
-        public: bool | None = None
-        federation: str | None = None
-        hide_background_image: bool | None = None
         background_image: str | None = None
         background_color: str | None = None
         location: str | None = None
@@ -702,8 +627,6 @@ class BaseAdminController(BaseController):
                 public = False
                 federation = SharlyChessConfig().federation.name
                 hide_background_image = SharlyChessConfig.default_hide_background_image
-            case 'delete':
-                pass
             case _:
                 raise ValueError(f'action=[{action}]')
 

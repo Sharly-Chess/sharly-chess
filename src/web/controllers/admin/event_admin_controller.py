@@ -15,6 +15,7 @@ from pyexcel_ods3 import save_data
 
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
+from data.loader import EventLoader
 from data.player import Player
 from data.print_documents import (
     PrintDocument,
@@ -85,15 +86,12 @@ class EventAdminController(BaseEventAdminController):
                 if action is None:
                     raise RuntimeError('action not defined')
                 if data is None:
-                    data = cls._prepare_event_modal_data(
-                        action, request, web_context.admin_event
-                    )
-                    stored_event: StoredEvent = cls._admin_validate_event_update_data(
-                        action, request, web_context.admin_event, data
-                    )
-                    errors = stored_event.errors
-                if errors is None:
-                    errors = {}
+                    if action == 'delete':
+                        data = {'uniq_id': ''}
+                    else:
+                        data = cls._prepare_event_modal_data(
+                            action, request, web_context.admin_event
+                        )
 
                 plugin_form_fields_templates = (
                     plugin_manager.hook.get_event_form_fields_template() or []
@@ -116,11 +114,12 @@ class EventAdminController(BaseEventAdminController):
                     ]
                     and 'background_image' in data
                     else {},
+                    'event_uniq_ids': EventLoader.all_event_ids(),
                     'modal': 'event',
                     'plugin_form_fields_templates': plugin_form_fields_templates,
                     'action': action,
                     'data': data,
-                    'errors': errors,
+                    'errors': errors or {},
                 }
             case 'print':
                 print_options = PrintDocumentOptionManager.objects()
@@ -255,113 +254,6 @@ class EventAdminController(BaseEventAdminController):
             tournament_id=tournament_id,
         )
 
-    def _admin_event_update(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-        action: str,
-        event_uniq_id: str | None,
-    ) -> Template | ClientRedirect | Redirect:
-        match action:
-            case 'clone' | 'update' | 'delete':
-                web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
-                    request,
-                    event_uniq_id=event_uniq_id,
-                    data=data,
-                )
-            case _:
-                raise ValueError(f'action=[{action}]')
-        if web_context.error:
-            return web_context.error
-        stored_event: StoredEvent = self._admin_validate_event_update_data(
-            action, request, web_context.admin_event, data
-        )
-        if stored_event.errors:
-            assert event_uniq_id is not None
-            return self._admin_event_config_render(
-                request,
-                event_uniq_id=event_uniq_id,
-                modal='event',
-                action=action,
-                data=data,
-                errors=stored_event.errors,
-            )
-        uniq_id: str = stored_event.uniq_id
-        match action:
-            case 'update':
-                if web_context.admin_event is None:
-                    raise RuntimeError(f'{web_context.admin_event=} for [{action=}]')
-                rename: bool = uniq_id != web_context.admin_event.uniq_id
-                if rename:
-                    try:
-                        EventDatabase(web_context.admin_event.uniq_id).rename(
-                            new_uniq_id=uniq_id
-                        )
-                    except PermissionError as ex:
-                        return BaseController.redirect_error(
-                            request,
-                            _('Renaming the database failed: {ex}.').format(ex=ex),
-                        )
-                with EventDatabase(uniq_id, write=True) as event_database:
-                    event_database.update_stored_event(stored_event)
-                    event_database.commit()
-                if rename:
-                    Message.success(
-                        request,
-                        _(
-                            'Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated.'
-                        ).format(
-                            old_uniq_id=web_context.admin_event.uniq_id,
-                            new_uniq_id=uniq_id,
-                        ),
-                    )
-                else:
-                    Message.success(
-                        request,
-                        _('Event [{uniq_id}] has been updated.').format(
-                            uniq_id=uniq_id
-                        ),
-                    )
-                return self._admin_event_config_render(request, event_uniq_id=uniq_id)
-            case 'clone':
-                if web_context.admin_event is None:
-                    raise RuntimeError(f'{web_context.admin_event=} for [{action=}]')
-                EventDatabase(web_context.admin_event.uniq_id).clone(
-                    new_uniq_id=uniq_id
-                )
-                with EventDatabase(uniq_id, write=True) as event_database:
-                    event_database.update_stored_event(stored_event)
-                    if 'with_players' not in data:
-                        event_database.delete_all_stored_players()
-
-                    event_database.commit()
-                Message.success(
-                    request,
-                    _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id),
-                )
-                return self._admin_event_config_render(request, event_uniq_id=uniq_id)
-            case 'delete':
-                if web_context.admin_event is None:
-                    raise RuntimeError(f'{web_context.admin_event=} for [{action=}]')
-                try:
-                    arch = EventDatabase(web_context.admin_event.uniq_id).delete()
-                except PermissionError as ex:
-                    return BaseController.redirect_error(
-                        request, f'Archiving the database failed: {ex}'
-                    )
-                Message.success(
-                    request,
-                    _(
-                        'Event [{uniq_id}] has been deleted, the database has been archived ({arch}).'
-                    ).format(uniq_id=web_context.admin_event.uniq_id, arch=arch),
-                )
-                return ClientRedirect(redirect_to=admin_url(request))
-            case _:
-                raise ValueError(f'action=[{action}]')
-
     @post(
         path='/admin/event-clone/{event_uniq_id:str}',
         name='admin-event-clone',
@@ -375,9 +267,39 @@ class EventAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
     ) -> Template | ClientRedirect | Redirect:
-        return self._admin_event_update(
-            request, data=data, action='clone', event_uniq_id=event_uniq_id
+        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            data=data,
         )
+        if web_context.error:
+            return web_context.error
+        stored_event: StoredEvent = self._admin_validate_event_update_data(
+            'clone', web_context.admin_event, data
+        )
+        if stored_event.errors:
+            assert event_uniq_id is not None
+            return self._admin_event_config_render(
+                request,
+                event_uniq_id=event_uniq_id,
+                modal='event',
+                action='clone',
+                data=data,
+                errors=stored_event.errors,
+            )
+        uniq_id: str = stored_event.uniq_id
+        event = web_context.get_admin_event()
+        EventDatabase(event.uniq_id).clone(new_uniq_id=uniq_id)
+        with EventDatabase(uniq_id, write=True) as event_database:
+            event_database.update_stored_event(stored_event)
+            if 'with_players' not in data:
+                event_database.delete_all_stored_players()
+            event_database.commit()
+        Message.success(
+            request,
+            _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id),
+        )
+        return self._admin_event_config_render(request, event_uniq_id=uniq_id)
 
     @post(
         path='/admin/event-delete/{event_uniq_id:str}',
@@ -395,9 +317,38 @@ class EventAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
     ) -> Template | ClientRedirect | Redirect:
-        return self._admin_event_update(
-            request, data=data, action='delete', event_uniq_id=event_uniq_id
+        web_context = BaseEventAdminWebContext(request, event_uniq_id, data)
+        if web_context.error:
+            return web_context.error
+        event = web_context.get_admin_event()
+        uniq_id = WebContext.form_data_to_str(data, field := 'uniq_id')
+        errors: dict[str, str] = {}
+        if not uniq_id:
+            errors[field] = _('Please enter the event ID.')
+        elif uniq_id != event.uniq_id:
+            errors[field] = _('event ID does not match.')
+        if errors:
+            return self._admin_event_config_render(
+                request,
+                event_uniq_id=event_uniq_id,
+                modal='event',
+                action='delete',
+                data=data,
+                errors=errors,
+            )
+        try:
+            arch = EventDatabase(event.uniq_id).delete()
+        except PermissionError as ex:
+            return BaseController.redirect_error(
+                request, f'Archiving the database failed: {ex}'
+            )
+        Message.success(
+            request,
+            _(
+                'Event [{uniq_id}] has been deleted, the database has been archived ({arch}).'
+            ).format(uniq_id=event.uniq_id, arch=arch),
         )
+        return ClientRedirect(redirect_to=admin_url(request))
 
     @patch(path='/admin/event-update/{event_uniq_id:str}', name='admin-event-update')
     async def htmx_admin_event_update(
@@ -409,9 +360,79 @@ class EventAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
     ) -> Template | ClientRedirect | Redirect:
-        return self._admin_event_update(
-            request, data=data, action='update', event_uniq_id=event_uniq_id
+        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            data=data,
         )
+        if web_context.error:
+            return web_context.error
+        stored_event: StoredEvent = self._admin_validate_event_update_data(
+            'update', web_context.admin_event, data
+        )
+        if stored_event.errors:
+            assert event_uniq_id is not None
+            return self._admin_event_config_render(
+                request,
+                event_uniq_id=event_uniq_id,
+                modal='event',
+                action='update',
+                data=data,
+                errors=stored_event.errors,
+            )
+        uniq_id = stored_event.uniq_id
+        with EventDatabase(uniq_id, write=True) as event_database:
+            event_database.update_stored_event(stored_event)
+            event_database.commit()
+        Message.success(
+            request,
+            _('Event [{uniq_id}] has been updated.').format(uniq_id=uniq_id),
+        )
+        return self._admin_event_config_render(request, event_uniq_id=uniq_id)
+
+    @patch(
+        path='/admin/event-uniq-id-update/{event_uniq_id:str}',
+        name='admin-event-uniq-id-update',
+    )
+    async def htmx_admin_event_uniq_id_update(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        event_uniq_id: str,
+    ) -> Template | ClientRedirect | Redirect:
+        web_context = BaseEventAdminWebContext(request, event_uniq_id, data)
+        event = web_context.get_admin_event()
+        new_uniq_id = WebContext.form_data_to_str(data, 'uniq_id')
+        if (
+            not new_uniq_id
+            or not EventLoader.id_regex.match(new_uniq_id)
+            or (
+                new_uniq_id != event.uniq_id
+                and new_uniq_id in EventLoader.all_event_ids()
+            )
+        ):
+            # No precise error (validated in JS)
+            return self.redirect_error(
+                request, f'Invalid event uniq ID [{new_uniq_id}].'
+            )
+        try:
+            EventDatabase(event.uniq_id).rename(new_uniq_id)
+        except PermissionError as ex:
+            return self.redirect_error(
+                request,
+                _('Renaming the database failed: {ex}.').format(ex=ex),
+            )
+        Message.success(
+            request,
+            _('Event [{old_uniq_id}] has been renamed to [{new_uniq_id}].').format(
+                old_uniq_id=event.uniq_id,
+                new_uniq_id=new_uniq_id,
+            ),
+        )
+        return ClientRedirect(admin_event_config_url(request, new_uniq_id))
 
     @post(
         path='/admin/event-print/{event_uniq_id:str}',
