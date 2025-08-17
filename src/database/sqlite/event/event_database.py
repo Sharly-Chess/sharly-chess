@@ -2,7 +2,6 @@ import shutil
 import time
 from collections.abc import Iterator
 from contextlib import suppress
-from datetime import datetime
 from functools import cached_property
 from logging import Logger
 from pathlib import Path
@@ -124,28 +123,18 @@ class EventDatabase(MigrationDatabase):
 
     def delete(self) -> Path:
         """Soft-deletes the event database file by archiving it."""
-        from data.loader import EventLoader
+        from data.loader import ArchiveLoader, EventLoader
 
-        file: Path = EventDatabase(self.uniq_id).file
-        index: int = 0
-        date_str: str = datetime.strftime(datetime.now(), '%Y-%m-%d-%H-%M')
-        arch: Path = (
-            file.parent
-            / f'{file.stem}_{date_str}.{SharlyChessConfig.event_archive_ext}'
-        )
-        while True:
-            try:
-                file.rename(arch)
-                logger.info('Database has been archived (%s).', arch)
-                EventLoader.unload_event(self.uniq_id)
-                return arch
-            except FileExistsError:
-                logger.warning(
-                    'Could not rename the database because file [%s] already exists.',
-                    arch,
-                )
-                index += 1
-                arch = file.parent / f'{file.stem}_{date_str}-{index}.arch'
+        index = 0
+        arch_file = ArchiveLoader.get_archive_path(self.uniq_id)
+        while arch_file.exists():
+            index += 1
+            arch_file = ArchiveLoader.get_archive_path(f'{self.uniq_id}#{index}')
+        arch_file.parent.mkdir(parents=True, exist_ok=True)
+        self.file.rename(arch_file)
+        logger.info('Database has been archived (%s).', arch_file)
+        EventLoader.unload_event(self.uniq_id)
+        return arch_file
 
     def rename(self, new_uniq_id: str):
         """Changes the event file database to the one associated to the

@@ -314,9 +314,6 @@ msgstr ""
 msgid "Add a tournament to the event."
 msgstr ""
 
-msgid "Add an event."
-msgstr ""
-
 msgid "Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!"
 msgstr ""
 
@@ -369,6 +366,9 @@ msgid "Any number of devices can be controlled by the same display controller."
 msgstr ""
 
 msgid "Arbiter interface"
+msgstr ""
+
+msgid "Archive [{archive}] successfully restored (see event [{event}])."
 msgstr ""
 
 msgid "Archived ({num})"
@@ -1877,9 +1877,6 @@ msgid "Family [{family_uniq_id}] has been deleted."
 msgstr ""
 
 msgid "Family [{family_uniq_id}] has been updated."
-msgstr ""
-
-msgid "Family [{family_uniq_id}]: {text}"
 msgstr ""
 
 msgid "Family [{uniq_id}] already exists."
@@ -3744,6 +3741,9 @@ msgstr ""
 msgid "Res. ** RESULT FOR TABLE HEADER"
 msgstr "Res."
 
+msgid "Restore"
+msgstr ""
+
 msgid "Result"
 msgstr ""
 
@@ -3803,9 +3803,6 @@ msgid "Rotator [{rotator_uniq_id}] has been deleted."
 msgstr ""
 
 msgid "Rotator [{rotator_uniq_id}] has been updated."
-msgstr ""
-
-msgid "Rotator [{rotator_uniq_id}]: {text}"
 msgstr ""
 
 msgid "Rotator [{uniq_id}] already exists."
@@ -3929,12 +3926,6 @@ msgid "Screen [{screen_uniq_id}] has been deleted."
 msgstr ""
 
 msgid "Screen [{screen_uniq_id}] has been updated."
-msgstr ""
-
-msgid "Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}"
-msgstr ""
-
-msgid "Screen [{screen_uniq_id}]: {text}"
 msgstr ""
 
 msgid "Screen [{uniq_id}] already exists."
@@ -4725,12 +4716,6 @@ msgstr ""
 msgid "Timer [{timer_uniq_id}] has been updated."
 msgstr ""
 
-msgid "Timer [{timer_uniq_id}], hour [{hour_order}]: {text}"
-msgstr ""
-
-msgid "Timer [{timer_uniq_id}]: {text}"
-msgstr ""
-
 msgid "Timer [{uniq_id}] already exists."
 msgstr ""
 
@@ -4836,9 +4821,6 @@ msgid "Tournament [{tournament_uniq_id}] is not started yet."
 msgstr ""
 
 msgid "Tournament [{tournament_uniq_id}] is started."
-msgstr ""
-
-msgid "Tournament [{tournament_uniq_id}]: {text}"
 msgstr ""
 
 msgid "Tournament [{uniq_id}] already exists."
