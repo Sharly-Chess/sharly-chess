@@ -1,7 +1,10 @@
+from collections import defaultdict
 import json
 from dataclasses import dataclass
 from typing import Annotated, Any
 
+from data.pairings.engines import BbpPairings
+from data.pairings.history import RoundResult
 from litestar import delete, get, patch, put, post
 from litestar.plugins.htmx import HTMXRequest, ClientRedirect
 from litestar.enums import RequestEncodingType
@@ -1192,4 +1195,65 @@ class PairingsAdminController(BaseEventAdminController):
                 'data': '',
             },
             ['sse'],
+        )
+
+    @get(
+        path='/admin/pairings/info-modal/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-pairings-info-modal',
+    )
+    async def admin_pairings_info_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        round: int,
+    ) -> Template | ClientRedirect:
+        web_context: PairingsAdminWebContext = PairingsAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=round,
+        )
+        tournament = web_context.get_admin_tournament()
+
+        engine = tournament.pairing_variation.engine
+        assert isinstance(engine, BbpPairings)
+
+        history = engine.get_history(tournament=tournament, round_=round)
+
+        buckets: dict[float, list[tuple[int, Player, list[RoundResult]]]] = defaultdict(
+            list
+        )
+
+        for hist_player in history.players:
+            pairing_number = hist_player.id
+
+            rounds_upto = sorted(
+                (rr for rr in hist_player.rounds if rr.round <= round),
+                key=lambda rr: rr.round,
+            )
+            total = rounds_upto[-1].points.total if rounds_upto else 0.0
+
+            # Resolve to the Tournament Player using players_by_starting_rank
+            tp = tournament.players_by_starting_rank.get(pairing_number)
+            if tp is None:
+                continue
+
+            buckets[total].append((pairing_number, tp, rounds_upto))
+
+        # Sort each bucket by pairing number (ascending)
+        for __, items in buckets.items():
+            items.sort(key=lambda it: it[0])
+
+        # Build final structure: list of (points, [players]) sorted by points desc
+        grouped = [(pts, entries) for pts, entries in buckets.items()]
+        grouped.sort(key=lambda it: it[0], reverse=True)
+
+        return self._admin_event_pairings_render(
+            web_context,
+            {
+                'modal': 'pairing_info',
+                'pairing_history': grouped,
+                'players_by_pairing_number': tournament.players_by_starting_rank,
+            },
         )

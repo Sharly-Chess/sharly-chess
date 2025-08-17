@@ -11,7 +11,7 @@ from common.exception import SharlyChessException
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from common.tool_installer import PapiConverterInstaller
-from data.input_output.dict_reader import dict_to_dataclass, DictReaderException
+from utils.dict_reader import dict_to_dataclass, DictReaderException
 from data.pairings.engines import DoubleBergerPairingEngine
 from data.pairings.variations import (
     BergerRoundRobinVariation,

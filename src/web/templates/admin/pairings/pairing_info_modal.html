@@ -1,0 +1,68 @@
+{% import '/common/macros.j2' as macros with context %}
+
+<div id="player-modal" class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-players-update-modal" style="max-width: 90%;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Pairings information') }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <table
+                id="pairings-info-table"
+                class="table prominent table-sm table-hover w-100 bg-light mx-auto justify-content-center"
+            >
+                <tbody>
+                    {% for points, entries in pairing_history %}
+                        <tr class="header">
+                            <td class="group-title" colspan="10">
+                                Niveau {{ points }} - {{points}} points - {{ entries|length }} joueur{{ 's' if entries|length > 1 }}
+                            </td>
+                        </tr>
+
+                        {% for pairing_no, player, rounds in entries %}
+                            {% with row_class='even' if loop.index is even else 'odd' %}
+                                <tr id="player-{{ player.id }}" class="{{ row_class }}">
+                                    <td>#{{ pairing_no }}</td>
+                                    <td>{{ player.full_name }}</td>
+                                    <td>{{ rounds[-1].floater }}</td>
+                                    {% for rr in rounds %}
+                                        <td>
+                                            {% if rr.opponent %}
+                                                <span
+                                                    class=""
+                                                    {{ macros.tooltip_attributes('info', players_by_pairing_number[rr.opponent].full_name) }}
+                                                >
+                                                    {{ rr.opponent }}
+                                                </span>
+                                            {% else %}
+                                                <span
+                                                    class=""
+                                                >
+                                                -
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                    {% endfor %}
+                                    {% for rr in rounds %}
+                                        <td>{{ rr.color or '-' }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endwith %}
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-primary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Close') }}
+            </button>
+        </div>
+    </div>
+</div>

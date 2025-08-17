@@ -581,7 +581,8 @@ body[data-bs-theme=light] .btn-primary {
     border-color: transparent;
 }
 
-[data-bs-theme=dark] table.prominent thead th {
+[data-bs-theme=dark] table.prominent thead th,
+[data-bs-theme=dark] table.prominent tr.header td {
     background-color: var(--bs-primary);
     color: var(--pw-contrast-text);
     padding: 5px;
@@ -597,7 +598,7 @@ body[data-bs-theme=light] .btn-primary {
     vertical-align: middle;
 }
 
-[data-bs-theme=dark] table.prominent thead td {
+[data-bs-theme=dark] table.prominent thead td, [data-bs-theme=dark] table.prominent tr.header td {
     padding: 5px;
 }
 

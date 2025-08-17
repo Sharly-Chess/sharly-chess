@@ -1,10 +1,13 @@
 from abc import ABC, abstractmethod
+import json
 import subprocess
 from functools import cache
 from operator import attrgetter
 from pathlib import Path
 from typing import TextIO, TYPE_CHECKING
 
+from utils.dict_reader import dict_to_dataclass
+from data.pairings.history import TournamentHistory
 import trf
 from typing_extensions import override
 
@@ -236,6 +239,41 @@ class BbpPairings(PairingEngine):
                 )
             )
         return stored_boards
+
+    def get_history(self, tournament: 'Tournament', round_: int) -> TournamentHistory:
+        pairings_dir = TMP_DIR / 'pairings'
+        pairings_dir.mkdir(exist_ok=True, parents=True)
+        trf_file_path = pairings_dir / f'{tournament.uniq_id}.trfx'
+        history_file_path = pairings_dir / f'{tournament.uniq_id}-history.json'
+        history_file_path.unlink(missing_ok=True)
+        trf_tournament = tournament.to_trf(
+            TrfType.TRF_BX,
+            after_round=round_ - 1,
+            next_round_pairings_as_zpb=False,
+        )
+        with open(trf_file_path, 'w', encoding='utf-8') as trf_file:
+            trf.dump(trf_file, trf_tournament)
+        result = subprocess.run(
+            [
+                self.executable_path,
+                '--dutch',
+                trf_file_path,
+                '--history',
+                history_file_path,
+            ],
+            capture_output=True,
+            encoding='utf-8',
+        )
+        if not history_file_path.exists():
+            raise SharlyChessException(
+                f'{tournament.log_prefix}round {round_} - Pairing history '
+                f'from BbpPairings failed with status {result.returncode}.\n'
+                f'stdout: {result.stdout}\nstderr: {result.stderr}'
+            )
+        with open(history_file_path, 'r', encoding='utf-8') as file:
+            history_dict = json.load(file)
+        history_data = dict_to_dataclass(TournamentHistory, history_dict)
+        return history_data
 
 
 class RoundRobinPairingEngine(PairingEngine, ABC):
