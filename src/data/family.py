@@ -241,17 +241,6 @@ class Family:
         return format_timestamp_date_time(self.last_update)
 
     def _calculate_screens(self) -> bool:
-        if not self.tournament.rounds:
-            self.error = _(
-                'Tournament [{tournament_uniq_id}] can not be read, family ignored.'
-            ).format(tournament_uniq_id=self.tournament.uniq_id)
-            self.error = (
-                str(self.error)
-                if self.error
-                else _('Tournament can not be read, family ignored.')
-            )
-            self.event.add_warning(self.error, family=self)
-            return False
         players_instead_of_boards: bool
         cut_items_number: int = 0
         match ScreenType(self.type):

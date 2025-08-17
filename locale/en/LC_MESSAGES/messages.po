@@ -5081,9 +5081,6 @@ msgstr ""
 msgid "Tournament [{tournament_name}] not found (code: [{code}]): [{error}]."
 msgstr ""
 
-msgid "Tournament [{tournament_uniq_id}] can not be read, family ignored."
-msgstr ""
-
 msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
 msgstr ""
 
@@ -5106,9 +5103,6 @@ msgid "Tournament [{tournament_uniq_id}]: {text}"
 msgstr ""
 
 msgid "Tournament [{uniq_id}] already exists."
-msgstr ""
-
-msgid "Tournament can not be read, family ignored."
 msgstr ""
 
 msgid "Tournament creation"

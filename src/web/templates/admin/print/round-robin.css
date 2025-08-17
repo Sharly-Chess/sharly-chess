@@ -1,6 +1,7 @@
 {# ========== BORDERS ========== #}
 .rr-table { border-collapse: collapse; }
-.rr-table td.result { border-left: 1px solid #000000; }
+.rr-table td.result,
+.rr-table td.tie-break { border-left: 1px solid #000000; }
 {# ========== WIDTH, MARGINS, PADDING ==========#}
 .rr-table { padding: 2px; border-spacing: 0; margin-top: 3rem; }
 .rr-table td { padding: 4px; }
@@ -10,8 +11,10 @@
 {# ========== TEXT ALIGN ========== #}
 .rr-table .player { text-align: left; }
 .rr-table .rating,
+.rr-table .player-title,
 .rr-table .rr-number { text-align: right; }
 .rr-table .points,
+.rr-table .tie-break,
 .rr-table .result { text-align: center; }
 
 .rr-table td.self-game {

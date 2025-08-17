@@ -601,6 +601,8 @@ class BergerGridPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
+        assert self.tournament is not None
+        self.tournament.compute_player_ranks()
         return {
             'result_grid': self.build_result_grid(),
             'grid_id_by_player_id': self.grid_id_by_player_id,

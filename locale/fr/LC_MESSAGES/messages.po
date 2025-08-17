@@ -5087,9 +5087,6 @@ msgstr "Le tournoi [{tournament_id}] n'existe pas."
 msgid "Tournament [{tournament_name}] not found (code: [{code}]): [{error}]."
 msgstr "Tournoi [{tournament_name}] introuvable (code : [{code}]) : [{error}]."
 
-msgid "Tournament [{tournament_uniq_id}] can not be read, family ignored."
-msgstr "Le tournoi [{tournament_uniq_id}] ne peut pas être lu, famille ignorée."
-
 msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
 msgstr "Le tournoi [{tournament_uniq_id}] a été créé et les écrans par défaut ont été ajoutés."
 
@@ -5113,9 +5110,6 @@ msgstr "Tournoi [{tournament_uniq_id}] : {text}"
 
 msgid "Tournament [{uniq_id}] already exists."
 msgstr "Le tournoi [{uniq_id}] existe déjà."
-
-msgid "Tournament can not be read, family ignored."
-msgstr "Impossible de lire le tournoi, famille ignorée."
 
 msgid "Tournament creation"
 msgstr "Création d'un tournoi"

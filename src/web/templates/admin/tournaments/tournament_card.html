@@ -8,26 +8,16 @@
     <div class="d-flex gap-2 align-items-center justify-content-center">
         <div
             class="text-nowrap {% if not tournament.rounds %}text-secondary{% endif %}"
-            {% if tournament.rounds %}
-                {{ macros.tooltip_attributes('info', _('Number of players: %(num)d', num=tournament.players_by_id|length), 'top') }}
-            {% endif %}
+            {{ macros.tooltip_attributes('info', _('Number of players: %(num)d', num=tournament.players_by_id|length), 'top') }}
         >
             <i class="bi-people-fill pe-1"></i>
-            {% if tournament.rounds %}
-                {{ tournament.players_by_id|length }}
-            {% else %}
-                <i class="bi-question text-secondary"></i>
-            {% endif %}
+            {{ tournament.players_by_id|length }}
         </div>
         <div
-            class="text-nowrap {% if not tournament.rounds %}text-secondary{% endif %}"
+            class="text-nowrap"
         >
             {{ admin_macros.tournament_status_icon(tournament) }}
-            {% if tournament.rounds %}
-                {{ tournament.current_round }}/{{ tournament.rounds }}
-            {% else %}
-                <i class="bi-question"></i>
-            {% endif %}
+            {{ tournament.current_round }}/{{ tournament.rounds }}
         </div>
         {% if not tournament.record_illegal_moves %}
             {% set text=_('Illegal moves are not recorded.') %}

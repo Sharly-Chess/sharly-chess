@@ -12,10 +12,7 @@
 
 {% macro tournament_status_icon(tournament, class) %}
     <!-- tournament_status_icon() -->
-    {% if not tournament.rounds %}
-        {% set _icon_class='bi-exclamation-triangle-fill text-danger' %}
-        {% set _tooltip_text='' %}
-    {% elif not tournament.started %}
+    {% if not tournament.started %}
         {% set _icon_class='bi-pause-fill' %}
         {% set _tooltip_text=_('The tournament has not yet started.') %}
     {% elif tournament.playing %}

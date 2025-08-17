@@ -9,6 +9,7 @@
         <thead class="rr-header">
             <tr class="rr-header">
                 <th class="rr-number">{{ _('Nb. *** NB FOR TABLE HEADER') }}</th>
+                <th class="player-title">{# The player's title #}</th>
                 <th class="player">{{ _('Name *** NAME FOR TABLE HEADER') }}</th>
                 <th>{{ _('Fed *** FEDERATION FOR TABLE HEADER') }}</th>
                 <th>{{ document.tournament.rating.print_view_header }}</th>
@@ -16,6 +17,9 @@
                     <th>{{ berger_number }}</th>
                 {% endfor %}
                 <th class="result">{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
+                {% for tie_break in document.tournament.tie_breaks %}
+                    <th class="tie-break">{{ tie_break.acronym }}</th>
+                {% endfor %}
             </tr>
         </thead>
         <tbody>
@@ -25,6 +29,7 @@
                 >
                     <td class=number">{{ grid_id_by_player_id[player_id] }}</td>
                     {% with player=document.tournament.players_by_id[player_id] %}
+                        <td class="player-title">{{ player.title }}</td>
                         <td class="player">{{ player.full_name }}</td>
                         <td class="federation">{{ player.federation }}</td>
                         <td class="rating">{{ player.rating_str }}</td>
@@ -46,6 +51,11 @@
                         {% endif %}
                     {% endfor %}
                     <td class="result">{{ document.grid_results_points(results) }}</td>
+                    {% with player=document.tournament.players_by_id[player_id] %}
+                        {% for tie_break in player.tie_break_values_as_strings %}
+                            <td class="tie-break">{{ tie_break }}</td>
+                        {% endfor %}
+                    {% endwith %}
                 </tr>
             {% endfor %}
         </tbody>
