@@ -15,7 +15,7 @@ from plugins.ffe.papi_mappers import (
     PapiPlayerRatingType,
     PapiPlayerFFELicence,
 )
-from utils.enum import TournamentRating, PlayerRatingType
+from utils.enum import TournamentRating, PlayerRatingType, PlayerTitle
 from database.sql_server.sql_server import SqlServer, SqlServerCredentials
 from plugins import PLUGINS_DIR
 from plugins.ffe import PLUGIN_NAME
@@ -102,6 +102,12 @@ class FFESqlServer(SqlServer):
 
     @staticmethod
     def _get_stored_player_from_row(row: dict[str, Any]) -> StoredPlayer:
+        ffe_title_value = row['FideTitre'] or ''
+        title: PlayerTitle = (
+            PlayerTitle.NONE
+            if ffe_title_value in ('c', 'cf')
+            else PapiPlayerTitle.get_core_object(ffe_title_value).value
+        )
         return StoredPlayer(
             id=None,
             first_name=row['Prenom'].title() if row['Prenom'] else '',
@@ -113,7 +119,7 @@ class FFESqlServer(SqlServer):
             comment='',
             owed=0.0,
             paid=0.0,
-            title=PapiPlayerTitle.get_core_object(row['FideTitre'] or '').value,
+            title=title,
             ratings={
                 TournamentRating.STANDARD: PlayerRating(
                     row['Elo'], PapiPlayerRatingType.get_core_object(row['Fide'])
