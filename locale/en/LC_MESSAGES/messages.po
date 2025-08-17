@@ -683,6 +683,9 @@ msgstr ""
 msgid "Change the player's tournament."
 msgstr ""
 
+msgid "Changing the unique ID will cause an error on any opened screen of the event."
+msgstr ""
+
 msgid "Character [{char}] is not allowed."
 msgstr ""
 
@@ -1565,15 +1568,16 @@ msgstr ""
 msgid "Edit the sets of players displayed on the screen."
 msgstr ""
 
-msgid "Edit the unique ID of the event, used for URLs and file exports."
-msgstr ""
-
 #, python-format
 msgid "Editing of default timers for event [%(event_uniq_id)s]"
 msgstr ""
 
 #, python-format
 msgid "Editing of display controller [%(display_controller_uniq_id)s]"
+msgstr ""
+
+#, python-format
+msgid "Editing of event [%(event_uniq_id)s]"
 msgstr ""
 
 #, python-format
@@ -1679,14 +1683,7 @@ msgstr "Estimated"
 msgid "Event"
 msgstr ""
 
-#, python-format
-msgid "Event [%(uniq_id)s]"
-msgstr ""
-
 msgid "Event [{event_id}] not found (code: [{code}]): [{error}]."
-msgstr ""
-
-msgid "Event [{old_uniq_id}] has been renamed to [{new_uniq_id}]."
 msgstr ""
 
 msgid "Event [{uniq_id}] has been created."
@@ -1701,7 +1698,7 @@ msgstr ""
 msgid "Event creation"
 msgstr ""
 
-msgid "Event edition"
+msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
 msgstr ""
 
 msgid "Event: {event_name}"
@@ -4525,6 +4522,9 @@ msgid "The rating used when the time control is more than 10 minutes and less th
 msgstr ""
 
 msgid "The related objects will also be deleted:"
+msgstr ""
+
+msgid "The representation of the event for URLs and file exports."
 msgstr ""
 
 #, python-format
