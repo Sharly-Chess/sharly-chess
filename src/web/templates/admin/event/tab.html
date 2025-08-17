@@ -52,7 +52,75 @@
         <tbody>
             <tr>
                 <th scope="row" class="text-nowrap">{{ _('Unique ID') }}</th>
-                <td class="text-nowrap">{{ admin_event.uniq_id }}</td>
+                <td class="text-nowrap">
+                    <span id="uniq-id-field">
+                        {{ admin_event.uniq_id }}
+                        <span
+                            {{ macros.tooltip_attributes(
+                                'info',
+                                _(
+                                    'Edit the unique ID of the event, used for URLs and file exports. '
+                                    'This will cause an error on any opened screen.'
+                                ),
+                                'right'
+                            ) }}
+                        >
+                            <button
+                                id="uniq-id-update-button"
+                                data-testid="uniq-id-update-button"
+                                type="button"
+                                class="btn btn-sm text-primary text-nowrap"
+                            >
+                                <i class="bi-pencil"></i>
+                            </button>
+                        </span>
+                    </span>
+                    <div
+                        id="uniq-id-update-form-container"
+                        class="col-12 col-md-6"
+                        style="display: none"
+                    >
+                        {{ admin_macros.inline_text_form(
+                            'uniq-id-update',
+                            name='uniq_id',
+                            placeholder=_('E.g.: %(string)s', string=_('my-event')),
+                            value=admin_event.uniq_id,
+                            patch_url=url_for('admin-event-uniq-id-update', event_uniq_id=admin_event.uniq_id),
+                        ) }}
+                    </div>
+                    <script>
+                        {% set id = 'uniq-id-update' %}
+                        $('#{{ id }}-input').on('input', function() {
+                            let disabled = true;
+                            let error = "";
+                            const value = $(this).val();
+                            if (value === '') {
+                                error = "{{ _('A value is expected.') }}";
+                            } else if (value != "{{ admin_event.uniq_id }}" && {{ event_uniq_ids|tojson }}.includes(value)) {
+                                error = "{{ _('An event with this unique ID already exists.') }}";
+                            } else if (!value.match(/^[0-9a-zA-Z_\-]+$/)) {
+                                error = "{{ _('Accepted characters are letters, numbers, underscore (_) and minus (-).') }}";
+                            } else {
+                                disabled = false;
+                                error = "{{ _('Validate') }}";
+                            }
+
+                            $('#{{ id }}-submit-button').prop('disabled', disabled);
+                            const tooltipElement = document.getElementById('{{ id }}-submit-button-container');
+                            const tooltip = bootstrap.Tooltip.getInstance(tooltipElement);
+                            tooltip.setContent({ '.tooltip-inner': error || "{{ _('Validate') }}" });
+                            tooltip.update();
+                        });
+                        $('#{{ id }}-button').click(() => {
+                            $('#{{ id }}-form-container').css('display', '');
+                            $('#uniq-id-field').css('display', 'none');
+                        });
+                        $('#{{ id }}-cancel-button').click(() => {
+                            $('#{{ id }}-form-container').css('display', 'none');
+                            $('#uniq-id-field').css('display', '');
+                        });
+                    </script>
+                </td>
             </tr>
             <tr>
                 <th scope="row" class="text-nowrap">{{ _('Date') }}</th>

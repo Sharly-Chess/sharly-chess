@@ -77,6 +77,7 @@ class EventAdminController(BaseEventAdminController):
             'admin_event_tab': 'admin-event-config-tab',
             'ffe_utils': FFEUtils,
             'plugin_event_info_rows': plugin_event_info_rows,
+            'event_uniq_ids': EventLoader.all_event_ids(),
         }
 
         match modal:
@@ -114,7 +115,6 @@ class EventAdminController(BaseEventAdminController):
                     ]
                     and 'background_image' in data
                     else {},
-                    'event_uniq_ids': EventLoader.all_event_ids(),
                     'modal': 'event',
                     'plugin_form_fields_templates': plugin_form_fields_templates,
                     'action': action,
