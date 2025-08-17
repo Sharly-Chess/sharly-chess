@@ -213,6 +213,8 @@ class SharlyChessConfig(metaclass=Singleton):
     # The old extension of event databases (used to recover data from previous releases).
     event_database_old_ext: str = 'db'
 
+    event_archive_base_path = EVENTS_DIR / 'archives'
+
     # The extension of archives event databases (Sharly Chess Archive).
     event_archive_ext: str = 'sca'
 

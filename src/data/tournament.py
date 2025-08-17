@@ -46,7 +46,6 @@ from utils.enum import (
 )
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredPrizeGroup
-from plugins.manager import plugin_manager
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -69,9 +68,6 @@ class Tournament:
         self.boards_by_id = self._get_boards_by_id()
         self.prize_groups_by_id = self._get_prize_groups_by_id()
         self._players_by_rank: dict[int, Player] | None = None
-
-        # Give plugin the chance to initialise their data
-        plugin_manager.hook.on_tournament_init(tournament=self)
 
     @property
     def event(self) -> 'Event':

@@ -327,14 +327,7 @@ class Family:
                     )
             case _:
                 raise ValueError(f'type={self.type}')
-        if not cut_items_number:
-            self.event.add_warning(
-                _(
-                    'Nothing to display for tournament [{tournament_uniq_id}], one empty screen will be used.'
-                ).format(tournament_uniq_id=self.tournament.uniq_id),
-                family=self,
-            )
-        else:
+        if cut_items_number:
             # OK now we know the number of items and the number of the first item to take
             # Let's go for the number of items by part and the number of parts
             if self.number:

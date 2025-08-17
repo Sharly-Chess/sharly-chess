@@ -340,9 +340,6 @@ msgstr ""
 msgid "Add an account to the event."
 msgstr ""
 
-msgid "Add an event."
-msgstr ""
-
 msgid "Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!"
 msgstr ""
 
@@ -436,13 +433,7 @@ msgstr ""
 msgid "Application"
 msgstr ""
 
-msgid "Archived ({num})"
-msgstr ""
-
 msgid "Archived event"
-msgstr ""
-
-msgid "Archived events"
 msgstr ""
 
 msgid "Argument --server is deprecated, ignored."
@@ -757,9 +748,6 @@ msgstr ""
 msgid "Category edition"
 msgstr ""
 
-msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
-msgstr ""
-
 msgid "Change the player's tournament."
 msgstr ""
 
@@ -806,16 +794,7 @@ msgstr ""
 msgid "ChessEvent Password:"
 msgstr ""
 
-msgid "ChessEvent connection not defined."
-msgstr ""
-
-msgid "ChessEvent event not set."
-msgstr ""
-
 msgid "ChessEvent event:"
-msgstr ""
-
-msgid "ChessEvent tournament name not set."
 msgstr ""
 
 msgid "ChessEvent tournament:"
@@ -1139,12 +1118,6 @@ msgstr ""
 msgid "Crosstable before the first round"
 msgstr ""
 
-msgid "Current ({num})"
-msgstr ""
-
-msgid "Current events"
-msgstr ""
-
 msgid "Current round"
 msgstr ""
 
@@ -1198,9 +1171,6 @@ msgstr ""
 msgid "Database [{database}] - "
 msgstr ""
 
-msgid "Database [{database}] successfully updated."
-msgstr ""
-
 msgid "Database [{database}] unexpectedly not found at path [{path}]."
 msgstr ""
 
@@ -1217,9 +1187,6 @@ msgid "Date of birth:"
 msgstr ""
 
 msgid "Date:"
-msgstr ""
-
-msgid "Debug message"
 msgstr ""
 
 msgid "Default federation"
@@ -1861,13 +1828,7 @@ msgstr ""
 msgid "Enter the tournament ID to confirm its deletion:"
 msgstr ""
 
-msgid "Error message"
-msgstr ""
-
 msgid "Error uploading tournament"
-msgstr ""
-
-msgid "Error when updating database [{database}]."
 msgstr ""
 
 msgid "Error while creating the database: {error}."
@@ -1902,12 +1863,6 @@ msgid "Event creation"
 msgstr ""
 
 msgid "Event: {event_name}"
-msgstr ""
-
-msgid "Events"
-msgstr ""
-
-msgid "Events ({num})"
 msgstr ""
 
 msgid "Execution"
@@ -2083,9 +2038,6 @@ msgid "Family [{family_uniq_id}] has been deleted."
 msgstr ""
 
 msgid "Family [{family_uniq_id}] has been updated."
-msgstr ""
-
-msgid "Family [{family_uniq_id}]: {text}"
 msgstr ""
 
 msgid "Family [{uniq_id}] already exists."
@@ -2324,9 +2276,6 @@ msgstr ""
 msgid "Highlights the row if the new result is different when using the keyboard shortcuts (useful when re-entering all the results for verification)."
 msgstr ""
 
-msgid "Home"
-msgstr ""
-
 msgid "Hort system"
 msgstr ""
 
@@ -2446,9 +2395,6 @@ msgstr ""
 msgid "Increment (optional, seconds):"
 msgstr ""
 
-msgid "Information message"
-msgstr ""
-
 msgid "Initial time (optional, seconds):"
 msgstr ""
 
@@ -2500,9 +2446,6 @@ msgstr ""
 msgid "Invalid color [{color}] ([#RRGGBB] expected)."
 msgstr ""
 
-msgid "Invalid console logging level [{console_log_level}]."
-msgstr ""
-
 msgid "Invalid date [{date_str}]."
 msgstr ""
 
@@ -2518,9 +2461,6 @@ msgstr ""
 msgid "Invalid display link text [{text}]"
 msgstr ""
 
-msgid "Invalid federation [{federation}]."
-msgstr ""
-
 msgid "Invalid fees link text [{text}]."
 msgstr ""
 
@@ -2530,13 +2470,7 @@ msgstr ""
 msgid "Invalid hour [{hour}] (before previous hour [{previous_hour}])."
 msgstr ""
 
-msgid "Invalid locale [{locale}]."
-msgstr ""
-
 msgid "Invalid mail [{mail}]."
-msgstr ""
-
-msgid "Invalid range [{first}-{last}]."
 msgstr ""
 
 msgid "Invalid response from the FFE website."
@@ -2669,9 +2603,6 @@ msgstr ""
 msgid "Local databases"
 msgstr ""
 
-msgid "Local source databases settings have been updated."
-msgstr ""
-
 msgid "Location"
 msgstr ""
 
@@ -2747,16 +2678,10 @@ msgstr ""
 msgid "Maximum number of illegal moves"
 msgstr ""
 
-msgid "Maximum number of illegal moves not set, by default [{record_illegal_moves}]"
-msgstr ""
-
 msgid "Maximum number of points (included):"
 msgstr ""
 
 msgid "Maximum number of results displayed:"
-msgstr ""
-
-msgid "Maximum number of results set to [{results_limit}] to fit on [{columns}] columns."
 msgstr ""
 
 msgid "Maximum rating"
@@ -2928,15 +2853,6 @@ msgstr ""
 msgid "No alert message"
 msgstr ""
 
-msgid "No archived events."
-msgstr ""
-
-msgid "No background colour set, by default [{background_color}]"
-msgstr ""
-
-msgid "No background image set, by default [{background_image}]"
-msgstr ""
-
 msgid "No category"
 msgstr ""
 
@@ -2949,9 +2865,6 @@ msgstr ""
 msgid "No criteria."
 msgstr ""
 
-msgid "No current events."
-msgstr ""
-
 msgid "No data received from [{url}]."
 msgstr ""
 
@@ -2959,9 +2872,6 @@ msgid "No display controllers"
 msgstr ""
 
 msgid "No events found."
-msgstr ""
-
-msgid "No events."
 msgstr ""
 
 msgid "No hours."
@@ -2973,16 +2883,10 @@ msgstr ""
 msgid "No mail defined."
 msgstr ""
 
-msgid "No name set, by default [{name}]"
-msgstr ""
-
 msgid "No pairing found for this player in the current round."
 msgstr ""
 
 msgid "No pairings."
-msgstr ""
-
-msgid "No passed events."
 msgstr ""
 
 msgid "No permissions"
@@ -3042,9 +2946,6 @@ msgstr ""
 msgid "No screen neither family to rotate."
 msgstr ""
 
-msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
-msgstr ""
-
 msgid "No screens"
 msgstr ""
 
@@ -3075,9 +2976,6 @@ msgstr ""
 msgid "No tournaments."
 msgstr ""
 
-msgid "No upcoming events."
-msgstr ""
-
 msgid "No updates found."
 msgstr ""
 
@@ -3103,9 +3001,6 @@ msgid "Not connected, impossible to update."
 msgstr ""
 
 msgid "Not paired"
-msgstr ""
-
-msgid "Nothing to display for tournament [{tournament_uniq_id}], one empty screen will be used."
 msgstr ""
 
 msgid "Notification"
@@ -3371,19 +3266,7 @@ msgstr ""
 msgid "Parings by player"
 msgstr ""
 
-msgid "Passed ({num})"
-msgstr ""
-
-msgid "Passed events"
-msgstr ""
-
 msgid "Password:"
-msgstr ""
-
-msgid "Pattern [{pattern}] can be used by screen families only."
-msgstr ""
-
-msgid "Pattern [{pattern}] matches no screen."
 msgstr ""
 
 msgid "Penalty (handicap, seconds):"
@@ -3967,6 +3850,9 @@ msgstr ""
 msgid "Res. ** RESULT FOR TABLE HEADER"
 msgstr "Res."
 
+msgid "Restore"
+msgstr ""
+
 msgid "Result"
 msgstr ""
 
@@ -4035,9 +3921,6 @@ msgid "Rotator [{rotator_uniq_id}] has been deleted."
 msgstr ""
 
 msgid "Rotator [{rotator_uniq_id}] has been updated."
-msgstr ""
-
-msgid "Rotator [{rotator_uniq_id}]: {text}"
 msgstr ""
 
 msgid "Rotator [{uniq_id}] already exists."
@@ -4157,9 +4040,6 @@ msgstr "Score"
 msgid "Screen Management"
 msgstr ""
 
-msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
-msgstr ""
-
 msgid "Screen [{screen_uniq_id}] has been assigned to controller [{display_controller_uniq_id}]."
 msgstr ""
 
@@ -4170,12 +4050,6 @@ msgid "Screen [{screen_uniq_id}] has been deleted."
 msgstr ""
 
 msgid "Screen [{screen_uniq_id}] has been updated."
-msgstr ""
-
-msgid "Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}"
-msgstr ""
-
-msgid "Screen [{screen_uniq_id}]: {text}"
 msgstr ""
 
 msgid "Screen [{uniq_id}] already exists."
@@ -4261,9 +4135,6 @@ msgid "Sharly Chess server URL"
 msgstr ""
 
 msgid "Sharly Chess settings"
-msgstr ""
-
-msgid "Sharly Chess settings have been updated."
 msgstr ""
 
 msgid "Show all the players"
@@ -4996,12 +4867,6 @@ msgstr ""
 msgid "Timer [{timer_uniq_id}] has been updated."
 msgstr ""
 
-msgid "Timer [{timer_uniq_id}], hour [{hour_order}]: {text}"
-msgstr ""
-
-msgid "Timer [{timer_uniq_id}]: {text}"
-msgstr ""
-
 msgid "Timer [{uniq_id}] already exists."
 msgstr ""
 
@@ -5101,9 +4966,6 @@ msgid "Tournament [{tournament_uniq_id}] has started."
 msgstr ""
 
 msgid "Tournament [{tournament_uniq_id}] is finished, you can not add players any longer."
-msgstr ""
-
-msgid "Tournament [{tournament_uniq_id}]: {text}"
 msgstr ""
 
 msgid "Tournament [{uniq_id}] already exists."
@@ -5343,12 +5205,6 @@ msgstr ""
 msgid "Unrated Win"
 msgstr ""
 
-msgid "Upcoming ({num})"
-msgstr ""
-
-msgid "Upcoming events"
-msgstr ""
-
 msgid "Update"
 msgstr ""
 
@@ -5459,9 +5315,6 @@ msgstr ""
 
 msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr "WIM"
-
-msgid "Warning message"
-msgstr ""
 
 msgid "Warning: by default, only people on your Sharly Chess server can access the application."
 msgstr ""
@@ -5960,4 +5813,103 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
+#~ msgid "No password required"
+#~ msgstr ""
+
+#~ msgid "No screen nor family to rotate."
+#~ msgstr ""
+
+#~ msgid "Tournament [{tournament_uniq_id}] is not started yet."
+#~ msgstr ""
+
+#~ msgid "Tournament [{tournament_uniq_id}] is started."
+#~ msgstr ""
+
+#~ msgid "Tournament [{tournament_uniq_id}]: {text}"
+#~ msgstr ""
+
+#~ msgid "Archive [{archive}] successfully restored (see event [{event}])."
+#~ msgstr ""
+
+#~ msgid "Archived ({num})"
+#~ msgstr ""
+
+#~ msgid "Archived events"
+#~ msgstr ""
+
+#~ msgid "Current ({num})"
+#~ msgstr ""
+
+#~ msgid "Current events"
+#~ msgstr ""
+
+#~ msgid "Database [{database}] successfully updated."
+#~ msgstr ""
+
+#~ msgid "Debug message"
+#~ msgstr ""
+
+#~ msgid "Error message"
+#~ msgstr ""
+
+#~ msgid "Error when updating database [{database}]."
+#~ msgstr ""
+
+#~ msgid "Events"
+#~ msgstr ""
+
+#~ msgid "Events ({num})"
+#~ msgstr ""
+
+#~ msgid "Home"
+#~ msgstr ""
+
+#~ msgid "Information message"
+#~ msgstr ""
+
+#~ msgid "Invalid console logging level [{console_log_level}]."
+#~ msgstr ""
+
+#~ msgid "Invalid federation [{federation}]."
+#~ msgstr ""
+
+#~ msgid "Invalid locale [{locale}]."
+#~ msgstr ""
+
+#~ msgid "Local source databases settings have been updated."
+#~ msgstr ""
+
+#~ msgid "No archived events."
+#~ msgstr ""
+
+#~ msgid "No current events."
+#~ msgstr ""
+
+#~ msgid "No events."
+#~ msgstr ""
+
+#~ msgid "No passed events."
+#~ msgstr ""
+
+#~ msgid "No upcoming events."
+#~ msgstr ""
+
+#~ msgid "Passed ({num})"
+#~ msgstr ""
+
+#~ msgid "Passed events"
+#~ msgstr ""
+
+#~ msgid "Sharly Chess settings have been updated."
+#~ msgstr ""
+
+#~ msgid "Upcoming ({num})"
+#~ msgstr ""
+
+#~ msgid "Upcoming events"
+#~ msgstr ""
+
+#~ msgid "Warning message"
+#~ msgstr ""
 

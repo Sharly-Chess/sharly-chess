@@ -494,7 +494,7 @@ class EventAdminController(BaseEventAdminController):
                 new_uniq_id=new_uniq_id,
             ),
         )
-        return ClientRedirect(admin_event_config_url(request, new_uniq_id))
+        return self._admin_event_config_render(request, new_uniq_id)
 
     @post(
         path='/admin/event-print/{event_uniq_id:str}',

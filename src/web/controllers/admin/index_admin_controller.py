@@ -155,7 +155,7 @@ class IndexAdminController(BaseAdminController):
             )
 
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
-        archive_loader: ArchiveLoader = ArchiveLoader.get(request=web_context.request)
+        sorted_archives = ArchiveLoader.get_sorted_archives()
         public_only: bool = not web_context.client.can_view_private_events
         passed_events = EventLoader.get_events_metadata(
             'passed', public_only=public_only
@@ -211,11 +211,11 @@ class IndexAdminController(BaseAdminController):
                 },
                 'archives': {
                     'title': _('Archived ({num})').format(
-                        num=len(archive_loader.archives_sorted_by_date) or '-'
+                        num=len(sorted_archives) or '-'
                     ),
                     'template': 'index/archives_tab.html',
-                    'archives': archive_loader.archives_sorted_by_date,
-                    'disabled': not archive_loader.archives_sorted_by_date,
+                    'archives': sorted_archives,
+                    'disabled': not sorted_archives,
                     'empty_str': _('No archived events.'),
                     'icon_class': 'bi-archive indented',
                     'page_title': _('Archived events'),
@@ -584,6 +584,27 @@ class IndexAdminController(BaseAdminController):
         Message.success(request, _('Sharly Chess settings have been updated.'))
         return self._admin_render(request=request, data=None, admin_tab='config')
 
+    @post(
+        path='/admin/restore-archive/{archive_name:str}',
+        name='admin-restore-archive',
+    )
+    async def htmx_admin_restore_archive(
+        self,
+        request: HTMXRequest,
+        archive_name: str,
+    ) -> Template | ClientRedirect | Redirect:
+        archive = ArchiveLoader.get_archive(archive_name)
+        if not archive:
+            return self.redirect_error(request, f'Unknown archive [{archive_name}]')
+        uniq_id = archive.restore()
+        Message.success(
+            request,
+            _(
+                'Archive [{archive}] successfully restored (see event [{event}]).'
+            ).format(archive=archive.name, event=uniq_id),
+        )
+        return self._admin_render(request, admin_tab='archives')
+
     @patch(
         path='/admin/locale-update/{locale:str}',
         name='admin-locale-update',
@@ -765,7 +786,7 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
         database_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         try:
             database = LocalSourceDatabaseManager.get_object(database_id)
             database.delete()
@@ -784,7 +805,7 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
         data_source_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         try:
             data_source = OnlineDataSourceManager.get_object(data_source_id)
             await data_source.reload_connection_status()

@@ -195,18 +195,6 @@
                 {% for row in plugin_event_info_rows %}
                     {% include row %}
                 {% endfor %}
-
-                {% if client.can_view_event_complete_config %}
-                    {% for message in admin_event.messages %}
-                        <tr>
-                            <td scope="row" colspan="2" class="text-nowrap {{ logging_levels[message.level].class }}">
-                                <i class="{{ logging_levels[message.level].icon_class }}"></i>
-                                {{ logging_levels[message.level].name }}
-                                {{ message.formatted_text }}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                {% endif %}
             </tbody>
         </table>
     </div>
