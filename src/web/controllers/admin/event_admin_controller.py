@@ -418,21 +418,25 @@ class EventAdminController(BaseEventAdminController):
             return self.redirect_error(
                 request, f'Invalid event uniq ID [{new_uniq_id}].'
             )
-        try:
-            EventDatabase(event.uniq_id).rename(new_uniq_id)
-        except PermissionError as ex:
-            return self.redirect_error(
+        if new_uniq_id != event_uniq_id:
+            try:
+                EventDatabase(event.uniq_id).rename(new_uniq_id)
+            except PermissionError as ex:
+                return self.redirect_error(
+                    request,
+                    _('Renaming the database failed: {ex}.').format(ex=ex),
+                )
+            Message.success(
                 request,
-                _('Renaming the database failed: {ex}.').format(ex=ex),
+                _(
+                    'Event unique ID has been renamed from '
+                    '[{old_uniq_id}] to [{new_uniq_id}].'
+                ).format(
+                    old_uniq_id=event.uniq_id,
+                    new_uniq_id=new_uniq_id,
+                ),
             )
-        Message.success(
-            request,
-            _('Event [{old_uniq_id}] has been renamed to [{new_uniq_id}].').format(
-                old_uniq_id=event.uniq_id,
-                new_uniq_id=new_uniq_id,
-            ),
-        )
-        return ClientRedirect(admin_event_config_url(request, new_uniq_id))
+        return self._admin_event_config_render(request, event_uniq_id)
 
     @post(
         path='/admin/event-print/{event_uniq_id:str}',

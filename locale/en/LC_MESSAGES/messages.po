@@ -683,6 +683,9 @@ msgstr ""
 msgid "Change the player's tournament."
 msgstr ""
 
+msgid "Changing the unique ID will cause an error on any opened screen of the event."
+msgstr ""
+
 msgid "Character [{char}] is not allowed."
 msgstr ""
 
@@ -1565,9 +1568,6 @@ msgstr ""
 msgid "Edit the sets of players displayed on the screen."
 msgstr ""
 
-msgid "Edit the unique ID of the event, used for URLs and file exports. This will cause an error on any opened screen."
-msgstr ""
-
 #, python-format
 msgid "Editing of default timers for event [%(event_uniq_id)s]"
 msgstr ""
@@ -1686,9 +1686,6 @@ msgstr ""
 msgid "Event [{event_id}] not found (code: [{code}]): [{error}]."
 msgstr ""
 
-msgid "Event [{old_uniq_id}] has been renamed to [{new_uniq_id}]."
-msgstr ""
-
 msgid "Event [{uniq_id}] has been created."
 msgstr ""
 
@@ -1699,6 +1696,9 @@ msgid "Event [{uniq_id}] has been updated."
 msgstr ""
 
 msgid "Event creation"
+msgstr ""
+
+msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
 msgstr ""
 
 msgid "Event: {event_name}"
@@ -4524,6 +4524,9 @@ msgstr ""
 msgid "The related objects will also be deleted:"
 msgstr ""
 
+msgid "The representation of the event for URLs and file exports."
+msgstr ""
+
 #, python-format
 msgid "The rotating delay between two screens (by default %(default)d seconds)."
 msgstr ""
@@ -5531,13 +5534,4 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
-
-#~ msgid "Edit the unique ID of the event, used for URLs and file exports."
-#~ msgstr ""
-
-#~ msgid "Event [%(uniq_id)s]"
-#~ msgstr ""
-
-#~ msgid "Event edition"
-#~ msgstr ""
 
