@@ -65,15 +65,8 @@ class ScreenSet:
                         map(str.strip, fixed_boards_str.split(','))
                     ):
                         if fixed_board_str:
-                            try:
-                                self.fixed_board_numbers.append(int(fixed_board_str))
-                            except ValueError:
-                                self.event.add_warning(
-                                    _(
-                                        'Invalid board number [{fixed_board_str}].'
-                                    ).format(fixed_board_str=fixed_board_str),
-                                    screen_set=self,
-                                )
+                            assert fixed_board_str.isdigit()  # validated by the form
+                            self.fixed_board_numbers.append(int(fixed_board_str))
                 else:
                     self.fixed_board_numbers = [
                         player.fixed
@@ -87,13 +80,6 @@ class ScreenSet:
                     self.last = max(1, self.stored_screen_set.last)
                     if self.first:
                         self.last = max(self.first, self.last)
-                if self.first and self.last and self.first > self.last:
-                    self.event.add_warning(
-                        _('Invalid range [{first}-{last}].').format(
-                            first=self.first, last=self.last
-                        ),
-                        screen_set=self,
-                    )
         else:
             assert self.family is not None
             self.fixed_board_numbers = []

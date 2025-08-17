@@ -1,7 +1,6 @@
 import copy
 import logging
 import re
-import time
 from collections import defaultdict, Counter
 from dataclasses import dataclass
 from functools import total_ordering, cached_property
@@ -41,9 +40,6 @@ from database.sqlite.event.event_store import (
 )
 
 logger: Logger = get_logger()
-
-event_last_load_date_by_uniq_id: dict[str, float] = {}
-silent_event_uniq_ids: list[str] = []
 
 
 @dataclass
@@ -113,12 +109,6 @@ class Event:
 
     def __init__(self, stored_event: StoredEvent):
         self.stored_event: StoredEvent = stored_event
-        self.messages: list[EventMessage] = []
-        last_load_date: float | None = event_last_load_date_by_uniq_id.get(
-            self.uniq_id, None
-        )
-        self._silent = last_load_date is not None and last_load_date > self.last_update
-        event_last_load_date_by_uniq_id[self.uniq_id] = time.time()
 
     @property
     def uniq_id(self) -> str:
@@ -163,14 +153,9 @@ class Event:
             name = f'{base_name} ({index})'
         return name
 
-    @cached_property
+    @property
     def name(self) -> str:
-        name: str = self.uniq_id
-        if not self.stored_event.name:
-            self.add_error(_('No name set, by default [{name}]').format(name=name))
-        else:
-            name = self.stored_event.name
-        return name
+        return self.stored_event.name
 
     @property
     def start(self) -> float:
@@ -184,7 +169,7 @@ class Event:
     def federation(self) -> str:
         return self.stored_event.federation
 
-    @property
+    @cached_property
     def prize_currency(self) -> str:
         if stored := self.stored_event.prize_currency:
             return stored
@@ -222,59 +207,36 @@ class Event:
     def location(self) -> str | None:
         return self.stored_event.location
 
-    @cached_property
+    @property
     def background_image(self) -> str:
         if self.stored_event.hide_background_image:
             return ''
-        background_image: str = SharlyChessConfig.default_background_image
-        if not self.stored_event.background_image:
-            self.add_debug(
-                _('No background image set, by default [{background_image}]').format(
-                    background_image=background_image
-                )
-            )
-        else:
-            background_image = self.stored_event.background_image
-        return background_image
+        return (
+            self.stored_event.background_image
+            or SharlyChessConfig.default_background_image
+        )
 
-    @cached_property
+    @property
     def background_url(self) -> str:
         return inline_image_url(self.background_image)
 
-    @cached_property
+    @property
     def background_color(self) -> str:
-        background_color: str = SharlyChessConfig.default_background_color
-        if not self.stored_event.background_color:
-            self.add_debug(
-                _('No background colour set, by default [{background_color}]').format(
-                    background_color=background_color
-                )
-            )
-        else:
-            background_color = self.stored_event.background_color
-        return background_color
-
-    @cached_property
-    def update_password(self) -> str | None:
-        update_password: str | None = self.stored_event.update_password
-        if not update_password:
-            self.add_debug(_('No password set for the results entry'))
-        return update_password
-
-    @cached_property
-    def record_illegal_moves(self) -> int:
-        record_illegal_moves: int = (
-            SharlyChessConfig.default_record_illegal_moves_number
+        return (
+            self.stored_event.background_color
+            or SharlyChessConfig.default_background_color
         )
-        if self.stored_event.record_illegal_moves is None:
-            self.add_debug(
-                _(
-                    'Maximum number of illegal moves not set, by default [{record_illegal_moves}]'
-                ).format(record_illegal_moves=record_illegal_moves)
-            )
-        else:
-            record_illegal_moves = self.stored_event.record_illegal_moves
-        return record_illegal_moves
+
+    @property
+    def update_password(self) -> str | None:
+        return self.stored_event.update_password
+
+    @property
+    def record_illegal_moves(self) -> int:
+        return (
+            self.stored_event.record_illegal_moves
+            or SharlyChessConfig.default_record_illegal_moves_number
+        )
 
     @property
     def rules(self) -> str | None:
@@ -422,8 +384,6 @@ class Event:
 
     @cached_property
     def timers_by_id(self) -> dict[int, Timer]:
-        if self.errors:
-            return {}
         timers_by_id: dict[int, Timer] = {
             stored_timer.id: Timer(self, stored_timer)
             for stored_timer in self.stored_event.stored_timers
@@ -455,8 +415,6 @@ class Event:
 
     @cached_property
     def tournaments_by_id(self) -> dict[int, Tournament]:
-        if self.errors:
-            return {}
         tournaments_by_id: dict[int, Tournament] = {
             stored_tournament.id: Tournament(self, stored_tournament)
             for stored_tournament in self.stored_event.stored_tournaments
@@ -620,8 +578,6 @@ class Event:
 
     @cached_property
     def basic_screens_by_id(self) -> dict[int, Screen]:
-        if self.errors:
-            return {}
         screens_by_id: dict[int, Screen] = {
             stored_screen.id: Screen(self, stored_screen=stored_screen)
             for stored_screen in self.stored_event.stored_screens
@@ -673,8 +629,6 @@ class Event:
 
     @cached_property
     def families_by_id(self) -> dict[int, Family]:
-        if self.errors:
-            return {}
         families_by_id: dict[int, Family] = {
             stored_family.id: Family(self, stored_family=stored_family)
             for stored_family in self.stored_event.stored_families
@@ -735,8 +689,6 @@ class Event:
 
     @cached_property
     def rotators_by_id(self) -> dict[int, Rotator]:
-        if self.errors:
-            return {}
         rotators_by_id: dict[int, Rotator] = {
             stored_rotator.id: Rotator(self, stored_rotator)
             for stored_rotator in self.stored_event.stored_rotators
@@ -757,8 +709,6 @@ class Event:
 
     @cached_property
     def display_controllers_by_id(self) -> dict[int, DisplayController]:
-        if self.errors:
-            return {}
         display_controllers_by_id: dict[int, DisplayController] = {
             stored_display_controller.id: DisplayController(
                 self, stored_display_controller
@@ -820,186 +770,6 @@ class Event:
     @property
     def plugin_data(self) -> dict[str, dict[str, Any]]:
         return self.stored_event.plugin_data or {}
-
-    def _add_message(
-        self,
-        level: int,
-        text: str,
-        tournament: Tournament | None = None,
-        family: Family | None = None,
-        timer: Timer | None = None,
-        timer_hour: TimerHour | None = None,
-        screen: Screen | None = None,
-        screen_set: ScreenSet | None = None,
-        rotator: Rotator | None = None,
-    ) -> EventMessage:
-        event_message: EventMessage = EventMessage(
-            level,
-            text,
-            tournament=tournament,
-            family=family,
-            timer=timer,
-            timer_hour=timer_hour,
-            screen=screen,
-            screen_set=screen_set,
-            rotator=rotator,
-        )
-        self.messages.append(event_message)
-        return event_message
-
-    def add_debug(
-        self,
-        text: str,
-        tournament: Tournament | None = None,
-        family: Family | None = None,
-        timer: Timer | None = None,
-        timer_hour: TimerHour | None = None,
-        screen: Screen | None = None,
-        screen_set: ScreenSet | None = None,
-        rotator: Rotator | None = None,
-    ):
-        event_message: EventMessage = self._add_message(
-            logging.DEBUG,
-            text,
-            tournament=tournament,
-            family=family,
-            timer=timer,
-            timer_hour=timer_hour,
-            screen=screen,
-            screen_set=screen_set,
-            rotator=rotator,
-        )
-        if not self._silent:
-            logger.debug(event_message.formatted_text)
-
-    @property
-    def infos(self) -> list[str]:
-        return [
-            message.text for message in self.messages if message.level == logging.INFO
-        ]
-
-    def add_info(
-        self,
-        text: str,
-        tournament: Tournament | None = None,
-        family: Family | None = None,
-        timer: Timer | None = None,
-        timer_hour: TimerHour | None = None,
-        screen: Screen | None = None,
-        screen_set: ScreenSet | None = None,
-        rotator: Rotator | None = None,
-    ):
-        event_message: EventMessage = self._add_message(
-            logging.INFO,
-            text,
-            tournament=tournament,
-            family=family,
-            timer=timer,
-            timer_hour=timer_hour,
-            screen=screen,
-            screen_set=screen_set,
-            rotator=rotator,
-        )
-        if not self._silent:
-            logger.info(event_message.formatted_text)
-
-    @property
-    def warnings(self) -> list[str]:
-        return [
-            message.text
-            for message in self.messages
-            if message.level == logging.WARNING
-        ]
-
-    def add_warning(
-        self,
-        text: str,
-        tournament: Tournament | None = None,
-        family: Family | None = None,
-        timer: Timer | None = None,
-        timer_hour: TimerHour | None = None,
-        screen: Screen | None = None,
-        screen_set: ScreenSet | None = None,
-        rotator: Rotator | None = None,
-    ):
-        event_message: EventMessage = self._add_message(
-            logging.WARNING,
-            text,
-            tournament=tournament,
-            family=family,
-            timer=timer,
-            timer_hour=timer_hour,
-            screen=screen,
-            screen_set=screen_set,
-            rotator=rotator,
-        )
-        if not self._silent:
-            logger.info(event_message.formatted_text)
-
-    @property
-    def errors(self) -> list[str]:
-        return [
-            message.text for message in self.messages if message.level == logging.ERROR
-        ]
-
-    def add_error(
-        self,
-        text: str,
-        tournament: Tournament | None = None,
-        family: Family | None = None,
-        timer: Timer | None = None,
-        timer_hour: TimerHour | None = None,
-        screen: Screen | None = None,
-        screen_set: ScreenSet | None = None,
-        rotator: Rotator | None = None,
-    ):
-        event_message: EventMessage = self._add_message(
-            logging.ERROR,
-            text,
-            tournament=tournament,
-            family=family,
-            timer=timer,
-            timer_hour=timer_hour,
-            screen=screen,
-            screen_set=screen_set,
-            rotator=rotator,
-        )
-        if not self._silent:
-            logger.info(event_message.formatted_text)
-
-    @property
-    def criticals(self) -> list[str]:
-        return [
-            message.text
-            for message in self.messages
-            if message.level == logging.CRITICAL
-        ]
-
-    def add_critical(
-        self,
-        text: str,
-        tournament: Tournament | None = None,
-        family: Family | None = None,
-        timer: Timer | None = None,
-        timer_hour: TimerHour | None = None,
-        screen: Screen | None = None,
-        screen_set: ScreenSet | None = None,
-        rotator: Rotator | None = None,
-    ):
-        """Adds a debug-level message and logs it"""
-        event_message: EventMessage = self._add_message(
-            logging.CRITICAL,
-            text,
-            tournament=tournament,
-            family=family,
-            timer=timer,
-            timer_hour=timer_hour,
-            screen=screen,
-            screen_set=screen_set,
-            rotator=rotator,
-        )
-        if not self._silent:
-            logger.info(event_message.formatted_text)
 
     def __lt__(self, other: 'Event'):
         # p1 < p2 calls p1.__lt__(p2)
