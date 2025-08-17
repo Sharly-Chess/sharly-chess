@@ -44,7 +44,6 @@ class TestEventFunctionality:
         modal.get_by_test_id('uniq-id-update-button').click()
         modal.get_by_test_id('uniq-id-update-input').fill(new_uniq_id)
         modal.get_by_test_id('uniq-id-update-submit-button').click()
-
-        page.goto('/admin')
-        card = page.locator(f"div.card:has-text('Unique ID: {new_uniq_id}')")
-        expect(card).to_be_visible()
+        expect(page.locator("tr:has(th:text-is('Unique ID')) td")).to_have_text(
+            new_uniq_id
+        )
