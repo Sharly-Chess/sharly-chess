@@ -203,6 +203,9 @@ msgstr ""
 msgid "A positive value is expected."
 msgstr ""
 
+msgid "A value is expected."
+msgstr ""
+
 msgid "Absent"
 msgstr ""
 
@@ -212,7 +215,7 @@ msgstr ""
 msgid "Accelerated variations of the swiss pairing system."
 msgstr ""
 
-msgid "Accepted characters are letters, numbers, underscore (_) and minus (-), invalid characters have been replaced by an underscore."
+msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
 msgstr ""
 
 msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
@@ -351,6 +354,9 @@ msgid "All the tournaments"
 msgstr ""
 
 msgid "Allow"
+msgstr ""
+
+msgid "An event with this unique ID already exists."
 msgstr ""
 
 msgid "An unexpected error occurred."
@@ -1519,9 +1525,6 @@ msgstr ""
 msgid "E.g.: timer"
 msgstr ""
 
-msgid "E.g.: world-championship"
-msgstr ""
-
 msgid "EXEMPT"
 msgstr ""
 
@@ -1574,16 +1577,15 @@ msgstr ""
 msgid "Edit the sets of players displayed on the screen."
 msgstr ""
 
+msgid "Edit the unique ID of the event, used for URLs and file exports."
+msgstr ""
+
 #, python-format
 msgid "Editing of default timers for event [%(event_uniq_id)s]"
 msgstr ""
 
 #, python-format
 msgid "Editing of display controller [%(display_controller_uniq_id)s]"
-msgstr ""
-
-#, python-format
-msgid "Editing of event [%(event_uniq_id)s]"
 msgstr ""
 
 #, python-format
@@ -1671,9 +1673,6 @@ msgstr ""
 msgid "Enter the tournament ID to confirm its deletion:"
 msgstr ""
 
-msgid "Error"
-msgstr ""
-
 msgid "Error message"
 msgstr ""
 
@@ -1692,13 +1691,14 @@ msgstr "Estimated"
 msgid "Event"
 msgstr ""
 
+#, python-format
+msgid "Event [%(uniq_id)s]"
+msgstr ""
+
 msgid "Event [{event_id}] not found (code: [{code}]): [{error}]."
 msgstr ""
 
-msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
-msgstr ""
-
-msgid "Event [{uniq_id}] already exists."
+msgid "Event [{old_uniq_id}] has been renamed to [{new_uniq_id}]."
 msgstr ""
 
 msgid "Event [{uniq_id}] has been created."
@@ -1711,6 +1711,9 @@ msgid "Event [{uniq_id}] has been updated."
 msgstr ""
 
 msgid "Event creation"
+msgstr ""
+
+msgid "Event edition"
 msgstr ""
 
 msgid "Event: {event_name}"
@@ -2207,9 +2210,6 @@ msgid "Import a tournament"
 msgstr ""
 
 msgid "Import a tournament to the event from an external source."
-msgstr ""
-
-msgid "Import of papi file [{file}] failed."
 msgstr ""
 
 msgid "Impossible to add players to tournament [{tournament_uniq_id}]."
@@ -2816,6 +2816,9 @@ msgstr ""
 msgid "No phone defined."
 msgstr ""
 
+msgid "No players"
+msgstr ""
+
 msgid "No players matching the criteria."
 msgstr ""
 
@@ -3322,6 +3325,10 @@ msgid "Players' opponent: displayed"
 msgstr ""
 
 msgid "Players' opponent: hidden"
+msgstr ""
+
+#, python-format
+msgid "Players: %(num)d"
 msgstr ""
 
 msgid "Playing"
@@ -4249,9 +4256,6 @@ msgstr ""
 msgid "The URL or the path of the image to display (by default the Sharly Chess logo)."
 msgstr ""
 
-msgid "The Unique ID, used for data storage and export."
-msgstr ""
-
 msgid "The Unique ID, used to reference the display controller."
 msgstr ""
 
@@ -4858,9 +4862,6 @@ msgstr ""
 msgid "Tournament [{tournament_name}] not found (code: [{code}]): [{error}]."
 msgstr ""
 
-msgid "Tournament [{tournament_uniq_id}] can not be read, family ignored."
-msgstr ""
-
 msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
 msgstr ""
 
@@ -4889,9 +4890,6 @@ msgid "Tournament [{tournament_uniq_id}]: {text}"
 msgstr ""
 
 msgid "Tournament [{uniq_id}] already exists."
-msgstr ""
-
-msgid "Tournament can not be read, family ignored."
 msgstr ""
 
 msgid "Tournament creation"
@@ -5190,6 +5188,9 @@ msgstr ""
 msgid "Using colors helps in finding quickly important information on the console."
 msgstr ""
 
+msgid "Validate"
+msgstr ""
+
 msgid "Value"
 msgstr ""
 
@@ -5450,6 +5451,9 @@ msgid "event ID does not match."
 msgstr ""
 
 msgid "minimum: {value}"
+msgstr ""
+
+msgid "my-event"
 msgstr ""
 
 msgid "no"

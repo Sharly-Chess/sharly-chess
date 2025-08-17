@@ -12,10 +12,7 @@
 
 {% macro tournament_status_icon(tournament, class) %}
     <!-- tournament_status_icon() -->
-    {% if not tournament.rounds %}
-        {% set _icon_class='bi-exclamation-triangle-fill text-danger' %}
-        {% set _tooltip_text='' %}
-    {% elif not tournament.started %}
+    {% if not tournament.started %}
         {% set _icon_class='bi-pause-fill' %}
         {% set _tooltip_text=_('The tournament has not yet started.') %}
     {% elif tournament.playing %}
@@ -837,7 +834,8 @@ with_indicator: display a loading indicator, optional
     value='',
     placeholder='NO PLACEHOLDER',
     post_url='',
-    patch_url=''
+    patch_url='',
+    prevent_empty=false
 ) %}
     <form
         id="{{ id }}-form"
@@ -852,6 +850,7 @@ with_indicator: display a loading indicator, optional
     >
         <input
             id="{{ id }}-input"
+            data-testid="{{ id }}-input"
             name="{{ name }}"
             type="text"
             class="form-control"
@@ -859,30 +858,53 @@ with_indicator: display a loading indicator, optional
             value="{{ value }}"
             style="outline-offset: 0px;"
         >
-        <button
-            id="{{ id }}-submit-button"
-            class="btn btn-primary"
-            type="submit"
-            {% if not value %}disabled{% endif %}
-            style="outline-offset: 0px;"
+        <span
+            id="{{ id }}-submit-button-container"
+            {{ macros.tooltip_attributes('', _('Validate'), 'top') }}
         >
-            <i class="bi-check"></i>
-        </button>
+            <button
+                id="{{ id }}-submit-button"
+                data-testid="{{ id }}-submit-button"
+                class="btn btn-primary rounded-0"
+                type="submit"
+                {% if not value %}disabled{% endif %}
+                style="outline-offset: 0px;"
+            >
+                <i class="bi-check"></i>
+            </button>
+        </span>
         <button
             id="{{ id }}-cancel-button"
+            data-testid="{{ id }}-cancel-button"
             class="inline-form-cancel-button btn btn-secondary"
             type="button"
             style="outline-offset: 0px;"
+            {{ macros.tooltip_attributes('', _('Cancel'), 'top') }}
         >
             <i class="bi-x"></i>
         </button>
     </form>
     <script>
-        $('#{{ id }}-input').on('input', function() {
-            $('#{{ id }}-submit-button').prop('disabled', $(this).val() === '');
-        });
+        {% if prevent_empty %}
+            $('#{{ id }}-input').on('input', function() {
+                let disabled = true;
+                let tooltipMessage = "";
+                const value = $(this).val();
+                if (value === '') {
+                    tooltipMessage = "{{ _('A value is expected.') }}";
+                } else {
+                    disabled = false;
+                    tooltipMessage = "{{ _('Validate') }}";
+                }
+                $('#{{ id }}-submit-button').prop('disabled', disabled);
+                const tooltipElement = document.getElementById('{{ id }}-submit-button-container');
+                const tooltip = bootstrap.Tooltip.getInstance(tooltipElement);
+                tooltip.setContent({ '.tooltip-inner': tooltipMessage });
+                tooltip.update();
+            });
+        {% endif %}
         $('#{{ id }}-input').focus(function() {
-            $('#prize-group-create-form').addClass('focus');
+            $('#{{ id }}-form').addClass('focus');
         });
     </script>
 {% endmacro %}

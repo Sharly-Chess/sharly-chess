@@ -203,6 +203,9 @@ msgstr "Un entier positif est attendu."
 msgid "A positive value is expected."
 msgstr "Une valeur positive est attendue."
 
+msgid "A value is expected."
+msgstr "Une valeur est attendue."
+
 msgid "Absent"
 msgstr "Absent·e"
 
@@ -212,8 +215,8 @@ msgstr "Appariements accélérés"
 msgid "Accelerated variations of the swiss pairing system."
 msgstr "Variantes accélérées du système d'appariements suisse."
 
-msgid "Accepted characters are letters, numbers, underscore (_) and minus (-), invalid characters have been replaced by an underscore."
-msgstr "Les caractères acceptés sont les lettres, chiffres, souligné (« tiret du 8 ») et moins (« tiret du 6 »), les caractère invalides ont été remplacés par un souligné."
+msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
+msgstr "Les caractères acceptés sont les lettres, chiffres, souligné (« tiret du 8 ») et moins (« tiret du 6 »)."
 
 msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
 msgstr "Accès refusé (code : [{code}]) à [{user_id}] pour le tournoi [{tournament_name}] ([{chessevent_string}])."
@@ -352,6 +355,9 @@ msgstr "Tous les tournois"
 
 msgid "Allow"
 msgstr "Autoriser"
+
+msgid "An event with this unique ID already exists."
+msgstr "Un évènement avec cet identifiant unique existe déjà."
 
 msgid "An unexpected error occurred."
 msgstr "Une erreur inattendue s'est produite."
@@ -1519,9 +1525,6 @@ msgstr "Exemple : mon_mot_de_passe"
 msgid "E.g.: timer"
 msgstr "Exemple : chronometre"
 
-msgid "E.g.: world-championship"
-msgstr "Exemple : championnat-du-monde"
-
 msgid "EXEMPT"
 msgstr "EXEMPT·E"
 
@@ -1574,6 +1577,9 @@ msgstr "Éditer les ensembles d'échiquiers affichés sur l'écran."
 msgid "Edit the sets of players displayed on the screen."
 msgstr "Éditer les ensembles de joueur·euses affichés sur l'écran."
 
+msgid "Edit the unique ID of the event, used for URLs and file exports."
+msgstr "Éditer l'identifiant unique de l'évènement, utilisé pour les URLs et les fichiers exportés."
+
 #, python-format
 msgid "Editing of default timers for event [%(event_uniq_id)s]"
 msgstr "Édition des chronomètres par défaut pour l'évènement [%(event_uniq_id)s]"
@@ -1581,10 +1587,6 @@ msgstr "Édition des chronomètres par défaut pour l'évènement [%(event_uniq_
 #, python-format
 msgid "Editing of display controller [%(display_controller_uniq_id)s]"
 msgstr "Édition du pilote d'afficheurs [%(display_controller_uniq_id)s]"
-
-#, python-format
-msgid "Editing of event [%(event_uniq_id)s]"
-msgstr "Édition de l'évènement [%(event_uniq_id)s]"
 
 #, python-format
 msgid "Editing of player [%(player)s]"
@@ -1671,9 +1673,6 @@ msgstr "Saisir le résultat"
 msgid "Enter the tournament ID to confirm its deletion:"
 msgstr "Entrez l'identifiant du tournoi pour confirmer sa suppression :"
 
-msgid "Error"
-msgstr "Erreur"
-
 msgid "Error message"
 msgstr "Message d'erreur"
 
@@ -1692,14 +1691,15 @@ msgstr "Estimé"
 msgid "Event"
 msgstr "Évènement"
 
+#, python-format
+msgid "Event [%(uniq_id)s]"
+msgstr "Évènement [%(uniq_id)s]"
+
 msgid "Event [{event_id}] not found (code: [{code}]): [{error}]."
 msgstr "Évènement [{event_id}] introuvable (code : [{code}]) : [{error}]."
 
-msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
-msgstr "L'évènement [{old_uniq_id}] a été renommé ([{new_uniq_id}]) et modifié."
-
-msgid "Event [{uniq_id}] already exists."
-msgstr "L'évènement [{uniq_id}] existe déjà."
+msgid "Event [{old_uniq_id}] has been renamed to [{new_uniq_id}]."
+msgstr "L'évènement [{old_uniq_id}] a été renommé en [{new_uniq_id}]."
 
 msgid "Event [{uniq_id}] has been created."
 msgstr "L'évènement [{uniq_id}] a été créé."
@@ -1712,6 +1712,9 @@ msgstr "L'évènement [{uniq_id}] a été modifié."
 
 msgid "Event creation"
 msgstr "Création d'un évènement"
+
+msgid "Event edition"
+msgstr "Édition d'un évènement"
 
 msgid "Event: {event_name}"
 msgstr "Évènement : {event_name}"
@@ -2208,9 +2211,6 @@ msgstr "Importer un tournoi"
 
 msgid "Import a tournament to the event from an external source."
 msgstr "Importer un tournoi à l'évènement depuis une source externe."
-
-msgid "Import of papi file [{file}] failed."
-msgstr "L'import du fichier papi [{file}] a échoué."
 
 msgid "Impossible to add players to tournament [{tournament_uniq_id}]."
 msgstr "Impossible d'ajouter des joueur·euses au tournoi [{tournament_uniq_id}]."
@@ -2816,6 +2816,9 @@ msgstr "Aucun mot de passe pour la saisie des résultats"
 msgid "No phone defined."
 msgstr "Téléphone non défini."
 
+msgid "No players"
+msgstr "Aucun·e joueur·euse"
+
 msgid "No players matching the criteria."
 msgstr "Aucun·e joueur·euse correspondant aux critères."
 
@@ -3323,6 +3326,10 @@ msgstr "Adversaires des joueur·euses : affichée·es"
 
 msgid "Players' opponent: hidden"
 msgstr "Adversaires des joueur·euses : cachée·es"
+
+#, python-format
+msgid "Players: %(num)d"
+msgstr "Joueur·euses : %(num)d"
 
 msgid "Playing"
 msgstr "En cours"
@@ -4249,9 +4256,6 @@ msgstr "L'URL de l'image à afficher."
 msgid "The URL or the path of the image to display (by default the Sharly Chess logo)."
 msgstr "L'URL ou le chemin de l'image à afficher (par défaut le logo de Sharly Chess)."
 
-msgid "The Unique ID, used for data storage and export."
-msgstr "L'identifiant unique, utilisé pour le stockage des données et les fichiers d'export."
-
 msgid "The Unique ID, used to reference the display controller."
 msgstr "L'identifiant unique, utilisé pour référencer le pilote d'afficheurs."
 
@@ -4858,9 +4862,6 @@ msgstr "Le tournoi [{tournament_id}] n'existe pas."
 msgid "Tournament [{tournament_name}] not found (code: [{code}]): [{error}]."
 msgstr "Tournoi [{tournament_name}] introuvable (code : [{code}]) : [{error}]."
 
-msgid "Tournament [{tournament_uniq_id}] can not be read, family ignored."
-msgstr "Le tournoi [{tournament_uniq_id}] ne peut pas être lu, famille ignorée."
-
 msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
 msgstr "Le tournoi [{tournament_uniq_id}] a été créé et les écrans par défaut ont été ajoutés."
 
@@ -4890,9 +4891,6 @@ msgstr "Tournoi [{tournament_uniq_id}] : {text}"
 
 msgid "Tournament [{uniq_id}] already exists."
 msgstr "Le tournoi [{uniq_id}] existe déjà."
-
-msgid "Tournament can not be read, family ignored."
-msgstr "Impossible de lire le tournoi, famille ignorée."
 
 msgid "Tournament creation"
 msgstr "Création d'un tournoi"
@@ -5190,6 +5188,9 @@ msgstr "Utiliser le système de points 3/1/0 au lieu du système standard 1/0,5/
 msgid "Using colors helps in finding quickly important information on the console."
 msgstr "Utiliser les couleurs peut permettre de trouver facilement les informations importantes sur la console."
 
+msgid "Validate"
+msgstr "Valider"
+
 msgid "Value"
 msgstr "Valeur"
 
@@ -5451,6 +5452,9 @@ msgstr "L'identifiant de l'évènement ne correspond pas."
 
 msgid "minimum: {value}"
 msgstr "minimum : {value}"
+
+msgid "my-event"
+msgstr "mon-evenement"
 
 msgid "no"
 msgstr "non"
