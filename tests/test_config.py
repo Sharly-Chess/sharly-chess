@@ -42,7 +42,6 @@ class TestUtils:
     """Utility functions for tests."""
 
     event_defaults = {
-        'name': 'Test Event',
         'custom_exec_mode': SharlyChessConfig.default_custom_exec_mode,
         'federation': 'FRA',
         'public': True,
@@ -141,6 +140,7 @@ class TestUtils:
         defaults = {
             **cls.event_defaults,
             'uniq_id': uniq_id,
+            'name': uniq_id,
             'start': start_ts,
             'stop': stop_ts,
         }

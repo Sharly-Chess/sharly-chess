@@ -42,6 +42,72 @@
                         data=data, errors=errors
                     ) }}
                 {% else %}
+                    {% if action == 'update' %}
+                        <h3 id="uniq-id-field">
+                            <span class="pe-1">
+                                {{ _('Event [%(uniq_id)s]', uniq_id=admin_event.uniq_id) }}
+                            </span>
+                            <span
+                                {{ macros.tooltip_attributes(
+                                    'info', _('Edit the unique ID of the event, used for URLs and file exports.'), 'right'
+                                ) }}
+                            >
+                                <button
+                                    id="uniq-id-update-button"
+                                    data-testid="uniq-id-update-button"
+                                    type="button"
+                                    class="btn btn-sm text-primary text-nowrap"
+                                >
+                                    <i class="bi-pencil"></i>
+                                </button>
+                            </span>
+                        </h3>
+                        <div
+                            id="uniq-id-update-form-container"
+                            class="mt-1 mb-1 col-12 col-md-6"
+                            style="display: none"
+                        >
+                            {{ admin_macros.inline_text_form(
+                                'uniq-id-update',
+                                name='uniq_id',
+                                placeholder=_('E.g.: %(string)s', string=_('my-event')),
+                                value=admin_event.uniq_id,
+                                patch_url=url_for('admin-event-uniq-id-update', event_uniq_id=admin_event.uniq_id),
+                            ) }}
+                        </div>
+                        <script>
+                            {% set id = 'uniq-id-update' %}
+                            $('#{{ id }}-input').on('input', function() {
+                                let disabled = true;
+                                let error = "";
+                                const value = $(this).val();
+                                if (value === '') {
+                                    error = "{{ _('A value is expected.') }}";
+                                } else if (value != "{{ admin_event.uniq_id }}" && {{ event_uniq_ids|tojson }}.includes(value)) {
+                                    error = "{{ _('An event with this unique ID already exists.') }}";
+                                } else if (!value.match(/^[0-9a-zA-Z_\-]+$/)) {
+                                    error = "{{ _('Accepted characters are letters, numbers, underscore (_) and minus (-).') }}";
+                                } else {
+                                    disabled = false;
+                                    error = "{{ _('Validate') }}";
+                                }
+
+                                $('#{{ id }}-submit-button').prop('disabled', disabled);
+                                const tooltipElement = document.getElementById('{{ id }}-submit-button-container');
+                                const tooltip = bootstrap.Tooltip.getInstance(tooltipElement);
+                                tooltip.setContent({ '.tooltip-inner': error || "{{ _('Validate') }}" });
+                                tooltip.update();
+                            });
+                            $('#{{ id }}-button').click(() => {
+                                $('#{{ id }}-form-container').css('display', '');
+                                $('#uniq-id-field').css('display', 'none');
+                            });
+                            $('#{{ id }}-cancel-button').click(() => {
+                                $('#{{ id }}-form-container').css('display', 'none');
+                                $('#uniq-id-field').css('display', '');
+                            });
+                        </script>
+                    {% endif %}
                     <h4>
                         {{ _('Properties') }}
                     </h4>
@@ -77,30 +143,6 @@
                         </div>
                         <div class="col-12 col-md-6 mb-3">
                             {{ admin_macros.text_input(
-                                name='location',
-                                label=_('%(string)s:', string=_('Location')),
-                                placeholder=_('E.g.: Paris'),
-                                help_text=_('The location of the event.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                    </div>
-                    <div class="row">
-                        {% if client.can_rename_event %}
-                            <div class="col-12 col-md-6 mb-3">
-                                {{ admin_macros.text_input(
-                                    name='uniq_id',
-                                    label=_('ID (unique):'),
-                                    placeholder=_('E.g.: world-championship'),
-                                    help_text=_('The Unique ID, used for data storage and export.'),
-                                    data=data, errors=errors
-                                ) }}
-                            </div>
-                        {% else %}
-                            <input type="hidden" name="uniq_id" value="{{ data['uniq_id'] }}" />
-                        {% endif %}
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.text_input(
                                 name='name',
                                 label=_('Name:'),
                                 placeholder=_('E.g.: World championship'),
@@ -128,6 +170,15 @@
                         </div>
                     </div>
                     <div class="row">
+                        <div class="col-12 col-md-6 mb-3">
+                            {{ admin_macros.text_input(
+                                name='location',
+                                label=_('%(string)s:', string=_('Location')),
+                                placeholder=_('E.g.: Paris'),
+                                help_text=_('The location of the event.'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
                         <div class="col-12 col-md-6">
                             {{ admin_macros.text_input(
                                 name='prize_currency',

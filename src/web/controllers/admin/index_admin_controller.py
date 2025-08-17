@@ -381,12 +381,6 @@ class IndexAdminController(BaseAdminController):
                     data = cls._prepare_event_modal_data(
                         action, web_context.request, None
                     )
-                    stored_event: StoredEvent = cls._admin_validate_event_update_data(
-                        action, web_context, None, data
-                    )
-                    errors = stored_event.errors
-                if errors is None:
-                    errors = {}
 
                 plugin_form_fields_templates = (
                     plugin_manager.hook.get_event_form_fields_template() or []
@@ -411,7 +405,7 @@ class IndexAdminController(BaseAdminController):
                     'modal': modal,
                     'action': action,
                     'data': data,
-                    'errors': errors,
+                    'errors': errors or {},
                 }
             case 'database':
                 databases: list[LocalSourceDatabase] = (

@@ -112,7 +112,8 @@ class EventLoader:
         else:
             index = 1
             uniq_id = base_uniq_id
-        while uniq_id in self.all_event_ids():
+        used_event_ids = self.all_event_ids()
+        while uniq_id in used_event_ids:
             index += 1
             uniq_id = f'{base_uniq_id}-{index}'
         return uniq_id
