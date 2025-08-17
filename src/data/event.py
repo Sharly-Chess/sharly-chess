@@ -1,8 +1,6 @@
 import copy
-import logging
 import re
 from collections import defaultdict, Counter
-from dataclasses import dataclass
 from functools import total_ordering, cached_property
 from logging import Logger
 from operator import attrgetter
@@ -24,8 +22,7 @@ from data.family import Family
 from data.player import Player, Club, Federation
 from data.rotator import Rotator
 from data.screen import Screen
-from data.screen_set import ScreenSet
-from data.timer import Timer, TimerHour
+from data.timer import Timer
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from plugins.manager import plugin_manager
@@ -40,67 +37,6 @@ from database.sqlite.event.event_store import (
 )
 
 logger: Logger = get_logger()
-
-
-@dataclass
-class EventMessage:
-    level: int
-    text: str
-    tournament: Tournament | None
-    family: Family | None
-    timer: Timer | None
-    timer_hour: TimerHour | None
-    screen: Screen | None
-    screen_set: ScreenSet | None
-    rotator: Rotator | None
-
-    def __post_init__(self):
-        assert self.level in [
-            logging.DEBUG,
-            logging.INFO,
-            logging.WARNING,
-            logging.ERROR,
-            logging.CRITICAL,
-        ]
-
-    @property
-    def formatted_text(self) -> str:
-        if self.tournament:
-            return _('Tournament [{tournament_uniq_id}]: {text}').format(
-                tournament_uniq_id=self.tournament.uniq_id, text=self.text
-            )
-        elif self.family:
-            return _('Family [{family_uniq_id}]: {text}').format(
-                family_uniq_id=self.family.uniq_id, text=self.text
-            )
-        elif self.timer_hour:
-            return _('Timer [{timer_uniq_id}], hour [{hour_order}]: {text}').format(
-                timer_uniq_id=self.timer_hour.timer.uniq_id,
-                hour_order=self.timer_hour.order,
-                text=self.text,
-            )
-        elif self.timer:
-            return _('Timer [{timer_uniq_id}]: {text}').format(
-                timer_uniq_id=self.timer.uniq_id, text=self.text
-            )
-        elif self.screen_set and self.screen:
-            return _(
-                'Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}'
-            ).format(
-                screen_uniq_id=self.screen.uniq_id,
-                screen_set_order=self.screen_set.order,
-                text=self.text,
-            )
-        elif self.screen:
-            return _('Screen [{screen_uniq_id}]: {text}').format(
-                screen_uniq_id=self.screen.uniq_id, text=self.text
-            )
-        elif self.rotator:
-            return _('Rotator [{rotator_uniq_id}]: {text}').format(
-                rotator_uniq_id=self.rotator.uniq_id, text=self.text
-            )
-        else:
-            return self.text
 
 
 @total_ordering
