@@ -4862,9 +4862,6 @@ msgstr ""
 msgid "Tournament [{tournament_name}] not found (code: [{code}]): [{error}]."
 msgstr ""
 
-msgid "Tournament [{tournament_uniq_id}] can not be read, family ignored."
-msgstr ""
-
 msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
 msgstr ""
 
@@ -4893,9 +4890,6 @@ msgid "Tournament [{tournament_uniq_id}]: {text}"
 msgstr ""
 
 msgid "Tournament [{uniq_id}] already exists."
-msgstr ""
-
-msgid "Tournament can not be read, family ignored."
 msgstr ""
 
 msgid "Tournament creation"
@@ -5606,28 +5600,4 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
-
-#~ msgid "Accepted characters are letters, numbers, underscore (_) and minus (-), invalid characters have been replaced by an underscore."
-#~ msgstr ""
-
-#~ msgid "E.g.: world-championship"
-#~ msgstr ""
-
-#~ msgid "Editing of event [%(event_uniq_id)s]"
-#~ msgstr ""
-
-#~ msgid "Error"
-#~ msgstr ""
-
-#~ msgid "Event [{old_uniq_id}] has been renamed ([{new_uniq_id}]) and updated."
-#~ msgstr ""
-
-#~ msgid "Event [{uniq_id}] already exists."
-#~ msgstr ""
-
-#~ msgid "Import of papi file [{file}] failed."
-#~ msgstr ""
-
-#~ msgid "The Unique ID, used for data storage and export."
-#~ msgstr ""
 
