@@ -113,7 +113,7 @@ class FFESqlServer(SqlServer):
             comment='',
             owed=0.0,
             paid=0.0,
-            title=PapiPlayerTitle.get_core_object(row['FideTitre'] or ''),
+            title=PapiPlayerTitle.get_core_object(row['FideTitre'] or '').value,
             ratings={
                 TournamentRating.STANDARD: PlayerRating(
                     row['Elo'], PapiPlayerRatingType.get_core_object(row['Fide'])
