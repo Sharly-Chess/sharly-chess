@@ -683,6 +683,9 @@ msgstr "Édition d'une categorie"
 msgid "Change the player's tournament."
 msgstr "Changer le joueur de tournoi."
 
+msgid "Changing the unique ID will cause an error on any opened screen of the event."
+msgstr "Modifier l'identifiant unique provoquera une erreur sur tous les écrans ouverts de l'évènement."
+
 msgid "Character [{char}] is not allowed."
 msgstr "La caractère [{char}] n'est pas autorisé."
 
@@ -1565,9 +1568,6 @@ msgstr "Éditer les ensembles d'échiquiers affichés sur l'écran."
 msgid "Edit the sets of players displayed on the screen."
 msgstr "Éditer les ensembles de joueur·euses affichés sur l'écran."
 
-msgid "Edit the unique ID of the event, used for URLs and file exports."
-msgstr "Éditer l'identifiant unique de l'évènement, utilisé pour les URLs et les fichiers exportés."
-
 #, python-format
 msgid "Editing of default timers for event [%(event_uniq_id)s]"
 msgstr "Édition des chronomètres par défaut pour l'évènement [%(event_uniq_id)s]"
@@ -1575,6 +1575,10 @@ msgstr "Édition des chronomètres par défaut pour l'évènement [%(event_uniq_
 #, python-format
 msgid "Editing of display controller [%(display_controller_uniq_id)s]"
 msgstr "Édition du pilote d'afficheurs [%(display_controller_uniq_id)s]"
+
+#, python-format
+msgid "Editing of event [%(event_uniq_id)s]"
+msgstr "Édition de l'évènement [%(event_uniq_id)s]"
 
 #, python-format
 msgid "Editing of player [%(player)s]"
@@ -1679,15 +1683,8 @@ msgstr "Estimé"
 msgid "Event"
 msgstr "Évènement"
 
-#, python-format
-msgid "Event [%(uniq_id)s]"
-msgstr "Évènement [%(uniq_id)s]"
-
 msgid "Event [{event_id}] not found (code: [{code}]): [{error}]."
 msgstr "Évènement [{event_id}] introuvable (code : [{code}]) : [{error}]."
-
-msgid "Event [{old_uniq_id}] has been renamed to [{new_uniq_id}]."
-msgstr "L'évènement [{old_uniq_id}] a été renommé en [{new_uniq_id}]."
 
 msgid "Event [{uniq_id}] has been created."
 msgstr "L'évènement [{uniq_id}] a été créé."
@@ -1701,8 +1698,8 @@ msgstr "L'évènement [{uniq_id}] a été modifié."
 msgid "Event creation"
 msgstr "Création d'un évènement"
 
-msgid "Event edition"
-msgstr "Édition d'un évènement"
+msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
+msgstr "L'identifiant unique de l'évènement à été renommé de [{old_uniq_id}] à [{new_uniq_id}]."
 
 msgid "Event: {event_name}"
 msgstr "Évènement : {event_name}"
@@ -4526,6 +4523,9 @@ msgstr "Le classement utilisé lorsque la cadence est supérieure à 10 minutes 
 
 msgid "The related objects will also be deleted:"
 msgstr "Les objets liés vont également être supprimés :"
+
+msgid "The representation of the event for URLs and file exports."
+msgstr "La représentation de l'évènement pour les URLs et les exports de fichier."
 
 #, python-format
 msgid "The rotating delay between two screens (by default %(default)d seconds)."
