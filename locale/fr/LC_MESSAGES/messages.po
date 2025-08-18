@@ -59,8 +59,8 @@ msgstr[1] "%(num)d critères"
 #, python-format
 msgid "%(num)d player"
 msgid_plural "%(num)d players"
-msgstr[0] "%(num)d joueur"
-msgstr[1] "%(num)d joueurs"
+msgstr[0] "%(num)d joueur·euse"
+msgstr[1] "%(num)d joueur·euses"
 
 #, python-format
 msgid "%(num)d prize"
