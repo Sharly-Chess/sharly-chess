@@ -56,6 +56,7 @@ class PairingSetting[T](IdentifiableEntity, ABC):
         if not cls.is_set(tournament):
             return False
         assert tournament.pairing_settings is not None
+        assert tournament.stored_pairing_settings is not None
         return cls.check_value(
             tournament,
             cls.from_stored_value(tournament.stored_pairing_settings[cls.static_id()]),

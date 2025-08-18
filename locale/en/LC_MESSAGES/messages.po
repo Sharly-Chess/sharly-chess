@@ -41,8 +41,20 @@ msgid "%(minutes)d minutes before"
 msgstr ""
 
 #, python-format
+msgid "%(num).1f point group -"
+msgid_plural "%(num).1f points group -"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(num)d criterion"
 msgid_plural "%(num)d criteria"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)d player"
+msgid_plural "%(num)d players"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -202,6 +214,9 @@ msgid "A value is expected."
 msgstr ""
 
 msgid "Absent"
+msgstr ""
+
+msgid "Absolute"
 msgstr ""
 
 msgid "Accelerated pairings"
@@ -934,6 +949,9 @@ msgid "Colour #2 is used {delay_2} minutes before the start of the rounds (delay
 msgstr ""
 
 msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
+msgstr ""
+
+msgid "Colour history"
 msgstr ""
 
 msgid "Columns"
@@ -2172,6 +2190,9 @@ msgstr ""
 msgid "Fixed boards:"
 msgstr ""
 
+msgid "Floats"
+msgstr ""
+
 #, python-format
 msgid "Font size adjustment (%%):"
 msgstr ""
@@ -2425,6 +2446,9 @@ msgid "Incorrect path [{path}]."
 msgstr ""
 
 msgid "Increment (optional, seconds):"
+msgstr ""
+
+msgid "Info"
 msgstr ""
 
 msgid "Information message"
@@ -2840,12 +2864,6 @@ msgstr "National"
 msgid "Navigation"
 msgstr ""
 
-msgid "Nb. *** NB FOR TABLE HEADER"
-msgstr "Nb."
-
-msgid "Nb. final rounds without byes:"
-msgstr ""
-
 msgid "Neither screen nor rotator currently assigned"
 msgstr ""
 
@@ -3044,6 +3062,12 @@ msgstr ""
 msgid "No valid hour defined."
 msgstr ""
 
+msgid "No. *** NB FOR TABLE HEADER"
+msgstr "No."
+
+msgid "No. final rounds without byes:"
+msgstr ""
+
 msgid "None"
 msgstr ""
 
@@ -3179,6 +3203,9 @@ msgstr ""
 msgid "Opponent Elo [Pts]"
 msgstr ""
 
+msgid "Opponents"
+msgstr ""
+
 msgid "Organization"
 msgstr ""
 
@@ -3256,6 +3283,10 @@ msgid "Pairing"
 msgstr ""
 
 msgid "Pairing Allocated Bye"
+msgstr ""
+
+#, python-format
+msgid "Pairing information for round %(round)d"
 msgstr ""
 
 msgid "Pairing number"
@@ -3616,6 +3647,9 @@ msgid "Port [{port}] already in use."
 msgstr ""
 
 msgid "Port: {port}"
+msgstr ""
+
+msgid "Pref."
 msgstr ""
 
 msgid "Present"
@@ -4150,6 +4184,9 @@ msgstr ""
 msgid "Sector arbitration"
 msgstr ""
 
+msgid "See the pairings information for the start of this round."
+msgstr ""
+
 msgid "Seed color"
 msgstr ""
 
@@ -4323,6 +4360,9 @@ msgid "Status"
 msgstr ""
 
 msgid "Storing data…"
+msgstr ""
+
+msgid "Strong"
 msgstr ""
 
 msgid "Sum of Buchholz"
@@ -5433,6 +5473,9 @@ msgstr ""
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
 msgstr ""
 
+msgid "Weak"
+msgstr ""
+
 msgid "Web server not started yet ({ex}), waiting…"
 msgstr ""
 
@@ -5875,118 +5918,4 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
-
-#~ msgid "No password required"
-#~ msgstr ""
-
-#~ msgid "No screen nor family to rotate."
-#~ msgstr ""
-
-#~ msgid "Tournament [{tournament_uniq_id}] is not started yet."
-#~ msgstr ""
-
-#~ msgid "Tournament [{tournament_uniq_id}] is started."
-#~ msgstr ""
-
-#~ msgid "Tournament [{tournament_uniq_id}]: {text}"
-#~ msgstr ""
-
-#~ msgid "Archive [{archive}] successfully restored (see event [{event}])."
-#~ msgstr ""
-
-#~ msgid "Archived ({num})"
-#~ msgstr ""
-
-#~ msgid "Archived events"
-#~ msgstr ""
-
-#~ msgid "Current ({num})"
-#~ msgstr ""
-
-#~ msgid "Current events"
-#~ msgstr ""
-
-#~ msgid "Database [{database}] successfully updated."
-#~ msgstr ""
-
-#~ msgid "Debug message"
-#~ msgstr ""
-
-#~ msgid "Error message"
-#~ msgstr ""
-
-#~ msgid "Error when updating database [{database}]."
-#~ msgstr ""
-
-#~ msgid "Events"
-#~ msgstr ""
-
-#~ msgid "Events ({num})"
-#~ msgstr ""
-
-#~ msgid "Home"
-#~ msgstr ""
-
-#~ msgid "Information message"
-#~ msgstr ""
-
-#~ msgid "Invalid console logging level [{console_log_level}]."
-#~ msgstr ""
-
-#~ msgid "Invalid federation [{federation}]."
-#~ msgstr ""
-
-#~ msgid "Invalid locale [{locale}]."
-#~ msgstr ""
-
-#~ msgid "Local source databases settings have been updated."
-#~ msgstr ""
-
-#~ msgid "No archived events."
-#~ msgstr ""
-
-#~ msgid "No current events."
-#~ msgstr ""
-
-#~ msgid "No events."
-#~ msgstr ""
-
-#~ msgid "No passed events."
-#~ msgstr ""
-
-#~ msgid "No upcoming events."
-#~ msgstr ""
-
-#~ msgid "Passed ({num})"
-#~ msgstr ""
-
-#~ msgid "Passed events"
-#~ msgstr ""
-
-#~ msgid "Sharly Chess settings have been updated."
-#~ msgstr ""
-
-#~ msgid "Upcoming ({num})"
-#~ msgstr ""
-
-#~ msgid "Upcoming events"
-#~ msgstr ""
-
-#~ msgid "Warning message"
-#~ msgstr ""
-
-#~ msgid "Custom"
-#~ msgstr ""
-
-#~ msgid "Other devices connected to your network can see your public screens. If you have created screens for player check-in and results entry then those features will be enabled."
-#~ msgstr ""
-
-#~ msgid "Use connected devices to check-in players and enter results on public screens"
-#~ msgstr ""
-
-#~ msgid "Use customized permissions"
-#~ msgstr ""
-
-#~ msgid "You decide which devices and which accounts are allowed to display screens, check-in players, enter results, pair rounds… Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers…"
-#~ msgstr ""
 
