@@ -1165,6 +1165,9 @@ class Tournament:
         self, stored_boards: list[StoredBoard], round_: int, pab_result: Result
     ):
         with EventDatabase(self.event.uniq_id, True) as database:
+            if pab_board := self.get_round_pab_board(round_):
+                pab_board.stored_board.index += len(stored_boards)
+                database.update_stored_board(pab_board.stored_board)
             for stored_board in stored_boards:
                 id_ = database.add_stored_board(stored_board)
                 stored_board.id = id_
@@ -1178,9 +1181,6 @@ class Tournament:
                 else:
                     white_stored_pairing.result = pab_result.value
                 board.white_pairing.update(database)
-            if pab_board := self.get_round_pab_board(round_):
-                pab_board.stored_board.index += len(stored_boards)
-                database.update_stored_board(pab_board.stored_board)
             database.commit()
 
     def open_check_in(self):
