@@ -39,7 +39,9 @@ class TestEventFunctionality:
         TestUtils.create_event(EVENT_ID, via_api_request_context=api_request_context)
         page.goto(f'/admin/event/{EVENT_ID}/config')
         page.get_by_test_id('uniq-id-update-button').click()
-        page.get_by_test_id('uniq-id-update-input').fill(new_uniq_id)
+        update_unput = page.get_by_test_id('uniq-id-update-input')
+        expect(update_unput).to_be_visible()
+        update_unput.fill(new_uniq_id)
         page.get_by_test_id('uniq-id-update-submit-button').click()
         expect(page.locator("tr:has(th:text-is('Unique ID')) td")).to_have_text(
             new_uniq_id
