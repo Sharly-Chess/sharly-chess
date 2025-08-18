@@ -41,9 +41,9 @@
                         <tr class="header">
                             <td class="group-title fw-bold text-center" colspan="10000">
                                 {{ ngettext(
-                                    '%(num)d point group -',
-                                    '%(num)d points group -',
-                                    entries|length,
+                                    '%(num).1f point group -',
+                                    '%(num).1f points group -',
+                                    points,
                                 ) }}
                                 {{ ngettext(
                                     '%(num)d player',
