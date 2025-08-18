@@ -8,6 +8,7 @@ from plugins.pairing_acceleration.pairing_variations import (
     HaleySwissVariation,
     HaleySoftSwissVariation,
     ProgressiveSwissVariation,
+    BakuSwissVariation,
 )
 from plugins.utils import Plugin, PluginUtils
 
@@ -48,7 +49,8 @@ class PairingAccelerationPlugin(Plugin):
             HaleySwissVariation,
             HaleySoftSwissVariation,
             ProgressiveSwissVariation,
+            BakuSwissVariation,
         ]
+        standard: type[SwissVariation] = StandardSwissVariation
         for variation_type in reversed(ordered_types):
-            standard: type[SwissVariation] = StandardSwissVariation
             PluginUtils.insert_on_equals(variation_types, variation_type, standard)

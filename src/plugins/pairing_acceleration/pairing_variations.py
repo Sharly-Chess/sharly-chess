@@ -1,5 +1,7 @@
 from abc import ABC
 from functools import cache
+from math import ceil
+from typing import Literal
 
 from common.i18n import _
 from data.pairings.settings import PairingSetting
@@ -156,3 +158,46 @@ class ProgressiveSwissVariation(AccelerationSwissVariation):
     @staticmethod
     def print_real_points(current_round: int, rounds: int) -> bool:
         return current_round <= rounds - 2
+
+
+class BakuSwissVariation(AccelerationSwissVariation):
+    @staticmethod
+    def variation_id() -> Literal['BAKU']:
+        return 'BAKU'
+
+    @staticmethod
+    def static_name():
+        return _('Baku acceleration system')
+
+    @property
+    def settings(self) -> list[PairingSetting]:
+        return super().settings + [RatingLimitSetting()]
+
+    @staticmethod
+    def print_real_points(current_round, rounds):
+        return current_round <= ceil(rounds / 2)
+
+    @staticmethod
+    def accelerated_rounds(rounds: int) -> int:
+        return ceil(rounds / 2)
+
+    def full_point_rounds(rounds: int) -> int:
+        return ceil(BakuSwissVariation.accelerated_rounds(rounds) / 2)
+
+    @classmethod
+    def compute_virtual_points(
+        cls, tournament: Tournament, player: Player, at_round: int
+    ) -> float:
+        if at_round > cls.accelerated_rounds(tournament.rounds):
+            return 0
+        rating_group = RatingLimitSetting.get_player_rating_group(tournament, player)
+        if at_round > cls.full_point_rounds(tournament.rounds):
+            if rating_group == RatingGroup.A:
+                return Result.DRAW.points(tournament.point_values)
+            else:
+                return 0
+        else:
+            if rating_group == RatingGroup.A:
+                return Result.GAIN.points(tournament.point_values)
+            else:
+                return 0

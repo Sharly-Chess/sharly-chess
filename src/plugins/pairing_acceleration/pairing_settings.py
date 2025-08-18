@@ -59,7 +59,7 @@ class RatingLimitSetting(PairingSetting[int]):
         ratings = cls.player_ratings(tournament)
         if len(ratings) < 2:
             return 0
-        first_b = len(ratings) // 2 - 1
+        first_b = (len(ratings) // 4) * 2 - 1
         return math.ceil((ratings[first_b] + ratings[first_b + 1]) / 2)
 
     recommended_value = default_value

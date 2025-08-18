@@ -566,6 +566,9 @@ msgstr ""
 msgid "Background image:"
 msgstr ""
 
+msgid "Baku acceleration system"
+msgstr ""
+
 msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
 msgstr "Bd."
 
@@ -2863,6 +2866,9 @@ msgid "No password required"
 msgstr ""
 
 msgid "No phone defined."
+msgstr ""
+
+msgid "No players"
 msgstr ""
 
 msgid "No players"

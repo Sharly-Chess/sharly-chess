@@ -566,6 +566,9 @@ msgstr "Image et couleur de fond"
 msgid "Background image:"
 msgstr "Image de fond :"
 
+msgid "Baku acceleration system"
+msgstr "Système d'accélération de Baku"
+
 msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
 msgstr "Ech."
 
