@@ -108,6 +108,8 @@ class PapiPlayerTitle(PluginCoreMapper[str, PlayerTitle]):
     def _core_object_by_plugin_value(cls) -> dict[str, PlayerTitle]:
         return {
             '': PlayerTitle.NONE,
+            'c': PlayerTitle.NONE,
+            'cf': PlayerTitle.NONE,
             'ff': PlayerTitle.WOMAN_FIDE_MASTER,
             'f': PlayerTitle.FIDE_MASTER,
             'mf': PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
