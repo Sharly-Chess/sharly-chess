@@ -7,7 +7,7 @@
     {% endif %}
 >
     <tr>
-        <th scope="col" colspan="2" class="text-nowrap text-start w-1">
+        <th scope="col" colspan="2" class="text-nowrap text-start compact-col">
             <div class="d-flex align-items-center">
                 <i
                     class="bi-arrow-clockwise btn text-dark py-0 ps-0 pe-1 m-0"
@@ -153,7 +153,7 @@
         {% endif %}
         {{ admin_macros.extra_admin_column_header("mail", admin_players_extra_columns)}}
         {% if 'mail' in admin_players_filter_columns %}
-            <th scope="col" class="text-nowrap text-start w-1">
+            <th scope="col" class="text-nowrap text-start compact-col">
                 <div class="d-flex align-items-center">
                     <i class="bi-envelope-check" {{ macros.tooltip_attributes('info', _('The mail addresses.'), 'top') }} ></i>
                 </div>
@@ -161,7 +161,7 @@
         {% endif %}
         {{ admin_macros.extra_admin_column_header("phone", admin_players_extra_columns)}}
         {% if 'phone' in admin_players_filter_columns %}
-            <th scope="col" class="text-nowrap text-start w-1">
+            <th scope="col" class="text-nowrap text-start compact-col">
                 <div class="d-flex align-items-center">
                     <i class="bi-telephone" {{ macros.tooltip_attributes('info', _('The phone numbers.'), 'top') }} ></i>
                 </div>
@@ -192,7 +192,7 @@
         {% endif %}
         {{ admin_macros.extra_admin_column_header("fide", admin_players_extra_columns)}}
         {% if 'fide' in admin_players_filter_columns %}
-            <th scope="col" class="text-nowrap text-center w-1">
+            <th scope="col" class="text-nowrap text-center compact-col">
                 <div class="d-flex align-items-center">
                     {{ _('FIDE *** FIDE COLUMN HEADER FOR PLAYERS') }}
                 </div>

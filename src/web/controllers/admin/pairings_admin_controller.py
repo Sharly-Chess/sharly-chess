@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Annotated, Any
 
 from data.pairings.engines import BbpPairings
-from data.pairings.history import RoundResult
+from data.pairings.bbpHistory import TournamentHistoryPlayer
 from litestar import delete, get, patch, put, post
 from litestar.plugins.htmx import HTMXRequest, ClientRedirect
 from litestar.enums import RequestEncodingType
@@ -1221,32 +1221,20 @@ class PairingsAdminController(BaseEventAdminController):
 
         history = engine.get_history(tournament=tournament, round_=round)
 
-        buckets: dict[float, list[tuple[int, Player, list[RoundResult]]]] = defaultdict(
-            list
-        )
+        buckets: dict[float, list[TournamentHistoryPlayer]] = defaultdict(list)
 
-        for hist_player in history.players:
-            pairing_number = hist_player.id
+        # Put each player in the right bucket
+        for player in history.players:
+            buckets[player.points].append(player)
 
-            rounds_upto = sorted(
-                (rr for rr in hist_player.rounds if rr.round <= round),
-                key=lambda rr: rr.round,
-            )
-            total = rounds_upto[-1].points.total if rounds_upto else 0.0
+        # Sort players within each bucket by player id
+        for pts, players in buckets.items():
+            players.sort(key=lambda p: p.id)
 
-            # Resolve to the Tournament Player using players_by_starting_rank
-            tp = tournament.players_by_starting_rank.get(pairing_number)
-            if tp is None:
-                continue
+        # Create grouped list
+        grouped = [(pts, players) for pts, players in buckets.items()]
 
-            buckets[total].append((pairing_number, tp, rounds_upto))
-
-        # Sort each bucket by pairing number (ascending)
-        for __, items in buckets.items():
-            items.sort(key=lambda it: it[0])
-
-        # Build final structure: list of (points, [players]) sorted by points desc
-        grouped = [(pts, entries) for pts, entries in buckets.items()]
+        # Sort groups by points (highest first)
         grouped.sort(key=lambda it: it[0], reverse=True)
 
         return self._admin_event_pairings_render(
