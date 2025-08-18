@@ -1,4 +1,5 @@
 from enum import StrEnum, auto
+from typing import Self
 
 from common.i18n import _
 
@@ -16,6 +17,10 @@ class AuthActionCategory(StrEnum):
     SCREENS = auto()
     PRIZES = auto()
     PRINT = auto()
+
+    @classmethod
+    def categories(cls) -> list[Self]:
+        return list(cls(c) for c in cls)
 
     @property
     def name(self) -> str:
@@ -124,6 +129,10 @@ class AuthAction(StrEnum):
 
     # Print
     PRINT = auto()
+
+    @classmethod
+    def actions(cls) -> list[Self]:
+        return list(cls(a) for a in cls)
 
     @property
     def category(self) -> AuthActionCategory:

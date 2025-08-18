@@ -72,6 +72,75 @@ Some roles 'include' other roles:
 |Results Entry via public screens|Tournament|Spectator|_none_|
 |Spectator|Event|_none_|_none_|
 
+## Permissions by role
+
+| Permission                        | ADM | ORG | SCR | CA  | DCA | PAI | SEC | CHE | RES | SPE |
+|-----------------------------------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| APPLICATION MANAGEMENT            | ADM | ORG | SCR | CA  | DCA | PAI | SEC | CHE | RES | SPE |
+| View application settings         |  X  |     |     |     |     |     |     |     |     |     |
+| Update application settings       |  X  |     |     |     |     |     |     |     |     |     |
+| Manage source databases           |  X  |     |     |     |     |     |     |     |     |     |
+| EVENTS MANAGEMENT                 | ADM | ORG | SCR | CA  | DCA | PAI | SEC | CHE | RES | SPE |
+| View private events               |  X  |     |     |     |     |     |     |     |     |     |
+| View passed and upcoming events   |  X  |     |     |     |     |     |     |     |     |     |
+| Add events                        |  X  |     |     |     |     |     |     |     |     |     |
+| View event cards details          |  X  |     |     |     |     |     |     |     |     |     |
+| Delete events                     |  X  |     |     |     |     |     |     |     |     |     |
+| Rename events                     |  X  |     |     |     |     |     |     |     |     |     |
+| Update events                     |  X  |  X  |     |  X  |     |     |     |     |     |     |
+| View complete event configuration |  X  |  X  |     |  X  |  X  |     |     |     |     |     |
+| View basic event configuration    |  X  |  X  |     |  X  |  X  |     |  X  |     |     |     |
+| ACCESS CONTROL                    | ADM | ORG | SCR | CA  | DCA | PAI | SEC | CHE | RES | SPE |
+| Manage accounts                   |  X  |  X  |  X  |  X  |  X  |     |     |     |     |     |
+| Manage devices                    |  X  |  X  |  X  |  X  |  X  |     |     |     |     |     |
+| TOURNAMENTS MANAGEMENT            | ADM | ORG | SCR | CA  | DCA | PAI | SEC | CHE | RES | SPE |
+| View the Tournaments tab          |  X  |     |     |  X  |  X  |     |     |     |     |     |
+| Add tournaments                   |  X  |     |     |  X  |     |     |     |     |     |     |
+| Update tournaments                |  X  |     |     |  X  |  X  |     |     |     |     |     |
+| Delete tournaments                |  X  |     |     |  X  |     |     |     |     |     |     |
+| Publish tournament results        |  X  |     |     |  X  |  X  |     |     |     |     |     |
+| Publish tournament rules          |  X  |     |     |  X  |  X  |     |     |     |     |     |
+| Download tournament fees          |  X  |  X  |     |  X  |  X  |     |     |     |     |     |
+| PLAYERS                           | ADM | ORG | SCR | CA  | DCA | PAI | SEC | CHE | RES | SPE |
+| View Players tab                  |  X  |     |     |  X  |  X  |  X  |  X  |     |     |     |
+| Add players                       |  X  |     |     |  X  |  X  |     |     |     |     |     |
+| Update players                    |  X  |     |     |  X  |  X  |     |     |     |     |     |
+| Update players' history           |  X  |     |     |  X  |  X  |  X  |  X  |  X  |     |     |
+| Delete players                    |  X  |     |     |  X  |  X  |     |     |     |     |     |
+| CHECK-IN                          | ADM | ORG | SCR | CA  | DCA | PAI | SEC | CHE | RES | SPE |
+| Open/close check-in               |  X  |     |     |  X  |  X  |  X  |     |     |     |     |
+| Check-in players                  |  X  |     |     |  X  |  X  |  X  |  X  |  X  |     |     |
+| PAIRINGS                          | ADM | ORG | SCR | CA  | DCA | PAI | SEC | CHE | RES | SPE |
+| View Pairings tab                 |  X  |     |     |  X  |  X  |  X  |  X  |     |     |     |
+| Use pairing engines               |  X  |     |     |  X  |  X  |  X  |     |     |     |     |
+| Manually pair players             |  X  |     |     |  X  |  X  |  X  |     |     |     |     |
+| Upair all the boards of a round   |  X  |     |     |  X  |  X  |  X  |     |     |     |     |
+| Unpair one board                  |  X  |     |     |  X  |  X  |  X  |     |     |     |     |
+| Permute boards                    |  X  |     |     |  X  |  X  |  X  |     |     |     |     |
+| Set the current round             |  X  |     |     |  X  |  X  |  X  |     |     |     |     |
+| Set Zero-Points Byes              |  X  |     |     |  X  |  X  |  X  |     |     |     |     |
+| Set Half-Points Byes              |  X  |     |     |  X  |  X  |  X  |     |     |     |     |
+| Set Full-Points Byes              |  X  |     |     |  X  |  X  |     |     |     |     |     |
+| View draft pairings               |  X  |     |     |  X  |  X  |  X  |     |     |     |     |
+| Publish pairings                  |  X  |     |     |  X  |  X  |  X  |     |     |     |     |
+| RANKINGS                          | ADM | ORG | SCR | CA  | DCA | PAI | SEC | CHE | RES | SPE |
+| View draft rankings               |  X  |     |     |  X  |  X  |  X  |     |     |     |     |
+| Publish rankings                  |  X  |     |     |  X  |  X  |  X  |     |     |     |     |
+| RESULTS                           | ADM | ORG | SCR | CA  | DCA | PAI | SEC | CHE | RES | SPE |
+| Enter results                     |  X  |     |     |  X  |  X  |     |  X  |     |  X  |     |
+| Update results                    |  X  |     |     |  X  |  X  |     |  X  |     |     |     |
+| Set illegal moves                 |  X  |     |     |  X  |  X  |     |  X  |     |     |     |
+| Set special results               |  X  |     |     |  X  |  X  |     |     |     |     |     |
+| SCREENS                           | ADM | ORG | SCR | CA  | DCA | PAI | SEC | CHE | RES | SPE |
+| Manage screens                    |  X  |  X  |  X  |  X  |  X  |     |     |     |     |     |
+| View private screens              |  X  |  X  |  X  |  X  |  X  |     |     |     |     |     |
+| View public screens               |  X  |  X  |  X  |  X  |  X  |  X  |  X  |  X  |  X  |  X  |
+| PRIZES                            | ADM | ORG | SCR | CA  | DCA | PAI | SEC | CHE | RES | SPE |
+| View Prizes tab                   |  X  |     |     |  X  |  X  |     |     |     |     |     |
+| Manage prizes                     |  X  |     |     |  X  |  X  |     |     |     |     |     |
+| PRINT                             | ADM | ORG | SCR | CA  | DCA | PAI | SEC | CHE | RES | SPE |
+| Print                             |  X  |     |     |  X  |  X  |     |     |     |     |     |
+
 ## Devices
 
 Devices are defined on the web UI by their IP address.

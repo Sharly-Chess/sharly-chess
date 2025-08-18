@@ -33,15 +33,15 @@ class RoleScope(IntEnum):
 
 
 class Role(IdentifiableEntity, ABC):
+    @staticmethod
+    @abstractmethod
+    def short_name() -> str:
+        """Short name to use in docs."""
+
     @property
     @abstractmethod
     def scope(self) -> RoleScope:
         """The scope of effect of the role."""
-
-    @property
-    @abstractmethod
-    def order(self) -> int:
-        """The order of the role (used to generate the documentation)."""
 
     @staticmethod
     @abstractmethod
@@ -105,13 +105,13 @@ class SpectatorRole(Role):
     def static_name() -> str:
         return _('Spectator')
 
+    @staticmethod
+    def short_name() -> str:
+        return _('SPE')
+
     @property
     def scope(self) -> RoleScope:
         return RoleScope.EVENT
-
-    @property
-    def order(self) -> int:
-        return 10
 
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
@@ -135,13 +135,13 @@ class ResultsEntryRole(Role):
     def static_name() -> str:
         return _('Results Entry via public screens')
 
+    @staticmethod
+    def short_name() -> str:
+        return _('RES')
+
     @property
     def scope(self) -> RoleScope:
         return RoleScope.TOURNAMENT
-
-    @property
-    def order(self) -> int:
-        return 9
 
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
@@ -167,13 +167,13 @@ class CheckInRole(Role):
     def static_name() -> str:
         return _('Check-in via input Screens')
 
+    @staticmethod
+    def short_name() -> str:
+        return _('CHE')
+
     @property
     def scope(self) -> RoleScope:
         return RoleScope.TOURNAMENT
-
-    @property
-    def order(self) -> int:
-        return 8
 
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
@@ -202,13 +202,13 @@ class SectorArbitrationRole(Role):
     def static_name() -> str:
         return _('Sector arbitration')
 
+    @staticmethod
+    def short_name() -> str:
+        return _('SEC')
+
     @property
     def scope(self) -> RoleScope:
         return RoleScope.TOURNAMENT
-
-    @property
-    def order(self) -> int:
-        return 7
 
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
@@ -241,13 +241,13 @@ class PairingRole(Role):
     def static_name() -> str:
         return _('Pairing')
 
+    @staticmethod
+    def short_name() -> str:
+        return _('PAI')
+
     @property
     def scope(self) -> RoleScope:
         return RoleScope.TOURNAMENT
-
-    @property
-    def order(self) -> int:
-        return 6
 
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
@@ -290,13 +290,13 @@ class DeputyChiefArbitrationRole(Role):
     def static_name() -> str:
         return _('Deputy Chief Arbitration')
 
+    @staticmethod
+    def short_name() -> str:
+        return _('DCA')
+
     @property
     def scope(self) -> RoleScope:
         return RoleScope.EVENT
-
-    @property
-    def order(self) -> int:
-        return 5
 
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
@@ -344,13 +344,13 @@ class ChiefArbitrationRole(Role):
     def static_name() -> str:
         return _('Chief Arbitration')
 
+    @staticmethod
+    def short_name() -> str:
+        return _('CA')
+
     @property
     def scope(self) -> RoleScope:
         return RoleScope.EVENT
-
-    @property
-    def order(self) -> int:
-        return 4
 
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
@@ -380,13 +380,13 @@ class ScreenManagementRole(Role):
     def static_name() -> str:
         return _('Screen Management')
 
+    @staticmethod
+    def short_name() -> str:
+        return _('SCR')
+
     @property
     def scope(self) -> RoleScope:
         return RoleScope.EVENT
-
-    @property
-    def order(self) -> int:
-        return 3
 
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
@@ -417,13 +417,13 @@ class OrganizationRole(Role):
     def static_name() -> str:
         return _('Organization')
 
+    @staticmethod
+    def short_name() -> str:
+        return _('ORG')
+
     @property
     def scope(self) -> RoleScope:
         return RoleScope.EVENT
-
-    @property
-    def order(self) -> int:
-        return 2
 
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
@@ -458,13 +458,13 @@ class AdministrationRole(Role):
     def static_name() -> str:
         return _('Administration')
 
+    @staticmethod
+    def short_name() -> str:
+        return _('ADM')
+
     @property
     def scope(self) -> RoleScope:
         return RoleScope.APPLICATION
-
-    @property
-    def order(self) -> int:
-        return 1
 
     @staticmethod
     def direct_sub_roles() -> list[type[Role]]:
