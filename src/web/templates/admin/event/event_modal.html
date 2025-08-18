@@ -8,7 +8,7 @@
                     {{ _('Editing of event [%(event_uniq_id)s]', event_uniq_id=admin_event.uniq_id) }}
                     <span style="font-size: 90%">{{ macros.doc_icon('events-create', 'ms-2') }}</span>
                 {% else %}
-                    {{ _('Archiving of event [%(event_uniq_id)s]', event_uniq_id=admin_event.uniq_id) }}
+                    {{ _('Deletion of event [%(event_uniq_id)s]', event_uniq_id=admin_event.uniq_id) }}
                 {% endif %}
             </h2>
         </div>
@@ -16,15 +16,15 @@
             <form
                 id="modal-form"
                 {% if action == 'create' %}
-                    hx-post="{{ url_for('admin-tab-create-event', admin_tab=admin_tab) }}"
+                    hx-post="{{ url_for('admin-tab-' ~ action ~ '-event', admin_tab=admin_tab) }}"
                     hx-push-url="true"
                 {% elif action == 'clone' %}
-                    hx-post="{{ url_for('admin-event-clone', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-post="{{ url_for('admin-event-' ~ action, event_uniq_id=admin_event.uniq_id) }}"
                 {% elif action == 'delete' %}
-                    hx-post="{{ url_for('admin-event-delete', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-post="{{ url_for('admin-event-' ~ action, event_uniq_id=admin_event.uniq_id) }}"
                     hx-push-url="true"
                 {% elif action == 'update' %}
-                    hx-patch="{{ url_for('admin-event-update', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-patch="{{ url_for('admin-event-' ~ action, event_uniq_id=admin_event.uniq_id) }}"
                 {% else %}
                     hx-get="{{ url_for('unknown-action-' ~ action) }}"
                 {% endif %}
@@ -32,11 +32,14 @@
                 hx-indicator="#please-wait"
             >
                 {% if action == 'delete' %}
-                    {{ admin_macros.checkbox_input(
-                        name='archive',
-                        label='',
-                        placeholder=_('I confirm that I want to archive this event.'),
-                        help_text="",
+                    <h4 class="text-danger">
+                        {{ _('Warning: the deletion of an event is permanent!') }}
+                    </h4>
+                    {{ admin_macros.text_input(
+                        name='uniq_id',
+                        label=_('Enter the event ID to confirm its deletion:'),
+                        placeholder=_('Enter here the event ID'),
+                        help_text=_('Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem.'),
                         data=data, errors=errors
                     ) }}
                 {% else %}
@@ -311,8 +314,8 @@
                         <i class="bi-floppy-fill pe-1"></i>
                         {{ _('Save') }}
                     {% elif action == 'delete' %}
-                        <i class="bi bi-archive-fill pe-1"></i>
-                        {{ _('Archive') }}
+                        <i class="bi-trash pe-1"></i>
+                        {{ _('Delete') }}
                     {% else %}
                         ?
                     {% endif %}

@@ -256,7 +256,6 @@ with_indicator: display a loading indicator, optional
                     {% if input_type == 'password' %}input-group{% endif %}
                     {% if with_indicator %}d-flex align-items-center{% endif %}
                     {% if input_type == 'switch' %}form-check form-switch d-inline-block pe-3{% endif %}
-                    {% if input_type == 'checkbox' %}form-check d-inline-block pe-3{% endif %}
                 "
             >
                 {% if input_type == 'select' %}
@@ -309,13 +308,13 @@ with_indicator: display a loading indicator, optional
                     {% elif select_options|length == 1 and not disabled %}
                         <input type="hidden" name="{{ name }}" value="{{ selected[0] }}" />
                     {% endif %}
-                {% elif input_type == 'switch' or input_type == 'checkbox' %}
+                {% elif input_type == 'switch' %}
                     <input
                         id="{{ id }}"
                         name="{{ name }}"
                         data-testid="{{ id }}"
                         type="checkbox"
-                        class="form-check-input {% if error or (name in errors) %}is-invalid{% endif %} {% if valid %}is-valid{% endif %}"
+                        class="form-check-input"
                         value="on"
                         aria-describedby="{{ id }}-help {{ id }}-error"
                         {% if data[name] == 'on' %}checked{% endif %}
@@ -752,31 +751,6 @@ with_indicator: display a loading indicator, optional
     {{ _generic_input(
         name=name,
         input_type='switch',
-        label=label,
-        placeholder=placeholder,
-        help_text=help_text,
-        info=info,
-        data=data,
-        errors=errors,
-        error=error,
-        disabled=disabled,
-    ) }}
-{% endmacro %}
-
-{% macro checkbox_input(
-    name,
-    label='NO LABEL',
-    placeholder='NO PLACEHOLDER',
-    help_text='NO HELP TEXT',
-    info='',
-    data={},
-    errors={},
-    error=false,
-    disabled=false
-) %}
-    {{ _generic_input(
-        name=name,
-        input_type='checkbox',
         label=label,
         placeholder=placeholder,
         help_text=help_text,
