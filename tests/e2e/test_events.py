@@ -26,11 +26,11 @@ class TestEventFunctionality:
         card = page.locator("div.card:has-text('Unique ID: test-event-e2e')")
         expect(card).to_be_visible()
         card.click()
-        TestUtils.button_by_text(page, 'Delete').click()
+        TestUtils.button_by_text(page, 'Archive').click()
 
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
-        modal.locator('#uniq-id').fill(EVENT_ID)
+        modal.locator('#archive').check()
         modal.locator('button[type=submit]').click()
         expect(page.get_by_text(f'Event [{EVENT_ID}] has been deleted')).to_be_visible()
 

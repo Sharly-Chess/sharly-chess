@@ -368,6 +368,9 @@ msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs affi
 msgid "Arbiter interface"
 msgstr "Arbitrage"
 
+msgid "Archive"
+msgstr "Archiver"
+
 msgid "Archive [{archive}] successfully restored (see event [{event}])."
 msgstr "L'archive [{archive}] restaurée avec succès (voir l'évènement [{event}])."
 
@@ -376,6 +379,10 @@ msgstr "Archivés ({num})"
 
 msgid "Archived event"
 msgstr "Évènement archivé"
+
+#, python-format
+msgid "Archiving of event [%(event_uniq_id)s]"
+msgstr "Archivage de l’événement [%(event_uniq_id)s]"
 
 msgid "Argument --server is deprecated, ignored."
 msgstr "L'option --server est obsolète, ignorée."
@@ -1179,10 +1186,6 @@ msgid "Deletion of display controller [%(display_controller_uniq_id)s]"
 msgstr "Suppression du pilote d'afficheurs [%(display_controller_uniq_id)s]"
 
 #, python-format
-msgid "Deletion of event [%(event_uniq_id)s]"
-msgstr "Suppression de l'évènement [%(event_uniq_id)s]"
-
-#, python-format
 msgid "Deletion of player [%(player)s]"
 msgstr "Suppression du·de la joueur·euse [%(player)s]"
 
@@ -1650,14 +1653,8 @@ msgstr "L'horaire de fin doit être après l'horaire de début."
 msgid "End:"
 msgstr "Fin :"
 
-msgid "Enter here the event ID"
-msgstr "Entrez ici l'identifiant de l'évènement"
-
 msgid "Enter here the tournament ID"
 msgstr "Entrez ici l'identifiant du tournoi"
-
-msgid "Enter the event ID to confirm its deletion:"
-msgstr "Entrez l'identifiant de l'évènement pour confirmer sa suppression :"
 
 msgid "Enter the result"
 msgstr "Saisir le résultat"
@@ -2141,6 +2138,9 @@ msgstr "Comment trier les joueur·euses."
 
 msgid "How to split the results."
 msgstr "Comment regrouper les résultats."
+
+msgid "I confirm that I want to archive this event."
+msgstr "Je confirme l’archivage de cet événement."
 
 msgid "I would like the following custom files to be added to a future release of Sharly Chess:"
 msgstr "J'aimerais que les fichiers de personnalisation suivants soient ajoutés dans une future version de Sharly Chess :"
@@ -3306,6 +3306,9 @@ msgstr "Veuillez choisir la version à restaurer : "
 msgid "Please choose the tournament."
 msgstr "Veuillez choisir le tournoi."
 
+msgid "Please confirm that you wish to archive this event."
+msgstr "Veuillez confirmer que vous souhaitez archiver cet événement."
+
 msgid "Please enter a URL or select an image on the right hand side."
 msgstr "Veuillez entrer une URL ou choisir une image à droite."
 
@@ -3335,9 +3338,6 @@ msgstr "Veuillez entrer le nom du pilote d'afficheurs."
 
 msgid "Please enter the end date of the event."
 msgstr "Veuillez entrer la date de fin de l'évènement."
-
-msgid "Please enter the event ID."
-msgstr "Veuillez entrer l'identifiant de l'évènement."
 
 msgid "Please enter the family ID."
 msgstr "Veuillez entrer l'identifiant du chronomètre."
@@ -3692,9 +3692,6 @@ msgstr "Historique"
 
 msgid "Record *** RECORD FOR PLAYERS COLUMNS"
 msgstr "Historique"
-
-msgid "Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem."
-msgstr "La récupération des données supprimées n'est pas possible sur l'interface web (les données sont néanmoins archivées et peuvent être récupérées sur le système de fichiers)."
 
 msgid "Refresh"
 msgstr "Actualiser"
@@ -5198,9 +5195,6 @@ msgstr "Attention : la suppression d'un chronomètre est définitive !"
 msgid "Warning: the deletion of a tournament is permanent!"
 msgstr "Attention : la suppression d'un tournoi est définitive !"
 
-msgid "Warning: the deletion of an event is permanent!"
-msgstr "Attention : la suppression d'un évènement est définitive !"
-
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
 msgstr "Attention : vous essayez d'exécuter une opération interdite par le règlement FIDE."
 
@@ -5381,9 +5375,6 @@ msgstr "pilote-d-afficheur"
 msgid "event"
 msgstr "évènement"
 
-msgid "event ID does not match."
-msgstr "L'identifiant de l'évènement ne correspond pas."
-
 msgid "minimum: {value}"
 msgstr "minimum : {value}"
 
@@ -5534,4 +5525,3 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
-
