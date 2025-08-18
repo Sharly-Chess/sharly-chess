@@ -4,7 +4,7 @@ from typing import Annotated, Any, Iterable
 
 import xlsxwriter
 
-from litestar import get, patch, post, Response
+from litestar import get, patch, post, Response, delete
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
@@ -87,12 +87,9 @@ class EventAdminController(BaseEventAdminController):
                 if action is None:
                     raise RuntimeError('action not defined')
                 if data is None:
-                    if action == 'delete':
-                        data = {'uniq_id': ''}
-                    else:
-                        data = cls._prepare_event_modal_data(
-                            action, request, web_context.admin_event
-                        )
+                    data = cls._prepare_event_modal_data(
+                        action, request, web_context.admin_event
+                    )
 
                 plugin_form_fields_templates = (
                     plugin_manager.hook.get_event_form_fields_template() or []
@@ -238,6 +235,21 @@ class EventAdminController(BaseEventAdminController):
         )
 
     @get(
+        path='/admin/event-delete-modal/{event_uniq_id:str}',
+        name='admin-event-delete-modal',
+        cache=1,
+    )
+    async def htmx_admin_event_delete_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+    ) -> Template | ClientRedirect:
+        web_context = BaseEventAdminWebContext(request, event_uniq_id)
+        return self._admin_event_render(
+            web_context.template_context | {'modal': 'event-delete'}
+        )
+
+    @get(
         path='/admin/print-modal/{event_uniq_id:str}',
         name='admin-print-modal',
     )
@@ -301,41 +313,20 @@ class EventAdminController(BaseEventAdminController):
         )
         return self._admin_event_config_render(request, event_uniq_id=uniq_id)
 
-    @post(
+    @delete(
         path='/admin/event-delete/{event_uniq_id:str}',
         name='admin-event-delete',
         status_code=HTTP_200_OK,
     )
-    # We have to use POST because hx-delete sends form parameters as query parameters,
-    # which are not read by Litestar in a DELETE request.
     async def htmx_admin_event_delete(
         self,
         request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
         event_uniq_id: str,
     ) -> Template | ClientRedirect | Redirect:
-        web_context = BaseEventAdminWebContext(request, event_uniq_id, data)
+        web_context = BaseEventAdminWebContext(request, event_uniq_id)
         if web_context.error:
             return web_context.error
         event = web_context.get_admin_event()
-        errors: dict[str, str] = {}
-
-        field = 'archive'
-        do_archive = WebContext.form_data_to_bool(data, field)
-        if not do_archive:
-            errors[field] = _('Please confirm that you wish to archive this event.')
-        if errors:
-            return self._admin_event_config_render(
-                request,
-                event_uniq_id=event_uniq_id,
-                modal='event',
-                action='delete',
-                data=data,
-                errors=errors,
-            )
         try:
             arch = EventDatabase(event.uniq_id).delete()
         except PermissionError as ex:
