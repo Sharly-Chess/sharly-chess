@@ -80,6 +80,7 @@ class EventAdminController(BaseEventAdminController):
             'admin_event_tab': 'admin-event-config-tab',
             'ffe_utils': FFEUtils,
             'plugin_event_info_rows': plugin_event_info_rows,
+            'event_uniq_ids': EventLoader.all_event_ids(),
         }
 
         match modal:
@@ -117,7 +118,6 @@ class EventAdminController(BaseEventAdminController):
                     ]
                     and 'background_image' in data
                     else {},
-                    'event_uniq_ids': EventLoader.all_event_ids(),
                     'modal': 'event',
                     'plugin_form_fields_templates': plugin_form_fields_templates,
                     'action': action,
@@ -480,20 +480,24 @@ class EventAdminController(BaseEventAdminController):
             return self.redirect_error(
                 request, f'Invalid event uniq ID [{new_uniq_id}].'
             )
-        try:
-            EventDatabase(event.uniq_id).rename(new_uniq_id)
-        except PermissionError as ex:
-            return self.redirect_error(
+        if new_uniq_id != event_uniq_id:
+            try:
+                EventDatabase(event.uniq_id).rename(new_uniq_id)
+            except PermissionError as ex:
+                return self.redirect_error(
+                    request,
+                    _('Renaming the database failed: {ex}.').format(ex=ex),
+                )
+            Message.success(
                 request,
-                _('Renaming the database failed: {ex}.').format(ex=ex),
+                _(
+                    'Event unique ID has been renamed from '
+                    '[{old_uniq_id}] to [{new_uniq_id}].'
+                ).format(
+                    old_uniq_id=event.uniq_id,
+                    new_uniq_id=new_uniq_id,
+                ),
             )
-        Message.success(
-            request,
-            _('Event [{old_uniq_id}] has been renamed to [{new_uniq_id}].').format(
-                old_uniq_id=event.uniq_id,
-                new_uniq_id=new_uniq_id,
-            ),
-        )
         return self._admin_event_config_render(request, new_uniq_id)
 
     @post(

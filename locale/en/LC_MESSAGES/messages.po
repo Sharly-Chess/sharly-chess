@@ -433,7 +433,16 @@ msgstr ""
 msgid "Application"
 msgstr ""
 
+msgid "Archive [{archive}] successfully restored (see event [{event}])."
+msgstr ""
+
+msgid "Archived ({num})"
+msgstr ""
+
 msgid "Archived event"
+msgstr ""
+
+msgid "Archived events"
 msgstr ""
 
 msgid "Argument --server is deprecated, ignored."
@@ -749,6 +758,9 @@ msgid "Category edition"
 msgstr ""
 
 msgid "Change the player's tournament."
+msgstr ""
+
+msgid "Changing the unique ID will cause an error on any opened screen of the event."
 msgstr ""
 
 msgid "Character [{char}] is not allowed."
@@ -1118,6 +1130,12 @@ msgstr ""
 msgid "Crosstable before the first round"
 msgstr ""
 
+msgid "Current ({num})"
+msgstr ""
+
+msgid "Current events"
+msgstr ""
+
 msgid "Current round"
 msgstr ""
 
@@ -1131,7 +1149,7 @@ msgstr ""
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr ""
 
-msgid "Custom"
+msgid "Customization"
 msgstr ""
 
 msgid "Customize the permissions"
@@ -1171,6 +1189,9 @@ msgstr ""
 msgid "Database [{database}] - "
 msgstr ""
 
+msgid "Database [{database}] successfully updated."
+msgstr ""
+
 msgid "Database [{database}] unexpectedly not found at path [{path}]."
 msgstr ""
 
@@ -1187,6 +1208,9 @@ msgid "Date of birth:"
 msgstr ""
 
 msgid "Date:"
+msgstr ""
+
+msgid "Debug message"
 msgstr ""
 
 msgid "Default federation"
@@ -1705,9 +1729,6 @@ msgstr ""
 msgid "Edit the sets of players displayed on the screen."
 msgstr ""
 
-msgid "Edit the unique ID of the event, used for URLs and file exports."
-msgstr ""
-
 #, python-format
 msgid "Editing of account [%(username)s]"
 msgstr ""
@@ -1828,7 +1849,13 @@ msgstr ""
 msgid "Enter the tournament ID to confirm its deletion:"
 msgstr ""
 
+msgid "Error message"
+msgstr ""
+
 msgid "Error uploading tournament"
+msgstr ""
+
+msgid "Error when updating database [{database}]."
 msgstr ""
 
 msgid "Error while creating the database: {error}."
@@ -1840,14 +1867,7 @@ msgstr "Estimated"
 msgid "Event"
 msgstr ""
 
-#, python-format
-msgid "Event [%(uniq_id)s]"
-msgstr ""
-
 msgid "Event [{event_id}] not found (code: [{code}]): [{error}]."
-msgstr ""
-
-msgid "Event [{old_uniq_id}] has been renamed to [{new_uniq_id}]."
 msgstr ""
 
 msgid "Event [{uniq_id}] has been created."
@@ -1862,7 +1882,16 @@ msgstr ""
 msgid "Event creation"
 msgstr ""
 
+msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
+msgstr ""
+
 msgid "Event: {event_name}"
+msgstr ""
+
+msgid "Events"
+msgstr ""
+
+msgid "Events ({num})"
 msgstr ""
 
 msgid "Execution"
@@ -2276,6 +2305,9 @@ msgstr ""
 msgid "Highlights the row if the new result is different when using the keyboard shortcuts (useful when re-entering all the results for verification)."
 msgstr ""
 
+msgid "Home"
+msgstr ""
+
 msgid "Hort system"
 msgstr ""
 
@@ -2395,6 +2427,9 @@ msgstr ""
 msgid "Increment (optional, seconds):"
 msgstr ""
 
+msgid "Information message"
+msgstr ""
+
 msgid "Initial time (optional, seconds):"
 msgstr ""
 
@@ -2446,6 +2481,9 @@ msgstr ""
 msgid "Invalid color [{color}] ([#RRGGBB] expected)."
 msgstr ""
 
+msgid "Invalid console logging level [{console_log_level}]."
+msgstr ""
+
 msgid "Invalid date [{date_str}]."
 msgstr ""
 
@@ -2461,6 +2499,9 @@ msgstr ""
 msgid "Invalid display link text [{text}]"
 msgstr ""
 
+msgid "Invalid federation [{federation}]."
+msgstr ""
+
 msgid "Invalid fees link text [{text}]."
 msgstr ""
 
@@ -2468,6 +2509,9 @@ msgid "Invalid fixed board number [{fixed_board}]."
 msgstr ""
 
 msgid "Invalid hour [{hour}] (before previous hour [{previous_hour}])."
+msgstr ""
+
+msgid "Invalid locale [{locale}]."
 msgstr ""
 
 msgid "Invalid mail [{mail}]."
@@ -2601,6 +2645,9 @@ msgid "Local URL: {local_url}"
 msgstr ""
 
 msgid "Local databases"
+msgstr ""
+
+msgid "Local source databases settings have been updated."
 msgstr ""
 
 msgid "Location"
@@ -2853,6 +2900,9 @@ msgstr ""
 msgid "No alert message"
 msgstr ""
 
+msgid "No archived events."
+msgstr ""
+
 msgid "No category"
 msgstr ""
 
@@ -2865,6 +2915,9 @@ msgstr ""
 msgid "No criteria."
 msgstr ""
 
+msgid "No current events."
+msgstr ""
+
 msgid "No data received from [{url}]."
 msgstr ""
 
@@ -2872,6 +2925,9 @@ msgid "No display controllers"
 msgstr ""
 
 msgid "No events found."
+msgstr ""
+
+msgid "No events."
 msgstr ""
 
 msgid "No hours."
@@ -2887,6 +2943,9 @@ msgid "No pairing found for this player in the current round."
 msgstr ""
 
 msgid "No pairings."
+msgstr ""
+
+msgid "No passed events."
 msgstr ""
 
 msgid "No permissions"
@@ -2974,6 +3033,9 @@ msgid "No tournaments configured with ChessEvent connections found."
 msgstr ""
 
 msgid "No tournaments."
+msgstr ""
+
+msgid "No upcoming events."
 msgstr ""
 
 msgid "No updates found."
@@ -3123,9 +3185,6 @@ msgstr ""
 msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
 msgstr ""
 
-msgid "Other devices connected to your network can see your public screens. If you have created screens for player check-in and results entry then those features will be enabled."
-msgstr ""
-
 msgid "Other players in this score group are not included since the share would be less than the threshold."
 msgstr ""
 
@@ -3264,6 +3323,12 @@ msgid "Papi file"
 msgstr ""
 
 msgid "Parings by player"
+msgstr ""
+
+msgid "Passed ({num})"
+msgstr ""
+
+msgid "Passed events"
 msgstr ""
 
 msgid "Password:"
@@ -4137,6 +4202,9 @@ msgstr ""
 msgid "Sharly Chess settings"
 msgstr ""
 
+msgid "Sharly Chess settings have been updated."
+msgstr ""
+
 msgid "Show all the players"
 msgstr ""
 
@@ -4646,6 +4714,9 @@ msgid "The rating used when the time control is more than 10 minutes and less th
 msgstr ""
 
 msgid "The related objects will also be deleted:"
+msgstr ""
+
+msgid "The representation of the event for URLs and file exports."
 msgstr ""
 
 msgid "The roles to attribute to this account."
@@ -5205,6 +5276,12 @@ msgstr ""
 msgid "Unrated Win"
 msgstr ""
 
+msgid "Upcoming ({num})"
+msgstr ""
+
+msgid "Upcoming events"
+msgstr ""
+
 msgid "Update"
 msgstr ""
 
@@ -5251,12 +5328,6 @@ msgid "Upper limit expected to be greater than lower limit."
 msgstr ""
 
 msgid "Upper rating limit"
-msgstr ""
-
-msgid "Use connected devices to check-in players and enter results on public screens"
-msgstr ""
-
-msgid "Use customized permissions"
 msgstr ""
 
 msgid "Use log-level specific colors"
@@ -5315,6 +5386,9 @@ msgstr ""
 
 msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr "WIM"
+
+msgid "Warning message"
+msgstr ""
 
 msgid "Warning: by default, only people on your Sharly Chess server can access the application."
 msgstr ""
@@ -5568,9 +5642,6 @@ msgid "You can temporarily invalidate accounts by turning this switch off."
 msgstr ""
 
 msgid "You can temporarily invalidate devices by turning this switch off."
-msgstr ""
-
-msgid "You decide which devices and which accounts are allowed to display screens, check-in players, enter results, pair rounds… Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers…"
 msgstr ""
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
@@ -5911,5 +5982,20 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Warning message"
+#~ msgstr ""
+
+#~ msgid "Custom"
+#~ msgstr ""
+
+#~ msgid "Other devices connected to your network can see your public screens. If you have created screens for player check-in and results entry then those features will be enabled."
+#~ msgstr ""
+
+#~ msgid "Use connected devices to check-in players and enter results on public screens"
+#~ msgstr ""
+
+#~ msgid "Use customized permissions"
+#~ msgstr ""
+
+#~ msgid "You decide which devices and which accounts are allowed to display screens, check-in players, enter results, pair rounds… Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers…"
 #~ msgstr ""
 

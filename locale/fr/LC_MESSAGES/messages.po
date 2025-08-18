@@ -433,8 +433,17 @@ msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs affi
 msgid "Application"
 msgstr "Application"
 
+msgid "Archive [{archive}] successfully restored (see event [{event}])."
+msgstr "'archive [{archive}] restaurée avec succès (voir l'évènement [{event}])"
+
+msgid "Archived ({num})"
+msgstr "Archivés ({num})"
+
 msgid "Archived event"
 msgstr "Évènement archivé"
+
+msgid "Archived events"
+msgstr "Évènements archivés"
 
 msgid "Argument --server is deprecated, ignored."
 msgstr "L'option --server est obsolète, ignorée."
@@ -750,6 +759,9 @@ msgstr "Édition d'une categorie"
 
 msgid "Change the player's tournament."
 msgstr "Changer le joueur de tournoi."
+
+msgid "Changing the unique ID will cause an error on any opened screen of the event."
+msgstr "Modifier l'identifiant unique provoquera une erreur sur tous les écrans ouverts de l'évènement."
 
 msgid "Character [{char}] is not allowed."
 msgstr "La caractère [{char}] n'est pas autorisé."
@@ -1118,6 +1130,12 @@ msgstr "Grille américaine après la ronde {round}"
 msgid "Crosstable before the first round"
 msgstr "Grille américaine avant la première ronde"
 
+msgid "Current ({num})"
+msgstr "En cours ({num})"
+
+msgid "Current events"
+msgstr "Évènements en cours"
+
 msgid "Current round"
 msgstr "Ronde en cours"
 
@@ -1131,8 +1149,8 @@ msgstr "Affiche actuellement l'écran rotatif [{uniq_id}]"
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr "Affiche actuellement l'écran [{uniq_id}]"
 
-msgid "Custom"
-msgstr "Personnalisé"
+msgid "Customization"
+msgstr "Personnalisation"
 
 msgid "Customize the permissions"
 msgstr "Personnaliser les permissions"
@@ -1171,6 +1189,9 @@ msgstr "Base de données"
 msgid "Database [{database}] - "
 msgstr "Base de données [{database}] - "
 
+msgid "Database [{database}] successfully updated."
+msgstr "Base de données [{database}] mise à jour avec succès."
+
 msgid "Database [{database}] unexpectedly not found at path [{path}]."
 msgstr "Base de données [{database}] non trouvée au chemin attendu [{path}]."
 
@@ -1188,6 +1209,9 @@ msgstr "Date naiss. :"
 
 msgid "Date:"
 msgstr "Date :"
+
+msgid "Debug message"
+msgstr "Message de déboggage"
 
 msgid "Default federation"
 msgstr "Fédération par défaut"
@@ -1705,9 +1729,6 @@ msgstr "Éditer les ensembles d'échiquiers affichés sur l'écran."
 msgid "Edit the sets of players displayed on the screen."
 msgstr "Éditer les ensembles de joueur·euses affichés sur l'écran."
 
-msgid "Edit the unique ID of the event, used for URLs and file exports."
-msgstr "Éditer l'identifiant unique de l'évènement, utilisé pour les URLs et les fichiers exportés."
-
 #, python-format
 msgid "Editing of account [%(username)s]"
 msgstr "Édition du compte [%(username)s]"
@@ -1828,8 +1849,14 @@ msgstr "Saisir le résultat"
 msgid "Enter the tournament ID to confirm its deletion:"
 msgstr "Entrez l'identifiant du tournoi pour confirmer sa suppression :"
 
+msgid "Error message"
+msgstr "Message d'erreur"
+
 msgid "Error uploading tournament"
 msgstr "Erreur lors de la mise en ligne du tournoi"
+
+msgid "Error when updating database [{database}]."
+msgstr "Erreur lors de la mise à jour de la base de données [{database}]."
 
 msgid "Error while creating the database: {error}."
 msgstr "Erreur lors de la création de la base de données: {error}."
@@ -1840,15 +1867,8 @@ msgstr "Estimé"
 msgid "Event"
 msgstr "Évènement"
 
-#, python-format
-msgid "Event [%(uniq_id)s]"
-msgstr "Évènement [%(uniq_id)s]"
-
 msgid "Event [{event_id}] not found (code: [{code}]): [{error}]."
 msgstr "Évènement [{event_id}] introuvable (code : [{code}]) : [{error}]."
-
-msgid "Event [{old_uniq_id}] has been renamed to [{new_uniq_id}]."
-msgstr "L'évènement [{old_uniq_id}] a été renommé en [{new_uniq_id}]."
 
 msgid "Event [{uniq_id}] has been created."
 msgstr "L'évènement [{uniq_id}] a été créé."
@@ -1862,8 +1882,17 @@ msgstr "L'évènement [{uniq_id}] a été modifié."
 msgid "Event creation"
 msgstr "Création d'un évènement"
 
+msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
+msgstr "L'identifiant unique de l'évènement à été renommé de [{old_uniq_id}] à [{new_uniq_id}]."
+
 msgid "Event: {event_name}"
 msgstr "Évènement : {event_name}"
+
+msgid "Events"
+msgstr "Évènements"
+
+msgid "Events ({num})"
+msgstr "Évènements ({num})"
 
 msgid "Execution"
 msgstr "Exécution"
@@ -2276,6 +2305,9 @@ msgstr "Surbrillance"
 msgid "Highlights the row if the new result is different when using the keyboard shortcuts (useful when re-entering all the results for verification)."
 msgstr "Met l'échiquier en surbrillance lorsqu'un résultat saisi au clavier est différent (utile lorsque l'on ré-entre tous les résultats pour vérification)."
 
+msgid "Home"
+msgstr "Accueil"
+
 msgid "Hort system"
 msgstr "Système Hort"
 
@@ -2395,6 +2427,9 @@ msgstr "Chemin incorrect [{path}]."
 msgid "Increment (optional, seconds):"
 msgstr "Incrément (optionel, en secondes) :"
 
+msgid "Information message"
+msgstr "Message d'information"
+
 msgid "Initial time (optional, seconds):"
 msgstr "Temps initial (optionel, en secondes) :"
 
@@ -2446,6 +2481,9 @@ msgstr "Numéro d'échiquier non valide [{fixed_board_str}]."
 msgid "Invalid color [{color}] ([#RRGGBB] expected)."
 msgstr "Couleur non valide [{color}] ([#RRGGBB] attendu)."
 
+msgid "Invalid console logging level [{console_log_level}]."
+msgstr "Niveau de log console non valide [{console_log_level}]."
+
 msgid "Invalid date [{date_str}]."
 msgstr "Date non valide [{date_str}]."
 
@@ -2461,6 +2499,9 @@ msgstr "Délai non valide [{delay}] (entier positif attendu)."
 msgid "Invalid display link text [{text}]"
 msgstr "Text du lien d'affichage non valide [{text}]."
 
+msgid "Invalid federation [{federation}]."
+msgstr "Fédération [{federation}] non valide."
+
 msgid "Invalid fees link text [{text}]."
 msgstr "Texte du lien des droits d'homologation non valide [{text}]."
 
@@ -2469,6 +2510,9 @@ msgstr "Numéro d'échiquier [{fixed_board}] non valide."
 
 msgid "Invalid hour [{hour}] (before previous hour [{previous_hour}])."
 msgstr "Horaire non valide [{hour}] (avant l'horaire précédent [{previous_hour}])."
+
+msgid "Invalid locale [{locale}]."
+msgstr "Langue [{locale}] non valide."
 
 msgid "Invalid mail [{mail}]."
 msgstr "Mél [{mail}] non valide."
@@ -2602,6 +2646,9 @@ msgstr "URL locale : {local_url}"
 
 msgid "Local databases"
 msgstr "Bases de données locales"
+
+msgid "Local source databases settings have been updated."
+msgstr "les paramètres des bases de données locales ont été mis à jour."
 
 msgid "Location"
 msgstr "Lieu"
@@ -2853,6 +2900,9 @@ msgstr "Aucun groupe de prix"
 msgid "No alert message"
 msgstr "Pas de message d'alerte"
 
+msgid "No archived events."
+msgstr "Aucun évènement archivé."
+
 msgid "No category"
 msgstr "Aucune catégorie"
 
@@ -2865,6 +2915,9 @@ msgstr "Aucun critère pour la catégorie générale."
 msgid "No criteria."
 msgstr "Aucun critère."
 
+msgid "No current events."
+msgstr "Aucun évènement en cours."
+
 msgid "No data received from [{url}]."
 msgstr "Aucune donnée reçue de [{url}]."
 
@@ -2873,6 +2926,9 @@ msgstr "Aucun pilote d'afficheurs"
 
 msgid "No events found."
 msgstr "Aucun évènement trouvé."
+
+msgid "No events."
+msgstr "Aucun évènement."
 
 msgid "No hours."
 msgstr "Aucun horaire."
@@ -2888,6 +2944,9 @@ msgstr "Aucun appariement pour ce·tte joueur·euse pour la ronde courante."
 
 msgid "No pairings."
 msgstr "Aucun appariement."
+
+msgid "No passed events."
+msgstr "Aucun évènement passé."
 
 msgid "No permissions"
 msgstr "Aucune permission"
@@ -2975,6 +3034,9 @@ msgstr "Aucun tournoi configuré avec des connexions ChessEvent n’a été trou
 
 msgid "No tournaments."
 msgstr "Aucun tournoi."
+
+msgid "No upcoming events."
+msgstr "Aucun évènement à venir."
 
 msgid "No updates found."
 msgstr "Aucun changement détecté."
@@ -3123,9 +3185,6 @@ msgstr "Organisation"
 msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
 msgstr "Organisez vos prix en groupes pour gérer leur attribution. Un·e joueur·euse ne peut recevoir qu’un seul prix par groupe, mais peut recevoir des prix dans plusieurs groupes."
 
-msgid "Other devices connected to your network can see your public screens. If you have created screens for player check-in and results entry then those features will be enabled."
-msgstr "Les appareils connectés sur votre réseau peuvent voir vos écrans publics. Si vous avez créé des écrans pour le pointage des joueur·euses et l'entrée des résultats alors ces fonctionnalités seront activées."
-
 msgid "Other players in this score group are not included since the share would be less than the threshold."
 msgstr "Les autres joueur·euses de ce groupe de score n'ont pas été inclus·es, car leur part serait inférieure au seuil."
 
@@ -3265,6 +3324,12 @@ msgstr "Fichier Papi"
 
 msgid "Parings by player"
 msgstr "Appariements par ordre alphabétique"
+
+msgid "Passed ({num})"
+msgstr "Passés ({num})"
+
+msgid "Passed events"
+msgstr "Évènements passés"
 
 msgid "Password:"
 msgstr "Mot de passe :"
@@ -4137,6 +4202,9 @@ msgstr "URL du serveur Sharly Chess"
 msgid "Sharly Chess settings"
 msgstr "Configuration de Sharly Chess"
 
+msgid "Sharly Chess settings have been updated."
+msgstr "La configuration de Sharly Chess a été mise à jour."
+
 msgid "Show all the players"
 msgstr "Afficher tou·tes les joueur·euses"
 
@@ -4647,6 +4715,9 @@ msgstr "Le classement utilisé lorsque la cadence est supérieure à 10 minutes 
 
 msgid "The related objects will also be deleted:"
 msgstr "Les objets liés vont également être supprimés :"
+
+msgid "The representation of the event for URLs and file exports."
+msgstr "La représentation de l'évènement pour les URLs et les exports de fichier."
 
 msgid "The roles to attribute to this account."
 msgstr "Les rôles à attribuer à ce compte."
@@ -5205,6 +5276,12 @@ msgstr "Défaite non comptabilisé pour le classement Elo"
 msgid "Unrated Win"
 msgstr "Victoire non comptabilisé pour le classement Elo"
 
+msgid "Upcoming ({num})"
+msgstr "À venir ({num})"
+
+msgid "Upcoming events"
+msgstr "Évènements à venir"
+
 msgid "Update"
 msgstr "Mettre à jour"
 
@@ -5252,12 +5329,6 @@ msgstr "La limite Elo haute doit être supérieure à la limite Elo basse."
 
 msgid "Upper rating limit"
 msgstr "Limite Elo haute"
-
-msgid "Use connected devices to check-in players and enter results on public screens"
-msgstr "Utiliser des appareils connectés pour pointer les joueur·euses et entrer les résultats sur des écrans publics"
-
-msgid "Use customized permissions"
-msgstr "Personnalisez les permissions"
 
 msgid "Use log-level specific colors"
 msgstr "Utiliser des couleurs spécifiques au niveau de log"
@@ -5315,6 +5386,9 @@ msgstr "VICTOIRE BLANCS"
 
 msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr "MIF"
+
+msgid "Warning message"
+msgstr "Message d'avertissement"
 
 msgid "Warning: by default, only people on your Sharly Chess server can access the application."
 msgstr "Attention : par défaut, seules les personnes connectées sur le serveur Sharly Chess peuvent accéder à l'application."
@@ -5569,9 +5643,6 @@ msgstr "Vous pouvez désactiver temporairement les comptes en décochant cette c
 
 msgid "You can temporarily invalidate devices by turning this switch off."
 msgstr "Vous pouvez désactiver temporairement les appareils en décochant cette case."
-
-msgid "You decide which devices and which accounts are allowed to display screens, check-in players, enter results, pair rounds… Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers…"
-msgstr "Vous décidez les appareils et les personnes autorisées à afficher les écrans, pointer les joueur·euses, entrer les résultats, apparier les rondes… Sharly Chess offre un système d'autorisation puissant pour facilement déléguer la gestion de votre évènement à des organisateur·ices, des arbitres en chef·fe, des arbitres adjoint·es, des arbitres de secteur, des personnes chargées de l'appariement, du pointage, de la saisie des résultats, de la gestion des écrans…"
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement…) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans simples seront générés automatiquement."
@@ -5838,87 +5909,18 @@ msgstr "{string} : {value}"
 #~ msgid "Tournament [{tournament_uniq_id}]: {text}"
 #~ msgstr "Tournoi [{tournament_uniq_id}] : {text}"
 
-#~ msgid "Archive [{archive}] successfully restored (see event [{event}])."
-#~ msgstr "L'archive [{archive}] restaurée avec succès (voir l'évènement [{event}])."
+#~ msgid "Custom"
+#~ msgstr "Personnalisé"
 
-#~ msgid "Archived ({num})"
-#~ msgstr "Archivés ({num})"
+#~ msgid "Other devices connected to your network can see your public screens. If you have created screens for player check-in and results entry then those features will be enabled."
+#~ msgstr "Les appareils connectés sur votre réseau peuvent voir vos écrans publics. Si vous avez créé des écrans pour le pointage des joueur·euses et l'entrée des résultats alors ces fonctionnalités seront activées."
 
-#~ msgid "Archived events"
-#~ msgstr "Évènements archivés"
+#~ msgid "Use connected devices to check-in players and enter results on public screens"
+#~ msgstr "Utiliser des appareils connectés pour pointer les joueur·euses et entrer les résultats sur des écrans publics"
 
-#~ msgid "Current ({num})"
-#~ msgstr "En cours ({num})"
+#~ msgid "Use customized permissions"
+#~ msgstr "Personnalisez les permissions"
 
-#~ msgid "Current events"
-#~ msgstr "Évènements en cours"
-
-#~ msgid "Database [{database}] successfully updated."
-#~ msgstr "Base de données [{database}] mise à jour avec succès."
-
-#~ msgid "Debug message"
-#~ msgstr "Message de déboggage"
-
-#~ msgid "Error message"
-#~ msgstr "Message d'erreur"
-
-#~ msgid "Error when updating database [{database}]."
-#~ msgstr "Erreur lors de la mise à jour de la base de données [{database}]."
-
-#~ msgid "Events"
-#~ msgstr "Évènements"
-
-#~ msgid "Events ({num})"
-#~ msgstr "Évènements ({num})"
-
-#~ msgid "Home"
-#~ msgstr "Accueil"
-
-#~ msgid "Information message"
-#~ msgstr "Message d'information"
-
-#~ msgid "Invalid console logging level [{console_log_level}]."
-#~ msgstr "Niveau de log console non valide [{console_log_level}]."
-
-#~ msgid "Invalid federation [{federation}]."
-#~ msgstr "Fédération [{federation}] non valide."
-
-#~ msgid "Invalid locale [{locale}]."
-#~ msgstr "Langue [{locale}] non valide."
-
-#~ msgid "Local source databases settings have been updated."
-#~ msgstr "les paramètres des bases de données locales ont été mis à jour."
-
-#~ msgid "No archived events."
-#~ msgstr "Aucun évènement archivé."
-
-#~ msgid "No current events."
-#~ msgstr "Aucun évènement en cours."
-
-#~ msgid "No events."
-#~ msgstr "Aucun évènement."
-
-#~ msgid "No passed events."
-#~ msgstr "Aucun évènement passé."
-
-#~ msgid "No upcoming events."
-#~ msgstr "Aucun évènement à venir."
-
-#~ msgid "Passed ({num})"
-#~ msgstr "Passés ({num})"
-
-#~ msgid "Passed events"
-#~ msgstr "Évènements passés"
-
-#~ msgid "Sharly Chess settings have been updated."
-#~ msgstr "La configuration de Sharly Chess a été mise à jour."
-
-#~ msgid "Upcoming ({num})"
-#~ msgstr "À venir ({num})"
-
-#~ msgid "Upcoming events"
-#~ msgstr "Évènements à venir"
-
-#~ msgid "Warning message"
-#~ msgstr "Message d'avertissement"
+#~ msgid "You decide which devices and which accounts are allowed to display screens, check-in players, enter results, pair rounds… Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers…"
+#~ msgstr "Vous décidez les appareils et les personnes autorisées à afficher les écrans, pointer les joueur·euses, entrer les résultats, apparier les rondes… Sharly Chess offre un système d'autorisation puissant pour facilement déléguer la gestion de votre évènement à des organisateur·ices, des arbitres en chef·fe, des arbitres adjoint·es, des arbitres de secteur, des personnes chargées de l'appariement, du pointage, de la saisie des résultats, de la gestion des écrans…"
 
