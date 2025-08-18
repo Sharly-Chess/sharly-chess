@@ -9,6 +9,7 @@ import sqlite3
 
 from common.exception import SharlyChessException
 from common.i18n import _
+from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from common.tool_installer import PapiConverterInstaller
 from data.input_output.dict_reader import dict_to_dataclass, DictReaderException
@@ -54,6 +55,9 @@ from utils.enum import (
     PlayerRatingType,
     Result,
 )
+
+
+logger = get_logger()
 
 
 @dataclass
@@ -418,10 +422,22 @@ class PapiConverter:
                 raise_unknown_value('pointSystem', variables.pointSystem)
         stored_tournament.three_points_for_a_win = three_points_for_a_win
         stored_tournament.location = variables.venue
-        if not stored_tournament.id:
-            stored_tournament.plugin_data = {
-                PLUGIN_NAME: {'ffe_id': variables.homologation}
-            }
+        ffe_id = None
+        if variables.homologation:
+            if not variables.homologation.isdigit():
+                # Papi form allows for a non-integer value,
+                # so the value is ignored instead of raising
+                logger.warning(
+                    f'Homologation number [{variables.homologation}] '
+                    'is not an integer, its value is ignored.'
+                )
+            else:
+                ffe_id = int(variables.homologation)
+        plugin_data = stored_tournament.plugin_data or {}
+        if PLUGIN_NAME not in plugin_data:
+            plugin_data[PLUGIN_NAME] = {}
+        plugin_data[PLUGIN_NAME] |= {'ffe_id': ffe_id}
+        stored_tournament.plugin_data = plugin_data
         return stored_tournament
 
     @staticmethod
@@ -693,12 +709,6 @@ class PapiConverter:
                 'ffe_id', None
             ),
         )
-
-        # Add plugin-specific data if available
-        if tournament.plugin_data and PLUGIN_NAME in tournament.plugin_data:
-            plugin_data = tournament.plugin_data[PLUGIN_NAME]
-            if 'ffe_id' in plugin_data:
-                variables.homologation = plugin_data['ffe_id']
 
         # Create mapping from internal player ID to index in PapiPlayer list
         player_id_to_index = {
