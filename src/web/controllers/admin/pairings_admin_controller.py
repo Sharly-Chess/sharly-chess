@@ -1,7 +1,10 @@
+from collections import defaultdict
 import json
 from dataclasses import dataclass
 from typing import Annotated, Any
 
+from data.pairings.engines import BbpPairings
+from data.pairings.bbp_history import TournamentHistoryPlayer
 from litestar import delete, get, patch, put, post
 from litestar.plugins.htmx import HTMXRequest, ClientRedirect
 from litestar.enums import RequestEncodingType
@@ -1192,4 +1195,53 @@ class PairingsAdminController(BaseEventAdminController):
                 'data': '',
             },
             ['sse'],
+        )
+
+    @get(
+        path='/admin/pairings/info-modal/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-pairings-info-modal',
+    )
+    async def admin_pairings_info_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        round: int,
+    ) -> Template | ClientRedirect:
+        web_context: PairingsAdminWebContext = PairingsAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=round,
+        )
+        tournament = web_context.get_admin_tournament()
+
+        engine = tournament.pairing_variation.engine
+        assert isinstance(engine, BbpPairings)
+
+        history = engine.get_history(tournament=tournament, round_=round)
+
+        buckets: dict[float, list[TournamentHistoryPlayer]] = defaultdict(list)
+
+        # Put each player in the right bucket
+        for player in history.players:
+            buckets[player.points].append(player)
+
+        # Sort players within each bucket by player id
+        for pts, players in buckets.items():
+            players.sort(key=lambda p: p.id)
+
+        # Create grouped list
+        grouped = [(pts, players) for pts, players in buckets.items()]
+
+        # Sort groups by points (highest first)
+        grouped.sort(key=lambda it: it[0], reverse=True)
+
+        return self._admin_event_pairings_render(
+            web_context,
+            {
+                'modal': 'pairing_info',
+                'pairing_history': grouped,
+                'players_by_pairing_number': tournament.players_by_starting_rank,
+            },
         )

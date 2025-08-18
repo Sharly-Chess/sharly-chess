@@ -45,10 +45,22 @@ msgid "%(minutes)d minutes before"
 msgstr "%(minutes)d minutes avant"
 
 #, python-format
+msgid "%(num).1f point group -"
+msgid_plural "%(num).1f points group -"
+msgstr[0] "Groupe de %(num).1f point -"
+msgstr[1] "Groupe de %(num).1f points -"
+
+#, python-format
 msgid "%(num)d criterion"
 msgid_plural "%(num)d criteria"
 msgstr[0] "%(num)d critère"
 msgstr[1] "%(num)d critères"
+
+#, python-format
+msgid "%(num)d player"
+msgid_plural "%(num)d players"
+msgstr[0] "%(num)d joueur·euse"
+msgstr[1] "%(num)d joueur·euses"
 
 #, python-format
 msgid "%(num)d prize"
@@ -208,6 +220,9 @@ msgstr "Une valeur est attendue."
 
 msgid "Absent"
 msgstr "Absent·e"
+
+msgid "Absolute"
+msgstr "Préférence absolue"
 
 msgid "Accelerated pairings"
 msgstr "Appariements accélérés"
@@ -848,6 +863,9 @@ msgstr "La couleur n°2 est utilisée {delay_2} minutes avant le début des rond
 
 msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
 msgstr "La couleur n°3 est utilisée à partir du début des rondes et pendant {delay_3} minutes (délai n°3)."
+
+msgid "Colour history"
+msgstr "Couleurs"
 
 msgid "Columns"
 msgstr "Colonnes"
@@ -1979,6 +1997,9 @@ msgstr "Échiquier fixe :"
 msgid "Fixed boards:"
 msgstr "Échiquiers fixes :"
 
+msgid "Floats"
+msgstr "Flotteurs"
+
 #, python-format
 msgid "Font size adjustment (%%):"
 msgstr "Ajustement de la taille de police (%%) :"
@@ -2236,6 +2257,9 @@ msgstr "Chemin incorrect [{path}]."
 
 msgid "Increment (optional, seconds):"
 msgstr "Incrément (optionel, en secondes) :"
+
+msgid "Info"
+msgstr "Info"
 
 msgid "Information message"
 msgstr "Message d'information"
@@ -2660,12 +2684,6 @@ msgstr "National"
 msgid "Navigation"
 msgstr "Navigation"
 
-msgid "Nb. *** NB FOR TABLE HEADER"
-msgstr "N°"
-
-msgid "Nb. final rounds without byes:"
-msgstr "Dernières rondes sans bye :"
-
 msgid "Neither screen nor rotator currently assigned"
 msgstr "Pas d'écran ni d'écran rotatif utilisé actuellement"
 
@@ -2876,6 +2894,12 @@ msgstr "Aucun changement détecté."
 msgid "No valid hour defined."
 msgstr "Aucun horaire valide défini."
 
+msgid "No. *** NB FOR TABLE HEADER"
+msgstr "N°"
+
+msgid "No. final rounds without byes:"
+msgstr "Dernières rondes sans bye :"
+
 msgid "None"
 msgstr "Aucun"
 
@@ -3005,6 +3029,9 @@ msgstr "Adversaire Elo"
 msgid "Opponent Elo [Pts]"
 msgstr "Adversaire Elo [Pts]"
 
+msgid "Opponents"
+msgstr "Adversaires"
+
 msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
 msgstr "Organisez vos prix en groupes pour gérer leur attribution. Un·e joueur·euse ne peut recevoir qu’un seul prix par groupe, mais peut recevoir des prix dans plusieurs groupes."
 
@@ -3077,6 +3104,10 @@ msgstr "Apparié·e contre : %(opponent_name)s"
 
 msgid "Pairing Allocated Bye"
 msgstr "Exempt·e"
+
+#, python-format
+msgid "Pairing information for round %(round)d"
+msgstr "Informations d’appariement pour la ronde %(round)d"
 
 msgid "Pairing number"
 msgstr "Numéro d'appariement"
@@ -3440,6 +3471,9 @@ msgstr "Le port [{port}] est déjà utilisé."
 
 msgid "Port: {port}"
 msgstr "Port : {port}"
+
+msgid "Pref."
+msgstr "Préf."
 
 msgid "Present"
 msgstr "Présent·e"
@@ -3955,6 +3989,9 @@ msgstr "Rechercher par : %(fields)s"
 msgid "Searching…"
 msgstr "Recherche en cours…"
 
+msgid "See the pairings information for the start of this round."
+msgstr "Voir les informations d’appariement pour le début de cette ronde."
+
 msgid "Seed color"
 msgstr "Couleur initiale"
 
@@ -4138,6 +4175,9 @@ msgstr "Statut"
 
 msgid "Storing data…"
 msgstr "Stockage des données…"
+
+msgid "Strong"
+msgstr "Préférence forte"
 
 msgid "Sum of Buchholz"
 msgstr "Somme des Buchholz"
@@ -5197,6 +5237,9 @@ msgstr "Attention : la suppression d'un tournoi est définitive !"
 
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
 msgstr "Attention : vous essayez d'exécuter une opération interdite par le règlement FIDE."
+
+msgid "Weak"
+msgstr "Préférence faible"
 
 msgid "Web server not started yet ({ex}), waiting…"
 msgstr "Le serveur web n'est pas encore démarré ({ex}), veuillez patienter…"

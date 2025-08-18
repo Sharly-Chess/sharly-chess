@@ -4,7 +4,7 @@
         hx-swap-oob="outerHTML:#player-{{ old_player_id or player.id}}"
     {% endif %}
 >
-    <td class="text-nowrap text-start w-1 ps-2">
+    <td class="text-nowrap text-start compact-col ps-2">
         <span class="dropdown">
             <button class="btn btn-secondary dropdown-toggle mx-0 px-1 py-0" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" >
                 <i class="bi-three-dots"></i>
@@ -61,7 +61,7 @@
             </ul>
         </span>
     </td>
-    <th scope="row" class="text-nowrap text-end w-1 index">
+    <th scope="row" class="text-nowrap text-end compact-col index">
         {{ index }}
     </th>
     {{ admin_macros.extra_admin_column_cell("title", player, admin_players_extra_columns)}}
@@ -114,7 +114,7 @@
     </td>
     {{ admin_macros.extra_admin_column_cell("federation", player, admin_players_extra_columns)}}
     {% if 'federation' in admin_players_filter_columns %}
-        <td class="text-nowrap text-center w-1">
+        <td class="text-nowrap text-center compact-col">
             <span class="">
                 <img
                     class="player-federation-flag pe-1"
@@ -126,7 +126,7 @@
     {% endif %}
     {{ admin_macros.extra_admin_column_cell("club", player, admin_players_extra_columns)}}
     {% if 'club' in admin_players_filter_columns %}
-        <td class="text-nowrap text-start w-1" style="max-width: 15em; overflow: hidden; text-overflow: ellipsis;">
+        <td class="text-nowrap text-start compact-col" style="max-width: 15em; overflow: hidden; text-overflow: ellipsis;">
             {{ player.club }}
         </td>
     {% endif %}
@@ -185,7 +185,7 @@
     {% endif %}
     {{ admin_macros.extra_admin_column_cell("fide", player, admin_players_extra_columns)}}
     {% if 'fide' in admin_players_filter_columns %}
-        <td class="text-nowrap text-center w-1">
+        <td class="text-nowrap text-center compact-col">
             <img
                 src="{{ url_for('static', file_path='/images/fide-light.svg') }}?version={{ sharly_chess_config.version }}"
                 style="height: 1.2em"
