@@ -181,8 +181,9 @@ class BakuSwissVariation(AccelerationSwissVariation):
     def accelerated_rounds(rounds: int) -> int:
         return ceil(rounds / 2)
 
-    def full_point_rounds(rounds: int) -> int:
-        return ceil(BakuSwissVariation.accelerated_rounds(rounds) / 2)
+    @classmethod
+    def full_point_rounds(cls, rounds: int) -> int:
+        return ceil(cls.accelerated_rounds(rounds) / 2)
 
     @classmethod
     def compute_virtual_points(
