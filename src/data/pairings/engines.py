@@ -5,7 +5,7 @@ from operator import attrgetter
 from pathlib import Path
 from typing import TextIO, TYPE_CHECKING
 
-from data.pairings.bbpHistory import TournamentHistory, parse_bbp_checklist_text
+from data.pairings.bbp_history import TournamentHistory, parse_bbp_checklist_text
 import trf
 from typing_extensions import override
 

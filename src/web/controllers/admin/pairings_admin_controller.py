@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Annotated, Any
 
 from data.pairings.engines import BbpPairings
-from data.pairings.bbpHistory import TournamentHistoryPlayer
+from data.pairings.bbp_history import TournamentHistoryPlayer
 from litestar import delete, get, patch, put, post
 from litestar.plugins.htmx import HTMXRequest, ClientRedirect
 from litestar.enums import RequestEncodingType

@@ -99,15 +99,10 @@ def parse_bbp_checklist_text(text_content: str) -> TournamentHistory:
     Extracts: points, color preference, C2 (bye eligible), C12 (floater n-1),
     C14 (floater n-2), current opponent, and previous round opponents.
     """
-    lines = text_content.split('\n')
     players_list = []
-    header_found = False
     num_rounds = 0
 
-    i = 0
-    while i < len(lines):
-        line = lines[i]
-
+    for line in text_content.split('\n'):
         # Look for header line that starts with "ID"
         if line.strip().startswith('ID\t'):
             header_found = True
@@ -121,17 +116,14 @@ def parse_bbp_checklist_text(text_content: str) -> TournamentHistory:
                 num_rounds = dash_count - 1 if dash_count > 0 else 0
             else:
                 num_rounds = 0
-            i += 1
             continue
 
         # Skip empty lines and BBP footer
         if not line or line.startswith('BBP Pairings'):
-            i += 1
             continue
 
         # Only parse player data if we found the header
         if not header_found:
-            i += 1
             continue
 
         # Parse player data lines
@@ -142,7 +134,6 @@ def parse_bbp_checklist_text(text_content: str) -> TournamentHistory:
             # First part should be player ID
             id_part = parts[0].strip()
             if not id_part or not id_part.isdigit():
-                i += 1
                 continue
 
             player_id = int(id_part)
@@ -151,7 +142,6 @@ def parse_bbp_checklist_text(text_content: str) -> TournamentHistory:
             try:
                 points = float(parts[1].strip())
             except (ValueError, IndexError):
-                i += 1
                 continue
 
             # Extract color history (column 3) - like "  WB", "   B", "    " (spaces = didn't play)
@@ -242,8 +232,6 @@ def parse_bbp_checklist_text(text_content: str) -> TournamentHistory:
             )
 
             players_list.append(player)
-
-        i += 1
 
     # Sort by player ID
     players_list.sort(key=lambda p: p.id)
