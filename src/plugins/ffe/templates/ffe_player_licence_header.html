@@ -2,7 +2,7 @@
 {% import '/ffe_macros.j2' as ffe_macros %}
 
 {% with url=url_for('ffe-admin-event-players-tab', event_uniq_id=admin_event.uniq_id) %}
-<th scope="col" class="text-nowrap text-center w-1">
+<th scope="col" class="text-nowrap text-center compact-col">
     <div class="d-flex align-items-center gap-1">
         {{ _('FFE *** FFE COLUMN HEADER FOR PLAYERS') }}
         {% if admin_players_licences|length > 1 %}

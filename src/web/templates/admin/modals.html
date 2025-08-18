@@ -5,6 +5,8 @@
     {% include 'index/config_modal.html' %}
 {% elif modal == 'event' %}
     {% include 'event/event_modal.html' %}
+{% elif modal == 'event-delete' %}
+    {% include 'event/event_delete_modal.html' %}
 {% elif modal == 'print' %}
     {% include 'event/print_modal.html' %}
 {% elif modal == 'tournament' %}
@@ -29,6 +31,8 @@
     {% include 'pairings/unfinished_round_modal.html' %}
 {% elif modal == 'pairing-settings' %}
     {% include 'pairings/settings/modal.html' %}
+{% elif modal == 'pairing_info' %}
+    {% include 'pairings/pairing_info_modal.html' %}
 {% elif modal == 'screen' %}
     {% include 'screens/screen_modal.html' %}
 {% elif modal == 'screen_sets' %}

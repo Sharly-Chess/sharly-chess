@@ -1,0 +1,123 @@
+{% import '/common/macros.j2' as macros with context %}
+
+<div id="player-modal" class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-players-update-modal" style="max-width: 90%;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Pairing information for round %(round)d', round=admin_round) }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <table
+                id="pairings-info-table"
+                class="table prominent table-sm table-hover w-100 bg-light mx-auto justify-content-center"
+            >
+                {% with first_entry=pairing_history[0][1][0] %}
+                    <thead>
+                        <tr>
+                            <th scope="col" class="text-start  compact-col">
+                                {{ _('No. *** NB FOR TABLE HEADER') }}
+                            </th>
+                            <th scope="col" class="text-start">
+                                {{ _('Name') }}
+                            </th>
+                            <th scope="col" class="text-start  compact-col">
+                                {{ _('Pref.') }}
+                            </th>
+                            <th scope="col" class="text-start  compact-col">
+                                {{ _('Floats') }}
+                            </th>
+                            <th colspan="{{ first_entry.previous_opponents|length }}" scope="col" class="text-start compact-col">
+                                {{ _('Opponents') }}
+                            </th>
+                             <th scope="col" class="text-start compact-col">
+                                {{ _('Colour history') }}
+                            </th>
+                        </tr>
+                    </thead>
+                {% endwith %}
+                <tbody>
+                    {% for points, entries in pairing_history %}
+                        <tr class="header">
+                            <td class="group-title fw-bold text-center" colspan="10000">
+                                {{ ngettext(
+                                    '%(num).1f point group -',
+                                    '%(num).1f points group -',
+                                    points,
+                                ) }}
+                                {{ ngettext(
+                                    '%(num)d player',
+                                    '%(num)d players',
+                                    entries|length,
+                                ) }}
+                            </td>
+                        </tr>
+
+                        {% for player_history in entries %}
+                            {% with player=players_by_pairing_number[player_history.id], row_class='even' if loop.index is even else 'odd' %}
+                                <tr id="player-{{ player.id }}" class="{{ row_class }}">
+                                    <td class="compact-col">#{{ player_history.id }}</td>
+                                    <td>{{ player.full_name }}</td>
+                                    <td class="compact-col text-center">
+                                        {% with color_preference=player_history.color_preference, absolute=player_history.color_preference.absolute, strong=player_history.color_preference.strong %}
+                                            <span
+                                                class=""
+                                                {{ macros.tooltip_attributes('info', _('Absolute') if absolute else _('Strong') if strong else _('Weak'), 'top') }}
+                                            >
+                                                {% if absolute %}
+                                                    <b>{{ color_preference.color.to_crosstable|upper if color_preference else '·' }}</b>
+                                                {% elif strong %}
+                                                    {{ color_preference.color.to_crosstable|upper if color_preference else '·' }}
+                                                {% else %}
+                                                    {{ color_preference.color.to_crosstable|lower if color_preference else '·' }}
+                                                {% endif %}
+                                            </span>
+                                        {% endwith %}
+                                    </td>
+                                    <td class="compact-col text-center">{{ player_history.floater_prev_prev }} {{ player_history.floater_prev }}</td>
+                                    {% for opponent_id in player_history.previous_opponents %}
+                                        <td class="text-center compact-col px-1">
+                                            {% if opponent_id %}
+                                                <span
+                                                    {{ macros.tooltip_attributes('info', players_by_pairing_number[opponent_id].full_name) }}
+                                                >
+                                                    {{ opponent_id }}
+                                                </span>
+                                            {% else %}
+                                                <span
+                                                    class=""
+                                                >
+                                                ·
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                    {% endfor %}
+                                    {% if player_history.previous_opponents|length == 0 %}
+                                        <td></td>
+                                    {% endif %}
+                                    <td class="text-end compact-col ps-4 pe-2">
+                                        <div class="character-grid">
+                                            {% for color in player_history.color_history %}
+                                            <span>{{ color.to_crosstable if color else '' }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endwith %}
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-primary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Close') }}
+            </button>
+        </div>
+    </div>
+</div>

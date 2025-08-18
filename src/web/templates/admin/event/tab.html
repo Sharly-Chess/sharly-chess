@@ -36,15 +36,15 @@
             {% if client.can_delete_event %}
                 <button
                     class="btn btn-outline-danger text-nowrap ms-1"
-                    hx-get="{{ url_for('admin-event-modal', action='delete', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-get="{{ url_for('admin-event-delete-modal', event_uniq_id=admin_event.uniq_id) }}"
                     hx-target="body"
                     hx-indicator="#please-wait"
                     preload
                     data-bs-toggle="modal"
                     data-bs-target="#modal-wrapper"
                 >
-                    <i class="bi-trash-fill pe-1"></i>
-                    {{ _('Delete') }}
+                    <i class="bi bi-archive-fill pe-1"></i>
+                    {{ _('Archive') }}
                 </button>
             {% endif %}
         </div>

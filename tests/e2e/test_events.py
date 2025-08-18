@@ -24,11 +24,11 @@ class TestEventFunctionality:
         card = page.locator("div.card:has-text('Unique ID: test-event-e2e')")
         expect(card).to_be_visible()
         card.click()
-        TestUtils.button_by_text(page, 'Delete').click()
+        TestUtils.button_by_text(page, 'Archive').click()
 
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
-        modal.locator('#uniq-id').fill(EVENT_ID)
+        modal.locator('#archive').check()
         modal.locator('button[type=submit]').click()
         expect(page.get_by_text(f'Event [{EVENT_ID}] has been deleted')).to_be_visible()
 
@@ -37,7 +37,9 @@ class TestEventFunctionality:
         TestUtils.create_event(EVENT_ID, via_api_request_context=api_request_context)
         page.goto(f'/admin/event/{EVENT_ID}/config')
         page.get_by_test_id('uniq-id-update-button').click()
-        page.get_by_test_id('uniq-id-update-input').fill(new_uniq_id)
+        update_input = page.get_by_test_id('uniq-id-update-input')
+        expect(update_input).to_be_visible()
+        update_input.fill(new_uniq_id)
         page.get_by_test_id('uniq-id-update-submit-button').click()
         expect(page.locator("tr:has(th:text-is('Unique ID')) td")).to_have_text(
             new_uniq_id

@@ -34,7 +34,7 @@ class BaseEventAdminWebContext(AdminWebContext):
         data: Annotated[
             dict[str, str] | None,
             Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
+        ] = None,
     ):
         super().__init__(request, data=data, admin_tab=None)
         self.admin_event: Event | None = None
