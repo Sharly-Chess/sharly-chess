@@ -465,7 +465,7 @@ msgstr "Évènements archivés"
 
 #, python-format
 msgid "Archiving of event [%(event_uniq_id)s]"
-msgstr "Archivage de l’événement [%(event_uniq_id)s]"
+msgstr "Archivage de l'évènement [%(event_uniq_id)s]"
 
 msgid "Argument --server is deprecated, ignored."
 msgstr "L'option --server est obsolète, ignorée."
@@ -2345,7 +2345,7 @@ msgid "How to split the results."
 msgstr "Comment regrouper les résultats."
 
 msgid "I confirm that I want to archive this event."
-msgstr "Je confirme l’archivage de cet événement."
+msgstr "Je confirme vouloir archiver cet évènement."
 
 msgid "I would like the following custom files to be added to a future release of Sharly Chess:"
 msgstr "J'aimerais que les fichiers de personnalisation suivants soient ajoutés dans une future version de Sharly Chess :"
@@ -3513,9 +3513,6 @@ msgstr "Veuillez choisir la version à restaurer : "
 
 msgid "Please choose the tournament."
 msgstr "Veuillez choisir le tournoi."
-
-msgid "Please confirm that you wish to archive this event."
-msgstr "Veuillez confirmer que vous souhaitez archiver cet événement."
 
 msgid "Please enter a URL or select an image on the right hand side."
 msgstr "Veuillez entrer une URL ou choisir une image à droite."
