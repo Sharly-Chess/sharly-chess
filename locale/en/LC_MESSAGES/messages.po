@@ -433,6 +433,9 @@ msgstr ""
 msgid "Application"
 msgstr ""
 
+msgid "Archive"
+msgstr ""
+
 msgid "Archive [{archive}] successfully restored (see event [{event}])."
 msgstr ""
 
@@ -443,6 +446,10 @@ msgid "Archived event"
 msgstr ""
 
 msgid "Archived events"
+msgstr ""
+
+#, python-format
+msgid "Archiving of event [%(event_uniq_id)s]"
 msgstr ""
 
 msgid "Argument --server is deprecated, ignored."
@@ -1295,10 +1302,6 @@ msgid "Deletion of display controller [%(display_controller_uniq_id)s]"
 msgstr ""
 
 #, python-format
-msgid "Deletion of event [%(event_uniq_id)s]"
-msgstr ""
-
-#, python-format
 msgid "Deletion of player [%(player)s]"
 msgstr ""
 
@@ -1831,13 +1834,7 @@ msgstr ""
 msgid "End:"
 msgstr ""
 
-msgid "Enter here the event ID"
-msgstr ""
-
 msgid "Enter here the tournament ID"
-msgstr ""
-
-msgid "Enter the event ID to confirm its deletion:"
 msgstr ""
 
 msgid "Enter the password associated with the username."
@@ -2324,6 +2321,9 @@ msgid "How to sort the players."
 msgstr ""
 
 msgid "How to split the results."
+msgstr ""
+
+msgid "I confirm that I want to archive this event."
 msgstr ""
 
 msgid "I would like the following custom files to be added to a future release of Sharly Chess:"
@@ -3483,6 +3483,9 @@ msgstr ""
 msgid "Please choose the tournament."
 msgstr ""
 
+msgid "Please confirm that you wish to archive this event."
+msgstr ""
+
 msgid "Please enter a URL or select an image on the right hand side."
 msgstr ""
 
@@ -3514,9 +3517,6 @@ msgid "Please enter the display controller name."
 msgstr ""
 
 msgid "Please enter the end date of the event."
-msgstr ""
-
-msgid "Please enter the event ID."
 msgstr ""
 
 msgid "Please enter the family ID."
@@ -3869,9 +3869,6 @@ msgstr ""
 
 msgid "Record *** RECORD FOR PLAYERS COLUMNS"
 msgstr "Record"
-
-msgid "Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem."
-msgstr ""
 
 msgid "Refresh"
 msgstr ""
@@ -5433,9 +5430,6 @@ msgstr ""
 msgid "Warning: the deletion of an account is permanent!"
 msgstr ""
 
-msgid "Warning: the deletion of an event is permanent!"
-msgstr ""
-
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
 msgstr ""
 
@@ -5723,9 +5717,6 @@ msgid "display-controller"
 msgstr ""
 
 msgid "event"
-msgstr ""
-
-msgid "event ID does not match."
 msgstr ""
 
 msgid "minimum: {value}"

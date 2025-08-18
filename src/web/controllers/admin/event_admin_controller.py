@@ -383,12 +383,12 @@ class EventAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         event = web_context.get_admin_event()
-        uniq_id = WebContext.form_data_to_str(data, field := 'uniq_id')
         errors: dict[str, str] = {}
-        if not uniq_id:
-            errors[field] = _('Please enter the event ID.')
-        elif uniq_id != event.uniq_id:
-            errors[field] = _('event ID does not match.')
+
+        field = 'archive'
+        do_archive = WebContext.form_data_to_bool(data, field)
+        if not do_archive:
+            errors[field] = _('Please confirm that you wish to archive this event.')
         if errors:
             return self._admin_event_config_render(
                 request,

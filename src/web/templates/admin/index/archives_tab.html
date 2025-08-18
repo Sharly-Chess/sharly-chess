@@ -18,7 +18,7 @@
 <div class="d-flex mb-2 align-items-center flex-wrap gap-1">
 </div>
 
-<table class="mt-5 px-4 table table-striped table-sm table-hover border-black w-auto bg-light mx-auto justify-content-center">
+<table class="mt-5 table prominent table-striped w-auto bg-light mx-auto justify-content-center">
     <thead class="table-dark position-sticky top-0 z-2">
         <tr>
             <th scope="col" class="text-nowrap">{{ _('Archived event') }}</th>
@@ -40,7 +40,7 @@
                                 hx-target="body"
                                 hx-indicator="#please-wait"
                             >
-                                <i class="bi-arrow-counterclockwise"></i>
+                                {{ _('Restore') }}
                             </button>
                         </span>
                     </td>
