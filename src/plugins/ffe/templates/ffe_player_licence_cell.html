@@ -1,7 +1,7 @@
 {% import '/common/macros.j2' as macros with context %}
 {% import '/ffe_macros.j2' as ffe_macros %}
 
-<td class="text-nowrap text-center w-1">
+<td class="text-nowrap text-center compact-col">
     <span
         {% if value.plugin_data.ffe.ffe_licence.value == 0 %}
             {{ macros.tooltip_attributes('error', value.plugin_data.ffe.ffe_licence.name, 'right') }}
