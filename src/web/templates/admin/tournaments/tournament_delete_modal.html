@@ -1,0 +1,81 @@
+{% extends '/admin/common/modal/delete_modal.html' %}
+
+{% block modal_title %}
+    {{ _('Deletion of tournament [%(tournament_uniq_id)s]', tournament_uniq_id=admin_tournament.uniq_id) }}
+{% endblock %}
+
+{% block delete_warning %}
+    {{ _('Warning: the deletion of a tournament is permanent!') }}
+{% endblock %}
+
+{% block form_content %}
+
+    {% if (
+        admin_tournament.dependent_screens
+        or admin_tournament.dependent_families
+        or admin_tournament.prize_groups
+        or admin_tournament.players
+    ) %}
+        <p>{{ _('All the dependant objects will also be deleted:') }}</p>
+        <ul>
+            {% if admin_tournament.players %}
+                {# TODO (Molrn - multi-tournament) replace by the players only playing in this tournament #}
+                <li>
+                   {{ ngettext(
+                       '%(num)d player',
+                       '%(num)d players',
+                       admin_tournament.players|length
+                   ) }}
+               </li>
+            {% endif %}
+            {% if admin_tournament.dependent_screens %}
+               <li>
+                   {{ ngettext(
+                       '%(num)d screen',
+                       '%(num)d screens',
+                       admin_tournament.dependent_screens|length
+                   ) }}
+               </li>
+            {% endif %}
+            {% if admin_tournament.dependent_families %}
+               <li>
+                   {{ ngettext(
+                       '%(num)d family',
+                       '%(num)d families',
+                       admin_tournament.dependent_families|length
+                   ) }}
+               </li>
+            {% endif %}
+            {% if admin_tournament.prize_groups %}
+               <li>
+                   {{ ngettext(
+                       '%(num)d prize group',
+                       '%(num)d prize groups',
+                       admin_tournament.prize_groups|length
+                   ) }}
+               </li>
+            {% endif %}
+        </ul>
+    {% endif %}
+
+    {{ admin_macros.checkbox_input(
+        name='confirm-checkbox',
+        label='',
+        placeholder=_('I confirm that I want to delete this tournament.'),
+        help_text='',
+    ) }}
+    <script>
+        $('#confirm-checkbox').change(function () {
+           $('#delete-button').prop('disabled', !$(this).is(':checked'));
+        });
+        $('#confirm-checkbox').trigger('change');
+    </script>
+{% endblock %}
+
+{% block delete_url %}
+    {{ url_for(
+        'admin-tournament-delete',
+        event_uniq_id=admin_event.uniq_id,
+        tournament_id=admin_tournament.id,
+    ) }}
+{% endblock %}
