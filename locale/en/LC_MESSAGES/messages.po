@@ -2871,9 +2871,6 @@ msgstr ""
 msgid "No players"
 msgstr ""
 
-msgid "No players"
-msgstr ""
-
 msgid "No players matching the criteria."
 msgstr ""
 
@@ -4352,6 +4349,12 @@ msgid "The Unique ID, used to reference the timer."
 msgstr ""
 
 msgid "The Unique ID, used to reference the tournament."
+msgstr ""
+
+msgid "The [{pairing_system}] pairing system is not compatible with the Papi export."
+msgstr ""
+
+msgid "The [{tie_break}] tie break is not compatible with the Papi export."
 msgstr ""
 
 msgid "The arbiter interface allows the management of the events."
