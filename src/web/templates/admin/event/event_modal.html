@@ -2,13 +2,11 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                {% if action in ['create', 'clone', ] %}
-                    {{ _('Event creation') }}<span style="font-size: 70%">{{ macros.doc_icon('events-create', 'ms-2') }}</span>
-                {% elif action == 'update' %}
+                {% if action == 'update' %}
                     {{ _('Editing of event [%(event_uniq_id)s]', event_uniq_id=admin_event.uniq_id) }}
                     <span style="font-size: 90%">{{ macros.doc_icon('events-create', 'ms-2') }}</span>
                 {% else %}
-                    {{ _('Deletion of event [%(event_uniq_id)s]', event_uniq_id=admin_event.uniq_id) }}
+                    {{ _('Event creation') }}<span style="font-size: 70%">{{ macros.doc_icon('events-create', 'ms-2') }}</span>
                 {% endif %}
             </h2>
         </div>
@@ -16,271 +14,253 @@
             <form
                 id="modal-form"
                 {% if action == 'create' %}
-                    hx-post="{{ url_for('admin-tab-' ~ action ~ '-event', admin_tab=admin_tab) }}"
+                    hx-post="{{ url_for('admin-tab-create-event', admin_tab=admin_tab) }}"
                     hx-push-url="true"
                 {% elif action == 'clone' %}
-                    hx-post="{{ url_for('admin-event-' ~ action, event_uniq_id=admin_event.uniq_id) }}"
-                {% elif action == 'delete' %}
-                    hx-post="{{ url_for('admin-event-' ~ action, event_uniq_id=admin_event.uniq_id) }}"
-                    hx-push-url="true"
+                    hx-post="{{ url_for('admin-event-clone', event_uniq_id=admin_event.uniq_id) }}"
                 {% elif action == 'update' %}
-                    hx-patch="{{ url_for('admin-event-' ~ action, event_uniq_id=admin_event.uniq_id) }}"
-                {% else %}
-                    hx-get="{{ url_for('unknown-action-' ~ action) }}"
+                    hx-patch="{{ url_for('admin-event-update', event_uniq_id=admin_event.uniq_id) }}"
                 {% endif %}
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                {% if action == 'delete' %}
-                    <h4 class="text-danger">
-                        {{ _('Warning: the deletion of an event is permanent!') }}
-                    </h4>
-                    {{ admin_macros.text_input(
-                        name='uniq_id',
-                        label=_('Enter the event ID to confirm its deletion:'),
-                        placeholder=_('Enter here the event ID'),
-                        help_text=_('Recovering deleted events is not possible from the web interface (however the events are archived and can be recovered from the filesystem.'),
-                        data=data, errors=errors
-                    ) }}
-                {% else %}
-                    <h4>
-                        {{ _('Properties') }}
-                    </h4>
-                    <div class="row">
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.switch_input(
-                                name='public',
-                                label=_('Visibility:'),
-                                placeholder=_('Public event'),
-                                help_text=_('Only arbiters can see private events.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.select_input(
-                                name='federation',
-                                label=_('Federation:'),
-                                help_text=_('The federation that organizes the event.'),
-                                select_options=federation_options,
-                                data=data, errors=errors
-                            ) }}
-                        </div>
+                <h4>
+                    {{ _('Properties') }}
+                </h4>
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.switch_input(
+                            name='public',
+                            label=_('Visibility:'),
+                            placeholder=_('Public event'),
+                            help_text=_('Only arbiters can see private events.'),
+                            data=data, errors=errors
+                        ) }}
                     </div>
-                    <div class="row">
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.text_input(
-                                name='name',
-                                label=_('Name:'),
-                                placeholder=_('E.g.: World championship'),
-                                help_text=_('The name of the event, used for display and reports.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 col-lg-3 mb-3">
-                            {{ admin_macros.datetime_input(
-                                name='start',
-                                label=_('Start:'),
-                                help_text=_('The start date and time of the event.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 col-lg-3 mb-3">
-                            {{ admin_macros.datetime_input(
-                                name='stop',
-                                label=_('End:'),
-                                help_text=_('The end date and time of the event.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.select_input(
+                            name='federation',
+                            label=_('Federation:'),
+                            help_text=_('The federation that organizes the event.'),
+                            select_options=federation_options,
+                            data=data, errors=errors
+                        ) }}
                     </div>
-                    <div class="row">
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.text_input(
-                                name='location',
-                                label=_('%(string)s:', string=_('Location')),
-                                placeholder=_('E.g.: Paris'),
-                                help_text=_('The location of the event.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6">
-                            {{ admin_macros.text_input(
-                                name='prize_currency',
-                                label=_('%(string)s:', string=_('Prize currency')),
-                                placeholder=_('E.g.: %(string)s', string=_("'EUR' or '€'")),
-                                help_text=_('The currency used to represent monetary prizes (defaults to the currency of the event federation).'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.text_input(
+                            name='name',
+                            label=_('Name:'),
+                            placeholder=_('E.g.: World championship'),
+                            help_text=_('The name of the event, used for display and reports.'),
+                            data=data, errors=errors
+                        ) }}
                     </div>
-                    {% for form_fields_template in plugin_form_fields_templates %}
-                        {% include form_fields_template %}
-                    {% endfor %}
+                    <div class="col-12 col-md-6 col-lg-3 mb-3">
+                        {{ admin_macros.datetime_input(
+                            name='start',
+                            label=_('Start:'),
+                            help_text=_('The start date and time of the event.'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-3 mb-3">
+                        {{ admin_macros.datetime_input(
+                            name='stop',
+                            label=_('End:'),
+                            help_text=_('The end date and time of the event.'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.text_input(
+                            name='location',
+                            label=_('%(string)s:', string=_('Location')),
+                            placeholder=_('E.g.: Paris'),
+                            help_text=_('The location of the event.'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.text_input(
+                            name='prize_currency',
+                            label=_('%(string)s:', string=_('Prize currency')),
+                            placeholder=_('E.g.: %(string)s', string=_("'EUR' or '€'")),
+                            help_text=_('The currency used to represent monetary prizes (defaults to the currency of the event federation).'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+                {% for form_fields_template in plugin_form_fields_templates %}
+                    {% include form_fields_template %}
+                {% endfor %}
 
-                    <h4>
-                        {{ _('Results entry') }}
-                    </h4>
-                    <div class="row">
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.password_input(
-                                name='update_password',
-                                label=_('Password to enter results:'),
-                                placeholder=_('E.g.: my_password'),
-                                help_text=_('The password required on input screens to enter results (optional).'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.select_input(
-                                name='record_illegal_moves',
-                                label=_('Illegal moves recording:'),
-                                help_text=_(
-                                    'The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d). This value can be modified for each tournament.',
-                                    default=sharly_chess_config.default_record_illegal_moves_number
-                                ),
-                                select_options=record_illegal_moves_options,
-                                data=data, errors=errors
-                            ) }}
-                        </div>
+                <h4>
+                    {{ _('Results entry') }}
+                </h4>
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.password_input(
+                            name='update_password',
+                            label=_('Password to enter results:'),
+                            placeholder=_('E.g.: my_password'),
+                            help_text=_('The password required on input screens to enter results (optional).'),
+                            data=data, errors=errors
+                        ) }}
                     </div>
-
-                    <h4>
-                        {{ _('Rules') }}
-                    </h4>
-                    <div class="row">
-                        <div class="col-12 mb-3">
-                            {{ admin_macros.text_input(
-                                name='rules',
-                                label=_('Rules file location:'),
-                                placeholder=_('E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf'),
-                                help_text=_('A URL, or the path to the rules file on the server, in PDF format (optional).'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.select_input(
+                            name='record_illegal_moves',
+                            label=_('Illegal moves recording:'),
+                            help_text=_(
+                                'The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d). This value can be modified for each tournament.',
+                                default=sharly_chess_config.default_record_illegal_moves_number
+                            ),
+                            select_options=record_illegal_moves_options,
+                            data=data, errors=errors
+                        ) }}
                     </div>
+                </div>
 
-                    <h4>
-                        {{ _('Display') }}
-                    </h4>
-                    <div class="row">
-                        <div class="col-12 col-md-6 mb-3">
-                            <div>
-                            {{ admin_macros.text_input(
-                                name='background_image',
-                                label=_('Background image:'),
-                                help_text=_('The URL or the path of the image to display (by default the Sharly Chess logo).'),
-                                default_checkbox=true,
-                                default_checkbox_text=_('no background image'),
-                                data=data, errors=errors
-                            ) }}
-                            <script>
-                                $('#background-image-checkbox').click(function() {
-                                    if ($(this).is(':checked')) {
-                                        $('#background-image-picker-wrapper').css('display', 'none');
-                                        $('#background-image-test').css('background-image', '');
-                                    } else {
-                                        $('#background-image-picker-wrapper').css('display', 'block');
-                                    }
-                                });
-                            </script>
-                            </div>
+                <h4>
+                    {{ _('Rules') }}
+                </h4>
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        {{ admin_macros.text_input(
+                            name='rules',
+                            label=_('Rules file location:'),
+                            placeholder=_('E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf'),
+                            help_text=_('A URL, or the path to the rules file on the server, in PDF format (optional).'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+
+                <h4>
+                    {{ _('Display') }}
+                </h4>
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        <div>
+                        {{ admin_macros.text_input(
+                            name='background_image',
+                            label=_('Background image:'),
+                            help_text=_('The URL or the path of the image to display (by default the Sharly Chess logo).'),
+                            default_checkbox=true,
+                            default_checkbox_text=_('no background image'),
+                            data=data, errors=errors
+                        ) }}
+                        <script>
+                            $('#background-image-checkbox').click(function() {
+                                if ($(this).is(':checked')) {
+                                    $('#background-image-picker-wrapper').css('display', 'none');
+                                    $('#background-image-test').css('background-image', '');
+                                } else {
+                                    $('#background-image-picker-wrapper').css('display', 'block');
+                                }
+                            });
+                        </script>
+                        </div>
+                        <div
+                            id="background-image-picker-wrapper"
+                            style="display: {% if data['background_image_checkbox'] == 'on' %}none{% else %}block{% endif %}"
+                        >
+                            <label class="form-label">{{ _('Choose a custom image:') }}</label>
                             <div
-                                id="background-image-picker-wrapper"
-                                style="display: {% if data['background_image_checkbox'] == 'on' %}none{% else %}block{% endif %}"
-                            >
-                                <label class="form-label">{{ _('Choose a custom image:') }}</label>
-                                <div
-                                    id="background-image-picker"
-                                >
-                                </div>
-                            </div>
-                            <script>
-                                $('#background-image-picker')
-                                .jstree(
-                                    {
-                                        'core' : {
-                                            'multiple': false,
-                                            'data' : {{ background_images_jstree_data | tojson }}
-                                        }
-                                    }
-                                );
-                                $('#background-image-picker').on("changed.jstree", function (e, data) {
-                                });
-                            </script>
-                        </div>
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.color_input(
-                                name='background_color',
-                                label=_('Background colour:'),
-                                help_text=_('The background colour is used when the image does not fill the whole screen.'),
-                                default_checkbox=true,
-                                default_color=sharly_chess_config.default_background_color,
-                                data=data, errors=errors
-                            ) }}
-                            <script>
-                                $('#background-color-checkbox').click(function() {
-                                    if ($(this).is(':checked')) {
-                                        $('#background-image-test').css('background-color', '{{ sharly_chess_config.default_background_color }}');
-                                    } else {
-                                    }
-                                });
-                                $('#background-color').change(function() {
-                                    $('#background-image-test').css('background-color', $(this).val());
-                                });
-                            </script>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <div
-                                id="background-image-test"
-                                style="
-                                    margin: 0 auto;
-                                    width: 320px;
-                                    height: 180px;
-                                    background-image: url('{{ admin_event.background_url if admin_event else sharly_chess_config.default_background_image }}');
-                                    background-color: {{ admin_event.background_color if admin_event else sharly_chess_config.default_background_color }};
-                                    background-repeat: no-repeat;
-                                    background-size: contain;
-                                    background-position: center center;"
+                                id="background-image-picker"
                             >
                             </div>
                         </div>
+                        <script>
+                            $('#background-image-picker')
+                            .jstree(
+                                {
+                                    'core' : {
+                                        'multiple': false,
+                                        'data' : {{ background_images_jstree_data | tojson }}
+                                    }
+                                }
+                            );
+                            $('#background-image-picker').on("changed.jstree", function (e, data) {
+                            });
+                        </script>
                     </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.color_input(
+                            name='background_color',
+                            label=_('Background colour:'),
+                            help_text=_('The background colour is used when the image does not fill the whole screen.'),
+                            default_checkbox=true,
+                            default_color=sharly_chess_config.default_background_color,
+                            data=data, errors=errors
+                        ) }}
+                        <script>
+                            $('#background-color-checkbox').click(function() {
+                                if ($(this).is(':checked')) {
+                                    $('#background-image-test').css('background-color', '{{ sharly_chess_config.default_background_color }}');
+                                } else {
+                                }
+                            });
+                            $('#background-color').change(function() {
+                                $('#background-image-test').css('background-color', $(this).val());
+                            });
+                        </script>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div
+                            id="background-image-test"
+                            style="
+                                margin: 0 auto;
+                                width: 320px;
+                                height: 180px;
+                                background-image: url('{{ admin_event.background_url if admin_event else sharly_chess_config.default_background_image }}');
+                                background-color: {{ admin_event.background_color if admin_event else sharly_chess_config.default_background_color }};
+                                background-repeat: no-repeat;
+                                background-size: contain;
+                                background-position: center center;"
+                        >
+                        </div>
+                    </div>
+                </div>
 
-                    <h4>
-                        {{ _('Alert message') }}
-                    </h4>
-                    <div class="row">
-                        <div class="col-12 col-md-6 col-xl-3 mb-3">
-                            {{ admin_macros.color_input(
-                                name='message_background_color',
-                                label=_('Background colour:'),
-                                help_text=_('The background colour of the alert messages.'),
-                                default_checkbox=true,
-                                default_color=sharly_chess_config.default_message_background_color,
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 col-xl-3 mb-3">
-                            {{ admin_macros.color_input(
-                                name='message_color',
-                                label=_('Text colour:'),
-                                help_text=_('The text colour of the alert messages.'),
-                                default_checkbox=true,
-                                default_color=sharly_chess_config.default_message_color,
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-xl-6 mb-3">
-                            {% with
-                                message_help_text=_('When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level.')
-                            %}
-                                {% include '../common/modal/alert_message.html' %}
-                            {% endwith %}
-                        </div>
+                <h4>
+                    {{ _('Alert message') }}
+                </h4>
+                <div class="row">
+                    <div class="col-12 col-md-6 col-xl-3 mb-3">
+                        {{ admin_macros.color_input(
+                            name='message_background_color',
+                            label=_('Background colour:'),
+                            help_text=_('The background colour of the alert messages.'),
+                            default_checkbox=true,
+                            default_color=sharly_chess_config.default_message_background_color,
+                            data=data, errors=errors
+                        ) }}
                     </div>
-                {% endif %}
+                    <div class="col-12 col-md-6 col-xl-3 mb-3">
+                        {{ admin_macros.color_input(
+                            name='message_color',
+                            label=_('Text colour:'),
+                            help_text=_('The text colour of the alert messages.'),
+                            default_checkbox=true,
+                            default_color=sharly_chess_config.default_message_color,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-xl-6 mb-3">
+                        {% with
+                            message_help_text=_('When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level.')
+                        %}
+                            {% include '../common/modal/alert_message.html' %}
+                        {% endwith %}
+                    </div>
+                </div>
             </form>
         </div>
 
@@ -305,20 +285,10 @@
                 <button
                     type="submit"
                     form="modal-form"
-                    class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                    class="text-nowrap white btn btn-primary"
                 >
-                    {% if action == 'create' %}
-                        <i class="bi-floppy-fill pe-1"></i>
-                        {{ _('Create') }}
-                    {% elif action == 'update' %}
-                        <i class="bi-floppy-fill pe-1"></i>
-                        {{ _('Save') }}
-                    {% elif action == 'delete' %}
-                        <i class="bi-trash pe-1"></i>
-                        {{ _('Delete') }}
-                    {% else %}
-                        ?
-                    {% endif %}
+                    <i class="bi-floppy-fill pe-1"></i>
+                    {{ _('Save') if action == 'update' else _('Create') }}
                 </button>
             {% endif %}
         </div>
