@@ -3337,9 +3337,6 @@ msgstr ""
 msgid "Please choose the tournament."
 msgstr ""
 
-msgid "Please confirm that you wish to archive this event."
-msgstr ""
-
 msgid "Please enter a URL or select an image on the right hand side."
 msgstr ""
 
@@ -5568,3 +5565,4 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+

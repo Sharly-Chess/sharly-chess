@@ -30,9 +30,16 @@
                 <i class="bi-x-circle-fill pe-1"></i>
                 {{ _('Cancel') }}
             </button>
-            <button type="submit" form="modal-form" class="text-nowrap white btn btn-danger">
-                <i class="bi-trash pe-1"></i>
-                {{ _('Delete') }}
+            <button
+                id="delete-button"
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn btn-danger"
+            >
+                {% block delete_button_content %}
+                    <i class="bi-trash pe-1"></i>
+                    {{ _('Delete') }}
+                {% endblock %}
             </button>
         </div>
     </div>

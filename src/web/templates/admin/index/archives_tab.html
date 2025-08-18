@@ -25,16 +25,14 @@
                     <th scope="row" class="text-nowrap">{{ archive.name }}</th>
                     <td>{{ archive.date_str }}</td>
                     <td>
-                        <span {{ macros.tooltip_attributes('info', _('Restore'), 'right') }}>
-                            <button
-                                class="btn btn-sm btn-outline-primary"
-                                hx-post="{{ url_for('admin-restore-archive', archive_name=archive.name) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                            >
-                                {{ _('Restore') }}
-                            </button>
-                        </span>
+                        <button
+                            class="btn btn-sm btn-outline-primary"
+                            hx-post="{{ url_for('admin-restore-archive', archive_name=archive.name) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        >
+                            {{ _('Restore') }}
+                        </button>
                     </td>
                 </tr>
             {% endfor %}

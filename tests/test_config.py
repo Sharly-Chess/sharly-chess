@@ -144,11 +144,9 @@ class TestUtils:
         via_api_request_context: APIRequestContext | None = None,
     ):
         if via_api_request_context:
-            form_data = cls.prepare_form_data({'uniq_id': uniq_id})
-            res = via_api_request_context.post(
+            res = via_api_request_context.delete(
                 f'/admin/event-delete/{uniq_id}',
                 headers={'Content-Type': 'application/x-www-form-urlencoded'},
-                data=form_data,
             )
             TestUtils.check_api_response(res)
         else:
