@@ -330,7 +330,7 @@ class BaseAdminController(BaseController):
         name = WebContext.form_data_to_str(data, field := 'name') or ''
         if not name:
             errors[field] = _('Please enter the name of the event.')
-        if action == 'update' and not web_context.client.can_rename_event:
+        if action == 'update' and web_context.client.can_rename_event:
             assert admin_event is not None
             uniq_id = admin_event.uniq_id
         else:

@@ -340,9 +340,6 @@ msgstr ""
 msgid "Add an account to the event."
 msgstr ""
 
-msgid "Add an event."
-msgstr ""
-
 msgid "Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!"
 msgstr ""
 
@@ -434,6 +431,9 @@ msgid "Any number of devices can be controlled by the same display controller."
 msgstr ""
 
 msgid "Application"
+msgstr ""
+
+msgid "Archive [{archive}] successfully restored (see event [{event}])."
 msgstr ""
 
 msgid "Archived ({num})"
@@ -757,10 +757,10 @@ msgstr ""
 msgid "Category edition"
 msgstr ""
 
-msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
+msgid "Change the player's tournament."
 msgstr ""
 
-msgid "Change the player's tournament."
+msgid "Changing the unique ID will cause an error on any opened screen of the event."
 msgstr ""
 
 msgid "Character [{char}] is not allowed."
@@ -806,16 +806,7 @@ msgstr ""
 msgid "ChessEvent Password:"
 msgstr ""
 
-msgid "ChessEvent connection not defined."
-msgstr ""
-
-msgid "ChessEvent event not set."
-msgstr ""
-
 msgid "ChessEvent event:"
-msgstr ""
-
-msgid "ChessEvent tournament name not set."
 msgstr ""
 
 msgid "ChessEvent tournament:"
@@ -1158,7 +1149,7 @@ msgstr ""
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr ""
 
-msgid "Custom"
+msgid "Customization"
 msgstr ""
 
 msgid "Customize the permissions"
@@ -1738,9 +1729,6 @@ msgstr ""
 msgid "Edit the sets of players displayed on the screen."
 msgstr ""
 
-msgid "Edit the unique ID of the event, used for URLs and file exports."
-msgstr ""
-
 #, python-format
 msgid "Editing of account [%(username)s]"
 msgstr ""
@@ -1879,14 +1867,7 @@ msgstr "Estimated"
 msgid "Event"
 msgstr ""
 
-#, python-format
-msgid "Event [%(uniq_id)s]"
-msgstr ""
-
 msgid "Event [{event_id}] not found (code: [{code}]): [{error}]."
-msgstr ""
-
-msgid "Event [{old_uniq_id}] has been renamed to [{new_uniq_id}]."
 msgstr ""
 
 msgid "Event [{uniq_id}] has been created."
@@ -1899,6 +1880,9 @@ msgid "Event [{uniq_id}] has been updated."
 msgstr ""
 
 msgid "Event creation"
+msgstr ""
+
+msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
 msgstr ""
 
 msgid "Event: {event_name}"
@@ -2083,9 +2067,6 @@ msgid "Family [{family_uniq_id}] has been deleted."
 msgstr ""
 
 msgid "Family [{family_uniq_id}] has been updated."
-msgstr ""
-
-msgid "Family [{family_uniq_id}]: {text}"
 msgstr ""
 
 msgid "Family [{uniq_id}] already exists."
@@ -2536,9 +2517,6 @@ msgstr ""
 msgid "Invalid mail [{mail}]."
 msgstr ""
 
-msgid "Invalid range [{first}-{last}]."
-msgstr ""
-
 msgid "Invalid response from the FFE website."
 msgstr ""
 
@@ -2747,16 +2725,10 @@ msgstr ""
 msgid "Maximum number of illegal moves"
 msgstr ""
 
-msgid "Maximum number of illegal moves not set, by default [{record_illegal_moves}]"
-msgstr ""
-
 msgid "Maximum number of points (included):"
 msgstr ""
 
 msgid "Maximum number of results displayed:"
-msgstr ""
-
-msgid "Maximum number of results set to [{results_limit}] to fit on [{columns}] columns."
 msgstr ""
 
 msgid "Maximum rating"
@@ -2931,12 +2903,6 @@ msgstr ""
 msgid "No archived events."
 msgstr ""
 
-msgid "No background colour set, by default [{background_color}]"
-msgstr ""
-
-msgid "No background image set, by default [{background_image}]"
-msgstr ""
-
 msgid "No category"
 msgstr ""
 
@@ -2971,9 +2937,6 @@ msgid "No internet connection"
 msgstr ""
 
 msgid "No mail defined."
-msgstr ""
-
-msgid "No name set, by default [{name}]"
 msgstr ""
 
 msgid "No pairing found for this player in the current round."
@@ -3042,9 +3005,6 @@ msgstr ""
 msgid "No screen neither family to rotate."
 msgstr ""
 
-msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
-msgstr ""
-
 msgid "No screens"
 msgstr ""
 
@@ -3103,9 +3063,6 @@ msgid "Not connected, impossible to update."
 msgstr ""
 
 msgid "Not paired"
-msgstr ""
-
-msgid "Nothing to display for tournament [{tournament_uniq_id}], one empty screen will be used."
 msgstr ""
 
 msgid "Notification"
@@ -3226,9 +3183,6 @@ msgid "Organization"
 msgstr ""
 
 msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
-msgstr ""
-
-msgid "Other devices connected to your network can see your public screens. If you have created screens for player check-in and results entry then those features will be enabled."
 msgstr ""
 
 msgid "Other players in this score group are not included since the share would be less than the threshold."
@@ -3378,12 +3332,6 @@ msgid "Passed events"
 msgstr ""
 
 msgid "Password:"
-msgstr ""
-
-msgid "Pattern [{pattern}] can be used by screen families only."
-msgstr ""
-
-msgid "Pattern [{pattern}] matches no screen."
 msgstr ""
 
 msgid "Penalty (handicap, seconds):"
@@ -3967,6 +3915,9 @@ msgstr ""
 msgid "Res. ** RESULT FOR TABLE HEADER"
 msgstr "Res."
 
+msgid "Restore"
+msgstr ""
+
 msgid "Result"
 msgstr ""
 
@@ -4035,9 +3986,6 @@ msgid "Rotator [{rotator_uniq_id}] has been deleted."
 msgstr ""
 
 msgid "Rotator [{rotator_uniq_id}] has been updated."
-msgstr ""
-
-msgid "Rotator [{rotator_uniq_id}]: {text}"
 msgstr ""
 
 msgid "Rotator [{uniq_id}] already exists."
@@ -4157,9 +4105,6 @@ msgstr "Score"
 msgid "Screen Management"
 msgstr ""
 
-msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
-msgstr ""
-
 msgid "Screen [{screen_uniq_id}] has been assigned to controller [{display_controller_uniq_id}]."
 msgstr ""
 
@@ -4170,12 +4115,6 @@ msgid "Screen [{screen_uniq_id}] has been deleted."
 msgstr ""
 
 msgid "Screen [{screen_uniq_id}] has been updated."
-msgstr ""
-
-msgid "Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}"
-msgstr ""
-
-msgid "Screen [{screen_uniq_id}]: {text}"
 msgstr ""
 
 msgid "Screen [{uniq_id}] already exists."
@@ -4777,6 +4716,9 @@ msgstr ""
 msgid "The related objects will also be deleted:"
 msgstr ""
 
+msgid "The representation of the event for URLs and file exports."
+msgstr ""
+
 msgid "The roles to attribute to this account."
 msgstr ""
 
@@ -4996,12 +4938,6 @@ msgstr ""
 msgid "Timer [{timer_uniq_id}] has been updated."
 msgstr ""
 
-msgid "Timer [{timer_uniq_id}], hour [{hour_order}]: {text}"
-msgstr ""
-
-msgid "Timer [{timer_uniq_id}]: {text}"
-msgstr ""
-
 msgid "Timer [{uniq_id}] already exists."
 msgstr ""
 
@@ -5101,9 +5037,6 @@ msgid "Tournament [{tournament_uniq_id}] has started."
 msgstr ""
 
 msgid "Tournament [{tournament_uniq_id}] is finished, you can not add players any longer."
-msgstr ""
-
-msgid "Tournament [{tournament_uniq_id}]: {text}"
 msgstr ""
 
 msgid "Tournament [{uniq_id}] already exists."
@@ -5395,12 +5328,6 @@ msgid "Upper limit expected to be greater than lower limit."
 msgstr ""
 
 msgid "Upper rating limit"
-msgstr ""
-
-msgid "Use connected devices to check-in players and enter results on public screens"
-msgstr ""
-
-msgid "Use customized permissions"
 msgstr ""
 
 msgid "Use log-level specific colors"
@@ -5717,9 +5644,6 @@ msgstr ""
 msgid "You can temporarily invalidate devices by turning this switch off."
 msgstr ""
 
-msgid "You decide which devices and which accounts are allowed to display screens, check-in players, enter results, pair rounds… Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers…"
-msgstr ""
-
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr ""
 
@@ -5960,4 +5884,118 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
+#~ msgid "No password required"
+#~ msgstr ""
+
+#~ msgid "No screen nor family to rotate."
+#~ msgstr ""
+
+#~ msgid "Tournament [{tournament_uniq_id}] is not started yet."
+#~ msgstr ""
+
+#~ msgid "Tournament [{tournament_uniq_id}] is started."
+#~ msgstr ""
+
+#~ msgid "Tournament [{tournament_uniq_id}]: {text}"
+#~ msgstr ""
+
+#~ msgid "Archive [{archive}] successfully restored (see event [{event}])."
+#~ msgstr ""
+
+#~ msgid "Archived ({num})"
+#~ msgstr ""
+
+#~ msgid "Archived events"
+#~ msgstr ""
+
+#~ msgid "Current ({num})"
+#~ msgstr ""
+
+#~ msgid "Current events"
+#~ msgstr ""
+
+#~ msgid "Database [{database}] successfully updated."
+#~ msgstr ""
+
+#~ msgid "Debug message"
+#~ msgstr ""
+
+#~ msgid "Error message"
+#~ msgstr ""
+
+#~ msgid "Error when updating database [{database}]."
+#~ msgstr ""
+
+#~ msgid "Events"
+#~ msgstr ""
+
+#~ msgid "Events ({num})"
+#~ msgstr ""
+
+#~ msgid "Home"
+#~ msgstr ""
+
+#~ msgid "Information message"
+#~ msgstr ""
+
+#~ msgid "Invalid console logging level [{console_log_level}]."
+#~ msgstr ""
+
+#~ msgid "Invalid federation [{federation}]."
+#~ msgstr ""
+
+#~ msgid "Invalid locale [{locale}]."
+#~ msgstr ""
+
+#~ msgid "Local source databases settings have been updated."
+#~ msgstr ""
+
+#~ msgid "No archived events."
+#~ msgstr ""
+
+#~ msgid "No current events."
+#~ msgstr ""
+
+#~ msgid "No events."
+#~ msgstr ""
+
+#~ msgid "No passed events."
+#~ msgstr ""
+
+#~ msgid "No upcoming events."
+#~ msgstr ""
+
+#~ msgid "Passed ({num})"
+#~ msgstr ""
+
+#~ msgid "Passed events"
+#~ msgstr ""
+
+#~ msgid "Sharly Chess settings have been updated."
+#~ msgstr ""
+
+#~ msgid "Upcoming ({num})"
+#~ msgstr ""
+
+#~ msgid "Upcoming events"
+#~ msgstr ""
+
+#~ msgid "Warning message"
+#~ msgstr ""
+
+#~ msgid "Custom"
+#~ msgstr ""
+
+#~ msgid "Other devices connected to your network can see your public screens. If you have created screens for player check-in and results entry then those features will be enabled."
+#~ msgstr ""
+
+#~ msgid "Use connected devices to check-in players and enter results on public screens"
+#~ msgstr ""
+
+#~ msgid "Use customized permissions"
+#~ msgstr ""
+
+#~ msgid "You decide which devices and which accounts are allowed to display screens, check-in players, enter results, pair rounds… Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers…"
+#~ msgstr ""
 

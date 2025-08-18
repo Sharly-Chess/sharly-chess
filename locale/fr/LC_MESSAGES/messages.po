@@ -340,9 +340,6 @@ msgstr "Ajouter un tournoi à l'évènement."
 msgid "Add an account to the event."
 msgstr "Ajouter un compte à l'évènement."
 
-msgid "Add an event."
-msgstr "Ajouter un évènement."
-
 msgid "Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!"
 msgstr "Ajouter ici toutes les informations que vous pensez nécessaires, et si vous n'êtes pas connu·e des développeur·euses, présentez-vous !"
 
@@ -435,6 +432,9 @@ msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs affi
 
 msgid "Application"
 msgstr "Application"
+
+msgid "Archive [{archive}] successfully restored (see event [{event}])."
+msgstr "'archive [{archive}] restaurée avec succès (voir l'évènement [{event}])"
 
 msgid "Archived ({num})"
 msgstr "Archivés ({num})"
@@ -757,11 +757,11 @@ msgstr "Création d'une catégorie"
 msgid "Category edition"
 msgstr "Édition d'une categorie"
 
-msgid "Certification number and FFE password not set, operations on the FFE website will not be available."
-msgstr "Le numéro d'homologation et le mot de passe FFE ne sont pas définis, les opérations sur le site web FFE ne seront pas disponibles."
-
 msgid "Change the player's tournament."
 msgstr "Changer le joueur de tournoi."
+
+msgid "Changing the unique ID will cause an error on any opened screen of the event."
+msgstr "Modifier l'identifiant unique provoquera une erreur sur tous les écrans ouverts de l'évènement."
 
 msgid "Character [{char}] is not allowed."
 msgstr "La caractère [{char}] n'est pas autorisé."
@@ -806,17 +806,8 @@ msgstr "ChessEvent"
 msgid "ChessEvent Password:"
 msgstr "Mot de passe ChessEvent :"
 
-msgid "ChessEvent connection not defined."
-msgstr "Connexion à ChessEvent non définie."
-
-msgid "ChessEvent event not set."
-msgstr "Évènement ChessEvent non défini."
-
 msgid "ChessEvent event:"
 msgstr "Évènement ChessEvent :"
-
-msgid "ChessEvent tournament name not set."
-msgstr "Nom du tournoi ChessEvent non défini."
 
 msgid "ChessEvent tournament:"
 msgstr "Nom du tournoi ChessEvent :"
@@ -1158,8 +1149,8 @@ msgstr "Affiche actuellement l'écran rotatif [{uniq_id}]"
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr "Affiche actuellement l'écran [{uniq_id}]"
 
-msgid "Custom"
-msgstr "Personnalisé"
+msgid "Customization"
+msgstr "Personnalisation"
 
 msgid "Customize the permissions"
 msgstr "Personnaliser les permissions"
@@ -1738,9 +1729,6 @@ msgstr "Éditer les ensembles d'échiquiers affichés sur l'écran."
 msgid "Edit the sets of players displayed on the screen."
 msgstr "Éditer les ensembles de joueur·euses affichés sur l'écran."
 
-msgid "Edit the unique ID of the event, used for URLs and file exports."
-msgstr "Éditer l'identifiant unique de l'évènement, utilisé pour les URLs et les fichiers exportés."
-
 #, python-format
 msgid "Editing of account [%(username)s]"
 msgstr "Édition du compte [%(username)s]"
@@ -1879,15 +1867,8 @@ msgstr "Estimé"
 msgid "Event"
 msgstr "Évènement"
 
-#, python-format
-msgid "Event [%(uniq_id)s]"
-msgstr "Évènement [%(uniq_id)s]"
-
 msgid "Event [{event_id}] not found (code: [{code}]): [{error}]."
 msgstr "Évènement [{event_id}] introuvable (code : [{code}]) : [{error}]."
-
-msgid "Event [{old_uniq_id}] has been renamed to [{new_uniq_id}]."
-msgstr "L'évènement [{old_uniq_id}] a été renommé en [{new_uniq_id}]."
 
 msgid "Event [{uniq_id}] has been created."
 msgstr "L'évènement [{uniq_id}] a été créé."
@@ -1900,6 +1881,9 @@ msgstr "L'évènement [{uniq_id}] a été modifié."
 
 msgid "Event creation"
 msgstr "Création d'un évènement"
+
+msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
+msgstr "L'identifiant unique de l'évènement à été renommé de [{old_uniq_id}] à [{new_uniq_id}]."
 
 msgid "Event: {event_name}"
 msgstr "Évènement : {event_name}"
@@ -2084,9 +2068,6 @@ msgstr "La famile [{family_uniq_id}] a été supprimée."
 
 msgid "Family [{family_uniq_id}] has been updated."
 msgstr "La famile [{family_uniq_id}] a été modifiée."
-
-msgid "Family [{family_uniq_id}]: {text}"
-msgstr "Famille [{family_uniq_id}] : {text}"
 
 msgid "Family [{uniq_id}] already exists."
 msgstr "La famille [{uniq_id}] existe déjà."
@@ -2536,9 +2517,6 @@ msgstr "Langue [{locale}] non valide."
 msgid "Invalid mail [{mail}]."
 msgstr "Mél [{mail}] non valide."
 
-msgid "Invalid range [{first}-{last}]."
-msgstr "Plage invalide [{first}-{last}]. x"
-
 msgid "Invalid response from the FFE website."
 msgstr "Réponse non valide du site FFE."
 
@@ -2747,17 +2725,11 @@ msgstr "Nombre maximum de jokers (byes) : %(max_byes)d"
 msgid "Maximum number of illegal moves"
 msgstr "Nombre maximum de coups illégaux"
 
-msgid "Maximum number of illegal moves not set, by default [{record_illegal_moves}]"
-msgstr "Nombre maximum de coups illégaux non défini, par défaut [{record_illegal_moves}]"
-
 msgid "Maximum number of points (included):"
 msgstr "Nombre maximum de points (inclus) :"
 
 msgid "Maximum number of results displayed:"
 msgstr "Nombre maximum de résultats affichés :"
-
-msgid "Maximum number of results set to [{results_limit}] to fit on [{columns}] columns."
-msgstr "Nombre maximum de résultats passé à [{results_limit}] pour tenir sur [{columns}] colonnes."
 
 msgid "Maximum rating"
 msgstr "Elo maximum"
@@ -2931,12 +2903,6 @@ msgstr "Pas de message d'alerte"
 msgid "No archived events."
 msgstr "Aucun évènement archivé."
 
-msgid "No background colour set, by default [{background_color}]"
-msgstr "Couleur de fond non définie, par défaut [{background_color}]"
-
-msgid "No background image set, by default [{background_image}]"
-msgstr "Image de fond non définie, par défaut [{background_image}]"
-
 msgid "No category"
 msgstr "Aucune catégorie"
 
@@ -2972,9 +2938,6 @@ msgstr "Aucune connexion à internet"
 
 msgid "No mail defined."
 msgstr "Mél non défini."
-
-msgid "No name set, by default [{name}]"
-msgstr "Nom non défini, par défaut [{name}]"
 
 msgid "No pairing found for this player in the current round."
 msgstr "Aucun appariement pour ce·tte joueur·euse pour la ronde courante."
@@ -3042,9 +3005,6 @@ msgstr "Aucune famille d'écrans."
 msgid "No screen neither family to rotate."
 msgstr "Aucun écran ni famille à afficher."
 
-msgid "No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}]."
-msgstr "Aucun écran de type [{screen_type}] pour le menu de l'écran [{screen_uniq_id}]."
-
 msgid "No screens"
 msgstr "Aucun écran"
 
@@ -3104,9 +3064,6 @@ msgstr "Échec de la connexion, mise à jour impossible."
 
 msgid "Not paired"
 msgstr "Non-apparié·e"
-
-msgid "Nothing to display for tournament [{tournament_uniq_id}], one empty screen will be used."
-msgstr "Rien à afficher pour le tournoi [{tournament_uniq_id}], un écran vide sera utilisé."
 
 msgid "Notification"
 msgstr "Notification"
@@ -3227,9 +3184,6 @@ msgstr "Organisation"
 
 msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
 msgstr "Organisez vos prix en groupes pour gérer leur attribution. Un·e joueur·euse ne peut recevoir qu’un seul prix par groupe, mais peut recevoir des prix dans plusieurs groupes."
-
-msgid "Other devices connected to your network can see your public screens. If you have created screens for player check-in and results entry then those features will be enabled."
-msgstr "Les appareils connectés sur votre réseau peuvent voir vos écrans publics. Si vous avez créé des écrans pour le pointage des joueur·euses et l'entrée des résultats alors ces fonctionnalités seront activées."
 
 msgid "Other players in this score group are not included since the share would be less than the threshold."
 msgstr "Les autres joueur·euses de ce groupe de score n'ont pas été inclus·es, car leur part serait inférieure au seuil."
@@ -3379,12 +3333,6 @@ msgstr "Évènements passés"
 
 msgid "Password:"
 msgstr "Mot de passe :"
-
-msgid "Pattern [{pattern}] can be used by screen families only."
-msgstr "Le motif [{pattern}] ne peut être utilisé que pour les familles d'écrans."
-
-msgid "Pattern [{pattern}] matches no screen."
-msgstr "Le motif [{pattern}] ne correspond à aucun écran."
 
 msgid "Penalty (handicap, seconds):"
 msgstr "Pénalité (handicap, en secondes) :"
@@ -3967,6 +3915,9 @@ msgstr "La requête à la base de données a échoué : {error}."
 msgid "Res. ** RESULT FOR TABLE HEADER"
 msgstr "Rés."
 
+msgid "Restore"
+msgstr "Restaurer"
+
 msgid "Result"
 msgstr "Résultat"
 
@@ -4036,9 +3987,6 @@ msgstr "L'écran rotatif [{rotator_uniq_id}] a été supprimé."
 
 msgid "Rotator [{rotator_uniq_id}] has been updated."
 msgstr "L'écran rotatif [{rotator_uniq_id}] a été modifié."
-
-msgid "Rotator [{rotator_uniq_id}]: {text}"
-msgstr "Écran rotatif [{rotator_uniq_id}] : {text}"
 
 msgid "Rotator [{uniq_id}] already exists."
 msgstr "Rotator [{uniq_id}] existe déjà."
@@ -4157,9 +4105,6 @@ msgstr "Score"
 msgid "Screen Management"
 msgstr "Gestion de l'affichage"
 
-msgid "Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}]."
-msgstr "Écran [{pattern}] introuvable pour le menu de l'écran [{screen_uniq_id}]."
-
 msgid "Screen [{screen_uniq_id}] has been assigned to controller [{display_controller_uniq_id}]."
 msgstr "L'écran [{screen_uniq_id}] est utilisé par le pilote d'afficheurs [{display_controller_uniq_id}]."
 
@@ -4171,12 +4116,6 @@ msgstr "L'écran [{screen_uniq_id}] a été supprimé."
 
 msgid "Screen [{screen_uniq_id}] has been updated."
 msgstr "L'écran [{screen_uniq_id}] a été modifié."
-
-msgid "Screen [{screen_uniq_id}], screen set [{screen_set_order}]: {text}"
-msgstr "Écran [{screen_uniq_id}], ensemble [{screen_set_order}] : {text}"
-
-msgid "Screen [{screen_uniq_id}]: {text}"
-msgstr "Écran [{screen_uniq_id}] : {text}"
 
 msgid "Screen [{uniq_id}] already exists."
 msgstr "L'écran [{uniq_id}] existe déjà."
@@ -4777,6 +4716,9 @@ msgstr "Le classement utilisé lorsque la cadence est supérieure à 10 minutes 
 msgid "The related objects will also be deleted:"
 msgstr "Les objets liés vont également être supprimés :"
 
+msgid "The representation of the event for URLs and file exports."
+msgstr "La représentation de l'évènement pour les URLs et les exports de fichier."
+
 msgid "The roles to attribute to this account."
 msgstr "Les rôles à attribuer à ce compte."
 
@@ -4921,7 +4863,7 @@ msgid "This field allows you to specify the screens whose links will be displaye
 msgstr "Ce champ vous permet de spécifier les écrans dont les liens seront affichés sur le menu des écrans de la famille. Les identifiants d'écrans doivent être séparés par des virgules, les mots-clés @family (tous les écrans de la famille), @boards (tous les écrans d'affichage des échiquiers), @input (tous les écrans de saisie), @players (tous les écrans d'affichage des appariements), @ranking (tous les écrans de classement) ainsi que le joker * peuvent être utilisés. Si ce champ est laissé vide, aucun menu ne sera affiché sur les écrans de la famille."
 
 msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
-msgstr "Ce champ vous permet de spécifier les écrans dont les liens seront affichés sur le menu de l'écran. Les identifiants d'écrans doivent être séparés par des virgules, les mots-clés @family (tous les écrans de la famille), @boards (tous les écrans d'affichage des échiquiers), @input (tous les écrans de saisie), @players (tous les écrans d'affichage des appariements), @ranking (tous les écrans de classement) ainsi que le joker * peuvent être utilisés. Si ce champ est laissé vide, aucun menu ne sera affiché sur l'es 'écran."
+msgstr "Ce champ vous permet de spécifier les écrans dont les liens seront affichés sur le menu de l'écran. Les identifiants d'écrans doivent être séparés par des virgules, les mots-clés @family (tous les écrans de la famille), @boards (tous les écrans d'affichage des échiquiers), @input (tous les écrans de saisie), @players (tous les écrans d'affichage des appariements), @ranking (tous les écrans de classement) ainsi que le joker * peuvent être utilisés. Si ce champ est laissé vide, aucun menu ne sera affiché sur l'écran."
 
 msgid "This field can't be updated once the tournament has started."
 msgstr "Ce champ ne peut être mis à jour après le début du tournoi."
@@ -4995,12 +4937,6 @@ msgstr "Le chronomètre [{timer_uniq_id}] a été supprimé."
 
 msgid "Timer [{timer_uniq_id}] has been updated."
 msgstr "Le chronomètre [{timer_uniq_id}] a été modifié."
-
-msgid "Timer [{timer_uniq_id}], hour [{hour_order}]: {text}"
-msgstr "Chronomètre [{timer_uniq_id}], horaire [{hour_order}] : {text}"
-
-msgid "Timer [{timer_uniq_id}]: {text}"
-msgstr "Chronomètre [{timer_uniq_id}] : {text}"
 
 msgid "Timer [{uniq_id}] already exists."
 msgstr "Le chronomètre [{uniq_id}] existe déjà."
@@ -5102,9 +5038,6 @@ msgstr "Le tournoi [{tournament_uniq_id}] est en cours."
 
 msgid "Tournament [{tournament_uniq_id}] is finished, you can not add players any longer."
 msgstr "Le tournoi [{tournament_uniq_id}] est terminé, on ne peut plus y ajouter de joueur·euses."
-
-msgid "Tournament [{tournament_uniq_id}]: {text}"
-msgstr "Tournoi [{tournament_uniq_id}] : {text}"
 
 msgid "Tournament [{uniq_id}] already exists."
 msgstr "Le tournoi [{uniq_id}] existe déjà."
@@ -5396,12 +5329,6 @@ msgstr "La limite Elo haute doit être supérieure à la limite Elo basse."
 
 msgid "Upper rating limit"
 msgstr "Limite Elo haute"
-
-msgid "Use connected devices to check-in players and enter results on public screens"
-msgstr "Utiliser des appareils connectés pour pointer les joueur·euses et entrer les résultats sur des écrans publics"
-
-msgid "Use customized permissions"
-msgstr "Personnalisez les permissions"
 
 msgid "Use log-level specific colors"
 msgstr "Utiliser des couleurs spécifiques au niveau de log"
@@ -5717,9 +5644,6 @@ msgstr "Vous pouvez désactiver temporairement les comptes en décochant cette c
 msgid "You can temporarily invalidate devices by turning this switch off."
 msgstr "Vous pouvez désactiver temporairement les appareils en décochant cette case."
 
-msgid "You decide which devices and which accounts are allowed to display screens, check-in players, enter results, pair rounds… Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers…"
-msgstr "Vous décidez les appareils et les personnes autorisées à afficher les écrans, pointer les joueur·euses, entrer les résultats, apparier les rondes… Sharly Chess offre un système d'autorisation puissant pour facilement déléguer la gestion de votre évènement à des organisateur·ices, des arbitres en chef·fe, des arbitres adjoint·es, des arbitres de secteur, des personnes chargées de l'appariement, du pointage, de la saisie des résultats, de la gestion des écrans…"
-
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement…) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans simples seront générés automatiquement."
 
@@ -5960,4 +5884,43 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
+#~ msgid "Maximum number of results set to [{results_limit}] to fit on [{columns}] columns."
+#~ msgstr "Nombre maximum de résultats passé à [{results_limit}] pour tenir sur [{columns}] colonnes."
+
+#~ msgid "Maximum number of results: %(num)d"
+#~ msgstr "Nombre maximum de résultats : %(num)d"
+
+#~ msgid "Maximum number of results: unlimited"
+#~ msgstr "Nombre maximum de résultats : illimité"
+
+#~ msgid "No password required"
+#~ msgstr "Pas de mot de passe demandé"
+
+#~ msgid "No screen nor family to rotate."
+#~ msgstr "Aucun écran ni famille à afficher."
+
+#~ msgid "Tournament [{tournament_uniq_id}] is not started yet."
+#~ msgstr "Le tournoi [{tournament_uniq_id}] n'est pas encore démarré."
+
+#~ msgid "Tournament [{tournament_uniq_id}] is started."
+#~ msgstr "Le tournoi [{tournament_uniq_id}] est démarré."
+
+#~ msgid "Tournament [{tournament_uniq_id}]: {text}"
+#~ msgstr "Tournoi [{tournament_uniq_id}] : {text}"
+
+#~ msgid "Custom"
+#~ msgstr "Personnalisé"
+
+#~ msgid "Other devices connected to your network can see your public screens. If you have created screens for player check-in and results entry then those features will be enabled."
+#~ msgstr "Les appareils connectés sur votre réseau peuvent voir vos écrans publics. Si vous avez créé des écrans pour le pointage des joueur·euses et l'entrée des résultats alors ces fonctionnalités seront activées."
+
+#~ msgid "Use connected devices to check-in players and enter results on public screens"
+#~ msgstr "Utiliser des appareils connectés pour pointer les joueur·euses et entrer les résultats sur des écrans publics"
+
+#~ msgid "Use customized permissions"
+#~ msgstr "Personnalisez les permissions"
+
+#~ msgid "You decide which devices and which accounts are allowed to display screens, check-in players, enter results, pair rounds… Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers…"
+#~ msgstr "Vous décidez les appareils et les personnes autorisées à afficher les écrans, pointer les joueur·euses, entrer les résultats, apparier les rondes… Sharly Chess offre un système d'autorisation puissant pour facilement déléguer la gestion de votre évènement à des organisateur·ices, des arbitres en chef·fe, des arbitres adjoint·es, des arbitres de secteur, des personnes chargées de l'appariement, du pointage, de la saisie des résultats, de la gestion des écrans…"
 

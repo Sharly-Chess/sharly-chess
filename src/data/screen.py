@@ -9,6 +9,7 @@ from _weakref import ReferenceType
 from common import format_timestamp_date_time
 from common.background import inline_image_url
 from common.i18n import _
+from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.board import Board
 from data.screen_set import ScreenSet
@@ -19,6 +20,9 @@ from database.sqlite.event.event_store import StoredScreen
 if TYPE_CHECKING:
     from data.event import Event
     from data.family import Family
+
+
+logger = get_logger()
 
 
 class Screen:
@@ -41,7 +45,7 @@ class Screen:
             )
         self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
         self.stored_screen: StoredScreen | None = stored_screen
-        self._family_ref: 'ReferenceType[Family] | None' = (
+        self._family_ref: Optional['ReferenceType[Family]'] = (
             weakref.ref(family) if family else None
         )
         self.family_part: int | None = family_part
@@ -351,137 +355,81 @@ class Screen:
             for menu_part in map(str.strip, self.menu.split(',')):
                 if not menu_part:
                     continue
-                if menu_part == '@boards':
-                    part_menu_screens = (
-                        self.event.screens_by_screen_type_sorted_by_uniq_id[
-                            ScreenType.BOARDS
-                        ]
-                        if admin
-                        else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
-                            ScreenType.BOARDS
-                        ]
-                    )
-                    if not part_menu_screens:
-                        self.event.add_warning(
-                            _(
-                                'No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}].'
-                            ).format(screen_type='boards', screen_uniq_id=self.uniq_id)
+                is_screen_category = True
+                match menu_part:
+                    case '@boards':
+                        menu_screens += (
+                            self.event.screens_by_screen_type_sorted_by_uniq_id[
+                                ScreenType.BOARDS
+                            ]
+                            if admin
+                            else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
+                                ScreenType.BOARDS
+                            ]
                         )
-                    else:
-                        menu_screens += part_menu_screens
-                    continue
-                if menu_part == '@input':
-                    part_menu_screens = (
-                        self.event.screens_by_screen_type_sorted_by_uniq_id[
-                            ScreenType.INPUT
-                        ]
-                        if admin
-                        else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
-                            ScreenType.INPUT
-                        ]
-                    )
-                    if not part_menu_screens:
-                        self.event.add_warning(
-                            _(
-                                'No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}].'
-                            ).format(screen_type='input', screen_uniq_id=self.uniq_id)
+                    case '@input':
+                        menu_screens += (
+                            self.event.screens_by_screen_type_sorted_by_uniq_id[
+                                ScreenType.INPUT
+                            ]
+                            if admin
+                            else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
+                                ScreenType.INPUT
+                            ]
                         )
-                    else:
-                        menu_screens += part_menu_screens
-                    continue
-                if menu_part == '@players':
-                    part_menu_screens = (
-                        self.event.screens_by_screen_type_sorted_by_uniq_id[
-                            ScreenType.PLAYERS
-                        ]
-                        if admin
-                        else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
-                            ScreenType.PLAYERS
-                        ]
-                    )
-                    if not part_menu_screens:
-                        self.event.add_warning(
-                            _(
-                                'No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}].'
-                            ).format(screen_type='players', screen_uniq_id=self.uniq_id)
+                    case '@players':
+                        menu_screens += (
+                            self.event.screens_by_screen_type_sorted_by_uniq_id[
+                                ScreenType.PLAYERS
+                            ]
+                            if admin
+                            else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
+                                ScreenType.PLAYERS
+                            ]
                         )
-                    else:
-                        menu_screens += part_menu_screens
-                    continue
-                if menu_part == '@results':
-                    part_menu_screens = (
-                        self.event.screens_by_screen_type_sorted_by_uniq_id[
-                            ScreenType.RESULTS
-                        ]
-                        if admin
-                        else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
-                            ScreenType.RESULTS
-                        ]
-                    )
-                    if not part_menu_screens:
-                        self.event.add_warning(
-                            _(
-                                'No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}].'
-                            ).format(screen_type='results', screen_uniq_id=self.uniq_id)
+                    case '@results':
+                        menu_screens += (
+                            self.event.screens_by_screen_type_sorted_by_uniq_id[
+                                ScreenType.RESULTS
+                            ]
+                            if admin
+                            else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
+                                ScreenType.RESULTS
+                            ]
                         )
-                    else:
-                        menu_screens += part_menu_screens
-                    continue
-                if menu_part == '@ranking':
-                    part_menu_screens = (
-                        self.event.screens_by_screen_type_sorted_by_uniq_id[
-                            ScreenType.RANKING
-                        ]
-                        if admin
-                        else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
-                            ScreenType.RANKING
-                        ]
-                    )
-                    if not part_menu_screens:
-                        self.event.add_warning(
-                            _(
-                                'No screen of type [{screen_type}] for the menu of screen [{screen_uniq_id}].'
-                            ).format(screen_type='ranking', screen_uniq_id=self.uniq_id)
+                    case '@ranking':
+                        menu_screens += (
+                            self.event.screens_by_screen_type_sorted_by_uniq_id[
+                                ScreenType.RANKING
+                            ]
+                            if admin
+                            else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
+                                ScreenType.RANKING
+                            ]
                         )
-                    else:
-                        menu_screens += part_menu_screens
-                    continue
-                if menu_part == '@family':
-                    if self.family_id is None:
-                        self.event.add_warning(
-                            _(
-                                'Pattern [{pattern}] can be used by screen families only.'
-                            ).format(pattern=menu_part)
-                        )
-                    else:
-                        menu_screens += self.event.families_by_id[
-                            self.family_id
-                        ].screens_by_uniq_id.values()
+                    case '@family':
+                        if self.family_id is None:
+                            logger.warning(
+                                'Pattern [@family] can be used by screen families only.'
+                            )
+                        else:
+                            menu_screens += self.event.families_by_id[
+                                self.family_id
+                            ].screens_by_uniq_id.values()
+                    case _:
+                        is_screen_category = False
+                if is_screen_category:
                     continue
                 if '*' in menu_part:
                     menu_part_screen_uniq_ids: list[str] = fnmatch.filter(
                         self.event.screens_by_uniq_id.keys(), menu_part
                     )
-                    if not menu_part_screen_uniq_ids:
-                        self.event.add_warning(
-                            _('Pattern [{pattern}] matches no screen.').format(
-                                pattern=menu_part
-                            )
-                        )
-                    else:
-                        menu_screens += [
-                            self.event.screens_by_uniq_id[screen_uniq_id]
-                            for screen_uniq_id in menu_part_screen_uniq_ids
-                        ]
-                    continue
-                if menu_part in self.event.screens_by_uniq_id:
+                    menu_screens += [
+                        self.event.screens_by_uniq_id[screen_uniq_id]
+                        for screen_uniq_id in menu_part_screen_uniq_ids
+                    ]
+                elif menu_part in self.event.screens_by_uniq_id:
                     menu_screens.append(self.event.screens_by_uniq_id[menu_part])
-                else:
-                    self.event.add_warning(
-                        _(
-                            'Screen [{pattern}] not found for the menu of screen [{screen_uniq_id}].'
-                        ).format(pattern=menu_part, screen_uniq_id=self.uniq_id)
-                    )
         return menu_screens
 
     @cached_property
@@ -615,11 +563,9 @@ class Screen:
                     results_limit: int = self.columns * (
                         self.stored_screen.results_limit // self.columns + 1
                     )
-                    self.event.add_info(
-                        _(
-                            'Maximum number of results set to [{results_limit}] to fit on [{columns}] columns.'
-                        ).format(results_limit=results_limit, columns=self.columns),
-                        screen=self,
+                    logger.info(
+                        f'Screen [{self.uniq_id}]: Maximum number of results set to '
+                        f'[{results_limit}] to fit on [{self.columns}] columns.'
                     )
                     return results_limit
                 else:
