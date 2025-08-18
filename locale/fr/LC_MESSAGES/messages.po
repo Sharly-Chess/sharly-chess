@@ -5566,12 +5566,3 @@ msgstr "{status_code} - Erreur inconnue"
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
 
-#~ msgid "Deletion of event [%(event_uniq_id)s]"
-#~ msgstr "Suppression de l'évènement [%(event_uniq_id)s]"
-
-#~ msgid "The event will be archived but can be restored (Home page > Events > Archived)."
-#~ msgstr "L'évènement va être archivé mais peut être restauré (Accueil > Évènements > Archivés)."
-
-#~ msgid "Warning: deleting an event causes an error on its opened screens."
-#~ msgstr "Attention : la suppression d'un évènement provoque une erreur sur ses écrans ouverts."
-
