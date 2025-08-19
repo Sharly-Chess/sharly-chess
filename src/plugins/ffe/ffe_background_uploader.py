@@ -15,7 +15,6 @@ from data.loader import EventLoader
 from data.tournament import Tournament
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_session import FFESession
-from plugins.ffe.papi_converter import PapiConverter
 from plugins.ffe.utils import FFEUtils
 from plugins.utils import PluginUtils
 from web.channels import channels_plugin
@@ -83,12 +82,6 @@ class FfeBackgroundUploader:
                 FfeUploadStatus.SETTINGS_ERROR, unavailable_message
             )
             cls.upload_status_messages[result_id] = result
-        elif unavailable_message := (
-            PapiConverter.papi_export_unavailable_message(tournament)
-        ):
-            result = FfeUploadResult(
-                FfeUploadStatus.SETTINGS_ERROR, unavailable_message
-            )
         elif not FFEUtils.resolve_auto_upload(tournament) and cls.ffe_upload_needed(
             tournament
         ):

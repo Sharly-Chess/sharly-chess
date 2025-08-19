@@ -1,6 +1,5 @@
 from packaging.version import Version
 
-from common import experimental_features_enabled
 from common.i18n import _
 from data.pairings.variations import SwissVariation, StandardSwissVariation
 from plugins.hookspec import hookimpl
@@ -50,9 +49,8 @@ class PairingAccelerationPlugin(Plugin):
             HaleySwissVariation,
             HaleySoftSwissVariation,
             ProgressiveSwissVariation,
+            BakuSwissVariation,
         ]
-        if experimental_features_enabled():
-            ordered_types.append(BakuSwissVariation)
         standard: type[SwissVariation] = StandardSwissVariation
         for variation_type in reversed(ordered_types):
             PluginUtils.insert_on_equals(variation_types, variation_type, standard)

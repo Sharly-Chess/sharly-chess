@@ -443,8 +443,9 @@ class PapiConverter:
                 # Papi form allows for a non-integer value,
                 # so the value is ignored instead of raising
                 logger.warning(
-                    'Homologation number [%s] is not an integer, its value is ignored.',
-                    variables.homologation,
+                    'Homologation number [%s] '
+                    'is not an integer, its value is ignored.',
+                    variables.homologation
                 )
             else:
                 ffe_id = int(variables.homologation)
