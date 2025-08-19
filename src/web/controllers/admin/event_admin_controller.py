@@ -162,7 +162,6 @@ class EventAdminController(BaseEventAdminController):
     @get(
         path='/admin/event/{event_uniq_id:str}',
         name='admin-event',
-        cache=1,
     )
     async def htmx_admin_event(
         self,
@@ -204,7 +203,6 @@ class EventAdminController(BaseEventAdminController):
     @get(
         path='/admin/event/{event_uniq_id:str}/config',
         name='admin-event-config-tab',
-        cache=1,
     )
     async def htmx_admin_event_config_tab(
         self,
@@ -219,7 +217,6 @@ class EventAdminController(BaseEventAdminController):
     @get(
         path='/admin/event-modal/{action:str}/{event_uniq_id:str}',
         name='admin-event-modal',
-        cache=1,
     )
     async def htmx_admin_event_modal(
         self,
@@ -237,7 +234,6 @@ class EventAdminController(BaseEventAdminController):
     @get(
         path='/admin/event-delete-modal/{event_uniq_id:str}',
         name='admin-event-delete-modal',
-        cache=1,
     )
     async def htmx_admin_event_delete_modal(
         self,

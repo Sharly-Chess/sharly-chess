@@ -199,7 +199,6 @@ class PrizeAdminController(BaseEventAdminController):
             '/admin/event/{event_uniq_id:str}/prizes/{tournament_id:int}/{prize_group_id:int}',
         ],
         name='admin-event-prizes-tab',
-        cache=1,
     )
     async def htmx_admin_prizes_tab(
         self,

@@ -30,7 +30,6 @@ class IndexController(BaseController):
     @get(
         path='/',
         name='index',
-        cache=1,
     )
     async def index(
         self,
@@ -71,7 +70,6 @@ class IndexController(BaseController):
     @get(
         path='/empty-modal',
         name='empty-modal',
-        cache=1,
     )
     async def empty_modal(
         self,
@@ -157,7 +155,6 @@ class IndexController(BaseController):
         http_method=ALL_HTTP_METHODS,
         path='/error/{status_code:int}',
         name='http-error',
-        cache=1,
     )
     async def handle_http_error(
         self, request: HTMXRequest, status_code: int
@@ -190,10 +187,7 @@ class IndexController(BaseController):
         return Response(content='{}', media_type='application/json')
 
     @get(
-        path=[
-            '/apple-touch-icon.png',
-            '/apple-touch-icon-precomposed.png'
-        ],
+        path=['/apple-touch-icon.png', '/apple-touch-icon-precomposed.png'],
     )
     async def no_content(self) -> Response:
         return Response(status_code=HTTP_204_NO_CONTENT, content=None)
