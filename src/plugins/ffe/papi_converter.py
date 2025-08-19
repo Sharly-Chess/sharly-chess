@@ -428,9 +428,8 @@ class PapiConverter:
                 # Papi form allows for a non-integer value,
                 # so the value is ignored instead of raising
                 logger.warning(
-                    'Homologation number [%s] '
-                    'is not an integer, its value is ignored.',
-                    variables.homologation
+                    'Homologation number [%s] is not an integer, its value is ignored.',
+                    variables.homologation,
                 )
             else:
                 ffe_id = int(variables.homologation)
@@ -779,6 +778,9 @@ class PapiConverter:
         return papi_player
 
     def _get_papi_elo(self, player: Player, tournament_rating: TournamentRating) -> int:
+        # Override unrated rapide/blitzd rating in the export
+        if player.rating_is_overridden(tournament_rating):
+            tournament_rating = TournamentRating.STANDARD
         if player.ratings and tournament_rating in player.ratings:
             return player.ratings[tournament_rating].value
         return 0
@@ -786,13 +788,19 @@ class PapiConverter:
     def _get_papi_elo_type(
         self, player: Player, tournament_rating: TournamentRating
     ) -> str:
-        rating = player.ratings.get(tournament_rating, None)
+        # If we're overriding, export it as estimated
+        rating_type: PlayerRatingType | None
+        if player.rating_is_overridden(tournament_rating):
+            rating_type = PlayerRatingType.ESTIMATED
+        else:
+            rating = player.ratings.get(tournament_rating, None)
+            rating_type = rating.type if rating else None
         default_rating = PapiPlayerRatingType.get_plugin_value(
             PlayerRatingType.ESTIMATED
         )
         assert default_rating is not None
-        if rating:
-            return PapiPlayerRatingType.get_plugin_value(rating.type) or default_rating
+        if rating_type:
+            return PapiPlayerRatingType.get_plugin_value(rating_type) or default_rating
         return default_rating
 
     def _papi_player_to_dict(self, papi_player: PapiPlayer) -> dict:

@@ -110,7 +110,7 @@
     {% endif %}
     {{ admin_macros.extra_admin_column_cell("elo", player, admin_players_extra_columns)}}
     <td class="text-nowrap text-center">
-        {% if player.rating_is_overridden %}
+        {% if player.rating_is_overridden(player.tournament.rating) %}
             <span {{ macros.tooltip_attributes('info', _('Standard rating used.'), 'right') }}>{{ player.rating_str }} <sup>*</sup></span>
         {% else %}
             {{ player.rating_str }}
