@@ -11,6 +11,7 @@ from typing import Any, TYPE_CHECKING, Iterable, Optional, override
 from litestar.plugins.htmx import HTMXRequest
 from packaging.version import Version
 
+from common import TEST_ENV, DEVEL_ENV
 from common.exception import SharlyChessException
 from common.i18n import _
 from data.input_output import DataSource, TournamentExporter, TournamentImporter
@@ -179,7 +180,8 @@ class FfePlugin(Plugin):
     @hookimpl
     def insert_tournament_importers(self, importers: list[type[TournamentImporter]]):
         importers.append(PapiTournamentImporter)
-        importers.append(PapiJsonTournamentImporter)
+        if TEST_ENV or DEVEL_ENV:
+            importers.append(PapiJsonTournamentImporter)
 
     # ---------------------------------------------------------------------------------
     # Players

@@ -2227,6 +2227,9 @@ msgstr ""
 msgid "Import"
 msgstr ""
 
+msgid "Import JSON file (papi-converter format)"
+msgstr ""
+
 msgid "Import Papi file"
 msgstr ""
 

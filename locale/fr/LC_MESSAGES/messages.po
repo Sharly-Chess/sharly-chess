@@ -2227,6 +2227,9 @@ msgstr "Image : %(image)s"
 msgid "Import"
 msgstr "Importer"
 
+msgid "Import JSON file (papi-converter format)"
+msgstr "Importer un fichier JSON (format papi-converter)"
+
 msgid "Import Papi file"
 msgstr "Importer un fichier Papi"
 
