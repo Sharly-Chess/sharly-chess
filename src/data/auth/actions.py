@@ -6,7 +6,8 @@ from common.i18n import _
 
 class AuthActionCategory(StrEnum):
     APPLICATION = auto()
-    EVENTS = auto()
+    EVENTS_ACCESS = auto()
+    EVENTS_MANAGEMENT = auto()
     ACCESS = auto()
     TOURNAMENTS = auto()
     PLAYERS = auto()
@@ -27,7 +28,9 @@ class AuthActionCategory(StrEnum):
         match self:
             case AuthActionCategory.APPLICATION:
                 return _('Application management')
-            case AuthActionCategory.EVENTS:
+            case AuthActionCategory.EVENTS_ACCESS:
+                return _('Events access')
+            case AuthActionCategory.EVENTS_MANAGEMENT:
                 return _('Events management')
             case AuthActionCategory.ACCESS:
                 return _('Access control')
@@ -59,11 +62,13 @@ class AuthAction(StrEnum):
     UPDATE_APPLICATION_SETTINGS = auto()
     MANAGE_SOURCE_DATABASES = auto()
 
-    # Events
+    # Events access
     VIEW_PRIVATE_EVENTS = auto()
     VIEW_PASSED_COMING_EVENTS = auto()
-    ADD_EVENTS = auto()
     VIEW_DETAILED_EVENT_CARDS = auto()
+
+    # Events management
+    ADD_EVENTS = auto()
     DELETE_EVENTS = auto()
     RENAME_EVENTS = auto()
     UPDATE_EVENTS = auto()
@@ -146,15 +151,18 @@ class AuthAction(StrEnum):
             case (
                 AuthAction.VIEW_PRIVATE_EVENTS
                 | AuthAction.VIEW_PASSED_COMING_EVENTS
-                | AuthAction.ADD_EVENTS
                 | AuthAction.VIEW_DETAILED_EVENT_CARDS
+            ):
+                return AuthActionCategory.EVENTS_ACCESS
+            case (
+                AuthAction.ADD_EVENTS
                 | AuthAction.DELETE_EVENTS
                 | AuthAction.RENAME_EVENTS
                 | AuthAction.UPDATE_EVENTS
                 | AuthAction.VIEW_EVENT_COMPLETE_CONFIG
                 | AuthAction.VIEW_EVENT_BASIC_CONFIG
             ):
-                return AuthActionCategory.EVENTS
+                return AuthActionCategory.EVENTS_MANAGEMENT
             case AuthAction.MANAGE_ACCOUNTS | AuthAction.MANAGE_DEVICES:
                 return AuthActionCategory.ACCESS
             case (
@@ -280,7 +288,7 @@ class AuthAction(StrEnum):
             case AuthAction.MANUALLY_PAIR_PLAYERS:
                 return _('Manually pair players')
             case AuthAction.UNPAIR_ROUND:
-                return _('Upair all the boards of a round')
+                return _('Unpair all the boards of a round')
             case AuthAction.UNPAIR_BOARD:
                 return _('Unpair one board')
             case AuthAction.PERMUTE_BOARD:

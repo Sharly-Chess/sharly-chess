@@ -45,9 +45,8 @@ class Role(IdentifiableEntity, ABC):
 
     @staticmethod
     @abstractmethod
-    def direct_sub_roles() -> list[type['Role']]:
+    def direct_sub_roles() -> set[type['Role']]:
         """Roles to inherit the permissions of."""
-        return []
 
     @property
     @abstractmethod
@@ -72,7 +71,7 @@ class Role(IdentifiableEntity, ABC):
     @classmethod
     @cache
     def _sub_role_types(cls) -> set[type['Role']]:
-        sub_role_types: set[type['Role']] = set(cls.direct_sub_roles())
+        sub_role_types: set[type['Role']] = cls.direct_sub_roles()
         for direct_sub_role_type in cls.direct_sub_roles():
             sub_role_types |= direct_sub_role_type._sub_role_types()
         return sub_role_types
@@ -114,8 +113,8 @@ class SpectatorRole(Role):
         return RoleScope.EVENT
 
     @staticmethod
-    def direct_sub_roles() -> list[type[Role]]:
-        return []
+    def direct_sub_roles() -> set[type[Role]]:
+        return set()
 
     @staticmethod
     def role_actions() -> list[AuthAction]:
@@ -144,8 +143,10 @@ class ResultsEntryRole(Role):
         return RoleScope.TOURNAMENT
 
     @staticmethod
-    def direct_sub_roles() -> list[type[Role]]:
-        return [SpectatorRole]
+    def direct_sub_roles() -> set[type[Role]]:
+        return {
+            SpectatorRole,
+        }
 
     @staticmethod
     def role_actions() -> list[AuthAction]:
@@ -165,7 +166,7 @@ class CheckInRole(Role):
 
     @staticmethod
     def static_name() -> str:
-        return _('Check-in via input Screens')
+        return _('Check-in via public screens')
 
     @staticmethod
     def short_name() -> str:
@@ -176,8 +177,10 @@ class CheckInRole(Role):
         return RoleScope.TOURNAMENT
 
     @staticmethod
-    def direct_sub_roles() -> list[type[Role]]:
-        return [SpectatorRole]
+    def direct_sub_roles() -> set[type[Role]]:
+        return {
+            SpectatorRole,
+        }
 
     @staticmethod
     def role_actions() -> list[AuthAction]:
@@ -211,11 +214,11 @@ class SectorArbitrationRole(Role):
         return RoleScope.TOURNAMENT
 
     @staticmethod
-    def direct_sub_roles() -> list[type[Role]]:
-        return [
+    def direct_sub_roles() -> set[type[Role]]:
+        return {
             CheckInRole,
             ResultsEntryRole,
-        ]
+        }
 
     @staticmethod
     def role_actions() -> list[AuthAction]:
@@ -229,7 +232,9 @@ class SectorArbitrationRole(Role):
 
     @property
     def help_text(self) -> str:
-        return _('Allows check-in and results entry.')
+        return _(
+            'Allows access to the Players and Pairings tabs, results and illegal moves update.'
+        )
 
 
 class PairingRole(Role):
@@ -250,8 +255,10 @@ class PairingRole(Role):
         return RoleScope.TOURNAMENT
 
     @staticmethod
-    def direct_sub_roles() -> list[type[Role]]:
-        return [CheckInRole]
+    def direct_sub_roles() -> set[type[Role]]:
+        return {
+            SectorArbitrationRole,
+        }
 
     @staticmethod
     def role_actions() -> list[AuthAction]:
@@ -299,18 +306,15 @@ class DeputyChiefArbitrationRole(Role):
         return RoleScope.EVENT
 
     @staticmethod
-    def direct_sub_roles() -> list[type[Role]]:
-        return [
+    def direct_sub_roles() -> set[type[Role]]:
+        return {
             PairingRole,
-            SectorArbitrationRole,
-        ]
+        }
 
     @staticmethod
     def role_actions() -> list[AuthAction]:
         return [
             AuthAction.VIEW_EVENT_COMPLETE_CONFIG,
-            AuthAction.MANAGE_ACCOUNTS,
-            AuthAction.MANAGE_DEVICES,
             AuthAction.VIEW_TOURNAMENTS_TAB,
             AuthAction.UPDATE_TOURNAMENTS,
             AuthAction.PUBLISH_RESULTS,
@@ -353,13 +357,17 @@ class ChiefArbitrationRole(Role):
         return RoleScope.EVENT
 
     @staticmethod
-    def direct_sub_roles() -> list[type[Role]]:
-        return [DeputyChiefArbitrationRole]
+    def direct_sub_roles() -> set[type[Role]]:
+        return {
+            DeputyChiefArbitrationRole,
+        }
 
     @staticmethod
     def role_actions() -> list[AuthAction]:
         return [
             AuthAction.UPDATE_EVENTS,
+            AuthAction.MANAGE_ACCOUNTS,
+            AuthAction.MANAGE_DEVICES,
             AuthAction.ADD_TOURNAMENTS,
             AuthAction.DELETE_TOURNAMENTS,
         ]
@@ -389,8 +397,10 @@ class ScreenManagementRole(Role):
         return RoleScope.EVENT
 
     @staticmethod
-    def direct_sub_roles() -> list[type[Role]]:
-        return [SpectatorRole]
+    def direct_sub_roles() -> set[type[Role]]:
+        return {
+            SpectatorRole,
+        }
 
     @staticmethod
     def role_actions() -> list[AuthAction]:
@@ -426,8 +436,10 @@ class OrganizationRole(Role):
         return RoleScope.EVENT
 
     @staticmethod
-    def direct_sub_roles() -> list[type[Role]]:
-        return [ScreenManagementRole]
+    def direct_sub_roles() -> set[type[Role]]:
+        return {
+            ScreenManagementRole,
+        }
 
     @staticmethod
     def role_actions() -> list[AuthAction]:
@@ -446,7 +458,9 @@ class OrganizationRole(Role):
 
     @classmethod
     def manageable_roles(cls) -> set[Role]:
-        return cls.sub_roles() | ChiefArbitrationRole.sub_roles()
+        return super().manageable_roles() | {
+            ChiefArbitrationRole(),
+        }
 
 
 class AdministrationRole(Role):
@@ -467,8 +481,11 @@ class AdministrationRole(Role):
         return RoleScope.APPLICATION
 
     @staticmethod
-    def direct_sub_roles() -> list[type[Role]]:
-        return [OrganizationRole, ChiefArbitrationRole]
+    def direct_sub_roles() -> set[type[Role]]:
+        return {
+            OrganizationRole,
+            ChiefArbitrationRole,
+        }
 
     @staticmethod
     def role_actions() -> list[AuthAction]:
