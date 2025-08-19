@@ -747,7 +747,6 @@ class ScreenAdminController(BaseEventAdminController):
     @get(
         path='/admin/event/{event_uniq_id:str}/screens',
         name='admin-event-screens-tab',
-        cache=1,
     )
     async def htmx_admin_event_screens_tab(
         self,
@@ -801,7 +800,6 @@ class ScreenAdminController(BaseEventAdminController):
     @get(
         path='/admin/screen-modal/create/{event_uniq_id:str}/{screen_type:str}',
         name='admin-screen-create-modal',
-        cache=1,
     )
     async def htmx_admin_screen_create_modal(
         self,
@@ -821,7 +819,6 @@ class ScreenAdminController(BaseEventAdminController):
     @get(
         path='/admin/screen-modal/{action:str}/{event_uniq_id:str}/{screen_id:int}',
         name='admin-screen-modal',
-        cache=1,
     )
     async def htmx_admin_screen_modal(
         self,
@@ -1060,7 +1057,6 @@ class ScreenAdminController(BaseEventAdminController):
     @get(
         path='/admin/screen-sets-modal/{event_uniq_id:str}/{screen_id:int}',
         name='admin-screen-sets-modal',
-        cache=1,
     )
     async def htmx_admin_screen_sets_modal(
         self,
@@ -1079,7 +1075,6 @@ class ScreenAdminController(BaseEventAdminController):
     @get(
         path='/admin/screen-sets-set-modal/{event_uniq_id:str}/{screen_id:int}/{screen_set_id:int}',
         name='admin-screen-sets-set-modal',
-        cache=1,
     )
     async def htmx_admin_screen_sets_set_modal(
         self,

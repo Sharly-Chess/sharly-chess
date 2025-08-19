@@ -434,7 +434,6 @@ class TimerAdminController(BaseEventAdminController):
     @get(
         path='/admin/event/{event_uniq_id:str}/timers',
         name='admin-event-timers-tab',
-        cache=1,
     )
     async def htmx_admin_event_timers_tab(
         self,
@@ -449,7 +448,6 @@ class TimerAdminController(BaseEventAdminController):
     @get(
         path='/admin/default-timers-modal/{event_uniq_id:str}',
         name='admin-default-timers-modal',
-        cache=1,
     )
     async def htmx_admin_default_timers_modal(
         self,
@@ -534,7 +532,6 @@ class TimerAdminController(BaseEventAdminController):
     @get(
         path='/admin/timer-modal/create/{event_uniq_id:str}',
         name='admin-timer-create-modal',
-        cache=1,
     )
     async def htmx_admin_timer_create_modal(
         self,
@@ -552,7 +549,6 @@ class TimerAdminController(BaseEventAdminController):
     @get(
         path='/admin/timer-modal/{action:str}/{event_uniq_id:str}/{timer_id:int}',
         name='admin-timer-modal',
-        cache=1,
     )
     async def htmx_admin_timer_modal(
         self,
@@ -813,7 +809,6 @@ class TimerAdminController(BaseEventAdminController):
     @get(
         path='/admin/timer-hours-modal/{event_uniq_id:str}/{timer_id:int}',
         name='admin-timer-hours-modal',
-        cache=1,
     )
     async def htmx_admin_timer_hours_modal(
         self,
@@ -832,7 +827,6 @@ class TimerAdminController(BaseEventAdminController):
     @get(
         path='/admin/timer-hours-hour-modal/{event_uniq_id:str}/{timer_id:int}/{timer_hour_id:int}',
         name='admin-timer-hours-hour-modal',
-        cache=1,
     )
     async def htmx_admin_timer_hours_hour_modal(
         self,

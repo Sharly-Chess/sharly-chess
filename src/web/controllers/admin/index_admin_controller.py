@@ -405,7 +405,6 @@ class IndexAdminController(BaseAdminController):
     @get(
         path='/admin',
         name='admin',
-        cache=1,
     )
     async def htmx_admin(
         self,
@@ -421,7 +420,6 @@ class IndexAdminController(BaseAdminController):
     @get(
         path='/admin/{admin_tab:str}',
         name='admin-tab',
-        cache=1,
     )
     async def htmx_admin_tab(
         self,
@@ -438,7 +436,6 @@ class IndexAdminController(BaseAdminController):
     @get(
         path='/admin/{admin_tab:str}/event-modal/create',
         name='admin-tab-event-create-modal',
-        cache=1,
     )
     async def htmx_admin_tab_event_create_modal(
         self,
@@ -588,7 +585,6 @@ class IndexAdminController(BaseAdminController):
     @get(
         path='/admin/config-modal',
         name='admin-config-modal',
-        cache=1,
     )
     async def htmx_admin_config_modal(
         self,

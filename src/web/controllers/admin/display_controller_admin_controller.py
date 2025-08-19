@@ -270,7 +270,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
     @get(
         path='/admin/event/{event_uniq_id:str}/display_controllers',
         name='admin-event-display-controllers-tab',
-        cache=1,
     )
     async def htmx_admin_event_display_controllers_tab(
         self,
@@ -285,7 +284,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
     @get(
         path='/admin/display-controller-modal/create/{event_uniq_id:str}',
         name='admin-display-controller-create-modal',
-        cache=1,
     )
     async def htmx_admin_display_controller_create_modal(
         self,
@@ -303,7 +301,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
     @get(
         path='/admin/display-controller-modal/{action:str}/{event_uniq_id:str}/{display_controller_id:int}',
         name='admin-display-controller-modal',
-        cache=1,
     )
     async def htmx_admin_display_controller_modal(
         self,

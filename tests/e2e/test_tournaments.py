@@ -29,8 +29,10 @@ class TestTournamentFunctionality:
 
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
-        modal.locator('#uniq-id').fill(TOURNAMENT_ID)
-        TestUtils.button_by_text(modal, 'Delete').click()
+        modal.locator('#confirm-checkbox').click()
+        delete_button = TestUtils.button_by_text(modal, 'Delete')
+        expect(delete_button).to_be_enabled()
+        delete_button.click()
         expect(
             page.get_by_text(f'Tournament [{TOURNAMENT_ID}] has been deleted.')
         ).to_be_visible()

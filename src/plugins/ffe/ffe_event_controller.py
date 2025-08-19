@@ -30,7 +30,6 @@ class FfeAdminEventController(BaseEventAdminController):
     @get(
         path='/ffe/event/{event_uniq_id:str}/players',
         name='ffe-admin-event-players-tab',
-        cache=1,
     )
     async def htmx_ffe_event_tab(
         self,

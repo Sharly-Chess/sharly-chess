@@ -2,378 +2,345 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                {% if action in ['create', 'clone', ] %}
-                    {{ _('Tournament creation') }}
-                {% elif action == 'update' %}
+                {% if action == 'update' %}
                     {{ _('Editing of tournament [%(tournament_uniq_id)s]', tournament_uniq_id=admin_tournament.uniq_id) }}
-                {% elif action == 'delete' %}
-                    {{ _('Deletion of tournament [%(tournament_uniq_id)s]', tournament_uniq_id=admin_tournament.uniq_id) }}
                 {% else %}
-                    ?
+                    {{ _('Tournament creation') }}
                 {% endif %}
             </h2>
         </div>
         <div class="modal-body">
             <form
                 id="modal-form"
-                {% if action in ['create', 'clone', ] %}
-                    hx-post="{{ url_for('admin-tournament-create', event_uniq_id=admin_event.uniq_id) }}"
-                {% elif action == 'update' %}
-                    hx-patch="{{ url_for('admin-tournament-' ~ action, event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
-                {% elif action == 'delete' %}
-                    hx-post="{{ url_for('admin-tournament-' ~ action, event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                {% if action == 'update' %}
+                    hx-patch="{{ url_for(
+                        'admin-tournament-update',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id
+                    ) }}"
                 {% else %}
-                    hx-get="{{ url_for('unknown-action-' ~ action) }}"
+                    hx-post="{{ url_for('admin-tournament-create', event_uniq_id=admin_event.uniq_id) }}"
                 {% endif %}
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                {% if action == 'delete' %}
-                    <h4 class="text-danger">
-                        {{ _('Warning: the deletion of a tournament is permanent!') }}
-                    </h4>
-                    {% if admin_tournament.dependent_screens %}
-                        <p>{{ _('The following screens will also be deleted:') }}</p>
-                        <ul>
-                            {% for screen in admin_tournament.dependent_screens %}
-                                <li>{{ screen.name }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
-                    {% if admin_tournament.dependent_families %}
-                        <p>{{ _('The following screen families will also be deleted:') }}</p>
-                        <ul>
-                            {% for family in admin_tournament.dependent_families %}
-                                <li>{{ family.name }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
-                    {{ admin_macros.text_input(
-                        name='uniq_id',
-                        label=_('Enter the tournament ID to confirm its deletion:'),
-                        placeholder=_('Enter here the tournament ID'),
-                        help_text='',
-                        data=data, errors=errors
-                    ) }}
-                {% else %}
-                    {% if previous_tournament %}
-                        {% with type='success', auto_remove=true, message=_(
-                            'Tournament [%(tournament)s] has been created.',
-                            tournament=previous_tournament.uniq_id
-                        )  %}
-                            {% include '/common/alert.html' %}
-                        {% endwith %}
-                    {% endif %}
-                    <h4>
-                        {{ _('Properties') }}
-                    </h4>
-                    <div class="row">
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.text_input(
-                                name='uniq_id',
-                                label=_('ID (unique):'),
-                                placeholder=_('E.g.: main'),
-                                help_text=_('The Unique ID, used to reference the tournament.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.text_input(
-                                name='name',
-                                label=_('Name:'),
-                                placeholder=_('E.g.: Main tournament'),
-                                help_text=_('The name of the tournament, used for display.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
+                {% if previous_tournament %}
+                    {% with type='success', auto_remove=true, message=_(
+                        'Tournament [%(tournament)s] has been created.',
+                        tournament=previous_tournament.uniq_id
+                    )  %}
+                        {% include '/common/alert.html' %}
+                    {% endwith %}
+                {% endif %}
+                <h4>
+                    {{ _('Properties') }}
+                </h4>
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.text_input(
+                            name='uniq_id',
+                            label=_('ID (unique):'),
+                            placeholder=_('E.g.: main'),
+                            help_text=_('The Unique ID, used to reference the tournament.'),
+                            data=data, errors=errors
+                        ) }}
                     </div>
-                    <div class="row">
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.number_input(
-                                name='rounds',
-                                label=_('%(string)s:', string=_('Rounds')),
-                                help_text=_('The number of rounds of the tournament.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.select_input(
-                                name='rating',
-                                label=_('Rating:'),
-                                help_text=_('The type of rating to use for the tournament.'),
-                                select_options=rating_options,
-                                data=data, errors=errors
-                            ) }}
-                        </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.text_input(
+                            name='name',
+                            label=_('Name:'),
+                            placeholder=_('E.g.: Main tournament'),
+                            help_text=_('The name of the tournament, used for display.'),
+                            data=data, errors=errors
+                        ) }}
                     </div>
-                    <div class="row">
-                        <div class="col-12 col-md-6 col-lg-3 mb-3">
-                            {{ admin_macros.datetime_input(
-                                name='start',
-                                label=_('Start:'),
-                                help_text=_('The start time of the tournament (defaults to %(datetime)s).', datetime=admin_event.formatted_start_date_time),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 col-lg-3 mb-3">
-                            {{ admin_macros.datetime_input(
-                                name='stop',
-                                label=_('End:'),
-                                help_text=_('The end time of the tournament (defaults to %(datetime)s).', datetime=admin_event.formatted_stop_date_time),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.text_input(
-                                name='location',
-                                label=_('%(string)s:', string=_('Location')),
-                                placeholder=_('E.g.: Paris'),
-                                help_text=(
-                                    _(
-                                        'The location of the tournament (defaults to [%(location)s]).',
-                                        location=admin_event.location
-                                    ) if admin_event.location else _('The location of the tournament.')
-                                ),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.number_input(
+                            name='rounds',
+                            label=_('%(string)s:', string=_('Rounds')),
+                            help_text=_('The number of rounds of the tournament.'),
+                            data=data, errors=errors
+                        ) }}
                     </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.select_input(
+                            name='rating',
+                            label=_('Rating:'),
+                            help_text=_('The type of rating to use for the tournament.'),
+                            select_options=rating_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-6 col-lg-3 mb-3">
+                        {{ admin_macros.datetime_input(
+                            name='start',
+                            label=_('Start:'),
+                            help_text=_('The start time of the tournament (defaults to %(datetime)s).', datetime=admin_event.formatted_start_date_time),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-3 mb-3">
+                        {{ admin_macros.datetime_input(
+                            name='stop',
+                            label=_('End:'),
+                            help_text=_('The end time of the tournament (defaults to %(datetime)s).', datetime=admin_event.formatted_stop_date_time),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.text_input(
+                            name='location',
+                            label=_('%(string)s:', string=_('Location')),
+                            placeholder=_('E.g.: Paris'),
+                            help_text=(
+                                _(
+                                    'The location of the tournament (defaults to [%(location)s]).',
+                                    location=admin_event.location
+                                ) if admin_event.location else _('The location of the tournament.')
+                            ),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
 
-                    {% for form_fields_template in plugin_form_fields_templates %}
-                        {% include form_fields_template %}
-                    {% endfor %}
+                {% for form_fields_template in plugin_form_fields_templates %}
+                    {% include form_fields_template %}
+                {% endfor %}
 
-                    <h4>
-                        {{ _('Time control') }}
-                    </h4>
-                    <div class="row">
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.number_input(
-                                name='time_control_initial_time',
-                                label=_('Initial time (optional, seconds):'),
-                                placeholder=_('E.g.: %(seconds)d (%(minutes)d minutes)', seconds=5400, minutes=90),
-                                help_text=_('The initial time in seconds (may be empty if an increment is set).'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.number_input(
-                                name='time_control_increment',
-                                label=_('Increment (optional, seconds):'),
-                                placeholder=_('E.g.: %(seconds)d (seconds)', seconds=30),
-                                help_text=_('The number of seconds added to the players\' clock at each move.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-4 mb-3">
-                            {{ admin_macros.number_input(
-                                name='time_control_handicap_penalty_value',
-                                label=_('Penalty (handicap, seconds):'),
-                                placeholder=_('E.g.: %(seconds)d (seconds)', seconds=30),
-                                help_text=_('The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players).'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-4 mb-3">
-                            {{ admin_macros.number_input(
-                                name='time_control_handicap_penalty_step',
-                                label=_('Elo step (handicap):'),
-                                placeholder=_('E.g.: 50 (Elo)'),
-                                help_text=_('The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-4 mb-3">
-                            {{ admin_macros.number_input(
-                                name='time_control_handicap_min_time',
-                                label=_('Minimal time (handicap, seconds):'),
-                                placeholder=_('E.g.: %(seconds)d (seconds)', seconds=60),
-                                help_text=_('The minimum time, whatever the ranking difference between the two players.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
+                <h4>
+                    {{ _('Time control') }}
+                </h4>
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.number_input(
+                            name='time_control_initial_time',
+                            label=_('Initial time (optional, seconds):'),
+                            placeholder=_('E.g.: %(seconds)d (%(minutes)d minutes)', seconds=5400, minutes=90),
+                            help_text=_('The initial time in seconds (may be empty if an increment is set).'),
+                            data=data, errors=errors
+                        ) }}
                     </div>
-
-                    <h4>
-                        {{ _('Rules') }}
-                    </h4>
-                    <div class="row">
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.text_input(
-                                name='rules',
-                                label=_('Rules file location:'),
-                                placeholder=_('E.g.: c:\\chess\\tournaments\\main\\rules.pdf'),
-                                help_text=_('A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event).'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.select_input(
-                                name='record_illegal_moves',
-                                label=_('Illegal moves recording:'),
-                                help_text=_(
-                                    'The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d).',
-                                    default=admin_event.record_illegal_moves
-                                ),
-                                select_options=record_illegal_moves_options,
-                                data=data, errors=errors
-                            ) }}
-                        </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.number_input(
+                            name='time_control_increment',
+                            label=_('Increment (optional, seconds):'),
+                            placeholder=_('E.g.: %(seconds)d (seconds)', seconds=30),
+                            help_text=_('The number of seconds added to the players\' clock at each move.'),
+                            data=data, errors=errors
+                        ) }}
                     </div>
-
-                    <h4>
-                        {{ _('Pairings') }}
-                    </h4>
-                    <div class="row">
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.select_input(
-                                name='pairing_system',
-                                label=_('%(string)s:', string=_('Pairing system')),
-                                help_text=_('The system used to generate the pairings.'),
-                                select_options=pairing_system_options,
-                                onchange='updateTieBreaksHelp()',
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        {% for pairing_system in pairing_systems %}
-                            <div
-                                class="col-12 col-md-6 mb-3"
-                                id="{{ pairing_system.variation_container_id }}"
-                                {% if pairing_system.id != data['pairing_system'] %}
-                                    style="display:none"
-                                {% endif %}
-                            >
-                                {{ admin_macros.select_input(
-                                    name=pairing_system.variation_field_id,
-                                    label=_('%(string)s:', string=_('Variation')),
-                                    select_options=pairing_system.variation_manager.options(),
-                                    help_text=_('The variation of the pairing system.'),
-                                    data=data, errors=errors
-                                ) }}
-                            </div>
-                        {% endfor %}
-                        <script>
-                            $('input[name$="_pairing_variation"][type="hidden"]').remove();
-                            $('#pairing-system').change(function() {
-                                let elements = '';
-                                {% for pairing_system in pairing_systems %}
-                                    elements = $(
-                                        '#{{ pairing_system.variation_container_id }}, ' +
-                                        '#{{ pairing_system.tie_break_help_container_id }}'
-                                    );
-                                    if ($(this).val() === '{{ pairing_system.id }}') {
-                                        elements.show();
-                                    } else {
-                                        elements.hide();
-                                    }
-                                {% endfor %}
-                            });
-
-                        </script>
+                    <div class="col-12 col-md-4 mb-3">
+                        {{ admin_macros.number_input(
+                            name='time_control_handicap_penalty_value',
+                            label=_('Penalty (handicap, seconds):'),
+                            placeholder=_('E.g.: %(seconds)d (seconds)', seconds=30),
+                            help_text=_('The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players).'),
+                            data=data, errors=errors
+                        ) }}
                     </div>
-                    <div class="row">
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.number_input(
-                                name='first_board_number',
-                                label=_('First board number:'),
-                                placeholder=_('E.g.: %(num)d', num=20),
-                                help_text=_(
-                                    'The number of the first board of the tournament (if not set, defaults to %(default)d).',
-                                    default=sharly_chess_config.default_first_board_number
-                                ),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        {#
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.select_input(
-                                name='paired_bye_result',
-                                label=_('Paired bye points:'),
-                                help_text=_('The points scored by players who are paired bye.'),
-                                select_options=paired_bye_result_options,
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        #}
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.number_input(
-                                name='max_byes',
-                                label=_('Max byes:'),
-                                placeholder=_('E.g.: %(num)d', num=2),
-                                help_text=_(
-                                    'The maximum number of byes a player can pretend to (if not set, defaults to %(default)d).',
-                                    default=sharly_chess_config.default_max_byes
-                                ),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.number_input(
-                                name='last_rounds_no_byes',
-                                label=_('No. final rounds without byes:'),
-                                placeholder=_('E.g.: %(num)d', num=3),
-                                help_text=_(
-                                    'The number of final rounds in which byes are not permitted (if not set, defaults to %(default)d).',
-                                    default=sharly_chess_config.default_last_rounds_no_byes
-                                ),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.switch_input(
-                                name='three_points_for_a_win',
-                                label=_('%(string)s:', string=_('Point counting')),
-                                placeholder=_('Three points for a win'),
-                                help_text=_('Use the 3/1/0 points system instead of the standard 1/0.5/0 system.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
+                    <div class="col-12 col-md-4 mb-3">
+                        {{ admin_macros.number_input(
+                            name='time_control_handicap_penalty_step',
+                            label=_('Elo step (handicap):'),
+                            placeholder=_('E.g.: 50 (Elo)'),
+                            help_text=_('The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player.'),
+                            data=data, errors=errors
+                        ) }}
                     </div>
+                    <div class="col-12 col-md-4 mb-3">
+                        {{ admin_macros.number_input(
+                            name='time_control_handicap_min_time',
+                            label=_('Minimal time (handicap, seconds):'),
+                            placeholder=_('E.g.: %(seconds)d (seconds)', seconds=60),
+                            help_text=_('The minimum time, whatever the ranking difference between the two players.'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
 
-                    <h4>
-                        {{ _('Tie-breaks') }}
-                    </h4>
+                <h4>
+                    {{ _('Rules') }}
+                </h4>
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.text_input(
+                            name='rules',
+                            label=_('Rules file location:'),
+                            placeholder=_('E.g.: c:\\chess\\tournaments\\main\\rules.pdf'),
+                            help_text=_('A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event).'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.select_input(
+                            name='record_illegal_moves',
+                            label=_('Illegal moves recording:'),
+                            help_text=_(
+                                'The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d).',
+                                default=admin_event.record_illegal_moves
+                            ),
+                            select_options=record_illegal_moves_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+
+                <h4>
+                    {{ _('Pairings') }}
+                </h4>
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.select_input(
+                            name='pairing_system',
+                            label=_('%(string)s:', string=_('Pairing system')),
+                            help_text=_('The system used to generate the pairings.'),
+                            select_options=pairing_system_options,
+                            onchange='updateTieBreaksHelp()',
+                            data=data, errors=errors
+                        ) }}
+                    </div>
                     {% for pairing_system in pairing_systems %}
                         <div
-                            id="{{ pairing_system.tie_break_help_container_id }}"
-                            class="row"
+                            class="col-12 col-md-6 mb-3"
+                            id="{{ pairing_system.variation_container_id }}"
                             {% if pairing_system.id != data['pairing_system'] %}
                                 style="display:none"
                             {% endif %}
                         >
-                            <div class="col-12 col-md-6 form-text">
-                                {{ pairing_system.tie_break_help_html_content|safe }}
-                            </div>
-                            <div class="col-12 col-md-6 form-text">
-                                <div>{{ _('Other tie-breaks should not be used unless you really know what you do.') }}</div>
-                                <button
-                                    type="button"
-                                    class="text-nowrap btn btn-outline-primary form-text"
-                                    onclick="
-                                        {% for tie_break in pairing_system.default_tie_breaks %}
-                                            $('#tie-break-{{ loop.index }}').val('{{ tie_break.id }}');
-                                        {% endfor %}
-                                    "
-                                >
-                                    {{ _('Set the recommended tie-breaks') }}
-                                </button>
-                            </div>
+                            {{ admin_macros.select_input(
+                                name=pairing_system.variation_field_id,
+                                label=_('%(string)s:', string=_('Variation')),
+                                select_options=pairing_system.variation_manager.options(),
+                                help_text=_('The variation of the pairing system.'),
+                                data=data, errors=errors
+                            ) }}
                         </div>
                     {% endfor %}
-                    <div class="row">
-                        {% for index in [1, 2, 3] %}
-                            <div class="col-12 col-md-4 mb-3">
-                                {{ admin_macros.select_input(
-                                    name='tie_break_' ~ index|string,
-                                    label=_('Tie-break #%(index)d:', index=index),
-                                    select_options=tie_break_options,
-                                    help_text='',
-                                    data=data, errors=errors
-                                ) }}
-                            </div>
-                        {% endfor %}
+                    <script>
+                        $('input[name$="_pairing_variation"][type="hidden"]').remove();
+                        $('#pairing-system').change(function() {
+                            let elements = '';
+                            {% for pairing_system in pairing_systems %}
+                                elements = $(
+                                    '#{{ pairing_system.variation_container_id }}, ' +
+                                    '#{{ pairing_system.tie_break_help_container_id }}'
+                                );
+                                if ($(this).val() === '{{ pairing_system.id }}') {
+                                    elements.show();
+                                } else {
+                                    elements.hide();
+                                }
+                            {% endfor %}
+                        });
+
+                    </script>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.number_input(
+                            name='first_board_number',
+                            label=_('First board number:'),
+                            placeholder=_('E.g.: %(num)d', num=20),
+                            help_text=_(
+                                'The number of the first board of the tournament (if not set, defaults to %(default)d).',
+                                default=sharly_chess_config.default_first_board_number
+                            ),
+                            data=data, errors=errors
+                        ) }}
                     </div>
-                {% endif %}
+                    {#
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.select_input(
+                            name='paired_bye_result',
+                            label=_('Paired bye points:'),
+                            help_text=_('The points scored by players who are paired bye.'),
+                            select_options=paired_bye_result_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    #}
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.number_input(
+                            name='max_byes',
+                            label=_('Max byes:'),
+                            placeholder=_('E.g.: %(num)d', num=2),
+                            help_text=_(
+                                'The maximum number of byes a player can pretend to (if not set, defaults to %(default)d).',
+                                default=sharly_chess_config.default_max_byes
+                            ),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.number_input(
+                            name='last_rounds_no_byes',
+                            label=_('No. final rounds without byes:'),
+                            placeholder=_('E.g.: %(num)d', num=3),
+                            help_text=_(
+                                'The number of final rounds in which byes are not permitted (if not set, defaults to %(default)d).',
+                                default=sharly_chess_config.default_last_rounds_no_byes
+                            ),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.switch_input(
+                            name='three_points_for_a_win',
+                            label=_('%(string)s:', string=_('Point counting')),
+                            placeholder=_('Three points for a win'),
+                            help_text=_('Use the 3/1/0 points system instead of the standard 1/0.5/0 system.'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+
+                <h4>
+                    {{ _('Tie-breaks') }}
+                </h4>
+                {% for pairing_system in pairing_systems %}
+                    <div
+                        id="{{ pairing_system.tie_break_help_container_id }}"
+                        class="row"
+                        {% if pairing_system.id != data['pairing_system'] %}
+                            style="display:none"
+                        {% endif %}
+                    >
+                        <div class="col-12 col-md-6 form-text">
+                            {{ pairing_system.tie_break_help_html_content|safe }}
+                        </div>
+                        <div class="col-12 col-md-6 form-text">
+                            <div>{{ _('Other tie-breaks should not be used unless you really know what you do.') }}</div>
+                            <button
+                                type="button"
+                                class="text-nowrap btn btn-outline-primary form-text"
+                                onclick="
+                                    {% for tie_break in pairing_system.default_tie_breaks %}
+                                        $('#tie-break-{{ loop.index }}').val('{{ tie_break.id }}');
+                                    {% endfor %}
+                                "
+                            >
+                                {{ _('Set the recommended tie-breaks') }}
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="row">
+                    {% for index in [1, 2, 3] %}
+                        <div class="col-12 col-md-4 mb-3">
+                            {{ admin_macros.select_input(
+                                name='tie_break_' ~ index|string,
+                                label=_('Tie-break #%(index)d:', index=index),
+                                select_options=tie_break_options,
+                                help_text='',
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    {% endfor %}
+                </div>
             </form>
         </div>
         <div class="modal-footer">
@@ -385,7 +352,16 @@
                 <i class="bi-x-circle-fill pe-1"></i>
                 {{ _('Cancel') }}
             </button>
-            {% if action in ['create', 'clone', ] %}
+            {% if action == 'update' %}
+                <button
+                    type="submit"
+                    form="modal-form"
+                    class="text-nowrap white btn btn-primary"
+                >
+                    <i class="bi-floppy-fill pe-1"></i>
+                    {{ _('Save') }}
+                </button>
+            {% else %}
                 {{ admin_macros.split_submit_buttons(
                     options={
                         'create': _('Create'),
@@ -394,22 +370,6 @@
                     },
                     active_option='add_other' if add_other_active else 'create'
                 ) }}
-            {% else %}
-                <button
-                    type="submit"
-                    form="modal-form"
-                    class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
-                >
-                    {% if action == 'update' %}
-                        <i class="bi-floppy-fill pe-1"></i>
-                        {{ _('Save') }}
-                    {% elif action == 'delete' %}
-                        <i class="bi-trash pe-1"></i>
-                        {{ _('Delete') }}
-                    {% else %}
-                        ?
-                    {% endif %}
-                </button>
             {% endif %}
         </div>
     </div>

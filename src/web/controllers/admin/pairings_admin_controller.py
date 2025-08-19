@@ -263,7 +263,6 @@ class PairingsAdminController(BaseEventAdminController):
             '/admin/event/{event_uniq_id:str}/pairings/{tournament_id:int}/{round:int}',
         ],
         name='admin-event-pairings-tab',
-        cache=1,
     )
     async def htmx_admin_pairings_tab(
         self,

@@ -8,7 +8,7 @@ from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
 import urllib.parse
 
-from litestar import post, get, patch
+from litestar import post, get, patch, delete
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
@@ -57,7 +57,7 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
         data: Annotated[
             dict[str, str] | None,
             Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
+        ] = None,
     ):
         super().__init__(
             request,
@@ -103,125 +103,108 @@ class TournamentAdminController(BaseEventAdminController):
             data = {}
         uniq_id: str = WebContext.form_data_to_str(data, 'uniq_id') or ''
         check_in_open: bool = False
-        tie_breaks: list[dict] = []
-        rounds: int | None = None
-        pairing: str | None = None
-        rating: int | None = None
         start: float | None = None
         stop: float | None = None
-        if action == 'delete':
-            if web_context.admin_tournament is None:
-                raise RuntimeError('admin_tournament not defined')
-            if not uniq_id:
-                errors['uniq_id'] = _('Please enter the tournament ID.')
-            elif uniq_id != web_context.admin_tournament.uniq_id:
-                errors['uniq_id'] = _('tournament ID does not match.')
+        if not uniq_id:
+            errors['uniq_id'] = _('Please enter the tournament ID.')
+        elif uniq_id.find('/') != -1:
+            errors['uniq_id'] = _('Character [{char}] is not allowed.').format(char='/')
         else:
-            if not uniq_id:
-                errors['uniq_id'] = _('Please enter the tournament ID.')
-            elif uniq_id.find('/') != -1:
-                errors['uniq_id'] = _('Character [{char}] is not allowed.').format(
-                    char='/'
-                )
-            else:
-                match action:
-                    case 'create' | 'clone':
-                        if uniq_id in web_context.admin_event.tournaments_by_uniq_id:
-                            errors['uniq_id'] = _(
-                                'Tournament [{uniq_id}] already exists.'
-                            ).format(uniq_id=uniq_id)
-                    case 'update':
-                        tournament = web_context.admin_tournament
-                        assert tournament is not None
-                        if (
-                            uniq_id != tournament.uniq_id
-                            and uniq_id
-                            in web_context.admin_event.tournaments_by_uniq_id
-                        ):
-                            errors['uniq_id'] = _(
-                                'Tournament [{uniq_id}] already exists.'
-                            ).format(uniq_id=uniq_id)
-                        check_in_open = tournament.check_in_open
+            match action:
+                case 'create' | 'clone':
+                    if uniq_id in web_context.admin_event.tournaments_by_uniq_id:
+                        errors['uniq_id'] = _(
+                            'Tournament [{uniq_id}] already exists.'
+                        ).format(uniq_id=uniq_id)
+                case 'update':
+                    tournament = web_context.admin_tournament
+                    assert tournament is not None
+                    if (
+                        uniq_id != tournament.uniq_id
+                        and uniq_id in web_context.admin_event.tournaments_by_uniq_id
+                    ):
+                        errors['uniq_id'] = _(
+                            'Tournament [{uniq_id}] already exists.'
+                        ).format(uniq_id=uniq_id)
+                    check_in_open = tournament.check_in_open
 
-                    case _:
-                        raise ValueError(f'action=[{action}]')
-            rounds = WebContext.form_data_to_int(data, field := 'rounds') or 1
-            if rounds < 1:
-                errors[field] = _('A positive integer is expected.')
-            elif action == 'update':
-                tournament = web_context.admin_tournament
-                assert tournament is not None
-                if rounds < tournament.last_paired_round:
-                    errors['rounds'] = _(
-                        'Impossible to set a round number lower '
-                        'than the last round with pairings #{round}.'
-                    ).format(round=tournament.current_round)
-            rating = (
-                WebContext.form_data_to_int(data, field := 'rating')
-                or TournamentRating.STANDARD.value
+                case _:
+                    raise ValueError(f'action=[{action}]')
+        rounds = WebContext.form_data_to_int(data, field := 'rounds') or 1
+        if rounds < 1:
+            errors[field] = _('A positive integer is expected.')
+        elif action == 'update':
+            tournament = web_context.admin_tournament
+            assert tournament is not None
+            if rounds < tournament.last_paired_round:
+                errors['rounds'] = _(
+                    'Impossible to set a round number lower '
+                    'than the last round with pairings #{round}.'
+                ).format(round=tournament.current_round)
+        rating = (
+            WebContext.form_data_to_int(data, field := 'rating')
+            or TournamentRating.STANDARD.value
+        )
+        try:
+            TournamentRating(rating)
+        except ValueError:
+            errors[field] = f'Unknown rating [{rating}]'
+        event = web_context.admin_event
+        start_str = WebContext.form_data_to_str(data, field := 'start')
+        if start_str:
+            start = time.mktime(
+                datetime.strptime(start_str, '%Y-%m-%dT%H:%M').timetuple()
             )
-            try:
-                TournamentRating(rating)
-            except ValueError:
-                errors[field] = f'Unknown rating [{rating}]'
-            event = web_context.admin_event
-            start_str = WebContext.form_data_to_str(data, field := 'start')
-            if start_str:
-                start = time.mktime(
-                    datetime.strptime(start_str, '%Y-%m-%dT%H:%M').timetuple()
+            if not event.start <= start <= event.stop:
+                errors[field] = _(
+                    'Time outside of event time range ({start} - {stop}).'
+                ).format(
+                    start=event.formatted_start_date_time,
+                    stop=event.formatted_stop_date_time,
                 )
-                if not event.start <= start <= event.stop:
+        stop_str = WebContext.form_data_to_str(data, field := 'stop')
+        if stop_str:
+            stop = time.mktime(
+                datetime.strptime(stop_str, '%Y-%m-%dT%H:%M').timetuple()
+            )
+            if not event.start <= stop <= event.stop:
+                errors[field] = _(
+                    'Time outside of event time range ({start} - {stop}).'
+                ).format(
+                    start=event.formatted_start_date_time,
+                    stop=event.formatted_stop_date_time,
+                )
+            elif start and stop < start:
+                errors[field] = _('End time needs to be after start time.')
+
+        pairing_system = PairingSystemManager.get_object(
+            WebContext.form_data_to_str(data, 'pairing_system')
+            or SwissPairingSystem.static_id()
+        )
+        pairing = WebContext.form_data_to_str(
+            data, f'{pairing_system.id}_pairing_variation'
+        )
+
+        tie_breaks = []
+        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager.type_by_id()
+        used_tie_break_ids: list[str] = []
+        for index in (1, 2, 3):
+            field = f'tie_break_{index}'
+            tie_break_id = WebContext.form_data_to_str(data, field)
+            if not tie_break_id:
+                continue
+            if tie_break_id in used_tie_break_ids:
+                errors[field] = _('Tie-break already in use.')
+                break
+            used_tie_break_ids.append(tie_break_id)
+            if tie_break_type := (tie_break_type_by_id.get(tie_break_id, None)):
+                tie_break = tie_break_type()
+                if pairing_system in tie_break.forbidden_pairing_systems:
                     errors[field] = _(
-                        'Time outside of event time range ({start} - {stop}).'
-                    ).format(
-                        start=event.formatted_start_date_time,
-                        stop=event.formatted_stop_date_time,
-                    )
-            stop_str = WebContext.form_data_to_str(data, field := 'stop')
-            if stop_str:
-                stop = time.mktime(
-                    datetime.strptime(stop_str, '%Y-%m-%dT%H:%M').timetuple()
-                )
-                if not event.start <= stop <= event.stop:
-                    errors[field] = _(
-                        'Time outside of event time range ({start} - {stop}).'
-                    ).format(
-                        start=event.formatted_start_date_time,
-                        stop=event.formatted_stop_date_time,
-                    )
-                elif start and stop < start:
-                    errors[field] = _('End time needs to be after start time.')
-
-            pairing_system = PairingSystemManager.get_object(
-                WebContext.form_data_to_str(data, 'pairing_system')
-                or SwissPairingSystem.static_id()
-            )
-            pairing = WebContext.form_data_to_str(
-                data, f'{pairing_system.id}_pairing_variation'
-            )
-
-            tie_breaks = []
-            tie_break_type_by_id: dict[str, type[TieBreak]] = (
-                TieBreakManager.type_by_id()
-            )
-            used_tie_break_ids: list[str] = []
-            for index in (1, 2, 3):
-                field = f'tie_break_{index}'
-                tie_break_id = WebContext.form_data_to_str(data, field)
-                if not tie_break_id:
-                    continue
-                if tie_break_id in used_tie_break_ids:
-                    errors[field] = _('Tie-break already in use.')
+                        'Tie-break incompatible with the "{system}" pairing system.'
+                    ).format(system=pairing_system.name)
                     break
-                used_tie_break_ids.append(tie_break_id)
-                if tie_break_type := (tie_break_type_by_id.get(tie_break_id, None)):
-                    tie_break = tie_break_type()
-                    if pairing_system in tie_break.forbidden_pairing_systems:
-                        errors[field] = _(
-                            'Tie-break incompatible with the "{system}" pairing system.'
-                        ).format(system=pairing_system.name)
-                        break
-                    tie_breaks.append(tie_break.to_dict())
+                tie_breaks.append(tie_break.to_dict())
 
         if action == 'update':
             tournament = web_context.admin_tournament
@@ -239,66 +222,36 @@ class TournamentAdminController(BaseEventAdminController):
                         errors[field] = _(
                             "This field can't be updated once the tournament has started."
                         )
-        time_control_initial_time: int | None = None
-        time_control_increment: int | None = None
-        time_control_handicap_penalty_value: int | None = None
-        time_control_handicap_penalty_step: int | None = None
-        time_control_handicap_min_time: int | None = None
-        record_illegal_moves: int | None = None
-        rules: str | None = None
-        first_board_number: int | None = None
-        paired_bye_result: int | None = None
-        max_byes: int | None = None
-        last_rounds_no_byes: int | None = None
-        location: str | None = None
-        three_points_for_a_win = False
-        match action:
-            case 'create' | 'update' | 'clone':
-                name = WebContext.form_data_to_str(data, 'name') or ''
-                if not name:
-                    errors['name'] = _('Please enter the tournament name.')
-                time_control_initial_time = WebContext.form_data_to_int(
-                    data, 'time_control_initial_time'
-                )
-                time_control_increment = WebContext.form_data_to_int(
-                    data, 'time_control_increment'
-                )
-                time_control_handicap_penalty_value = WebContext.form_data_to_int(
-                    data, 'time_control_handicap_penalty_value'
-                )
-                time_control_handicap_penalty_step = WebContext.form_data_to_int(
-                    data, 'time_control_handicap_penalty_step'
-                )
-                time_control_handicap_min_time = WebContext.form_data_to_int(
-                    data, 'time_control_handicap_min_time'
-                )
-                record_illegal_moves = (
-                    cls._admin_validate_record_illegal_moves_update_data(data, errors)
-                )
-                rules = cls._admin_validate_rules_update_data(data, errors)
-                first_board_number = WebContext.form_data_to_int(
-                    data, 'first_board_number'
-                )
-                paired_bye_result = WebContext.form_data_to_int(
-                    data, 'paired_bye_result'
-                )
-                max_byes = WebContext.form_data_to_int(data, 'max_byes')
-                last_rounds_no_byes = WebContext.form_data_to_int(
-                    data, 'last_rounds_no_byes'
-                )
-                location = WebContext.form_data_to_str(data, 'location')
-                three_points_for_a_win = WebContext.form_data_to_bool(
-                    data, 'three_points_for_a_win'
-                )
-            case 'delete':
-                if web_context.admin_tournament is None:
-                    raise RuntimeError(
-                        f'{web_context.admin_tournament=} for [{action=}]'
-                    )
-                uniq_id = web_context.admin_tournament.uniq_id
-                name = web_context.admin_tournament.name
-            case _:
-                raise ValueError(f'action=[{action}]')
+        name = WebContext.form_data_to_str(data, 'name') or ''
+        if not name:
+            errors['name'] = _('Please enter the tournament name.')
+        time_control_initial_time = WebContext.form_data_to_int(
+            data, 'time_control_initial_time'
+        )
+        time_control_increment = WebContext.form_data_to_int(
+            data, 'time_control_increment'
+        )
+        time_control_handicap_penalty_value = WebContext.form_data_to_int(
+            data, 'time_control_handicap_penalty_value'
+        )
+        time_control_handicap_penalty_step = WebContext.form_data_to_int(
+            data, 'time_control_handicap_penalty_step'
+        )
+        time_control_handicap_min_time = WebContext.form_data_to_int(
+            data, 'time_control_handicap_min_time'
+        )
+        record_illegal_moves = cls._admin_validate_record_illegal_moves_update_data(
+            data, errors
+        )
+        rules = cls._admin_validate_rules_update_data(data, errors)
+        first_board_number = WebContext.form_data_to_int(data, 'first_board_number')
+        paired_bye_result = WebContext.form_data_to_int(data, 'paired_bye_result')
+        max_byes = WebContext.form_data_to_int(data, 'max_byes')
+        last_rounds_no_byes = WebContext.form_data_to_int(data, 'last_rounds_no_byes')
+        location = WebContext.form_data_to_str(data, 'location')
+        three_points_for_a_win = WebContext.form_data_to_bool(
+            data, 'three_points_for_a_win'
+        )
 
         # Have plugins validate their fields and return private plugin data
         per_plugin_tournament_data = (
@@ -440,8 +393,6 @@ class TournamentAdminController(BaseEventAdminController):
                             name = admin_event.get_unused_tournament_name(
                                 admin_tournament.stored_tournament.name
                             )
-                        case 'delete':
-                            pass
                         case _:
                             raise ValueError(f'action=[{action}]')
                     time_control_initial_time: int | None = None
@@ -510,8 +461,6 @@ class TournamentAdminController(BaseEventAdminController):
                         case 'create':
                             rounds = 1
                             rating = TournamentRating.STANDARD.value
-                        case 'delete':
-                            pass
                         case _:
                             raise ValueError(f'action=[{action}]')
                     if action in [
@@ -624,7 +573,6 @@ class TournamentAdminController(BaseEventAdminController):
     @get(
         path='/admin/event/{event_uniq_id:str}/tournaments',
         name='admin-event-tournaments-tab',
-        cache=1,
     )
     async def htmx_admin_event_tournaments_tab(
         self,
@@ -644,7 +592,6 @@ class TournamentAdminController(BaseEventAdminController):
     @get(
         path='/admin/tournament-modal/create/{event_uniq_id:str}',
         name='admin-tournament-create-modal',
-        cache=1,
     )
     async def htmx_admin_tournament_create_modal(
         self,
@@ -660,9 +607,23 @@ class TournamentAdminController(BaseEventAdminController):
         )
 
     @get(
+        path='/admin/tournament-delete-modal/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-tournament-delete-modal',
+    )
+    async def htmx_admin_tournament_delete_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int | None,
+    ) -> Template | ClientRedirect:
+        web_context = TournamentAdminWebContext(request, event_uniq_id, tournament_id)
+        return self._admin_event_render(
+            web_context.template_context | {'modal': 'tournament-delete'}
+        )
+
+    @get(
         path='/admin/tournament-modal/{action:str}/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tournament-modal',
-        cache=1,
     )
     async def htmx_admin_tournament_modal(
         self,
@@ -813,16 +774,12 @@ class TournamentAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int | None,
     ) -> Template | ClientRedirect:
-        match action:
-            case 'update' | 'delete' | 'clone' | 'create':
-                web_context: TournamentAdminWebContext = TournamentAdminWebContext(
-                    request,
-                    event_uniq_id=event_uniq_id,
-                    tournament_id=tournament_id,
-                    data=data,
-                )
-            case _:
-                raise ValueError(f'action=[{action}]')
+        web_context = TournamentAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            data=data,
+        )
         if web_context.error:
             return web_context.error
         if web_context.admin_event is None:
@@ -849,95 +806,88 @@ class TournamentAdminController(BaseEventAdminController):
         with EventDatabase(
             web_context.admin_event.uniq_id, write=True
         ) as event_database:
-            if action == 'delete':
-                assert tournament_id is not None
-                event_database.delete_stored_tournament(tournament_id)
+            if action == 'update':
+                stored_tournament = event_database.update_stored_tournament(
+                    stored_tournament
+                )
                 success_message = _(
-                    'Tournament [{tournament_uniq_id}] has been deleted.'
-                ).format(tournament_uniq_id=web_context.get_admin_tournament().uniq_id)
+                    'Tournament [{tournament_uniq_id}] has been updated.'
+                ).format(tournament_uniq_id=stored_tournament.uniq_id)
             else:
-                if action == 'update':
-                    stored_tournament = event_database.update_stored_tournament(
-                        stored_tournament
-                    )
+                stored_tournament = event_database.add_stored_tournament(
+                    stored_tournament
+                )
+                if 'add_screens' in data:
+                    for type_, menu, name in [
+                        (
+                            'input',
+                            '@input',
+                            _('Results entry ({tournament_name})').format(
+                                tournament_name=stored_tournament.name
+                            ),
+                        ),
+                        (
+                            'boards',
+                            '@boards',
+                            _('Pairings by board ({tournament_name})').format(
+                                tournament_name=stored_tournament.name
+                            ),
+                        ),
+                        (
+                            'players',
+                            '@players',
+                            _('Pairings by player ({tournament_name})').format(
+                                tournament_name=stored_tournament.name
+                            ),
+                        ),
+                        (
+                            'ranking',
+                            '@ranking',
+                            _('Ranking ({tournament_name})').format(
+                                tournament_name=stored_tournament.name
+                            ),
+                        ),
+                    ]:
+                        stored_screen: StoredScreen = event_database.add_stored_screen(
+                            StoredScreen(
+                                id=None,
+                                uniq_id=web_context.admin_event.get_unused_screen_uniq_id(
+                                    base_uniq_id=f'{stored_tournament.uniq_id}-{type_}'
+                                ),
+                                type=type_,
+                                public=True,
+                                name=name,
+                                columns=1,
+                                font_size=None,
+                                menu_link=True,
+                                menu_text=None,
+                                menu=menu,
+                                timer_id=None,
+                                input_exit_button=None,
+                                players_show_unpaired=None,
+                                players_show_opponent=None,
+                                results_limit=None,
+                                results_max_age=None,
+                                results_tournament_ids=[],
+                                background_image=None,
+                                background_color=None,
+                                message_default=True,
+                                message_text=None,
+                            )
+                        )
+                        assert stored_screen.id is not None
+                        assert stored_tournament.id is not None
+                        event_database.add_stored_screen_set(
+                            stored_screen.id, stored_tournament.id
+                        )
                     success_message = _(
-                        'Tournament [{tournament_uniq_id}] has been updated.'
+                        'Tournament [{tournament_uniq_id}] has been created '
+                        'and default screens have been added.'
                     ).format(tournament_uniq_id=stored_tournament.uniq_id)
                 else:
-                    stored_tournament = event_database.add_stored_tournament(
-                        stored_tournament
-                    )
-                    if 'add_screens' in data:
-                        for type_, menu, name in [
-                            (
-                                'input',
-                                '@input',
-                                _('Results entry ({tournament_name})').format(
-                                    tournament_name=stored_tournament.name
-                                ),
-                            ),
-                            (
-                                'boards',
-                                '@boards',
-                                _('Pairings by board ({tournament_name})').format(
-                                    tournament_name=stored_tournament.name
-                                ),
-                            ),
-                            (
-                                'players',
-                                '@players',
-                                _('Pairings by player ({tournament_name})').format(
-                                    tournament_name=stored_tournament.name
-                                ),
-                            ),
-                            (
-                                'ranking',
-                                '@ranking',
-                                _('Ranking ({tournament_name})').format(
-                                    tournament_name=stored_tournament.name
-                                ),
-                            ),
-                        ]:
-                            stored_screen: StoredScreen = event_database.add_stored_screen(
-                                StoredScreen(
-                                    id=None,
-                                    uniq_id=web_context.admin_event.get_unused_screen_uniq_id(
-                                        base_uniq_id=f'{stored_tournament.uniq_id}-{type_}'
-                                    ),
-                                    type=type_,
-                                    public=True,
-                                    name=name,
-                                    columns=1,
-                                    font_size=None,
-                                    menu_link=True,
-                                    menu_text=None,
-                                    menu=menu,
-                                    timer_id=None,
-                                    input_exit_button=None,
-                                    players_show_unpaired=None,
-                                    players_show_opponent=None,
-                                    results_limit=None,
-                                    results_max_age=None,
-                                    results_tournament_ids=[],
-                                    background_image=None,
-                                    background_color=None,
-                                    message_default=True,
-                                    message_text=None,
-                                )
-                            )
-                            assert stored_screen.id is not None
-                            assert stored_tournament.id is not None
-                            event_database.add_stored_screen_set(
-                                stored_screen.id, stored_tournament.id
-                            )
-                        success_message = _(
-                            'Tournament [{tournament_uniq_id}] has been created '
-                            'and default screens have been added.'
-                        ).format(tournament_uniq_id=stored_tournament.uniq_id)
-                    else:
-                        success_message = _(
-                            'Tournament [{tournament_uniq_id}] has been created.'
-                        ).format(tournament_uniq_id=stored_tournament.uniq_id)
+                    success_message = _(
+                        'Tournament [{tournament_uniq_id}] has been created.'
+                    ).format(tournament_uniq_id=stored_tournament.uniq_id)
 
                 tournament_id = stored_tournament.id
             event_database.commit()
@@ -998,30 +948,30 @@ class TournamentAdminController(BaseEventAdminController):
             data=data,
         )
 
-    @post(
+    @delete(
         path='/admin/tournament-delete/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tournament-delete',
         status_code=HTTP_200_OK,
     )
-    # We have to use POST because hx-delete sends form parameters as query parameters,
-    # which are not read by Litestar in a DELETE request.
     async def htmx_admin_tournament_delete(
         self,
         request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
         event_uniq_id: str,
         tournament_id: int,
     ) -> Template | ClientRedirect:
-        return self._admin_tournament_update(
+        web_context = TournamentAdminWebContext(request, event_uniq_id, tournament_id)
+        if web_context.error:
+            return web_context.error
+        with EventDatabase(event_uniq_id, True) as database:
+            database.delete_stored_tournament(tournament_id)
+            database.commit()
+        Message.success(
             request,
-            event_uniq_id=event_uniq_id,
-            action='delete',
-            tournament_id=tournament_id,
-            data=data,
+            _('Tournament [{tournament_uniq_id}] has been deleted.').format(
+                tournament_uniq_id=web_context.get_admin_tournament().uniq_id
+            ),
         )
+        return self._admin_event_tournaments_render(request, event_uniq_id)
 
     @get(
         path='/admin/tournament-print-view/{event_uniq_id:str}/{tournament_id:int}/{document: str}',
