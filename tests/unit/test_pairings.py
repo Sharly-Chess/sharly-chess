@@ -60,7 +60,6 @@ class PairingTestCase(TestCase):
 
         self.event = EventLoader().load_event(EVENT_ID)
         tournament = self.event.tournaments_by_uniq_id[TOURNAMENT_ID]
-        tournament.set_default_pairing_settings()
 
         diff_display = ''
         for round_ in range(1, (max_round or tournament.rounds) + 1):
@@ -140,11 +139,11 @@ class PairingTestCase(TestCase):
         # TODO (Molrn) figure out what is wrong with round 5
         self.assert_no_pairings_diff_in_tournament('papi-haley-soft', max_round=4)
 
-    def _test_swiss_papi_progressive(self):
+    def test_swiss_papi_progressive(self):
         # TODO (Molrn) figure out what is wrong with round 5
         self.assert_no_pairings_diff_in_tournament('papi-progressive', max_round=4)
 
-    def _test_swiss_papi_nicois(self):
+    def test_swiss_papi_nicois(self):
         # TODO (Molrn) figure out what is wrong with round 3
         self.assert_no_pairings_diff_in_tournament('papi-nicois', max_round=2)
 
