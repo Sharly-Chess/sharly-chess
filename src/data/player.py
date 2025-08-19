@@ -353,7 +353,28 @@ class Player:
         return str(self._tournament_rating)
 
     @property
+    def rating_is_overridden(self) -> bool:
+        if not self.event.override_unrated_rapide_blitz:
+            return False
+
+        rating = self.ratings.get(self.tournament.rating, None)
+        if rating and rating.type == PlayerRatingType.FIDE:
+            return False
+
+        if self.tournament.rating != TournamentRating.STANDARD:
+            rating = self.ratings.get(TournamentRating.STANDARD, None)
+            if rating and rating.type == PlayerRatingType.FIDE:
+                return True
+
+        return False
+
+    @property
     def _tournament_rating(self) -> PlayerRating:
+        if self.rating_is_overridden:
+            rating = self.ratings.get(TournamentRating.STANDARD)
+            assert rating is not None
+            return rating
+
         return self.get_rating(self.tournament.rating)
 
     @property

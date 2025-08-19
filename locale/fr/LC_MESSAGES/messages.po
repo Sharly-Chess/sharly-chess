@@ -650,9 +650,6 @@ msgstr "Buchholz tronqué"
 msgid "By board"
 msgstr "Par échiquier"
 
-msgid "By default - {option}"
-msgstr "Par défaut - {option}"
-
 msgid "By default, tournaments are not visible on the FFE site."
 msgstr "Par défaut, les tournois ne sont pas visibles sur le site de la FFE."
 
@@ -1162,6 +1159,9 @@ msgstr "Message de déboggage"
 
 msgid "Default federation"
 msgstr "Fédération par défaut"
+
+msgid "Default handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. If checked, this rating will also be used for seeding and pairings. If unchecked, they will be treated as unrated and require an estimated rating."
+msgstr "Gestion par défaut des joueurs·euses sans cote rapide/blitz. Pour le calcul des cotes, la FIDE considère ces joueurs·euses comme classé·es avec leur cote standard. Si coché (par défaut), cette cote sera également utilisée pour le classement initial et les appariements. Si décoché, ils·elles seront traité·es comme non classé·es et nécessiteront une estimation."
 
 msgid "Default language"
 msgstr "Langue par défaut"
@@ -1713,6 +1713,9 @@ msgstr "Erreur lors de la création de la base de données: {error}."
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr "Estimé"
 
+msgid "Estimated ratings"
+msgstr "Elos estimés"
+
 msgid "Event"
 msgstr "Évènement"
 
@@ -1890,6 +1893,12 @@ msgstr "Impossible de lire [{url}] (timeout) : {ex}."
 
 msgid "Failed to read [{url}]: [{ex}]."
 msgstr "Impossible de lire [{url}] : {ex}."
+
+msgid "Fallback to estimated ratings"
+msgstr "epli sur des Elos estimés"
+
+msgid "Fallback to standard rating for unrated players"
+msgstr "Repli sur l’Elo standard pour les joueurs non classés"
 
 msgid "Families"
 msgstr "Familles"
@@ -2139,6 +2148,9 @@ msgstr "Système de Haley"
 msgid "Half-Point Bye"
 msgstr "Demi-point joker (bye)"
 
+msgid "Handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. You may also choose to use this rating for seeding and pairings."
+msgstr "estion des joueurs·euses sans cote rapide/blitz. Pour le calcul des cotes, la FIDE considère ces joueurs·euses comme classé·es avec leur cote standard. Vous pouvez également choisir d’utiliser cette cote pour le classement initial et les appariements."
+
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
 msgstr "Avoir un nombre de joueur·euses et de prix proches représente un risque qu'un prix ne soit pas attribué."
 
@@ -2198,6 +2210,9 @@ msgstr "MI"
 
 msgid "Identity"
 msgstr "Identité"
+
+msgid "If no rapid/blitz rating exists, fall back to the standard rating"
+msgstr "S’il n’existe pas de cote rapide/blitz, utiliser la cote standard par défaut."
 
 msgid "Illegal moves are not recorded."
 msgstr "Les coups illégaux ne sont pas enregistrés."
@@ -3716,6 +3731,9 @@ msgstr "Limite Elo"
 msgid "Rating limits"
 msgstr "Limites Elo"
 
+msgid "Rating seed for unrated rapid/blitz"
+msgstr "Elo de départ pour les joueur·euses sans cote rapide/blitz"
+
 #, python-format
 msgid "Rating splitting groups A and B (recommended: %(recommended)d)."
 msgstr "Classement Elo séparant les groupes A et B (recommandation : %(recommended)d)."
@@ -4019,6 +4037,9 @@ msgstr "Couleur initiale"
 msgid "Seed color can't be modified once the tournament has started."
 msgstr "La couleur initiale ne peut être modifiée une fois que le tournoi a commencé."
 
+msgid "Seeding of unrated rapid/blitz"
+msgstr "Départ des joueur·euses sans cote rapide/blitz"
+
 msgid "Select the players and the data to update:"
 msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"
 
@@ -4175,6 +4196,9 @@ msgstr "Standard"
 
 msgid "Standard rating"
 msgstr "Classement standard"
+
+msgid "Standard rating used."
+msgstr "Elo standard utilisé."
 
 msgid "Standard swiss system"
 msgstr "Système suisse standard"
@@ -5162,11 +5186,23 @@ msgstr "La limite Elo haute doit être supérieure à la limite Elo basse."
 msgid "Upper rating limit"
 msgstr "Limite Elo haute"
 
+msgid "Use Application's default - {option}"
+msgstr "Par défaut de l’application : {option} "
+
+msgid "Use Event's default - {option}"
+msgstr "Défaut de l’événement – {option}"
+
+msgid "Use estimated rating for unrated players"
+msgstr "Utiliser un Elo estimé pour les joueur·euses non classé·es"
+
 msgid "Use log-level specific colors"
 msgstr "Utiliser des couleurs spécifiques au niveau de log"
 
 msgid "Use no timer"
 msgstr "Ne pas utiliser de chronomètre"
+
+msgid "Use standard ratings"
+msgstr "Utiliser les Elos standard"
 
 msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system."
 msgstr "Utiliser le système de points 3/1/0 au lieu du système standard 1/0,5/0."
