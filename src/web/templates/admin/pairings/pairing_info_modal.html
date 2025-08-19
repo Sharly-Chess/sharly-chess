@@ -7,7 +7,14 @@
                 {{ _('Pairing information for round %(round)d', round=admin_round) }}
             </h2>
         </div>
+
         <div class="modal-body">
+            {% if warning %}
+                <div class="alert alert-warning" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    {{ warning }}
+                </div>
+            {% endif %}
             <table
                 id="pairings-info-table"
                 class="table prominent table-sm table-hover w-100 bg-light mx-auto justify-content-center"
@@ -61,11 +68,10 @@
                                     <td class="compact-col text-center">
                                         {% with color_preference=player_history.color_preference, absolute=player_history.color_preference.absolute, strong=player_history.color_preference.strong %}
                                             <span
-                                                class=""
                                                 {{ macros.tooltip_attributes('info', _('Absolute') if absolute else _('Strong') if strong else _('Weak'), 'top') }}
                                             >
                                                 {% if absolute %}
-                                                    <b>{{ color_preference.color.to_crosstable|upper if color_preference else '·' }}</b>
+                                                    <span class="text-decoration-underline fw-bold">{{ color_preference.color.to_crosstable|upper if color_preference else '·' }}</span>
                                                 {% elif strong %}
                                                     {{ color_preference.color.to_crosstable|upper if color_preference else '·' }}
                                                 {% else %}
