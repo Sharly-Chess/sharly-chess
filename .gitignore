@@ -81,3 +81,5 @@ __pycache__/
 
 
 /src/common/i18n/.auto-update
+
+/scripts/roles/*.md
