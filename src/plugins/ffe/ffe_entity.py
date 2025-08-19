@@ -82,6 +82,9 @@ class FfePlayerComparator(FidePlayerComparator):
             and plugin_data.ffe_licence != match_plugin_data.ffe_licence
         ):
             plugin_data.ffe_licence = match_plugin_data.ffe_licence
+        self.player.stored_player.plugin_data[PLUGIN_NAME] = (
+            plugin_data.to_stored_value()
+        )
 
 
 class _FfeDataSource(ABC):
