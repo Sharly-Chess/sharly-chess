@@ -327,6 +327,9 @@ class AccessAdminController(BaseEventAdminController):
                 errors[field] = _('Account [{username}] already exists.').format(
                     username=username
                 )
+            password = WebContext.form_data_to_str(data, field := 'password')
+            if not password:
+                errors[field] = _('Please enter the password.')
         # no validation on the roles, an empty list is accepted.
         return errors
 
