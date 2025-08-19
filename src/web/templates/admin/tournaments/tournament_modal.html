@@ -107,6 +107,24 @@
                     </div>
                 </div>
 
+                <h4>
+                    {{ _('Estimated ratings') }}
+                </h4>
+
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.select_input(
+                            name='override_unrated_rapide_blitz',
+                            label=_('Seeding of unrated rapid/blitz'),
+                            help_text=_(
+                                'Handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. You may also choose to use this rating for seeding and pairings.',
+                            ),
+                            select_options=override_unrated_rapide_blitz_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+
                 {% for form_fields_template in plugin_form_fields_templates %}
                     {% include form_fields_template %}
                 {% endfor %}

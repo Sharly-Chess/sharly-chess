@@ -95,7 +95,7 @@ class BaseAdminController(BaseController):
     def _get_federation_options(default_federation: str | None):
         if default_federation:
             return {
-                default_federation: _('By default - {option}').format(
+                default_federation: _("Use Event's default - {option}").format(
                     option=f'{default_federation} - {SharlyChessConfig.federations[default_federation]}'
                 ),
             } | {
@@ -122,7 +122,9 @@ class BaseAdminController(BaseController):
             ).format(num=i)
             for i in range(1, 4)
         }
-        options[''] = _('By default - {option}').format(option=options[str(default)])
+        options[''] = _("Use Event's default - {option}").format(
+            option=options[str(default)]
+        )
         return options
 
     @staticmethod
@@ -142,7 +144,9 @@ class BaseAdminController(BaseController):
         default_option: str = WebContext.value_to_form_data(
             SharlyChessConfig.default_paired_bye_result.value
         )
-        options[''] = _('By default - {option}').format(option=options[default_option])
+        options[''] = _("Use Event's default - {option}").format(
+            option=options[default_option]
+        )
         return options
 
     @staticmethod
@@ -197,7 +201,7 @@ class BaseAdminController(BaseController):
             'on': _('Display the exit button'),
             'off': _('Hide the exit button'),
         }
-        options[''] = _('By default - {option}').format(
+        options[''] = _("Use Event's default - {option}").format(
             option=options[
                 'on' if SharlyChessConfig.default_input_exit_button else 'off'
             ]
@@ -211,7 +215,7 @@ class BaseAdminController(BaseController):
             'off': _('Display only paired players'),
             'on': _('Display all the players, paired and unpaired'),
         }
-        options[''] = _('By default - {option}').format(
+        options[''] = _("Use Event's default - {option}").format(
             option=options[
                 'on' if SharlyChessConfig.default_players_show_unpaired else 'off'
             ]
@@ -225,7 +229,7 @@ class BaseAdminController(BaseController):
             'off': _('Display only color and board number'),
             'on': _('Display color, board number and opponent'),
         }
-        options[''] = _('By default - {option}').format(
+        options[''] = _("Use Event's default - {option}").format(
             option=options[
                 'on' if SharlyChessConfig.default_players_show_opponent else 'off'
             ]
@@ -436,6 +440,9 @@ class BaseAdminController(BaseController):
                     'Invalid color [{color}] ([#RRGGBB] expected).'
                 ).format(color={data[field]})
         prize_currency = WebContext.form_data_to_str(data, 'prize_currency')
+        override_unrated_rapide_blitz = WebContext.form_data_to_bool(
+            data, 'override_unrated_rapide_blitz'
+        )
 
         # Have plugins validate their fields and return private plugin data
         per_plugin_tournament_data = (
@@ -470,6 +477,7 @@ class BaseAdminController(BaseController):
             message_color=message_color,
             message_background_color=message_background_color,
             prize_currency=prize_currency,
+            override_unrated_rapide_blitz=override_unrated_rapide_blitz,
             errors=errors,
             # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
             timer_colors={
@@ -623,10 +631,14 @@ class BaseAdminController(BaseController):
                 message_color = admin_event.message_color
                 message_background_color = admin_event.message_background_color
                 prize_currency = stored_event.prize_currency
+                override_unrated_rapide_blitz = (
+                    stored_event.override_unrated_rapide_blitz
+                )
             case 'create':
                 public = False
                 federation = SharlyChessConfig().federation.name
                 hide_background_image = SharlyChessConfig.default_hide_background_image
+                override_unrated_rapide_blitz = True
             case _:
                 raise ValueError(f'action=[{action}]')
 
@@ -668,4 +680,7 @@ class BaseAdminController(BaseController):
                 message_background_color
             ),
             'prize_currency': WebContext.value_to_form_data(prize_currency),
+            'override_unrated_rapide_blitz': WebContext.value_to_form_data(
+                override_unrated_rapide_blitz
+            ),
         } | plugin_form_data

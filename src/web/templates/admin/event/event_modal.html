@@ -99,6 +99,19 @@
                 {% endfor %}
 
                 <h4>
+                    {{ _('Estimated ratings') }}
+                </h4>
+                <div class="row">
+                    {{ admin_macros.switch_input(
+                        name='override_unrated_rapide_blitz',
+                        label='',
+                        placeholder=_('If no rapid/blitz rating exists, fall back to the standard rating'),
+                        help_text=_('Default handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. If checked, this rating will also be used for seeding and pairings. If unchecked, they will be treated as unrated and require an estimated rating.'),
+                        data=data, errors=errors
+                    ) }}
+                </div>
+
+                <h4>
                     {{ _('Results entry') }}
                 </h4>
                 <div class="row">
