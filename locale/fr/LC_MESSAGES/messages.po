@@ -1083,6 +1083,9 @@ msgstr "En cours ({num})"
 msgid "Current events ({num})"
 msgstr "Évènements en cours ({num})"
 
+msgid "Current pairings differ from the expected Swiss pairings, possibly due to manual changes, complementary pairings, or renumbering after rating/late-entry adjustments."
+msgstr "Les appariements diffèrent de ceux attendus, suite à des modifications manuelles, des appariements complémentaires ou une renumérotation."
+
 msgid "Current round"
 msgstr "Ronde en cours"
 
@@ -5574,4 +5577,3 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
-

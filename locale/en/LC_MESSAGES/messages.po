@@ -1083,6 +1083,9 @@ msgstr ""
 msgid "Current events ({num})"
 msgstr ""
 
+msgid "Current pairings differ from the expected Swiss pairings, possibly due to manual changes, complementary pairings, or renumbering after rating/late-entry adjustments."
+msgstr ""
+
 msgid "Current round"
 msgstr ""
 
