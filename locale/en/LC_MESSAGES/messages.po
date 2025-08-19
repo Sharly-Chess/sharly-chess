@@ -53,6 +53,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d family"
+msgid_plural "%(num)d families"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(num)d player"
 msgid_plural "%(num)d players"
 msgstr[0] ""
@@ -65,8 +71,20 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d prize group"
+msgid_plural "%(num)d prize groups"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(num)d prize successfully created!"
 msgid_plural "%(num)d prizes successfully created!"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)d screen"
+msgid_plural "%(num)d screens"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -401,6 +419,9 @@ msgid "All Events"
 msgstr ""
 
 msgid "All the candidate ports [{ports}] are already in use, can not start Sharly Chess server."
+msgstr ""
+
+msgid "All the dependant objects will also be deleted:"
 msgstr ""
 
 msgid "All the players"
@@ -1897,9 +1918,6 @@ msgstr ""
 msgid "End:"
 msgstr ""
 
-msgid "Enter here the tournament ID"
-msgstr ""
-
 msgid "Enter results"
 msgstr ""
 
@@ -1907,9 +1925,6 @@ msgid "Enter the password associated with the username."
 msgstr ""
 
 msgid "Enter the result"
-msgstr ""
-
-msgid "Enter the tournament ID to confirm its deletion:"
 msgstr ""
 
 msgid "Error message"
@@ -2405,6 +2420,9 @@ msgid "How to split the results."
 msgstr ""
 
 msgid "I confirm that I want to archive this event."
+msgstr ""
+
+msgid "I confirm that I want to delete this tournament."
 msgstr ""
 
 msgid "I would like the following custom files to be added to a future release of Sharly Chess:"
@@ -4654,12 +4672,6 @@ msgstr ""
 msgid "The following players did not check-in:"
 msgstr ""
 
-msgid "The following screen families will also be deleted:"
-msgstr ""
-
-msgid "The following screens will also be deleted:"
-msgstr ""
-
 msgid "The greater number of wins"
 msgstr ""
 
@@ -6093,9 +6105,6 @@ msgid "timer"
 msgstr ""
 
 msgid "tournament"
-msgstr ""
-
-msgid "tournament ID does not match."
 msgstr ""
 
 msgid "unknown"

@@ -53,6 +53,12 @@ msgstr[0] "%(num)d critère"
 msgstr[1] "%(num)d critères"
 
 #, python-format
+msgid "%(num)d family"
+msgid_plural "%(num)d families"
+msgstr[0] "%(num)d famille"
+msgstr[1] "%(num)d familles"
+
+#, python-format
 msgid "%(num)d player"
 msgid_plural "%(num)d players"
 msgstr[0] "%(num)d joueur·euse"
@@ -65,10 +71,22 @@ msgstr[0] "%(num)d prix"
 msgstr[1] "%(num)d prix"
 
 #, python-format
+msgid "%(num)d prize group"
+msgid_plural "%(num)d prize groups"
+msgstr[0] "%(num)d groupe de prix"
+msgstr[1] "%(num)d groupes de prix"
+
+#, python-format
 msgid "%(num)d prize successfully created!"
 msgid_plural "%(num)d prizes successfully created!"
 msgstr[0] "%(num)d prix créé avec succès !"
 msgstr[1] "%(num)d prix créés avec succès !"
+
+#, python-format
+msgid "%(num)d screen"
+msgid_plural "%(num)d screens"
+msgstr[0] "%(num)d écran"
+msgstr[1] "%(num)d écrans"
 
 #, python-format
 msgid "%(player)s - Round %(num)s"
@@ -402,6 +420,9 @@ msgstr "Évènements"
 
 msgid "All the candidate ports [{ports}] are already in use, can not start Sharly Chess server."
 msgstr "Tous les ports candidats [{ports}] sont déjà utilisés, impossible de démarrer le serveur web."
+
+msgid "All the dependant objects will also be deleted:"
+msgstr "Tous les objets dépendants seront également supprimés :"
 
 msgid "All the players"
 msgstr "Tou·tes les joueur·euses"
@@ -1897,9 +1918,6 @@ msgstr "L'horaire de fin doit être après l'horaire de début."
 msgid "End:"
 msgstr "Fin :"
 
-msgid "Enter here the tournament ID"
-msgstr "Entrez ici l'identifiant du tournoi"
-
 msgid "Enter results"
 msgstr "Entrer des résultats"
 
@@ -1908,9 +1926,6 @@ msgstr "Entrez le mot de passe associé à l'identifiant."
 
 msgid "Enter the result"
 msgstr "Saisir le résultat"
-
-msgid "Enter the tournament ID to confirm its deletion:"
-msgstr "Entrez l'identifiant du tournoi pour confirmer sa suppression :"
 
 msgid "Error message"
 msgstr "Message d'erreur"
@@ -2406,6 +2421,9 @@ msgstr "Comment regrouper les résultats."
 
 msgid "I confirm that I want to archive this event."
 msgstr "Je confirme vouloir archiver cet évènement."
+
+msgid "I confirm that I want to delete this tournament."
+msgstr "Je confirme vouloir supprimer ce tournoi."
 
 msgid "I would like the following custom files to be added to a future release of Sharly Chess:"
 msgstr "J'aimerais que les fichiers de personnalisation suivants soient ajoutés dans une future version de Sharly Chess :"
@@ -4654,12 +4672,6 @@ msgstr "Les catégories suivantes vont aussi être supprimées :"
 msgid "The following players did not check-in:"
 msgstr "Les joueur·euses suivant·es n'ont pas pointé :"
 
-msgid "The following screen families will also be deleted:"
-msgstr "Les familles d'écrans suivantes vont également être supprimées :"
-
-msgid "The following screens will also be deleted:"
-msgstr "Les écrans suivants vont également être supprimés :"
-
 msgid "The greater number of wins"
 msgstr "Le plus grand nombre de victoires"
 
@@ -6094,9 +6106,6 @@ msgstr "chrono"
 
 msgid "tournament"
 msgstr "tournoi"
-
-msgid "tournament ID does not match."
-msgstr "L'identifiant du tournoi ne correspond pas."
 
 msgid "unknown"
 msgstr "inconnu"

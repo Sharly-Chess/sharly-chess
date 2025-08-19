@@ -299,7 +299,6 @@ class EventAdminController(BaseEventAdminController):
     @get(
         path='/admin/event-delete-modal/{event_uniq_id:str}',
         name='admin-event-delete-modal',
-        cache=1,
     )
     async def htmx_admin_event_delete_modal(
         self,

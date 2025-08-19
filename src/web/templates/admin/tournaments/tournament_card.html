@@ -40,7 +40,6 @@
 {% endblock %}
 
 {% block card_text %}
-
     {% for block in tournament_card_blocks %}
         {% include block %}
     {% endfor %}
@@ -259,7 +258,7 @@
     >
         <button
             class="btn btn-sm {% if client.can_delete_tournaments %}btn-outline-danger{% else %}btn-outline-primary{% endif %} text-nowrap"
-            hx-get="{{ url_for('admin-tournament-modal', action='delete', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+            hx-get="{{ url_for('admin-tournament-delete-modal', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
             hx-target="body"
             hx-indicator="#please-wait"
             preload

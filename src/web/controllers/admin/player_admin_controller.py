@@ -1051,7 +1051,7 @@ class PlayerAdminController(BaseEventAdminController):
         data_source_id: str,
         player_source_id: str,
         tournament_id: str | None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         try:
             data_source = DataSourceManager.get_object(data_source_id)
         except KeyError:

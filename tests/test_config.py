@@ -272,11 +272,9 @@ class TestUtils:
         event_uniq_id: str,
         stored_tournament: StoredTournament,
     ):
-        form_data = cls.prepare_form_data({'uniq_id': stored_tournament.uniq_id})
-        res = api_request_context.post(
+        res = api_request_context.delete(
             f'/admin/tournament-delete/{event_uniq_id}/{stored_tournament.id}',
             headers={'Content-Type': 'application/x-www-form-urlencoded'},
-            data=form_data,
         )
         cls.check_api_response(res)
 
