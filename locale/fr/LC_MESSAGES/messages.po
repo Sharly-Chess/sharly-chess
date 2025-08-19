@@ -5622,3 +5622,7 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
+msgid "{tie_break} (Papi compatible)"
+msgstr "{tie_break} (compatible Papi)"
+
