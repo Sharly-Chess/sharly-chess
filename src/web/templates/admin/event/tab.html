@@ -62,6 +62,34 @@
             <tbody>
                 {% if client.can_view_event_complete_config %}
                     <tr>
+                        <th scope="row" class="text-nowrap">{{ _('Execution') }}</th>
+                        <td>
+                            <span
+                                {{ macros.tooltip_attributes(
+                                    'info',
+                                    _('You decide which devices and which accounts are allowed to display screens, check-in players, enter results, pair rounds… Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers…')
+                                    if admin_event.custom_exec_mode else
+                                    _('Other devices connected to your network can see your public screens. If you have created screens for player check-in and results entry then those features will be enabled.'),
+                                    'top'
+                                ) }}
+                            >
+                                {{
+                                    _('Custom')
+                                    if admin_event.custom_exec_mode else
+                                    _('Standard')
+                                }}
+                                <br/>
+                                <span style="font-size: 0.8rem">
+                                    {{
+                                        _('Use customized permissions')
+                                        if admin_event.custom_exec_mode else
+                                        _('Use connected devices to check-in players and enter results on public screens')
+                                    }}
+                                </span>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
                         <th scope="row" class="text-nowrap">
                             {{ _('Unique ID') }}
                             <i
