@@ -320,8 +320,8 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def get_extra_tie_break_classes(self) -> list[type['TieBreak']]:
-        """Provide extra tournament tie breaks"""
+    def insert_tie_break_types(self, tie_break_types: list[type['TieBreak']]):
+        """Provide extra tournament tie breaks."""
 
     # ---------------------------------------------------------------------------------
     # Pairings

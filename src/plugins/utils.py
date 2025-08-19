@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
 from types import ModuleType
-from typing import TYPE_CHECKING, Any, NamedTuple, Protocol, Self
+from typing import TYPE_CHECKING, Any, NamedTuple, Protocol, Self, Collection
 
 from packaging.version import Version
 
@@ -236,6 +236,14 @@ class PluginCoreMapper[PluginType: Hashable, CoreType: SupportsEquals](ABC):
             ),
             None,
         )
+
+    @classmethod
+    def core_objects(cls) -> Collection[CoreType]:
+        return cls._core_object_by_plugin_value().values()
+
+    @classmethod
+    def plugin_values(cls) -> Collection[PluginType]:
+        return cls._core_object_by_plugin_value().keys()
 
 
 @dataclass

@@ -33,7 +33,7 @@ from plugins.ffe.papi_mappers import (
     PapiPairingVariation,
     PapiPlayerCategory,
     PapiTournamentRating,
-    PapiTieBreakMapper,
+    PapiTieBreak,
     PapiThreePointsForAWin,
     PapiPlayerGender,
     PapiPlayerRatingType,
@@ -407,7 +407,7 @@ class PapiConverter:
                 continue
             try:
                 tie_breaks.append(
-                    PapiTieBreakMapper.get_core_object(papi_tie_break).to_dict()
+                    PapiTieBreak.get_core_object(papi_tie_break).to_dict()
                 )
             except KeyError:
                 raise_unknown_value(f'tiebreak{index + 1}', papi_tie_break)
@@ -611,6 +611,20 @@ class PapiConverter:
             )
         return stored_pairing, stored_board
 
+    @classmethod
+    def papi_export_unavailable_message(cls, tournament: Tournament) -> str | None:
+        """Return a message if the export to Papi is unavailable, None otherwise."""
+        if tournament.pairing_variation not in PapiPairingVariation.core_objects():
+            return _(
+                'The [{pairing_system}] pairing system is not compatible with the Papi export.'
+            ).format(pairing_system=tournament.pairing_variation.name)
+        for tie_break in tournament.tie_breaks:
+            if tie_break not in PapiTieBreak.core_objects():
+                return _(
+                    'The [{tie_break}] tie break is not compatible with the Papi export.'
+                ).format(tie_break=tie_break.name)
+        return None
+
     def write_papi_file(
         self,
         tournament: Tournament,
@@ -689,13 +703,13 @@ class PapiConverter:
             endDate=self._format_date_for_papi(tournament.stop_timestamp)
             if tournament.stop_timestamp
             else None,
-            tiebreak1=PapiTieBreakMapper.get_plugin_value(tournament.tie_breaks[0])
+            tiebreak1=PapiTieBreak.get_plugin_value(tournament.tie_breaks[0])
             if tournament.tie_breaks and tournament.tie_breaks[0]
             else None,
-            tiebreak2=PapiTieBreakMapper.get_plugin_value(tournament.tie_breaks[1])
+            tiebreak2=PapiTieBreak.get_plugin_value(tournament.tie_breaks[1])
             if len(tournament.tie_breaks) > 1 and tournament.tie_breaks[1]
             else None,
-            tiebreak3=PapiTieBreakMapper.get_plugin_value(tournament.tie_breaks[2])
+            tiebreak3=PapiTieBreak.get_plugin_value(tournament.tie_breaks[2])
             if len(tournament.tie_breaks) > 2 and tournament.tie_breaks[2]
             else None,
             pointSystem=PapiThreePointsForAWin.get_plugin_value(

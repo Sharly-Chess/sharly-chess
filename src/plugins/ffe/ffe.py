@@ -23,6 +23,7 @@ from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.prize.player_filter_options import PlayerFilterOption, ClubsFilterOption
 from data.prize.player_filters import PlayerFilter, ClubPlayerFilter
 from data.tie_breaks import TieBreak
+from data.tie_breaks.tie_breaks import ProgressiveScoresTieBreak
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
@@ -846,15 +847,27 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def get_extra_tie_break_classes(self) -> list[type[TieBreak]]:
-        return [
+    def insert_tie_break_types(self, tie_break_types: list[type[TieBreak]]):
+        # Reproduce the order of Papi
+        progressive_type: type[TieBreak] = ProgressiveScoresTieBreak
+        start_types: list[type[TieBreak]] = [
             ffe_tie_breaks.PapiStandardBuchholzTieBreak,
             ffe_tie_breaks.PapiBuchholzCutBottomTieBreak,
             ffe_tie_breaks.PapiMedianBuchholzTieBreak,
+        ]
+        for tie_break_type in start_types:
+            PluginUtils.insert_on_equals(
+                tie_break_types, tie_break_type, progressive_type, after=False
+            )
+        middle_types: list[type[TieBreak]] = [
             ffe_tie_breaks.PapiPerformanceTieBreak,
             ffe_tie_breaks.PapiSumOfBuchholzTieBreak,
             ffe_tie_breaks.PapiKashdanTieBreak,
         ]
+        for tie_break_type in middle_types:
+            PluginUtils.insert_on_equals(
+                tie_break_types, tie_break_type, progressive_type
+            )
 
     # ---------------------------------------------------------------------------------
     # Pairings

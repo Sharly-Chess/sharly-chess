@@ -32,7 +32,7 @@ from data.pairings.systems import SwissPairingSystem
 from data.player import Player
 from data.print_documents import PrintDocumentManager
 from data.print_documents.options import PrintOption
-from data.tie_breaks import TieBreak, TieBreakManager, PapiTieBreakManager
+from data.tie_breaks import TieBreak, TieBreakManager
 from data.tournament import Tournament
 from utils.enum import TournamentRating
 from database.sqlite.event.event_database import EventDatabase
@@ -572,8 +572,7 @@ class TournamentAdminController(BaseEventAdminController):
                         admin_event.record_illegal_moves
                     ),
                     'paired_bye_result_options': cls._get_paired_bye_result_options(),
-                    'tie_break_options': {'': _('None')}
-                    | PapiTieBreakManager.options(),
+                    'tie_break_options': {'': _('None')} | TieBreakManager.options(),
                     'rating_options': cls._get_rating_options(),
                     'override_unrated_rapid_blitz_options': override_unrated_rapid_blitz_options,
                     'pairing_systems': pairing_systems,
