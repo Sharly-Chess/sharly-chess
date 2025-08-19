@@ -18,9 +18,9 @@ class TournamentImporter(IdentifiableEntity, ABC):
         return True
 
     @property
-    def modal_title(self) -> str | None:
+    @abstractmethod
+    def modal_title(self) -> str:
         """The title to display in the import modal."""
-        return None
 
     @property
     @abstractmethod
