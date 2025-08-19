@@ -4352,7 +4352,7 @@ msgid "The Unique ID, used to reference the tournament."
 msgstr "L'identifiant unique, utilisé pour référencer le tournoi."
 
 msgid "The [{pairing_system}] pairing system is not compatible with the Papi export."
-msgstr "Le système d'appariements [{pairing_system]] n'est pas compatible avec l'export Papi."
+msgstr "Le système d'appariements [{pairing_system}] n'est pas compatible avec l'export Papi."
 
 msgid "The [{tie_break}] tie break is not compatible with the Papi export."
 msgstr "Le départage [{tie_break}] n'est pas compatible avec l'export Papi."
