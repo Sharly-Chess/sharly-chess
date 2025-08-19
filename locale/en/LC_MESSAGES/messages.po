@@ -213,6 +213,9 @@ msgstr ""
 msgid "A value is expected."
 msgstr ""
 
+msgid "ADM"
+msgstr ""
+
 msgid "Absent"
 msgstr ""
 
@@ -229,6 +232,9 @@ msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
 msgstr ""
 
 msgid "Access"
+msgstr ""
+
+msgid "Access control"
 msgstr ""
 
 msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
@@ -355,10 +361,19 @@ msgstr ""
 msgid "Add an account to the event."
 msgstr ""
 
+msgid "Add events"
+msgstr ""
+
 msgid "Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!"
 msgstr ""
 
 msgid "Add player"
+msgstr ""
+
+msgid "Add players"
+msgstr ""
+
+msgid "Add tournaments"
 msgstr ""
 
 msgid "Adding devices allows you to grant permissions to people on other clients,"
@@ -446,6 +461,9 @@ msgid "Any number of devices can be controlled by the same display controller."
 msgstr ""
 
 msgid "Application"
+msgstr ""
+
+msgid "Application management"
 msgstr ""
 
 msgid "Archive"
@@ -733,6 +751,12 @@ msgstr "Byes (%(byes)d)"
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr "C"
 
+msgid "CA"
+msgstr ""
+
+msgid "CHE"
+msgstr ""
+
 msgid "CHECK-IN"
 msgstr ""
 
@@ -811,6 +835,9 @@ msgid "Check-in is closed for tournament [{tournament_uniq_id}]."
 msgstr ""
 
 msgid "Check-in is open for tournament [{tournament_uniq_id}]."
+msgstr ""
+
+msgid "Check-in players"
 msgstr ""
 
 msgid "Check-in via input Screens"
@@ -1174,10 +1201,16 @@ msgstr ""
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr ""
 
+msgid "Custom"
+msgstr ""
+
 msgid "Customization"
 msgstr ""
 
 msgid "Customize the permissions"
+msgstr ""
+
+msgid "DCA"
 msgstr ""
 
 msgid "DOUBLE"
@@ -1269,6 +1302,12 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
+msgid "Delete events"
+msgstr ""
+
+msgid "Delete players"
+msgstr ""
+
 msgid "Delete the account."
 msgstr ""
 
@@ -1291,6 +1330,9 @@ msgid "Delete the timer."
 msgstr ""
 
 msgid "Delete the tournament."
+msgstr ""
+
+msgid "Delete tournaments"
 msgstr ""
 
 msgid "Deletes all the criteria of this category."
@@ -1492,6 +1534,9 @@ msgid "Download the players."
 msgstr ""
 
 msgid "Download the vCards of the selected players (VCF format). Warning: players without phone or email won't be included."
+msgstr ""
+
+msgid "Download tournament fees"
 msgstr ""
 
 msgid "Downloading source file…"
@@ -1855,6 +1900,9 @@ msgstr ""
 msgid "Enter here the tournament ID"
 msgstr ""
 
+msgid "Enter results"
+msgstr ""
+
 msgid "Enter the password associated with the username."
 msgstr ""
 
@@ -1907,6 +1955,9 @@ msgid "Events"
 msgstr ""
 
 msgid "Events ({num})"
+msgstr ""
+
+msgid "Events management"
 msgstr ""
 
 msgid "Execution"
@@ -2708,6 +2759,21 @@ msgstr ""
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Male"
 
+msgid "Manage accounts"
+msgstr ""
+
+msgid "Manage devices"
+msgstr ""
+
+msgid "Manage prizes"
+msgstr ""
+
+msgid "Manage screens"
+msgstr ""
+
+msgid "Manage source databases"
+msgstr ""
+
 msgid "Manage the prize groups of the tournament."
 msgstr ""
 
@@ -2715,6 +2781,9 @@ msgid "Mandatory for the first hour, optional for next hours."
 msgstr ""
 
 msgid "Manual"
+msgstr ""
+
+msgid "Manually pair players"
 msgstr ""
 
 msgid "Mark this round as over and define the next one as the current round."
@@ -3121,6 +3190,9 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
+msgid "ORG"
+msgstr ""
+
 msgid "Off"
 msgstr ""
 
@@ -3188,6 +3260,9 @@ msgstr ""
 msgid "Open check-in for tournament [%(tournament_uniq_id)s]."
 msgstr ""
 
+msgid "Open/close check-in"
+msgstr ""
+
 msgid "Open/close check-in."
 msgstr ""
 
@@ -3210,6 +3285,9 @@ msgid "Organization"
 msgstr ""
 
 msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
+msgstr ""
+
+msgid "Other devices connected to your network can see your public screens. If you have created screens for player check-in and results entry then those features will be enabled."
 msgstr ""
 
 msgid "Other players in this score group are not included since the share would be less than the threshold."
@@ -3246,6 +3324,9 @@ msgid "Owed:"
 msgstr ""
 
 msgid "PAB is already assigned"
+msgstr ""
+
+msgid "PAI"
 msgstr ""
 
 msgid "PERMUTE WHITE/BLACK"
@@ -3390,6 +3471,9 @@ msgid "Permissions"
 msgstr ""
 
 msgid "Permissions can not be customized in the current execution mode."
+msgstr ""
+
+msgid "Permute boards"
 msgstr ""
 
 msgid "Personal"
@@ -3781,6 +3865,18 @@ msgstr ""
 msgid "Public screen"
 msgstr ""
 
+msgid "Publish pairings"
+msgstr ""
+
+msgid "Publish rankings"
+msgstr ""
+
+msgid "Publish tournament results"
+msgstr ""
+
+msgid "Publish tournament rules"
+msgstr ""
+
 msgid "Q *** THE LETTER TO ANSWER QUIT"
 msgstr "Q"
 
@@ -3793,6 +3889,9 @@ msgstr "R %(round)d"
 
 msgid "R *** THE LETTER TO ANSWER REPLACE"
 msgstr "R"
+
+msgid "RES"
+msgstr ""
 
 msgid "Random"
 msgstr ""
@@ -3843,6 +3942,9 @@ msgid "Ranking screen family creation"
 msgstr ""
 
 msgid "Ranking screens show the players by rank."
+msgstr ""
+
+msgid "Rankings"
 msgstr ""
 
 msgid "Rapid"
@@ -3914,6 +4016,9 @@ msgid "Remove the player from the event."
 msgstr ""
 
 msgid "Remove the screen from the display controller."
+msgstr ""
+
+msgid "Rename events"
 msgstr ""
 
 msgid "Renaming the database failed: {ex}."
@@ -4112,6 +4217,15 @@ msgstr "S-Berger"
 msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
 msgstr "SBh"
 
+msgid "SCR"
+msgstr ""
+
+msgid "SEC"
+msgstr ""
+
+msgid "SPE"
+msgstr ""
+
 msgid "Save"
 msgstr ""
 
@@ -4198,6 +4312,24 @@ msgstr ""
 
 #, python-format
 msgid "Selection: %(selection)s"
+msgstr ""
+
+msgid "Set Full-Points Byes"
+msgstr ""
+
+msgid "Set Half-Points Byes"
+msgstr ""
+
+msgid "Set Zero-Points Byes"
+msgstr ""
+
+msgid "Set illegal moves"
+msgstr ""
+
+msgid "Set special results"
+msgstr ""
+
+msgid "Set the current round"
 msgstr ""
 
 msgid "Set the recommended tie-breaks"
@@ -5135,6 +5267,9 @@ msgstr ""
 msgid "Tournaments displayed:"
 msgstr ""
 
+msgid "Tournaments management"
+msgstr ""
+
 #, python-format
 msgid "Tournaments: %(num)d"
 msgstr ""
@@ -5276,6 +5411,9 @@ msgstr ""
 msgid "Unpair all the rounds of the tournament."
 msgstr ""
 
+msgid "Unpair one board"
+msgstr ""
+
 msgid "Unpair tournament"
 msgstr ""
 
@@ -5310,6 +5448,9 @@ msgstr ""
 msgid "Unrated Win"
 msgstr ""
 
+msgid "Upair all the boards of a round"
+msgstr ""
+
 msgid "Upcoming ({num})"
 msgstr ""
 
@@ -5319,10 +5460,25 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
+msgid "Update application settings"
+msgstr ""
+
+msgid "Update events"
+msgstr ""
+
 msgid "Update players"
 msgstr ""
 
+msgid "Update players' history"
+msgstr ""
+
+msgid "Update results"
+msgstr ""
+
 msgid "Update the players' information from an external data source."
+msgstr ""
+
+msgid "Update tournaments"
 msgstr ""
 
 msgid "Updating"
@@ -5364,10 +5520,19 @@ msgstr ""
 msgid "Upper rating limit"
 msgstr ""
 
+msgid "Use connected devices to check-in players and enter results on public screens"
+msgstr ""
+
+msgid "Use customized permissions"
+msgstr ""
+
 msgid "Use log-level specific colors"
 msgstr ""
 
 msgid "Use no timer"
+msgstr ""
+
+msgid "Use pairing engines"
 msgstr ""
 
 msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system."
@@ -5392,6 +5557,48 @@ msgid "Values"
 msgstr ""
 
 msgid "Variation"
+msgstr ""
+
+msgid "View Pairings tab"
+msgstr ""
+
+msgid "View Players tab"
+msgstr ""
+
+msgid "View Prizes tab"
+msgstr ""
+
+msgid "View application settings"
+msgstr ""
+
+msgid "View basic event configuration"
+msgstr ""
+
+msgid "View complete event configuration"
+msgstr ""
+
+msgid "View draft pairings"
+msgstr ""
+
+msgid "View draft rankings"
+msgstr ""
+
+msgid "View event cards details"
+msgstr ""
+
+msgid "View passed and upcoming events"
+msgstr ""
+
+msgid "View private events"
+msgstr ""
+
+msgid "View private screens"
+msgstr ""
+
+msgid "View public screens"
+msgstr ""
+
+msgid "View the Tournaments tab"
 msgstr ""
 
 msgid "View the files on filebin.net"
@@ -5676,6 +5883,9 @@ msgid "You can temporarily invalidate accounts by turning this switch off."
 msgstr ""
 
 msgid "You can temporarily invalidate devices by turning this switch off."
+msgstr ""
+
+msgid "You decide which devices and which accounts are allowed to display screens, check-in players, enter results, pair rounds… Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers…"
 msgstr ""
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
