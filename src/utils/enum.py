@@ -1,7 +1,8 @@
 """A file grouping all the "utility" classes/enum"""
 
 from datetime import date, datetime, timedelta
-from enum import Enum, StrEnum, IntEnum
+from enum import Enum, StrEnum, IntEnum, auto
+from math import ceil
 from typing import Self
 
 from common.i18n import _
@@ -829,6 +830,132 @@ class PlayerTitle(IntEnum):
 
     def __str__(self) -> str:
         return self.short_name
+
+
+class NormFailExplanation(Enum):
+    WrongGender = auto()
+    NotEnoughGames = auto()
+    NotEnoughFederations = auto()
+    TooManyOwnFederation = auto()
+    TooManyOneFederation = auto()
+    NotEnoughTitleHolders = auto()
+    NotEnoughRequiredTitles = auto()
+    ScoreTooLow = auto()
+    AverageTooLow = auto()
+    PerformanceTooLow = auto()
+
+
+class TitleNorm(Enum):
+    WIM = auto()
+    WGM = auto()
+    IM = auto()
+    GM = auto()
+
+    def satisfies_gender_requirement(self, gender: PlayerGender) -> bool:
+        match self:
+            case TitleNorm.WIM | TitleNorm.WGM:
+                return gender == PlayerGender.FEMALE
+            case _:
+                return True
+
+    @property
+    def minimum_rating(self) -> int:
+        match self:
+            case TitleNorm.WIM:
+                return 1850
+            case TitleNorm.WGM:
+                return 2000
+            case TitleNorm.IM:
+                return 2050
+            case TitleNorm.GM:
+                return 2200
+            case _:
+                raise ValueError(f'Invalid title norm value: {self}')
+
+    @property
+    def minimum_average(self) -> int:
+        match self:
+            case TitleNorm.WIM:
+                return 2030
+            case TitleNorm.WGM:
+                return 2180
+            case TitleNorm.IM:
+                return 2230
+            case TitleNorm.GM:
+                return 2380
+            case _:
+                raise ValueError(f'Invalid title norm value: {self}')
+
+    @property
+    def minimum_performance(self) -> float:
+        match self:
+            case TitleNorm.WIM:
+                return 2249.5
+            case TitleNorm.WGM:
+                return 2399.5
+            case TitleNorm.IM:
+                return 2449.5
+            case TitleNorm.GM:
+                return 2599.5
+            case _:
+                raise ValueError(f'Invalid title norm value: {self}')
+
+    @property
+    def minimum_rounds() -> int:
+        return 9
+
+    def minimum_score(
+        rounds: int, point_values: dict[Result, float] | None = None
+    ) -> float:
+        return Result.GAIN.points(point_values) * 0.35
+
+    def minimum_title_holders(rounds: int) -> int:
+        return ceil(rounds / 2)
+
+    def minimum_required_titles(rounds: int) -> int:
+        # FIXME(Amaras): Double Round-Robin requirements is 1/2 (rounded up)
+        return max(ceil(rounds / 3), 3)
+
+    def maximum_of_own_federation(rounds: int) -> int:
+        return (3 * rounds) // 5
+
+    def maximum_of_one_federation(rounds: int) -> int:
+        return (2 * rounds) // 3
+
+    @property
+    def title_holders(self) -> tuple[PlayerTitle, ...]:
+        return (
+            PlayerTitle.WOMAN_FIDE_MASTER,
+            PlayerTitle.FIDE_MASTER,
+            PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+            PlayerTitle.INTERNATIONAL_MASTER,
+            PlayerTitle.WOMAN_GRANDMASTER,
+            PlayerTitle.GRANDMASTER,
+        )
+
+    @property
+    def required_titles(self) -> tuple[PlayerTitle, ...]:
+        match self:
+            case TitleNorm.WIM:
+                return (
+                    PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+                    PlayerTitle.WOMAN_GRANDMASTER,
+                    PlayerTitle.INTERNATIONAL_MASTER,
+                    PlayerTitle.GRANDMASTER,
+                )
+            case TitleNorm.WGM:
+                return (
+                    PlayerTitle.WOMAN_GRANDMASTER,
+                    PlayerTitle.INTERNATIONAL_MASTER,
+                    PlayerTitle.GRANDMASTER,
+                )
+            case TitleNorm.IM:
+                return (
+                    PlayerTitle.INTERNATIONAL_MASTER,
+                    PlayerTitle.GRANDMASTER,
+                )
+            case TitleNorm.GM:
+                return (PlayerTitle.GRANDMASTER,)
 
 
 class BoardColor(StrEnum):
