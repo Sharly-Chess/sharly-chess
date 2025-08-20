@@ -353,7 +353,7 @@ class Player:
         return str(self._tournament_rating)
 
     def rating_is_overridden(self, tournament_rating: TournamentRating) -> bool:
-        if not self.tournament.override_unrated_rapide_blitz:
+        if not self.tournament.override_unrated_rapid_blitz:
             return False
 
         rating = self.ratings.get(tournament_rating, None)

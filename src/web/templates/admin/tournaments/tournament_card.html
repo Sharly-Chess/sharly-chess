@@ -56,8 +56,8 @@
             {{ tournament.rating }}
         </div>
         {% if tournament.rating != 1 %}
-            <div class="text-start {% if tournament.override_unrated_rapide_blitz %}text-secondary{% endif %}">
-                {% if tournament.override_unrated_rapide_blitz %}
+            <div class="text-start {% if tournament.override_unrated_rapid_blitz %}text-secondary{% endif %}">
+                {% if tournament.override_unrated_rapid_blitz %}
                     {{ _('Fallback to standard rating for unrated players') }}
                 {% else %}
                     {{ _('Use estimated rating for unrated players') }}

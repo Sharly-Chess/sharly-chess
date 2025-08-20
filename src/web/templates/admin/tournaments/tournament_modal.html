@@ -114,12 +114,12 @@
                 <div class="row estimated-ratings">
                     <div class="col-12 col-md-6 mb-3">
                         {{ admin_macros.select_input(
-                            name='override_unrated_rapide_blitz',
+                            name='override_unrated_rapid_blitz',
                             label=_('Seeding of unrated rapid/blitz'),
                             help_text=_(
                                 'Handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. You may also choose to use this rating for seeding and pairings.',
                             ),
-                            select_options=override_unrated_rapide_blitz_options,
+                            select_options=override_unrated_rapid_blitz_options,
                             data=data, errors=errors
                         ) }}
                     </div>

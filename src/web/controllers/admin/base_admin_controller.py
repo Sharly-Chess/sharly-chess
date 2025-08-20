@@ -440,8 +440,8 @@ class BaseAdminController(BaseController):
                     'Invalid color [{color}] ([#RRGGBB] expected).'
                 ).format(color={data[field]})
         prize_currency = WebContext.form_data_to_str(data, 'prize_currency')
-        override_unrated_rapide_blitz = WebContext.form_data_to_bool(
-            data, 'override_unrated_rapide_blitz'
+        override_unrated_rapid_blitz = WebContext.form_data_to_bool(
+            data, 'override_unrated_rapid_blitz'
         )
 
         # Have plugins validate their fields and return private plugin data
@@ -477,7 +477,7 @@ class BaseAdminController(BaseController):
             message_color=message_color,
             message_background_color=message_background_color,
             prize_currency=prize_currency,
-            override_unrated_rapide_blitz=override_unrated_rapide_blitz,
+            override_unrated_rapid_blitz=override_unrated_rapid_blitz,
             errors=errors,
             # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
             timer_colors={
@@ -631,14 +631,12 @@ class BaseAdminController(BaseController):
                 message_color = admin_event.message_color
                 message_background_color = admin_event.message_background_color
                 prize_currency = stored_event.prize_currency
-                override_unrated_rapide_blitz = (
-                    stored_event.override_unrated_rapide_blitz
-                )
+                override_unrated_rapid_blitz = stored_event.override_unrated_rapid_blitz
             case 'create':
                 public = False
                 federation = SharlyChessConfig().federation.name
                 hide_background_image = SharlyChessConfig.default_hide_background_image
-                override_unrated_rapide_blitz = True
+                override_unrated_rapid_blitz = True
             case _:
                 raise ValueError(f'action=[{action}]')
 
@@ -680,7 +678,7 @@ class BaseAdminController(BaseController):
                 message_background_color
             ),
             'prize_currency': WebContext.value_to_form_data(prize_currency),
-            'override_unrated_rapide_blitz': WebContext.value_to_form_data(
-                override_unrated_rapide_blitz
+            'override_unrated_rapid_blitz': WebContext.value_to_form_data(
+                override_unrated_rapid_blitz
             ),
         } | plugin_form_data

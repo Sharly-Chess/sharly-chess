@@ -252,8 +252,8 @@ class TournamentAdminController(BaseEventAdminController):
         three_points_for_a_win = WebContext.form_data_to_bool(
             data, 'three_points_for_a_win'
         )
-        override_unrated_rapide_blitz = WebContext.form_data_to_bool_or_none(
-            data, 'override_unrated_rapide_blitz'
+        override_unrated_rapid_blitz = WebContext.form_data_to_bool_or_none(
+            data, 'override_unrated_rapid_blitz'
         )
 
         # Have plugins validate their fields and return private plugin data
@@ -302,7 +302,7 @@ class TournamentAdminController(BaseEventAdminController):
             rating=rating or TournamentRating.STANDARD.value,
             pairing=pairing or '',
             three_points_for_a_win=three_points_for_a_win,
-            override_unrated_rapide_blitz=override_unrated_rapide_blitz,
+            override_unrated_rapid_blitz=override_unrated_rapid_blitz,
             errors=errors,
             plugin_data=plugin_data,
         )
@@ -420,7 +420,7 @@ class TournamentAdminController(BaseEventAdminController):
                         system.variation_field_id: None for system in pairing_systems
                     }
                     three_points_for_a_win: bool = False
-                    override_unrated_rapide_blitz: bool | None = None
+                    override_unrated_rapid_blitz: bool | None = None
                     match action:
                         case 'update' | 'clone':
                             assert admin_tournament is not None
@@ -461,8 +461,8 @@ class TournamentAdminController(BaseEventAdminController):
                             three_points_for_a_win = (
                                 admin_tournament.three_points_for_a_win
                             )
-                            override_unrated_rapide_blitz = (
-                                stored_tournament.override_unrated_rapide_blitz
+                            override_unrated_rapid_blitz = (
+                                stored_tournament.override_unrated_rapid_blitz
                             )
                         case 'create':
                             rounds = 1
@@ -517,7 +517,7 @@ class TournamentAdminController(BaseEventAdminController):
                             'rating': rating,
                             'pairing_system': pairing_system.id,
                             'three_points_for_a_win': three_points_for_a_win,
-                            'override_unrated_rapide_blitz': override_unrated_rapide_blitz,
+                            'override_unrated_rapid_blitz': override_unrated_rapid_blitz,
                         }
                         | {
                             field: variation
@@ -549,7 +549,7 @@ class TournamentAdminController(BaseEventAdminController):
                     for key, value in data.items()
                 }
 
-                override_unrated_rapide_blitz_options = {
+                override_unrated_rapid_blitz_options = {
                     '': '',
                     WebContext.value_to_form_data(True): _('Use standard ratings'),
                     WebContext.value_to_form_data(False): _(
@@ -557,12 +557,12 @@ class TournamentAdminController(BaseEventAdminController):
                     ),
                 }
 
-                override_unrated_rapide_blitz_options[''] = _(
+                override_unrated_rapid_blitz_options[''] = _(
                     "Use Event's default - {option}"
                 ).format(
-                    option=override_unrated_rapide_blitz_options[
+                    option=override_unrated_rapid_blitz_options[
                         WebContext.value_to_form_data(
-                            admin_event.override_unrated_rapide_blitz or False
+                            admin_event.override_unrated_rapid_blitz or False
                         )
                     ]
                 )
@@ -575,7 +575,7 @@ class TournamentAdminController(BaseEventAdminController):
                     'tie_break_options': {'': _('None')}
                     | PapiTieBreakManager.options(),
                     'rating_options': cls._get_rating_options(),
-                    'override_unrated_rapide_blitz_options': override_unrated_rapide_blitz_options,
+                    'override_unrated_rapid_blitz_options': override_unrated_rapid_blitz_options,
                     'pairing_systems': pairing_systems,
                     'pairing_system_options': PairingSystemManager.options(),
                     'plugin_form_fields_templates': plugin_form_fields_templates,

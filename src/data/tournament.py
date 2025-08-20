@@ -292,10 +292,10 @@ class Tournament:
         return TournamentRating(self.stored_tournament.rating)
 
     @property
-    def override_unrated_rapide_blitz(self) -> bool:
-        if self.stored_tournament.override_unrated_rapide_blitz is not None:
-            return self.stored_tournament.override_unrated_rapide_blitz
-        return self.event.override_unrated_rapide_blitz
+    def override_unrated_rapid_blitz(self) -> bool:
+        if self.stored_tournament.override_unrated_rapid_blitz is not None:
+            return self.stored_tournament.override_unrated_rapid_blitz
+        return self.event.override_unrated_rapid_blitz
 
     @property
     def three_points_for_a_win(self) -> bool:

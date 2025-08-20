@@ -116,8 +116,8 @@ class Event:
         return SharlyChessConfig.default_prize_currency
 
     @property
-    def override_unrated_rapide_blitz(self) -> bool:
-        return self.stored_event.override_unrated_rapide_blitz or False
+    def override_unrated_rapid_blitz(self) -> bool:
+        return self.stored_event.override_unrated_rapid_blitz or False
 
     @property
     def formatted_start_date_time(self) -> str:

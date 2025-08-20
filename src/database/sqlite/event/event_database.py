@@ -262,8 +262,8 @@ class EventDatabase(MigrationDatabase):
             message_color=row['message_color'],
             message_background_color=row['message_background_color'],
             prize_currency=row['prize_currency'],
-            override_unrated_rapide_blitz=self.load_bool_from_database_field(
-                row['override_unrated_rapide_blitz']
+            override_unrated_rapid_blitz=self.load_bool_from_database_field(
+                row['override_unrated_rapid_blitz']
             ),
         )
 
@@ -331,7 +331,7 @@ class EventDatabase(MigrationDatabase):
                     'message_color',
                     'message_background_color',
                     'prize_currency',
-                    'override_unrated_rapide_blitz',
+                    'override_unrated_rapid_blitz',
                 ],
             )
             | {
@@ -681,8 +681,8 @@ class EventDatabase(MigrationDatabase):
             three_points_for_a_win=cls.load_bool_from_database_field(
                 row['three_points_for_a_win']
             ),
-            override_unrated_rapide_blitz=cls.load_bool_or_none_from_database_field(
-                row['override_unrated_rapide_blitz']
+            override_unrated_rapid_blitz=cls.load_bool_or_none_from_database_field(
+                row['override_unrated_rapid_blitz']
             ),
         )
         plugin_manager.hook.augment_tournament_after_db_fetch(
@@ -754,7 +754,7 @@ class EventDatabase(MigrationDatabase):
                     'stop',
                     'last_rounds_no_byes',
                     'three_points_for_a_win',
-                    'override_unrated_rapide_blitz',
+                    'override_unrated_rapid_blitz',
                 ],
             )
             | {
