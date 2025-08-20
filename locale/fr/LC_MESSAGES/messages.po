@@ -1161,7 +1161,7 @@ msgid "Default federation"
 msgstr "Fédération par défaut"
 
 msgid "Default handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. If checked, this rating will also be used for seeding and pairings. If unchecked, they will be treated as unrated and require an estimated rating."
-msgstr "Gestion par défaut des joueurs·euses sans cote rapide/blitz. Pour le calcul des cotes, la FIDE considère ces joueurs·euses comme classé·es avec leur cote standard. Si coché (par défaut), cette cote sera également utilisée pour le classement initial et les appariements. Si décoché, ils·elles seront traité·es comme non classé·es et nécessiteront une estimation."
+msgstr "Gestion par défaut des joueur·euses sans classement rapide/blitz. Pour le calcul des classements FIDE, ces joueur·euses sont considérées comme classé·es avec leur classement FIDE standard. Lorsque cette case est cochée (par défaut), ce classement sera également utilisé pour le classement initial et les appariements. Lorsque non cochée, les joueur·euses seront traité·es comme non classé·es et nécessiteront une estimation."
 
 msgid "Default language"
 msgstr "Langue par défaut"
@@ -1713,8 +1713,8 @@ msgstr "Erreur lors de la création de la base de données: {error}."
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr "Estimé"
 
-msgid "Estimated ratings"
-msgstr "Elos estimés"
+msgid "Estimated ratings for rapid/blitz tournaments"
+msgstr "Elos estimés pour les tournois rapides/blitz"
 
 msgid "Event"
 msgstr "Évènement"
@@ -1895,10 +1895,10 @@ msgid "Failed to read [{url}]: [{ex}]."
 msgstr "Impossible de lire [{url}] : {ex}."
 
 msgid "Fallback to estimated ratings"
-msgstr "epli sur des Elos estimés"
+msgstr "Utilisation de classements estimés"
 
 msgid "Fallback to standard rating for unrated players"
-msgstr "Repli sur l’Elo standard pour les joueurs non classés"
+msgstr "Utilisation du classement FIDE standard pour les joueur·euses non classé·es"
 
 msgid "Families"
 msgstr "Familles"
@@ -2149,7 +2149,7 @@ msgid "Half-Point Bye"
 msgstr "Demi-point joker (bye)"
 
 msgid "Handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. You may also choose to use this rating for seeding and pairings."
-msgstr "estion des joueurs·euses sans cote rapide/blitz. Pour le calcul des cotes, la FIDE considère ces joueurs·euses comme classé·es avec leur cote standard. Vous pouvez également choisir d’utiliser cette cote pour le classement initial et les appariements."
+msgstr "Gestion des joueur·euses sans classement rapide/blitz. Pour le calcul des classements FIDE, ces joueur·euses sont considéré·es comme classé·es avec leur classement FIDE standard. Vous pouvez également choisir d’utiliser ce classement pour le classement initial et les appariements."
 
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
 msgstr "Avoir un nombre de joueur·euses et de prix proches représente un risque qu'un prix ne soit pas attribué."
@@ -2212,7 +2212,7 @@ msgid "Identity"
 msgstr "Identité"
 
 msgid "If no rapid/blitz rating exists, fall back to the standard rating"
-msgstr "S’il n’existe pas de cote rapide/blitz, utiliser la cote standard par défaut."
+msgstr "S’il n’existe pas de classement rapide/blitz, utiliser le classement FIDE standard par défaut."
 
 msgid "Illegal moves are not recorded."
 msgstr "Les coups illégaux ne sont pas enregistrés."
@@ -3732,7 +3732,7 @@ msgid "Rating limits"
 msgstr "Limites Elo"
 
 msgid "Rating seed for unrated rapid/blitz"
-msgstr "Elo de départ pour les joueur·euses sans cote rapide/blitz"
+msgstr "Classement des joueur·euses sans classement FIDE rapide/blitz"
 
 #, python-format
 msgid "Rating splitting groups A and B (recommended: %(recommended)d)."
@@ -4038,7 +4038,7 @@ msgid "Seed color can't be modified once the tournament has started."
 msgstr "La couleur initiale ne peut être modifiée une fois que le tournoi a commencé."
 
 msgid "Seeding of unrated rapid/blitz"
-msgstr "Départ des joueur·euses sans cote rapide/blitz"
+msgstr "Classement des joueur·euses sans classement FIDE rapide/blitz"
 
 msgid "Select the players and the data to update:"
 msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"

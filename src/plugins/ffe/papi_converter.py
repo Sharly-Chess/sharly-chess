@@ -778,7 +778,7 @@ class PapiConverter:
         return papi_player
 
     def _get_papi_elo(self, player: Player, tournament_rating: TournamentRating) -> int:
-        # Override unrated rapide/blitzd rating in the export
+        # Override unrated rapid/blitz rating in the export
         if player.rating_is_overridden(tournament_rating):
             tournament_rating = TournamentRating.STANDARD
         if player.ratings and tournament_rating in player.ratings:

@@ -1713,7 +1713,7 @@ msgstr ""
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr "Estimated"
 
-msgid "Estimated ratings"
+msgid "Estimated ratings for rapid/blitz tournaments"
 msgstr ""
 
 msgid "Event"
