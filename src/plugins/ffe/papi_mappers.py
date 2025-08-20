@@ -9,7 +9,8 @@ from data.pairings.systems import (
     SwissPairingSystem,
     PairingSystem,
 )
-from data.tie_breaks import TieBreak, PapiTieBreakManager
+from data.tie_breaks import tie_breaks, TieBreak
+from plugins.ffe import ffe_tie_breaks
 from plugins.ffe.utils import PlayerFFELicence
 from plugins.pairing_acceleration import pairing_variations as accelerations
 from plugins.utils import PluginCoreMapper
@@ -56,13 +57,20 @@ class PapiPairingSystem(PluginCoreMapper[str, PairingSystem]):
         }
 
 
-class PapiTieBreakMapper(PluginCoreMapper[str, TieBreak]):
+class PapiTieBreak(PluginCoreMapper[str, TieBreak]):
     @classmethod
     def _core_object_by_plugin_value(cls) -> dict[str, TieBreak]:
         return {
-            str(tie_break.static_papi_id()): tie_break
-            for tie_break in PapiTieBreakManager.objects()
-            if tie_break.static_papi_id() is not None
+            'Solkoff': ffe_tie_breaks.PapiStandardBuchholzTieBreak(),
+            'Brésilien': ffe_tie_breaks.PapiBuchholzCutBottomTieBreak(),
+            'Harkness': ffe_tie_breaks.PapiMedianBuchholzTieBreak(),
+            'Cumulatif': tie_breaks.ProgressiveScoresTieBreak(),
+            'Performance': ffe_tie_breaks.PapiPerformanceTieBreak(),
+            'SommeDesBuchholz': ffe_tie_breaks.PapiSumOfBuchholzTieBreak(),
+            'Kashdan': ffe_tie_breaks.PapiKashdanTieBreak(),
+            'Nombre de Victoires': tie_breaks.WinsTieBreak(),
+            'Sonnenborn-Berger': tie_breaks.SonnebornBergerTieBreak(),
+            'Koya': tie_breaks.KoyaTieBreak(),
         }
 
 

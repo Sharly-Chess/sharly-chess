@@ -1,27 +1,41 @@
 <div class="d-flex flex-column gap-1 card-plugin-block">
-    <div class="d-flex gap-2 {% if not tournament.plugin_data.ffe.ffe_id %}text-secondary{% endif %}">
-        <img
-            src="{{ url_for('static', file_path='/images/ffe.png') }}?version={{ sharly_chess_config.version }}"
-            style="height: 1.2em"
-            class="p-0"
-        />
-        {% if tournament.plugin_data.ffe.ffe_id %}
+    {% set ffe_actions_unavailable_message = ffe_utils.ffe_actions_unavailable_message(tournament) %}
+    {% if ffe_actions_unavailable_message %}
+        <div class="d-flex gap-2">
+            <img
+                src="{{ url_for('static', file_path='/images/ffe.png') }}?version={{ sharly_chess_config.version }}"
+                style="height: 1.2em"
+                class="p-0"
+            />
+            <span class="text-secondary">
+                {{ _('FFE actions unavailable') }}
+            </span>
+            <i
+                class="bi-info-circle-fill"
+                {{ macros.tooltip_attributes('warning', ffe_actions_unavailable_message, 'right') }}
+            ></i>
+        </div>
+    {% else %}
+        <div class="d-flex gap-2">
+            <img
+                src="{{ url_for('static', file_path='/images/ffe.png') }}?version={{ sharly_chess_config.version }}"
+                style="height: 1.2em"
+                class="p-0"
+            />
             {{ _('FFE certification number: %(ffe_id)d', ffe_id=tournament.plugin_data.ffe.ffe_id) }}
             <a href="https://echecs.asso.fr/FicheTournoi.aspx?Ref={{ tournament.plugin_data.ffe.ffe_id }}" target="_blank">
                 <i class="bi bi-box-arrow-up-right"></i>
             </a>
-        {% else %}
-            {{ _('No FFE certification number') }}
-        {% endif %}
-    </div>
-    {% with ffe_auto_upload=ffe_utils.resolve_auto_upload(tournament) %}
-        <div class="d-flex gap-2 {% if not ffe_auto_upload %}text-secondary{% endif %}">
-            <i class="bi-cloud-arrow-up-fill"></i>
-            {% if ffe_auto_upload %}
-                {{ _('Auto upload to FFE enabled') }}
-            {% else %}
-                {{ _('Auto-upload to FFE site disabled') }}
-            {% endif %}
         </div>
-    {% endwith %}
+        {% with ffe_auto_upload=ffe_utils.resolve_auto_upload(tournament) %}
+            <div class="d-flex gap-2 {% if not ffe_auto_upload %}text-secondary{% endif %}">
+                <i class="bi-cloud-arrow-up-fill"></i>
+                {% if ffe_auto_upload %}
+                    {{ _('Auto-upload to FFE enabled') }}
+                {% else %}
+                    {{ _('Auto-upload to FFE site disabled') }}
+                {% endif %}
+            </div>
+        {% endwith %}
+    {% endif %}
 </div>

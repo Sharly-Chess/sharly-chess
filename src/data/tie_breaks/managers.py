@@ -1,5 +1,4 @@
-import itertools
-
+from common import experimental_features_enabled
 from data.tie_breaks import tie_breaks, options
 from data.tie_breaks.options import TieBreakOption
 from data.tie_breaks.tie_breaks import TieBreak
@@ -10,41 +9,34 @@ from utils.entity import EntityManager
 class TieBreakManager(EntityManager[TieBreak]):
     @staticmethod
     def entity_types() -> list[type[TieBreak]]:
-        return [
-            tie_breaks.WinsTieBreak,
-            tie_breaks.GamesWonTieBreak,
-            tie_breaks.GamesPlayedWithBlackTieBreak,
-            tie_breaks.GamesWonWithBlackTieBreak,
+        # Include all the tie-breaks available in Papi
+        tie_break_types = [
             tie_breaks.ProgressiveScoresTieBreak,
-            tie_breaks.RoundsElectedToPlayTieBreak,
-            tie_breaks.StandardBuchholzTieBreak,
-            tie_breaks.ForeBuchholzTieBreak,
-            tie_breaks.SumOfBuchholzTieBreak,
-            tie_breaks.AverageOfBuchholzTieBreak,
+            tie_breaks.WinsTieBreak,
             tie_breaks.SonnebornBergerTieBreak,
             tie_breaks.KoyaTieBreak,
-            tie_breaks.KashdanTieBreak,
-            tie_breaks.AverageRatingOpponentsTieBreak,
-            tie_breaks.TournamentPerformanceRatingTieBreak,
-            tie_breaks.AveragePerformanceRatingOpponentsTieBreak,
-            tie_breaks.PerfectTournamentPerformanceTieBreak,
-            tie_breaks.AveragePerfectPerformanceTieBreak,
-            tie_breaks.DirectEncounterTieBreak,
-        ] + list(
-            itertools.chain.from_iterable(
-                plugin_manager.hook.get_extra_tie_break_classes()
-            )
-        )
-
-
-class PapiTieBreakManager(EntityManager[TieBreak]):
-    @staticmethod
-    def entity_types() -> list[type[TieBreak]]:
-        return [
-            tie_break_type
-            for tie_break_type in TieBreakManager.entity_types()
-            if tie_break_type.static_papi_id() is not None
         ]
+        # Include all the others as experimental
+        if experimental_features_enabled():
+            tie_break_types += [
+                tie_breaks.GamesWonTieBreak,
+                tie_breaks.GamesPlayedWithBlackTieBreak,
+                tie_breaks.GamesWonWithBlackTieBreak,
+                tie_breaks.RoundsElectedToPlayTieBreak,
+                tie_breaks.StandardBuchholzTieBreak,
+                tie_breaks.ForeBuchholzTieBreak,
+                tie_breaks.SumOfBuchholzTieBreak,
+                tie_breaks.AverageOfBuchholzTieBreak,
+                tie_breaks.KashdanTieBreak,
+                tie_breaks.AverageRatingOpponentsTieBreak,
+                tie_breaks.TournamentPerformanceRatingTieBreak,
+                tie_breaks.AveragePerformanceRatingOpponentsTieBreak,
+                tie_breaks.PerfectTournamentPerformanceTieBreak,
+                tie_breaks.AveragePerfectPerformanceTieBreak,
+                tie_breaks.DirectEncounterTieBreak,
+            ]
+        plugin_manager.hook.insert_tie_break_types(tie_break_types=tie_break_types)
+        return tie_break_types
 
 
 class TieBreakOptionManager(EntityManager[TieBreakOption]):

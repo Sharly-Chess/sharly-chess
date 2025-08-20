@@ -18,6 +18,11 @@ class TournamentExporter(IdentifiableEntity, ABC):
     def tooltip(self) -> str:
         """Tooltip to display on the export button."""
 
+    def is_unavailable_message(self, tournament: Tournament) -> str | None:
+        """Get a message about why the export is unavailable for the tournament.
+        Returns None if the export is available."""
+        return None
+
     @abstractmethod
     def dump_to_file(self, file: IO, tournament: Tournament):
         """Dump the content of the *tournament* to export into the *file*."""

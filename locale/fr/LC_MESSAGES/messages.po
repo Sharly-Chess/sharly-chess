@@ -566,9 +566,6 @@ msgstr "Erreur d'authentification (code : [{code}]) for [{user_id}] ([{chesseve
 msgid "Authentication failed."
 msgstr "L'authentification a échoué."
 
-msgid "Auto upload to FFE enabled"
-msgstr "Envoi automatique vers la FFE activé"
-
 msgid "Auto-update"
 msgstr "Mise à jour"
 
@@ -579,14 +576,14 @@ msgid "Auto-upload results to FFE site when a tournament is updated. You must en
 msgstr "Mise en ligne automatique des résultats vers le site de la FFE. Vous devez saisir l’identifiant et le mot de passe du tournoi pour que cela fonctionne."
 
 msgid "Auto-upload to FFE enabled"
-msgstr "Mise en ligne automatique vers le site de la FFE activée"
+msgstr "Envoi automatique vers la FFE activé"
 
 #, python-format
 msgid "Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)d minutes)"
-msgstr "Mise en ligne automatique vers la FFE activée (au minimum toutes les %(ffe_auto_upload_delay)d minutes)"
+msgstr "Envoi automatique vers la FFE activé (au minimum toutes les %(ffe_auto_upload_delay)d minutes)"
 
 msgid "Auto-upload to FFE site disabled"
-msgstr "Mise en ligne automatique vers le site de la FFE désactivée"
+msgstr "Envoi automatique vers la FFE désactivé"
 
 msgid "Auto-upload:"
 msgstr "Mise en ligne automatique :"
@@ -2044,11 +2041,17 @@ msgstr "Licence FFE"
 msgid "FFE Uniq ID:"
 msgstr "Identifiant unique FFE :"
 
+msgid "FFE actions unavailable"
+msgstr "Actions FFE non disponibles"
+
 msgid "FFE certification number (optional):"
 msgstr "Numéro d'homologation FFE (facultatif) :"
 
-msgid "FFE certification number and password not defined for tournament."
-msgstr "Numéro d’homologation et mot de passe FFE non définis pour le tournoi."
+msgid "FFE certification number and password not defined."
+msgstr "Numéro d'homologation FFE et mot de passe non-définis."
+
+msgid "FFE certification number not defined."
+msgstr "Numéro d'homologation FFE non-défini."
 
 #, python-format
 msgid "FFE certification number: %(ffe_id)d"
@@ -2079,6 +2082,9 @@ msgstr "Licence FFE : %(ffe_licence_number)s (cliquer pour copier dans le press
 #, python-format
 msgid "FFE licence: %(ffe_licence_number)s (expired)."
 msgstr "Licence FFE : %(ffe_licence_number)s (expirée)."
+
+msgid "FFE password not defined."
+msgstr "Mot de passe FFE non-défini."
 
 msgid "FFE password:"
 msgstr "Mot de passe FFE :"
@@ -3026,9 +3032,6 @@ msgstr "Nom du tournoi ChessEvent non défini"
 msgid "No FFE Licence"
 msgstr "Aucune licence FFE"
 
-msgid "No FFE certification number"
-msgstr "Pas d'homologation FFE"
-
 msgid "No FIDE ID."
 msgstr "Identifiant FIDE non défini."
 
@@ -3438,6 +3441,9 @@ msgstr "Format d’appariement :"
 
 msgid "Pairing system"
 msgstr "Système d'appariements"
+
+msgid "Pairing system [{pairing_system}] is not compatible."
+msgstr "Le système d'appariements [{pairing_system}] n'est pas compatible."
 
 msgid "Pairings"
 msgstr "Appariements"
@@ -5137,6 +5143,9 @@ msgstr "Victoire à 3 points"
 msgid "Tie-break #%(index)d:"
 msgstr "Départage n°%(index)d :"
 
+msgid "Tie-break [{tie_break}] is not compatible."
+msgstr "Le départage [{tie_break}] n'est pas compatible."
+
 msgid "Tie-break already in use."
 msgstr "Départage déjà utilisé."
 
@@ -6210,6 +6219,6 @@ msgstr "{status_code} - Erreur inconnue"
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
 
-#~ msgid "Estimated ratings for rapid/blitz tournaments"
-#~ msgstr "Elos estimés pour les tournois rapides/blitz"
+msgid "{tie_break} (Papi compatible)"
+msgstr "{tie_break} (compatible Papi)"
 

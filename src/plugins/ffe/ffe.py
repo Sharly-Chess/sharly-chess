@@ -846,8 +846,8 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def get_extra_tie_break_classes(self) -> list[type[TieBreak]]:
-        return [
+    def insert_tie_break_types(self, tie_break_types: list[type[TieBreak]]):
+        tie_break_types += [
             ffe_tie_breaks.PapiStandardBuchholzTieBreak,
             ffe_tie_breaks.PapiBuchholzCutBottomTieBreak,
             ffe_tie_breaks.PapiMedianBuchholzTieBreak,

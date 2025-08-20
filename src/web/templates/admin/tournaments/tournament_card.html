@@ -45,13 +45,6 @@
     {% endfor %}
 
     <div class="d-flex flex-column gap-1">
-        <div class="text-start {% if not tournament.rules %}text-secondary{% endif %}">
-            {% if tournament.rules %}
-                {{ _('Rules file set') }}
-            {% else %}
-                {{ _('No rules file set') }}
-            {% endif %}
-        </div>
         <div class="text-start">
             {{ tournament.rating }}
         </div>
@@ -87,6 +80,13 @@
                     {% endfor %}
                 {% else %}
                     {{ _('No tie-break defined') }}
+                {% endif %}
+            </div>
+            <div class="text-start {% if not tournament.rules %}text-secondary{% endif %}">
+                {% if tournament.rules %}
+                    {{ _('Rules file set') }}
+                {% else %}
+                    {{ _('No rules file set') }}
                 {% endif %}
             </div>
             <div class="text-start {% if not tournament.stored_tournament.first_board_number %}text-secondary{% endif %}">
@@ -158,7 +158,12 @@
                         {% for importer in tournament_importers %}
                             <li
                                 class="dropdown-item text-start cursor-pointer"
-                                hx-get="{{ url_for('admin-tournament-import-modal', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id, importer_id=importer.id) }}"
+                                hx-get="{{ url_for(
+                                    'admin-tournament-import-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=tournament.id,
+                                    importer_id=importer.id
+                                ) }}"
                                 hx-target="body"
                                 hx-indicator="#please-wait"
                                 preload
@@ -180,10 +185,21 @@
                 </button>
                 <ul class="dropdown-menu">
                     {% for exporter in tournament_exporters %}
+                        {% set is_unavailable_message = exporter.is_unavailable_message(tournament)  %}
                         <li
-                            class="dropdown-item text-start cursor-pointer"
-                            onclick="window.open('{{ url_for('admin-tournament-export', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id, exporter_id=exporter.id) }}', '_blank')"
-                            {{ macros.tooltip_attributes('info', exporter.tooltip, 'right') }}
+                            {% if is_unavailable_message %}
+                                class="dropdown-item text-start text-secondary"
+                                {{ macros.tooltip_attributes('warning', is_unavailable_message, 'right') }}
+                            {% else %}
+                                class="dropdown-item text-start cursor-pointer"
+                                onclick="window.open('{{ url_for(
+                                    'admin-tournament-export',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=tournament.id,
+                                    exporter_id=exporter.id
+                                ) }}', '_blank')"
+                               {{ macros.tooltip_attributes('info', exporter.tooltip, 'right') }}
+                            {% endif %}
                         >
                             {{ exporter.name }}
                         </li>

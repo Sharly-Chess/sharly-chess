@@ -44,6 +44,21 @@ class FFEUtils:
         assert isinstance(plugin_data, FfePlayerPluginData)
         return plugin_data
 
+    @staticmethod
+    def ffe_actions_unavailable_message(tournament: Tournament) -> str | None:
+        from plugins.ffe.papi_converter import PapiConverter
+
+        pd = tournament.plugin_data
+        ffe_id = get_data(pd, 'ffe_id')
+        ffe_password = get_data(pd, 'ffe_password')
+        if not ffe_id and not ffe_password:
+            return _('FFE certification number and password not defined.')
+        if not ffe_id:
+            return _('FFE certification number not defined.')
+        if not ffe_password:
+            return _('FFE password not defined.')
+        return PapiConverter.papi_export_unavailable_message(tournament)
+
 
 class PlayerFFELicence(IntEnum):
     NONE = 0
