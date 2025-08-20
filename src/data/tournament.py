@@ -396,6 +396,11 @@ class Tournament:
         }
 
     @cached_property
+    def players_by_pairing_number(self) -> dict[int, Player]:
+        sorted_players = self._set_players_pairing_numbers()
+        return {player.pairing_number or 0: player for player in sorted_players}
+
+    @cached_property
     def players_by_name_with_unpaired(self) -> list[Player]:
         return sorted(
             self.players,
@@ -766,12 +771,11 @@ class Tournament:
             chiefarbiter='',
             players=[
                 player.to_trf(
-                    self._player_id_to_trf_id,
-                    after_round=after_round,
+                    after_round,
+                    next_round_pairings_as_zpb,
                     include_next_round_bye=trf_type == TrfType.TRF_BX,
-                    next_round_pairings_as_zpb=next_round_pairings_as_zpb,
                 )
-                for player in self.players_by_starting_rank.values()
+                for player in self.players_by_pairing_number.values()
             ],
             federation=self.event.federation,
             xx_fields=(
@@ -786,12 +790,6 @@ class Tournament:
             ),
         )
 
-    def _player_id_to_trf_id(self, player_id: int) -> int:
-        for value, player in self.players_by_starting_rank.items():
-            if player.id == player_id:
-                return value
-        raise KeyError(f'Id of unknown player: {player_id}')
-
     def _player_id_to_rank(self, player_id: int) -> int:
         return self.players_by_id[player_id].rank
 
@@ -804,13 +802,13 @@ class Tournament:
             'XXZ': ' '.join(
                 [
                     str(trf_id)
-                    for trf_id, player in self.players_by_starting_rank.items()
+                    for trf_id, player in self.players_by_pairing_number.items()
                     if next_round in player.pairings
                     and player.pairings[next_round].next_round_bye
                 ]
             ),
         }
-        for trf_id, player in self.players_by_starting_rank.items():
+        for trf_id, player in self.players_by_pairing_number.items():
             vpoints_history = [
                 self._calculate_player_virtual_points(player, at_round=round_)
                 for round_ in range(1, next_round + 1)
@@ -1113,6 +1111,50 @@ class Tournament:
             database.commit()
         if player_id in self.players_by_id:
             del self.players_by_id[player_id]
+
+    def _set_players_pairing_numbers(self) -> list[Player]:
+        """Set the pairing numbers of all the players in the tournament.
+        Returns a list of players sorted by pairing number."""
+        if self.current_round > 4:
+            players_to_insert = [
+                player for player in self.players if player.pairing_number is None
+            ]
+            sorted_players = sorted(
+                [
+                    player
+                    for player in self.players
+                    if player.pairing_number is not None
+                ],
+                key=lambda player: player.pairing_number or 0,
+            )
+            if not players_to_insert and sorted_players[-1].pairing_number == len(
+                self.players
+            ):
+                # No player was removed or added, no need to renumber
+                return sorted_players
+            for player in players_to_insert:
+                player_index = next(
+                    (
+                        index
+                        for index, player_ in enumerate(sorted_players)
+                        if player_.rating < player.rating
+                    ),
+                    len(sorted_players),
+                )
+                sorted_players.insert(player_index, player)
+        else:
+            sorted_players = sorted(
+                self.players, key=lambda player: player.starting_rank_sort_key
+            )
+
+        with EventDatabase(self.event.uniq_id, True) as database:
+            for index, player in enumerate(sorted_players):
+                player.stored_tournament_player.pairing_number = index + 1
+                database.set_tournament_player_pairing_number(
+                    player.stored_tournament_player
+                )
+            database.commit()
+        return sorted_players
 
     def create_round_pairing(
         self, round_nb: int, white_player_id: int, black_player_id: int | None
