@@ -688,7 +688,7 @@ class FfePlugin(Plugin):
         event_auto_upload = bool(
             self.get_data(event.plugin_data, 'ffe_auto_upload', False)
         )
-        ffe_auto_upload_options[''] = _('By default - {option}').format(
+        ffe_auto_upload_options[''] = _("Use Event's default - {option}").format(
             option=ffe_auto_upload_options[
                 WebContext.value_to_form_data(event_auto_upload)
             ]

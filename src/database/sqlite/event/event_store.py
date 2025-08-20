@@ -162,6 +162,7 @@ class StoredTournament:
     last_player_update: float = 0.0
     last_pairing_update: float = 0.0
     three_points_for_a_win: bool = False
+    override_unrated_rapid_blitz: bool | None = None
     stored_prize_groups: list[StoredPrizeGroup] = field(
         default_factory=list[StoredPrizeGroup]
     )
@@ -303,6 +304,7 @@ class BaseStoredEvent:
     message_color: str | None = None
     message_background_color: str | None = None
     prize_currency: str | None = None
+    override_unrated_rapid_blitz: bool | None = None
 
     # Plugins can add their own tournament data
     plugin_data: dict[str, dict[str, Any]] | None = None
