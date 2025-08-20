@@ -39,6 +39,10 @@ English version below
 - Amélioration des appariements par ordre alphabétique (3.0.0)
 - Ajout des titres FIDE dans les attributions de prix (3.0.0)
 
+# Départages
+
+- Ajout de départages non compatibles avec Papi (expérimental) (3.0.0)
+
 ---
 
 # English
@@ -80,3 +84,7 @@ English version below
 
 - Improved alphabétical pairings (3.0.0)
 - Added FIDE titles on prize assignments (3.0.0)
+
+# Tie-breaks
+
+- Added tie-breaks not compatible with Papi (experimental) (3.0.0)
