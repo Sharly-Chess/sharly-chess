@@ -1710,8 +1710,8 @@ msgstr "Erreur lors de la création de la base de données: {error}."
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr "Estimé"
 
-msgid "Estimated ratings for rapid/blitz tournaments"
-msgstr "Elos estimés pour les tournois rapides/blitz"
+msgid "Estimated ratings"
+msgstr "Elos estimés"
 
 msgid "Event"
 msgstr "Évènement"
@@ -1751,6 +1751,13 @@ msgstr "Bouton de sortie :"
 
 msgid "Experimental features"
 msgstr "Fonctionnalités expérimentales"
+
+msgid "Experimental features (enabled)"
+msgstr "Fonctionnalités expérimentales (activées)"
+
+#, python-format
+msgid "Experimental features in version %(version)s are:"
+msgstr "Les fonctionnalités expérimentales en version %(version)s sont :"
 
 msgid "Expired FFE licence"
 msgstr "Licence FFE expirée"
@@ -2941,6 +2948,9 @@ msgstr "N°"
 
 msgid "No. final rounds without byes:"
 msgstr "Dernières rondes sans bye :"
+
+msgid "Non-Papi tie-breaks"
+msgstr "Départages non-compatibles avec Papi"
 
 msgid "None"
 msgstr "Aucun"

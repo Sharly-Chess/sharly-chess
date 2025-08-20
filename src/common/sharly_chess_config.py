@@ -144,6 +144,12 @@ class SharlyChessConfig(metaclass=Singleton):
         return self.stored_config.experimental
 
     @property
+    def experimental_features(self) -> list[str]:
+        return [
+            _('Non-Papi tie-breaks'),
+        ]
+
+    @property
     def launch_browser(self) -> bool:
         return self.stored_config.launch_browser and not TEST_ENV
 

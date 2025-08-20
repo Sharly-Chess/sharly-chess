@@ -34,14 +34,25 @@
                         info=_('Sharly Chess can automatically launch a web browser when starting the web server.'),
                         data=data, errors=errors
                     ) }}
-                    {{ admin_macros.switch_input(
-                        name='experimental',
-                        label='',
-                        placeholder=_('Experimental features'),
-                        help_text='',
-                        info=_('Benefit from the very last (experimental) features (USE AT YOUR OWN RISKS!).'),
-                        data=data, errors=errors
-                    ) }}
+                    {% if sharly_chess_config.experimental_features %}
+                        {% set ns = namespace(
+                            experimental_features_help=_(
+                                'Experimental features in version %(version)s are:',
+                                version=sharly_chess_config.version
+                            )
+                        ) %}
+                        {% for feature in sharly_chess_config.experimental_features %}
+                            {% set ns.experimental_features_help=ns.experimental_features_help ~ (' ' if loop.first else ', ') ~ feature %}
+                        {% endfor %}
+                        {{ admin_macros.switch_input(
+                            name='experimental',
+                            label='',
+                            placeholder=_('Experimental features'),
+                            help_text=ns.experimental_features_help,
+                            info=_('Benefit from the very last (experimental) features (USE AT YOUR OWN RISKS!).'),
+                            data=data, errors=errors
+                        ) }}
+                    {% endif %}
                 </div>
                 <h4>
                     {{ _('Console logs') }}

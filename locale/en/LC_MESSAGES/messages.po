@@ -1710,7 +1710,7 @@ msgstr ""
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr "Estimated"
 
-msgid "Estimated ratings for rapid/blitz tournaments"
+msgid "Estimated ratings"
 msgstr ""
 
 msgid "Event"
@@ -1750,6 +1750,13 @@ msgid "Exit button:"
 msgstr ""
 
 msgid "Experimental features"
+msgstr ""
+
+msgid "Experimental features (enabled)"
+msgstr ""
+
+#, python-format
+msgid "Experimental features in version %(version)s are:"
 msgstr ""
 
 msgid "Expired FFE licence"
@@ -2940,6 +2947,9 @@ msgid "No. *** NB FOR TABLE HEADER"
 msgstr "No."
 
 msgid "No. final rounds without byes:"
+msgstr ""
+
+msgid "Non-Papi tie-breaks"
 msgstr ""
 
 msgid "None"

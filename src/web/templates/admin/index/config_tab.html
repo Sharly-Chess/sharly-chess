@@ -114,12 +114,29 @@
                 </pre>
             </td>
         </tr>
-        <tr class="{{ row_cycler() }}">
-            <th scope="row" class="text-nowrap">{{ _('Experimental features') }}</th>
-            <td>
-                {% if sharly_chess_config.experimental %}{{ _('Enabled') }}{% else %}{{ _('Disabled') }}{% endif %}
-            </td>
-        </tr>
+        {% if sharly_chess_config.experimental_features %}
+            <tr class="{{ row_cycler() }}">
+                <th scope="row" class="text-nowrap">
+                    {% if sharly_chess_config.experimental %}
+                        {{ _('Experimental features (enabled)') }}
+                    {% else %}
+                        {{ _('Experimental features') }}
+                    {% endif %}
+                </th>
+                <td>
+                    {% if sharly_chess_config.experimental %}
+                        <pre class="mb-0">{%- for feature in sharly_chess_config.experimental_features -%}
+                            {%- if not loop.first -%}
+                                <br/>
+                            {%- endif -%}
+                            <span>{{ feature }}</span>
+                        {%- endfor -%}</pre>
+                    {% else %}
+                        {{ _('Disabled') }}
+                    {% endif %}
+                </td>
+            </tr>
+        {% endif %}
         <tr class="{{ row_cycler() }}">
             <th scope="row" class="text-nowrap">{{ _('%(lib)s version', lib='Sharly Chess') }}</th>
             <td>{{ sharly_chess_config['version'] }}</td>
