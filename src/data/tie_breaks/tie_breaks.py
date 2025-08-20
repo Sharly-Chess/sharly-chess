@@ -28,7 +28,6 @@ from utils.enum import BoardColor, Result
 from utils.option import OptionHandler, OptionError
 
 if TYPE_CHECKING:
-    from data.player import Player
     from data.tournament import Tournament
 
 
@@ -65,15 +64,6 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         """Compute the value of the tie-break for a player.
         As tie-breaks are intended for ranking,
         the return type need to support rich comparison with itself"""
-
-    @staticmethod
-    def static_papi_id() -> str | None:
-        """Represents the tie-break in a Papi database.
-        If None, the tie-break will not appear in the database"""
-
-    @property
-    def papi_id(self) -> str | None:
-        return self.static_papi_id()
 
     @property
     def is_displayable(self) -> bool:
@@ -147,10 +137,6 @@ class WinsTieBreak(TieBreak):
     @staticmethod
     def static_id() -> str:
         return 'WINS'
-
-    @staticmethod
-    def static_papi_id() -> str:
-        return 'Nombre de Victoires'
 
     @property
     def acronym(self) -> str:
@@ -298,10 +284,6 @@ class ProgressiveScoresTieBreak(TieBreak):
     @staticmethod
     def static_id() -> str:
         return 'PROGRESSIVE_SCORES'
-
-    @staticmethod
-    def static_papi_id() -> str:
-        return 'Cumulatif'
 
     @property
     def acronym(self) -> str:
@@ -746,10 +728,6 @@ class SonnebornBergerTieBreak(TieBreak):
     def static_id() -> str:
         return 'SONNEBORN_BERGER'
 
-    @staticmethod
-    def static_papi_id() -> str:
-        return 'Sonnenborn-Berger'
-
     @property
     def acronym(self) -> str:
         return 'SB'
@@ -884,10 +862,6 @@ class KoyaTieBreak(TieBreak):
     @staticmethod
     def static_id() -> str:
         return 'KOYA'
-
-    @staticmethod
-    def static_papi_id() -> str:
-        return 'Koya'
 
     @property
     def forbidden_pairing_systems(self) -> list[PairingSystem]:

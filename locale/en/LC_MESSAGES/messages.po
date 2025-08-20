@@ -477,9 +477,6 @@ msgstr ""
 msgid "Authentication successful!"
 msgstr ""
 
-msgid "Auto upload to FFE enabled"
-msgstr ""
-
 msgid "Auto-update"
 msgstr ""
 
@@ -1797,10 +1794,16 @@ msgstr ""
 msgid "FFE Uniq ID:"
 msgstr ""
 
+msgid "FFE actions unavailable"
+msgstr ""
+
 msgid "FFE certification number (optional):"
 msgstr ""
 
-msgid "FFE certification number and password not defined for tournament."
+msgid "FFE certification number and password not defined."
+msgstr ""
+
+msgid "FFE certification number not defined."
 msgstr ""
 
 #, python-format
@@ -1831,6 +1834,9 @@ msgstr ""
 
 #, python-format
 msgid "FFE licence: %(ffe_licence_number)s (expired)."
+msgstr ""
+
+msgid "FFE password not defined."
 msgstr ""
 
 msgid "FFE password:"
@@ -2759,9 +2765,6 @@ msgstr ""
 msgid "No FFE Licence"
 msgstr ""
 
-msgid "No FFE certification number"
-msgstr ""
-
 msgid "No FIDE ID."
 msgstr ""
 
@@ -3161,6 +3164,9 @@ msgid "Pairing style:"
 msgstr ""
 
 msgid "Pairing system"
+msgstr ""
+
+msgid "Pairing system [{pairing_system}] is not compatible."
 msgstr ""
 
 msgid "Pairings"
@@ -4759,6 +4765,9 @@ msgstr ""
 msgid "Tie-break #%(index)d:"
 msgstr ""
 
+msgid "Tie-break [{tie_break}] is not compatible."
+msgstr ""
+
 msgid "Tie-break already in use."
 msgstr ""
 
@@ -5615,5 +5624,8 @@ msgid "{status_code} - Unknown error"
 msgstr ""
 
 msgid "{string}: {value}"
+msgstr ""
+
+msgid "{tie_break} (Papi compatible)"
 msgstr ""
 

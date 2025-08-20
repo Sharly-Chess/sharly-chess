@@ -4,6 +4,7 @@ from functools import cache, lru_cache
 from math import floor
 from typing import TYPE_CHECKING
 
+from common import experimental_features_enabled
 from common.i18n import _
 from data.pairing import Pairing
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
@@ -34,7 +35,7 @@ def papi_performance_bonus(fractional_score: float) -> int | float:
     return bonus
 
 
-class PapiTieBreak(TieBreak, ABC):
+class FfeTieBreak(TieBreak, ABC):
     """Implementation of the tie-breaks as in Papi.
     Computation inaccuracies are reproduced"""
 
@@ -47,13 +48,19 @@ class PapiTieBreak(TieBreak, ABC):
     def sub_id() -> str:
         pass
 
+    @classmethod
+    def static_name(cls) -> str:
+        if not experimental_features_enabled():
+            return cls.sub_name()
+        return _('{tie_break} (Papi compatible)').format(tie_break=cls.sub_name())
+
     @staticmethod
-    @abstractmethod  # AS the usage is for Papi, papi_id has to be implemented
-    def static_papi_id() -> str:
+    @abstractmethod
+    def sub_name() -> str:
         pass
 
 
-class PapiBuchholzTieBreak(PapiTieBreak, BuchholzTieBreak, ABC):
+class PapiBuchholzTieBreak(FfeTieBreak, BuchholzTieBreak, ABC):
     @staticmethod
     def _papi_adjusted_score(
         player: Player,
@@ -191,16 +198,12 @@ class PapiBuchholzTieBreak(PapiTieBreak, BuchholzTieBreak, ABC):
 
 class PapiStandardBuchholzTieBreak(PapiBuchholzTieBreak):
     @staticmethod
-    def static_name() -> str:
+    def sub_name() -> str:
         return _('Buchholz')
 
     @staticmethod
     def sub_id() -> str:
         return 'PAPI_BUCHHOLZ'
-
-    @staticmethod
-    def static_papi_id() -> str:
-        return 'Solkoff'
 
     @property
     def acronym(self) -> str:
@@ -221,16 +224,12 @@ class PapiStandardBuchholzTieBreak(PapiBuchholzTieBreak):
 
 class PapiBuchholzCutBottomTieBreak(PapiBuchholzTieBreak):
     @staticmethod
-    def static_name() -> str:
+    def sub_name() -> str:
         return _('Buchholz cut bottom')
 
     @staticmethod
     def sub_id() -> str:
         return 'PAPI_BUCHHOLZ_CUT_BOTTOM'
-
-    @staticmethod
-    def static_papi_id() -> str:
-        return 'Brésilien'
 
     @property
     def acronym(self) -> str:
@@ -253,16 +252,12 @@ class PapiBuchholzCutBottomTieBreak(PapiBuchholzTieBreak):
 
 class PapiMedianBuchholzTieBreak(PapiBuchholzTieBreak):
     @staticmethod
-    def static_name() -> str:
+    def sub_name() -> str:
         return _('Median Buchholz')
 
     @staticmethod
     def sub_id() -> str:
         return 'PAPI_MEDIAN_BUCHHOLZ'
-
-    @staticmethod
-    def static_papi_id() -> str:
-        return 'Harkness'
 
     @property
     def acronym(self) -> str:
@@ -286,18 +281,14 @@ class PapiMedianBuchholzTieBreak(PapiBuchholzTieBreak):
         )
 
 
-class PapiPerformanceTieBreak(PapiTieBreak, PerformanceTieBreak):
+class PapiPerformanceTieBreak(FfeTieBreak, PerformanceTieBreak):
     @staticmethod
-    def static_name() -> str:
+    def sub_name() -> str:
         return _('Performance')
 
     @staticmethod
     def sub_id() -> str:
         return 'PAPI_PERFORMANCE'
-
-    @staticmethod
-    def static_papi_id() -> str:
-        return 'Performance'
 
     @property
     def acronym(self) -> str:
@@ -345,16 +336,12 @@ class PapiPerformanceTieBreak(PapiTieBreak, PerformanceTieBreak):
 
 class PapiSumOfBuchholzTieBreak(PapiBuchholzTieBreak):
     @staticmethod
-    def static_name() -> str:
+    def sub_name() -> str:
         return _('Sum of Buchholz')
 
     @staticmethod
     def sub_id() -> str:
         return 'PAPI_BUCHHOLZ_SUM'
-
-    @staticmethod
-    def static_papi_id() -> str:
-        return 'SommeDesBuchholz'
 
     @property
     def acronym(self) -> str:
@@ -387,18 +374,14 @@ class PapiSumOfBuchholzTieBreak(PapiBuchholzTieBreak):
         )
 
 
-class PapiKashdanTieBreak(PapiTieBreak):
+class PapiKashdanTieBreak(FfeTieBreak):
     @staticmethod
-    def static_name() -> str:
+    def sub_name() -> str:
         return _('Kashdan')
 
     @staticmethod
     def sub_id() -> str:
         return 'PAPI_KASHDAN'
-
-    @staticmethod
-    def static_papi_id() -> str:
-        return 'Kashdan'
 
     @property
     def acronym(self) -> str:

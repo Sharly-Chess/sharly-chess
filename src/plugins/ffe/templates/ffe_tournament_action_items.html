@@ -1,6 +1,11 @@
-
-<li class="dropdown-submenu">
-    <button class="dropdown-item d-flex justify-content-between">
+{% set ffe_actions_unavailable_message=ffe_utils.ffe_actions_unavailable_message(tournament) %}
+{% if ffe_actions_unavailable_message %}
+    <li
+        class="dropdown-item text-start text-secondary"
+        {{ macros.tooltip_attributes(
+            'warning', ffe_actions_unavailable_message, 'right'
+        ) }}
+    >
         <span>
             <img
                 src="{{ url_for('static', file_path='/images/ffe.png') }}?version={{ sharly_chess_config.version }}"
@@ -9,78 +14,73 @@
             />
             {{ _('FFE site') }}
         </span>
-        <i class="ps-3 bi bi-caret-right-fill"></i>
-    </button>
-    <ul class="dropdown-menu">
-        <li>
-            <span
-                {% if tournament.plugin_data.ffe.ffe_id %}
-                    {{ macros.tooltip_attributes('info', _('By default, tournaments are not visible on the FFE site.'), 'right') }}
-                {% else %}
-                    {{ macros.tooltip_attributes('warning', _('FFE certification number and password not defined for tournament.'), 'right') }}
-                {% endif %}
-            >
-                <button
-                    class="dropdown-item text-nowrap"
-                    {% if tournament.plugin_data.ffe.ffe_id %}
+    </li>
+{% else %}
+    <li class="dropdown-submenu">
+        <button class="dropdown-item d-flex justify-content-between">
+            <span>
+                <img
+                    src="{{ url_for('static', file_path='/images/ffe.png') }}?version={{ sharly_chess_config.version }}"
+                    style="height: 1.2em"
+                    class="pe-1"
+                />
+                {{ _('FFE site') }}
+            </span>
+            <i class="ps-3 bi bi-caret-right-fill"></i>
+        </button>
+        <ul class="dropdown-menu">
+            <li>
+                <span
+                    {{ macros.tooltip_attributes(
+                        'info', _('By default, tournaments are not visible on the FFE site.'), 'right'
+                    ) }}
+                >
+                    <button
+                        class="dropdown-item text-nowrap"
                         hx-post="{{ url_for('ffe-make-visible', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
-                    {% else %}
-                        disabled
-                    {% endif %}
+                    >
+                        <i class="bi bi-eye-fill pe-1"></i>
+                        {{ _('Make visible on FFE site') }}
+                    </button>
+                </span>
+            </li>
+            <li>
+                <span
+                    {{ macros.tooltip_attributes(
+                        'info', _('Uploading the PDF rules file allows the players to read the rules online.'), 'right'
+                    ) }}
                 >
-                    <i class="bi bi-eye-fill pe-1"></i>
-                    {{ _('Make visible on FFE site') }}
-                </button>
-            </span>
-        </li>
-        <li>
-            <span
-                {% if tournament.plugin_data.ffe.ffe_id %}
-                    {{ macros.tooltip_attributes('info', _('Uploading the PDF rules file allows the players to read the rules online.'), 'right') }}
-                {% else %}
-                    {{ macros.tooltip_attributes('warning', _('FFE certification number and password not defined for tournament.'), 'right') }}
-                {% endif %}
-            >
-                <button
-                    class="dropdown-item text-nowrap"
-                    {% if tournament.plugin_data.ffe.ffe_id %}
+                    <button
+                        class="dropdown-item text-nowrap"
                         hx-post="{{ url_for('ffe-upload-rules', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
-                    {% else %}
-                        disabled
-                    {% endif %}
+                    >
+                        <i class="bi bi-file-earmark-arrow-up-fill pe-1"></i>
+                        {{ _('Upload rules') }}
+                    </button>
+                </span>
+            </li>
+            <li>
+                <span
+                    {{ macros.tooltip_attributes(
+                        'info', _('Download the fees that the organizer should pay to the FFE.'), 'right'
+                    ) }}
                 >
-                    <i class="bi bi-file-earmark-arrow-up-fill pe-1"></i>
-                    {{ _('Upload rules') }}
-                </button>
-            </span>
-        </li>
-        <li>
-            <span
-                {% if tournament.plugin_data.ffe.ffe_id %}
-                    {{ macros.tooltip_attributes('info', _('Download the fees that the organizer should pay to the FFE.'), 'right') }}
-                {% else %}
-                    {{ macros.tooltip_attributes('warning', _('FFE certification number and password not defined for tournament.'), 'right') }}
-                {% endif %}
-            >
-                <button
-                    id="ffe-extract-fees-button"
-                    class="dropdown-item text-nowrap"
-                    {% if tournament.plugin_data.ffe.ffe_id %}
+                    <button
+                        id="ffe-extract-fees-button"
+                        class="dropdown-item text-nowrap"
                         hx-get="{{ url_for('ffe-extract-fees', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
-                    {% else %}
-                        disabled
-                    {% endif %}
-                >
-                    <i class="bi bi-file-earmark-arrow-up-fill pe-1"></i>
-                    {{ _('Download fees') }}
-                </button>
-            </span>
-        </li>
-    </ul>
-</li>
+                    >
+                        <i class="bi bi-file-earmark-arrow-up-fill pe-1"></i>
+                        {{ _('Download fees') }}
+                    </button>
+                </span>
+            </li>
+        </ul>
+    </li>
+{% endif %}
