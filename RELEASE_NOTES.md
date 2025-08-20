@@ -26,22 +26,25 @@ English version below
 
 ### Gestion des appariements
 
-- Remplacement des classements estimés rapide/blitz par les classements standards (3.0.0)
 - Affichage des informations d'appariement : groupes, flotteurs, historiques et préférences couleurs (3.0.0)
-- Suppression de la renumérotation automatique des échiquiers en cas d'appariement manuel (3.0.0)
 
 ### Gestion des écrans
 
 - Ajout du numéro dans le cas des échiquiers fixes (3.0.0)
 
+## Appariements
+
+- Remplacement des classements estimés rapide/blitz par les classements standards (3.0.0)
+- Suppression de la renumérotation automatique des échiquiers en cas d'appariement manuel (3.0.0)
+
+## Classements
+
+- Ajout de départages non compatibles avec Papi (expérimental) (3.0.0)
+
 ## Impressions
 
 - Amélioration des appariements par ordre alphabétique (3.0.0)
 - Ajout des titres FIDE dans les attributions de prix (3.0.0)
-
-# Départages
-
-- Ajout de départages non compatibles avec Papi (expérimental) (3.0.0)
 
 ---
 
@@ -72,19 +75,22 @@ English version below
 
 ### Pairings management
 
-- Allow overriding of unrated rapid/blitz ratings by standard ratings (3.0.0)
 - Display pairing information: groups, floaters, history and colour preferences (3.0.0)
-- Removed automatic renumbering of boards when manually pairing (3.0.0)
 
 ### Screens management
 
 - Added board IDs in case of fixed boards (3.0.0)
 
+## Pairings
+
+- Allow overriding of unrated rapid/blitz ratings by standard ratings (3.0.0)
+- Removed automatic renumbering of boards when manually pairing (3.0.0)
+
+## Rankings
+
+- Added tie-breaks not compatible with Papi (experimental) (3.0.0)
+
 ## Printing
 
 - Improved alphabétical pairings (3.0.0)
 - Added FIDE titles on prize assignments (3.0.0)
-
-# Tie-breaks
-
-- Added tie-breaks not compatible with Papi (experimental) (3.0.0)
