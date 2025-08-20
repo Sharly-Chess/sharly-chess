@@ -45,6 +45,7 @@ English version below
 
 - Amélioration des appariements par ordre alphabétique (3.0.0)
 - Ajout des titres FIDE dans les attributions de prix (3.0.0)
+- Ajout des départages sur les grilles Berger (3.0.0)
 
 ---
 
@@ -94,3 +95,4 @@ English version below
 
 - Improved alphabétical pairings (3.0.0)
 - Added FIDE titles on prize assignments (3.0.0)
+- Added tie-breaks to Berger grids (3.0.0)
