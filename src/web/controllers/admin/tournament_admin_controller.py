@@ -345,11 +345,9 @@ class TournamentAdminController(BaseEventAdminController):
         tournament_action_menu_items = (
             plugin_manager.hook.get_tournament_card_menu_items_template()
         )
-        tournament_importers: list[TournamentImporter] = [
-            importer
-            for importer in TournamentImporterManager.objects()
-            if importer.display_in_menu
-        ]
+        tournament_importers: list[TournamentImporter] = (
+            TournamentImporterManager.objects()
+        )
         tournament_exporters: list[TournamentExporter] = (
             TournamentExporterManager.objects()
         )

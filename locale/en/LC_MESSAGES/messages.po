@@ -1209,6 +1209,9 @@ msgstr ""
 msgid "Current events"
 msgstr ""
 
+msgid "Current pairings differ from the expected Swiss pairings, possibly due to manual changes, complementary pairings, or renumbering after rating/late-entry adjustments."
+msgstr ""
+
 msgid "Current round"
 msgstr ""
 
@@ -2472,6 +2475,9 @@ msgid "Image: %(image)s"
 msgstr ""
 
 msgid "Import"
+msgstr ""
+
+msgid "Import JSON file (papi-converter format)"
 msgstr ""
 
 msgid "Import Papi file"

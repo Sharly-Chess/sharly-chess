@@ -1295,7 +1295,14 @@ class PairingsAdminController(BaseEventAdminController):
         engine = tournament.pairing_variation.engine
         assert isinstance(engine, BbpPairings)
 
-        history = engine.get_history(tournament=tournament, round_=round)
+        warning: str | None = None
+        (history, boards) = engine.get_history(tournament=tournament, round_=round)
+        if tournament.round_has_pairings(round) and engine.pairings_diff(
+            tournament, round, ignore_order=False, expected_stored_boards=boards
+        ):
+            warning = _(
+                'Current pairings differ from the expected Swiss pairings, possibly due to manual changes, complementary pairings, or renumbering after rating/late-entry adjustments.'
+            )
 
         buckets: dict[float, list[TournamentHistoryPlayer]] = defaultdict(list)
 
@@ -1319,5 +1326,6 @@ class PairingsAdminController(BaseEventAdminController):
                 'modal': 'pairing_info',
                 'pairing_history': grouped,
                 'players_by_pairing_number': tournament.players_by_starting_rank,
+                'warning': warning,
             },
         )

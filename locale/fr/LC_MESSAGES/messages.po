@@ -1209,6 +1209,9 @@ msgstr "En cours ({num})"
 msgid "Current events"
 msgstr "Évènements en cours"
 
+msgid "Current pairings differ from the expected Swiss pairings, possibly due to manual changes, complementary pairings, or renumbering after rating/late-entry adjustments."
+msgstr "Les appariements diffèrent de ceux attendus, suite à des modifications manuelles, des appariements complémentaires ou une renumérotation suite à des ajustements de classements des joueur·euses ou des entrées tardives dans le tournoi."
+
 msgid "Current round"
 msgstr "Ronde en cours"
 
@@ -2473,6 +2476,9 @@ msgstr "Image : %(image)s"
 
 msgid "Import"
 msgstr "Importer"
+
+msgid "Import JSON file (papi-converter format)"
+msgstr "Importer un fichier JSON (format papi-converter)"
 
 msgid "Import Papi file"
 msgstr "Importer un fichier Papi"

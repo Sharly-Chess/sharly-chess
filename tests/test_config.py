@@ -4,7 +4,6 @@ import time
 from urllib import parse
 from common import BASE_DIR
 from common.sharly_chess_config import SharlyChessConfig
-from data.pairings.systems import SwissPairingSystem
 from data.pairings.variations import StandardSwissVariation
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -213,7 +212,7 @@ class TestUtils:
             'location': None,
             'start': None,
             'stop': None,
-            'pairing': SwissPairingSystem.static_id(),
+            'pairing': StandardSwissVariation.static_id(),
             'current_round': None,
             'check_in_open': False,
             'rounds': 7,

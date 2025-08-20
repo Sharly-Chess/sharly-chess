@@ -90,7 +90,11 @@ class PairingEngine(ABC):
         return self.invalid_player_count_message(tournament)
 
     def pairings_diff(
-        self, tournament: 'Tournament', round_: int, ignore_order: bool = False
+        self,
+        tournament: 'Tournament',
+        round_: int,
+        ignore_order: bool = False,
+        expected_stored_boards: list[StoredBoard] | None = None,
     ) -> list[tuple[Board | None, Board | None]]:
         """For round *round_* of tournament *tournament*, get the diff between
         the real pairings and the expected ones.
@@ -103,10 +107,12 @@ class PairingEngine(ABC):
 
         if ignore_order:
             real_boards = sorted(real_boards, reverse=True)
+        if expected_stored_boards is None:
+            expected_stored_boards = self._generate_stored_boards(tournament, round_)
         expected_boards = sorted(
             (
                 Board(tournament, round_, stored_board)
-                for stored_board in self._generate_stored_boards(tournament, round_)
+                for stored_board in expected_stored_boards
             ),
             key=None if ignore_order or self.reorder_boards else attrgetter('index'),
             reverse=ignore_order or self.reorder_boards,
@@ -238,12 +244,13 @@ class BbpPairings(PairingEngine):
             )
         return stored_boards
 
-    def get_history(self, tournament: 'Tournament', round_: int) -> TournamentHistory:
+    def get_history(
+        self, tournament: 'Tournament', round_: int
+    ) -> tuple[TournamentHistory, list[StoredBoard]]:
         pairings_dir = TMP_DIR / 'pairings'
         pairings_dir.mkdir(exist_ok=True, parents=True)
         trfx_file_path = pairings_dir / f'{tournament.uniq_id}.trfx'
-        trf_file_path = pairings_dir / f'{tournament.uniq_id}.trf'
-        _file_path = pairings_dir / f'{tournament.uniq_id}.trfx'
+        pairings_file_path = pairings_dir / f'{tournament.uniq_id}.trf'
         checklist_file_path = pairings_dir / f'{tournament.uniq_id}-history.txt'
         checklist_file_path.unlink(missing_ok=True)
         trf_tournament = tournament.to_trf(
@@ -260,7 +267,7 @@ class BbpPairings(PairingEngine):
                 trfx_file_path,
                 # The only way to get a checklist is to actaully pair the round....
                 '-p',
-                trf_file_path,
+                pairings_file_path,
                 # Request the checklist
                 '-l',
                 checklist_file_path,
@@ -268,7 +275,7 @@ class BbpPairings(PairingEngine):
             capture_output=True,
             encoding='utf-8',
         )
-        if not checklist_file_path.exists():
+        if not checklist_file_path.exists() or not pairings_file_path.exists():
             raise SharlyChessException(
                 f'{tournament.log_prefix}round {round_} - Pairing history '
                 f'from BbpPairings failed with status {result.returncode}.\n'
@@ -276,8 +283,12 @@ class BbpPairings(PairingEngine):
             )
         with open(checklist_file_path, 'r', encoding='utf-8') as file:
             text_content = file.read()
-        history_data = parse_bbp_checklist_text(text_content)
-        return history_data
+            history_data = parse_bbp_checklist_text(text_content)
+
+        with open(pairings_file_path, encoding='utf-8') as pairing_file:
+            boards = self._boards_from_file(pairing_file, tournament, round_, False)
+
+        return (history_data, boards)
 
 
 class RoundRobinPairingEngine(PairingEngine, ABC):
