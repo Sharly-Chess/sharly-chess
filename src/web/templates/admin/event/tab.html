@@ -242,6 +242,18 @@
                         </td>
                     </tr>
                     <tr>
+                        <th scope="row" class="text-nowrap">{{ _('Rating seed for unrated rapid/blitz') }}</th>
+                        <td class="text-nowrap">
+                            {% if not admin_event.override_unrated_rapid_blitz %}
+                                {{ _('Fallback to estimated ratings') }}
+                            {% else %}
+                                <span class="fst-italic">
+                                    {{ _('Use standard ratings') }} {{ _('(by default)') }}
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
                         <th scope="row" class="text-nowrap">{{ _('Rules') }}</th>
                         <td class="text-nowrap">
                             {% if admin_event.rules %}

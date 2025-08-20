@@ -138,6 +138,10 @@ class Event:
         return self.stored_event.custom_exec_mode
 
     @property
+    def override_unrated_rapid_blitz(self) -> bool:
+        return self.stored_event.override_unrated_rapid_blitz or False
+
+    @property
     def formatted_start_date_time(self) -> str:
         return format_timestamp_date_time(self.start)
 

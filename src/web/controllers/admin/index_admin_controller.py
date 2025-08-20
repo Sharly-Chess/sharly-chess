@@ -353,7 +353,9 @@ class IndexAdminController(BaseAdminController):
                     str(console_log_level): console_log_level_str
                     for console_log_level, console_log_level_str in sharly_chess_config.console_log_levels.items()
                 }
-                console_log_level_options[''] = _('By default - {option}').format(
+                console_log_level_options[''] = _(
+                    "Use Application's default - {option}"
+                ).format(
                     option=console_log_level_options[
                         str(SharlyChessConfig.default_console_log_level)
                     ]

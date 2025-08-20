@@ -745,9 +745,6 @@ msgstr ""
 msgid "By board"
 msgstr ""
 
-msgid "By default - {option}"
-msgstr ""
-
 msgid "By default, tournaments are not visible on the FFE site."
 msgstr ""
 
@@ -1296,6 +1293,9 @@ msgid "Debug message"
 msgstr ""
 
 msgid "Default federation"
+msgstr ""
+
+msgid "Default handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. If checked, this rating will also be used for seeding and pairings. If unchecked, they will be treated as unrated and require an estimated rating."
 msgstr ""
 
 msgid "Default language"
@@ -1945,6 +1945,9 @@ msgstr ""
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr "Estimated"
 
+msgid "Estimated ratings"
+msgstr ""
+
 msgid "Event"
 msgstr ""
 
@@ -2136,6 +2139,12 @@ msgid "Failed to read [{url}] (timeout): [{ex}]."
 msgstr ""
 
 msgid "Failed to read [{url}]: [{ex}]."
+msgstr ""
+
+msgid "Fallback to estimated ratings"
+msgstr ""
+
+msgid "Fallback to standard rating for unrated players"
 msgstr ""
 
 msgid "Families"
@@ -2383,6 +2392,9 @@ msgstr ""
 msgid "Half-Point Bye"
 msgstr ""
 
+msgid "Handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. You may also choose to use this rating for seeding and pairings."
+msgstr ""
+
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
 msgstr ""
 
@@ -2450,6 +2462,9 @@ msgid "Identification"
 msgstr ""
 
 msgid "Identity"
+msgstr ""
+
+msgid "If no rapid/blitz rating exists, fall back to the standard rating"
 msgstr ""
 
 msgid "Illegal moves are not recorded."
@@ -4016,6 +4031,9 @@ msgstr ""
 msgid "Rating limits"
 msgstr ""
 
+msgid "Rating seed for unrated rapid/blitz"
+msgstr ""
+
 #, python-format
 msgid "Rating splitting groups A and B (recommended: %(recommended)d)."
 msgstr ""
@@ -4349,6 +4367,9 @@ msgstr ""
 msgid "Seed color can't be modified once the tournament has started."
 msgstr ""
 
+msgid "Seeding of unrated rapid/blitz"
+msgstr ""
+
 msgid "Select the players and the data to update:"
 msgstr ""
 
@@ -4513,6 +4534,9 @@ msgid "Standard"
 msgstr ""
 
 msgid "Standard rating"
+msgstr ""
+
+msgid "Standard rating used."
 msgstr ""
 
 msgid "Standard swiss system"
@@ -5562,10 +5586,19 @@ msgstr ""
 msgid "Upper rating limit"
 msgstr ""
 
+msgid "Use Application's default - {option}"
+msgstr ""
+
+msgid "Use Event's default - {option}"
+msgstr ""
+
 msgid "Use connected devices to check-in players and enter results on public screens"
 msgstr ""
 
 msgid "Use customized permissions"
+msgstr ""
+
+msgid "Use estimated rating for unrated players"
 msgstr ""
 
 msgid "Use log-level specific colors"
@@ -5575,6 +5608,9 @@ msgid "Use no timer"
 msgstr ""
 
 msgid "Use pairing engines"
+msgstr ""
+
+msgid "Use standard ratings"
 msgstr ""
 
 msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system."
@@ -6173,4 +6209,7 @@ msgstr ""
 
 msgid "{string}: {value}"
 msgstr ""
+
+#~ msgid "Estimated ratings for rapid/blitz tournaments"
+#~ msgstr ""
 

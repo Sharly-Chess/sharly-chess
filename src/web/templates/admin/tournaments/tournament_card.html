@@ -55,6 +55,15 @@
         <div class="text-start">
             {{ tournament.rating }}
         </div>
+        {% if tournament.rating != 1 %}
+            <div class="text-start {% if tournament.override_unrated_rapid_blitz %}text-secondary{% endif %}">
+                {% if tournament.override_unrated_rapid_blitz %}
+                    {{ _('Fallback to standard rating for unrated players') }}
+                {% else %}
+                    {{ _('Use estimated rating for unrated players') }}
+                {% endif %}
+            </div>
+        {% endif %}
         <div class="text-start">
             {{ _('Pairings: %(pairing_variation)s', pairing_variation=tournament.pairing_variation.name) }}
             {% with pairing_tooltip_message=tournament.pairing_variation.settings_tooltip_message(tournament) %}
