@@ -290,10 +290,6 @@ class PapiPerformanceTieBreak(FfeTieBreak, PerformanceTieBreak):
     def sub_id() -> str:
         return 'PAPI_PERFORMANCE'
 
-    @staticmethod
-    def static_papi_id() -> str:
-        return 'Performance'
-
     @property
     def acronym(self) -> str:
         return _('Perf *** ACRONYM FOR PAPI PERFORMANCE')

@@ -45,13 +45,6 @@
     {% endfor %}
 
     <div class="d-flex flex-column gap-1">
-        <div class="text-start {% if not tournament.rules %}text-secondary{% endif %}">
-            {% if tournament.rules %}
-                {{ _('Rules file set') }}
-            {% else %}
-                {{ _('No rules file set') }}
-            {% endif %}
-        </div>
         <div class="text-start">
             {{ tournament.rating }}
         </div>
@@ -87,6 +80,13 @@
                     {% endfor %}
                 {% else %}
                     {{ _('No tie-break defined') }}
+                {% endif %}
+            </div>
+            <div class="text-start {% if not tournament.rules %}text-secondary{% endif %}">
+                {% if tournament.rules %}
+                    {{ _('Rules file set') }}
+                {% else %}
+                    {{ _('No rules file set') }}
                 {% endif %}
             </div>
             <div class="text-start {% if not tournament.stored_tournament.first_board_number %}text-secondary{% endif %}">

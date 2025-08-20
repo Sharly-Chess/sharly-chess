@@ -6,7 +6,7 @@
         {% if value.plugin_data.ffe.ffe_licence.value == 0 %}
             {{ macros.tooltip_attributes('error', value.plugin_data.ffe.ffe_licence.name, 'right') }}
         {% elif value.plugin_data.ffe.ffe_licence.value == 1 %}
-            {{ macros.tooltip_attributes('warning', _('FFE licence: %(ffe_licence_number)s (expired).', ffe_licence_number=value.plugin_data.ffe.ffe_licence_number), 'right') }}
+            {{ macros.tooltip_attributes('warning', _('FFE licence: %(ffe_licence_number)s (expired).', ffe_licence_number=value.plugin_data.ffe.ffe_licence_number or ''), 'right') }}
             class="cursor-pointer"
             onclick="navigator.clipboard.writeText('{{ value.plugin_data.ffe.ffe_licence_number }}')"
         {% elif value.plugin_data.ffe.ffe_licence.value in [2, 3] %}

@@ -615,14 +615,14 @@ class PapiConverter:
     def papi_export_unavailable_message(cls, tournament: Tournament) -> str | None:
         """Return a message if the export to Papi is unavailable, None otherwise."""
         if tournament.pairing_variation not in PapiPairingVariation.core_objects():
-            return _(
-                'The [{pairing_system}] pairing system is not compatible with the Papi export.'
-            ).format(pairing_system=tournament.pairing_variation.name)
+            return _('Pairing system [{pairing_system}] is not compatible.').format(
+                pairing_system=tournament.pairing_variation.name
+            )
         for tie_break in tournament.tie_breaks:
             if tie_break not in PapiTieBreak.core_objects():
-                return _(
-                    'The [{tie_break}] tie break is not compatible with the Papi export.'
-                ).format(tie_break=tie_break.name)
+                return _('Tie-break [{tie_break}] is not compatible.').format(
+                    tie_break=tie_break.name
+                )
         return None
 
     def write_papi_file(
