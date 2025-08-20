@@ -4,7 +4,7 @@ import weakref
 from dataclasses import dataclass
 from datetime import date
 from functools import total_ordering, cached_property
-from typing import Literal, Self, Callable, SupportsFloat, TYPE_CHECKING
+from typing import Self, Callable, SupportsFloat, TYPE_CHECKING
 from trf import Player as TrfPlayer
 from trf.Player import Game as TrfGame
 
@@ -16,6 +16,7 @@ from plugins.manager import plugin_manager
 from plugins.utils import PluginData
 from utils import StaticUtils
 from utils.enum import (
+    NormCriterion,
     NormFailExplanation,
     PlayerGender,
     PlayerTitle,
@@ -559,116 +560,194 @@ class Player:
         self.board_number = board_number
         self.color = color
 
-    def achieves_title_norm(
-        self, title_norm: TitleNorm
-    ) -> Literal[True] | list[NormFailExplanation]:
+    def achieves_any_title_norm(
+        self,
+    ) -> dict[
+        TitleNorm,
+        dict[
+            NormFailExplanation | NormCriterion,
+            int | float | PlayerGender | dict[Federation, int] | dict[PlayerTitle, int],
+        ],
+    ]:
         """Returns True if the given title norm is achievable, or a list of the reasons why it is not.
         Since there are several reasons which can be cumulative, it is important to
         check all the requirements."""
         # NOTE(Amaras): in all this function, all references to articles refer to
         # FIDE Handbook B.01: FIDE Title Regulations effective from 1 January 2024
-        if not title_norm.satisfies_gender_requirement(self.gender):
-            # There is no need to go further if this fails
-            return [NormFailExplanation.WrongGender]
-        reasons = []
+        result: dict[
+            TitleNorm,
+            dict[
+                NormCriterion | NormFailExplanation,
+                int
+                | float
+                | PlayerGender
+                | dict[Federation, int]
+                | dict[PlayerTitle, int],
+            ],
+        ] = {title_norm: {} for title_norm in TitleNorm.values()}
+        for title_norm in result.keys():
+            if not title_norm.satisfies_gender_requirement(self.gender):
+                # There is no need to go further if this fails
+                result[title_norm][NormFailExplanation.WRONG_GENDER] = self.gender
+            else:
+                result[title_norm][NormCriterion.GENDER] = self.gender
 
         played_games: int = 0
         federations = Counter[Federation]()
-        titles_holders = Counter[PlayerTitle]()
-        required_titles = Counter[PlayerTitle]()
+        title_holders = Counter[PlayerTitle]()
+        required_titles: dict[TitleNorm, Counter[PlayerTitle]] = {
+            title_norm: Counter() for title_norm in TitleNorm.values()
+        }
         ratings: list[PlayerRating] = []
         forfeit_or_pab = 0
-        results = Counter[Result]()
+        game_results = Counter[Result]()
         tournament_rating = self.tournament.rating
         tournament_players = self.tournament.players_by_id
         tournament_rounds = self.tournament.rounds
-        point_values = self.tournament.point_values
         for pairing in self.pairings_by_round.values():
             if pairing.played:
                 played_games += 1
                 opponent = tournament_players[pairing.opponent_id]
                 federations[opponent.federation] += 1
                 ratings.append(opponent.ratings[tournament_rating])
-                if (title := opponent.title) in title_norm.title_holders:
-                    titles_holders[title] += 1
-                if title in title_norm.required_titles:
-                    required_titles[title] += 1
-                results[pairing.result] += 1
+                if (title := opponent.title) in TitleNorm.title_holders():
+                    title_holders[title] += 1
+                for title_norm in result.keys():
+                    if title in title_norm.required_titles:
+                        required_titles[title_norm][title] += 1
+                game_results[pairing.result] += 1
             if pairing.forfeit_gain or pairing.exempt:
                 forfeit_or_pab += 1
 
         # FIXME(Amaras): this depends on the tournament format, it is wrong for team championships
-        if played_games < 8:
-            reasons.append(NormFailExplanation.NotEnoughGames)
+        for title_norm in result.keys():
+            if played_games < TitleNorm.minimum_rounds():
+                result[title_norm][NormFailExplanation.NOT_ENOUGH_GAMES] = played_games
 
-        # specific case for 9 round tournaments, see 1.4.1.c
-        if tournament_rounds == 9 and played_games == 8 and forfeit_or_pab != 1:
-            reasons.append(NormFailExplanation.NotEnoughGames)
+            # specific case for 9 round tournaments, see 1.4.1.c
+            elif (
+                tournament_rounds == TitleNorm.minimum_rounds()
+                and played_games == TitleNorm.minimum_rounds() - 1
+                and forfeit_or_pab != 1
+            ):
+                result[title_norm][NormFailExplanation.NOT_ENOUGH_GAMES] = played_games
+            else:
+                result[title_norm][NormCriterion.GAMES] = played_games
+            if (own_federation := federations[self.federation]) != 0:
+                # See 1.4.3, provided that there is no exception
+                # FIXME(Amaras): take care of the exceptions
+                if len(federations) <= 2:
+                    result[title_norm][NormFailExplanation.NOT_ENOUGH_FEDERATIONS] = (
+                        len(federations) - 1
+                    )
+                if own_federation > TitleNorm.maximum_of_own_federation(
+                    tournament_rounds
+                ):
+                    result[title_norm][NormFailExplanation.TOO_MANY_OWN_FEDERATION] = {
+                        self.federation: own_federation
+                    }
+            elif len(federations) < 2:
+                result[title_norm][NormFailExplanation.NOT_ENOUGH_FEDERATIONS] = len(
+                    federations
+                )
+            else:
+                result[title_norm][NormCriterion.FEDERATIONS] = dict(federations)
 
-        if (own_federation := federations[self.federation]) != 0:
-            # See 1.4.3, provided that there is no exception
-            # FIXME(Amaras): take care of the exceptions
-            if len(federations) <= 2:
-                reasons.append(NormFailExplanation.NotEnoughFederations)
-            if own_federation > title_norm.maximum_of_own_federation(tournament_rounds):
-                reasons.append(NormFailExplanation.TooManyOwnFederation)
+            for federation, number_in_federation in federations.items():
+                if number_in_federation > TitleNorm.maximum_of_one_federation(
+                    tournament_rounds
+                ):
+                    del result[title_norm][NormCriterion.FEDERATIONS]
+                    result[title_norm][NormFailExplanation.TOO_MANY_ONE_FEDERATION] = {
+                        federation: number_in_federation
+                    }
 
-        if any(
-            number_in_federation
-            > title_norm.maximum_of_one_federation(tournament_rounds)
-            for number_in_federation in federations.values()
-        ):
-            reasons.append(NormFailExplanation.TooManyOneFederation)
+        for title_norm in result.keys():
+            if (
+                holders := sum(title_holders.values())
+            ) < TitleNorm.minimum_title_holders(tournament_rounds):
+                result[title_norm][NormFailExplanation.NOT_ENOUGH_TITLE_HOLDERS] = (
+                    holders
+                )
+            else:
+                result[title_norm][NormCriterion.TITLE_HOLDERS] = dict(title_holders)
 
-        if sum(titles_holders.values()) < title_norm.minimum_title_holders(
-            tournament_rounds
-        ):
-            reasons.append(NormFailExplanation.NotEnoughTitleHolders)
+            if (
+                titles := sum(required_titles[title_norm].values())
+            ) < TitleNorm.minimum_required_titles(tournament_rounds):
+                result[title_norm][NormFailExplanation.NOT_ENOUGH_REQUIRED_TITLES] = (
+                    titles
+                )
+            else:
+                result[title_norm][NormCriterion.REQUIRED_TITLES] = dict(
+                    required_titles[title_norm]
+                )
 
-        if sum(required_titles.values()) < title_norm.minimum_required_titles(
-            tournament_rounds
-        ):
-            reasons.append(NormFailExplanation.NotEnoughRequiredTitles)
+        score = sum(count * result.points() for result, count in game_results.items())
+        for title_norm in result.keys():
+            if score < TitleNorm.minimum_score(tournament_rounds):
+                result[title_norm][NormFailExplanation.SCORE_TOO_LOW] = score
+            else:
+                result[title_norm][NormCriterion.SCORE] = score
 
         ratings.sort()
+        adjusted_ratings = {
+            title_norm: ratings.copy() for title_norm in TitleNorm.values()
+        }
         # One (the lowest) value is raised to the rating floor
         # See 1.4.6.b and 1.4.6.c
-        if ratings[0] < title_norm.minimum_rating:
-            ratings[0].value = title_norm.minimum_rating
-            ratings[0].type = PlayerRatingType.FIDE
-        ratings.sort()
-        for index, rating in enumerate(ratings):
-            if not rating.unrated:
-                # Unrated players' ratings are sorted first
-                break
+        for title_norm, ratings in adjusted_ratings.items():
+            if ratings[0] < title_norm.minimum_rating:
+                ratings[0].value = title_norm.minimum_rating
+                ratings[0].type = PlayerRatingType.FIDE
+            ratings.sort()
+            for index, rating in enumerate(ratings):
+                if not rating.unrated:
+                    # Unrated players' ratings are sorted first
+                    break
+                else:
+                    # Unrated players not covered by 1.4.6.b are set to 1400, see 1.4.6.d
+                    ratings[index].value = 1400
+            ratings = [
+                rating.value for rating in ratings
+            ]  # Only keep the ratings, the types are no longer needed
+            average_rating = sum(ratings) / len(ratings)
+            if average_rating < title_norm.minimum_average:
+                result[title_norm][NormFailExplanation.AVERAGE_TOO_LOW] = average_rating
             else:
-                # Unrated players not covered by 1.4.6.b are set to 1400, see 1.4.6.d
-                ratings[index].value = 1400
-        ratings = [
-            rating.value for rating in ratings
-        ]  # Only keep the ratings, the types are no longer needed
-        average_rating = sum(ratings) / len(ratings)
-        if average_rating < title_norm.minimum_average:
-            reasons.append(NormFailExplanation.AverageTooLow)
+                result[title_norm][NormCriterion.RATING_AVERAGE] = average_rating
 
-        score = sum(
-            count * result.points(point_values) for result, count in results.items()
-        )
-        if score < title_norm.minimum_score:
-            reasons.append(NormFailExplanation.ScoreTooLow)
-        max_score = Result.GAIN.points(point_values) * sum(results.values())
+            max_score = Result.GAIN.points() * sum(game_results.values())
+            bonus = StaticUtils.performance_bonus(score / max_score)
+            performance = average_rating + bonus
 
-        bonus = StaticUtils.performance_bonus(score / max_score)
+            minimum_performance = title_norm.minimum_performance
 
-        performance = average_rating + bonus
+            if performance < minimum_performance:
+                result[title_norm][NormFailExplanation.PERFORMANCE_TOO_LOW] = (
+                    performance
+                )
+            else:
+                result[title_norm][NormCriterion.PERFORMANCE] = performance
 
-        if performance < title_norm.minimum_performance:
-            reasons.append(NormFailExplanation.PerformanceTooLow)
+            if NormCriterion.PERFORMANCE in result[title_norm] and not any(
+                fail_explanation in result[TitleNorm]
+                for fail_explanation in NormFailExplanation.values()
+            ):
+                over_performance = 0
+                new_score = score
+                new_bonus = bonus
+                draw_points = Result.DRAW.points()
+                while True:
+                    new_score -= draw_points
+                    new_bonus = StaticUtils.performance_bonus(new_score / max_score)
+                    if average_rating + new_bonus >= title_norm.minimum_performance:
+                        over_performance += draw_points
+                    else:
+                        break
+                result[title_norm][NormCriterion.OVERPERFORMANCE] = over_performance
 
-        if reasons:
-            return reasons
-
-        return True
+        return result
 
     @cached_property
     def has_real_pairings(self) -> bool:

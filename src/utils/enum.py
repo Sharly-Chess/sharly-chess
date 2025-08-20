@@ -1,5 +1,6 @@
 """A file grouping all the "utility" classes/enum"""
 
+from collections.abc import Iterator
 from datetime import date, datetime, timedelta
 from enum import Enum, StrEnum, IntEnum, auto
 from math import ceil
@@ -833,16 +834,57 @@ class PlayerTitle(IntEnum):
 
 
 class NormFailExplanation(Enum):
-    WrongGender = auto()
-    NotEnoughGames = auto()
-    NotEnoughFederations = auto()
-    TooManyOwnFederation = auto()
-    TooManyOneFederation = auto()
-    NotEnoughTitleHolders = auto()
-    NotEnoughRequiredTitles = auto()
-    ScoreTooLow = auto()
-    AverageTooLow = auto()
-    PerformanceTooLow = auto()
+    WRONG_GENDER = auto()
+    NOT_ENOUGH_GAMES = auto()
+    NOT_ENOUGH_FEDERATIONS = auto()
+    TOO_MANY_OWN_FEDERATION = auto()
+    TOO_MANY_ONE_FEDERATION = auto()
+    NOT_ENOUGH_TITLE_HOLDERS = auto()
+    NOT_ENOUGH_REQUIRED_TITLES = auto()
+    SCORE_TOO_LOW = auto()
+    AVERAGE_TOO_LOW = auto()
+    PERFORMANCE_TOO_LOW = auto()
+
+    @classmethod
+    def values(cls) -> Iterable['NormFailExplanation']:
+        yield from (
+            cls.WRONG_GENDER,
+            cls.NOT_ENOUGH_GAMES,
+            cls.NOT_ENOUGH_FEDERATIONS,
+            cls.TOO_MANY_OWN_FEDERATION,
+            cls.TOO_MANY_ONE_FEDERATION,
+            cls.NOT_ENOUGH_TITLE_HOLDERS,
+            cls.NOT_ENOUGH_REQUIRED_TITLES,
+            cls.SCORE_TOO_LOW,
+            cls.AVERAGE_TOO_LOW,
+            cls.PERFORMANCE_TOO_LOW,
+        )
+
+
+class NormCriterion(Enum):
+    GENDER = auto()
+    GAMES = auto()
+    FEDERATIONS = auto()
+    TITLE_HOLDERS = auto()
+    REQUIRED_TITLES = auto()
+    SCORE = auto()
+    RATING_AVERAGE = auto()
+    PERFORMANCE = auto()
+    OVERPERFORMANCE = auto()
+
+    @classmethod
+    def values(cls) -> Iterable['NormCriterion']:
+        yield from (
+            cls.GENDER,
+            cls.GAMES,
+            cls.FEDERATIONS,
+            cls.TITLE_HOLDERS,
+            cls.REQUIRED_TITLES,
+            cls.SCORE,
+            cls.RATING_AVERAGE,
+            cls.PERFORMANCE,
+            cls.OVERPERFORMANCE,
+        )
 
 
 class TitleNorm(Enum):
@@ -850,6 +892,13 @@ class TitleNorm(Enum):
     WGM = auto()
     IM = auto()
     GM = auto()
+
+    @classmethod
+    def values(cls) -> Iterator['TitleNorm']:
+        yield cls.WIM
+        yield cls.WGM
+        yield cls.IM
+        yield cls.GM
 
     def satisfies_gender_requirement(self, gender: PlayerGender) -> bool:
         match self:
@@ -900,30 +949,35 @@ class TitleNorm(Enum):
             case _:
                 raise ValueError(f'Invalid title norm value: {self}')
 
-    @property
+    @staticmethod
     def minimum_rounds() -> int:
         return 9
 
+    @staticmethod
     def minimum_score(
         rounds: int, point_values: dict[Result, float] | None = None
     ) -> float:
-        return Result.GAIN.points(point_values) * 0.35
+        return Result.GAIN.points(point_values) * 0.35 * rounds
 
+    @staticmethod
     def minimum_title_holders(rounds: int) -> int:
         return ceil(rounds / 2)
 
+    @staticmethod
     def minimum_required_titles(rounds: int) -> int:
         # FIXME(Amaras): Double Round-Robin requirements is 1/2 (rounded up)
         return max(ceil(rounds / 3), 3)
 
+    @staticmethod
     def maximum_of_own_federation(rounds: int) -> int:
         return (3 * rounds) // 5
 
+    @staticmethod
     def maximum_of_one_federation(rounds: int) -> int:
         return (2 * rounds) // 3
 
-    @property
-    def title_holders(self) -> tuple[PlayerTitle, ...]:
+    @staticmethod
+    def title_holders() -> tuple[PlayerTitle, ...]:
         return (
             PlayerTitle.WOMAN_FIDE_MASTER,
             PlayerTitle.FIDE_MASTER,
