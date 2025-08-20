@@ -2949,9 +2949,6 @@ msgstr "No."
 msgid "No. final rounds without byes:"
 msgstr ""
 
-msgid "Non-Papi tie-breaks"
-msgstr ""
-
 msgid "None"
 msgstr ""
 
@@ -4241,6 +4238,9 @@ msgid "Strong"
 msgstr ""
 
 msgid "Sum of Buchholz"
+msgstr ""
+
+msgid "Support for all FIDE recognised tie-break (including ones that are not compatible with Papi)"
 msgstr ""
 
 msgid "Support for the ChessEvent platform used for organising tournaments in France."

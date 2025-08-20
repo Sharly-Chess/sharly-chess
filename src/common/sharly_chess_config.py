@@ -146,7 +146,9 @@ class SharlyChessConfig(metaclass=Singleton):
     @property
     def experimental_features(self) -> list[str]:
         return [
-            _('Non-Papi tie-breaks'),
+            _(
+                'Support for all FIDE recognised tie-break (including ones that are not compatible with Papi)'
+            ),
         ]
 
     @property

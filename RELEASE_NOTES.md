@@ -39,7 +39,7 @@ English version below
 
 ## Classements
 
-- Ajout de départages non compatibles avec Papi (expérimental) (3.0.0)
+- Prise en charge de tous les départages reconnus par la FIDE, y compris ceux non compatibles avec Papi (expérimental, 3.0.0)
 
 ## Impressions
 
@@ -88,7 +88,7 @@ English version below
 
 ## Rankings
 
-- Added tie-breaks not compatible with Papi (experimental) (3.0.0)
+- Support for all FIDE recognised tie-breaks, including ones not compatible with Papi (experimental, 3.0.0)
 
 ## Printing
 
