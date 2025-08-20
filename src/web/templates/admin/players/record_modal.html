@@ -86,11 +86,15 @@
                                 {% endif %}
                             {% elif pairing.exempt %}
                                 {% set text=_('Pairing Allocated Bye') %}
+                            {% elif pairing.unrated_loss %}
+                                {% set text=_('Unrated Loss') %}
                             {% elif pairing.loss %}
                                 {% set text=_('Loss') %}
+                            {% elif pairing.unrated_draw %}
+                                {% set text=_('Unrated Draw') %}
                             {% elif pairing.draw %}
                                 {% set text=_('Draw') %}
-                            {% elif pairing.gain %}
+                            {% elif pairing.win %}
                                 {% set text=_('Win') %}
                             {% elif pairing.half_point_bye %}
                                 {% set text=_('Half-Point Bye') %}
