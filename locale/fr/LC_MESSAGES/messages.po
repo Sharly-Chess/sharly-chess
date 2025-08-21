@@ -2245,9 +2245,6 @@ msgstr "MI"
 msgid "Identity"
 msgstr "Identité"
 
-msgid "If no rapid/blitz rating exists, fall back to the standard rating"
-msgstr "S’il n’existe pas de classement rapide/blitz, utiliser le classement FIDE standard par défaut."
-
 msgid "Illegal moves are not recorded."
 msgstr "Les coups illégaux ne sont pas enregistrés."
 
@@ -2303,6 +2300,9 @@ msgstr "Impossible d'attribuer un nombre de rondes inférieur à la dernière ro
 
 msgid "In play"
 msgstr "En jeu"
+
+msgid "In rapid/blitz tournaments, use the standard rating for unrated players"
+msgstr "Dans les tournois rapides/blitz, utiliser le classement standard pour les joueur·euses non classé·es"
 
 msgid "In-tournament"
 msgstr "Dans le tournoi"
@@ -5683,3 +5683,4 @@ msgstr "{string} : {value}"
 
 msgid "{tie_break} (Papi compatible)"
 msgstr "{tie_break} (compatible Papi)"
+
