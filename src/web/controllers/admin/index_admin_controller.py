@@ -97,7 +97,7 @@ class IndexAdminController(BaseAdminController):
             else:
                 federation = Federation(federation_name)
         else:
-            errors[field] = _('Please choose a federation')
+            errors[field] = _('Please choose a federation.')
         locale: str | None = WebContext.form_data_to_str(data, field := 'locale')
         if locale and locale not in locales:
             errors[field] = _('Invalid locale [{locale}].').format(locale=locale)
@@ -242,9 +242,6 @@ class IndexAdminController(BaseAdminController):
             console_level_infos[value]['name'] = name
 
         context = web_context.template_context | {
-            'application_federation': sharly_chess_config.federation
-            if sharly_chess_config.stored_config.federation
-            else None,
             'plugins': plugin_manager.all_plugins,
             'messages': Message.messages(web_context.request),
             'nav_tabs': nav_tabs,

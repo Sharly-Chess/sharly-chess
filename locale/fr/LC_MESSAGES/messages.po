@@ -3373,6 +3373,9 @@ msgstr "Veuillez demander le mot de passe à l'organisateur·ice."
 msgid "Please choose a federation"
 msgstr "Veuillez choisir une fédération"
 
+msgid "Please choose a federation."
+msgstr "Veuillez choisir une fédération."
+
 msgid "Please choose the document."
 msgstr "Veuillez choisir le document."
 
@@ -5631,4 +5634,3 @@ msgstr "{string} : {value}"
 
 msgid "{tie_break} (Papi compatible)"
 msgstr "{tie_break} (compatible Papi)"
-

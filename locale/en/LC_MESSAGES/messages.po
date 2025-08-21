@@ -3373,6 +3373,9 @@ msgstr ""
 msgid "Please choose a federation"
 msgstr ""
 
+msgid "Please choose a federation."
+msgstr ""
+
 msgid "Please choose the document."
 msgstr ""
 

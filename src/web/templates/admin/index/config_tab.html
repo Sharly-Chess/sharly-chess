@@ -64,18 +64,13 @@
         </tr>
         <tr class="{{ row_cycler() }}">
             <th scope="row" class="text-nowrap">{{ _('Default federation') }}</th>
-            {% if application_federation %}
+            {% if sharly_chess_config.federation %}
                 <td>
                     <img
-                        class="player-application_federation-flag pe-1"
-                        src="{{ macros.federation_flag_url(application_federation) }}"
+                        class="player-federation-flag pe-1"
+                        src="{{ macros.federation_flag_url(sharly_chess_config.federation) }}"
                     />
-                    {{ application_federation.name }} - {{ sharly_chess_config.federations[application_federation.name] }}
-                    {% if not application_federation %}
-                        <span class="fst-italic">
-                            {{ _('(by default)') }}
-                        </span>
-                    {% endif %}
+                    {{ sharly_chess_config.federation.name }} - {{ sharly_chess_config.federations[sharly_chess_config.federation.name] }}
                 </td>
             {% else %}
                 <td>
