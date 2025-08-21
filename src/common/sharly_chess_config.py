@@ -95,6 +95,9 @@ class SharlyChessConfig(metaclass=Singleton):
         if not stored_config.locale:
             system_user_locale: str | None = cls._get_system_user_locale()
             stored_config.locale = cls._get_user_locale(system_user_locale)
+
+            if TEST_ENV:
+                stored_config.federation = SharlyChessConfig.default_federation
             with ConfigDatabase(write=True) as config_database:
                 config_database.update_stored_config(stored_config)
                 config_database.commit()
