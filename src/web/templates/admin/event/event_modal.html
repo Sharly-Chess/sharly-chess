@@ -159,48 +159,72 @@
                 <div class="row">
                     <div class="col-12 col-md-6 mb-3">
                         <div>
-                        {{ admin_macros.text_input(
-                            name='background_image',
-                            label=_('Background image:'),
-                            help_text=_('The URL or the path of the image to display (by default the Sharly Chess logo).'),
-                            default_checkbox=true,
-                            default_checkbox_text=_('no background image'),
-                            data=data, errors=errors
-                        ) }}
-                        <script>
-                            $('#background-image-checkbox').click(function() {
-                                if ($(this).is(':checked')) {
-                                    $('#background-image-picker-wrapper').css('display', 'none');
-                                    $('#background-image-test').css('background-image', '');
-                                } else {
-                                    $('#background-image-picker-wrapper').css('display', 'block');
-                                }
-                            });
-                        </script>
+                            {{ admin_macros.text_input(
+                                name='background_image',
+                                label=_('Background image:'),
+                                help_text=_("The URL or the path of the image (relative to the 'custom' folder) to display (by default the Sharly Chess logo)."),
+                                default_checkbox=true,
+                                default_checkbox_text=_('no background image'),
+                                data=data, errors=errors
+                            ) }}
+                            <script>
+                                $('#background-image-checkbox').click(function() {
+                                    if ($(this).is(':checked')) {
+                                        $('#background-image-picker-wrapper').css('display', 'none');
+                                        $('#background-image-test').css('display', 'none');
+                                    } else {
+                                        $('#background-image-test').css('display', 'block');
+                                        $('#background-image-picker-wrapper').css('display', 'block');
+                                    }
+                                });
+                            </script>
                         </div>
+
                         <div
                             id="background-image-picker-wrapper"
                             style="display: {% if data['background_image_checkbox'] == 'on' %}none{% else %}block{% endif %}"
                         >
-                            <label class="form-label">{{ _('Choose a custom image:') }}</label>
-                            <div
-                                id="background-image-picker"
-                            >
+                            <div class="row">
+                                <div class="col-12 text-nowrap d-inline-flex align-items-center gap-4 my-2">
+                                    <button
+                                        type="button"
+                                        class="collapse-button collapsed text-body"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#custom-tree"
+                                    >
+                                        <span
+                                            class="d-inline-flex align-items-center gap-2"
+                                        >
+                                            <i class="bi bi-chevron-down"></i>
+                                            {{ _("Choose from images in the 'custom' folder") }}
+                                        </span>
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                        <script>
-                            $('#background-image-picker')
-                            .jstree(
-                                {
-                                    'core' : {
-                                        'multiple': false,
-                                        'data' : {{ background_images_jstree_data | tojson }}
+
+                            <div class="collapse" id="custom-tree">
+                                <div
+                                    id="background-image-picker"
+                                >
+                                </div>
+                            </div>
+                            <script>
+                                $('#background-image-picker')
+                                .jstree(
+                                    {
+                                        'core': {
+                                            'multiple': false,
+                                            'data': {{ background_images_jstree_data | tojson }},
+                                            'themes': {
+                                                'name': 'default-dark'
+                                            }
+                                        }
                                     }
-                                }
-                            );
-                            $('#background-image-picker').on("changed.jstree", function (e, data) {
-                            });
-                        </script>
+                                );
+                                $('#background-image-picker').on("changed.jstree", function (e, data) {
+                                });
+                            </script>
+                        </div>
                     </div>
                     <div class="col-12 col-md-6 mb-3">
                         {{ admin_macros.color_input(
@@ -236,7 +260,8 @@
                                 background-color: {{ admin_event.background_color if admin_event else sharly_chess_config.default_background_color }};
                                 background-repeat: no-repeat;
                                 background-size: contain;
-                                background-position: center center;"
+                                background-position: center center;
+                                display: {% if data['background_image_checkbox'] == 'on' %}none{% else %}block{% endif %};"
                         >
                         </div>
                     </div>
