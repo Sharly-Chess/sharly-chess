@@ -562,9 +562,9 @@ class Tournament:
     @property
     def point_values(self) -> dict[Result, float]:
         if self.three_points_for_a_win:
-            return {Result.GAIN: 3, Result.DRAW: 1, Result.LOSS: 0}
+            return {Result.WIN: 3, Result.DRAW: 1, Result.LOSS: 0}
         else:
-            return {Result.GAIN: 1, Result.DRAW: 0.5, Result.LOSS: 0}
+            return {Result.WIN: 1, Result.DRAW: 0.5, Result.LOSS: 0}
 
     @property
     def plugin_data(self) -> dict[str, dict[str, Any]]:
@@ -828,7 +828,7 @@ class Tournament:
     ) -> dict[str, str]:
         fields: dict[str, str] = {}
         for result in [
-            result_class.GAIN,
+            result_class.WIN,
             result_class.DRAW,
             result_class.LOSS,
             result_class.FORFEIT_LOSS,
@@ -870,7 +870,7 @@ class Tournament:
                 )
             )
 
-        max_possible_points = Result.GAIN.points(self.point_values) * after_round
+        max_possible_points = Result.WIN.points(self.point_values) * after_round
 
         # NOTE(Amaras): only points from played games should be counted
         players = sorted(

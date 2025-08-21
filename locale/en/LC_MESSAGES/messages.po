@@ -166,8 +166,26 @@ msgstr "-"
 msgid "/move"
 msgstr ""
 
+msgid "0 - 0 (U)"
+msgstr ""
+
+msgid "0 - 1 (U)"
+msgstr ""
+
+msgid "0 - 1/2 (U)"
+msgstr ""
+
 msgid "1 *** THE LETTER TO ANSWER ONCE"
 msgstr "1"
+
+msgid "1 - 0 (U)"
+msgstr ""
+
+msgid "1/2 - 0 (U)"
+msgstr ""
+
+msgid "1/2 - 1/2 (U)"
+msgstr ""
 
 msgid "1st day of the month"
 msgstr ""
@@ -264,6 +282,9 @@ msgid "Access from the local network (LAN/WAN)"
 msgstr ""
 
 msgid "Access to the arbiter interface is not allowed from this client."
+msgstr ""
+
+msgid "Access unrated and penalty results."
 msgstr ""
 
 msgid "Action"
@@ -1710,7 +1731,7 @@ msgstr ""
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr "Estimated"
 
-msgid "Estimated ratings for rapid/blitz tournaments"
+msgid "Estimated ratings"
 msgstr ""
 
 msgid "Event"
@@ -3113,6 +3134,9 @@ msgstr ""
 msgid "PAB is already assigned"
 msgstr ""
 
+msgid "PENALTY"
+msgstr ""
+
 msgid "PERMUTE WHITE/BLACK"
 msgstr ""
 
@@ -3166,7 +3190,7 @@ msgstr ""
 msgid "Pairing system"
 msgstr ""
 
-msgid "Pairing system [{pairing_system}] is not compatible."
+msgid "Pairing system [{pairing_system}] is not compatible with the PAPI format."
 msgstr ""
 
 msgid "Pairings"
@@ -3368,6 +3392,12 @@ msgid "Plays %(board)d *** BOARD STRING FOR PAIRINGS PRINT"
 msgstr "Plays on board %(board)d"
 
 msgid "Please ask the organizer to get the password."
+msgstr ""
+
+msgid "Please choose a federation"
+msgstr ""
+
+msgid "Please choose a federation."
 msgstr ""
 
 msgid "Please choose the document."
@@ -3818,6 +3848,9 @@ msgid "Restore"
 msgstr ""
 
 msgid "Result"
+msgstr ""
+
+msgid "Result [{result}] is not compatible with the PAPI format."
 msgstr ""
 
 msgid "Results"
@@ -4332,7 +4365,7 @@ msgstr ""
 msgid "The date of the first hour is not defined (mandatory)."
 msgstr ""
 
-msgid "The default federation for your events."
+msgid "The default federation for your events. Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr ""
 
 msgid "The default language used."
@@ -4345,7 +4378,7 @@ msgstr ""
 msgid "The end time of the tournament (defaults to %(datetime)s)."
 msgstr ""
 
-msgid "The federation that organizes the event."
+msgid "The federation that organizes the event. Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr ""
 
 msgid "The file to import."
@@ -4765,7 +4798,7 @@ msgstr ""
 msgid "Tie-break #%(index)d:"
 msgstr ""
 
-msgid "Tie-break [{tie_break}] is not compatible."
+msgid "Tie-break [{tie_break}] is not compatible with the PAPI format."
 msgstr ""
 
 msgid "Tie-break already in use."
@@ -5022,6 +5055,18 @@ msgid "U8"
 msgstr ""
 
 msgid "UNPAIR"
+msgstr ""
+
+msgid "UNRATED BLACK VICTORY"
+msgstr ""
+
+msgid "UNRATED DRAW"
+msgstr ""
+
+msgid "UNRATED PENALTY"
+msgstr ""
+
+msgid "UNRATED WHITE VICTORY"
 msgstr ""
 
 msgid "URL [{url}] did not respond (error: [{error}])."
@@ -5628,4 +5673,3 @@ msgstr ""
 
 msgid "{tie_break} (Papi compatible)"
 msgstr ""
-

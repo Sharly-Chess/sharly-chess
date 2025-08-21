@@ -2,6 +2,9 @@
 {% import '/admin/common/macros.j2' as admin_macros with context %}
 
 {% include '/admin/pairings/round_controls.html' %}
+<div id="messages" hx-swap-oob="beforeend">
+    {% include '/common/messages.html' %}
+</div>
 {% with swap_oob=True %}
     <template>
         {% include '/admin/pairings/pairing_row.html' %}
