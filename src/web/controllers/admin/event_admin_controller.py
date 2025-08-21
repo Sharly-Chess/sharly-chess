@@ -95,7 +95,9 @@ class EventAdminController(BaseEventAdminController):
                     plugin_manager.hook.get_event_form_fields_template() or []
                 )
                 template_context |= {
-                    'federation_options': cls._get_federation_options(None),
+                    'federation_options': cls._get_federation_options_with_application_default(
+                        None
+                    ),
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         SharlyChessConfig.default_record_illegal_moves_number
                     ),
