@@ -1,5 +1,8 @@
+import locale
 import logging
+import os
 import socket
+import subprocess
 import sys
 from pathlib import Path
 from typing import overload, ClassVar, TYPE_CHECKING
@@ -21,6 +24,8 @@ from common.i18n import (
     DEFAULT_LOCALE,
     _,
     locales,
+    normalize_bcp47_to_locale,
+    read_macos_global_prefs,
     set_locale,
 )
 from common.logger import set_logging_config, get_logger
@@ -54,16 +59,85 @@ class SharlyChessConfig(metaclass=Singleton):
         if TEST_ENV:
             return 'en_GB'
         if sys.platform == 'win32':  # pragma: py-not-win32
-            import locale
             import ctypes
 
             windll = ctypes.windll.kernel32
-            system_user_locale: str = locale.windows_locale[
-                windll.GetUserDefaultUILanguage()
-            ]
-            logger.info('User locale: %s', system_user_locale)
-            return system_user_locale
-        # TODO add other OS
+            try:
+                # Locale ID → Windows locale name → Python locale key
+                # locale.windows_locale maps LCIDs to names like 'en_GB'
+                system_user_locale = locale.windows_locale[
+                    windll.GetUserDefaultUILanguage()
+                ]
+                logger.info('User locale (Windows): %s', system_user_locale)
+                return system_user_locale
+            except Exception as e:
+                logger.debug('Failed to get Windows UI language: %s', e)
+                # fall through to generic fallback below
+
+        elif sys.platform == 'darwin':
+            prefs = read_macos_global_prefs()
+            lang_list = prefs.get('AppleLanguages') or []
+            apple_locale = prefs.get('AppleLocale')
+
+            if lang_list:
+                loc = normalize_bcp47_to_locale(str(lang_list[0]))
+                logger.info('User locale (macOS AppleLanguages): %s', loc)
+                return loc
+
+            if apple_locale:
+                loc = normalize_bcp47_to_locale(str(apple_locale))
+                logger.info('User locale (macOS AppleLocale): %s', loc)
+                return loc
+
+            # last-ditch: `defaults read -g AppleLanguages`
+            try:
+                proc = subprocess.run(
+                    ['defaults', 'read', '-g', 'AppleLanguages'],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                )
+                # Output is Apple’s property list textual representation; pick first token in quotes
+                import re
+
+                m = re.search(r'"([^"]+)"', proc.stdout)
+                if m:
+                    loc = normalize_bcp47_to_locale(m.group(1))
+                    logger.info('User locale (macOS defaults fallback): %s', loc)
+                    return loc
+            except Exception as e:
+                logger.debug('macOS defaults fallback failed: %s', e)
+
+        # Linux / other: rely on locale module / env
+        try:
+            # Ensure LC_CTYPE is initialized from environment
+            locale.setlocale(locale.LC_CTYPE, '')
+        except Exception:
+            pass
+
+        lang = (
+            os.environ.get('LC_ALL')
+            or os.environ.get('LC_MESSAGES')
+            or os.environ.get('LANG')
+            or ''
+        )
+
+        if lang:
+            # LANG often looks like 'en_GB.UTF-8' → strip encoding
+            loc = lang.split('.', 1)[0]
+            logger.info('User locale (env): %s', loc)
+            return loc
+
+        # Final fallback: locale.getlocale()
+        try:
+            loc_tuple = locale.getlocale()  # (language_code, encoding)
+            if loc_tuple and loc_tuple[0]:
+                logger.info('User locale (locale.getlocale): %s', loc_tuple[0])
+                return loc_tuple[0]
+        except Exception:
+            pass
+
+        logger.info('User locale: unknown')
         return None
 
     @staticmethod

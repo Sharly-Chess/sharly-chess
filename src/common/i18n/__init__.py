@@ -1,4 +1,7 @@
 import gettext as gettext_lib
+import os
+import plistlib
+import subprocess
 import threading
 from gettext import GNUTranslations
 from logging import Logger
@@ -151,3 +154,40 @@ def ngettext(singular: str, plural: str, n: int, locale: str | None = None):
         return _all_translations[locale or get_locale()].ngettext(singular, plural, n)
     else:
         return gettext_lib.ngettext(singular, plural, n)
+
+
+def normalize_bcp47_to_locale(tag: str) -> str:
+    """
+    Convert a BCP47-like tag (e.g. 'en-US', 'pt-BR', 'zh-Hans-CN') to a
+    Python locale-ish string. Keeps only language + region when present.
+    """
+    if not tag:
+        return tag
+    parts = tag.replace('_', '-').split('-')
+    if len(parts) >= 2 and len(parts[1]) in (2, 3):
+        return f'{parts[0].lower()}_{parts[1].upper()}'
+    # no explicit region; return language only
+    return parts[0].lower()
+
+
+def read_macos_global_prefs() -> dict:
+    """
+    Read ~/Library/Preferences/.GlobalPreferences.plist as a dict.
+    Falls back to `defaults read -g` if needed.
+    """
+    # Preferred: read the plist directly
+    plist_path = os.path.expanduser('~/Library/Preferences/.GlobalPreferences.plist')
+    try:
+        with open(plist_path, 'rb') as fp:
+            return plistlib.load(fp) or {}
+    except Exception:
+        pass
+
+    # Fallback: `defaults` (returns a legacy-ish format; use `export` for real plist)
+    try:
+        proc = subprocess.run(
+            ['defaults', 'export', '-g', '-'], check=True, capture_output=True
+        )
+        return plistlib.loads(proc.stdout) or {}
+    except Exception:
+        return {}
