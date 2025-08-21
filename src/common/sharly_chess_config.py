@@ -1,12 +1,14 @@
+import locale
 import logging
+import os
 import socket
+import subprocess
 import sys
 from pathlib import Path
-from typing import overload, ClassVar, TYPE_CHECKING
+from typing import Optional, overload, ClassVar, TYPE_CHECKING
 
 import jinja2
 import litestar
-import pycountry
 import uvicorn
 from packaging.version import Version
 
@@ -21,6 +23,8 @@ from common.i18n import (
     DEFAULT_LOCALE,
     _,
     locales,
+    normalize_bcp47_to_locale,
+    read_macos_global_prefs,
     set_locale,
 )
 from common.logger import set_logging_config, get_logger
@@ -54,16 +58,85 @@ class SharlyChessConfig(metaclass=Singleton):
         if TEST_ENV:
             return 'en_GB'
         if sys.platform == 'win32':  # pragma: py-not-win32
-            import locale
             import ctypes
 
             windll = ctypes.windll.kernel32
-            system_user_locale: str = locale.windows_locale[
-                windll.GetUserDefaultUILanguage()
-            ]
-            logger.info('User locale: %s', system_user_locale)
-            return system_user_locale
-        # TODO add other OS
+            try:
+                # Locale ID → Windows locale name → Python locale key
+                # locale.windows_locale maps LCIDs to names like 'en_GB'
+                system_user_locale = locale.windows_locale[
+                    windll.GetUserDefaultUILanguage()
+                ]
+                logger.info('User locale (Windows): %s', system_user_locale)
+                return system_user_locale
+            except Exception as e:
+                logger.debug('Failed to get Windows UI language: %s', e)
+                # fall through to generic fallback below
+
+        elif sys.platform == 'darwin':
+            prefs = read_macos_global_prefs()
+            lang_list = prefs.get('AppleLanguages') or []
+            apple_locale = prefs.get('AppleLocale')
+
+            if lang_list:
+                loc = normalize_bcp47_to_locale(str(lang_list[0]))
+                logger.info('User locale (macOS AppleLanguages): %s', loc)
+                return loc
+
+            if apple_locale:
+                loc = normalize_bcp47_to_locale(str(apple_locale))
+                logger.info('User locale (macOS AppleLocale): %s', loc)
+                return loc
+
+            # last-ditch: `defaults read -g AppleLanguages`
+            try:
+                proc = subprocess.run(
+                    ['defaults', 'read', '-g', 'AppleLanguages'],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                )
+                # Output is Apple’s property list textual representation; pick first token in quotes
+                import re
+
+                m = re.search(r'"([^"]+)"', proc.stdout)
+                if m:
+                    loc = normalize_bcp47_to_locale(m.group(1))
+                    logger.info('User locale (macOS defaults fallback): %s', loc)
+                    return loc
+            except Exception as e:
+                logger.debug('macOS defaults fallback failed: %s', e)
+
+        # Linux / other: rely on locale module / env
+        try:
+            # Ensure LC_CTYPE is initialized from environment
+            locale.setlocale(locale.LC_CTYPE, '')
+        except Exception:
+            pass
+
+        lang = (
+            os.environ.get('LC_ALL')
+            or os.environ.get('LC_MESSAGES')
+            or os.environ.get('LANG')
+            or ''
+        )
+
+        if lang:
+            # LANG often looks like 'en_GB.UTF-8' → strip encoding
+            loc = lang.split('.', 1)[0]
+            logger.info('User locale (env): %s', loc)
+            return loc
+
+        # Final fallback: locale.getlocale()
+        try:
+            loc_tuple = locale.getlocale()  # (language_code, encoding)
+            if loc_tuple and loc_tuple[0]:
+                logger.info('User locale (locale.getlocale): %s', loc_tuple[0])
+                return loc_tuple[0]
+        except Exception:
+            pass
+
+        logger.info('User locale: unknown')
         return None
 
     @staticmethod
@@ -78,15 +151,6 @@ class SharlyChessConfig(metaclass=Singleton):
             )
         return DEFAULT_LOCALE
 
-    @staticmethod
-    def _get_locale_federation(system_user_locale: str | None) -> str:
-        if system_user_locale is not None:
-            country_code = system_user_locale.split('_')[-1].upper()
-            country = pycountry.countries.get(alpha_2=country_code)
-            if country and country.alpha_3 in SharlyChessConfig.federations:
-                return country.alpha_3
-        return SharlyChessConfig.default_federation
-
     @classmethod
     def load_stored_config(cls) -> StoredConfig:
         with ConfigDatabase() as config_database:
@@ -94,7 +158,9 @@ class SharlyChessConfig(metaclass=Singleton):
         if not stored_config.locale:
             system_user_locale: str | None = cls._get_system_user_locale()
             stored_config.locale = cls._get_user_locale(system_user_locale)
-            stored_config.federation = cls._get_locale_federation(system_user_locale)
+
+            if TEST_ENV:
+                stored_config.federation = SharlyChessConfig.tests_federation
             with ConfigDatabase(write=True) as config_database:
                 config_database.update_stored_config(stored_config)
                 config_database.commit()
@@ -148,10 +214,13 @@ class SharlyChessConfig(metaclass=Singleton):
         return self.stored_config.launch_browser and not TEST_ENV
 
     @property
-    def federation(self) -> 'Federation':
+    def federation(self) -> Optional['Federation']:
         from data.player import Federation
 
-        return Federation(self.stored_config.federation or self.default_federation)
+        if self.stored_config.federation is not None:
+            return Federation(self.stored_config.federation)
+        else:
+            return None
 
     @property
     def locale(self) -> str:
@@ -413,8 +482,8 @@ class SharlyChessConfig(metaclass=Singleton):
 
     default_prize_currency = 'EUR'
 
-    # The default fédération when creating events or players
-    default_federation: str = 'FID'
+    # The test federation, used not to need to set the federation when entering the application
+    tests_federation: str = 'FID'
 
     # The federation names.
     federations: dict[str, str] = {
