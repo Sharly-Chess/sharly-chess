@@ -92,10 +92,13 @@ class BaseAdminController(BaseController):
     """A base class inherited by all the admin controllers."""
 
     @staticmethod
-    def _get_federation_options(default_federation: str | None):
+    def __get_federation_options(
+        default_federation: str | None,
+        default_federation_text: str,
+    ):
         if default_federation:
             return {
-                default_federation: _("Use Event's default - {option}").format(
+                default_federation: default_federation_text.format(
                     option=f'{default_federation} - {SharlyChessConfig.federations[default_federation]}'
                 ),
             } | {
@@ -108,6 +111,24 @@ class BaseAdminController(BaseController):
                 federation_id: f'{federation_id} - {federation_name}'
                 for federation_id, federation_name in SharlyChessConfig.federations.items()
             }
+
+    @classmethod
+    def _get_federation_options_with_event_default(
+        cls,
+        default_federation: str | None,
+    ):
+        return cls.__get_federation_options(
+            default_federation, _("Use Event's default - {option}")
+        )
+
+    @classmethod
+    def _get_federation_options_with_application_default(
+        cls,
+        default_federation: str | None,
+    ):
+        return cls.__get_federation_options(
+            default_federation, _("Use Application's default - {option}")
+        )
 
     @staticmethod
     def _get_record_illegal_moves_options(

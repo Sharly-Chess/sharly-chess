@@ -328,7 +328,7 @@ class IndexAdminController(BaseAdminController):
                     'console_log_level_options': console_log_level_options,
                     'locale_options': locale_options,
                     'plugin_form_fields_templates': plugin_form_fields_templates,
-                    'federation_options': cls._get_federation_options(
+                    'federation_options': cls._get_federation_options_with_application_default(
                         SharlyChessConfig.default_federation
                     ),
                     'modal': modal,
@@ -359,7 +359,7 @@ class IndexAdminController(BaseAdminController):
                     if 'background_image' in data
                     else {},
                     'plugin_form_fields_templates': plugin_form_fields_templates,
-                    'federation_options': cls._get_federation_options(
+                    'federation_options': cls._get_federation_options_with_application_default(
                         default_federation=None
                     ),
                     'modal': modal,

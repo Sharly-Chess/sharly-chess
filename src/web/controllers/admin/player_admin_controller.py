@@ -622,7 +622,7 @@ class PlayerAdminController(BaseEventAdminController):
             case None:
                 pass
             case 'player':
-                federation_options = cls._get_federation_options(
+                federation_options = cls._get_federation_options_with_event_default(
                     sharly_chess_config.stored_config.federation
                     or SharlyChessConfig.default_federation
                 )
@@ -688,7 +688,7 @@ class PlayerAdminController(BaseEventAdminController):
                         case _:
                             raise ValueError(f'action=[{action}]')
 
-                    federation_options = cls._get_federation_options(
+                    federation_options = cls._get_federation_options_with_event_default(
                         sharly_chess_config.stored_config.federation
                         or SharlyChessConfig.default_federation
                         if federation is None
