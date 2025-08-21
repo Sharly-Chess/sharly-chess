@@ -260,7 +260,7 @@ class SystemHandler:
 class ExecutableInstaller(ToolInstaller, ABC):
     """Abstract installer for tools containing a executable"""
 
-    def __init__(self, licence_files: list[str] | None = None):
+    def __init__(self, licence_files: set[str] | None = None):
         super().__init__(self._name, self._version, licence_files)
 
     @property
@@ -306,10 +306,10 @@ class BbpPairingsInstaller(ExecutableInstaller):
     def __init__(self):
         # Specify which files in the archive are licence files
         super().__init__(
-            licence_files=[
+            licence_files={
                 'LICENSE.txt',
                 'Apache-2.0.txt',
-            ]
+            }
         )
 
     @property
