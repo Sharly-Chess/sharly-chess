@@ -2295,7 +2295,7 @@ msgid "In play"
 msgstr "En jeu"
 
 msgid "In rapid/blitz tournaments, use the standard rating for unrated players"
-msgstr "Dans les tournois rapides/blitz, utiliser le classement standard pour les joueurs non classés"
+msgstr "Dans les tournois rapides/blitz, utiliser le classement standard pour les joueur·euses non classées"
 
 msgid "In-tournament"
 msgstr "Dans le tournoi"
