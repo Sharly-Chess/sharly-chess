@@ -1115,7 +1115,10 @@ class Tournament:
     def _set_players_pairing_numbers(self) -> list[Player]:
         """Set the pairing numbers of all the players in the tournament.
         Returns a list of players sorted by pairing number."""
-        if self.current_round > 4:
+        if self.current_round >= 4:
+            # FIDE Handbook C.04.2.B.3: No modification of a pairing number
+            # is allowed after the fourth round has been paired.
+            # --> We keep the numbering only to inserted / deleted players
             players_to_insert = [
                 player for player in self.players if player.pairing_number is None
             ]
@@ -1137,7 +1140,8 @@ class Tournament:
                     (
                         index
                         for index, player_ in enumerate(sorted_players)
-                        if player_.rating < player.rating
+                        if player_.starting_rank_sort_key
+                        < player.starting_rank_sort_key
                     ),
                     len(sorted_players),
                 )
