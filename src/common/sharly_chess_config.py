@@ -85,6 +85,7 @@ class SharlyChessConfig(metaclass=Singleton):
             country = pycountry.countries.get(alpha_2=country_code)
             if country and country.alpha_3 in SharlyChessConfig.federations:
                 return country.alpha_3
+
         return SharlyChessConfig.default_federation
 
     @classmethod
@@ -94,7 +95,6 @@ class SharlyChessConfig(metaclass=Singleton):
         if not stored_config.locale:
             system_user_locale: str | None = cls._get_system_user_locale()
             stored_config.locale = cls._get_user_locale(system_user_locale)
-            stored_config.federation = cls._get_locale_federation(system_user_locale)
             with ConfigDatabase(write=True) as config_database:
                 config_database.update_stored_config(stored_config)
                 config_database.commit()
@@ -151,7 +151,8 @@ class SharlyChessConfig(metaclass=Singleton):
     def federation(self) -> 'Federation':
         from data.player import Federation
 
-        return Federation(self.stored_config.federation or self.default_federation)
+        assert self.stored_config.federation is not None
+        return Federation(self.stored_config.federation)
 
     @property
     def locale(self) -> str:
@@ -413,7 +414,7 @@ class SharlyChessConfig(metaclass=Singleton):
 
     default_prize_currency = 'EUR'
 
-    # The default fédération when creating events or players
+    # The default fédération should never be needed since we force the user to select one
     default_federation: str = 'FID'
 
     # The federation names.

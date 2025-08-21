@@ -96,6 +96,8 @@ class IndexAdminController(BaseAdminController):
                 data[field] = ''
             else:
                 federation = Federation(federation_name)
+        else:
+            errors[field] = _('Please choose a federation')
         locale: str | None = WebContext.form_data_to_str(data, field := 'locale')
         if locale and locale not in locales:
             errors[field] = _('Invalid locale [{locale}].').format(locale=locale)
@@ -240,6 +242,9 @@ class IndexAdminController(BaseAdminController):
             console_level_infos[value]['name'] = name
 
         context = web_context.template_context | {
+            'application_federation': sharly_chess_config.federation
+            if sharly_chess_config.stored_config.federation
+            else None,
             'plugins': plugin_manager.all_plugins,
             'messages': Message.messages(web_context.request),
             'nav_tabs': nav_tabs,
@@ -290,19 +295,13 @@ class IndexAdminController(BaseAdminController):
                             sharly_chess_config.stored_config.locale
                         ),
                     }
-                    for plugin in plugin_manager.all_plugins:
+
+                for plugin in plugin_manager.all_plugins:
+                    if plugin.form_key not in data:
                         data[plugin.form_key] = WebContext.value_to_form_data(
                             plugin.is_enabled
                         )
-                    stored_config: StoredConfig = (
-                        cls._admin_validate_config_update_data(data)
-                    )
-                    stored_plugins: list[StoredPlugin] = (
-                        cls._admin_validate_plugins_update_data(data)
-                    )
-                    errors = stored_config.errors
-                    for stored_plugin in stored_plugins:
-                        errors |= stored_plugin.errors
+
                 if errors is None:
                     errors = {}
                 console_log_level_options: dict[str, str] = {
@@ -329,7 +328,7 @@ class IndexAdminController(BaseAdminController):
                     'locale_options': locale_options,
                     'plugin_form_fields_templates': plugin_form_fields_templates,
                     'federation_options': cls._get_federation_options(
-                        SharlyChessConfig.default_federation
+                        default_federation=None, may_be_empty=not data['federation']
                     ),
                     'modal': modal,
                     'data': data,
