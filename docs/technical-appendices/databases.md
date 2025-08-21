@@ -76,7 +76,7 @@
 | `deprecated_chessevent_event_id` | `TEXT`    |                           |     | _Deprecated_                                                                                                                                                                                                             |
 | `ffe_auto_upload`                | `INTEGER` | NOT NULL<br/>DEFAULT 0    |     | _TODO_                                                                                                                                                                                                                   |
 | `ffe_auto_upload_delay`          | `INTEGER` |                           |     | _TODO_                                                                                                                                                                                                                   |
-| `custom_exec_mode`               | `INTEGER` | NOT NULL<br/>DEFAULT 0    |     | Boolean:<br/>- `0`: the default execution mode is used (by default);<br/>- `1`: roles can be given to clients.                                                                                                           |
+| `override_unrated_rapid_blitz`   | `INTEGER` |                           |     | Boolean:<br/>- `0`: use estimated ratings for rapid/blitz unrated players<br/>- `1`: use standard ratings (by default)                                                                                                   |
 
 ### `metadata` (event metadata)
 
