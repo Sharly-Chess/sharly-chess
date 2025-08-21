@@ -463,7 +463,7 @@ class SharlyChessConfig(metaclass=Singleton):
     default_first_board_number: int = 1
 
     # The default result for players paired bye.
-    default_paired_bye_result: Result = Result.GAIN
+    default_paired_bye_result: Result = Result.WIN
 
     # The default maximum number of byes for a player in a tournament.
     default_max_byes: int = 1

@@ -619,7 +619,7 @@ class PlayerAdminController(BaseEventAdminController):
             case None:
                 pass
             case 'player':
-                federation_options = cls._get_federation_options(
+                federation_options = cls._get_federation_options_with_event_default(
                     default_federation=admin_event.federation
                 )
 
@@ -684,7 +684,7 @@ class PlayerAdminController(BaseEventAdminController):
                         case _:
                             raise ValueError(f'action=[{action}]')
 
-                    federation_options = cls._get_federation_options(
+                    federation_options = cls._get_federation_options_with_event_default(
                         admin_event.federation if federation is None else None
                     )
 

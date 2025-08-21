@@ -13,10 +13,10 @@
         <td class="text-start">[{{ wp.points_str }}]</td>
     {% endif %}
     <td>{{ wp.full_name }} ({{ wp.rating_str }})</td>
-    <td class="text-center" style="width: 3rem;">
+    <td class="text-center" style="width: 4.5rem;">
         <button
-            class="btn btn-sm btn-outline-primary"
-            style="width: 3rem;"
+            class="btn btn-sm btn-outline-primary text-nowrap"
+            style="width: 4.5rem;"
             hx-get="{{ url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id) }}"
             hx-trigger="click"
             hx-target="body"

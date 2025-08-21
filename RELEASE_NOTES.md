@@ -5,41 +5,36 @@ English version below
 
 - Suppression du format de stockage Access de Papi (3.0.0)
 - Support de macOS (Apple Silicon Macs seulement, 3.0.0)
-
-## interface web
-
 - Amélioration des temps de réponses de l'interface utilisateur (3.0.0)
 
-### Gestion des évènements
+## Évènements
 
 - Restauration des évènements archivés (3.0.0)
 - Masquage des identifiants uniques (3.0.0)
 
-### Gestion des tournois
+### Tournois
 
 - Création des tournois par import d'un fichier Papi (3.0.0)
 - Export des tournois au format Papi (3.0.0)
 
-### Gestion des joueur·euses
+### Joueur·euses
 
 - Suppression de la limite à 10 caractères des numéros de téléphone (3.0.0)
 
-### Gestion des appariements
+### Appariements
 
 - Affichage des informations d'appariement : groupes, flotteurs, historiques et préférences couleurs (3.0.0)
+- Remplacement des classements estimés rapide/blitz par les classements standards (3.0.0)
+- Suppression de la renumérotation automatique des échiquiers en cas d'appariement manuel (3.0.0)
+- Saisie des résultats non classés et des pénalités (expérimental) (3.0.0)
 
-### Gestion des écrans
+### Écrans
 
 - Ajout du numéro dans le cas des échiquiers fixes (3.0.0)
 
-## Appariements
-
-- Remplacement des classements estimés rapide/blitz par les classements standards (3.0.0)
-- Suppression de la renumérotation automatique des échiquiers en cas d'appariement manuel (3.0.0)
-
 ## Classements
 
-- Prise en charge de tous les départages reconnus par la FIDE, y compris ceux non compatibles avec Papi (expérimental, 3.0.0)
+- Ajout de départages non compatibles avec Papi (expérimental) (3.0.0)
 
 ## Impressions
 
@@ -55,41 +50,36 @@ English version below
 
 - Remove Papi Access storage (3.0.0)
 - Native macOS support (Apple Silicon Macs only, 3.0.0)
-
-## Web interface
-
 - Improved UI response times (3.0.0)
 
-### Events management
+## Events
 
 - Restore archived events (3.0.0)
 - Hide unique IDS (3.0.0)
 
-### Tournaments management
+## Tournaments
 
 - Create tournaments from Papi files (3.0.0)
 - Export tournaments to Papi format (3.0.0)
 
-### Players management
+## Players
 
 - Removed the 10-character limit on phone numbers (3.0.0)
 
-### Pairings management
+### Pairings
 
 - Display pairing information: groups, floaters, history and colour preferences (3.0.0)
+- Allow overriding of unrated rapid/blitz ratings by standard ratings (3.0.0)
+- Removed automatic renumbering of boards when manually pairing (3.0.0)
+- Entry of unrated and penalty results (3.0.0)
 
-### Screens management
+### Screens
 
 - Added board IDs in case of fixed boards (3.0.0)
 
-## Pairings
-
-- Allow overriding of unrated rapid/blitz ratings by standard ratings (3.0.0)
-- Removed automatic renumbering of boards when manually pairing (3.0.0)
-
 ## Rankings
 
-- Support for all FIDE recognised tie-breaks, including ones not compatible with Papi (experimental, 3.0.0)
+- Added tie-breaks not compatible with Papi (experimental) (3.0.0)
 
 ## Printing
 

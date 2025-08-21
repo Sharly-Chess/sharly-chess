@@ -17,9 +17,11 @@ from data.pairings.engines import DoubleBergerPairingEngine
 from data.pairings.variations import (
     BergerRoundRobinVariation,
     DoubleBergerRoundRobinVariation,
+    PairingVariation,
 )
 from data.player import PlayerRating
 from data.player import Player
+from data.tie_breaks.tie_breaks import TieBreak
 from data.tournament import Tournament
 from database.sqlite.event.event_store import (
     StoredTournament,
@@ -612,17 +614,44 @@ class PapiConverter:
         return stored_pairing, stored_board
 
     @classmethod
+    def check_pairing_variation(cls, pairing_variation: PairingVariation) -> str | None:
+        if pairing_variation not in PapiPairingVariation.core_objects():
+            return _(
+                'Pairing system [{pairing_system}] is not compatible with the PAPI format.'
+            ).format(pairing_system=pairing_variation.name)
+        return None
+
+    @classmethod
+    def check_tiebreak(cls, tie_break: TieBreak) -> str | None:
+        if tie_break not in PapiTieBreak.core_objects():
+            return _(
+                'Tie-break [{tie_break}] is not compatible with the PAPI format.'
+            ).format(tie_break=tie_break.name)
+        return None
+
+    @classmethod
+    def check_result(cls, result: Result) -> str | None:
+        if not PapiRound.is_convertible_to_papi(result):
+            return _(
+                'Result [{result}] is not compatible with the PAPI format.'
+            ).format(result=result)
+        return None
+
+    @classmethod
     def papi_export_unavailable_message(cls, tournament: Tournament) -> str | None:
         """Return a message if the export to Papi is unavailable, None otherwise."""
-        if tournament.pairing_variation not in PapiPairingVariation.core_objects():
-            return _('Pairing system [{pairing_system}] is not compatible.').format(
-                pairing_system=tournament.pairing_variation.name
-            )
+        if pairing_blocker := cls.check_pairing_variation(tournament.pairing_variation):
+            return pairing_blocker
+
         for tie_break in tournament.tie_breaks:
-            if tie_break not in PapiTieBreak.core_objects():
-                return _('Tie-break [{tie_break}] is not compatible.').format(
-                    tie_break=tie_break.name
-                )
+            if tie_break_blocker := cls.check_tiebreak(tie_break):
+                return tie_break_blocker
+
+        for round in range(1, tournament.rounds + 1):
+            for player in tournament.players:
+                if msg := cls.check_result(player.pairings[round].result):
+                    return msg
+
         return None
 
     def write_papi_file(
@@ -649,7 +678,7 @@ class PapiConverter:
             with open(temp_json_file, 'w', encoding='utf-8') as file:
                 json.dump(papi_data_dict, file, ensure_ascii=False, indent=2)
 
-            # Use papi-converter to convert JSON to papi format
+            # Use papi-converter to convert JSON to PAPI format
             result = subprocess.run(
                 [
                     self.executable_path,

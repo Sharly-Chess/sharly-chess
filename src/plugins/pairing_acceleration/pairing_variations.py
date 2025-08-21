@@ -46,7 +46,7 @@ class HaleySwissVariation(AccelerationSwissVariation):
                 tournament, player
             )
             if rating_group == RatingGroup.A:
-                return Result.GAIN.points(tournament.point_values)
+                return Result.WIN.points(tournament.point_values)
         return 0.0
 
     @staticmethod
@@ -82,7 +82,7 @@ class HaleySoftSwissVariation(AccelerationSwissVariation):
                 tournament, player
             )
             if rating_group == RatingGroup.A:
-                return Result.GAIN.points(tournament.point_values)
+                return Result.WIN.points(tournament.point_values)
             elif at_round == 2:
                 return Result.DRAW.points(tournament.point_values)
         return 0.0
@@ -123,7 +123,7 @@ class ProgressiveSwissVariation(AccelerationSwissVariation):
             tournament_rounds=tournament.rounds,
             points=player.points_before(at_round),
             draw_points=Result.DRAW.points(tournament.point_values),
-            gain_points=Result.GAIN.points(tournament.point_values),
+            gain_points=Result.WIN.points(tournament.point_values),
         )
 
     @staticmethod

@@ -166,8 +166,26 @@ msgstr "-"
 msgid "/move"
 msgstr "/cp"
 
+msgid "0 - 0 (U)"
+msgstr "0 - 0 (NC)"
+
+msgid "0 - 1 (U)"
+msgstr "0 - 1 (NC)"
+
+msgid "0 - 1/2 (U)"
+msgstr "0 - 1/2 (NC)"
+
 msgid "1 *** THE LETTER TO ANSWER ONCE"
 msgstr "1"
+
+msgid "1 - 0 (U)"
+msgstr "1 - 0 (NC)"
+
+msgid "1/2 - 0 (U)"
+msgstr "1/2 - 0 (NC)"
+
+msgid "1/2 - 1/2 (U)"
+msgstr "1/2 - 1/2 (NC)"
 
 msgid "1st day of the month"
 msgstr "1er jour du mois"
@@ -265,6 +283,9 @@ msgstr "Accès depuis le réseau local (LAN/WAN)"
 
 msgid "Access to the arbiter interface is not allowed from this client."
 msgstr "L'accès à l'interface d'arbitrage n'est pas autorisé depuis cette machine."
+
+msgid "Access unrated and penalty results."
+msgstr "Accéder aux résultats non homologués et pénalisés"
 
 msgid "Action"
 msgstr "Action"
@@ -1711,7 +1732,7 @@ msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr "Estimé"
 
 msgid "Estimated ratings"
-msgstr "Elos estimés"
+msgstr "Classements estimés"
 
 msgid "Event"
 msgstr "Évènement"
@@ -3120,6 +3141,9 @@ msgstr "Dû :"
 msgid "PAB is already assigned"
 msgstr "il y a déjà un·e joueur·euse exempt·e"
 
+msgid "PENALTY"
+msgstr "PÉNALITÉ"
+
 msgid "PERMUTE WHITE/BLACK"
 msgstr "PERMUTER BLANCS/NOIRS"
 
@@ -3173,8 +3197,8 @@ msgstr "Format d’appariement :"
 msgid "Pairing system"
 msgstr "Système d'appariements"
 
-msgid "Pairing system [{pairing_system}] is not compatible."
-msgstr "Le système d'appariements [{pairing_system}] n'est pas compatible."
+msgid "Pairing system [{pairing_system}] is not compatible with the PAPI format."
+msgstr "Le système d'appariements [{pairing_system}] n'est pas compatible avec le format PAPI."
 
 msgid "Pairings"
 msgstr "Appariements"
@@ -3832,6 +3856,9 @@ msgstr "Restaurer"
 
 msgid "Result"
 msgstr "Résultat"
+
+msgid "Result [{result}] is not compatible with the PAPI format."
+msgstr "Le résultat [{result}] n’est pas compatible avec le format PAPI."
 
 msgid "Results"
 msgstr "Résultats"
@@ -4781,8 +4808,8 @@ msgstr "Victoire à 3 points"
 msgid "Tie-break #%(index)d:"
 msgstr "Départage n°%(index)d :"
 
-msgid "Tie-break [{tie_break}] is not compatible."
-msgstr "Le départage [{tie_break}] n'est pas compatible."
+msgid "Tie-break [{tie_break}] is not compatible with the PAPI format."
+msgstr "Le départage [{tie_break}] n’est pas compatible avec le format PAPI."
 
 msgid "Tie-break already in use."
 msgstr "Départage déjà utilisé."
@@ -5039,6 +5066,18 @@ msgstr "U8"
 
 msgid "UNPAIR"
 msgstr "DÉSAPPARIER"
+
+msgid "UNRATED BLACK VICTORY"
+msgstr "VICTOIRE NOIR NON HOMOLOGUÉE"
+
+msgid "UNRATED DRAW"
+msgstr "NUL NON HOMOLOGUÉ"
+
+msgid "UNRATED PENALTY"
+msgstr "PÉNALITÉ NON HOMOLOGUÉE"
+
+msgid "UNRATED WHITE VICTORY"
+msgstr "VICTOIRE BLANCHE NON HOMOLOGUÉE"
 
 msgid "URL [{url}] did not respond (error: [{error}])."
 msgstr "L'URL [{url}] n'a pas répondu (erreur : [{error}])."
