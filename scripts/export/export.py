@@ -56,12 +56,21 @@ EXPORT_DIR: Path = BASE_DIR / 'export'
 PROJECT_DIR: Path = DIST_DIR / basename
 ZIP_FILE: Path = EXPORT_DIR / f'{basename}.zip'
 EXE_FILENAME: str = basename + '.exe'
+EXE: Path = PROJECT_DIR / EXE_FILENAME
+SIGNED_EXE: Path = PROJECT_DIR / f'{basename}-signed.exe'
 INTERNAL_DIRNAME: str = '_internal'
 SPEC_FILE: Path = BASE_DIR / f'{basename}.spec'
 TEST_DIR: Path = BASE_DIR / 'export-test'
 SOURCE_DIR: Path = BASE_DIR / 'src'
 FFE_SQL_SERVER_CREDENTIALS_FILE: Path = PLUGINS_DIR / 'ffe' / '.credentials'
 LICENCES_DIR = PROJECT_DIR / 'LICENSES'
+
+SIGNTOOL_VERSION: str = '10.0.26100.0'
+WINDOWS_SDK_DIR: Path = Path('C:/Program Files (x86)/Windows Kits')
+SIGNTOOL_DIR: Path = WINDOWS_SDK_DIR / '10' / 'bin' / SIGNTOOL_VERSION / 'x64'
+SIGNTOOL_EXE: Path = SIGNTOOL_DIR / 'signtool.exe'
+SIGNTOOL_CERT_FINGERPRINT: str = '93ce5c3718b4ac7471f6697bf4693d5ed985046e'
+SIGNTOOL_TIMESTAMP_URL = 'http://time.certum.pl'
 
 
 def generate_license_files():
@@ -546,6 +555,39 @@ def build_exe():
     run(pyinstaller_params)
 
 
+def sign_exe():
+    # windows_tools.signtool has no sha1 parameter
+    # from windows_tools.signtool import SignTool
+    # signer: SignTool = SignTool(authority_timestamp_url='http://time.certum.pl')
+    # signer.sign(SIGNED_EXE, bitness=64)
+    shutil.copy(EXE, SIGNED_EXE)
+    cwd = os.getcwd()
+    os.chdir(str(SIGNTOOL_DIR))
+    cmd = [
+        str(SIGNTOOL_EXE),
+        'sign',
+        '-sha1',
+        str(SIGNTOOL_CERT_FINGERPRINT),
+        '-tr',
+        str(SIGNTOOL_TIMESTAMP_URL),
+        '-td',
+        'sha256',
+        '-fd',
+        'sha256',
+        str(SIGNED_EXE),
+    ]
+    logger.info(' '.join(cmd))
+    import subprocess
+
+    process = subprocess.run(cmd, capture_output=True, text=True)
+    if process.returncode != 0:
+        logger.error('Failed to sign the executable.')
+        logger.error(process.stderr)
+    else:
+        logger.info('Executable signed successfully.')
+    os.chdir(cwd)
+
+
 def create_project():
     logger.info('Adding data from folder [%s] to [%s]...', PROJECT_DIR, DATA_DIR)
     shutil.copytree(DATA_DIR, PROJECT_DIR, dirs_exist_ok=True)
@@ -659,6 +701,11 @@ def main():
         action='store_true',
         help='Skip cleanup to preserve build artifacts for signing',
     )
+    parser.add_argument(
+        '--sign-only',
+        action='store_true',
+        help='Skip everything but signing if the exe is present',
+    )
     args = parser.parse_args()
     if args.github:
         if SHARLY_CHESS_VERSION != Version(args.github):
@@ -671,16 +718,20 @@ def main():
         logger.info('The version is not verified (not running on GitHub).')
     if not InstallationChecker.check():
         return
+    if args.sign_only and EXE.exists():
+        sign_exe()
+        return
     clean(clean_zip=True)
     update_i18n_files()
     build_exe()
+    sign_exe()
     create_project()
     generate_license_files()
     create_zip_files()
     build_test()
 
     # Skip cleanup if we need to preserve build artifacts for signing
-    if not args.preserve_build:
+    if not args.preserve_build and not args.only_sign:
         clean(clean_zip=False)
     else:
         logger.info(
