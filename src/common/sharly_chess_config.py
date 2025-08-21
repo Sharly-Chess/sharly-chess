@@ -5,11 +5,10 @@ import socket
 import subprocess
 import sys
 from pathlib import Path
-from typing import overload, ClassVar, TYPE_CHECKING
+from typing import Optional, overload, ClassVar, TYPE_CHECKING
 
 import jinja2
 import litestar
-import pycountry
 import uvicorn
 from packaging.version import Version
 
@@ -152,15 +151,6 @@ class SharlyChessConfig(metaclass=Singleton):
             )
         return DEFAULT_LOCALE
 
-    @staticmethod
-    def _get_locale_federation(system_user_locale: str | None) -> str:
-        if system_user_locale is not None:
-            country_code = system_user_locale.split('_')[-1].upper()
-            country = pycountry.countries.get(alpha_2=country_code)
-            if country and country.alpha_3 in SharlyChessConfig.federations:
-                return country.alpha_3
-        return SharlyChessConfig.default_federation
-
     @classmethod
     def load_stored_config(cls) -> StoredConfig:
         with ConfigDatabase() as config_database:
@@ -168,7 +158,9 @@ class SharlyChessConfig(metaclass=Singleton):
         if not stored_config.locale:
             system_user_locale: str | None = cls._get_system_user_locale()
             stored_config.locale = cls._get_user_locale(system_user_locale)
-            stored_config.federation = cls._get_locale_federation(system_user_locale)
+
+            if TEST_ENV:
+                stored_config.federation = SharlyChessConfig.tests_federation
             with ConfigDatabase(write=True) as config_database:
                 config_database.update_stored_config(stored_config)
                 config_database.commit()
@@ -222,10 +214,13 @@ class SharlyChessConfig(metaclass=Singleton):
         return self.stored_config.launch_browser and not TEST_ENV
 
     @property
-    def federation(self) -> 'Federation':
+    def federation(self) -> Optional['Federation']:
         from data.player import Federation
 
-        return Federation(self.stored_config.federation or self.default_federation)
+        if self.stored_config.federation is not None:
+            return Federation(self.stored_config.federation)
+        else:
+            return None
 
     @property
     def locale(self) -> str:
@@ -487,8 +482,8 @@ class SharlyChessConfig(metaclass=Singleton):
 
     default_prize_currency = 'EUR'
 
-    # The default fédération when creating events or players
-    default_federation: str = 'FID'
+    # The test federation, used not to need to set the federation when entering the application
+    tests_federation: str = 'FID'
 
     # The federation names.
     federations: dict[str, str] = {
