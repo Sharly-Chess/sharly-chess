@@ -141,7 +141,7 @@ class BaseAdminController(BaseController):
     def _get_paired_bye_result_options() -> dict[str, str]:
         options: dict[str, str] = {
             '': '',
-            WebContext.value_to_form_data(Result.GAIN.value): _(
+            WebContext.value_to_form_data(Result.WIN.value): _(
                 'Points for win (Full-Point Bye)'
             ),
             WebContext.value_to_form_data(Result.DRAW.value): _(

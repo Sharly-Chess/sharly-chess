@@ -16,7 +16,7 @@
         {% with player=wp, illegal_moves=board.white_pairing.illegal_moves %}{% include 'illegal_moves_cell.html' %}{% endwith %}
     {% endif %}
     <td>{{ wp.full_name }} ({{ wp.rating_str }})</td>
-    <td class="text-center" style="width: 3rem;">
+    <td class="text-center" style="width: 4.5rem;">
         <span
             {% if not client.can_enter_results(admin_tournament.id) %}
                 {{ macros.tooltip_attributes('warning', _('You are not allowed to enter results.'), 'top') }}
@@ -29,8 +29,8 @@
             {% endif %}
         >
             <button
-                class="btn btn-sm btn-outline-primary"
-                style="width: 3rem;"
+                class="btn btn-sm btn-outline-primary text-nowrap"
+                style="width: 4.5rem;"
                 {% if not_allowed or ('MANUAL_UNPAIRING' not in existing_actions and board.exempt) %}
                     disabled
                 {% else %}

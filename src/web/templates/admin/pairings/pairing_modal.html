@@ -1,7 +1,7 @@
 {% import '/common/macros.j2' as macros with context %}
 
 {% with wp=board.white_player, bp=board.black_player %}
-    <div class="modal-dialog modal-dialog-centered pairing-modal">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered pairing-modal">
         <div class="modal-content bg-secondary-subtle">
             <div class="modal-header">
                 <div class="modal-title fs-4 fw-bold">{{ _('Board %(board_number)s', board_number=board.number) }}</div>
@@ -124,6 +124,7 @@
                         <div>{{ _('BLACK WINS') }}<br/>0 - 1<br/><br/>{{ bp.last_name }}<br/>{{ bp.first_name }}<br/>{{ bp.rating_str }}</div>
                     </button>
                 </div>
+
                 <div class="row d-flex align-items-center justify-content-center mt-3">
                     {% set action_route = url_for(
                         'admin-pairings-set-result',
@@ -245,6 +246,86 @@
                     >
                         <div>{{ _('BLACK WINS') }}<br/>{{ _('BY FORFEIT') }}<br/>F - 1</div>
                     </button>
+                </div>
+
+                <hr class="my-3" />
+
+                <div class="row">
+                    <div class="col-12 fs-5 text-nowrap d-inline-flex align-items-center gap-4 mb-2 {% if not screen_type in admin_screens_screen_types %}text-secondary{% endif %}">
+                        <button
+                            type="button"
+                            class="collapse-button collapsed"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#rare-results"
+                        >
+                            <span
+                                class="form-check-label d-inline-flex align-items-center gap-2"
+                            >
+                                <i class="bi bi-chevron-down"></i>
+                                {{ _('Access unrated and penalty results.') }}
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="collapse" id="rare-results">
+                    {# --- Data-driven rows for extra result buttons (UNRATED, PENALTIES, etc.) --- #}
+                    {% set extra_rows = [
+                        [
+                            (13, 'white', _('UNRATED WHITE VICTORY'), _('1 - 0 (U)')),
+                            (12, 'draw', _('UNRATED DRAW'), _('1/2 - 1/2 (U)')),
+                            (11, 'black' , _('UNRATED BLACK VICTORY'), _('0 - 1 (U)')),
+                        ],
+                        [
+                            (16, 'white', _('PENALTY'), '1/2 - 0'),
+                            (15, 'draw', _('PENALTY'), '0 - 0'),
+                            (17, 'black', _('PENALTY'), '0 - 1/2'),
+                        ],
+                        [
+                            (19, 'white', _('UNRATED PENALTY'), _('1/2 - 0 (U)')),
+                            (18, 'draw', _('UNRATED PENALTY'), _('0 - 0 (U)')),
+                            (20, 'black', _('UNRATED PENALTY'), _('0 - 1/2 (U)')),
+                        ],
+                    ] %}
+
+                    {% for row in extra_rows %}
+                        <div class="row d-flex align-items-center justify-content-center mt-3">
+                            {% for (result_id, class, line1, line2) in row %}
+                                {% set action = 'RESULT_UPDATE' %}
+                                {% set action_route = url_for(
+                                    'admin-pairings-set-result',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=admin_tournament.id,
+                                    round=admin_round,
+                                    board_id=board.id,
+                                    result=result_id,
+                                ) %}
+                                <button
+                                    class="{{ class }} admin-result-button col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
+                                    {% if board.exempt %}
+                                        disabled
+                                    {% endif %}
+                                    {% if action in allowed_actions %}
+                                        hx-put="{{ action_route }}"
+                                    {% else %}
+                                        hx-get="{{ url_for(
+                                            'admin-pairings-safety-mode-modal',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=admin_tournament.id,
+                                            round=admin_round,
+                                            action=action,
+                                            redirect_method='PUT',
+                                            redirect_route=action_route,
+                                        ) }}"
+                                    {% endif %}
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                >
+                                    <div>{{ line1 }}<br/>{{ line2 }}</div>
+                                </button>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
                 </div>
 
                 <hr class="my-3" />

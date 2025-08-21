@@ -13,33 +13,40 @@ class Result(IntEnum):
     NO_RESULT = 0  # NOT PAIRED or NO RESULT YET
     LOSS = 1
     DRAW = 2
-    GAIN = 3
+    WIN = 3
     FORFEIT_LOSS = 4
     DOUBLE_FORFEIT = 5
-    FORFEIT_GAIN = 6
+    FORFEIT_WIN = 6
     ZERO_POINT_BYE = 7
     HALF_POINT_BYE = 8
     PAIRING_ALLOCATED_BYE = 9
     FULL_POINT_BYE = 10
     UNRATED_LOSS = 11
     UNRATED_DRAW = 12
-    UNRATED_GAIN = 13
+    UNRATED_WIN = 13
     REST_GAME = 14
+
+    PENALTY_LL = 15  # 0-0
+    PENALTY_DL = 16  # 0.5-0
+    PENALTY_LD = 17  # 0-0.5
+    UNRATED_PENALTY_LL = 18  # 0-0
+    UNRATED_PENALTY_DL = 19  # 0.5-0
+    UNRATED_PENALTY_LD = 20  # 0-0.5
 
     def __str__(self) -> str:
         match self:
-            case Result.GAIN | Result.UNRATED_GAIN:
+            case Result.WIN:
                 return '1-0'
-            case Result.LOSS | Result.UNRATED_LOSS:
+            case Result.LOSS:
                 return '0-1'
-            case Result.DRAW | Result.UNRATED_DRAW | Result.HALF_POINT_BYE:
+            case Result.DRAW | Result.HALF_POINT_BYE:
                 return '1/2'
             case Result.NO_RESULT | Result.ZERO_POINT_BYE:
                 return ''
             case Result.FORFEIT_LOSS:
                 return 'F-1'
             case (
-                Result.FORFEIT_GAIN
+                Result.FORFEIT_WIN
                 | Result.PAIRING_ALLOCATED_BYE
                 | Result.FULL_POINT_BYE
             ):
@@ -48,6 +55,24 @@ class Result(IntEnum):
                 return 'F-F'
             case Result.REST_GAME:
                 return '0-F'
+            case Result.UNRATED_WIN:
+                return '1-0 (U)'
+            case Result.UNRATED_LOSS:
+                return '0-1 (U)'
+            case Result.UNRATED_DRAW:
+                return '1/2 (U)'
+            case Result.PENALTY_LL:
+                return '0-0'
+            case Result.UNRATED_PENALTY_LL:
+                return '0-0 (U)'
+            case Result.PENALTY_DL:
+                return '1/2-0'
+            case Result.UNRATED_PENALTY_DL:
+                return '1/2-0 (U)'
+            case Result.PENALTY_LD:
+                return '0-1/2'
+            case Result.UNRATED_PENALTY_LD:
+                return '0-1/2 (U)'
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
@@ -67,14 +92,24 @@ class Result(IntEnum):
                 | Result.FORFEIT_LOSS
                 | Result.DOUBLE_FORFEIT
                 | Result.REST_GAME
+                | Result.PENALTY_LL
+                | Result.UNRATED_PENALTY_LL
+                | Result.PENALTY_LD
+                | Result.UNRATED_PENALTY_LD
             ):
                 return 0.0
-            case Result.DRAW | Result.UNRATED_DRAW | Result.HALF_POINT_BYE:
+            case (
+                Result.DRAW
+                | Result.UNRATED_DRAW
+                | Result.HALF_POINT_BYE
+                | Result.PENALTY_DL
+                | Result.UNRATED_PENALTY_DL
+            ):
                 return 0.5
             case (
-                Result.GAIN
-                | Result.UNRATED_GAIN
-                | Result.FORFEIT_GAIN
+                Result.WIN
+                | Result.UNRATED_WIN
+                | Result.FORFEIT_WIN
                 | Result.PAIRING_ALLOCATED_BYE
                 | Result.FULL_POINT_BYE
             ):
@@ -86,7 +121,7 @@ class Result(IntEnum):
         """
         The value in points, according to rules defined in *values*.
         If a result instance is not included in *values*, the closest result's
-        value will be used (e.g. `Result.PAIRING_ALLOCATED_BYE` will default to `Result.GAIN`'s value)
+        value will be used (e.g. `Result.PAIRING_ALLOCATED_BYE` will default to `Result.WIN`'s value)
         If the closest result's value is not given, will default to the default
         value, as defined by FIDE rules (1-0.5-0)
         """
@@ -105,17 +140,26 @@ class Result(IntEnum):
                 | Result.UNRATED_LOSS
                 | Result.NO_RESULT
                 | Result.ZERO_POINT_BYE
+                | Result.PENALTY_LL
+                | Result.UNRATED_PENALTY_LL
+                | Result.PENALTY_LD
+                | Result.UNRATED_PENALTY_LD
             ):
                 value = value or values.get(Result.LOSS)
-            case Result.UNRATED_DRAW | Result.HALF_POINT_BYE:
+            case (
+                Result.UNRATED_DRAW
+                | Result.HALF_POINT_BYE
+                | Result.PENALTY_DL
+                | Result.UNRATED_PENALTY_DL
+            ):
                 value = value or values.get(Result.DRAW)
             case (
                 Result.FULL_POINT_BYE
-                | Result.FORFEIT_GAIN
-                | Result.UNRATED_GAIN
+                | Result.FORFEIT_WIN
+                | Result.UNRATED_WIN
                 | Result.PAIRING_ALLOCATED_BYE
             ):
-                value = value or values.get(Result.GAIN)
+                value = value or values.get(Result.WIN)
         return value or self.point_value
 
     @property
@@ -123,10 +167,10 @@ class Result(IntEnum):
         """Given a `Result` instance (white result), returns the result of the
         opponent.
 
-        >>> Result.GAIN.opposite_result == Result.LOSS
+        >>> Result.WIN.opposite_result == Result.LOSS
         True
 
-        >>> Result.LOSS.opposite_result == Result.GAIN
+        >>> Result.LOSS.opposite_result == Result.WIN
         True
 
         >>> Result.DRAW.opposite_result == Result.DRAW
@@ -140,25 +184,37 @@ class Result(IntEnum):
         """
         match self:
             case Result.LOSS:
-                return Result.GAIN
-            case Result.GAIN:
+                return Result.WIN
+            case Result.WIN:
                 return Result.LOSS
             case Result.DRAW:
                 return Result.DRAW
             case Result.UNRATED_LOSS:
-                return Result.UNRATED_GAIN
-            case Result.UNRATED_GAIN:
+                return Result.UNRATED_WIN
+            case Result.UNRATED_WIN:
                 return Result.UNRATED_LOSS
             case Result.UNRATED_DRAW:
                 return Result.UNRATED_DRAW
-            case Result.FORFEIT_GAIN:
+            case Result.FORFEIT_WIN:
                 return Result.FORFEIT_LOSS
             case Result.FORFEIT_LOSS:
-                return Result.FORFEIT_GAIN
+                return Result.FORFEIT_WIN
             case Result.DOUBLE_FORFEIT:
                 return Result.DOUBLE_FORFEIT
             case Result.NO_RESULT:
                 return Result.NO_RESULT
+            case Result.PENALTY_LL:
+                return Result.PENALTY_LL
+            case Result.PENALTY_DL:
+                return Result.PENALTY_LD
+            case Result.PENALTY_LD:
+                return Result.PENALTY_DL
+            case Result.UNRATED_PENALTY_LL:
+                return Result.UNRATED_PENALTY_LL
+            case Result.UNRATED_PENALTY_DL:
+                return Result.UNRATED_PENALTY_LD
+            case Result.UNRATED_PENALTY_LD:
+                return Result.UNRATED_PENALTY_DL
             case (
                 Result.ZERO_POINT_BYE
                 | Result.HALF_POINT_BYE
@@ -172,21 +228,25 @@ class Result(IntEnum):
     @property
     def to_trf(self) -> str:
         match self:
-            case Result.LOSS:
+            case Result.LOSS | Result.PENALTY_LL | Result.PENALTY_LD:
                 return '0'
-            case Result.DRAW:
+            case Result.DRAW | Result.PENALTY_DL:
                 return '='
-            case Result.GAIN:
+            case Result.WIN:
                 return '1'
-            case Result.UNRATED_LOSS:
+            case (
+                Result.UNRATED_LOSS
+                | Result.UNRATED_PENALTY_LL
+                | Result.UNRATED_PENALTY_LD
+            ):
                 return 'L'
-            case Result.UNRATED_DRAW:
+            case Result.UNRATED_DRAW | Result.UNRATED_PENALTY_DL:
                 return 'D'
-            case Result.UNRATED_GAIN:
+            case Result.UNRATED_WIN:
                 return 'W'
             case Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT:
                 return '-'
-            case Result.FORFEIT_GAIN:
+            case Result.FORFEIT_WIN:
                 return '+'
             case Result.HALF_POINT_BYE:
                 return 'H'
@@ -202,24 +262,40 @@ class Result(IntEnum):
                 raise ValueError(f'Unknown value: {self}')
 
     @classmethod
-    def from_trf(cls, value: str):
+    def from_trf(cls, value: str, opponent_value: str):
         match value.upper():
             case '' | 'Z':
                 return cls.ZERO_POINT_BYE
             case '1':
-                return cls.GAIN
+                return cls.WIN
             case '=':
-                return cls.DRAW
+                return cls.PENALTY_DL if opponent_value == '0' else cls.DRAW
             case '0':
-                return cls.LOSS
+                match opponent_value:
+                    case '0':
+                        return cls.PENALTY_LL
+                    case '=':
+                        return cls.PENALTY_LD
+                    case _:
+                        return cls.LOSS
             case 'W':
-                return cls.UNRATED_GAIN
+                return cls.UNRATED_WIN
             case 'D':
-                return cls.UNRATED_DRAW
+                return (
+                    cls.UNRATED_PENALTY_DL
+                    if opponent_value == 'L'
+                    else cls.UNRATED_DRAW
+                )
             case 'L':
-                return cls.UNRATED_LOSS
+                match opponent_value:
+                    case 'L':
+                        return cls.UNRATED_PENALTY_LL
+                    case 'D':
+                        return cls.UNRATED_PENALTY_LD
+                    case _:
+                        return cls.UNRATED_LOSS
             case '+':
-                return cls.FORFEIT_GAIN
+                return cls.FORFEIT_WIN
             case '-':
                 return cls.FORFEIT_LOSS
             case 'U':
@@ -234,15 +310,26 @@ class Result(IntEnum):
     @property
     def to_crosstable(self) -> str:
         match self:
-            case Result.LOSS | Result.UNRATED_LOSS:
+            case (
+                Result.LOSS
+                | Result.UNRATED_LOSS
+                | Result.PENALTY_LL
+                | Result.UNRATED_PENALTY_LL
+            ):
                 return '-'
-            case Result.DRAW | Result.UNRATED_DRAW | Result.HALF_POINT_BYE:
+            case (
+                Result.DRAW
+                | Result.UNRATED_DRAW
+                | Result.HALF_POINT_BYE
+                | Result.PENALTY_DL
+                | Result.UNRATED_PENALTY_DL
+            ):
                 return '='
-            case Result.GAIN | Result.UNRATED_GAIN:
+            case Result.WIN | Result.UNRATED_WIN:
                 return '+'
             case Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT:
                 return '<'
-            case Result.FORFEIT_GAIN | Result.FULL_POINT_BYE:
+            case Result.FORFEIT_WIN | Result.FULL_POINT_BYE:
                 return '>'
             case Result.PAIRING_ALLOCATED_BYE:
                 return 'EXE'
@@ -258,7 +345,7 @@ class Result(IntEnum):
     @property
     def to_pgn(self) -> str:
         match self:
-            case Result.GAIN | Result.UNRATED_GAIN:
+            case Result.WIN | Result.UNRATED_WIN:
                 return '1-0'
             case Result.LOSS | Result.UNRATED_LOSS:
                 return '0-1'
@@ -266,13 +353,17 @@ class Result(IntEnum):
                 return '1/2-1/2'
             case (
                 Result.NO_RESULT
-                | Result.FORFEIT_GAIN
+                | Result.FORFEIT_WIN
                 | Result.FORFEIT_LOSS
                 | Result.FULL_POINT_BYE
                 | Result.HALF_POINT_BYE
                 | Result.ZERO_POINT_BYE
                 | Result.PAIRING_ALLOCATED_BYE
                 | Result.REST_GAME
+                | Result.PENALTY_LL
+                | Result.UNRATED_PENALTY_LL
+                | Result.PENALTY_LD
+                | Result.UNRATED_PENALTY_LD
             ):
                 return '*'
             case _:
@@ -285,7 +376,7 @@ class Result(IntEnum):
                 return 'BBL'
             case Result.DRAW:
                 return 'BBD'
-            case Result.GAIN:
+            case Result.WIN:
                 return 'BBW'
             case Result.FORFEIT_LOSS:
                 return 'BBF'
@@ -310,7 +401,7 @@ class Result(IntEnum):
     def unplayed(self) -> bool:
         return self in (
             Result.NO_RESULT,
-            Result.FORFEIT_GAIN,
+            Result.FORFEIT_WIN,
             Result.FORFEIT_LOSS,
             Result.DOUBLE_FORFEIT,
             Result.HALF_POINT_BYE,
@@ -320,20 +411,44 @@ class Result(IntEnum):
             Result.REST_GAME,
         )
 
+    @property
+    def is_special_result(self) -> bool:
+        """Unusual results that my need permission to be entered."""
+        return self in (
+            Result.UNRATED_LOSS,
+            Result.UNRATED_DRAW,
+            Result.UNRATED_WIN,
+            Result.PENALTY_LL,
+            Result.PENALTY_DL,
+            Result.PENALTY_LD,
+            Result.UNRATED_PENALTY_LL,
+            Result.UNRATED_PENALTY_DL,
+            Result.UNRATED_PENALTY_LD,
+        )
+
     @classmethod
     def user_imputable_results(cls) -> tuple['Result', ...]:
         """Imputable results are the ones that a player can
         input by themselves, namely a win, a draw, or a loss or forfeits."""
-        return cls.GAIN, cls.DRAW, cls.LOSS
+        return cls.WIN, cls.DRAW, cls.LOSS
 
     @classmethod
     def admin_imputable_results(cls) -> tuple['Result', ...]:
         """Admin imputable results are the ones that only arbiters can input."""
         return cls.user_imputable_results() + (
             cls.NO_RESULT,
-            cls.FORFEIT_GAIN,
+            cls.FORFEIT_WIN,
             cls.FORFEIT_LOSS,
             cls.DOUBLE_FORFEIT,
+            cls.UNRATED_LOSS,
+            cls.UNRATED_DRAW,
+            cls.UNRATED_WIN,
+            cls.PENALTY_LL,
+            cls.PENALTY_DL,
+            cls.PENALTY_LD,
+            cls.UNRATED_PENALTY_LL,
+            cls.UNRATED_PENALTY_DL,
+            cls.UNRATED_PENALTY_LD,
         )
 
 

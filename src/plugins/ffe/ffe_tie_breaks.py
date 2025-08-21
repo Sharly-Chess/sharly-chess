@@ -108,7 +108,7 @@ class PapiBuchholzTieBreak(FfeTieBreak, BuchholzTieBreak, ABC):
         ) * (after_round - round_index)
         match pairing.result:
             case (
-                Result.FORFEIT_GAIN
+                Result.FORFEIT_WIN
                 | Result.PAIRING_ALLOCATED_BYE
                 | Result.FULL_POINT_BYE
             ):
@@ -121,7 +121,7 @@ class PapiBuchholzTieBreak(FfeTieBreak, BuchholzTieBreak, ABC):
                 | Result.DOUBLE_FORFEIT
                 | Result.NO_RESULT
             ):
-                return dummy + Result.GAIN.points(player.point_values)
+                return dummy + Result.WIN.points(player.point_values)
             case _:
                 raise ValueError(f'{pairing.result=}')
 
@@ -327,7 +327,7 @@ class PapiPerformanceTieBreak(FfeTieBreak, PerformanceTieBreak):
                 score += pairing.result.points(tournament.point_values)
         if not ratings:
             return 0
-        max_score = len(ratings) * Result.GAIN.points(tournament.point_values)
+        max_score = len(ratings) * Result.WIN.points(tournament.point_values)
         average = sum(ratings) / len(ratings)
         fractional_score = score / max_score
         bonus = papi_performance_bonus(fractional_score)
@@ -407,8 +407,8 @@ class PapiKashdanTieBreak(FfeTieBreak):
             if round_index <= after_round
         ]
         score_by_result: dict[Result, float] = {
-            Result.GAIN: 4,
-            Result.UNRATED_GAIN: 4,
+            Result.WIN: 4,
+            Result.UNRATED_WIN: 4,
             Result.DRAW: 2,
             Result.UNRATED_DRAW: 2,
             Result.LOSS: 1,

@@ -63,7 +63,7 @@
                 {% set _text='D' if pairing.unrated_draw else '=' %}
                 {% set _class=_box_class %}
                 {% set _tooltip_text=_('Unrated Draw') if pairing.unrated_draw else _('Draw') %}
-            {% elif pairing.gain %}
+            {% elif pairing.win %}
                 {% set _text='W' if pairing.unrated_gain else '1' %}
                 {% set _class=_box_class %}
                 {% set _text_style='position: relative; top: 0.1em;' %}

@@ -150,7 +150,7 @@ class PrizesTestCase(TestCase):
     ) -> StoredPlayer:
         stored_pairings: list[StoredPairing] = []
         for round_ in range(1, 7):
-            result = Result.GAIN if round_ <= points else Result.LOSS
+            result = Result.WIN if round_ <= points else Result.LOSS
             stored_pairings.append(
                 StoredPairing(
                     tournament_id=1,
