@@ -2020,6 +2020,13 @@ msgstr "Bouton de sortie :"
 msgid "Experimental features"
 msgstr "Fonctionnalités expérimentales"
 
+msgid "Experimental features (enabled)"
+msgstr "Fonctionnalités expérimentales (activées)"
+
+#, python-format
+msgid "Experimental features in version %(version)s are:"
+msgstr "Les fonctionnalités expérimentales en version %(version)s sont :"
+
 msgid "Expired FFE licence"
 msgstr "Licence FFE expirée"
 
@@ -4610,6 +4617,9 @@ msgstr "Sous-rôles"
 
 msgid "Sum of Buchholz"
 msgstr "Somme des Buchholz"
+
+msgid "Support for all FIDE recognised tie-break (including ones that are not compatible with Papi)"
+msgstr "Tous les départages reconnus par la FIDE (y compris ceux non compatibles avec Papi)"
 
 msgid "Support for the ChessEvent platform used for organising tournaments in France."
 msgstr "Support pour la plateforme ChessEvent utilsée pour l'organisation de tournois en France."

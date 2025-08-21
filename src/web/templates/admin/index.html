@@ -1,6 +1,21 @@
 {% extends 'common/base.html' %}
 
 {% block admin_header_back_button %}
+    <div class="d-flex px-3 pb-2 w-100 justify-content-between align-items-center border-bottom">
+        <button
+            class="btn px-0 py-0 d-flex align-items-center gap-2"
+            hx-get="{{ url_for('index') }}"
+            preload
+            hx-target="body"
+            hx-push-url="true"
+            hx-indicator="#please-wait"
+            hx-swap="transition:true"
+        >
+            <i class="bi-arrow-left-circle-fill"></i>
+            <span class="expanded-only">{{ _('Home page') }}</span>
+        </button>
+        {{ macros.experimental_warning(sharly_chess_config.experimental) }}
+    </div>
 {% endblock admin_header_back_button %}
 
 {% block admin_nav %}
