@@ -331,7 +331,7 @@ class NicoisSwissVariation(SwissVariation):
             points=player.points_before(at_round),
             tournament_rounds=tournament.rounds,
             draw_points=Result.DRAW.points(tournament.point_values),
-            gain_points=Result.GAIN.points(tournament.point_values),
+            gain_points=Result.WIN.points(tournament.point_values),
         )
 
     @staticmethod

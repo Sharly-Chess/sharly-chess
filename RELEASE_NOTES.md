@@ -27,6 +27,7 @@ English version below
 ### Gestion des appariements
 
 - Affichage des informations d'appariement : groupes, flotteurs, historiques et préférences couleurs (3.0.0)
+- Saisie des résultats non classés et des pénalités (expérimental) (3.0.0)
 
 ### Gestion des écrans
 
@@ -77,6 +78,7 @@ English version below
 ### Pairings management
 
 - Display pairing information: groups, floaters, history and colour preferences (3.0.0)
+- Entry of unrated and penalty results (3.0.0)
 
 ### Screens management
 
