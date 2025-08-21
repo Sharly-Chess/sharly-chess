@@ -1773,6 +1773,13 @@ msgstr ""
 msgid "Experimental features"
 msgstr ""
 
+msgid "Experimental features (enabled)"
+msgstr ""
+
+#, python-format
+msgid "Experimental features in version %(version)s are:"
+msgstr ""
+
 msgid "Expired FFE licence"
 msgstr ""
 
@@ -4264,6 +4271,9 @@ msgid "Strong"
 msgstr ""
 
 msgid "Sum of Buchholz"
+msgstr ""
+
+msgid "Support for all FIDE recognised tie-break (including ones that are not compatible with Papi)"
 msgstr ""
 
 msgid "Support for the ChessEvent platform used for organising tournaments in France."
