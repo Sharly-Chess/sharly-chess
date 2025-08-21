@@ -1141,7 +1141,7 @@ class Tournament:
                         index
                         for index, player_ in enumerate(sorted_players)
                         if player_.starting_rank_sort_key
-                        < player.starting_rank_sort_key
+                        > player.starting_rank_sort_key
                     ),
                     len(sorted_players),
                 )
