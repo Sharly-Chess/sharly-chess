@@ -158,7 +158,7 @@ class WinsTieBreak(TieBreak):
         assert player.tournament is not None
         point_values = player.tournament.point_values
         return sum(
-            pairing.result.points(point_values) == Result.GAIN.points(point_values)
+            pairing.result.points(point_values) == Result.WIN.points(point_values)
             for round_index, pairing in player.pairings.items()
             if round_index <= after_round
         )
@@ -193,7 +193,7 @@ class GamesWonTieBreak(TieBreak):
         if after_round is None:
             after_round = max(player.pairings)
         return sum(
-            pairing.result == Result.GAIN
+            pairing.result == Result.WIN
             for round_index, pairing in player.pairings.items()
             if round_index <= after_round
         )
@@ -263,7 +263,7 @@ class GamesWonWithBlackTieBreak(TieBreak):
         if after_round is None:
             after_round = max(player.pairings)
         return sum(
-            pairing.color == BoardColor.BLACK and pairing.result == Result.GAIN
+            pairing.color == BoardColor.BLACK and pairing.result == Result.WIN
             for round_index, pairing in player.pairings.items()
             if round_index <= after_round
         )
@@ -827,11 +827,11 @@ class SonnebornBergerTieBreak(TieBreak):
         dummy = player.points_after(after_round)
         match pairing.result:
             case (
-                Result.FORFEIT_GAIN
+                Result.FORFEIT_WIN
                 | Result.PAIRING_ALLOCATED_BYE
                 | Result.FULL_POINT_BYE
             ):
-                return dummy, Result.GAIN
+                return dummy, Result.WIN
             case Result.HALF_POINT_BYE:
                 return dummy, Result.DRAW
             case (
@@ -892,9 +892,7 @@ class KoyaTieBreak(TieBreak):
         if after_round is None:
             after_round = max(player.pairings)
         if limit is None:
-            limit = (
-                0.5 * Result.GAIN.points(tournament.point_values) * (after_round - 1)
-            )
+            limit = 0.5 * Result.WIN.points(tournament.point_values) * (after_round - 1)
         pairings: dict[int, Pairing] = {
             round_index: pairing
             for round_index, pairing in player.pairings.items()
@@ -947,13 +945,17 @@ class KashdanTieBreak(TieBreak):
             if round_index <= after_round
         ]
         score_by_result: dict[Result, float] = {
-            Result.GAIN: 4,
-            Result.UNRATED_GAIN: 4,
+            Result.WIN: 4,
+            Result.UNRATED_WIN: 4,
             Result.DRAW: 2,
             Result.UNRATED_DRAW: 2,
+            Result.PENALTY_DL: 2,
+            Result.UNRATED_PENALTY_DL: 2,
             Result.LOSS: 1,
             Result.UNRATED_LOSS: 1,
-            Result.FORFEIT_GAIN: 0,
+            Result.PENALTY_LL: 1,
+            Result.UNRATED_PENALTY_LL: 1,
+            Result.FORFEIT_WIN: 0,
             Result.PAIRING_ALLOCATED_BYE: 0,
             Result.FULL_POINT_BYE: 0,
             Result.HALF_POINT_BYE: 0,
@@ -1105,7 +1107,7 @@ class TournamentPerformanceRatingTieBreak(PerformanceTieBreak):
                 score += pairing.result.points(tournament.point_values)
         if not ratings:
             return 0
-        max_score = len(ratings) * Result.GAIN.points(tournament.point_values)
+        max_score = len(ratings) * Result.WIN.points(tournament.point_values)
         average = sum(ratings) / len(ratings)
         fractional_score = round(score / max_score, 2)
         bonus = StaticUtils.performance_bonus(fractional_score)
@@ -1278,7 +1280,7 @@ class PerfectTournamentPerformanceTieBreak(PerformanceTieBreak):
         ]
         return Decimal(
             sum(
-                chance[0] * Decimal(Result.GAIN.points(point_values))
+                chance[0] * Decimal(Result.WIN.points(point_values))
                 + chance[1] * Decimal(Result.LOSS.points(point_values))
                 for chance in chances
             )
@@ -1486,7 +1488,7 @@ class DirectEncounterTieBreak(TieBreak):
                 opponent_id: pairing
                 for opponent_id, pairing in tied_pairings.items()
                 if pairing.result
-                not in (Result.FORFEIT_GAIN, Result.DOUBLE_FORFEIT, Result.FORFEIT_LOSS)
+                not in (Result.FORFEIT_WIN, Result.DOUBLE_FORFEIT, Result.FORFEIT_LOSS)
             }
         if len(tied_pairings) == len(tied_opponents):
             return sum(
@@ -1495,7 +1497,7 @@ class DirectEncounterTieBreak(TieBreak):
             ), True
         tied_results = [pairing.result for pairing in tied_pairings.values()]
         virtual_results = [
-            Result.GAIN
+            Result.WIN
             for opponent_id in tied_opponents
             if opponent_id not in tied_pairings
         ]

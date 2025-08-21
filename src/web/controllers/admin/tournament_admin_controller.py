@@ -835,6 +835,11 @@ class TournamentAdminController(BaseEventAdminController):
                 errors=stored_tournament.errors,
             )
 
+        if message := plugin_manager.hook.signal_tournament_set(
+            tournament=web_context.admin_tournament, stored_tournament=stored_tournament
+        ):
+            Message.warning(request, message)
+
         with EventDatabase(
             web_context.admin_event.uniq_id, write=True
         ) as event_database:

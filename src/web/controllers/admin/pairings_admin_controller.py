@@ -1,3 +1,5 @@
+from common import experimental_features_enabled
+
 from collections import defaultdict
 import json
 from dataclasses import dataclass
@@ -22,6 +24,7 @@ from data.player import Player
 from data.safety_mode import RoundStatus, SafetyMode, PairingAction
 from data.tournament import Tournament
 from utils.enum import Result
+from plugins.manager import plugin_manager
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -228,6 +231,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             'board': self.admin_board,
             'wp': self.admin_board.white_player if self.admin_board else None,
             'bp': self.admin_board.black_player if self.admin_board else None,
+            'experimental_features_enabled': experimental_features_enabled(),
         }
 
     def get_admin_tournament(self) -> Tournament:
@@ -394,7 +398,14 @@ class PairingsAdminController(BaseEventAdminController):
                     board_id, web_context.admin_filtered_boards
                 )
         else:
-            tournament.add_result(board, Result(result))
+            r = Result(result)
+            if r.is_special_result:
+                if message := plugin_manager.hook.signal_special_result_set(
+                    tournament=tournament, result=r
+                ):
+                    Message.warning(request, message)
+
+            tournament.add_result(board, r)
             target_board_id = self._next_board_id(
                 board_id, web_context.admin_filtered_boards
             )
@@ -402,7 +413,10 @@ class PairingsAdminController(BaseEventAdminController):
         if not web_context.requires_refresh:
             return HTMXTemplate(
                 template_name='/admin/pairings/pairing_row_and_controls.html',
-                context=context,
+                context=context
+                | {
+                    'messages': Message.messages(web_context.request),
+                },
                 re_target='#round-controls',
                 re_swap='outerHTML',
                 trigger_event=trigger_event,
@@ -533,7 +547,7 @@ class PairingsAdminController(BaseEventAdminController):
             case 'Digit0' | 'Numpad0':
                 result = Result.NO_RESULT
             case 'Digit1' | 'Numpad1':
-                result = Result.GAIN
+                result = Result.WIN
             case 'Digit2' | 'Numpad2':
                 result = Result.LOSS
             case 'Digit3' | 'Numpad3':
