@@ -26,7 +26,7 @@ English version below
 - Affichage des informations d'appariement : groupes, flotteurs, historiques et préférences couleurs (3.0.0)
 - Remplacement des classements estimés rapide/blitz par les classements standards (3.0.0)
 - Suppression de la renumérotation automatique des échiquiers en cas d'appariement manuel (3.0.0)
-- Saisie des résultats non classés et des pénalités (expérimental) (3.0.0)
+- Saisie des résultats non comptabilisés et des pénalités (3.0.0)
 
 ### Écrans
 
@@ -54,7 +54,7 @@ English version below
 
 ## Events
 
-- Restore archived events (3.0.0)
+- Restoring of archived events (3.0.0)
 - Hide unique IDS (3.0.0)
 
 ## Tournaments
