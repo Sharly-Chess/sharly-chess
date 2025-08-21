@@ -1,17 +1,17 @@
 <td
-        class="
-            player-cell bg-transparent
-            {% if screen.type == 'input' and last_illegal_move_updated and last_illegal_move_updated.expiration > now and last_illegal_move_updated.tournament_id == tournament.id and last_illegal_move_updated.player_id == player.id %}
-                last_illegal_move_updated
-            {% endif %}"
-        {% if editable %}
-            hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            preload
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-        {% endif %}
+    class="
+        player-cell bg-transparent
+        {% if screen.type == 'input' and last_illegal_move_updated and last_illegal_move_updated.expiration > now and last_illegal_move_updated.tournament_id == tournament.id and last_illegal_move_updated.player_id == player.id %}
+            last_illegal_move_updated
+        {% endif %}"
+    {% if editable %}
+        hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+        preload
+        data-bs-toggle="modal"
+        data-bs-target="#modal-wrapper"
+    {% endif %}
 >
     {% if player is none %}
         <span class="fst-italic">{{ _('EXEMPT') }}</span>

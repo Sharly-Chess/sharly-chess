@@ -16,6 +16,7 @@ from common.exception import SharlyChessException
 from common.i18n import _
 from data.input_output import DataSource, TournamentExporter, TournamentImporter
 from data.input_output.data_source import FideDataSource
+from data.pairings.managers import PairingVariationManager
 from data.pairings.variations import SwissVariation
 from data.print_documents import PlayerSplitter, PrintDocument
 from data.print_documents.documents import PlayerPrintDocument
@@ -23,6 +24,8 @@ from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.prize.player_filter_options import PlayerFilterOption, ClubsFilterOption
 from data.prize.player_filters import PlayerFilter, ClubPlayerFilter
 from data.tie_breaks import TieBreak
+from data.tie_breaks.managers import TieBreakManager, TieBreakOptionManager
+from data.tie_breaks.options import TieBreakOption
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
@@ -34,13 +37,20 @@ from plugins.ffe.ffe_tournament_importers import (
     PapiJsonTournamentImporter,
     PapiTournamentImporter,
 )
+from plugins.ffe.papi_converter import PapiConverter
 from plugins.ffe.utils import (
     FFE_DEFAULT_UPLOAD_DELAY,
     FFE_MIN_UPLOAD_DELAY,
     FfePlayerPluginData,
 )
 from plugins.ffe.ffe_tournament_controller import FfeAdminTournamentController
-from utils.enum import PlayerCategory, PlayerRatingType, ScreenType, TournamentRating
+from utils.enum import (
+    PlayerCategory,
+    PlayerRatingType,
+    Result,
+    ScreenType,
+    TournamentRating,
+)
 from data.player import Player, PlayerRating
 from database.sqlite.event.event_database import EventDatabase
 from plugins.ffe import migrations, PLUGIN_NAME, ffe_tie_breaks
@@ -770,6 +780,44 @@ class FfePlugin(Plugin):
     @hookimpl
     def get_tournament_card_menu_items_template(self) -> str:
         return '/ffe_tournament_action_items.html'
+
+    @hookimpl
+    def signal_tournament_set(
+        self, tournament: 'Tournament', stored_tournament: 'StoredTournament'
+    ) -> str | None:
+        pairing_variation = PairingVariationManager.get_object(
+            stored_tournament.pairing
+        )
+        if blocker := PapiConverter.check_pairing_variation(pairing_variation):
+            return blocker
+
+        if not blocker:
+            tie_break_type_by_id: dict[str, type[TieBreak]] = (
+                TieBreakManager.type_by_id()
+            )
+            option_type_by_id: dict[str, type[TieBreakOption]] = (
+                TieBreakOptionManager.type_by_id()
+            )
+            for tie_break_dict in stored_tournament.tie_breaks:
+                assert isinstance(tie_break_dict['type'], str)
+                assert isinstance(tie_break_dict['options'], dict)
+                tie_break_id = tie_break_dict['type']
+                options: list[TieBreakOption] = []
+                for option_id, value in tie_break_dict['options'].items():
+                    if option_type := option_type_by_id.get(option_id, None):
+                        options.append(option_type(value))
+                if tie_break_type := tie_break_type_by_id.get(tie_break_id, None):
+                    tie_break = tie_break_type(options)
+                    if blocker := PapiConverter.check_tiebreak(tie_break):
+                        return blocker
+
+        return None
+
+    @hookimpl
+    def signal_special_result_set(
+        self, tournament: 'Tournament', result: Result
+    ) -> str | None:
+        return PapiConverter.check_result(result)
 
     # ---------------------------------------------------------------------------------
     # Printing

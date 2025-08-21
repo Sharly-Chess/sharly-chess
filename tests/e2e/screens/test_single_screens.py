@@ -161,7 +161,7 @@ class TestSingleScreensFunctionality:
         # Test the primary result button
 
         players = [
-            {'name': 'ALYX', 'result': Result.GAIN, 'button_text': '1 - 0'},
+            {'name': 'ALYX', 'result': Result.WIN, 'button_text': '1 - 0'},
             {'name': 'BRUNO', 'result': Result.DRAW, 'button_text': '½ - ½'},
             {'name': 'MARIA', 'result': Result.LOSS, 'button_text': '0 - 1'},
         ]
@@ -205,7 +205,7 @@ class TestSingleScreensFunctionality:
         expect(row.locator('td.score')).to_contain_text('#1')
 
         # Update the first row for some possible results, and check that the result is updated on the screen
-        for r in [Result.LOSS, Result.DRAW, Result.GAIN]:
+        for r in [Result.LOSS, Result.DRAW, Result.WIN]:
             set_result = api_request_context.put(
                 f'/admin/pairing/set-result/{EVENT_ID}/{paired_tournament.id}/1/1/{r.value}'
             )
