@@ -638,16 +638,18 @@ class Player:
                 # FIXME(Amaras): take care of the exceptions
                 if len(federations) <= 2:
                     result[title_norm][NormFailExplanation.NOT_ENOUGH_FEDERATIONS] = (
-                        len(federations) - 1
+                        dict(federations)
                     )
-                if own_federation > TitleNorm.maximum_of_own_federation(
+                elif own_federation > TitleNorm.maximum_of_own_federation(
                     tournament_rounds
                 ):
                     result[title_norm][NormFailExplanation.TOO_MANY_OWN_FEDERATION] = {
                         self.federation: own_federation
                     }
+                else:
+                    result[title_norm][NormCriterion.FEDERATIONS] = dict(federations)
             elif len(federations) < 2:
-                result[title_norm][NormFailExplanation.NOT_ENOUGH_FEDERATIONS] = len(
+                result[title_norm][NormFailExplanation.NOT_ENOUGH_FEDERATIONS] = dict(
                     federations
                 )
             else:
@@ -663,20 +665,20 @@ class Player:
                     }
 
         for title_norm in result.keys():
-            if (
-                holders := sum(title_holders.values())
-            ) < TitleNorm.minimum_title_holders(tournament_rounds):
-                result[title_norm][NormFailExplanation.NOT_ENOUGH_TITLE_HOLDERS] = (
-                    holders
+            if (sum(title_holders.values())) < TitleNorm.minimum_title_holders(
+                tournament_rounds
+            ):
+                result[title_norm][NormFailExplanation.NOT_ENOUGH_TITLE_HOLDERS] = dict(
+                    title_holders
                 )
             else:
                 result[title_norm][NormCriterion.TITLE_HOLDERS] = dict(title_holders)
 
             if (
-                titles := sum(required_titles[title_norm].values())
+                sum(required_titles[title_norm].values())
             ) < TitleNorm.minimum_required_titles(tournament_rounds):
                 result[title_norm][NormFailExplanation.NOT_ENOUGH_REQUIRED_TITLES] = (
-                    titles
+                    dict(required_titles[title_norm])
                 )
             else:
                 result[title_norm][NormCriterion.REQUIRED_TITLES] = dict(

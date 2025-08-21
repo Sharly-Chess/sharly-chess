@@ -3,6 +3,7 @@
 from collections.abc import Iterator
 from datetime import date, datetime, timedelta
 from enum import Enum, StrEnum, IntEnum, auto
+from functools import cache
 from math import ceil
 from typing import Self
 
@@ -950,33 +951,40 @@ class TitleNorm(Enum):
                 raise ValueError(f'Invalid title norm value: {self}')
 
     @staticmethod
+    @cache
     def minimum_rounds() -> int:
         return 9
 
     @staticmethod
+    @cache
     def minimum_score(
         rounds: int, point_values: dict[Result, float] | None = None
     ) -> float:
         return Result.GAIN.points(point_values) * 0.35 * rounds
 
     @staticmethod
+    @cache
     def minimum_title_holders(rounds: int) -> int:
         return ceil(rounds / 2)
 
     @staticmethod
+    @cache
     def minimum_required_titles(rounds: int) -> int:
         # FIXME(Amaras): Double Round-Robin requirements is 1/2 (rounded up)
         return max(ceil(rounds / 3), 3)
 
     @staticmethod
+    @cache
     def maximum_of_own_federation(rounds: int) -> int:
         return (3 * rounds) // 5
 
     @staticmethod
+    @cache
     def maximum_of_one_federation(rounds: int) -> int:
         return (2 * rounds) // 3
 
     @staticmethod
+    @cache
     def title_holders() -> tuple[PlayerTitle, ...]:
         return (
             PlayerTitle.WOMAN_FIDE_MASTER,
