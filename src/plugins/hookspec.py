@@ -15,7 +15,7 @@ from plugins.utils import (
     PluginNavBarItem,
     PluginData,
 )
-from utils.enum import ScreenType, TournamentRating
+from utils.enum import Result, ScreenType, TournamentRating
 
 if TYPE_CHECKING:
     from data.input_output import DataSource, TournamentExporter, TournamentImporter
@@ -276,6 +276,18 @@ class AppHookSpecs:
     @hookspec
     def get_tournament_card_menu_items_template(self) -> str:
         """Provide a path to the template to be added to the action menu"""
+
+    @hookspec
+    def signal_tournament_set(
+        self, tournament: 'Tournament | None', stored_tournament: 'StoredTournament'
+    ) -> str | None:
+        """An signal sent when a tournament is updated.  Returns a string to be displayed to the user"""
+
+    @hookspec
+    def signal_special_result_set(
+        self, tournament: 'Tournament | None', result: Result
+    ) -> str | None:
+        """An signal sent when a special result is set.  Returns a string to be displayed to the user"""
 
     # ---------------------------------------------------------------------------------
     # Printing

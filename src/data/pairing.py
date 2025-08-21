@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 
 logger: Logger = get_logger()
 
+
 class Pairing:
     """A pairing (from the point of view of the `Player` class)"""
 
@@ -70,14 +71,18 @@ class Pairing:
         if self.illegal_moves < self.player.tournament.record_illegal_moves:
             self.stored_pairing.illegal_moves += 1
             self.update(event_database)
-            logger.info('An illegal move has been recorded for player [%s].', self.player.id)
+            logger.info(
+                'An illegal move has been recorded for player [%s].', self.player.id
+            )
             return True
 
     def delete_illegal_move(self, event_database: EventDatabase):
         if self.illegal_moves > 0:
             self.stored_pairing.illegal_moves -= 1
             self.update(event_database)
-            logger.info('An illegal move has been deleted for player [%s].', self.player.id)
+            logger.info(
+                'An illegal move has been deleted for player [%s].', self.player.id
+            )
             return True
         else:
             logger.info('No illegal move found for player [%s].', self.player.id)
@@ -101,27 +106,43 @@ class Pairing:
 
     @property
     def loss(self) -> bool:
-        return self.result in (Result.LOSS, Result.UNRATED_LOSS)
+        return self.result in (
+            Result.LOSS,
+            Result.UNRATED_LOSS,
+            Result.PENALTY_LL,
+            Result.PENALTY_LD,
+            Result.UNRATED_PENALTY_LL,
+            Result.UNRATED_PENALTY_LD,
+        )
 
     @property
     def unrated_loss(self) -> bool:
-        return self.result == Result.UNRATED_LOSS
+        return self.result in (
+            Result.UNRATED_LOSS,
+            Result.UNRATED_PENALTY_LL,
+            Result.UNRATED_PENALTY_LD,
+        )
 
     @property
     def draw(self) -> bool:
-        return self.result in (Result.DRAW, Result.UNRATED_DRAW)
+        return self.result in (
+            Result.DRAW,
+            Result.UNRATED_DRAW,
+            Result.PENALTY_DL,
+            Result.UNRATED_PENALTY_DL,
+        )
 
     @property
     def unrated_draw(self) -> bool:
-        return self.result == Result.UNRATED_DRAW
+        return self.result in (Result.UNRATED_DRAW, Result.UNRATED_PENALTY_DL)
 
     @property
-    def gain(self) -> bool:
-        return self.result in (Result.GAIN, Result.UNRATED_GAIN)
+    def win(self) -> bool:
+        return self.result in (Result.WIN, Result.UNRATED_WIN)
 
     @property
     def unrated_gain(self) -> bool:
-        return self.result == Result.UNRATED_GAIN
+        return self.result == Result.UNRATED_WIN
 
     @property
     def half_point_bye(self) -> bool:
@@ -141,13 +162,13 @@ class Pairing:
 
     @property
     def forfeit_gain(self) -> bool:
-        return self.result == Result.FORFEIT_GAIN
+        return self.result == Result.FORFEIT_WIN
 
     @property
     def unplayed(self) -> bool:
         return self.result in (
             Result.NO_RESULT,
-            Result.FORFEIT_GAIN,
+            Result.FORFEIT_WIN,
             Result.FORFEIT_LOSS,
             Result.DOUBLE_FORFEIT,
             Result.HALF_POINT_BYE,
