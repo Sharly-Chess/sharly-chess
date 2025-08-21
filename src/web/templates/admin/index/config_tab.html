@@ -75,18 +75,19 @@
             </tr>
             <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">{{ _('Default federation') }}</th>
-                <td>
-                    <img
-                        class="player-federation-flag pe-1"
-                        src="{{ macros.federation_flag_url(sharly_chess_config.federation) }}"
-                    />
-                    {{ sharly_chess_config.federation.name }} - {{ sharly_chess_config.federations[sharly_chess_config.federation.name] }}
-                    {% if not sharly_chess_config.stored_config.federation %}
-                        <span class="fst-italic">
-                            {{ _('(by default)') }}
-                        </span>
-                    {% endif %}
-                </td>
+                {% if sharly_chess_config.federation %}
+                    <td>
+                        <img
+                            class="player-federation-flag pe-1"
+                            src="{{ macros.federation_flag_url(sharly_chess_config.federation) }}"
+                        />
+                        {{ sharly_chess_config.federation.name }} - {{ sharly_chess_config.federations[sharly_chess_config.federation.name] }}
+                    </td>
+                {% else %}
+                    <td>
+                        -
+                    </td>
+                {% endif %}
             </tr>
             <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">{{ _('Launching the browser on server startup') }}</th>

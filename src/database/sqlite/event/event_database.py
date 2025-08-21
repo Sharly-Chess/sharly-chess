@@ -239,7 +239,7 @@ class EventDatabase(MigrationDatabase):
         stored_event = stored_event_type(
             uniq_id=self.uniq_id,
             name=row['name'],
-            federation=row.get('federation', SharlyChessConfig().default_federation),
+            federation=row.get('federation', ''),
             start=row['start'],
             stop=row['stop'],
             public=self.load_bool_from_database_field(row['public']),

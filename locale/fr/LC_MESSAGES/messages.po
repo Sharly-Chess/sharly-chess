@@ -2354,6 +2354,9 @@ msgstr "Genre"
 msgid "Gender:"
 msgstr "Genre :"
 
+msgid "General"
+msgstr "Général"
+
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr "Générer les appariements pour toutes les rondes du tournoi."
 
@@ -3649,6 +3652,12 @@ msgstr "Participe au tournoi [%(uniq_id)s]"
 msgid "Plays %(board)d *** BOARD STRING FOR PAIRINGS PRINT"
 msgstr "Table %(board)d"
 
+msgid "Please choose a federation"
+msgstr "Veuillez choisir une fédération"
+
+msgid "Please choose a federation."
+msgstr "Veuillez choisir une fédération."
+
 msgid "Please choose the document."
 msgstr "Veuillez choisir le document."
 
@@ -4680,8 +4689,8 @@ msgstr "La source de données dans laquelle rechercher des joueur·euses."
 msgid "The date of the first hour is not defined (mandatory)."
 msgstr "La date du premier horaire n'est pas définie (obligatoire)."
 
-msgid "The default federation for your events."
-msgstr "La fédération par défaut de vos évènements."
+msgid "The default federation for your events. Sharly Chess may provide functionality specific to the federation chosen for each event."
+msgstr "La fédération par défaut pour vos évènements. Sharly Chess peut proposer des fonctionnalités spécifiques à la fédération choisie pour chaque évènement."
 
 msgid "The default language used."
 msgstr "La langue utilisée par défaut."
@@ -4693,8 +4702,8 @@ msgstr "La date et l'heure de fin de l'évènement."
 msgid "The end time of the tournament (defaults to %(datetime)s)."
 msgstr "L'horaire de fin du tournoi (par défaut %(datetime)s)."
 
-msgid "The federation that organizes the event."
-msgstr "La fédération qui organise l'évènement."
+msgid "The federation that organizes the event. Sharly Chess may provide functionality specific to the federation chosen for each event."
+msgstr "La fédération qui organise l’évènement. Sharly Chess peut proposer des fonctionnalités spécifiques à la fédération choisie pour chaque évènement."
 
 msgid "The file to import."
 msgstr "Le fichier à importer."

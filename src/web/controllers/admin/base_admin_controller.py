@@ -89,22 +89,35 @@ class BaseAdminController(BaseController):
     """A base class inherited by all the admin controllers."""
 
     @staticmethod
-    def _get_federation_options(default_federation: str | None) -> dict[str, str]:
+    def _get_federation_options(
+        default_federation: str | None, may_be_empty: bool = False
+    ) -> dict[str, str]:
+        # Base options
+        options = {
+            federation_id: f'{federation_id} - {federation_name}'
+            for federation_id, federation_name in SharlyChessConfig.federations.items()
+        }
+
         if default_federation:
-            return {
+            options = {
                 default_federation: _("Use Event's default - {option}").format(
                     option=f'{default_federation} - {SharlyChessConfig.federations[default_federation]}'
                 ),
-            } | {
-                federation_id: f'{federation_id} - {federation_name}'
-                for federation_id, federation_name in SharlyChessConfig.federations.items()
-                if federation_id != default_federation
+                **{
+                    fid: name
+                    for fid, name in options.items()
+                    if fid != default_federation
+                },
             }
-        else:
-            return {
-                federation_id: f'{federation_id} - {federation_name}'
-                for federation_id, federation_name in SharlyChessConfig.federations.items()
+
+        if may_be_empty:
+            # Add placeholder at the top
+            options = {
+                '': _('Please choose a federation'),
+                **options,
             }
+
+        return options
 
     @staticmethod
     def _get_record_illegal_moves_options(
@@ -342,12 +355,7 @@ class BaseAdminController(BaseController):
                 StaticUtils.name_to_uniq_id(name)
             )
 
-        federation = (
-            WebContext.form_data_to_str(
-                data, field := 'federation', SharlyChessConfig().default_federation
-            )
-            or ''
-        )
+        federation = WebContext.form_data_to_str(data, field := 'federation', '') or ''
         if federation not in SharlyChessConfig.federations:
             # should never happen, not translated.
             errors[field] = f'Invalid federation value [{data[field]}].'

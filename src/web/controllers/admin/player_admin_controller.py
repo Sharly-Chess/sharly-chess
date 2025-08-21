@@ -165,9 +165,7 @@ class PlayerAdminController(BaseEventAdminController):
             # should never happen, not translated.
             errors[field] = f'Invalid title value [{data[field]}].'
             data[field] = ''
-        federation = WebContext.form_data_to_str(
-            data, field := 'federation', SharlyChessConfig().default_federation
-        )
+        federation = WebContext.form_data_to_str(data, field := 'federation', '')
         if federation not in SharlyChessConfig.federations:
             # should never happen, not translated.
             errors[field] = f'Invalid federation value [{data[field]}].'
@@ -498,7 +496,6 @@ class PlayerAdminController(BaseEventAdminController):
                 players[start_index + index + 1] = player
 
         admin_player: Player | None = web_context.admin_player
-        sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
 
         # Allow plugin to provide extra columns
         per_plugin_columns: Iterable[Iterable[ExtraAdminColumn]] = (
@@ -625,8 +622,7 @@ class PlayerAdminController(BaseEventAdminController):
                 pass
             case 'player':
                 federation_options = cls._get_federation_options(
-                    sharly_chess_config.stored_config.federation
-                    or SharlyChessConfig.default_federation
+                    default_federation=admin_event.federation
                 )
 
                 if data is None:
@@ -691,10 +687,7 @@ class PlayerAdminController(BaseEventAdminController):
                             raise ValueError(f'action=[{action}]')
 
                     federation_options = cls._get_federation_options(
-                        sharly_chess_config.stored_config.federation
-                        or SharlyChessConfig.default_federation
-                        if federation is None
-                        else None
+                        admin_event.federation if federation is None else None
                     )
 
                     rating_data: dict[str, Any] = {}

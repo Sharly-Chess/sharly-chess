@@ -22,27 +22,26 @@
                     </h4>
                 {% endif %}
                 <h4>
-                    {{ _('Internationalization') }}
+                    {{ _('General') }}
+
                 </h4>
-                <div class="row">
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.select_input(
-                            name='federation',
-                            label=_('Federation:'),
-                            help_text=_('The default federation for your events.'),
-                            select_options=federation_options,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.select_input(
-                            name='locale',
-                            label=_('Language:'),
-                            help_text=_('The default language used.'),
-                            select_options=locale_options,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
+                <div class="d-flex flex-column gap-2">
+                    {{ admin_macros.switch_input(
+                        name='launch_browser',
+                        label='',
+                        placeholder=_('Launch a browser on startup'),
+                        help_text='',
+                        info=_('Sharly Chess can automatically launch a web browser when starting the web server.'),
+                        data=data, errors=errors
+                    ) }}
+                    {{ admin_macros.switch_input(
+                        name='experimental',
+                        label='',
+                        placeholder=_('Experimental features'),
+                        help_text='',
+                        info=_('Benefit from the very last (experimental) features (USE AT YOUR OWN RISKS!).'),
+                        data=data, errors=errors
+                    ) }}
                 </div>
                 <h4>
                     {{ _('Console logs') }}
@@ -88,6 +87,29 @@
                     </div>
                 </div>
                 <h4>
+                    {{ _('Internationalization') }}
+                </h4>
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.select_input(
+                            name='federation',
+                            label=_('Federation:'),
+                            help_text=_('The default federation for your events. Sharly Chess may provide functionality specific to the federation chosen for each event.'),
+                            select_options=federation_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.select_input(
+                            name='locale',
+                            label=_('Language:'),
+                            help_text=_('The default language used.'),
+                            select_options=locale_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+                <h4>
                     {{ _('Plugins') }}
                 </h4>
                 <div class="row d-fex flex-column gap-2">
@@ -102,31 +124,6 @@
                             data=data, errors=errors
                         ) }}
                     {% endfor %}
-                </div>
-                <h4>
-                    {{ _('Execution') }}
-                </h4>
-                <div class="row">
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.switch_input(
-                            name='launch_browser',
-                            label='',
-                            placeholder=_('Launch a browser on startup'),
-                            help_text='',
-                            info=_('Sharly Chess can automatically launch a web browser when starting the web server.'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.switch_input(
-                            name='experimental',
-                            label='',
-                            placeholder=_('Experimental features'),
-                            help_text='',
-                            info=_('Benefit from the very last (experimental) features (USE AT YOUR OWN RISKS!).'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
                 </div>
             </form>
         </div>
