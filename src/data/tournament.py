@@ -1152,8 +1152,8 @@ class Tournament:
             )
 
         with EventDatabase(self.event.uniq_id, True) as database:
-            for index, player in enumerate(sorted_players):
-                player.stored_tournament_player.pairing_number = index + 1
+            for pairing_number, player in enumerate(sorted_players, start=1):
+                player.stored_tournament_player.pairing_number = pairing_number
                 database.set_tournament_player_pairing_number(
                     player.stored_tournament_player
                 )
