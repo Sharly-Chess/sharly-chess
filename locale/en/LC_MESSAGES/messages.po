@@ -2501,9 +2501,6 @@ msgstr ""
 msgid "Identity"
 msgstr ""
 
-msgid "If no rapid/blitz rating exists, fall back to the standard rating"
-msgstr ""
-
 msgid "Illegal moves are not recorded."
 msgstr ""
 
@@ -2555,6 +2552,9 @@ msgid "Impossible to set a round number lower than the last round with pairings 
 msgstr ""
 
 msgid "In play"
+msgstr ""
+
+msgid "In rapid/blitz tournaments, use the standard rating for unrated players"
 msgstr ""
 
 msgid "In-tournament"
