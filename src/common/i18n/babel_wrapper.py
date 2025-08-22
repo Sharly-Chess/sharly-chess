@@ -66,8 +66,19 @@ class BabelWrapper:
             ],
         )
         if changed := (file_fingerprint(tmp_file) != pot_fingerprint):
+            if pot_fingerprint:
+                logger.info(
+                    'I18n strings have changed, POT file [%s] has been updated.',
+                    str(cls.pot_file.name),
+                )
+            else:
+                logger.info('POT file [%s] has been created.', str(cls.pot_file.name))
             shutil.move(tmp_file, cls.pot_file)
         else:
+            logger.info(
+                'I18n strings are unchanged, no need to rebuild POT file [%s].',
+                str(cls.pot_file.name),
+            )
             tmp_file.unlink()
         return changed
 

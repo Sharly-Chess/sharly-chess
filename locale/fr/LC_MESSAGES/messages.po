@@ -171,8 +171,8 @@ msgstr "0 - 0 (NC)"
 msgid "0 - 1 (U)"
 msgstr "0 - 1 (NC)"
 
-msgid "0 - 1/2 (U)"
-msgstr "0 - 1/2 (NC)"
+msgid "0 - ½ (U)"
+msgstr "0 - ½ (NC)"
 
 msgid "1 *** THE LETTER TO ANSWER ONCE"
 msgstr "1"
@@ -180,11 +180,11 @@ msgstr "1"
 msgid "1 - 0 (U)"
 msgstr "1 - 0 (NC)"
 
-msgid "1/2 - 0 (U)"
-msgstr "1/2 - 0 (NC)"
+msgid "½ - 0 (U)"
+msgstr "½ - 0 (NC)"
 
-msgid "1/2 - 1/2 (U)"
-msgstr "1/2 - 1/2 (NC)"
+msgid "½ - ½ (U)"
+msgstr "½ - ½ (NC)"
 
 msgid "1st day of the month"
 msgstr "1er jour du mois"
@@ -6279,4 +6279,3 @@ msgstr "{string} : {value}"
 
 msgid "{tie_break} (Papi compatible)"
 msgstr "{tie_break} (compatible Papi)"
-
