@@ -47,7 +47,7 @@
         {% endwith %}
         {% if admin_tournament.finished %}
             <option value="{{ admin_tournament.rounds + 1 }}" {% if display_results %}selected{%endif %}>
-                {{ _('Results') }}
+                {{ _('Ranking') }}
             </option>
         {% endif %}
     </select>
@@ -78,7 +78,7 @@
     <span {{ macros.tooltip_attributes('info', _('Current round'), 'top') }}>
         <button
             class="btn btn-outline-primary text-nowrap"
-            {% if admin_tournament.finished %}
+            {% if not admin_tournament.finished %}
                 hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_tournament.current_round) }}"
             {% else %}
                 hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
