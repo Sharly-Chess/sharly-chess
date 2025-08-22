@@ -145,11 +145,23 @@
                     </button>
                 </span>
             </li>
-            {% if tournament_importers and not tournament.players %}
+            {% if tournament.started %}
+                <li
+                    class="dropdown-item text-start text-secondary"
+                    {{ macros.tooltip_attributes(
+                        'warning', _('Import is unavailable once the tournament has started.'), 'right'
+                    ) }}
+                >
+                    <i class="bi-download pe-1"></i>
+                    {{ _('Import') }}
+                </li>
+            {% else %}
                 <li class="dropdown-submenu">
                     <button class="dropdown-item d-flex justify-content-between" href="#">
-                        <span><i class="bi-download pe-1"></i>
-                        {{ _('Import') }}</span>
+                        <span>
+                            <i class="bi-download pe-1"></i>
+                            {{ _('Import') }}
+                        </span>
                         <i class="ps-3 bi bi-caret-right-fill"></i>
                     </button>
                     <ul class="dropdown-menu">
