@@ -24,6 +24,7 @@ English version below
 ### Appariements
 
 - Affichage des informations d'appariement : groupes, flotteurs, historiques et préférences couleurs (3.0.0)
+– Affichage des résultats du tournoi dans l’onglet appariements après la dernière ronde (3.0.0)
 - Remplacement des classements estimés rapide/blitz par les classements standards (3.0.0)
 - Suppression de la renumérotation automatique des échiquiers en cas d'appariement manuel (3.0.0)
 - Saisie des résultats non comptabilisés et des pénalités (3.0.0)
@@ -69,6 +70,7 @@ English version below
 ### Pairings
 
 - Display pairing information: groups, floaters, history and colour preferences (3.0.0)
+- Display of tournament results in pairings tab after last round (3.0.0)
 - Allow overriding of unrated rapid/blitz ratings by standard ratings (3.0.0)
 - Removed automatic renumbering of boards when manually pairing (3.0.0)
 - Entry of unrated and penalty results (3.0.0)
