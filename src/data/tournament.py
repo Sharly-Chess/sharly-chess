@@ -1046,7 +1046,7 @@ class Tournament:
         )
 
         # Remove the cached 'playing' value so that the pairing tab updates correctly
-        del self.playing
+        self.__dict__.pop('playing', None)
 
     def delete_result(self, board: Board):
         """Deletes the result for the given `board`."""
@@ -1065,7 +1065,7 @@ class Tournament:
         )
 
         # Remove the cached 'playing' value so that the pairing tab updates correctly
-        del self.playing
+        self.__dict__.pop('playing', None)
 
     def check_in_player(self, player: Player, check_in: bool):
         """Stores the `check_in` status for the given `player`."""
