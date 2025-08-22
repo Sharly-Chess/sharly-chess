@@ -96,7 +96,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         elif event.tournaments:
             self.admin_tournament = event.tournaments_sorted_by_uniq_id[0]
 
-        self.display_results = self.admin_tournament and (
+        self.display_rankings = self.admin_tournament and (
             self.admin_tournament.finished
             and (round_ is None or round_ > self.admin_tournament.rounds)
         )
@@ -110,7 +110,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         )
 
         if self.admin_tournament and (
-            self.admin_round > self.admin_tournament.rounds or self.display_results
+            self.admin_round > self.admin_tournament.rounds or self.display_rankings
         ):
             self.admin_round = self.admin_tournament.rounds
 
@@ -126,7 +126,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             self.admin_boards = self.admin_tournament.get_round_boards(self.admin_round)
             unpaired = self.admin_tournament.get_unpaired_players(self.admin_boards)
 
-        if self.admin_tournament and self.display_results:
+        if self.admin_tournament and self.display_rankings:
             self.admin_tournament.compute_player_ranks()
 
         if SessionHandler.get_session_admin_pairings_show_without_results(request):
@@ -230,7 +230,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             'admin_round': self.admin_round,
             'admin_boards': self.admin_boards,
             'round_status': self.round_status,
-            'display_results': self.display_results,
+            'display_rankings': self.display_rankings,
             'safety_mode': self.safety_mode,
             'allowed_actions': allowed_actions,
             'existing_actions': existing_actions,

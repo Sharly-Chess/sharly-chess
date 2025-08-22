@@ -17,7 +17,7 @@
         <button
             class="btn btn-outline-primary text-nowrap"
             style="transform: scaleX(-1);"
-            hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round - 1 if not display_results else admin_round) }}"
+            hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round - 1 if not display_rankings else admin_round) }}"
             hx-target="body"
             hx-replace-url="true"
             hx-indicator="#please-wait"
@@ -46,7 +46,7 @@
             {% endfor %}
         {% endwith %}
         {% if admin_tournament.finished %}
-            <option value="{{ admin_tournament.rounds + 1 }}" {% if display_results %}selected{%endif %}>
+            <option value="{{ admin_tournament.rounds + 1 }}" {% if display_rankings %}selected{%endif %}>
                 {{ _('Ranking') }}
             </option>
         {% endif %}
@@ -68,7 +68,7 @@
             {% endif %}
             hx-target="body"
             hx-indicator="#please-wait"
-            {% if display_results or (admin_round >= admin_tournament.rounds and not admin_tournament.finished) %}
+            {% if display_rankings or (admin_round >= admin_tournament.rounds and not admin_tournament.finished) %}
                 disabled
             {% endif %}
         >
@@ -86,7 +86,7 @@
             hx-target="body"
             hx-replace-url="true"
             hx-indicator="#please-wait"
-            {% if display_results or (admin_round >= admin_tournament.rounds and not admin_tournament.finished) %}
+            {% if display_rankings or (admin_round >= admin_tournament.rounds and not admin_tournament.finished) %}
                 disabled
             {% endif %}
         >
