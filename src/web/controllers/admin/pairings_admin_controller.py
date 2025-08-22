@@ -100,8 +100,6 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             self.admin_tournament.finished
             and (round_ is None or round_ > self.admin_tournament.rounds)
         )
-        if self.admin_tournament and self.display_results:
-            self.admin_tournament.compute_player_ranks()
 
         self.admin_round = (
             round_
@@ -111,7 +109,9 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             else 0
         )
 
-        if self.admin_tournament and self.admin_round > self.admin_tournament.rounds:
+        if self.admin_tournament and (
+            self.admin_round > self.admin_tournament.rounds or self.display_results
+        ):
             self.admin_round = self.admin_tournament.rounds
 
         self.round_status = RoundStatus.from_round(
@@ -125,6 +125,9 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             self.admin_tournament.set_for_round(self.admin_round)
             self.admin_boards = self.admin_tournament.get_round_boards(self.admin_round)
             unpaired = self.admin_tournament.get_unpaired_players(self.admin_boards)
+
+        if self.admin_tournament and self.display_results:
+            self.admin_tournament.compute_player_ranks()
 
         if SessionHandler.get_session_admin_pairings_show_without_results(request):
             self.admin_filtered_boards = [
