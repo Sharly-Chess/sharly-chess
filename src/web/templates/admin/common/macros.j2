@@ -184,6 +184,7 @@ with_indicator: display a loading indicator, optional
     input_type,
     label='NO LABEL',
     placeholder='',
+    doc_icon='',
     help_text='NO HELP TEXT',
     data={},
     errors={},
@@ -233,7 +234,7 @@ with_indicator: display a loading indicator, optional
                         for="{{ id }}"
                         class="form-check-label flex-grow-1 mb-1"
                     >
-                        {{ label }}
+                        {{ label }}{% if doc_icon %}<span >{{ macros.doc_icon(doc_icon, 'ms-2') }}</span>{% endif %}
                     </label>
                 {% endif %}
                 {% if default_checkbox %}
@@ -323,7 +324,7 @@ with_indicator: display a loading indicator, optional
                             disabled
                         {% endif %}
                     />
-                    {{ placeholder }}
+                      {{ placeholder }}{% if doc_icon %}<span >{{ macros.doc_icon(doc_icon, 'ms-2') }}</span>{% endif %}
                 {% else %}
                     {% if disabled %}
                         <input
@@ -713,6 +714,7 @@ with_indicator: display a loading indicator, optional
     name,
     label='NO LABEL',
     help_text='NO HELP TEXT',
+    doc_icon='',
     data={},
     errors={},
     error=false,
@@ -727,6 +729,7 @@ with_indicator: display a loading indicator, optional
         input_type='select',
         label=label,
         help_text=help_text,
+        doc_icon=doc_icon,
         data=data,
         errors=errors,
         error=error,
@@ -742,6 +745,7 @@ with_indicator: display a loading indicator, optional
     name,
     label='NO LABEL',
     placeholder='NO PLACEHOLDER',
+    doc_icon='',
     help_text='NO HELP TEXT',
     info='',
     data={},
@@ -754,6 +758,7 @@ with_indicator: display a loading indicator, optional
         input_type='switch',
         label=label,
         placeholder=placeholder,
+        doc_icon=doc_icon,
         help_text=help_text,
         info=info,
         data=data,
