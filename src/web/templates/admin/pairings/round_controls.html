@@ -17,7 +17,7 @@
         <button
             class="btn btn-outline-primary text-nowrap"
             style="transform: scaleX(-1);"
-            hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round - 1) }}"
+            hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round - 1 if not display_rankings else admin_round) }}"
             hx-target="body"
             hx-replace-url="true"
             hx-indicator="#please-wait"
@@ -45,6 +45,11 @@
                 </option>
             {% endfor %}
         {% endwith %}
+        {% if admin_tournament.finished %}
+            <option value="{{ admin_tournament.rounds + 1 }}" {% if display_rankings %}selected{%endif %}>
+                {{ _('Ranking') }}
+            </option>
+        {% endif %}
     </select>
     <span {{ macros.tooltip_attributes('info', _('Next round'), 'top') }}>
         <button
@@ -54,13 +59,16 @@
                 preload
                 data-bs-toggle="modal"
                 data-bs-target="#modal-wrapper"
-            {% else %}
+            {% elif admin_round < admin_tournament.rounds %}
                 hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round + 1) }}"
+                hx-replace-url="true"
+            {% else %}
+                hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
                 hx-replace-url="true"
             {% endif %}
             hx-target="body"
             hx-indicator="#please-wait"
-            {% if admin_round >= admin_tournament.rounds %}
+            {% if display_rankings or (admin_round >= admin_tournament.rounds and not admin_tournament.finished) %}
                 disabled
             {% endif %}
         >
@@ -70,11 +78,15 @@
     <span {{ macros.tooltip_attributes('info', _('Current round'), 'top') }}>
         <button
             class="btn btn-outline-primary text-nowrap"
-            hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_tournament.current_round) }}"
+            {% if not admin_tournament.finished %}
+                hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_tournament.current_round) }}"
+            {% else %}
+                hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+            {% endif %}
             hx-target="body"
             hx-replace-url="true"
             hx-indicator="#please-wait"
-            {% if admin_round >= admin_tournament.current_round %}
+            {% if display_rankings or (admin_round >= admin_tournament.rounds and not admin_tournament.finished) %}
                 disabled
             {% endif %}
         >
