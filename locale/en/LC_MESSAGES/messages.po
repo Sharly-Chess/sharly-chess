@@ -172,7 +172,7 @@ msgstr ""
 msgid "0 - 1 (U)"
 msgstr ""
 
-msgid "0 - 1/2 (U)"
+msgid "0 - ½ (U)"
 msgstr ""
 
 msgid "1 *** THE LETTER TO ANSWER ONCE"
@@ -181,10 +181,10 @@ msgstr "1"
 msgid "1 - 0 (U)"
 msgstr ""
 
-msgid "1/2 - 0 (U)"
+msgid "½ - 0 (U)"
 msgstr ""
 
-msgid "1/2 - 1/2 (U)"
+msgid "½ - ½ (U)"
 msgstr ""
 
 msgid "1st day of the month"
