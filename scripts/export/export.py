@@ -672,7 +672,7 @@ def main():
     if not InstallationChecker.check():
         return
     clean(clean_zip=True)
-    update_i18n_files()
+    update_i18n_files(generate_doc=False)
     build_exe()
     create_project()
     generate_license_files()

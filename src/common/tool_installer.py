@@ -24,29 +24,29 @@ logger = get_logger()
 
 class ToolInstaller(ABC):
     """An abstract class for tools and libs to check installation and install.
-    Classes inheriting from this class should just implement methods check_file() and install()."""
+    Classes inheriting from this class should just implement methods check_files() and install()."""
 
     def __init__(
         self,
         name: str,
         version: Version,
-        licence_files: list[str] | None = None,
+        licence_files: set[str] | None = None,
         licence_type: str | None = None,
     ):
         self.name: str = name
         self.version: Version = version
-        self.licence_files = licence_files or []
-        self.licence_type = licence_type
+        self.licence_files: set[str] = licence_files or set()
+        self.licence_type: str | None = licence_type
 
     @property
     @abstractmethod
-    def check_file(self) -> Path:
+    def check_files(self) -> set[Path]:
         """Returns the path of the file to check for a correct installation."""
 
     @property
     def is_installed(self) -> bool:
         """Returns True if correctly installed, False otherwise."""
-        return self.check_file.exists()
+        return all(file.exists() for file in self.check_files)
 
     def check_installation(self) -> bool:
         """Checks the installation of a tool or lib.
@@ -109,20 +109,30 @@ class WebLibInstaller(ToolInstaller, ABC):
         version: Version,
         lib_install_folder_name: str,
         version_folder_name: str,
-        lib_files: list[str],
-        licence_files: list[str] | None = None,
+        lib_files: set[str],
+        licence_files: set[str] | None = None,
+        licence_type: str | None = None,
     ):
-        super().__init__(name, version, licence_files)
+        super().__init__(name, version, licence_files, licence_type)
         self.lib_install_dir: Path = self.lib_dir / lib_install_folder_name
         self.version_folder_name: str = version_folder_name.format(version=self.version)
         self.version_install_dir: Path = self.lib_install_dir / self.version_folder_name
-        self.lib_files: list[str] = [
+        self.lib_files: set[str] = {
             lib_file.format(version=self.version) for lib_file in lib_files
-        ]
+        }
 
     @property
-    def check_file(self) -> Path:
-        return self.version_install_dir / self.lib_files[0]
+    def check_files(self) -> set[Path]:
+        return {
+            self.version_install_dir / lib_file for lib_file in self.lib_files
+        }.union(
+            {
+                self.version_install_dir / licence_file
+                for licence_file in self.licence_files
+            }
+            if self.licence_files
+            else {}
+        )
 
 
 class WebLibArchiveInstaller(WebLibInstaller, ABC):
@@ -134,10 +144,10 @@ class WebLibArchiveInstaller(WebLibInstaller, ABC):
         version: Version,
         lib_install_folder_name: str,
         version_folder_name: str,
-        lib_files: list[str],
+        lib_files: set[str],
         archive_url: str,
         archive_filename: str,
-        licence_files: list[str] | None = None,
+        licence_files: set[str] | None = None,
         licence_type: str | None = None,
     ):
         super().__init__(
@@ -147,10 +157,10 @@ class WebLibArchiveInstaller(WebLibInstaller, ABC):
             version_folder_name,
             lib_files,
             licence_files,
+            licence_type,
         )
-        self.archive_url = archive_url.format(version=self.version)
-        self.archive_filename = archive_filename.format(version=self.version)
-        self.licence_type = licence_type
+        self.archive_url: str = archive_url.format(version=self.version)
+        self.archive_filename: str = archive_filename.format(version=self.version)
 
     def install(self) -> bool:
         self.version_install_dir.mkdir(parents=True, exist_ok=True)
@@ -211,6 +221,7 @@ class WebLibFileInstaller(WebLibInstaller):
         version: Version,
         url: str,
         lib_file: str,
+        licence_files: set[str] | None = None,
         licence_type: str | None = None,
     ):
         super().__init__(
@@ -218,19 +229,21 @@ class WebLibFileInstaller(WebLibInstaller):
             version,
             '',
             '',
-            [
+            {
                 lib_file,
-            ],
+            },
+            licence_files,
+            licence_type,
         )
         self.url: str = url.format(version=self.version)
-        self.licence_type = licence_type
 
     def install(self) -> bool:
-        self.check_file.parent.mkdir(parents=True, exist_ok=True)
-        print_interactive_info(f'Downloading {self.url} to {self.check_file}...')
+        check_file: Path = next(iter(self.check_files))
+        check_file.parent.mkdir(parents=True, exist_ok=True)
+        print_interactive_info(f'Downloading {self.url} to {check_file}...')
         response = requests.get(self.url, stream=True, timeout=REQUEST_TIMEOUT)
         response.raise_for_status()
-        with open(self.check_file, 'wb') as f:
+        with open(check_file, 'wb') as f:
             for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
         print_interactive_success('Done.')
@@ -247,7 +260,7 @@ class SystemHandler:
 class ExecutableInstaller(ToolInstaller, ABC):
     """Abstract installer for tools containing a executable"""
 
-    def __init__(self, licence_files: list[str] | None = None):
+    def __init__(self, licence_files: set[str] | None = None):
         super().__init__(self._name, self._version, licence_files)
 
     @property
@@ -283,15 +296,21 @@ class ExecutableInstaller(ToolInstaller, ABC):
         return self.executable_dir.parent
 
     @property
-    def check_file(self) -> Path:
-        return self.executable_path
+    def check_files(self) -> set[Path]:
+        return {
+            self.executable_path,
+        }
 
 
 class BbpPairingsInstaller(ExecutableInstaller):
     def __init__(self):
         # Specify which files in the archive are licence files
-        licence_files = ['LICENSE.txt', 'Apache-2.0.txt']
-        super().__init__(licence_files=licence_files)
+        super().__init__(
+            licence_files={
+                'LICENSE.txt',
+                'Apache-2.0.txt',
+            }
+        )
 
     @property
     def _name(self) -> str:
