@@ -23,6 +23,7 @@ from data.board import Board
 from data.player import Player
 from data.safety_mode import RoundStatus, SafetyMode, PairingAction
 from data.tournament import Tournament
+from database.sqlite.event.event_database import EventDatabase
 from utils.enum import Result
 from plugins.manager import plugin_manager
 from web.controllers.admin.base_event_admin_controller import (
@@ -1280,3 +1281,86 @@ class PairingsAdminController(BaseEventAdminController):
                 'warning': warning,
             },
         )
+
+    @patch(
+        path='/admin/manual-tiebreak-update/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-manual-tiebreak-update',
+    )
+    async def htmx_admin_manual_tiebreak_update(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        data: Annotated[
+            dict[str, str | list[int]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template | ClientRedirect:
+        web_context: PairingsAdminWebContext = PairingsAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=None,
+        )
+        if web_context.error:
+            return web_context.error
+
+        tournament = web_context.get_admin_tournament()
+
+        player_data = data['player']
+        submitted_ids: list[int] = player_data if isinstance(player_data, list) else []
+
+        # 'Natural' sort order without tiebreaks
+        players_by_rank_without_manual_tiebreaks = sorted(
+            tournament.players,
+            key=lambda p: p.no_manual_rank_sort_key,
+        )
+
+        # Group players by manual_rank_key, preserving current order
+        by_rank: dict[object, list[Player]] = defaultdict(list)
+        for player in players_by_rank_without_manual_tiebreaks:
+            by_rank[player.before_manual_rank_key].append(player)
+
+        players_to_update: dict[int, int | None] = {}
+
+        #  Update manual_tiebreaks: assign only to point grups whose index varies from the natural sort order, clear for others
+        for group in by_rank.values():
+            # Singletons never need manual tiebreak
+            if len(group) <= 1:
+                for p in group:
+                    if p.manual_tiebreak is not None:
+                        players_to_update[p.id] = None
+                continue
+
+            # Current order (by manual_rank_key) and submitted order (restricted to this group)
+            current_ids = [p.id for p in group]
+            submitted_ids_in_group = [
+                pid for pid in submitted_ids if pid in current_ids
+            ]
+
+            # If group order identical, clear all manual tiebreaks
+            if submitted_ids_in_group == current_ids:
+                for p in group:
+                    if p.manual_tiebreak is not None:
+                        players_to_update[p.id] = None
+            else:
+                # Maps of index within the group
+                for i, pid in enumerate(submitted_ids_in_group):
+                    players_to_update[pid] = -i
+
+        if players_to_update:
+            with EventDatabase(tournament.event.uniq_id, True) as database:
+                database.set_tournament_players_manual_tiebreak(
+                    tournament_id, players_to_update
+                )
+                database.commit()
+
+        web_context: PairingsAdminWebContext = PairingsAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=None,
+        )
+
+        # Re-render the admin pairings view
+        return self._admin_event_pairings_render(web_context)

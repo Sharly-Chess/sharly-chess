@@ -72,6 +72,11 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         return True
 
     @property
+    def is_manual(self) -> bool:
+        """Defines if the tie-break is the manual one"""
+        return False
+
+    @property
     def forbidden_pairing_systems(self) -> list[PairingSystem]:
         """List of pairing systems for which the tie-break is not usable.
         By default, tie-breaks can be used for all pairing systems."""
@@ -1505,3 +1510,45 @@ class DirectEncounterTieBreak(TieBreak):
             result.points(tournament.point_values)
             for result in tied_results + virtual_results
         ), False
+
+
+class ManualTieBreak(TieBreak):
+    """Used for play-off's, etc"""
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Manual')
+
+    @staticmethod
+    def static_id() -> str:
+        return 'MANUAL'
+
+    @property
+    def acronym(self) -> str:
+        # FIDE acronym: 'WIN'
+        return _('Man. *** ACRONYM FOR MANUAL TIEBREAK')
+
+    @property
+    def short_name(self) -> str:
+        return _('Manual')
+
+    @property
+    def is_manual(self) -> bool:
+        return True
+
+    def compute_player_value(
+        self,
+        player: 'Player',
+        *,
+        after_round: int | None,
+    ) -> int:
+        if after_round is None:
+            after_round = max(player.pairings)
+        assert player.tournament is not None
+        if not player.tournament.finished:
+            return 0
+        return (
+            player.stored_tournament_player.manual_tiebreak
+            if player.stored_tournament_player.manual_tiebreak is not None
+            else 0
+        )

@@ -15,6 +15,7 @@ class TieBreakManager(EntityManager[TieBreak]):
             tie_breaks.WinsTieBreak,
             tie_breaks.SonnebornBergerTieBreak,
             tie_breaks.KoyaTieBreak,
+            tie_breaks.ManualTieBreak,
         ]
         # Include all the others as experimental
         if experimental_features_enabled():
