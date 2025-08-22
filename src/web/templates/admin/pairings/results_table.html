@@ -1,0 +1,48 @@
+<table
+    id="results-table"
+    class="results-table table prominent table-striped table-sm table-hover w-100 bg-light"
+>
+    <thead>
+        <tr class="player-header">
+            <th class="rank text-end">
+                {{ _('Rk. *** RANK FOR TABLE HEADER') }}
+            </th>
+            <th class="title text-end">&nbsp;</th>
+            <th class="name text-start">{{ _('Name *** NAME FOR TABLE HEADER') }}</th>
+            <th class="rating text-end">
+                {{ admin_tournament.rating.print_view_header }}
+            </th>
+            <th class="category text-center">{{ _('Cat *** CATEGORY FOR TABLE HEADER') }}</th>
+            <th class="category text-center">{{ _('Gen *** GENDER FOR TABLE HEADER') }}</th>
+            <th class="federation text-center">{{ _('Fed *** FEDERATION FOR TABLE HEADER') }}</th>
+            <th class="points text-center">
+                <strong>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</strong>
+            </th>
+            {% for tie_break in admin_tournament.tie_breaks %}
+                    {% if tie_break.is_displayable %}
+                    <th class="tie-break text-center">{{ tie_break.acronym }}</th>
+                {% endif %}
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for player in admin_tournament.players_by_rank.values() %}
+            <tr id="player-{{ player.id }}" class="player-row {{ row_class }}">
+                <td class="rank text-end">
+                    {{ player.rank }}
+                </td>
+                <td class="title text-end">{{ player.title.short_name }}</td>
+                <td class="name text-start{{ "fw-bold" if not pairings_list}}">{{ player.full_name }}</td>
+                <td class="rating text-{{ "start" if pairings_list else "end"}}">{{ player.rating_str }}</td>
+                <td class="category text-center">{{ player.category.short_name }}</td>
+                <td class="category text-center">{{ player.gender.short_name }}</td>
+                <td class="federation text-center">{{ player.federation }}</td>
+                <td class="points text-center fw-bold">{{ player.points_str }}</td>
+                {% for tie_break_string in player.tie_break_values_as_strings %}
+                    <td class="tie-break text-center">{{ tie_break_string }}</td>
+                {% endfor %}
+                {{ macros.extra_column_data("end", extra_columns)}}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

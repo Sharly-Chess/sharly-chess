@@ -1045,6 +1045,9 @@ class Tournament:
             board.black_player.rating,
         )
 
+        # Remove the cached 'playing' value so that the pairing tab updates correctly
+        del self.playing
+
     def delete_result(self, board: Board):
         """Deletes the result for the given `board`."""
         assert board.black_player is not None
@@ -1060,6 +1063,9 @@ class Tournament:
             board.round,
             board.id,
         )
+
+        # Remove the cached 'playing' value so that the pairing tab updates correctly
+        del self.playing
 
     def check_in_player(self, player: Player, check_in: bool):
         """Stores the `check_in` status for the given `player`."""

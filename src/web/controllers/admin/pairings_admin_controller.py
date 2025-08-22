@@ -96,6 +96,13 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         elif event.tournaments:
             self.admin_tournament = event.tournaments_sorted_by_uniq_id[0]
 
+        self.display_results = self.admin_tournament and (
+            self.admin_tournament.finished
+            and (round_ is None or round_ > self.admin_tournament.rounds)
+        )
+        if self.admin_tournament and self.display_results:
+            self.admin_tournament.compute_player_ranks()
+
         self.admin_round = (
             round_
             if round_ is not None
@@ -103,6 +110,9 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             if self.admin_tournament is not None
             else 0
         )
+
+        if self.admin_tournament and self.admin_round > self.admin_tournament.rounds:
+            self.admin_round = self.admin_tournament.rounds
 
         self.round_status = RoundStatus.from_round(
             self.admin_round,
@@ -217,6 +227,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             'admin_round': self.admin_round,
             'admin_boards': self.admin_boards,
             'round_status': self.round_status,
+            'display_results': self.display_results,
             'safety_mode': self.safety_mode,
             'allowed_actions': allowed_actions,
             'existing_actions': existing_actions,
