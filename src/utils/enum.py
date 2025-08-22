@@ -39,7 +39,7 @@ class Result(IntEnum):
             case Result.LOSS:
                 return '0-1'
             case Result.DRAW | Result.HALF_POINT_BYE:
-                return '1/2'
+                return '½-½'
             case Result.NO_RESULT | Result.ZERO_POINT_BYE:
                 return ''
             case Result.FORFEIT_LOSS:
@@ -59,19 +59,19 @@ class Result(IntEnum):
             case Result.UNRATED_LOSS:
                 return '0-1 (U)'
             case Result.UNRATED_DRAW:
-                return '1/2 (U)'
+                return '½-½ (U)'
             case Result.PENALTY_LL:
                 return '0-0'
             case Result.UNRATED_PENALTY_LL:
                 return '0-0 (U)'
             case Result.PENALTY_DL:
-                return '1/2-0'
+                return '½-0'
             case Result.UNRATED_PENALTY_DL:
-                return '1/2-0 (U)'
+                return '½-0 (U)'
             case Result.PENALTY_LD:
-                return '0-1/2'
+                return '0-½'
             case Result.UNRATED_PENALTY_LD:
-                return '0-1/2 (U)'
+                return '0-½ (U)'
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
