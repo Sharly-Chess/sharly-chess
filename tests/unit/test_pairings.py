@@ -10,6 +10,8 @@ from data.loader import EventLoader
 
 import pytest
 from data.pairings.engines import BergerPairingEngine
+from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_store import StoredTournamentPlayer
 from plugins.ffe.ffe_tournament_importers import PapiJsonTournamentImporter
 from tests.test_config import TestUtils
 
@@ -43,24 +45,27 @@ class PairingTestCase(TestCase):
 
     """Tests for all the pairing systems."""
 
-    def assert_no_pairings_diff_in_tournament(
-        self,
-        json_file: str,
-        ignore_order: bool = False,
-        max_round: int | None = None,
-    ):
+    def _tournament_from_json(self, json_file: str):
         tournament = self.event.tournaments_by_uniq_id[TOURNAMENT_ID]
 
         # Import the test players and pairings from the json file
         leaf_name = f'{json_file}.json'
         json_path = Path('../json') / leaf_name
         assert json_path.exists(), f'JSON file [{leaf_name}] not found'
-
         PapiJsonTournamentImporter().load_tournament(json_path, self.event, tournament)
+        return self._reload_tournament()
 
+    def _reload_tournament(self):
         self.event = EventLoader().load_event(EVENT_ID)
-        tournament = self.event.tournaments_by_uniq_id[TOURNAMENT_ID]
+        return self.event.tournaments_by_uniq_id[TOURNAMENT_ID]
 
+    def assert_no_pairings_diff_in_tournament(
+        self,
+        json_file: str,
+        ignore_order: bool = False,
+        max_round: int | None = None,
+    ):
+        tournament = self._tournament_from_json(json_file)
         diff_display = ''
         for round_ in range(1, (max_round or tournament.rounds) + 1):
             diff = tournament.pairing_variation.engine.pairings_diff(
@@ -291,4 +296,156 @@ class PairingTestCase(TestCase):
     def test_berger_papi_large(self):
         self.assert_no_pairings_diff_in_tournament(
             'papi-berger-large', ignore_order=True
+        )
+
+    # ---------------------------------------------------------------------------------
+    # Pairing numbers
+    # ---------------------------------------------------------------------------------
+
+    def test_pairing_numbers_assigned_in_starting_rank_order(self):
+        tournament = self._tournament_from_json('tec-swiss')
+        expected_player_name_by_pairing_number = {
+            1: 'ALYX',
+            2: 'BRUNO',
+            3: 'CHARLINE',
+            4: 'DAVID',
+            5: 'HELENE',
+            6: 'FRANCK',
+            7: 'GENEVIEVE',
+            8: 'IRINA',
+            9: 'JESSICA',
+            10: 'LAIS',
+            11: 'MARIA',
+            12: 'NICK',
+            13: 'OPAL',
+            14: 'PAUL',
+            15: 'REINE',
+            16: 'STEPHAN',
+        }
+        player_name_by_pairing_number = {
+            pairing_number: player.last_name
+            for pairing_number, player in tournament.players_by_pairing_number.items()
+        }
+        self.assertEqual(
+            player_name_by_pairing_number,
+            expected_player_name_by_pairing_number,
+        )
+
+    def test_pairing_numbers_reordered_on_starting_rank_change(self):
+        tournament = self._tournament_from_json('tec-swiss-unpaired')
+        player = tournament.players_by_pairing_number[9]
+        player.stored_player.ratings |= {
+            1: {
+                'value': 2250,
+                'type': 3,
+            }
+        }
+        with EventDatabase(EVENT_ID, True) as database:
+            database.update_stored_player(player.stored_player)
+            database.commit()
+
+        tournament = self._reload_tournament()
+        players_by_pairing_number = tournament.players_by_pairing_number
+        self.assertEqual(player.last_name, 'JESSICA')
+        self.assertEqual(players_by_pairing_number[9].last_name, 'IRINA')
+        self.assertEqual(players_by_pairing_number[1].last_name, 'JESSICA')
+
+    def test_pairing_numbers_not_reordered_on_starting_rank_change_after_round_4(self):
+        tournament = self._tournament_from_json('tec-swiss')
+        player = tournament.players_by_pairing_number[9]
+        player.stored_player.ratings |= {
+            1: {
+                'value': 2250,
+                'type': 3,
+            }
+        }
+        with EventDatabase(EVENT_ID, True) as database:
+            database.update_stored_player(player.stored_player)
+            database.commit()
+
+        tournament = self._reload_tournament()
+        players_by_pairing_number = tournament.players_by_pairing_number
+        self.assertEqual(players_by_pairing_number[9].last_name, player.last_name)
+
+    def test_pairing_numbers_reordered_on_player_deletion(self):
+        tournament = self._tournament_from_json('tec-swiss')
+        player = tournament.players_by_pairing_number[9]
+
+        with EventDatabase(EVENT_ID, True) as database:
+            database.delete_stored_player(player.id)
+            database.commit()
+
+        tournament = self._reload_tournament()
+        expected_player_name_by_pairing_number = {
+            1: 'ALYX',
+            2: 'BRUNO',
+            3: 'CHARLINE',
+            4: 'DAVID',
+            5: 'HELENE',
+            6: 'FRANCK',
+            7: 'GENEVIEVE',
+            8: 'IRINA',
+            9: 'LAIS',
+            10: 'MARIA',
+            11: 'NICK',
+            12: 'OPAL',
+            13: 'PAUL',
+            14: 'REINE',
+            15: 'STEPHAN',
+        }
+        player_name_by_pairing_number = {
+            pairing_number: player.last_name
+            for pairing_number, player in tournament.players_by_pairing_number.items()
+        }
+        self.assertEqual(
+            player_name_by_pairing_number,
+            expected_player_name_by_pairing_number,
+        )
+
+    def test_pairing_numbers_reordered_on_player_insertion(self):
+        tournament = self._tournament_from_json('tec-swiss')
+        player = tournament.players_by_pairing_number[9]
+        new_stored_player = player.stored_player
+        new_stored_player.id = None
+        new_stored_player.last_name = 'PIERRE'
+        new_stored_player.ratings |= {
+            1: {
+                'value': 1925,
+                'type': 3,
+            }
+        }
+        with EventDatabase(EVENT_ID, True) as database:
+            player_id = database.add_stored_player(new_stored_player)
+            database.add_stored_tournament_player(
+                StoredTournamentPlayer(tournament.id, player_id)
+            )
+            database.commit()
+
+        tournament = self._reload_tournament()
+        expected_player_name_by_pairing_number = {
+            1: 'ALYX',
+            2: 'BRUNO',
+            3: 'CHARLINE',
+            4: 'DAVID',
+            5: 'HELENE',
+            6: 'FRANCK',
+            7: 'PIERRE',
+            8: 'GENEVIEVE',
+            9: 'IRINA',
+            10: 'JESSICA',
+            11: 'LAIS',
+            12: 'MARIA',
+            13: 'NICK',
+            14: 'OPAL',
+            15: 'PAUL',
+            16: 'REINE',
+            17: 'STEPHAN',
+        }
+        player_name_by_pairing_number = {
+            pairing_number: player.last_name
+            for pairing_number, player in tournament.players_by_pairing_number.items()
+        }
+        self.assertEqual(
+            player_name_by_pairing_number,
+            expected_player_name_by_pairing_number,
         )

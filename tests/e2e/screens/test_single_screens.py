@@ -183,6 +183,7 @@ class TestSingleScreensFunctionality:
             modal = lan_page.locator('.modal-dialog')
             expect(modal).to_be_visible()
             modal.locator(f'button:has-text("{player["button_text"]}")').click()
+            expect(modal).not_to_be_visible()
 
             # Test that the page is updated
             expect(row.locator('td.score')).to_contain_text(str(player['result']))

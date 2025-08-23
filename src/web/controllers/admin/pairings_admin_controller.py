@@ -1354,7 +1354,7 @@ class PairingsAdminController(BaseEventAdminController):
             {
                 'modal': 'pairing_info',
                 'pairing_history': grouped,
-                'players_by_pairing_number': tournament.players_by_starting_rank,
+                'players_by_pairing_number': tournament.players_by_pairing_number,
                 'warning': warning,
             },
         )

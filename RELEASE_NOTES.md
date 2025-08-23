@@ -28,6 +28,7 @@ English version below
 - Remplacement des classements estimés rapide/blitz par les classements standards (3.0.0)
 - Suppression de la renumérotation automatique des échiquiers en cas d'appariement manuel (3.0.0)
 - Saisie des résultats non comptabilisés et des pénalités (3.0.0)
+- Ajout de la recherche de joueur·euse (3.0.0)
 
 ### Écrans
 
@@ -76,6 +77,7 @@ English version below
 - Allow overriding of unrated rapid/blitz ratings by standard ratings (3.0.0)
 - Removed automatic renumbering of boards when manually pairing (3.0.0)
 - Entry of unrated and penalty results (3.0.0)
+- Added player search (3.0.0)
 
 ### Screens
 
