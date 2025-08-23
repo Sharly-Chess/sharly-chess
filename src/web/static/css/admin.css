@@ -94,3 +94,8 @@
 [data-bs-theme=dark] table.prominent td.bye {
     color: var(--bs-secondary-color);
 }
+
+.player-popover {
+  max-width: none;
+  width: max-content;   /* shrink to fit table */
+}
