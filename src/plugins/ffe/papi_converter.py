@@ -17,9 +17,11 @@ from data.pairings.engines import DoubleBergerPairingEngine
 from data.pairings.variations import (
     BergerRoundRobinVariation,
     DoubleBergerRoundRobinVariation,
+    PairingVariation,
 )
 from data.player import PlayerRating
 from data.player import Player
+from data.tie_breaks.tie_breaks import ManualTieBreak, TieBreak
 from data.tournament import Tournament
 from database.sqlite.event.event_store import (
     StoredTournament,
@@ -270,6 +272,11 @@ class PapiConverter:
         ):
             stored_tournament.pairing = DoubleBergerRoundRobinVariation.static_id()
 
+        has_manual_tiebreak = any(
+            tiebreak.get('type') is ManualTieBreak.static_id()
+            for tiebreak in stored_tournament.tie_breaks
+        )
+
         next_board_id = 1
         board_id_by_player_id_by_round: dict[int, dict[int, int]] = {
             round_: {} for round_ in range(1, stored_tournament.rounds + 1)
@@ -284,6 +291,14 @@ class PapiConverter:
             stored_player.id = player_id
             stored_tournament_player = StoredTournamentPlayer(player_id=player_id)
             round_keys = papi_player.rounds.keys()
+
+            if has_manual_tiebreak:
+                # The relative order of the players is stored in the fixed table field with values above 1000!
+                if stored_player.fixed and stored_player.fixed >= 1000:
+                    stored_tournament_player.manual_tiebreak = (
+                        stored_player.fixed - 1000
+                    )
+                    stored_player.fixed = None
 
             if is_round_robin:
                 start_round = 1
@@ -612,17 +627,44 @@ class PapiConverter:
         return stored_pairing, stored_board
 
     @classmethod
+    def check_pairing_variation(cls, pairing_variation: PairingVariation) -> str | None:
+        if pairing_variation not in PapiPairingVariation.core_objects():
+            return _(
+                'Pairing system [{pairing_system}] is not compatible with the PAPI format.'
+            ).format(pairing_system=pairing_variation.name)
+        return None
+
+    @classmethod
+    def check_tiebreak(cls, tie_break: TieBreak) -> str | None:
+        if tie_break not in PapiTieBreak.core_objects():
+            return _(
+                'Tie-break [{tie_break}] is not compatible with the PAPI format.'
+            ).format(tie_break=tie_break.name)
+        return None
+
+    @classmethod
+    def check_result(cls, result: Result) -> str | None:
+        if not PapiRound.is_convertible_to_papi(result):
+            return _(
+                'Result [{result}] is not compatible with the PAPI format.'
+            ).format(result=result)
+        return None
+
+    @classmethod
     def papi_export_unavailable_message(cls, tournament: Tournament) -> str | None:
         """Return a message if the export to Papi is unavailable, None otherwise."""
-        if tournament.pairing_variation not in PapiPairingVariation.core_objects():
-            return _('Pairing system [{pairing_system}] is not compatible.').format(
-                pairing_system=tournament.pairing_variation.name
-            )
+        if pairing_blocker := cls.check_pairing_variation(tournament.pairing_variation):
+            return pairing_blocker
+
         for tie_break in tournament.tie_breaks:
-            if tie_break not in PapiTieBreak.core_objects():
-                return _('Tie-break [{tie_break}] is not compatible.').format(
-                    tie_break=tie_break.name
-                )
+            if tie_break_blocker := cls.check_tiebreak(tie_break):
+                return tie_break_blocker
+
+        for round in range(1, tournament.rounds + 1):
+            for player in tournament.players:
+                if msg := cls.check_result(player.pairings[round].result):
+                    return msg
+
         return None
 
     def write_papi_file(
@@ -649,7 +691,7 @@ class PapiConverter:
             with open(temp_json_file, 'w', encoding='utf-8') as file:
                 json.dump(papi_data_dict, file, ensure_ascii=False, indent=2)
 
-            # Use papi-converter to convert JSON to papi format
+            # Use papi-converter to convert JSON to PAPI format
             result = subprocess.run(
                 [
                     self.executable_path,
@@ -724,6 +766,10 @@ class PapiConverter:
             ),
         )
 
+        has_manual_tiebreak = any(
+            isinstance(tiebreak, ManualTieBreak) for tiebreak in tournament.tie_breaks
+        )
+
         # Create mapping from internal player ID to index in PapiPlayer list
         player_id_to_index = {
             player.id: index for index, player in enumerate(tournament.players)
@@ -733,19 +779,31 @@ class PapiConverter:
         papi_players: list[PapiPlayer] = []
         for player in tournament.players:
             papi_player = self._player_to_papi_player(
-                player, tournament, player_id_to_index
+                player, player_id_to_index, has_manual_tiebreak
             )
             papi_players.append(papi_player)
 
         return PapiData(variables=variables, players=papi_players)
 
     def _player_to_papi_player(
-        self, player: Player, tournament: Tournament, player_id_to_index: dict[int, int]
+        self,
+        player: Player,
+        player_id_to_index: dict[int, int],
+        has_manual_tiebreak: bool,
     ) -> PapiPlayer:
         """Convert a Player object to PapiPlayer."""
 
         plugin_data = player.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, FfePlayerPluginData)
+
+        fixed_board: int | None = player.fixed
+        if (
+            has_manual_tiebreak
+            and player.stored_tournament_player.manual_tiebreak is not None
+        ):
+            # The relative order of the players is stored in the fixed table field with values above 1000!
+            # Our values can be negative, so we need to add 2000 to the value
+            fixed_board = player.stored_tournament_player.manual_tiebreak + 2000
 
         papi_player = PapiPlayer(
             lastName=player.last_name,
@@ -764,7 +822,7 @@ class PapiConverter:
             fideCode=str(player.fide_id) if player.fide_id else None,
             federation=player.federation.name,
             club=player.club.name,
-            fixedBoard=player.fixed,
+            fixedBoard=fixed_board,
             checkedIn=player.check_in,
             elo=self._get_papi_elo(player, TournamentRating.STANDARD),
             fideElo=self._get_papi_elo_type(player, TournamentRating.STANDARD),

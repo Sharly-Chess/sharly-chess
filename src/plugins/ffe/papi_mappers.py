@@ -71,6 +71,7 @@ class PapiTieBreak(PluginCoreMapper[str, TieBreak]):
             'Nombre de Victoires': tie_breaks.WinsTieBreak(),
             'Sonnenborn-Berger': tie_breaks.SonnebornBergerTieBreak(),
             'Koya': tie_breaks.KoyaTieBreak(),
+            'Manuel': tie_breaks.ManualTieBreak(),
         }
 
 
@@ -187,10 +188,10 @@ class PapiResult(IntEnum):
     UNPLAYED_OR_NOT_PAIRED = 0
     LOSS = 1
     DRAW_OR_HPB = 2  # HPB = Half-Point Bye
-    GAIN = 3
+    WIN = 3
     FORFEIT_LOSS = 4
     DOUBLE_FORFEIT = 5
-    PAB_OR_FORFEIT_GAIN_OR_FPB = 6  # PAB = Pairing-Allocated-Bye, FPB = Full-Point Bye
+    PAB_OR_FORFEIT_WIN_OR_FPB = 6  # PAB = Pairing-Allocated-Bye, FPB = Full-Point Bye
 
 
 @dataclass
@@ -213,17 +214,17 @@ class PapiRound:
                 if self.color == PapiColor.BYE:
                     return Result.HALF_POINT_BYE
                 return Result.DRAW
-            case PapiResult.GAIN:
-                return Result.GAIN
+            case PapiResult.WIN:
+                return Result.WIN
             case PapiResult.FORFEIT_LOSS:
                 return Result.FORFEIT_LOSS
             case PapiResult.DOUBLE_FORFEIT:
                 return Result.DOUBLE_FORFEIT
-            case PapiResult.PAB_OR_FORFEIT_GAIN_OR_FPB:
+            case PapiResult.PAB_OR_FORFEIT_WIN_OR_FPB:
                 if self.color == PapiColor.BYE:
                     return Result.FULL_POINT_BYE
                 if self.opponent is not None:
-                    return Result.FORFEIT_GAIN
+                    return Result.FORFEIT_WIN
                 return Result.PAIRING_ALLOCATED_BYE
             case _:
                 raise ValueError(f'Unknown value: {self.result}')
@@ -250,23 +251,31 @@ class PapiRound:
     @staticmethod
     def _result_to_papi_result(result: Result):
         match result:
-            case Result.GAIN | Result.UNRATED_GAIN:
-                return PapiResult.GAIN
-            case Result.LOSS | Result.UNRATED_LOSS:
+            case Result.WIN:
+                return PapiResult.WIN
+            case Result.LOSS:
                 return PapiResult.LOSS
-            case Result.DRAW | Result.UNRATED_DRAW | Result.HALF_POINT_BYE:
+            case Result.DRAW | Result.HALF_POINT_BYE:
                 return PapiResult.DRAW_OR_HPB
             case Result.NO_RESULT | Result.ZERO_POINT_BYE | Result.REST_GAME:
                 return PapiResult.UNPLAYED_OR_NOT_PAIRED
             case Result.FORFEIT_LOSS:
                 return PapiResult.FORFEIT_LOSS
             case (
-                Result.FORFEIT_GAIN
+                Result.FORFEIT_WIN
                 | Result.PAIRING_ALLOCATED_BYE
                 | Result.FULL_POINT_BYE
             ):
-                return PapiResult.PAB_OR_FORFEIT_GAIN_OR_FPB
+                return PapiResult.PAB_OR_FORFEIT_WIN_OR_FPB
             case Result.DOUBLE_FORFEIT:
                 return PapiResult.DOUBLE_FORFEIT
             case _:
                 raise ValueError(f'Unknown value: {result}')
+
+    @staticmethod
+    def is_convertible_to_papi(result: Result) -> bool:
+        try:
+            PapiRound._result_to_papi_result(result)
+            return True
+        except ValueError:
+            return False

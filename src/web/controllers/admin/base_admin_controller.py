@@ -92,22 +92,57 @@ class BaseAdminController(BaseController):
     """A base class inherited by all the admin controllers."""
 
     @staticmethod
-    def _get_federation_options(default_federation: str | None):
+    def __get_federation_options(
+        default_federation: str | None,
+        default_federation_text: str,
+        may_be_empty: bool,
+    ):
+        # Base options
+        options = {
+            federation_id: f'{federation_id} - {federation_name}'
+            for federation_id, federation_name in SharlyChessConfig.federations.items()
+        }
+
         if default_federation:
-            return {
-                default_federation: _("Use Event's default - {option}").format(
+            options = {
+                default_federation: default_federation_text.format(
                     option=f'{default_federation} - {SharlyChessConfig.federations[default_federation]}'
                 ),
-            } | {
-                federation_id: f'{federation_id} - {federation_name}'
-                for federation_id, federation_name in SharlyChessConfig.federations.items()
-                if federation_id != default_federation
+                **{
+                    fid: name
+                    for fid, name in options.items()
+                    if fid != default_federation
+                },
             }
-        else:
-            return {
-                federation_id: f'{federation_id} - {federation_name}'
-                for federation_id, federation_name in SharlyChessConfig.federations.items()
+
+        if may_be_empty:
+            # Add placeholder at the top
+            options = {
+                '': _('Please choose a federation'),
+                **options,
             }
+
+        return options
+
+    @classmethod
+    def _get_federation_options_with_event_default(
+        cls,
+        default_federation: str | None,
+        may_be_empty: bool = False,
+    ):
+        return cls.__get_federation_options(
+            default_federation, _("Use Event's default - {option}"), may_be_empty
+        )
+
+    @classmethod
+    def _get_federation_options_with_application_default(
+        cls,
+        default_federation: str | None,
+        may_be_empty: bool = False,
+    ):
+        return cls.__get_federation_options(
+            default_federation, _("Use Application's default - {option}"), may_be_empty
+        )
 
     @staticmethod
     def _get_record_illegal_moves_options(
@@ -131,7 +166,7 @@ class BaseAdminController(BaseController):
     def _get_paired_bye_result_options() -> dict[str, str]:
         options: dict[str, str] = {
             '': '',
-            WebContext.value_to_form_data(Result.GAIN.value): _(
+            WebContext.value_to_form_data(Result.WIN.value): _(
                 'Points for win (Full-Point Bye)'
             ),
             WebContext.value_to_form_data(Result.DRAW.value): _(
@@ -342,12 +377,7 @@ class BaseAdminController(BaseController):
                 StaticUtils.name_to_uniq_id(name)
             )
 
-        federation = (
-            WebContext.form_data_to_str(
-                data, field := 'federation', SharlyChessConfig().default_federation
-            )
-            or ''
-        )
+        federation = WebContext.form_data_to_str(data, field := 'federation', '') or ''
         if federation not in SharlyChessConfig.federations:
             # should never happen, not translated.
             errors[field] = f'Invalid federation value [{data[field]}].'
@@ -634,8 +664,15 @@ class BaseAdminController(BaseController):
                 override_unrated_rapid_blitz = stored_event.override_unrated_rapid_blitz
             case 'create':
                 public = False
-                federation = SharlyChessConfig().federation.name
-                hide_background_image = SharlyChessConfig.default_hide_background_image
+                sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
+                federation = (
+                    sharly_chess_config.federation.name
+                    if sharly_chess_config.federation
+                    else ''
+                )
+                hide_background_image = (
+                    sharly_chess_config.default_hide_background_image
+                )
                 override_unrated_rapid_blitz = True
             case _:
                 raise ValueError(f'action=[{action}]')

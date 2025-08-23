@@ -1,5 +1,5 @@
 import weakref
-from typing import Callable, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from trf.Player import Game as TrfGame
 
@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from data.player import Player
 
 logger: Logger = get_logger()
+
 
 class Pairing:
     """A pairing (from the point of view of the `Player` class)"""
@@ -70,14 +71,18 @@ class Pairing:
         if self.illegal_moves < self.player.tournament.record_illegal_moves:
             self.stored_pairing.illegal_moves += 1
             self.update(event_database)
-            logger.info('An illegal move has been recorded for player [%s].', self.player.id)
+            logger.info(
+                'An illegal move has been recorded for player [%s].', self.player.id
+            )
             return True
 
     def delete_illegal_move(self, event_database: EventDatabase):
         if self.illegal_moves > 0:
             self.stored_pairing.illegal_moves -= 1
             self.update(event_database)
-            logger.info('An illegal move has been deleted for player [%s].', self.player.id)
+            logger.info(
+                'An illegal move has been deleted for player [%s].', self.player.id
+            )
             return True
         else:
             logger.info('No illegal move found for player [%s].', self.player.id)
@@ -101,27 +106,43 @@ class Pairing:
 
     @property
     def loss(self) -> bool:
-        return self.result in (Result.LOSS, Result.UNRATED_LOSS)
+        return self.result in (
+            Result.LOSS,
+            Result.UNRATED_LOSS,
+            Result.PENALTY_LL,
+            Result.PENALTY_LD,
+            Result.UNRATED_PENALTY_LL,
+            Result.UNRATED_PENALTY_LD,
+        )
 
     @property
     def unrated_loss(self) -> bool:
-        return self.result == Result.UNRATED_LOSS
+        return self.result in (
+            Result.UNRATED_LOSS,
+            Result.UNRATED_PENALTY_LL,
+            Result.UNRATED_PENALTY_LD,
+        )
 
     @property
     def draw(self) -> bool:
-        return self.result in (Result.DRAW, Result.UNRATED_DRAW)
+        return self.result in (
+            Result.DRAW,
+            Result.UNRATED_DRAW,
+            Result.PENALTY_DL,
+            Result.UNRATED_PENALTY_DL,
+        )
 
     @property
     def unrated_draw(self) -> bool:
-        return self.result == Result.UNRATED_DRAW
+        return self.result in (Result.UNRATED_DRAW, Result.UNRATED_PENALTY_DL)
 
     @property
-    def gain(self) -> bool:
-        return self.result in (Result.GAIN, Result.UNRATED_GAIN)
+    def win(self) -> bool:
+        return self.result in (Result.WIN, Result.UNRATED_WIN)
 
     @property
     def unrated_gain(self) -> bool:
-        return self.result == Result.UNRATED_GAIN
+        return self.result == Result.UNRATED_WIN
 
     @property
     def half_point_bye(self) -> bool:
@@ -141,13 +162,13 @@ class Pairing:
 
     @property
     def forfeit_gain(self) -> bool:
-        return self.result == Result.FORFEIT_GAIN
+        return self.result == Result.FORFEIT_WIN
 
     @property
     def unplayed(self) -> bool:
         return self.result in (
             Result.NO_RESULT,
-            Result.FORFEIT_GAIN,
+            Result.FORFEIT_WIN,
             Result.FORFEIT_LOSS,
             Result.DOUBLE_FORFEIT,
             Result.HALF_POINT_BYE,
@@ -182,15 +203,14 @@ class Pairing:
             Result.FULL_POINT_BYE,
         )
 
-    def to_trf(
-        self, round_number: int, player_id_to_trf_id: Callable[[int], int]
-    ) -> TrfGame:
+    def to_trf(self, round_number: int) -> TrfGame:
+        opponent = self.opponent
         return TrfGame(
             startrank=(
                 '0000'
                 if self.result.is_bye
-                else player_id_to_trf_id(self.opponent_id)
-                if self.opponent_id
+                else opponent.pairing_number
+                if opponent
                 else ''
             ),
             color=(
@@ -199,13 +219,6 @@ class Pairing:
             result=self.result.to_trf,
             round=round_number,
         )
-
-    def __repr__(self):
-        return f'{self.__class__.__name__}({self.color} {self.opponent_id} {self.result.to_trf})'
-
-    # --------------------------------------------------------------------------
-    # Legacy
-    # --------------------------------------------------------------------------
 
     @property
     def color(self) -> BoardColor | None:
@@ -218,12 +231,18 @@ class Pairing:
         )
 
     @property
-    def opponent_id(self) -> int | None:
+    def opponent(self) -> Optional['Player']:
         board = self.board
         if not board or not board.black_player:
             return None
         return (
-            board.black_player.id
-            if self.color == BoardColor.WHITE
-            else board.white_player.id
+            board.black_player if self.color == BoardColor.WHITE else board.white_player
         )
+
+    @property
+    def opponent_id(self) -> int | None:
+        opponent = self.opponent
+        return opponent.id if opponent else None
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}({self.color} {self.opponent_id} {self.result.to_trf})'

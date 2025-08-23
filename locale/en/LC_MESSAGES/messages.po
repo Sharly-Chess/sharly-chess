@@ -166,8 +166,20 @@ msgstr "-"
 msgid "/move"
 msgstr ""
 
+msgid "0 - 0 (U)"
+msgstr ""
+
+msgid "0 - 1 (U)"
+msgstr ""
+
+msgid "0 - ½ (U)"
+msgstr ""
+
 msgid "1 *** THE LETTER TO ANSWER ONCE"
 msgstr "1"
+
+msgid "1 - 0 (U)"
+msgstr ""
 
 msgid "1st day of the month"
 msgstr ""
@@ -264,6 +276,9 @@ msgid "Access from the local network (LAN/WAN)"
 msgstr ""
 
 msgid "Access to the arbiter interface is not allowed from this client."
+msgstr ""
+
+msgid "Access unrated and penalty results."
 msgstr ""
 
 msgid "Action"
@@ -780,9 +795,6 @@ msgstr ""
 msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
 msgstr ""
 
-msgid "Choose a custom image:"
-msgstr ""
-
 msgid "Choose a player at random"
 msgstr ""
 
@@ -799,6 +811,9 @@ msgid "Choose at least one league."
 msgstr ""
 
 msgid "Choose at least one rating type."
+msgstr ""
+
+msgid "Choose from images in the 'custom' folder"
 msgstr ""
 
 msgid "Choose the columns displayed."
@@ -1710,7 +1725,7 @@ msgstr ""
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr "Estimated"
 
-msgid "Estimated ratings for rapid/blitz tournaments"
+msgid "Estimated ratings"
 msgstr ""
 
 msgid "Event"
@@ -1750,6 +1765,13 @@ msgid "Exit button:"
 msgstr ""
 
 msgid "Experimental features"
+msgstr ""
+
+msgid "Experimental features (enabled)"
+msgstr ""
+
+#, python-format
+msgid "Experimental features in version %(version)s are:"
 msgstr ""
 
 msgid "Expired FFE licence"
@@ -2202,6 +2224,9 @@ msgstr ""
 msgid "I confirm that I want to delete this tournament."
 msgstr ""
 
+msgid "I confirm that I want to overwrite the player data of this tournament."
+msgstr ""
+
 msgid "I would like the following custom files to be added to a future release of Sharly Chess:"
 msgstr ""
 
@@ -2215,9 +2240,6 @@ msgid "IM *** SHORT NAME FOR International Master"
 msgstr "IM"
 
 msgid "Identity"
-msgstr ""
-
-msgid "If no rapid/blitz rating exists, fall back to the standard rating"
 msgstr ""
 
 msgid "Illegal moves are not recorded."
@@ -2260,10 +2282,10 @@ msgstr ""
 msgid "Import a tournament to the event from an external source."
 msgstr ""
 
-msgid "Impossible to add players to tournament [{tournament_uniq_id}]."
+msgid "Import is unavailable once the tournament has started."
 msgstr ""
 
-msgid "Impossible to import into a tournament already having players."
+msgid "Impossible to add players to tournament [{tournament_uniq_id}]."
 msgstr ""
 
 #, python-format
@@ -2274,6 +2296,9 @@ msgid "Impossible to set a round number lower than the last round with pairings 
 msgstr ""
 
 msgid "In play"
+msgstr ""
+
+msgid "In rapid/blitz tournaments, use the standard rating for unrated players"
 msgstr ""
 
 msgid "In-tournament"
@@ -2559,6 +2584,9 @@ msgstr ""
 
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Male"
+
+msgid "Man. *** ACRONYM FOR MANUAL TIEBREAK"
+msgstr "Man."
 
 msgid "Manage the prize groups of the tournament."
 msgstr ""
@@ -2957,6 +2985,9 @@ msgstr ""
 msgid "Not connected, impossible to update."
 msgstr ""
 
+msgid "Not paired for this round"
+msgstr ""
+
 msgid "Notification"
 msgstr ""
 
@@ -3113,6 +3144,9 @@ msgstr ""
 msgid "PAB is already assigned"
 msgstr ""
 
+msgid "PENALTY"
+msgstr ""
+
 msgid "PERMUTE WHITE/BLACK"
 msgstr ""
 
@@ -3166,7 +3200,7 @@ msgstr ""
 msgid "Pairing system"
 msgstr ""
 
-msgid "Pairing system [{pairing_system}] is not compatible."
+msgid "Pairing system [{pairing_system}] is not compatible with the PAPI format."
 msgstr ""
 
 msgid "Pairings"
@@ -3368,6 +3402,12 @@ msgid "Plays %(board)d *** BOARD STRING FOR PAIRINGS PRINT"
 msgstr "Plays on board %(board)d"
 
 msgid "Please ask the organizer to get the password."
+msgstr ""
+
+msgid "Please choose a federation"
+msgstr ""
+
+msgid "Please choose a federation."
 msgstr ""
 
 msgid "Please choose the document."
@@ -3820,6 +3860,9 @@ msgstr ""
 msgid "Result"
 msgstr ""
 
+msgid "Result [{result}] is not compatible with the PAPI format."
+msgstr ""
+
 msgid "Results"
 msgstr ""
 
@@ -4233,6 +4276,9 @@ msgstr ""
 msgid "Sum of Buchholz"
 msgstr ""
 
+msgid "Support for all FIDE recognised tie-break (including ones that are not compatible with Papi)"
+msgstr ""
+
 msgid "Support for the ChessEvent platform used for organising tournaments in France."
 msgstr ""
 
@@ -4281,7 +4327,7 @@ msgstr ""
 msgid "The URL of the image to display."
 msgstr ""
 
-msgid "The URL or the path of the image to display (by default the Sharly Chess logo)."
+msgid "The URL or the path of the image (relative to the 'custom' folder) to display (by default the Sharly Chess logo)."
 msgstr ""
 
 msgid "The Unique ID, used to reference the display controller."
@@ -4332,7 +4378,7 @@ msgstr ""
 msgid "The date of the first hour is not defined (mandatory)."
 msgstr ""
 
-msgid "The default federation for your events."
+msgid "The default federation for your events. Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr ""
 
 msgid "The default language used."
@@ -4345,7 +4391,7 @@ msgstr ""
 msgid "The end time of the tournament (defaults to %(datetime)s)."
 msgstr ""
 
-msgid "The federation that organizes the event."
+msgid "The federation that organizes the event. Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr ""
 
 msgid "The file to import."
@@ -4765,7 +4811,7 @@ msgstr ""
 msgid "Tie-break #%(index)d:"
 msgstr ""
 
-msgid "Tie-break [{tie_break}] is not compatible."
+msgid "Tie-break [{tie_break}] is not compatible with the PAPI format."
 msgstr ""
 
 msgid "Tie-break already in use."
@@ -4908,6 +4954,9 @@ msgstr ""
 msgid "Tournament [{tournament_uniq_id}] is started."
 msgstr ""
 
+msgid "Tournament [{tournament}] successfully imported."
+msgstr ""
+
 msgid "Tournament [{uniq_id}] already exists."
 msgstr ""
 
@@ -5022,6 +5071,18 @@ msgid "U8"
 msgstr ""
 
 msgid "UNPAIR"
+msgstr ""
+
+msgid "UNRATED BLACK VICTORY"
+msgstr ""
+
+msgid "UNRATED DRAW"
+msgstr ""
+
+msgid "UNRATED PENALTY"
+msgstr ""
+
+msgid "UNRATED WHITE VICTORY"
 msgstr ""
 
 msgid "URL [{url}] did not respond (error: [{error}])."
@@ -5272,6 +5333,10 @@ msgstr ""
 
 #, python-format
 msgid "Warning: round #%(round)d is not finished."
+msgstr ""
+
+#, python-format
+msgid "Warning: the %(player_count)d players in the tournament will be deleted."
 msgstr ""
 
 msgid "Warning: the deletion of a display controller is permanent!"
@@ -5629,3 +5694,8 @@ msgstr ""
 msgid "{tie_break} (Papi compatible)"
 msgstr ""
 
+msgid "½ - 0 (U)"
+msgstr ""
+
+msgid "½ - ½ (U)"
+msgstr ""

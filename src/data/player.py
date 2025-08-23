@@ -3,7 +3,7 @@ import weakref
 from dataclasses import dataclass
 from datetime import date
 from functools import total_ordering, cached_property
-from typing import Self, Callable, SupportsFloat, TYPE_CHECKING
+from typing import Self, SupportsFloat, TYPE_CHECKING
 from trf import Player as TrfPlayer
 from trf.Player import Game as TrfGame
 
@@ -279,6 +279,10 @@ class Player:
             raise RuntimeError('Reference has been garbage collected')
         return tournament
 
+    @property
+    def pairing_number(self) -> int | None:
+        return self.stored_tournament_player.pairing_number
+
     def _get_default_pairing(self, round_: int) -> Pairing:
         return Pairing(
             self,
@@ -368,6 +372,10 @@ class Player:
         return False
 
     @property
+    def manual_tiebreak(self) -> int | None:
+        return self.stored_tournament_player.manual_tiebreak
+
+    @property
     def _tournament_rating(self) -> PlayerRating:
         if self.rating_is_overridden(self.tournament.rating):
             rating = self.ratings.get(TournamentRating.STANDARD)
@@ -454,16 +462,13 @@ class Player:
 
     def to_trf(
         self,
-        player_id_to_trf_id: Callable[[int], int],
-        /,
-        *,
         after_round: int,
-        include_next_round_bye: bool,
         next_round_pairings_as_zpb: bool,
+        include_next_round_bye: bool,
     ) -> TrfPlayer:
         games: list[TrfGame] = []
         for round_nb, pairing in self.pairings.items():
-            trf_game = pairing.to_trf(round_nb, player_id_to_trf_id)
+            trf_game = pairing.to_trf(round_nb)
             if round_nb <= after_round:
                 games.append(trf_game)
             elif round_nb == after_round + 1:
@@ -480,7 +485,7 @@ class Player:
                     )
 
         return TrfPlayer(
-            startrank=player_id_to_trf_id(self.id),
+            startrank=self.pairing_number,
             name=f'{self.last_name}, {self.first_name}',
             sex=self.gender.to_trf,
             title=self.title.to_trf,
@@ -642,6 +647,62 @@ class Player:
             -self.title,
             self.last_name,
             self.first_name or '',
+        )
+
+    @property
+    def before_manual_rank_key(self) -> tuple:
+        """Returns a tuple of the player's rank using points and tie-break values *up to* the manual tiebreak, or points only if there is no manual tiebreak.
+        Used for grouping in the rankings table."""
+        from data.tie_breaks.tie_breaks import ManualTieBreak
+
+        tie_breaks_values = tuple(
+            (-float(tie_break) if isinstance(tie_break, SupportsFloat) else 0.0)
+            for tie_break in self._tie_break_values or []
+        )
+
+        manual_tiebreak_index = next(
+            (
+                i
+                for i, tb in enumerate(self.tournament.tie_breaks)
+                if isinstance(tb, ManualTieBreak)
+            ),
+            None,
+        )
+
+        if manual_tiebreak_index is not None:
+            tie_breaks_values = tie_breaks_values[:manual_tiebreak_index]
+        else:
+            tie_breaks_values = tuple()
+
+        return (-self.points if self.points is not None else 0.0,) + tie_breaks_values
+
+    @property
+    def no_manual_rank_sort_key(self) -> tuple:
+        from data.tie_breaks.tie_breaks import ManualTieBreak
+
+        tie_breaks_values = list(
+            (-float(tie_break) if isinstance(tie_break, SupportsFloat) else 0.0)
+            for tie_break in self._tie_break_values or []
+        )
+
+        manual_tiebreak_index = next(
+            (
+                i
+                for i, tb in enumerate(self.tournament.tie_breaks)
+                if isinstance(tb, ManualTieBreak)
+            ),
+            None,
+        )
+
+        if manual_tiebreak_index is not None and manual_tiebreak_index < len(
+            tie_breaks_values
+        ):
+            tie_breaks_values[manual_tiebreak_index] = 0
+
+        return (
+            (-self.points if self.points is not None else 0.0,)
+            + tuple(tie_breaks_values)
+            + self.starting_rank_sort_key
         )
 
     @property

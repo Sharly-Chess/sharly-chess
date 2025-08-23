@@ -14,7 +14,7 @@ from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
 
-from common import check_rgb_str, DEVEL_ENV, experimental_features_enabled
+from common import check_rgb_str, DEVEL_ENV
 from common.i18n import (
     set_locale,
     locales,
@@ -351,7 +351,6 @@ class WebContext:
             locale_options[locale] = name
         return {
             'DEVEL_ENV': DEVEL_ENV,
-            'EXPERIMENTAL_FEATURES': experimental_features_enabled(),
             'now': now,
             'now_http_date': unixtime_to_httpdate(int(now)),
             'sharly_chess_config': sharly_chess_config,

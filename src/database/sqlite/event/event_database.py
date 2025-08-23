@@ -236,7 +236,7 @@ class EventDatabase(MigrationDatabase):
         stored_event = stored_event_type(
             uniq_id=self.uniq_id,
             name=row['name'],
-            federation=row.get('federation', SharlyChessConfig().default_federation),
+            federation=row.get('federation', ''),
             start=row['start'],
             stop=row['stop'],
             public=self.load_bool_from_database_field(row['public']),
@@ -803,17 +803,6 @@ class EventDatabase(MigrationDatabase):
         return self._write_stored_tournament(stored_tournament)
 
     def delete_stored_tournament(self, tournament_id: int):
-        # Delete players which are only part of this tournament
-        self.execute(
-            'DELETE FROM `player` WHERE `id` in ('
-            '   SELECT `player_id` FROM `tournament_player` as `tp1` '
-            '   WHERE `tournament_id` = ? AND ('
-            '       SELECT COUNT(*) FROM `tournament_player` as `tp2`'
-            '       WHERE `tp1`.`player_id` = `tp2`.`player_id`'
-            '   ) = 1'
-            ')',
-            (tournament_id,),
-        )
         self.execute('DELETE FROM `tournament` WHERE `id` = ?;', (tournament_id,))
 
     def set_tournament_check_in(self, tournament_id: int, o: bool):
@@ -992,6 +981,7 @@ class EventDatabase(MigrationDatabase):
             tournament_id=row['tournament_id'],
             player_id=row['player_id'],
             pairing_number=row['pairing_number'],
+            manual_tiebreak=row['manual_tiebreak'],
         )
 
     def load_player_stored_tournament_player(
@@ -1011,7 +1001,8 @@ class EventDatabase(MigrationDatabase):
         self, stored_tournament_player: StoredTournamentPlayer
     ):
         fields = self._get_fields_dict(
-            stored_tournament_player, ['tournament_id', 'player_id', 'pairing_number']
+            stored_tournament_player,
+            ['tournament_id', 'player_id', 'pairing_number', 'manual_tiebreak'],
         )
         fields_str = ', '.join(f'`{f}`' for f in fields)
         values_str = ', '.join(['?'] * len(fields))
@@ -1037,6 +1028,28 @@ class EventDatabase(MigrationDatabase):
             ),
         )
 
+    def set_tournament_players_manual_tiebreak(
+        self,
+        tournament_id: int,
+        updates: dict[int, int | None],
+    ) -> int:
+        """
+        Bulk-update manual_tiebreak for many players in a tournament.
+        updates: { player_id: int | None }  (None -> set NULL)
+        Returns total rows updated.
+        """
+        if not updates:
+            return 0
+
+        params = [(mtb, tournament_id, pid) for pid, mtb in updates.items()]
+        sql = (
+            'UPDATE `tournament_player` '
+            'SET `manual_tiebreak` = ? '
+            'WHERE `tournament_id` = ? AND `player_id` = ?'
+        )
+
+        return self.executemany(sql, params)
+
     def delete_stored_tournament_player(self, tournament_id: int, player_id: int):
         self.execute(
             (
@@ -1048,6 +1061,12 @@ class EventDatabase(MigrationDatabase):
         self.execute(
             'DELETE FROM `pairing` WHERE `tournament_id` = ? AND `player_id` = ?',
             (tournament_id, player_id),
+        )
+
+    def delete_players_in_tournament(self, tournament_id: int):
+        self.execute(
+            'DELETE FROM `tournament_player` WHERE `tournament_id` = ?',
+            (tournament_id,),
         )
 
     # ---------------------------------------------------------------------------------

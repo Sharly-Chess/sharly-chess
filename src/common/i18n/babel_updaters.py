@@ -26,6 +26,7 @@ class BabelUpdater(BabelWrapper):
         self,
         locale_infos: dict[str, LocaleInfo],
         default_locale: str,
+        generate_doc: bool,
     ):
         self.locale_infos: dict[str, LocaleInfo] = locale_infos
         self.default_locale: str = default_locale
@@ -33,34 +34,60 @@ class BabelUpdater(BabelWrapper):
         if self.i18n_source_files_changed():
             logger.info('Extracting i18n strings...')
             new_i18n_strings = self.extract_i18n_strings()
-            if new_i18n_strings:
-                logger.info(
-                    'I18n strings have changed, the PO/MO files need to be rebuilt.'
-                )
-            else:
-                logger.info(
-                    'I18n strings are unchanged, no need to rebuild the PO/MO files.'
-                )
         mo_file_updated: bool = False
         for locale, locale_info in self.locale_infos.items():
+            logger.info('Inspecting locale [%s]...', locale)
             po_file: Path = self.locale_po_file(locale)
-            mo_file: Path = self.locale_mo_file(locale)
-            if new_i18n_strings or not po_file.is_file():
+            po_file_update_marker: Path = po_file.with_suffix('.updated')
+            new_po_strings: bool = False
+            if not po_file.is_file():
                 new_po_strings = self.update_po_file(locale)
-            else:
-                new_po_strings = False
+                po_file_update_marker.touch()
+                logger.info('PO file [%s] has been created.', str(po_file.name))
+            elif new_i18n_strings:
+                new_po_strings = self.update_po_file(locale)
+                po_file_update_marker.touch()
+                if new_po_strings:
+                    logger.info('PO file [%s] has been changed.', str(po_file.name))
             new_errors: bool = locale_info.control()
             locale_info.print_summary()
-            if (
-                new_errors
-                or new_po_strings
-                or not mo_file.is_file()
-                or po_file.lstat().st_mtime > mo_file.lstat().st_mtime
+            mo_file: Path = self.locale_mo_file(locale)
+            build_mo: bool = False
+            if new_errors:
+                logger.info('Errors found in PO file [%s].', str(po_file.name))
+                build_mo = True
+            elif new_po_strings:
+                build_mo = True
+            elif not mo_file.is_file():
+                logger.info('MO file [%s] not found, creating it.', str(mo_file.name))
+                build_mo = True
+            elif po_file.lstat().st_mtime > mo_file.lstat().st_mtime:
+                logger.info(
+                    'MO file [%s] older than PO file [%s], rebuilding it.',
+                    str(mo_file.name),
+                    str(po_file.name),
+                )
+                build_mo = True
+            elif (
+                po_file_update_marker.exists()
+                and po_file.lstat().st_mtime > po_file_update_marker.lstat().st_mtime
             ):
+                logger.info(
+                    'PO file [%s] has changed since last time updated.',
+                    str(po_file.name),
+                )
+                build_mo = True
+            else:
+                logger.info(
+                    'PO file [%s] is unchanged, no need to rebuild MO file [%s].',
+                    str(po_file.name),
+                    str(mo_file.name),
+                )
+            if build_mo:
                 self.update_mo_file(locale)
                 logger.info('Translations have been updated for locale [%s].', locale)
                 mo_file_updated = True
-        if mo_file_updated:
+        if generate_doc and mo_file_updated:
             self.write_markdown()
         self.ok: bool = True
         logger.info('Checking the translations...')
@@ -112,19 +139,13 @@ class BabelUpdater(BabelWrapper):
                         new_fingerprints[str(file)] = file_fingerprint(file).hex()
                         if not updated_file_found:
                             if str(file) not in old_fingerprints:
-                                logger.info(
-                                    'File [%s] is new, the POT file need to be rebuild.',
-                                    file,
-                                )
+                                logger.info('File [%s] is new.', file)
                                 updated_file_found = True
                             elif (
                                 new_fingerprints[str(file)]
                                 != old_fingerprints[str(file)]
                             ):
-                                logger.info(
-                                    'File [%s] has been updated, the POT file needs to be rebuilt.',
-                                    file,
-                                )
+                                logger.info('File [%s] has been updated.', file.name)
                                 updated_file_found = True
         if not pattern_found:
             logger.error('No file pattern found in [%s].', cls.config_file)
@@ -265,4 +286,25 @@ class BabelMOFilesUpdater(BabelWrapper):
         locales: list[str],
     ):
         for locale in locales:
-            self.update_mo_file(locale)
+            po_file: Path = self.locale_po_file(locale)
+            mo_file: Path = self.locale_mo_file(locale)
+            build_mo: bool = False
+            if not mo_file.is_file():
+                logger.info('MO file [%s] not found, creating it.', str(mo_file.name))
+                build_mo = True
+            elif po_file.lstat().st_mtime > mo_file.lstat().st_mtime:
+                logger.info(
+                    'MO file [%s] older than PO file [%s], rebuilding it.',
+                    str(mo_file.name),
+                    str(po_file.name),
+                )
+                build_mo = True
+            else:
+                logger.debug(
+                    'PO file [%s] is unchanged, no need to rebuild MO file [%s].',
+                    str(po_file.name),
+                    str(mo_file.name),
+                )
+            if build_mo:
+                self.update_mo_file(locale)
+                logger.info('Translations have been updated for locale [%s].', locale)

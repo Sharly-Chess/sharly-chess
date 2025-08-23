@@ -20,17 +20,17 @@ DEVEL_ENV: bool = not getattr(sys, 'frozen', False)
 TEST_ENV: bool = os.getenv('TEST_ENV') == 'true'
 
 # True when experimental features are enabled (relying on an engine option), False otherwise.
-_EXPERIMENTAL_FEATURES: bool = False
+_EXPERIMENTAL_FEATURES_ENABLED: bool = False
 
 
 def enable_experimental_features(enabled: bool):
-    global _EXPERIMENTAL_FEATURES
-    _EXPERIMENTAL_FEATURES = enabled
+    global _EXPERIMENTAL_FEATURES_ENABLED
+    _EXPERIMENTAL_FEATURES_ENABLED = enabled
 
 
 def experimental_features_enabled() -> bool:
-    global _EXPERIMENTAL_FEATURES
-    return _EXPERIMENTAL_FEATURES
+    global _EXPERIMENTAL_FEATURES_ENABLED
+    return _EXPERIMENTAL_FEATURES_ENABLED
 
 
 REQUEST_TIMEOUT: int = 10

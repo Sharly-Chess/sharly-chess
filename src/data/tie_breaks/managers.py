@@ -15,6 +15,7 @@ class TieBreakManager(EntityManager[TieBreak]):
             tie_breaks.WinsTieBreak,
             tie_breaks.SonnebornBergerTieBreak,
             tie_breaks.KoyaTieBreak,
+            tie_breaks.ManualTieBreak,
         ]
         # Include all the others as experimental
         if experimental_features_enabled():
@@ -33,7 +34,6 @@ class TieBreakManager(EntityManager[TieBreak]):
                 tie_breaks.AveragePerformanceRatingOpponentsTieBreak,
                 tie_breaks.PerfectTournamentPerformanceTieBreak,
                 tie_breaks.AveragePerfectPerformanceTieBreak,
-                tie_breaks.DirectEncounterTieBreak,
             ]
         plugin_manager.hook.insert_tie_break_types(tie_break_types=tie_break_types)
         return tie_break_types
