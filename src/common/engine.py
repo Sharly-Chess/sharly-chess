@@ -126,24 +126,9 @@ class Engine(ABC):
                 dir_name: str
                 version: Version
                 if matches := re.match(
-                    r'^papi-web-(\d+.\d+.\d+(?:a\d+|b\d+|rc\d+)?)$',
+                    r'^(?:papi-web|sharly-chess)-(\d+\.\d+\.\d+(?:a\d+|b\d+|rc\d+)?)(?:-windows)?$',
                     version_dir.name,
                 ):
-                    # 2.4.0 <= version < 3.0.0
-                    dir_name = matches.group(0)
-                    version: Version = Version(matches.group(1))
-                elif matches := re.match(
-                    r'^sharly-chess-(\d+.\d+.\d+(?:a\d+|b\d+|rc\d+)?)$',
-                    version_dir.name,
-                ):
-                    # 2.7.1 <= version
-                    dir_name = matches.group(0)
-                    version: Version = Version(matches.group(1))
-                elif matches := re.match(
-                    r'^sharly-chess-(\d+.\d+.\d+(?:a\d+|b\d+|rc\d+)?)-windows$',
-                    version_dir.name,
-                ):
-                    # 3.0.0 <= version
                     dir_name = matches.group(0)
                     version: Version = Version(matches.group(1))
                 else:
