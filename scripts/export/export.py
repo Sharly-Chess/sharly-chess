@@ -566,17 +566,11 @@ def sign_exe(sign_only: bool):
 
             import subprocess
 
-            logger.info(
-                f'Running {
-                    " ".join(
-                        [
-                            str(WIN_SIGNTOOL_EXE),
-                        ]
-                        + params
-                    )
-                }'
-            )
-            process = subprocess.run(params, capture_output=True, text=True)
+            cmd: list[str] = [
+                str(WIN_SIGNTOOL_EXE),
+            ] + params
+            logger.info(f'Running {" ".join(cmd)}')
+            process = subprocess.run(cmd, capture_output=True, text=True)
             for line in map(lambda s: s.rstrip(), process.stdout.split('\n')):
                 if line:
                     logger.info(line)
