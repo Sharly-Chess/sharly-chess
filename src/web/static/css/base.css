@@ -641,7 +641,7 @@ body[data-bs-theme=light] .btn-primary {
   background-color: var(--bs-body-bg) !important;
 }
 
-[data-bs-theme=dark] table.prominent tbody + tbody tr:first-of-type td {
+[data-bs-theme=dark] table.prominent tr.separator td {
     border-top: 1px solid rgba(var(--bs-primary-rgb), 0.3);
 }
 
