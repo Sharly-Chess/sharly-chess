@@ -142,8 +142,12 @@
                                     <td>{{ opponent.category.short_name }}</td>
                                     <td>{{ opponent.federation }}</td>
                                     <td class='text-center'>{{ opponent.points_str }}</td>
-                                    {% for tie_break in opponent.tie_break_values_as_strings %}
-                                        <td class="tie-break text-center">{{ tie_break }}</td>
+                                    {% for tie_break in admin_tournament.tie_breaks %}
+                                        {% if tie_break.is_displayable %}
+                                            <td class="tie-break text-center">
+                                                {{ player.tie_break_values_as_strings[loop.index0] }}
+                                            </td>
+                                        {% endif %}
                                     {% endfor %}
                                 {% endwith %}
                             {% else %}
