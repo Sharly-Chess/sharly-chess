@@ -101,6 +101,7 @@ class StoredTournamentPlayer:
     tournament_id: int = 0
     player_id: int = 0
     pairing_number: int | None = None
+    manual_tiebreak: int | None = None
     stored_pairings: list[StoredPairing] = field(default_factory=list[StoredPairing])
 
 

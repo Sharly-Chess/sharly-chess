@@ -180,12 +180,6 @@ msgstr "1"
 msgid "1 - 0 (U)"
 msgstr ""
 
-msgid "½ - 0 (U)"
-msgstr ""
-
-msgid "½ - ½ (U)"
-msgstr ""
-
 msgid "1st day of the month"
 msgstr ""
 
@@ -282,6 +276,9 @@ msgstr ""
 msgid "Access from the local network (LAN/WAN)"
 msgstr ""
 
+msgid "Access unrated and penalty results."
+msgstr ""
+
 msgid "Account [{username}] already exists."
 msgstr ""
 
@@ -305,9 +302,6 @@ msgid "Accounts"
 msgstr ""
 
 msgid "Accounts ({num})"
-msgstr ""
-
-msgid "Access unrated and penalty results."
 msgstr ""
 
 msgid "Action"
@@ -911,9 +905,6 @@ msgstr ""
 msgid "Chief Arbitration"
 msgstr ""
 
-msgid "Choose a custom image:"
-msgstr ""
-
 msgid "Choose a player at random"
 msgstr ""
 
@@ -930,6 +921,9 @@ msgid "Choose at least one league."
 msgstr ""
 
 msgid "Choose at least one rating type."
+msgstr ""
+
+msgid "Choose from images in the 'custom' folder"
 msgstr ""
 
 msgid "Choose one, many or no tournaments."
@@ -2453,6 +2447,9 @@ msgstr ""
 msgid "Home"
 msgstr ""
 
+msgid "Home page"
+msgstr ""
+
 msgid "Hort system"
 msgstr ""
 
@@ -2475,6 +2472,9 @@ msgid "I confirm that I want to archive this event."
 msgstr ""
 
 msgid "I confirm that I want to delete this tournament."
+msgstr ""
+
+msgid "I confirm that I want to overwrite the player data of this tournament."
 msgstr ""
 
 msgid "I would like the following custom files to be added to a future release of Sharly Chess:"
@@ -2538,10 +2538,10 @@ msgstr ""
 msgid "Import a tournament to the event from an external source."
 msgstr ""
 
-msgid "Impossible to add players to tournament [{tournament_uniq_id}]."
+msgid "Import is unavailable once the tournament has started."
 msgstr ""
 
-msgid "Impossible to import into a tournament already having players."
+msgid "Impossible to add players to tournament [{tournament_uniq_id}]."
 msgstr ""
 
 #, python-format
@@ -2846,6 +2846,9 @@ msgstr ""
 
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Male"
+
+msgid "Man. *** ACRONYM FOR MANUAL TIEBREAK"
+msgstr "Man."
 
 msgid "Manage accounts"
 msgstr ""
@@ -3244,6 +3247,9 @@ msgid "Not connected, impossible to update."
 msgstr ""
 
 msgid "Not paired"
+msgstr ""
+
+msgid "Not paired for this round"
 msgstr ""
 
 msgid "Notification"
@@ -4675,7 +4681,7 @@ msgstr ""
 msgid "The URL of the image to display."
 msgstr ""
 
-msgid "The URL or the path of the image to display (by default the Sharly Chess logo)."
+msgid "The URL or the path of the image (relative to the 'custom' folder) to display (by default the Sharly Chess logo)."
 msgstr ""
 
 msgid "The Unique ID, used to authenticate."
@@ -5326,6 +5332,9 @@ msgstr ""
 msgid "Tournament [{tournament_uniq_id}] is finished, you can not add players any longer."
 msgstr ""
 
+msgid "Tournament [{tournament}] successfully imported."
+msgstr ""
+
 msgid "Tournament [{uniq_id}] already exists."
 msgstr ""
 
@@ -5793,6 +5802,10 @@ msgstr ""
 
 #, python-format
 msgid "Warning: round #%(round)d is not finished."
+msgstr ""
+
+#, python-format
+msgid "Warning: the %(player_count)d players in the tournament will be deleted."
 msgstr ""
 
 msgid "Warning: the deletion of a device is permanent!"
@@ -6279,4 +6292,16 @@ msgstr ""
 
 msgid "{tie_break} (Papi compatible)"
 msgstr ""
+
+msgid "½ - 0 (U)"
+msgstr ""
+
+msgid "½ - ½ (U)"
+msgstr ""
+
+#~ msgid "Tournament [{tournament_uniq_id}] is not started yet."
+#~ msgstr ""
+
+#~ msgid "Tournament [{tournament_uniq_id}] is started."
+#~ msgstr ""
 
