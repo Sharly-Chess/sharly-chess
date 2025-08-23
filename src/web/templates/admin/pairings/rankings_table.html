@@ -6,7 +6,7 @@
 >
     <table
         id="rankings-table"
-        class="rankings-table table prominent table-striped table-sm table-hover w-100 bg-light"
+        class="rankings-table table prominent table-sm table-hover w-100 bg-light"
     >
         <thead
             class="position-sticky z-2"
@@ -34,39 +34,51 @@
                 {% endfor %}
             </tr>
         </thead>
-        <tbody class="sortable with-handles">
-            {% for player in admin_tournament.players_by_rank.values() %}
-                {% set same_as_prev = loop.previtem and loop.previtem.before_manual_rank_key == player.before_manual_rank_key %}
-                {% set same_as_next = loop.nextitem and loop.nextitem.before_manual_rank_key == player.before_manual_rank_key %}
-                {% set sortable = same_as_prev or same_as_next %}
-                <tr
-                    id="player-{{ player.id }}"
-                    class="player-row {{ row_class }} {% if not sortable %}non-sortable{% endif %}"
-                    {% if sortable %}data-group="{{ player.before_manual_rank_key }}"{% endif %}
-                >
-                    <td class="rank text-end">
-                        {{ player.rank }}
+
+        {# ---- Create a tbody for each point group for nice sortable behaviour ---- #}
+        {% set ns = namespace(current_key=None) %}
+        {% for player in admin_tournament.players_by_rank.values() %}
+        {% set group_key = player.before_manual_rank_key %}
+        {% set row_class='even' if loop.index is even else 'odd' %}
+
+        {% if ns.current_key != group_key %}
+            {% if not loop.first %}</tbody>{% endif %}
+            {% set ns.current_key = group_key %}
+            <tbody class="sortable with-handles">
+        {% endif %}
+
+        {% set same_as_prev = loop.previtem and loop.previtem.before_manual_rank_key == group_key %}
+        {% set same_as_next = loop.nextitem and loop.nextitem.before_manual_rank_key == group_key %}
+        {% set sortable = same_as_prev or same_as_next %}
+
+        <tr id="player-{{ player.id }}" class="player-row {{ row_class }} {% if not sortable %}non-sortable{% endif %}">
+            <td class="rank text-end">{{ player.rank }}</td>
+            <td class="title text-end">{{ player.title.short_name }}</td>
+            <td class="name text-start{{ ' fw-bold' if not pairings_list }}">{{ player.full_name }}</td>
+            <td class="rating text-{{ 'start' if pairings_list else 'end' }}">{{ player.rating_str }}</td>
+            <td class="category text-center">{{ player.category.short_name }}</td>
+            <td class="category text-center">{{ player.gender.short_name }}</td>
+            <td class="federation text-center">{{ player.federation }}</td>
+            <td class="points text-center fw-bold">{{ player.points_str }}</td>
+
+            {% for tie_break in admin_tournament.tie_breaks %}
+                {% set tie_break_string = player.tie_break_values_as_strings[loop.index0] %}
+                {% if tie_break.is_manual %}
+                    <td class="playoff text-center compact-col">
+                    {% if sortable %}
+                        <i class="bi-grip-horizontal handle {% if player.manual_tiebreak is not none %}text-warning{% endif %}"></i>
+                    {% endif %}
                     </td>
-                    <td class="title text-end">{{ player.title.short_name }}</td>
-                    <td class="name text-start{{ "fw-bold" if not pairings_list}}">{{ player.full_name }}</td>
-                    <td class="rating text-{{ "start" if pairings_list else "end"}}">{{ player.rating_str }}</td>
-                    <td class="category text-center">{{ player.category.short_name }}</td>
-                    <td class="category text-center">{{ player.gender.short_name }}</td>
-                    <td class="federation text-center">{{ player.federation }}</td>
-                    <td class="points text-center fw-bold">{{ player.points_str }}</td>
-                    {% for tie_break in admin_tournament.tie_breaks %}
-                        {% set tie_break_string = player.tie_break_values_as_strings[loop.index0] %}
-                        {% if tie_break.is_manual %}
-                            <td class="playoff text-center compact-col">
-                                {% if sortable %}<i class="bi-grip-horizontal handle {% if player.manual_tiebreak is not none %}text-warning{% endif %}"></i>{% endif %}
-                            </td>
-                        {% else %}
-                            <td class="tie-break text-center">{{ tie_break_string }}</td>
-                        {% endif %}
-                    {% endfor %}
-                    <input type='hidden' name='player' value='{{ player.id }}'/>
-                </tr>
+                {% else %}
+                    <td class="tie-break text-center">{{ tie_break_string }}</td>
+                {% endif %}
             {% endfor %}
-        </tbody>
+
+            <input type="hidden" name="player" value="{{ player.id }}">
+        </tr>
+
+        {# if this is the last player overall, close the final TBODY #}
+            {% if loop.last %}</tbody>{% endif %}
+        {% endfor %}
     </table>
 </form>

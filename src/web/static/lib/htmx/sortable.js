@@ -6,7 +6,7 @@ htmx.onLoad(function(content) {
 
         options = {
             animation: 150,
-            ghostClass: 'blue-background-class',
+            ghostClass: 'sortable-ghost',
             // Make the `.htmx-indicator` unsortable
             filter: ".htmx-indicator, .non-sortable",
             onMove: function (evt) {
