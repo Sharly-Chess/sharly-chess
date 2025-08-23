@@ -86,6 +86,9 @@ class Club:
 @total_ordering
 @dataclass
 class PlayerRating:
+    """A representation of the player's rating.
+    *value* is the numerical rating"""
+
     value: int
     type: PlayerRatingType
 
@@ -94,15 +97,15 @@ class PlayerRating:
         return cls(dict_rating['value'], PlayerRatingType(dict_rating['type']))
 
     @property
-    def unrated(self) -> bool:
+    def fide_unrated(self) -> bool:
         return self.type != PlayerRatingType.FIDE
 
     def __lt__(self, other):
         if not isinstance(other, self.__class__):
             return NotImplemented
-        if self.unrated and not other.unrated:
+        if self.fide_unrated and not other.fide_unrated:
             return False
-        if not self.unrated and other.unrated:
+        if not self.fide_unrated and other.fide_unrated:
             return True
         return self.value < other.value
 
@@ -643,9 +646,9 @@ class Player:
                 elif own_federation > TitleNorm.maximum_of_own_federation(
                     tournament_rounds
                 ):
-                    result[title_norm][NormFailExplanation.TOO_MANY_OWN_FEDERATION] = {
-                        self.federation: own_federation
-                    }
+                    result[title_norm][NormFailExplanation.TOO_MANY_OWN_FEDERATION] = (
+                        dict(federations)
+                    )
                 else:
                     result[title_norm][NormCriterion.FEDERATIONS] = dict(federations)
             elif len(federations) < 2:
@@ -655,14 +658,15 @@ class Player:
             else:
                 result[title_norm][NormCriterion.FEDERATIONS] = dict(federations)
 
-            for federation, number_in_federation in federations.items():
-                if number_in_federation > TitleNorm.maximum_of_one_federation(
-                    tournament_rounds
-                ):
-                    del result[title_norm][NormCriterion.FEDERATIONS]
-                    result[title_norm][NormFailExplanation.TOO_MANY_ONE_FEDERATION] = {
-                        federation: number_in_federation
-                    }
+            # If the most common doesn't go over the threshold, no other can.
+            _, number_in_federation = federations.most_common(1)
+            if number_in_federation > TitleNorm.maximum_of_one_federation(
+                tournament_rounds
+            ):
+                del result[title_norm][NormCriterion.FEDERATIONS]
+                result[title_norm][NormFailExplanation.TOO_MANY_ONE_FEDERATION] = dict(
+                    federations
+                )
 
         for title_norm in result.keys():
             if (sum(title_holders.values())) < TitleNorm.minimum_title_holders(
@@ -704,7 +708,7 @@ class Player:
                 ratings[0].type = PlayerRatingType.FIDE
             ratings.sort()
             for index, rating in enumerate(ratings):
-                if not rating.unrated:
+                if not rating.fide_unrated:
                     # Unrated players' ratings are sorted first
                     break
                 else:
