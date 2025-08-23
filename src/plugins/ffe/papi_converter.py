@@ -21,7 +21,7 @@ from data.pairings.variations import (
 )
 from data.player import PlayerRating
 from data.player import Player
-from data.tie_breaks.tie_breaks import TieBreak
+from data.tie_breaks.tie_breaks import ManualTieBreak, TieBreak
 from data.tournament import Tournament
 from database.sqlite.event.event_store import (
     StoredTournament,
@@ -272,6 +272,11 @@ class PapiConverter:
         ):
             stored_tournament.pairing = DoubleBergerRoundRobinVariation.static_id()
 
+        has_manual_tiebreak = any(
+            tiebreak.get('type') is ManualTieBreak.static_id()
+            for tiebreak in stored_tournament.tie_breaks
+        )
+
         next_board_id = 1
         board_id_by_player_id_by_round: dict[int, dict[int, int]] = {
             round_: {} for round_ in range(1, stored_tournament.rounds + 1)
@@ -286,6 +291,14 @@ class PapiConverter:
             stored_player.id = player_id
             stored_tournament_player = StoredTournamentPlayer(player_id=player_id)
             round_keys = papi_player.rounds.keys()
+
+            if has_manual_tiebreak:
+                # The relative order of the players is stored in the fixed table field with values above 1000!
+                if stored_player.fixed and stored_player.fixed >= 1000:
+                    stored_tournament_player.manual_tiebreak = (
+                        stored_player.fixed - 1000
+                    )
+                    stored_player.fixed = None
 
             if is_round_robin:
                 start_round = 1
@@ -753,6 +766,10 @@ class PapiConverter:
             ),
         )
 
+        has_manual_tiebreak = any(
+            isinstance(tiebreak, ManualTieBreak) for tiebreak in tournament.tie_breaks
+        )
+
         # Create mapping from internal player ID to index in PapiPlayer list
         player_id_to_index = {
             player.id: index for index, player in enumerate(tournament.players)
@@ -762,19 +779,31 @@ class PapiConverter:
         papi_players: list[PapiPlayer] = []
         for player in tournament.players:
             papi_player = self._player_to_papi_player(
-                player, tournament, player_id_to_index
+                player, player_id_to_index, has_manual_tiebreak
             )
             papi_players.append(papi_player)
 
         return PapiData(variables=variables, players=papi_players)
 
     def _player_to_papi_player(
-        self, player: Player, tournament: Tournament, player_id_to_index: dict[int, int]
+        self,
+        player: Player,
+        player_id_to_index: dict[int, int],
+        has_manual_tiebreak: bool,
     ) -> PapiPlayer:
         """Convert a Player object to PapiPlayer."""
 
         plugin_data = player.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, FfePlayerPluginData)
+
+        fixedBoard: int | None = player.fixed
+        if (
+            has_manual_tiebreak
+            and player.stored_tournament_player.manual_tiebreak is not None
+        ):
+            # The relative order of the players is stored in the fixed table field with values above 1000!
+            # Our values can be negative, so we need to add 2000 to the value
+            fixedBoard = player.stored_tournament_player.manual_tiebreak + 2000
 
         papi_player = PapiPlayer(
             lastName=player.last_name,
@@ -793,7 +822,7 @@ class PapiConverter:
             fideCode=str(player.fide_id) if player.fide_id else None,
             federation=player.federation.name,
             club=player.club.name,
-            fixedBoard=player.fixed,
+            fixedBoard=fixedBoard,
             checkedIn=player.check_in,
             elo=self._get_papi_elo(player, TournamentRating.STANDARD),
             fideElo=self._get_papi_elo_type(player, TournamentRating.STANDARD),
