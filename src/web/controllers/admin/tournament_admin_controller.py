@@ -778,7 +778,15 @@ class TournamentAdminController(BaseEventAdminController):
             return self._admin_event_render(template_context)
 
         try:
-            importer.load_tournament(tmp_path, event, web_context.admin_tournament)
+            tournament = importer.load_tournament(
+                tmp_path, event, web_context.admin_tournament
+            )
+            Message.success(
+                request,
+                _('Tournament [{tournament}] successfully imported.').format(
+                    tournament=tournament.uniq_id
+                ),
+            )
         except SharlyChessException as e:
             errors = {'file': str(e)}
             template_context = self._get_admin_event_render_context(

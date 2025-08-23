@@ -320,6 +320,7 @@ with_indicator: display a loading indicator, optional
                         value="on"
                         aria-describedby="{{ id }}-help {{ id }}-error"
                         {% if data[name] == 'on' %}checked{% endif %}
+                        test="{{ data }}"
                         {% if disabled %}
                             disabled
                         {% endif %}

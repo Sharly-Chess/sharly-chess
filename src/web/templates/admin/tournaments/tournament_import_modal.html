@@ -1,4 +1,4 @@
-<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-tournament-edit-modal">
+<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
@@ -26,6 +26,14 @@
                     <h4>
                         {{ _('Tournament: %(tournament_name)s', tournament_name=admin_tournament.name) }}
                     </h4>
+                    {% if admin_tournament.players %}
+                        <h5 class="text-danger">
+                            {{ _(
+                                'Warning: the %(player_count)d players in the tournament will be deleted.',
+                                player_count=admin_tournament.players|length
+                            ) }}
+                        </h5>
+                    {% endif %}
                 {% endif %}
                 <div class="row">
                     <div class="col-12">
@@ -37,6 +45,24 @@
                         ) }}
                     </div>
                 </div>
+                {% if admin_tournament and admin_tournament.players %}
+                    <div class="mt-2">
+                        {{ admin_macros.checkbox_input(
+                            name='confirm_checkbox',
+                            label='',
+                            placeholder=_(
+                                'I confirm that I want to overwrite the player data of this tournament.'
+                            ),
+                            help_text='',
+                        ) }}
+                    </div>
+                    <script>
+                        $('#confirm-checkbox').change(function () {
+                           $('#import-button').prop('disabled', !$(this).is(':checked'));
+                        });
+                        $('#confirm-checkbox').trigger('change');
+                    </script>
+                {% endif %}
             </form>
         </div>
         <div class="modal-footer">
@@ -49,9 +75,10 @@
                 {{ _('Cancel') }}
             </button>
             <button
+                id="import-button"
                 type="submit"
                 form="modal-form"
-                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                class="text-nowrap white btn btn-primary"
             >
                 <i class="bi-download pe-1"></i>
                 {{ _('Import') }}
