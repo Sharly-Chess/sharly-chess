@@ -223,9 +223,9 @@ class BbpPairings(PairingEngine):
         has_pab = tournament.round_has_pab(round_)
         for raw_pairing in file.readlines():
             (white_trf_id, black_trf_id) = map(int, raw_pairing.split(' '))
-            white_player = tournament.players_by_starting_rank[white_trf_id]
+            white_player = tournament.players_by_pairing_number[white_trf_id]
             if black_trf_id != cls.BYE_ID:
-                black_player_id = tournament.players_by_starting_rank[black_trf_id].id
+                black_player_id = tournament.players_by_pairing_number[black_trf_id].id
             elif not (
                 white_player.pairings[round_].next_round_bye
                 or (partial_pairings and has_pab)

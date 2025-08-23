@@ -1,5 +1,5 @@
 import weakref
-from typing import Callable, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from trf.Player import Game as TrfGame
 
@@ -203,15 +203,14 @@ class Pairing:
             Result.FULL_POINT_BYE,
         )
 
-    def to_trf(
-        self, round_number: int, player_id_to_trf_id: Callable[[int], int]
-    ) -> TrfGame:
+    def to_trf(self, round_number: int) -> TrfGame:
+        opponent = self.opponent
         return TrfGame(
             startrank=(
                 '0000'
                 if self.result.is_bye
-                else player_id_to_trf_id(self.opponent_id)
-                if self.opponent_id
+                else opponent.pairing_number
+                if opponent
                 else ''
             ),
             color=(
@@ -220,9 +219,6 @@ class Pairing:
             result=self.result.to_trf,
             round=round_number,
         )
-
-    def __repr__(self):
-        return f'{self.__class__.__name__}({self.color} {self.opponent_id} {self.result.to_trf})'
 
     @property
     def color(self) -> BoardColor | None:
@@ -235,12 +231,18 @@ class Pairing:
         )
 
     @property
-    def opponent_id(self) -> int | None:
+    def opponent(self) -> Optional['Player']:
         board = self.board
         if not board or not board.black_player:
             return None
         return (
-            board.black_player.id
-            if self.color == BoardColor.WHITE
-            else board.white_player.id
+            board.black_player if self.color == BoardColor.WHITE else board.white_player
         )
+
+    @property
+    def opponent_id(self) -> int | None:
+        opponent = self.opponent
+        return opponent.id if opponent else None
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}({self.color} {self.opponent_id} {self.result.to_trf})'
