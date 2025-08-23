@@ -2585,6 +2585,9 @@ msgstr "Rendre visible sur le site de la FFE"
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Homme"
 
+msgid "Man. *** ACRONYM FOR MANUAL TIEBREAK"
+msgstr "Man."
+
 msgid "Manage the prize groups of the tournament."
 msgstr "Gérer les groupes de prix du tournoi."
 
@@ -5687,3 +5690,22 @@ msgstr "{string} : {value}"
 
 msgid "{tie_break} (Papi compatible)"
 msgstr "{tie_break} (compatible Papi)"
+
+msgid "½ - 0 (U)"
+msgstr "½ - 0 (NC)"
+
+msgid "½ - ½ (U)"
+msgstr "½ - ½ (NC)"
+
+#~ msgid "Choose a custom image:"
+#~ msgstr "Choisissez une image personnalisée :"
+
+#~ msgid "The URL or the path of the image to display (by default the Sharly Chess logo)."
+#~ msgstr "L'URL ou le chemin de l'image à afficher (par défaut le logo de Sharly Chess)."
+
+#~ msgid "Manual Tiebreak"
+#~ msgstr "Départage manuel"
+
+#~ msgid "Playoff"
+#~ msgstr ""
+

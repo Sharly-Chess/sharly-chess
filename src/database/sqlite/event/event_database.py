@@ -981,6 +981,7 @@ class EventDatabase(MigrationDatabase):
             tournament_id=row['tournament_id'],
             player_id=row['player_id'],
             pairing_number=row['pairing_number'],
+            manual_tiebreak=row['manual_tiebreak'],
         )
 
     def load_player_stored_tournament_player(
@@ -1000,7 +1001,8 @@ class EventDatabase(MigrationDatabase):
         self, stored_tournament_player: StoredTournamentPlayer
     ):
         fields = self._get_fields_dict(
-            stored_tournament_player, ['tournament_id', 'player_id', 'pairing_number']
+            stored_tournament_player,
+            ['tournament_id', 'player_id', 'pairing_number', 'manual_tiebreak'],
         )
         fields_str = ', '.join(f'`{f}`' for f in fields)
         values_str = ', '.join(['?'] * len(fields))
@@ -1025,6 +1027,28 @@ class EventDatabase(MigrationDatabase):
                 stored_tournament_player.player_id,
             ),
         )
+
+    def set_tournament_players_manual_tiebreak(
+        self,
+        tournament_id: int,
+        updates: dict[int, int | None],
+    ) -> int:
+        """
+        Bulk-update manual_tiebreak for many players in a tournament.
+        updates: { player_id: int | None }  (None -> set NULL)
+        Returns total rows updated.
+        """
+        if not updates:
+            return 0
+
+        params = [(mtb, tournament_id, pid) for pid, mtb in updates.items()]
+        sql = (
+            'UPDATE `tournament_player` '
+            'SET `manual_tiebreak` = ? '
+            'WHERE `tournament_id` = ? AND `player_id` = ?'
+        )
+
+        return self.executemany(sql, params)
 
     def delete_stored_tournament_player(self, tournament_id: int, player_id: int):
         self.execute(

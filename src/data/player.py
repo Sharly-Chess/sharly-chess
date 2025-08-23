@@ -368,6 +368,10 @@ class Player:
         return False
 
     @property
+    def manual_tiebreak(self) -> int | None:
+        return self.stored_tournament_player.manual_tiebreak
+
+    @property
     def _tournament_rating(self) -> PlayerRating:
         if self.rating_is_overridden(self.tournament.rating):
             rating = self.ratings.get(TournamentRating.STANDARD)
@@ -642,6 +646,59 @@ class Player:
             -self.title,
             self.last_name,
             self.first_name or '',
+        )
+
+    @property
+    def before_manual_rank_key(self) -> tuple:
+        """Returns a tuple of the player's rank using points and tie-break values *up to* the manual tiebreak"""
+        from data.tie_breaks.tie_breaks import ManualTieBreak
+
+        tie_breaks_values = tuple(
+            (-float(tie_break) if isinstance(tie_break, SupportsFloat) else 0.0)
+            for tie_break in self._tie_break_values or []
+        )
+
+        manual_tiebreak_index = next(
+            (
+                i
+                for i, tb in enumerate(self.tournament.tie_breaks)
+                if isinstance(tb, ManualTieBreak)
+            ),
+            None,
+        )
+
+        if manual_tiebreak_index is not None:
+            tie_breaks_values = tie_breaks_values[:manual_tiebreak_index]
+
+        return (-self.points if self.points is not None else 0.0,) + tie_breaks_values
+
+    @property
+    def no_manual_rank_sort_key(self) -> tuple:
+        from data.tie_breaks.tie_breaks import ManualTieBreak
+
+        tie_breaks_values = list(
+            (-float(tie_break) if isinstance(tie_break, SupportsFloat) else 0.0)
+            for tie_break in self._tie_break_values or []
+        )
+
+        manual_tiebreak_index = next(
+            (
+                i
+                for i, tb in enumerate(self.tournament.tie_breaks)
+                if isinstance(tb, ManualTieBreak)
+            ),
+            None,
+        )
+
+        if manual_tiebreak_index is not None and manual_tiebreak_index < len(
+            tie_breaks_values
+        ):
+            tie_breaks_values[manual_tiebreak_index] = 0
+
+        return (
+            (-self.points if self.points is not None else 0.0,)
+            + tuple(tie_breaks_values)
+            + self.starting_rank_sort_key
         )
 
     @property

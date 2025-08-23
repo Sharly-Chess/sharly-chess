@@ -71,6 +71,7 @@ class PapiTieBreak(PluginCoreMapper[str, TieBreak]):
             'Nombre de Victoires': tie_breaks.WinsTieBreak(),
             'Sonnenborn-Berger': tie_breaks.SonnebornBergerTieBreak(),
             'Koya': tie_breaks.KoyaTieBreak(),
+            'Manuel': tie_breaks.ManualTieBreak(),
         }
 
 

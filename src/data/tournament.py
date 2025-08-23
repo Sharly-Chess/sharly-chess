@@ -988,6 +988,7 @@ class Tournament:
             for player in self.players:
                 player.points = player.points_after(after_round)
                 player.compute_tie_break_values(after_round=after_round)
+
             self._players_by_rank = {
                 rank: player
                 for rank, player in enumerate(
@@ -998,6 +999,7 @@ class Tournament:
                     start=1,
                 )
             }
+
         else:
             # set 0.0 tie-break values for all the players
             for player in self.players:
@@ -1084,6 +1086,7 @@ class Tournament:
             tournament_id=self.id,
             player_id=stored_player.id,
             pairing_number=None,
+            manual_tiebreak=None,
             stored_pairings=[
                 StoredPairing(
                     tournament_id=self.id,

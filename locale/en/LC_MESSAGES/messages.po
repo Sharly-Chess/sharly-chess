@@ -2585,6 +2585,9 @@ msgstr ""
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Male"
 
+msgid "Man. *** ACRONYM FOR MANUAL TIEBREAK"
+msgstr "Man."
+
 msgid "Manage the prize groups of the tournament."
 msgstr ""
 
@@ -5687,4 +5690,13 @@ msgstr ""
 
 msgid "{tie_break} (Papi compatible)"
 msgstr ""
+
+msgid "½ - 0 (U)"
+msgstr ""
+
+msgid "½ - ½ (U)"
+msgstr ""
+
+#~ msgid "Playoff"
+#~ msgstr ""
 
