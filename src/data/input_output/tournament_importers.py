@@ -49,7 +49,7 @@ class TournamentImporter(IdentifiableEntity, ABC):
         Raises if the tournament already has players."""
         if tournament and tournament.started:
             raise SharlyChessException(
-                'Impossible to import into a started tournament.'
+                'Import only possible before the tournament starts.'
             )
         stored_tournament, stored_players = self.load_stored_tournament(
             source_file, tournament.stored_tournament if tournament else None
