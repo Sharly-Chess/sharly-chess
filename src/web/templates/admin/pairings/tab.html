@@ -112,7 +112,6 @@
                                             'info', _('Overwrite the result of the pairing when using the keyboard shortcuts.'), 'top'
                                         ) }}
                                     >
-
                                         <button
                                             id="overwrite-mode"
                                             {% if action in allowed_actions %}
@@ -349,11 +348,35 @@
             }
         }
 
+        function searchPlayerHandler(e) {
+            const value = normalizeText($("#search-player").val().trim());
+            $("table").each(function() {
+                const $table = $(this);
+                const $rows = $table.find("tbody tr");
+
+                if (value === "") {
+                    $rows.show();
+                    $table.removeClass("table-danger-warning");
+                    return;
+                }
+
+                let matchFound = false;
+
+                $("table tbody tr").each(function() {
+                    const text = normalizeText($(this).text());
+                    $(this).toggle(text.indexOf(value) > -1);
+                });
+
+                $table.addClass("table-danger-warning");
+            });
+        }
+
         $(document).ready(function() {
             $(document).off("keydown.pairings");
             $(document).off("click.pairings");
             $(document).off("htmx:afterSwap.pairings");
             $(document).off("highlight_board_with_warning.pairings");
+            $(document).off("input.search");
 
             $(document).on("keydown.pairings", keydownHandler);
             $(document).on("click.pairings", "tr.pairing-row > td", rowClickHandler);
@@ -361,6 +384,7 @@
             $(document).on("highlight_board_with_warning.pairings", function(e) {
                 highlightBoardWithError(e.detail.board_id);
             });
+            $(document).on("input.search", "#search-player", searchPlayerHandler);
         });
     </script>
 {% else %}
