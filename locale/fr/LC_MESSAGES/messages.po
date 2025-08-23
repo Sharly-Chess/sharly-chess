@@ -2986,7 +2986,7 @@ msgid "Not connected, impossible to update."
 msgstr "Échec de la connexion, mise à jour impossible."
 
 msgid "Not paired for this round"
-msgstr "Non apparié pour cette ronde"
+msgstr "Non-apparié·e pour cette ronde"
 
 msgid "Notification"
 msgstr "Notification"
