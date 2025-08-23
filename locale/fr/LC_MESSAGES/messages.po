@@ -3250,7 +3250,7 @@ msgid "Not paired"
 msgstr "Non-apparié·e"
 
 msgid "Not paired for this round"
-msgstr "Non apparié pour cette ronde"
+msgstr "Non-apparié·e pour cette ronde"
 
 msgid "Notification"
 msgstr "Notification"
