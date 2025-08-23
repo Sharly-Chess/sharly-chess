@@ -54,7 +54,17 @@
         <tr id="player-{{ player.id }}" class="player-row {{ row_class }} {% if not sortable %}non-sortable{% endif %}">
             <td class="rank text-end">{{ player.rank }}</td>
             <td class="title text-end">{{ player.title.short_name }}</td>
-            <td class="name text-start{{ ' fw-bold' if not pairings_list }}">{{ player.full_name }}</td>
+            <td class="name text-start{{ "fw-bold" if not pairings_list}}">
+                {{ player.full_name }}
+                <button
+                    type="button"
+                    class="btn player-info p-1"
+                    data-content-id="popover-content-{{ player.id }}"
+                    aria-label="More info"
+                >
+                    <i class="bi-info-circle ps-2"></i>
+                </button>
+            </td>
             <td class="rating text-{{ 'start' if pairings_list else 'end' }}">{{ player.rating_str }}</td>
             <td class="category text-center">{{ player.category.short_name }}</td>
             <td class="category text-center">{{ player.gender.short_name }}</td>
@@ -82,3 +92,99 @@
         {% endfor %}
     </table>
 </form>
+
+{% for player in admin_tournament.players_by_rank.values() %}
+    {# per-row hidden content #}
+    <div id="popover-content-{{ player.id }}" class="d-none">
+        <table class="table table-sm mb-0">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th scope="col" class="text-nowrap text-center">
+                        {{ _('Rk. *** RANK FOR TABLE HEADER') }}
+                    </th>
+                    <th scope="col" class="text-nowrap">
+                        {{ _('Opponent') }}
+                    </th>
+                    <th scope="col" class="text-nowrap text-center">
+                        {{ _('Rating') }}
+                    </th>
+                    <th scope="col" class="text-nowrap text-center">
+                        {{ _('Cat *** CATEGORY FOR TABLE HEADER') }}
+                    </th>
+                    <th scope="col" class="text-nowrap text-center">
+                        {{ _('Fed *** FEDERATION FOR TABLE HEADER') }}
+                    </th>
+                    <th scope="col" class="text-nowrap">
+                        {{ _('Pts') }}
+                    </th>
+                    {% for tie_break in admin_tournament.tie_breaks %}
+                            {% if tie_break.is_displayable %}
+                            <th class="tie-break text-center">{{ tie_break.acronym }}</th>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for round in range(1, admin_tournament.rounds + 1) %}
+                    <tr>
+                        <th class="round text-center">{{ _('R %(round)d *** ROUND FOR TABLE HEADER', round=round) }}</th>
+                        {%with pairing = player.pairings[round], opponent_id = player.pairings[round].opponent_id %}
+                            {% if opponent_id %}
+                                {%with opponent = player.tournament.players_by_id[opponent_id] %}
+                                    <td>{{ pairing.color.to_crosstable }}</td>
+                                    <td class='text-center'>{{ pairing.result }}</td>
+                                    <td class='text-center'>{{ opponent.rank }}</td>
+                                    <td class='text-nowrap'>{{ opponent.full_name }}</td>
+                                    <td>{{ opponent.rating_str }}</td>
+                                    <td>{{ opponent.category.short_name }}</td>
+                                    <td>{{ opponent.federation }}</td>
+                                    <td class='text-center'>{{ opponent.points_str }}</td>
+                                    {% for tie_break in opponent.tie_break_values_as_strings %}
+                                        <td class="tie-break text-center">{{ tie_break }}</td>
+                                    {% endfor %}
+                                {% endwith %}
+                            {% else %}
+                                <td colspan="1000" class="fst-italic">
+                                {% if pairing.zero_point_bye %}
+                                    {{ ('Zero-Point Bye') }}
+                                {% elif pairing.exempt %}
+                                    {{ _('Pairing Allocated Bye') }}
+                                {% elif pairing.half_point_bye %}
+                                    {{ _('Half-Point Bye') }}
+                                {% elif pairing.full_point_bye %}
+                                    {{ _('Full-Point Bye') }}
+                                {% else %}
+                                    {{ _('Not paired for this round') }}
+                                {% endif %}
+                                </td>
+                            {% endif %}
+                        {% endwith %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endfor %}
+
+<script>
+    $(document).ready(function() {
+        document.querySelectorAll('.player-info').forEach((btn) => {
+            new bootstrap.Popover(btn, {
+            html: true,
+            trigger: 'hover focus',
+            container: 'body',
+            placement: 'auto',
+            sanitize: false,
+            customClass: 'player-popover',
+            content: () => {
+                const id = btn.getAttribute('data-content-id');
+                const el = document.getElementById(id);
+                return el ? el.innerHTML : '';
+            },
+            });
+        });
+    });
+</script>
