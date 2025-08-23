@@ -803,7 +803,6 @@ class EventDatabase(MigrationDatabase):
         return self._write_stored_tournament(stored_tournament)
 
     def delete_stored_tournament(self, tournament_id: int):
-        self.delete_stored_tournament_players(tournament_id)
         self.execute('DELETE FROM `tournament` WHERE `id` = ?;', (tournament_id,))
 
     def set_tournament_check_in(self, tournament_id: int, o: bool):
@@ -1040,24 +1039,9 @@ class EventDatabase(MigrationDatabase):
             (tournament_id, player_id),
         )
 
-    def delete_stored_tournament_players(self, tournament_id: int):
-        # Delete players which are only part of this tournament
-        self.execute(
-            'DELETE FROM `player` WHERE `id` in ('
-            '   SELECT `player_id` FROM `tournament_player` as `tp1` '
-            '   WHERE `tournament_id` = ? AND ('
-            '       SELECT COUNT(*) FROM `tournament_player` as `tp2`'
-            '       WHERE `tp1`.`player_id` = `tp2`.`player_id`'
-            '   ) = 1'
-            ')',
-            (tournament_id,),
-        )
+    def delete_players_in_tournament(self, tournament_id: int):
         self.execute(
             'DELETE FROM `tournament_player` WHERE `tournament_id` = ?',
-            (tournament_id,),
-        )
-        self.execute(
-            'DELETE FROM `pairing` WHERE `tournament_id` = ?',
             (tournament_id,),
         )
 

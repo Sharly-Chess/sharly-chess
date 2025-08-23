@@ -60,7 +60,7 @@ class TournamentImporter(IdentifiableEntity, ABC):
             )
         with EventDatabase(event.uniq_id, True) as database:
             if tournament:
-                database.delete_stored_tournament_players(tournament.id)
+                database.delete_players_in_tournament(tournament.id)
             tournament_id = self._write_stored_tournament(
                 stored_tournament, stored_players, database
             )
