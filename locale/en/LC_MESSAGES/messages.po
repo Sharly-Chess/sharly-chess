@@ -2985,6 +2985,9 @@ msgstr ""
 msgid "Not connected, impossible to update."
 msgstr ""
 
+msgid "Not paired for this round"
+msgstr ""
+
 msgid "Notification"
 msgstr ""
 
@@ -5696,7 +5699,3 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "Playoff"
-#~ msgstr ""
-
