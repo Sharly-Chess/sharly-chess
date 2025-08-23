@@ -650,7 +650,8 @@ class Player:
 
     @property
     def before_manual_rank_key(self) -> tuple:
-        """Returns a tuple of the player's rank using points and tie-break values *up to* the manual tiebreak"""
+        """Returns a tuple of the player's rank using points and tie-break values *up to* the manual tiebreak, or points only if there is no manual tiebreak.
+        Used for grouping in the rankings table."""
         from data.tie_breaks.tie_breaks import ManualTieBreak
 
         tie_breaks_values = tuple(
@@ -669,6 +670,8 @@ class Player:
 
         if manual_tiebreak_index is not None:
             tie_breaks_values = tie_breaks_values[:manual_tiebreak_index]
+        else:
+            tie_breaks_values = tuple()
 
         return (-self.points if self.points is not None else 0.0,) + tie_breaks_values
 
