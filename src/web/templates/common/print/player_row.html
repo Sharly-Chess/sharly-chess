@@ -72,7 +72,7 @@
         {% if ranking or crosstable %}
             <td class="points text-center fw-bold">{{ player.points_str }}</td>
             {% for tie_break in tournament.tie_breaks %}
-                {% if tie_break.is_displayable and not tie_break.is_manual %}
+                {% if tie_break.is_displayable %}
                     {% set tie_break_string = player.tie_break_values_as_strings[loop.index0] %}
                     <td class="tie-break text-center">{{ tie_break_string }}</td>
                 {% endif %}

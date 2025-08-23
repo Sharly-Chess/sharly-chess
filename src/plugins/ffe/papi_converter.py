@@ -796,14 +796,14 @@ class PapiConverter:
         plugin_data = player.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, FfePlayerPluginData)
 
-        fixedBoard: int | None = player.fixed
+        fixed_board: int | None = player.fixed
         if (
             has_manual_tiebreak
             and player.stored_tournament_player.manual_tiebreak is not None
         ):
             # The relative order of the players is stored in the fixed table field with values above 1000!
             # Our values can be negative, so we need to add 2000 to the value
-            fixedBoard = player.stored_tournament_player.manual_tiebreak + 2000
+            fixed_board = player.stored_tournament_player.manual_tiebreak + 2000
 
         papi_player = PapiPlayer(
             lastName=player.last_name,
@@ -822,7 +822,7 @@ class PapiConverter:
             fideCode=str(player.fide_id) if player.fide_id else None,
             federation=player.federation.name,
             club=player.club.name,
-            fixedBoard=fixedBoard,
+            fixedBoard=fixed_board,
             checkedIn=player.check_in,
             elo=self._get_papi_elo(player, TournamentRating.STANDARD),
             fideElo=self._get_papi_elo_type(player, TournamentRating.STANDARD),

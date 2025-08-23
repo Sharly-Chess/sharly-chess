@@ -1525,12 +1525,15 @@ class ManualTieBreak(TieBreak):
 
     @property
     def acronym(self) -> str:
-        # FIDE acronym: 'WIN'
         return _('Man. *** ACRONYM FOR MANUAL TIEBREAK')
 
     @property
     def short_name(self) -> str:
         return _('Manual')
+
+    @property
+    def is_displayable(self) -> bool:
+        return False
 
     @property
     def is_manual(self) -> bool:
@@ -1542,13 +1545,7 @@ class ManualTieBreak(TieBreak):
         *,
         after_round: int | None,
     ) -> int:
-        if after_round is None:
-            after_round = max(player.pairings)
         assert player.tournament is not None
         if not player.tournament.finished:
             return 0
-        return (
-            player.stored_tournament_player.manual_tiebreak
-            if player.stored_tournament_player.manual_tiebreak is not None
-            else 0
-        )
+        return player.stored_tournament_player.manual_tiebreak or 0

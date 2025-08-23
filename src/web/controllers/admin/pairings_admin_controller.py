@@ -1323,7 +1323,7 @@ class PairingsAdminController(BaseEventAdminController):
 
         players_to_update: dict[int, int | None] = {}
 
-        #  Update manual_tiebreaks: assign only to point grups whose index varies from the natural sort order, clear for others
+        #  Update manual_tiebreaks: assign only to point groups whose index varies from the natural sort order, clear for others
         for group in by_rank.values():
             # Singletons never need manual tiebreak
             if len(group) <= 1:
