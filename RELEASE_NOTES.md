@@ -38,7 +38,7 @@ English version below
 
 - Ajout de départages non compatibles avec Papi (expérimental) (3.0.0)
 - Ajout d’une option de départage manuel (3.0.0)
-- Ajout d’une vue du classement dans l’onglet appariements après la dernière ronde du tournoi (3.0.0)
+- Ajout d’une vue du classement dans l’onglet Appariements après la dernière ronde du tournoi (3.0.0)
 
 ## Impressions
 
@@ -87,7 +87,7 @@ English version below
 
 - Added tie-breaks not compatible with Papi (experimental) (3.0.0)
 - Added a manual tie-break option (3.0.0)
-- Added a ranking view on the pairings tab after the last round of the tournament (3.0.0)
+- Added a ranking view on the Pairings tab after the last round of the tournament (3.0.0)
 
 ## Printing
 
