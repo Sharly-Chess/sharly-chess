@@ -3,7 +3,7 @@ import weakref
 from dataclasses import dataclass
 from datetime import date
 from functools import total_ordering, cached_property
-from typing import Self, Callable, SupportsFloat, TYPE_CHECKING
+from typing import Self, SupportsFloat, TYPE_CHECKING
 from trf import Player as TrfPlayer
 from trf.Player import Game as TrfGame
 
@@ -279,6 +279,10 @@ class Player:
             raise RuntimeError('Reference has been garbage collected')
         return tournament
 
+    @property
+    def pairing_number(self) -> int | None:
+        return self.stored_tournament_player.pairing_number
+
     def _get_default_pairing(self, round_: int) -> Pairing:
         return Pairing(
             self,
@@ -458,16 +462,13 @@ class Player:
 
     def to_trf(
         self,
-        player_id_to_trf_id: Callable[[int], int],
-        /,
-        *,
         after_round: int,
-        include_next_round_bye: bool,
         next_round_pairings_as_zpb: bool,
+        include_next_round_bye: bool,
     ) -> TrfPlayer:
         games: list[TrfGame] = []
         for round_nb, pairing in self.pairings.items():
-            trf_game = pairing.to_trf(round_nb, player_id_to_trf_id)
+            trf_game = pairing.to_trf(round_nb)
             if round_nb <= after_round:
                 games.append(trf_game)
             elif round_nb == after_round + 1:
@@ -484,7 +485,7 @@ class Player:
                     )
 
         return TrfPlayer(
-            startrank=player_id_to_trf_id(self.id),
+            startrank=self.pairing_number,
             name=f'{self.last_name}, {self.first_name}',
             sex=self.gender.to_trf,
             title=self.title.to_trf,

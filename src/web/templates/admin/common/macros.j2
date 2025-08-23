@@ -254,7 +254,7 @@ with_indicator: display a loading indicator, optional
             <div
                 class="
                     pw-input-group
-                    {% if input_type == 'password' %}input-group{% endif %}
+                    {% if input_type == 'password' or input_type == 'search' %}input-group{% endif %}
                     {% if with_indicator %}d-flex align-items-center{% endif %}
                     {% if input_type == 'switch' %}form-check form-switch d-inline-block pe-3{% endif %}
                     {% if input_type == 'checkbox' %}form-check d-inline-block pe-3{% endif %}
@@ -335,6 +335,11 @@ with_indicator: display a loading indicator, optional
                             type="hidden"
                             value="{{ value }}"
                         />
+                    {% endif %}
+                    {% if input_type == 'search' %}
+                        <i
+                            class="input-group-text bi bi-search ps-2 pt-2"
+                        ></i>
                     {% endif %}
                     <input
                         id="{{ id }}"
@@ -466,6 +471,7 @@ with_indicator: display a loading indicator, optional
     label='NO LABEL',
     placeholder='',
     help_text='NO HELP TEXT',
+    input_type='text',
     data={},
     errors={},
     error=false,
@@ -492,7 +498,7 @@ with_indicator: display a loading indicator, optional
 ) %}
     {{ _generic_input(
         name=name,
-        input_type='text',
+        input_type=input_type,
         label=label,
         placeholder=placeholder,
         help_text=help_text,
