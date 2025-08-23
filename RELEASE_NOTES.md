@@ -36,8 +36,8 @@ English version below
 ## Classements
 
 - Ajout de départages non compatibles avec Papi (expérimental) (3.0.0)
-- Ajout d’une option de départage manuel  (3.0.0)
--	Ajout d’une vue du classement dans l’onglet appariements après la dernière ronde du tournoi (3.0.0)
+- Ajout d’une option de départage manuel (3.0.0)
+- Ajout d’une vue du classement dans l’onglet appariements après la dernière ronde du tournoi (3.0.0)
 
 ## Impressions
 
