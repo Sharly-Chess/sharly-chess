@@ -57,7 +57,6 @@ PROJECT_DIR: Path = DIST_DIR / basename
 ZIP_FILE: Path = EXPORT_DIR / f'{basename}.zip'
 EXE_FILENAME: str = basename + '.exe'
 EXE: Path = PROJECT_DIR / EXE_FILENAME
-SIGNED_EXE: Path = PROJECT_DIR / f'{basename}-signed.exe'
 INTERNAL_DIRNAME: str = '_internal'
 SPEC_FILE: Path = BASE_DIR / f'{basename}.spec'
 TEST_DIR: Path = BASE_DIR / 'export-test'
@@ -65,12 +64,13 @@ SOURCE_DIR: Path = BASE_DIR / 'src'
 FFE_SQL_SERVER_CREDENTIALS_FILE: Path = PLUGINS_DIR / 'ffe' / '.credentials'
 LICENCES_DIR = PROJECT_DIR / 'LICENSES'
 
-SIGNTOOL_VERSION: str = '10.0.26100.0'
-WINDOWS_SDK_DIR: Path = Path('C:/Program Files (x86)/Windows Kits')
-SIGNTOOL_DIR: Path = WINDOWS_SDK_DIR / '10' / 'bin' / SIGNTOOL_VERSION / 'x64'
-SIGNTOOL_EXE: Path = SIGNTOOL_DIR / 'signtool.exe'
-SIGNTOOL_CERT_FINGERPRINT: str = '93ce5c3718b4ac7471f6697bf4693d5ed985046e'
-SIGNTOOL_TIMESTAMP_URL = 'http://time.certum.pl'
+if os.name == 'nt':
+    WIN_SIGNTOOL_VERSION: str = '10.0.26100.0'
+    WIN_SDK_DIR: Path = Path('C:/Program Files (x86)/Windows Kits')
+    WIN_SIGNTOOL_DIR: Path = WIN_SDK_DIR / '10' / 'bin' / WIN_SIGNTOOL_VERSION / 'x64'
+    WIN_SIGNTOOL_EXE: Path = WIN_SIGNTOOL_DIR / 'signtool.exe'
+    WIN_SIGNTOOL_CERT_FINGERPRINT: str = '93ce5c3718b4ac7471f6697bf4693d5ed985046e'
+    WIN_SIGNTOOL_TIMESTAMP_URL = 'http://time.certum.pl'
 
 
 def generate_license_files():
@@ -555,37 +555,84 @@ def build_exe():
     run(pyinstaller_params)
 
 
-def sign_exe():
-    # windows_tools.signtool has no sha1 parameter
-    # from windows_tools.signtool import SignTool
-    # signer: SignTool = SignTool(authority_timestamp_url='http://time.certum.pl')
-    # signer.sign(SIGNED_EXE, bitness=64)
-    shutil.copy(EXE, SIGNED_EXE)
-    cwd = os.getcwd()
-    os.chdir(str(SIGNTOOL_DIR))
-    cmd = [
-        str(SIGNTOOL_EXE),
-        'sign',
-        '-sha1',
-        str(SIGNTOOL_CERT_FINGERPRINT),
-        '-tr',
-        str(SIGNTOOL_TIMESTAMP_URL),
-        '-td',
-        'sha256',
-        '-fd',
-        'sha256',
-        str(SIGNED_EXE),
-    ]
-    logger.info(' '.join(cmd))
-    import subprocess
+def sign_exe(sign_only: bool):
+    if os.name == 'nt':
 
-    process = subprocess.run(cmd, capture_output=True, text=True)
-    if process.returncode != 0:
-        logger.error('Failed to sign the executable.')
-        logger.error(process.stderr)
-    else:
+        def run_signtool(params: list[str]) -> int:
+            # windows_tools.signtool has no sha1 parameter
+            # from windows_tools.signtool import SignTool
+            # signer: SignTool = SignTool(authority_timestamp_url='http://time.certum.pl')
+            # signer.sign(EXE, bitness=64)
+
+            import subprocess
+
+            logger.info(
+                f'Running {
+                    " ".join(
+                        [
+                            str(WIN_SIGNTOOL_EXE),
+                        ]
+                        + params
+                    )
+                }'
+            )
+            process = subprocess.run(params, capture_output=True, text=True)
+            for line in map(lambda s: s.rstrip(), process.stdout.split('\n')):
+                if line:
+                    logger.info(line)
+            for line in map(lambda s: s.rstrip(), process.stderr.split('\n')):
+                if line:
+                    logger.error(line)
+            return process.returncode
+
+        cwd = os.getcwd()
+        os.chdir(str(WIN_SIGNTOOL_DIR))
+
+        if (
+            sign_only
+            and run_signtool(
+                [
+                    'verify',
+                    '-pa',
+                    '-v',
+                    str(EXE),
+                ]
+            )
+            == 0
+        ):
+            logger.warning('Executable already signed.')
+            return
+        if (
+            run_signtool(
+                [
+                    'sign',
+                    '-sha1',
+                    str(WIN_SIGNTOOL_CERT_FINGERPRINT),
+                    '-tr',
+                    str(WIN_SIGNTOOL_TIMESTAMP_URL),
+                    '-td',
+                    'sha256',
+                    '-fd',
+                    'sha256',
+                    str(EXE),
+                ]
+            )
+            != 0
+        ):
+            raise RuntimeError('Failed to sign the executable.')
         logger.info('Executable signed successfully.')
-    os.chdir(cwd)
+        logger.info('Verifying the signature...')
+        # https://learn.microsoft.com/en-us/windows/win32/seccrypto/using-signtool-to-verify-a-file-signature
+        run_signtool(
+            [
+                'verify',
+                '-pa',
+                '-v',
+                str(EXE),
+            ]
+        )
+
+        os.chdir(cwd)
 
 
 def create_project():
@@ -719,19 +766,19 @@ def main():
     if not InstallationChecker.check():
         return
     if args.sign_only and EXE.exists():
-        sign_exe()
+        sign_exe(True)
         return
     clean(clean_zip=True)
     update_i18n_files(generate_doc=False)
     build_exe()
-    sign_exe()
+    sign_exe(False)
     create_project()
     generate_license_files()
     create_zip_files()
     build_test()
 
     # Skip cleanup if we need to preserve build artifacts for signing
-    if not args.preserve_build and not args.only_sign:
+    if not args.preserve_build and not args.sign_only:
         clean(clean_zip=False)
     else:
         logger.info(
