@@ -50,9 +50,10 @@
         {% set same_as_prev = loop.previtem and loop.previtem.before_manual_rank_key == group_key %}
         {% set same_as_next = loop.nextitem and loop.nextitem.before_manual_rank_key == group_key %}
         {% set sortable = same_as_prev or same_as_next %}
+        {% set new_point_group = loop.previtem and loop.previtem.points != player.points %}
 
-        <tr id="player-{{ player.id }}" class="player-row {{ row_class }} {% if not sortable %}non-sortable{% endif %}">
-            <td class="rank text-end">{{ player.rank }}</td>
+        <tr id="player-{{ player.id }}" class="player-row {{ row_class }} {% if not sortable %}non-sortable{% endif %} {% if new_point_group %}separator{% endif %}">
+            <td class="rank text-end">{{ player.rank }}{{group_key}}</td>
             <td class="title text-end">{{ player.title.short_name }}</td>
             <td class="name text-start{{ "fw-bold" if not pairings_list}}">
                 {{ player.full_name }}

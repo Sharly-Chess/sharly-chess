@@ -603,6 +603,14 @@ body[data-bs-theme=light] .btn-primary {
     vertical-align: middle;
 }
 
+[data-bs-theme=dark] table.prominent.table-danger-warning thead th {
+    background-color: rgb(var(--bs-warning-rgb), 0.8);
+    padding: 5px;
+    border-bottom: 7px solid var(--bs-body-bg);
+    vertical-align: middle;
+}
+
+
 [data-bs-theme=dark] table.prominent thead td,
 [data-bs-theme=dark] table.prominent tr.header td {
     padding: 5px;
@@ -641,7 +649,7 @@ body[data-bs-theme=light] .btn-primary {
   background-color: var(--bs-body-bg) !important;
 }
 
-[data-bs-theme=dark] table.prominent tbody + tbody tr:first-of-type td {
+[data-bs-theme=dark] table.prominent tr.separator td {
     border-top: 1px solid rgba(var(--bs-primary-rgb), 0.3);
 }
 
