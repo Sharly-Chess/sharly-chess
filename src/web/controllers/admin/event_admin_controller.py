@@ -1,36 +1,21 @@
-import csv
-from tempfile import NamedTemporaryFile
-from typing import Annotated, Any, Iterable
+from typing import Annotated
 
-import xlsxwriter
-
-from litestar import get, patch, post, Response, delete
-from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
+from litestar import get, patch, post, delete
+from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.response import Template, Redirect, File
+from litestar.response import Template, Redirect
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import ClientRedirect
-from pyexcel_ods3 import save_data
 
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.loader import EventLoader
-from data.player import Player
-from data.print_documents import (
-    PrintDocument,
-    PrintDocumentManager,
-    PrintDocumentOptionManager,
-)
-from data.print_documents.documents import PlayerListPrintDocument
 from plugins.ffe.utils import FFEUtils
-from utils.enum import TournamentRating
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
-from plugins.hookspec import ExtraColumn
 from plugins.manager import plugin_manager
-from utils.option import OptionError
 from web.controllers.base_controller import BaseController
 from web.controllers.base_controller import WebContext
 from web.messages import Message
@@ -68,12 +53,9 @@ class EventAdminController(BaseEventAdminController):
             return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
-        template_context: dict[str, Any] = cls._get_admin_event_render_context(
-            web_context
-        )
 
         plugin_event_info_rows = plugin_manager.hook.get_event_info_rows_template()
-        template_context |= {
+        template_context = web_context.template_context | {
             'admin_event_tab': 'admin-event-config-tab',
             'ffe_utils': FFEUtils,
             'plugin_event_info_rows': plugin_event_info_rows,
@@ -117,43 +99,6 @@ class EventAdminController(BaseEventAdminController):
                     'modal': 'event',
                     'plugin_form_fields_templates': plugin_form_fields_templates,
                     'action': action,
-                    'data': data,
-                    'errors': errors or {},
-                }
-            case 'print':
-                print_options = PrintDocumentOptionManager.objects()
-                if data is None:
-                    event = web_context.admin_event
-                    if len(event.tournaments_sorted_by_uniq_id) == 1:
-                        tournament_id = event.tournaments_sorted_by_uniq_id[0].id
-                    data = {
-                        'tournament_id': WebContext.value_to_form_data(tournament_id),
-                        'document': PlayerListPrintDocument.static_id(),
-                    } | {
-                        option.id: WebContext.value_to_form_data(option.default_value)
-                        for option in print_options
-                    }
-                containers_by_document: dict[str, list[str]] = {'': []} | {
-                    document.id: [
-                        option.container_id for option in document.default_options()
-                    ]
-                    for document in PrintDocumentManager.objects()
-                }
-                current_document_option_ids = []
-                if document_id := data.get('document', None):
-                    current_document_option_ids = [
-                        option.id
-                        for option in PrintDocumentManager.get_type(
-                            document_id
-                        ).default_options()
-                    ]
-                template_context |= {
-                    'modal': 'print',
-                    'tournament_options': web_context.get_tournament_options(),
-                    'document_options': PrintDocumentManager.options(),
-                    'current_document_option_ids': current_document_option_ids,
-                    'print_options': print_options,
-                    'containers_by_document': containers_by_document,
                     'data': data,
                     'errors': errors or {},
                 }
@@ -245,23 +190,6 @@ class EventAdminController(BaseEventAdminController):
         web_context = BaseEventAdminWebContext(request, event_uniq_id)
         return self._admin_event_render(
             web_context.template_context | {'modal': 'event-delete'}
-        )
-
-    @get(
-        path='/admin/print-modal/{event_uniq_id:str}',
-        name='admin-print-modal',
-    )
-    async def htmx_admin_print_modal(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        tournament_id: int | None = None,
-    ) -> Template | ClientRedirect:
-        return self._admin_event_config_render(
-            request,
-            modal='print',
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
         )
 
     @post(
@@ -426,319 +354,3 @@ class EventAdminController(BaseEventAdminController):
                 ),
             )
         return self._admin_event_config_render(request, new_uniq_id)
-
-    @post(
-        path='/admin/event-print/{event_uniq_id:str}',
-        name='admin-event-print',
-    )
-    async def htmx_admin_event_print(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-        event_uniq_id: str,
-    ) -> Template | ClientRedirect | Redirect:
-        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            data=data,
-        )
-        if web_context.error:
-            return web_context.error
-        if web_context.admin_event is None:
-            raise RuntimeError('admin_event not defined')
-        errors: dict[str, str] = {}
-
-        tournament: Tournament | None = None
-        field = 'tournament_id'
-
-        try:
-            tournament_id = WebContext.form_data_to_int(data, field)
-            if not tournament_id:
-                raise ValueError('Tournament ID not supplied')
-            tournament = web_context.admin_event.tournaments_by_id[tournament_id]
-        except (ValueError, KeyError):
-            errors[field] = _('Please choose the tournament.')
-
-        document_type: type[PrintDocument] | None = None
-        field = 'document'
-        try:
-            document_type = PrintDocumentManager.get_type(
-                WebContext.form_data_to_str(data, field) or ''
-            )
-        except KeyError:
-            errors[field] = _('Please choose the document.')
-        if tournament and document_type:
-            if error_message := document_type.validate_for_tournament(tournament):
-                errors[field] = error_message
-            options = []
-            for option in document_type.default_options():
-                value = WebContext.form_data_to_value(data, option.id, option.type)
-                options.append(type(option)(value))
-            document = document_type(options, tournament)
-            try:
-                document.validate_options()
-            except OptionError as error:
-                errors[error.option.id] = str(error)
-
-        if tournament and document_type and not errors:
-            # Clear the modal contents, and send an event
-            return HTMXTemplate(
-                template_name='common/empty_modal.html',
-                re_target='#modal-wrapper',
-                trigger_event='do_print',
-                after='receive',
-                params={
-                    'event_uniq_id': event_uniq_id,
-                    'tournament_id': tournament.id if tournament else None,
-                    'document': data['document'],
-                    'options': {
-                        option.id: data[option.id]
-                        for option in document_type.default_options()
-                        if option.id in data
-                    },
-                },
-            )
-        return self._admin_event_config_render(
-            request,
-            event_uniq_id=event_uniq_id,
-            modal='print',
-            data=data,
-            errors=errors,
-        )
-
-    @staticmethod
-    def download_players_as_vcf(
-        event_uniq_id: str,
-        players: list[Player],
-    ) -> Response[str]:
-        """Returns a file with all the vCards of the players."""
-        data: str = ''
-        for player in players:
-            if not (player.mail or player.phone):
-                continue
-            data += 'BEGIN:VCARD\nVERSION:3.0\n'
-            if player.first_name:
-                data += (
-                    f'N:{player.last_name.title()};{player.first_name}\n'
-                    f'FN:{player.first_name} {player.last_name.title()}\n'
-                )
-            else:
-                data += f'N:{player.last_name.title()}\nFN:{player.last_name.title()}\n'
-            data += (
-                f'ORG:{player.club}\n'
-                f'item1.TEL:{player.phone}\n'
-                f'item1.X-ABLabel:{_("Personal")}\n'
-                f'item2.EMAIL;type=INTERNET:{player.mail}\n'
-                f'item2.X-ABLabel:{_("Personal")}\n'
-                f'CATEGORIES:{_("Chess")}\n'
-                'END:VCARD\n\n'
-            )
-        return Response(
-            content=data,
-            media_type='text/x-vcard',
-            headers={
-                'Content-Disposition': f'attachment;{event_uniq_id}.vcf',
-            },
-        )
-
-    DATASHEET_COLUMNS = [
-        'last_name',
-        'first_name',
-        'yob',
-        'mail',
-        'phone',
-        'gender',
-        'fide_id',
-        'tournament',
-        'federation',
-        'club',
-        'owed',
-        'paid',
-        'comment',
-        'St',
-        'S',
-        'Ra',
-        'R',
-        'Bl',
-        'B',
-    ]
-
-    @classmethod
-    def get_players_datasheet_extra_columns(cls) -> dict[int, list[ExtraColumn]]:
-        """Returns the extra data columns added by the plugins"""
-        per_plugin_columns: list[Iterable[ExtraColumn]] = (
-            plugin_manager.hook.get_extra_players_datasheet_columns()
-        )
-        extra_columns: dict[int, list[ExtraColumn]] = {}
-        for plugin_columns in per_plugin_columns:
-            for extra_column in plugin_columns:
-                try:
-                    index = cls.DATASHEET_COLUMNS.index(extra_column.at)
-                    c = extra_columns.setdefault(index, [])
-                    c.append(extra_column)
-                except ValueError:
-                    pass
-
-        # The dict has keys sorted from high to low so that we can insert them in that
-        # order without affecting lower indexes
-        return {key: extra_columns[key] for key in reversed(sorted(extra_columns))}
-
-    @classmethod
-    def get_players_datasheet_columns(cls) -> list[str]:
-        """Returns the names of the columns used in the datasheets that can be downloaded."""
-
-        header_columns = cls.DATASHEET_COLUMNS[:]
-
-        # Add plugin columns
-        extra_columns = EventAdminController.get_players_datasheet_extra_columns()
-        for index, columns in extra_columns.items():
-            header_columns[index:index] = [column.title for column in columns]
-
-        return header_columns
-
-    @classmethod
-    def get_players_datasheet_data(
-        cls,
-        players: list[Player],
-    ) -> list[list[str | int | float]]:
-        """Returns the data of the datasheets that can be downloaded."""
-
-        extra_columns = cls.get_players_datasheet_extra_columns()
-
-        def augment_row(row, player):
-            for index, columns in extra_columns.items():
-                row[index:index] = [column.value(player) for column in columns]
-            return row
-
-        rows = [
-            augment_row(
-                [
-                    player.last_name,
-                    player.first_name,
-                    player.year_of_birth,
-                    player.mail or '',
-                    player.phone or '',
-                    player.gender.short_name,
-                    player.fide_id or '',
-                    player.tournament.uniq_id if player.tournament else '',
-                    player.federation.name,
-                    player.club.name if player.club else '',
-                    player.owed,
-                    player.paid,
-                    player.comment,
-                    player.get_rating(TournamentRating.STANDARD).value,
-                    player.get_rating(TournamentRating.STANDARD).type.short_name,
-                    player.get_rating(TournamentRating.RAPID).value,
-                    player.get_rating(TournamentRating.RAPID).type.short_name,
-                    player.get_rating(TournamentRating.BLITZ).value,
-                    player.get_rating(TournamentRating.BLITZ).type.short_name,
-                ],
-                player,
-            )
-            for player in players
-        ]
-        return rows
-
-    @classmethod
-    def download_players_as_xlsx(
-        cls,
-        event_uniq_id: str,
-        players: list[Player],
-    ) -> File:
-        """Returns a file with all the information of the players in an XLSX format."""
-        temp_file = NamedTemporaryFile(delete=False, mode='wb', suffix='.xlsx')
-        workbook = xlsxwriter.Workbook(temp_file)
-        worksheet = workbook.add_worksheet()
-        columns = cls.get_players_datasheet_columns()
-        data = cls.get_players_datasheet_data(players)
-        worksheet.add_table(
-            0,
-            0,
-            len(data),
-            len(columns) - 1,
-            options={
-                'columns': [{'header': column} for column in columns],
-                'data': data,
-            },
-        )
-        worksheet.autofit()
-        workbook.close()
-        return File(path=temp_file.name, filename=f'{event_uniq_id}.xlsx')
-
-    @classmethod
-    def download_players_as_csv(
-        cls,
-        event_uniq_id: str,
-        players: list[Player],
-    ) -> File:
-        """Returns a file with all the information of the players in a CSV format (comma-separated)."""
-        temp_file = NamedTemporaryFile(
-            delete=False, mode='w', suffix='.csv', newline=''
-        )
-        writer = csv.writer(temp_file)
-        writer.writerow(cls.get_players_datasheet_columns())
-        writer.writerows(cls.get_players_datasheet_data(players))
-        return File(path=temp_file.name, filename=f'{event_uniq_id}.csv')
-
-    @classmethod
-    def download_players_as_ods(
-        cls,
-        event_uniq_id: str,
-        players: list[Player],
-    ) -> File:
-        """Returns a file with all the information of the players in an ODS format."""
-        temp_file = NamedTemporaryFile(delete=False, mode='w+b', suffix='.ods')
-        save_data(
-            temp_file,
-            [cls.get_players_datasheet_columns()]
-            + cls.get_players_datasheet_data(players),
-        )
-        return File(path=temp_file.name, filename=f'{event_uniq_id}.ods')
-
-    @get(
-        path='/admin/download-event-players/{event_uniq_id:str}',
-        name='admin-download-event-players',
-    )
-    async def htmx_admin_event_download_players(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        download_format: str | None = None,
-        player_ids: list[int] | None = None,
-    ) -> ClientRedirect | Response[str] | File:
-        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
-            request, event_uniq_id=event_uniq_id, data=None
-        )
-        if web_context.error:
-            return web_context.error
-        if web_context.admin_event is None:
-            raise RuntimeError('admin_event not defined')
-        players: list[Player] = [
-            web_context.admin_event.players_by_id[player_id]
-            for player_id in player_ids or []
-            if player_id
-        ]
-        if not players:
-            players = web_context.admin_event.players_sorted_by_name
-        match download_format:
-            case 'vcf':
-                return self.download_players_as_vcf(
-                    web_context.admin_event.uniq_id, players
-                )
-            case 'csv':
-                return self.download_players_as_csv(
-                    web_context.admin_event.uniq_id, players
-                )
-            case 'xlsx':
-                return self.download_players_as_xlsx(
-                    web_context.admin_event.uniq_id, players
-                )
-            case 'ods':
-                return self.download_players_as_ods(
-                    web_context.admin_event.uniq_id, players
-                )
-            case _:
-                raise ValueError(f'download_format={download_format}')

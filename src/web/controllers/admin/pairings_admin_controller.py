@@ -271,8 +271,9 @@ class PairingsAdminController(BaseEventAdminController):
     ) -> Template | ClientRedirect:
         if web_context.error:
             return web_context.error
+
         return cls._admin_event_render(
-            cls._get_admin_event_render_context(web_context) | (template_context or {}),
+            web_context.template_context | (template_context or {}),
         )
 
     @get(

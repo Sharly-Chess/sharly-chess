@@ -330,9 +330,6 @@ class TournamentAdminController(BaseEventAdminController):
             raise RuntimeError('admin_event not defined')
         admin_event: Event = web_context.admin_event
         admin_tournament: Tournament | None = web_context.admin_tournament
-        template_context: dict[str, Any] = cls._get_admin_event_render_context(
-            web_context
-        )
 
         tournament_form_fields_templates_and_data = (
             plugin_manager.hook.get_tournament_card_block_template_and_data()
@@ -355,20 +352,24 @@ class TournamentAdminController(BaseEventAdminController):
         tournament_exporters: list[TournamentExporter] = (
             TournamentExporterManager.objects()
         )
-        template_context |= {
-            'admin_event_tab': 'admin-event-tournaments-tab',
-            'paired_bye_result_options': cls._get_paired_bye_result_options(),
-            'tournament_card_blocks': tournament_card_blocks,
-            'tournament_importers': tournament_importers,
-            'tournament_exporters': tournament_exporters,
-            'tournament_action_menu_items': tournament_action_menu_items,
-            'admin_tournaments_show_details': (
-                SessionHandler.get_session_admin_tournaments_show_details(
-                    web_context.request
-                )
-            ),
-            'data_sources': DataSourceManager.objects(),
-        } | tournament_card_block_data
+        template_context = (
+            web_context.template_context
+            | {
+                'admin_event_tab': 'admin-event-tournaments-tab',
+                'paired_bye_result_options': cls._get_paired_bye_result_options(),
+                'tournament_card_blocks': tournament_card_blocks,
+                'tournament_importers': tournament_importers,
+                'tournament_exporters': tournament_exporters,
+                'tournament_action_menu_items': tournament_action_menu_items,
+                'admin_tournaments_show_details': (
+                    SessionHandler.get_session_admin_tournaments_show_details(
+                        web_context.request
+                    )
+                ),
+                'data_sources': DataSourceManager.objects(),
+            }
+            | tournament_card_block_data
+        )
 
         match modal:
             case None:
@@ -735,9 +736,10 @@ class TournamentAdminController(BaseEventAdminController):
         web_context: TournamentAdminWebContext = TournamentAdminWebContext(
             request, event_uniq_id=event_uniq_id, tournament_id=tournament_id, data={}
         )
-        template_context: dict[str, Any] = self._get_admin_event_render_context(
-            web_context
-        ) | self._tournament_import_modal_context(importer_id=importer_id)
+        template_context = (
+            web_context.template_context
+            | self._tournament_import_modal_context(importer_id=importer_id)
+        )
         return self._admin_event_render(template_context)
 
     @dataclass
@@ -775,9 +777,10 @@ class TournamentAdminController(BaseEventAdminController):
             tmp_path = Path(tmp_name)
         else:
             errors: dict[str, str] = {'file': _('A file is expected.')}
-            template_context: dict[str, Any] = self._get_admin_event_render_context(
-                web_context
-            ) | self._tournament_import_modal_context(importer_id, errors=errors)
+            template_context = (
+                web_context.template_context
+                | self._tournament_import_modal_context(importer_id, errors=errors)
+            )
             return self._admin_event_render(template_context)
 
         try:
@@ -792,9 +795,10 @@ class TournamentAdminController(BaseEventAdminController):
             )
         except SharlyChessException as e:
             errors = {'file': str(e)}
-            template_context = self._get_admin_event_render_context(
-                web_context
-            ) | self._tournament_import_modal_context(importer_id, errors=errors)
+            template_context = (
+                web_context.template_context
+                | self._tournament_import_modal_context(importer_id, errors=errors)
+            )
             return self._admin_event_render(template_context)
         finally:
             if tmp_path:
@@ -1044,9 +1048,6 @@ class TournamentAdminController(BaseEventAdminController):
         if web_context.admin_tournament is None:
             raise RuntimeError('admin_tournament not defined')
         admin_tournament: Tournament = web_context.admin_tournament
-        template_context: dict[str, Any] = self._get_admin_event_render_context(
-            web_context
-        )
         document_type = PrintDocumentManager.get_type(document)
         option_data: dict[str, str] = {}
         if options:
@@ -1074,11 +1075,15 @@ class TournamentAdminController(BaseEventAdminController):
         )
         extra_css: str = '\n'.join(per_plugin_css)
 
-        template_context |= {
-            'document': print_document,
-            'extra_columns': extra_columns,
-            'extra_css': extra_css,
-        } | print_document.template_context
+        template_context = (
+            web_context.template_context
+            | {
+                'document': print_document,
+                'extra_columns': extra_columns,
+                'extra_css': extra_css,
+            }
+            | print_document.template_context
+        )
         return HTMXTemplate(
             template_name=print_document.template_name, context=template_context
         )
