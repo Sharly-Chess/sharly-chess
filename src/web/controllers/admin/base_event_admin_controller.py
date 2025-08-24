@@ -79,6 +79,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                 'icon_class': 'bi-sign-stop',
             },
         }
+        event = self.get_admin_event()
         nav_tabs: dict[str, dict[str, str | dict[str, dict[str, str]]]] = {
             'admin-event-config-tab': {
                 'title': _('Configuration'),
@@ -87,15 +88,13 @@ class BaseEventAdminWebContext(AdminWebContext):
             },
             'admin-event-tournaments-tab': {
                 'title': _('Tournaments ({num})').format(
-                    num=len(self.get_admin_event().tournaments_by_id) or '-'
+                    num=len(event.tournaments_by_id) or '-'
                 ),
                 'template': 'tournaments/tab.html',
                 'icon_class': 'bi-diagram-3-fill',
             },
             'admin-event-players-tab': {
-                'title': _('Players ({num})').format(
-                    num=self.get_admin_event().player_count or '-'
-                ),
+                'title': _('Players ({num})').format(num=event.player_count or '-'),
                 'template': 'players/tab.html',
                 'icon_class': 'bi-people-fill',
             },
@@ -115,32 +114,31 @@ class BaseEventAdminWebContext(AdminWebContext):
                 'submenu': {
                     'admin-event-screens-tab': {
                         'title': _('Single Screens ({num})').format(
-                            num=len(self.get_admin_event().basic_screens_by_id) or '-'
+                            num=len(event.basic_screens_by_id) or '-'
                         ),
                         'template': 'screens/tab.html',
                     },
                     'admin-event-families-tab': {
                         'title': _('Families ({num})').format(
-                            num=len(self.get_admin_event().families_by_id) or '-'
+                            num=len(event.families_by_id) or '-'
                         ),
                         'template': 'families/tab.html',
                     },
                     'admin-event-rotators-tab': {
                         'title': _('Rotators ({num})').format(
-                            num=len(self.get_admin_event().rotators_by_id) or '-'
+                            num=len(event.rotators_by_id) or '-'
                         ),
                         'template': 'rotators/tab.html',
                     },
                     'admin-event-timers-tab': {
                         'title': _('Timers ({num})').format(
-                            num=len(self.get_admin_event().timers_by_id) or '-'
+                            num=len(event.timers_by_id) or '-'
                         ),
                         'template': 'timers/tab.html',
                     },
                     'admin-event-display-controllers-tab': {
                         'title': _('Display controllers ({num})').format(
-                            num=len(self.get_admin_event().display_controllers_by_id)
-                            or '-'
+                            num=len(event.display_controllers_by_id) or '-'
                         ),
                         'template': 'display_controllers/tab.html',
                     },
