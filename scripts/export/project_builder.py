@@ -48,7 +48,7 @@ class ProjectBuilder(ABC):
         self.licences_dir = self.project_dir / 'LICENSES'
         self.tools_dir: Path = self.project_dir / 'tools'
         self.zip_file: Path = self.export_dir / f'{self.basename}.zip'
-        self.test_dir: Path = BASE_DIR / 'export-test'
+        self.test_dir: Path = BASE_DIR / 'export-test' / self.basename
         self.clean_project_on_exit: bool = clean_project_on_exit
 
     def run(self) -> bool:
@@ -82,6 +82,7 @@ class ProjectBuilder(ABC):
         self._delete_folder(self.build_dir)
         self._delete_file(self.spec_file)
         self._delete_folder(self.project_dir)
+        self._delete_file(self.zip_file)
         self.hook_post_clean_on_startup()
 
     @abstractmethod
@@ -97,6 +98,11 @@ class ProjectBuilder(ABC):
     def build_project(self) -> bool:
         logger.info('Creating project folder [%s]...', self.project_dir)
         self.project_dir.mkdir(parents=True, exist_ok=True)
+        # Important: build the EXE prior to copy any other data
+        # to the project folder or PyInstaller fails on Windows with the error:
+        # PermissionError: [WinError 5] Access refused
+        if not self._build_exe():
+            return False
         logger.info(
             'Adding data from folder [%s] to [%s]...', self.project_dir, self.data_dir
         )
@@ -110,8 +116,6 @@ class ProjectBuilder(ABC):
         custom_dir: Path = self.project_dir / 'custom'
         logger.info('Creating custom folder [%s]...', custom_dir)
         custom_dir.mkdir(exist_ok=True)
-        if not self._build_exe():
-            return False
         if not self._generate_license_files():
             return False
         if not self.hook_post_build_project():
@@ -651,16 +655,11 @@ class ProjectBuilder(ABC):
         return True
 
     def build_test(self) -> bool:
-        if not self.test_dir.is_dir():
-            logger.info('Creating test environment in [%s]...', self.test_dir)
-            self.test_dir.mkdir(parents=True)
-        else:
-            logger.info('Updating test environment in [%s]...', self.test_dir)
-            shutil.rmtree(
-                self.test_dir / '_internal',
-                onerror=shutil_delete_onerror,
-                ignore_errors=True,
-            )
+        if self.test_dir.exists():
+            logger.info('Deleting folder [%s]...', self.test_dir)
+            shutil.rmtree(self.test_dir, onerror=shutil_delete_onerror)
+        logger.info('Creating test environment in [%s]...', self.test_dir)
+        self.test_dir.mkdir(parents=True)
         with ZipFile(self.zip_file, 'r') as zip_file:
-            zip_file.extractall(self.zip_file)
+            zip_file.extractall(self.test_dir)
         return True

@@ -5,6 +5,7 @@ from pathlib import Path
 from common import SHARLY_CHESS_VERSION
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
+from common.tool_installer import BbpPairingsInstaller
 from scripts.export.project_builder import ProjectBuilder
 
 logger: Logger = get_logger()
@@ -39,90 +40,147 @@ class WinProjectBuilder(ProjectBuilder):
         return []
 
     def hook_post_build_project(self) -> bool:
-        if not self.sign_exe():
+        if not self._sign_files():
             return False
         if not self._build_chessevent_batch():
             return False
         return True
 
+    @staticmethod
+    def _compact_command_output(
+        output: str,
+    ) -> str:
+        return '\n'.join(
+            line for line in map(lambda s: s.rstrip(), output.split('\n')) if line
+        )
+
     def _signtool_command(
         self,
         params: list[str],
-    ) -> int:
-        # windows_tools.signtool has no sha1 parameter
+    ) -> tuple[int, str, str]:
+        """Run SignTool and return the result code, stdout and stderr as strings"""
+        # windows_tools.signtool has no sha1 parameter, needed to sign with
+        # a cloud certificate, so the module can not be used.
         # from windows_tools.signtool import SignTool
         # signer: SignTool = SignTool(authority_timestamp_url='http://time.certum.pl')
         # signer.sign(EXE, bitness=64)
+
+        # SignTool must run from its folder or the folder added to PATH
+        cwd = os.getcwd()
+        os.chdir(self.signtool_dir)
 
         import subprocess
 
         cmd: list[str] = [
             str(self.signtool_dir / 'signtool.exe'),
         ] + params
-        logger.info(f'Running {" ".join(cmd)}')
+        logger.info('Running command [%s]...', ' '.join(cmd))
         process = subprocess.run(cmd, capture_output=True, text=True)
-        for line in map(lambda s: s.rstrip(), process.stdout.split('\n')):
-            if line:
-                logger.info(line)
-        for line in map(lambda s: s.rstrip(), process.stderr.split('\n')):
-            if line:
-                logger.error(line)
-        return process.returncode
-
-    def _signtool_verify_exe(self) -> bool:
-        """Verify the exe, return True if correctly signed."""
-        # https://learn.microsoft.com/en-us/windows/win32/seccrypto/using-signtool-to-verify-a-file-signature
-        return (
-            self._signtool_command(
-                [
-                    'verify',
-                    '-pa',
-                    '-v',
-                    str(self.exe),
-                ]
-            )
-            == 0
-        )
-
-    def _signtool_sign_exe(self) -> bool:
-        """Sign the exe, return True if no error while signing."""
-        return (
-            self._signtool_command(
-                [
-                    'sign',
-                    '-sha1',
-                    str(SIGNTOOL_CERT_FINGERPRINT),
-                    '-tr',
-                    str(SIGNTOOL_TIMESTAMP_URL),
-                    '-td',
-                    'sha256',
-                    '-fd',
-                    'sha256',
-                    str(self.exe),
-                ]
-            )
-            != 0
-        )
-
-    def sign_exe(self) -> bool:
-        cwd = os.getcwd()
-        # SignTool must run from its folder or the folder added to PATH
-        os.chdir(self.signtool_dir)
-        if self._signtool_verify_exe():
-            logger.warning('Executable already signed.')
-            return False
-        logger.info('Signing file [%s]...', self.exe)
-        if not self._signtool_sign_exe():
-            logger.warning('Failed to sign the executable.')
-            return False
-        logger.info('Executable signed successfully.')
-        logger.info('Verifying the signature...')
-        if not self._signtool_verify_exe():
-            logger.warning('Verification failed.')
-            return False
-        logger.info('Executable signature successfully verified..')
+        logger.info('Command returned [%d].', process.returncode)
+        # Restore the orig working dir
         os.chdir(cwd)
+
+        return (
+            process.returncode,
+            self._compact_command_output(process.stdout),
+            self._compact_command_output(process.stderr),
+        )
+
+    def _signtool_verify_file(
+        self,
+        file: Path,
+        signed: bool,
+    ) -> bool:
+        """Verify if a file is signed or not signed, return True if as expected.
+        Cf https://learn.microsoft.com/en-us/windows/win32/seccrypto/using-signtool-to-verify-a-file-signature"""
+        logger.info(
+            'Verifying that file [%s] is %s...',
+            file,
+            'signed' if signed else 'not signed',
+        )
+        result, out, err = self._signtool_command(
+            [
+                'verify',
+                '-pa',
+                '-v',
+                str(file),
+            ],
+        )
+        correct: bool
+        if signed:
+            correct = result == 0
+        else:
+            correct = result != 0
+        if correct:
+            logger.info(out)
+            logger.info(
+                'File [%s] is signed.' if signed else 'File [%s] is not signed.', file
+            )
+        else:
+            logger.info(out)
+            logger.warning(err)
+            logger.error(
+                'File [%s] is not signed.'
+                if signed
+                else 'File [%s] is already signed.',
+                file,
+            )
+        return correct
+
+    def _signtool_sign_file(
+        self,
+        file: Path,
+    ) -> bool:
+        """Sign the exe, return True if no error while signing."""
+        logger.info('Signing file [%s]...', file)
+        result, out, err = self._signtool_command(
+            [
+                'sign',
+                '-sha1',
+                str(SIGNTOOL_CERT_FINGERPRINT),
+                '-tr',
+                str(SIGNTOOL_TIMESTAMP_URL),
+                '-td',
+                'sha256',
+                '-fd',
+                'sha256',
+                str(file),
+            ]
+        )
+        correct: bool = result == 0
+        if correct:
+            logger.info(out)
+            logger.info('File [%s] has been successfully signed.', file)
+        else:
+            logger.info(out)
+            logger.warning(err)
+            logger.error('Signing file [%s] failed.', file)
+        return correct
+
+    def _sign_file(
+        self,
+        file: Path,
+    ) -> bool:
+        # Verify that the file is not already signed
+        if not self._signtool_verify_file(file, signed=False):
+            return True
+        # Sign the file
+        if not self._signtool_sign_file(file):
+            return False
+        # Verify that it has been signed
+        if not self._signtool_verify_file(file, signed=True):
+            return False
         return True
+
+    def _sign_files(self) -> bool:
+        return all(
+            self._sign_file(file)
+            for file in [
+                self.exe,
+                BbpPairingsInstaller().executable_path,
+                # Note(pascalaubry) Papi Converter not signed
+            ]
+        )
 
     def _build_chessevent_batch(self) -> bool:
         target_file = self.tools_dir / 'chessevent.bat'
