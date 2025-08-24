@@ -3307,6 +3307,9 @@ msgstr "Numéro de téléphone :"
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr "Téléphone : %(phone)s (cliquer pour copier dans le presse-papier)."
 
+msgid "Player"
+msgstr "Joueur·euse"
+
 msgid "Player / Elo"
 msgstr "Joueur·euse / Elo"
 
@@ -4076,6 +4079,9 @@ msgstr "Recherche"
 #, python-format
 msgid "Search by: %(fields)s"
 msgstr "Rechercher par : %(fields)s"
+
+msgid "Search for player"
+msgstr "Rechercher un·e joueur·euse"
 
 msgid "Searching…"
 msgstr "Recherche en cours…"
@@ -5702,3 +5708,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+

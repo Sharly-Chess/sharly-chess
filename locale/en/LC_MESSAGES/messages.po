@@ -3310,6 +3310,9 @@ msgstr ""
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr ""
 
+msgid "Player"
+msgstr ""
+
 msgid "Player / Elo"
 msgstr ""
 
@@ -4078,6 +4081,9 @@ msgstr ""
 
 #, python-format
 msgid "Search by: %(fields)s"
+msgstr ""
+
+msgid "Search for player"
 msgstr ""
 
 msgid "Searching…"
@@ -5705,3 +5711,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
