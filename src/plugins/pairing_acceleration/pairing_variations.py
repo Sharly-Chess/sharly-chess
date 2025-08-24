@@ -199,6 +199,6 @@ class BakuSwissVariation(AccelerationSwissVariation):
                 return 0
         else:
             if rating_group == RatingGroup.A:
-                return Result.GAIN.points(tournament.point_values)
+                return Result.WIN.points(tournament.point_values)
             else:
                 return 0
