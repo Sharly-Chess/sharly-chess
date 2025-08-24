@@ -193,26 +193,38 @@
                     {{ _('Export') }}</span>
                     <i class="ps-3 bi bi-caret-right-fill"></i>
                 </button>
+
                 <ul class="dropdown-menu">
                     {% for exporter in tournament_exporters %}
                         {% set is_unavailable_message = exporter.is_unavailable_message(tournament)  %}
-                        <li
-                            {% if is_unavailable_message %}
+                        {% if is_unavailable_message %}
+                            <li
                                 class="dropdown-item text-start text-secondary"
                                 {{ macros.tooltip_attributes('warning', is_unavailable_message, 'right') }}
-                            {% else %}
+                            >
+                                {{ exporter.name }}
+                            </li>
+                        {% else %}
+                            <li
                                 class="dropdown-item text-start cursor-pointer"
-                                onclick="window.open('{{ url_for(
-                                    'admin-tournament-export',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=tournament.id,
-                                    exporter_id=exporter.id
-                                ) }}', '_blank')"
+                                onclick="$('#export-form-{{ exporter.id }}').submit()"
                                {{ macros.tooltip_attributes('info', exporter.tooltip, 'right') }}
-                            {% endif %}
-                        >
-                            {{ exporter.name }}
-                        </li>
+                            >
+                                <form
+                                    id="export-form-{{ exporter.id }}"
+                                    action="{{ url_for(
+                                        'admin-tournament-export',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        tournament_id=tournament.id,
+                                        exporter_id=exporter.id
+                                    ) }}"
+                                    target="_blank"
+                                    hx-indicator="#please-wait"
+                                >
+                                    {{ exporter.name }}
+                                </form>
+                            </li>
+                        {% endif %}
                     {% endfor %}
                 </ul>
             </li>
