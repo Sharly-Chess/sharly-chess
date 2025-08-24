@@ -1,14 +1,18 @@
+import csv
 from collections.abc import Callable
 from datetime import date
 from logging import Logger
 import math
+from tempfile import NamedTemporaryFile
 from typing import Annotated, Any, Iterable
+from pyexcel_ods3 import save_data
+import xlsxwriter
 
-from litestar import get, patch, delete, post
+from litestar import get, patch, delete, post, Response
 from litestar.plugins.htmx import HTMXRequest, ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.response import Template, Redirect
+from litestar.response import Template, Redirect, File
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 from litestar.channels import ChannelsPlugin
@@ -35,7 +39,7 @@ from utils.enum import (
 )
 from plugins.ffe.utils import PlayerFFELicence
 from plugins.manager import plugin_manager
-from plugins.utils import ExtraAdminColumn
+from plugins.utils import ExtraAdminColumn, ExtraColumn
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -1931,3 +1935,237 @@ class PlayerAdminController(BaseEventAdminController):
                 'connection_error': connection_error,
             },
         )
+
+    @staticmethod
+    def download_players_as_vcf(
+        event_uniq_id: str,
+        players: list[Player],
+    ) -> Response[str]:
+        """Returns a file with all the vCards of the players."""
+        data: str = ''
+        for player in players:
+            if not (player.mail or player.phone):
+                continue
+            data += 'BEGIN:VCARD\nVERSION:3.0\n'
+            if player.first_name:
+                data += (
+                    f'N:{player.last_name.title()};{player.first_name}\n'
+                    f'FN:{player.first_name} {player.last_name.title()}\n'
+                )
+            else:
+                data += f'N:{player.last_name.title()}\nFN:{player.last_name.title()}\n'
+            data += (
+                f'ORG:{player.club}\n'
+                f'item1.TEL:{player.phone}\n'
+                f'item1.X-ABLabel:{_("Personal")}\n'
+                f'item2.EMAIL;type=INTERNET:{player.mail}\n'
+                f'item2.X-ABLabel:{_("Personal")}\n'
+                f'CATEGORIES:{_("Chess")}\n'
+                'END:VCARD\n\n'
+            )
+        return Response(
+            content=data,
+            media_type='text/x-vcard',
+            headers={
+                'Content-Disposition': f'attachment;{event_uniq_id}.vcf',
+            },
+        )
+
+    DATASHEET_COLUMNS = [
+        'last_name',
+        'first_name',
+        'yob',
+        'mail',
+        'phone',
+        'gender',
+        'fide_id',
+        'tournament',
+        'federation',
+        'club',
+        'owed',
+        'paid',
+        'comment',
+        'St',
+        'S',
+        'Ra',
+        'R',
+        'Bl',
+        'B',
+    ]
+
+    @classmethod
+    def get_players_datasheet_extra_columns(cls) -> dict[int, list[ExtraColumn]]:
+        """Returns the extra data columns added by the plugins"""
+        per_plugin_columns: list[Iterable[ExtraColumn]] = (
+            plugin_manager.hook.get_extra_players_datasheet_columns()
+        )
+        extra_columns: dict[int, list[ExtraColumn]] = {}
+        for plugin_columns in per_plugin_columns:
+            for extra_column in plugin_columns:
+                try:
+                    index = cls.DATASHEET_COLUMNS.index(extra_column.at)
+                    c = extra_columns.setdefault(index, [])
+                    c.append(extra_column)
+                except ValueError:
+                    pass
+
+        # The dict has keys sorted from high to low so that we can insert them in that
+        # order without affecting lower indexes
+        return {key: extra_columns[key] for key in reversed(sorted(extra_columns))}
+
+    @classmethod
+    def get_players_datasheet_columns(cls) -> list[str]:
+        """Returns the names of the columns used in the datasheets that can be downloaded."""
+
+        header_columns = cls.DATASHEET_COLUMNS[:]
+
+        # Add plugin columns
+        extra_columns = PlayerAdminController.get_players_datasheet_extra_columns()
+        for index, columns in extra_columns.items():
+            header_columns[index:index] = [column.title for column in columns]
+
+        return header_columns
+
+    @classmethod
+    def get_players_datasheet_data(
+        cls,
+        players: list[Player],
+    ) -> list[list[str | int | float]]:
+        """Returns the data of the datasheets that can be downloaded."""
+
+        extra_columns = cls.get_players_datasheet_extra_columns()
+
+        def augment_row(row, player):
+            for index, columns in extra_columns.items():
+                row[index:index] = [column.value(player) for column in columns]
+            return row
+
+        rows = [
+            augment_row(
+                [
+                    player.last_name,
+                    player.first_name,
+                    player.year_of_birth,
+                    player.mail or '',
+                    player.phone or '',
+                    player.gender.short_name,
+                    player.fide_id or '',
+                    player.tournament.uniq_id if player.tournament else '',
+                    player.federation.name,
+                    player.club.name if player.club else '',
+                    player.owed,
+                    player.paid,
+                    player.comment,
+                    player.get_rating(TournamentRating.STANDARD).value,
+                    player.get_rating(TournamentRating.STANDARD).type.short_name,
+                    player.get_rating(TournamentRating.RAPID).value,
+                    player.get_rating(TournamentRating.RAPID).type.short_name,
+                    player.get_rating(TournamentRating.BLITZ).value,
+                    player.get_rating(TournamentRating.BLITZ).type.short_name,
+                ],
+                player,
+            )
+            for player in players
+        ]
+        return rows
+
+    @classmethod
+    def download_players_as_xlsx(
+        cls,
+        event_uniq_id: str,
+        players: list[Player],
+    ) -> File:
+        """Returns a file with all the information of the players in an XLSX format."""
+        temp_file = NamedTemporaryFile(delete=False, mode='wb', suffix='.xlsx')
+        workbook = xlsxwriter.Workbook(temp_file)
+        worksheet = workbook.add_worksheet()
+        columns = cls.get_players_datasheet_columns()
+        data = cls.get_players_datasheet_data(players)
+        worksheet.add_table(
+            0,
+            0,
+            len(data),
+            len(columns) - 1,
+            options={
+                'columns': [{'header': column} for column in columns],
+                'data': data,
+            },
+        )
+        worksheet.autofit()
+        workbook.close()
+        return File(path=temp_file.name, filename=f'{event_uniq_id}.xlsx')
+
+    @classmethod
+    def download_players_as_csv(
+        cls,
+        event_uniq_id: str,
+        players: list[Player],
+    ) -> File:
+        """Returns a file with all the information of the players in a CSV format (comma-separated)."""
+        temp_file = NamedTemporaryFile(
+            delete=False, mode='w', suffix='.csv', newline=''
+        )
+        writer = csv.writer(temp_file)
+        writer.writerow(cls.get_players_datasheet_columns())
+        writer.writerows(cls.get_players_datasheet_data(players))
+        return File(path=temp_file.name, filename=f'{event_uniq_id}.csv')
+
+    @classmethod
+    def download_players_as_ods(
+        cls,
+        event_uniq_id: str,
+        players: list[Player],
+    ) -> File:
+        """Returns a file with all the information of the players in an ODS format."""
+        temp_file = NamedTemporaryFile(delete=False, mode='w+b', suffix='.ods')
+        save_data(
+            temp_file,
+            [cls.get_players_datasheet_columns()]
+            + cls.get_players_datasheet_data(players),
+        )
+        return File(path=temp_file.name, filename=f'{event_uniq_id}.ods')
+
+    @get(
+        path='/admin/download-event-players/{event_uniq_id:str}',
+        name='admin-download-event-players',
+    )
+    async def htmx_admin_event_download_players(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        download_format: str | None = None,
+        player_ids: list[int] | None = None,
+    ) -> ClientRedirect | Response[str] | File:
+        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
+            request, event_uniq_id=event_uniq_id, data=None
+        )
+        if web_context.error:
+            return web_context.error
+        if web_context.admin_event is None:
+            raise RuntimeError('admin_event not defined')
+        players: list[Player] = [
+            web_context.admin_event.players_by_id[player_id]
+            for player_id in player_ids or []
+            if player_id
+        ]
+        if not players:
+            players = web_context.admin_event.players_sorted_by_name
+        match download_format:
+            case 'vcf':
+                return self.download_players_as_vcf(
+                    web_context.admin_event.uniq_id, players
+                )
+            case 'csv':
+                return self.download_players_as_csv(
+                    web_context.admin_event.uniq_id, players
+                )
+            case 'xlsx':
+                return self.download_players_as_xlsx(
+                    web_context.admin_event.uniq_id, players
+                )
+            case 'ods':
+                return self.download_players_as_ods(
+                    web_context.admin_event.uniq_id, players
+                )
+            case _:
+                raise ValueError(f'download_format={download_format}')
