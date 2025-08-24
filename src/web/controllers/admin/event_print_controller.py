@@ -21,6 +21,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
 )
+from web.session import SessionHandler
 
 
 class EventPrintController(BaseEventAdminController):
@@ -92,6 +93,15 @@ class EventPrintController(BaseEventAdminController):
         tournament_id: int | None = None,
     ) -> Template | ClientRedirect:
         web_context = BaseEventAdminWebContext(request, event_uniq_id)
+        if (
+            last_tournament := SessionHandler.get_session_admin_print_last_tournament(
+                request
+            )
+        ) is not None:
+            event_uniq_id, tid = last_tournament
+            if event_uniq_id == web_context.get_admin_event().uniq_id:
+                tournament_id = tid
+
         template_context = self._print_modal_context(
             web_context, tournament_id=tournament_id
         )
@@ -136,6 +146,11 @@ class EventPrintController(BaseEventAdminController):
             )
         except (ValueError, KeyError):
             errors[field] = _('Please choose the tournament.')
+
+        if tournament:
+            SessionHandler.set_session_admin_print_last_tournament(
+                request, web_context.get_admin_event().uniq_id, tournament.id
+            )
 
         document_type: type[PrintDocument] | None = None
         field = 'document'
