@@ -133,7 +133,7 @@
                 >
                     <button
                         class="dropdown-item text-nowrap"
-                        hx-get="{{ url_for('admin-print-modal', event_uniq_id=admin_event.uniq_id) }}?tournament_id={{ tournament.id }}"
+                        hx-get="{{ url_for('admin-print-modal', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
                         preload
