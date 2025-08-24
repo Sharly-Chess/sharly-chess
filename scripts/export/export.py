@@ -70,8 +70,10 @@ def main():
     if not InstallationChecker.check():
         sys.exit(1)
     if not update_i18n_files(generate_doc=False):
+        logger.error('You must update the translations.')
         sys.exit(1)
     if not get_project_builder().run():
+        logger.error('Export failed.')
         sys.exit(1)
 
 
