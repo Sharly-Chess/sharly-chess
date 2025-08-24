@@ -593,6 +593,9 @@ class TournamentAdminController(BaseEventAdminController):
                             request
                         )
                     ),
+                    'admin_tournament': None
+                    if action == 'clone'
+                    else web_context.admin_tournament,
                     'modal': modal,
                     'action': action,
                     'data': data,
