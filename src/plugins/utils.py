@@ -220,6 +220,11 @@ class PluginCoreMapper[PluginType: Hashable, CoreType: SupportsEquals](ABC):
         Every possible value should be represented."""
 
     @classmethod
+    def core_objects(cls) -> list[CoreType]:
+        """The lists of possible core values."""
+        return list(cls._core_object_by_plugin_value().values())
+
+    @classmethod
     def get_core_object(cls, plugin_value: PluginType) -> CoreType:
         """Retrieve the core object associated to the plugin value."""
         return cls._core_object_by_plugin_value()[plugin_value]
