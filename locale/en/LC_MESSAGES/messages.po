@@ -2871,9 +2871,6 @@ msgstr ""
 msgid "No players"
 msgstr ""
 
-msgid "No players"
-msgstr ""
-
 msgid "No players matching the criteria."
 msgstr ""
 

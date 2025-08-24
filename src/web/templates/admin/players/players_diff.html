@@ -2,7 +2,12 @@
     <li
         {% if data_source.is_available %}
             class="dropdown-item text-start cursor-pointer"
-            hx-get="{{ url_for('admin-event-players-diff-modal', event_uniq_id=admin_event.uniq_id, data_source_id=data_source.id) }}"
+            hx-get="{{
+                url_for(
+                    'admin-event-players-diff-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    data_source_id=data_source.id
+                    ) }}"
             {% if tournament %}
                 hx-vals='{"tournament_id": "{{ tournament.id }}"}'
             {% endif %}

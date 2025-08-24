@@ -168,7 +168,12 @@
                         {% for importer in tournament_importers %}
                             <li
                                 class="dropdown-item text-start cursor-pointer"
-                                hx-get="{{ url_for('admin-tournament-import-modal', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id, importer_id=importer.id) }}"
+                                hx-get="{{ url_for(
+                                    'admin-tournament-import-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=tournament.id,
+                                    importer_id=importer.id
+                                ) }}"
                                 hx-target="body"
                                 hx-indicator="#please-wait"
                                 preload
