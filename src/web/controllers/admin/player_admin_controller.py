@@ -342,9 +342,6 @@ class PlayerAdminController(BaseEventAdminController):
                     filter_origin, f'{player.federation} {player.club}'
                 )
             )
-        template_context: dict[str, Any] = cls._get_admin_event_render_context(
-            web_context
-        )
         per_plugin_context = plugin_manager.hook.get_player_admin_template_context(
             web_context=web_context
         )
@@ -355,7 +352,7 @@ class PlayerAdminController(BaseEventAdminController):
         }
         for plugin_filters in plugin_manager.hook.player_filters(
             web_context=web_context,
-            template_context=template_context | plugin_context,
+            template_context=web_context.template_context | plugin_context,
         ):
             filters += plugin_filters
         return [
@@ -473,9 +470,6 @@ class PlayerAdminController(BaseEventAdminController):
             return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
-        template_context: dict[str, Any] = cls._get_admin_event_render_context(
-            web_context
-        )
         admin_event: Event = web_context.admin_event
         session_event_uniq_id = SessionHandler.get_session_admin_player_event(request)
         search_results_id = SessionHandler.get_session_admin_players_search_results_id(
@@ -543,77 +537,81 @@ class PlayerAdminController(BaseEventAdminController):
             web_context=web_context
         )
 
-        template_context |= {
-            'admin_event_tab': 'admin-event-players-tab',
-            'admin_players': players,
-            'admin_filtered_player_count': len(search_results),
-            'page': page or 1,
-            'pages': pages,
-            'nav_tab_title': _('Players ({num})').format(
-                num=len(admin_event.players_by_id)
-            ),
-            'admin_players_columns': [
-                'name',
-                'check_in',
-                'rating',
-                'federation',
-                'club',
-                'yob',
-                'category',
-                'mail',
-                'phone',
-                'gender',
-                'fixed',
-                'fide',
-                'owed_paid',
-                'tournament',
-                'comment',
-                'record',
-            ],
-            'admin_players_sort': SessionHandler.get_session_admin_players_sort(
-                web_context.request
-            ),
-            'admin_players_federations': players_federations,
-            'admin_players_clubs': players_clubs,
-            'admin_players_yobs': players_yobs,
-            'admin_players_categories': players_categories,
-            'admin_players_genders': players_genders,
-            'admin_players_check_ins': players_check_ins,
-            'admin_players_filter_columns': SessionHandler.get_session_admin_players_filter_columns(
-                web_context.request
-            ),
-            'admin_players_filter_federations': SessionHandler.get_session_admin_players_filter_federations(
-                web_context.request
-            ),
-            'admin_players_filter_clubs': SessionHandler.get_session_admin_players_filter_clubs(
-                web_context.request
-            ),
-            'admin_players_filter_clubs_search': SessionHandler.get_session_admin_players_filter_clubs_search(
-                web_context.request
-            ),
-            'admin_players_filter_genders': SessionHandler.get_session_admin_players_filter_genders(
-                web_context.request
-            ),
-            'admin_players_filter_check_ins': SessionHandler.get_session_admin_players_filter_check_ins(
-                web_context.request
-            ),
-            'admin_players_filter_tournaments': SessionHandler.get_session_admin_players_filter_tournaments(
-                web_context.request
-            ),
-            'admin_players_filter_categories': SessionHandler.get_session_admin_players_filter_categories(
-                web_context.request
-            ),
-            'admin_players_filter_name': SessionHandler.get_session_admin_players_filter_name(
-                web_context.request
-            ),
-            'admin_players_extra_columns': extra_columns,
-            'data_sources': DataSourceManager.objects(),
-            'player_addable_tournaments': admin_event.player_addable_tournaments,
-        } | {
-            key: value
-            for context in per_plugin_context
-            for key, value in context.items()
-        }
+        template_context = (
+            web_context.template_context
+            | {
+                'admin_event_tab': 'admin-event-players-tab',
+                'admin_players': players,
+                'admin_filtered_player_count': len(search_results),
+                'page': page or 1,
+                'pages': pages,
+                'nav_tab_title': _('Players ({num})').format(
+                    num=len(admin_event.players_by_id)
+                ),
+                'admin_players_columns': [
+                    'name',
+                    'check_in',
+                    'rating',
+                    'federation',
+                    'club',
+                    'yob',
+                    'category',
+                    'mail',
+                    'phone',
+                    'gender',
+                    'fixed',
+                    'fide',
+                    'owed_paid',
+                    'tournament',
+                    'comment',
+                    'record',
+                ],
+                'admin_players_sort': SessionHandler.get_session_admin_players_sort(
+                    web_context.request
+                ),
+                'admin_players_federations': players_federations,
+                'admin_players_clubs': players_clubs,
+                'admin_players_yobs': players_yobs,
+                'admin_players_categories': players_categories,
+                'admin_players_genders': players_genders,
+                'admin_players_check_ins': players_check_ins,
+                'admin_players_filter_columns': SessionHandler.get_session_admin_players_filter_columns(
+                    web_context.request
+                ),
+                'admin_players_filter_federations': SessionHandler.get_session_admin_players_filter_federations(
+                    web_context.request
+                ),
+                'admin_players_filter_clubs': SessionHandler.get_session_admin_players_filter_clubs(
+                    web_context.request
+                ),
+                'admin_players_filter_clubs_search': SessionHandler.get_session_admin_players_filter_clubs_search(
+                    web_context.request
+                ),
+                'admin_players_filter_genders': SessionHandler.get_session_admin_players_filter_genders(
+                    web_context.request
+                ),
+                'admin_players_filter_check_ins': SessionHandler.get_session_admin_players_filter_check_ins(
+                    web_context.request
+                ),
+                'admin_players_filter_tournaments': SessionHandler.get_session_admin_players_filter_tournaments(
+                    web_context.request
+                ),
+                'admin_players_filter_categories': SessionHandler.get_session_admin_players_filter_categories(
+                    web_context.request
+                ),
+                'admin_players_filter_name': SessionHandler.get_session_admin_players_filter_name(
+                    web_context.request
+                ),
+                'admin_players_extra_columns': extra_columns,
+                'data_sources': DataSourceManager.objects(),
+                'player_addable_tournaments': admin_event.player_addable_tournaments,
+            }
+            | {
+                key: value
+                for context in per_plugin_context
+                for key, value in context.items()
+            }
+        )
 
         match modal:
             case None:
@@ -1810,9 +1808,6 @@ class PlayerAdminController(BaseEventAdminController):
         player_matches: (
             list[PlayerComparator] | None
         ) = await data_source.get_player_matches(players, field_ids, diff_only=False)
-        template_context: dict[str, Any] = self._get_admin_event_render_context(
-            web_context
-        )
         if player_matches is None:
             Message.error(
                 request,
@@ -1833,7 +1828,7 @@ class PlayerAdminController(BaseEventAdminController):
                 c = extra_columns.setdefault(extra_column.at, [])
                 c.append(extra_column)
 
-        template_context |= {
+        template_context = web_context.template_context | {
             'modal': 'players_diff',
             'data_source': data_source,
             'field_ids': field_ids,
@@ -1927,10 +1922,9 @@ class PlayerAdminController(BaseEventAdminController):
             SessionHandler.set_session_admin_players_active_data_source(
                 request, data_source.id
             )
-        template_context = self._get_admin_event_render_context(web_context)
         return HTMXTemplate(
             template_name='admin/players/search_results.html',
-            context=template_context
+            context=web_context.template_context
             | {
                 'search_results': players,
                 'data_source': data_source,

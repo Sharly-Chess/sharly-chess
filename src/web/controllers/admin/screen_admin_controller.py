@@ -449,9 +449,7 @@ class ScreenAdminController(BaseEventAdminController):
             return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
-        template_context: dict[str, Any] = cls._get_admin_event_render_context(
-            web_context
-        ) | {
+        template_context = web_context.template_context | {
             'admin_event_tab': 'admin-event-screens-tab',
             'admin_screens_show_family_screens': SessionHandler.get_session_admin_screens_show_family_screens(
                 web_context.request

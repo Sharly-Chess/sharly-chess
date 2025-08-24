@@ -30,6 +30,7 @@ class BaseEventAdminWebContext(AdminWebContext):
         ] = None,
     ):
         super().__init__(request, data=data, admin_tab=None)
+        self.request: HTMXRequest = request
         self.admin_event: Event | None = None
         if self.error:
             return
@@ -51,29 +52,6 @@ class BaseEventAdminWebContext(AdminWebContext):
 
     @property
     def template_context(self) -> dict[str, Any]:
-        return super().template_context | {
-            'admin_event': self.admin_event,
-        }
-
-    def get_tournament_options(self) -> dict[str, str]:
-        event = self.get_admin_event()
-        return {
-            self.value_to_form_data(
-                tournament.id
-            ): f'{tournament.name} ({tournament.uniq_id})'
-            for tournament in event.tournaments_sorted_by_uniq_id
-        }
-
-
-class BaseEventAdminController(BaseAdminController):
-    @classmethod
-    def _get_admin_event_render_context(
-        cls,
-        web_context: BaseEventAdminWebContext,
-    ) -> dict[str, Any]:
-        if web_context.admin_event is None:
-            raise RuntimeError('admin_event not defined')
-        admin_event: Event = web_context.admin_event
         logging_levels: dict[int, dict[str, str]] = {
             logging.DEBUG: {
                 'name': 'DEBUG',
@@ -109,14 +87,14 @@ class BaseEventAdminController(BaseAdminController):
             },
             'admin-event-tournaments-tab': {
                 'title': _('Tournaments ({num})').format(
-                    num=len(admin_event.tournaments_by_id) or '-'
+                    num=len(self.get_admin_event().tournaments_by_id) or '-'
                 ),
                 'template': 'tournaments/tab.html',
                 'icon_class': 'bi-diagram-3-fill',
             },
             'admin-event-players-tab': {
                 'title': _('Players ({num})').format(
-                    num=admin_event.player_count or '-'
+                    num=self.get_admin_event().player_count or '-'
                 ),
                 'template': 'players/tab.html',
                 'icon_class': 'bi-people-fill',
@@ -137,31 +115,32 @@ class BaseEventAdminController(BaseAdminController):
                 'submenu': {
                     'admin-event-screens-tab': {
                         'title': _('Single Screens ({num})').format(
-                            num=len(admin_event.basic_screens_by_id) or '-'
+                            num=len(self.get_admin_event().basic_screens_by_id) or '-'
                         ),
                         'template': 'screens/tab.html',
                     },
                     'admin-event-families-tab': {
                         'title': _('Families ({num})').format(
-                            num=len(admin_event.families_by_id) or '-'
+                            num=len(self.get_admin_event().families_by_id) or '-'
                         ),
                         'template': 'families/tab.html',
                     },
                     'admin-event-rotators-tab': {
                         'title': _('Rotators ({num})').format(
-                            num=len(admin_event.rotators_by_id) or '-'
+                            num=len(self.get_admin_event().rotators_by_id) or '-'
                         ),
                         'template': 'rotators/tab.html',
                     },
                     'admin-event-timers-tab': {
                         'title': _('Timers ({num})').format(
-                            num=len(admin_event.timers_by_id) or '-'
+                            num=len(self.get_admin_event().timers_by_id) or '-'
                         ),
                         'template': 'timers/tab.html',
                     },
                     'admin-event-display-controllers-tab': {
                         'title': _('Display controllers ({num})').format(
-                            num=len(admin_event.display_controllers_by_id) or '-'
+                            num=len(self.get_admin_event().display_controllers_by_id)
+                            or '-'
                         ),
                         'template': 'display_controllers/tab.html',
                     },
@@ -169,14 +148,24 @@ class BaseEventAdminController(BaseAdminController):
             },
         }
 
-        template_context: dict[str, Any] = web_context.template_context | {
-            'messages': Message.messages(web_context.request),
+        return super().template_context | {
+            'admin_event': self.admin_event,
+            'messages': Message.messages(self.request),
             'logging_levels': logging_levels,
             'nav_tabs': nav_tabs,
         }
 
-        return template_context
+    def get_tournament_options(self) -> dict[str, str]:
+        event = self.get_admin_event()
+        return {
+            self.value_to_form_data(
+                tournament.id
+            ): f'{tournament.name} ({tournament.uniq_id})'
+            for tournament in event.tournaments_sorted_by_uniq_id
+        }
 
+
+class BaseEventAdminController(BaseAdminController):
     @classmethod
     def _admin_event_render(
         cls,

@@ -1,6 +1,6 @@
 import csv
 from tempfile import NamedTemporaryFile
-from typing import Annotated, Any, Iterable
+from typing import Annotated, Iterable
 
 import xlsxwriter
 
@@ -68,12 +68,9 @@ class EventAdminController(BaseEventAdminController):
             return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
-        template_context: dict[str, Any] = cls._get_admin_event_render_context(
-            web_context
-        )
 
         plugin_event_info_rows = plugin_manager.hook.get_event_info_rows_template()
-        template_context |= {
+        template_context = web_context.template_context | {
             'admin_event_tab': 'admin-event-config-tab',
             'ffe_utils': FFEUtils,
             'plugin_event_info_rows': plugin_event_info_rows,
