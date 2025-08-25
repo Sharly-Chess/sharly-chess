@@ -5,10 +5,6 @@ from pathlib import Path
 from logging import Logger
 from packaging.version import Version, InvalidVersion
 
-from scripts.export.linux.linux_project_builder import LinuxProjectBuilder
-from scripts.export.macos.mac_project_builder import MacProjectBuilder
-from scripts.export.windows.win_project_builder import WinProjectBuilder
-
 sys.path.extend(
     map(
         str,
@@ -20,7 +16,6 @@ sys.path.extend(
     )
 )
 
-from scripts.export.project_builder import ProjectBuilder
 from common.i18n import update_i18n_files
 
 from common import enable_experimental_features
@@ -30,6 +25,11 @@ from common.logger import get_logger
 from common.installation_checker import (
     InstallationChecker,
 )
+
+from .project_builder import ProjectBuilder
+from .linux.linux_project_builder import LinuxProjectBuilder
+from .macos.mac_project_builder import MacProjectBuilder
+from .windows.win_project_builder import WinProjectBuilder
 
 # Enable experimental features to force the installation of the experimental tools and libs before exporting
 enable_experimental_features(True)
