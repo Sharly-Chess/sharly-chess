@@ -27,9 +27,16 @@ jobs:
         id: step1
         run: |
           echo "runner=${{ github.actor }}-sharly-chess-windows-export" >> $GITHUB_OUTPUT
+  setup-windows-runner-test:
+    needs: [setup-windows-runner]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output runner variable
+        run: |
+          echo ${{ needs.setup-windows-runner.outputs.runner }}
   export-sharly-chess-windows:
 #    needs: tests
-    needs: [setup-windows-runner]
+    needs: [setup-windows-runner, setup-windows-runner-test]
     runs-on: ${{ needs.setup-windows-runner.outputs.runner }}
     steps:
       # Get the current date to set the title of the release
