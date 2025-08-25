@@ -36,7 +36,7 @@ jobs:
           # https://github.com/actions/setup-python/issues/969
           python-version: 3.12
       - name: Install dependencies
-        shell: cmd  # pwsh is not found on Windows self-hosted runners
+        shell: cmd  # pwsh is not found on Windows self-hosted runners (https://github.com/actions/runner/issues/3415)
         run: |
           pip install -e .[export]
       - name: Generate i18n files
