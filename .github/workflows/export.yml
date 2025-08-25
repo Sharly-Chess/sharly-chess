@@ -23,8 +23,8 @@ jobs:
         include:
           - os: windows-latest
             platform: windows
-#          - os: macos-latest
-#            platform: macos
+          - os: macos-latest
+            platform: macos
     runs-on: ${{ matrix.os }}
     steps:
       # Get the current date to set the title of the release
