@@ -97,7 +97,6 @@ jobs:
         run: |
           python scripts/i18n/i18n_update.py
       - name: Generate FFE SQL credentials
-        if: matrix.platform == 'macos'
         shell: bash
         env:
           FFE_HOST: ${{ secrets.FFE_HOSTNAME }}
