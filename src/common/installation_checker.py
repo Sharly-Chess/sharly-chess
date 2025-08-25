@@ -20,12 +20,12 @@ class InstallationChecker:
             SharlyChessConfig.bootstrap_version,
             'bootstrap',
             'bootstrap-{version}-dist',
-            [
+            {
                 'js/bootstrap.bundle.min.js',
                 'js/bootstrap.bundle.min.js.map',
                 'css/bootstrap.min.css',
                 'css/bootstrap.min.css.map',
-            ],
+            },
             'https://github.com/twbs/bootstrap/releases/download/v{version}/bootstrap-{version}-dist.zip',
             'bootstrap-{version}-dist.zip',
             licence_type='MIT',
@@ -35,11 +35,11 @@ class InstallationChecker:
             SharlyChessConfig.bootstrap_icons_version,
             'bootstrap-icons',
             'bootstrap-icons-{version}',
-            [
+            {
                 'font/bootstrap-icons.min.css',
                 'font/fonts/bootstrap-icons.woff',
                 'font/fonts/bootstrap-icons.woff2',
-            ],
+            },
             'https://github.com/twbs/icons/releases/download/v{version}/bootstrap-icons-{version}.zip',
             'bootstrap-icons-{version}.zip',
             licence_type='MIT',
@@ -49,9 +49,9 @@ class InstallationChecker:
             SharlyChessConfig.sortable_version,
             'Sortable',
             'Sortable-{version}',
-            [
+            {
                 'Sortable.min.js',
-            ],
+            },
             'https://github.com/SortableJS/Sortable/archive/refs/tags/{version}.zip',
             'Sortable-{version}.zip',
             licence_type='MIT',
@@ -61,13 +61,13 @@ class InstallationChecker:
             SharlyChessConfig.jstree_version,
             'jstree',
             'jstree-{version}',
-            [
+            {
                 'dist/jstree.min.js',
                 'dist/themes/default-dark/style.min.css',
                 'dist/themes/default-dark/32px.png',
                 'dist/themes/default-dark/40px.png',
                 'dist/themes/default-dark/throbber.gif',
-            ],
+            },
             'https://github.com/vakata/jstree/archive/refs/tags/{version}.zip',
             'jstree-{version}.zip',
             licence_type='MIT',
@@ -77,9 +77,9 @@ class InstallationChecker:
             SharlyChessConfig.morphdom_version,
             'morphdom',
             'morphdom-{version}',
-            [
+            {
                 'dist/morphdom-umd.min.js',
-            ],
+            },
             'https://github.com/patrick-steele-idem/morphdom/archive/refs/tags/v{version}.zip',
             'morphdom-{version}.zip',
             licence_type='MIT',
@@ -89,10 +89,10 @@ class InstallationChecker:
             SharlyChessConfig.select2_version,
             'select2',
             'select2-{version}',
-            [
+            {
                 'dist/js/select2.full.min.js',
                 'dist/css/select2.min.css',
-            ],
+            },
             'https://github.com/select2/select2/archive/refs/tags/{version}.zip',
             'select2-{version}.zip',
             licence_type='MIT',

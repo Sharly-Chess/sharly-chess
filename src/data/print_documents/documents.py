@@ -368,6 +368,7 @@ class BoardPrintDocument(PrintDocument, ABC):
         return {
             'show_result': self.show_results,
             'boards': self.boards,
+            'selected_round': self.at_round,
         }
 
     @property
