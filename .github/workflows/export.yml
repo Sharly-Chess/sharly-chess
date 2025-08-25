@@ -17,27 +17,30 @@ jobs:
 #  tests:
 #    uses: ./.github/workflows/full_tests.yml
   setup-windows-runner:
-    # This job outputs the runner to use for the next job
+    # This job outputs the label of the runner to use for the next job,
+    # where <id> if the GitHub ID of the user that fired the action:
+    # <id>-sharly-chess-windows-export
     # Details on https://stackoverflow.com/questions/71961921/specify-runner-to-be-used-depending-on-condition-in-a-github-actions-workflow
     runs-on: ubuntu-latest
     outputs:
-      runner: ${{ steps.step1.outputs.runner }}
+      runner: ${{ steps.output-runner-label.outputs.runner_label }}
     steps:
-      - name: Get Windows runner
-        id: step1
+      - name: Get Windows runner label
+        id: output-runner-label
         run: |
-          echo "runner=${{ github.actor }}-sharly-chess-windows-export" >> $GITHUB_OUTPUT
-  setup-windows-runner-test:
+          echo "runner_label=${{ github.actor }}-sharly-chess-windows-export" >> $GITHUB_OUTPUT
+  setup-windows-runner-message:
     needs: [setup-windows-runner]
     runs-on: ubuntu-latest
     steps:
       - name: Output runner variable
         run: |
-          echo ${{ needs.setup-windows-runner.outputs.runner }}
+          echo "Job export-sharly-chess-windows will run on runner ${{ needs.setup-windows-runner.outputs.runner_label }}."
+          echo "Do not forget to start the runner."
   export-sharly-chess-windows:
 #    needs: tests
-    needs: [setup-windows-runner, setup-windows-runner-test]
-    runs-on: ${{ needs.setup-windows-runner.outputs.runner }}
+    needs: [setup-windows-runner, setup-windows-runner-message]
+    runs-on: ${{ needs.setup-windows-runner.outputs.runner_label }}
     steps:
       # Get the current date to set the title of the release
       - name: Get current date
