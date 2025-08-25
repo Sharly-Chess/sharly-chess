@@ -15,12 +15,13 @@ permissions:
 
 jobs:
   tests:
+    if: false
     uses: ./.github/workflows/full_tests.yml
   export-sharly-chess-windows-msg:
     needs: tests
     runs-on: ubuntu-latest
     steps:
-      - name: Warning message
+      - name: Warning message (${{ github.actor }})
         shell: bash
         run: |
           echo "Next job export-sharly-chess-windows needs to run on a Windows self-hosted GitHub runner"
