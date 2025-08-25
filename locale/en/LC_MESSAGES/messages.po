@@ -2150,6 +2150,9 @@ msgstr ""
 msgid "Go to the first screen."
 msgstr ""
 
+msgid "Go to the pairings."
+msgstr ""
+
 msgid "Go to the rotator."
 msgstr ""
 
