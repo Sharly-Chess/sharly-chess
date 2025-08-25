@@ -40,11 +40,11 @@ jobs:
         run: |
           pip install -e .[export]
       - name: Generate i18n files
-        shell: pwsh
+        shell: cmd
         run: |
           python scripts/i18n/i18n_update.py
       - name: Generate FFE SQL credentials
-        shell: pwsh
+        shell: cmd
         env:
           FFE_HOST: ${{ secrets.FFE_HOSTNAME }}
           FFE_USER: ${{ secrets.FFE_USER }}
@@ -64,7 +64,7 @@ jobs:
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "Using version: ${VERSION}"
       - name: Generate ZIP file
-        shell: pwsh
+        shell: cmd
         run: |
           python scripts/export/export.py --github="${{ steps.version.outputs.version }}"
       - name: Upload artifacts
