@@ -2397,6 +2397,9 @@ msgstr ""
 msgid "Go to the first screen."
 msgstr ""
 
+msgid "Go to the pairings."
+msgstr ""
+
 msgid "Go to the rotator."
 msgstr ""
 
@@ -2445,9 +2448,6 @@ msgid "Highlights the row if the new result is different when using the keyboard
 msgstr ""
 
 msgid "Home"
-msgstr ""
-
-msgid "Home page"
 msgstr ""
 
 msgid "Hort system"
@@ -3592,6 +3592,9 @@ msgstr ""
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr ""
 
+msgid "Player"
+msgstr ""
+
 msgid "Player / Elo"
 msgstr ""
 
@@ -4405,6 +4408,9 @@ msgstr ""
 
 #, python-format
 msgid "Search by: %(fields)s"
+msgstr ""
+
+msgid "Search for player"
 msgstr ""
 
 msgid "Searching…"
@@ -6299,9 +6305,6 @@ msgstr ""
 msgid "½ - ½ (U)"
 msgstr ""
 
-#~ msgid "Tournament [{tournament_uniq_id}] is not started yet."
-#~ msgstr ""
-
-#~ msgid "Tournament [{tournament_uniq_id}] is started."
+#~ msgid "Home page"
 #~ msgstr ""
 

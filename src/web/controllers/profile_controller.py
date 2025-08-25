@@ -12,6 +12,7 @@ from litestar_htmx import HTMXTemplate
 from common.i18n import _
 from data.auth.entities import Account
 from database.sqlite.event.event_database import EventDatabase
+from web.controllers.admin.base_admin_controller import AdminWebContext
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminWebContext
 from web.controllers.base_controller import WebContext, BaseController
 from web.session import SessionHandler
@@ -24,7 +25,7 @@ class ProfileWebContext(BaseEventAdminWebContext):
 class ProfileController(BaseController):
     @staticmethod
     def _render_profile_modal(
-        web_context: ProfileWebContext,
+        web_context: AdminWebContext,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -55,11 +56,19 @@ class ProfileController(BaseController):
         event_uniq_id: str | None,
         locale: str | None = None,
     ) -> Template | ClientRedirect:
-        web_context: ProfileWebContext = ProfileWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            data=None,
-        )
+        web_context: AdminWebContext
+        if event_uniq_id:
+            web_context = ProfileWebContext(
+                request,
+                event_uniq_id=event_uniq_id,
+                data=None,
+            )
+        else:
+            web_context = AdminWebContext(
+                request,
+                data=None,
+                admin_tab=None,
+            )
         if web_context.error:
             return web_context.error
 
@@ -97,9 +106,7 @@ class ProfileController(BaseController):
         if not username:
             errors[field] = _('Please enter the username.')
         else:
-            password: str | None = WebContext.form_data_to_str(
-                data, field := 'password'
-            )
+            password: str = WebContext.form_data_to_str(data, field := 'password') or ''
             try:
                 account: Account = web_context.admin_event.accounts_by_username[
                     username
@@ -107,12 +114,14 @@ class ProfileController(BaseController):
                 ph = PasswordHasher()
                 try:
                     pw_hash = account.password_hash
+                    # NOTE(pascalaubry): pw_hash is None for the anonymous account
+                    assert pw_hash is not None
                     # NOTE(Amaras): because of a peculiar design decision from
                     # the author of argon2-cffi, the only return value is True,
                     # all other outcomes result in an exception, and it is dangerous
                     # to change that design decision now.
                     # Therefore, if the verification does not error, then it has
-                    # succeded.
+                    # succeeded.
                     ph.verify(pw_hash, password)
                     # NOTE(Amaras): hashing parameters might change, either through
                     # our own choice, or when the default parameters are improved.
@@ -188,7 +197,7 @@ class ProfileController(BaseController):
             None,
         )
 
-        # Update the web context to reflect the login
+        # Update the web context to reflect the logout
         web_context: ProfileWebContext = ProfileWebContext(
             request,
             event_uniq_id=event_uniq_id,

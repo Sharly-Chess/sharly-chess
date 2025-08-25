@@ -135,7 +135,7 @@
                 >
                     <button
                         class="dropdown-item text-nowrap"
-                        hx-get="{{ url_for('admin-print-modal', event_uniq_id=admin_event.uniq_id) }}?tournament_id={{ tournament.id }}"
+                        hx-get="{{ url_for('admin-print-modal', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
                         preload
@@ -195,26 +195,37 @@
                     {{ _('Export') }}</span>
                     <i class="ps-3 bi bi-caret-right-fill"></i>
                 </button>
+
                 <ul class="dropdown-menu">
                     {% for exporter in tournament_exporters %}
                         {% set is_unavailable_message = exporter.is_unavailable_message(tournament)  %}
-                        <li
-                            {% if is_unavailable_message %}
+                        {% if is_unavailable_message %}
+                            <li
                                 class="dropdown-item text-start text-secondary"
                                 {{ macros.tooltip_attributes('warning', is_unavailable_message, 'right') }}
-                            {% else %}
+                            >
+                                {{ exporter.name }}
+                            </li>
+                        {% else %}
+                            <li
                                 class="dropdown-item text-start cursor-pointer"
-                                onclick="window.open('{{ url_for(
-                                    'admin-tournament-export',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=tournament.id,
-                                    exporter_id=exporter.id
-                                ) }}', '_blank')"
+                                onclick="$('#export-form-{{ exporter.id }}').submit()"
                                {{ macros.tooltip_attributes('info', exporter.tooltip, 'right') }}
-                            {% endif %}
-                        >
-                            {{ exporter.name }}
-                        </li>
+                            >
+                                <form
+                                    id="export-form-{{ exporter.id }}"
+                                    action="{{ url_for(
+                                        'admin-tournament-export',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        tournament_id=tournament.id,
+                                        exporter_id=exporter.id
+                                    ) }}"
+                                    hx-indicator="#please-wait"
+                                >
+                                    {{ exporter.name }}
+                                </form>
+                            </li>
+                        {% endif %}
                     {% endfor %}
                 </ul>
             </li>
@@ -239,6 +250,15 @@
             {% endfor %}
         </ul>
     </div>
+    <span {{ macros.tooltip_attributes('info', _('Go to the pairings.'), 'top') }}>
+        <a
+            class="btn btn-sm btn-outline-primary"
+            href="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+            target="_blank"
+        >
+            <i class="bi bi-arrow-left-right"></i>
+        </a>
+    </span>
 {% endblock %}
 
 {% block card_buttons_right %}

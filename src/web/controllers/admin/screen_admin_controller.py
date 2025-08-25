@@ -493,9 +493,7 @@ class ScreenAdminController(BaseEventAdminController):
                 'create_tooltip': _('Add a screen to display an image.'),
             },
         }
-        template_context: dict[str, Any] = cls._get_admin_event_render_context(
-            web_context
-        )
+        template_context: dict[str, Any] = web_context.template_context
 
         if web_context.client.can_manage_screens:
             # 'admin' view
@@ -511,14 +509,14 @@ class ScreenAdminController(BaseEventAdminController):
                 )
             else:
                 screens_by_type_sorted_by_uniq_id = web_context.admin_event.basic_screens_by_screen_type_sorted_by_uniq_id
-            for screen_type in ScreenType.screen_types():
-                admin_screen_types_data[screen_type]['screens'] = (
-                    screens_by_type_sorted_by_uniq_id[screen_type]
+            for screen_type_ in ScreenType.screen_types():
+                admin_screen_types_data[screen_type_]['screens'] = (
+                    screens_by_type_sorted_by_uniq_id[screen_type_]
                 )
-                admin_screen_types_data[screen_type]['title'] = admin_screen_types_data[
-                    screen_type
-                ]['title'].format(
-                    num=len(admin_screen_types_data[screen_type]['screens']) or '-'
+                admin_screen_types_data[screen_type_]['title'] = (
+                    admin_screen_types_data[screen_type_]['title'].format(
+                        num=len(admin_screen_types_data[screen_type_]['screens']) or '-'
+                    )
                 )
             template_context |= {
                 'admin_event_tab': 'admin-event-screens-tab',
@@ -531,7 +529,7 @@ class ScreenAdminController(BaseEventAdminController):
                     web_context.request
                 ),
                 'admin_screens_count': sum(
-                    len(admin_screen_types_data[screen_type])
+                    len(admin_screen_types_data[ScreenType(screen_type)])
                     for screen_type in admin_screen_types_data
                 ),
             }

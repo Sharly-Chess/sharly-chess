@@ -2397,6 +2397,9 @@ msgstr "Aller au pilote d'écran."
 msgid "Go to the first screen."
 msgstr "Aller au premier écran."
 
+msgid "Go to the pairings."
+msgstr "Aller aux appariements."
+
 msgid "Go to the rotator."
 msgstr "Aller à l'écran rotatif."
 
@@ -2446,9 +2449,6 @@ msgstr "Met l'échiquier en surbrillance lorsqu'un résultat saisi au clavier es
 
 msgid "Home"
 msgstr "Accueil"
-
-msgid "Home page"
-msgstr ""
 
 msgid "Hort system"
 msgstr "Système Hort"
@@ -3592,6 +3592,9 @@ msgstr "Numéro de téléphone :"
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr "Téléphone : %(phone)s (cliquer pour copier dans le presse-papier)."
 
+msgid "Player"
+msgstr "Joueur·euse"
+
 msgid "Player / Elo"
 msgstr "Joueur·euse / Elo"
 
@@ -4406,6 +4409,9 @@ msgstr "Recherche"
 #, python-format
 msgid "Search by: %(fields)s"
 msgstr "Rechercher par : %(fields)s"
+
+msgid "Search for player"
+msgstr "Rechercher un·e joueur·euse"
 
 msgid "Searching…"
 msgstr "Recherche en cours…"
@@ -6299,9 +6305,6 @@ msgstr "½ - 0 (NC)"
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
 
-#~ msgid "Tournament [{tournament_uniq_id}] is not started yet."
-#~ msgstr "Le tournoi [{tournament_uniq_id}] n'est pas encore démarré."
-
-#~ msgid "Tournament [{tournament_uniq_id}] is started."
-#~ msgstr "Le tournoi [{tournament_uniq_id}] est démarré."
+#~ msgid "Home page"
+#~ msgstr ""
 

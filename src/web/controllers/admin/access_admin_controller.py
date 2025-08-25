@@ -122,7 +122,7 @@ class AccessAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         return cls._admin_event_render(
-            cls._get_admin_event_render_context(web_context) | (template_context or {})
+            web_context.template_context | (template_context or {})
         )
 
     @staticmethod
@@ -170,10 +170,10 @@ class AccessAdminController(BaseEventAdminController):
                 'tournament_ids': tournament_ids or '',
             }
         )
-        template_context = self._get_admin_event_render_context(web_context)
         return HTMXTemplate(
             template_name='admin/common/access/permissions_form.html',
-            context=template_context | self._permission_form_context(web_context, data),
+            context=web_context.template_context
+            | self._permission_form_context(web_context, data),
         )
 
     # --------------------------------------------------------------------------

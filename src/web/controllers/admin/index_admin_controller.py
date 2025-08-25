@@ -190,6 +190,7 @@ class IndexAdminController(BaseAdminController):
                     'empty_str': _('No current events.'),
                     'icon_class': 'bi-calendar indented',
                     'page_title': _('Current events'),
+                    'divider': True,
                 },
                 'coming_events': {
                     'title': _('Upcoming ({num})').format(
@@ -233,6 +234,7 @@ class IndexAdminController(BaseAdminController):
                     'empty_str': _('No events.'),
                     'icon_class': 'bi-calendar indented',
                     'page_title': _('Events'),
+                    'divider': True,
                 },
             }
         if web_context.client.can_view_application_settings:

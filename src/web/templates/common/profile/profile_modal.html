@@ -25,7 +25,7 @@
                             {% if l != locale %}
                                 <li
                                     class="dropdown-item text-start cursor-pointer"
-                                    hx-get="{{ url_for('profile-modal') }}"
+                                    hx-get="{{ url_for('profile-modal', event_uniq_id=admin_event.uniq_id) if admin_event else url_for('profile-modal') }}"
                                     hx-vals='{"locale": "{{ l }}"}'
                                     preload
                                     hx-target="body"

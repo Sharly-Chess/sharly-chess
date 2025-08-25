@@ -672,7 +672,9 @@ def main():
     if not InstallationChecker.check():
         return
     clean(clean_zip=True)
-    update_i18n_files(generate_doc=False)
+    if not update_i18n_files(generate_doc=False):
+        logger.error('You must update the translations.')
+        return
     build_exe()
     create_project()
     generate_license_files()

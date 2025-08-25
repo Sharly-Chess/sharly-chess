@@ -40,40 +40,53 @@ class BabelUpdater(BabelWrapper):
             po_file: Path = self.locale_po_file(locale)
             po_file_update_marker: Path = po_file.with_suffix('.updated')
             new_po_strings: bool = False
+            build_po: bool = False
             if not po_file.is_file():
-                new_po_strings = self.update_po_file(locale)
-                po_file_update_marker.touch()
-                logger.info('PO file [%s] has been created.', str(po_file.name))
-            elif new_i18n_strings:
-                new_po_strings = self.update_po_file(locale)
-                po_file_update_marker.touch()
-                if new_po_strings:
-                    logger.info('PO file [%s] has been changed.', str(po_file.name))
-            new_errors: bool = locale_info.control()
-            locale_info.print_summary()
-            mo_file: Path = self.locale_mo_file(locale)
-            build_mo: bool = False
-            if new_errors:
-                logger.info('Errors found in PO file [%s].', str(po_file.name))
-                build_mo = True
-            elif new_po_strings:
-                build_mo = True
-            elif not mo_file.is_file():
-                logger.info('MO file [%s] not found, creating it.', str(mo_file.name))
-                build_mo = True
-            elif po_file.lstat().st_mtime > mo_file.lstat().st_mtime:
-                logger.info(
-                    'MO file [%s] older than PO file [%s], rebuilding it.',
-                    str(mo_file.name),
-                    str(po_file.name),
-                )
-                build_mo = True
+                logger.info('PO file [%s] not found, creating it.', str(po_file.name))
+                build_po = True
             elif (
                 po_file_update_marker.exists()
                 and po_file.lstat().st_mtime > po_file_update_marker.lstat().st_mtime
             ):
                 logger.info(
-                    'PO file [%s] has changed since last time updated.',
+                    'PO file [%s] has changed since last time updated, updating it.',
+                    str(po_file.name),
+                )
+                build_po = True
+            elif new_i18n_strings:
+                logger.info(
+                    'i18n strings have changed, updating PO file [%s].',
+                    str(po_file.name),
+                )
+                build_po = True
+            if build_po:
+                new_po_strings = self.update_po_file(locale)
+                po_file_update_marker.touch()
+            new_errors: bool = locale_info.control()
+            locale_info.print_summary()
+            mo_file: Path = self.locale_mo_file(locale)
+            build_mo: bool = False
+            if not mo_file.is_file():
+                logger.info('MO file [%s] not found, creating it.', str(mo_file.name))
+                build_mo = True
+            elif new_errors:
+                logger.info(
+                    'Errors found in PO file [%s], rebuilding MO file [%s].',
+                    str(po_file.name),
+                    str(po_file.name),
+                )
+                build_mo = True
+            elif new_po_strings:
+                logger.info(
+                    'New strings in PO file [%s], rebuilding MO file [%s].',
+                    str(po_file.name),
+                    str(po_file.name),
+                )
+                build_mo = True
+            elif po_file.lstat().st_mtime > mo_file.lstat().st_mtime:
+                logger.info(
+                    'MO file [%s] older than PO file [%s], rebuilding it.',
+                    str(mo_file.name),
                     str(po_file.name),
                 )
                 build_mo = True

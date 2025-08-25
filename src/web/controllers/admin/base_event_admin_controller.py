@@ -69,29 +69,6 @@ class BaseEventAdminWebContext(AdminWebContext):
 
     @property
     def template_context(self) -> dict[str, Any]:
-        return super().template_context | {
-            'admin_event': self.admin_event,
-        }
-
-    def get_tournament_options(self) -> dict[str, str]:
-        event = self.get_admin_event()
-        return {
-            self.value_to_form_data(
-                tournament.id
-            ): f'{tournament.name} ({tournament.uniq_id})'
-            for tournament in event.tournaments_sorted_by_uniq_id
-        }
-
-
-class BaseEventAdminController(BaseAdminController):
-    @classmethod
-    def _get_admin_event_render_context(
-        cls,
-        web_context: BaseEventAdminWebContext,
-    ) -> dict[str, Any]:
-        if web_context.admin_event is None:
-            raise RuntimeError('admin_event not defined')
-        admin_event: Event = web_context.admin_event
         logging_levels: dict[int, dict[str, str]] = {
             logging.DEBUG: {
                 'name': 'DEBUG',
@@ -119,8 +96,11 @@ class BaseEventAdminController(BaseAdminController):
                 'icon_class': 'bi-sign-stop',
             },
         }
-        nav_tabs: dict[str, dict[str, Any]] = {}
-        if web_context.client.can_view_event_basic_config:
+        event: Event = self.get_admin_event()
+        nav_tabs: dict[
+            str, dict[str, str | bool | dict[str, dict[str, str | bool]]]
+        ] = {}
+        if self.client.can_view_event_basic_config:
             nav_tabs |= {
                 'admin-event-config-tab': {
                     'title': _('Configuration'),
@@ -128,27 +108,25 @@ class BaseEventAdminController(BaseAdminController):
                     'icon_class': 'bi-gear-fill',
                 },
             }
-        if web_context.client.can_view_tournaments_tab:
+        if self.client.can_view_tournaments_tab:
             nav_tabs |= {
                 'admin-event-tournaments-tab': {
                     'title': _('Tournaments ({num})').format(
-                        num=len(admin_event.tournaments_by_id) or '-'
+                        num=len(event.tournaments_by_id) or '-'
                     ),
                     'template': 'tournaments/tab.html',
                     'icon_class': 'bi-diagram-3-fill',
                 },
             }
-        if web_context.client.can_view_players_tab:
+        if self.client.can_view_players_tab:
             nav_tabs |= {
                 'admin-event-players-tab': {
-                    'title': _('Players ({num})').format(
-                        num=admin_event.player_count or '-'
-                    ),
+                    'title': _('Players ({num})').format(num=event.player_count or '-'),
                     'template': 'players/tab.html',
                     'icon_class': 'bi-people-fill',
                 },
             }
-        if web_context.client.can_view_pairings_tab:
+        if self.client.can_view_pairings_tab:
             nav_tabs |= {
                 'admin-event-pairings-tab': {
                     'title': _('Pairings'),
@@ -156,7 +134,7 @@ class BaseEventAdminController(BaseAdminController):
                     'icon_class': 'bi-arrow-left-right',
                 },
             }
-        if web_context.client.can_view_prizes_tab:
+        if self.client.can_view_prizes_tab:
             nav_tabs |= {
                 'admin-event-prizes-tab': {
                     'title': _('Prizes'),
@@ -164,7 +142,7 @@ class BaseEventAdminController(BaseAdminController):
                     'icon_class': 'bi-trophy-fill',
                 },
             }
-        if web_context.client.can_manage_screens:
+        if self.client.can_manage_screens:
             nav_tabs |= {
                 'admin-event-views': {
                     'title': _('Screens'),
@@ -172,55 +150,53 @@ class BaseEventAdminController(BaseAdminController):
                     'submenu': {
                         'admin-event-screens-tab': {
                             'title': _('Single Screens ({num})').format(
-                                num=len(admin_event.basic_screens_by_id) or '-'
+                                num=len(event.basic_screens_by_id) or '-'
                             ),
                             'template': 'screens/tab.html',
                         },
                         'admin-event-families-tab': {
                             'title': _('Families ({num})').format(
-                                num=len(admin_event.families_by_id) or '-'
+                                num=len(event.families_by_id) or '-'
                             ),
                             'template': 'families/tab.html',
                         },
                         'admin-event-rotators-tab': {
                             'title': _('Rotators ({num})').format(
-                                num=len(admin_event.rotators_by_id) or '-'
+                                num=len(event.rotators_by_id) or '-'
                             ),
                             'template': 'rotators/tab.html',
                         },
                         'admin-event-timers-tab': {
                             'title': _('Timers ({num})').format(
-                                num=len(admin_event.timers_by_id) or '-'
+                                num=len(event.timers_by_id) or '-'
                             ),
                             'template': 'timers/tab.html',
                         },
                         'admin-event-display-controllers-tab': {
                             'title': _('Display controllers ({num})').format(
-                                num=len(admin_event.display_controllers_by_id) or '-'
+                                num=len(event.display_controllers_by_id) or '-'
                             ),
                             'template': 'display_controllers/tab.html',
                         },
                     },
                 },
             }
-        elif web_context.client.can_view_public_screens:
+        elif self.client.can_view_public_screens:
             screens_by_screen_type_sorted_by_uniq_id: dict[ScreenType, list[Screen]]
             rotators: list[Rotator]
             display_controllers: list[DisplayController]
-            if web_context.client.can_view_private_screens:
+            if self.client.can_view_private_screens:
                 screens_by_screen_type_sorted_by_uniq_id = (
-                    admin_event.screens_by_screen_type_sorted_by_uniq_id
+                    event.screens_by_screen_type_sorted_by_uniq_id
                 )
-                rotators = admin_event.rotators_sorted_by_uniq_id
-                display_controllers = admin_event.display_controllers_sorted_by_uniq_id
+                rotators = event.rotators_sorted_by_uniq_id
+                display_controllers = event.display_controllers_sorted_by_uniq_id
             else:
                 screens_by_screen_type_sorted_by_uniq_id = (
-                    admin_event.public_screens_by_screen_type_sorted_by_uniq_id
+                    event.public_screens_by_screen_type_sorted_by_uniq_id
                 )
-                rotators = admin_event.public_rotators_sorted_by_uniq_id
-                display_controllers = (
-                    admin_event.public_display_controllers_sorted_by_uniq_id
-                )
+                rotators = event.public_rotators_sorted_by_uniq_id
+                display_controllers = event.public_display_controllers_sorted_by_uniq_id
             screens: list[Screen]
             screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.BOARDS]
             nav_tabs |= {
@@ -298,39 +274,48 @@ class BaseEventAdminController(BaseAdminController):
                     'icon_class': 'bi-box-arrow-in-right',
                 },
             }
-        if web_context.admin_event.custom_exec_mode and (
-            web_context.client.can_manage_accounts
-            or web_context.client.can_manage_devices
+        if self.admin_event.custom_exec_mode and (
+            self.client.can_manage_accounts or self.client.can_manage_devices
         ):
             nav_tab: dict[str, Any] = {
                 'title': _('Access'),
                 'icon_class': 'bi-key',
                 'submenu': {},
             }
-            if web_context.client.can_manage_accounts:
+            if self.client.can_manage_accounts:
                 nav_tab['submenu']['admin-event-accounts-tab'] = {
                     'title': _('Accounts ({num})').format(
-                        num=len(admin_event.accounts_by_id) or '-'
+                        num=len(event.accounts_by_id) or '-'
                     ),
                     'template': 'accounts/tab.html',
                 }
-            if web_context.client.can_manage_accounts:
+            if self.client.can_manage_accounts:
                 nav_tab['submenu']['admin-event-devices-tab'] = {
                     'title': _('Devices ({num})').format(
-                        num=len(admin_event.devices_by_id) or '-'
+                        num=len(event.devices_by_id) or '-'
                     ),
                     'template': 'devices/tab.html',
                 }
             nav_tabs['admin-event-access'] = nav_tab
 
-        template_context: dict[str, Any] = web_context.template_context | {
-            'messages': Message.messages(web_context.request),
+        return super().template_context | {
+            'admin_event': self.admin_event,
+            'messages': Message.messages(self.request),
             'logging_levels': logging_levels,
             'nav_tabs': nav_tabs,
         }
 
-        return template_context
+    def get_tournament_options(self) -> dict[str, str]:
+        event = self.get_admin_event()
+        return {
+            self.value_to_form_data(
+                tournament.id
+            ): f'{tournament.name} ({tournament.uniq_id})'
+            for tournament in event.tournaments_sorted_by_uniq_id
+        }
 
+
+class BaseEventAdminController(BaseAdminController):
     @classmethod
     def _admin_event_render(
         cls,
