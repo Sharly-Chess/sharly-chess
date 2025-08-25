@@ -202,6 +202,7 @@ with_indicator: display a loading indicator, optional
     select_options={},
     onchange='',
     multiple_select=false,
+    file_accept='',
     number_min='',
     number_max='',
     number_step='',
@@ -382,6 +383,9 @@ with_indicator: display a loading indicator, optional
                         {% endif %}
                         {% if number_step != '' %}
                             step="{{ number_step }}"
+                        {% endif %}
+                        {% if file_accept %}
+                            accept="{{ file_accept }}"
                         {% endif %}
                         class="form-control {% if error or (name in errors) %}is-invalid{% endif %} {% if valid %}is-valid{% endif %}"
                         aria-describedby="{{ id }}-help {{ id }}-error"
@@ -670,24 +674,11 @@ with_indicator: display a loading indicator, optional
     label='NO LABEL',
     placeholder='',
     help_text='NO HELP TEXT',
+    file_accept='',
     data={},
     errors={},
     error=false,
-    valid=false,
-    password_visible=false,
-    disabled=false,
-    with_indicator=false,
-    hx_get='',
-    hx_post='',
-    hx_trigger='',
-    hx_include='',
-    hx_target='',
-    hx_swap='',
-    hx_indicator='',
-    hx_on_before_request='',
-    hx_on_after_request='',
-    hx_sync='',
-    hx_vals=''
+    disabled=false
 ) %}
     {{ _generic_input(
         name=name,
@@ -695,24 +686,11 @@ with_indicator: display a loading indicator, optional
         label=label,
         placeholder=placeholder,
         help_text=help_text,
+        file_accept=file_accept,
         data=data,
         errors=errors,
         error=error,
-        valid=valid,
-        password_visible=password_visible,
-        disabled=disabled,
-        with_indicator=with_indicator,
-        hx_get=hx_get,
-        hx_post=hx_post,
-        hx_trigger=hx_trigger,
-        hx_target=hx_target,
-        hx_swap=hx_swap,
-        hx_include=hx_include,
-        hx_indicator=hx_indicator,
-        hx_on_before_request=hx_on_before_request,
-        hx_on_after_request=hx_on_after_request,
-        hx_sync=hx_sync,
-        hx_vals=hx_vals
+        disabled=disabled
     ) }}
 {% endmacro %}
 

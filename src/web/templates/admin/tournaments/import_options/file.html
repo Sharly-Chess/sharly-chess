@@ -1,0 +1,9 @@
+<div class="row">
+    {{ admin_macros.file_input(
+        name=option.id,
+        label=_('%(string)s:', string=_('File')),
+        help_text=_('The file to import.'),
+        file_accept=', '.join(option.accepted_file_suffixes),
+        data=data, errors=errors
+    ) }}
+</div>

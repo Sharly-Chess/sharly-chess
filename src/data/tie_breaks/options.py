@@ -7,7 +7,7 @@ from utils.option import Option, OptionError
 
 
 class TieBreakOption(Option, ABC):
-    """Abstract class representing an option of a tie-break"""
+    """Parent class of all the options of tie breaks."""
 
     @property
     def template_name(self) -> str:

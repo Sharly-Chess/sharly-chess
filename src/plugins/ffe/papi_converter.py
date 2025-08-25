@@ -225,28 +225,22 @@ class PapiConverter:
         If a StoredTournament object is provided, add the values to this one,
         otherwise creates a new one.
         Raises a SharlyChessException if the conversion fails."""
-        if source_file.suffix == '.papi':
-            target_file = TMP_DIR / 'papi-converter-output.json'
-            result = subprocess.run(
-                [
-                    self.executable_path,
-                    source_file,
-                    target_file,
-                ],
-                capture_output=True,
-                encoding='utf-8',
-            )
-            if not target_file.exists():
-                raise SharlyChessException(
-                    f'Papi file conversion to JSON failed.'
-                    f'PapiConverter failed with status {result.returncode}.\n'
-                    f'stdout: {result.stdout}\nstderr: {result.stderr}'
-                )
-        elif source_file.suffix == '.json':
-            target_file = source_file
-        else:
+        target_file = TMP_DIR / 'papi-converter-output.json'
+        target_file.unlink(missing_ok=True)
+        result = subprocess.run(
+            [
+                self.executable_path,
+                source_file,
+                target_file,
+            ],
+            capture_output=True,
+            encoding='utf-8',
+        )
+        if not target_file.exists():
             raise SharlyChessException(
-                'PapiConverter only supports .papi and .json files.'
+                f'Papi file conversion to JSON failed.'
+                f'PapiConverter failed with status {result.returncode}.\n'
+                f'stdout: {result.stdout}\nstderr: {result.stderr}'
             )
 
         with open(target_file, 'r', encoding='utf-8') as file:

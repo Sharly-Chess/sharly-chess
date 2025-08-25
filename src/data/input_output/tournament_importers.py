@@ -1,15 +1,15 @@
 from abc import ABC, abstractmethod
-from pathlib import Path
 
 from data.event import Event
+from data.input_output.tournament_importer_options import TournamentImporterOption
 from data.loader import EventLoader
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredPlayer
-from utils.entity import IdentifiableEntity
+from utils.option import OptionHandler
 
 
-class TournamentImporter(IdentifiableEntity, ABC):
+class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
     @property
     def display_in_menu(self) -> bool:
         """Determines if the import is visible in the import menu."""
@@ -26,28 +26,28 @@ class TournamentImporter(IdentifiableEntity, ABC):
         """Determines if the boards need reordering after they've been loaded."""
 
     @abstractmethod
-    def load_stored_tournament(
+    async def load_stored_tournament(
         self,
-        source_file: Path,
         stored_tournament: StoredTournament | None = None,
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
         """Load the tournament file into stored objects.
         Use the ids from the source to link data.
         If a StoredTournament object is provided, add the values to this one,
         otherwise creates a new one.
+        Raise an OptionError for errors caught and displayed in the form.
+        Raise a SharlyChessError for an error to log.
         """
 
-    def load_tournament(
+    async def load_tournament(
         self,
-        source_file: Path,
         event: Event,
         tournament: Tournament | None = None,
     ) -> Tournament:
         """Load a tournament into an event.
         If tournament is provided, update this tournament, otherwise create a new one.
         Raises if the tournament already has players."""
-        stored_tournament, stored_players = self.load_stored_tournament(
-            source_file, tournament.stored_tournament if tournament else None
+        stored_tournament, stored_players = await self.load_stored_tournament(
+            tournament.stored_tournament if tournament else None
         )
         with EventDatabase(event.uniq_id, True) as database:
             if tournament:

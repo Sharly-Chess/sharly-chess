@@ -5322,7 +5322,7 @@ msgid "Tournament [{tournament}] is finished, you can not add players any longer
 msgstr "Le tournoi [{tournament}] est terminé, on ne peut plus y ajouter de joueur·euses."
 
 msgid "Tournament [{tournament}] successfully imported."
-msgstr "Le tournoi [{tournament}] importé avec succès."
+msgstr "Le tournoi [{tournament}] a été importé avec succès."
 
 msgid "Tournament exempt from registration fees."
 msgstr "Tournoi exempt de droits d'homologation."

@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 class PlayerFilterOption(Option, ABC):
-    """Parent class of all the option of player filters."""
+    """Parent class of all the options of player filters."""
 
     @property
     def template_name(self) -> str:

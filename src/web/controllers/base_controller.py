@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Annotated, Any
 
 from httpdate.httpdate import httpdate_to_unixtime, unixtime_to_httpdate
+from litestar.datastructures import UploadFile
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 from litestar.controller import Controller
 from litestar.enums import RequestEncodingType
@@ -128,6 +129,7 @@ class WebContext:
             date: cls.form_data_to_date,
             list[int]: cls.form_data_to_list_int,
             list[str]: cls.form_data_to_list_str,
+            UploadFile: cls.form_data_to_upload_file,
         }
         for type_, function in type_functions.items():
             if expected_type in (type_, type_ | None):
@@ -239,6 +241,12 @@ class WebContext:
         if field not in data or not data[field]:
             return empty_value or []
         return [element.strip() for element in data[field].split(';')]
+
+    @staticmethod
+    def form_data_to_upload_file(data: dict[str, Any], field: str) -> UploadFile | None:
+        if field not in data or not isinstance(data[field], UploadFile):
+            return None
+        return data[field]
 
     @staticmethod
     def form_data_to_rgb(
