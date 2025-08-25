@@ -23,10 +23,10 @@ jobs:
     # Details on https://stackoverflow.com/questions/71961921/specify-runner-to-be-used-depending-on-condition-in-a-github-actions-workflow
     runs-on: ubuntu-latest
     outputs:
-      runner: ${{ steps.output-runner-label.outputs.runner_label }}
+      runner: ${{ steps.output_runner_label.outputs.runner_label }}
     steps:
       - name: Get Windows runner label
-        id: output-runner-label
+        id: output_runner_label
         run: |
           echo "runner_label=${{ github.actor }}-sharly-chess-windows-export" >> $GITHUB_OUTPUT
   setup-windows-runner-message:
