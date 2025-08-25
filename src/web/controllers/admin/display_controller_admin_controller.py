@@ -195,9 +195,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
             ),
         )
 
-        template_context: dict[str, Any] = cls._get_admin_event_render_context(
-            web_context
-        ) | {
+        template_context = web_context.template_context | {
             'admin_event_tab': 'admin-event-display-controllers-tab',
             'sorted_screens': sorted_screens,
         }

@@ -521,3 +521,17 @@ class SessionHandler:
     @classmethod
     def get_session_admin_prizes_show_details(cls, request: HTMXRequest) -> bool:
         return request.session.get(cls.ADMIN_PRIZES_SHOW_DETAILS_KEY, False)
+
+    PRINT_TOURNAMENT_KEY: str = 'admin_print_last_tournament'
+
+    @classmethod
+    def set_session_admin_print_last_tournament(
+        cls, request: HTMXRequest, event_uniq_id: str, tournament_id: int
+    ):
+        request.session[cls.PRINT_TOURNAMENT_KEY] = (event_uniq_id, tournament_id)
+
+    @classmethod
+    def get_session_admin_print_last_tournament(
+        cls, request: HTMXRequest
+    ) -> tuple[str, int] | None:
+        return request.session.get(cls.PRINT_TOURNAMENT_KEY, None)

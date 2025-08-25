@@ -256,13 +256,12 @@
                                 disabled=admin_tournament.started,
                                 data=data, errors=errors
                             ) }}
-                            {% if admin_tournament.started %}
-                                <input type="hidden" name="{{pairing_system.variation_field_id}}" value="{{ data[pairing_system.variation_field_id] }}" />
-                            {% endif %}
                         </div>
+                        {% if admin_tournament.started %}
+                            <input type="hidden" name="{{ pairing_system.variation_field_id }}" value="{{ data[pairing_system.variation_field_id] }}" />
+                        {% endif %}
                     {% endfor %}
                     <script>
-                        $('input[name$="_pairing_variation"][type="hidden"]').remove();
                         $('#pairing-system').change(function() {
                             let elements = '';
                             {% for pairing_system in pairing_systems %}
