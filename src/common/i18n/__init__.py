@@ -82,6 +82,7 @@ locale_infos: dict[str, LocaleInfo] = {
 
 _auto_update_file: Path = BASE_DIR / 'src' / 'common' / 'i18n' / '.auto-update'
 
+print(f'{DEVEL_ENV=}, {sys.argv=}')
 if DEVEL_ENV and not Path(sys.argv[0]).stem == 'i18n_update':
     # if i18n_update is running then update_i18n_files() will be called later,
     # no need to do anything here
