@@ -14,9 +14,11 @@ permissions:
   contents: write
 
 jobs:
+
   tests:
     if: false
     uses: ./.github/workflows/full_tests.yml
+
   export-sharly-chess-windows-msg:
 #    needs: tests
     runs-on: ubuntu-latest
@@ -28,6 +30,7 @@ jobs:
           echo "for cloud code-signing. If the job doesn't start, it is probably because GitHub did not "
           echo "find a self-hosted runner with label ${{ github.actor }} (your GitHub ID). In this case,"
           echo "check the labels of your runners."
+
   export-sharly-chess-windows:
     needs: export-sharly-chess-windows-msg
     runs-on: ${{ github.actor }}
@@ -82,9 +85,10 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: sharly-chess-windows-${{ steps.version.outputs.version }}
+          name: sharly-chess-${{ steps.version.outputs.version }}-windows
           path: |
             export/sharly-chess-${{ steps.version.outputs.version }}.zip
+
   export-sharly-chess-macos:
 #    needs: tests
     runs-on: macos-latest
@@ -160,7 +164,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: sharly-chess-${{ matrix.platform }}-${{ steps.version.outputs.version }}
+          name: sharly-chess-${{ steps.version.outputs.version }}-macos
           path: |
             export/sharly-chess-${{ steps.version.outputs.version }}-macos.dmg
 
@@ -189,12 +193,12 @@ jobs:
       - name: Download Windows artifacts
         uses: actions/download-artifact@v4
         with:
-          name: sharly-chess-windows-${{ steps.version.outputs.version }}
+          name: sharly-chess-${{ steps.version.outputs.version }}-windows
           path: export-windows/
       - name: Download macOS artifacts
         uses: actions/download-artifact@v4
         with:
-          name: sharly-chess-macos-${{ steps.version.outputs.version }}
+          name: sharly-chess-${{ steps.version.outputs.version }}-macos
           path: export-macos/
       - name: Rename artifacts with platform suffix
         run: |
