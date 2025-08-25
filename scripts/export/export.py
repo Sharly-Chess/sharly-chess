@@ -12,6 +12,8 @@ sys.path.extend(
             Path(__file__).parents[2],  # The root path
             Path(__file__).parents[2]
             / 'src',  # The path to the sources of the application
+            Path(__file__).parents[2]
+            / 'scripts/export',  # The path to the scripts of the application
         ],
     )
 )
