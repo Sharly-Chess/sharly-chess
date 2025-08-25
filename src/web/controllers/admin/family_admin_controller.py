@@ -352,9 +352,7 @@ class FamilyAdminController(BaseEventAdminController):
             return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
-        template_context: dict[str, Any] = cls._get_admin_event_render_context(
-            web_context
-        ) | {
+        template_context = web_context.template_context | {
             'admin_event_tab': 'admin-event-families-tab',
             'admin_families_show_details': SessionHandler.get_session_admin_families_show_details(
                 web_context.request,
