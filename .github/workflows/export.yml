@@ -18,7 +18,7 @@ jobs:
     if: false
     uses: ./.github/workflows/full_tests.yml
   export-sharly-chess-windows-msg:
-    needs: tests
+#    needs: tests
     runs-on: ubuntu-latest
     steps:
       - name: Warning message (${{ github.actor }})
@@ -86,7 +86,7 @@ jobs:
           path: |
             export/sharly-chess-${{ steps.version.outputs.version }}.zip
   export-sharly-chess-macos:
-    needs: tests
+#    needs: tests
     runs-on: macos-latest
     steps:
       # Get the current date to set the title of the release
