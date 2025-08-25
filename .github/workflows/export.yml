@@ -14,10 +14,21 @@ permissions:
   contents: write
 
 jobs:
-#  tests:
-#    uses: ./.github/workflows/full_tests.yml
+  tests:
+    uses: ./.github/workflows/full_tests.yml
+  export-sharly-chess-windows-msg:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Warning message
+        shell: bash
+        run: |
+          echo "Next job export-sharly-chess-windows needs to run on a Windows self-hosted GitHub runner"
+          echo "for cloud code-signing. If the job doesn't start, it is probably because GitHub did not "
+          echo "find a self-hosted runner with label ${{ github.actor }} (your GitHub ID). In this case,"
+          echo "check the labels of your runners."
   export-sharly-chess-windows:
-#    needs: tests
+    needs: export-sharly-chess-windows-msg
     runs-on: ${{ github.actor }}
     steps:
       # Get the current date to set the title of the release
@@ -74,7 +85,7 @@ jobs:
           path: |
             export/sharly-chess-${{ steps.version.outputs.version }}.zip
   export-sharly-chess-macos:
-#    needs: tests
+    needs: tests
     runs-on: macos-latest
     steps:
       # Get the current date to set the title of the release
@@ -152,54 +163,54 @@ jobs:
           path: |
             export/sharly-chess-${{ steps.version.outputs.version }}-macos.dmg
 
-#  create-release:
-#    needs: export-sharly-chess
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Get current date
-#        id: date
-#        uses: Kaven-Universe/github-action-current-date-time@v1
-#        with:
-#          format: "YYYY_MM_DD HH_mm_ss_SSS"
-#      - name: Set version variable
-#        id: version
-#        shell: bash
-#        run: |
-#          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-#            VERSION="${{ github.event.inputs.version }}"
-#          else
-#            VERSION="${{ github.ref_name }}"
-#          fi
-#          echo "version=${VERSION}" >> $GITHUB_OUTPUT
-#          echo "Using version: ${VERSION}"
-#      - name: Checkout repository
-#        uses: actions/checkout@v4.2.2
-#      - name: Download Windows artifacts
-#        uses: actions/download-artifact@v4
-#        with:
-#          name: sharly-chess-windows-${{ steps.version.outputs.version }}
-#          path: export-windows/
-#      - name: Download macOS artifacts
-#        uses: actions/download-artifact@v4
-#        with:
-#          name: sharly-chess-macos-${{ steps.version.outputs.version }}
-#          path: export-macos/
-#      - name: Rename artifacts with platform suffix
-#        run: |
-#          VERSION="${{ steps.version.outputs.version }}"
-#          mkdir -p release-files
-#          # Windows files
-#          cp export-windows/sharly-chess-${VERSION}.zip release-files/sharly-chess-${VERSION}-windows.zip
-#          # macOS files - only sharly-chess
-#          cp export-macos/sharly-chess-${VERSION}-macos.dmg release-files/sharly-chess-${VERSION}-macos.dmg
-#      - name: Create release
-#        uses: softprops/action-gh-release@v2
-#        with:
-#          tag_name: ${{ steps.version.outputs.version }}
-#          name: "Version ${{ steps.version.outputs.version }} (${{ steps.date.outputs.year }}-${{ steps.date.outputs.month }}-${{ steps.date.outputs.day }})"
-#          draft: true
-#          prerelease: contains(steps.version.outputs.version, 'a') || contains(steps.version.outputs.version, 'b') || contains(steps.version.outputs.version, 'rc')
-#          files: |
-#            release-files/sharly-chess-${{ steps.version.outputs.version }}-windows.zip
-#            release-files/sharly-chess-${{ steps.version.outputs.version }}-macos.dmg
-#          body_path: RELEASE_NOTES.md
+  create-release:
+    needs: [export-sharly-chess-windows, export-sharly-chess-macos]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get current date
+        id: date
+        uses: Kaven-Universe/github-action-current-date-time@v1
+        with:
+          format: "YYYY_MM_DD HH_mm_ss_SSS"
+      - name: Set version variable
+        id: version
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${{ github.ref_name }}"
+          fi
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Using version: ${VERSION}"
+      - name: Checkout repository
+        uses: actions/checkout@v4.2.2
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: sharly-chess-windows-${{ steps.version.outputs.version }}
+          path: export-windows/
+      - name: Download macOS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: sharly-chess-macos-${{ steps.version.outputs.version }}
+          path: export-macos/
+      - name: Rename artifacts with platform suffix
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          mkdir -p release-files
+          # Windows files
+          cp export-windows/sharly-chess-${VERSION}.zip release-files/sharly-chess-${VERSION}-windows.zip
+          # macOS files - only sharly-chess
+          cp export-macos/sharly-chess-${VERSION}-macos.dmg release-files/sharly-chess-${VERSION}-macos.dmg
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: "Version ${{ steps.version.outputs.version }} (${{ steps.date.outputs.year }}-${{ steps.date.outputs.month }}-${{ steps.date.outputs.day }})"
+          draft: true
+          prerelease: contains(steps.version.outputs.version, 'a') || contains(steps.version.outputs.version, 'b') || contains(steps.version.outputs.version, 'rc')
+          files: |
+            release-files/sharly-chess-${{ steps.version.outputs.version }}-windows.zip
+            release-files/sharly-chess-${{ steps.version.outputs.version }}-macos.dmg
+          body_path: RELEASE_NOTES.md
