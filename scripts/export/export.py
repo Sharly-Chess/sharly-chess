@@ -1,9 +1,7 @@
-import argparse
 import sys
 from pathlib import Path
 
 from logging import Logger
-from packaging.version import Version, InvalidVersion
 
 sys.path.extend(
     map(
@@ -22,7 +20,6 @@ from common.i18n import update_i18n_files
 
 from common import enable_experimental_features
 
-from common import SHARLY_CHESS_VERSION
 from common.logger import get_logger
 from common.installation_checker import (
     InstallationChecker,
@@ -50,25 +47,10 @@ def get_project_builder() -> ProjectBuilder:
         case 'linux':
             return LinuxProjectBuilder()
         case _:
-            raise RuntimeError('No project builder for ')
+            raise RuntimeError(f'No project builder for platform [{sys.platform}].')
 
 
 def main():
-    # option --github is used when generating the EXE file from a GITHUB action
-    # to verify that the name of the tag matches the Sharly Chess version.
-    # option --preserve-build is used to skip cleanup for signing purposes
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--github', type=str)
-    args = parser.parse_args()
-    if args.github:
-        if SHARLY_CHESS_VERSION != Version(args.github):
-            raise InvalidVersion(
-                f'Version [{args.github}] does not match (expected [{SHARLY_CHESS_VERSION}]).'
-            )
-        else:
-            logger.info('Version [%s] is valid.', args.github)
-    else:
-        logger.info('The version is not verified (not running on GitHub).')
     if not InstallationChecker.check():
         sys.exit(1)
     if not update_i18n_files(generate_doc=False):

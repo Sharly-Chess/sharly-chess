@@ -1,4 +1,5 @@
 import os
+from argparse import ArgumentParser, Namespace
 from logging import Logger
 from pathlib import Path
 
@@ -12,9 +13,6 @@ logger: Logger = get_logger()
 
 # The release of SignTool installed by the GitHub action
 SIGNTOOL_RELEASE: int = 26100
-
-# The fingerprint of the certificate used to signe the EXE
-SIGNTOOL_CERT_FINGERPRINT: str = '93ce5c3718b4ac7471f6697bf4693d5ed985046e'
 
 # The URL where to get the timestamp of the signature
 SIGNTOOL_TIMESTAMP_URL = 'http://time.certum.pl'
@@ -31,6 +29,27 @@ class WinProjectBuilder(ProjectBuilder):
         self.signtool_dir: Path = Path(
             f'C:/Program Files (x86)/Windows Kits/10/bin/{signtool_version}/x64'
         )
+        # The fingerprint of the certificate used to sign files
+        self.signtool_cert_fingerprint: str = ''
+
+    def hook_add_params(
+        self,
+        parser: ArgumentParser,
+    ):
+        parser.add_argument(
+            '--windows-signtool-cert-fingerprint',
+            type=str,
+            help='The user.',
+            required=True,
+        )
+
+    def hook_check_params(
+        self,
+        args: Namespace,
+    ):
+        if not args.windows_signtool_cert_fingerprint:
+            raise RuntimeError('Option --windows-signtool-cert-fingerprint not found.')
+        self.signtool_cert_fingerprint = args.windows_signtool_cert_fingerprint
 
     def hook_post_clean_on_startup(self):
         # Will be used later to delete the MSI
@@ -137,9 +156,9 @@ class WinProjectBuilder(ProjectBuilder):
             [
                 'sign',
                 '-sha1',
-                str(SIGNTOOL_CERT_FINGERPRINT),
+                self.signtool_cert_fingerprint,
                 '-tr',
-                str(SIGNTOOL_TIMESTAMP_URL),
+                SIGNTOOL_TIMESTAMP_URL,
                 '-td',
                 'sha256',
                 '-fd',

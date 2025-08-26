@@ -3,6 +3,7 @@ import os
 import shutil
 import subprocess
 from abc import ABC, abstractmethod
+from argparse import ArgumentParser, Namespace
 from logging import Logger
 from pathlib import Path
 from pkgutil import iter_modules
@@ -11,6 +12,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 
 import requests
 from PyInstaller.__main__ import run
+from packaging.version import Version, InvalidVersion
 
 from common import BASE_DIR, EVENTS_FOLDER, TMP_DIR
 from common import SHARLY_CHESS_VERSION
@@ -52,6 +54,23 @@ class ProjectBuilder(ABC):
         self.clean_project_on_exit: bool = clean_project_on_exit
 
     def run(self) -> bool:
+        parser = ArgumentParser(description='Export Sharly Chess.')
+        # option --github is used when generating the EXE file from a GITHUB action
+        # to verify that the name of the tag matches the Sharly Chess version.
+        # option --preserve-build is used to skip cleanup for signing purposes
+        parser.add_argument('--github', type=str)
+        self.hook_add_params(parser)
+        args: Namespace = parser.parse_args()
+        if args.github:
+            if SHARLY_CHESS_VERSION != Version(args.github):
+                raise InvalidVersion(
+                    f'Version [{args.github}] does not match (expected [{SHARLY_CHESS_VERSION}]).'
+                )
+            else:
+                logger.info('Version [%s] is valid.', args.github)
+        else:
+            logger.info('The version is not verified (not running on GitHub).')
+        self.hook_check_params(args)
         self.clean_on_startup()
         if not self.build_project():
             return False
@@ -61,6 +80,20 @@ class ProjectBuilder(ABC):
             return False
         self.clean_on_exit()
         return True
+
+    @abstractmethod
+    def hook_add_params(
+        self,
+        parser: ArgumentParser,
+    ):
+        """Let the builder add params (for example to pass secrets on the command line)."""
+
+    @abstractmethod
+    def hook_check_params(
+        self,
+        args: Namespace,
+    ):
+        """Let the builder control the params passed to the program."""
 
     @staticmethod
     def _delete_folder(

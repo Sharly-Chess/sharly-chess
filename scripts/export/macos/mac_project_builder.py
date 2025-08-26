@@ -1,3 +1,5 @@
+from abc import abstractmethod
+from argparse import ArgumentParser, Namespace
 from logging import Logger
 
 from common import SHARLY_CHESS_VERSION
@@ -13,6 +15,20 @@ class MacProjectBuilder(ProjectBuilder):
     def __init__(self):
         # Do not clean the project folder to sign files with script build_and_notarize.sh
         super().__init__(clean_project_on_exit=False)
+
+    @abstractmethod
+    def hook_add_params(
+        self,
+        parser: ArgumentParser,
+    ):
+        pass
+
+    @abstractmethod
+    def hook_check_params(
+        self,
+        args: Namespace,
+    ):
+        pass
 
     def hook_post_clean_on_startup(self):
         pass
