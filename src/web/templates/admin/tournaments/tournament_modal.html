@@ -150,23 +150,6 @@
                 {% set trf25 = data.time_control_trf25 or '5400+30' %}
                 <input type="hidden" name="time_control_trf25" id="time-control-trf25" value="{{ trf25 }}">
 
-                <style>
-                  /* Time control editor – bootstrap-free layout for period rows */
-                  .tc-side-title { font-size: 95%; margin-top: 0.3rem; }
-                  .tc .tc-period { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) auto; gap: .5rem; align-items: end; }
-                  .tc .tc-period + .tc-period { margin-top: 1rem; }
-                  .tc .tc-field label { font-size: .85rem; display: block; margin-bottom: .25rem; }
-                  .tc .tc-input { width: 100%; }
-                  .tc .tc-del-wrap { display: flex; justify-content: end; align-items: center;}
-                  .tc .tc-del-wrap .btn { padding: .375rem .75rem; font-size: 1rem; }
-                  /* Single-column inputs with a floating delete button on tablet widths and below */
-                  @media (max-width: 768px) {
-                    .tc .tc-period { position: relative; display: grid; grid-template-columns: 1fr; gap: .5rem; align-items: start; padding-right: 56px; }
-                    .tc .tc-field { grid-column: 1; }
-                    .tc .tc-del-wrap { position: absolute; right: 0; top: 50%; transform: translateY(-50%); height: 40px; display: flex; align-items: center; justify-content: center; }
-                  }
-                </style>
-
                 <div class="row">
                     <div class="col-12 mb-3">
                         <div id="tc-editor-modal" class="tc" data-initial="{{ trf25 }}">
@@ -861,6 +844,34 @@
 
             // Re-render honoring the user's toggle (don't auto-collapse when equal)
             rerender($root, formatTrf25(tc), wantDifferent);
+        });
+
+        function tcEditorOpen() {
+            return $root.find('.tc-panel').is(':visible');
+        }
+
+        function tcNudgeAndMessage() {
+            const msg = "{{ _('Please close the time control editor before saving.') }}";
+            const $panel = $root.find('.tc-panel');
+            $root.find('.tc-error').text(msg);
+            const $container = $root.closest('.modal-body');
+            if ($container.length) {
+                const top = $root.offset().top - $container.offset().top + $container.scrollTop() - 16;
+                $container.animate({ scrollTop: top }, 200);
+            } else {
+                $('html, body').animate({ scrollTop: $root.offset().top - 80 }, 200);
+            }
+        }
+
+        // Block native submit
+        $('#modal-form').on('submit', function(e){
+            if (tcEditorOpen()) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                tcNudgeAndMessage();
+                return false;
+            }
         });
 
         // First render from initial value
