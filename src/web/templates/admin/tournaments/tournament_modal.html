@@ -147,7 +147,7 @@
                 <h4>{{ _('Time control') }}</h4>
 
                 {# Source of truth for the server #}
-                {% set trf25 = data.time_control_trf25 or '5400+30' %}
+                {% set trf25 = data.time_control_trf25 or '' %}
                 <input type="hidden" name="time_control_trf25" id="time-control-trf25" value="{{ trf25 }}">
 
                 <div class="row">
@@ -191,28 +191,7 @@
                     </div>
                 </div>
 
-                <h4>
-                    {{ _('Time control') }}
-                </h4>
                 <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
-                        {{ admin_macros.number_input(
-                            name='time_control_initial_time',
-                            label=_('Initial time (optional, seconds):'),
-                            placeholder=_('E.g.: %(seconds)d (%(minutes)d minutes)', seconds=5400, minutes=90),
-                            help_text=_('The initial time in seconds (may be empty if an increment is set).'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-md-6 mb-3">
-                        {{ admin_macros.number_input(
-                            name='time_control_increment',
-                            label=_('Increment (optional, seconds):'),
-                            placeholder=_('E.g.: %(seconds)d (seconds)', seconds=30),
-                            help_text=_('The number of seconds added to the players\' clock at each move.'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
                     <div class="col-12 col-md-4 mb-3">
                         {{ admin_macros.number_input(
                             name='time_control_handicap_penalty_value',
@@ -472,210 +451,10 @@
 {% endif %}
 
 <script>
-    var polyglot = new Polyglot({
-        locale: '{{ locale }}',
-        phrases: {
-            // units
-            'tc.seconds': '{{ _("<smart_count> second |||| <smart_count> seconds") }}',
-            'tc.minutes': '{{ _("<smart_count> minute |||| <smart_count> minutes") }}',
-            'tc.moves':   '{{ _("<smart_count> move |||| <smart_count> moves") }}',
-            'tc.min_abbr': '{{ _("min") }}',
-            'tc.sec_abbr': '{{ _("s") }}',
-            'tc.per_move': '{{ _("/move") }}',          // used like “+30 s/move”
-            'tc.for_moves': '{{ _("/<moves>") }}',      // used like “90 min/40 moves”
-
-            // labels & joiners
-            'tc.white': '{{ _("White") }}',
-            'tc.black': '{{ _("Black") }}',
-            'tc.then_join': '{{ _("<first> then <second>") }}',         // “A then B”
-            'tc.comma_join': '{{ _("<first>, <second>") }}',            // “A, B”
-            'tc.side_fmt': '{{ _("<side>: <text>") }}',                 // “White: …”
-        },
-        interpolation: {
-            prefix: '<',
-            suffix: '>',
-        },
-    });
-
-    function tcUnitMinutes(n){ return polyglot.t('tc.minutes', n); }
-    function tcUnitSeconds(n){ return polyglot.t('tc.seconds', n); }
-    function tcMoves(n){ return polyglot.t('tc.moves', n); }
-
-    // Join array with localized commas and final “then”
-    function joinWithThenLocalized(parts){
-        if (parts.length === 0) return '';
-        if (parts.length === 1) return parts[0];
-        // fold with comma, then replace last join with “then”
-        let out = parts[0];
-        for (let i=1;i<parts.length-1;i++){
-            out = polyglot.t('tc.comma_join', { first: out, second: parts[i] });
-        }
-        return polyglot.t('tc.then_join', { first: out, second: parts[parts.length-1] });
+    function ensureWhite(tc)  {
+        return { white: (tc.white && tc.white.length ? tc.white : [{ seconds: 0 }]), black: tc.black };
     }
 
-    // Render seconds as “X min Y s” or just minutes/seconds with correct plurals
-    function formatBaseSecondsPolyglot(total){
-        if (total >= 60){
-            const m = Math.floor(total/60);
-            const s = total % 60;
-            if (s === 0) return tcUnitMinutes(m);
-            return tcUnitMinutes(m) + ' ' + tcUnitSeconds(s);
-        }
-        return tcUnitSeconds(total);
-    }
-
-    // ---- Humanize one side (array of periods) ----
-    function humanizeSidePolyglot(periods){
-        if (!periods || !periods.length) return '';
-        const parts = periods.map((p) => {
-            const base = formatBaseSecondsPolyglot(p.seconds || 0);
-            const inc  = (p.increment!=null && p.increment>0) ? (' +' + tcUnitSeconds(p.increment) + '{{ _(' per move') }}') : '';
-            if (p.moves != null) {
-                return tcMoves(p.moves) + ' ' + '{{ _("in") }}' + ' ' + base + inc;   // “40 moves in 100 min +30 s”
-            }
-            return base + inc; // sudden death “15 min +10 s”
-        });
-        return joinWithThenLocalized(parts);
-    }
-
-    // ---- TRF25 -> human string using your existing parseTrf25 ----
-    function humanizeTrf25Polyglot(trf){
-        const tc = parseTrf25(trf);
-        const w = humanizeSidePolyglot(tc.white);
-        const b = tc.black ? humanizeSidePolyglot(tc.black) : null;
-        if (b && w !== b){
-            const ws = polyglot.t('tc.side_fmt', { side: polyglot.t('tc.white'), text: w });
-            const bs = polyglot.t('tc.side_fmt', { side: polyglot.t('tc.black'), text: b });
-            return ws + ' / ' + bs;
-        }
-        return w;
-    }
-
-    function fmtSecondsShort(total){
-        // Prefer minutes if >= 60; otherwise seconds
-        if (total >= 60 && total % 60 === 0) {
-            const m = Math.floor(total/60);
-            return `${m} ${polyglot.t('tc.min_abbr')}`;
-        }
-        if (total >= 60) {
-            const m = Math.floor(total/60);
-            const s = total % 60;
-            return `${m} ${polyglot.t('tc.min_abbr')} ${s} ${polyglot.t('tc.sec_abbr')}`;
-        }
-        return `${total} ${polyglot.t('tc.sec_abbr')}`;
-    }
-
-    function humanizePeriodShort(p, idx, totalCount){
-        const base = fmtSecondsShort(p.seconds || 0);
-        const inc  = (p.increment!=null && p.increment>0)
-            ? ` + ${p.increment} ${polyglot.t('tc.sec_abbr')}${polyglot.t('tc.per_move')}`
-            : '';
-
-        if (p.moves != null) {
-            const movesStr = tcMoves(p.moves);
-            const slashForMoves = polyglot.t('tc.for_moves', { moves: movesStr });
-            return `${base}${slashForMoves}${inc}`;
-        }
-
-        let out = base + inc;
-        // Special case: single-period with increment → add “from move 1”
-        if (totalCount === 1 && p.increment!=null && p.increment>0) {
-            out += ' ' + '{{ _("from move 1") }}';
-        }
-        return out;
-    }
-
-    function humanizeSideShort(periods){
-        if (!periods || !periods.length) return '';
-
-        // Step 1: see if all increments are the same and non-null
-        const increments = periods.map(p => p.increment ?? 0);
-        const allEqual = increments.every(i => i === increments[0]);
-        const commonInc = increments[0];
-
-        // Step 2: build period strings without increment if shared
-        const parts = periods.map((p,i) => {
-            const base = fmtSecondsShort(p.seconds || 0);
-            if (p.moves != null) {
-            const movesStr = tcMoves(p.moves);
-            const slashForMoves = polyglot.t('tc.for_moves', { moves: movesStr });
-            return base + slashForMoves;
-            }
-            return base;
-        });
-
-        let out = parts.join(' {{ _('then') }} ');
-
-        // Step 3: attach increment only once if shared
-        if (allEqual && commonInc > 0) {
-            out += ` + ${commonInc} ${polyglot.t('tc.sec_abbr')}${polyglot.t('tc.per_move')} {{ _("from move 1") }}`;
-        } else {
-            // fallback: add increments inline as before
-            out = periods.map(p => humanizePeriodShort(p)).join(' + ');
-        }
-
-        return out;
-    }
-
-    // TRF25 → short string (handles asymmetry)
-    function humanizeTrf25Short(trf){
-        const tc = parseTrf25(trf);
-        const w = humanizeSideShort(tc.white);
-        const b = tc.black ? humanizeSideShort(tc.black) : null;
-        if (b && w !== b){
-            const ws = polyglot.t('tc.side_fmt', { side: polyglot.t('tc.white'), text: w });
-            const bs = polyglot.t('tc.side_fmt', { side: polyglot.t('tc.black'), text: b });
-            return `${ws} / ${bs}`;
-        }
-        return w;
-    }
-
-    // ----- TRF25 parse/format -----
-    function parseTrf25(input) {
-        const t = (input || '').trim();
-        if (!t) return { white: [{ seconds: 0 }] };
-
-        const parseSide = (s) => {
-            const body = s.replace(/^[WB]/i,'');
-            return body.split(':').filter(Boolean).map(parsePeriod);
-        };
-        function parsePeriod(tok ){
-            const m = tok.match(/^(\d+\/)?(\d+)(?:\+(\d+))?$/);
-            if (!m) throw new Error(`Invalid period: “${tok}”`);
-            const moves = m[1] ? parseInt(m[1],10) : undefined;
-            const seconds = parseInt(m[2],10);
-            const increment = m[3] ? parseInt(m[3],10) : undefined;
-            return { moves, seconds, increment };
-        }
-
-        const hasWB = /^[WB]/i.test(t) && /-/.test(t);
-        if (hasWB) {
-            const [l,r] = t.split('-',2);
-            const out = {};
-            (/^[Ww]/.test(l) ? (out.white=parseSide(l)) : (out.black=parseSide(l)));
-            (/^[Bb]/.test(r) ? (out.black=parseSide(r)) : (out.white=parseSide(r)));
-            return out;
-        }
-
-        // It's symmetric
-        return { white: parseSide(t) };
-    }
-
-    function formatTrf25(tc){
-        const fmtSide = (side)=> side.map(p => {
-            const base = (p.moves !=null ? p.moves + '/' : '') + (p.seconds ?? 0);
-            return p.increment!=null ? base + '+' + p.increment : base;
-        }).join(':');
-
-        const w = tc.white ? fmtSide(tc.white) : undefined;
-        const b = tc.black ? fmtSide(tc.black) : undefined;
-        if (w && b && w!==b) return 'W'+w+'-B'+b;
-        return w ?? (b ?? '');
-    }
-
-    const ensureWhite = (tc) => ({ white: (tc.white && tc.white.length ? tc.white : [{ seconds: 0 }]), black: tc.black });
-
-    // ----- UI builders -----
     function periodRow(p) {
         const moves = p.moves ?? '';
         const mins  = Math.floor((p.seconds || 0) / 60);
@@ -843,7 +622,7 @@
         if (!$root.length) return;
 
         const $hidden = $('#time-control-trf25');
-        let initial = $root.data('initial') || $hidden.val() || '5400+30';
+        let initial = $root.data('initial') || $hidden.val() || '';
         try {
             parseTrf25(initial);   // validate
         } catch {

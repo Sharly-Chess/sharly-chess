@@ -86,7 +86,7 @@
 }
 
 .pairing-modal .admin-result-button.danger:hover {
-    background-color: var(--bs-danger);
+    background-color: var(--bs      danger);
     border-color: var(--bs-danger);
     color: white;
 }

@@ -90,4 +90,13 @@
             </div>
         {% endif %}
     </div>
+
+    <script>
+        $(document).ready(function() {
+            document.querySelectorAll('.tc-human').forEach(el => {
+                const trf = el.dataset.trf;
+                el.textContent = humanizeTrf25Short(trf);
+            });
+        });
+    </script>
 {% endblock %}
