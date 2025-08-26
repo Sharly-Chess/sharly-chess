@@ -171,6 +171,8 @@ class BakuSwissVariation(AccelerationSwissVariation):
 
     @property
     def settings(self) -> list[PairingSetting]:
+        # FIXME(Amaras): use pairing numbers instead of rating
+        # FIXME(Amaras): make sure the settings can't be modified by arbiters
         return super().settings + [RatingLimitSetting()]
 
     @staticmethod
@@ -191,6 +193,8 @@ class BakuSwissVariation(AccelerationSwissVariation):
     ) -> float:
         if at_round > cls.accelerated_rounds(tournament.rounds):
             return 0
+        # FIXME(Amaras): ensure the last player's id is the same after including latecomers
+        # TODO(Amaras): figure out what to do when ratings are modified
         rating_group = RatingLimitSetting.get_player_rating_group(tournament, player)
         if at_round > cls.full_point_rounds(tournament.rounds):
             if rating_group == RatingGroup.A:
