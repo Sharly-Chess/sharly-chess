@@ -521,13 +521,19 @@
             // Skip fully empty
             if (movesRaw === '' && !hasInc && seconds === 0) return;
 
-            // Validate moves > 0 if present
-            let movesInt;
+            const isLast = idx === $side.find('.tc-period').length - 1;
+
+            // Validate moves
             if (movesRaw !== '') {
                 movesInt = parseInt(movesRaw, 10);
-                if (isNaN(movesInt) || movesInt <= 0) {
+                if (isNaN(movesInt) || movesInt < 0 || (!isLast && movesInt === 0)) {
                     $moves.addClass('is-invalid');
                     errors.push(`{{ _('Period') }} ${idx+1} : {{ _('the number of moves must be a positive integer.') }}`);
+                    return;
+                }
+                if (isLast) {
+                    $moves.addClass('is-invalid');
+                    errors.push(`{{ _('Period') }} ${idx+1} : {{ _('the number of moves must not be specified for the final period.') }}`);
                     return;
                 }
             }
@@ -552,12 +558,12 @@
             periods.push(p);
         });
 
-        // Rule C: non-final periods must specify moves (how else do we advance?)
+        // Rule C: non-final periods must specify moves; final period must not
         periods.forEach((p, i) => {
             const isLast = i === periods.length - 1;
+            const $row = $side.find('.tc-period').eq(i);
+
             if (!isLast && (p.moves == null)) {
-                // Find the matching row DOM to mark invalid
-                const $row = $side.find('.tc-period').eq(i);
                 $row.find('.p-moves').addClass('is-invalid');
                 errors.push(`{{ _('Period') }} ${i+1} : {{ _('the number of moves is required for a non-final period.') }}`);
             }
