@@ -5587,10 +5587,7 @@ msgstr ""
 msgid "display-controller"
 msgstr ""
 
-msgid "duration is required if moves or an increment are provided."
-msgstr ""
-
-msgid "duration must be greater than 0."
+msgid "either the duration or the increment must be greater than 0."
 msgstr ""
 
 msgid "event"

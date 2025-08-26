@@ -341,8 +341,8 @@
                     if (allEqual && commonInc > 0) {
                         out += ` + ${commonInc} ${polyglot.t('tc.sec_abbr')}${polyglot.t('tc.per_move')} {{ _("from move 1") }}`;
                     } else {
-                        // fallback: add increments inline as before
-                        out = periods.map(p => humanizePeriodShort(p)).join(' + ');
+                        const parts = periods.map((p,i) => humanizePeriodShort(p, i, periods.length));
+                        out = joinWithThenLocalized(parts);
                     }
 
                     return out;

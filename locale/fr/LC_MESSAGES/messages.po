@@ -5587,11 +5587,8 @@ msgstr "par défaut"
 msgid "display-controller"
 msgstr "pilote-d-afficheur"
 
-msgid "duration is required if moves or an increment are provided."
-msgstr "la durée est requise si des coups ou un incrément sont fournis."
-
-msgid "duration must be greater than 0."
-msgstr "la durée doit être supérieure à 0."
+msgid "either the duration or the increment must be greater than 0."
+msgstr "la durée ou l’incrément doit être supérieur à 0."
 
 msgid "event"
 msgstr "évènement"

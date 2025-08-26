@@ -491,7 +491,7 @@
         return $el;
     }
 
-    function readSide($side){
+    function readSide($side, { annotate = false } = {}){
         const periods = [];
         const errors = [];
 
@@ -502,9 +502,13 @@
             const $secs  = $r.find('.p-secs');
             const $inc   = $r.find('.p-inc');
 
-            // Clear previous invalid styles
-            $moves.removeClass('is-invalid'); $mins.removeClass('is-invalid');
-            $secs.removeClass('is-invalid');  $inc.removeClass('is-invalid');
+            // Only clear previous invalid styles when we intend to annotate
+            if (annotate) {
+                $moves.removeClass('is-invalid');
+                $mins.removeClass('is-invalid');
+                $secs.removeClass('is-invalid');
+                $inc.removeClass('is-invalid');
+            }
 
             const movesRaw = $moves.val();
             const minsRaw  = $mins.val();
@@ -524,30 +528,22 @@
 
             // Validate moves
             if (movesRaw !== '') {
-                movesInt = parseInt(movesRaw, 10);
+                const movesInt = parseInt(movesRaw, 10);
                 if (isNaN(movesInt) || movesInt < 0 || (!isLast && movesInt === 0)) {
-                    $moves.addClass('is-invalid');
+                    if (annotate) $moves.addClass('is-invalid');
                     errors.push(`{{ _('Period') }} ${idx+1} : {{ _('the number of moves must be a positive integer.') }}`);
                     return;
                 }
                 if (isLast) {
-                    $moves.addClass('is-invalid');
+                    if (annotate) $moves.addClass('is-invalid');
                     errors.push(`{{ _('Period') }} ${idx+1} : {{ _('the number of moves must not be specified for the final period.') }}`);
                     return;
                 }
             }
 
-            // Rule A: seconds required if moves or increment present
-            if ((hasMoves || hasInc) && seconds === 0) {
-                $mins.addClass('is-invalid'); $secs.addClass('is-invalid');
-                errors.push(`{{ _('Period') }} ${idx+1} : {{ _('duration is required if moves or an increment are provided.') }}`);
-                return;
-            }
-
-            // Rule B: seconds must be > 0 for any kept period
-            if (seconds === 0) {
-                $mins.addClass('is-invalid'); $secs.addClass('is-invalid');
-                errors.push(`{{ _('Period') }} ${idx+1} : {{ _('duration must be greater than 0.') }}`);
+            if (seconds === 0 && !hasInc) {
+                if (annotate) { $mins.addClass('is-invalid'); $secs.addClass('is-invalid'); }
+                errors.push(`{{ _('Period') }} ${idx+1} : {{ _('either the duration or the increment must be greater than 0.') }}`);
                 return;
             }
 
@@ -561,9 +557,8 @@
         periods.forEach((p, i) => {
             const isLast = i === periods.length - 1;
             const $row = $side.find('.tc-period').eq(i);
-
             if (!isLast && (p.moves == null)) {
-                $row.find('.p-moves').addClass('is-invalid');
+                if (annotate) $row.find('.p-moves').addClass('is-invalid');
                 errors.push(`{{ _('Period') }} ${i+1} : {{ _('the number of moves is required for a non-final period.') }}`);
             }
         });
@@ -576,7 +571,7 @@
         const $sides = $root.find('.tc-sides > .tc-side');
 
         const read = (sideEl) => {
-            const { periods, errors } = readSide(sideEl);
+            const { periods, errors } = readSide(sideEl, { annotate: !!opts.annotate });
             if (errors.length && !opts.allowPartial) throw new Error(errors.join(' '));
             return periods;
         };
@@ -611,14 +606,21 @@
 
     function updatePreview($root){
         try {
-            const tc  = currentModel($root, { allowPartial:true });
+            const tc  = currentModel($root, { allowPartial:true, annotate:false });
             const str = formatTrf25(tc);
             $root.find('.tc-readable').text(humanizeTrf25Short(str));
             $root.find('.tc-error').text('');
         } catch {
-            // suppress errors while typing
             $root.find('.tc-error').text('');
         }
+    }
+
+    function updateDeleteButtons($root){
+        $root.find('.tc-side').each(function(){
+            const $rows = $(this).find('.tc-period');
+            $rows.find('.tc-del').css('visibility', 'hidden');
+            $rows.last().find('.tc-del').css('visibility', 'visible');
+        });
     }
 
     // ----- Init for the modal instance -----
@@ -652,12 +654,13 @@
         $root.on('click', '.tc-edit', show);
         $root.on('click', '.tc-cancel', hide);
 
+
         $root.on('click', '.tc-ok', function() {
-        try {
-                const tc = currentModel($root); // Throws if invalid
+            try {
+                const tc = currentModel($root, { allowPartial:false, annotate:true }); // validate + mark fields
                 const out = formatTrf25(tc);
-                $root.find('.tc-readable').text(humanizeTrf25Short(out));        // editor panel readable
-                $root.find('.tc-readable-inline').text(humanizeTrf25Short(out)); // main display readable
+                $root.find('.tc-readable').text(humanizeTrf25Short(out));
+                $root.find('.tc-readable-inline').text(humanizeTrf25Short(out));
                 $hidden.val(out);
                 hide();
             } catch (e) {
@@ -680,6 +683,7 @@
             }
 
             updatePreview($root);
+            updateDeleteButtons($root);
         });
 
         $root.on('click', '.tc-del', function() {
@@ -689,6 +693,7 @@
                 $side.find('.tc-periods').append(periodRow({ seconds: 0 }));
             }
             updatePreview($root);
+            updateDeleteButtons($root);
         });
 
         $root.on('input', '.tc-panel input', function() { updatePreview($root); });
@@ -743,5 +748,6 @@
         // First render from initial value
         $hidden.val(initial);
         $root.find('.tc-readable-inline').text(humanizeTrf25Short(initial));
+        updateDeleteButtons($root);
     });
 </script>
