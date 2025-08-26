@@ -15,15 +15,15 @@ permissions:
 
 jobs:
 
-#  tests:
-#    uses: ./.github/workflows/full_tests.yml
+  tests:
+    uses: ./.github/workflows/full_tests.yml
 
   export-sharly-chess-windows:
     # Next job export-sharly-chess-windows needs to run on a Windows self-hosted GitHub runner
     # for cloud code-signing. If the job doesn't start, it is probably because GitHub did not
     # find a self-hosted runner with label 'your-github-id'.
     # In this case, check the labels of your runners.
-#    needs: tests
+    needs: tests
     runs-on: ${{ github.actor }}
     steps:
       # Get the current date to set the title of the release
@@ -83,7 +83,7 @@ jobs:
             export/sharly-chess-${{ steps.version.outputs.version }}.zip
 
   export-sharly-chess-macos:
-#    needs: tests
+    needs: tests
     runs-on: macos-latest
     steps:
       # Get the current date to set the title of the release
