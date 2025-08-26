@@ -14,6 +14,11 @@ class LinuxProjectBuilder(ProjectBuilder):
         super().__init__(clean_project_on_exit=False)
         raise NotImplementedError(f'Class {self.__class__} not implemented yet.')
 
+    def hook_extend_sys_path(
+        self,
+    ):
+        pass
+
     def hook_add_params(
         self,
         parser: ArgumentParser,

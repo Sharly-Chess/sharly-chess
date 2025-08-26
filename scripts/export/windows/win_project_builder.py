@@ -1,4 +1,4 @@
-import os
+import sys
 from argparse import ArgumentParser, Namespace
 from logging import Logger
 from pathlib import Path
@@ -31,6 +31,11 @@ class WinProjectBuilder(ProjectBuilder):
         )
         # The fingerprint of the certificate used to sign files
         self.signtool_cert_fingerprint: str = ''
+
+    def hook_extend_sys_path(
+        self,
+    ):
+        sys.path.append(str(self.signtool_dir))
 
     def hook_add_params(
         self,
@@ -84,10 +89,6 @@ class WinProjectBuilder(ProjectBuilder):
         # signer: SignTool = SignTool(authority_timestamp_url='http://time.certum.pl')
         # signer.sign(EXE, bitness=64)
 
-        # SignTool must run from its folder or the folder added to PATH
-        cwd = os.getcwd()
-        os.chdir(self.signtool_dir)
-
         import subprocess
 
         cmd: list[str] = [
@@ -96,8 +97,6 @@ class WinProjectBuilder(ProjectBuilder):
         logger.info('Running command [%s]...', ' '.join(cmd))
         process = subprocess.run(cmd, capture_output=True, text=True)
         logger.info('Command returned [%d].', process.returncode)
-        # Restore the orig working dir
-        os.chdir(cwd)
 
         return (
             process.returncode,

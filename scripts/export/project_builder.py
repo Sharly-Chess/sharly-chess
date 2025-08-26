@@ -82,6 +82,12 @@ class ProjectBuilder(ABC):
         return True
 
     @abstractmethod
+    def hook_extend_sys_path(
+        self,
+    ):
+        """Let the builder extend to path (needed by external commands)."""
+
+    @abstractmethod
     def hook_add_params(
         self,
         parser: ArgumentParser,
