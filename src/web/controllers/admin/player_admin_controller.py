@@ -238,8 +238,7 @@ class PlayerAdminController(BaseEventAdminController):
                 for tr in TournamentRating
             },
             fide_id=WebContext.form_data_to_int(data, 'fide_id'),
-            federation=WebContext.form_data_to_str(data, 'federation')
-            or SharlyChessConfig().default_federation,
+            federation=WebContext.form_data_to_str(data, 'federation') or '',
             club=WebContext.form_data_to_str(data, 'club') or '',
             fixed=WebContext.form_data_to_int(data, 'fixed'),
             check_in=False,

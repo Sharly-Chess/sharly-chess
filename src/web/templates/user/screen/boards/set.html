@@ -6,13 +6,14 @@
             <div class="boards-set">
                 <h2 class="set-title text-center">
                     {% if tournament.current_round %}
-                        {% set remaining=tournament.boards_without_result(tournament.current_round)|length %}
+                        {% set current_round = tournament.current_round %}
+                        {% set remaining=tournament.boards_without_result(current_round)|length %}
                         {{ ngettext(
                             "%(set_name)s (round #%(round)d, %(remaining)d board remaining)",
                             "%(set_name)s (round #%(round)d, %(remaining)d boards remaining)",
                             remaining,
                             set_name=screen_set.name_for_boards,
-                            round=tournament.current_round,
+                            round=current_round,
                             remaining=remaining
                         ) }}
                     {% else %}
@@ -27,11 +28,11 @@
                                     <tr>
                                         <th scope="col" class="board-number">Ech</th>
                                         <th scope="col" class="points">Pts</th>
-                                        {% if tournament.print_real_points %}<th scope="col" class="points">&nbsp;</th>{% endif %}
+                                        {% if tournament.print_real_points(current_round) %}<th scope="col" class="points">&nbsp;</th>{% endif %}
                                         <th scope="col" class="player w-50" {% if screen.type == 'input' and tournament.record_illegal_moves %}colspan="2"{% endif %}>{{ _('White') }}{% if tournament.handicap %} ({{ _('time control') }}){% endif %}</th>
                                         <th scope="col" class="score">Score</th>
                                         <th scope="col" class="player w-50" {% if screen.type == 'input' and tournament.record_illegal_moves %}colspan="2"{% endif %}>{{ _('Black') }}{% if tournament.handicap %} ({{ _('time control') }}){% endif %}</th>
-                                        {% if tournament.print_real_points %}<th scope="col" class="points">&nbsp;</th>{% endif %}
+                                        {% if tournament.print_real_points(current_round) %}<th scope="col" class="points">&nbsp;</th>{% endif %}
                                         <th scope="col" class="points">Pts</th>
                                     </tr>
                                 </thead>
@@ -80,7 +81,7 @@
                                         >
                                             {{ wp.vpoints_str }}
                                         </td>
-                                        {% if tournament.print_real_points %}
+                                        {% if tournament.print_real_points(current_round) %}
                                             <td
                                                 class="points bg-transparent text-center"
                                                 {% if editable %}
@@ -117,7 +118,7 @@
                                             {% include 'board_row_illegal_moves_cell.html' %}
                                             {% include 'board_row_player_cell.html' %}
                                         {% endwith %}
-                                        {% if tournament.print_real_points %}
+                                        {% if tournament.print_real_points(current_round) %}
                                             <td
                                                 class="points bg-transparent text-center"
                                                 {% if editable %}
