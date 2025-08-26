@@ -144,6 +144,71 @@
                     {% include form_fields_template %}
                 {% endfor %}
 
+                <h4>{{ _('Time control') }}</h4>
+
+                {# Source of truth for the server #}
+                {% set trf25 = data.time_control_trf25 or '5400+30' %}
+                <input type="hidden" name="time_control_trf25" id="time-control-trf25" value="{{ trf25 }}">
+
+                <style>
+                  /* Time control editor – bootstrap-free layout for period rows */
+                  .tc-side-title { font-size: 95%; margin-top: 0.3rem; }
+                  .tc .tc-period { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) auto; gap: .5rem; align-items: end; }
+                  .tc .tc-period + .tc-period { margin-top: 1rem; }
+                  .tc .tc-field label { font-size: .85rem; display: block; margin-bottom: .25rem; }
+                  .tc .tc-input { width: 100%; }
+                  .tc .tc-del-wrap { display: flex; justify-content: end; align-items: center;}
+                  .tc .tc-del-wrap .btn { padding: .375rem .75rem; font-size: 1rem; }
+                  /* Single-column inputs with a floating delete button on tablet widths and below */
+                  @media (max-width: 768px) {
+                    .tc .tc-period { position: relative; display: grid; grid-template-columns: 1fr; gap: .5rem; align-items: start; padding-right: 56px; }
+                    .tc .tc-field { grid-column: 1; }
+                    .tc .tc-del-wrap { position: absolute; right: 0; top: 50%; transform: translateY(-50%); height: 40px; display: flex; align-items: center; justify-content: center; }
+                  }
+                </style>
+
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <div id="tc-editor-modal" class="tc" data-initial="{{ trf25 }}">
+                            <!-- Read-only display -->
+                            <div class="tc-display d-flex align-items-center gap-2">
+                                <span class="tc-readable-inline"></span>
+                                <span class="text-muted">—</span>
+                                <button type="button" class="tc-edit btn btn-sm btn-outline-primary ms-2">
+                                    <i class="bi-pencil-fill"></i> {{ _('Edit') }}
+                                </button>
+                            </div>
+
+                            <!-- Inline editor -->
+                            <div class="tc-panel mt-2" style="display:none">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input tc-diff" type="checkbox" id="tc-diff">
+                                    <label class="form-check-label" for="tc-diff">
+                                        {{ _('Different for White / Black') }}
+                                    </label>
+                                </div>
+
+                                <div class="tc-sides d-grid gap-2"></div>
+
+                                <div class="small text-muted mt-2">
+                                    <div class="small text-muted mt-1">
+                                        <span class="tc-readable"></span>
+                                    </div>
+                                    <div class="tc-error text-danger"></div>
+                                </div>
+
+                                <div class="d-flex gap-2 mt-2">
+                                    <button type="button" class="tc-ok btn btn-sm btn-primary">{{ _('OK') }}</button>
+                                    <button type="button" class="tc-cancel btn btn-sm btn-outline-secondary">{{ _('Cancel') }}</button>
+                                    <button type="button" class="tc-add-period btn btn-sm btn-outline-primary">
+                                        + {{ _('Add period') }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <h4>
                     {{ _('Time control') }}
                 </h4>
@@ -423,3 +488,383 @@
         });
     </script>
 {% endif %}
+
+<script>
+    var polyglot = new Polyglot({
+        locale: '{{ locale }}',
+        phrases: {
+            // units
+            'tc.seconds': '{{ _("<smart_count> second |||| <smart_count> seconds") }}',
+            'tc.minutes': '{{ _("<smart_count> minute |||| <smart_count> minutes") }}',
+            'tc.moves':   '{{ _("<smart_count> move |||| <smart_count> moves") }}',
+
+            // labels & joiners
+            'tc.white': '{{ _("White") }}',
+            'tc.black': '{{ _("Black") }}',
+            'tc.then_join': '{{ _("<first> then <second>") }}',         // “A then B”
+            'tc.comma_join': '{{ _("<first>, <second>") }}',            // “A, B”
+            'tc.side_fmt': '{{ _("<side>: <text>") }}',                 // “White: …”
+        },
+        interpolation: {
+            prefix: '<',
+            suffix: '>',
+        },
+    });
+
+    function tcUnitMinutes(n){ return polyglot.t('tc.minutes', n); }
+    function tcUnitSeconds(n){ return polyglot.t('tc.seconds', n); }
+    function tcMoves(n){ return polyglot.t('tc.moves', n); }
+
+    // Join array with localized commas and final “then”
+    function joinWithThenLocalized(parts){
+        if (parts.length === 0) return '';
+        if (parts.length === 1) return parts[0];
+        // fold with comma, then replace last join with “then”
+        let out = parts[0];
+        for (let i=1;i<parts.length-1;i++){
+            out = polyglot.t('tc.comma_join', { first: out, second: parts[i] });
+        }
+        return polyglot.t('tc.then_join', { first: out, second: parts[parts.length-1] });
+    }
+
+    // Render seconds as “X min Y s” or just minutes/seconds with correct plurals
+    function formatBaseSecondsPolyglot(total){
+        if (total >= 60){
+            const m = Math.floor(total/60);
+            const s = total % 60;
+            if (s === 0) return tcUnitMinutes(m);
+            return tcUnitMinutes(m) + ' ' + tcUnitSeconds(s);
+        }
+        return tcUnitSeconds(total);
+    }
+
+    // ---- Humanize one side (array of periods) ----
+    function humanizeSidePolyglot(periods){
+        if (!periods || !periods.length) return '';
+        const parts = periods.map((p) => {
+            const base = formatBaseSecondsPolyglot(p.seconds || 0);
+            const inc  = (p.increment!=null && p.increment>0) ? (' +' + tcUnitSeconds(p.increment)) : '';
+            if (p.moves != null) {
+                return tcMoves(p.moves) + ' ' + '{{ _("in") }}' + ' ' + base + inc;   // “40 moves in 100 min +30 s”
+            }
+            return base + inc; // sudden death “15 min +10 s”
+        });
+        return joinWithThenLocalized(parts);
+    }
+
+    // ---- TRF25 -> human string using your existing parseTrf25 ----
+    function humanizeTrf25Polyglot(trf){
+        const tc = parseTrf25(trf);
+        const w = humanizeSidePolyglot(tc.white);
+        const b = tc.black ? humanizeSidePolyglot(tc.black) : null;
+        if (b && w !== b){
+            const ws = polyglot.t('tc.side_fmt', { side: polyglot.t('tc.white'), text: w });
+            const bs = polyglot.t('tc.side_fmt', { side: polyglot.t('tc.black'), text: b });
+            return ws + ' / ' + bs;
+        }
+        return w;
+    }
+
+    // ----- TRF25 parse/format -----
+    function parseTrf25(input) {
+        const t = (input || '').trim();
+        if (!t) return { white: [{ seconds: 0 }] };
+
+        const parseSide = (s) => {
+            const body = s.replace(/^[WB]/i,'');
+            return body.split(':').filter(Boolean).map(parsePeriod);
+        };
+        function parsePeriod(tok ){
+            const m = tok.match(/^(\d+\/)?(\d+)(?:\+(\d+))?$/);
+            if (!m) throw new Error(`Invalid period: “${tok}”`);
+            const moves = m[1] ? parseInt(m[1],10) : undefined;
+            const seconds = parseInt(m[2],10);
+            const increment = m[3] ? parseInt(m[3],10) : undefined;
+            return { moves, seconds, increment };
+        }
+
+        const hasWB = /^[WB]/i.test(t) && /-/.test(t);
+        if (hasWB) {
+            const [l,r] = t.split('-',2);
+            const out = {};
+            (/^[Ww]/.test(l) ? (out.white=parseSide(l)) : (out.black=parseSide(l)));
+            (/^[Bb]/.test(r) ? (out.black=parseSide(r)) : (out.white=parseSide(r)));
+            return out;
+        }
+
+        // It's symmetric
+        return { white: parseSide(t) };
+    }
+
+    function formatTrf25(tc){
+        const fmtSide = (side)=> side.map(p => {
+            const base = (p.moves !=null ? p.moves + '/' : '') + (p.seconds ?? 0);
+            return p.increment!=null ? base + '+' + p.increment : base;
+        }).join(':');
+
+        const w = tc.white ? fmtSide(tc.white) : undefined;
+        const b = tc.black ? fmtSide(tc.black) : undefined;
+        if (w && b && w!==b) return 'W'+w+'-B'+b;
+        return w ?? (b ?? '');
+    }
+
+    const ensureWhite = (tc) => ({ white: (tc.white && tc.white.length ? tc.white : [{ seconds: 0 }]), black: tc.black });
+
+    // ----- UI builders -----
+    function periodRow(p) {
+        const moves = p.moves ?? '';
+        const mins  = Math.floor((p.seconds || 0) / 60);
+        const secs  = (p.seconds || 0) % 60;
+        const inc   = p.increment ?? '';
+        return $(`
+            <div class="tc-period">
+                <div class="tc-field">
+                    <label>Coups</label>
+                    <input type="number" class="form-control p-moves" min="0" value="${moves}">
+                </div>
+                <div class="tc-field">
+                    <label>Durée (min)</label>
+                    <input type="number" class="form-control p-mins" min="0" value="${mins}">
+                </div>
+                <div class="tc-field">
+                    <label>Durée (s)</label>
+                    <input type="number" class="form-control p-secs" min="0" max="59" value="${secs}">
+                </div>
+                <div class="tc-field">
+                    <label>Incrément (s)</label>
+                    <input type="number" class="form-control p-inc" min="0" value="${inc}">
+                </div>
+                <div class="tc-del-wrap">
+                    <button type="button" class="btn btn-sm btn-secondary tc-del">✕</button>
+                </div>
+            </div>
+        `);
+    }
+
+    function sideBox(title, arr) {
+        if (title) title = `<h4 class="tc-side-title">${title}</h4>`;
+        const $el = $(`<div class="tc-side">${title}<div class="tc-periods"></div></div>`);
+        arr.forEach(p=> $el.find('.tc-periods').append(periodRow(p)));
+        return $el;
+    }
+
+    function readSide($side){
+        const periods = [];
+        const errors = [];
+
+        $side.find('.tc-period').each(function(idx) {
+            const $r = $(this);
+            const $moves = $r.find('.p-moves');
+            const $mins  = $r.find('.p-mins');
+            const $secs  = $r.find('.p-secs');
+            const $inc   = $r.find('.p-inc');
+
+            // Clear previous invalid styles
+            $moves.removeClass('is-invalid'); $mins.removeClass('is-invalid');
+            $secs.removeClass('is-invalid');  $inc.removeClass('is-invalid');
+
+            const movesRaw = $moves.val();
+            const minsRaw  = $mins.val();
+            const secsRaw  = $secs.val();
+            const incRaw   = $inc.val();
+
+            const hasMoves = movesRaw !== '' && !isNaN(parseInt(movesRaw,10));
+            const hasInc   = incRaw   !== '' && !isNaN(parseInt(incRaw,10));
+            const mins = parseInt(minsRaw,10) || 0;
+            const secs = parseInt(secsRaw,10) || 0;
+            const seconds = Math.max(0, mins*60 + secs);
+
+            // Skip fully empty
+            if (movesRaw === '' && !hasInc && seconds === 0) return;
+
+            // Validate moves > 0 if present
+            let movesInt;
+            if (movesRaw !== '') {
+                movesInt = parseInt(movesRaw, 10);
+                if (isNaN(movesInt) || movesInt <= 0) {
+                    $moves.addClass('is-invalid');
+                    errors.push(`Période ${idx+1} : le nombre de coups doit être un entier positif.`);
+                    return;
+                }
+            }
+
+            // Rule A: seconds required if moves or increment present
+            if ((hasMoves || hasInc) && seconds === 0) {
+                $mins.addClass('is-invalid'); $secs.addClass('is-invalid');
+                errors.push(`Période ${idx+1} : la durée est requise si des coups ou un incrément sont renseignés.`);
+                return;
+            }
+
+            // Rule B: seconds must be > 0 for any kept period
+            if (seconds === 0) {
+                $mins.addClass('is-invalid'); $secs.addClass('is-invalid');
+                errors.push(`Période ${idx+1} : la durée doit être supérieure à 0.`);
+                return;
+            }
+
+            const p = { seconds };
+            if (hasMoves) p.moves = Math.max(0, parseInt(movesRaw,10)||0);
+            if (hasInc)   p.increment = Math.max(0, parseInt(incRaw,10)||0);
+            periods.push(p);
+        });
+
+        // Rule C: non-final periods must specify moves (how else do we advance?)
+        periods.forEach((p, i) => {
+            const isLast = i === periods.length - 1;
+            if (!isLast && (p.moves == null)) {
+                // Find the matching row DOM to mark invalid
+                const $row = $side.find('.tc-period').eq(i);
+                $row.find('.p-moves').addClass('is-invalid');
+                errors.push(`Période ${i+1} : le nombre de coups est requis pour une période non finale.`);
+            }
+        });
+
+        return { periods, errors };
+    }
+
+    function currentModel($root, opts={}) {
+        const diff = $root.find('.tc-diff').is(':checked');
+        const $sides = $root.find('.tc-sides > .tc-side');
+
+        const read = (sideEl) => {
+            const { periods, errors } = readSide(sideEl);
+            if (errors.length && !opts.allowPartial) throw new Error(errors.join(' '));
+            return periods;
+        };
+
+        if (!diff) return { white: read($sides.first()) };
+        return { white: read($sides.eq(0)), black: read($sides.eq(1)) };
+    }
+
+    function rerender($root, trf, forceDifferent) {
+        const model = ensureWhite(parseTrf25(trf));
+        const $panel = $root.find('.tc-panel');
+        const $sides = $panel.find('.tc-sides').empty();
+
+        // Checkbox is the source of truth unless caller forces it
+        const wantDifferent = (typeof forceDifferent === 'boolean')
+            ? forceDifferent
+            : $panel.find('.tc-diff').is(':checked');
+
+        $panel.find('.tc-diff').prop('checked', wantDifferent);
+
+        if (wantDifferent) {
+            // Ensure there is a black side; if missing, clone white
+            const black = model.black ? model.black : JSON.parse(JSON.stringify(model.white));
+            $sides.append(sideBox('Blanc', model.white));
+            $sides.append(sideBox('Noir', black));
+        } else {
+            $sides.append(sideBox('', model.white));
+        }
+
+        updatePreview($root);
+    }
+
+    function updatePreview($root){
+        try {
+            const tc  = currentModel($root, { allowPartial:true });
+            const str = formatTrf25(tc);
+            $root.find('.tc-readable').text(humanizeTrf25Polyglot(str));
+            $root.find('.tc-error').text('');
+        } catch {
+            // suppress errors while typing
+            $root.find('.tc-error').text('');
+        }
+    }
+
+    // ----- Init for the modal instance -----
+    $(function() {
+        const $root = $('#tc-editor-modal');
+        if (!$root.length) return;
+
+        const $hidden = $('#time-control-trf25');
+        let initial = $root.data('initial') || $hidden.val() || '5400+30';
+        try {
+            parseTrf25(initial);   // validate
+        } catch {
+            initial = '';          // reset to empty if corrupt
+        }
+
+        const show = () => {
+            const currentStr = $hidden.val().trim();
+            const wantDifferent = $root.find('.tc-diff').is(':checked');
+            rerender($root, currentStr, wantDifferent);
+            $root.find('.tc-panel').slideDown(120);
+            $root.find('.tc-display .tc-edit').hide();        // Hide the edit button
+            $root.find('.tc-display').addClass('opacity-75'); // Visual hint
+        };
+
+        const hide = () => {
+            $root.find('.tc-panel').hide();
+            $root.find('.tc-display .tc-edit').show();
+            $root.find('.tc-display').removeClass('opacity-75');
+        };
+
+        $root.on('click', '.tc-edit', show);
+        $root.on('click', '.tc-cancel', hide);
+
+        $root.on('click', '.tc-ok', function() {
+        try {
+                const tc = currentModel($root); // Throws if invalid
+                const out = formatTrf25(tc);
+                $root.find('.tc-readable').text(humanizeTrf25Polyglot(out));        // editor panel readable
+                $root.find('.tc-readable-inline').text(humanizeTrf25Polyglot(out)); // main display readable
+                $hidden.val(out);
+                hide();
+            } catch (e) {
+                $root.find('.tc-error').text(e.message || String(e));
+            }
+        });
+
+        $root.on('click', '.tc-add-period', function() {
+            const different = $root.find('.tc-diff').is(':checked');
+            const $sides = $root.find('.tc-sides > .tc-side');
+
+            if (different) {
+                // Add a period row to each side (White and Black)
+                $sides.each(function() {
+                    $(this).find('.tc-periods').append(periodRow({ seconds: 0 }));
+                });
+            } else {
+                // Single (symmetric) control: add to the single side
+                $sides.first().find('.tc-periods').append(periodRow({ seconds: 0 }));
+            }
+
+            updatePreview($root);
+        });
+
+        $root.on('click', '.tc-del', function() {
+            const $side = $(this).closest('.tc-side');
+            $(this).closest('.tc-period').remove();
+            if (!$side.find('.tc-period').length) {
+                $side.find('.tc-periods').append(periodRow({ seconds: 0 }));
+            }
+            updatePreview($root);
+        });
+
+        $root.on('input', '.tc-panel input', function() { updatePreview($root); });
+
+        $root.on('change', '.tc-diff', function() {
+            const wantDifferent = $(this).is(':checked');
+
+            // Build from the CURRENT form (not the code pill) so edits aren't lost
+            let tc;
+            try { tc = currentModel($root); } catch { tc = { white: [{ seconds: 0 }] }; }
+
+            if (wantDifferent) {
+                // Clone white into black if none present
+                if (!tc.black) tc.black = JSON.parse(JSON.stringify(tc.white));
+            } else {
+                // Collapse to symmetric
+                delete tc.black;
+            }
+
+            // Re-render honoring the user's toggle (don't auto-collapse when equal)
+            rerender($root, formatTrf25(tc), wantDifferent);
+        });
+
+        // First render from initial value
+        $hidden.val(initial);
+        $root.find('.tc-readable-inline').text(humanizeTrf25Polyglot(initial));
+    });
+</script>
