@@ -1,4 +1,4 @@
-<div id="round-controls" class="d-flex gap-1 ms-auto align-items-center">
+<div id="round-controls" class="d-flex row-gap-2 column-gap-1 ms-auto align-items-center flex-wrap justify-content-end">
     <span {{ macros.tooltip_attributes('info', _('Search for player'), 'top') }} style="z-index: 1;">
         {{ admin_macros.text_input(
             name='search_player',
@@ -10,7 +10,7 @@
     </span>
     <span {{ macros.tooltip_attributes('info', _('First round'), 'top') }}>
         <button
-            class="btn btn-outline-primary text-nowrap"
+            class="btn btn-outline-primary text-nowrap ms-2"
             hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=1) }}"
             hx-target="body"
             hx-replace-url="true"
