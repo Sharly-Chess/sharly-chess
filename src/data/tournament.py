@@ -46,6 +46,7 @@ from utils.enum import (
 )
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredPrizeGroup
+from utils.time_control import parse_time_control_trf25
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -149,12 +150,12 @@ class Tournament:
     @property
     def time_control_initial_time(self) -> int:
         """Parse initial time from TRF25 format. Returns 0 for invalid formats."""
-        return self._parse_time_control_trf25()[0]
+        return parse_time_control_trf25(self.stored_tournament.time_control_trf25)[0]
 
     @property
     def time_control_increment(self) -> int:
         """Parse increment from TRF25 format. Returns 0 for invalid formats."""
-        return self._parse_time_control_trf25()[1]
+        return parse_time_control_trf25(self.stored_tournament.time_control_trf25)[1]
 
     @property
     def time_control_handicap_penalty_value(self) -> int | None:

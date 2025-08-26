@@ -39,6 +39,7 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredScreen
 from plugins.hookspec import ExtraColumn
 from plugins.manager import plugin_manager
+from utils.time_control import parse_time_control_trf25
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -235,6 +236,13 @@ class TournamentAdminController(BaseEventAdminController):
         time_control_handicap_min_time = WebContext.form_data_to_int(
             data, 'time_control_handicap_min_time'
         )
+
+        intial_time, inc = parse_time_control_trf25(time_control_trf25)
+        if intial_time == 0 and time_control_handicap_penalty_value:
+            errors['time_control_handicap_penalty_value'] = _(
+                'Penalties require a time control with a single period.'
+            )
+
         record_illegal_moves = cls._admin_validate_record_illegal_moves_update_data(
             data, errors
         )
