@@ -6,7 +6,7 @@ from pathlib import Path
 from common import SHARLY_CHESS_VERSION
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from common.tool_installer import BbpPairingsInstaller
+from common.tool_installer import BbpPairingsInstaller, PapiConverterInstaller
 from scripts.export.project_builder import ProjectBuilder
 
 logger: Logger = get_logger()
@@ -195,9 +195,9 @@ class WinProjectBuilder(ProjectBuilder):
             self._sign_file(file)
             for file in [
                 self.exe,
-                BbpPairingsInstaller().executable_path,
-                # Note(pascalaubry) Papi Converter not signed
             ]
+            + BbpPairingsInstaller().files_to_sign
+            + PapiConverterInstaller().files_to_sign
         )
 
     def _build_chessevent_batch(self) -> bool:

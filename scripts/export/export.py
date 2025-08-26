@@ -1,3 +1,4 @@
+import platform
 import sys
 from pathlib import Path
 
@@ -38,16 +39,17 @@ logger: Logger = get_logger()
 
 def get_project_builder() -> ProjectBuilder:
     """Return the project of the current platform"""
-    # use sys.platform to distinguish Mac and Linux (os.name returns 'posix' for both)
-    match sys.platform:
-        case 'win32':
+    # use platform.system to distinguish Mac and Linux (os.name returns 'posix' for both)
+    system = platform.system()
+    match system:
+        case 'Windows':
             return WinProjectBuilder()
-        case 'darwin':
+        case 'Darwin':
             return MacProjectBuilder()
-        case 'linux':
+        case 'Linux':
             return LinuxProjectBuilder()
         case _:
-            raise RuntimeError(f'No project builder for platform [{sys.platform}].')
+            raise RuntimeError(f'No project builder for platform [{system}].')
 
 
 def main():
