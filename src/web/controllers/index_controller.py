@@ -1,6 +1,6 @@
 import asyncio
 import json
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Any
 
 from litestar import Response, get, route, HttpMethod, status_codes
 from litestar.config.response_cache import CACHE_FOREVER
@@ -164,19 +164,80 @@ class IndexController(BaseController):
     @get('/sse')
     async def sse_handler(self, channels: ChannelsPlugin) -> ServerSentEvent:
         async def generator() -> AsyncGenerator[ServerSentEventMessage, None]:
+            keep_alive_interval = 20.0  # 20 seconds
+
             try:
                 async with channels.start_subscription(['sse']) as subscriber:
-                    async for raw_event in subscriber.iter_events():
-                        # Parse from string if needed
-                        if isinstance(raw_event, (bytes, str)):
-                            event = json.loads(raw_event)
-                        else:
-                            event = raw_event
+                    # Create background task for keep-alive
+                    async def keep_alive():
+                        while True:
+                            await asyncio.sleep(keep_alive_interval)
+                            # This will never complete, just sleep
 
-                        yield ServerSentEventMessage(
-                            event=event.get('event', 'message'),
-                            data=event.get('data', ''),
-                        )
+                    keep_alive_task = asyncio.create_task(keep_alive())
+
+                    try:
+                        # Use a queue to handle both events and keep-alives
+                        event_queue: asyncio.Queue[tuple[str, Any]] = asyncio.Queue()
+
+                        # Task to read from subscriber
+                        async def event_reader():
+                            async for raw_event in subscriber.iter_events():
+                                await event_queue.put(('event', raw_event))
+
+                        # Task for keep-alive timer
+                        async def keep_alive_timer():
+                            while True:
+                                await asyncio.sleep(keep_alive_interval)
+                                await event_queue.put(('keep-alive', None))
+
+                        # Start both tasks
+                        reader_task = asyncio.create_task(event_reader())
+                        timer_task = asyncio.create_task(keep_alive_timer())
+
+                        try:
+                            while True:
+                                # Wait for next item from queue
+                                item_type, data = await event_queue.get()
+
+                                if item_type == 'event':
+                                    # Parse from string if needed
+                                    if isinstance(data, (bytes, str)):
+                                        event = json.loads(data)
+                                    else:
+                                        event = data
+
+                                    yield ServerSentEventMessage(
+                                        event=event.get('event', 'message'),
+                                        data=event.get('data', ''),
+                                    )
+
+                                elif item_type == 'keep-alive':
+                                    yield ServerSentEventMessage(
+                                        event='keep-alive',
+                                        data='ping',
+                                    )
+
+                        finally:
+                            # Clean up tasks
+                            reader_task.cancel()
+                            timer_task.cancel()
+                            try:
+                                await reader_task
+                            except asyncio.CancelledError:
+                                pass
+                            try:
+                                await timer_task
+                            except asyncio.CancelledError:
+                                pass
+
+                    finally:
+                        keep_alive_task.cancel()
+                        try:
+                            await keep_alive_task
+                        except asyncio.CancelledError:
+                            pass
+
             except asyncio.CancelledError:
                 return
 

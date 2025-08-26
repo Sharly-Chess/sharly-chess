@@ -560,9 +560,10 @@ class Tournament:
 
         return related_screens
 
-    @cached_property
-    def print_real_points(self) -> bool:
-        return self.pairing_variation.print_real_points(self.current_round, self.rounds)
+    def print_real_points(self, round_: int | None = None) -> bool:
+        if round_ is None:
+            round_ = self.current_round
+        return self.pairing_variation.print_real_points(round_, self.rounds)
 
     @property
     def point_values(self) -> dict[Result, float]:

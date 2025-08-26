@@ -9,13 +9,13 @@
     <tr>
         <th>{{ _('Board (%(remaining)d)', remaining=admin_tournament.boards_without_result(admin_round)|length) }}</th>
         <th>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
-        {% if admin_tournament.print_real_points %}
+        {% if admin_tournament.print_real_points(admin_round) %}
             <th>&nbsp;</th>
         {% endif %}
         <th>{{ _('White') }}</th>
         <th class="text-center">{{ _('Result') }}</th>
         <th>{{ _('Black') }}</th>
-        {% if admin_tournament.print_real_points %}
+        {% if admin_tournament.print_real_points(admin_round) %}
             <th>&nbsp;</th>
         {% endif %}
         <th>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
