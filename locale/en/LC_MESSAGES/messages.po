@@ -163,6 +163,9 @@ msgstr "-"
 msgid "- *** SHORT NAME FOR GENDER NONE"
 msgstr "-"
 
+msgid "/<moves>"
+msgstr ""
+
 msgid "/move"
 msgstr ""
 
@@ -208,6 +211,15 @@ msgstr ""
 msgid "<first> and <second>"
 msgstr ""
 
+msgid "<first> then <second>"
+msgstr ""
+
+msgid "<first>, <second>"
+msgstr ""
+
+msgid "<side>: <text>"
+msgstr ""
+
 msgid "<smart_count> day |||| <smart_count> days"
 msgstr ""
 
@@ -215,6 +227,9 @@ msgid "<smart_count> hour |||| <smart_count> hours"
 msgstr ""
 
 msgid "<smart_count> minute |||| <smart_count> minutes"
+msgstr ""
+
+msgid "<smart_count> move |||| <smart_count> moves"
 msgstr ""
 
 msgid "<smart_count> second |||| <smart_count> seconds"
@@ -363,6 +378,9 @@ msgid "Add a tournament to the event."
 msgstr ""
 
 msgid "Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!"
+msgstr ""
+
+msgid "Add period"
 msgstr ""
 
 msgid "Add player"
@@ -1275,6 +1293,9 @@ msgstr ""
 msgid "Details"
 msgstr ""
 
+msgid "Different for White / Black"
+msgstr ""
+
 msgid "Direct encounter"
 msgstr ""
 
@@ -1427,6 +1448,12 @@ msgstr ""
 msgid "Duplication of screen family [%(family_uniq_id)s]"
 msgstr ""
 
+msgid "Duration (min)"
+msgstr ""
+
+msgid "Duration (sec)"
+msgstr ""
+
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
 msgstr "E"
 
@@ -1448,10 +1475,6 @@ msgstr ""
 
 #, python-format
 msgid "E.g.: %(screen_type)s-screen"
-msgstr ""
-
-#, python-format
-msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
 msgstr ""
 
 #, python-format
@@ -2150,6 +2173,9 @@ msgstr ""
 msgid "Go to the first screen."
 msgstr ""
 
+msgid "Go to the pairings."
+msgstr ""
+
 msgid "Go to the rotator."
 msgstr ""
 
@@ -2325,16 +2351,13 @@ msgstr ""
 msgid "Incorrect path [{path}]."
 msgstr ""
 
-msgid "Increment (optional, seconds):"
+msgid "Increment (sec)"
 msgstr ""
 
 msgid "Info"
 msgstr ""
 
 msgid "Information message"
-msgstr ""
-
-msgid "Initial time (optional, seconds):"
 msgstr ""
 
 msgid "Input Screens may be used to allow players to enter their own results on a computer or tablet that you make available at the venue."
@@ -2371,6 +2394,9 @@ msgid "Invalid FFE licence number [{ffe_licence_number}]."
 msgstr ""
 
 msgid "Invalid FIDE ID [{fide_id}]."
+msgstr ""
+
+msgid "Invalid TRF25 string: unexpected characters."
 msgstr ""
 
 msgid "Invalid URL [{background_image}]."
@@ -2419,6 +2445,9 @@ msgid "Invalid locale [{locale}]."
 msgstr ""
 
 msgid "Invalid mail [{mail}]."
+msgstr ""
+
+msgid "Invalid period:"
 msgstr ""
 
 msgid "Invalid response from the FFE website."
@@ -2710,6 +2739,9 @@ msgstr ""
 msgid "Modified, but no internet connection"
 msgstr ""
 
+msgid "Moves"
+msgstr ""
+
 #, python-format
 msgid "Moving on to round #%(round)d"
 msgstr ""
@@ -2986,6 +3018,9 @@ msgid "Not connected, impossible to update."
 msgstr ""
 
 msgid "Not paired for this round"
+msgstr ""
+
+msgid "Not specified"
 msgstr ""
 
 msgid "Notification"
@@ -3270,6 +3305,9 @@ msgstr ""
 msgid "Password to enter results:"
 msgstr ""
 
+msgid "Penalties require a time control with a single period."
+msgstr ""
+
 msgid "Penalty (handicap, seconds):"
 msgstr ""
 
@@ -3289,6 +3327,9 @@ msgid "Performance"
 msgstr ""
 
 msgid "Performance indicators for round #{round}"
+msgstr ""
+
+msgid "Period"
 msgstr ""
 
 msgid "Personal"
@@ -3423,6 +3464,9 @@ msgid "Please choose the release to recover: "
 msgstr ""
 
 msgid "Please choose the tournament."
+msgstr ""
+
+msgid "Please close the time control editor before saving."
 msgstr ""
 
 msgid "Please enter a URL or select an image on the right hand side."
@@ -4418,9 +4462,6 @@ msgstr ""
 msgid "The greater number of wins with Black (unplayed games are counted as played with White)"
 msgstr ""
 
-msgid "The initial time in seconds (may be empty if an increment is set)."
-msgstr ""
-
 msgid "The last set of a screen can not be deleted."
 msgstr ""
 
@@ -4529,9 +4570,6 @@ msgid "The number of screens on which the boards will be distributed, optional (
 msgstr ""
 
 msgid "The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players."
-msgstr ""
-
-msgid "The number of seconds added to the players' clock at each move."
 msgstr ""
 
 #, python-format
@@ -4833,6 +4871,9 @@ msgid "Tie-breaks:"
 msgstr ""
 
 msgid "Time control"
+msgstr ""
+
+msgid "Time control:"
 msgstr ""
 
 msgid "Time is not defined."
@@ -5546,7 +5587,19 @@ msgstr ""
 msgid "display-controller"
 msgstr ""
 
+msgid "duration is required if moves or an increment are provided."
+msgstr ""
+
+msgid "duration must be greater than 0."
+msgstr ""
+
 msgid "event"
+msgstr ""
+
+msgid "from move 1"
+msgstr ""
+
+msgid "min"
 msgstr ""
 
 msgid "minimum: {value}"
@@ -5600,6 +5653,9 @@ msgstr ""
 msgid "rotator"
 msgstr ""
 
+msgid "s"
+msgstr ""
+
 msgid "screens of {number} boards"
 msgstr ""
 
@@ -5627,7 +5683,19 @@ msgstr ""
 msgid "some already played each other"
 msgstr ""
 
+msgid "the number of moves is required for a non-final period."
+msgstr ""
+
+msgid "the number of moves must be a positive integer."
+msgstr ""
+
+msgid "the number of moves must not be specified for the final period."
+msgstr ""
+
 msgid "the whole ranking"
+msgstr ""
+
+msgid "then"
 msgstr ""
 
 msgid "time control"
@@ -5705,4 +5773,3 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
