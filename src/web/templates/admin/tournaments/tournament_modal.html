@@ -619,19 +619,19 @@
         return $(`
             <div class="tc-period">
                 <div class="tc-field">
-                    <label>Coups</label>
+                    <label>{{ _('Moves') }}</label>
                     <input type="number" class="form-control p-moves" min="0" value="${moves}">
                 </div>
                 <div class="tc-field">
-                    <label>Durée (min)</label>
+                    <label>{{ _('Duration (min)') }}</label>
                     <input type="number" class="form-control p-mins" min="0" value="${mins}">
                 </div>
                 <div class="tc-field">
-                    <label>Durée (s)</label>
+                    <label>{{ _('Duration (s)') }}</label>
                     <input type="number" class="form-control p-secs" min="0" max="59" value="${secs}">
                 </div>
                 <div class="tc-field">
-                    <label>Incrément (s)</label>
+                    <label>{{ _('Increment (s)') }}</label>
                     <input type="number" class="form-control p-inc" min="0" value="${inc}">
                 </div>
                 <div class="tc-del-wrap">
@@ -683,7 +683,7 @@
                 movesInt = parseInt(movesRaw, 10);
                 if (isNaN(movesInt) || movesInt <= 0) {
                     $moves.addClass('is-invalid');
-                    errors.push(`Période ${idx+1} : le nombre de coups doit être un entier positif.`);
+                    errors.push(`{{ _('Period') }} ${idx+1} : {{ _('the number of moves must be a positive integer.') }}`);
                     return;
                 }
             }
@@ -691,14 +691,14 @@
             // Rule A: seconds required if moves or increment present
             if ((hasMoves || hasInc) && seconds === 0) {
                 $mins.addClass('is-invalid'); $secs.addClass('is-invalid');
-                errors.push(`Période ${idx+1} : la durée est requise si des coups ou un incrément sont renseignés.`);
+                errors.push(`{{ _('Period') }} ${idx+1} : {{ _('duration is required if moves or an increment are provided.') }}`);
                 return;
             }
 
             // Rule B: seconds must be > 0 for any kept period
             if (seconds === 0) {
                 $mins.addClass('is-invalid'); $secs.addClass('is-invalid');
-                errors.push(`Période ${idx+1} : la durée doit être supérieure à 0.`);
+                errors.push(`{{ _('Period') }} ${idx+1} : {{ _('duration must be greater than 0.') }}`);
                 return;
             }
 
@@ -715,7 +715,7 @@
                 // Find the matching row DOM to mark invalid
                 const $row = $side.find('.tc-period').eq(i);
                 $row.find('.p-moves').addClass('is-invalid');
-                errors.push(`Période ${i+1} : le nombre de coups est requis pour une période non finale.`);
+                errors.push(`{{ _('Period') }} ${i+1} : {{ _('the number of moves is required for a non-final period.') }}`);
             }
         });
 
