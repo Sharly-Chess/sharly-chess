@@ -550,10 +550,6 @@ class ProjectBuilder(ABC):
             f'--icon=src/web/static/images/{self.project_name}.ico',
             '--optimize',
             '1',
-            # TODO Remove this option when https://github.com/pyinstaller/pyinstaller/issues/9149 is fixed
-            # this option was added in 2.7.2 as a workaround of a bug in PyInstaller
-            # See https://github.com/pyinstaller/pyinstaller/issues/9149#issuecomment-2914294505
-            '--exclude-module=pkg_resources',
             'src/sharly_chess.py',
         ]
         migration_base_modules: list[ModuleType] = [
@@ -613,7 +609,7 @@ class ProjectBuilder(ABC):
         files += list(yml_dir.glob('*.yml'))
         custom_dir: Path = self.src_dir / 'custom'
         files += [file for file in custom_dir.glob('**/*') if file.is_file()]
-        files += [file for file in self.src_dir.glob('**/*.mo') if file.is_file()]
+        files += [file for file in self.locale_dir.glob('**/*.mo') if file.is_file()]
 
         # Add entire executable installer directories
         for executable_installer in InstallationChecker.executable_installers:

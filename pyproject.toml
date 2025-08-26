@@ -50,7 +50,7 @@ lint = ["ruff", "validate-pyproject", "pipdeptree", "mypy", "pre-commit"]
 
 translate = ["transformers", "torch", "sentencepiece", "sacremoses"]
 
-export = ["PyInstaller", "pip-licenses"]
+export = ["PyInstaller ~= 6.15.0", "pip-licenses"]
 
 tests = ["pytest", "pytest-playwright", "pytest-asyncio", "pytest-base-url"]
 
