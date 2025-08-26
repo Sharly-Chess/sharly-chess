@@ -156,7 +156,6 @@
                             <!-- Read-only display -->
                             <div class="tc-display d-flex align-items-center gap-2">
                                 <span class="tc-readable-inline"></span>
-                                <span class="text-muted">—</span>
                                 <button type="button" class="tc-edit btn btn-sm btn-outline-primary ms-2">
                                     <i class="bi-pencil-fill"></i> {{ _('Edit') }}
                                 </button>
@@ -480,6 +479,10 @@
             'tc.seconds': '{{ _("<smart_count> second |||| <smart_count> seconds") }}',
             'tc.minutes': '{{ _("<smart_count> minute |||| <smart_count> minutes") }}',
             'tc.moves':   '{{ _("<smart_count> move |||| <smart_count> moves") }}',
+            'tc.min_abbr': '{{ _("min") }}',
+            'tc.sec_abbr': '{{ _("s") }}',
+            'tc.per_move': '{{ _("/move") }}',          // used like “+30 s/move”
+            'tc.for_moves': '{{ _("/<moves>") }}',      // used like “90 min/40 moves”
 
             // labels & joiners
             'tc.white': '{{ _("White") }}',
@@ -526,7 +529,7 @@
         if (!periods || !periods.length) return '';
         const parts = periods.map((p) => {
             const base = formatBaseSecondsPolyglot(p.seconds || 0);
-            const inc  = (p.increment!=null && p.increment>0) ? (' +' + tcUnitSeconds(p.increment)) : '';
+            const inc  = (p.increment!=null && p.increment>0) ? (' +' + tcUnitSeconds(p.increment) + '{{ _(' per move') }}') : '';
             if (p.moves != null) {
                 return tcMoves(p.moves) + ' ' + '{{ _("in") }}' + ' ' + base + inc;   // “40 moves in 100 min +30 s”
             }
@@ -544,6 +547,85 @@
             const ws = polyglot.t('tc.side_fmt', { side: polyglot.t('tc.white'), text: w });
             const bs = polyglot.t('tc.side_fmt', { side: polyglot.t('tc.black'), text: b });
             return ws + ' / ' + bs;
+        }
+        return w;
+    }
+
+    function fmtSecondsShort(total){
+        // Prefer minutes if >= 60; otherwise seconds
+        if (total >= 60 && total % 60 === 0) {
+            const m = Math.floor(total/60);
+            return `${m} ${polyglot.t('tc.min_abbr')}`;
+        }
+        if (total >= 60) {
+            const m = Math.floor(total/60);
+            const s = total % 60;
+            return `${m} ${polyglot.t('tc.min_abbr')} ${s} ${polyglot.t('tc.sec_abbr')}`;
+        }
+        return `${total} ${polyglot.t('tc.sec_abbr')}`;
+    }
+
+    function humanizePeriodShort(p, idx, totalCount){
+        const base = fmtSecondsShort(p.seconds || 0);
+        const inc  = (p.increment!=null && p.increment>0)
+            ? ` + ${p.increment} ${polyglot.t('tc.sec_abbr')}${polyglot.t('tc.per_move')}`
+            : '';
+
+        if (p.moves != null) {
+            const movesStr = tcMoves(p.moves);
+            const slashForMoves = polyglot.t('tc.for_moves', { moves: movesStr });
+            return `${base}${slashForMoves}${inc}`;
+        }
+
+        let out = base + inc;
+        // Special case: single-period with increment → add “from move 1”
+        if (totalCount === 1 && p.increment!=null && p.increment>0) {
+            out += ' ' + '{{ _("from move 1") }}';
+        }
+        return out;
+    }
+
+    function humanizeSideShort(periods){
+        if (!periods || !periods.length) return '';
+
+        // Step 1: see if all increments are the same and non-null
+        const increments = periods.map(p => p.increment ?? 0);
+        const allEqual = increments.every(i => i === increments[0]);
+        const commonInc = increments[0];
+
+        // Step 2: build period strings without increment if shared
+        const parts = periods.map((p,i) => {
+            const base = fmtSecondsShort(p.seconds || 0);
+            if (p.moves != null) {
+            const movesStr = tcMoves(p.moves);
+            const slashForMoves = polyglot.t('tc.for_moves', { moves: movesStr });
+            return base + slashForMoves;
+            }
+            return base;
+        });
+
+        let out = parts.join(' {{ _('then') }} ');
+
+        // Step 3: attach increment only once if shared
+        if (allEqual && commonInc > 0) {
+            out += ` + ${commonInc} ${polyglot.t('tc.sec_abbr')}${polyglot.t('tc.per_move')} {{ _("from move 1") }}`;
+        } else {
+            // fallback: add increments inline as before
+            out = periods.map(p => humanizePeriodShort(p)).join(' + ');
+        }
+
+        return out;
+    }
+
+    // TRF25 → short string (handles asymmetry)
+    function humanizeTrf25Short(trf){
+        const tc = parseTrf25(trf);
+        const w = humanizeSideShort(tc.white);
+        const b = tc.black ? humanizeSideShort(tc.black) : null;
+        if (b && w !== b){
+            const ws = polyglot.t('tc.side_fmt', { side: polyglot.t('tc.white'), text: w });
+            const bs = polyglot.t('tc.side_fmt', { side: polyglot.t('tc.black'), text: b });
+            return `${ws} / ${bs}`;
         }
         return w;
     }
@@ -734,8 +816,8 @@
         if (wantDifferent) {
             // Ensure there is a black side; if missing, clone white
             const black = model.black ? model.black : JSON.parse(JSON.stringify(model.white));
-            $sides.append(sideBox('Blanc', model.white));
-            $sides.append(sideBox('Noir', black));
+            $sides.append(sideBox('{{ _("White") }}', model.white));
+            $sides.append(sideBox('{{ _("Black") }}', black));
         } else {
             $sides.append(sideBox('', model.white));
         }
@@ -747,7 +829,7 @@
         try {
             const tc  = currentModel($root, { allowPartial:true });
             const str = formatTrf25(tc);
-            $root.find('.tc-readable').text(humanizeTrf25Polyglot(str));
+            $root.find('.tc-readable').text(humanizeTrf25Short(str));
             $root.find('.tc-error').text('');
         } catch {
             // suppress errors while typing
@@ -790,8 +872,8 @@
         try {
                 const tc = currentModel($root); // Throws if invalid
                 const out = formatTrf25(tc);
-                $root.find('.tc-readable').text(humanizeTrf25Polyglot(out));        // editor panel readable
-                $root.find('.tc-readable-inline').text(humanizeTrf25Polyglot(out)); // main display readable
+                $root.find('.tc-readable').text(humanizeTrf25Short(out));        // editor panel readable
+                $root.find('.tc-readable-inline').text(humanizeTrf25Short(out)); // main display readable
                 $hidden.val(out);
                 hide();
             } catch (e) {
@@ -876,6 +958,6 @@
 
         // First render from initial value
         $hidden.val(initial);
-        $root.find('.tc-readable-inline').text(humanizeTrf25Polyglot(initial));
+        $root.find('.tc-readable-inline').text(humanizeTrf25Short(initial));
     });
 </script>
