@@ -16,8 +16,7 @@ English version below
 
 - Création des tournois par import d'un fichier Papi (3.0.0)
 - Export des tournois au format Papi (3.0.0)
-- Saisi avance de cadence (3.0.0)
-- Éditeur interactif de cadence de jeu
+- Éditeur interactif de la cadence de jeu (3.0.0)
 
 ### Joueur·euses
 
