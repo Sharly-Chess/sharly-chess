@@ -46,8 +46,6 @@ class Migration(BaseMigration):
         self._sanitize_table_uniq_ids('rotator')
         self._sanitize_table_uniq_ids('display_controller')
         self._sanitize_table_uniq_ids('timer')
-        # timer_hour.uniq_id does not need sanitizing as it is not referred to as a unique id
-        # It is indeed more of a unique name
 
     def backward(self):
         pass

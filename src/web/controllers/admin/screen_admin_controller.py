@@ -277,7 +277,8 @@ class ScreenAdminController(BaseEventAdminController):
                     uniq_id = web_context.get_admin_screen().uniq_id
                 else:
                     uniq_id = event.get_unused_screen_uniq_id(
-                        ScreenType(type_), StaticUtils.name_to_uniq_id(name)
+                        ScreenType(type_),
+                        StaticUtils.name_to_uniq_id(name) if name else None,
                     )
             case 'delete':
                 uniq_id = ''

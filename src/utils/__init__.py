@@ -164,7 +164,9 @@ class StaticUtils:
 
     @staticmethod
     def name_to_uniq_id(name: str) -> str:
-        return re.sub(r'[^a-zA-Z0-9_\-]', '_', unidecode(name).lower())
+        name = unidecode(name).lower()
+        name = re.sub(r' \((\d+)\)$', r'-\1', name)
+        return re.sub(r'[^a-zA-Z0-9_\-]', '_', name)
 
 
 class SharedUtils:

@@ -235,7 +235,8 @@ class FamilyAdminController(BaseEventAdminController):
                     uniq_id = web_context.get_admin_family().uniq_id
                 else:
                     uniq_id = event.get_unused_family_uniq_id(
-                        ScreenType(type_), StaticUtils.name_to_uniq_id(name)
+                        ScreenType(type_),
+                        StaticUtils.name_to_uniq_id(name) if name else None,
                     )
             case 'delete':
                 uniq_id = ''
@@ -318,7 +319,6 @@ class FamilyAdminController(BaseEventAdminController):
                 pass
             case 'family':
                 if data is None:
-                    uniq_id: str | None = None
                     name: str | None = None
                     public: bool | None = None
                     menu_link: bool | None = None
@@ -422,7 +422,6 @@ class FamilyAdminController(BaseEventAdminController):
                         case _:
                             raise ValueError(f'action=[{action}]')
                     data = {
-                        'uniq_id': WebContext.value_to_form_data(uniq_id),
                         'public': WebContext.value_to_form_data(public),
                         'name': WebContext.value_to_form_data(name),
                         'tournament_id': WebContext.value_to_form_data(tournament_id),

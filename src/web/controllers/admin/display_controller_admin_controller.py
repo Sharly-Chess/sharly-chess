@@ -428,7 +428,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
             database.update_stored_display_controller(stored_display_controller)
             database.commit()
         return HTMXTemplate(
-            template_name='/admin/display_controller/display_controller_update_modal_header.html',
+            template_name='/admin/display_controllers/display_controller_update_modal_header.html',
             context=web_context.template_context
             | {
                 'display_controller_uniq_ids': list(
