@@ -659,8 +659,7 @@ class EventDatabase(MigrationDatabase):
             id=row['id'],
             uniq_id=row['uniq_id'],
             name=row['name'],
-            time_control_initial_time=row['time_control_initial_time'],
-            time_control_increment=row['time_control_increment'],
+            time_control_trf25=row['time_control_trf25'],
             time_control_handicap_penalty_step=row[
                 'time_control_handicap_penalty_step'
             ],
@@ -745,8 +744,7 @@ class EventDatabase(MigrationDatabase):
                 [
                     'uniq_id',
                     'name',
-                    'time_control_initial_time',
-                    'time_control_increment',
+                    'time_control_trf25',
                     'time_control_handicap_penalty_step',
                     'time_control_handicap_penalty_value',
                     'time_control_handicap_min_time',

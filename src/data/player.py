@@ -125,8 +125,7 @@ class Player:
         self.color: BoardColor | None = None
         self._tie_break_values: list['SupportsRichComparison'] | None = None
         self._rank: int | None = None
-        self.time_control_initial_time: int | None = None
-        self.time_control_increment: int | None = None
+        self.time_control_trf25: str | None = None
         self.time_control_modified: bool | None = None
 
     @staticmethod

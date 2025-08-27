@@ -162,6 +162,9 @@ msgstr "-"
 msgid "- *** SHORT NAME FOR GENDER NONE"
 msgstr "-"
 
+msgid "/<moves>"
+msgstr "/<moves>"
+
 msgid "/move"
 msgstr "/cp"
 
@@ -207,6 +210,15 @@ msgstr "65+"
 msgid "<first> and <second>"
 msgstr "<first> et <second>"
 
+msgid "<first> then <second>"
+msgstr "<first> puis <second>"
+
+msgid "<first>, <second>"
+msgstr "<first>, <second>"
+
+msgid "<side>: <text>"
+msgstr "<side> : <text>"
+
 msgid "<smart_count> day |||| <smart_count> days"
 msgstr "<smart_count> jour |||| <smart_count> jours"
 
@@ -215,6 +227,9 @@ msgstr "<smart_count> heure |||| <smart_count> heures"
 
 msgid "<smart_count> minute |||| <smart_count> minutes"
 msgstr "<smart_count> minute |||| <smart_count> minutes"
+
+msgid "<smart_count> move |||| <smart_count> moves"
+msgstr "<smart_count> coup |||| <smart_count> coups"
 
 msgid "<smart_count> second |||| <smart_count> seconds"
 msgstr "<smart_count> seconde |||| <smart_count> secondes"
@@ -399,6 +414,9 @@ msgstr "Ajouter des évènements"
 
 msgid "Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!"
 msgstr "Ajouter ici toutes les informations que vous pensez nécessaires, et si vous n'êtes pas connu·e des développeur·euses, présentez-vous !"
+
+msgid "Add period"
+msgstr "Ajouter une période"
 
 msgid "Add player"
 msgstr "Ajouter"
@@ -1457,6 +1475,9 @@ msgstr "Appareils"
 msgid "Devices ({num})"
 msgstr "Appareils ({num})"
 
+msgid "Different for White / Black"
+msgstr "Différent pour Blancs / Noirs"
+
 msgid "Direct encounter"
 msgstr "Rencontre directe"
 
@@ -1621,6 +1642,12 @@ msgstr "Dupliquer sans les joueur·euses"
 msgid "Duplication of screen family [%(family_uniq_id)s]"
 msgstr "Duplication de la famille d'écrans [%(family_uniq_id)s]"
 
+msgid "Duration (min)"
+msgstr "Durée (min)"
+
+msgid "Duration (sec)"
+msgstr "Durée (sec)"
+
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
 msgstr "E"
 
@@ -1643,10 +1670,6 @@ msgstr "Exemple : %(num)d%%"
 #, python-format
 msgid "E.g.: %(screen_type)s-screen"
 msgstr "Exemple : ecran-%(screen_type)s"
-
-#, python-format
-msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
-msgstr "Exemple : %(seconds)d (%(minutes)d minutes)"
 
 #, python-format
 msgid "E.g.: %(seconds)d (seconds)"
@@ -2581,8 +2604,8 @@ msgstr "Installation incorrecte, abandon."
 msgid "Incorrect path [{path}]."
 msgstr "Chemin incorrect [{path}]."
 
-msgid "Increment (optional, seconds):"
-msgstr "Incrément (optionel, en secondes) :"
+msgid "Increment (sec)"
+msgstr "Incrément (sec)"
 
 msgid "Info"
 msgstr "Info"
@@ -2592,9 +2615,6 @@ msgstr "Message d'information"
 
 msgid "Inherited roles"
 msgstr "Rôles hérités"
-
-msgid "Initial time (optional, seconds):"
-msgstr "Temps initial (optionel, en secondes) :"
 
 msgid "Input Screens may be used to allow players to enter their own results on a device that you make available at the venue."
 msgstr "Les écrans de saisie peuvent être utilisés pour permettre aux joueur·euses d’entrer eux-mêmes leurs résultats sur un portable ou une tablette mis à disposition sur le lieu du tournoi."
@@ -2631,6 +2651,9 @@ msgstr "Numéro de licence FFE [{ffe_licence_number}] non valide."
 
 msgid "Invalid FIDE ID [{fide_id}]."
 msgstr "Identifiant FIDE [{fide_id}] non valide."
+
+msgid "Invalid TRF25 string: unexpected characters."
+msgstr "Chaîne TRF25 invalide : caractères inattendus."
 
 msgid "Invalid URL [{background_image}]."
 msgstr "URL [{background_image}] non valide."
@@ -2679,6 +2702,9 @@ msgstr "Langue [{locale}] non valide."
 
 msgid "Invalid mail [{mail}]."
 msgstr "Mél [{mail}] non valide."
+
+msgid "Invalid period:"
+msgstr "Période invalide :"
 
 msgid "Invalid response from the FFE website."
 msgstr "Réponse non valide du site FFE."
@@ -2980,6 +3006,9 @@ msgstr "Modifié depuis le dernier envoi"
 msgid "Modified, but no internet connection"
 msgstr "Modifié, mais pas de connexion internet"
 
+msgid "Moves"
+msgstr "Coups"
+
 #, python-format
 msgid "Moving on to round #%(round)d"
 msgstr "Passage à la ronde n°%(round)d"
@@ -3251,6 +3280,9 @@ msgstr "Non-apparié·e"
 
 msgid "Not paired for this round"
 msgstr "Non-apparié·e pour cette ronde"
+
+msgid "Not specified"
+msgstr "Non spécifié"
 
 msgid "Notification"
 msgstr "Notification"
@@ -3546,6 +3578,9 @@ msgstr "Évènements passés"
 msgid "Password:"
 msgstr "Mot de passe :"
 
+msgid "Penalties require a time control with a single period."
+msgstr "Les pénalités nécessitent une cadence avec une seule période."
+
 msgid "Penalty (handicap, seconds):"
 msgstr "Pénalité (handicap, en secondes) :"
 
@@ -3566,6 +3601,9 @@ msgstr "Performance"
 
 msgid "Performance indicators for round #{round}"
 msgstr "Indicateurs de performance pour la ronde n°{round}"
+
+msgid "Period"
+msgstr "Période"
 
 msgid "Permissions"
 msgstr "Permissions"
@@ -3709,6 +3747,9 @@ msgstr "Veuillez choisir la version à restaurer : "
 
 msgid "Please choose the tournament."
 msgstr "Veuillez choisir le tournoi."
+
+msgid "Please close the time control editor before saving."
+msgstr "Veuillez fermer l'éditeur de cadence avant d'enregistrer."
 
 msgid "Please enter a URL or select an image on the right hand side."
 msgstr "Veuillez entrer une URL ou choisir une image à droite."
@@ -4772,9 +4813,6 @@ msgstr "Le plus grand nombre de victoires"
 msgid "The greater number of wins with Black (unplayed games are counted as played with White)"
 msgstr "Le plus grand nombre de victoires avec les Noirs"
 
-msgid "The initial time in seconds (may be empty if an increment is set)."
-msgstr "Le temps initial en secondes (peut être nul en cas d'incrément)."
-
 msgid "The last set of a screen can not be deleted."
 msgstr "Le dernier écran ne peut être supprimé."
 
@@ -4884,9 +4922,6 @@ msgstr "Le nombre d'écrans sur lesquels les échiquiers seront répartis, facul
 
 msgid "The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players."
 msgstr "Le nombre d'écrans sur lesquels les joueur·euses seront réparti·es, facultatif (le nombre d'écrans reste toujours le même et le nombre de joueur·euses par écran s'adapte)."
-
-msgid "The number of seconds added to the players' clock at each move."
-msgstr "Le nombre de secondes ajoutés à la pendules des joueur·euses à chaque coup."
 
 #, python-format
 msgid "The number of the first board of the tournament (if not set, defaults to %(default)d)."
@@ -5218,6 +5253,9 @@ msgstr "Départages :"
 
 msgid "Time control"
 msgstr "Cadence"
+
+msgid "Time control:"
+msgstr "Cadence :"
 
 msgid "Time is not defined."
 msgstr "L'heure n'est pas définie"
@@ -6136,8 +6174,17 @@ msgstr "par défaut"
 msgid "display-controller"
 msgstr "pilote-d-afficheur"
 
+msgid "either the duration or the increment must be greater than 0."
+msgstr "la durée ou l’incrément doit être supérieur à 0."
+
 msgid "event"
 msgstr "évènement"
+
+msgid "from move 1"
+msgstr "dès le 1er coup"
+
+msgid "min"
+msgstr "min"
 
 msgid "minimum: {value}"
 msgstr "minimum : {value}"
@@ -6193,6 +6240,9 @@ msgstr "classement du début à {last}"
 msgid "rotator"
 msgstr "rotatif"
 
+msgid "s"
+msgstr "s"
+
 msgid "screens of {number} boards"
 msgstr "écrans de {number} échiquiers"
 
@@ -6223,8 +6273,20 @@ msgstr "serveur"
 msgid "some already played each other"
 msgstr "certain·es se sont déjà rencontré·es"
 
+msgid "the number of moves is required for a non-final period."
+msgstr "le nombre de coups est requis pour une période non-finale."
+
+msgid "the number of moves must be a positive integer."
+msgstr "le nombre de coups doit être un entier positif."
+
+msgid "the number of moves must not be specified for the final period."
+msgstr "le nombre de coups ne doit pas être spécifié pour la période finale."
+
 msgid "the whole ranking"
 msgstr "classement complet"
+
+msgid "then"
+msgstr "puis"
 
 msgid "time control"
 msgstr "temps"
@@ -6304,7 +6366,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
-#~ msgid "Home page"
-#~ msgstr ""
 
