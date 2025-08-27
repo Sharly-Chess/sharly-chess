@@ -99,3 +99,19 @@
   max-width: none;
   width: max-content;   /* shrink to fit table */
 }
+
+/* Time control editor – bootstrap-free layout for period rows */
+
+.tc-side-title { font-size: 95%; margin-top: 0.3rem; }
+.tc .tc-period { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) auto; gap: .5rem; align-items: end; }
+.tc .tc-period + .tc-period { margin-top: 1rem; }
+.tc .tc-field label { font-size: .85rem; display: block; margin-bottom: .25rem; }
+.tc .tc-input { width: 100%; }
+.tc .tc-del-wrap { display: flex; justify-content: end; align-items: center;}
+.tc .tc-del-wrap .btn { padding: .375rem .75rem; font-size: 1rem; }
+
+@media (max-width: 768px) {
+    .tc .tc-period { position: relative; display: grid; grid-template-columns: 1fr; gap: .5rem; align-items: start; padding-right: 56px; }
+    .tc .tc-field { grid-column: 1; }
+    .tc .tc-del-wrap { position: absolute; right: 0; top: 50%; transform: translateY(-50%); height: 40px; display: flex; align-items: center; justify-content: center; }
+}
