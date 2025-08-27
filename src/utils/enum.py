@@ -1,6 +1,6 @@
 """A file grouping all the "utility" classes/enum"""
 
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from enum import Enum, StrEnum, IntEnum
 
 from common.i18n import _
@@ -641,16 +641,32 @@ class PlayerCategory(IntEnum):
         tournament_start: datetime | None = None,
         tournament_end: datetime | None = None,
     ) -> 'PlayerCategory':
+        from plugins.manager import plugin_manager
+
         if not year_of_birth:
             return PlayerCategory.NONE
+
         if tournament_start and tournament_end:
-            if tournament_end - tournament_start > timedelta(days=30):
-                ref_time = max(tournament_start, min(datetime.now(), tournament_end))
+            start_d = tournament_start.date()
+            end_d = tournament_end.date()
+            if (end_d - start_d) > timedelta(days=30):
+                base = date.today()
+                if base < start_d:
+                    ref_date = start_d
+                elif base > end_d:
+                    ref_date = end_d
+                else:
+                    ref_date = base
             else:
-                ref_time = tournament_start
+                ref_date = start_d
         else:
-            ref_time = datetime.now()
-        ref_year = ref_time.year if ref_time.month < 9 else ref_time.year + 1
+            ref_date = date.today()
+
+        ref_year: int = (
+            plugin_manager.hook.adjust_category_reference_year(reference_date=ref_date)
+            or ref_date.year
+        )
+
         age = ref_year - year_of_birth
         if age <= 8:
             return PlayerCategory.U8
