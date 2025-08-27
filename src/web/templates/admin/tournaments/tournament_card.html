@@ -57,6 +57,12 @@
                 {% endif %}
             </div>
         {% endif %}
+        {% if tournament.time_control_trf25 %}
+            <div class="text-start">
+                {{ _('Time control:') }}
+                <span class="tc-human" data-trf="{{ tournament.time_control_trf25|e }}"></span>
+            </div>
+        {% endif %}
         <div class="text-start">
             {{ _('Pairings: %(pairing_variation)s', pairing_variation=tournament.pairing_variation.name) }}
             {% with pairing_tooltip_message=tournament.pairing_variation.settings_tooltip_message(tournament) %}

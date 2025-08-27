@@ -17,6 +17,7 @@ English version below
 
 - Création des tournois par import d'un fichier Papi (3.0.0)
 - Export des tournois au format Papi (3.0.0)
+- Éditeur interactif de la cadence de jeu (3.0.0)
 
 ### Joueur·euses
 
@@ -67,6 +68,7 @@ English version below
 
 - Create tournaments from Papi files (3.0.0)
 - Export tournaments to Papi format (3.0.0)
+- Interactive time control editor (3.0.0)
 
 ## Players
 
