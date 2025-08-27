@@ -156,14 +156,18 @@ class DisplayControllerAdminController(BaseEventAdminController):
                     public: bool | None = None
                     match action:
                         case 'update':
-                            assert web_context.admin_display_controller is not None
-                            name = web_context.admin_display_controller.stored_display_controller.name
+                            display_controller = (
+                                web_context.get_admin_display_controller()
+                            )
+                            name = display_controller.stored_display_controller.name
                         case 'create':
-                            name = web_context.admin_event.get_unused_display_controller_name()
+                            name = event.get_unused_display_controller_name()
                         case 'clone':
-                            assert web_context.admin_display_controller is not None
-                            name = web_context.admin_event.get_unused_display_controller_name(
-                                base_name=web_context.admin_display_controller.stored_display_controller.name,
+                            display_controller = (
+                                web_context.get_admin_display_controller()
+                            )
+                            name = event.get_unused_display_controller_name(
+                                base_name=display_controller.stored_display_controller.name,
                             )
                         case 'delete':
                             pass
