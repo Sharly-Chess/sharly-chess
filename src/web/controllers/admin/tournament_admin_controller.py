@@ -18,6 +18,7 @@ from litestar.status_codes import HTTP_200_OK
 
 from common.exception import SharlyChessException
 from common.i18n import _
+from common.sharly_chess_config import SharlyChessConfig
 from data.board import Board
 from data.event import Event
 from data.input_output import (
@@ -34,6 +35,7 @@ from data.print_documents import PrintDocumentManager
 from data.print_documents.options import PrintOption
 from data.tie_breaks import TieBreak, TieBreakManager
 from data.tournament import Tournament
+from utils import StaticUtils
 from utils.enum import TournamentRating
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredScreen
@@ -102,35 +104,9 @@ class TournamentAdminController(BaseEventAdminController):
         errors: dict[str, str] = {}
         if data is None:
             data = {}
-        uniq_id: str = WebContext.form_data_to_str(data, 'uniq_id') or ''
         check_in_open: bool = False
         start: float | None = None
         stop: float | None = None
-        if not uniq_id:
-            errors['uniq_id'] = _('Please enter the tournament ID.')
-        elif uniq_id.find('/') != -1:
-            errors['uniq_id'] = _('Character [{char}] is not allowed.').format(char='/')
-        else:
-            match action:
-                case 'create' | 'clone':
-                    if uniq_id in web_context.admin_event.tournaments_by_uniq_id:
-                        errors['uniq_id'] = _(
-                            'Tournament [{uniq_id}] already exists.'
-                        ).format(uniq_id=uniq_id)
-                case 'update':
-                    tournament = web_context.admin_tournament
-                    assert tournament is not None
-                    if (
-                        uniq_id != tournament.uniq_id
-                        and uniq_id in web_context.admin_event.tournaments_by_uniq_id
-                    ):
-                        errors['uniq_id'] = _(
-                            'Tournament [{uniq_id}] already exists.'
-                        ).format(uniq_id=uniq_id)
-                    check_in_open = tournament.check_in_open
-
-                case _:
-                    raise ValueError(f'action=[{action}]')
         rounds = WebContext.form_data_to_int(data, field := 'rounds') or 1
         if rounds < 1:
             errors[field] = _('A positive integer is expected.')
@@ -226,6 +202,12 @@ class TournamentAdminController(BaseEventAdminController):
         name = WebContext.form_data_to_str(data, 'name') or ''
         if not name:
             errors['name'] = _('Please enter the tournament name.')
+        if action == 'update':
+            uniq_id = web_context.get_admin_tournament().uniq_id
+        else:
+            uniq_id = event.get_unused_tournament_uniq_id(
+                StaticUtils.name_to_uniq_id(name)
+            )
         time_control_trf25 = WebContext.form_data_to_str(data, 'time_control_trf25')
         time_control_handicap_penalty_value = WebContext.form_data_to_int(
             data, 'time_control_handicap_penalty_value'
@@ -380,21 +362,14 @@ class TournamentAdminController(BaseEventAdminController):
                 pairing_systems = PairingSystemManager.objects()
                 pairing_system: PairingSystem = SwissPairingSystem()
                 if data is None:
-                    uniq_id: str | None = None
-                    name: str | None = None
                     match action:
                         case 'update':
                             assert admin_tournament is not None
-                            uniq_id = admin_tournament.stored_tournament.uniq_id
                             name = admin_tournament.stored_tournament.name
                         case 'create':
-                            uniq_id = admin_event.get_unused_tournament_uniq_id()
                             name = admin_event.get_unused_tournament_name()
                         case 'clone':
                             assert admin_tournament is not None
-                            uniq_id = admin_event.get_unused_tournament_uniq_id(
-                                admin_tournament.stored_tournament.uniq_id
-                            )
                             name = admin_event.get_unused_tournament_name(
                                 admin_tournament.stored_tournament.name
                             )
@@ -493,7 +468,6 @@ class TournamentAdminController(BaseEventAdminController):
                         'stop': WebContext.value_to_datetime_form_data(stop),
                     } | WebContext.values_dict_to_form_data(
                         {
-                            'uniq_id': uniq_id,
                             'name': name,
                             'time_control_trf25': time_control_trf25,
                             'time_control_handicap_penalty_value': time_control_handicap_penalty_value,
@@ -573,6 +547,9 @@ class TournamentAdminController(BaseEventAdminController):
                 template_context |= {
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         admin_event.record_illegal_moves
+                    ),
+                    'tournament_uniq_ids': list(
+                        admin_event.tournaments_by_uniq_id.keys()
                     ),
                     'paired_bye_result_options': cls._get_paired_bye_result_options(),
                     'tie_break_options': tie_break_options,
@@ -669,6 +646,46 @@ class TournamentAdminController(BaseEventAdminController):
             modal='tournament',
             action=action,
             tournament_id=tournament_id,
+        )
+
+    @patch(
+        path='/admin/tournament-uniq-id-update/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-tournament-uniq-id-update',
+    )
+    async def htmx_admin_tournament_uniq_id_update(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        event_uniq_id: str,
+        tournament_id: int,
+    ) -> HTMXTemplate | ClientRedirect:
+        web_context = TournamentAdminWebContext(request, event_uniq_id, tournament_id)
+        event = web_context.get_admin_event()
+        tournament = web_context.get_admin_tournament()
+        new_uniq_id = WebContext.form_data_to_str(data, 'uniq_id')
+        if (
+            not new_uniq_id
+            or not SharlyChessConfig.uniq_id_regex.match(new_uniq_id)
+            or (
+                new_uniq_id != tournament.uniq_id
+                and new_uniq_id in event.tournaments_by_uniq_id.keys()
+            )
+        ):
+            # No precise error (validated in JS)
+            return self.redirect_error(request, f'Invalid uniq ID [{new_uniq_id}].')
+        tournament.stored_tournament.uniq_id = new_uniq_id
+        with EventDatabase(event.uniq_id, True) as database:
+            database.update_stored_tournament(tournament.stored_tournament)
+            database.commit()
+        return HTMXTemplate(
+            template_name='/admin/tournaments/tournament_update_modal_header.html',
+            context=web_context.template_context
+            | {'tournament_uniq_ids': list(event.tournaments_by_uniq_id.keys())},
+            re_swap='innerHTML',
+            re_target='.modal-header',
         )
 
     @get(

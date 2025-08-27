@@ -748,13 +748,9 @@ class PlayerAdminController(BaseEventAdminController):
                     tournament_options |= {'': '-'}
                 elif action == 'update':
                     assert admin_player is not None
-                    assert admin_player.tournament is not None
                     if admin_player.tournament not in tournaments:
                         tournaments.insert(0, admin_player.tournament)
-                tournament_options |= {
-                    str(tournament.id): f'{tournament.name} ({tournament.uniq_id})'
-                    for tournament in tournaments
-                }
+                tournament_options |= web_context.get_tournament_options(tournaments)
 
                 plugin_form_fields_templates = (
                     plugin_manager.hook.get_player_form_fields_template() or []

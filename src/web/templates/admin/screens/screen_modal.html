@@ -1,31 +1,33 @@
 <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-screen-edit-modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 class="modal-title">
-                {% if action in ['create', 'clone', ] %}
-                    {% if screen_type == 'input' %}
-                        {{ _('Input screen creation') }}
-                    {% elif screen_type == 'boards' %}
-                        {{ _('Boards screen creation') }}
-                    {% elif screen_type == 'players' %}
-                        {{ _('Players screen creation') }}
-                    {% elif screen_type == 'results' %}
-                        {{ _('Results screen creation') }}
-                    {% elif screen_type == 'ranking' %}
-                        {{ _('Ranking screen creation') }}
-                    {% elif screen_type == 'image' %}
-                        {{ _('Image screen creation') }}
+            {% if action == 'update' %}
+                {% include 'screen_update_modal_header.html' %}
+            {% else %}
+                <h2 class="modal-title">
+                    {% if action in ['create', 'clone', ] %}
+                        {% if screen_type == 'input' %}
+                            {{ _('Input screen creation') }}
+                        {% elif screen_type == 'boards' %}
+                            {{ _('Boards screen creation') }}
+                        {% elif screen_type == 'players' %}
+                            {{ _('Players screen creation') }}
+                        {% elif screen_type == 'results' %}
+                            {{ _('Results screen creation') }}
+                        {% elif screen_type == 'ranking' %}
+                            {{ _('Ranking screen creation') }}
+                        {% elif screen_type == 'image' %}
+                            {{ _('Image screen creation') }}
+                        {% else %}
+                            ?
+                        {% endif %}
+                    {% elif action == 'delete' %}
+                        {{ _('Deletion of screen [%(screen_uniq_id)s]', screen_uniq_id=admin_screen.uniq_id) }}
                     {% else %}
                         ?
                     {% endif %}
-                {% elif action == 'update' %}
-                    {{ _('Editing of screen [%(screen_uniq_id)s]', screen_uniq_id=admin_screen.uniq_id) }}
-                {% elif action == 'delete' %}
-                    {{ _('Deletion of screen [%(screen_uniq_id)s]', screen_uniq_id=admin_screen.uniq_id) }}
-                {% else %}
-                    ?
-                {% endif %}
-            </h2>
+                </h2>
+            {% endif %}
         </div>
         <div class="modal-body">
             <form
@@ -67,9 +69,8 @@
                         {% endif %}
                     </h4>
 
-                    {% set col = 6 if action == 'create' and screen_type in ['input', 'boards', 'players', 'ranking', ] else 4 %}
                     <div class="row">
-                        <div class="col-12 col-xl-{{col}} mb-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ admin_macros.switch_input(
                                 name='public',
                                 label=_('Visibility:'),
@@ -78,16 +79,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6 col-xl-{{col}} mb-3">
-                            {{ admin_macros.text_input(
-                                name='uniq_id',
-                                label=_('ID (unique):'),
-                                placeholder=_('E.g.: %(screen_type)s-screen', screen_type=screen_type),
-                                help_text=_('The Unique ID, used to reference the screen.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 col-xl-{{col}} mb-3">
+                        <div class="col-12 col-md-6 mb-3">
                             {{ admin_macros.text_input(
                                 name='name',
                                 label=_('Name:'),
@@ -97,7 +89,7 @@
                             ) }}
                         </div>
                         {% if action == 'create' and screen_type in ['input', 'boards', 'players', 'ranking', ] %}
-                            <div class="col-12 col-xl-{{col}} mb-3">
+                            <div class="col-12 col-md-6 mb-3">
                                 {{ admin_macros.select_input(
                                     name='init_set_tournament_id',
                                     label=_('Tournament:'),

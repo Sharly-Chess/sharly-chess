@@ -2367,7 +2367,7 @@ msgid "Input screen creation"
 msgstr "Création d'un écran de saisie"
 
 msgid "Input screen family creation"
-msgstr "Création d'une famille d'écrans de saisie."
+msgstr "Création d'une famille d'écrans de saisie"
 
 msgid "Input screens show pairings by board number and allow people to enter results."
 msgstr "Les écrans de saisie des résultats présentent les appariements des joueur·euses par ordre croissant des échiquiers et permet l'entrée des résultats par les joueur·euses ou les arbitres."

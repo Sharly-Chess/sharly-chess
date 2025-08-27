@@ -9,11 +9,13 @@ from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
+from common.sharly_chess_config import SharlyChessConfig
 from data.display_controller import DisplayController
 from data.rotator import Rotator
 from data.screen import Screen
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredDisplayController
+from utils import StaticUtils
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -27,12 +29,12 @@ class DisplayControllerAdminWebContext(BaseEventAdminWebContext):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        display_controller_id: int | None,
+        display_controller_id: int | None = None,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ]
-        | None,
+        | None = None,
     ):
         super().__init__(
             request,
@@ -55,6 +57,10 @@ class DisplayControllerAdminWebContext(BaseEventAdminWebContext):
                 )
                 return
 
+    def get_admin_display_controller(self) -> DisplayController:
+        assert self.admin_display_controller is not None
+        return self.admin_display_controller
+
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
@@ -69,84 +75,28 @@ class DisplayControllerAdminController(BaseEventAdminController):
         web_context: DisplayControllerAdminWebContext,
         data: dict[str, str] | None = None,
     ) -> StoredDisplayController:
+        event = web_context.get_admin_event()
         errors: dict[str, str] = {}
         if data is None:
             data = {}
-        field: str
-        match action:
-            case 'create':
-                pass
-            case 'update' | 'clone' | 'delete':
-                if web_context.admin_display_controller is None:
-                    raise RuntimeError(
-                        f'{web_context.admin_display_controller=} for [{action=}]'
-                    )
-            case _:
-                raise ValueError(f'action=[{action}]')
-        field = 'uniq_id'
-        uniq_id: str | None = WebContext.form_data_to_str(data, field)
         name: str | None
-        public: bool | None = None
-
-        if action in [
-            'delete',
-        ]:
-            pass
-        else:
-            if not uniq_id:
-                errors[field] = _('Please enter the display controller ID.')
-            else:
-                match action:
-                    case 'create' | 'clone':
-                        if web_context.admin_event is None:
-                            raise RuntimeError(
-                                f'{web_context.admin_event=} for [{action=}]'
-                            )
-                        if (
-                            uniq_id
-                            in web_context.admin_event.display_controllers_by_uniq_id
-                        ):
-                            errors[field] = _(
-                                'Display controller [{uniq_id}] already exists.'
-                            ).format(uniq_id=uniq_id)
-                    case 'update':
-                        if web_context.admin_display_controller is None:
-                            raise RuntimeError(
-                                f'{web_context.admin_display_controller=} for [{action=}]'
-                            )
-                        if web_context.admin_event is None:
-                            raise RuntimeError(
-                                f'{web_context.admin_event=} for [{action=}]'
-                            )
-                        if (
-                            uniq_id != web_context.admin_display_controller.uniq_id
-                            and uniq_id
-                            in web_context.admin_event.display_controllers_by_uniq_id
-                        ):
-                            errors[field] = _(
-                                'Display controller [{uniq_id}] already exists.'
-                            ).format(uniq_id=uniq_id)
-                    case _:
-                        raise ValueError(f'action=[{action}]')
-            public = WebContext.form_data_to_bool(data, 'public')
+        public = WebContext.form_data_to_bool(data, 'public')
         match action:
             case 'create' | 'clone' | 'update':
                 name = WebContext.form_data_to_str(data, 'name') or ''
                 if not name:
                     errors['name'] = _('Please enter the display controller name.')
-            case 'delete':
-                if web_context.admin_display_controller is None:
-                    raise RuntimeError(
-                        f'{web_context.admin_display_controller=} for [{action=}]'
+                if action == 'update':
+                    uniq_id = web_context.get_admin_display_controller().uniq_id
+                else:
+                    uniq_id = event.get_unused_display_controller_uniq_id(
+                        StaticUtils.name_to_uniq_id(name)
                     )
-                uniq_id = uniq_id or ''
-                name = (
-                    web_context.admin_display_controller.stored_display_controller.name
-                )
+            case 'delete':
+                uniq_id = ''
+                name = web_context.get_admin_display_controller().stored_display_controller.name
             case _:
                 raise ValueError(f'action=[{action}]')
-
-        assert uniq_id is not None
 
         display_controller_id: int | None = None
         if web_context.admin_display_controller and action not in [
@@ -174,21 +124,17 @@ class DisplayControllerAdminController(BaseEventAdminController):
         data: dict[str, str] | None = None,  # type: ignore
         errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect:
-        web_context: DisplayControllerAdminWebContext = (
-            DisplayControllerAdminWebContext(
-                request,
-                event_uniq_id=event_uniq_id,
-                display_controller_id=display_controller_id,
-                data=data,
-            )
+        web_context = DisplayControllerAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            display_controller_id=display_controller_id,
+            data=data,
         )
         if web_context.error:
             return web_context.error
-        if web_context.admin_event is None:
-            raise RuntimeError('admin_event not defined')
-
+        event = web_context.get_admin_event()
         sorted_screens: list[Screen] = sorted(
-            web_context.admin_event.basic_screens_by_id.values(),
+            event.basic_screens_by_id.values(),
             key=lambda screen: (
                 screen.stored_screen.type if screen.stored_screen else None,
                 screen.stored_screen.uniq_id if screen.stored_screen else None,
@@ -211,16 +157,11 @@ class DisplayControllerAdminController(BaseEventAdminController):
                     match action:
                         case 'update':
                             assert web_context.admin_display_controller is not None
-                            uniq_id = web_context.admin_display_controller.stored_display_controller.uniq_id
                             name = web_context.admin_display_controller.stored_display_controller.name
                         case 'create':
-                            uniq_id = web_context.admin_event.get_unused_display_controller_uniq_id()
                             name = web_context.admin_event.get_unused_display_controller_name()
                         case 'clone':
                             assert web_context.admin_display_controller is not None
-                            uniq_id = web_context.admin_event.get_unused_display_controller_uniq_id(
-                                base_uniq_id=web_context.admin_display_controller.stored_display_controller.uniq_id
-                            )
                             name = web_context.admin_event.get_unused_display_controller_name(
                                 base_name=web_context.admin_display_controller.stored_display_controller.name,
                             )
@@ -230,11 +171,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
                             raise ValueError(f'action=[{action}]')
                     match action:
                         case 'update' | 'clone':
-                            if web_context.admin_display_controller is None:
-                                raise RuntimeError(
-                                    f'{web_context.admin_display_controller=} for [{action=}]'
-                                )
-                            public = web_context.admin_display_controller.stored_display_controller.public
+                            public = web_context.get_admin_display_controller().stored_display_controller.public
                         case 'create':
                             public = True
                         case 'delete':
@@ -246,7 +183,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
                         'public': WebContext.value_to_form_data(public),
                         'name': WebContext.value_to_form_data(name),
                     }
-                    stored_display_controller: StoredDisplayController = (
+                    stored_display_controller = (
                         cls._admin_validate_display_controller_update_data(
                             action, web_context, data
                         )
@@ -256,6 +193,9 @@ class DisplayControllerAdminController(BaseEventAdminController):
                     errors = {}
 
                 template_context |= {
+                    'display_controller_uniq_ids': list(
+                        event.display_controllers_by_uniq_id.keys()
+                    ),
                     'modal': modal,
                     'action': action,
                     'data': data,
@@ -340,12 +280,9 @@ class DisplayControllerAdminController(BaseEventAdminController):
                 raise ValueError(f'action=[{action}]')
         if web_context.error:
             return web_context.error
-        if web_context.admin_event is None:
-            raise RuntimeError('admin_event not defined')
-        stored_display_controller: StoredDisplayController = (
-            self._admin_validate_display_controller_update_data(
-                action, web_context, data
-            )
+        event = web_context.get_admin_event()
+        stored_display_controller = self._admin_validate_display_controller_update_data(
+            action, web_context, data
         )
         if stored_display_controller.errors:
             return self._admin_event_display_controllers_render(
@@ -357,9 +294,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
                 data=data,
                 errors=stored_display_controller.errors,
             )
-        with EventDatabase(
-            web_context.admin_event.uniq_id, write=True
-        ) as event_database:
+        with EventDatabase(event.uniq_id, write=True) as event_database:
             match action:
                 case 'create' | 'clone':
                     stored_display_controller = (
@@ -392,18 +327,16 @@ class DisplayControllerAdminController(BaseEventAdminController):
                         ),
                     )
                 case 'delete':
-                    assert web_context.admin_display_controller is not None
+                    display_controller = web_context.get_admin_display_controller()
                     event_database.delete_stored_display_controller(
-                        web_context.admin_display_controller.id
+                        display_controller.id
                     )
                     event_database.commit()
                     Message.success(
                         request,
                         _(
                             'Display controller [{display_controller_uniq_id}] has been deleted.'
-                        ).format(
-                            display_controller_uniq_id=web_context.admin_display_controller.uniq_id
-                        ),
+                        ).format(display_controller_uniq_id=display_controller.uniq_id),
                     )
                 case _:
                     raise ValueError(f'action=[{action}]')
@@ -453,6 +386,53 @@ class DisplayControllerAdminController(BaseEventAdminController):
             action='update',
             display_controller_id=display_controller_id,
             data=data,
+        )
+
+    @patch(
+        path='/admin/display-controller-uniq-id-update/{event_uniq_id:str}/{display_controller_id:int}',
+        name='admin-display-controller-uniq-id-update',
+    )
+    async def htmx_admin_display_controller_uniq_id_update(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        event_uniq_id: str,
+        display_controller_id: int,
+    ) -> HTMXTemplate | ClientRedirect:
+        web_context = DisplayControllerAdminWebContext(
+            request, event_uniq_id, display_controller_id
+        )
+        event = web_context.get_admin_event()
+        display_controller = web_context.get_admin_display_controller()
+        new_uniq_id = WebContext.form_data_to_str(data, 'uniq_id')
+        if (
+            not new_uniq_id
+            or not SharlyChessConfig.uniq_id_regex.match(new_uniq_id)
+            or (
+                new_uniq_id != display_controller.uniq_id
+                and new_uniq_id in event.families_by_uniq_id.keys()
+            )
+        ):
+            # No precise error (validated in JS)
+            return self.redirect_error(request, f'Invalid uniq ID [{new_uniq_id}].')
+        stored_display_controller = display_controller.stored_display_controller
+        stored_display_controller.uniq_id = new_uniq_id
+        with EventDatabase(event.uniq_id, True) as database:
+            database.update_stored_display_controller(stored_display_controller)
+            database.commit()
+        return HTMXTemplate(
+            template_name='/admin/display_controller/display_controller_update_modal_header.html',
+            context=web_context.template_context
+            | {
+                'display_controller_uniq_ids': list(
+                    event.display_controllers_by_uniq_id.keys()
+                )
+            },
+            re_swap='innerHTML',
+            re_target='.modal-header',
         )
 
     @delete(

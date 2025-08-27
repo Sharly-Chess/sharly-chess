@@ -1,6 +1,7 @@
 import locale
 import logging
 import os
+import re
 import socket
 import subprocess
 import sys
@@ -317,6 +318,8 @@ class SharlyChessConfig(metaclass=Singleton):
 
     # The path of the files used to generate example event databases.
     example_events_path = BASE_DIR / 'example_events'
+
+    uniq_id_regex = re.compile(r'^[0-9a-zA-Z_\-]+$')
 
     # The versions of the libraries for which the version can be easily extracted.
     litestar_version: Version = Version(litestar.__version__.formatted(short=True))
