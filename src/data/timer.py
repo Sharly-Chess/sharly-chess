@@ -60,6 +60,7 @@ class TimerHour:
 
     @property
     def id(self) -> int:
+        assert self.stored_timer_hour.id is not None
         return self.stored_timer_hour.id
 
     @property
@@ -168,7 +169,7 @@ class Timer:
 
     @property
     def id(self) -> int:
-        assert self.stored_timer is not None
+        assert self.stored_timer.id is not None
         return self.stored_timer.id
 
     @cached_property

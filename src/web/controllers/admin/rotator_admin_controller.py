@@ -209,14 +209,14 @@ class RotatorAdminController(BaseEventAdminController):
                             f'screen_{screen_id}': WebContext.value_to_form_data(
                                 screen_id in screen_ids
                             )
-                            for screen_id in web_context.admin_event.basic_screens_by_id
+                            for screen_id in event.basic_screens_by_id
                         }
                     if family_ids:
                         data |= {
                             f'family_{family_id}': WebContext.value_to_form_data(
                                 family_id in family_ids
                             )
-                            for family_id in web_context.admin_event.families_by_id
+                            for family_id in event.families_by_id
                         }
                     stored_rotator: StoredRotator = (
                         cls._admin_validate_rotator_update_data(
