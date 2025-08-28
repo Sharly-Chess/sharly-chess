@@ -778,6 +778,11 @@ class TournamentAdminController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(
             request, event_uniq_id, tournament_id, None
         )
+        if web_context.admin_tournament and web_context.admin_tournament.started:
+            return self.redirect_error(
+                request, 'Import only possible before the tournament starts.'
+            )
+
         event = web_context.get_admin_event()
         importer = TournamentImporterManager.get_object(importer_id)
 
