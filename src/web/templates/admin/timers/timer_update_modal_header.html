@@ -1,0 +1,49 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+<h3 id="uniq-id-field" class="modal-title">
+    <span class="pe-1">
+        {{ _('Editing of timer [%(timer_uniq_id)s]', timer_uniq_id=admin_timer.uniq_id) }}
+    </span>
+    <span
+        {{ macros.tooltip_attributes(
+            'info', _('Edit the unique ID.'), 'right'
+        ) }}
+    >
+        <button
+            id="uniq-id-update-button"
+            data-testid="uniq-id-update-button"
+            type="button"
+            class="btn btn-sm text-primary text-nowrap"
+        >
+            <i class="bi-pencil"></i>
+        </button>
+    </span>
+</h3>
+<div
+    id="uniq-id-update-form-container"
+    class="mt-1 mb-1 col-12 col-md-6"
+    style="display: none"
+>
+    {{ admin_macros.uniq_id_form(
+        current_uniq_id=admin_timer.uniq_id,
+        existing_uniq_ids=timer_uniq_ids,
+        placeholder=_('E.g.: %(string)s', string=_('my-timer')),
+        patch_url=url_for(
+            'admin-timer-uniq-id-update',
+            event_uniq_id=admin_event.uniq_id,
+            timer_id=admin_timer.id
+        ),
+    ) }}
+</div>
+<script>
+    {% set id = 'uniq-id-update' %}
+    $('#{{ id }}-button').click(() => {
+        $('#{{ id }}-form-container').css('display', '');
+        $('#uniq-id-field').css('display', 'none');
+    });
+    $('#{{ id }}-cancel-button').click(() => {
+        $('#{{ id }}-form-container').css('display', 'none');
+        $('#uniq-id-field').css('display', '');
+    });
+</script>

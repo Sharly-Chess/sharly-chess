@@ -6,9 +6,12 @@ from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
+from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
+from common.sharly_chess_config import SharlyChessConfig
 from data.family import Family
+from utils import StaticUtils
 from utils.enum import ScreenType
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredFamily
@@ -26,13 +29,13 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        family_id: int | None,
-        family_type: str | None,
+        family_id: int | None = None,
+        family_type: str | None = None,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ]
-        | None,
+        | None = None,
     ):
         super().__init__(
             request,
@@ -52,6 +55,10 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
                 return
         self.family_type = family_type
 
+    def get_admin_family(self) -> Family:
+        assert self.admin_family is not None
+        return self.admin_family
+
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
@@ -70,28 +77,19 @@ class FamilyAdminController(BaseEventAdminController):
         data: dict[str, str] | None = None,
     ) -> StoredFamily:
         errors: dict[str, str] = {}
+        event = web_context.get_admin_event()
         if data is None:
             data = {}
         field: str
-        type_: str | None = None
+        type_: str
         match action:
             case 'create':
+                assert web_context.family_type is not None
                 type_ = web_context.family_type
             case 'update' | 'clone' | 'delete':
-                if web_context.admin_family is None:
-                    raise RuntimeError(f'{web_context.admin_family=} for [{action=}]')
-                type_ = web_context.admin_family.stored_family.type
+                type_ = web_context.get_admin_family().stored_family.type
             case _:
                 raise ValueError(f'action=[{action}]')
-        match type_:
-            case 'boards' | 'input' | 'players' | 'ranking':
-                pass
-            case _:
-                raise ValueError(f'type=[{type_}]')
-        field = 'uniq_id'
-        uniq_id: str | None = WebContext.form_data_to_str(data, field)
-        name: str | None = None
-        public: bool | None = None
         menu_link: bool | None = None
         menu_text: str | None = None
         menu: str | None = None
@@ -112,65 +110,20 @@ class FamilyAdminController(BaseEventAdminController):
         number: int | None = None
         message_default: bool = True
         message_text: str | None = None
-        if action in [
-            'delete',
-        ]:
-            pass
-        else:
-            if not uniq_id:
-                errors[field] = _('Please enter the family ID.')
-            elif ':' in uniq_id:
-                errors[field] = _('Character [{char}] is not allowed.').format(char=':')
-            else:
-                match action:
-                    case 'create' | 'clone':
-                        if web_context.admin_event is None:
-                            raise RuntimeError(
-                                f'{web_context.admin_event=} for [{action=}]'
-                            )
-                        if uniq_id in web_context.admin_event.families_by_uniq_id:
-                            errors[field] = _(
-                                'Family [{uniq_id}] already exists.'
-                            ).format(uniq_id=uniq_id)
-                    case 'update':
-                        if web_context.admin_family is None:
-                            raise RuntimeError(
-                                f'{web_context.admin_family=} for [{action=}]'
-                            )
-                        if web_context.admin_event is None:
-                            raise RuntimeError(
-                                f'{web_context.admin_event=} for [{action=}]'
-                            )
-                        if (
-                            uniq_id != web_context.admin_family.uniq_id
-                            and uniq_id in web_context.admin_event.families_by_uniq_id
-                        ):
-                            errors[field] = _(
-                                'Family [{uniq_id}] already exists.'
-                            ).format(uniq_id=uniq_id)
-                    case _:
-                        raise ValueError(f'action=[{action}]')
-            name = WebContext.form_data_to_str(data, 'name')
-            public = WebContext.form_data_to_bool(data, 'public')
+        name = WebContext.form_data_to_str(data, 'name')
+        public = WebContext.form_data_to_bool(data, 'public')
         match action:
             case 'create' | 'clone' | 'update':
                 field = 'tournament_id'
-                if web_context.admin_event is None:
-                    raise RuntimeError(f'{web_context.admin_event=} for [{action=}]')
                 try:
-                    if len(web_context.admin_event.tournaments_by_id) == 1:
-                        tournament_id = list(
-                            web_context.admin_event.tournaments_by_id.keys()
-                        )[0]
+                    if len(event.tournaments_by_id) == 1:
+                        tournament_id = list(event.tournaments_by_id.keys())[0]
                         data[field] = WebContext.value_to_form_data(tournament_id)
                     else:
                         tournament_id = WebContext.form_data_to_int(data, field)
                         if not tournament_id:
                             errors[field] = _('Please choose the tournament.')
-                        elif (
-                            tournament_id
-                            not in web_context.admin_event.tournaments_by_id
-                        ):
+                        elif tournament_id not in event.tournaments_by_id:
                             errors[field] = _(
                                 'Tournament [{tournament_id}] not found.'
                             ).format(tournament_id=tournament_id)
@@ -192,10 +145,7 @@ class FamilyAdminController(BaseEventAdminController):
                 field = 'timer_id'
                 try:
                     timer_id = WebContext.form_data_to_int(data, field)
-                    if (
-                        timer_id
-                        and timer_id not in web_context.admin_event.timers_by_id
-                    ):
+                    if timer_id and timer_id not in event.timers_by_id:
                         errors[field] = _('Timer [{timer_id}] not found.').format(
                             timer_id=timer_id
                         )
@@ -281,12 +231,18 @@ class FamilyAdminController(BaseEventAdminController):
                     message_text = web_context.admin_family.stored_family.message_text
                 else:
                     message_text = WebContext.form_data_to_str(data, field)
+                if action == 'update':
+                    uniq_id = web_context.get_admin_family().uniq_id
+                else:
+                    uniq_id = event.get_unused_family_uniq_id(
+                        ScreenType(type_),
+                        StaticUtils.name_to_uniq_id(name) if name else None,
+                    )
             case 'delete':
-                if web_context.admin_family is None:
-                    raise RuntimeError(f'{web_context.admin_family=} for [{action=}]')
-                uniq_id = uniq_id or ''
-                tournament_id = web_context.admin_family.stored_family.tournament_id
-                name = web_context.admin_family.stored_family.name
+                uniq_id = ''
+                stored_family = web_context.get_admin_family().stored_family
+                tournament_id = stored_family.tournament_id
+                name = stored_family.name
             case _:
                 raise ValueError(f'action=[{action}]')
 
@@ -350,8 +306,7 @@ class FamilyAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
-        if web_context.admin_event is None:
-            raise RuntimeError('admin_event not defined')
+        event = web_context.get_admin_event()
         template_context = web_context.template_context | {
             'admin_event_tab': 'admin-event-families-tab',
             'admin_families_show_details': SessionHandler.get_session_admin_families_show_details(
@@ -364,7 +319,6 @@ class FamilyAdminController(BaseEventAdminController):
                 pass
             case 'family':
                 if data is None:
-                    uniq_id: str | None = None
                     name: str | None = None
                     public: bool | None = None
                     menu_link: bool | None = None
@@ -389,25 +343,17 @@ class FamilyAdminController(BaseEventAdminController):
                     message_text: str | None = None
                     match action:
                         case 'update':
-                            assert web_context.admin_family is not None
-                            uniq_id = web_context.admin_family.stored_family.uniq_id
-                            name = web_context.admin_family.stored_family.name
+                            name = web_context.get_admin_family().stored_family.name
                         case 'create':
                             assert family_type is not None
-                            uniq_id = web_context.admin_event.get_unused_family_uniq_id(
-                                family_type=ScreenType(family_type)
-                            )
-                            name = web_context.admin_event.get_unused_family_name(
+                            name = event.get_unused_family_name(
                                 family_type=ScreenType(family_type)
                             )
                         case 'clone':
-                            assert web_context.admin_family is not None
-                            uniq_id = web_context.admin_event.get_unused_family_uniq_id(
-                                base_uniq_id=web_context.admin_family.stored_family.uniq_id
-                            )
-                            name = web_context.admin_event.get_unused_family_name(
-                                family_type=ScreenType(web_context.admin_family.type),
-                                base_name=web_context.admin_family.stored_family.name,
+                            family = web_context.get_admin_family()
+                            name = event.get_unused_family_name(
+                                family_type=ScreenType(family.type),
+                                base_name=family.stored_family.name,
                             )
                         case 'delete':
                             pass
@@ -415,53 +361,51 @@ class FamilyAdminController(BaseEventAdminController):
                             raise ValueError(f'action=[{action}]')
                     match action:
                         case 'update' | 'clone':
-                            if web_context.admin_family is None:
-                                raise RuntimeError(
-                                    f'{web_context.admin_family=} for [{action=}]'
-                                )
-                            public = web_context.admin_family.stored_family.public
-                            tournament_id = (
-                                web_context.admin_family.stored_family.tournament_id
-                            )
-                            columns = web_context.admin_family.stored_family.columns
-                            font_size = web_context.admin_family.stored_family.font_size
-                            menu_link = web_context.admin_family.stored_family.menu_link
-                            menu_text = web_context.admin_family.stored_family.menu_text
-                            menu = web_context.admin_family.stored_family.menu
-                            timer_id = web_context.admin_family.stored_family.timer_id
-                            first = web_context.admin_family.stored_family.first
-                            last = web_context.admin_family.stored_family.last
-                            match web_context.admin_family.type:
+                            family = web_context.get_admin_family()
+                            stored_family = family.stored_family
+                            public = stored_family.public
+                            tournament_id = stored_family.tournament_id
+                            columns = stored_family.columns
+                            font_size = stored_family.font_size
+                            menu_link = stored_family.menu_link
+                            menu_text = stored_family.menu_text
+                            menu = stored_family.menu
+                            timer_id = stored_family.timer_id
+                            first = stored_family.first
+                            last = stored_family.last
+                            match family.type:
                                 case ScreenType.BOARDS:
                                     pass
                                 case ScreenType.INPUT:
-                                    input_exit_button = web_context.admin_family.stored_family.input_exit_button
+                                    input_exit_button = stored_family.input_exit_button
                                 case ScreenType.PLAYERS:
-                                    players_show_opponent = web_context.admin_family.stored_family.players_show_opponent
-                                    players_show_unpaired = web_context.admin_family.stored_family.players_show_unpaired
-                                case ScreenType.RANKING:
-                                    ranking_crosstable = web_context.admin_family.stored_family.ranking_crosstable
-                                    ranking_round = web_context.admin_family.stored_family.ranking_round
-                                    ranking_min_points = web_context.admin_family.stored_family.ranking_min_points
-                                    ranking_max_points = web_context.admin_family.stored_family.ranking_max_points
-                                case _:
-                                    raise ValueError(
-                                        f'type=[{web_context.admin_family.type}]'
+                                    players_show_opponent = (
+                                        stored_family.players_show_opponent
                                     )
-                            parts = web_context.admin_family.stored_family.parts
-                            number = web_context.admin_family.stored_family.number
-                            message_default = (
-                                web_context.admin_family.stored_family.message_default
-                            )
-                            message_text = (
-                                web_context.admin_family.stored_family.message_text
-                            )
+                                    players_show_unpaired = (
+                                        stored_family.players_show_unpaired
+                                    )
+                                case ScreenType.RANKING:
+                                    ranking_crosstable = (
+                                        stored_family.ranking_crosstable
+                                    )
+                                    ranking_round = stored_family.ranking_round
+                                    ranking_min_points = (
+                                        stored_family.ranking_min_points
+                                    )
+                                    ranking_max_points = (
+                                        stored_family.ranking_max_points
+                                    )
+                                case _:
+                                    raise ValueError(f'type=[{family.type}]')
+                            parts = stored_family.parts
+                            number = stored_family.number
+                            message_default = stored_family.message_default
+                            message_text = stored_family.message_text
                         case 'create':
                             public = True
                             message_default = True
-                            tournament_id = list(
-                                web_context.admin_event.tournaments_by_id.keys()
-                            )[0]
+                            tournament_id = list(event.tournaments_by_id.keys())[0]
                             match family_type:
                                 case ScreenType.BOARDS:
                                     menu = '@boards'
@@ -478,7 +422,6 @@ class FamilyAdminController(BaseEventAdminController):
                         case _:
                             raise ValueError(f'action=[{action}]')
                     data = {
-                        'uniq_id': WebContext.value_to_form_data(uniq_id),
                         'public': WebContext.value_to_form_data(public),
                         'name': WebContext.value_to_form_data(name),
                         'tournament_id': WebContext.value_to_form_data(tournament_id),
@@ -530,11 +473,12 @@ class FamilyAdminController(BaseEventAdminController):
                     'screen_type_options': cls._get_screen_type_options(
                         family_screens_only=True
                     ),
-                    'timer_options': cls._get_timer_options(web_context.admin_event),
+                    'timer_options': cls._get_timer_options(event),
                     'input_exit_button_options': cls._get_input_exit_button_options(),
                     'players_show_unpaired_options': cls._get_players_show_unpaired_options(),
                     'players_show_opponent_options': cls._get_players_show_opponent_options(),
                     'ranking_crosstable_options': cls._get_ranking_crosstable_options(),
+                    'family_uniq_ids': list(event.families_by_uniq_id.keys()),
                     'modal': modal,
                     'action': action,
                     'data': data,
@@ -746,6 +690,48 @@ class FamilyAdminController(BaseEventAdminController):
             family_id=family_id,
             family_type=None,
             data=data,
+        )
+
+    @patch(
+        path='/admin/family-uniq-id-update/{event_uniq_id:str}/{family_id:int}',
+        name='admin-family-uniq-id-update',
+    )
+    async def htmx_admin_family_uniq_id_update(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        event_uniq_id: str,
+        family_id: int,
+    ) -> HTMXTemplate | ClientRedirect:
+        web_context = FamilyAdminWebContext(request, event_uniq_id, family_id)
+        event = web_context.get_admin_event()
+        family = web_context.get_admin_family()
+        new_uniq_id = WebContext.form_data_to_str(data, 'uniq_id')
+        if (
+            not new_uniq_id
+            or not SharlyChessConfig.uniq_id_regex.match(new_uniq_id)
+            or (
+                new_uniq_id != family.uniq_id
+                and new_uniq_id in event.families_by_uniq_id.keys()
+            )
+        ):
+            # No precise error (validated in JS)
+            return self.redirect_error(request, f'Invalid uniq ID [{new_uniq_id}].')
+        stored_family = family.stored_family
+        assert stored_family is not None
+        stored_family.uniq_id = new_uniq_id
+        with EventDatabase(event.uniq_id, True) as database:
+            database.update_stored_family(stored_family)
+            database.commit()
+        return HTMXTemplate(
+            template_name='/admin/families/family_update_modal_header.html',
+            context=web_context.template_context
+            | {'family_uniq_ids': list(event.families_by_uniq_id.keys())},
+            re_swap='innerHTML',
+            re_target='.modal-header',
         )
 
     @delete(

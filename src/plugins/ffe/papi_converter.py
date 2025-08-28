@@ -50,6 +50,7 @@ from plugins.pairing_acceleration.pairing_settings import (
     DualRatingLimitsSetting,
     RatingLimitSetting,
 )
+from utils import StaticUtils
 from utils.enum import (
     TournamentRating,
     PlayerGender,
@@ -250,18 +251,19 @@ class PapiConverter:
 
         with open(target_file, 'r', encoding='utf-8') as file:
             papi_data_dict = json.load(file)
-        return self.read_papi_data(papi_data_dict, stored_tournament)
+        return self.read_papi_data(papi_data_dict, source_file.stem, stored_tournament)
 
     def read_papi_data(
         self,
         papi_data_dict: dict[str, Any],
+        uniq_id: str,
         stored_tournament: StoredTournament | None = None,
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
         """Read a dict in the format of the papi-converter into stored objects."""
         papi_data = dict_to_dataclass(PapiData, papi_data_dict)
 
         stored_tournament = self._read_papi_variables(
-            papi_data.variables, stored_tournament
+            papi_data.variables, uniq_id, stored_tournament
         )
         is_round_robin = (
             stored_tournament.pairing == BergerRoundRobinVariation.static_id()
@@ -353,6 +355,7 @@ class PapiConverter:
     @staticmethod
     def _read_papi_variables(
         variables: PapiVariables,
+        uniq_id: str,
         stored_tournament: StoredTournament | None = None,
     ) -> StoredTournament:
         def raise_exception(field_: str, message: str):
@@ -366,7 +369,7 @@ class PapiConverter:
                 raise_exception('name', _('A non-empty string is expected'))
             stored_tournament = StoredTournament(
                 id=None,
-                uniq_id=variables.name.lower().replace('/', '-').replace(' ', '-'),
+                uniq_id=StaticUtils.name_to_uniq_id(uniq_id),
                 name=variables.name,
             )
 

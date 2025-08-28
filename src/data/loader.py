@@ -28,7 +28,6 @@ logger: Logger = get_logger()
 
 
 class EventLoader:
-    id_regex = re.compile(r'^[0-9a-zA-Z_\-]+$')
     _valid_event_ids: list[str] = []
     _invalid_uniq_ids: list[str] = []
 
@@ -73,7 +72,7 @@ class EventLoader:
     def all_event_ids(cls) -> list[str]:
         ids: list[str] = []
         for file in EVENTS_DIR.glob(f'*.{SharlyChessConfig.event_database_ext}'):
-            if cls.id_regex.match(file.stem):
+            if SharlyChessConfig.uniq_id_regex.match(file.stem):
                 ids.append(file.stem)
             else:
                 new_id: str = re.sub(r'[^a-zA-Z0-9_\-]', '_', file.stem)

@@ -35,7 +35,7 @@ class TournamentExporter(IdentifiableEntity, ABC):
     @staticmethod
     def file_name(tournament: Tournament) -> str:
         """Name of the file to download."""
-        return tournament.name
+        return tournament.uniq_id
 
     @property
     def file_encoding(self) -> str | None:
@@ -127,8 +127,10 @@ class PgnTournamentExporter(TournamentExporter):
     @staticmethod
     @override
     def file_name(tournament: Tournament) -> str:
-        return f'{tournament.name} - ' + _('Round #{round}').format(
-            round=tournament.current_round
+        return (
+            tournament.uniq_id
+            + '-'
+            + _('round_{round}').format(round=tournament.current_round)
         )
 
     def dump_to_file(self, file: IO, tournament: Tournament):

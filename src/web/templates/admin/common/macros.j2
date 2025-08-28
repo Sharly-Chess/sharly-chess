@@ -947,6 +947,42 @@ with_indicator: display a loading indicator, optional
     </script>
 {% endmacro %}
 
+
+{% macro uniq_id_form(
+    current_uniq_id,
+    existing_uniq_ids=[],
+    placeholder='',
+    patch_url=''
+) %}
+    {% set id = 'uniq-id-update' %}
+    {{ inline_text_form(
+        id,
+        name='uniq_id',
+        placeholder=placeholder,
+        value=current_uniq_id,
+        patch_url=patch_url,
+    ) }}
+    <script>
+        $('#{{ id }}-input').on('input', function() {
+            let error = "";
+            const value = $(this).val();
+            if (value === '') {
+                error = "{{ _('A value is expected.') }}";
+            } else if (value != "current_uniq_id" && {{ existing_uniq_ids|tojson }}.includes(value)) {
+                error = "{{ _('This unique ID is already used.') }}";
+            } else if (!value.match(/^[0-9a-zA-Z_\-]+$/)) {
+                error = "{{ _('Accepted characters are letters, numbers, underscore (_) and minus (-).') }}";
+            }
+
+            $('#{{ id }}-submit-button').prop('disabled', error !== "");
+            const tooltipElement = document.getElementById('{{ id }}-submit-button-container');
+            const tooltip = bootstrap.Tooltip.getInstance(tooltipElement);
+            tooltip.setContent({ '.tooltip-inner': error || "{{ _('Validate') }}" });
+            tooltip.update();
+        });
+    </script>
+{% endmacro %}
+
 {% macro extra_admin_column_header(
     at,
     extra_columns = {}
