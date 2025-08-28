@@ -36,17 +36,21 @@ class TestFamilyScreensFunctionality:
         TestUtils.button_by_text(page, 'Results entry').click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
-        modal.get_by_role('textbox', name='ID (unique):').fill(FAMILY_ID)
-        modal.get_by_role('textbox', name='Name:').fill('Test Family')
+
+        name = 'Test family'
+        expected_uniq_id = 'test_family'
+        modal.get_by_role('textbox', name='Name:').fill(name)
         modal.locator('button[type=submit]').click()
-        card = page.locator("div.card:has-text('Test Family')")
+        card = page.locator(f"div.card:has-text('{name}')")
         expect(card).to_be_visible()
 
         button = card.locator('button[hx-get*="delete"]')
         button.click()
         TestUtils.button_by_text(modal, 'Delete').click()
-
-        expect(page.locator("div.card:has-text('Test Family')")).not_to_be_attached()
+        expect(
+            page.get_by_text(f'Family [{expected_uniq_id}] has been deleted.')
+        ).to_be_visible()
+        expect(page.locator(f"div.card:has-text('{name}')")).not_to_be_attached()
 
     def test_results_entry_family_by_parts(
         self,
