@@ -1,29 +1,31 @@
 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable admin-family-edit-modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 class="modal-title">
-                {% if action in ['create', 'clone', ] %}
-                    {% if family_type == 'input' %}
-                        {{ _('Input screen family creation') }}
-                    {% elif family_type == 'boards' %}
-                        {{ _('Boards screen family creation') }}
-                    {% elif family_type == 'players' %}
-                        {{ _('Players screen family creation') }}
-                    {% elif family_type == 'ranking' %}
-                        {{ _('Ranking screen family creation') }}
+            {% if action == 'update' %}
+                {% include 'family_update_modal_header.html' %}
+            {% else %}
+                <h2 class="modal-title">
+                    {% if action in ['create', 'clone', ] %}
+                        {% if family_type == 'input' %}
+                            {{ _('Input screen family creation') }}
+                        {% elif family_type == 'boards' %}
+                            {{ _('Boards screen family creation') }}
+                        {% elif family_type == 'players' %}
+                            {{ _('Players screen family creation') }}
+                        {% elif family_type == 'ranking' %}
+                            {{ _('Ranking screen family creation') }}
+                        {% else %}
+                            ?
+                        {% endif %}
+                    {% elif action == 'clone' %}
+                        {{ _('Duplication of screen family [%(family_uniq_id)s]', family_uniq_id=admin_family.uniq_id) }}
+                    {% elif action == 'delete' %}
+                        {{ _('Deletion of screen family [%(family_uniq_id)s]', family_uniq_id=admin_family.uniq_id) }}
                     {% else %}
                         ?
                     {% endif %}
-                {% elif action == 'clone' %}
-                    {{ _('Duplication of screen family [%(family_uniq_id)s]', family_uniq_id=admin_family.uniq_id) }}
-                {% elif action == 'update' %}
-                    {{ _('Editing of screen family [%(family_uniq_id)s]', family_uniq_id=admin_family.uniq_id) }}
-                {% elif action == 'delete' %}
-                    {{ _('Deletion of screen family [%(family_uniq_id)s]', family_uniq_id=admin_family.uniq_id) }}
-                {% else %}
-                    ?
-                {% endif %}
-            </h2>
+                </h2>
+            {% endif %}
         </div>
         <div class="modal-body">
             <form
@@ -67,15 +69,6 @@
                                 label=_('Visibility:'),
                                 placeholder=_('Public family'),
                                 help_text=_('Only arbiters can see private screen families.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.text_input(
-                                name='uniq_id',
-                                label=_('ID (unique):'),
-                                placeholder=_('E.g.: %(family_type)s-family', family_type=family_type),
-                                help_text=_('The Unique ID, used to reference the screen family.'),
                                 data=data, errors=errors
                             ) }}
                         </div>

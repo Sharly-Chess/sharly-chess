@@ -1,31 +1,33 @@
 <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-screen-edit-modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 class="modal-title">
-                {% if action in ['create', 'clone', ] %}
-                    {% if screen_type.value == 'input' %}
-                        {{ _('Input screen creation') }}
-                    {% elif screen_type.value == 'boards' %}
-                        {{ _('Boards screen creation') }}
-                    {% elif screen_type.value == 'players' %}
-                        {{ _('Players screen creation') }}
-                    {% elif screen_type.value == 'results' %}
-                        {{ _('Results screen creation') }}
-                    {% elif screen_type.value == 'ranking' %}
-                        {{ _('Ranking screen creation') }}
-                    {% elif screen_type.value == 'image' %}
-                        {{ _('Image screen creation') }}
+            {% if action == 'update' %}
+                {% include 'screen_update_modal_header.html' %}
+            {% else %}
+                <h2 class="modal-title">
+                    {% if action in ['create', 'clone', ] %}
+                        {% if screen_type.value == 'input' %}
+                            {{ _('Input screen creation') }}
+                        {% elif screen_type.value == 'boards' %}
+                            {{ _('Boards screen creation') }}
+                        {% elif screen_type.value == 'players' %}
+                            {{ _('Players screen creation') }}
+                        {% elif screen_type.value == 'results' %}
+                            {{ _('Results screen creation') }}
+                        {% elif screen_type.value == 'ranking' %}
+                            {{ _('Ranking screen creation') }}
+                        {% elif screen_type.value == 'image' %}
+                            {{ _('Image screen creation') }}
+                        {% else %}
+                            ?
+                        {% endif %}
+                    {% elif action == 'delete' %}
+                        {{ _('Deletion of screen [%(screen_uniq_id)s]', screen_uniq_id=admin_screen.uniq_id) }}
                     {% else %}
                         ?
                     {% endif %}
-                {% elif action == 'update' %}
-                    {{ _('Editing of screen [%(screen_uniq_id)s]', screen_uniq_id=admin_screen.uniq_id) }}
-                {% elif action == 'delete' %}
-                    {{ _('Deletion of screen [%(screen_uniq_id)s]', screen_uniq_id=admin_screen.uniq_id) }}
-                {% else %}
-                    ?
-                {% endif %}
-            </h2>
+                </h2>
+            {% endif %}
         </div>
         <div class="modal-body">
             <form
@@ -75,15 +77,6 @@
                                 label=_('Visibility:'),
                                 placeholder=_('Public screen'),
                                 help_text=_('Only arbiters can see private screens.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 col-xl-{{col}} mb-3">
-                            {{ admin_macros.text_input(
-                                name='uniq_id',
-                                label=_('ID (unique):'),
-                                placeholder=_('E.g.: %(screen_type)s-screen', screen_type=screen_type.value),
-                                help_text=_('The Unique ID, used to reference the screen.'),
                                 data=data, errors=errors
                             ) }}
                         </div>

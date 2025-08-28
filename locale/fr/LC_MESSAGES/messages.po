@@ -499,9 +499,6 @@ msgstr "Autorise l'appariement des joueur·euses, en utilisant un moteur d'appar
 msgid "Allows to create accounts, declare devices and grant them permissions."
 msgstr "Permet la création de comptes, la déclaration d'appareils et l'assignation de permissions."
 
-msgid "An event with this unique ID already exists."
-msgstr "Un évènement avec cet identifiant unique existe déjà."
-
 msgid "An unexpected error occurred."
 msgstr "Une erreur inattendue s'est produite."
 
@@ -856,9 +853,6 @@ msgstr "Changer le joueur de tournoi."
 
 msgid "Changing the unique ID will cause an error on any opened screen of the event."
 msgstr "Modifier l'identifiant unique provoquera une erreur sur tous les écrans ouverts de l'évènement."
-
-msgid "Character [{char}] is not allowed."
-msgstr "La caractère [{char}] n'est pas autorisé."
 
 msgid "Check connection"
 msgstr "Vérifier la connexion"
@@ -1494,7 +1488,7 @@ msgid "Display all the players, paired and unpaired"
 msgstr "Afficher tou·tes les joueur·euses, apparié·es et non apparié·es"
 
 msgid "Display color, board number and opponent"
-msgstr "Affichier, la couleur, l'échiquier et l'adversaire"
+msgstr "Afficher la couleur, l'échiquier et l'adversaire"
 
 msgid "Display controller"
 msgstr "Pilote d'afficheurs"
@@ -1507,9 +1501,6 @@ msgstr "Le pilote d'afficheurs [{display_controller_uniq_id}] a été supprimé.
 
 msgid "Display controller [{display_controller_uniq_id}] has been updated."
 msgstr "Le pilote d'afficheurs [{display_controller_uniq_id}] a été modifié."
-
-msgid "Display controller [{uniq_id}] already exists."
-msgstr "Le pilote d'afficheurs [{uniq_id}] existe déjà."
 
 msgid "Display controller creation"
 msgstr "Création d'un pilote d'afficheurs"
@@ -1652,10 +1643,6 @@ msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
 msgstr "E"
 
 #, python-format
-msgid "E.g.: %(family_type)s-family"
-msgstr "Exemple : famille-%(family_type)s"
-
-#, python-format
 msgid "E.g.: %(minutes)d (minutes)"
 msgstr "Exemple : %(minutes)d (minutes)"
 
@@ -1668,8 +1655,8 @@ msgid "E.g.: %(num)d%%"
 msgstr "Exemple : %(num)d%%"
 
 #, python-format
-msgid "E.g.: %(screen_type)s-screen"
-msgstr "Exemple : ecran-%(screen_type)s"
+msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
+msgstr "Exemple : %(seconds)d (%(minutes)d minutes)"
 
 #, python-format
 msgid "E.g.: %(seconds)d (seconds)"
@@ -1781,20 +1768,8 @@ msgstr "Exemple : pierre dupont"
 msgid "E.g.: john.doe@chess.com"
 msgstr "Exemple : pierre.dupont@chess.com"
 
-msgid "E.g.: main"
-msgstr "Exemple : principal"
-
-msgid "E.g.: my-display-controller"
-msgstr "Exemple : mon-pilote-d-afficheurs"
-
-msgid "E.g.: my-rotator"
-msgstr "Exemple : mon-ecran-rotatif"
-
 msgid "E.g.: my_password"
 msgstr "Exemple : mon_mot_de_passe"
-
-msgid "E.g.: timer"
-msgstr "Exemple : chronometre"
 
 msgid "EXEMPT"
 msgstr "EXEMPT·E"
@@ -1853,6 +1828,9 @@ msgstr "Éditer les ensembles d'échiquiers affichés sur l'écran."
 
 msgid "Edit the sets of players displayed on the screen."
 msgstr "Éditer les ensembles de joueur·euses affichés sur l'écran."
+
+msgid "Edit the unique ID."
+msgstr "Éditer l'identifiant unique."
 
 #, python-format
 msgid "Editing of account [%(username)s]"
@@ -2216,9 +2194,6 @@ msgstr "La famile [{family_uniq_id}] a été supprimée."
 msgid "Family [{family_uniq_id}] has been updated."
 msgstr "La famile [{family_uniq_id}] a été modifiée."
 
-msgid "Family [{uniq_id}] already exists."
-msgstr "La famille [{uniq_id}] existe déjà."
-
 msgid "Fed *** FEDERATION FOR TABLE HEADER"
 msgstr "Féd."
 
@@ -2503,9 +2478,6 @@ msgstr "Je confirme vouloir écraser les données des joueur·euses de ce tourno
 msgid "I would like the following custom files to be added to a future release of Sharly Chess:"
 msgstr "J'aimerais que les fichiers de personnalisation suivants soient ajoutés dans une future version de Sharly Chess :"
 
-msgid "ID (unique):"
-msgstr "Identifiant (unique) :"
-
 msgid "ID [{user_id}] not found (code: [{code}]): [{error}]."
 msgstr "Identifiant [{user_id}] introuvable (code : [{code}]) : [{error}]."
 
@@ -2623,7 +2595,7 @@ msgid "Input screen creation"
 msgstr "Création d'un écran de saisie"
 
 msgid "Input screen family creation"
-msgstr "Création d'une famille d'écrans de saisie."
+msgstr "Création d'une famille d'écrans de saisie"
 
 msgid "Input screens show pairings by board number and allow people to enter results."
 msgstr "Les écrans de saisie des résultats présentent les appariements des joueur·euses par ordre croissant des échiquiers et permet l'entrée des résultats par les joueur·euses ou les arbitres."
@@ -3775,17 +3747,11 @@ msgstr "Veuillez entrer l'adresse IP."
 msgid "Please enter the date of the first hour."
 msgstr "Veuillez entrer la date du premier horaire."
 
-msgid "Please enter the display controller ID."
-msgstr "Veuillez entrer l'identifiant du pilote d'afficheurs."
-
 msgid "Please enter the display controller name."
 msgstr "Veuillez entrer le nom du pilote d'afficheurs."
 
 msgid "Please enter the end date of the event."
 msgstr "Veuillez entrer la date de fin de l'évènement."
-
-msgid "Please enter the family ID."
-msgstr "Veuillez entrer l'identifiant du chronomètre."
 
 msgid "Please enter the image URL."
 msgstr "Veuillez entrer l'URL de l'image."
@@ -3802,14 +3768,8 @@ msgstr "Veuillez entrer le numéro de la version que vous souhaitez restaurer [{
 msgid "Please enter the password."
 msgstr "Veuillez entrer le mot de passe."
 
-msgid "Please enter the rotator ID."
-msgstr "Veuillez entrer l'identifiant de l'écran rotatif."
-
 msgid "Please enter the round number or the hour ID."
 msgstr "Veuillez entrer le numéro de ronde ou l'identifiant de l'horaire."
-
-msgid "Please enter the screen ID."
-msgstr "Veuillez entrer l'identifiant de l'écran."
 
 msgid "Please enter the start date of the event."
 msgstr "Veuillez entrer la date de début de l'évènement."
@@ -3822,12 +3782,6 @@ msgstr "Veuillez entrer le texte à afficher avant l'horaire (obligatoire sauf p
 
 msgid "Please enter the time."
 msgstr "Veuillez entrer l'heure."
-
-msgid "Please enter the timer ID."
-msgstr "Veuillez entrer l'identifiant du chronomètre."
-
-msgid "Please enter the tournament ID."
-msgstr "Veuillez entrer l'identifiant du tournoi."
 
 msgid "Please enter the tournament name."
 msgstr "Veuillez entrer le nom du tournoi."
@@ -4283,9 +4237,6 @@ msgstr "L'écran rotatif [{rotator_uniq_id}] a été supprimé."
 msgid "Rotator [{rotator_uniq_id}] has been updated."
 msgstr "L'écran rotatif [{rotator_uniq_id}] a été modifié."
 
-msgid "Rotator [{uniq_id}] already exists."
-msgstr "Rotator [{uniq_id}] existe déjà."
-
 msgid "Rotator automatically rotate between multiple screens."
 msgstr "Les écrans rotatifs permettent de faire défiler automatiquement plusieurs écrans."
 
@@ -4319,9 +4270,6 @@ msgstr "La ronde %(round)d est terminée."
 #, python-format
 msgid "Round #%(round)d is running."
 msgstr "La ronde %(round)d est en cours."
-
-msgid "Round #{round}"
-msgstr "Ronde n°{round}"
 
 #, python-format
 msgid "Round %(round)d - Board %(board_number)d"
@@ -4420,9 +4368,6 @@ msgstr "L'écran [{screen_uniq_id}] a été supprimé."
 
 msgid "Screen [{screen_uniq_id}] has been updated."
 msgstr "L'écran [{screen_uniq_id}] a été modifié."
-
-msgid "Screen [{uniq_id}] already exists."
-msgstr "L'écran [{uniq_id}] existe déjà."
 
 msgid "Screen families:"
 msgstr "Familles d'écrans :"
@@ -4751,6 +4696,9 @@ msgstr "L'identifiant unique, utilisé pour référencer le chronomètre'."
 
 msgid "The Unique ID, used to reference the tournament."
 msgstr "L'identifiant unique, utilisé pour référencer le tournoi."
+
+msgid "The arbiter interface allows the management of the events."
+msgstr "L'interface d'arbitrage permet la gestion des évènements."
 
 msgid "The background colour is used when the image does not fill the whole screen."
 msgstr "La couleur de fond est utilisée lorsque l'image ne remplit pas complètement l'écran."
@@ -5229,6 +5177,9 @@ msgstr "Cet écran est privé (non visible des spectateur·ices)."
 msgid "This screen is public (visible by the spectators)."
 msgstr "Cet écran est public (visible des spectateur·ices)."
 
+msgid "This unique ID is already used."
+msgstr "Cet identifiant unique est déjà utilisé."
+
 msgid "Three points for a win"
 msgstr "Victoire à 3 points"
 
@@ -5274,9 +5225,6 @@ msgstr "Le chronomètre [{timer_uniq_id}] a été supprimé."
 
 msgid "Timer [{timer_uniq_id}] has been updated."
 msgstr "Le chronomètre [{timer_uniq_id}] a été modifié."
-
-msgid "Timer [{uniq_id}] already exists."
-msgstr "Le chronomètre [{uniq_id}] existe déjà."
 
 msgid "Timer creation"
 msgstr "Création d'un chronomètre"
@@ -5378,9 +5326,6 @@ msgstr "Le tournoi [{tournament_uniq_id}] est terminé, on ne peut plus y ajoute
 
 msgid "Tournament [{tournament}] successfully imported."
 msgstr "Le tournoi [{tournament}] importé avec succès."
-
-msgid "Tournament [{uniq_id}] already exists."
-msgstr "Le tournoi [{uniq_id}] existe déjà."
 
 msgid "Tournament creation"
 msgstr "Création d'un tournoi"
@@ -6189,8 +6134,26 @@ msgstr "min"
 msgid "minimum: {value}"
 msgstr "minimum : {value}"
 
+msgid "my-display-controller"
+msgstr "mon-pilote-d-afficheur"
+
 msgid "my-event"
 msgstr "mon-evenement"
+
+msgid "my-family"
+msgstr "ma-famille"
+
+msgid "my-rotator"
+msgstr "mon-rotatif"
+
+msgid "my-screen"
+msgstr "mon-ecran"
+
+msgid "my-timer"
+msgstr "mon-chronometre"
+
+msgid "my-tournament"
+msgstr "mon-tournoi"
 
 msgid "no"
 msgstr "non"
@@ -6239,6 +6202,9 @@ msgstr "classement du début à {last}"
 
 msgid "rotator"
 msgstr "rotatif"
+
+msgid "round_{round}"
+msgstr "ronde_{round}"
 
 msgid "s"
 msgstr "s"

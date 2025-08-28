@@ -53,11 +53,13 @@ class TestSingleScreensFunctionality:
         page.get_by_test_id('create-screen-type-input').click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
-        modal.get_by_role('textbox', name='ID (unique):').fill(SCREEN_ID)
-        modal.get_by_role('textbox', name='Name:').fill('Test Screen')
+        name = 'Test Screen'
+        expected_uniq_id = 'test_screen'
+        modal.get_by_role('textbox', name='Name:').fill(name)
         modal.locator('button[type=submit]').click()
+
         page.get_by_test_id('accordion-screen-type-input').click()
-        card = page.locator("div.card:has-text('Test Screen')")
+        card = page.locator(f"div.card:has-text('{name}')")
         expect(card).to_be_visible()
 
         button = card.locator('button[hx-get*="delete"]')
@@ -65,9 +67,9 @@ class TestSingleScreensFunctionality:
         TestUtils.button_by_text(modal, 'Delete').click()
 
         expect(
-            page.get_by_text(f'Screen [{SCREEN_ID}] has been deleted.')
+            page.get_by_text(f'Screen [{expected_uniq_id}] has been deleted.')
         ).to_be_visible()
-        expect(page.locator("div.card:has-text('Test Screen')")).not_to_be_attached()
+        expect(page.locator(f"div.card:has-text('{name}')")).not_to_be_attached()
 
     def test_check_in_screen(
         self,

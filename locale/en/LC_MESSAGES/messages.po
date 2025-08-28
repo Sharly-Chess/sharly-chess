@@ -499,9 +499,6 @@ msgstr ""
 msgid "Allows to create accounts, declare devices and grant them permissions."
 msgstr ""
 
-msgid "An event with this unique ID already exists."
-msgstr ""
-
 msgid "An unexpected error occurred."
 msgstr ""
 
@@ -855,9 +852,6 @@ msgid "Change the player's tournament."
 msgstr ""
 
 msgid "Changing the unique ID will cause an error on any opened screen of the event."
-msgstr ""
-
-msgid "Character [{char}] is not allowed."
 msgstr ""
 
 msgid "Check connection"
@@ -1508,9 +1502,6 @@ msgstr ""
 msgid "Display controller [{display_controller_uniq_id}] has been updated."
 msgstr ""
 
-msgid "Display controller [{uniq_id}] already exists."
-msgstr ""
-
 msgid "Display controller creation"
 msgstr ""
 
@@ -1652,10 +1643,6 @@ msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
 msgstr "E"
 
 #, python-format
-msgid "E.g.: %(family_type)s-family"
-msgstr ""
-
-#, python-format
 msgid "E.g.: %(minutes)d (minutes)"
 msgstr ""
 
@@ -1668,7 +1655,7 @@ msgid "E.g.: %(num)d%%"
 msgstr ""
 
 #, python-format
-msgid "E.g.: %(screen_type)s-screen"
+msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
 msgstr ""
 
 #, python-format
@@ -1781,19 +1768,7 @@ msgstr ""
 msgid "E.g.: john.doe@chess.com"
 msgstr ""
 
-msgid "E.g.: main"
-msgstr ""
-
-msgid "E.g.: my-display-controller"
-msgstr ""
-
-msgid "E.g.: my-rotator"
-msgstr ""
-
 msgid "E.g.: my_password"
-msgstr ""
-
-msgid "E.g.: timer"
 msgstr ""
 
 msgid "EXEMPT"
@@ -1852,6 +1827,9 @@ msgid "Edit the sets of boards displayed on the screen."
 msgstr ""
 
 msgid "Edit the sets of players displayed on the screen."
+msgstr ""
+
+msgid "Edit the unique ID."
 msgstr ""
 
 #, python-format
@@ -2216,9 +2194,6 @@ msgstr ""
 msgid "Family [{family_uniq_id}] has been updated."
 msgstr ""
 
-msgid "Family [{uniq_id}] already exists."
-msgstr ""
-
 msgid "Fed *** FEDERATION FOR TABLE HEADER"
 msgstr "Fed."
 
@@ -2423,6 +2398,9 @@ msgstr ""
 msgid "Go to the pairings."
 msgstr ""
 
+msgid "Go to the pairings."
+msgstr ""
+
 msgid "Go to the rotator."
 msgstr ""
 
@@ -2501,9 +2479,6 @@ msgid "I confirm that I want to overwrite the player data of this tournament."
 msgstr ""
 
 msgid "I would like the following custom files to be added to a future release of Sharly Chess:"
-msgstr ""
-
-msgid "ID (unique):"
 msgstr ""
 
 msgid "ID [{user_id}] not found (code: [{code}]): [{error}]."
@@ -3775,16 +3750,10 @@ msgstr ""
 msgid "Please enter the date of the first hour."
 msgstr ""
 
-msgid "Please enter the display controller ID."
-msgstr ""
-
 msgid "Please enter the display controller name."
 msgstr ""
 
 msgid "Please enter the end date of the event."
-msgstr ""
-
-msgid "Please enter the family ID."
 msgstr ""
 
 msgid "Please enter the image URL."
@@ -3802,13 +3771,7 @@ msgstr ""
 msgid "Please enter the password."
 msgstr ""
 
-msgid "Please enter the rotator ID."
-msgstr ""
-
 msgid "Please enter the round number or the hour ID."
-msgstr ""
-
-msgid "Please enter the screen ID."
 msgstr ""
 
 msgid "Please enter the start date of the event."
@@ -3821,12 +3784,6 @@ msgid "Please enter the text to display before the hour (mandatory except for ro
 msgstr ""
 
 msgid "Please enter the time."
-msgstr ""
-
-msgid "Please enter the timer ID."
-msgstr ""
-
-msgid "Please enter the tournament ID."
 msgstr ""
 
 msgid "Please enter the tournament name."
@@ -4283,9 +4240,6 @@ msgstr ""
 msgid "Rotator [{rotator_uniq_id}] has been updated."
 msgstr ""
 
-msgid "Rotator [{uniq_id}] already exists."
-msgstr ""
-
 msgid "Rotator automatically rotate between multiple screens."
 msgstr ""
 
@@ -4318,9 +4272,6 @@ msgstr ""
 
 #, python-format
 msgid "Round #%(round)d is running."
-msgstr ""
-
-msgid "Round #{round}"
 msgstr ""
 
 #, python-format
@@ -4419,9 +4370,6 @@ msgid "Screen [{screen_uniq_id}] has been deleted."
 msgstr ""
 
 msgid "Screen [{screen_uniq_id}] has been updated."
-msgstr ""
-
-msgid "Screen [{uniq_id}] already exists."
 msgstr ""
 
 msgid "Screen families:"
@@ -4732,6 +4680,9 @@ msgid "The URL or the path of the image (relative to the 'custom' folder) to dis
 msgstr ""
 
 msgid "The Unique ID, used to authenticate."
+msgstr ""
+
+msgid "The arbiter interface allows the management of the events."
 msgstr ""
 
 msgid "The Unique ID, used to reference the display controller."
@@ -5229,6 +5180,9 @@ msgstr ""
 msgid "This screen is public (visible by the spectators)."
 msgstr ""
 
+msgid "This unique ID is already used."
+msgstr ""
+
 msgid "Three points for a win"
 msgstr ""
 
@@ -5273,9 +5227,6 @@ msgid "Timer [{timer_uniq_id}] has been deleted."
 msgstr ""
 
 msgid "Timer [{timer_uniq_id}] has been updated."
-msgstr ""
-
-msgid "Timer [{uniq_id}] already exists."
 msgstr ""
 
 msgid "Timer creation"
@@ -5377,9 +5328,6 @@ msgid "Tournament [{tournament_uniq_id}] is finished, you can not add players an
 msgstr ""
 
 msgid "Tournament [{tournament}] successfully imported."
-msgstr ""
-
-msgid "Tournament [{uniq_id}] already exists."
 msgstr ""
 
 msgid "Tournament creation"
@@ -6189,7 +6137,25 @@ msgstr ""
 msgid "minimum: {value}"
 msgstr ""
 
+msgid "my-display-controller"
+msgstr ""
+
 msgid "my-event"
+msgstr ""
+
+msgid "my-family"
+msgstr ""
+
+msgid "my-rotator"
+msgstr ""
+
+msgid "my-screen"
+msgstr ""
+
+msgid "my-timer"
+msgstr ""
+
+msgid "my-tournament"
 msgstr ""
 
 msgid "no"
@@ -6238,6 +6204,9 @@ msgid "ranking from start to #{last}"
 msgstr ""
 
 msgid "rotator"
+msgstr ""
+
+msgid "round_{round}"
 msgstr ""
 
 msgid "s"

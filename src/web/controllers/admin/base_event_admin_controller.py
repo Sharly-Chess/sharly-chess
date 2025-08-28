@@ -16,6 +16,7 @@ from data.event import Event
 from data.loader import EventLoader
 from data.rotator import Rotator
 from data.screen import Screen
+from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from plugins.utils import PluginNavBarItem
 from utils.enum import ScreenType
@@ -305,13 +306,19 @@ class BaseEventAdminWebContext(AdminWebContext):
             'nav_tabs': nav_tabs,
         }
 
-    def get_tournament_options(self) -> dict[str, str]:
-        event = self.get_admin_event()
+    def get_tournament_options(
+        self, tournaments: list[Tournament] | None = None
+    ) -> dict[str, str]:
+        if not tournaments:
+            tournaments = self.get_admin_event().tournaments_sorted_by_uniq_id
+        tournament_names = [tournament.name for tournament in tournaments]
         return {
-            self.value_to_form_data(
-                tournament.id
-            ): f'{tournament.name} ({tournament.uniq_id})'
-            for tournament in event.tournaments_sorted_by_uniq_id
+            self.value_to_form_data(tournament.id): (
+                tournament.name
+                if tournament_names.count(tournament.name) == 1
+                else f'{tournament.name} ({tournament.uniq_id})'
+            )
+            for tournament in tournaments
         }
 
 

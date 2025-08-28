@@ -69,7 +69,7 @@ class Event:
         base_uniq_id = unicode_normalize(base_uniq_id)
         if matches := re.match(r'^(.*)-(\d+)$', base_uniq_id):
             base_uniq_id = matches.group(1)
-            index = int(matches.group(2))
+            index = int(matches.group(2)) - 1
             uniq_id = f'{base_uniq_id}-{index + 1}'
         else:
             index = 1
