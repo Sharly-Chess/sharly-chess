@@ -6,6 +6,7 @@ English version below
 - Suppression du format de stockage Access de Papi (3.0.0)
 - Support de macOS (Apple Silicon Macs seulement, 3.0.0)
 - Amélioration des temps de réponses de l'interface utilisateur (3.0.0)
+- Signature des exécutables Windows (3.0.0)
 
 ## Évènements
 
@@ -56,6 +57,7 @@ English version below
 - Remove Papi Access storage (3.0.0)
 - Native macOS support (Apple Silicon Macs only, 3.0.0)
 - Improved UI response times (3.0.0)
+- Use signed programs on Windows (3.0.0)
 
 ## Events
 
