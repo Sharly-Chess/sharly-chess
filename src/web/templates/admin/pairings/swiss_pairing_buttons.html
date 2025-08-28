@@ -27,6 +27,7 @@
             data-bs-target="#modal-wrapper"
             hx-target="body"
             hx-indicator="#please-wait"
+            {% if admin_tournament.players|length == 0 %}disabled{% endif %}
         >
             <i class="bi-info-circle pe-1"></i>
             {{ _('Info') }}
