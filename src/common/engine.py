@@ -71,7 +71,7 @@ class Engine(ABC):
         if not InstallationChecker.check():
             self.error = True
             return
-        if more_recent_version and download_url:
+        if more_recent_version and download_url and not TEST_ENV:
             yes_answer = _('Y *** THE LETTER TO ANSWER YES')
             no_answer = _('N *** THE LETTER TO ANSWER NO')
             while True:
