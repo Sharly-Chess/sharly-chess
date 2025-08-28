@@ -421,9 +421,9 @@ class FFESession(Session):
         }
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            tmpdir = Path(tmpdir)
-            tmp_papi_file = tmpdir / 'export.papi'
-            tmp_sce_file = tmpdir / 'event.sce'
+            tmp_path: Path = Path(tmpdir)
+            tmp_papi_file: Path = tmp_path / 'export.papi'
+            tmp_sce_file: Path = tmp_path / 'event.sce'
 
             # Copy the event database to the tmp file
             with EventDatabase(self.tournament.event.uniq_id) as event_database:
