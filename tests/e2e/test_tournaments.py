@@ -17,11 +17,12 @@ class TestTournamentFunctionality:
         TestUtils.button_by_text(page, 'Create a tournament').click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
-        modal.get_by_role('textbox', name='ID (unique):').fill(TOURNAMENT_ID)
-        modal.get_by_role('textbox', name='Name:').fill('Test Tournament')
+        name = 'Test Tournament'
+        expected_uniq_id = 'test_tournament'
+        modal.get_by_role('textbox', name='Name:').fill(name)
         modal.get_by_role('button', name='Create', exact=True).click()
 
-        card = page.locator("div.card:has-text('Test Tournament')")
+        card = page.locator(f"div.card:has-text('{name}')")
         expect(card).to_be_visible()
 
         button = card.locator('button[hx-get*="delete"]')
@@ -34,6 +35,6 @@ class TestTournamentFunctionality:
         expect(delete_button).to_be_enabled()
         delete_button.click()
         expect(
-            page.get_by_text(f'Tournament [{TOURNAMENT_ID}] has been deleted.')
+            page.get_by_text(f'Tournament [{expected_uniq_id}] has been deleted.')
         ).to_be_visible()
         expect(page.locator('.card')).to_have_count(0)

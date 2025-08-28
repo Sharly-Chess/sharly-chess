@@ -1228,8 +1228,8 @@ class PlayerAdminController(BaseEventAdminController):
         src_tournament = admin_player.tournament
         try:
             self._validate_player_tournament_move(admin_player, dst_tournament)
-            src_tournament.delete_player_from_tournament(admin_player.id)
             dst_tournament.add_player_to_tournament(admin_player.stored_player)
+            src_tournament.delete_player_from_tournament(admin_player.id)
             if not self.filtered_players(request, event_uniq_id, [admin_player]):
                 self.delete_from_search_results(request, admin_player.id)
             Message.success(

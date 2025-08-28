@@ -913,6 +913,7 @@ class ScreenAdminController(BaseEventAdminController):
                     screen = web_context.get_admin_screen()
                     event_database.delete_stored_screen(screen.id)
                     event_database.commit()
+                    print(screen.uniq_id)
                     Message.success(
                         request,
                         _('Screen [{screen_uniq_id}] has been deleted.').format(
