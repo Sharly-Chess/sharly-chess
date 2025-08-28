@@ -1839,7 +1839,6 @@ class EventDatabase(MigrationDatabase):
     ) -> StoredDisplayController:
         return StoredDisplayController(
             id=row['id'],
-            uniq_id=row['uniq_id'],
             name=row['name'],
             screen_id=row['screen_id'],
             rotator_id=row['rotator_id'],
@@ -1862,7 +1861,7 @@ class EventDatabase(MigrationDatabase):
         self,
     ) -> Iterator[StoredDisplayController]:
         self.execute(
-            'SELECT * FROM `display_controller` ORDER BY `uniq_id`',
+            'SELECT * FROM `display_controller` ORDER BY `name`',
             (),
         )
         yield from map(self._row_to_stored_display_controller, self.fetchall())
@@ -1872,7 +1871,6 @@ class EventDatabase(MigrationDatabase):
         stored_display_controller: StoredDisplayController,
     ) -> StoredDisplayController:
         fields: list[str] = [
-            'uniq_id',
             'name',
             'public',
             'screen_id',
@@ -1880,7 +1878,6 @@ class EventDatabase(MigrationDatabase):
             'last_update',
         ]
         params: list = [
-            stored_display_controller.uniq_id,
             stored_display_controller.name,
             stored_display_controller.public,
             stored_display_controller.screen_id,

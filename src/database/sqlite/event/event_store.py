@@ -275,12 +275,11 @@ class StoredRotator:
 @dataclass
 class StoredDisplayController:
     id: int | None
-    uniq_id: str
-    name: str | None
+    name: str
     public: bool = True
-    errors: dict[str, str] = field(default_factory=dict[str, str])
     screen_id: int | None = None
     rotator_id: int | None = None
+    errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
 @dataclass

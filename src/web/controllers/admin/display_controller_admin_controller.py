@@ -9,13 +9,11 @@ from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
-from common.sharly_chess_config import SharlyChessConfig
 from data.display_controller import DisplayController
 from data.rotator import Rotator
 from data.screen import Screen
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredDisplayController
-from utils import StaticUtils
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -86,14 +84,9 @@ class DisplayControllerAdminController(BaseEventAdminController):
                 name = WebContext.form_data_to_str(data, 'name') or ''
                 if not name:
                     errors['name'] = _('Please enter the display controller name.')
-                if action == 'update':
-                    uniq_id = web_context.get_admin_display_controller().uniq_id
                 else:
-                    uniq_id = event.get_unused_display_controller_uniq_id(
-                        StaticUtils.name_to_uniq_id(name)
-                    )
+                    event.get_unused_display_controller_name(name)
             case 'delete':
-                uniq_id = ''
                 name = web_context.get_admin_display_controller().stored_display_controller.name
             case _:
                 raise ValueError(f'action=[{action}]')
@@ -107,8 +100,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
 
         return StoredDisplayController(
             id=display_controller_id,
-            uniq_id=uniq_id,
-            public=bool(public),
+            public=public,
             name=name,
             errors=errors,
         )
@@ -309,10 +301,8 @@ class DisplayControllerAdminController(BaseEventAdminController):
                     Message.success(
                         request,
                         _(
-                            'Display controller [{display_controller_uniq_id}] has been created.'
-                        ).format(
-                            display_controller_uniq_id=stored_display_controller.uniq_id
-                        ),
+                            'Display controller [{display_controller}] has been created.'
+                        ).format(display_controller=stored_display_controller.name),
                     )
                 case 'update':
                     stored_display_controller = (
@@ -323,10 +313,8 @@ class DisplayControllerAdminController(BaseEventAdminController):
                     Message.success(
                         request,
                         _(
-                            'Display controller [{display_controller_uniq_id}] has been updated.'
-                        ).format(
-                            display_controller_uniq_id=stored_display_controller.uniq_id
-                        ),
+                            'Display controller [{display_controller}] has been updated.'
+                        ).format(display_controller=stored_display_controller.name),
                     )
                 case 'delete':
                     display_controller = web_context.get_admin_display_controller()
@@ -336,8 +324,8 @@ class DisplayControllerAdminController(BaseEventAdminController):
                     Message.success(
                         request,
                         _(
-                            'Display controller [{display_controller_uniq_id}] has been deleted.'
-                        ).format(display_controller_uniq_id=display_controller.uniq_id),
+                            'Display controller [{display_controller}] has been deleted.'
+                        ).format(display_controller=display_controller.name),
                     )
                 case _:
                     raise ValueError(f'action=[{action}]')
@@ -387,52 +375,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
             action='update',
             display_controller_id=display_controller_id,
             data=data,
-        )
-
-    @patch(
-        path='/admin/display-controller-uniq-id-update/{event_uniq_id:str}/{display_controller_id:int}',
-        name='admin-display-controller-uniq-id-update',
-    )
-    async def htmx_admin_display_controller_uniq_id_update(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-        event_uniq_id: str,
-        display_controller_id: int,
-    ) -> HTMXTemplate | ClientRedirect:
-        web_context = DisplayControllerAdminWebContext(
-            request, event_uniq_id, display_controller_id
-        )
-        event = web_context.get_admin_event()
-        display_controller = web_context.get_admin_display_controller()
-        new_uniq_id = WebContext.form_data_to_str(data, 'uniq_id')
-        if (
-            not new_uniq_id
-            or not SharlyChessConfig.uniq_id_regex.match(new_uniq_id)
-            or (
-                new_uniq_id != display_controller.uniq_id
-                and new_uniq_id in event.families_by_uniq_id.keys()
-            )
-        ):
-            # No precise error (validated in JS)
-            return self.redirect_error(request, f'Invalid uniq ID [{new_uniq_id}].')
-        stored_display_controller = display_controller.stored_display_controller
-        stored_display_controller.uniq_id = new_uniq_id
-        with EventDatabase(event.uniq_id, True) as database:
-            database.update_stored_display_controller(stored_display_controller)
-        return HTMXTemplate(
-            template_name='/admin/display_controllers/display_controller_update_modal_header.html',
-            context=web_context.template_context
-            | {
-                'display_controller_uniq_ids': list(
-                    event.display_controllers_by_uniq_id.keys()
-                )
-            },
-            re_swap='innerHTML',
-            re_target='.modal-header',
         )
 
     @delete(

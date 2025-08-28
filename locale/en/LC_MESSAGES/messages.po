@@ -1309,13 +1309,13 @@ msgstr ""
 msgid "Display controller"
 msgstr ""
 
-msgid "Display controller [{display_controller_uniq_id}] has been created."
+msgid "Display controller [{display_controller}] has been created."
 msgstr ""
 
-msgid "Display controller [{display_controller_uniq_id}] has been deleted."
+msgid "Display controller [{display_controller}] has been deleted."
 msgstr ""
 
-msgid "Display controller [{display_controller_uniq_id}] has been updated."
+msgid "Display controller [{display_controller}] has been updated."
 msgstr ""
 
 msgid "Display controller creation"

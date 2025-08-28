@@ -1309,14 +1309,14 @@ msgstr "Afficher la couleur, l'échiquier et l'adversaire"
 msgid "Display controller"
 msgstr "Pilote d'afficheurs"
 
-msgid "Display controller [{display_controller_uniq_id}] has been created."
-msgstr "Le pilote d'afficheurs [{display_controller_uniq_id}] a été créé."
+msgid "Display controller [{display_controller}] has been created."
+msgstr "Le pilote d'afficheurs [{display_controller}] a été créé."
 
-msgid "Display controller [{display_controller_uniq_id}] has been deleted."
-msgstr "Le pilote d'afficheurs [{display_controller_uniq_id}] a été supprimé."
+msgid "Display controller [{display_controller}] has been deleted."
+msgstr "Le pilote d'afficheurs [{display_controller}] a été supprimé."
 
-msgid "Display controller [{display_controller_uniq_id}] has been updated."
-msgstr "Le pilote d'afficheurs [{display_controller_uniq_id}] a été modifié."
+msgid "Display controller [{display_controller}] has been updated."
+msgstr "Le pilote d'afficheurs [{display_controller}] a été modifié."
 
 msgid "Display controller creation"
 msgstr "Création d'un pilote d'afficheurs"

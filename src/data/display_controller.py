@@ -43,16 +43,12 @@ class DisplayController:
 
     @property
     def uniq_id(self) -> str:
-        return self.stored_display_controller.uniq_id
+        # TODO (Molrn) replace all the uniq_id usages by the name
+        return self.stored_display_controller.name
 
     @property
     def name(self) -> str:
-        name: str = (
-            self.stored_display_controller.name
-            if self.stored_display_controller.name
-            else _('Display controller')
-        )
-        return name
+        return self.stored_display_controller.name
 
     @property
     def screen_id(self) -> int | None:
