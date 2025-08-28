@@ -89,7 +89,7 @@
                             ) }}
                         </div>
                         {% if action == 'create' and screen_type in ['input', 'boards', 'players', 'ranking', ] %}
-                            <div class="col-12 col-md-6 mb-3">
+                            <div class="col-12 mb-3">
                                 {{ admin_macros.select_input(
                                     name='init_set_tournament_id',
                                     label=_('Tournament:'),
