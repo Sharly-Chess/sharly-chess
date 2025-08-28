@@ -18,7 +18,7 @@ class Migration(BaseMigration):
             index = 1
             used_uniq_ids = suffixed_uniq_id_by_id.values()
             while new_uniq_id in used_uniq_ids:
-                new_uniq_id = f'{uniq_id} ({index})'
+                new_uniq_id = f'{uniq_id}-{index}'
                 index += 1
             suffixed_uniq_id_by_id[id_] = new_uniq_id
         return suffixed_uniq_id_by_id
