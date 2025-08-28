@@ -726,6 +726,9 @@ class FamilyAdminController(BaseEventAdminController):
         with EventDatabase(event.uniq_id, True) as database:
             database.update_stored_family(stored_family)
             database.commit()
+
+        web_context = FamilyAdminWebContext(request, event_uniq_id, family_id)
+        event = web_context.get_admin_event()
         return HTMXTemplate(
             template_name='/admin/families/family_update_modal_header.html',
             context=web_context.template_context
