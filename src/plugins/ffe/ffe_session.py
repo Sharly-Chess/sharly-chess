@@ -500,8 +500,8 @@ class FFESession(Session):
                 ),
             )
             event_database.commit()
-        self.report_success(_('Results upload OK'))
         if not set_visible:
+            self.report_success(_('Results upload OK'))
             return
 
         logger.info('Making the tournament visible on the FFE website...')
