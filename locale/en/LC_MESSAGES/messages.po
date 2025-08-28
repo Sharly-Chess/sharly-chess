@@ -1321,9 +1321,6 @@ msgstr ""
 msgid "Display controller creation"
 msgstr ""
 
-msgid "Display controller edition"
-msgstr ""
-
 msgid "Display controllers"
 msgstr ""
 
@@ -1624,6 +1621,9 @@ msgid "Edit the sets of players displayed on the screen."
 msgstr ""
 
 msgid "Edit the unique ID."
+msgstr ""
+
+msgid "Editing of a display controller"
 msgstr ""
 
 #, python-format
@@ -5700,4 +5700,13 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "Display controller edition"
+#~ msgstr ""
+
+#~ msgid "Editing of screen [%(screen_uniq_id)s]"
+#~ msgstr ""
+
+#~ msgid "Editing of screen family [%(family_uniq_id)s]"
+#~ msgstr ""
 

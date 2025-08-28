@@ -1321,9 +1321,6 @@ msgstr "Le pilote d'afficheurs [{display_controller}] a été modifié."
 msgid "Display controller creation"
 msgstr "Création d'un pilote d'afficheurs"
 
-msgid "Display controller edition"
-msgstr "Édition d'un pilote d'afficheurs"
-
 msgid "Display controllers"
 msgstr "Pilotes d'afficheurs"
 
@@ -1626,6 +1623,9 @@ msgstr "Éditer les ensembles de joueur·euses affichés sur l'écran."
 msgid "Edit the unique ID."
 msgstr "Éditer l'identifiant unique."
 
+msgid "Editing of a display controller"
+msgstr "Édition d'un pilote d'afficheurs"
+
 #, python-format
 msgid "Editing of default timers for event [%(event_uniq_id)s]"
 msgstr "Édition des chronomètres par défaut pour l'évènement [%(event_uniq_id)s]"
@@ -1644,11 +1644,11 @@ msgstr "Édition de l'écran rotatif [%(rotator)s]"
 
 #, python-format
 msgid "Editing of screen [%(screen_name)s]"
-msgstr ""
+msgstr "Édition de l'écran [%(screen_name)s]"
 
 #, python-format
 msgid "Editing of screen family [%(family_name)s]"
-msgstr ""
+msgstr "Édition de la famille d'écrans [%(family_name)s]"
 
 #, python-format
 msgid "Editing of timer [%(timer)s]"
@@ -5112,7 +5112,7 @@ msgstr "Identifiant unique : %(uniq_id)s"
 
 #, python-format
 msgid "Unique ID: [%(uniq_id)s]"
-msgstr ""
+msgstr "Identifiant unique : [%(uniq_id)s]"
 
 #, python-format
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
@@ -5700,4 +5700,13 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "Display controller edition"
+#~ msgstr "Édition d'un pilote d'afficheurs"
+
+#~ msgid "Editing of screen [%(screen_uniq_id)s]"
+#~ msgstr "Édition de l'écran [%(screen_uniq_id)s]"
+
+#~ msgid "Editing of screen family [%(family_uniq_id)s]"
+#~ msgstr "Édition de la famille d'écrans [%(family_uniq_id)s]"
 
