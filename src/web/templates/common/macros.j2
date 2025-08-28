@@ -201,7 +201,9 @@
     <!-- copyright_script() -->
     <script>
         {# this macro allows us to show copyright on all pages but image screens #}
-        $('#copyright').css('display', '{{ "block" if show else "none" }}');
+        $(document).ready(function() {
+            $('#copyright').toggleClass('d-none', {{ "false" if show else "true" }});
+        });
     </script>
     <!-- end copyright_script() -->
 {% endmacro %}
