@@ -13,7 +13,7 @@ from data.event import Event
 from data.loader import EventLoader
 
 
-class TestEngine(Engine):
+class _TestEngine(Engine):
     @property
     def log_file_path(self) -> Path:
         return LOG_FILE
@@ -33,7 +33,7 @@ class RecoverTestCase(TestCase):
         os.chdir(Path(__file__).parent)
         files: list[Path] = [file for file in (Path('../..') / dir_name).glob('*.db')]
         logger.info('Loading test engine...')
-        test_engine: TestEngine = TestEngine()
+        test_engine = _TestEngine()
         logger.info('Recovering version [%s]...', version)
         test_engine._recover_previous_version(
             version,
