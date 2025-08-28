@@ -1303,7 +1303,7 @@ msgid "Display all the players, paired and unpaired"
 msgstr "Afficher tou·tes les joueur·euses, apparié·es et non apparié·es"
 
 msgid "Display color, board number and opponent"
-msgstr "Affichier, la couleur, l'échiquier et l'adversaire"
+msgstr "Afficher la couleur, l'échiquier et l'adversaire"
 
 msgid "Display controller"
 msgstr "Pilote d'afficheurs"
