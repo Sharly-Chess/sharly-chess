@@ -71,7 +71,10 @@ class Engine(ABC):
         if not InstallationChecker.check():
             self.error = True
             return
-        if more_recent_version and download_url and not TEST_ENV:
+        if TEST_ENV:
+            # skip all the upgrade stuff on TEST_ENV (recovering tests are specific)
+            return
+        if more_recent_version and download_url:
             yes_answer = _('Y *** THE LETTER TO ANSWER YES')
             no_answer = _('N *** THE LETTER TO ANSWER NO')
             while True:
@@ -99,7 +102,7 @@ class Engine(ABC):
                 ]:
                     break
                 raise ValueError(f'choice=[{choice}]')
-        if not EventLoader().event_uniq_ids and not TEST_ENV:
+        if not EventLoader().event_uniq_ids:
             logger.info(
                 'No event database found, looking for old event databases in the current release...'
             )
@@ -114,7 +117,7 @@ class Engine(ABC):
                 file.rename(event_database.file)
                 # now load the new database
                 EventLoader().load_event(event_uniq_id)
-        if not EventLoader().event_uniq_ids and not TEST_ENV:
+        if not EventLoader().event_uniq_ids:
             logger.info(
                 'Still no event database found, looking for previously installed releases of Sharly Chess...'
             )
@@ -239,7 +242,7 @@ class Engine(ABC):
                         dir_name,
                         previous_databases[(recovered_version, dir_name)],
                     )
-            if DEVEL_ENV and not recovered_version and not TEST_ENV:
+            if DEVEL_ENV and not recovered_version:
                 yes_answer = _('Y *** THE LETTER TO ANSWER YES')
                 no_answer = _('N *** THE LETTER TO ANSWER NO')
                 while True:
