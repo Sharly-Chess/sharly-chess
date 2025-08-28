@@ -14,18 +14,75 @@ permissions:
   contents: write
 
 jobs:
+
   tests:
     uses: ./.github/workflows/full_tests.yml
-  export-sharly-chess:
-    needs: tests
-    strategy:
-      matrix:
-        include:
-          - os: windows-latest
-            platform: windows
-          - os: macos-latest
-            platform: macos
-    runs-on: ${{ matrix.os }}
+
+  export-sharly-chess-windows:
+    # Next job export-sharly-chess-windows needs to run on a Windows self-hosted GitHub runner
+    # for cloud code-signing. If the job doesn't start, it is probably because GitHub did not
+    # find a self-hosted runner with label 'your-github-id'.
+    # In this case, check the labels of your runners.
+    runs-on: ${{ github.actor }}
+    steps:
+      # Get the current date to set the title of the release
+      - name: Get current date
+        id: date
+        uses: Kaven-Universe/github-action-current-date-time@v1
+        with:
+          format: "YYYY_MM_DD HH_mm_ss_SSS"
+      - name: Checkout repository
+        uses: actions/checkout@v4.2.2
+      - name: Setup Python
+        uses: actions/setup-python@v5.5.0
+        with:
+          # Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset.
+          # NOTE(pascalaubry): on Windows self-hosted runners, the first install fails:
+          # https://github.com/actions/setup-python/issues/969
+          python-version: 3.12
+      - name: Install dependencies
+        shell: cmd  # pwsh is not found on Windows self-hosted runners (https://github.com/actions/runner/issues/3415)
+        run: |
+          pip install -e .[export]
+      - name: Generate i18n files
+        shell: cmd
+        run: |
+          python scripts/i18n/i18n_update.py
+      - name: Generate FFE SQL credentials
+        shell: powershell
+        env:
+          FFE_HOST: ${{ secrets.FFE_HOSTNAME }}
+          FFE_USER: ${{ secrets.FFE_USER }}
+          FFE_PASSWORD: ${{ secrets.FFE_PASSWORD }}
+          FFE_DATABASE: ${{ secrets.FFE_DATABASE }}
+        run: |
+          python scripts/ffe/generate_ffe_sql_server_credentials.py --github --host="$env:FFE_HOST" --user="$env:FFE_USER" --password="$env:FFE_PASSWORD" --database="$env:FFE_DATABASE"
+      - name: Set version variable
+        id: version
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${{ github.ref_name }}"
+          fi
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Using version: ${VERSION}"
+      - name: Generate ZIP file
+        shell: powershell
+        env:
+          WINDOWS_SIGNTOOL_CERT_FINGERPRINT: ${{ secrets.WINDOWS_SIGNTOOL_CERT_FINGERPRINT }}
+        run: |
+          python scripts/export/export.py --github="${{ steps.version.outputs.version }}" --windows-signtool-cert-fingerprint="$env:WINDOWS_SIGNTOOL_CERT_FINGERPRINT"
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sharly-chess-${{ steps.version.outputs.version }}-windows
+          path: |
+            export/sharly-chess-${{ steps.version.outputs.version }}.zip
+
+  export-sharly-chess-macos:
+    runs-on: macos-latest
     steps:
       # Get the current date to set the title of the release
       - name: Get current date
@@ -40,38 +97,15 @@ jobs:
         with:
           # Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset.
           python-version: 3.12
-      - name: Install dependencies (Windows)
-        if: matrix.platform == 'windows'
-        shell: pwsh
-        run: |
-          pip install -e .[export]
-      - name: Install dependencies (macOS)
-        if: matrix.platform == 'macos'
+      - name: Install dependencies
         shell: bash
         run: |
           pip install -e .[export]
-      - name: Generate i18n files (Windows)
-        if: matrix.platform == 'windows'
-        shell: pwsh
-        run: |
-          python scripts/i18n/i18n_update.py
-      - name: Generate i18n files (macOS)
-        if: matrix.platform == 'macos'
+      - name: Generate i18n files
         shell: bash
         run: |
           python scripts/i18n/i18n_update.py
-      - name: Generate FFE SQL credentials (Windows)
-        if: matrix.platform == 'windows'
-        shell: pwsh
-        env:
-          FFE_HOST: ${{ secrets.FFE_HOSTNAME }}
-          FFE_USER: ${{ secrets.FFE_USER }}
-          FFE_PASSWORD: ${{ secrets.FFE_PASSWORD }}
-          FFE_DATABASE: ${{ secrets.FFE_DATABASE }}
-        run: |
-          python scripts/ffe/generate_ffe_sql_server_credentials.py --github --host="$env:FFE_HOST" --user="$env:FFE_USER" --password="$env:FFE_PASSWORD" --database="$env:FFE_DATABASE"
-      - name: Generate FFE SQL credentials (macOS)
-        if: matrix.platform == 'macos'
+      - name: Generate FFE SQL credentials
         shell: bash
         env:
           FFE_HOST: ${{ secrets.FFE_HOSTNAME }}
@@ -91,13 +125,7 @@ jobs:
           fi
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "Using version: ${VERSION}"
-      - name: Generate ZIP file (Windows)
-        if: matrix.platform == 'windows'
-        shell: pwsh
-        run: |
-          python scripts/export/export.py --github="${{ steps.version.outputs.version }}"
       - name: Build, Sign, and Notarize macOS App
-        if: matrix.platform == 'macos'
         shell: bash
         env:
           # Map GitHub secrets to environment variables expected by the script
@@ -109,15 +137,13 @@ jobs:
         run: |
           # Build the application first
           echo "Building application with preserved artifacts..."
-          python scripts/export/export.py --github="${{ steps.version.outputs.version }}" --preserve-build
+          python scripts/export/export.py --github="${{ steps.version.outputs.version }}"
 
           # Run the build and notarize script
           echo "Running signing and notarization script..."
-          chmod +x scripts/mac/build_and_notarize.sh
-          ./scripts/mac/build_and_notarize.sh
-
+          chmod +x scripts/export/macos/build_and_notarize.sh
+          ./scripts/export/macos/build_and_notarize.sh
       - name: Clean up macOS build artifacts
-        if: always() && matrix.platform == 'macos' # always() ensures this runs even if previous steps fail
         shell: bash
         run: |
           echo "Cleaning up macOS build artifacts..."
@@ -129,13 +155,12 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: sharly-chess-${{ matrix.platform }}-${{ steps.version.outputs.version }}
+          name: sharly-chess-${{ steps.version.outputs.version }}-macos
           path: |
-            export/sharly-chess-${{ steps.version.outputs.version }}.zip
             export/sharly-chess-${{ steps.version.outputs.version }}-macos.dmg
 
   create-release:
-    needs: export-sharly-chess
+    needs: [tests, export-sharly-chess-windows, export-sharly-chess-macos]
     runs-on: ubuntu-latest
     steps:
       - name: Get current date
@@ -159,12 +184,12 @@ jobs:
       - name: Download Windows artifacts
         uses: actions/download-artifact@v4
         with:
-          name: sharly-chess-windows-${{ steps.version.outputs.version }}
+          name: sharly-chess-${{ steps.version.outputs.version }}-windows
           path: export-windows/
       - name: Download macOS artifacts
         uses: actions/download-artifact@v4
         with:
-          name: sharly-chess-macos-${{ steps.version.outputs.version }}
+          name: sharly-chess-${{ steps.version.outputs.version }}-macos
           path: export-macos/
       - name: Rename artifacts with platform suffix
         run: |

@@ -1027,6 +1027,9 @@ class ScreenAdminController(BaseEventAdminController):
         with EventDatabase(event.uniq_id, True) as database:
             database.update_stored_screen(stored_screen)
             database.commit()
+
+        web_context = ScreenAdminWebContext(request, event_uniq_id, screen_id)
+        event = web_context.get_admin_event()
         return HTMXTemplate(
             template_name='/admin/screens/screen_update_modal_header.html',
             context=web_context.template_context
