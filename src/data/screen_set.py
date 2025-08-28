@@ -486,6 +486,6 @@ class ScreenSet:
                     raise ValueError(f'first={self.first}, last={self.last}')
 
     def __str__(self):
-        return _('Tournament {tournament_uniq_id} ({numbers_str})').format(
-            tournament_uniq_id=self.tournament.uniq_id, numbers_str=self.numbers_str
+        return _('Tournament {tournament} ({numbers_str})').format(
+            tournament=self.tournament.name, numbers_str=self.numbers_str
         )

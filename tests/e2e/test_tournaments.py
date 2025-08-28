@@ -18,7 +18,6 @@ class TestTournamentFunctionality:
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
         name = 'Test Tournament'
-        expected_uniq_id = 'test_tournament'
         modal.get_by_role('textbox', name='Name:').fill(name)
         modal.get_by_role('button', name='Create', exact=True).click()
 
@@ -35,6 +34,6 @@ class TestTournamentFunctionality:
         expect(delete_button).to_be_enabled()
         delete_button.click()
         expect(
-            page.get_by_text(f'Tournament [{expected_uniq_id}] has been deleted.')
+            page.get_by_text(f'Tournament [{name}] has been deleted.')
         ).to_be_visible()
         expect(page.locator('.card')).to_have_count(0)

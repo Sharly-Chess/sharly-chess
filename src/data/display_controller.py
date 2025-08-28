@@ -44,7 +44,7 @@ class DisplayController:
     @property
     def uniq_id(self) -> str:
         # TODO (Molrn) replace all the uniq_id usages by the name
-        return self.stored_display_controller.name
+        return self.name
 
     @property
     def name(self) -> str:

@@ -10,8 +10,8 @@ class Migration(BaseMigration):
             index = 1
             used_names = suffixed_name_by_id.values()
             while new_name in used_names:
-                new_name = f'{name} ({index})'
                 index += 1
+                new_name = f'{name} ({index})'
             suffixed_name_by_id[id_] = new_name
         return suffixed_name_by_id
 
@@ -31,19 +31,39 @@ class Migration(BaseMigration):
         """Replaces the `uniq_id` column by the name column.
         The entries in the name column have to be unique and not NULL to respect the constraints.
         The `uniq_id` columns can't be directly dropped because of the UNIQUE constraint."""
-        self.database.execute(f'UPDATE `{table_name}` SET `uniq_id` = `name`')
-        self.database.execute('ALTER TABLE `display_controller` DROP COLUMN `name`')
+
+        # Clear the uniq_id column to avoid a constraint violation
+        # Happens when a name is the same as the uniq_id of another record
         self.database.execute(
-            'ALTER TABLE `display_controller` RENAME COLUMN `uniq_id` TO `name`'
+            f'UPDATE `{table_name}` SET '
+            "`uniq_id` = 'tmp-unused-uniq-id-' || CAST(`id` AS TEXT)"
+        )
+        self.database.execute(f'UPDATE `{table_name}` SET `uniq_id` = `name`')
+        self.database.execute(f'ALTER TABLE `{table_name}` DROP COLUMN `name`')
+        self.database.execute(
+            f'ALTER TABLE `{table_name}` RENAME COLUMN `uniq_id` TO `name`'
         )
 
     def forward(self):
         self._uniquify_table_names('display_controller', 'Display Controller')
         self._replace_uniq_id_by_name('display_controller')
+        self._uniquify_table_names('tournament')
+        self._replace_uniq_id_by_name('tournament')
+        self.database.execute('ALTER TABLE `timer` RENAME COLUMN `uniq_id` TO `name`')
+        self.database.execute('ALTER TABLE `rotator` RENAME COLUMN `uniq_id` TO `name`')
 
     def backward(self):
-        self.database.execute('ALTER TABLE `display_controller` ADD `uniq_id` TEXT')
         self.database.execute(
-            'UPDATE `display_controller` SET '
-            "`uniq_id` = 'display-controller-' || CAST(`id` as TEXT)"
+            'ALTER TABLE `display_controller` RENAME COLUMN `uniq_id` TO `name`'
         )
+        self.database.execute('ALTER TABLE `display_controller` ADD `name` TEXT')
+        self.database.execute('UPDATE `display_controller` SET `name` = `uniq_id`')
+
+        self.database.execute(
+            'ALTER TABLE `tournament` RENAME COLUMN `uniq_id` TO `name`'
+        )
+        self.database.execute('ALTER TABLE `tournament` ADD `name` TEXT')
+        self.database.execute('UPDATE `tournament` SET `name` = `uniq_id`')
+
+        self.database.execute('ALTER TABLE `timer` RENAME COLUMN `name` TO `uniq_id`')
+        self.database.execute('ALTER TABLE `rotator` RENAME COLUMN `name` TO `uniq_id`')

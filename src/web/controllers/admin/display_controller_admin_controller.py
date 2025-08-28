@@ -80,23 +80,23 @@ class DisplayControllerAdminController(BaseEventAdminController):
         name: str | None
         public = WebContext.form_data_to_bool(data, 'public')
         match action:
-            case 'create' | 'clone' | 'update':
+            case 'create' | 'update':
                 name = WebContext.form_data_to_str(data, 'name') or ''
                 if not name:
-                    errors['name'] = _('Please enter the display controller name.')
-                else:
-                    event.get_unused_display_controller_name(name)
+                    errors['name'] = _('This field is required.')
+                elif (
+                    action != 'update'
+                    or web_context.get_admin_display_controller().name != name
+                ):
+                    name = event.get_unused_display_controller_name(name)
             case 'delete':
                 name = web_context.get_admin_display_controller().stored_display_controller.name
             case _:
                 raise ValueError(f'action=[{action}]')
 
         display_controller_id: int | None = None
-        if web_context.admin_display_controller and action not in [
-            'create',
-            'clone',
-        ]:
-            display_controller_id = web_context.admin_display_controller.id
+        if action == 'update':
+            display_controller_id = web_context.get_admin_display_controller().id
 
         return StoredDisplayController(
             id=display_controller_id,
@@ -143,7 +143,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
                 pass
             case 'display_controller':
                 if data is None:
-                    uniq_id: str | None = None
                     name: str | None = None
                     public: bool | None = None
                     match action:
@@ -154,19 +153,12 @@ class DisplayControllerAdminController(BaseEventAdminController):
                             name = display_controller.stored_display_controller.name
                         case 'create':
                             name = event.get_unused_display_controller_name()
-                        case 'clone':
-                            display_controller = (
-                                web_context.get_admin_display_controller()
-                            )
-                            name = event.get_unused_display_controller_name(
-                                base_name=display_controller.stored_display_controller.name,
-                            )
                         case 'delete':
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
                     match action:
-                        case 'update' | 'clone':
+                        case 'update':
                             public = web_context.get_admin_display_controller().stored_display_controller.public
                         case 'create':
                             public = True
@@ -175,7 +167,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
                         case _:
                             raise ValueError(f'action=[{action}]')
                     data = {
-                        'uniq_id': WebContext.value_to_form_data(uniq_id),
                         'public': WebContext.value_to_form_data(public),
                         'name': WebContext.value_to_form_data(name),
                     }
@@ -189,9 +180,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
                     errors = {}
 
                 template_context |= {
-                    'display_controller_uniq_ids': list(
-                        event.display_controllers_by_uniq_id.keys()
-                    ),
                     'modal': modal,
                     'action': action,
                     'data': data,
@@ -263,7 +251,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
         ],
     ) -> Template | ClientRedirect:
         match action:
-            case 'update' | 'delete' | 'clone' | 'create':
+            case 'update' | 'delete' | 'create':
                 web_context: DisplayControllerAdminWebContext = (
                     DisplayControllerAdminWebContext(
                         request,
@@ -292,7 +280,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
             )
         with EventDatabase(event.uniq_id, write=True) as event_database:
             match action:
-                case 'create' | 'clone':
+                case 'create':
                     stored_display_controller = (
                         event_database.add_stored_display_controller(
                             stored_display_controller
@@ -434,9 +422,9 @@ class DisplayControllerAdminController(BaseEventAdminController):
                 ]
                 web_context.admin_display_controller.screen_id = screen.id
                 message = _(
-                    'Screen [{screen_uniq_id}] has been assigned to controller [{display_controller_uniq_id}].'
+                    'Screen [{screen_uniq_id}] has been assigned to controller [{display_controller}].'
                 ).format(
-                    display_controller_uniq_id=web_context.admin_display_controller.uniq_id,
+                    display_controller=web_context.admin_display_controller.name,
                     screen_uniq_id=screen.uniq_id,
                 )
             case 'rotator':
@@ -445,10 +433,10 @@ class DisplayControllerAdminController(BaseEventAdminController):
                 ]
                 web_context.admin_display_controller.rotator_id = rotator.id
                 message = _(
-                    'Rotator [{rotator_uniq_id}] has been assigned to controller [{display_controller_uniq_id}].'
+                    'Rotator [{rotator}] has been assigned to controller [{display_controller}].'
                 ).format(
-                    display_controller_uniq_id=web_context.admin_display_controller.uniq_id,
-                    rotator_uniq_id=rotator.uniq_id,
+                    display_controller=web_context.admin_display_controller.name,
+                    rotator=rotator.name,
                 )
             case _:
                 raise ValueError(f'type=[{type}]')

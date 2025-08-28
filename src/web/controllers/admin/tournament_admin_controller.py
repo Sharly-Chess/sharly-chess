@@ -18,7 +18,6 @@ from litestar.status_codes import HTTP_200_OK
 
 from common.exception import SharlyChessException
 from common.i18n import _
-from common.sharly_chess_config import SharlyChessConfig
 from data.board import Board
 from data.event import Event
 from data.input_output import (
@@ -201,13 +200,9 @@ class TournamentAdminController(BaseEventAdminController):
                         )
         name = WebContext.form_data_to_str(data, 'name') or ''
         if not name:
-            errors['name'] = _('Please enter the tournament name.')
-        if action == 'update':
-            uniq_id = web_context.get_admin_tournament().uniq_id
-        else:
-            uniq_id = event.get_unused_tournament_uniq_id(
-                StaticUtils.name_to_uniq_id(name)
-            )
+            errors['name'] = _('This field is required.')
+        elif action != 'update' or web_context.get_admin_tournament().name != name:
+            name = event.get_unused_tournament_name(name)
         time_control_trf25 = WebContext.form_data_to_str(data, 'time_control_trf25')
         time_control_handicap_penalty_value = WebContext.form_data_to_int(
             data, 'time_control_handicap_penalty_value'
@@ -265,7 +260,6 @@ class TournamentAdminController(BaseEventAdminController):
                 'clone',
             ]
             else None,
-            uniq_id=uniq_id,
             name=name,
             time_control_trf25=time_control_trf25,
             time_control_handicap_penalty_value=time_control_handicap_penalty_value,
@@ -548,9 +542,6 @@ class TournamentAdminController(BaseEventAdminController):
                     'record_illegal_moves_options': cls._get_record_illegal_moves_options(
                         admin_event.record_illegal_moves
                     ),
-                    'tournament_uniq_ids': list(
-                        admin_event.tournaments_by_uniq_id.keys()
-                    ),
                     'paired_bye_result_options': cls._get_paired_bye_result_options(),
                     'tie_break_options': tie_break_options,
                     'rating_options': cls._get_rating_options(),
@@ -646,45 +637,6 @@ class TournamentAdminController(BaseEventAdminController):
             modal='tournament',
             action=action,
             tournament_id=tournament_id,
-        )
-
-    @patch(
-        path='/admin/tournament-uniq-id-update/{event_uniq_id:str}/{tournament_id:int}',
-        name='admin-tournament-uniq-id-update',
-    )
-    async def htmx_admin_tournament_uniq_id_update(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-        event_uniq_id: str,
-        tournament_id: int,
-    ) -> HTMXTemplate | ClientRedirect:
-        web_context = TournamentAdminWebContext(request, event_uniq_id, tournament_id)
-        event = web_context.get_admin_event()
-        tournament = web_context.get_admin_tournament()
-        new_uniq_id = WebContext.form_data_to_str(data, 'uniq_id')
-        if (
-            not new_uniq_id
-            or not SharlyChessConfig.uniq_id_regex.match(new_uniq_id)
-            or (
-                new_uniq_id != tournament.uniq_id
-                and new_uniq_id in event.tournaments_by_uniq_id.keys()
-            )
-        ):
-            # No precise error (validated in JS)
-            return self.redirect_error(request, f'Invalid uniq ID [{new_uniq_id}].')
-        tournament.stored_tournament.uniq_id = new_uniq_id
-        with EventDatabase(event.uniq_id, True) as database:
-            database.update_stored_tournament(tournament.stored_tournament)
-        return HTMXTemplate(
-            template_name='/admin/tournaments/tournament_update_modal_header.html',
-            context=web_context.template_context
-            | {'tournament_uniq_ids': list(event.tournaments_by_uniq_id.keys())},
-            re_swap='innerHTML',
-            re_target='.modal-header',
         )
 
     @get(
@@ -879,8 +831,8 @@ class TournamentAdminController(BaseEventAdminController):
                     stored_tournament
                 )
                 success_message = _(
-                    'Tournament [{tournament_uniq_id}] has been updated.'
-                ).format(tournament_uniq_id=stored_tournament.uniq_id)
+                    'Tournament [{tournament}] has been updated.'
+                ).format(tournament=stored_tournament.name)
             else:
                 stored_tournament = event_database.add_stored_tournament(
                     stored_tournament
@@ -920,7 +872,9 @@ class TournamentAdminController(BaseEventAdminController):
                             StoredScreen(
                                 id=None,
                                 uniq_id=web_context.admin_event.get_unused_screen_uniq_id(
-                                    base_uniq_id=f'{stored_tournament.uniq_id}-{type_}'
+                                    base_uniq_id=StaticUtils.name_to_uniq_id(
+                                        f'{stored_tournament.name}-{type_}'
+                                    )
                                 ),
                                 type=type_,
                                 public=True,
@@ -949,13 +903,13 @@ class TournamentAdminController(BaseEventAdminController):
                             stored_screen.id, stored_tournament.id
                         )
                     success_message = _(
-                        'Tournament [{tournament_uniq_id}] has been created '
+                        'Tournament [{tournament}] has been created '
                         'and default screens have been added.'
-                    ).format(tournament_uniq_id=stored_tournament.uniq_id)
+                    ).format(tournament=stored_tournament.name)
                 else:
                     success_message = _(
-                        'Tournament [{tournament_uniq_id}] has been created.'
-                    ).format(tournament_uniq_id=stored_tournament.uniq_id)
+                        'Tournament [{tournament}] has been created.'
+                    ).format(tournament=stored_tournament.name)
 
                 tournament_id = stored_tournament.id
 
@@ -1033,8 +987,8 @@ class TournamentAdminController(BaseEventAdminController):
             database.delete_stored_tournament(tournament_id)
         Message.success(
             request,
-            _('Tournament [{tournament_uniq_id}] has been deleted.').format(
-                tournament_uniq_id=web_context.get_admin_tournament().uniq_id
+            _('Tournament [{tournament}] has been deleted.').format(
+                tournament=web_context.get_admin_tournament().name
             ),
         )
         return self._admin_event_tournaments_render(request, event_uniq_id)

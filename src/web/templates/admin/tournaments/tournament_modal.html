@@ -1,13 +1,13 @@
 <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-tournament-edit-modal">
     <div class="modal-content">
         <div class="modal-header">
-            {% if action == 'update' %}
-                {% include 'tournament_update_modal_header.html' %}
-            {% else %}
-                 <h2 class="modal-title">
+             <h2 class="modal-title">
+                {% if action == 'update' %}
+                    {{ _('Editing of tournament [%(tournament)s]', tournament=admin_tournament.name) }}
+                {% else %}
                    {{ _('Tournament creation') }}
-                </h2>
-            {% endif %}
+                {% endif %}
+            </h2>
         </div>
         <div class="modal-body">
             <form

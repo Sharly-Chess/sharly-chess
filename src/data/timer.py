@@ -189,7 +189,12 @@ class Timer:
 
     @property
     def uniq_id(self) -> str:
-        return self.stored_timer.uniq_id
+        # TODO (Molrn) replace all the uniq_id usages by the name
+        return self.name
+
+    @property
+    def name(self) -> str:
+        return self.stored_timer.name
 
     def _build_timer_hours(self):
         previous_valid_timer_hour: TimerHour | None = None

@@ -827,10 +827,9 @@ class PairingsAdminController(BaseEventAdminController):
         tournament.set_current_round(1)
         Message.success(
             request,
-            _(
-                'Pairings generated for all rounds of '
-                'tournament [{tournament_uniq_id}].'
-            ).format(tournament_uniq_id=tournament.uniq_id),
+            _('Pairings generated for all rounds of tournament [{tournament}].').format(
+                tournament=tournament.name
+            ),
         )
 
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(

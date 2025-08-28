@@ -159,13 +159,8 @@ class BaseEventAdminWebContext(AdminWebContext):
     ) -> dict[str, str]:
         if not tournaments:
             tournaments = self.get_admin_event().tournaments_sorted_by_uniq_id
-        tournament_names = [tournament.name for tournament in tournaments]
         return {
-            self.value_to_form_data(tournament.id): (
-                tournament.name
-                if tournament_names.count(tournament.name) == 1
-                else f'{tournament.name} ({tournament.uniq_id})'
-            )
+            self.value_to_form_data(tournament.id): tournament.name
             for tournament in tournaments
         }
 

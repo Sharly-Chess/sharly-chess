@@ -1,19 +1,17 @@
 <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-timer-edit-modal">
     <div class="modal-content">
         <div class="modal-header">
-            {% if action == 'update' %}
-                {% include 'timer_update_modal_header.html' %}
-            {% else %}
-                <h2 class="modal-title">
-                    {% if action in ['create', 'clone', ] %}
-                        {{ _('Timer creation') }}
-                    {% elif action == 'delete' %}
-                        {{ _('Deletion of timer [%(timer_uniq_id)s]', timer_uniq_id=admin_timer.uniq_id) }}
-                    {% else %}
-                        ?
-                    {% endif %}
-                </h2>
-            {% endif %}
+            <h2 class="modal-title">
+                {% if action in ['create', 'clone', ] %}
+                    {{ _('Timer creation') }}
+                {% elif action == 'update' %}
+                    {{ _('Editing of timer [%(timer)s]', timer=admin_timer.name) }}
+                {% elif action == 'delete' %}
+                    {{ _('Deletion of timer [%(timer)s]', timer=admin_timer.name) }}
+                {% else %}
+                    ?
+                {% endif %}
+            </h2>
         </div>
         <div class="modal-body">
             <form
@@ -37,7 +35,21 @@
                         {{ _('Warning: the deletion of a timer is permanent!') }}
                     </h4>
                 {% else %}
-                    <h4 class="mt-3">
+                    <h4>
+                        {{ _('Properties') }}
+                    </h4>
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-3">
+                            {{ admin_macros.text_input(
+                                name='name',
+                                label=_('%(string)s:', string=_('Name')),
+                                placeholder=_('E.g.: %(string)s', string=_('My timer')),
+                                help_text=_('The name of the timer.'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    </div>
+                    <h4>
                         {{ _('Colors and delays') }}
                     </h4>
                     <div class="row">

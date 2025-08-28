@@ -1,7 +1,7 @@
 {% extends '/admin/common/modal/delete_modal.html' %}
 
 {% block modal_title %}
-    {{ _('Deletion of tournament [%(tournament_uniq_id)s]', tournament_uniq_id=admin_tournament.uniq_id) }}
+    {{ _('Deletion of tournament [%(tournament)s]', tournament=admin_tournament.name) }}
 {% endblock %}
 
 {% block delete_warning %}

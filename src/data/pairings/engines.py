@@ -178,8 +178,8 @@ class BbpPairings(PairingEngine):
     ) -> list[StoredBoard]:
         pairings_dir = TMP_DIR / 'pairings'
         pairings_dir.mkdir(exist_ok=True, parents=True)
-        trf_file_path = pairings_dir / f'{tournament.uniq_id}.trfx'
-        pairings_file_path = pairings_dir / f'{tournament.uniq_id}-pairings.txt'
+        trf_file_path = pairings_dir / f'{tournament.sanitized_name}.trfx'
+        pairings_file_path = pairings_dir / f'{tournament.sanitized_name}-pairings.txt'
         pairings_file_path.unlink(missing_ok=True)
         trf_tournament = tournament.to_trf(
             TrfType.TRF_BX,
@@ -249,9 +249,9 @@ class BbpPairings(PairingEngine):
     ) -> tuple[TournamentHistory, list[StoredBoard]]:
         pairings_dir = TMP_DIR / 'pairings'
         pairings_dir.mkdir(exist_ok=True, parents=True)
-        trfx_file_path = pairings_dir / f'{tournament.uniq_id}.trfx'
-        pairings_file_path = pairings_dir / f'{tournament.uniq_id}.trf'
-        checklist_file_path = pairings_dir / f'{tournament.uniq_id}-history.txt'
+        trfx_file_path = pairings_dir / f'{tournament.sanitized_name}.trfx'
+        pairings_file_path = pairings_dir / f'{tournament.sanitized_name}.trf'
+        checklist_file_path = pairings_dir / f'{tournament.sanitized_name}-history.txt'
         checklist_file_path.unlink(missing_ok=True)
         trf_tournament = tournament.to_trf(
             TrfType.TRF_BX,

@@ -72,14 +72,14 @@ class Event:
         return uniq_id
 
     @staticmethod
-    def _get_unused_item_name(base_name: str, used_names: list[str]) -> str:
+    def _get_unused_item_name(base_name: str, used_names: Iterable[str]) -> str:
         """Returns the first unused name in a list looking like base_name:
         base_name, or base_name (2), or base_name (n+1)..."""
         index: int
         name: str
         if matches := re.match(r'^(.*) \((\d+)\)$', base_name):
             base_name = matches.group(1)
-            index = int(matches.group(2))
+            index = int(matches.group(2)) - 1
             name = f'{base_name} ({index + 1})'
         else:
             index = 1
@@ -333,20 +333,13 @@ class Event:
 
     @cached_property
     def timers_by_uniq_id(self) -> dict[str, Timer]:
-        return {
-            timer.uniq_id: timer
-            for timer in self.timers_by_id.values()
-            if timer.uniq_id is not None
-        }
+        return {timer.uniq_id: timer for timer in self.timers_by_id.values()}
 
-    def get_unused_timer_uniq_id(
-        self,
-        base_uniq_id: str | None = None,
-    ) -> str:
-        """Returns the first unused timer uniq_id looking like base_uniq_id:
-        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1..."""
-        return self._get_unused_item_uniq_id(
-            base_uniq_id or _('timer'), self.timers_by_uniq_id
+    def get_unused_timer_name(self, base_name: str | None = None) -> str:
+        """Returns the first unused timer name looking like base_name:
+        base_name, or base_name (2), or base_name (n+1)..."""
+        return self._get_unused_item_name(
+            base_name or _('New timer'), self.timers_by_uniq_id
         )
 
     @property
@@ -491,16 +484,6 @@ class Event:
                 counter[check_in] += tournament.check_in_counts[check_in]
         return counter
 
-    def get_unused_tournament_uniq_id(
-        self,
-        base_uniq_id: str | None = None,
-    ) -> str:
-        """Returns the first unused tournament uniq_id looking like base_uniq_id:
-        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1..."""
-        return self._get_unused_item_uniq_id(
-            base_uniq_id or _('tournament'), self.tournaments_by_uniq_id
-        )
-
     def get_unused_tournament_name(
         self,
         base_name: str | None = None,
@@ -636,11 +619,11 @@ class Event:
     def rotators_by_uniq_id(self) -> dict[str, Rotator]:
         return {rotator.uniq_id: rotator for rotator in self.rotators_by_id.values()}
 
-    def get_unused_rotator_uniq_id(self, base_uniq_id: str | None = None) -> str:
-        """Returns the first unused rotator uniq_id looking like base_uniq_id:
-        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1..."""
-        return self._get_unused_item_uniq_id(
-            base_uniq_id or _('rotator'), self.rotators_by_uniq_id
+    def get_unused_rotator_name(self, base_name: str | None = None) -> str:
+        """Returns the first unused rotator name looking like base_name:
+        base_name, or base_name (2), or base_name (n+1)..."""
+        return self._get_unused_item_name(
+            base_name or _('New rotator'), self.rotators_by_uniq_id
         )
 
     @cached_property
@@ -673,20 +656,6 @@ class Event:
         return sorted(
             filter(attrgetter('public'), self.display_controllers_by_id.values()),
             key=attrgetter('uniq_id'),
-        )
-
-    def get_unused_display_controller_uniq_id(
-        self,
-        base_uniq_id: str | None = None,
-    ) -> str:
-        """Returns the first unused display controller uniq_id looking like base_uniq_id:
-        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1..."""
-        return self._get_unused_item_uniq_id(
-            base_uniq_id or _('display-controller'),
-            [
-                display_controller.uniq_id
-                for display_controller in self.display_controllers_by_id.values()
-            ],
         )
 
     def get_unused_display_controller_name(
