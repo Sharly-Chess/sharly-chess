@@ -218,16 +218,7 @@
             <i class="bi-pencil-fill"></i>
         </button>
     </span>
-    <form
-        hx-post="{{ url_for(
-            'admin-prize-category-duplicate',
-            event_uniq_id=admin_event.uniq_id,
-            tournament_id=admin_tournament.id,
-            prize_group_id=admin_prize_group.id,
-            prize_category_id=prize_category.id,
-        ) }}"
-        hx-target="body"
-        hx-indicator="#please-wait"
+    <span
         {{ macros.tooltip_attributes(
             'info',
             _('There can only be one main category.')
@@ -237,15 +228,23 @@
         ) }}
     >
         <button
-            type="submit"
-            class="btn btn-sm btn-outline-primary"
-            {% if prize_category.is_main %}
-                disabled
-            {% endif %}
+            hx-post="{{ url_for(
+                'admin-prize-category-duplicate',
+                event_uniq_id=admin_event.uniq_id,
+                tournament_id=admin_tournament.id,
+                prize_group_id=admin_prize_group.id,
+                prize_category_id=prize_category.id,
+                ) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+                class="btn btn-sm btn-outline-primary"
+                {% if prize_category.is_main %}
+                    disabled
+                {% endif %}
         >
             <i class="bi-copy"></i>
         </button>
-    </form>
+    </span>
     <span {{ macros.tooltip_attributes('info', _('Delete the category.'), 'top') }}>
         <button
             class="btn btn-sm btn-outline-danger"
