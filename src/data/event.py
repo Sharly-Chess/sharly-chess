@@ -495,6 +495,25 @@ class Event:
                 counter[check_in] += tournament.check_in_counts[check_in]
         return counter
 
+    def move_player_to_tournament(
+        self,
+        player: Player,
+        source_tournament: Tournament,
+        destination_tournament: Tournament,
+    ):
+        """Moves the given player from tournament *source_tournament* to *destination_tournament*."""
+        stored_tournament_player = player.stored_tournament_player
+        with EventDatabase(self.uniq_id, write=True) as database:
+            database.move_tournament_player(
+                stored_tournament_player, destination_tournament.id
+            )
+            del source_tournament.players_by_id[player.id]
+            player.stored_tournament_player = (
+                database.load_player_stored_tournament_player(player.id)
+            )
+            destination_tournament.players_by_id[player.id] = player
+            database.commit()
+
     def get_unused_tournament_uniq_id(
         self,
         base_uniq_id: str | None = None,

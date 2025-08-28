@@ -1026,6 +1026,27 @@ class EventDatabase(MigrationDatabase):
             ),
         )
 
+    def move_tournament_player(
+        self,
+        stored_tournament_player: StoredTournamentPlayer,
+        destination_tournament_id: int,
+    ):
+        params = {
+            'new_tournament_id': destination_tournament_id,
+            'old_tournament_id': stored_tournament_player.tournament_id,
+            'player_id': stored_tournament_player.player_id,
+        }
+        self.execute(
+            'UPDATE `tournament_player` '
+            'SET `tournament_id` = :new_tournament_id '
+            'WHERE `tournament_id` = :old_tournament_id AND `player_id` = :player_id',
+            params,
+        )
+        self.execute(
+            'DELETE FROM `pairing` WHERE `tournament_id` = :old_tournament_id AND `player_id` = :player_id',
+            params,
+        )
+
     def set_tournament_players_manual_tiebreak(
         self,
         tournament_id: int,
