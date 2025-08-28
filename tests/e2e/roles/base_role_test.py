@@ -160,12 +160,11 @@ class BaseRoleTest:
         stored_screen = TestUtils.create_screen(
             api_request_context,
             PUBLIC_EVENT_ID,
-            'public-input',
+            'Input Screen with pairings',
             ScreenType.INPUT,
             {
                 'init_set_tournament_id': role_test_tournament.id,
                 'public': True,
-                'name': 'Input Screen with pairings',
             },
         )
         self.paired_screen = stored_screen
@@ -181,12 +180,11 @@ class BaseRoleTest:
         stored_screen = TestUtils.create_screen(
             api_request_context,
             PUBLIC_EVENT_ID,
-            'public-input-unpaired',
+            'Input Screen without pairings',
             ScreenType.INPUT,
             {
                 'init_set_tournament_id': role_test_unpaired_tournament.id,
                 'public': True,
-                'name': 'Input Screen without pairings',
             },
         )
         self.unpaired_screen = stored_screen

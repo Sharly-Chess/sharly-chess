@@ -281,7 +281,7 @@ class TestUtils:
         cls,
         api_request_context: APIRequestContext,
         event_uniq_id: str,
-        uniq_id: str,
+        name: str,
         screen_type: ScreenType,
         overrides: Optional[dict] = None,
     ):
@@ -290,8 +290,7 @@ class TestUtils:
         # Provide defaults
         defaults: dict[str, Any] = {
             'id': None,
-            'uniq_id': uniq_id,
-            'name': uniq_id,
+            'name': name,
             'init_set_tournament_id': None,
             'columns': None,
             'font_size': None,
@@ -332,7 +331,7 @@ class TestUtils:
 
         with EventDatabase(event_uniq_id) as event_database:
             stored_screens = event_database.load_stored_screens()
-            stored_screen = next(s for s in stored_screens if s.uniq_id == uniq_id)
+            stored_screen = next(s for s in stored_screens if s.name == name)
             return stored_screen
 
     @classmethod
