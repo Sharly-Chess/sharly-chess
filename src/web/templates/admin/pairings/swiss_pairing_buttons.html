@@ -27,7 +27,9 @@
             data-bs-target="#modal-wrapper"
             hx-target="body"
             hx-indicator="#please-wait"
-            {% if admin_tournament.players|length == 0 %}disabled{% endif %}
+            {% if pairings_generation_disabled_message %}
+                disabled
+            {% endif %}
         >
             <i class="bi-info-circle pe-1"></i>
             {{ _('Info') }}
