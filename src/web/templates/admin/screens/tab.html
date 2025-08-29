@@ -77,7 +77,7 @@
                         <button
                             class="dropdown-item text-start cursor-pointer"
                             {% if enabled %}
-                                hx-get="{{ url_for('admin-screen-create-modal', event_uniq_id=admin_event.uniq_id, screen_type=screen_type.value) }}"
+                                hx-get="{{ url_for('admin-screen-create-modal', event_uniq_id=admin_event.uniq_id, screen_type=screen_type) }}"
                                 hx-target="body"
                                 hx-indicator="#please-wait"
                                 preload
