@@ -91,7 +91,7 @@ class SqlServer:
                 user=self.credentials.user,
                 password=self.credentials.password,
                 timeout=self.timeout,
-                autocommit=True,
+                autocommit=False,
             )
 
             if self.database is not None:
