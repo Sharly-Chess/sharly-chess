@@ -58,7 +58,6 @@ class ScreenAdminWebContext(BaseEventAdminWebContext):
             except KeyError:
                 self._redirect_error(f'Screen [{screen_id}] not found.')
                 return
-        self.screen_type = screen_type
         if screen_set_id:
             assert self.admin_screen is not None
             try:
@@ -69,6 +68,15 @@ class ScreenAdminWebContext(BaseEventAdminWebContext):
                 self._redirect_error(
                     f'Screen set [{screen_set_id}] not found for screen [{self.admin_screen.uniq_id}]'
                 )
+                return
+        self.screen_type: ScreenType | None = None
+        if self.admin_screen:
+            self.screen_type = self.admin_screen.type
+        elif screen_type:
+            try:
+                self.screen_type = ScreenType(screen_type)
+            except ValueError:
+                self._redirect_error(f'Unknown screen type [{screen_type}].')
                 return
 
     def get_admin_screen(self) -> Screen:
@@ -83,9 +91,7 @@ class ScreenAdminWebContext(BaseEventAdminWebContext):
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
             'admin_screen': self.admin_screen,
-            'screen_type': self.admin_screen.type
-            if self.admin_screen
-            else self.screen_type,
+            'screen_type': self.screen_type,
             'admin_screen_set': self.admin_screen_set,
         }
 

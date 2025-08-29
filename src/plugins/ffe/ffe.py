@@ -292,8 +292,8 @@ class FfePlugin(Plugin):
                 if action == 'create' and ffe_id and ffe_id in ffe_ids:
                     errors[field] = _(
                         'The player with FFE ID [{ffe_id}] already '
-                        'plays tournament [{tournament_uniq_id}].'
-                    ).format(ffe_id=ffe_id, tournament_uniq_id=tournament.uniq_id)
+                        'plays tournament [{tournament}].'
+                    ).format(ffe_id=ffe_id, tournament=tournament.name)
             except ValueError:
                 errors[field] = _('Invalid FFE ID [{ffe_id}].').format(
                     ffe_id=data[field]
@@ -322,10 +322,10 @@ class FfePlugin(Plugin):
                     errors[field] = _(
                         'The player with FFE licence number '
                         '[{ffe_licence_number}] already plays '
-                        'tournament [{tournament_uniq_id}].'
+                        'tournament [{tournament}].'
                     ).format(
                         ffe_licence_number=ffe_licence_number,
-                        tournament_uniq_id=tournament.uniq_id,
+                        tournament=tournament.name,
                     )
 
     @hookimpl
@@ -436,10 +436,10 @@ class FfePlugin(Plugin):
         ):
             return _(
                 'FFE licence [{ffe_licence_number}] already '
-                'present in tournament [{tournament_uniq_id}].'
+                'present in tournament [{tournament}].'
             ).format(
                 ffe_licence_number=ffe_licence_number,
-                tournament_uniq_id=tournament.uniq_id,
+                tournament=tournament.name,
             )
 
         if ffe_id and any(

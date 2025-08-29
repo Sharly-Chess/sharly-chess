@@ -67,6 +67,12 @@ class PrizeGroup:
             None,
         )
 
+    def get_unused_category_name(self, base_name: str | None = None) -> str:
+        return StaticUtils.get_unused_item_name(
+            base_name or _('New category'),
+            (category.name for category in self.categories),
+        )
+
     def get_event_database(self) -> EventDatabase:
         return EventDatabase(self.tournament.event.uniq_id, True)
 

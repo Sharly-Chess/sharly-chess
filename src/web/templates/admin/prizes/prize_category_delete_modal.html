@@ -1,16 +1,16 @@
 {% extends '/admin/common/modal/delete_modal.html' %}
 
 {% block modal_title %}
-    {{ _('Deleting prize category [%(prize_category)s]', prize_category=admin_prize_category.name) }}
+    {{ _('Delete prize category') }}
 {% endblock %}
 
-{% block delete_warning %}
-    {{ _('Warning: deleting a prize category is permanent!') }}
+{% block object_name %}
+    {{ _('%(string)s: %(value)s', string=_('Category'), value=admin_prize_category.name) }}
 {% endblock %}
 
 {% block form_content %}
     {% if admin_prize_category.criteria or admin_prize_category.prizes %}
-        <p>
+        <p class="mt-3">
             {{ _('The related objects will also be deleted:') }}
         </p>
         <ul>

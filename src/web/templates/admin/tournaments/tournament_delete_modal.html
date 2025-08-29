@@ -1,22 +1,21 @@
 {% extends '/admin/common/modal/delete_modal.html' %}
 
 {% block modal_title %}
-    {{ _('Deletion of tournament [%(tournament_uniq_id)s]', tournament_uniq_id=admin_tournament.uniq_id) }}
+    {{ _('Delete tournament') }}
 {% endblock %}
 
-{% block delete_warning %}
-    {{ _('Warning: the deletion of a tournament is permanent!') }}
+{% block object_name %}
+    {{ _('%(string)s: %(value)s', string=_('Tournament'), value=admin_tournament.name) }}
 {% endblock %}
 
 {% block form_content %}
-
     {% if (
         admin_tournament.dependent_screens
         or admin_tournament.dependent_families
         or admin_tournament.prize_groups
         or admin_tournament.players
     ) %}
-        <p>{{ _('All the dependant objects will also be deleted:') }}</p>
+        <p class="mt-3">{{ _('All the dependant objects will also be deleted:') }}</p>
         <ul>
             {% if admin_tournament.players %}
                 {# TODO (Molrn - multi-tournament) replace by the players only playing in this tournament #}

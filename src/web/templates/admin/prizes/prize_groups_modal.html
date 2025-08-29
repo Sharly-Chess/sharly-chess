@@ -51,13 +51,14 @@
                             </div>
                         </div>
                     </div>
+                    {% set form_id = base_id ~ '-update' %}
                     <div
                         id="{{ base_id }}-form-container"
                         class="mt-1 mb-1"
                         style="display: none"
                     >
                         {{ admin_macros.inline_text_form(
-                            base_id ~ '-update',
+                            form_id,
                             name='name',
                             placeholder=_('E.g.: %(string)s', string=_('My group')),
                             value=prize_group.name,
@@ -66,18 +67,31 @@
                                 event_uniq_id=admin_event.uniq_id,
                                 tournament_id=admin_tournament.id,
                                 prize_group_id=prize_group.id
-                            ),
-                            prevent_empty=true,
+                            )
                         ) }}
                     </div>
 
                     <script>
-                        $('#{{ base_id }}-update-button').click(() => {
+                        $('#{{ form_id }}-input').on('input', function() {
+                            let error = "";
+                            const value = $(this).val();
+                            if (value === '') {
+                                error = "{{ _('A value is expected.') }}";
+                            } else if (value != "{{ prize_group.name }}" && {{ prize_group_names|tojson }}.includes(value)) {
+                                error = "{{ _('This name is already used.') }}";
+                            }
+                            $('#{{ form_id }}-submit-button').prop('disabled', error !== "");
+                            const tooltipElement = document.getElementById('{{ form_id }}-submit-button-container');
+                            const tooltip = bootstrap.Tooltip.getInstance(tooltipElement);
+                            tooltip.setContent({ '.tooltip-inner': error || "{{ _('Validate') }}" });
+                            tooltip.update();
+                        });
+                        $('#{{ form_id }}-button').click(() => {
                             $('.inline-form-cancel-button').trigger('click');
                             $('#{{ base_id }}-form-container').css('display', '');
                             $('#{{ base_id }}-row').css('display', 'none');
                         });
-                        $('#{{ base_id }}-update-cancel-button').click(() => {
+                        $('#{{ form_id }}-cancel-button').click(() => {
                             $('#{{ base_id }}-form-container').css('display', 'none');
                             $('#{{ base_id }}-row').css('display', '');
                         });

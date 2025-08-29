@@ -12,6 +12,7 @@ from _weakref import ReferenceType
 from trf import Tournament as TrfTournament
 
 from common import format_timestamp
+from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
 
@@ -33,7 +34,7 @@ from database.sqlite.event.event_store import (
     StoredTournamentPlayer,
     StoredPairing,
 )
-from utils import SharedUtils
+from utils import SharedUtils, StaticUtils
 from utils.enum import (
     BoardColor,
     PlayerGender,
@@ -84,13 +85,16 @@ class Tournament:
 
     @property
     def uniq_id(self) -> str:
-        return self.stored_tournament.uniq_id
+        # TODO (Molrn) replace all the uniq_id usages by the name
+        return self.name
 
     @property
     def name(self) -> str:
-        return (
-            self.stored_tournament.name if self.stored_tournament.name else self.uniq_id
-        )
+        return self.stored_tournament.name
+
+    @property
+    def sanitized_name(self) -> str:
+        return StaticUtils.name_to_uniq_id(self.name)
 
     @property
     def full_name(self) -> str:
@@ -376,6 +380,12 @@ class Tournament:
 
         if prize_group_id in self.prize_groups_by_id:
             del self.prize_groups_by_id[prize_group_id]
+
+    def get_unused_prize_group_name(self, base_name: str | None = None) -> str:
+        return StaticUtils.get_unused_item_name(
+            base_name or _('New group'),
+            (group.name for group in self.prize_groups),
+        )
 
     @property
     def players(self) -> Collection[Player]:

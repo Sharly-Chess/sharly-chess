@@ -53,7 +53,15 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
             except KeyError:
                 self._redirect_error(f'Family [{family_id}] not found.')
                 return
-        self.family_type = family_type
+        self.family_type: ScreenType | None = None
+        if self.admin_family:
+            self.family_type = self.admin_family.type
+        elif family_type:
+            try:
+                self.family_type = ScreenType(family_type)
+            except ValueError:
+                self._redirect_error(f'Unknown screen type [{family_type}].')
+                return
 
     def get_admin_family(self) -> Family:
         assert self.admin_family is not None
@@ -63,9 +71,7 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
             'admin_family': self.admin_family,
-            'family_type': self.admin_family.type
-            if self.admin_family
-            else self.family_type,
+            'family_type': self.family_type,
         }
 
 

@@ -6,10 +6,8 @@ from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
-from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
-from common.sharly_chess_config import SharlyChessConfig
 from data.rotator import Rotator
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredRotator
@@ -72,48 +70,47 @@ class RotatorAdminController(BaseEventAdminController):
         errors: dict[str, str] = {}
         if data is None:
             data = {}
+        name = ''
         delay: int | None = None
         message_default: bool | None = True
         message_text: str | None = None
         screen_ids: list[int] | None = None
         family_ids: list[int] | None = None
-        public = WebContext.form_data_to_bool(data, 'public')
-        match action:
-            case 'create' | 'update' | 'clone':
-                public = WebContext.form_data_to_bool(data, 'public')
-                field = 'delay'
-                try:
-                    delay = WebContext.form_data_to_int(data, field, minimum=1)
-                except ValueError:
-                    errors[field] = _('A positive integer is expected.')
-                screen_ids = []
-                for screen_id in event.basic_screens_by_id:
-                    field = f'screen_{screen_id}'
-                    if WebContext.form_data_to_bool(data, field):
-                        screen_ids.append(screen_id)
-                family_ids = []
-                for family_id in event.families_by_id:
-                    field = f'family_{family_id}'
-                    if WebContext.form_data_to_bool(data, field):
-                        family_ids.append(family_id)
-                field = 'message_text'
-                message_default = WebContext.form_data_to_bool(
-                    data, field + '_checkbox'
-                )
-                if message_default and web_context.admin_rotator:
-                    # do not change the original value when the default message is used
-                    # (needed since disabled fields are not submitted)
-                    message_text = web_context.admin_rotator.stored_rotator.message_text
-                else:
-                    message_text = WebContext.form_data_to_str(data, field)
+        public = True
+        if action != 'delete':
+            public = WebContext.form_data_to_bool(data, 'public')
+            name = WebContext.form_data_to_str(data, field := 'name') or ''
+            if not name:
+                errors[field] = _('This field is required.')
+            else:
+                used_names = list(event.rotators_by_uniq_id.keys())
                 if action == 'update':
-                    uniq_id = web_context.get_admin_rotator().uniq_id
-                else:
-                    uniq_id = event.get_unused_rotator_uniq_id()
-            case 'delete':
-                uniq_id = ''
-            case _:
-                raise ValueError(f'action=[{action}]')
+                    used_names.remove(web_context.get_admin_rotator().name)
+                if name in used_names:
+                    errors[field] = _('This name is already used.')
+            field = 'delay'
+            try:
+                delay = WebContext.form_data_to_int(data, field, minimum=1)
+            except ValueError:
+                errors[field] = _('A positive integer is expected.')
+            screen_ids = []
+            for screen_id in event.basic_screens_by_id:
+                field = f'screen_{screen_id}'
+                if WebContext.form_data_to_bool(data, field):
+                    screen_ids.append(screen_id)
+            family_ids = []
+            for family_id in event.families_by_id:
+                field = f'family_{family_id}'
+                if WebContext.form_data_to_bool(data, field):
+                    family_ids.append(family_id)
+            field = 'message_text'
+            message_default = WebContext.form_data_to_bool(data, field + '_checkbox')
+            if message_default and web_context.admin_rotator:
+                # do not change the original value when the default message is used
+                # (needed since disabled fields are not submitted)
+                message_text = web_context.admin_rotator.stored_rotator.message_text
+            else:
+                message_text = WebContext.form_data_to_str(data, field)
 
         rotator_id: int | None = None
         if web_context.admin_rotator and action not in [
@@ -124,7 +121,7 @@ class RotatorAdminController(BaseEventAdminController):
 
         return StoredRotator(
             id=rotator_id,
-            uniq_id=uniq_id,
+            name=name,
             public=bool(public),
             delay=delay,
             screen_ids=screen_ids,
@@ -166,6 +163,7 @@ class RotatorAdminController(BaseEventAdminController):
                 pass
             case 'rotator':
                 if data is None:
+                    name = ''
                     public: bool | None = None
                     delay: int | None = None
                     message_default: bool = True
@@ -174,22 +172,20 @@ class RotatorAdminController(BaseEventAdminController):
                     family_ids: list[int] | None = None
                     match action:
                         case 'update' | 'clone':
-                            assert web_context.admin_rotator is not None
-                            public = web_context.admin_rotator.stored_rotator.public
-                            delay = web_context.admin_rotator.stored_rotator.delay
-                            message_default = (
-                                web_context.admin_rotator.stored_rotator.message_default
+                            stored_rotator = (
+                                web_context.get_admin_rotator().stored_rotator
                             )
-                            message_text = (
-                                web_context.admin_rotator.stored_rotator.message_text
-                            )
-                            screen_ids = (
-                                web_context.admin_rotator.stored_rotator.screen_ids
-                            )
-                            family_ids = (
-                                web_context.admin_rotator.stored_rotator.family_ids
-                            )
+                            name = stored_rotator.name
+                            if action == 'clone':
+                                name = event.get_unused_rotator_name(name)
+                            public = stored_rotator.public
+                            delay = stored_rotator.delay
+                            message_default = stored_rotator.message_default
+                            message_text = stored_rotator.message_text
+                            screen_ids = stored_rotator.screen_ids
+                            family_ids = stored_rotator.family_ids
                         case 'create':
+                            name = event.get_unused_rotator_name()
                             public = True
                             message_default = True
                         case 'delete':
@@ -197,6 +193,7 @@ class RotatorAdminController(BaseEventAdminController):
                         case _:
                             raise ValueError(f'action=[{action}]')
                     data = {
+                        'name': WebContext.value_to_form_data(name),
                         'public': WebContext.value_to_form_data(public),
                         'delay': WebContext.value_to_form_data(delay),
                         'message_text_checkbox': WebContext.value_to_form_data(
@@ -227,7 +224,6 @@ class RotatorAdminController(BaseEventAdminController):
                 if errors is None:
                     errors = {}
                 template_context |= {
-                    'rotator_uniq_ids': list(event.rotators_by_uniq_id.keys()),
                     'modal': modal,
                     'action': action,
                     'data': data,
@@ -335,8 +331,8 @@ class RotatorAdminController(BaseEventAdminController):
                     stored_rotator = event_database.add_stored_rotator(stored_rotator)
                     Message.success(
                         request,
-                        _('Rotator [{rotator_uniq_id}] has been created.').format(
-                            rotator_uniq_id=stored_rotator.uniq_id
+                        _('Rotator [{rotator}] has been created.').format(
+                            rotator=stored_rotator.name
                         ),
                     )
                 case 'update':
@@ -345,8 +341,8 @@ class RotatorAdminController(BaseEventAdminController):
                     )
                     Message.success(
                         request,
-                        _('Rotator [{rotator_uniq_id}] has been updated.').format(
-                            rotator_uniq_id=stored_rotator.uniq_id
+                        _('Rotator [{rotator}] has been updated.').format(
+                            rotator=stored_rotator.name
                         ),
                     )
                 case 'delete':
@@ -354,8 +350,8 @@ class RotatorAdminController(BaseEventAdminController):
                     event_database.delete_stored_rotator(rotator.id)
                     Message.success(
                         request,
-                        _('Rotator [{rotator_uniq_id}] has been deleted.').format(
-                            rotator_uniq_id=rotator.uniq_id
+                        _('Rotator [{rotator}] has been deleted.').format(
+                            rotator=rotator.name
                         ),
                     )
                 case _:
@@ -401,46 +397,6 @@ class RotatorAdminController(BaseEventAdminController):
             action='update',
             rotator_id=rotator_id,
             data=data,
-        )
-
-    @patch(
-        path='/admin/rotator-uniq-id-update/{event_uniq_id:str}/{rotator_id:int}',
-        name='admin-rotator-uniq-id-update',
-    )
-    async def htmx_admin_rotator_uniq_id_update(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-        event_uniq_id: str,
-        rotator_id: int,
-    ) -> HTMXTemplate | ClientRedirect:
-        web_context = RotatorAdminWebContext(request, event_uniq_id, rotator_id)
-        event = web_context.get_admin_event()
-        rotator = web_context.get_admin_rotator()
-        new_uniq_id = WebContext.form_data_to_str(data, 'uniq_id')
-        if (
-            not new_uniq_id
-            or not SharlyChessConfig.uniq_id_regex.match(new_uniq_id)
-            or (
-                new_uniq_id != rotator.uniq_id
-                and new_uniq_id in event.rotators_by_uniq_id.keys()
-            )
-        ):
-            # No precise error (validated in JS)
-            return self.redirect_error(request, f'Invalid uniq ID [{new_uniq_id}].')
-        stored_rotator = rotator.stored_rotator
-        stored_rotator.uniq_id = new_uniq_id
-        with EventDatabase(event.uniq_id, True) as database:
-            database.update_stored_rotator(stored_rotator)
-        return HTMXTemplate(
-            template_name='/admin/rotators/rotator_update_modal_header.html',
-            context=web_context.template_context
-            | {'rotator_uniq_ids': list(event.rotators_by_uniq_id.keys())},
-            re_swap='innerHTML',
-            re_target='.modal-header',
         )
 
     @delete(

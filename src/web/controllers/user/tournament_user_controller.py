@@ -61,16 +61,16 @@ class TournamentUserWebContext(ScreenUserWebContext):
             if tournament_started:
                 if not self.tournament.current_round:
                     self._redirect_error(
-                        _(
-                            'Tournament [{tournament_uniq_id}] is not started yet.'
-                        ).format(tournament_uniq_id=self.tournament.uniq_id)
+                        _('Tournament [{tournament}] is not started yet.').format(
+                            tournament=self.tournament.name
+                        )
                     )
                     return
             else:
                 if self.tournament.current_round:
                     self._redirect_error(
-                        _('Tournament [{tournament_uniq_id}] is started.').format(
-                            tournament_uniq_id=self.tournament.uniq_id
+                        _('Tournament [{tournament}] is started.').format(
+                            tournament=self.tournament.name
                         )
                     )
                     return

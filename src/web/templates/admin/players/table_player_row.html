@@ -81,16 +81,16 @@
             <i
                 {% if player.tournament.finished %}
                     class="bi-ban text-secondary"
-                    {{ macros.tooltip_attributes('warning', _('Tournament [%(tournament_uniq_id)s] is finished.', tournament_uniq_id=player.tournament.uniq_id), 'right') }}
+                    {{ macros.tooltip_attributes('warning', _('Tournament [%(tournament)s] is finished.', tournament=player.tournament.name), 'right') }}
                 {% elif player.tournament.playing %}
                     class="bi-ban text-secondary"
-                    {{ macros.tooltip_attributes('warning', _('Tournament [%(tournament_uniq_id)s] is playing.', tournament_uniq_id=player.tournament.uniq_id), 'right') }}
+                    {{ macros.tooltip_attributes('warning', _('Tournament [%(tournament)s] is playing.', tournament=player.tournament.name), 'right') }}
                 {% elif not player.tournament.check_in_open %}
                     class="bi-ban text-secondary"
-                    {{ macros.tooltip_attributes('warning', _('Check-in is closed for tournament [%(tournament_uniq_id)s].', tournament_uniq_id=player.tournament.uniq_id), 'right') }}
+                    {{ macros.tooltip_attributes('warning', _('Check-in is closed for tournament [%(tournament)s].', tournament=player.tournament.name), 'right') }}
                 {% elif not player.can_check_in_out %}
                     class="bi-ban text-secondary"
-                    {{ macros.tooltip_attributes('warning', _('Player [%(player)s] is absent for the next round in tournament [%(tournament_uniq_id)s].', player=player.full_name, tournament_uniq_id=player.tournament.uniq_id), 'right') }}
+                    {{ macros.tooltip_attributes('warning', _('Player [%(player)s] is absent for the next round in tournament [%(tournament)s].', player=player.full_name, tournament=player.tournament.name), 'right') }}
                 {% else %}
                     {% if player.check_in %}
                         class="bi-check-circle-fill text-success cursor-pointer"

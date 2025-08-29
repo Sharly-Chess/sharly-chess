@@ -17,13 +17,13 @@
                     <li
                         class="dropdown-item text-nowrap my-0 d-inline-flex align-items-center gap-2"
                         {% if tournament.finished %}
-                            {{ macros.tooltip_attributes('warning', _('Tournament [%(tournament_uniq_id)s] is finished.', tournament_uniq_id=tournament.uniq_id), 'left') }}
+                            {{ macros.tooltip_attributes('warning', _('Tournament [%(tournament)s] is finished.', tournament=tournament.name), 'left') }}
                         {% elif tournament.playing %}
-                            {{ macros.tooltip_attributes('warning', _('Tournament [%(tournament_uniq_id)s] is playing.', tournament_uniq_id=tournament.uniq_id), 'left') }}
+                            {{ macros.tooltip_attributes('warning', _('Tournament [%(tournament)s] is playing.', tournament=tournament.name), 'left') }}
                         {% elif tournament.check_in_open %}
-                            {{ macros.tooltip_attributes('info', _('Close check-in for tournament [%(tournament_uniq_id)s].', tournament_uniq_id=tournament.uniq_id), 'left') }}
+                            {{ macros.tooltip_attributes('info', _('Close check-in for tournament [%(tournament)s].', tournament=tournament.name), 'left') }}
                         {% else %}
-                            {{ macros.tooltip_attributes('info', _('Open check-in for tournament [%(tournament_uniq_id)s].', tournament_uniq_id=tournament.uniq_id), 'left') }}
+                            {{ macros.tooltip_attributes('info', _('Open check-in for tournament [%(tournament)s].', tournament=tournament.name), 'left') }}
                         {% endif %}
                     >
                         <div class="form-check form-switch d-inline-block my-0">

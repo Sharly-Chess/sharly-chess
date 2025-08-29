@@ -181,8 +181,8 @@ class PlayerAdminController(BaseEventAdminController):
                 and fide_id in tournament.players_by_fide_id
             ):
                 errors[field] = _(
-                    'The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}].'
-                ).format(fide_id=fide_id, tournament_uniq_id=tournament.uniq_id)
+                    'The player with FIDE ID [{fide_id}] already plays tournament [{tournament}].'
+                ).format(fide_id=fide_id, tournament=tournament.name)
         except ValueError:
             errors[field] = _('Invalid FIDE ID [{fide_id}].').format(
                 fide_id=data[field]
@@ -1167,8 +1167,8 @@ class PlayerAdminController(BaseEventAdminController):
                     Message.error(
                         request,
                         _(
-                            'Tournament [{tournament_uniq_id}] is finished, you can not add players any longer.'
-                        ).format(tournament_uniq_id=tournament.uniq_id),
+                            'Tournament [{tournament}] is finished, you can not add players any longer.'
+                        ).format(tournament=tournament.name),
                     )
                     return self._admin_event_players_render(
                         request,
@@ -1236,12 +1236,12 @@ class PlayerAdminController(BaseEventAdminController):
                 request,
                 _(
                     'Player [{player}] has been moved '
-                    'from tournament [{src_tournament_uniq_id}] '
-                    'to tournament [{dst_tournament_uniq_id}].'
+                    'from tournament [{src_tournament}] '
+                    'to tournament [{dst_tournament}].'
                 ).format(
                     player=admin_player.full_name,
-                    src_tournament_uniq_id=src_tournament.uniq_id,
-                    dst_tournament_uniq_id=dst_tournament.uniq_id,
+                    src_tournament=src_tournament.name,
+                    dst_tournament=dst_tournament.name,
                 ),
             )
         except ValueError as e:
@@ -1264,25 +1264,25 @@ class PlayerAdminController(BaseEventAdminController):
         if player.has_real_pairings:
             raise ValueError(
                 _(
-                    'Player [{player}] has pairings in tournament [{tournament_uniq_id}].'
+                    'Player [{player}] has pairings in tournament [{tournament}].'
                 ).format(
                     player=player.full_name,
-                    tournament_uniq_id=src_tournament.uniq_id,
+                    tournament=src_tournament.name,
                 ),
             )
         if not dst_tournament.can_add_players:
             raise ValueError(
-                _(
-                    'Impossible to add players to tournament [{tournament_uniq_id}].'
-                ).format(tournament_uniq_id=src_tournament.uniq_id)
+                _('Impossible to add players to tournament [{tournament}].').format(
+                    tournament=src_tournament.uniq_id
+                )
             )
         if player.fide_id in dst_tournament.players_by_fide_id:
             raise ValueError(
                 _(
-                    'Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}].'
+                    'Fide ID [{fide_id}] already present in tournament [{tournament}].'
                 ).format(
                     fide_id=player.fide_id,
-                    tournament_uniq_id=dst_tournament.uniq_id,
+                    tournament=dst_tournament.name,
                 ),
             )
         if plugin_error := (
@@ -1464,10 +1464,10 @@ class PlayerAdminController(BaseEventAdminController):
             Message.error(
                 request,
                 _(
-                    'Player [{player}] has pairings in tournament [{tournament_uniq_id}].'
+                    'Player [{player}] has pairings in tournament [{tournament}].'
                 ).format(
                     player=player.full_name,
-                    tournament_uniq_id=tournament.uniq_id,
+                    tournament=tournament.name,
                 ),
             )
         else:
@@ -1508,8 +1508,8 @@ class PlayerAdminController(BaseEventAdminController):
         admin_tournament.open_check_in()
         Message.success(
             request,
-            _('Check-in is open for tournament [{tournament_uniq_id}].').format(
-                tournament_uniq_id=admin_tournament.uniq_id
+            _('Check-in is open for tournament [{tournament}].').format(
+                tournament=admin_tournament.name
             ),
         )
         return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)
@@ -1557,8 +1557,8 @@ class PlayerAdminController(BaseEventAdminController):
         admin_tournament.close_check_in(zpbs_next_round, zpbs_all_rounds)
         Message.success(
             request,
-            _('Check-in is closed for tournament [{tournament_uniq_id}].').format(
-                tournament_uniq_id=admin_tournament.uniq_id
+            _('Check-in is closed for tournament [{tournament}].').format(
+                tournament=admin_tournament.name
             ),
         )
         return HTMXTemplate(
