@@ -43,6 +43,21 @@ class Role(IdentifiableEntity, ABC):
     def scope(self) -> RoleScope:
         """The scope of effect of the role."""
 
+    @property
+    def has_application_scope(self) -> bool:
+        """Returns True if the role has an application scope."""
+        return self.scope == RoleScope.APPLICATION
+
+    @property
+    def has_event_scope(self) -> bool:
+        """Returns True if the role has an event scope."""
+        return self.scope == RoleScope.EVENT
+
+    @property
+    def has_tournament_scope(self) -> bool:
+        """Returns True if the role has a tournament scope."""
+        return self.scope == RoleScope.TOURNAMENT
+
     @staticmethod
     @abstractmethod
     def direct_sub_roles() -> set[type['Role']]:
