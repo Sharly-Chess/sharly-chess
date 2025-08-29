@@ -3829,6 +3829,9 @@ msgstr ""
 msgid "Port"
 msgstr ""
 
+msgid "Port [{port}] already in use, can not start Sharly Chess server."
+msgstr ""
+
 msgid "Port [{port}] already in use."
 msgstr ""
 
