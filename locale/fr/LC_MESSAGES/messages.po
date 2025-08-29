@@ -981,9 +981,6 @@ msgstr "Continuer"
 msgid "Continuously"
 msgstr "En continu"
 
-msgid "Display Controller"
-msgstr "Pilote d'afficheurs"
-
 msgid "Conversion to Papi format failed."
 msgstr "La conversion au format Papi a échoué."
 
@@ -1313,6 +1310,9 @@ msgstr "Désactivé"
 
 msgid "Display"
 msgstr "Affichage"
+
+msgid "Display Controller"
+msgstr "Pilote d'afficheurs"
 
 msgid "Display all the players, paired and unpaired"
 msgstr "Afficher tou·tes les joueur·euses, apparié·es et non apparié·es"
@@ -2765,6 +2765,9 @@ msgstr "Navigation"
 msgid "Neither screen nor rotator currently assigned"
 msgstr "Pas d'écran ni d'écran rotatif utilisé actuellement"
 
+msgid "New category"
+msgstr "Nouvelle catégorie"
+
 msgid "New checkins are in, refresh your browser"
 msgstr "De nouveaux pointages ont été effectués, actualisez votre navigateur"
 
@@ -2773,6 +2776,9 @@ msgstr "Nouveau pilote d'afficheurs"
 
 msgid "New event"
 msgstr "Nouvel évènement"
+
+msgid "New group"
+msgstr "Nouveau groupe"
 
 msgid "New results are in, refresh your browser"
 msgstr "De nouveaux résultats ont été enregistrés, actualisez votre navigateur"
@@ -3445,9 +3451,6 @@ msgstr "Veuillez entrer une URL ou choisir une image à droite."
 msgid "Please enter a date after the start date."
 msgstr "Veuillez entrer une date postérieure à la date de début."
 
-msgid "Please enter a name."
-msgstr "Veuillez entrer un nom."
-
 msgid "Please enter a password for the ChessEvent connection."
 msgstr "Veuillez entrer un mot de passe pour la connexion à ChessEvent."
 
@@ -3878,6 +3881,9 @@ msgstr "Rde.Ech"
 msgid "Rotation delay: %(seconds)d sec."
 msgstr "Délai de rotation : %(seconds)d sec."
 
+msgid "Rotator"
+msgstr "Écran rotatif"
+
 msgid "Rotator [{rotator}] has been assigned to controller [{display_controller}]."
 msgstr "L'écran rotatif [{rotator}] est utilisé par le pilote d'afficheurs [{display_controller}]."
 
@@ -4133,9 +4139,6 @@ msgstr "Montrer/cacher les écrans créés à partir de familles d'écrans."
 
 msgid "Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to the log files)."
 msgstr "Montrer la date et l'heure sur la console peut permettre d'identifier les opérations lentes sur la console (la date et l'heure sont toujours écrites dans les fichiers de log)."
-
-msgid "Side group"
-msgstr "Autre"
 
 msgid "Single Screens"
 msgstr "Écrans simples"
@@ -4789,6 +4792,9 @@ msgstr "L'heure n'est pas définie"
 msgid "Time outside of event time range ({start} - {stop})."
 msgstr "Horaire en dehors des horaires de l'évènement ({start} - {stop})."
 
+msgid "Timer"
+msgstr "Chronomètre"
+
 msgid "Timer [{timer_id}] not found."
 msgstr "Le chronomètre [{timer_id}] n'existe pas."
 
@@ -5281,12 +5287,6 @@ msgstr "Attention : les %(player_count)d joueur·euses du tournoi seront suppri
 
 msgid "Warning: the deletion is permanent!"
 msgstr "Attention : la suppression est définitive !"
-
-msgid "Warning: the deletion of a rotator is permanent!"
-msgstr "Attention : la suppression d'un écran rotatif est définitive !"
-
-msgid "Warning: the deletion of a timer is permanent!"
-msgstr "Attention : la suppression d'un chronomètre est définitive !"
 
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
 msgstr "Attention : vous essayez d'exécuter une opération interdite par le règlement FIDE."

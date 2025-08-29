@@ -981,9 +981,6 @@ msgstr ""
 msgid "Continuously"
 msgstr ""
 
-msgid "Display Controller"
-msgstr ""
-
 msgid "Conversion to Papi format failed."
 msgstr ""
 
@@ -1312,6 +1309,9 @@ msgid "Disabled"
 msgstr ""
 
 msgid "Display"
+msgstr ""
+
+msgid "Display Controller"
 msgstr ""
 
 msgid "Display all the players, paired and unpaired"
@@ -2765,6 +2765,9 @@ msgstr ""
 msgid "Neither screen nor rotator currently assigned"
 msgstr ""
 
+msgid "New category"
+msgstr ""
+
 msgid "New checkins are in, refresh your browser"
 msgstr ""
 
@@ -2772,6 +2775,9 @@ msgid "New display controller"
 msgstr ""
 
 msgid "New event"
+msgstr ""
+
+msgid "New group"
 msgstr ""
 
 msgid "New results are in, refresh your browser"
@@ -3445,9 +3451,6 @@ msgstr ""
 msgid "Please enter a date after the start date."
 msgstr ""
 
-msgid "Please enter a name."
-msgstr ""
-
 msgid "Please enter a password for the ChessEvent connection."
 msgstr ""
 
@@ -3878,6 +3881,9 @@ msgstr ""
 msgid "Rotation delay: %(seconds)d sec."
 msgstr ""
 
+msgid "Rotator"
+msgstr ""
+
 msgid "Rotator [{rotator}] has been assigned to controller [{display_controller}]."
 msgstr ""
 
@@ -4132,9 +4138,6 @@ msgid "Show/hide the screens created from screen families."
 msgstr ""
 
 msgid "Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to the log files)."
-msgstr ""
-
-msgid "Side group"
 msgstr ""
 
 msgid "Single Screens"
@@ -4789,6 +4792,9 @@ msgstr ""
 msgid "Time outside of event time range ({start} - {stop})."
 msgstr ""
 
+msgid "Timer"
+msgstr ""
+
 msgid "Timer [{timer_id}] not found."
 msgstr ""
 
@@ -5280,12 +5286,6 @@ msgid "Warning: the %(player_count)d players in the tournament will be deleted."
 msgstr ""
 
 msgid "Warning: the deletion is permanent!"
-msgstr ""
-
-msgid "Warning: the deletion of a rotator is permanent!"
-msgstr ""
-
-msgid "Warning: the deletion of a timer is permanent!"
 msgstr ""
 
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
