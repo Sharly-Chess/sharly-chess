@@ -2062,7 +2062,7 @@ msgid "For non-monetary prizes, the value is used for reward priority."
 msgstr "Pour les prix non-monétaires, la valeur est utiliée pour prioriser les récompenses."
 
 msgid "For players who have not checked-in:"
-msgstr "Pour les joueurs qui ne se sont pas pointés :"
+msgstr "Pour les joueur·euses qui ne se sont pas pointé·es :"
 
 msgid "For these reasons, it is strongly discouraged to unpair a round. It is instead recommended to use manual pairings to handle unusual situations."
 msgstr "Pour ces raisons, il est fortement déconseillé de désapparier une ronde. Il est à la place recommandé d'utiliser les appariements manuels pour gérer les situations inhabituelles."
