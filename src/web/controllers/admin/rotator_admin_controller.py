@@ -82,8 +82,12 @@ class RotatorAdminController(BaseEventAdminController):
             name = WebContext.form_data_to_str(data, field := 'name') or ''
             if not name:
                 errors[field] = _('This field is required.')
-            elif action != 'update' or web_context.get_admin_rotator().name != name:
-                name = event.get_unused_rotator_name(name)
+            else:
+                used_names = list(event.rotators_by_uniq_id.keys())
+                if action == 'update':
+                    used_names.remove(web_context.get_admin_rotator().name)
+                if name in used_names:
+                    errors[field] = _('This name is already used.')
             field = 'delay'
             try:
                 delay = WebContext.form_data_to_int(data, field, minimum=1)

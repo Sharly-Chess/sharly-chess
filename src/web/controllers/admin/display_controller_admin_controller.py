@@ -77,20 +77,23 @@ class DisplayControllerAdminController(BaseEventAdminController):
         errors: dict[str, str] = {}
         if data is None:
             data = {}
-        name: str | None
+        name = ''
         public = WebContext.form_data_to_bool(data, 'public')
         match action:
             case 'create' | 'update':
-                name = WebContext.form_data_to_str(data, 'name') or ''
+                name = WebContext.form_data_to_str(data, field := 'name') or ''
                 if not name:
-                    errors['name'] = _('This field is required.')
-                elif (
-                    action != 'update'
-                    or web_context.get_admin_display_controller().name != name
-                ):
-                    name = event.get_unused_display_controller_name(name)
+                    errors[field] = _('This field is required.')
+                else:
+                    used_names = list(event.display_controllers_by_uniq_id.keys())
+                    if action == 'update':
+                        used_names.remove(
+                            web_context.get_admin_display_controller().name
+                        )
+                    if name in used_names:
+                        errors[field] = _('This name is already used.')
             case 'delete':
-                name = web_context.get_admin_display_controller().stored_display_controller.name
+                pass
             case _:
                 raise ValueError(f'action=[{action}]')
 

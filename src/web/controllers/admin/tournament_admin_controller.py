@@ -198,11 +198,15 @@ class TournamentAdminController(BaseEventAdminController):
                         errors[field] = _(
                             "This field can't be updated once the tournament has started."
                         )
-        name = WebContext.form_data_to_str(data, 'name') or ''
+        name = WebContext.form_data_to_str(data, field := 'name') or ''
         if not name:
             errors['name'] = _('This field is required.')
-        elif action != 'update' or web_context.get_admin_tournament().name != name:
-            name = event.get_unused_tournament_name(name)
+        else:
+            used_names = list(event.tournaments_by_uniq_id.keys())
+            if action == 'update':
+                used_names.remove(web_context.get_admin_tournament().name)
+            if name in used_names:
+                errors[field] = _('This name is already used.')
         time_control_trf25 = WebContext.form_data_to_str(data, 'time_control_trf25')
         time_control_handicap_penalty_value = WebContext.form_data_to_int(
             data, 'time_control_handicap_penalty_value'

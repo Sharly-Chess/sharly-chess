@@ -99,8 +99,13 @@ class TimerAdminController(BaseEventAdminController):
             name = WebContext.form_data_to_str(data, field := 'name') or ''
             if not name:
                 errors[field] = _('This field is required.')
-            elif action != 'update' or web_context.get_admin_timer().name != name:
-                name = event.get_unused_timer_name(name)
+            else:
+                used_names = list(event.timers_by_uniq_id.keys())
+                if action == 'update':
+                    used_names.remove(web_context.get_admin_timer().name)
+                if name in used_names:
+                    errors[field] = _('This name is already used.')
+
             for i in range(1, 4):
                 field = f'color_{i}'
                 color_checkboxes[i] = WebContext.form_data_to_bool(
