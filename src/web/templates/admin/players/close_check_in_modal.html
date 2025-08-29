@@ -6,31 +6,59 @@
             </h2>
         </div>
         <div class="modal-body">
+            {% set num_players = admin_tournament.players_by_check_in_status[false]|length %}
+            {% set max_players_before_collapse = 5 %}
             <div class="row">
                 <div class="col-12">
                     {% if admin_tournament.players_by_check_in_status[false] %}
-                        <p>{{ _('The following players did not check-in:') }}</p>
-                        <ul>
-                            {% for player in admin_tournament.players_by_check_in_status[false] %}
-                                <li>{{ player.full_name }}</li>
-                            {% endfor %}
-                        </ul>
-                        <p>{{ _('Choose what to do after closing the check-in:') }}</p>
-                        <ul>
-                            <li>
-                                {{ _('Assign the players zero-point byes for the rest of the tournament (check-in will not be allowed until the byes are removed).') }}
-                            </li>
-                            <li>
-                                {{ _('Assign the players a zero-point bye for the next round (players will be able to check-in for the following rounds).') }}
-                            </li>
-                            <li>{{ _('Do not assign zero-point byes') }}</li>
-                        </ul>
+                        {% if num_players > max_players_before_collapse %}
+                            <button
+                                type="button"
+                                class="collapse-button collapsed"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#not-checked-in-players"
+                            >
+                                <span
+                                    class="form-check-label d-inline-flex align-items-center gap-2"
+                                >
+                                    <i class="bi bi-chevron-down"></i>
+                                    {{ ngettext('%(num)d player did not check-in', '%(num)d players did not check-in', num_players) }}
+                                </span>
+                            </button>
+                        {% else %}
+                            <p>{{ ngettext('%(num)d player did not check-in:', '%(num)d players did not check-in:', num_players) }}</p>
+                        {% endif %}
+
+                        <div class="{% if num_players > max_players_before_collapse %}collapse{% endif %}" id="not-checked-in-players">
+                            <ul>
+                                {% for player in admin_tournament.players_by_check_in_status[false] %}
+                                    <li>{{ player.full_name }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     {% else %}
                         <p>{{ _('All the players intended to play the coming round did check-in.') }}</p>
                     {% endif %}
                 </div>
             </div>
         </div>
+        <form
+            id="modal-form"
+            hx-patch="{{ url_for('admin-tournament-close-check-in', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+        >
+            {% if num_players %}
+                <div class="modal-footer justify-content-start">
+                    <div class="vstack gap-2 flex-shrink-1">
+                        <p class="mb-2">{{ _('For players who have not checked-in:') }}</p>
+                        <div><input type="radio" class="me-2" name="action" value="zpd-tournament">{{ _('Assign a zero-point bye <b>for the rest of the tournament</b>') }}</div>
+                        <div><input type="radio" class="me-2" name="action" value="zpd-next-round">{{ _('Assign a zero-point bye <b>for the next round</b>') }}</div>
+                        <div><input type="radio" class="me-2" name="action" value="no-zpd">{{ _('Do not assign zero-point bye (players will be eligible for pairing)') }}</div>
+                    </div>
+                </div>
+            {% endif %}
+        </form>
         <div class="modal-footer">
             <button
                 type="button"
@@ -40,40 +68,24 @@
                 <i class="bi-x-circle-fill pe-1"></i>
                 {{ _('Cancel') }}
             </button>
-            {% if admin_tournament.players_by_check_in_status[false] %}
-                <button
-                    class="text-nowrap white btn btn-primary"
-                    aria-describedby="{{ id }}-help"
-                    hx-patch="{{ url_for('admin-tournament-close-check-in-zpb-last-rounds', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                >
-                    {{ _('Assign zero-point byes for the rest of the tournament') }}
-                </button>
-                <button
-                    class="text-nowrap white btn btn-primary"
-                    aria-describedby="{{ id }}-help"
-                    hx-patch="{{ url_for('admin-tournament-close-check-in-zpb-next-round', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                >
-                    {{ _('Assign a zero-point bye for the next round') }}
-                </button>
-            {% endif %}
             <button
+                id="submit-btn"
+                form="modal-form"
+                type="submit"
                 class="text-nowrap white btn btn-primary"
-                aria-describedby="{{ id }}-help"
-                hx-patch="{{ url_for('admin-tournament-close-check-in', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
+                {% if num_players %}disabled{% endif %}
             >
-                {{ _('Close the check-in') }}
+                {{ _('Close check-in') }}
             </button>
         </div>
     </div>
 </div>
 
 <script>
+    $('input[name="action"]').on('change', function() {
+        $('#submit-btn').prop('disabled', false);
+    });
+
     // We need to reload the page when the modal is dismissed, to turn the check-in switch back on.
     $(document).one('hide.bs.modal', function(e) {
         e.preventDefault();

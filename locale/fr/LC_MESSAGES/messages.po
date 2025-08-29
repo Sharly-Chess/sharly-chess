@@ -69,6 +69,18 @@ msgstr[0] "%(num)d joueur·euse"
 msgstr[1] "%(num)d joueur·euses"
 
 #, python-format
+msgid "%(num)d player did not check-in"
+msgid_plural "%(num)d players did not check-in"
+msgstr[0] "%(num)d joueur·euse n’a pas confirmé sa présence"
+msgstr[1] "%(num)d joueur·euses n’ont pas confirmé leur présence"
+
+#, python-format
+msgid "%(num)d player did not check-in:"
+msgid_plural "%(num)d players did not check-in:"
+msgstr[0] "%(num)d joueur·euse n’a pas confirmé sa présence :"
+msgstr[1] "%(num)d joueur·euses n’ont pas confirmé leur présence :"
+
+#, python-format
 msgid "%(num)d prize"
 msgid_plural "%(num)d prizes"
 msgstr[0] "%(num)d prix"
@@ -456,20 +468,14 @@ msgstr "L'option --server est obsolète, ignorée."
 msgid "Assign a screen to the controller."
 msgstr "Attribuer un écran au pilote."
 
-msgid "Assign a zero-point bye for the next round"
-msgstr "Marquer forfait pour la ronde à venir"
+msgid "Assign a zero-point bye <b>for the next round</b>"
+msgstr "Marquer forfait <b>pour la ronde à venir</b>"
 
-msgid "Assign the players a zero-point bye for the next round (players will be able to check-in for the following rounds)."
-msgstr "Marquer les joueur·euses forfait pour la ronde à venir (pointage autorisé pour les rondes suivantes)."
-
-msgid "Assign the players zero-point byes for the rest of the tournament (check-in will not be allowed until the byes are removed)."
-msgstr "Marquer les joueur·euses forfait pour le reste du tournoi (pas de pointage autorisé sans suppression des forfaits)."
+msgid "Assign a zero-point bye <b>for the rest of the tournament</b>"
+msgstr "Marquer forfait <b>pour le reste du tournoi</b>"
 
 msgid "Assign to a display controller."
 msgstr "Attribuer à un pilote d'écran."
-
-msgid "Assign zero-point byes for the rest of the tournament"
-msgstr "Marquer forfait pour le reste du tournoi"
 
 msgid "At least a minimum or a maximum rating must be defined."
 msgstr "Au moins un Elo minimum ou un Elo maximum doit être défini."
@@ -831,9 +837,6 @@ msgstr "Choisir parmi les images du dossier 'custom'"
 msgid "Choose the columns displayed."
 msgstr "Choisir les colonnes affichées."
 
-msgid "Choose what to do after closing the check-in:"
-msgstr "Choisissez quoi faire après avoir fermé le pointage :"
-
 msgid "Choose your language"
 msgstr "Veuillez choisir votre langue"
 
@@ -855,6 +858,9 @@ msgstr "Fermer"
 msgid "Close check in"
 msgstr "Fermer le pointage"
 
+msgid "Close check-in"
+msgstr "Fermer le pointage"
+
 #, python-format
 msgid "Close check-in for tournament [%(tournament_uniq_id)s]"
 msgstr "Fermer le pointage pour le tournoi [%(tournament_uniq_id)s]"
@@ -862,9 +868,6 @@ msgstr "Fermer le pointage pour le tournoi [%(tournament_uniq_id)s]"
 #, python-format
 msgid "Close check-in for tournament [%(tournament_uniq_id)s]."
 msgstr "Fermer le pointage pour le tournoi [%(tournament_uniq_id)s]."
-
-msgid "Close the check-in"
-msgstr "Fermer le pointage"
 
 msgid "Club"
 msgstr "Club"
@@ -1354,8 +1357,8 @@ msgstr "Afficher les adversaires"
 msgid "Displayed round: %(round)d"
 msgstr "Ronde affichée : %(round)d"
 
-msgid "Do not assign zero-point byes"
-msgstr "Ne pas marquer forfait"
+msgid "Do not assign zero-point bye (players will be eligible for pairing)"
+msgstr "Ne pas marquer forfait (les joueur·euses seront apparié·es) "
 
 msgid "Do you want to install example event databases [{y_uc}/{n_lc}]? "
 msgstr "Voulez-vous installer des bases d'évènement d'exemple [{y_uc}/{n_lc}] ? "
@@ -1459,10 +1462,6 @@ msgstr "Exemple : %(num)d"
 #, python-format
 msgid "E.g.: %(num)d%%"
 msgstr "Exemple : %(num)d%%"
-
-#, python-format
-msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
-msgstr "Exemple : %(seconds)d (%(minutes)d minutes)"
 
 #, python-format
 msgid "E.g.: %(seconds)d (seconds)"
@@ -1647,12 +1646,12 @@ msgid "Editing of rotator [%(rotator_uniq_id)s]"
 msgstr "Édition de l'écran rotatif [%(rotator_uniq_id)s]"
 
 #, python-format
-msgid "Editing of screen [%(screen_uniq_id)s]"
-msgstr "Édition de l'écran [%(screen_uniq_id)s]"
+msgid "Editing of screen [%(screen_name)s]"
+msgstr ""
 
 #, python-format
-msgid "Editing of screen family [%(family_uniq_id)s]"
-msgstr "Édition de la famille d'écrans [%(family_uniq_id)s]"
+msgid "Editing of screen family [%(family_name)s]"
+msgstr ""
 
 #, python-format
 msgid "Editing of timer [%(timer_uniq_id)s]"
@@ -2063,6 +2062,9 @@ msgstr "Ajustement de la taille de police pour l'écran, 100%% par défaut."
 
 msgid "For non-monetary prizes, the value is used for reward priority."
 msgstr "Pour les prix non-monétaires, la valeur est utiliée pour prioriser les récompenses."
+
+msgid "For players who have not checked-in:"
+msgstr "Pour les joueurs qui ne se sont pas pointés :"
 
 msgid "For these reasons, it is strongly discouraged to unpair a round. It is instead recommended to use manual pairings to handle unusual situations."
 msgstr "Pour ces raisons, il est fortement déconseillé de désapparier une ronde. Il est à la place recommandé d'utiliser les appariements manuels pour gérer les situations inhabituelles."
@@ -4380,9 +4382,6 @@ msgstr "Le premier tournoi de l'écran, obligatoire (il est possible d'ajouter u
 msgid "The following categories will also be deleted:"
 msgstr "Les catégories suivantes vont aussi être supprimées :"
 
-msgid "The following players did not check-in:"
-msgstr "Les joueur·euses suivant·es n'ont pas pointé :"
-
 msgid "The greater number of wins"
 msgstr "Le plus grand nombre de victoires"
 
@@ -5104,6 +5103,10 @@ msgstr "Identifiant unique"
 #, python-format
 msgid "Unique ID: %(uniq_id)s"
 msgstr "Identifiant unique : %(uniq_id)s"
+
+#, python-format
+msgid "Unique ID: [%(uniq_id)s]"
+msgstr ""
 
 #, python-format
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
