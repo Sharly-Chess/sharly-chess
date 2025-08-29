@@ -7,6 +7,7 @@
         </div>
         <div class="modal-body">
             {% set num_players = admin_tournament.players_by_check_in_status[false]|length %}
+            {% set info = ngettext('%(num)d player did not check-in', '%(num)d players did not check-in', num_players) %}
             {% set max_players_before_collapse = 5 %}
             <div class="row">
                 <div class="col-12">
@@ -22,11 +23,11 @@
                                     class="form-check-label d-inline-flex align-items-center gap-2"
                                 >
                                     <i class="bi bi-chevron-down"></i>
-                                    {{ ngettext('%(num)d player did not check-in', '%(num)d players did not check-in', num_players) }}
+                                    {{ info }}
                                 </span>
                             </button>
                         {% else %}
-                            <p>{{ ngettext('%(num)d player did not check-in:', '%(num)d players did not check-in:', num_players) }}</p>
+                            <p>{{ _('%(string)s: %(value)s', string=info, value='') }}</p>
                         {% endif %}
 
                         <div class="{% if num_players > max_players_before_collapse %}collapse{% endif %}" id="not-checked-in-players">

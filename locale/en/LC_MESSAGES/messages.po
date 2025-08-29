@@ -75,12 +75,6 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
-msgid "%(num)d player did not check-in:"
-msgid_plural "%(num)d players did not check-in:"
-msgstr[0] ""
-msgstr[1] ""
-
-#, python-format
 msgid "%(num)d prize"
 msgid_plural "%(num)d prizes"
 msgstr[0] ""
@@ -124,6 +118,10 @@ msgstr ""
 
 #, python-format
 msgid "%(string)s:"
+msgstr ""
+
+#, python-format
+msgid "%(string)s: %(value)s"
 msgstr ""
 
 #, python-format

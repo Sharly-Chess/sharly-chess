@@ -75,12 +75,6 @@ msgstr[0] "%(num)d joueur·euse n’a pas confirmé sa présence"
 msgstr[1] "%(num)d joueur·euses n’ont pas confirmé leur présence"
 
 #, python-format
-msgid "%(num)d player did not check-in:"
-msgid_plural "%(num)d players did not check-in:"
-msgstr[0] "%(num)d joueur·euse n’a pas confirmé sa présence :"
-msgstr[1] "%(num)d joueur·euses n’ont pas confirmé leur présence :"
-
-#, python-format
 msgid "%(num)d prize"
 msgid_plural "%(num)d prizes"
 msgstr[0] "%(num)d prix"
@@ -125,6 +119,10 @@ msgstr "%(set_name)s (ronde %(round)d)"
 #, python-format
 msgid "%(string)s:"
 msgstr "%(string)s :"
+
+#, python-format
+msgid "%(string)s: %(value)s"
+msgstr ""
 
 #, python-format
 msgid "%f to %l"
