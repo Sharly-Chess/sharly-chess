@@ -303,7 +303,7 @@ class DeputyChiefArbitrationRole(Role):
 
     @property
     def scope(self) -> RoleScope:
-        return RoleScope.EVENT
+        return RoleScope.TOURNAMENT
 
     @staticmethod
     def direct_sub_roles() -> set[type[Role]]:
