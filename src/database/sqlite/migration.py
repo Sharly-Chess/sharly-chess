@@ -271,7 +271,6 @@ class MigrationManager[T: MigrationDatabase](ABC):
                 else:
                     self._upgrade(target_migration)
                 logger.debug(self.log_prefix + 'Migration complete.')
-            self.database.commit()
         except OperationalError as error:
             raise SharlyChessException(self.log_prefix + f'Migration failed: {error}')
 

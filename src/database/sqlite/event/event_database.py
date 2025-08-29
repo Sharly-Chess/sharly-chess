@@ -71,9 +71,6 @@ class EventDatabase(MigrationDatabase):
             self.update_event_loader = True
             super().__init__(self.event_database_path(self.uniq_id), write)
 
-    def __exit__(self, exc_type, exc_value, traceback):
-        super().__exit__(exc_type, exc_value, traceback)
-
     @classmethod
     def create_instance(cls, file: Path, write: bool = False) -> Self:
         return cls(file.stem, write)

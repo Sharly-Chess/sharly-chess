@@ -871,7 +871,6 @@ class ScreenAdminController(BaseEventAdminController):
                         event_database.add_stored_screen_set(
                             stored_screen.id, init_set_tournament_id
                         )
-                    event_database.commit()
                     Message.success(
                         request,
                         _('Screen [{screen_uniq_id}] has been created.').format(
@@ -893,7 +892,6 @@ class ScreenAdminController(BaseEventAdminController):
                             event_database.clone_stored_screen_set(
                                 screen_set.id, stored_screen.id
                             )
-                    event_database.commit()
                     Message.success(
                         request,
                         _('Screen [{screen_uniq_id}] has been created.').format(
@@ -902,7 +900,6 @@ class ScreenAdminController(BaseEventAdminController):
                     )
                 case 'update':
                     stored_screen = event_database.update_stored_screen(stored_screen)
-                    event_database.commit()
                     Message.success(
                         request,
                         _('Screen [{screen_uniq_id}] has been updated.').format(
@@ -912,7 +909,6 @@ class ScreenAdminController(BaseEventAdminController):
                 case 'delete':
                     screen = web_context.get_admin_screen()
                     event_database.delete_stored_screen(screen.id)
-                    event_database.commit()
                     Message.success(
                         request,
                         _('Screen [{screen_uniq_id}] has been deleted.').format(
@@ -1026,7 +1022,6 @@ class ScreenAdminController(BaseEventAdminController):
         stored_screen.uniq_id = new_uniq_id
         with EventDatabase(event.uniq_id, True) as database:
             database.update_stored_screen(stored_screen)
-            database.commit()
 
         web_context = ScreenAdminWebContext(request, event_uniq_id, screen_id)
         event = web_context.get_admin_event()
@@ -1175,7 +1170,6 @@ class ScreenAdminController(BaseEventAdminController):
                     event_database.reorder_stored_screen_sets(screen.id, data['item'])
                 case _:
                     raise ValueError(f'action=[{action}]')
-            event_database.commit()
 
         return self._admin_event_screens_render(
             request,

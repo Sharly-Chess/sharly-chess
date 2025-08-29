@@ -69,7 +69,6 @@ class TournamentImporter(IdentifiableEntity, ABC):
                     for index, board in enumerate(sorted(boards, reverse=True)):
                         board.stored_board.index = index
                         database.update_stored_board(board.stored_board)
-                database.commit()
         return tournament
 
     @staticmethod

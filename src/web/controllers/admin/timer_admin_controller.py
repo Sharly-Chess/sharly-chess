@@ -474,7 +474,6 @@ class TimerAdminController(BaseEventAdminController):
 
         with EventDatabase(event.uniq_id, write=True) as event_database:
             event_database.update_stored_event(stored_event)
-            event_database.commit()
 
         return self._admin_event_timers_render(request, event_uniq_id=event_uniq_id)
 
@@ -563,7 +562,6 @@ class TimerAdminController(BaseEventAdminController):
                             stored_timer.id, set_datetime=True
                         )
                     )
-                    event_database.commit()
                     Message.success(
                         request,
                         _('Timer [{timer_uniq_id}] has been created.').format(
@@ -591,7 +589,6 @@ class TimerAdminController(BaseEventAdminController):
                         stored_timer_hour = event_database.add_stored_timer_hour(
                             timer.id, set_datetime=True
                         )
-                        event_database.commit()
 
                         return self._admin_event_timers_render(
                             request,
@@ -601,8 +598,6 @@ class TimerAdminController(BaseEventAdminController):
                             timer_hour_id=stored_timer_hour.id,
                         )
                     else:
-                        event_database.commit()
-
                         for timer_hour in timer.timer_hours_sorted_by_order:
                             if timer_hour.error:
                                 return self._admin_event_timers_render(
@@ -618,7 +613,6 @@ class TimerAdminController(BaseEventAdminController):
                 case 'delete':
                     timer = web_context.get_admin_timer()
                     event_database.delete_stored_timer(timer.id)
-                    event_database.commit()
                     Message.success(
                         request,
                         _('Timer [{timer_uniq_id}] has been deleted.').format(
@@ -637,7 +631,6 @@ class TimerAdminController(BaseEventAdminController):
                         event_database.clone_stored_timer_hour(
                             timer_hour.id, stored_timer.id
                         )
-                    event_database.commit()
                     Message.success(
                         request,
                         _('Timer [{timer_uniq_id}] has been created.').format(
@@ -748,7 +741,6 @@ class TimerAdminController(BaseEventAdminController):
         stored_timer.uniq_id = new_uniq_id
         with EventDatabase(event.uniq_id, True) as database:
             database.update_stored_timer(stored_timer)
-            database.commit()
         return HTMXTemplate(
             template_name='/admin/timers/timer_update_modal_header.html',
             context=web_context.template_context
@@ -916,7 +908,6 @@ class TimerAdminController(BaseEventAdminController):
                     event_database.reorder_stored_timer_hours(data['item'])
                 case _:
                     raise ValueError(f'action=[{action}]')
-            event_database.commit()
 
         return self._admin_event_timers_render(
             request,

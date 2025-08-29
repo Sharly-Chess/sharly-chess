@@ -288,7 +288,6 @@ class Tournament:
     def update_pairing_settings(self, pairing_settings: dict[str, Any]):
         with EventDatabase(self.event.uniq_id, write=True) as database:
             database.set_tournament_pairing_settings(self.id, pairing_settings)
-            database.commit()
         self.stored_tournament.pairing_settings = pairing_settings
         property_name = 'pairing_settings'
         if property_name in self.__dict__:
@@ -366,7 +365,6 @@ class Tournament:
     def add_prize_group(self, stored_prize_group: StoredPrizeGroup) -> PrizeGroup:
         with EventDatabase(self.event.uniq_id, True) as database:
             object_id = database.add_stored_prize_group(stored_prize_group)
-            database.commit()
         stored_prize_group.id = object_id
         prize_group = PrizeGroup(self, stored_prize_group)
         self.prize_groups_by_id[object_id] = prize_group
@@ -375,7 +373,6 @@ class Tournament:
     def delete_prize_group(self, prize_group_id: int):
         with EventDatabase(self.event.uniq_id, True) as database:
             database.delete_stored_prize_group(prize_group_id)
-            database.commit()
 
         if prize_group_id in self.prize_groups_by_id:
             del self.prize_groups_by_id[prize_group_id]
@@ -964,14 +961,11 @@ class Tournament:
         round."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
             player.pairings[self.current_round].add_illegal_move(database)
-            database.commit()
 
     def delete_illegal_move(self, player: Player) -> bool:
         """Deletes one illegal move for the given `player` for the current round."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
             deleted = player.pairings[self.current_round].delete_illegal_move(database)
-            if deleted:
-                database.commit()
         return deleted
 
     def correct_ranking_round(self, ranking_round: int | None = None) -> int:
@@ -1036,7 +1030,6 @@ class Tournament:
             )
 
             board.set_last_result_update(board.white_pairing.result, event_database)
-            event_database.commit()
 
         logger.info(
             'Added result: %s %s %d.%d %s %s %d %s %s %s %d.',
@@ -1063,7 +1056,6 @@ class Tournament:
             board.white_pairing.update_result(event_database, Result.NO_RESULT)
             board.black_pairing.update_result(event_database, Result.NO_RESULT)
             board.set_last_result_update(board.white_pairing.result, event_database)
-            event_database.commit()
         logger.info(
             'Removed result: %s %s %d.%d.',
             self.event.uniq_id,
@@ -1079,7 +1071,6 @@ class Tournament:
         """Stores the `check_in` status for the given `player`."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
             database.set_player_check_in(player.id, check_in)
-            database.commit()
         player.stored_player.check_in = check_in
 
     def add_player_to_tournament(
@@ -1110,13 +1101,11 @@ class Tournament:
         else:
             with EventDatabase(self.event.uniq_id, True) as database:
                 database.add_stored_tournament_player(stored_tournament_player)
-                database.commit()
         self.players_by_id[stored_player.id] = Player(self, stored_player)
 
     def delete_player_from_tournament(self, player_id: int):
         with EventDatabase(self.event.uniq_id, True) as database:
             database.delete_stored_tournament_player(self.id, player_id)
-            database.commit()
         if player_id in self.players_by_id:
             del self.players_by_id[player_id]
 
@@ -1165,7 +1154,6 @@ class Tournament:
                 database.set_tournament_player_pairing_number(
                     player.stored_tournament_player
                 )
-            database.commit()
         return sorted_players
 
     def create_round_pairing(
@@ -1215,7 +1203,6 @@ class Tournament:
             white_pairing.stored_pairing.result = result.value
             white_pairing.stored_pairing.board_id = board_id
             white_pairing.update(database)
-            database.commit()
 
     def unpair_boards(self, boards: list[Board]):
         with EventDatabase(self.event.uniq_id, True) as database:
@@ -1228,7 +1215,6 @@ class Tournament:
                 database.delete_stored_board(board.identifier)
                 if board.identifier in self.boards_by_id:
                     del self.boards_by_id[board.identifier]
-            database.commit()
 
     def create_boards(
         self, stored_boards: list[StoredBoard], round_: int, pab_result: Result
@@ -1250,7 +1236,6 @@ class Tournament:
                 else:
                     white_stored_pairing.result = pab_result.value
                 board.white_pairing.update(database)
-            database.commit()
 
     def open_check_in(self):
         """Opens the check-in for the tournament and sets all the present players
@@ -1271,7 +1256,6 @@ class Tournament:
         with EventDatabase(self.event.uniq_id, write=True) as database:
             database.set_tournament_check_in(self.id, True)
             database.set_players_check_in(present_player_ids, False)
-            database.commit()
 
     def close_check_in(self, zpbs_next_round: bool, zpbs_last_rounds: bool):
         """Closes the check-in for the tournament and assigns a ZPB to all the players not checked-in
@@ -1300,16 +1284,13 @@ class Tournament:
                         player.pairings_by_round[round_].update_result(
                             database, Result.ZERO_POINT_BYE
                         )
-            database.commit()
 
     def set_player_byes(self, player: Player, byes: dict[int, Result]):
         """Updates a player's pairings with ZPB, HPB, FPB or not-paired values."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
             for round_, result in byes.items():
                 player.pairings_by_round[round_].update_result(database, result)
-            database.commit()
 
     def set_current_round(self, round_: int):
         with EventDatabase(self.event.uniq_id, True) as database:
             database.set_tournament_current_round(self.id, round_)
-            database.commit()

@@ -127,3 +127,4 @@ if __name__ == '__main__':
                 database.migration_managers[0].migrate(migration)
             except SharlyChessException as e:
                 print_interactive_error(str(e))
+                raise e

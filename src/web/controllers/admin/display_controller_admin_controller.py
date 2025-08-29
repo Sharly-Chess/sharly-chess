@@ -306,7 +306,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
                             stored_display_controller
                         )
                     )
-                    event_database.commit()
                     Message.success(
                         request,
                         _(
@@ -321,7 +320,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
                             stored_display_controller
                         )
                     )
-                    event_database.commit()
                     Message.success(
                         request,
                         _(
@@ -335,7 +333,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
                     event_database.delete_stored_display_controller(
                         display_controller.id
                     )
-                    event_database.commit()
                     Message.success(
                         request,
                         _(
@@ -426,7 +423,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
         stored_display_controller.uniq_id = new_uniq_id
         with EventDatabase(event.uniq_id, True) as database:
             database.update_stored_display_controller(stored_display_controller)
-            database.commit()
         return HTMXTemplate(
             template_name='/admin/display_controllers/display_controller_update_modal_header.html',
             context=web_context.template_context
@@ -521,7 +517,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
             event_database.update_stored_display_controller(
                 web_context.admin_display_controller.stored_display_controller
             )
-            event_database.commit()
 
         Message.success(
             request,
@@ -567,7 +562,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
             event_database.update_stored_display_controller(
                 web_context.admin_display_controller.stored_display_controller
             )
-            event_database.commit()
 
         return self._admin_event_display_controllers_render(
             request, event_uniq_id=event_uniq_id

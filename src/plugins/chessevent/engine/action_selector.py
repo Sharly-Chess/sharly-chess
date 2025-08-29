@@ -167,8 +167,6 @@ class ActionSelector(metaclass=Singleton):
                     tournament.id,
                 ),
             )
-
-            event_database.commit()
         return players_added
 
     @classmethod

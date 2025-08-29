@@ -460,33 +460,31 @@ class FFESession(Session):
                 else:
                     logger.info('No ZPBs to delete.')
 
-                tmp_event_database.commit()
-
-                try:
-                    logger.debug(
-                        'Converting [%s] to [%s]...',
-                        self.tournament.uniq_id,
-                        tmp_papi_file,
-                    )
-                    PapiConverter().write_papi_file(tmp_tournament, tmp_papi_file)
-                except Exception:
-                    self.report_error(_('Conversion to Papi format failed.'))
-                    return
-
-                html: str | None = self._read_url(
-                    url=url,
-                    data=post,
-                    files={
-                        UPLOAD_FILE_ID: tmp_papi_file,
-                    },
+            try:
+                logger.debug(
+                    'Converting [%s] to [%s]...',
+                    self.tournament.uniq_id,
+                    tmp_papi_file,
                 )
+                PapiConverter().write_papi_file(tmp_tournament, tmp_papi_file)
+            except Exception:
+                self.report_error(_('Conversion to Papi format failed.'))
+                return
 
-                if not html:
-                    return
-                __, error = self._parse_html_content(html)
-                if error:
-                    self.report_error(_('Upload failed'))
-                    return
+            html: str | None = self._read_url(
+                url=url,
+                data=post,
+                files={
+                    UPLOAD_FILE_ID: tmp_papi_file,
+                },
+            )
+
+            if not html:
+                return
+            __, error = self._parse_html_content(html)
+            if error:
+                self.report_error(_('Upload failed'))
+                return
 
         with EventDatabase(self.tournament.event.uniq_id, write=True) as event_database:
             now = time.time()
@@ -499,7 +497,6 @@ class FFESession(Session):
                     self.tournament.id,
                 ),
             )
-            event_database.commit()
         if not set_visible:
             self.report_success(_('Results upload OK'))
             return
@@ -610,6 +607,5 @@ class FFESession(Session):
                     self.tournament.id,
                 ),
             )
-            event_database.commit()
         logger.info('Rules uploaded')
         self.report_success(_('Rules uploaded'))

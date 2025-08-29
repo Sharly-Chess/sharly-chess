@@ -134,7 +134,6 @@ class TestUtils:
             stored_event = StoredEvent(**data)
             with EventDatabase(uniq_id, write=True) as event_database:
                 event_database.update_stored_event(stored_event)
-                event_database.commit()
 
     @classmethod
     def delete_event(
@@ -207,7 +206,6 @@ class TestUtils:
             with EventDatabase(event_uniq_id, write=True) as event_database:
                 stored_tournament = StoredTournament(**data)
                 event_database.add_stored_tournament(stored_tournament)
-                event_database.commit()
 
         with EventDatabase(event_uniq_id) as event_database:
             tournaments = event_database.load_stored_tournaments()
