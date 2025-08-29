@@ -112,7 +112,7 @@ class ServerEngine(Engine):
             for port in sharly_chess_config.web_ports:
                 if self.__port_in_use(port):
                     print_interactive_warning(
-                        _('Port [{port}] already in use, exiting.').format(port=port)
+                        _('Port [{port}] already in use.').format(port=port)
                     )
                     continue
                 sharly_chess_config.web_port = port

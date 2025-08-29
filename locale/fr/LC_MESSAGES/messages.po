@@ -3544,6 +3544,9 @@ msgstr "Points: %(max)s ou moins"
 msgid "Port"
 msgstr "Port"
 
+msgid "Port [{port}] already in use, can not start Sharly Chess server."
+msgstr "Le port [{port}] est déjà utilisé, impossible de démarrer le serveur Sharly Chess."
+
 msgid "Port [{port}] already in use."
 msgstr "Le port [{port}] est déjà utilisé."
 
