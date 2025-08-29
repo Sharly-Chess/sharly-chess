@@ -981,8 +981,8 @@ msgstr "Continuer"
 msgid "Continuously"
 msgstr "En continu"
 
-msgid "Controller"
-msgstr "Pilote"
+msgid "Display Controller"
+msgstr "Pilote d'afficheurs"
 
 msgid "Conversion to Papi format failed."
 msgstr "La conversion au format Papi a échoué."
@@ -1240,25 +1240,25 @@ msgid "Delete"
 msgstr "Supprimer"
 
 msgid "Delete display controller"
-msgstr "Supprimer un pilote d'afficheurs"
+msgstr "Supprimer le pilote d'afficheurs"
 
 msgid "Delete player"
-msgstr "Supprimer un·e joueur·euse"
+msgstr "Supprimer le·la joueur·euse"
 
 msgid "Delete prize category"
-msgstr "Supprimer une catégorie de prix"
+msgstr "Supprimer la catégorie de prix"
 
 msgid "Delete prize group"
-msgstr "Supprimer "
+msgstr "Supprimer le groupe de prix"
 
 msgid "Delete rotator"
-msgstr "Supprimer un écran rotatif"
+msgstr "Supprimer l'écran rotatif"
 
 msgid "Delete screen"
-msgstr "Supprier un écran"
+msgstr "Supprier l'écran"
 
 msgid "Delete screen family"
-msgstr "Supprimer une famille d'écrans"
+msgstr "Supprimer la famille d'écrans"
 
 msgid "Delete the category."
 msgstr "Supprimer la catégorie."
@@ -1279,10 +1279,10 @@ msgid "Delete the tournament."
 msgstr "Supprimer le tournoi"
 
 msgid "Delete timer"
-msgstr "Supprimer un chronomètre"
+msgstr "Supprimer le chronomètre"
 
 msgid "Delete tournament"
-msgstr "Supprimer un tournoi"
+msgstr "Supprimer le tournoi"
 
 msgid "Deletes all the criteria of this category."
 msgstr "Supprime tous les critères de cette catégorie."
@@ -1589,28 +1589,28 @@ msgid "Edit default timers"
 msgstr "Modifier les chronomètres par défaut"
 
 msgid "Edit display controller"
-msgstr "Modifier un pilote d'afficheurs"
+msgstr "Modifier le pilote d'afficheurs"
 
 msgid "Edit event"
-msgstr "Modifier un évènement"
+msgstr "Modifier l'évènement"
 
 msgid "Edit player"
-msgstr "Modifier un·e joueur·euse"
+msgstr "Modifier le·la joueur·euse"
 
 msgid "Edit prize"
-msgstr "Modifier un prix"
+msgstr "Modifier le prix"
 
 msgid "Edit prize category"
-msgstr "Modifier une catégorie de prix"
+msgstr "Modifier la catégorie de prix"
 
 msgid "Edit rotator"
-msgstr "Modifier un écran rotatif"
+msgstr "Modifier l'écran rotatif"
 
 msgid "Edit screen"
-msgstr "Modifier un écran"
+msgstr "Modifier l'écran"
 
 msgid "Edit screen family"
-msgstr "Modifier une famille d'écrans"
+msgstr "Modifier la famille d'écrans"
 
 msgid "Edit the Sharly Chess settings."
 msgstr "Modifier la configuration de Sharly Chess."
@@ -1655,10 +1655,10 @@ msgid "Edit the unique ID."
 msgstr "Modifier l'identifiant unique."
 
 msgid "Edit timer"
-msgstr "Modifier un chronomètre"
+msgstr "Modifier le chronomètre"
 
 msgid "Edit tournament"
-msgstr "Modifier un tournoi"
+msgstr "Modifier le tournoi"
 
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
 msgstr "Elo"

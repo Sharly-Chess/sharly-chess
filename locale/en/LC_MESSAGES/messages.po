@@ -981,7 +981,7 @@ msgstr ""
 msgid "Continuously"
 msgstr ""
 
-msgid "Controller"
+msgid "Display Controller"
 msgstr ""
 
 msgid "Conversion to Papi format failed."
