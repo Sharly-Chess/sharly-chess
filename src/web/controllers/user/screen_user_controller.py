@@ -170,10 +170,6 @@ class ScreenUserController(BaseScreenUserController):
     ) -> Template | ClientRedirect:
         web_context: RotatorUserWebContext = RotatorUserWebContext(
             request,
-            data=None,
-            event_uniq_id=event_uniq_id,
-            rotator_id=rotator_id,
-            rotator_screen_index=rotator_screen_index,
         )
         if web_context.error:
             return web_context.error
@@ -218,10 +214,6 @@ class ScreenUserController(BaseScreenUserController):
     ) -> Template | ClientRedirect | Reswap:
         web_context: DisplayControllerUserWebContext = DisplayControllerUserWebContext(
             request,
-            data=None,
-            event_uniq_id=event_uniq_id,
-            display_controller_id=display_controller_id,
-            rotator_screen_index=rotator_screen_index,
         )
         if web_context.error:
             return web_context.error
