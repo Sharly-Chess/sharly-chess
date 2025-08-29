@@ -65,6 +65,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d player did not check-in"
+msgid_plural "%(num)d players did not check-in"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(num)d prize"
 msgid_plural "%(num)d prizes"
 msgstr[0] ""
@@ -108,6 +114,10 @@ msgstr ""
 
 #, python-format
 msgid "%(string)s:"
+msgstr ""
+
+#, python-format
+msgid "%(string)s: %(value)s"
 msgstr ""
 
 #, python-format
@@ -545,19 +555,13 @@ msgstr ""
 msgid "Assign a screen to the controller."
 msgstr ""
 
-msgid "Assign a zero-point bye for the next round"
+msgid "Assign a zero-point bye <b>for the next round</b>"
 msgstr ""
 
-msgid "Assign the players a zero-point bye for the next round (players will be able to check-in for the following rounds)."
-msgstr ""
-
-msgid "Assign the players zero-point byes for the rest of the tournament (check-in will not be allowed until the byes are removed)."
+msgid "Assign a zero-point bye <b>for the rest of the tournament</b>"
 msgstr ""
 
 msgid "Assign to a display controller."
-msgstr ""
-
-msgid "Assign zero-point byes for the rest of the tournament"
 msgstr ""
 
 msgid "At least a minimum or a maximum rating must be defined."
@@ -944,9 +948,6 @@ msgstr ""
 msgid "Choose the columns displayed."
 msgstr ""
 
-msgid "Choose what to do after closing the check-in:"
-msgstr ""
-
 msgid "Choose your language"
 msgstr ""
 
@@ -969,15 +970,15 @@ msgstr ""
 msgid "Close check-in"
 msgstr ""
 
+msgid "Close check-in"
+msgstr ""
+
 #, python-format
 msgid "Close check-in for tournament [%(tournament_uniq_id)s]"
 msgstr ""
 
 #, python-format
 msgid "Close check-in for tournament [%(tournament_uniq_id)s]."
-msgstr ""
-
-msgid "Close the check-in"
 msgstr ""
 
 msgid "Club"
@@ -1539,7 +1540,7 @@ msgstr ""
 msgid "Displayed round: %(round)d"
 msgstr ""
 
-msgid "Do not assign zero-point byes"
+msgid "Do not assign zero-point bye (players will be eligible for pairing)"
 msgstr ""
 
 msgid "Do you want to install example event databases [{y_uc}/{n_lc}]? "
@@ -1652,10 +1653,6 @@ msgstr ""
 
 #, python-format
 msgid "E.g.: %(num)d%%"
-msgstr ""
-
-#, python-format
-msgid "E.g.: %(seconds)d (%(minutes)d minutes)"
 msgstr ""
 
 #, python-format
@@ -1861,11 +1858,11 @@ msgid "Editing of rotator [%(rotator_uniq_id)s]"
 msgstr ""
 
 #, python-format
-msgid "Editing of screen [%(screen_uniq_id)s]"
+msgid "Editing of screen [%(screen_name)s]"
 msgstr ""
 
 #, python-format
-msgid "Editing of screen family [%(family_uniq_id)s]"
+msgid "Editing of screen family [%(family_name)s]"
 msgstr ""
 
 #, python-format
@@ -2311,6 +2308,9 @@ msgstr ""
 msgid "For non-monetary prizes, the value is used for reward priority."
 msgstr ""
 
+msgid "For players who have not checked-in:"
+msgstr ""
+
 msgid "For these reasons, it is strongly discouraged to unpair a round. It is instead recommended to use manual pairings to handle unusual situations."
 msgstr ""
 
@@ -2393,9 +2393,6 @@ msgid "Go to the display controller."
 msgstr ""
 
 msgid "Go to the first screen."
-msgstr ""
-
-msgid "Go to the pairings."
 msgstr ""
 
 msgid "Go to the pairings."
@@ -4755,9 +4752,6 @@ msgstr ""
 msgid "The following categories will also be deleted:"
 msgstr ""
 
-msgid "The following players did not check-in:"
-msgstr ""
-
 msgid "The greater number of wins"
 msgstr ""
 
@@ -5512,6 +5506,10 @@ msgstr ""
 
 #, python-format
 msgid "Unique ID: %(uniq_id)s"
+msgstr ""
+
+#, python-format
+msgid "Unique ID: [%(uniq_id)s]"
 msgstr ""
 
 #, python-format

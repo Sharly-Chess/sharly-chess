@@ -1589,55 +1589,15 @@ class PlayerAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
     ) -> Template | ClientRedirect:
-        return self._admin_tournament_close_check_in(
-            request=request,
-            data=data,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-        )
+        action = WebContext.form_data_to_str(data, 'action') or ''
 
-    @patch(
-        path='/admin/tournament-close-check-in-zpb-next-round/{event_uniq_id:str}/{tournament_id:int}',
-        name='admin-tournament-close-check-in-zpb-next-round',
-    )
-    async def htmx_admin_tournament_close_check_in_zpb_next_round(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-        event_uniq_id: str,
-        tournament_id: int,
-    ) -> Template | ClientRedirect:
         return self._admin_tournament_close_check_in(
             request=request,
             data=data,
             event_uniq_id=event_uniq_id,
             tournament_id=tournament_id,
-            zpbs_all_rounds=False,
-        )
-
-    @patch(
-        path='/admin/tournament-close-check-in-zpb-last-rounds/{event_uniq_id:str}/{tournament_id:int}',
-        name='admin-tournament-close-check-in-zpb-last-rounds',
-    )
-    async def htmx_admin_close_tournament_check_in_zpbs_all_rounds(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-        event_uniq_id: str,
-        tournament_id: int,
-    ) -> Template | ClientRedirect:
-        return self._admin_tournament_close_check_in(
-            request=request,
-            data=data,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-            zpbs_all_rounds=True,
+            zpbs_all_rounds=action == 'zpd-tournament',
+            zpbs_next_round=action == 'zpd-next-round',
         )
 
     def _admin_player_check_in_out(
