@@ -71,9 +71,8 @@ class Engine(ABC):
         if not InstallationChecker.check():
             self.error = True
             return
-        logger.error(f'{TEST_ENV=}')
         if TEST_ENV:
-            # skip all the upgrade stuff on TEST_ENV (recovering tests are specific)
+            # skip all the upgrade stuff on TEST_ENV (recovering tests run explicitely)
             return
         if more_recent_version and download_url:
             yes_answer = _('Y *** THE LETTER TO ANSWER YES')
