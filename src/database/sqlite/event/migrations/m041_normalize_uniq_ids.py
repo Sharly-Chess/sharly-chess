@@ -18,8 +18,8 @@ class Migration(BaseMigration):
             index = 1
             used_uniq_ids = suffixed_uniq_id_by_id.values()
             while new_uniq_id in used_uniq_ids:
-                new_uniq_id = f'{uniq_id}-{index}'
                 index += 1
+                new_uniq_id = f'{uniq_id}-{index}'
             suffixed_uniq_id_by_id[id_] = new_uniq_id
         return suffixed_uniq_id_by_id
 
@@ -51,12 +51,8 @@ class Migration(BaseMigration):
             values_to_insert.pop(0)
 
     def forward(self):
-        self._sanitize_table_uniq_ids('tournament')
         self._sanitize_table_uniq_ids('screen')
         self._sanitize_table_uniq_ids('family')
-        self._sanitize_table_uniq_ids('rotator')
-        self._sanitize_table_uniq_ids('display_controller')
-        self._sanitize_table_uniq_ids('timer')
 
     def backward(self):
         pass

@@ -12,6 +12,7 @@
             "request": "launch",
             "module": "pytest",
             "args": [
+                "tests/unit/test_pairings.py::PairingTestCase::test_swiss_papi_haley",
                 "tests/e2e/roles/test_deputy_chief_arbitration_role.py::TestDeputyChiefArbitrationRole::test_access",
                 "--headed",
                 "-s",      // optional: show stdout/stderr immediately

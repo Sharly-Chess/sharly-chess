@@ -9,7 +9,7 @@
         <div class="modal-header">
             <h2 class="modal-title">
                 {% if admin_tournament and admin_event.tournaments_by_id|length > 1 %}
-                    {{ _('Players update for tournament [%(tournament_uniq_id)s]', tournament_uniq_id=admin_tournament.uniq_id) }}
+                    {{ _('Players update for tournament [%(tournament)s]', tournament=admin_tournament.name) }}
                 {% else %}
                     {{ _('Players update') }}
                 {% endif %}

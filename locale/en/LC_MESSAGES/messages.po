@@ -533,6 +533,9 @@ msgstr ""
 msgid "Archive [{archive}] successfully restored (see event [{event}])."
 msgstr ""
 
+msgid "Archive event"
+msgstr ""
+
 msgid "Archived ({num})"
 msgstr ""
 
@@ -540,10 +543,6 @@ msgid "Archived event"
 msgstr ""
 
 msgid "Archived events"
-msgstr ""
-
-#, python-format
-msgid "Archiving of event [%(event_uniq_id)s]"
 msgstr ""
 
 msgid "Argument --server is deprecated, ignored."
@@ -752,12 +751,6 @@ msgstr ""
 msgid "Boards from #%(first)d to #%(last)d"
 msgstr ""
 
-msgid "Boards screen creation"
-msgstr ""
-
-msgid "Boards screen family creation"
-msgstr ""
-
 msgid "Boards screens show pairings by board number."
 msgstr ""
 
@@ -846,12 +839,6 @@ msgstr "Category"
 msgid "Category [%(category)s] successfully created!"
 msgstr ""
 
-msgid "Category creation"
-msgstr ""
-
-msgid "Category edition"
-msgstr ""
-
 msgid "Change the player's tournament."
 msgstr ""
 
@@ -874,13 +861,13 @@ msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
 msgstr "Check-in"
 
 #, python-format
-msgid "Check-in is closed for tournament [%(tournament_uniq_id)s]."
+msgid "Check-in is closed for tournament [%(tournament)s]."
 msgstr ""
 
-msgid "Check-in is closed for tournament [{tournament_uniq_id}]."
+msgid "Check-in is closed for tournament [{tournament}]."
 msgstr ""
 
-msgid "Check-in is open for tournament [{tournament_uniq_id}]."
+msgid "Check-in is open for tournament [{tournament}]."
 msgstr ""
 
 msgid "Check-in players"
@@ -970,15 +957,12 @@ msgstr ""
 msgid "Close check-in"
 msgstr ""
 
-msgid "Close check-in"
+#, python-format
+msgid "Close check-in for tournament [%(tournament)s]"
 msgstr ""
 
 #, python-format
-msgid "Close check-in for tournament [%(tournament_uniq_id)s]"
-msgstr ""
-
-#, python-format
-msgid "Close check-in for tournament [%(tournament_uniq_id)s]."
+msgid "Close check-in for tournament [%(tournament)s]."
 msgstr ""
 
 msgid "Club"
@@ -1192,6 +1176,36 @@ msgstr ""
 msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator."
 msgstr ""
 
+msgid "Create display controller"
+msgstr ""
+
+msgid "Create event"
+msgstr ""
+
+msgid "Create player"
+msgstr ""
+
+msgid "Create prize"
+msgstr ""
+
+msgid "Create prize category"
+msgstr ""
+
+msgid "Create rotator"
+msgstr ""
+
+msgid "Create screen"
+msgstr ""
+
+msgid "Create screen family"
+msgstr ""
+
+msgid "Create timer"
+msgstr ""
+
+msgid "Create tournament"
+msgstr ""
+
 msgid "Create with default screens"
 msgstr ""
 
@@ -1271,7 +1285,7 @@ msgstr ""
 msgid "Data for tournament [{tournament_name}] on ChessEvent are unchanged."
 msgstr ""
 
-msgid "Data for tournament [{tournament_uniq_id}] could not be decoded (encoding: [{encoding}]), saved in file [{file}] (error line [{line}], column [{column}], position [{position}])."
+msgid "Data for tournament [{tournament}] could not be decoded (encoding: [{encoding}]), saved in file [{file}] (error line [{line}], column [{column}], position [{position}])."
 msgstr ""
 
 msgid "Data is already displayed on the FFE website."
@@ -1335,6 +1349,9 @@ msgstr ""
 msgid "Define as monetary"
 msgstr ""
 
+msgid "Define as public"
+msgstr ""
+
 msgid "Define the criteria for players to belong to this category."
 msgstr ""
 
@@ -1351,10 +1368,31 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
+msgid "Delete display controller"
+msgstr ""
+
 msgid "Delete events"
 msgstr ""
 
+msgid "Delete player"
+msgstr ""
+
 msgid "Delete players"
+msgstr ""
+
+msgid "Delete prize category"
+msgstr ""
+
+msgid "Delete prize group"
+msgstr ""
+
+msgid "Delete rotator"
+msgstr ""
+
+msgid "Delete screen"
+msgstr ""
+
+msgid "Delete screen family"
 msgstr ""
 
 msgid "Delete the account."
@@ -1381,18 +1419,16 @@ msgstr ""
 msgid "Delete the tournament."
 msgstr ""
 
+msgid "Delete timer"
+msgstr ""
+
+msgid "Delete tournament"
+msgstr ""
+
 msgid "Delete tournaments"
 msgstr ""
 
 msgid "Deletes all the criteria of this category."
-msgstr ""
-
-#, python-format
-msgid "Deleting prize category [%(prize_category)s]"
-msgstr ""
-
-#, python-format
-msgid "Deleting prize group [%(prize_group)s]"
 msgstr ""
 
 msgid "Deletion date"
@@ -1404,34 +1440,6 @@ msgstr ""
 
 #, python-format
 msgid "Deletion of device [%(ip)s]"
-msgstr ""
-
-#, python-format
-msgid "Deletion of display controller [%(display_controller_uniq_id)s]"
-msgstr ""
-
-#, python-format
-msgid "Deletion of player [%(player)s]"
-msgstr ""
-
-#, python-format
-msgid "Deletion of rotator [%(rotator_uniq_id)s]"
-msgstr ""
-
-#, python-format
-msgid "Deletion of screen [%(screen_uniq_id)s]"
-msgstr ""
-
-#, python-format
-msgid "Deletion of screen family [%(family_uniq_id)s]"
-msgstr ""
-
-#, python-format
-msgid "Deletion of timer [%(timer_uniq_id)s]"
-msgstr ""
-
-#, python-format
-msgid "Deletion of tournament [%(tournament_uniq_id)s]"
 msgstr ""
 
 msgid "Deputy Chief Arbitration"
@@ -1485,25 +1493,22 @@ msgstr ""
 msgid "Display"
 msgstr ""
 
+msgid "Display Controller"
+msgstr ""
+
 msgid "Display all the players, paired and unpaired"
 msgstr ""
 
 msgid "Display color, board number and opponent"
 msgstr ""
 
-msgid "Display controller"
+msgid "Display controller [{display_controller}] has been created."
 msgstr ""
 
-msgid "Display controller [{display_controller_uniq_id}] has been created."
+msgid "Display controller [{display_controller}] has been deleted."
 msgstr ""
 
-msgid "Display controller [{display_controller_uniq_id}] has been deleted."
-msgstr ""
-
-msgid "Display controller [{display_controller_uniq_id}] has been updated."
-msgstr ""
-
-msgid "Display controller creation"
+msgid "Display controller [{display_controller}] has been updated."
 msgstr ""
 
 msgid "Display controllers"
@@ -1628,10 +1633,6 @@ msgid "Duplicate with players"
 msgstr ""
 
 msgid "Duplicate without players"
-msgstr ""
-
-#, python-format
-msgid "Duplication of screen family [%(family_uniq_id)s]"
 msgstr ""
 
 msgid "Duration (min)"
@@ -1781,6 +1782,33 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
+msgid "Edit default timers"
+msgstr ""
+
+msgid "Edit display controller"
+msgstr ""
+
+msgid "Edit event"
+msgstr ""
+
+msgid "Edit player"
+msgstr ""
+
+msgid "Edit prize"
+msgstr ""
+
+msgid "Edit prize category"
+msgstr ""
+
+msgid "Edit rotator"
+msgstr ""
+
+msgid "Edit screen"
+msgstr ""
+
+msgid "Edit screen family"
+msgstr ""
+
 msgid "Edit the Sharly Chess settings."
 msgstr ""
 
@@ -1829,48 +1857,18 @@ msgstr ""
 msgid "Edit the unique ID."
 msgstr ""
 
+msgid "Edit timer"
+msgstr ""
+
+msgid "Edit tournament"
+msgstr ""
+
 #, python-format
 msgid "Editing of account [%(username)s]"
 msgstr ""
 
 #, python-format
-msgid "Editing of default timers for event [%(event_uniq_id)s]"
-msgstr ""
-
-#, python-format
 msgid "Editing of device [%(ip)s]"
-msgstr ""
-
-#, python-format
-msgid "Editing of display controller [%(display_controller_uniq_id)s]"
-msgstr ""
-
-#, python-format
-msgid "Editing of event [%(event_uniq_id)s]"
-msgstr ""
-
-#, python-format
-msgid "Editing of player [%(player)s]"
-msgstr ""
-
-#, python-format
-msgid "Editing of rotator [%(rotator_uniq_id)s]"
-msgstr ""
-
-#, python-format
-msgid "Editing of screen [%(screen_name)s]"
-msgstr ""
-
-#, python-format
-msgid "Editing of screen family [%(family_name)s]"
-msgstr ""
-
-#, python-format
-msgid "Editing of timer [%(timer_uniq_id)s]"
-msgstr ""
-
-#, python-format
-msgid "Editing of tournament [%(tournament_uniq_id)s]"
 msgstr ""
 
 msgid "Editing of unauthenticated access"
@@ -1971,9 +1969,6 @@ msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch
 msgstr ""
 
 msgid "Event [{uniq_id}] has been updated."
-msgstr ""
-
-msgid "Event creation"
 msgstr ""
 
 msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
@@ -2089,7 +2084,7 @@ msgstr ""
 msgid "FFE licence B (leisure)"
 msgstr ""
 
-msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament_uniq_id}]."
+msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament}]."
 msgstr ""
 
 msgid "FFE licence number"
@@ -2182,6 +2177,9 @@ msgstr ""
 msgid "Families are used to split a large amount of information across multiple screens."
 msgstr ""
 
+msgid "Family"
+msgstr ""
+
 msgid "Family [{family_uniq_id}] has been created."
 msgstr ""
 
@@ -2218,7 +2216,7 @@ msgstr ""
 msgid "Female *** NAME FOR GENDER FEMALE"
 msgstr "Female"
 
-msgid "Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}]."
+msgid "Fide ID [{fide_id}] already present in tournament [{tournament}]."
 msgstr ""
 
 msgid "Fide Master"
@@ -2407,6 +2405,9 @@ msgstr ""
 msgid "Grand Master"
 msgstr ""
 
+msgid "Group"
+msgstr ""
+
 msgid "Groups"
 msgstr ""
 
@@ -2478,6 +2479,9 @@ msgstr ""
 msgid "I would like the following custom files to be added to a future release of Sharly Chess:"
 msgstr ""
 
+msgid "ID (unique):"
+msgstr ""
+
 msgid "ID [{user_id}] not found (code: [{code}]): [{error}]."
 msgstr ""
 
@@ -2508,9 +2512,6 @@ msgstr ""
 msgid "Image ({num})"
 msgstr ""
 
-msgid "Image screen creation"
-msgstr ""
-
 msgid "Image screens show an image (local or remote)."
 msgstr ""
 
@@ -2536,7 +2537,7 @@ msgstr ""
 msgid "Import is unavailable once the tournament has started."
 msgstr ""
 
-msgid "Impossible to add players to tournament [{tournament_uniq_id}]."
+msgid "Impossible to add players to tournament [{tournament}]."
 msgstr ""
 
 #, python-format
@@ -2589,12 +2590,6 @@ msgid "Inherited roles"
 msgstr ""
 
 msgid "Input Screens may be used to allow players to enter their own results on a device that you make available at the venue."
-msgstr ""
-
-msgid "Input screen creation"
-msgstr ""
-
-msgid "Input screen family creation"
 msgstr ""
 
 msgid "Input screens show pairings by board number and allow people to enter results."
@@ -2991,6 +2986,12 @@ msgstr ""
 msgid "My group"
 msgstr ""
 
+msgid "My rotator"
+msgstr ""
+
+msgid "My timer"
+msgstr ""
+
 msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
 msgstr "N"
 
@@ -3031,6 +3032,9 @@ msgstr ""
 msgid "Neither screen nor rotator currently assigned"
 msgstr ""
 
+msgid "New category"
+msgstr ""
+
 msgid "New checkins are in, refresh your browser"
 msgstr ""
 
@@ -3040,10 +3044,19 @@ msgstr ""
 msgid "New event"
 msgstr ""
 
+msgid "New group"
+msgstr ""
+
 msgid "New password. Leave blank for no change."
 msgstr ""
 
 msgid "New results are in, refresh your browser"
+msgstr ""
+
+msgid "New rotator"
+msgstr ""
+
+msgid "New timer"
 msgstr ""
 
 msgid "New tournament"
@@ -3355,7 +3368,7 @@ msgid "Only one age category is expected with options including other categories
 msgstr ""
 
 #, python-format
-msgid "Open check-in for tournament [%(tournament_uniq_id)s]."
+msgid "Open check-in for tournament [%(tournament)s]."
 msgstr ""
 
 msgid "Open/close check-in"
@@ -3516,7 +3529,7 @@ msgstr ""
 msgid "Pairings for round #{round}"
 msgstr ""
 
-msgid "Pairings generated for all rounds of tournament [{tournament_uniq_id}]."
+msgid "Pairings generated for all rounds of tournament [{tournament}]."
 msgstr ""
 
 msgid "Pairings generation not allowed if previous rounds have missing results or unpaired players."
@@ -3619,16 +3632,13 @@ msgid "Player [%(player)s] has been created."
 msgstr ""
 
 #, python-format
-msgid "Player [%(player)s] is absent for the next round in tournament [%(tournament_uniq_id)s]."
+msgid "Player [%(player)s] is absent for the next round in tournament [%(tournament)s]."
 msgstr ""
 
-msgid "Player [{player}] has been moved from tournament [{src_tournament_uniq_id}] to tournament [{dst_tournament_uniq_id}]."
+msgid "Player [{player}] has been moved from tournament [{src_tournament}] to tournament [{dst_tournament}]."
 msgstr ""
 
-msgid "Player [{player}] has pairings in tournament [{tournament_uniq_id}]."
-msgstr ""
-
-msgid "Player creation"
+msgid "Player [{player}] has pairings in tournament [{tournament}]."
 msgstr ""
 
 msgid "Player selection (by alphabetical order)"
@@ -3665,12 +3675,6 @@ msgstr ""
 msgid "Players of category [%(category)s]"
 msgstr ""
 
-msgid "Players screen creation"
-msgstr ""
-
-msgid "Players screen family creation"
-msgstr ""
-
 msgid "Players screens show pairings by alphabetical order."
 msgstr ""
 
@@ -3678,7 +3682,7 @@ msgid "Players update"
 msgstr ""
 
 #, python-format
-msgid "Players update for tournament [%(tournament_uniq_id)s]"
+msgid "Players update for tournament [%(tournament)s]"
 msgstr ""
 
 msgid "Players' opponent: displayed"
@@ -3729,9 +3733,6 @@ msgstr ""
 msgid "Please enter a date after the start date."
 msgstr ""
 
-msgid "Please enter a name."
-msgstr ""
-
 msgid "Please enter a password for the ChessEvent connection."
 msgstr ""
 
@@ -3745,9 +3746,6 @@ msgid "Please enter the IP address."
 msgstr ""
 
 msgid "Please enter the date of the first hour."
-msgstr ""
-
-msgid "Please enter the display controller name."
 msgstr ""
 
 msgid "Please enter the end date of the event."
@@ -3781,9 +3779,6 @@ msgid "Please enter the text to display before the hour (mandatory except for ro
 msgstr ""
 
 msgid "Please enter the time."
-msgstr ""
-
-msgid "Please enter the tournament name."
 msgstr ""
 
 msgid "Please enter the username."
@@ -3882,9 +3877,6 @@ msgstr ""
 msgid "Prize category [{prize_category}] successfully updated."
 msgstr ""
 
-msgid "Prize creation"
-msgstr ""
-
 msgid "Prize criterion creation"
 msgstr ""
 
@@ -3892,9 +3884,6 @@ msgid "Prize criterion edition"
 msgstr ""
 
 msgid "Prize currency"
-msgstr ""
-
-msgid "Prize edition"
 msgstr ""
 
 msgid "Prize group [{prize_group}] successfully created."
@@ -3936,12 +3925,6 @@ msgstr ""
 msgid "Properties"
 msgstr ""
 
-msgid "Properties (image)"
-msgstr ""
-
-msgid "Properties (last results)"
-msgstr ""
-
 msgid "Properties (pairings by board)"
 msgstr ""
 
@@ -3959,9 +3942,6 @@ msgstr ""
 
 msgid "Pts *** POINTS FOR TABLE HEADER"
 msgstr "Pts"
-
-msgid "Public display controller"
-msgstr ""
 
 msgid "Public event"
 msgstr ""
@@ -4043,12 +4023,6 @@ msgid "Ranking before the first round"
 msgstr ""
 
 msgid "Ranking only"
-msgstr ""
-
-msgid "Ranking screen creation"
-msgstr ""
-
-msgid "Ranking screen family creation"
 msgstr ""
 
 msgid "Ranking screens show the players by rank."
@@ -4188,9 +4162,6 @@ msgstr ""
 msgid "Results for round #{round}"
 msgstr ""
 
-msgid "Results screen creation"
-msgstr ""
-
 msgid "Results screens show the last results (most recent first)."
 msgstr ""
 
@@ -4225,22 +4196,22 @@ msgstr ""
 msgid "Rotation delay: %(seconds)d sec."
 msgstr ""
 
-msgid "Rotator [{rotator_uniq_id}] has been assigned to controller [{display_controller_uniq_id}]."
+msgid "Rotator"
 msgstr ""
 
-msgid "Rotator [{rotator_uniq_id}] has been created."
+msgid "Rotator [{rotator}] has been assigned to controller [{display_controller}]."
 msgstr ""
 
-msgid "Rotator [{rotator_uniq_id}] has been deleted."
+msgid "Rotator [{rotator}] has been created."
 msgstr ""
 
-msgid "Rotator [{rotator_uniq_id}] has been updated."
+msgid "Rotator [{rotator}] has been deleted."
+msgstr ""
+
+msgid "Rotator [{rotator}] has been updated."
 msgstr ""
 
 msgid "Rotator automatically rotate between multiple screens."
-msgstr ""
-
-msgid "Rotator creation"
 msgstr ""
 
 msgid "Rotators"
@@ -4354,10 +4325,13 @@ msgstr ""
 msgid "Score *** PERF IND. FOR TABULAR DISPLAY"
 msgstr "Score"
 
+msgid "Screen"
+msgstr ""
+
 msgid "Screen Management"
 msgstr ""
 
-msgid "Screen [{screen_uniq_id}] has been assigned to controller [{display_controller_uniq_id}]."
+msgid "Screen [{screen_uniq_id}] has been assigned to controller [{display_controller}]."
 msgstr ""
 
 msgid "Screen [{screen_uniq_id}] has been created."
@@ -4374,6 +4348,9 @@ msgstr ""
 
 #, python-format
 msgid "Screen families: %(num)d"
+msgstr ""
+
+msgid "Screen type"
 msgstr ""
 
 msgid "Screens"
@@ -4497,9 +4474,6 @@ msgid "Show/hide the screens created from screen families."
 msgstr ""
 
 msgid "Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to the log files)."
-msgstr ""
-
-msgid "Side group"
 msgstr ""
 
 msgid "Single Screens"
@@ -4646,7 +4620,7 @@ msgstr ""
 msgid "The Buchholz System (the sum of the scores of each of the opponents of a player)"
 msgstr ""
 
-msgid "The ChessEvent connection is not defined for tournament [{tournament_uniq_id}]."
+msgid "The ChessEvent connection is not defined for tournament [{tournament}]."
 msgstr ""
 
 msgid "The FFE ID is a positive integer."
@@ -4677,27 +4651,6 @@ msgid "The URL or the path of the image (relative to the 'custom' folder) to dis
 msgstr ""
 
 msgid "The Unique ID, used to authenticate."
-msgstr ""
-
-msgid "The arbiter interface allows the management of the events."
-msgstr ""
-
-msgid "The Unique ID, used to reference the display controller."
-msgstr ""
-
-msgid "The Unique ID, used to reference the rotator."
-msgstr ""
-
-msgid "The Unique ID, used to reference the screen family."
-msgstr ""
-
-msgid "The Unique ID, used to reference the screen."
-msgstr ""
-
-msgid "The Unique ID, used to reference the timer."
-msgstr ""
-
-msgid "The Unique ID, used to reference the tournament."
 msgstr ""
 
 msgid "The background colour is used when the image does not fill the whole screen."
@@ -4818,13 +4771,13 @@ msgstr ""
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
 msgstr ""
 
-msgid "The name of the display controller, optional."
-msgstr ""
-
 msgid "The name of the event on the ChessEvent platform (by default, can be overridden by the tournaments)."
 msgstr ""
 
 msgid "The name of the event, used for display and reports."
+msgstr ""
+
+msgid "The name of the rotator."
 msgstr ""
 
 #, python-format
@@ -4835,6 +4788,9 @@ msgid "The name of the screen set (the name of the first set of a screen is by d
 msgstr ""
 
 msgid "The name of the screen, displayed on event screens."
+msgstr ""
+
+msgid "The name of the timer."
 msgstr ""
 
 msgid "The name of the tournament on the ChessEvent platform."
@@ -4911,13 +4867,13 @@ msgstr ""
 msgid "The player has already been paired, removing them from the tournament is impossible."
 msgstr ""
 
-msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament_uniq_id}]."
+msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament}]."
 msgstr ""
 
-msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament_uniq_id}]."
+msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament}]."
 msgstr ""
 
-msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}]."
+msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
 msgstr ""
 
 msgid "The player's FIDE ID (do not change)."
@@ -5144,10 +5100,16 @@ msgstr ""
 msgid "This field can't be updated once the tournament has started."
 msgstr ""
 
+msgid "This field is required."
+msgstr ""
+
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
 msgstr ""
 
 msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
+msgstr ""
+
+msgid "This name is already used."
 msgstr ""
 
 msgid "This rotator is private (not visible by the spectators)."
@@ -5211,19 +5173,19 @@ msgstr ""
 msgid "Time outside of event time range ({start} - {stop})."
 msgstr ""
 
+msgid "Timer"
+msgstr ""
+
 msgid "Timer [{timer_id}] not found."
 msgstr ""
 
-msgid "Timer [{timer_uniq_id}] has been created."
+msgid "Timer [{timer}] has been created."
 msgstr ""
 
-msgid "Timer [{timer_uniq_id}] has been deleted."
+msgid "Timer [{timer}] has been deleted."
 msgstr ""
 
-msgid "Timer [{timer_uniq_id}] has been updated."
-msgstr ""
-
-msgid "Timer creation"
+msgid "Timer [{timer}] has been updated."
 msgstr ""
 
 msgid "Timer hours"
@@ -5287,11 +5249,11 @@ msgid "Tournament [%(tournament)s] has been created."
 msgstr ""
 
 #, python-format
-msgid "Tournament [%(tournament_uniq_id)s] is finished."
+msgid "Tournament [%(tournament)s] is finished."
 msgstr ""
 
 #, python-format
-msgid "Tournament [%(tournament_uniq_id)s] is playing."
+msgid "Tournament [%(tournament)s] is playing."
 msgstr ""
 
 msgid "Tournament [{name}] has been updated, {num} players added."
@@ -5303,28 +5265,25 @@ msgstr ""
 msgid "Tournament [{tournament_name}] not found (code: [{code}]): [{error}]."
 msgstr ""
 
-msgid "Tournament [{tournament_uniq_id}] has been created and default screens have been added."
+msgid "Tournament [{tournament}] has been created and default screens have been added."
 msgstr ""
 
-msgid "Tournament [{tournament_uniq_id}] has been created."
+msgid "Tournament [{tournament}] has been created."
 msgstr ""
 
-msgid "Tournament [{tournament_uniq_id}] has been deleted."
+msgid "Tournament [{tournament}] has been deleted."
 msgstr ""
 
-msgid "Tournament [{tournament_uniq_id}] has been updated."
+msgid "Tournament [{tournament}] has been updated."
 msgstr ""
 
-msgid "Tournament [{tournament_uniq_id}] has started."
+msgid "Tournament [{tournament}] has started."
 msgstr ""
 
-msgid "Tournament [{tournament_uniq_id}] is finished, you can not add players any longer."
+msgid "Tournament [{tournament}] is finished, you can not add players any longer."
 msgstr ""
 
 msgid "Tournament [{tournament}] successfully imported."
-msgstr ""
-
-msgid "Tournament creation"
 msgstr ""
 
 msgid "Tournament exempt from registration fees."
@@ -5358,7 +5317,7 @@ msgstr ""
 msgid "Tournament visibility successfully set"
 msgstr ""
 
-msgid "Tournament {tournament_uniq_id} ({numbers_str})"
+msgid "Tournament {tournament} ({numbers_str})"
 msgstr ""
 
 msgid "Tournament:"
@@ -5781,12 +5740,6 @@ msgstr ""
 msgid "Warning: by default, only people on your Sharly Chess server can access the application."
 msgstr ""
 
-msgid "Warning: deleting a prize category is permanent!"
-msgstr ""
-
-msgid "Warning: deleting a prize group is permanent!"
-msgstr ""
-
 msgid "Warning: experimental features are enabled!"
 msgstr ""
 
@@ -5798,28 +5751,10 @@ msgstr ""
 msgid "Warning: the %(player_count)d players in the tournament will be deleted."
 msgstr ""
 
+msgid "Warning: the deletion is permanent!"
+msgstr ""
+
 msgid "Warning: the deletion of a device is permanent!"
-msgstr ""
-
-msgid "Warning: the deletion of a display controller is permanent!"
-msgstr ""
-
-msgid "Warning: the deletion of a player is permanent!"
-msgstr ""
-
-msgid "Warning: the deletion of a rotator is permanent!"
-msgstr ""
-
-msgid "Warning: the deletion of a screen family is permanent!"
-msgstr ""
-
-msgid "Warning: the deletion of a screen is permanent!"
-msgstr ""
-
-msgid "Warning: the deletion of a timer is permanent!"
-msgstr ""
-
-msgid "Warning: the deletion of a tournament is permanent!"
 msgstr ""
 
 msgid "Warning: the deletion of an account is permanent!"
@@ -6117,9 +6052,6 @@ msgstr ""
 msgid "by default"
 msgstr ""
 
-msgid "display-controller"
-msgstr ""
-
 msgid "either the duration or the increment must be greater than 0."
 msgstr ""
 
@@ -6135,25 +6067,13 @@ msgstr ""
 msgid "minimum: {value}"
 msgstr ""
 
-msgid "my-display-controller"
-msgstr ""
-
 msgid "my-event"
 msgstr ""
 
 msgid "my-family"
 msgstr ""
 
-msgid "my-rotator"
-msgstr ""
-
 msgid "my-screen"
-msgstr ""
-
-msgid "my-timer"
-msgstr ""
-
-msgid "my-tournament"
 msgstr ""
 
 msgid "no"
@@ -6199,9 +6119,6 @@ msgid "ranking from #{first} to end"
 msgstr ""
 
 msgid "ranking from start to #{last}"
-msgstr ""
-
-msgid "rotator"
 msgstr ""
 
 msgid "round_{round}"
@@ -6256,12 +6173,6 @@ msgid "then"
 msgstr ""
 
 msgid "time control"
-msgstr ""
-
-msgid "timer"
-msgstr ""
-
-msgid "tournament"
 msgstr ""
 
 msgid "unknown"
@@ -6333,4 +6244,55 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "Archiving of event [%(event_uniq_id)s]"
+#~ msgstr ""
+
+#~ msgid "Deletion of display controller [%(display_controller_uniq_id)s]"
+#~ msgstr ""
+
+#~ msgid "Please enter the tournament name."
+#~ msgstr ""
+
+#~ msgid "Screen [{screen_uniq_id}] has been assigned to controller [{display_controller_uniq_id}]."
+#~ msgstr ""
+
+#~ msgid "The arbiter interface allows the management of the events."
+#~ msgstr ""
+
+#~ msgid "The Unique ID, used to reference the display controller."
+#~ msgstr ""
+
+#~ msgid "The Unique ID, used to reference the rotator."
+#~ msgstr ""
+
+#~ msgid "The Unique ID, used to reference the screen family."
+#~ msgstr ""
+
+#~ msgid "The Unique ID, used to reference the screen."
+#~ msgstr ""
+
+#~ msgid "The Unique ID, used to reference the timer."
+#~ msgstr ""
+
+#~ msgid "The Unique ID, used to reference the tournament."
+#~ msgstr ""
+
+#~ msgid "Tournament [{tournament}] is not started yet."
+#~ msgstr ""
+
+#~ msgid "Tournament [{tournament}] is started."
+#~ msgstr ""
+
+#~ msgid "Warning: deleting a prize category is permanent!"
+#~ msgstr ""
+
+#~ msgid "Warning: deleting a prize group is permanent!"
+#~ msgstr ""
+
+#~ msgid "timer"
+#~ msgstr ""
+
+#~ msgid "tournament"
+#~ msgstr ""
 

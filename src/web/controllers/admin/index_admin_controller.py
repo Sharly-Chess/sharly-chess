@@ -519,7 +519,6 @@ class IndexAdminController(BaseAdminController):
         EventDatabase(uniq_id).create()
         with EventDatabase(uniq_id, write=True) as event_database:
             event_database.update_stored_event(stored_event)
-            event_database.commit()
         Message.success(
             request, _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id)
         )
@@ -573,7 +572,6 @@ class IndexAdminController(BaseAdminController):
             config_database.update_stored_config(stored_config)
             for stored_plugin in stored_plugins:
                 config_database.update_stored_plugin(stored_plugin)
-            config_database.commit()
         SharlyChessConfig.reload()
         previous_enabled_plugins = set(
             plugin.id for plugin in plugin_manager.enabled_plugins
@@ -620,7 +618,6 @@ class IndexAdminController(BaseAdminController):
             stored_config.locale = locale
             with ConfigDatabase(write=True) as config_database:
                 config_database.update_stored_config(sharly_chess_config.stored_config)
-                config_database.commit()
             sharly_chess_config.reload()
         return self._admin_render(request=request, data=None, admin_tab='config')
 
@@ -736,7 +733,6 @@ class IndexAdminController(BaseAdminController):
                         updated_at=source_database.updated_at_timestamp,
                     )
                 )
-            config_database.commit()
         Message.success(
             request, _('Local source databases settings have been updated.')
         )

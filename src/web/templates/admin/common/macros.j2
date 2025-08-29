@@ -927,8 +927,7 @@ with_indicator: display a loading indicator, optional
     value='',
     placeholder='NO PLACEHOLDER',
     post_url='',
-    patch_url='',
-    prevent_empty=false
+    patch_url=''
 ) %}
     <form
         id="{{ id }}-form"
@@ -978,24 +977,6 @@ with_indicator: display a loading indicator, optional
         </button>
     </form>
     <script>
-        {% if prevent_empty %}
-            $('#{{ id }}-input').on('input', function() {
-                let disabled = true;
-                let tooltipMessage = "";
-                const value = $(this).val();
-                if (value === '') {
-                    tooltipMessage = "{{ _('A value is expected.') }}";
-                } else {
-                    disabled = false;
-                    tooltipMessage = "{{ _('Validate') }}";
-                }
-                $('#{{ id }}-submit-button').prop('disabled', disabled);
-                const tooltipElement = document.getElementById('{{ id }}-submit-button-container');
-                const tooltip = bootstrap.Tooltip.getInstance(tooltipElement);
-                tooltip.setContent({ '.tooltip-inner': tooltipMessage });
-                tooltip.update();
-            });
-        {% endif %}
         $('#{{ id }}-input').focus(function() {
             $('#{{ id }}-form').addClass('focus');
         });
@@ -1023,7 +1004,7 @@ with_indicator: display a loading indicator, optional
             const value = $(this).val();
             if (value === '') {
                 error = "{{ _('A value is expected.') }}";
-            } else if (value != "current_uniq_id" && {{ existing_uniq_ids|tojson }}.includes(value)) {
+            } else if (value != "{{ current_uniq_id }}" && {{ existing_uniq_ids|tojson }}.includes(value)) {
                 error = "{{ _('This unique ID is already used.') }}";
             } else if (!value.match(/^[0-9a-zA-Z_\-]+$/)) {
                 error = "{{ _('Accepted characters are letters, numbers, underscore (_) and minus (-).') }}";

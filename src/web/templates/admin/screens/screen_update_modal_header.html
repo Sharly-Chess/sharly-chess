@@ -2,11 +2,11 @@
 {% import '/admin/common/macros.j2' as admin_macros with context %}
 
 <div class="vstack">
-    <h3 class="modal-title">
+    <h2 class="modal-title">
         <span class="pe-1">
-            {{ _('Editing of screen [%(screen_name)s]', screen_name=admin_screen.name) }}
+            {{ _('Edit screen') }}
         </span>
-    </h3>
+    </h2>
     <div id="uniq-id-field" class="form-text pt-0 mt-0">
         {{ _('Unique ID: [%(uniq_id)s]', uniq_id=admin_screen.uniq_id) }}
         <span

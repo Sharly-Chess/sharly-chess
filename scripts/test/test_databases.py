@@ -9,7 +9,7 @@ from common.logger import (
     print_interactive_error,
     print_interactive_success,
 )
-from database.access.papi.papi_store import StoredPlayer
+from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_sql_server import FFESqlServer
@@ -55,7 +55,6 @@ def test_fide_local_database():
                 for sql_command in sql_commands.values():
                     with FideDatabase(write=True) as fide_database:
                         fide_database.execute(sql_command)
-                        fide_database.commit()
                 duration: float = time.perf_counter() - start
                 print(f'{duration:.2f} seconds.')
             print(

@@ -164,7 +164,6 @@ class SharlyChessConfig(metaclass=Singleton):
                 stored_config.federation = SharlyChessConfig.tests_federation
             with ConfigDatabase(write=True) as config_database:
                 config_database.update_stored_config(stored_config)
-                config_database.commit()
         set_locale(stored_config.locale)
         set_logging_config(
             console_log_level=stored_config.console_log_level,
