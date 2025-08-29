@@ -524,4 +524,4 @@ class Family:
                     )
 
     def __str__(self):
-        return f'Tournament {self.tournament.uniq_id} ({self.numbers_str})'
+        return f'Tournament {self.tournament.name} ({self.numbers_str})'
