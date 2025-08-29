@@ -1,13 +1,18 @@
-<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-timer-edit-modal">
+<div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-timer-edit-modal"
+    {% if action == 'delete' %}
+        style="--bs-modal-width: fit-content;"
+    {% endif %}
+>
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
                 {% if action in ['create', 'clone', ] %}
-                    {{ _('Timer creation') }}
+                    {{ _('Create timer') }}
                 {% elif action == 'update' %}
-                    {{ _('Editing of timer [%(timer)s]', timer=admin_timer.name) }}
+                    {{ _('Edit timer') }}
                 {% elif action == 'delete' %}
-                    {{ _('Deletion of timer [%(timer)s]', timer=admin_timer.name) }}
+                    {{ _('Delete timer') }}
                 {% else %}
                     ?
                 {% endif %}
@@ -31,8 +36,11 @@
                 hx-indicator="#please-wait"
             >
                 {% if action == 'delete' %}
+                    <h4>
+                        {{ _('%(string)s: %(value)s', string=_('Timer'), value=admin_timer.name) }}
+                    </h4>
                     <h4 class="text-danger">
-                        {{ _('Warning: the deletion of a timer is permanent!') }}
+                        {{ _('Warning: the deletion is permanent!') }}
                     </h4>
                 {% else %}
                     <h4>

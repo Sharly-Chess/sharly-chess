@@ -450,14 +450,13 @@ msgstr ""
 msgid "Archive [{archive}] successfully restored (see event [{event}])."
 msgstr ""
 
+msgid "Archive event"
+msgstr ""
+
 msgid "Archived ({num})"
 msgstr ""
 
 msgid "Archived event"
-msgstr ""
-
-#, python-format
-msgid "Archiving of event [%(event_uniq_id)s]"
 msgstr ""
 
 msgid "Argument --server is deprecated, ignored."
@@ -657,12 +656,6 @@ msgstr ""
 msgid "Boards from #%(first)d to #%(last)d"
 msgstr ""
 
-msgid "Boards screen creation"
-msgstr ""
-
-msgid "Boards screen family creation"
-msgstr ""
-
 msgid "Boards screens show pairings by board number."
 msgstr ""
 
@@ -743,12 +736,6 @@ msgstr "Category"
 
 #, python-format
 msgid "Category [%(category)s] successfully created!"
-msgstr ""
-
-msgid "Category creation"
-msgstr ""
-
-msgid "Category edition"
 msgstr ""
 
 msgid "Change the player's tournament."
@@ -994,6 +981,9 @@ msgstr ""
 msgid "Continuously"
 msgstr ""
 
+msgid "Controller"
+msgstr ""
+
 msgid "Conversion to Papi format failed."
 msgstr ""
 
@@ -1067,6 +1057,36 @@ msgid "Create and add another"
 msgstr ""
 
 msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator."
+msgstr ""
+
+msgid "Create display controller"
+msgstr ""
+
+msgid "Create event"
+msgstr ""
+
+msgid "Create player"
+msgstr ""
+
+msgid "Create prize"
+msgstr ""
+
+msgid "Create prize category"
+msgstr ""
+
+msgid "Create rotator"
+msgstr ""
+
+msgid "Create screen"
+msgstr ""
+
+msgid "Create screen family"
+msgstr ""
+
+msgid "Create timer"
+msgstr ""
+
+msgid "Create tournament"
 msgstr ""
 
 msgid "Create with default screens"
@@ -1219,6 +1239,27 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
+msgid "Delete display controller"
+msgstr ""
+
+msgid "Delete player"
+msgstr ""
+
+msgid "Delete prize category"
+msgstr ""
+
+msgid "Delete prize group"
+msgstr ""
+
+msgid "Delete rotator"
+msgstr ""
+
+msgid "Delete screen"
+msgstr ""
+
+msgid "Delete screen family"
+msgstr ""
+
 msgid "Delete the category."
 msgstr ""
 
@@ -1237,46 +1278,16 @@ msgstr ""
 msgid "Delete the tournament."
 msgstr ""
 
+msgid "Delete timer"
+msgstr ""
+
+msgid "Delete tournament"
+msgstr ""
+
 msgid "Deletes all the criteria of this category."
 msgstr ""
 
-#, python-format
-msgid "Deleting prize category [%(prize_category)s]"
-msgstr ""
-
-#, python-format
-msgid "Deleting prize group [%(prize_group)s]"
-msgstr ""
-
 msgid "Deletion date"
-msgstr ""
-
-#, python-format
-msgid "Deletion of display controller [%(display_controller)s]"
-msgstr ""
-
-#, python-format
-msgid "Deletion of player [%(player)s]"
-msgstr ""
-
-#, python-format
-msgid "Deletion of rotator [%(rotator)s]"
-msgstr ""
-
-#, python-format
-msgid "Deletion of screen [%(screen_uniq_id)s]"
-msgstr ""
-
-#, python-format
-msgid "Deletion of screen family [%(family_uniq_id)s]"
-msgstr ""
-
-#, python-format
-msgid "Deletion of timer [%(timer)s]"
-msgstr ""
-
-#, python-format
-msgid "Deletion of tournament [%(tournament)s]"
 msgstr ""
 
 msgid "Description"
@@ -1316,9 +1327,6 @@ msgid "Display controller [{display_controller}] has been deleted."
 msgstr ""
 
 msgid "Display controller [{display_controller}] has been updated."
-msgstr ""
-
-msgid "Display controller creation"
 msgstr ""
 
 msgid "Display controllers"
@@ -1434,10 +1442,6 @@ msgid "Duplicate with players"
 msgstr ""
 
 msgid "Duplicate without players"
-msgstr ""
-
-#, python-format
-msgid "Duplication of screen family [%(family_uniq_id)s]"
 msgstr ""
 
 msgid "Duration (min)"
@@ -1581,6 +1585,33 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
+msgid "Edit default timers"
+msgstr ""
+
+msgid "Edit display controller"
+msgstr ""
+
+msgid "Edit event"
+msgstr ""
+
+msgid "Edit player"
+msgstr ""
+
+msgid "Edit prize"
+msgstr ""
+
+msgid "Edit prize category"
+msgstr ""
+
+msgid "Edit rotator"
+msgstr ""
+
+msgid "Edit screen"
+msgstr ""
+
+msgid "Edit screen family"
+msgstr ""
+
 msgid "Edit the Sharly Chess settings."
 msgstr ""
 
@@ -1623,39 +1654,10 @@ msgstr ""
 msgid "Edit the unique ID."
 msgstr ""
 
-msgid "Editing of a display controller"
+msgid "Edit timer"
 msgstr ""
 
-#, python-format
-msgid "Editing of default timers for event [%(event_uniq_id)s]"
-msgstr ""
-
-#, python-format
-msgid "Editing of event [%(event_uniq_id)s]"
-msgstr ""
-
-#, python-format
-msgid "Editing of player [%(player)s]"
-msgstr ""
-
-#, python-format
-msgid "Editing of rotator [%(rotator)s]"
-msgstr ""
-
-#, python-format
-msgid "Editing of screen [%(screen_name)s]"
-msgstr ""
-
-#, python-format
-msgid "Editing of screen family [%(family_name)s]"
-msgstr ""
-
-#, python-format
-msgid "Editing of timer [%(timer)s]"
-msgstr ""
-
-#, python-format
-msgid "Editing of tournament [%(tournament)s]"
+msgid "Edit tournament"
 msgstr ""
 
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
@@ -1738,9 +1740,6 @@ msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch
 msgstr ""
 
 msgid "Event [{uniq_id}] has been updated."
-msgstr ""
-
-msgid "Event creation"
 msgstr ""
 
 msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
@@ -1932,6 +1931,9 @@ msgid "Families ({num})"
 msgstr ""
 
 msgid "Families are used to split a large amount of information across multiple screens."
+msgstr ""
+
+msgid "Family"
 msgstr ""
 
 msgid "Family [{family_uniq_id}] has been created."
@@ -2159,6 +2161,9 @@ msgstr ""
 msgid "Grand Master"
 msgstr ""
 
+msgid "Group"
+msgstr ""
+
 msgid "Groups"
 msgstr ""
 
@@ -2251,9 +2256,6 @@ msgstr ""
 msgid "Image ({num})"
 msgstr ""
 
-msgid "Image screen creation"
-msgstr ""
-
 msgid "Image screens show an image (local or remote)."
 msgstr ""
 
@@ -2332,12 +2334,6 @@ msgid "Information message"
 msgstr ""
 
 msgid "Input Screens may be used to allow players to enter their own results on a computer or tablet that you make available at the venue."
-msgstr ""
-
-msgid "Input screen creation"
-msgstr ""
-
-msgid "Input screen family creation"
 msgstr ""
 
 msgid "Input screens show pairings by board number and allow people to enter results."
@@ -3354,9 +3350,6 @@ msgstr ""
 msgid "Player [{player}] has pairings in tournament [{tournament}]."
 msgstr ""
 
-msgid "Player creation"
-msgstr ""
-
 msgid "Player selection (by alphabetical order)"
 msgstr ""
 
@@ -3389,12 +3382,6 @@ msgstr ""
 
 #, python-format
 msgid "Players of category [%(category)s]"
-msgstr ""
-
-msgid "Players screen creation"
-msgstr ""
-
-msgid "Players screen family creation"
 msgstr ""
 
 msgid "Players screens show pairings by alphabetical order."
@@ -3602,9 +3589,6 @@ msgstr ""
 msgid "Prize category [{prize_category}] successfully updated."
 msgstr ""
 
-msgid "Prize creation"
-msgstr ""
-
 msgid "Prize criterion creation"
 msgstr ""
 
@@ -3612,9 +3596,6 @@ msgid "Prize criterion edition"
 msgstr ""
 
 msgid "Prize currency"
-msgstr ""
-
-msgid "Prize edition"
 msgstr ""
 
 msgid "Prize group [{prize_group}] successfully created."
@@ -3651,12 +3632,6 @@ msgid "Progressive scores"
 msgstr ""
 
 msgid "Properties"
-msgstr ""
-
-msgid "Properties (image)"
-msgstr ""
-
-msgid "Properties (last results)"
 msgstr ""
 
 msgid "Properties (pairings by board)"
@@ -3745,12 +3720,6 @@ msgid "Ranking before the first round"
 msgstr ""
 
 msgid "Ranking only"
-msgstr ""
-
-msgid "Ranking screen creation"
-msgstr ""
-
-msgid "Ranking screen family creation"
 msgstr ""
 
 msgid "Ranking screens show the players by rank."
@@ -3881,9 +3850,6 @@ msgstr ""
 msgid "Results for round #{round}"
 msgstr ""
 
-msgid "Results screen creation"
-msgstr ""
-
 msgid "Results screens show the last results (most recent first)."
 msgstr ""
 
@@ -3925,9 +3891,6 @@ msgid "Rotator [{rotator}] has been updated."
 msgstr ""
 
 msgid "Rotator automatically rotate between multiple screens."
-msgstr ""
-
-msgid "Rotator creation"
 msgstr ""
 
 msgid "Rotators"
@@ -4029,6 +3992,9 @@ msgstr ""
 msgid "Score *** PERF IND. FOR TABULAR DISPLAY"
 msgstr "Score"
 
+msgid "Screen"
+msgstr ""
+
 msgid "Screen [{screen_uniq_id}] has been assigned to controller [{display_controller}]."
 msgstr ""
 
@@ -4046,6 +4012,9 @@ msgstr ""
 
 #, python-format
 msgid "Screen families: %(num)d"
+msgstr ""
+
+msgid "Screen type"
 msgstr ""
 
 msgid "Screens"
@@ -4756,6 +4725,9 @@ msgstr ""
 msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
 msgstr ""
 
+msgid "This name is already used."
+msgstr ""
+
 msgid "This rotator is private (not visible by the users)."
 msgstr ""
 
@@ -4827,9 +4799,6 @@ msgid "Timer [{timer}] has been deleted."
 msgstr ""
 
 msgid "Timer [{timer}] has been updated."
-msgstr ""
-
-msgid "Timer creation"
 msgstr ""
 
 msgid "Timer hours"
@@ -4934,9 +4903,6 @@ msgid "Tournament [{tournament}] is started."
 msgstr ""
 
 msgid "Tournament [{tournament}] successfully imported."
-msgstr ""
-
-msgid "Tournament creation"
 msgstr ""
 
 msgid "Tournament exempt from registration fees."
@@ -5302,12 +5268,6 @@ msgstr "WIM"
 msgid "Warning message"
 msgstr ""
 
-msgid "Warning: deleting a prize category is permanent!"
-msgstr ""
-
-msgid "Warning: deleting a prize group is permanent!"
-msgstr ""
-
 msgid "Warning: experimental features are enabled!"
 msgstr ""
 
@@ -5319,25 +5279,13 @@ msgstr ""
 msgid "Warning: the %(player_count)d players in the tournament will be deleted."
 msgstr ""
 
-msgid "Warning: the deletion of a display controller is permanent!"
-msgstr ""
-
-msgid "Warning: the deletion of a player is permanent!"
+msgid "Warning: the deletion is permanent!"
 msgstr ""
 
 msgid "Warning: the deletion of a rotator is permanent!"
 msgstr ""
 
-msgid "Warning: the deletion of a screen family is permanent!"
-msgstr ""
-
-msgid "Warning: the deletion of a screen is permanent!"
-msgstr ""
-
 msgid "Warning: the deletion of a timer is permanent!"
-msgstr ""
-
-msgid "Warning: the deletion of a tournament is permanent!"
 msgstr ""
 
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
@@ -5700,13 +5648,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "Display controller edition"
-#~ msgstr ""
-
-#~ msgid "Editing of screen [%(screen_uniq_id)s]"
-#~ msgstr ""
-
-#~ msgid "Editing of screen family [%(family_uniq_id)s]"
-#~ msgstr ""
 

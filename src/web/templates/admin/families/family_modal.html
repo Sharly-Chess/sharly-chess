@@ -1,29 +1,25 @@
-<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable admin-family-edit-modal">
+<div
+    class="modal-dialog modal-dialog-centered modal-dialog-scrollable admin-family-edit-modal"
+    {% if action == 'delete' %}
+        style="--bs-modal-width: fit-content;"
+    {% endif %}
+>
     <div class="modal-content">
         <div class="modal-header">
             {% if action == 'update' %}
                 {% include 'family_update_modal_header.html' %}
-            {% else %}
-                <h2 class="modal-title">
-                    {% if action in ['create', 'clone', ] %}
-                        {% if family_type == 'input' %}
-                            {{ _('Input screen family creation') }}
-                        {% elif family_type == 'boards' %}
-                            {{ _('Boards screen family creation') }}
-                        {% elif family_type == 'players' %}
-                            {{ _('Players screen family creation') }}
-                        {% elif family_type == 'ranking' %}
-                            {{ _('Ranking screen family creation') }}
-                        {% else %}
-                            ?
-                        {% endif %}
-                    {% elif action == 'clone' %}
-                        {{ _('Duplication of screen family [%(family_uniq_id)s]', family_uniq_id=admin_family.uniq_id) }}
-                    {% elif action == 'delete' %}
-                        {{ _('Deletion of screen family [%(family_uniq_id)s]', family_uniq_id=admin_family.uniq_id) }}
-                    {% else %}
-                        ?
-                    {% endif %}
+            {% elif action in ['create', 'clone', ] %}
+                <div class="vstack">
+                    <h2 class="modal-title">
+                        {{ _('Create screen family') }}
+                    </h2>
+                    <div class="form-text pt-0 mt-0">
+                        {{ _('%(string)s: %(value)s', string=_('Screen type'), value=family_type.name) }}
+                    </div>
+                </div>
+            {% elif action == 'delete' %}
+                 <h2 class="modal-title">
+                   {{ _('Delete screen family') }}
                 </h2>
             {% endif %}
         </div>
@@ -45,8 +41,11 @@
                 hx-indicator="#please-wait"
             >
                 {% if action == 'delete' %}
+                    <h4>
+                        {{ _('%(string)s: %(value)s', string=_('Family'), value=admin_family.uniq_id) }}
+                    </h4>
                     <h4 class="text-danger">
-                        {{ _('Warning: the deletion of a screen family is permanent!') }}
+                        {{ _('Warning: the deletion is permanent!') }}
                     </h4>
                 {% else %}
                     <h4>

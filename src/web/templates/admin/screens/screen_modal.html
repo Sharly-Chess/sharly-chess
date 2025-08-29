@@ -1,31 +1,25 @@
-<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-screen-edit-modal">
+<div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-screen-edit-modal"
+    {% if action == 'delete' %}
+        style="--bs-modal-width: fit-content;"
+    {% endif %}
+>
     <div class="modal-content">
         <div class="modal-header">
             {% if action == 'update' %}
                 {% include 'screen_update_modal_header.html' %}
-            {% else %}
-                <h2 class="modal-title">
-                    {% if action in ['create', 'clone', ] %}
-                        {% if screen_type == 'input' %}
-                            {{ _('Input screen creation') }}
-                        {% elif screen_type == 'boards' %}
-                            {{ _('Boards screen creation') }}
-                        {% elif screen_type == 'players' %}
-                            {{ _('Players screen creation') }}
-                        {% elif screen_type == 'results' %}
-                            {{ _('Results screen creation') }}
-                        {% elif screen_type == 'ranking' %}
-                            {{ _('Ranking screen creation') }}
-                        {% elif screen_type == 'image' %}
-                            {{ _('Image screen creation') }}
-                        {% else %}
-                            ?
-                        {% endif %}
-                    {% elif action == 'delete' %}
-                        {{ _('Deletion of screen [%(screen_uniq_id)s]', screen_uniq_id=admin_screen.uniq_id) }}
-                    {% else %}
-                        ?
-                    {% endif %}
+            {% elif action in ['create', 'clone', ] %}
+                <div class="vstack">
+                    <h2 class="modal-title">
+                        {{ _('Create screen') }}
+                    </h2>
+                    <div class="form-text pt-0 mt-0">
+                        {{ _('%(string)s: %(value)s', string=_('Screen type'), value=screen_type.name) }}
+                    </div>
+                </div>
+            {% elif action == 'delete' %}
+                 <h2 class="modal-title">
+                   {{ _('Delete screen') }}
                 </h2>
             {% endif %}
         </div>
@@ -47,26 +41,15 @@
                 hx-indicator="#please-wait"
             >
                 {% if action == 'delete' %}
+                    <h4>
+                        {{ _('%(string)s: %(value)s', string=_('Screen'), value=admin_screen.uniq_id) }}
+                    </h4>
                     <h4 class="text-danger">
-                        {{ _('Warning: the deletion of a screen is permanent!') }}
+                        {{ _('Warning: the deletion is permanent!') }}
                     </h4>
                 {% else %}
                     <h4>
-                        {% if screen_type == 'input' %}
-                            {{ _('Properties (results entry)') }}
-                        {% elif screen_type == 'boards' %}
-                            {{ _('Properties (pairings by board)') }}
-                        {% elif screen_type == 'players' %}
-                            {{ _('Properties (pairings by player)') }}
-                        {% elif screen_type == 'results' %}
-                            {{ _('Properties (last results)') }}
-                        {% elif screen_type == 'ranking' %}
-                            {{ _('Properties (ranking)') }}
-                        {% elif screen_type == 'image' %}
-                            {{ _('Properties (image)') }}
-                        {% else %}
-                            ?
-                        {% endif %}
+                        {{ _('Properties') }}
                     </h4>
 
                     <div class="row">

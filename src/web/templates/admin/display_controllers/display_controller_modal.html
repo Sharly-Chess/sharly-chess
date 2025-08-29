@@ -6,11 +6,11 @@
         <div class="modal-header">
             <h2 class="modal-title">
                 {% if action == 'create' %}
-                    {{ _('Display controller creation') }}
+                    {{ _('Create display controller') }}
                 {% elif action == 'update' %}
-                    {{ _('Editing of a display controller') }}
+                    {{ _('Edit display controller') }}
                 {% elif action == 'delete' %}
-                    {{ _('Deletion of display controller [%(display_controller)s]', display_controller=admin_display_controller.name) }}
+                    {{ _('Delete display controller') }}
                 {% endif %}
             </h2>
         </div>
@@ -30,8 +30,11 @@
                 hx-indicator="#please-wait"
             >
                 {% if action == 'delete' %}
+                    <h4>
+                        {{ _('%(string)s: %(value)s', string=_('Controller'), value=admin_display_controller.name) }}
+                    </h4>
                     <h4 class="text-danger">
-                        {{ _('Warning: the deletion of a display controller is permanent!') }}
+                        {{ _('Warning: the deletion is permanent!') }}
                     </h4>
                 {% else %}
                     <div class="col-12 mb-3">

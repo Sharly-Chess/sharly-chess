@@ -1,13 +1,18 @@
-<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-rotator-edit-modal">
+<div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-rotator-edit-modal"
+    {% if action == 'delete' %}
+        style="--bs-modal-width: fit-content;"
+    {% endif %}
+>
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
                 {% if action in ['create', 'clone', ] %}
-                    {{ _('Rotator creation') }}
+                    {{ _('Create rotator') }}
                 {% elif action == 'update' %}
-                    {{ _('Editing of rotator [%(rotator)s]', rotator=admin_rotator.name) }}
+                    {{ _('Edit rotator') }}
                 {% elif action == 'delete' %}
-                    {{ _('Deletion of rotator [%(rotator)s]', rotator=admin_rotator.name) }}
+                    {{ _('Delete rotator') }}
                 {% else %}
                     ?
                 {% endif %}
@@ -29,8 +34,11 @@
                 hx-indicator="#please-wait"
             >
                 {% if action == 'delete' %}
+                    <h4>
+                        {{ _('%(string)s: %(value)s', string=_('Rotator'), value=admin_rotator.name) }}
+                    </h4>
                     <h4 class="text-danger">
-                        {{ _('Warning: the deletion of a rotator is permanent!') }}
+                        {{ _('Warning: the deletion is permanent!') }}
                     </h4>
                 {% else %}
                     <h4>

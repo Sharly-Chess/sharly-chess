@@ -122,7 +122,7 @@ msgstr "%(string)s :"
 
 #, python-format
 msgid "%(string)s: %(value)s"
-msgstr ""
+msgstr "%(string)s : %(value)s"
 
 #, python-format
 msgid "%f to %l"
@@ -450,15 +450,14 @@ msgstr "Archiver"
 msgid "Archive [{archive}] successfully restored (see event [{event}])."
 msgstr "L'archive [{archive}] restaurée avec succès (voir l'évènement [{event}])."
 
+msgid "Archive event"
+msgstr "Archiver un évènement"
+
 msgid "Archived ({num})"
 msgstr "Archivés ({num})"
 
 msgid "Archived event"
 msgstr "Évènement archivé"
-
-#, python-format
-msgid "Archiving of event [%(event_uniq_id)s]"
-msgstr "Archivage de l'évènement [%(event_uniq_id)s]"
 
 msgid "Argument --server is deprecated, ignored."
 msgstr "L'option --server est obsolète, ignorée."
@@ -657,12 +656,6 @@ msgstr "Ech. %f-%l"
 msgid "Boards from #%(first)d to #%(last)d"
 msgstr "échiquiers du n°%(first)d au n°%(last)d"
 
-msgid "Boards screen creation"
-msgstr "Création d'un écran d'appariements par échiquier"
-
-msgid "Boards screen family creation"
-msgstr "Création d'une famille d'écrans d'appariements par échiquier"
-
 msgid "Boards screens show pairings by board number."
 msgstr "Les écrans d'affichage des échiquiers présentent les appariements par échiquier."
 
@@ -744,12 +737,6 @@ msgstr "Catégorie"
 #, python-format
 msgid "Category [%(category)s] successfully created!"
 msgstr "La catégorie [%(category)s] créée avec succès !"
-
-msgid "Category creation"
-msgstr "Création d'une catégorie"
-
-msgid "Category edition"
-msgstr "Édition d'une categorie"
 
 msgid "Change the player's tournament."
 msgstr "Changer le joueur de tournoi."
@@ -994,6 +981,9 @@ msgstr "Continuer"
 msgid "Continuously"
 msgstr "En continu"
 
+msgid "Controller"
+msgstr "Pilote"
+
 msgid "Conversion to Papi format failed."
 msgstr "La conversion au format Papi a échoué."
 
@@ -1068,6 +1058,36 @@ msgstr "Créer et ajouter à nouveau"
 
 msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator."
 msgstr "Créez autant de pilotes d’afficheurs que nécessaire, puis, sur vos afficheurs, choisissez un pilote d’afficheurs plutôt qu’un écran simple ou un écran rotatif spécifique."
+
+msgid "Create display controller"
+msgstr "Créer un pilote d'afficheurs"
+
+msgid "Create event"
+msgstr "Créer un évènement"
+
+msgid "Create player"
+msgstr "Créer un·e joueur·euse"
+
+msgid "Create prize"
+msgstr "Créer un prix"
+
+msgid "Create prize category"
+msgstr "Créer une catégorie de prix"
+
+msgid "Create rotator"
+msgstr "Créer un écran rotatif"
+
+msgid "Create screen"
+msgstr "Créer un écran"
+
+msgid "Create screen family"
+msgstr "Créer une famille d'écrans"
+
+msgid "Create timer"
+msgstr "Créer un chronomètre"
+
+msgid "Create tournament"
+msgstr "Créer un tournoi"
 
 msgid "Create with default screens"
 msgstr "Créer avec les écrans par défaut"
@@ -1219,6 +1239,27 @@ msgstr "Délai :"
 msgid "Delete"
 msgstr "Supprimer"
 
+msgid "Delete display controller"
+msgstr "Supprimer un pilote d'afficheurs"
+
+msgid "Delete player"
+msgstr "Supprimer un·e joueur·euse"
+
+msgid "Delete prize category"
+msgstr "Supprimer une catégorie de prix"
+
+msgid "Delete prize group"
+msgstr "Supprimer "
+
+msgid "Delete rotator"
+msgstr "Supprimer un écran rotatif"
+
+msgid "Delete screen"
+msgstr "Supprier un écran"
+
+msgid "Delete screen family"
+msgstr "Supprimer une famille d'écrans"
+
 msgid "Delete the category."
 msgstr "Supprimer la catégorie."
 
@@ -1237,47 +1278,17 @@ msgstr "Supprimer le chronomètre."
 msgid "Delete the tournament."
 msgstr "Supprimer le tournoi"
 
+msgid "Delete timer"
+msgstr "Supprimer un chronomètre"
+
+msgid "Delete tournament"
+msgstr "Supprimer un tournoi"
+
 msgid "Deletes all the criteria of this category."
 msgstr "Supprime tous les critères de cette catégorie."
 
-#, python-format
-msgid "Deleting prize category [%(prize_category)s]"
-msgstr "Suppression de la catégorie [%(prize_category)s]"
-
-#, python-format
-msgid "Deleting prize group [%(prize_group)s]"
-msgstr "Suppression du groupe [%(prize_group)s]"
-
 msgid "Deletion date"
 msgstr "Date de suppression"
-
-#, python-format
-msgid "Deletion of display controller [%(display_controller)s]"
-msgstr "Suppression du pilote d'afficheurs [%(display_controller)s]"
-
-#, python-format
-msgid "Deletion of player [%(player)s]"
-msgstr "Suppression du·de la joueur·euse [%(player)s]"
-
-#, python-format
-msgid "Deletion of rotator [%(rotator)s]"
-msgstr "Suppression de l'écran rotatif [%(rotator)s]"
-
-#, python-format
-msgid "Deletion of screen [%(screen_uniq_id)s]"
-msgstr "Suppression de l'écran [%(screen_uniq_id)s]"
-
-#, python-format
-msgid "Deletion of screen family [%(family_uniq_id)s]"
-msgstr "Suppression de la famille d'écrans [%(family_uniq_id)s]"
-
-#, python-format
-msgid "Deletion of timer [%(timer)s]"
-msgstr "Suppression du chronomètre [%(timer)s]"
-
-#, python-format
-msgid "Deletion of tournament [%(tournament)s]"
-msgstr "Suppression du tournoi [%(tournament)s]"
 
 msgid "Description"
 msgstr "Description"
@@ -1317,9 +1328,6 @@ msgstr "Le pilote d'afficheurs [{display_controller}] a été supprimé."
 
 msgid "Display controller [{display_controller}] has been updated."
 msgstr "Le pilote d'afficheurs [{display_controller}] a été modifié."
-
-msgid "Display controller creation"
-msgstr "Création d'un pilote d'afficheurs"
 
 msgid "Display controllers"
 msgstr "Pilotes d'afficheurs"
@@ -1435,10 +1443,6 @@ msgstr "Dupliquer avec les joueur·euses"
 
 msgid "Duplicate without players"
 msgstr "Dupliquer sans les joueur·euses"
-
-#, python-format
-msgid "Duplication of screen family [%(family_uniq_id)s]"
-msgstr "Duplication de la famille d'écrans [%(family_uniq_id)s]"
 
 msgid "Duration (min)"
 msgstr "Durée (min)"
@@ -1579,84 +1583,82 @@ msgid "Each group should contain one or more categories (e.g. U12, Best Female) 
 msgstr "Chaque groupe doit contenir une ou plusieurs catégories (par exemple : U12, Meilleure Féminine) avec des critères et des places (1er, 2e, etc.). Les prix sont attribués selon leur valeur (et l’ordre des catégories en cas d’égalité)."
 
 msgid "Edit"
-msgstr "Éditer"
+msgstr "Modifier"
+
+msgid "Edit default timers"
+msgstr "Modifier les chronomètres par défaut"
+
+msgid "Edit display controller"
+msgstr "Modifier un pilote d'afficheurs"
+
+msgid "Edit event"
+msgstr "Modifier un évènement"
+
+msgid "Edit player"
+msgstr "Modifier un·e joueur·euse"
+
+msgid "Edit prize"
+msgstr "Modifier un prix"
+
+msgid "Edit prize category"
+msgstr "Modifier une catégorie de prix"
+
+msgid "Edit rotator"
+msgstr "Modifier un écran rotatif"
+
+msgid "Edit screen"
+msgstr "Modifier un écran"
+
+msgid "Edit screen family"
+msgstr "Modifier une famille d'écrans"
 
 msgid "Edit the Sharly Chess settings."
-msgstr "Éditer la configuration de Sharly Chess."
+msgstr "Modifier la configuration de Sharly Chess."
 
 msgid "Edit the hours of the timer"
-msgstr "Éditer les horaires du chronomètre."
+msgstr "Modifier les horaires du chronomètre."
 
 msgid "Edit the player's properties."
-msgstr "Éditer les propriétés du·de la joueur·euse."
+msgstr "Modifier les propriétés du·de la joueur·euse."
 
 msgid "Edit the player's tournament record."
 msgstr "Modifier l'historique du·de la joueur·euse."
 
 msgid "Edit the properties of the category."
-msgstr "Éditer les propriétés de la catégorie."
+msgstr "Modifier les propriétés de la catégorie."
 
 msgid "Edit the properties of the display controller."
-msgstr "Éditer les propriétés du pilote d'afficheurs."
+msgstr "Modifier les propriétés du pilote d'afficheurs."
 
 msgid "Edit the properties of the rotator."
-msgstr "Éditer les propriétés de l'écran rotatif."
+msgstr "Modifier les propriétés de l'écran rotatif."
 
 msgid "Edit the properties of the screen family."
-msgstr "Éditer les propriétés de la famille d'écrans."
+msgstr "Modifier les propriétés de la famille d'écrans."
 
 msgid "Edit the properties of the screen."
-msgstr "Éditer les propriétés de l'écran."
+msgstr "Modifier les propriétés de l'écran."
 
 msgid "Edit the properties of the timer."
-msgstr "Éditer les propriétés du chronomètre."
+msgstr "Modifier les propriétés du chronomètre."
 
 msgid "Edit the properties of the tournament."
-msgstr "Éditer les propriétés du tournoi."
+msgstr "Modifier les propriétés du tournoi."
 
 msgid "Edit the sets of boards displayed on the screen."
-msgstr "Éditer les ensembles d'échiquiers affichés sur l'écran."
+msgstr "Modifier les ensembles d'échiquiers affichés sur l'écran."
 
 msgid "Edit the sets of players displayed on the screen."
-msgstr "Éditer les ensembles de joueur·euses affichés sur l'écran."
+msgstr "Modifier les ensembles de joueur·euses affichés sur l'écran."
 
 msgid "Edit the unique ID."
-msgstr "Éditer l'identifiant unique."
+msgstr "Modifier l'identifiant unique."
 
-msgid "Editing of a display controller"
-msgstr "Édition d'un pilote d'afficheurs"
+msgid "Edit timer"
+msgstr "Modifier un chronomètre"
 
-#, python-format
-msgid "Editing of default timers for event [%(event_uniq_id)s]"
-msgstr "Édition des chronomètres par défaut pour l'évènement [%(event_uniq_id)s]"
-
-#, python-format
-msgid "Editing of event [%(event_uniq_id)s]"
-msgstr "Édition de l'évènement [%(event_uniq_id)s]"
-
-#, python-format
-msgid "Editing of player [%(player)s]"
-msgstr "Édition du·de la joueur·euse [%(player)s]"
-
-#, python-format
-msgid "Editing of rotator [%(rotator)s]"
-msgstr "Édition de l'écran rotatif [%(rotator)s]"
-
-#, python-format
-msgid "Editing of screen [%(screen_name)s]"
-msgstr "Édition de l'écran [%(screen_name)s]"
-
-#, python-format
-msgid "Editing of screen family [%(family_name)s]"
-msgstr "Édition de la famille d'écrans [%(family_name)s]"
-
-#, python-format
-msgid "Editing of timer [%(timer)s]"
-msgstr "Édition du chronomètre [%(timer)s]"
-
-#, python-format
-msgid "Editing of tournament [%(tournament)s]"
-msgstr "Édition du tournoi [%(tournament)s]"
+msgid "Edit tournament"
+msgstr "Modifier un tournoi"
 
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
 msgstr "Elo"
@@ -1739,9 +1741,6 @@ msgstr "L'évènement [{uniq_id}] a été supprimé, la base de données a été
 
 msgid "Event [{uniq_id}] has been updated."
 msgstr "L'évènement [{uniq_id}] a été modifié."
-
-msgid "Event creation"
-msgstr "Création d'un évènement"
 
 msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
 msgstr "L'identifiant unique de l'évènement à été renommé de [{old_uniq_id}] à [{new_uniq_id}]."
@@ -1933,6 +1932,9 @@ msgstr "Familles ({num})"
 
 msgid "Families are used to split a large amount of information across multiple screens."
 msgstr "Les familles d’écrans sont utilisées pour répartir une grande quantité d’informations sur plusieurs écrans."
+
+msgid "Family"
+msgstr "Famille"
 
 msgid "Family [{family_uniq_id}] has been created."
 msgstr "La famile [{family_uniq_id}] a été créée."
@@ -2159,6 +2161,9 @@ msgstr "Aller à l'écran."
 msgid "Grand Master"
 msgstr "Grand Maître International"
 
+msgid "Group"
+msgstr "Groupe"
+
 msgid "Groups"
 msgstr "Groupes"
 
@@ -2251,9 +2256,6 @@ msgstr "Image"
 msgid "Image ({num})"
 msgstr "Image ({num})"
 
-msgid "Image screen creation"
-msgstr "Création d'un écran d'image"
-
 msgid "Image screens show an image (local or remote)."
 msgstr "Les écrans d'image affichent une image (locale ou distante)."
 
@@ -2333,12 +2335,6 @@ msgstr "Message d'information"
 
 msgid "Input Screens may be used to allow players to enter their own results on a computer or tablet that you make available at the venue."
 msgstr "Les écrans de saisie peuvent être utilisés pour permettre aux joueur·euses d’entrer eux-mêmes leurs résultats sur un ordinateur ou une tablette mis à disposition sur le lieu du tournoi."
-
-msgid "Input screen creation"
-msgstr "Création d'un écran de saisie"
-
-msgid "Input screen family creation"
-msgstr "Création d'une famille d'écrans de saisie"
 
 msgid "Input screens show pairings by board number and allow people to enter results."
 msgstr "Les écrans de saisie des résultats présentent les appariements des joueur·euses par ordre croissant des échiquiers et permet l'entrée des résultats par les joueur·euses ou les arbitres."
@@ -3354,9 +3350,6 @@ msgstr "Le·la joueur·euse [{player}] a été déplacé·e du tournoi [{src_tou
 msgid "Player [{player}] has pairings in tournament [{tournament}]."
 msgstr "Le·la joueur·euse [{player}] a déjà été apparié·e dans le tournoi [{tournament}]."
 
-msgid "Player creation"
-msgstr "Création d'un·e joueur·euse"
-
 msgid "Player selection (by alphabetical order)"
 msgstr "Sélection des joueur·euses (par ordre alphabétique)"
 
@@ -3390,12 +3383,6 @@ msgstr "joueur·euses de %(first)s à %(last)s"
 #, python-format
 msgid "Players of category [%(category)s]"
 msgstr "Joueur·euses de la catégorie [%(category)s]"
-
-msgid "Players screen creation"
-msgstr "Création d'un écran d'appariements par ordre alphabétique"
-
-msgid "Players screen family creation"
-msgstr "Création d'une famille d'écrans d'appariements par ordre alphabétique"
 
 msgid "Players screens show pairings by alphabetical order."
 msgstr "Les écrans d'affichage des joueur·euses présentent les appariements par ordre alphabétique."
@@ -3602,9 +3589,6 @@ msgstr "La catégorie de prix [{prize_category}] a été supprimée avec succès
 msgid "Prize category [{prize_category}] successfully updated."
 msgstr "La catégorie de prix [{prize_category}] a été mise à jour avec succès."
 
-msgid "Prize creation"
-msgstr "Création de prix"
-
 msgid "Prize criterion creation"
 msgstr "Création d'un critère"
 
@@ -3613,9 +3597,6 @@ msgstr "Édition d'un critère"
 
 msgid "Prize currency"
 msgstr "Monnaie des prix"
-
-msgid "Prize edition"
-msgstr "Édition d'un prix"
 
 msgid "Prize group [{prize_group}] successfully created."
 msgstr "Le groupe de prix [{prize_group}] a été créé avec succès."
@@ -3652,12 +3633,6 @@ msgstr "Cumulatif"
 
 msgid "Properties"
 msgstr "Propriétés"
-
-msgid "Properties (image)"
-msgstr "Propriétés (image)"
-
-msgid "Properties (last results)"
-msgstr "Propriétés (derniers résultats)"
 
 msgid "Properties (pairings by board)"
 msgstr "Propriétés (appariements par échiquier)"
@@ -3746,12 +3721,6 @@ msgstr "Classement avant la première ronde"
 
 msgid "Ranking only"
 msgstr "Classement seulement"
-
-msgid "Ranking screen creation"
-msgstr "Creation d'un écran de classement"
-
-msgid "Ranking screen family creation"
-msgstr "Création d'une famille d'écrans de classement"
 
 msgid "Ranking screens show the players by rank."
 msgstr "Les écrans d'affichage de classement présentent les joueur·euses par ordre de classement."
@@ -3881,9 +3850,6 @@ msgstr "Saisie des résultats ({tournament_name})"
 msgid "Results for round #{round}"
 msgstr "Résultats de la ronde {round}"
 
-msgid "Results screen creation"
-msgstr "Création d'un écran de résultats"
-
 msgid "Results screens show the last results (most recent first)."
 msgstr "Les écrans de résultats affichent les derniers résultats saisis par ordre anti-chronologique (le plus récent d'abord)."
 
@@ -3926,9 +3892,6 @@ msgstr "L'écran rotatif [{rotator}] a été modifié."
 
 msgid "Rotator automatically rotate between multiple screens."
 msgstr "Les écrans rotatifs permettent de faire défiler automatiquement plusieurs écrans."
-
-msgid "Rotator creation"
-msgstr "Création d'un écran rotatif"
 
 msgid "Rotators"
 msgstr "Écrans rotatifs"
@@ -4029,6 +3992,9 @@ msgstr "Score"
 msgid "Score *** PERF IND. FOR TABULAR DISPLAY"
 msgstr "Score"
 
+msgid "Screen"
+msgstr "Écran"
+
 msgid "Screen [{screen_uniq_id}] has been assigned to controller [{display_controller}]."
 msgstr "L'écran [{screen_uniq_id}] est utilisé par le pilote d'afficheurs [{display_controller}]."
 
@@ -4047,6 +4013,9 @@ msgstr "Familles d'écrans :"
 #, python-format
 msgid "Screen families: %(num)d"
 msgstr "Familles d'écrans : %(num)d"
+
+msgid "Screen type"
+msgstr "Type d'écran"
 
 msgid "Screens"
 msgstr "Écrans"
@@ -4756,6 +4725,9 @@ msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran 
 msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
 msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran depuis les autres écrans. Si ce champ est laissé vide, une étiquette par défaut sera utilisée."
 
+msgid "This name is already used."
+msgstr "Ce nom est déjà utilisé."
+
 msgid "This rotator is private (not visible by the users)."
 msgstr "Cet écran rotatif est privé (non visible des utilisateur·ices)."
 
@@ -4828,9 +4800,6 @@ msgstr "Le chronomètre [{timer}] a été supprimé."
 
 msgid "Timer [{timer}] has been updated."
 msgstr "Le chronomètre [{timer}] a été modifié."
-
-msgid "Timer creation"
-msgstr "Création d'un chronomètre"
 
 msgid "Timer hours"
 msgstr "Horaires du chronomètre"
@@ -4935,9 +4904,6 @@ msgstr "Le tournoi [{tournament}] est démarré."
 
 msgid "Tournament [{tournament}] successfully imported."
 msgstr "Le tournoi [{tournament}] importé avec succès."
-
-msgid "Tournament creation"
-msgstr "Création d'un tournoi"
 
 msgid "Tournament exempt from registration fees."
 msgstr "Tournoi exempt de droits d'homologation."
@@ -5302,12 +5268,6 @@ msgstr "MIF"
 msgid "Warning message"
 msgstr "Message d'avertissement"
 
-msgid "Warning: deleting a prize category is permanent!"
-msgstr "Attention : la suppression d'une catégorie est définitive !"
-
-msgid "Warning: deleting a prize group is permanent!"
-msgstr "Attention : la suppression d'un groupe est définitive !"
-
 msgid "Warning: experimental features are enabled!"
 msgstr "Avertissement : les fonctionnalités expérimentales sont activées !"
 
@@ -5319,26 +5279,14 @@ msgstr "Attention : la ronde n°%(round)d n'est pas terminée."
 msgid "Warning: the %(player_count)d players in the tournament will be deleted."
 msgstr "Attention : les %(player_count)d joueur·euses du tournoi seront supprimé·es."
 
-msgid "Warning: the deletion of a display controller is permanent!"
-msgstr "Attention : la suppression d'un pilote d'afficheurs est définitive !"
-
-msgid "Warning: the deletion of a player is permanent!"
-msgstr "Attention : la suppression d'un·e joueur·euse est définitive !"
+msgid "Warning: the deletion is permanent!"
+msgstr "Attention : la suppression est définitive !"
 
 msgid "Warning: the deletion of a rotator is permanent!"
 msgstr "Attention : la suppression d'un écran rotatif est définitive !"
 
-msgid "Warning: the deletion of a screen family is permanent!"
-msgstr "Attention : la suppression d'une famille d'écrans est définitive !"
-
-msgid "Warning: the deletion of a screen is permanent!"
-msgstr "Attention : la suppression d'un écran est définitive !"
-
 msgid "Warning: the deletion of a timer is permanent!"
 msgstr "Attention : la suppression d'un chronomètre est définitive !"
-
-msgid "Warning: the deletion of a tournament is permanent!"
-msgstr "Attention : la suppression d'un tournoi est définitive !"
 
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
 msgstr "Attention : vous essayez d'exécuter une opération interdite par le règlement FIDE."
@@ -5700,13 +5648,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
-#~ msgid "Display controller edition"
-#~ msgstr "Édition d'un pilote d'afficheurs"
-
-#~ msgid "Editing of screen [%(screen_uniq_id)s]"
-#~ msgstr "Édition de l'écran [%(screen_uniq_id)s]"
-
-#~ msgid "Editing of screen family [%(family_uniq_id)s]"
-#~ msgstr "Édition de la famille d'écrans [%(family_uniq_id)s]"
 
