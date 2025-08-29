@@ -592,7 +592,6 @@ class FamilyAdminController(BaseEventAdminController):
             match action:
                 case 'create' | 'clone':
                     stored_family = event_database.add_stored_family(stored_family)
-                    event_database.commit()
                     Message.success(
                         request,
                         _('Family [{family_uniq_id}] has been created.').format(
@@ -601,7 +600,6 @@ class FamilyAdminController(BaseEventAdminController):
                     )
                 case 'update':
                     stored_family = event_database.update_stored_family(stored_family)
-                    event_database.commit()
                     Message.success(
                         request,
                         _('Family [{family_uniq_id}] has been updated.').format(
@@ -611,7 +609,6 @@ class FamilyAdminController(BaseEventAdminController):
                 case 'delete':
                     assert web_context.admin_family is not None
                     event_database.delete_stored_family(web_context.admin_family.id)
-                    event_database.commit()
                     Message.success(
                         request,
                         _('Family [{family_uniq_id}] has been deleted.').format(
@@ -725,7 +722,6 @@ class FamilyAdminController(BaseEventAdminController):
         stored_family.uniq_id = new_uniq_id
         with EventDatabase(event.uniq_id, True) as database:
             database.update_stored_family(stored_family)
-            database.commit()
 
         web_context = FamilyAdminWebContext(request, event_uniq_id, family_id)
         event = web_context.get_admin_event()

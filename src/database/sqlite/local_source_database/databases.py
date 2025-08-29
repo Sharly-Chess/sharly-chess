@@ -57,7 +57,6 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 database.insert_stored_local_source_database(
                     self.stored_source_database
                 )
-                database.commit()
 
     @staticmethod
     def _dir() -> Path:
@@ -221,7 +220,6 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         self.stored_source_database = self.default_stored_database
         with ConfigDatabase(write=True) as database:
             database.update_stored_local_source_database(self.default_stored_database)
-            database.commit()
         self.publish_database_status_updated()
 
     def check(self) -> bool:
@@ -325,6 +323,5 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         self.stored_source_database.updated_at = time.time()
         with ConfigDatabase(write=True) as database:
             database.update_stored_local_source_database(self.stored_source_database)
-            database.commit()
         logger.info(self.log_prefix + _('Database successfully updated.'))
         return self.stop_update(True)

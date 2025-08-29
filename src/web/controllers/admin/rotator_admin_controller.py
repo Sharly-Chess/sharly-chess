@@ -333,7 +333,6 @@ class RotatorAdminController(BaseEventAdminController):
             match action:
                 case 'create':
                     stored_rotator = event_database.add_stored_rotator(stored_rotator)
-                    event_database.commit()
                     Message.success(
                         request,
                         _('Rotator [{rotator_uniq_id}] has been created.').format(
@@ -344,7 +343,6 @@ class RotatorAdminController(BaseEventAdminController):
                     stored_rotator = event_database.update_stored_rotator(
                         stored_rotator
                     )
-                    event_database.commit()
                     Message.success(
                         request,
                         _('Rotator [{rotator_uniq_id}] has been updated.').format(
@@ -354,7 +352,6 @@ class RotatorAdminController(BaseEventAdminController):
                 case 'delete':
                     rotator = web_context.get_admin_rotator()
                     event_database.delete_stored_rotator(rotator.id)
-                    event_database.commit()
                     Message.success(
                         request,
                         _('Rotator [{rotator_uniq_id}] has been deleted.').format(
@@ -438,7 +435,6 @@ class RotatorAdminController(BaseEventAdminController):
         stored_rotator.uniq_id = new_uniq_id
         with EventDatabase(event.uniq_id, True) as database:
             database.update_stored_rotator(stored_rotator)
-            database.commit()
         return HTMXTemplate(
             template_name='/admin/rotators/rotator_update_modal_header.html',
             context=web_context.template_context

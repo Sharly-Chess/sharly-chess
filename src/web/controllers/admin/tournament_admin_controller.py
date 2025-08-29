@@ -679,7 +679,6 @@ class TournamentAdminController(BaseEventAdminController):
         tournament.stored_tournament.uniq_id = new_uniq_id
         with EventDatabase(event.uniq_id, True) as database:
             database.update_stored_tournament(tournament.stored_tournament)
-            database.commit()
         return HTMXTemplate(
             template_name='/admin/tournaments/tournament_update_modal_header.html',
             context=web_context.template_context
@@ -959,7 +958,6 @@ class TournamentAdminController(BaseEventAdminController):
                     ).format(tournament_uniq_id=stored_tournament.uniq_id)
 
                 tournament_id = stored_tournament.id
-            event_database.commit()
 
         if add_other:
             return self._admin_event_tournaments_render(
@@ -1033,7 +1031,6 @@ class TournamentAdminController(BaseEventAdminController):
             return web_context.error
         with EventDatabase(event_uniq_id, True) as database:
             database.delete_stored_tournament(tournament_id)
-            database.commit()
         Message.success(
             request,
             _('Tournament [{tournament_uniq_id}] has been deleted.').format(

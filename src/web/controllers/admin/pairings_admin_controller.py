@@ -1354,7 +1354,6 @@ class PairingsAdminController(BaseEventAdminController):
                 database.set_tournament_players_manual_tiebreak(
                     tournament_id, players_to_update
                 )
-                database.commit()
 
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
