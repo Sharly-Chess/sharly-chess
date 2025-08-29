@@ -12,6 +12,7 @@ from _weakref import ReferenceType
 from trf import Tournament as TrfTournament
 
 from common import format_timestamp
+from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
 
@@ -379,6 +380,12 @@ class Tournament:
 
         if prize_group_id in self.prize_groups_by_id:
             del self.prize_groups_by_id[prize_group_id]
+
+    def get_unused_prize_group_name(self, base_name: str | None = None) -> str:
+        return StaticUtils.get_unused_item_name(
+            base_name or _('New group'),
+            (group.name for group in self.prize_groups),
+        )
 
     @property
     def players(self) -> Collection[Player]:

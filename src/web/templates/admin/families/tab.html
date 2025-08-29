@@ -55,7 +55,7 @@
                 <li>
                     <button
                         class="dropdown-item text-start cursor-pointer"
-                        hx-get="{{ url_for('admin-family-create-modal', event_uniq_id=admin_event.uniq_id, family_type=family_type) }}"
+                        hx-get="{{ url_for('admin-family-create-modal', event_uniq_id=admin_event.uniq_id, family_type=family_type.value) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
                         preload

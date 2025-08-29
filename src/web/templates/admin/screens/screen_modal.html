@@ -27,7 +27,7 @@
             <form
                 id="modal-form"
                 {% if action == 'create' %}
-                    hx-post="{{ url_for('admin-screen-' ~ action, event_uniq_id=admin_event.uniq_id, screen_type=screen_type) }}"
+                    hx-post="{{ url_for('admin-screen-' ~ action, event_uniq_id=admin_event.uniq_id, screen_type=screen_type.value) }}"
                 {% elif action == 'clone' %}
                     hx-post="{{ url_for('admin-screen-' ~ action, event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id) }}"
                 {% elif action == 'update' %}

@@ -27,7 +27,7 @@
             <form
                 id="modal-form"
                 {% if action == 'create' %}
-                    hx-post="{{ url_for('admin-family-' ~ action, event_uniq_id=admin_event.uniq_id, family_type=family_type) }}"
+                    hx-post="{{ url_for('admin-family-' ~ action, event_uniq_id=admin_event.uniq_id, family_type=family_type.value) }}"
                 {% elif action == 'clone' %}
                     hx-post="{{ url_for('admin-family-' ~ action, event_uniq_id=admin_event.uniq_id, family_id=admin_family.id) }}"
                 {% elif action == 'update' %}
