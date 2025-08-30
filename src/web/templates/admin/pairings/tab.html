@@ -56,7 +56,7 @@
                                 preload
                                 data-bs-toggle="modal"
                                 data-bs-target="#modal-wrapper"
-                                {{ macros.tooltip_attributes('info', _('Pairings disabled while check-in is open.'), 'top') }}
+                                {{ macros.tooltip_attributes('info', _('Close check-in for tournament [%(tournament)s].', tournament=admin_tournament.name), 'bottom') }}
                             >
                                 {{ _('Close check in') }}
                             </button>
