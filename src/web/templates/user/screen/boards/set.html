@@ -162,7 +162,11 @@
         {% else %}
             <div class="players-set">
                 <h2 class="set-title text-center">
-                    {{ _('%(set_name)s (check-in)', set_name=screen_set.name_for_boards) }}
+                    {{
+                        _('%(set_name)s (check-in)', set_name=screen_set.name_for_boards)
+                        if screen_set.tournament.check_in_open else
+                        _('%(set_name)s (registered players)', set_name=screen_set.name_for_boards)
+                    }}
                 </h2>
                 <div class="row screen-set-row mx-0">
                     {% for players_by_name_tuple in screen_set.players_by_name_tuple_lists %}
