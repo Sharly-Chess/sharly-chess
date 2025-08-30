@@ -47,6 +47,8 @@ class EventLoader:
 
     @classmethod
     def load_event_ids(cls, uniq_id: str | None = None):
+        cls._clean_not_existing_event_database_files(cls._valid_event_ids)
+        cls._clean_not_existing_event_database_files(cls._invalid_uniq_ids)
         known_event_ids = cls._valid_event_ids + cls._invalid_uniq_ids
         event_ids = [uniq_id] if uniq_id is not None else cls.all_event_ids()
         for event_id in event_ids:
@@ -62,6 +64,16 @@ class EventLoader:
             except SharlyChessException as e:
                 logger.error(e)
                 cls._invalid_uniq_ids.append(event_id)
+
+    @classmethod
+    def _clean_not_existing_event_database_files(cls, event_uniq_ids: list[str]):
+        to_remove = [
+            uniq_id
+            for uniq_id in event_uniq_ids
+            if not EventDatabase.event_database_path(uniq_id).exists()
+        ]
+        for uniq_id in to_remove:
+            event_uniq_ids.remove(uniq_id)
 
     @cached_property
     def event_uniq_ids(self) -> list[str]:
