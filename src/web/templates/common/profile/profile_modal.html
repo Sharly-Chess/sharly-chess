@@ -177,8 +177,8 @@
                                     </td>
                                     <td class="{% if permission.inherited %}text-secondary fst-italic{% endif %}">
                                         {% if role.has_tournament_scope %}
-                                            {% if permission.tournament_uniq_ids %}
-                                                {{ _('Tournaments: %(tournament_uniq_ids)s', tournament_uniq_ids=permission.tournament_uniq_ids) }}
+                                            {% if permission.tournament_ids %}
+                                                {{ _('Tournaments: %(tournament_ids)s', tournament_ids=permission.tournament_ids) }}
                                             {% else %}
                                                 {{ _('All the tournaments') }}
                                             {% endif %}

@@ -308,6 +308,9 @@ msgstr "Accès depuis le réseau local (LAN/WAN)"
 msgid "Access unrated and penalty results."
 msgstr "Accéder aux résultats non homologués et pénalisés"
 
+msgid "Account"
+msgstr "Compte"
+
 msgid "Account [{username}] already exists."
 msgstr "Le compte [{username}] existe déjà."
 
@@ -1372,6 +1375,12 @@ msgstr "Délai :"
 msgid "Delete"
 msgstr "Supprimer"
 
+msgid "Delete account"
+msgstr "Supprimer le compte"
+
+msgid "Delete device"
+msgstr "Supprimer l'appareil"
+
 msgid "Delete display controller"
 msgstr "Supprimer le pilote d'afficheurs"
 
@@ -1438,14 +1447,6 @@ msgstr "Supprime tous les critères de cette catégorie."
 msgid "Deletion date"
 msgstr "Date de suppression"
 
-#, python-format
-msgid "Deletion of account [%(username)s]"
-msgstr "Suppression du compte [%(username)s]"
-
-#, python-format
-msgid "Deletion of device [%(ip)s]"
-msgstr "Suppression de l'appareil [%(ip)s]"
-
 msgid "Deputy Chief Arbitration"
 msgstr "Arbitrage adjoint"
 
@@ -1460,6 +1461,9 @@ msgstr "Les descriptions ne peuvent être définies que pour les prix non-monét
 
 msgid "Details"
 msgstr "Détails"
+
+msgid "Device"
+msgstr "Appareil"
 
 msgid "Device [{ip}] already set."
 msgstr "Appareil [{ip}] déjà défini."
@@ -5357,8 +5361,8 @@ msgid "Tournaments: %(num)d"
 msgstr "Tournois : %(num)d"
 
 #, python-format
-msgid "Tournaments: %(tournament_uniq_ids)s"
-msgstr "Tournois : %(tournament_uniq_ids)s"
+msgid "Tournaments: %(tournament_ids)s"
+msgstr "Tournois : %(tournament_ids)s"
 
 msgid "Tournaments: {tournament_names}"
 msgstr "Tournois : {tournament_names}"

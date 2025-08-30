@@ -308,6 +308,9 @@ msgstr ""
 msgid "Access unrated and penalty results."
 msgstr ""
 
+msgid "Account"
+msgstr ""
+
 msgid "Account [{username}] already exists."
 msgstr ""
 
@@ -1372,6 +1375,12 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
+msgid "Delete account"
+msgstr ""
+
+msgid "Delete device"
+msgstr ""
+
 msgid "Delete display controller"
 msgstr ""
 
@@ -1438,14 +1447,6 @@ msgstr ""
 msgid "Deletion date"
 msgstr ""
 
-#, python-format
-msgid "Deletion of account [%(username)s]"
-msgstr ""
-
-#, python-format
-msgid "Deletion of device [%(ip)s]"
-msgstr ""
-
 msgid "Deputy Chief Arbitration"
 msgstr ""
 
@@ -1459,6 +1460,9 @@ msgid "Descriptions can only be defined for non-monetary prizes."
 msgstr ""
 
 msgid "Details"
+msgstr ""
+
+msgid "Device"
 msgstr ""
 
 msgid "Device [{ip}] already set."
@@ -5357,7 +5361,7 @@ msgid "Tournaments: %(num)d"
 msgstr ""
 
 #, python-format
-msgid "Tournaments: %(tournament_uniq_ids)s"
+msgid "Tournaments: %(tournament_ids)s"
 msgstr ""
 
 msgid "Tournaments: {tournament_names}"
