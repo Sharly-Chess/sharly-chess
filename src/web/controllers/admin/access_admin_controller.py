@@ -3,9 +3,9 @@ from typing import Annotated, Any
 
 from argon2 import PasswordHasher
 from litestar import post, get, delete, patch
-from litestar.plugins.htmx import HTMXRequest, ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
+from litestar.plugins.htmx import HTMXRequest, ClientRedirect
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
@@ -322,7 +322,7 @@ class AccessAdminController(BaseEventAdminController):
                 )
             elif username in event.accounts_by_username and (
                 action != FormAction.UPDATE
-                or (account and account.username == username)
+                or (account and account.username != username)
             ):
                 errors[field] = _('Account [{username}] already exists.').format(
                     username=username
@@ -610,7 +610,7 @@ class AccessAdminController(BaseEventAdminController):
                 ip = f'{int(matches.group(1))}.{int(matches.group(2))}.{int(matches.group(3))}.{int(matches.group(4))}'
                 data[field] = ip
                 if ip in event.devices_by_ip and (
-                    action != FormAction.UPDATE or (device and device.ip == ip)
+                    action != FormAction.UPDATE or (device and device.ip != ip)
                 ):
                     errors[field] = _('Device [{ip}] already set.').format(ip=ip)
             else:

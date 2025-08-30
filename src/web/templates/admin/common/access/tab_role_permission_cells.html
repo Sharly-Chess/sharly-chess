@@ -3,9 +3,9 @@
 </td>
 <td class="{% if not entity.active %}text-secondary{% endif %}">
     {% if role.has_tournament_scope %}
-        {% set permission=client.permissions_by_role[role] %}
+        {% set permission=entity.permissions_by_role[role] %}
         {% if permission.tournament_ids %}
-            {{ _('Tournaments: %(tournament_ids)s', tournament_ids=permission.tournament_ids) }}
+            {{ client.permission_tournament_names(permission) }}
         {% else %}
             {{ _('All the tournaments') }}
         {% endif %}

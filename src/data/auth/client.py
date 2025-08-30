@@ -1,5 +1,4 @@
 from contextlib import suppress
-from dataclasses import dataclass
 from functools import cached_property, cache
 from typing import TYPE_CHECKING, Optional
 
@@ -9,20 +8,17 @@ from data.auth.actions import AuthAction
 from data.auth.entities import (
     Device,
     Account,
+    AuthEntity,
+    Permission,
 )
 from data.auth.managers import RoleManager
 from data.auth.roles import Role
+from data.tournament import Tournament
 from utils.enum import Result
 from web.session import SessionHandler
 
 if TYPE_CHECKING:
     from data.event import Event
-
-
-@dataclass
-class Permission:
-    tournament_ids: set[int] | None = None
-    inherited: bool = False
 
 
 class Client:
@@ -76,6 +72,24 @@ class Client:
     # Permissions / actions
     # ---------------------------------------------------------------------------------
 
+    def permission_tournament_names(
+        self,
+        permission: Permission,
+    ) -> str | None:
+        """Returns"""
+        tournaments: list[Tournament]
+        if permission.tournament_ids is None:
+            tournaments = []
+        else:
+            tournaments = [
+                self.event.tournaments_by_id[tournament_id]
+                for tournament_id in permission.tournament_ids
+                if tournament_id in self.event.tournaments_by_id
+            ]
+        if not tournaments:
+            return None
+        return ', '.join(tournament.name for tournament in tournaments)
+
     @cached_property
     def permissions_by_role(self) -> dict[Role, Permission]:
         """Returns all the permissions by role, granted or inherited as a device or an account."""
@@ -83,12 +97,12 @@ class Client:
         for access_entity in (self.active_account, self.active_device):
             tournament_ids = access_entity.tournament_ids
             for role in access_entity.roles:
-                permissions_by_role[role] = self._merge_permissions(
+                permissions_by_role[role] = AuthEntity.merge(
                     Permission(tournament_ids),
                     permissions_by_role.get(role, None),
                 )
                 for sub_role in role.sub_roles():
-                    permissions_by_role[sub_role] = self._merge_permissions(
+                    permissions_by_role[sub_role] = AuthEntity.merge(
                         Permission(tournament_ids),
                         permissions_by_role.get(sub_role, None),
                     )
@@ -97,23 +111,6 @@ class Client:
             for role in RoleManager.objects()
             if role in permissions_by_role
         }
-
-    @staticmethod
-    def _merge_permissions(
-        permission1: Permission, permission2: Permission | None
-    ) -> Permission:
-        if not permission2:
-            return permission1
-        tournament_ids: set[int] | None = None
-        if (
-            permission1.tournament_ids is not None
-            and permission2.tournament_ids is not None
-        ):
-            tournament_ids = permission1.tournament_ids | permission2.tournament_ids
-        return Permission(
-            tournament_ids=tournament_ids,
-            inherited=permission1.inherited or permission2.inherited,
-        )
 
     @staticmethod
     @cache

@@ -5360,10 +5360,6 @@ msgstr ""
 msgid "Tournaments: %(num)d"
 msgstr ""
 
-#, python-format
-msgid "Tournaments: %(tournament_ids)s"
-msgstr ""
-
 msgid "Tournaments: {tournament_names}"
 msgstr ""
 
@@ -6255,55 +6251,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "Archiving of event [%(event_uniq_id)s]"
-#~ msgstr ""
-
-#~ msgid "Deletion of display controller [%(display_controller_uniq_id)s]"
-#~ msgstr ""
-
-#~ msgid "Please enter the tournament name."
-#~ msgstr ""
-
-#~ msgid "Screen [{screen_uniq_id}] has been assigned to controller [{display_controller_uniq_id}]."
-#~ msgstr ""
-
-#~ msgid "The arbiter interface allows the management of the events."
-#~ msgstr ""
-
-#~ msgid "The Unique ID, used to reference the display controller."
-#~ msgstr ""
-
-#~ msgid "The Unique ID, used to reference the rotator."
-#~ msgstr ""
-
-#~ msgid "The Unique ID, used to reference the screen family."
-#~ msgstr ""
-
-#~ msgid "The Unique ID, used to reference the screen."
-#~ msgstr ""
-
-#~ msgid "The Unique ID, used to reference the timer."
-#~ msgstr ""
-
-#~ msgid "The Unique ID, used to reference the tournament."
-#~ msgstr ""
-
-#~ msgid "Tournament [{tournament}] is not started yet."
-#~ msgstr ""
-
-#~ msgid "Tournament [{tournament}] is started."
-#~ msgstr ""
-
-#~ msgid "Warning: deleting a prize category is permanent!"
-#~ msgstr ""
-
-#~ msgid "Warning: deleting a prize group is permanent!"
-#~ msgstr ""
-
-#~ msgid "timer"
-#~ msgstr ""
-
-#~ msgid "tournament"
-#~ msgstr ""
 

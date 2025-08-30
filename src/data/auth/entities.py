@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from functools import cached_property
 
 from common.i18n import _
 from data.auth.managers import RoleManager
@@ -8,6 +10,12 @@ from database.sqlite.event.event_store import (
     StoredAccess,
 )
 from data.auth.roles import Role, AdministrationRole
+
+
+@dataclass
+class Permission:
+    tournament_ids: set[int] | None = None
+    inherited: bool = False
 
 
 class AuthEntity[T: StoredAccess](ABC):
@@ -46,6 +54,44 @@ class AuthEntity[T: StoredAccess](ABC):
         if self._stored_access.tournament_ids is None:
             return None
         return set(self._stored_access.tournament_ids)
+
+    @cached_property
+    def permissions_by_role(
+        self,
+    ) -> dict[Role, Permission]:
+        """Returns all the permissions by role, granted or inherited for a device or an account."""
+        permissions_by_role: dict[Role, Permission] = {}
+        tournament_ids = self.tournament_ids
+        for role in self.roles:
+            permissions_by_role[role] = self.merge(
+                Permission(tournament_ids),
+                permissions_by_role.get(role, None),
+            )
+            for sub_role in role.sub_roles():
+                permissions_by_role[sub_role] = self.merge(
+                    Permission(tournament_ids),
+                    permissions_by_role.get(sub_role, None),
+                )
+        return {
+            role: permissions_by_role[role]
+            for role in RoleManager.objects()
+            if role in permissions_by_role
+        }
+
+    @staticmethod
+    def merge(permission1: Permission, permission2: Permission | None) -> Permission:
+        if not permission2:
+            return permission1
+        tournament_ids: set[int] | None = None
+        if (
+            permission1.tournament_ids is not None
+            and permission2.tournament_ids is not None
+        ):
+            tournament_ids = permission1.tournament_ids | permission2.tournament_ids
+        return Permission(
+            tournament_ids=tournament_ids,
+            inherited=permission1.inherited or permission2.inherited,
+        )
 
 
 class Device(AuthEntity[StoredDevice]):
