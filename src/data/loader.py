@@ -67,11 +67,11 @@ class EventLoader:
 
     @classmethod
     def _clean_not_existing_event_database_files(cls, event_uniq_ids: list[str]):
-        to_remove = [
+        to_remove = (
             uniq_id
             for uniq_id in event_uniq_ids
             if not EventDatabase.event_database_path(uniq_id).exists()
-        ]
+        )
         for uniq_id in to_remove:
             event_uniq_ids.remove(uniq_id)
 
