@@ -604,7 +604,7 @@ class AccessAdminController(BaseEventAdminController):
             if not ip:
                 errors[field] = _('Please enter the IP address.')
             elif matches := re.match(
-                r'^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[1-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[1-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[1-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[1-9])$',
+                r'^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[1-9])$',
                 ip,
             ):
                 ip = f'{int(matches.group(1))}.{int(matches.group(2))}.{int(matches.group(3))}.{int(matches.group(4))}'
@@ -614,7 +614,7 @@ class AccessAdminController(BaseEventAdminController):
                 ):
                     errors[field] = _('Device [{ip}] already set.').format(ip=ip)
             else:
-                errors[field] = _('The IP address [{ip}] is not valid.').format(ip=ip)
+                errors[field] = _('IP address [{ip}] is not valid.').format(ip=ip)
         # no validation on the roles, an empty list is accepted.
         return errors
 

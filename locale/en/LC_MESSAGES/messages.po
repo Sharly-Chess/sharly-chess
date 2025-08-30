@@ -4649,10 +4649,10 @@ msgstr ""
 msgid "The ID used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
 msgstr ""
 
-msgid "The IP address [{ip}] is not valid."
+msgid "IP address [{ip}] is not valid."
 msgstr ""
 
-msgid "The IP address, used tu identify the device."
+msgid "The IP address, used t0 identify the device."
 msgstr ""
 
 msgid "The URL of the image to display."
