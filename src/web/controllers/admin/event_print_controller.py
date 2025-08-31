@@ -40,7 +40,9 @@ class EventPrintController(BaseEventAdminController):
     @staticmethod
     def _print_modal_context(
         web_context: BaseEventAdminWebContext,
+        document_id: str | None = None,
         tournament_id: int | None = None,
+        _round: int | None = None,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
@@ -51,7 +53,8 @@ class EventPrintController(BaseEventAdminController):
                 tournament_id = event.tournaments_sorted_by_uniq_id[0].id
             data = {
                 'tournament_id': WebContext.value_to_form_data(tournament_id),
-                'document': PlayerListPrintDocument.static_id(),
+                'document': document_id or PlayerListPrintDocument.static_id(),
+                'round': WebContext.value_to_form_data(_round) or '',
             } | {
                 option.id: WebContext.value_to_form_data(option.default_value)
                 for option in print_options
@@ -82,7 +85,9 @@ class EventPrintController(BaseEventAdminController):
     @get(
         path=[
             '/admin/print-modal/{event_uniq_id:str}',
-            '/admin/print-modal/{event_uniq_id:str}/{tournament_id:int}',
+            '/admin/print-modal/{event_uniq_id:str}/{document_id:str}',
+            '/admin/print-modal/{event_uniq_id:str}/{document_id:str}/{tournament_id:int}',
+            '/admin/print-modal/{event_uniq_id:str}/{document_id:str}/{tournament_id:int}/{round:int}',
         ],
         name='admin-print-modal',
     )
@@ -90,20 +95,18 @@ class EventPrintController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
+        document_id: str | None = None,
         tournament_id: int | None = None,
+        round: int | None = None,
     ) -> Template | ClientRedirect:
         web_context = BaseEventAdminWebContext(request, event_uniq_id)
-        if (
-            last_tournament := SessionHandler.get_session_admin_print_last_tournament(
-                request
-            )
-        ) is not None:
-            event_uniq_id, tid = last_tournament
-            if event_uniq_id == web_context.get_admin_event().uniq_id:
-                tournament_id = tid
+        tournament_id = web_context.default_tournament_for_print_modal(tournament_id)
 
         template_context = self._print_modal_context(
-            web_context, tournament_id=tournament_id
+            web_context,
+            document_id=document_id,
+            tournament_id=tournament_id,
+            _round=round,
         )
         return self._admin_print_render(
             web_context=web_context,
