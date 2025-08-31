@@ -1165,8 +1165,7 @@ class PlayerAdminController(BaseEventAdminController):
                 event.update_player(player, stored_player)
                 previous_tournament = player.tournament
                 if tournament.id != previous_tournament.id:
-                    tournament.add_player_to_tournament(stored_player)
-                    previous_tournament.delete_player_from_tournament(player.id)
+                    event.move_player_to_tournament(player, tournament)
                 if not self.filtered_players(request, event_uniq_id, [player]):
                     self.delete_from_search_results(request, player.id)
             case 'create':
@@ -1233,10 +1232,10 @@ class PlayerAdminController(BaseEventAdminController):
         admin_player = web_context.get_admin_player()
         dst_tournament = web_context.get_admin_tournament()
         src_tournament = admin_player.tournament
+        event = web_context.get_admin_event()
         try:
             self._validate_player_tournament_move(admin_player, dst_tournament)
-            dst_tournament.add_player_to_tournament(admin_player.stored_player)
-            src_tournament.delete_player_from_tournament(admin_player.id)
+            event.move_player_to_tournament(admin_player, dst_tournament)
             if not self.filtered_players(request, event_uniq_id, [admin_player]):
                 self.delete_from_search_results(request, admin_player.id)
             Message.success(
