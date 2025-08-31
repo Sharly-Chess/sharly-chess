@@ -2499,6 +2499,9 @@ msgstr "IM"
 msgid "IP address"
 msgstr ""
 
+msgid "IP address [{ip}] is not valid."
+msgstr ""
+
 msgid "IP address:"
 msgstr ""
 
@@ -4649,10 +4652,7 @@ msgstr ""
 msgid "The ID used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
 msgstr ""
 
-msgid "IP address [{ip}] is not valid."
-msgstr ""
-
-msgid "The IP address, used t0 identify the device."
+msgid "The IP address, used to identify the device."
 msgstr ""
 
 msgid "The URL of the image to display."
