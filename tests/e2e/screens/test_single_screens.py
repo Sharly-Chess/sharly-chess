@@ -88,7 +88,8 @@ class TestSingleScreensFunctionality:
 
         # Should not be checked in
         row = rows.filter(has_text='ALYX')
-        expect(row.locator('i.bi-square')).to_be_visible()
+        expect(row.locator('i.bi-square')).not_to_be_visible()
+        expect(row.locator('i.bi-check-square-fill')).not_to_be_visible()
 
         expect(row.locator('td:nth-child(1)')).not_to_have_attribute(
             'hx-get', re.compile(r'.*checkin-modal.*')
