@@ -11,9 +11,14 @@
             </h2>
         </div>
         <div class="modal-body">
+            <h4>
+                {% block object_name %}
+                    OBJECT NAME
+                {% endblock %}
+            </h4>
             <h4 class="text-danger">
                 {% block delete_warning %}
-                    DELETE WARNING
+                    {{ _('Warning: the deletion is permanent!') }}
                 {% endblock %}
             </h4>
             <form

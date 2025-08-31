@@ -55,7 +55,6 @@ def test_fide_local_database():
                 for sql_command in sql_commands.values():
                     with FideDatabase(write=True) as fide_database:
                         fide_database.execute(sql_command)
-                        fide_database.commit()
                 duration: float = time.perf_counter() - start
                 print(f'{duration:.2f} seconds.')
             print(

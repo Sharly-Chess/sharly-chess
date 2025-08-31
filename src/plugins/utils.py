@@ -89,7 +89,6 @@ class PluginContext:
                     name=plugin.id, is_enabled=plugin.default_is_enabled
                 )
                 database.insert_stored_plugin(stored_plugin)
-                database.commit()
         self.stored_plugin = stored_plugin
 
 

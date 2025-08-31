@@ -97,7 +97,9 @@ class Board:
 
     @property
     def last_result_update_str(self) -> str:
-        return format_timestamp(self.last_result_update) if self.last_result_update else ''
+        return (
+            format_timestamp(self.last_result_update) if self.last_result_update else ''
+        )
 
     def replace_player(
         self, new_player: 'Player', player_color: Literal['white', 'black']
@@ -126,7 +128,6 @@ class Board:
             if self.result != Result.NO_RESULT:
                 database.update_stored_pairing(self.white_pairing.stored_pairing)
                 database.update_stored_pairing(self.black_pairing.stored_pairing)
-            database.commit()
 
     def set_last_result_update(self, new_result: Result, database: EventDatabase):
         """Updates board timestamp. Clears board timestamp if result is NO_RESULT."""

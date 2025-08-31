@@ -134,7 +134,6 @@ class TestUtils:
             stored_event = StoredEvent(**data)
             with EventDatabase(uniq_id, write=True) as event_database:
                 event_database.update_stored_event(stored_event)
-                event_database.commit()
 
     @classmethod
     def delete_event(
@@ -155,7 +154,7 @@ class TestUtils:
     def create_tournament(
         cls,
         event_uniq_id: str,
-        uniq_id: str,
+        name: str,
         via_api_request_context: APIRequestContext | None = None,
         overrides: dict | None = None,
         json_file: str | None = None,
@@ -165,8 +164,7 @@ class TestUtils:
         # Provide defaults
         defaults: dict[str, Any] = {
             'id': None,
-            'uniq_id': uniq_id,
-            'name': uniq_id,
+            'name': name,
             'time_control_trf25': None,
             'time_control_handicap_penalty_step': None,
             'time_control_handicap_penalty_value': None,
@@ -207,11 +205,10 @@ class TestUtils:
             with EventDatabase(event_uniq_id, write=True) as event_database:
                 stored_tournament = StoredTournament(**data)
                 event_database.add_stored_tournament(stored_tournament)
-                event_database.commit()
 
         with EventDatabase(event_uniq_id) as event_database:
             tournaments = event_database.load_stored_tournaments()
-            stored_tournament = next(t for t in tournaments if t.uniq_id == uniq_id)
+            stored_tournament = next(t for t in tournaments if t.name == name)
 
         if json_file and via_api_request_context:
             json_path = BASE_DIR / 'tests' / 'json' / f'{json_file}.json'

@@ -181,8 +181,8 @@ class PlayerAdminController(BaseEventAdminController):
                 and fide_id in tournament.players_by_fide_id
             ):
                 errors[field] = _(
-                    'The player with FIDE ID [{fide_id}] already plays tournament [{tournament_uniq_id}].'
-                ).format(fide_id=fide_id, tournament_uniq_id=tournament.uniq_id)
+                    'The player with FIDE ID [{fide_id}] already plays tournament [{tournament}].'
+                ).format(fide_id=fide_id, tournament=tournament.name)
         except ValueError:
             errors[field] = _('Invalid FIDE ID [{fide_id}].').format(
                 fide_id=data[field]
@@ -1158,8 +1158,7 @@ class PlayerAdminController(BaseEventAdminController):
                 event.update_player(player, stored_player)
                 previous_tournament = player.tournament
                 if tournament.id != previous_tournament.id:
-                    tournament.add_player_to_tournament(stored_player)
-                    previous_tournament.delete_player_from_tournament(player.id)
+                    event.move_player_to_tournament(player, tournament)
                 if not self.filtered_players(request, event_uniq_id, [player]):
                     self.delete_from_search_results(request, player.id)
             case 'create':
@@ -1167,8 +1166,8 @@ class PlayerAdminController(BaseEventAdminController):
                     Message.error(
                         request,
                         _(
-                            'Tournament [{tournament_uniq_id}] is finished, you can not add players any longer.'
-                        ).format(tournament_uniq_id=tournament.uniq_id),
+                            'Tournament [{tournament}] is finished, you can not add players any longer.'
+                        ).format(tournament=tournament.name),
                     )
                     return self._admin_event_players_render(
                         request,
@@ -1226,22 +1225,22 @@ class PlayerAdminController(BaseEventAdminController):
         admin_player = web_context.get_admin_player()
         dst_tournament = web_context.get_admin_tournament()
         src_tournament = admin_player.tournament
+        event = web_context.get_admin_event()
         try:
             self._validate_player_tournament_move(admin_player, dst_tournament)
-            dst_tournament.add_player_to_tournament(admin_player.stored_player)
-            src_tournament.delete_player_from_tournament(admin_player.id)
+            event.move_player_to_tournament(admin_player, dst_tournament)
             if not self.filtered_players(request, event_uniq_id, [admin_player]):
                 self.delete_from_search_results(request, admin_player.id)
             Message.success(
                 request,
                 _(
                     'Player [{player}] has been moved '
-                    'from tournament [{src_tournament_uniq_id}] '
-                    'to tournament [{dst_tournament_uniq_id}].'
+                    'from tournament [{src_tournament}] '
+                    'to tournament [{dst_tournament}].'
                 ).format(
                     player=admin_player.full_name,
-                    src_tournament_uniq_id=src_tournament.uniq_id,
-                    dst_tournament_uniq_id=dst_tournament.uniq_id,
+                    src_tournament=src_tournament.name,
+                    dst_tournament=dst_tournament.name,
                 ),
             )
         except ValueError as e:
@@ -1264,25 +1263,25 @@ class PlayerAdminController(BaseEventAdminController):
         if player.has_real_pairings:
             raise ValueError(
                 _(
-                    'Player [{player}] has pairings in tournament [{tournament_uniq_id}].'
+                    'Player [{player}] has pairings in tournament [{tournament}].'
                 ).format(
                     player=player.full_name,
-                    tournament_uniq_id=src_tournament.uniq_id,
+                    tournament=src_tournament.name,
                 ),
             )
         if not dst_tournament.can_add_players:
             raise ValueError(
-                _(
-                    'Impossible to add players to tournament [{tournament_uniq_id}].'
-                ).format(tournament_uniq_id=src_tournament.uniq_id)
+                _('Impossible to add players to tournament [{tournament}].').format(
+                    tournament=src_tournament.uniq_id
+                )
             )
         if player.fide_id in dst_tournament.players_by_fide_id:
             raise ValueError(
                 _(
-                    'Fide ID [{fide_id}] already present in tournament [{tournament_uniq_id}].'
+                    'Fide ID [{fide_id}] already present in tournament [{tournament}].'
                 ).format(
                     fide_id=player.fide_id,
-                    tournament_uniq_id=dst_tournament.uniq_id,
+                    tournament=dst_tournament.name,
                 ),
             )
         if plugin_error := (
@@ -1464,10 +1463,10 @@ class PlayerAdminController(BaseEventAdminController):
             Message.error(
                 request,
                 _(
-                    'Player [{player}] has pairings in tournament [{tournament_uniq_id}].'
+                    'Player [{player}] has pairings in tournament [{tournament}].'
                 ).format(
                     player=player.full_name,
-                    tournament_uniq_id=tournament.uniq_id,
+                    tournament=tournament.name,
                 ),
             )
         else:
@@ -1508,8 +1507,8 @@ class PlayerAdminController(BaseEventAdminController):
         admin_tournament.open_check_in()
         Message.success(
             request,
-            _('Check-in is open for tournament [{tournament_uniq_id}].').format(
-                tournament_uniq_id=admin_tournament.uniq_id
+            _('Check-in is open for tournament [{tournament}].').format(
+                tournament=admin_tournament.name
             ),
         )
         return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)
@@ -1557,8 +1556,8 @@ class PlayerAdminController(BaseEventAdminController):
         admin_tournament.close_check_in(zpbs_next_round, zpbs_all_rounds)
         Message.success(
             request,
-            _('Check-in is closed for tournament [{tournament_uniq_id}].').format(
-                tournament_uniq_id=admin_tournament.uniq_id
+            _('Check-in is closed for tournament [{tournament}].').format(
+                tournament=admin_tournament.name
             ),
         )
         return HTMXTemplate(
@@ -1582,55 +1581,15 @@ class PlayerAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
     ) -> Template | ClientRedirect:
-        return self._admin_tournament_close_check_in(
-            request=request,
-            data=data,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-        )
+        action = WebContext.form_data_to_str(data, 'action') or ''
 
-    @patch(
-        path='/admin/tournament-close-check-in-zpb-next-round/{event_uniq_id:str}/{tournament_id:int}',
-        name='admin-tournament-close-check-in-zpb-next-round',
-    )
-    async def htmx_admin_tournament_close_check_in_zpb_next_round(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-        event_uniq_id: str,
-        tournament_id: int,
-    ) -> Template | ClientRedirect:
         return self._admin_tournament_close_check_in(
             request=request,
             data=data,
             event_uniq_id=event_uniq_id,
             tournament_id=tournament_id,
-            zpbs_all_rounds=False,
-        )
-
-    @patch(
-        path='/admin/tournament-close-check-in-zpb-last-rounds/{event_uniq_id:str}/{tournament_id:int}',
-        name='admin-tournament-close-check-in-zpb-last-rounds',
-    )
-    async def htmx_admin_close_tournament_check_in_zpbs_all_rounds(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-        event_uniq_id: str,
-        tournament_id: int,
-    ) -> Template | ClientRedirect:
-        return self._admin_tournament_close_check_in(
-            request=request,
-            data=data,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-            zpbs_all_rounds=True,
+            zpbs_all_rounds=action == 'zpd-tournament',
+            zpbs_next_round=action == 'zpd-next-round',
         )
 
     def _admin_player_check_in_out(

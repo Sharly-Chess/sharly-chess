@@ -126,7 +126,6 @@ class PrizesTestCase(TestCase):
             self.tournament = Tournament(
                 self.event,
                 StoredTournament(
-                    uniq_id='empty',
                     name='empty',
                     id=1,
                     current_round=ROUNDS,

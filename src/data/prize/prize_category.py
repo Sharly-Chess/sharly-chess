@@ -148,12 +148,10 @@ class PrizeCategory:
     def update(self):
         with self.get_event_database() as database:
             database.update_stored_prize_category(self.stored_prize_category)
-            database.commit()
 
     def add_criterion(self, stored_criterion: StoredPrizeCriterion) -> PrizeCriterion:
         with self.get_event_database() as database:
             object_id = database.add_stored_prize_criterion(stored_criterion)
-            database.commit()
         stored_criterion.id = object_id
         prize_criterion = PrizeCriterion(self, stored_criterion)
         self.criteria_by_id[object_id] = prize_criterion
@@ -162,14 +160,12 @@ class PrizeCategory:
     def delete_criterion(self, criterion_id: int):
         with self.get_event_database() as database:
             database.delete_stored_prize_criterion(criterion_id)
-            database.commit()
         if criterion_id in self.criteria_by_id:
             del self.criteria_by_id[criterion_id]
 
     def add_prize(self, stored_prize: StoredPrize) -> Prize:
         with self.get_event_database() as database:
             object_id = database.add_stored_prize(stored_prize)
-            database.commit()
         prize = Prize(self, stored_prize)
         stored_prize.id = object_id
         self.prizes_by_id[object_id] = prize
@@ -178,7 +174,6 @@ class PrizeCategory:
     def delete_prize(self, prize_id: int):
         with self.get_event_database() as database:
             database.delete_stored_prize(prize_id)
-            database.commit()
         if prize_id in self.prizes_by_id:
             del self.prizes_by_id[prize_id]
 

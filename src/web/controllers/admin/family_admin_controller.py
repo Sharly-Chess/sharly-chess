@@ -53,7 +53,15 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
             except KeyError:
                 self._redirect_error(f'Family [{family_id}] not found.')
                 return
-        self.family_type = family_type
+        self.family_type: ScreenType | None = None
+        if self.admin_family:
+            self.family_type = self.admin_family.type
+        elif family_type:
+            try:
+                self.family_type = ScreenType(family_type)
+            except ValueError:
+                self._redirect_error(f'Unknown screen type [{family_type}].')
+                return
 
     def get_admin_family(self) -> Family:
         assert self.admin_family is not None
@@ -63,9 +71,7 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
             'admin_family': self.admin_family,
-            'family_type': self.admin_family.type
-            if self.admin_family
-            else self.family_type,
+            'family_type': self.family_type,
         }
 
 
@@ -592,7 +598,6 @@ class FamilyAdminController(BaseEventAdminController):
             match action:
                 case 'create' | 'clone':
                     stored_family = event_database.add_stored_family(stored_family)
-                    event_database.commit()
                     Message.success(
                         request,
                         _('Family [{family_uniq_id}] has been created.').format(
@@ -601,7 +606,6 @@ class FamilyAdminController(BaseEventAdminController):
                     )
                 case 'update':
                     stored_family = event_database.update_stored_family(stored_family)
-                    event_database.commit()
                     Message.success(
                         request,
                         _('Family [{family_uniq_id}] has been updated.').format(
@@ -611,7 +615,6 @@ class FamilyAdminController(BaseEventAdminController):
                 case 'delete':
                     assert web_context.admin_family is not None
                     event_database.delete_stored_family(web_context.admin_family.id)
-                    event_database.commit()
                     Message.success(
                         request,
                         _('Family [{family_uniq_id}] has been deleted.').format(
@@ -725,7 +728,6 @@ class FamilyAdminController(BaseEventAdminController):
         stored_family.uniq_id = new_uniq_id
         with EventDatabase(event.uniq_id, True) as database:
             database.update_stored_family(stored_family)
-            database.commit()
 
         web_context = FamilyAdminWebContext(request, event_uniq_id, family_id)
         event = web_context.get_admin_event()

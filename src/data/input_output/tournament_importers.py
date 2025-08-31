@@ -49,10 +49,6 @@ class TournamentImporter(IdentifiableEntity, ABC):
         stored_tournament, stored_players = self.load_stored_tournament(
             source_file, tournament.stored_tournament if tournament else None
         )
-        if not tournament:
-            stored_tournament.uniq_id = event.get_unused_tournament_uniq_id(
-                stored_tournament.uniq_id
-            )
         with EventDatabase(event.uniq_id, True) as database:
             if tournament:
                 database.delete_players_in_tournament(tournament.id)
@@ -69,7 +65,6 @@ class TournamentImporter(IdentifiableEntity, ABC):
                     for index, board in enumerate(sorted(boards, reverse=True)):
                         board.stored_board.index = index
                         database.update_stored_board(board.stored_board)
-                database.commit()
         return tournament
 
     @staticmethod

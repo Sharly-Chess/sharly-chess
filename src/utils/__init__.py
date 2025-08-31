@@ -2,7 +2,7 @@ import re
 from decimal import Decimal
 from functools import lru_cache, cache
 from math import floor
-from typing import Callable
+from typing import Callable, Iterable
 
 import iso4217parse
 import pycountry
@@ -167,6 +167,39 @@ class StaticUtils:
         name = unidecode(name).lower()
         name = re.sub(r' \((\d+)\)$', r'-\1', name)
         return re.sub(r'[^a-zA-Z0-9_\-]', '_', name)
+
+    @classmethod
+    def get_unused_item_uniq_id(
+        cls, base_uniq_id: str, used_uniq_ids: Iterable[str]
+    ) -> str:
+        """Returns the first unused uniq_id in a list looking like base_uniq_id:
+        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1..."""
+        index = 1
+        uniq_id = base_uniq_id
+        base_uniq_id = cls.name_to_uniq_id(base_uniq_id)
+        if matches := re.match(r'^(.*)-(\d+)$', base_uniq_id):
+            base_uniq_id = matches.group(1)
+            index = int(matches.group(2)) - 1
+            uniq_id = f'{base_uniq_id}-{index + 1}'
+        while uniq_id in used_uniq_ids:
+            index += 1
+            uniq_id = f'{base_uniq_id}-{index}'
+        return uniq_id
+
+    @staticmethod
+    def get_unused_item_name(base_name: str, used_names: Iterable[str]) -> str:
+        """Returns the first unused name in a list looking like base_name:
+        base_name, or base_name (2), or base_name (n+1)..."""
+        index = 1
+        name = base_name
+        if matches := re.match(r'^(.*) \((\d+)\)$', base_name):
+            base_name = matches.group(1)
+            index = int(matches.group(2)) - 1
+            name = f'{base_name} ({index + 1})'
+        while name in used_names:
+            index += 1
+            name = f'{base_name} ({index})'
+        return name
 
 
 class SharedUtils:

@@ -60,22 +60,32 @@ class SQLiteDatabase:
         self.acquire_lock()
         self.database = connect(db_url, detect_types=1, uri=True)
         self.cursor = self.database.cursor()
+
+        self.cursor.execute('PRAGMA foreign_keys=ON')
+        self.cursor.execute('PRAGMA busy_timeout=5000')
+
         if self.write:
             self.cursor.execute('PRAGMA journal_mode=DELETE')
-            self.cursor.execute('PRAGMA foreign_keys=ON')
-            self.commit()
+            self.cursor.execute('BEGIN IMMEDIATE')
+
         return self
 
     def __exit__(self, exc_type, exc_value, tb):
-        if self.cursor is not None:
-            self.cursor.close()
-            del self.cursor
-            self.cursor = None
-        if self.database is not None:
-            self.database.close()
-            del self.database
-            self.database = None
-        self.release_lock()
+        try:
+            which = str(self.file)
+            if self.database and self.write:
+                if exc_type is None:
+                    self.database.commit()
+                else:
+                    print(f'Rolling back {which} due to exception')
+                    self.database.rollback()
+        finally:
+            if self.cursor is not None:
+                self.cursor = None
+            if self.database is not None:
+                self.database.close()
+                self.database = None
+            self.release_lock()
 
     def execute(self, query: str, params: tuple | dict[str, Any] = ()):
         assert self.cursor is not None
