@@ -3,6 +3,7 @@ from bisect import bisect_right
 from collections import namedtuple
 from collections.abc import Iterable
 from contextlib import suppress
+from dataclasses import dataclass
 from decimal import Decimal
 from math import isclose
 from typing import TYPE_CHECKING, Protocol, TypeVar
@@ -31,14 +32,14 @@ if TYPE_CHECKING:
     from data.tournament import Tournament
 
 
-T = TypeVar('T', bound='SupportsRichComparison')
+T = TypeVar('T', bound='SupportsSortingAndNegation')
 
 
-class SupportsRichComparison(Protocol):
+class SupportsSortingAndNegation(Protocol):
+    # Required for sorting the values
     def __lt__(self: T, other: T) -> bool: ...
-    def __le__(self: T, other: T) -> bool: ...
-    def __gt__(self: T, other: T) -> bool: ...
-    def __ge__(self: T, other: T) -> bool: ...
+    # Required for sorting in reverse order
+    def __neg__(self: T) -> T: ...
 
 
 class TieBreak(OptionHandler[TieBreakOption], ABC):
@@ -60,16 +61,16 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         player: 'Player',
         *,
         after_round: int | None,
-    ) -> 'SupportsRichComparison':
+    ) -> 'SupportsSortingAndNegation':
         """Compute the value of the tie-break for a player.
         As tie-breaks are intended for ranking,
         the return type need to support rich comparison with itself"""
 
     @property
-    def is_displayable(self) -> bool:
-        """Defines if the tie-break can be displayed
-        in a print view or a ranking screen"""
-        return True
+    def display_rank_delta(self) -> bool:
+        """Defines if the rank delta should be displayed instead of the tie-break value.
+        Usage: tie-breaks with not displayable values (ex: direct encounter)."""
+        return False
 
     @property
     def is_manual(self) -> bool:
@@ -1409,6 +1410,35 @@ class AveragePerfectPerformanceTieBreak(PerformanceTieBreak):
         return StaticUtils.round_ranking(sum(ptp) / len(ptp))
 
 
+@dataclass
+class DirectEncounterResult:
+    break_tie_guaranteed: bool
+    theoretical_minimum: float
+    theoretical_maximum: float
+    reversed: bool = False
+
+    def __lt__(self, other) -> bool:
+        if not isinstance(other, DirectEncounterResult):
+            return NotImplemented
+        if self.reversed and other.reversed:
+            return (
+                other.break_tie_guaranteed < self.break_tie_guaranteed
+                or other.theoretical_maximum < self.theoretical_minimum
+            )
+        return (
+            self.break_tie_guaranteed < other.break_tie_guaranteed
+            or self.theoretical_maximum < other.theoretical_minimum
+        )
+
+    def __neg__(self) -> 'DirectEncounterResult':
+        return DirectEncounterResult(
+            self.break_tie_guaranteed,
+            self.theoretical_minimum,
+            self.theoretical_maximum,
+            not self.reversed,
+        )
+
+
 class DirectEncounterTieBreak(TieBreak):
     """Direct Encounter score.
     Options:
@@ -1441,16 +1471,15 @@ class DirectEncounterTieBreak(TieBreak):
         ]
 
     @property
-    def is_displayable(self) -> bool:
-        # tuple[float, bool] is not displayable
-        return False
+    def display_rank_delta(self) -> bool:
+        return True
 
     def compute_player_value(
         self,
         player: 'Player',
         *,
         after_round: int | None,
-    ) -> tuple[float, bool]:
+    ) -> DirectEncounterResult:
         """If all players with the same number of points as *player* before round
         *after_round* have played each other, returns the score *player* achieved against
         all tied opponents in the form (score, True).
@@ -1495,21 +1524,25 @@ class DirectEncounterTieBreak(TieBreak):
                 if pairing.result
                 not in (Result.FORFEIT_WIN, Result.DOUBLE_FORFEIT, Result.FORFEIT_LOSS)
             }
-        if len(tied_pairings) == len(tied_opponents):
-            return sum(
-                pairing.result.points(tournament.point_values)
-                for pairing in tied_pairings.values()
-            ), True
         tied_results = [pairing.result for pairing in tied_pairings.values()]
         virtual_results = [
             Result.WIN
             for opponent_id in tied_opponents
             if opponent_id not in tied_pairings
         ]
-        return sum(
+        break_tie_guaranteed = len(tied_pairings) == len(tied_opponents)
+        theoretical_minimum = sum(
+            result.points(tournament.point_values) for result in tied_results
+        )
+        theoretical_maximum = sum(
             result.points(tournament.point_values)
             for result in tied_results + virtual_results
-        ), False
+        )
+        return DirectEncounterResult(
+            break_tie_guaranteed,
+            theoretical_minimum,
+            theoretical_maximum,
+        )
 
 
 class ManualTieBreak(TieBreak):
@@ -1532,8 +1565,8 @@ class ManualTieBreak(TieBreak):
         return _('Manual')
 
     @property
-    def is_displayable(self) -> bool:
-        return False
+    def display_rank_delta(self) -> bool:
+        return True
 
     @property
     def is_manual(self) -> bool:

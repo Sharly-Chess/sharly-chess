@@ -992,31 +992,37 @@ class Tournament:
         if after_round is None:
             after_round = self.max_ranking_round
 
-        if after_round:
-            # Estimate ratings to ensure we have a defined rating for everyone
-            self._estimate_players(self.players, after_round=after_round)
-            for player in self.players:
-                player.points = player.points_after(after_round)
-                player.compute_tie_break_values(after_round=after_round)
+        self._estimate_players(self.players, after_round=after_round)
+        for player in self.players:
+            player.points = player.points_after(after_round)
+            player.compute_tie_break_values(after_round=after_round)
 
-            self._players_by_rank = {
-                rank: player
-                for rank, player in enumerate(
-                    sorted(
-                        self.players,
-                        key=lambda p: p.rank_sort_key,
-                    ),
-                    start=1,
-                )
-            }
-
-        else:
-            # set 0.0 tie-break values for all the players
-            for player in self.players:
-                player.compute_tie_break_values(after_round=0)
-            self._players_by_rank = self.players_by_starting_rank
+        self._players_by_rank = {
+            rank: player
+            for rank, player in enumerate(
+                sorted(
+                    self.players,
+                    key=lambda p: p.rank_sort_key,
+                ),
+                start=1,
+            )
+        }
         for rank, player in self._players_by_rank.items():
             player.rank = rank
+        for tie_break_index, tie_break in enumerate(self.tie_breaks):
+            if not tie_break.display_rank_delta:
+                continue
+            players_ranked_without_tie_break = sorted(
+                self.players,
+                key=lambda p: p.rank_sort_key_without_tie_break(type(tie_break)),
+            )
+            for rank_without_tie_break, player in enumerate(
+                players_ranked_without_tie_break, start=1
+            ):
+                player.tie_break_values[tie_break_index].rank_progress = (
+                    rank_without_tie_break - player.rank
+                )
+
         return self._players_by_rank
 
     @property

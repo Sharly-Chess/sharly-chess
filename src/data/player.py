@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     from _weakref import ReferenceType
     from data.event import Event
     from data.tournament import Tournament
-    from data.tie_breaks.tie_breaks import SupportsRichComparison
+    from data.tie_breaks.tie_breaks import SupportsSortingAndNegation, TieBreak
 
 
 @dataclass(frozen=True)
@@ -99,6 +99,35 @@ class PlayerRating:
         return f'{self.value} {self.type.short_name}'
 
 
+class TieBreakValue:
+    def __init__(self, tie_break: 'TieBreak', value: 'SupportsSortingAndNegation'):
+        self._tie_break_ref: 'ReferenceType[TieBreak]' = weakref.ref(tie_break)
+        self.value = value
+        self.rank_progress: int | None = None
+
+    @property
+    def tie_break(self) -> 'TieBreak':
+        if (tie_break := self._tie_break_ref()) is None:
+            raise RuntimeError('Reference has been garbage collected')
+        return tie_break
+
+    representation: str = ''
+
+    def __str__(self) -> str:
+        if self.rank_progress is not None:
+            if self.rank_progress > 0:
+                return f'▲ {self.rank_progress}'
+            if self.rank_progress < 0:
+                return f'▼ {-self.rank_progress}'
+            return ''
+        if isinstance(self.value, SupportsFloat):
+            return StaticUtils.points_str(float(self.value))
+        raise ValueError(
+            f'Tie break value [{self.value}] of tie break '
+            f'[{self.tie_break.id}] has no defined representation'
+        )
+
+
 @total_ordering
 class Player:
     # TODO (Molrn - multi tournament) Split into 2 classes:
@@ -123,7 +152,7 @@ class Player:
         self.board_id: int | None = None
         self.board_number: int | None = None
         self.color: BoardColor | None = None
-        self._tie_break_values: list['SupportsRichComparison'] | None = None
+        self._tie_break_values: list[TieBreakValue] | None = None
         self._rank: int | None = None
         self.time_control_trf25: str | None = None
         self.time_control_modified: bool | None = None
@@ -590,22 +619,25 @@ class Player:
         self.time_control_increment = increment
         self.time_control_modified = modified
 
+    # -------------------------------------------------------------------------
+    # Ranking
+    # -------------------------------------------------------------------------
+
     @property
-    def tie_break_values_as_strings(self) -> list[str]:
+    def tie_break_values(self) -> list[TieBreakValue]:
         """Returns the player's tie-break values as strings."""
         assert self._tie_break_values is not None, (
             'Player._tie_break_values is not set, call Tournament.compute_player_ranks() before.'
         )
-        return [
-            StaticUtils.points_str(float(tie_break_value))
-            for tie_break_value in self._tie_break_values
-            if isinstance(tie_break_value, SupportsFloat)
-        ]
+        return self._tie_break_values
 
     def compute_tie_break_values(self, *, after_round: int | None):
         assert self.tournament is not None
         self._tie_break_values = [
-            tie_break.compute_player_value(self, after_round=after_round)
+            TieBreakValue(
+                tie_break,
+                tie_break.compute_player_value(self, after_round=after_round),
+            )
             for tie_break in self.tournament.tie_breaks
         ]
 
@@ -641,7 +673,7 @@ class Player:
     @property
     def board_number_sort_key(self) -> tuple[float, int, int, str, str]:
         return (
-            -self.vpoints if self.vpoints is not None else 0.0,
+            -(self.vpoints or 0.0),
             -self.rating,
             -self.title,
             self.last_name,
@@ -652,69 +684,49 @@ class Player:
     def before_manual_rank_key(self) -> tuple:
         """Returns a tuple of the player's rank using points and tie-break values *up to* the manual tiebreak, or points only if there is no manual tiebreak.
         Used for grouping in the rankings table."""
-        from data.tie_breaks.tie_breaks import ManualTieBreak
 
-        tie_breaks_values = tuple(
-            (-float(tie_break) if isinstance(tie_break, SupportsFloat) else 0.0)
-            for tie_break in self._tie_break_values or []
+        tie_break_sort_key = tuple(
+            -tie_break_value.value for tie_break_value in self.tie_break_values
         )
 
         manual_tiebreak_index = next(
             (
-                i
-                for i, tb in enumerate(self.tournament.tie_breaks)
-                if isinstance(tb, ManualTieBreak)
+                index
+                for index, tie_break in enumerate(self.tournament.tie_breaks)
+                if tie_break.is_manual
             ),
             None,
         )
 
         if manual_tiebreak_index is not None:
-            tie_breaks_values = tie_breaks_values[:manual_tiebreak_index]
+            tie_break_sort_key = tie_break_sort_key[:manual_tiebreak_index]
         else:
-            tie_breaks_values = tuple()
+            tie_break_sort_key = tuple()
 
-        return (-self.points if self.points is not None else 0.0,) + tie_breaks_values
+        return (-(self.points or 0.0),) + tie_break_sort_key
 
-    @property
-    def no_manual_rank_sort_key(self) -> tuple:
-        from data.tie_breaks.tie_breaks import ManualTieBreak
+    def rank_sort_key_without_tie_break(
+        self, tie_break_type: type['TieBreak']
+    ) -> tuple:
+        """Returns a rank sort key as if the tie-break of type *tie_break_type* was not set."""
 
-        tie_breaks_values = list(
-            (-float(tie_break) if isinstance(tie_break, SupportsFloat) else 0.0)
-            for tie_break in self._tie_break_values or []
+        tie_break_sort_key = tuple(
+            -tie_break_value.value
+            for tie_break_value in self.tie_break_values
+            if not isinstance(tie_break_value.tie_break, tie_break_type)
         )
-
-        manual_tiebreak_index = next(
-            (
-                i
-                for i, tb in enumerate(self.tournament.tie_breaks)
-                if isinstance(tb, ManualTieBreak)
-            ),
-            None,
-        )
-
-        if manual_tiebreak_index is not None and manual_tiebreak_index < len(
-            tie_breaks_values
-        ):
-            tie_breaks_values[manual_tiebreak_index] = 0
 
         return (
-            (-self.points if self.points is not None else 0.0,)
-            + tuple(tie_breaks_values)
-            + self.starting_rank_sort_key
+            (-(self.points or 0.0),) + tie_break_sort_key + self.starting_rank_sort_key
         )
 
     @property
     def rank_sort_key(self) -> tuple:
-        # NOTE(Tim) we need to handle the DirectEncounter TieBreak, which is a Tuple.
-        tie_breaks = tuple(
-            (-float(tie_break) if isinstance(tie_break, SupportsFloat) else 0.0)
-            for tie_break in self._tie_break_values or []
+        tie_break_sort_key = tuple(
+            -tie_break_value.value for tie_break_value in self.tie_break_values
         )
         return (
-            (-self.points if self.points is not None else 0.0,)
-            + tie_breaks
-            + self.starting_rank_sort_key
+            (-(self.points or 0.0),) + tie_break_sort_key + self.starting_rank_sort_key
         )
 
     def __le__(self, other: 'Player') -> bool:

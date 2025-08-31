@@ -22,6 +22,7 @@ from common.logger import get_logger
 from data.board import Board
 from data.player import Player
 from data.safety_mode import RoundStatus, SafetyMode, PairingAction
+from data.tie_breaks.tie_breaks import ManualTieBreak
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from utils.enum import Result
@@ -1313,7 +1314,7 @@ class PairingsAdminController(BaseEventAdminController):
         # 'Natural' sort order without tiebreaks
         players_by_rank_without_manual_tiebreaks = sorted(
             tournament.players,
-            key=lambda p: p.no_manual_rank_sort_key,
+            key=lambda p: p.rank_sort_key_without_tie_break(ManualTieBreak),
         )
 
         # Group players by manual_rank_key, preserving current order
