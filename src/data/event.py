@@ -184,9 +184,7 @@ class Event:
 
     @property
     def screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return sorted(
-            self.screens_by_uniq_id.values(), key=lambda screen: screen.uniq_id
-        )
+        return sorted(self.screens_by_uniq_id.values(), key=lambda screen: screen.name)
 
     @property
     def screens_of_type_sorted_by_uniq_id(
@@ -481,6 +479,10 @@ class Event:
     @cached_property
     def basic_screens_by_uniq_id(self) -> dict[str, Screen]:
         return {screen.uniq_id: screen for screen in self.basic_screens_by_id.values()}
+
+    @cached_property
+    def basic_screens_sorted_by_name(self) -> list[Screen]:
+        return sorted(self.basic_screens_by_id.values(), key=lambda screen: screen.name)
 
     def get_unused_screen_uniq_id(
         self,

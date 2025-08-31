@@ -157,7 +157,7 @@ class ScreenSet:
         return self.screen.players_show_opponent
 
     @property
-    def name_for_boards(self) -> str | None:
+    def name_for_boards(self) -> str:
         if self.tournament.current_round:
             self._extract_boards()
             if self.stored_screen_set:
@@ -191,7 +191,7 @@ class ScreenSet:
             return self.name_for_players
 
     @property
-    def name_for_players(self) -> str | None:
+    def name_for_players(self) -> str:
         self._extract_players_by_name()
         if self.stored_screen_set:
             name = self.stored_screen_set.name
@@ -227,7 +227,7 @@ class ScreenSet:
         return self.screen.ranking_max_points
 
     @property
-    def name_for_ranking(self) -> str | None:
+    def name_for_ranking(self) -> str:
         self._extract_players_by_rank()
         if self.stored_screen_set:
             name = self.stored_screen_set.name
