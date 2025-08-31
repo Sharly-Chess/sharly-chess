@@ -1,4 +1,5 @@
 import shutil
+from sqlite3 import OperationalError
 import time
 from collections.abc import Iterator
 from contextlib import suppress
@@ -70,6 +71,22 @@ class EventDatabase(MigrationDatabase):
             self.uniq_id = uniq_id
             self.update_event_loader = True
             super().__init__(self.event_database_path(self.uniq_id), write)
+
+    def __exit__(self, exc_type, exc_value, tb):
+        if self.write and exc_type is None:
+            try:
+                self.execute(
+                    'SELECT `tournament_id` FROM tournament_dirty WHERE dirty = 1;'
+                )
+                for row in self.fetchall():
+                    plugin_manager.hook.on_tournament_data_updated(
+                        event_uniq_id=self.uniq_id, tournament_id=row['tournament_id']
+                    )
+
+                self.execute('UPDATE tournament_dirty SET dirty = 0 WHERE dirty = 1;')
+            except OperationalError:
+                pass
+        super().__exit__(exc_type, exc_value, tb)
 
     @classmethod
     def create_instance(cls, file: Path, write: bool = False) -> Self:
@@ -770,6 +787,7 @@ class EventDatabase(MigrationDatabase):
             fetched_stored_tournament = self.get_stored_tournament(stored_tournament.id)
         if fetched_stored_tournament is None:
             raise RuntimeError('Tournament write failed')
+
         return fetched_stored_tournament
 
     def add_stored_tournament(

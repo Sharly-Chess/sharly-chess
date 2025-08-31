@@ -31,7 +31,7 @@ from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
-from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
+from plugins.ffe.ffe_background_uploader import EventLoader, FfeBackgroundUploader
 from plugins.ffe.ffe_tournament_exporters import PapiTournamentExporter
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.ffe_tournament_importers import (
@@ -662,9 +662,12 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def on_tournament_data_updated(self, tournament: 'Tournament'):
-        if FFEUtils.resolve_auto_upload(tournament):
-            FfeBackgroundUploader.schedule_upload(tournament)
+    def on_tournament_data_updated(self, event_uniq_id: str, tournament_id: int):
+        event = EventLoader().events_by_id.get(event_uniq_id, None)
+        if event and tournament_id in event.tournaments_by_id:
+            tournament = event.tournaments_by_id[tournament_id]
+            if FFEUtils.resolve_auto_upload(tournament):
+                FfeBackgroundUploader.schedule_upload(tournament)
 
     @hookimpl
     def augment_tournament_after_db_fetch(
