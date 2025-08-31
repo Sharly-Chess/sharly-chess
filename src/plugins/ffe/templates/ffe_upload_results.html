@@ -23,7 +23,7 @@
                         {{ ffe_actions_unavailable_message }}
                     </span>
                 {% else %}
-                    {% set result=upload_status_messages[result_id(tournament)] if result_id(tournament) in upload_status_messages %}
+                    {% set result=upload_status_messages[result_id(admin_event.uniq_id, tournament.id)] if result_id(admin_event.uniq_id, tournament.id) in upload_status_messages else None %}
                     {% if result %}
                         <span id="t_{{tournament.id}}" class="status {% if result.status == 5 %}text-success{% elif result.status >= 7 %}text-danger{% endif %}">
                             {{ result.message }}
