@@ -454,6 +454,21 @@ class Event:
             [tournament.name for tournament in self.tournaments_by_id.values()],
         )
 
+    def move_player_to_tournament(
+        self, player: Player, destination_tournament: Tournament
+    ):
+        """Moves the given player from its current tournament to *destination_tournament*."""
+        source_tournament = player.tournament
+        with EventDatabase(self.uniq_id, write=True) as database:
+            destination_tournament.add_player_to_tournament(
+                player.stored_player, database
+            )
+            database.delete_stored_tournament_player(source_tournament.id, player.id)
+            del source_tournament.players_by_id[player.id]
+            player.stored_tournament_player = (
+                database.load_player_stored_tournament_player(player.id)
+            )
+
     @cached_property
     def basic_screens_by_id(self) -> dict[int, Screen]:
         screens_by_id: dict[int, Screen] = {
