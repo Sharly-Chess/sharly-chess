@@ -107,6 +107,10 @@ msgid "%(set_name)s (check-in)"
 msgstr ""
 
 #, python-format
+msgid "%(set_name)s (registered players)"
+msgstr ""
+
+#, python-format
 msgid "%(set_name)s (round #%(round)d, %(remaining)d board remaining)"
 msgid_plural "%(set_name)s (round #%(round)d, %(remaining)d boards remaining)"
 msgstr[0] ""
@@ -3542,6 +3546,9 @@ msgid "Points: up to %(max)s"
 msgstr ""
 
 msgid "Port"
+msgstr ""
+
+msgid "Port [{port}] already in use, can not start Sharly Chess server."
 msgstr ""
 
 msgid "Port [{port}] already in use."
