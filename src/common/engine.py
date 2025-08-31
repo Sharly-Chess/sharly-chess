@@ -121,18 +121,16 @@ class Engine(ABC):
             logger.info(
                 'Still no event database found, looking for previously installed releases of Sharly Chess...'
             )
-            previous_versions: list[tuple[Version, str]] = []
+            previous_versions: list[tuple[Version, Path]] = []
             for version_dir in Path('..').glob('*'):
                 if not version_dir.is_dir():
                     logger.debug('Not a directory: [%s]', version_dir)
                     continue
-                dir_name: str
                 version: Version
                 if matches := re.match(
                     r'^(?:papi-web|sharly-chess)-(\d+\.\d+\.\d+(?:a\d+|b\d+|rc\d+)?)(?:-windows)?$',
                     version_dir.name,
                 ):
-                    dir_name = matches.group(0)
                     version: Version = Version(matches.group(1))
                 else:
                     logger.debug('Not a release: [%s].', version_dir)
@@ -144,12 +142,11 @@ class Engine(ABC):
                 elif version == sharly_chess_config.version:
                     logger.debug('Version [%s] : current release, ignored.', version)
                 else:
-                    previous_versions.append((version, dir_name))
-            previous_databases: dict[tuple[Version, str], list[Path]] = {}
+                    previous_versions.append((version, version_dir))
+            previous_databases: dict[tuple[Version, Path], list[Path]] = {}
             if previous_versions:
                 previous_versions.sort()
-                for version, dir_name in previous_versions:
-                    version_dir = Path('..') / dir_name
+                for version, version_dir in previous_versions:
                     files: list[Path] = list(
                         version_dir.glob(
                             f'{EVENTS_FOLDER}/*.{sharly_chess_config.event_database_ext}'
@@ -165,7 +162,7 @@ class Engine(ABC):
                             version,
                             ', '.join([file.stem for file in files]),
                         )
-                        previous_databases[(version, dir_name)] = files
+                        previous_databases[(version, version_dir)] = files
                     else:
                         logger.debug('- Release [%s]: no events', version)
                 if not previous_databases:
@@ -175,7 +172,7 @@ class Engine(ABC):
             recovered_version: Version | None = None
             if previous_databases:
                 # keep the versions with databases only
-                previous_versions: list[tuple[Version, str]] = list(
+                previous_versions: list[tuple[Version, Path]] = list(
                     previous_databases.keys()
                 )
                 previous_versions.sort()
@@ -206,9 +203,9 @@ class Engine(ABC):
                     print_interactive_input(_('Please choose the release to recover: '))
                     version_range = range(1, len(previous_versions) + 1)
                     for num in version_range:
-                        version, dir_name = previous_versions[num - 1]
+                        version, version_dir = previous_versions[num - 1]
                         print_interactive_input(
-                            f'  - [{num}] {version} ({", ".join([file.stem for file in previous_databases[(version, dir_name)]])})'
+                            f'  - [{num}] {version} ({", ".join([file.stem for file in previous_databases[(version, version_dir)]])})'
                         )
                     quit_answer: str = _('Q *** THE LETTER TO ANSWER QUIT')
                     print_interactive_input(
@@ -236,11 +233,11 @@ class Engine(ABC):
                         except ValueError:
                             pass
                 if version_num is not None:
-                    recovered_version, dir_name = previous_versions[version_num - 1]
+                    recovered_version, version_dir = previous_versions[version_num - 1]
                     self._recover_previous_version(
                         recovered_version,
-                        dir_name,
-                        previous_databases[(recovered_version, dir_name)],
+                        version_dir,
+                        previous_databases[(recovered_version, version_dir)],
                     )
             if DEVEL_ENV and not recovered_version:
                 yes_answer = _('Y *** THE LETTER TO ANSWER YES')
@@ -272,10 +269,9 @@ class Engine(ABC):
 
     @classmethod
     def _recover_previous_version(
-        cls, version: Version, dir_name: str, files: list[Path]
+        cls, version: Version, version_dir: Path, files: list[Path]
     ):
         """Recover all the data of a previous version (configuration, events, Papi files and customization files)."""
-        version_dir = Path('..') / dir_name
         config_database_file = (
             version_dir / EVENTS_FOLDER / ConfigDatabase.config_database_name
         )
