@@ -34,6 +34,7 @@ English version below
 ## Écrans
 
 - Ajout du numéro dans le cas des échiquiers fixes (3.0.0)
+- Correction d'un bug sur l'affichage des chronomètres sur les écrans rotatifs et les pilotes d'afficheurs (3.0.1)
 
 ## Classements
 
@@ -84,6 +85,7 @@ English version below
 ## Screens
 
 - Added board IDs in case of fixed boards (3.0.0)
+- Fixed the display of timers on rotators and display controllers (3.0.1)
 
 ## Rankings
 
