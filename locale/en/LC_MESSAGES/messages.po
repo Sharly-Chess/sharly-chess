@@ -3144,7 +3144,7 @@ msgstr ""
 msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
 msgstr ""
 
-msgid "Other players in this score group are not included since the share would be less than the threshold."
+msgid "Other players in this score group are not included in the prizes (price below the minimum threshold)."
 msgstr ""
 
 msgid "Other tie-breaks should not be used unless you really know what you do."

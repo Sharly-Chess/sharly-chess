@@ -95,7 +95,7 @@ class AveragePrizeSharing(PrizeSharing):
                         value=share,
                         is_main=True,
                         warning=_(
-                            'Other players in this score group are not included since the share would be less than the threshold.'
+                            'Other players in this score group are not included in the prizes (price below the minimum threshold).'
                         )
                         if is_last and warning
                         else None,
@@ -157,7 +157,7 @@ class HortSystemPrizeSharing(PrizeSharing):
                         value=(own + total / len(players_in_tie)) / 2,
                         is_main=True,
                         warning=_(
-                            'Other players in this score group are not included since the share would be less than the threshold.'
+                            'Other players in this score group are not included in the prizes (price below the minimum threshold).'
                         )
                         if is_last and warning
                         else None,
