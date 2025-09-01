@@ -21,6 +21,10 @@ from common.i18n import _, ngettext
 from common.logger import get_logger
 from data.board import Board
 from data.player import Player
+from data.print_documents.documents import (
+    PairingPrintDocument,
+    PlayerRankingPrintDocument,
+)
 from data.safety_mode import RoundStatus, SafetyMode, PairingAction
 from data.tie_breaks.tie_breaks import ManualTieBreak
 from data.tournament import Tournament
@@ -221,12 +225,23 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
     def template_context(self) -> dict[str, Any]:
         allowed_actions = []
         existing_actions = []
+
+        default_print_document = PairingPrintDocument.static_id()
+
         if self.admin_tournament:
             permission_handler = self.admin_tournament.pairing_system.permission_handler
             allowed_actions = permission_handler.allowed_actions(
                 self.round_status, self.safety_mode
             )
             existing_actions = permission_handler.existing_actions(self.round_status)
+
+            if (
+                self.display_rankings
+                or self.admin_round < self.admin_tournament.current_round
+                or self.admin_tournament.is_round_finished(self.admin_round)
+            ):
+                default_print_document = PlayerRankingPrintDocument.static_id()
+
         return super().template_context | {
             'admin_event_tab': 'admin-event-pairings-tab',
             'admin_tournament': self.admin_tournament,
@@ -252,6 +267,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             'wp': self.admin_board.white_player if self.admin_board else None,
             'bp': self.admin_board.black_player if self.admin_board else None,
             'experimental_features_enabled': experimental_features_enabled(),
+            'default_print_document': default_print_document,
         }
 
     def get_admin_tournament(self) -> Tournament:
@@ -435,6 +451,8 @@ class PairingsAdminController(BaseEventAdminController):
             target_board_id = self._next_board_id(
                 board_id, web_context.admin_filtered_boards
             )
+            # Refetch the context to get the new default_print_document etc.
+            context = web_context.template_context
 
         if not web_context.requires_refresh:
             return HTMXTemplate(

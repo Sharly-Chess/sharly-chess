@@ -116,7 +116,10 @@
         </form>
     {% else %}
         <div class="admin-screen-set-div border border-secondary p-1 mb-1">
-            <div class="d-flex gap-4 px-2">
+            <div class="d-flex gap-3 px-2 align-items-center">
+                {% if not admin_screen_set and admin_screen.screen_sets_sorted_by_order|length > 1 %}
+                    <i class="bi-grip-horizontal"></i>
+                {% endif %}
                 <div class="flex-grow-1">
                     <div>
                         <b>
@@ -142,13 +145,10 @@
                         {% endif %}
                     </div>
                 </div>
-                <div class="d-flex gap-2 align-items-center">
+                <div class="d-flex gap-2">
                     {% if not admin_screen_set %}
-                        {% if admin_screen.screen_sets_sorted_by_order|length > 1 %}
-                            <i class="bi-arrows-move"></i>
-                        {% endif %}
                         <button
-                            class="btn btn-sm btn-primary text-nowrap"
+                            class="btn btn-sm btn-outline-primary text-nowrap"
                             hx-get="{{ url_for('admin-screen-sets-set-modal', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
                             hx-target="body"
                             hx-indicator="#please-wait"
@@ -157,7 +157,7 @@
                             <i class="bi-pencil-fill"></i>
                         </button>
                         <button
-                            class="btn btn-sm btn-primary text-nowrap"
+                            class="btn btn-sm btn-outline-primary text-nowrap"
                             hx-post="{{ url_for('admin-screen-set-clone', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
                             hx-target="body"
                             hx-indicator="#please-wait"
@@ -165,7 +165,7 @@
                             <i class="bi-copy"></i>
                         </button>
                         <button
-                            class="btn btn-sm btn-danger text-nowrap"
+                            class="btn btn-sm btn-outline-danger text-nowrap"
                             hx-delete="{{ url_for('admin-screen-set-delete', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
                             hx-target="body"
                             hx-indicator="#please-wait"

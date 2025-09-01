@@ -72,36 +72,32 @@
             <td class="points text-center fw-bold">{{ player.points_str }}</td>
 
             {% for tie_break_value in player.tie_break_values %}
-                {% if tie_break_value.tie_break.is_manual %}
-                    <td class="playoff text-center compact-col">
-                    {% if sortable %}
-                        <i class="bi-grip-horizontal handle {% if player.manual_tiebreak is not none %}text-warning{% endif %}"></i>
+                <td class="tie-break text-center compact-col cursor-grap">
+
+                    <span
+                        {% if tie_break_value.rank_progress %}
+                            {{ macros.tooltip_attributes(
+                                'info',
+                                ngettext(
+                                    'Moved up %(num)d place',
+                                    'Moved up %(num)d places',
+                                    tie_break_value.rank_progress
+                                ) if tie_break_value.rank_progress > 0 else
+                                ngettext(
+                                    'Moved down %(num)d place',
+                                    'Moved down %(num)d places',
+                                    - tie_break_value.rank_progress
+                                ),
+                                'right'
+                            ) }}
+                        {% endif %}
+                    >
+                        {{ tie_break_value }}
+                    </span>
+                    {% if tie_break_value.tie_break.is_manual and sortable %}
+                        <i class="bi-grip-horizontal ps-2 handle"></i>
                     {% endif %}
-                    </td>
-                {% else %}
-                    <td class="tie-break text-center">
-                        <span
-                            {% if tie_break_value.rank_progress %}
-                                {{ macros.tooltip_attributes(
-                                    'info',
-                                    ngettext(
-                                        'Moved up %(num)d place',
-                                        'Moved up %(num)d places',
-                                        tie_break_value.rank_progress
-                                    ) if tie_break_value.rank_progress > 0 else
-                                    ngettext(
-                                        'Moved down %(num)d place',
-                                        'Moved down %(num)d places',
-                                        - tie_break_value.rank_progress
-                                    ),
-                                    'right'
-                                ) }}
-                            {% endif %}
-                        >
-                            {{ tie_break_value }}
-                        </span>
-                    </td>
-                {% endif %}
+                </td>
             {% endfor %}
 
             <input type="hidden" name="player" value="{{ player.id }}">

@@ -25,6 +25,7 @@ from web.controllers.admin.base_admin_controller import (
     BaseAdminController,
 )
 from web.messages import Message
+from web.session import SessionHandler
 
 
 class BaseEventAdminWebContext(AdminWebContext):
@@ -67,6 +68,23 @@ class BaseEventAdminWebContext(AdminWebContext):
 
     def check_admin_tab(self):
         pass
+
+    def default_tournament_for_print_modal(
+        self, tournament_id: int | None
+    ) -> int | None:
+        if (
+            tournament_id is None
+            and (
+                last_tournament
+                := SessionHandler.get_session_admin_print_last_tournament(self.request)
+            )
+            is not None
+        ):
+            event_uniq_id, tid = last_tournament
+            if event_uniq_id == self.get_admin_event().uniq_id:
+                tournament_id = tid
+
+        return tournament_id
 
     @property
     def template_context(self) -> dict[str, Any]:
