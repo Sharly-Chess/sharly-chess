@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABC
 from decimal import Decimal
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Any
 from unittest import TestCase
 
 from data.event import Event
@@ -15,11 +15,15 @@ from plugins.ffe import ffe_tie_breaks
 from plugins.ffe.ffe_tournament_importers import PapiJsonTournamentImporter
 from tests.test_config import TestUtils
 
-EVENT_ID = 'test-pairings-event'
-TOURNAMENT_ID = 'test-pairings-tournament'
+EVENT_ID = 'test-tiebreaks-event'
+TOURNAMENT_ID = 'test-tiebreaks-tournament'
 
 
 class TieBreakTestCase(TestCase, ABC):
+    """Base test class for the tie-breaks tests.
+    Those tests are based on the TEC `Exercises in Tie-Breaking` file
+    (see https://tec.fide.com/2024/03/18/tie-break-exercise/)."""
+
     event: Event
 
     def setUp(self):
@@ -53,12 +57,12 @@ class TieBreakTestCase(TestCase, ABC):
     def tournament(self) -> Tournament:
         return self.event.tournaments_by_uniq_id[TOURNAMENT_ID]
 
-    def get_player_values[T](
+    def get_player_values(
         self,
-        compute_player_value: Callable[[Player], T],
+        compute_player_value: Callable[[Player], Any],
         exclude_ids: list[int] | None = None,
         only_ids: list[int] | None = None,
-    ) -> dict[int, T]:
+    ) -> dict[int, Any]:
         player_values = {}
         for player in self.tournament.players:
             if not (
@@ -68,21 +72,33 @@ class TieBreakTestCase(TestCase, ABC):
                 player_values[player.id] = compute_player_value(player)
         return player_values
 
-    def get_tie_break_player_values[T](
+    def get_tie_break_player_values(
         self,
         tie_break_: tie_breaks.TieBreak,
         exclude_ids: list[int] | None = None,
         only_ids: list[int] | None = None,
     ):
         return self.get_player_values(
-            lambda p: tie_break_.compute_player_value(p, after_round=None),
+            lambda p: tie_break_.compute_player_value(
+                p, after_round=self.tournament.rounds
+            ),
             exclude_ids,
             only_ids,
+        )
+
+    def get_direct_encounter_player_values(self):
+        self.tournament.compute_player_ranks()
+        tie_break_ = tie_breaks.DirectEncounterTieBreak()
+        return tie_break_.compute_all_player_values(
+            self.tournament, after_round=self.tournament.rounds
         )
 
 
 @pytest.mark.unit
 class SwissTieBreakTestCase(TieBreakTestCase):
+    """Class containing all the tie-break tests on the TEC standard Swiss tournament.
+    This tournament is defined at page 5 of `Exercises in Tie-Breaking`"""
+
     @property
     def json_file(self) -> str:
         return 'tec-swiss'
@@ -465,7 +481,9 @@ class SwissTieBreakTestCase(TieBreakTestCase):
 
     def test_aob(self):
         aob = tie_breaks.AverageOfBuchholzTieBreak().compute_player_value
-        results = self.get_player_values(lambda p: round(aob(p, after_round=None), 2))
+        results = self.get_player_values(
+            lambda p: round(aob(p, after_round=self.tournament.rounds), 2)
+        )
         expected = {
             2: 13.6,
             3: 13.4,
@@ -771,25 +789,44 @@ class SwissTieBreakTestCase(TieBreakTestCase):
         }
         self.assertEqual(expected, results)
 
+
+@pytest.mark.unit
+class SwissDirectEncounterTieBreakTestCase(TieBreakTestCase):
+    """There are no ties to break in the `TEC Swiss` tournament,
+    a longer one has to be used (see `Exercises in Tie-Breaking` page 43)."""
+
+    @property
+    def json_file(self) -> str:
+        return 'tec-swiss-direct-encounter'
+
     def test_direct_encounter(self):
-        tie_break_ = tie_breaks.DirectEncounterTieBreak()
-        results = self.get_tie_break_player_values(
-            tie_break_, only_ids=[1, 3, 4, 16, 5, 8, 11]
-        )
+        results = self.get_direct_encounter_player_values()
         expected = {
-            1: (2.5, False),
-            3: (2.5, False),
-            4: (2.0, False),
-            16: (3.0, False),
-            5: (2.0, False),
-            8: (2.0, False),
-            11: (1.0, False),
+            3: 0,
+            6: 3,
+            1: 1,
+            4: 1,
+            2: 0,
+            7: 0,
+            8: 0,
+            16: 0,
+            5: 0,
+            10: 0,
+            14: 0,
+            15: 0,
+            11: 0,
+            9: 0,
+            12: 0,
+            13: 0,
         }
         self.assertEqual(results, expected)
 
 
 @pytest.mark.unit
 class RoundRobinTieBreakTestCase(TieBreakTestCase):
+    """Class containing all the tie-break tests on the TEC Round-Robin tournament.
+    This tournament is defined at page 6 of `Exercises in Tie-Breaking`"""
+
     @property
     def json_file(self) -> str:
         return 'tec-round-robin'
@@ -832,14 +869,13 @@ class RoundRobinTieBreakTestCase(TieBreakTestCase):
         self.assertEqual(results, expected)
 
     def test_direct_encounter(self):
-        tie_break_ = tie_breaks.DirectEncounterTieBreak()
-        results = self.get_tie_break_player_values(tie_break_)
+        results = self.get_direct_encounter_player_values()
         expected = {
-            1: (2, True),
-            2: (0.5, True),
-            3: (0.5, True),
-            4: (0.5, True),
-            6: (1.5, True),
-            5: (1, True),
+            1: 2,
+            2: 0,
+            3: 0,
+            5: 1,
+            6: 2,
+            4: 0,
         }
         self.assertEqual(results, expected)

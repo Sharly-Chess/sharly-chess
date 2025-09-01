@@ -1490,7 +1490,7 @@ msgid "Different for White / Black"
 msgstr "Différent pour Blancs / Noirs"
 
 msgid "Direct encounter"
-msgstr "Rencontre directe"
+msgstr "Confrontation directe"
 
 msgid "Disabled"
 msgstr "Désactivé"
@@ -2983,6 +2983,18 @@ msgstr "Modifié depuis le dernier envoi"
 
 msgid "Modified, but no internet connection"
 msgstr "Modifié, mais pas de connexion internet"
+
+#, python-format
+msgid "Moved down %(num)d place"
+msgid_plural "Moved down %(num)d places"
+msgstr[0] "Descendu·e de %(num)d place"
+msgstr[1] "Descendu·e de %(num)d places"
+
+#, python-format
+msgid "Moved up %(num)d place"
+msgid_plural "Moved up %(num)d places"
+msgstr[0] "Monté·e de %(num)d place"
+msgstr[1] "Monté·e de %(num)d places"
 
 msgid "Moves"
 msgstr "Coups"

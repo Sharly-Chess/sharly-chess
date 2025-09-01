@@ -90,7 +90,8 @@ class TestSingleScreensFunctionality:
 
         # Should not be checked in
         row = rows.filter(has_text='AMOS')
-        expect(row.locator('i.bi-square')).to_be_visible()
+        expect(row.locator('i.bi-square')).not_to_be_visible()
+        expect(row.locator('i.bi-check-square-fill')).not_to_be_visible()
 
         # Clicking the row should not trigger a check-in
         expect(row).not_to_have_attribute('hx-get', re.compile(r'.*checkin-modal.*'))

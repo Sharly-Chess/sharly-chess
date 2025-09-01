@@ -67,9 +67,7 @@
                 <strong>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</strong>
             </th>
             {% for tie_break in tournament.tie_breaks %}
-                {% if tie_break.is_displayable %}
-                    <th class="tie-break text-center">{{ tie_break.acronym }}</th>
-                {% endif %}
+                <th class="tie-break text-center">{{ tie_break.acronym }}</th>
             {% endfor %}
         {% endif %}
     {% endif %}
