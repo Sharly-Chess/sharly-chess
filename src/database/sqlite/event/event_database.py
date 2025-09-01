@@ -73,20 +73,22 @@ class EventDatabase(MigrationDatabase):
             super().__init__(self.event_database_path(self.uniq_id), write)
 
     def __exit__(self, exc_type, exc_value, tb):
+        dirty_tournaments: list[int] = []
         if self.write and exc_type is None:
             try:
-                self.execute(
-                    'SELECT `tournament_id` FROM tournament_dirty WHERE dirty = 1;'
-                )
-                for row in self.fetchall():
-                    plugin_manager.hook.on_tournament_data_updated(
-                        event_uniq_id=self.uniq_id, tournament_id=row['tournament_id']
-                    )
-
-                self.execute('UPDATE tournament_dirty SET dirty = 0 WHERE dirty = 1;')
+                self.execute('SELECT `id` FROM tournament WHERE dirty = 1;')
+                dirty_tournaments = [row['id'] for row in self.fetchall()]
+                self.execute('UPDATE tournament SET dirty = 0 WHERE dirty = 1;')
             except OperationalError:
                 pass
         super().__exit__(exc_type, exc_value, tb)
+
+        # We need call the hook on all dirty tournaments after committing the changes above
+        if self.write and exc_type is None:
+            for tournament_id in dirty_tournaments:
+                plugin_manager.hook.on_tournament_data_updated(
+                    event_uniq_id=self.uniq_id, tournament_id=tournament_id
+                )
 
     @classmethod
     def create_instance(cls, file: Path, write: bool = False) -> Self:
