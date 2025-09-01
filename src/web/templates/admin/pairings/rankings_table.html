@@ -80,7 +80,26 @@
                     </td>
                 {% else %}
                     <td class="tie-break text-center">
-                        {{ tie_break_value }}
+                        <span
+                            {% if tie_break_value.rank_progress %}
+                                {{ macros.tooltip_attributes(
+                                    'info',
+                                    ngettext(
+                                        'Moved up %(num)d place',
+                                        'Moved up %(num)d places',
+                                        tie_break_value.rank_progress
+                                    ) if tie_break_value.rank_progress > 0 else
+                                    ngettext(
+                                        'Moved down %(num)d place',
+                                        'Moved down %(num)d places',
+                                        - tie_break_value.rank_progress
+                                    ),
+                                    'right'
+                                ) }}
+                            {% endif %}
+                        >
+                            {{ tie_break_value }}
+                        </span>
                     </td>
                 {% endif %}
             {% endfor %}
