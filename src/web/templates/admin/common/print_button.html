@@ -1,0 +1,20 @@
+<span
+    id="print-button"
+    {% if swap_oob %}
+        hx-swap-oob="true"
+    {% endif %}
+    class="sidebar-tooltip" {{ macros.tooltip_attributes('info', _('Print'), 'right') }}
+>
+    <button
+        class="btn nav-link text-start"
+        hx-get="{{ url_for('admin-print-modal', event_uniq_id=admin_event.uniq_id) }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+        preload
+        data-bs-toggle="modal"
+        data-bs-target="#modal-wrapper"
+    >
+        <i class="bi bi-printer-fill"></i>
+        <span class="expanded-only">{{ _('Print') }}</span>
+    </button>
+</span>
