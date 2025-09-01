@@ -72,7 +72,7 @@
             <td class="points text-center fw-bold">{{ player.points_str }}</td>
 
             {% for tie_break_value in player.tie_break_values %}
-                <td class="tie-break text-center">
+                <td class="tie-break text-center compact-col cursor-grap">
 
                     <span
                         {% if tie_break_value.rank_progress %}
@@ -95,7 +95,7 @@
                         {{ tie_break_value }}
                     </span>
                     {% if tie_break_value.tie_break.is_manual and sortable %}
-                        <i class="bi-arrows-move ps-2 handle"></i>
+                        <i class="bi-arrows-vertical ps-2 handle"></i>
                     {% endif %}
                 </td>
             {% endfor %}
