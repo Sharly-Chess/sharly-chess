@@ -2,6 +2,9 @@
 
 {% block top_left_nav %}
     {{ admin_macros.admin_title(_('Families'), 'screens-families') }}
+    <script>
+        preparePrintModal()
+    </script>
 {% endblock %}
 
 {% block top_right_nav %}

@@ -24,10 +24,16 @@ from utils.file import shutil_delete_onerror
 def pytest_configure(config):
     """Register custom markers."""
     config.addinivalue_line(
-        'markers', 'e2e: mark test as end-to-end test requiring server'
+        'markers',
+        'e2e: mark test as end-to-end test requiring server (runs on commit, pull request and release)',
     )
-    config.addinivalue_line('markers', 'unit: mark test as unit test')
-    config.addinivalue_line('markers', 'slow: mark test as slow running test')
+    config.addinivalue_line(
+        'markers',
+        'unit: mark test as unit test (runs on commit, pull request and release)',
+    )
+    config.addinivalue_line(
+        'markers', 'release_only: mark test as release only test (runs on release only)'
+    )
 
 
 def pytest_collection_modifyitems(config, items):

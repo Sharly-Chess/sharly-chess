@@ -27,6 +27,10 @@ from data.input_output.data_source import PlayerComparator, DataSource
 from data.input_output.managers import DataSourceManager
 from data.pairing import Pairing
 from data.player import Player, Federation, Club, PlayerRating
+from data.print_documents.documents import (
+    PlayerListPrintDocument,
+    PlayerCheckinListPrintDocument,
+)
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredPlayer
 from utils.enum import (
@@ -87,6 +91,20 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
                 self._redirect_error(f'Tournament [{tournament_id}] not found.')
                 return
 
+        print_tournament_id = self.default_tournament_for_print_modal(
+            tournament_id=None
+        )
+        if print_tournament_id is None:
+            tournaments = list(self.admin_event.tournaments_by_id.values())
+        else:
+            tournaments = [self.admin_event.tournaments_by_id[print_tournament_id]]
+        check_in_open = all(tournament.check_in_open for tournament in tournaments)
+        self.default_print_document = (
+            PlayerCheckinListPrintDocument.static_id()
+            if check_in_open
+            else PlayerListPrintDocument.static_id()
+        )
+
     def get_admin_tournament(self) -> Tournament:
         assert self.admin_tournament is not None
         return self.admin_tournament
@@ -100,6 +118,7 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
         return super().template_context | {
             'admin_player': self.admin_player,
             'admin_tournament': self.admin_tournament,
+            'default_print_document': self.default_print_document,
         }
 
 

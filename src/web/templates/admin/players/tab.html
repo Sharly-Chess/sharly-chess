@@ -99,6 +99,8 @@
 {% endwith %}
 
 <script>
+    preparePrintModal("{{ default_print_document }}");
+
     $(document).ready(function() {
         $(document).off("htmx:afterSwap.tips");
 

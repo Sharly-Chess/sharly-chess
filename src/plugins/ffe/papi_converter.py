@@ -1,4 +1,5 @@
 import json
+import tempfile
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from pathlib import Path
@@ -685,33 +686,33 @@ class PapiConverter:
         }
 
         # Write JSON to temporary file first
-        temp_json_file = TMP_DIR / 'papi-converter-input.json'
-        try:
-            with open(temp_json_file, 'w', encoding='utf-8') as file:
-                json.dump(papi_data_dict, file, ensure_ascii=False, indent=2)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path: Path = Path(tmpdir)
+            temp_json_file = tmp_path / 'papi-converter-input.json'
+            try:
+                with open(temp_json_file, 'w', encoding='utf-8') as file:
+                    json.dump(papi_data_dict, file, ensure_ascii=False, indent=2)
 
-            # Use papi-converter to convert JSON to PAPI format
-            result = subprocess.run(
-                [
-                    self.executable_path,
-                    temp_json_file,
-                    target_file,
-                ],
-                capture_output=True,
-                encoding='utf-8',
-            )
-
-            if result.returncode != 0 or not target_file.exists():
-                raise SharlyChessException(
-                    f'JSON to Papi file conversion failed.'
-                    f'PapiConverter failed with status {result.returncode}.\n'
-                    f'stdout: {result.stdout}\nstderr: {result.stderr}'
+                # Use papi-converter to convert JSON to PAPI format
+                result = subprocess.run(
+                    [
+                        self.executable_path,
+                        temp_json_file,
+                        target_file,
+                    ],
+                    capture_output=True,
+                    encoding='utf-8',
                 )
 
-        finally:
-            # Clean up temporary JSON file
-            temp_json_file.unlink(missing_ok=True)
-            return target_file.exists()
+                if result.returncode != 0 or not target_file.exists():
+                    raise SharlyChessException(
+                        f'JSON to Papi file conversion failed.'
+                        f'PapiConverter failed with status {result.returncode}.\n'
+                        f'stdout: {result.stdout}\nstderr: {result.stderr}'
+                    )
+
+            finally:
+                return target_file.exists()
 
     def _tournament_to_papi_data(self, tournament: Tournament) -> PapiData:
         """Convert a Tournament object to PapiData."""
