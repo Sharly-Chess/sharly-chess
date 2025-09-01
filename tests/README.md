@@ -51,8 +51,8 @@ pytest -m e2e
 # Run only unit tests
 pytest -m unit
 
-# Skip slow tests
-pytest -m "not slow"
+# Skip release_only tests
+pytest -m "not release_only"
 ```
 
 ### Development Options
@@ -87,9 +87,6 @@ The `run_tests.py` script provides convenient shortcuts:
 
 # Run specific test file with debug output
 ./run_tests.py tests/test_e2e_basic.py --debug --verbose
-
-# Run fast tests only (skip slow ones)
-./run_tests.py --fast
 ```
 
 ## Configuration
@@ -149,7 +146,7 @@ async def test_end_to_end_flow(page: Page):
     \"\"\"Full end-to-end test.\"\"\"
     pass
 
-@pytest.mark.slow
+@pytest.mark.release_only
 async def test_large_dataset(page: Page):
     \"\"\"Test with large dataset.\"\"\"
     pass
