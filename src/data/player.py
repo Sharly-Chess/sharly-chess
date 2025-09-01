@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     from _weakref import ReferenceType
     from data.event import Event
     from data.tournament import Tournament
-    from data.tie_breaks.tie_breaks import SupportsSortingAndNegation, TieBreak
+    from data.tie_breaks.tie_breaks import TieBreak
 
 
 @dataclass(frozen=True)
@@ -100,7 +100,7 @@ class PlayerRating:
 
 
 class TieBreakValue:
-    def __init__(self, tie_break: 'TieBreak', value: 'SupportsSortingAndNegation'):
+    def __init__(self, tie_break: 'TieBreak', value: SupportsFloat):
         self._tie_break_ref: 'ReferenceType[TieBreak]' = weakref.ref(tie_break)
         self.value = value
         self.rank_progress: int | None = None
@@ -120,12 +120,7 @@ class TieBreakValue:
             if self.rank_progress < 0:
                 return f'▼ {-self.rank_progress}'
             return ''
-        if isinstance(self.value, SupportsFloat):
-            return StaticUtils.points_str(float(self.value))
-        raise ValueError(
-            f'Tie break value [{self.value}] of tie break '
-            f'[{self.tie_break.id}] has no defined representation'
-        )
+        return StaticUtils.points_str(float(self.value))
 
 
 @total_ordering
@@ -514,7 +509,7 @@ class Player:
 
         return TrfPlayer(
             startrank=self.pairing_number,
-            name=f'{self.last_name}, {self.first_name}',
+            name=f'{self.last_name}, {self.first_name or ""}'[:32],
             sex=self.gender.to_trf,
             title=self.title.to_trf,
             rating=self.rating,
@@ -631,12 +626,13 @@ class Player:
         )
         return self._tie_break_values
 
-    def compute_tie_break_values(self, *, after_round: int | None):
-        assert self.tournament is not None
+    def compute_tie_break_values(self, *, after_round: int):
         self._tie_break_values = [
             TieBreakValue(
                 tie_break,
-                tie_break.compute_player_value(self, after_round=after_round),
+                tie_break.compute_player_value(self, after_round=after_round)
+                if tie_break.is_computed_per_player
+                else 0,
             )
             for tie_break in self.tournament.tie_breaks
         ]
@@ -667,11 +663,11 @@ class Player:
         ]
 
     @property
-    def starting_rank_sort_key(self) -> tuple[int, int, str, str]:
+    def starting_rank_sort_key(self) -> tuple:
         return -self.rating, -self.title, self.last_name, self.first_name or ''
 
     @property
-    def board_number_sort_key(self) -> tuple[float, int, int, str, str]:
+    def board_number_sort_key(self) -> tuple:
         return (
             -(self.vpoints or 0.0),
             -self.rating,
@@ -682,28 +678,25 @@ class Player:
 
     @property
     def before_manual_rank_key(self) -> tuple:
-        """Returns a tuple of the player's rank using points and tie-break values *up to* the manual tiebreak, or points only if there is no manual tiebreak.
-        Used for grouping in the rankings table."""
+        from data.tie_breaks.tie_breaks import ManualTieBreak
 
-        tie_break_sort_key = tuple(
-            -tie_break_value.value for tie_break_value in self.tie_break_values
-        )
+        return self.rank_sort_key_before_tie_break(ManualTieBreak)
 
-        manual_tiebreak_index = next(
-            (
-                index
-                for index, tie_break in enumerate(self.tournament.tie_breaks)
-                if tie_break.is_manual
-            ),
-            None,
-        )
+    def rank_sort_key_before_tie_break(self, tie_break_type: type['TieBreak']) -> tuple:
+        """Returns a rank sort key up to the tie-break of type *tie_break_type*.
+        If the tie-break is not found, return no tie-break in the key.
+        Usage: grouping values players by tie-break value (ex: manual tie-break sorting)."""
 
-        if manual_tiebreak_index is not None:
-            tie_break_sort_key = tie_break_sort_key[:manual_tiebreak_index]
-        else:
-            tie_break_sort_key = tuple()
-
-        return (-(self.points or 0.0),) + tie_break_sort_key
+        tie_break_sort_key: list = []
+        tie_break_found = False
+        for tie_break_value in self.tie_break_values:
+            if isinstance(tie_break_value.tie_break, tie_break_type):
+                tie_break_found = True
+                break
+            tie_break_sort_key.append(-tie_break_value.value)
+        if not tie_break_found:
+            tie_break_sort_key = []
+        return (-(self.points or 0.0),) + tuple(tie_break_sort_key)
 
     def rank_sort_key_without_tie_break(
         self, tie_break_type: type['TieBreak']
@@ -716,24 +709,19 @@ class Player:
             if not isinstance(tie_break_value.tie_break, tie_break_type)
         )
 
-        return (
-            (-(self.points or 0.0),) + tie_break_sort_key + self.starting_rank_sort_key
-        )
+        return (-(self.points or 0.0),) + tie_break_sort_key + (self.pairing_number,)
 
     @property
     def rank_sort_key(self) -> tuple:
         tie_break_sort_key = tuple(
             -tie_break_value.value for tie_break_value in self.tie_break_values
         )
-        return (
-            (-(self.points or 0.0),) + tie_break_sort_key + self.starting_rank_sort_key
-        )
+        return (-(self.points or 0.0),) + tie_break_sort_key + (self.pairing_number,)
 
     def __le__(self, other: 'Player') -> bool:
         # p1 <= p2 calls p1.__le__(p2)
         if not isinstance(other, Player):
             return NotImplemented
-        # A false positive warning is raised in PyCharm, cf https://youtrack.jetbrains.com/issue/PY-76256
         return self.board_number_sort_key > other.board_number_sort_key
 
     def __eq__(self, other):

@@ -992,20 +992,25 @@ class Tournament:
         if after_round is None:
             after_round = self.max_ranking_round
 
+        self._set_players_pairing_numbers()
         self._estimate_players(self.players, after_round=after_round)
         for player in self.players:
             player.points = player.points_after(after_round)
             player.compute_tie_break_values(after_round=after_round)
 
-        self._players_by_rank = {
-            rank: player
-            for rank, player in enumerate(
-                sorted(
-                    self.players,
-                    key=lambda p: p.rank_sort_key,
-                ),
-                start=1,
+        for index, tie_break in enumerate(self.tie_breaks):
+            if tie_break.is_computed_per_player:
+                continue
+            value_by_player_id = tie_break.compute_all_player_values(
+                self, after_round=after_round
             )
+            for player_id, tie_break_value in value_by_player_id.items():
+                player = self.players_by_id[player_id]
+                player.tie_break_values[index].value = tie_break_value
+
+        sorted_players = sorted(self.players, key=lambda p: p.rank_sort_key)
+        self._players_by_rank = {
+            rank: player for rank, player in enumerate(sorted_players, start=1)
         }
         for rank, player in self._players_by_rank.items():
             player.rank = rank

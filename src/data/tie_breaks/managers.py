@@ -50,5 +50,4 @@ class TieBreakOptionManager(EntityManager[TieBreakOption]):
             options.PlayedModifierTieBreakOption,
             options.ForeModifierTieBreakOption,
             options.LimitTieBreakOption,
-            options.ExcludeIdsTieBreakOption,
         ]
