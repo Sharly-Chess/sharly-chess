@@ -83,7 +83,10 @@
         </form>
     {% else %}
         <div class="admin-timer-hour-div border {% if timer_hour.error %}border-danger{% else %}border-secondary{% endif %}">
-            <div class="p-2 d-flex align-items-start gap-4">
+            <div class="p-2 d-flex align-items-start gap-3 align-items-center">
+                {% if not admin_timer_hour and admin_timer.timer_hours_sorted_by_order|length > 1 %}
+                    <i class="bi-grip-horizontal"></i>
+                {% endif %}
                 <div class="flex-grow-1">
                     <b>{% if timer_hour.timestamp %}{% if timer_hour.stored_timer_hour.date_str %}{{ timer_hour.stored_timer_hour.date_str }} {%endif %}{{ timer_hour.stored_timer_hour.time_str }}{% else %}??/??/???? ??:??{% endif %}</b> :
                     {{ timer_hour.uniq_id }}
@@ -94,9 +97,6 @@
                 </div>
                 <div class="flex-shrink-0 d-flex gap-2 align-items-center">
                     {% if not admin_timer_hour %}
-                        {% if not admin_timer_hour and admin_timer.timer_hours_sorted_by_order|length > 1 %}
-                            <i class="bi-arrows-vertical"></i>
-                        {% endif %}
                         <button
                             class="btn btn-sm btn-outline-primary text-nowrap"
                             hx-get="{{ url_for('admin-timer-hours-hour-modal', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
