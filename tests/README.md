@@ -87,9 +87,6 @@ The `run_tests.py` script provides convenient shortcuts:
 
 # Run specific test file with debug output
 ./run_tests.py tests/test_e2e_basic.py --debug --verbose
-
-# Run fast tests only (skip slow ones)
-./run_tests.py --fast
 ```
 
 ## Configuration
