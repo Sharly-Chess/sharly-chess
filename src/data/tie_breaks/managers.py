@@ -34,6 +34,7 @@ class TieBreakManager(EntityManager[TieBreak]):
                 tie_breaks.AveragePerformanceRatingOpponentsTieBreak,
                 tie_breaks.PerfectTournamentPerformanceTieBreak,
                 tie_breaks.AveragePerfectPerformanceTieBreak,
+                tie_breaks.DirectEncounterTieBreak,
             ]
         plugin_manager.hook.insert_tie_break_types(tie_break_types=tie_break_types)
         return tie_break_types
@@ -49,5 +50,4 @@ class TieBreakOptionManager(EntityManager[TieBreakOption]):
             options.PlayedModifierTieBreakOption,
             options.ForeModifierTieBreakOption,
             options.LimitTieBreakOption,
-            options.ExcludeIdsTieBreakOption,
         ]

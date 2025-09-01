@@ -2,6 +2,9 @@
 
 {% block top_left_nav %}
     {{ admin_macros.admin_title(_('Families'), 'screens-families') }}
+    <script>
+        preparePrintModal()
+    </script>
 {% endblock %}
 
 {% block top_right_nav %}
@@ -75,7 +78,7 @@
 {% block cards_container_cards %}
     <div class="row">
         {% if admin_event.families_by_id %}
-            {% for family in admin_event.families_by_id.values() %}
+            {% for family in admin_event.families_sorted_by_name %}
                 {% include 'family_card.html' %}
             {% endfor %}
         {% else %}

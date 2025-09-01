@@ -260,7 +260,10 @@ class FfeAdminEventController(BaseEventAdminController):
         statuses = FfeBackgroundUploader.upload_status_messages
         tournaments = admin_event.tournaments
         for tournament in tournaments:
-            result = statuses.get(FfeBackgroundUploader.result_id(tournament), None)
+            result = statuses.get(
+                FfeBackgroundUploader.result_id(admin_event.uniq_id, tournament.id),
+                None,
+            )
             if result and result.status == FfeUploadStatus.ERROR:
                 has_upload_error = True
                 break

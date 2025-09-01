@@ -11,6 +11,10 @@ from litestar_htmx import HTMXRequest, ClientRedirect
 
 from common.i18n import _
 from common.logger import get_logger
+from data.print_documents.documents import (
+    PrizeAssignmentPrintDocument,
+    PrizeListPrintDocument,
+)
 from data.prize.managers import (
     PrizeSharingManager,
     PlayerFilterManager,
@@ -148,6 +152,9 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
             'tournament_options': self.get_tournament_options(),
             'prize_group_options': self.get_prize_group_options(),
             'show_details': self.show_details,
+            'default_print_document': PrizeAssignmentPrintDocument.static_id()
+            if self.get_admin_tournament().finished
+            else PrizeListPrintDocument.static_id(),
         }
 
     def get_admin_tournament(self) -> Tournament:

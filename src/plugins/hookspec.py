@@ -234,7 +234,7 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def on_tournament_data_updated(self, tournament: 'Tournament'):
+    def on_tournament_data_updated(self, event_uniq_id: str, tournament_id: int):
         """Called when the (publishable) data of a tournament is updated"""
 
     @hookspec

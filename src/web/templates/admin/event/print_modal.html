@@ -83,3 +83,21 @@
         </div>
     </div>
 </div>
+
+{% if not errors %}
+    <script>
+        {# Tabs can set default values #}
+        if (default_print_document_id) {
+            $('#document').val(default_print_document_id).trigger('change');
+        }
+        if (default_print_tournament_id) {
+            const select = $('#tournament-id');
+            if (!select.prop('disabled')) {
+                select.val(default_print_tournament_id).trigger('change');
+            }
+        }
+        if (default_print_round && $('#round')) {
+            $('#round').val(default_print_round).trigger('change');
+        }
+    </script>
+{% endif %}

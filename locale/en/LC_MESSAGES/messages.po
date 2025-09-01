@@ -107,6 +107,10 @@ msgid "%(set_name)s (check-in)"
 msgstr ""
 
 #, python-format
+msgid "%(set_name)s (registered players)"
+msgstr ""
+
+#, python-format
 msgid "%(set_name)s (round #%(round)d, %(remaining)d board remaining)"
 msgid_plural "%(set_name)s (round #%(round)d, %(remaining)d boards remaining)"
 msgstr[0] ""
@@ -2706,6 +2710,18 @@ msgstr ""
 msgid "Modified, but no internet connection"
 msgstr ""
 
+#, python-format
+msgid "Moved down %(num)d place"
+msgid_plural "Moved down %(num)d places"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "Moved up %(num)d place"
+msgid_plural "Moved up %(num)d places"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "Moves"
 msgstr ""
 
@@ -3542,6 +3558,9 @@ msgid "Points: up to %(max)s"
 msgstr ""
 
 msgid "Port"
+msgstr ""
+
+msgid "Port [{port}] already in use, can not start Sharly Chess server."
 msgstr ""
 
 msgid "Port [{port}] already in use."

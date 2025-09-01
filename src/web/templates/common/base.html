@@ -441,11 +441,17 @@
                     }
                     return w;
                 }
+
+                function preparePrintModal(print_document_id, tournament_id, print_round) {
+                    default_print_document_id = print_document_id || '';
+                    default_print_tournament_id = tournament_id || '';
+                    default_print_round = print_round || '';
+                }
             </script>
         {% endif %}
     </head>
     <body
-        hx-ext="multi-swap,preload,morphdom-swap"
+        hx-ext="multi-swap,preload,morphdom-swap,remove-me"
         hx-swap="transition:true"
         class="d-none"
     >

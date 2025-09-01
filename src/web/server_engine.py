@@ -72,7 +72,11 @@ def launch_browser(url: str):
 class ServerEngine(Engine):
     app: ClassVar[Litestar | None] = None
 
-    def __init__(self, debug: bool = False):
+    def __init__(
+        self,
+        debug: bool = False,
+        port: int | None = None,
+    ):
         super().__init__()
         self.debug = debug
         if self.error:
@@ -95,23 +99,35 @@ class ServerEngine(Engine):
         for data_source in DataSourceManager.objects():
             data_source.on_app_init()
 
-        for port in sharly_chess_config.web_ports:
+        if port:
             if self.__port_in_use(port):
                 print_interactive_warning(
-                    _('Port [{port}] already in use.').format(port=port)
+                    _(
+                        'Port [{port}] already in use, can not start Sharly Chess server.'
+                    ).format(port=port)
                 )
-                continue
+                return
             sharly_chess_config.web_port = port
-            break
-        if sharly_chess_config.web_port is None:
-            print_interactive_error(
-                _(
-                    'All the candidate ports [{ports}] are already in use, can not start Sharly Chess server.'
-                ).format(
-                    ports=', '.join(str(port) for port in sharly_chess_config.web_ports)
+        else:
+            for port in sharly_chess_config.web_ports:
+                if self.__port_in_use(port):
+                    print_interactive_warning(
+                        _('Port [{port}] already in use.').format(port=port)
+                    )
+                    continue
+                sharly_chess_config.web_port = port
+                break
+            if sharly_chess_config.web_port is None:
+                print_interactive_error(
+                    _(
+                        'All the candidate ports [{ports}] are already in use, can not start Sharly Chess server.'
+                    ).format(
+                        ports=', '.join(
+                            str(port) for port in sharly_chess_config.web_ports
+                        )
+                    )
                 )
-            )
-            return
+                return
 
         print_interactive_info(
             _('Port: {port}').format(port=sharly_chess_config.web_port)
