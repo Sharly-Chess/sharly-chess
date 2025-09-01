@@ -111,8 +111,6 @@ class TieBreakValue:
             raise RuntimeError('Reference has been garbage collected')
         return tie_break
 
-    representation: str = ''
-
     def __str__(self) -> str:
         if self.rank_progress is not None:
             if self.rank_progress > 0:
