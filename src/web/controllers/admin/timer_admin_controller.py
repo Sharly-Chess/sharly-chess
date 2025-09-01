@@ -557,98 +557,76 @@ class TimerAdminController(BaseEventAdminController):
                 data=data,
                 errors=stored_timer.errors,
             )
-        with EventDatabase(event.uniq_id, write=True) as event_database:
-            match action:
-                case 'create':
+        match action:
+            case 'create':
+                with EventDatabase(event.uniq_id, write=True) as event_database:
                     stored_timer = event_database.add_stored_timer(stored_timer)
-                    assert stored_timer and stored_timer.id is not None
+                    assert stored_timer.id is not None
                     stored_timer_hour: StoredTimerHour = (
                         event_database.add_stored_timer_hour(
                             stored_timer.id, set_datetime=True
                         )
                     )
-                    Message.success(
-                        request,
-                        _('Timer [{timer}] has been created.').format(
-                            timer=stored_timer.name
-                        ),
-                    )
-
-                    return self._admin_event_timers_render(
-                        request,
-                        event_uniq_id=event_uniq_id,
-                        modal='timer_hours',
-                        timer_id=stored_timer.id,
-                        timer_hour_id=stored_timer_hour.id,
-                    )
-                case 'update':
-                    timer = web_context.get_admin_timer()
+                Message.success(
+                    request,
+                    _('Timer [{timer}] has been created.').format(
+                        timer=stored_timer.name
+                    ),
+                )
+                return self._admin_event_timers_render(
+                    request,
+                    event_uniq_id=event_uniq_id,
+                    modal='timer_hours',
+                    timer_id=stored_timer.id,
+                    timer_hour_id=stored_timer_hour.id,
+                )
+            case 'update':
+                with EventDatabase(event.uniq_id, write=True) as event_database:
                     stored_timer = event_database.update_stored_timer(stored_timer)
-                    Message.success(
-                        request,
-                        _('Timer [{timer}] has been updated.').format(
-                            timer=stored_timer.name
-                        ),
-                    )
-                    if not timer.timer_hours_by_id:
-                        stored_timer_hour = event_database.add_stored_timer_hour(
-                            timer.id, set_datetime=True
-                        )
-
-                        return self._admin_event_timers_render(
-                            request,
-                            event_uniq_id=event_uniq_id,
-                            modal='timer_hours',
-                            timer_id=stored_timer.id,
-                            timer_hour_id=stored_timer_hour.id,
-                        )
-                    else:
-                        for timer_hour in timer.timer_hours_sorted_by_order:
-                            if timer_hour.error:
-                                return self._admin_event_timers_render(
-                                    request,
-                                    event_uniq_id=event_uniq_id,
-                                    modal='timer_hours',
-                                    timer_id=stored_timer.id,
-                                    timer_hour_id=timer_hour.id,
-                                )
-                        return self._admin_event_timers_render(
-                            request, event_uniq_id=event_uniq_id
-                        )
-                case 'delete':
-                    timer = web_context.get_admin_timer()
+                Message.success(
+                    request,
+                    _('Timer [{timer}] has been updated.').format(
+                        timer=stored_timer.name
+                    ),
+                )
+                return self._admin_event_timers_render(
+                    request, event_uniq_id=event_uniq_id
+                )
+            case 'delete':
+                timer = web_context.get_admin_timer()
+                with EventDatabase(event.uniq_id, write=True) as event_database:
                     event_database.delete_stored_timer(timer.id)
-                    Message.success(
-                        request,
-                        _('Timer [{timer}] has been deleted.').format(timer=timer.name),
-                    )
-
-                    return self._admin_event_timers_render(
-                        request, event_uniq_id=event_uniq_id
-                    )
-                case 'clone':
-                    timer = web_context.get_admin_timer()
+                Message.success(
+                    request,
+                    _('Timer [{timer}] has been deleted.').format(timer=timer.name),
+                )
+                return self._admin_event_timers_render(
+                    request, event_uniq_id=event_uniq_id
+                )
+            case 'clone':
+                timer = web_context.get_admin_timer()
+                with EventDatabase(event.uniq_id, write=True) as event_database:
                     stored_timer = event_database.add_stored_timer(stored_timer)
-                    assert stored_timer is not None and stored_timer.id is not None
+                    assert stored_timer.id is not None
                     for timer_hour in timer.timer_hours_sorted_by_order:
                         event_database.clone_stored_timer_hour(
                             timer_hour.id, stored_timer.id
                         )
-                    Message.success(
-                        request,
-                        _('Timer [{timer}] has been created.').format(
-                            timer=stored_timer.name
-                        ),
-                    )
+                Message.success(
+                    request,
+                    _('Timer [{timer}] has been created.').format(
+                        timer=stored_timer.name
+                    ),
+                )
 
-                    return self._admin_event_timers_render(
-                        request,
-                        event_uniq_id=event_uniq_id,
-                        modal='timer_hours',
-                        timer_id=stored_timer.id,
-                    )
-                case _:
-                    raise ValueError(f'action=[{action}]')
+                return self._admin_event_timers_render(
+                    request,
+                    event_uniq_id=event_uniq_id,
+                    modal='timer_hours',
+                    timer_id=stored_timer.id,
+                )
+            case _:
+                raise ValueError(f'action=[{action}]')
 
     @post(path='/admin/timer-create/{event_uniq_id:str}', name='admin-timer-create')
     async def htmx_admin_timer_create(
