@@ -72,7 +72,7 @@ class Engine(ABC):
             self.error = True
             return
         if TEST_ENV:
-            # skip all the upgrade stuff on TEST_ENV (recovering tests run explicitely)
+            # skip all the upgrade stuff on TEST_ENV (recovering tests run the migrations explicitly)
             return
         if more_recent_version and download_url:
             yes_answer = _('Y *** THE LETTER TO ANSWER YES')

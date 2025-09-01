@@ -23,7 +23,7 @@ class _TestEngine(Engine):
 logger: Logger = get_logger()
 
 
-@pytest.mark.recovering
+@pytest.mark.release_only
 class RecoverTestCase(TestCase):
     """Tests the recovering of 2.4.0 events."""
 

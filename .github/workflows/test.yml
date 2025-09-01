@@ -37,4 +37,4 @@ jobs:
 
             - name: Run tests
               run: |
-                pytest -m "not slow"
+                pytest -m "not release_only"
