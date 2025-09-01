@@ -29,9 +29,7 @@
                     <strong>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</strong>
                 </th>
                 {% for tie_break in admin_tournament.tie_breaks %}
-                    {% if tie_break.is_displayable or tie_break.is_manual %}
-                        <th class="tie-break text-center">{{ tie_break.acronym }}</th>
-                    {% endif %}
+                    <th class="tie-break text-center">{{ tie_break.acronym }}</th>
                 {% endfor %}
             </tr>
         </thead>
@@ -73,16 +71,36 @@
             <td class="federation text-center">{{ player.federation }}</td>
             <td class="points text-center fw-bold">{{ player.points_str }}</td>
 
-            {% for tie_break in admin_tournament.tie_breaks %}
-                {% set tie_break_string = player.tie_break_values_as_strings[loop.index0] %}
-                {% if tie_break.is_manual %}
+            {% for tie_break_value in player.tie_break_values %}
+                {% if tie_break_value.tie_break.is_manual %}
                     <td class="playoff text-center compact-col">
                     {% if sortable %}
                         <i class="bi-grip-horizontal handle {% if player.manual_tiebreak is not none %}text-warning{% endif %}"></i>
                     {% endif %}
                     </td>
                 {% else %}
-                    <td class="tie-break text-center">{{ tie_break_string }}</td>
+                    <td class="tie-break text-center">
+                        <span
+                            {% if tie_break_value.rank_progress %}
+                                {{ macros.tooltip_attributes(
+                                    'info',
+                                    ngettext(
+                                        'Moved up %(num)d place',
+                                        'Moved up %(num)d places',
+                                        tie_break_value.rank_progress
+                                    ) if tie_break_value.rank_progress > 0 else
+                                    ngettext(
+                                        'Moved down %(num)d place',
+                                        'Moved down %(num)d places',
+                                        - tie_break_value.rank_progress
+                                    ),
+                                    'right'
+                                ) }}
+                            {% endif %}
+                        >
+                            {{ tie_break_value }}
+                        </span>
+                    </td>
                 {% endif %}
             {% endfor %}
 
@@ -123,9 +141,7 @@
                         {{ _('Pts *** POINTS FOR TABLE HEADER') }}
                     </th>
                     {% for tie_break in admin_tournament.tie_breaks %}
-                            {% if tie_break.is_displayable %}
-                            <th class="tie-break text-center">{{ tie_break.acronym }}</th>
-                        {% endif %}
+                        <th class="tie-break text-center">{{ tie_break.acronym }}</th>
                     {% endfor %}
                 </tr>
             </thead>
@@ -144,12 +160,10 @@
                                     <td>{{ opponent.category.short_name }}</td>
                                     <td>{{ opponent.federation }}</td>
                                     <td class='text-center'>{{ opponent.points_str }}</td>
-                                    {% for tie_break in admin_tournament.tie_breaks %}
-                                        {% if tie_break.is_displayable %}
-                                            <td class="tie-break text-center">
-                                                {{ player.tie_break_values_as_strings[loop.index0] }}
-                                            </td>
-                                        {% endif %}
+                                    {% for tie_break_value in opponent.tie_break_values %}
+                                        <td class="tie-break text-center">
+                                            {{ tie_break_value }}
+                                        </td>
                                     {% endfor %}
                                 {% endwith %}
                             {% else %}

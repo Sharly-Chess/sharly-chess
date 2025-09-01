@@ -1,6 +1,6 @@
 from abc import ABC
 from types import UnionType
-from typing import Any, override, Iterable
+from typing import Any, override
 
 from common.i18n import _
 from utils.option import Option, OptionError
@@ -85,20 +85,6 @@ class LimitTieBreakOption(TieBreakOption):
     @property
     def type(self) -> type | UnionType:
         return float | None
-
-    @property
-    def default_value(self) -> Any:
-        return None
-
-
-class ExcludeIdsTieBreakOption(TieBreakOption):
-    @staticmethod
-    def static_id() -> str:
-        return 'EXCLUDE_IDS'
-
-    @property
-    def type(self) -> type | UnionType:
-        return Iterable[int] | None
 
     @property
     def default_value(self) -> Any:

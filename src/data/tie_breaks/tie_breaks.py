@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
 from bisect import bisect_right
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 from collections.abc import Iterable
 from contextlib import suppress
+from dataclasses import dataclass
 from decimal import Decimal
 from math import isclose
-from typing import TYPE_CHECKING, Protocol, TypeVar
-
+from typing import TYPE_CHECKING, SupportsFloat
 
 from common.i18n import _
 from data.pairing import Pairing
@@ -21,7 +21,6 @@ from data.tie_breaks.options import (
     PlayedModifierTieBreakOption,
     ForeModifierTieBreakOption,
     LimitTieBreakOption,
-    ExcludeIdsTieBreakOption,
 )
 from utils import StaticUtils
 from utils.enum import BoardColor, Result
@@ -29,16 +28,6 @@ from utils.option import OptionHandler, OptionError
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
-
-
-T = TypeVar('T', bound='SupportsRichComparison')
-
-
-class SupportsRichComparison(Protocol):
-    def __lt__(self: T, other: T) -> bool: ...
-    def __le__(self: T, other: T) -> bool: ...
-    def __gt__(self: T, other: T) -> bool: ...
-    def __ge__(self: T, other: T) -> bool: ...
 
 
 class TieBreak(OptionHandler[TieBreakOption], ABC):
@@ -56,20 +45,31 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
 
     @abstractmethod
     def compute_player_value(
-        self,
-        player: 'Player',
-        *,
-        after_round: int | None,
-    ) -> 'SupportsRichComparison':
+        self, player: Player, *, after_round: int
+    ) -> SupportsFloat:
         """Compute the value of the tie-break for a player.
         As tie-breaks are intended for ranking,
         the return type need to support rich comparison with itself"""
 
     @property
-    def is_displayable(self) -> bool:
-        """Defines if the tie-break can be displayed
-        in a print view or a ranking screen"""
+    def is_computed_per_player(self) -> bool:
+        """Determines if the values are computed player per player.
+        If False, values are computed after all the others, all the tournament at once."""
         return True
+
+    def compute_all_player_values(
+        self, tournament: 'Tournament', *, after_round: int
+    ) -> dict[int, int]:
+        """Computes the values of all the players in a dict[player_id, value] format."""
+        raise NotImplementedError(
+            'If `is_computed_by_player` is False this method needs to be implemented.'
+        )
+
+    @property
+    def display_rank_delta(self) -> bool:
+        """Defines if the rank delta should be displayed instead of the tie-break value.
+        Usage: tie-breaks with not displayable values (ex: direct encounter)."""
+        return False
 
     @property
     def is_manual(self) -> bool:
@@ -90,7 +90,7 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
 
     @staticmethod
     def adjusted_score(
-        player: 'Player',
+        player: Player,
         *,
         after_round: int,
         adjust_fore: bool = False,
@@ -152,15 +152,7 @@ class WinsTieBreak(TieBreak):
     def short_name(self) -> str:
         return _('Wins')
 
-    def compute_player_value(
-        self,
-        player: 'Player',
-        *,
-        after_round: int | None,
-    ) -> int:
-        if after_round is None:
-            after_round = max(player.pairings)
-        assert player.tournament is not None
+    def compute_player_value(self, player: Player, *, after_round: int) -> int:
         point_values = player.tournament.point_values
         return sum(
             pairing.result.points(point_values) == Result.WIN.points(point_values)
@@ -189,14 +181,7 @@ class GamesWonTieBreak(TieBreak):
     def short_name(self) -> str:
         return _('Games won')
 
-    def compute_player_value(
-        self,
-        player: 'Player',
-        *,
-        after_round: int | None,
-    ) -> int:
-        if after_round is None:
-            after_round = max(player.pairings)
+    def compute_player_value(self, player: Player, *, after_round: int) -> int:
         return sum(
             pairing.result == Result.WIN
             for round_index, pairing in player.pairings.items()
@@ -224,14 +209,7 @@ class GamesPlayedWithBlackTieBreak(TieBreak):
     def short_name(self) -> str:
         return _('Black games')
 
-    def compute_player_value(
-        self,
-        player: 'Player',
-        *,
-        after_round: int | None,
-    ) -> int:
-        if after_round is None:
-            after_round = max(player.pairings)
+    def compute_player_value(self, player: Player, *, after_round: int) -> int:
         return sum(
             pairing.color == BoardColor.BLACK and pairing.played
             for round_index, pairing in player.pairings.items()
@@ -259,14 +237,7 @@ class GamesWonWithBlackTieBreak(TieBreak):
     def short_name(self) -> str:
         return _('Black Wins')
 
-    def compute_player_value(
-        self,
-        player: 'Player',
-        *,
-        after_round: int | None,
-    ) -> int:
-        if after_round is None:
-            after_round = max(player.pairings)
+    def compute_player_value(self, player: Player, *, after_round: int) -> int:
         return sum(
             pairing.color == BoardColor.BLACK and pairing.result == Result.WIN
             for round_index, pairing in player.pairings.items()
@@ -303,15 +274,8 @@ class ProgressiveScoresTieBreak(TieBreak):
     def available_options() -> list[type[TieBreakOption]]:
         return [CutTieBreakOption]
 
-    def compute_player_value(
-        self,
-        player: 'Player',
-        *,
-        after_round: int | None,
-    ) -> float:
+    def compute_player_value(self, player: Player, *, after_round: int) -> float:
         (cut,) = self.get_option_values()
-        if after_round is None:
-            after_round = max(player.pairings)
         return sum(player.points_after(r) for r in range(1 + cut, after_round + 1))
 
 
@@ -336,14 +300,7 @@ class RoundsElectedToPlayTieBreak(TieBreak):
     def short_name(self) -> str:
         return _('Games played')
 
-    def compute_player_value(
-        self,
-        player: 'Player',
-        *,
-        after_round: int | None,
-    ) -> int:
-        if after_round is None:
-            after_round = max(player.pairings)
+    def compute_player_value(self, player: Player, *, after_round: int) -> int:
         return sum(
             pairing.result
             not in (
@@ -365,7 +322,7 @@ class BuchholzTieBreak(TieBreak, ABC):
 
     @staticmethod
     def dummy_score(
-        player: 'Player',
+        player: Player,
         *,
         after_round: int = 1,
         fore_modifier: bool = False,
@@ -433,18 +390,10 @@ class StandardBuchholzTieBreak(BuchholzTieBreak):
                 self._get_option(CutTopTieBreakOption),
             )
 
-    def compute_player_value(
-        self,
-        player: 'Player',
-        *,
-        after_round: int | None,
-    ) -> float:
+    def compute_player_value(self, player: Player, *, after_round: int) -> float:
         cut_top, cut_btm, played_modifier = self.get_option_values()
-        if after_round is None:
-            after_round = max(player.pairings)
-        elif cut_top + cut_btm >= after_round:
+        if cut_top + cut_btm >= after_round:
             return 0
-        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         pairings: dict[int, Pairing] = {
             round_index: pairing
@@ -550,16 +499,9 @@ class ForeBuchholzTieBreak(BuchholzTieBreak):
                 self._get_option(CutTopTieBreakOption),
             )
 
-    def compute_player_value(
-        self,
-        player: 'Player',
-        *,
-        after_round: int | None,
-    ) -> float:
+    def compute_player_value(self, player: Player, *, after_round: int) -> float:
         cut_top, cut_btm, played_modifier = self.get_option_values()
-        if after_round is None:
-            after_round = max(player.pairings)
-        elif cut_top + cut_btm >= after_round:
+        if cut_top + cut_btm >= after_round:
             return 0
         pairings: dict[int, Pairing] = {
             round_index: pairing
@@ -633,17 +575,9 @@ class SumOfBuchholzTieBreak(BuchholzTieBreak):
     def available_options() -> list[type[TieBreakOption]]:
         return [ForeModifierTieBreakOption]
 
-    def compute_player_value(
-        self,
-        player: 'Player',
-        *,
-        after_round: int | None,
-    ) -> float:
-        assert player.tournament is not None
+    def compute_player_value(self, player: Player, *, after_round: int) -> float:
         tournament: 'Tournament' = player.tournament
         (fore_modifier,) = self.get_option_values()
-        if after_round is None:
-            after_round = max(player.pairings)
         opponents: list[Player | None] = [
             tournament.players_by_id.get(pairing.opponent_id)
             if pairing.opponent_id
@@ -687,17 +621,9 @@ class AverageOfBuchholzTieBreak(BuchholzTieBreak):
     def available_options() -> list[type[TieBreakOption]]:
         return [ForeModifierTieBreakOption]
 
-    def compute_player_value(
-        self,
-        player: 'Player',
-        *,
-        after_round: int | None,
-    ) -> float:
-        assert player.tournament is not None
+    def compute_player_value(self, player: Player, *, after_round: int) -> float:
         tournament: 'Tournament' = player.tournament
         (fore_modifier,) = self.get_option_values()
-        if after_round is None:
-            after_round = max(player.pairings)
         opponents: list[Player] = [
             tournament.players_by_id[pairing.opponent_id]
             for round_index, pairing in player.pairings.items()
@@ -748,17 +674,9 @@ class SonnebornBergerTieBreak(TieBreak):
             PlayedModifierTieBreakOption,
         ]
 
-    def compute_player_value(
-        self,
-        player: 'Player',
-        *,
-        after_round: int | None,
-    ) -> float:
-        assert player.tournament is not None
+    def compute_player_value(self, player: Player, *, after_round: int) -> float:
         tournament: 'Tournament' = player.tournament
         cut, played_modifier = self.get_option_values()
-        if after_round is None:
-            after_round = max(player.pairings)
         if cut >= after_round:
             return 0
         if tournament.pairing_system == RoundRobinPairingSystem():
@@ -823,7 +741,7 @@ class SonnebornBergerTieBreak(TieBreak):
 
     @staticmethod
     def _dummy_score(
-        player: 'Player',
+        player: Player,
         pairing: Pairing,
         *,
         after_round: int = 1,
@@ -885,17 +803,9 @@ class KoyaTieBreak(TieBreak):
     def available_options() -> list[type[TieBreakOption]]:
         return [LimitTieBreakOption]
 
-    def compute_player_value(
-        self,
-        player: 'Player',
-        *,
-        after_round: int | None,
-    ) -> float:
-        assert player.tournament is not None
+    def compute_player_value(self, player: Player, *, after_round: int) -> float:
         tournament: 'Tournament' = player.tournament
         (limit,) = self.get_option_values()
-        if after_round is None:
-            after_round = max(player.pairings)
         if limit is None:
             limit = 0.5 * Result.WIN.points(tournament.point_values) * (after_round - 1)
         pairings: dict[int, Pairing] = {
@@ -935,15 +845,7 @@ class KashdanTieBreak(TieBreak):
     def short_name(self) -> str:
         return _('Kashdan')
 
-    def compute_player_value(
-        self,
-        player: 'Player',
-        *,
-        after_round: int | None,
-    ) -> float:
-        if after_round is None:
-            after_round = max(player.pairings)
-
+    def compute_player_value(self, player: Player, *, after_round: int) -> float:
         pairings: list[Pairing] = [
             pairing
             for round_index, pairing in player.pairings.items()
@@ -1020,17 +922,9 @@ class AverageRatingOpponentsTieBreak(TieBreak):
                 self._get_option(CutTopTieBreakOption),
             )
 
-    def compute_player_value(
-        self,
-        player: 'Player',
-        *,
-        after_round: int | None,
-    ) -> int:
-        assert player.tournament is not None
+    def compute_player_value(self, player: Player, *, after_round: int) -> int:
         tournament: 'Tournament' = player.tournament
         cut_top, cut_btm = self.get_option_values()
-        if after_round is None:
-            after_round = max(player.pairings)
         if cut_top + cut_btm >= after_round:
             return 0
         pairings: list[Pairing] = [
@@ -1086,16 +980,8 @@ class TournamentPerformanceRatingTieBreak(PerformanceTieBreak):
     def short_name(self) -> str:
         return _('Performance')
 
-    def compute_player_value(
-        self,
-        player: 'Player',
-        *,
-        after_round: int | None,
-    ) -> int:
-        assert player.tournament is not None
+    def compute_player_value(self, player: Player, *, after_round: int) -> int:
         tournament: 'Tournament' = player.tournament
-        if after_round is None:
-            after_round = max(player.pairings)
         pairings: list[Pairing] = [
             pairing
             for round_index, pairing in player.pairings.items()
@@ -1142,16 +1028,8 @@ class AveragePerformanceRatingOpponentsTieBreak(PerformanceTieBreak):
             'Average perf. *** SHORT NAME FOR AVERAGE PERFORMANCE RATING OPPONENTS'
         )
 
-    def compute_player_value(
-        self,
-        player: 'Player',
-        *,
-        after_round: int | None,
-    ) -> int:
-        assert player.tournament is not None
+    def compute_player_value(self, player: Player, *, after_round: int) -> int:
         tournament: 'Tournament' = player.tournament
-        if after_round is None:
-            after_round = max(player.pairings)
         played_games: list[Pairing] = [
             pairing
             for round_index, pairing in player.pairings.items()
@@ -1193,14 +1071,7 @@ class PerfectTournamentPerformanceTieBreak(PerformanceTieBreak):
     def short_name(self) -> str:
         return _('Perfect perf. *** SHORT NAME FOR PERFECT TOURNAMENT PERFORMANCE')
 
-    def compute_player_value(
-        self,
-        player: 'Player',
-        *,
-        after_round: int | None,
-    ) -> int:
-        if after_round is None:
-            after_round = max(player.pairings)
+    def compute_player_value(self, player: Player, *, after_round: int) -> int:
         played_rounds: list[Pairing] = [
             pairing
             for round_index, pairing in player.pairings.items()
@@ -1208,7 +1079,6 @@ class PerfectTournamentPerformanceTieBreak(PerformanceTieBreak):
         ]
         if not played_rounds:
             return 0
-        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         actual_score = Decimal(
             sum(
@@ -1379,21 +1249,13 @@ class AveragePerfectPerformanceTieBreak(PerformanceTieBreak):
     def short_name(self) -> str:
         return _('Avg. Perfect Perf. *** SHORT NAME FOR AVERAGE PERFECT PERFORMANCE')
 
-    def compute_player_value(
-        self,
-        player: 'Player',
-        *,
-        after_round: int | None,
-    ) -> int:
-        if after_round is None:
-            after_round = max(player.pairings)
+    def compute_player_value(self, player: Player, *, after_round: int) -> int:
         pairings: list[Pairing] = [
             pairing
             for round_index, pairing in player.pairings.items()
             if round_index <= after_round and pairing.played
         ]
         ptp_tie_break = PerfectTournamentPerformanceTieBreak()
-        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         ptp = [
             ptp_tie_break.compute_player_value(
@@ -1409,10 +1271,19 @@ class AveragePerfectPerformanceTieBreak(PerformanceTieBreak):
         return StaticUtils.round_ranking(sum(ptp) / len(ptp))
 
 
+@dataclass
+class DirectEncounterGroup:
+    min_value: float
+    max_value: float
+    player_ids: list[int]
+
+    def is_player_included(self, player_min_value: float):
+        return self.min_value <= player_min_value <= self.max_value
+
+
 class DirectEncounterTieBreak(TieBreak):
     """Direct Encounter score.
     Options:
-      - EXCLUDE_IDS: List of player ids to not take into account.
       - PLAYED_MODIFIER: When False and the tournament is a Swiss tournament, all forfeit games
     will be excluded from consideration.
     See FIDE Handbook C.07.6."""
@@ -1436,80 +1307,145 @@ class DirectEncounterTieBreak(TieBreak):
     @staticmethod
     def available_options() -> list[type[TieBreakOption]]:
         return [
-            ExcludeIdsTieBreakOption,
             PlayedModifierTieBreakOption,
         ]
 
     @property
-    def is_displayable(self) -> bool:
-        # tuple[float, bool] is not displayable
+    def display_rank_delta(self) -> bool:
+        return True
+
+    def compute_player_value(self, player: Player, *, after_round: int) -> int:
+        """The value is computed all the players at once (see `compute_all_player_values`)."""
+        return 0
+
+    @property
+    def is_computed_per_player(self) -> bool:
         return False
 
-    def compute_player_value(
-        self,
-        player: 'Player',
-        *,
-        after_round: int | None,
-    ) -> tuple[float, bool]:
-        """If all players with the same number of points as *player* before round
-        *after_round* have played each other, returns the score *player* achieved against
-        all tied opponents in the form (score, True).
-        If not, returns the score achieved and a number of wins against all missing opponents
-        in the form (virtual_score, False).
-        If the second member is True, either some ties are broken correctly, or
-        some players cannot be untied this way.
-        If the second member is False, some ties might be broken, but there is no guarantee.
+    def compute_all_player_values(
+        self, tournament: 'Tournament', *, after_round: int
+    ) -> dict[int, int]:
+        """Form groups of tied players. Amongst each group,
+        attribute (if possible) an integer value from 0 to len(group).
         """
-        assert player.tournament is not None
-        tournament: 'Tournament' = player.tournament
-        exclude_ids, played_modifier = self.get_option_values()
-        if after_round is None:
-            after_round = max(player.pairings)
-        final_points = player.points_after(after_round)
-        tied_opponents: dict[int, Player] = {
-            opponent_id: opponent
-            for opponent_id, opponent in tournament.players_by_id.items()
-            if opponent_id != player.id
-        }
-        tied_opponents = {
-            opponent_id: opponent
-            for opponent_id, opponent in tied_opponents.items()
-            if opponent_id is not None
-            and opponent.points_after(after_round) == final_points
-        }
-        if exclude_ids is not None:
-            tied_opponents = {
-                opponent.id: opponent
-                for opponent in tied_opponents.values()
-                if opponent.id not in exclude_ids
-            }
-        tied_pairings: dict[int, Pairing] = {
-            pairing.opponent_id: pairing
-            for pairing in player.pairings.values()
-            if pairing.opponent_id in tied_opponents
-        }
+
+        (played_modifier,) = self.get_option_values()
+
+        # Group players by the rank sort key before the tie-break
+        players_by_rank_group: dict[tuple, list[Player]] = defaultdict(list)
+        for player in tournament.players:
+            rank_group = player.rank_sort_key_before_tie_break(DirectEncounterTieBreak)
+            players_by_rank_group[rank_group].append(player)
+
+        values_by_player_id: dict[int, int] = {}
+        point_values = tournament.point_values
         if tournament.pairing_system == SwissPairingSystem() and not played_modifier:
-            tied_pairings = {
-                opponent_id: pairing
-                for opponent_id, pairing in tied_pairings.items()
-                if pairing.result
-                not in (Result.FORFEIT_WIN, Result.DOUBLE_FORFEIT, Result.FORFEIT_LOSS)
+            point_values |= {
+                Result.FORFEIT_WIN: 0,
+                Result.DOUBLE_FORFEIT: 0,
+                Result.FORFEIT_LOSS: 0,
             }
-        if len(tied_pairings) == len(tied_opponents):
-            return sum(
-                pairing.result.points(tournament.point_values)
-                for pairing in tied_pairings.values()
-            ), True
-        tied_results = [pairing.result for pairing in tied_pairings.values()]
-        virtual_results = [
-            Result.WIN
-            for opponent_id in tied_opponents
-            if opponent_id not in tied_pairings
+        for player_group in players_by_rank_group.values():
+            self._set_player_group_values(
+                player_group,
+                0,
+                values_by_player_id,
+                after_round,
+                point_values,
+            )
+        return values_by_player_id
+
+    def _set_player_group_values(
+        self,
+        player_group: list[Player],
+        min_value: int,
+        values_by_player_id: dict[int, int],
+        after_round: int,
+        point_values: dict[Result, float] | None,
+    ):
+        """Recursively explore the group to assign values from *min_value*.
+        Try to isolate different subgroups, and explore the subgroups with a narrower value range.
+        Stop when a group can't be split or when a group only contains one player."""
+        if len(player_group) == 1:
+            values_by_player_id[player_group[0].id] = min_value
+            return
+
+        min_max_by_player_id = {
+            player.id: self._compute_player_min_max_points(
+                player,
+                player_group,
+                after_round,
+                point_values,
+            )
+            for player in player_group
+        }
+        player_subgroups = self._split_player_group(min_max_by_player_id)
+        if len(player_subgroups) == 1:
+            for player_id in player_subgroups[0].player_ids:
+                values_by_player_id[player_id] = min_value
+            return
+
+        players_by_id = {player.id: player for player in player_group}
+
+        for subgroup in player_subgroups:
+            self._set_player_group_values(
+                [players_by_id[player_id] for player_id in subgroup.player_ids],
+                min_value,
+                values_by_player_id,
+                after_round,
+                point_values,
+            )
+            min_value += len(subgroup.player_ids)
+
+    @staticmethod
+    def _split_player_group(
+        min_max_by_player_id: dict[int, tuple[float, float]],
+    ) -> list[DirectEncounterGroup]:
+        """Split a player group into a list of subgroups
+        according to their min / max possible points."""
+        sorted_player_min_max = sorted(
+            min_max_by_player_id.items(), key=lambda id_values: id_values[1]
+        )
+        player_subgroups: list[DirectEncounterGroup] = []
+        first_player_id, first_min_max = sorted_player_min_max.pop(0)
+        current_subgroup = DirectEncounterGroup(
+            first_min_max[0], first_min_max[1], [first_player_id]
+        )
+        for player_id, min_max in sorted_player_min_max:
+            if current_subgroup.is_player_included(min_max[0]):
+                current_subgroup.max_value = min_max[1]
+                current_subgroup.player_ids.append(player_id)
+            else:
+                player_subgroups.append(current_subgroup)
+                current_subgroup = DirectEncounterGroup(
+                    min_max[0], min_max[1], [player_id]
+                )
+        player_subgroups.append(current_subgroup)
+        return player_subgroups
+
+    @staticmethod
+    def _compute_player_min_max_points(
+        player: Player,
+        player_group: list[Player],
+        after_round: int,
+        point_values: dict[Result, float] | None,
+    ) -> tuple[float, float]:
+        """Compute the min and max possible points a player
+        can achieve against other players of the group."""
+        group_player_ids = tuple(player.id for player in player_group)
+        group_pairings = [
+            pairing
+            for round_, pairing in player.pairings_by_round.items()
+            if round_ <= after_round and pairing.opponent_id in group_player_ids
         ]
-        return sum(
-            result.points(tournament.point_values)
-            for result in tied_results + virtual_results
-        ), False
+        not_played = len(player_group) - len(group_pairings) - 1
+        group_points = sum(
+            pairing.result.points(point_values) for pairing in group_pairings
+        )
+        return (
+            group_points + Result.LOSS.points(point_values) * not_played,
+            group_points + Result.WIN.points(point_values) * not_played,
+        )
 
 
 class ManualTieBreak(TieBreak):
@@ -1532,20 +1468,14 @@ class ManualTieBreak(TieBreak):
         return _('Manual')
 
     @property
-    def is_displayable(self) -> bool:
-        return False
+    def display_rank_delta(self) -> bool:
+        return True
 
     @property
     def is_manual(self) -> bool:
         return True
 
-    def compute_player_value(
-        self,
-        player: 'Player',
-        *,
-        after_round: int | None,
-    ) -> int:
-        assert player.tournament is not None
+    def compute_player_value(self, player: Player, *, after_round: int) -> int:
         if not player.tournament.finished:
             return 0
         return player.stored_tournament_player.manual_tiebreak or 0

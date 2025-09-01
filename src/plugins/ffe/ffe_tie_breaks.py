@@ -142,9 +142,6 @@ class PapiBuchholzTieBreak(FfeTieBreak, BuchholzTieBreak, ABC):
         use_cut_top: bool = False,
         use_cut_btm: bool = False,
     ) -> float:
-        if after_round is None:
-            after_round = max(player.pairings)
-        assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         cut = self._papi_buchholz_cut(tournament.rounds)
         cut_top = cut if use_cut_top else 0
@@ -213,12 +210,7 @@ class PapiStandardBuchholzTieBreak(PapiBuchholzTieBreak):
     def short_name(self) -> str:
         return _('Buchholz')
 
-    def compute_player_value(
-        self,
-        player: Player,
-        *,
-        after_round: int | None,
-    ) -> float:
+    def compute_player_value(self, player: 'Player', *, after_round: int) -> float:
         return self.compute_papi_buchholz_player_value(player, after_round=after_round)
 
 
@@ -239,12 +231,7 @@ class PapiBuchholzCutBottomTieBreak(PapiBuchholzTieBreak):
     def short_name(self) -> str:
         return _('Tr. Buchholz *** SHORT NAME FOR PAPI BUCHHOLZ CUT BOTTOM')
 
-    def compute_player_value(
-        self,
-        player: Player,
-        *,
-        after_round: int | None,
-    ) -> float:
+    def compute_player_value(self, player: 'Player', *, after_round: int) -> float:
         return self.compute_papi_buchholz_player_value(
             player, after_round=after_round, use_cut_btm=True
         )
@@ -267,12 +254,7 @@ class PapiMedianBuchholzTieBreak(PapiBuchholzTieBreak):
     def short_name(self) -> str:
         return _('Me. Buchholz *** SHORT NAME FOR PAPI MEDIAN BUCHHOLZ')
 
-    def compute_player_value(
-        self,
-        player: Player,
-        *,
-        after_round: int | None,
-    ) -> float:
+    def compute_player_value(self, player: 'Player', *, after_round: int) -> float:
         return self.compute_papi_buchholz_player_value(
             player,
             after_round=after_round,
@@ -298,16 +280,8 @@ class PapiPerformanceTieBreak(FfeTieBreak, PerformanceTieBreak):
     def short_name(self) -> str:
         return _('Performance')
 
-    def compute_player_value(
-        self,
-        player: Player,
-        *,
-        after_round: int | None,
-    ) -> float:
-        assert player.tournament is not None
+    def compute_player_value(self, player: 'Player', *, after_round: int) -> float:
         tournament: 'Tournament' = player.tournament
-        if after_round is None:
-            after_round = max(player.pairings)
         pairings: list[Pairing] = [
             pairing
             for round_index, pairing in player.pairings.items()
@@ -351,16 +325,8 @@ class PapiSumOfBuchholzTieBreak(PapiBuchholzTieBreak):
     def short_name(self) -> str:
         return _('Bu. sum *** SHORT NAME FOR SUM OF BUCHHOLZ')
 
-    def compute_player_value(
-        self,
-        player: Player,
-        *,
-        after_round: int | None,
-    ) -> float:
-        assert player.tournament is not None
+    def compute_player_value(self, player: 'Player', *, after_round: int) -> float:
         tournament: 'Tournament' = player.tournament
-        if after_round is None:
-            after_round = max(player.pairings)
         opponents: list[Player | None] = [
             tournament.players_by_id.get(pairing.opponent_id)
             for round_index, pairing in player.pairings.items()
@@ -391,15 +357,8 @@ class PapiKashdanTieBreak(FfeTieBreak):
     def short_name(self) -> str:
         return _('Kashdan')
 
-    def compute_player_value(
-        self,
-        player: Player,
-        *,
-        after_round: int | None,
-    ) -> float:
+    def compute_player_value(self, player: 'Player', *, after_round: int) -> float:
         """Legacy: unplayed rounds are counted"""
-        if after_round is None:
-            after_round = max(player.pairings)
 
         pairings: list[Pairing] = [
             pairing
