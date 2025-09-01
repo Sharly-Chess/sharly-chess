@@ -54,7 +54,7 @@ class EventPrintController(BaseEventAdminController):
             data = {
                 'tournament_id': WebContext.value_to_form_data(tournament_id),
                 'document': document_id or PlayerListPrintDocument.static_id(),
-                'round': WebContext.value_to_form_data(_round) or '',
+                'round': WebContext.value_to_form_data(_round),
             } | {
                 option.id: WebContext.value_to_form_data(option.default_value)
                 for option in print_options
