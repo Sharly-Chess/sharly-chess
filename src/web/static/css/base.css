@@ -277,6 +277,9 @@ body[data-bs-theme="dark"] .htmx-indicator {
 .cursor-pointer {
     cursor: pointer;
 }
+.cursor-grap {
+    cursor: grab;
+}
 .sharly-chess-tooltip-info, .sharly-chess-tooltip-warning, .sharly-chess-tooltip-error {
     --bs-tooltip-bg: #9d9e9e;
     --bs-tooltip-color: black;
