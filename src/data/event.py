@@ -532,6 +532,10 @@ class Event:
         return families_by_id
 
     @cached_property
+    def families_sorted_by_name(self) -> list[Family]:
+        return sorted(self.families_by_id.values(), key=lambda family: family.name)
+
+    @cached_property
     def families_by_uniq_id(self) -> dict[str, Family]:
         return {family.uniq_id: family for family in self.families_by_id.values()}
 
