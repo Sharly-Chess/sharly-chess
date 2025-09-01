@@ -153,7 +153,7 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
             'prize_group_options': self.get_prize_group_options(),
             'show_details': self.show_details,
             'default_print_document': PrizeAssignmentPrintDocument.static_id()
-            if self.get_admin_tournament().finished
+            if self.admin_tournament and self.admin_tournament.finished
             else PrizeListPrintDocument.static_id(),
         }
 
