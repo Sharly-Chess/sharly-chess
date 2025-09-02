@@ -1,4 +1,3 @@
-import json
 import re
 import time
 from datetime import datetime
@@ -10,7 +9,7 @@ from common.i18n.utils import locale_flag_url, locale_localized_name
 from common.i18n.babel_wrapper import BabelWrapper
 from common.i18n.locale_info import LocaleInfo
 from common.logger import get_logger
-from utils.file import file_fingerprint
+from utils.file import text_files_fingerprint, text_file_fingerprint
 
 logger: Logger = get_logger()
 
@@ -26,151 +25,211 @@ class BabelUpdater(BabelWrapper):
         self,
         locale_infos: dict[str, LocaleInfo],
         default_locale: str,
-        generate_doc: bool,
     ):
+        self.tmp_dir: Path = TMP_DIR / 'i18n'
+        self.tmp_dir.mkdir(parents=True, exist_ok=True)
         self.locale_infos: dict[str, LocaleInfo] = locale_infos
         self.default_locale: str = default_locale
-        new_i18n_strings: bool = False
-        if self.i18n_source_files_changed():
-            logger.info('Extracting i18n strings...')
-            new_i18n_strings = self.extract_i18n_strings()
-        mo_file_updated: bool = False
+
+    def update(
+        self,
+        generate_doc: bool,
+    ):
+        logger.debug('Checking if i18n source files have been updated...')
+        old_sources_fingerprint: bytes = self.get_last_sources_fingerprint_for_pot()
+        new_sources_fingerprint: bytes = text_files_fingerprint(self.get_sources())
+        build_pot: bool = False
+        if not self.pot_file.exists():
+            build_pot = True
+            logger.info('POT file not found, extracting i18n strings...')
+        elif old_sources_fingerprint != new_sources_fingerprint:
+            build_pot = True
+            logger.info('Source files have changed, extracting i18n strings...')
+        else:
+            logger.debug('Source files unchanged, no need to extract i18n strings.')
+        if build_pot:
+            self.store_last_sources_fingerprint_for_pot(new_sources_fingerprint)
+            self.extract_i18n_strings()
+            logger.info('Wrote POT file.')
         for locale, locale_info in self.locale_infos.items():
-            logger.info('Inspecting locale [%s]...', locale)
             po_file: Path = self.locale_po_file(locale)
-            po_file_update_marker: Path = po_file.with_suffix('.updated')
-            new_po_strings: bool = False
+            old_pot_fingerprint_for_po: bytes = self.get_last_pot_fingerprint_for_po(
+                locale
+            )
+            new_pot_fingerprint_for_po: bytes = text_file_fingerprint(self.pot_file)
             build_po: bool = False
-            if not po_file.is_file():
-                logger.info('PO file [%s] not found, creating it.', str(po_file.name))
+            if not po_file.exists():
                 build_po = True
-            elif (
-                po_file_update_marker.exists()
-                and po_file.lstat().st_mtime > po_file_update_marker.lstat().st_mtime
-            ):
                 logger.info(
-                    'PO file [%s] has changed since last time updated, updating it.',
-                    str(po_file.name),
+                    'PO file not found for locale [%s], generating from POT file...',
+                    locale,
                 )
+            elif new_pot_fingerprint_for_po != old_pot_fingerprint_for_po:
                 build_po = True
-            elif new_i18n_strings:
                 logger.info(
-                    'i18n strings have changed, updating PO file [%s].',
-                    str(po_file.name),
+                    'POT file has changed for locale [%s], updating PO file...', locale
                 )
-                build_po = True
+            else:
+                logger.debug(
+                    'POT file unchanged for locale [%s], no need to update the PO file...',
+                    locale,
+                )
             if build_po:
-                new_po_strings = self.update_po_file(locale)
-                po_file_update_marker.touch()
-            new_errors: bool = locale_info.control()
+                self.store_last_pot_fingerprint_for_po(
+                    locale, new_pot_fingerprint_for_po
+                )
+                self.update_po_file(locale)
+                logger.info('Wrote PO file.')
+            po_errors: bool = locale_info.control()
             locale_info.print_summary()
             mo_file: Path = self.locale_mo_file(locale)
+            old_po_fingerprint_for_mo: bytes = self.get_last_po_fingerprint_for_mo(
+                locale
+            )
+            new_po_fingerprint_for_mo: bytes = text_file_fingerprint(po_file)
             build_mo: bool = False
-            if not mo_file.is_file():
-                logger.info('MO file [%s] not found, creating it.', str(mo_file.name))
+            if not mo_file.exists():
                 build_mo = True
-            elif new_errors:
                 logger.info(
-                    'Errors found in PO file [%s], rebuilding MO file [%s].',
-                    str(po_file.name),
-                    str(po_file.name),
+                    'MO file not found for locale [%s], generating from PO file...',
+                    locale,
                 )
+            elif new_po_fingerprint_for_mo != old_po_fingerprint_for_mo:
                 build_mo = True
-            elif new_po_strings:
                 logger.info(
-                    'New strings in PO file [%s], rebuilding MO file [%s].',
-                    str(po_file.name),
-                    str(po_file.name),
+                    'PO file has changed for locale [%s], updating MO file...', locale
                 )
+            elif po_errors:
                 build_mo = True
-            elif po_file.lstat().st_mtime > mo_file.lstat().st_mtime:
                 logger.info(
-                    'MO file [%s] older than PO file [%s], rebuilding it.',
-                    str(mo_file.name),
-                    str(po_file.name),
+                    'Errors found for locale [%s], rebuilding MO file...', locale
                 )
-                build_mo = True
             else:
-                logger.info(
-                    'PO file [%s] is unchanged, no need to rebuild MO file [%s].',
-                    str(po_file.name),
-                    str(mo_file.name),
+                logger.debug(
+                    'PO file unchanged for locale [%s], no need to update the MO file...',
+                    locale,
                 )
             if build_mo:
+                self.store_last_po_fingerprint_for_mo(locale, new_po_fingerprint_for_mo)
                 self.update_mo_file(locale)
-                logger.info('Translations have been updated for locale [%s].', locale)
-                mo_file_updated = True
-        if generate_doc and mo_file_updated:
-            self.write_markdown()
-        self.ok: bool = True
+                logger.info('Wrote MO file.')
+                if generate_doc:
+                    self.write_markdown()
+        ok: bool = True
         logger.info('Checking the translations...')
         for locale_info in self.locale_infos.values():
             if locale_info.error_messages:
                 logger.error('Translations are not valid for some locales.')
-                self.ok = False
+                ok = False
                 break
         for locale_info in self.locale_infos.values():
             if locale_info.empty_mandatory_messages:
                 logger.error('Mandatory translations are missing for some locales.')
-                self.ok = False
+                ok = False
                 break
         for locale_info in self.locale_infos.values():
             if not locale_info.default and locale_info.empty_optional_messages:
                 logger.warning('Translations are missing for some locales.')
-                self.ok = False
+                ok = False
                 break
         for locale_info in self.locale_infos.values():
             if locale_info.flagged_messages:
                 logger.warning('Translations are flagged for some locales.')
-                self.ok = False
+                ok = False
                 break
-        if self.ok:
+        if ok:
             logger.info('Translations OK.')
+        return ok
 
-    @classmethod
-    def i18n_source_files_changed(
-        cls,
-    ):
-        """Returns True if at least one i18n source file has changed, False otherwise."""
-        logger.info('Checking if i18n source files have been updated...')
-        pattern_found: bool = False
-        updated_file_found: bool = False
-        fingerprints_file = TMP_DIR / 'i18n-src.json'
-        old_fingerprints: dict[str, str] = {}
+    def last_sources_fingerprint_for_pot_file(self) -> Path:
+        """Returns the path of the file used to store the fingerprint of the source files."""
+        return self.tmp_dir / 'src-pot.fp'
+
+    def get_last_sources_fingerprint_for_pot(self) -> bytes:
+        """Returns the fingerprint of the source files stored to disk."""
         try:
-            with open(fingerprints_file) as f:
-                old_fingerprints = json.load(f)
+            with open(self.last_sources_fingerprint_for_pot_file(), 'rb') as f:
+                return f.read()
         except FileNotFoundError:
-            updated_file_found = True
-        new_fingerprints: dict[str, str] = {}
-        with open(cls.config_file, 'r') as f:
+            return bytes()
+
+    def store_last_sources_fingerprint_for_pot(
+        self,
+        fingerprint: bytes,
+    ):
+        """Stores the fingerprint of the sources files."""
+        with open(self.last_sources_fingerprint_for_pot_file(), 'wb') as f:
+            return f.write(fingerprint)
+
+    def get_sources(self):
+        """Returns the list of the source files."""
+        pattern_found: bool = False
+        files: list[Path] = []
+        with open(self.config_file, 'r') as f:
             # looking for patterns in the Babel configuration file
             for line in f:
                 if matches := re.match(r'\[\w+: *(.*)]', line):
                     pattern_found = True
-                    for file in BASE_DIR.glob(matches.group(1)):
-                        new_fingerprints[str(file)] = file_fingerprint(file).hex()
-                        if not updated_file_found:
-                            if str(file) not in old_fingerprints:
-                                logger.info('File [%s] is new.', file)
-                                updated_file_found = True
-                            elif (
-                                new_fingerprints[str(file)]
-                                != old_fingerprints[str(file)]
-                            ):
-                                logger.info('File [%s] has been updated.', file.name)
-                                updated_file_found = True
+                    files += BASE_DIR.glob(matches.group(1))
         if not pattern_found:
-            logger.error('No file pattern found in [%s].', cls.config_file)
-            return False
-        if not updated_file_found:
-            if cls.pot_file.is_file():
-                logger.info('No source files updated, no need to rebuild the POT file.')
-                return False
-            logger.info('POT file not found, needs to be rebuilt.')
-        with open(fingerprints_file, 'w') as f:
-            json.dump(new_fingerprints, f)
-        return True
+            raise FileNotFoundError(f'No file pattern found in [{self.config_file}].')
+        if not files:
+            raise FileNotFoundError('No source file found.')
+        return files
+
+    def last_pot_fingerprint_for_po_file(
+        self,
+        locale: str,
+    ) -> Path:
+        """Returns the path of the file used to store the fingerprint of the POT file used to update a PO file."""
+        return self.tmp_dir / f'{locale}-pot-po.fp'
+
+    def get_last_pot_fingerprint_for_po(
+        self,
+        locale: str,
+    ) -> bytes:
+        """Returns the fingerprint stored to disk of the POT file used tu update a PO file."""
+        try:
+            with open(self.last_pot_fingerprint_for_po_file(locale), 'rb') as f:
+                return f.read()
+        except FileNotFoundError:
+            return bytes()
+
+    def store_last_pot_fingerprint_for_po(
+        self,
+        locale: str,
+        fingerprint: bytes,
+    ):
+        """Stores the fingerprint of the POT file used to update a PO file."""
+        with open(self.last_pot_fingerprint_for_po_file(locale), 'wb') as f:
+            return f.write(fingerprint)
+
+    def last_po_fingerprint_for_mo_file(
+        self,
+        locale: str,
+    ) -> Path:
+        """Returns the path of the file used to store the fingerprint of the PO file used to generate a MO file."""
+        return self.tmp_dir / f'{locale}-po-mo.fp'
+
+    def get_last_po_fingerprint_for_mo(
+        self,
+        locale: str,
+    ) -> bytes:
+        """Returns the fingerprint stored to disk of the PO file used to generate a MO file."""
+        try:
+            with open(self.last_po_fingerprint_for_mo_file(locale), 'rb') as f:
+                return f.read()
+        except FileNotFoundError:
+            return bytes()
+
+    def store_last_po_fingerprint_for_mo(
+        self,
+        locale: str,
+        fingerprint: bytes,
+    ):
+        """Stores the fingerprint of the PO file used to generate a MO file."""
+        with open(self.last_po_fingerprint_for_mo_file(locale), 'wb') as f:
+            return f.write(fingerprint)
 
     def write_markdown(self):
         """Update the i18n doc file with the status of the translations."""
@@ -287,37 +346,17 @@ class BabelUpdater(BabelWrapper):
         )
         return '|'.join(locale_signatures), lines
 
-
-class BabelMOFilesUpdater(BabelWrapper):
-    """Update all the MO files.
-    Usage:
-    BabelMOFilesUpdater()
-    """
-
-    def __init__(
-        self,
-        locales: list[str],
-    ):
-        for locale in locales:
-            po_file: Path = self.locale_po_file(locale)
+    def create_absent_mo_files(self):
+        """Creates the MO files when not found (used when first pulling the repository and for testing on GitHub)."""
+        for locale, locale_info in self.locale_infos.items():
             mo_file: Path = self.locale_mo_file(locale)
-            build_mo: bool = False
-            if not mo_file.is_file():
-                logger.info('MO file [%s] not found, creating it.', str(mo_file.name))
-                build_mo = True
-            elif po_file.lstat().st_mtime > mo_file.lstat().st_mtime:
+            if not mo_file.exists():
                 logger.info(
-                    'MO file [%s] older than PO file [%s], rebuilding it.',
-                    str(mo_file.name),
-                    str(po_file.name),
+                    'MO file not found for locale [%s], generating from PO file...',
+                    locale,
                 )
-                build_mo = True
-            else:
-                logger.debug(
-                    'PO file [%s] is unchanged, no need to rebuild MO file [%s].',
-                    str(po_file.name),
-                    str(mo_file.name),
-                )
-            if build_mo:
                 self.update_mo_file(locale)
-                logger.info('Translations have been updated for locale [%s].', locale)
+                logger.info('Wrote MO file.')
+                po_file: Path = self.locale_po_file(locale)
+                new_po_fingerprint_for_mo: bytes = text_file_fingerprint(po_file)
+                self.store_last_po_fingerprint_for_mo(locale, new_po_fingerprint_for_mo)
