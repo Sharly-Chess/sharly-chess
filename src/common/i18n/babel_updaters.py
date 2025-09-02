@@ -1,6 +1,7 @@
 import re
 import time
 from datetime import datetime
+from functools import cached_property
 from logging import Logger
 from pathlib import Path
 
@@ -36,8 +37,8 @@ class BabelUpdater(BabelWrapper):
         generate_doc: bool,
     ):
         logger.debug('Checking if i18n source files have been updated...')
-        old_sources_fingerprint: bytes = self.get_last_sources_fingerprint_for_pot()
-        new_sources_fingerprint: bytes = text_files_fingerprint(self.get_sources())
+        old_sources_fingerprint: bytes = self.get_sources_fingerprint()
+        new_sources_fingerprint: bytes = text_files_fingerprint(self.sources)
         build_pot: bool = False
         if not self.pot_file.exists():
             build_pot = True
@@ -48,15 +49,11 @@ class BabelUpdater(BabelWrapper):
         else:
             logger.debug('Source files unchanged, no need to extract i18n strings.')
         if build_pot:
-            self.store_last_sources_fingerprint_for_pot(new_sources_fingerprint)
+            self.store_sources_fingerprint()
             self.extract_i18n_strings()
             logger.info('Wrote POT file.')
         for locale, locale_info in self.locale_infos.items():
             po_file: Path = self.locale_po_file(locale)
-            old_pot_fingerprint_for_po: bytes = self.get_last_pot_fingerprint_for_po(
-                locale
-            )
-            new_pot_fingerprint_for_po: bytes = text_file_fingerprint(self.pot_file)
             build_po: bool = False
             if not po_file.exists():
                 build_po = True
@@ -64,29 +61,31 @@ class BabelUpdater(BabelWrapper):
                     'PO file not found for locale [%s], generating from POT file...',
                     locale,
                 )
-            elif new_pot_fingerprint_for_po != old_pot_fingerprint_for_po:
+            elif text_file_fingerprint(self.pot_file) != self.get_pot_fingerprint(
+                locale
+            ):
                 build_po = True
                 logger.info(
                     'POT file has changed for locale [%s], updating PO file...', locale
                 )
+            elif text_file_fingerprint(po_file) != self.get_po_fingerprint(locale):
+                build_po = True
+                logger.info('PO file has changed for locale [%s], updating...', locale)
             else:
                 logger.debug(
                     'POT file unchanged for locale [%s], no need to update the PO file...',
                     locale,
                 )
             if build_po:
-                self.store_last_pot_fingerprint_for_po(
-                    locale, new_pot_fingerprint_for_po
-                )
                 self.update_po_file(locale)
                 logger.info('Wrote PO file.')
+                self.store_pot_fingerprint(locale)
+                self.store_po_fingerprint(locale)
             po_errors: bool = locale_info.control()
             locale_info.print_summary()
             mo_file: Path = self.locale_mo_file(locale)
-            old_po_fingerprint_for_mo: bytes = self.get_last_po_fingerprint_for_mo(
-                locale
-            )
-            new_po_fingerprint_for_mo: bytes = text_file_fingerprint(po_file)
+            old_po_fingerprint: bytes = self.get_po_fingerprint(locale)
+            po_fingerprint: bytes = text_file_fingerprint(po_file)
             build_mo: bool = False
             if not mo_file.exists():
                 build_mo = True
@@ -94,7 +93,7 @@ class BabelUpdater(BabelWrapper):
                     'MO file not found for locale [%s], generating from PO file...',
                     locale,
                 )
-            elif new_po_fingerprint_for_mo != old_po_fingerprint_for_mo:
+            elif po_fingerprint != old_po_fingerprint:
                 build_mo = True
                 logger.info(
                     'PO file has changed for locale [%s], updating MO file...', locale
@@ -110,7 +109,7 @@ class BabelUpdater(BabelWrapper):
                     locale,
                 )
             if build_mo:
-                self.store_last_po_fingerprint_for_mo(locale, new_po_fingerprint_for_mo)
+                self.store_po_fingerprint(locale)
                 self.update_mo_file(locale)
                 logger.info('Wrote MO file.')
                 if generate_doc:
@@ -141,27 +140,27 @@ class BabelUpdater(BabelWrapper):
             logger.info('Translations OK.')
         return ok
 
-    def last_sources_fingerprint_for_pot_file(self) -> Path:
+    def sources_fingerprint_file(self) -> Path:
         """Returns the path of the file used to store the fingerprint of the source files."""
         return self.tmp_dir / 'src-pot.fp'
 
-    def get_last_sources_fingerprint_for_pot(self) -> bytes:
+    def get_sources_fingerprint(self) -> bytes:
         """Returns the fingerprint of the source files stored to disk."""
         try:
-            with open(self.last_sources_fingerprint_for_pot_file(), 'rb') as f:
+            with open(self.sources_fingerprint_file(), 'rb') as f:
                 return f.read()
         except FileNotFoundError:
             return bytes()
 
-    def store_last_sources_fingerprint_for_pot(
+    def store_sources_fingerprint(
         self,
-        fingerprint: bytes,
     ):
         """Stores the fingerprint of the sources files."""
-        with open(self.last_sources_fingerprint_for_pot_file(), 'wb') as f:
-            return f.write(fingerprint)
+        with open(self.sources_fingerprint_file(), 'wb') as f:
+            return f.write(text_files_fingerprint(self.sources))
 
-    def get_sources(self):
+    @cached_property
+    def sources(self):
         """Returns the list of the source files."""
         pattern_found: bool = False
         files: list[Path] = []
@@ -177,59 +176,57 @@ class BabelUpdater(BabelWrapper):
             raise FileNotFoundError('No source file found.')
         return files
 
-    def last_pot_fingerprint_for_po_file(
+    def pot_fingerprint_file(
         self,
         locale: str,
     ) -> Path:
         """Returns the path of the file used to store the fingerprint of the POT file used to update a PO file."""
         return self.tmp_dir / f'{locale}-pot-po.fp'
 
-    def get_last_pot_fingerprint_for_po(
+    def get_pot_fingerprint(
         self,
         locale: str,
     ) -> bytes:
         """Returns the fingerprint stored to disk of the POT file used tu update a PO file."""
         try:
-            with open(self.last_pot_fingerprint_for_po_file(locale), 'rb') as f:
+            with open(self.pot_fingerprint_file(locale), 'rb') as f:
                 return f.read()
         except FileNotFoundError:
             return bytes()
 
-    def store_last_pot_fingerprint_for_po(
+    def store_pot_fingerprint(
         self,
         locale: str,
-        fingerprint: bytes,
     ):
         """Stores the fingerprint of the POT file used to update a PO file."""
-        with open(self.last_pot_fingerprint_for_po_file(locale), 'wb') as f:
-            return f.write(fingerprint)
+        with open(self.pot_fingerprint_file(locale), 'wb') as f:
+            return f.write(text_file_fingerprint(self.pot_file))
 
-    def last_po_fingerprint_for_mo_file(
+    def po_fingerprint_file(
         self,
         locale: str,
     ) -> Path:
         """Returns the path of the file used to store the fingerprint of the PO file used to generate a MO file."""
         return self.tmp_dir / f'{locale}-po-mo.fp'
 
-    def get_last_po_fingerprint_for_mo(
+    def get_po_fingerprint(
         self,
         locale: str,
     ) -> bytes:
         """Returns the fingerprint stored to disk of the PO file used to generate a MO file."""
         try:
-            with open(self.last_po_fingerprint_for_mo_file(locale), 'rb') as f:
+            with open(self.po_fingerprint_file(locale), 'rb') as f:
                 return f.read()
         except FileNotFoundError:
             return bytes()
 
-    def store_last_po_fingerprint_for_mo(
+    def store_po_fingerprint(
         self,
         locale: str,
-        fingerprint: bytes,
     ):
         """Stores the fingerprint of the PO file used to generate a MO file."""
-        with open(self.last_po_fingerprint_for_mo_file(locale), 'wb') as f:
-            return f.write(fingerprint)
+        with open(self.po_fingerprint_file(locale), 'wb') as f:
+            return f.write(text_file_fingerprint(self.locale_po_file(locale)))
 
     def write_markdown(self):
         """Update the i18n doc file with the status of the translations."""
@@ -357,6 +354,4 @@ class BabelUpdater(BabelWrapper):
                 )
                 self.update_mo_file(locale)
                 logger.info('Wrote MO file.')
-                po_file: Path = self.locale_po_file(locale)
-                new_po_fingerprint_for_mo: bytes = text_file_fingerprint(po_file)
-                self.store_last_po_fingerprint_for_mo(locale, new_po_fingerprint_for_mo)
+                self.store_po_fingerprint(locale)
