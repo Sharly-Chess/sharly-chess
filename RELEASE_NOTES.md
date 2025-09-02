@@ -20,7 +20,7 @@ English version below
 - Export des tournois au format Papi (3.0.0)
 - Éditeur interactif de la cadence de jeu (3.0.0)
 
-### Joueur·euses
+## Joueur·euses
 
 - Suppression de la limite à 10 caractères des numéros de téléphone (3.0.0)
 
@@ -31,6 +31,7 @@ English version below
 - Suppression de la renumérotation automatique des échiquiers en cas d'appariement manuel (3.0.0)
 - Saisie des résultats non comptabilisés et des pénalités (3.0.0)
 - Ajout de la recherche de joueur·euse sur l'onglet Appariements (3.0.0)
+- Correction de la recherche des joueur·euses sur l'onglet Appariements (3.0.2)
 
 ## Écrans
 
@@ -48,6 +49,10 @@ English version below
 - Amélioration des appariements par ordre alphabétique (3.0.0)
 - Ajout des titres FIDE dans les attributions de prix (3.0.0)
 - Ajout des départages sur les grilles Berger (3.0.0)
+
+## ChessEvent
+
+- Correction du téléversement FFE après mise à jour ChessEvent (3.0.1)
 
 ---
 
@@ -83,6 +88,7 @@ English version below
 - Removed automatic renumbering of boards when manually pairing (3.0.0)
 - Entry of unrated and penalty results (3.0.0)
 - Added player search on the pairings tab (3.0.0)
+- Fixed player search on the Pairings tab (3.0.2)
 
 ## Screens
 
@@ -100,3 +106,7 @@ English version below
 - Improved alphabétical pairings (3.0.0)
 - Added FIDE titles on prize assignments (3.0.0)
 - Added tie-breaks to Berger grids (3.0.0)
+
+## ChessEvent
+
+- Fixed FFE upload after ChessEvent update (3.0.1)
