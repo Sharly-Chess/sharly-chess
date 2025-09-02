@@ -3424,8 +3424,8 @@ msgstr "Organisez vos prix en groupes pour gérer leur attribution. Un·e joueur
 msgid "Other devices connected to your network can see your public screens. If you have created screens for player check-in and results entry then those features will be enabled."
 msgstr "Les appareils connectés sur votre réseau peuvent voir vos écrans publics. Si vous avez créé des écrans pour le pointage des joueur·euses et l'entrée des résultats alors ces fonctionnalités seront activées."
 
-msgid "Other players in this score group are not included since the share would be less than the threshold."
-msgstr "Les autres joueur·euses de ce groupe de score n'ont pas été inclus·es, car leur part serait inférieure au seuil."
+msgid "Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold."
+msgstr "Les autres joueur·euses de ce groupe de points n'entrent pas dans les prix (prix inférieur au seuil minimum)."
 
 msgid "Other tie-breaks should not be used unless you really know what you do."
 msgstr "Les autres départages ne devraient pas être utilisés à moins que vous ne sachiez réellement ce que vous faites."

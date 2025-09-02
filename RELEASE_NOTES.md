@@ -7,6 +7,7 @@ English version below
 - Support de macOS (Apple Silicon Macs seulement, 3.0.0)
 - Amélioration des temps de réponses de l'interface utilisateur (3.0.0)
 - Signature des exécutables Windows (3.0.0)
+- Correction de la récupération des versions précédentes (3.0.1)
 
 ## Évènements
 
@@ -26,7 +27,6 @@ English version below
 ## Appariements
 
 - Affichage des informations d'appariement : groupes, flotteurs, historiques et préférences couleurs (3.0.0)
-– Affichage du classement du tournoi dans l’onglet Appariements après la dernière ronde (3.0.0)
 - Remplacement des classements estimés rapide/blitz par les classements standards (3.0.0)
 - Suppression de la renumérotation automatique des échiquiers en cas d'appariement manuel (3.0.0)
 - Saisie des résultats non comptabilisés et des pénalités (3.0.0)
@@ -35,6 +35,7 @@ English version below
 ## Écrans
 
 - Ajout du numéro dans le cas des échiquiers fixes (3.0.0)
+- Correction de l'affichage des chronomètres sur les écrans rotatifs et les pilotes d'afficheurs (3.0.1)
 
 ## Classements
 
@@ -58,6 +59,7 @@ English version below
 - Native macOS support (Apple Silicon Macs only, 3.0.0)
 - Improved UI response times (3.0.0)
 - Use signed programs on Windows (3.0.0)
+- Fixed previous versions recovering (3.0.1)
 
 ## Events
 
@@ -77,7 +79,6 @@ English version below
 ## Pairings
 
 - Display pairing information: groups, floaters, history and colour preferences (3.0.0)
-- Display of tournament rankings in Pairings tab after last round (3.0.0)
 - Allow overriding of unrated rapid/blitz ratings by standard ratings (3.0.0)
 - Removed automatic renumbering of boards when manually pairing (3.0.0)
 - Entry of unrated and penalty results (3.0.0)
@@ -86,6 +87,7 @@ English version below
 ## Screens
 
 - Added board IDs in case of fixed boards (3.0.0)
+- Fixed the display of timers on rotators and display controllers (3.0.1)
 
 ## Rankings
 

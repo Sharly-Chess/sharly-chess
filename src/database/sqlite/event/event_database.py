@@ -10,7 +10,13 @@ from typing import Any, TYPE_CHECKING, override, Self, cast
 
 from packaging.version import Version
 
-from common import format_timestamp_date, format_timestamp_time, DEVEL_ENV, EVENTS_DIR
+from common import (
+    format_timestamp_date,
+    format_timestamp_time,
+    DEVEL_ENV,
+    EVENTS_DIR,
+    is_server_engine,
+)
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.auth.entities import Device, Account
@@ -87,7 +93,7 @@ class EventDatabase(MigrationDatabase):
         super().__exit__(exc_type, exc_value, tb)
 
         # We need call the hook on all dirty tournaments after committing the changes above
-        if self.write and exc_type is None:
+        if self.write and exc_type is None and is_server_engine():
             for tournament_id in dirty_tournaments:
                 plugin_manager.hook.on_tournament_data_updated(
                     event_uniq_id=self.uniq_id, tournament_id=tournament_id

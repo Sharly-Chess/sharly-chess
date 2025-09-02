@@ -28,8 +28,8 @@ logger: Logger = get_logger()
 
 
 class EventLoader:
-    _valid_event_ids: list[str] = []
-    _invalid_uniq_ids: list[str] = []
+    _valid_event_ids: set[str] = set()
+    _invalid_uniq_ids: set[str] = set()
 
     @classmethod
     def get(cls, request: HTMXRequest | None):
@@ -49,7 +49,7 @@ class EventLoader:
     def load_event_ids(cls, uniq_id: str | None = None):
         cls._clean_not_existing_event_database_files(cls._valid_event_ids)
         cls._clean_not_existing_event_database_files(cls._invalid_uniq_ids)
-        known_event_ids = cls._valid_event_ids + cls._invalid_uniq_ids
+        known_event_ids = cls._valid_event_ids | cls._invalid_uniq_ids
         event_ids = [uniq_id] if uniq_id is not None else cls.all_event_ids()
         for event_id in event_ids:
             if event_id in known_event_ids:
@@ -60,13 +60,13 @@ class EventLoader:
                 if not status:
                     with EventDatabase(event_id, True) as database:
                         database.upgrade()
-                cls._valid_event_ids.append(event_id)
+                cls._valid_event_ids.add(event_id)
             except SharlyChessException as e:
                 logger.error(e)
-                cls._invalid_uniq_ids.append(event_id)
+                cls._invalid_uniq_ids.add(event_id)
 
     @classmethod
-    def _clean_not_existing_event_database_files(cls, event_uniq_ids: list[str]):
+    def _clean_not_existing_event_database_files(cls, event_uniq_ids: set[str]):
         to_remove = (
             uniq_id
             for uniq_id in event_uniq_ids
@@ -78,7 +78,7 @@ class EventLoader:
     @cached_property
     def event_uniq_ids(self) -> list[str]:
         self.load_event_ids()
-        return self._valid_event_ids
+        return list(self._valid_event_ids)
 
     @classmethod
     def all_event_ids(cls) -> list[str]:

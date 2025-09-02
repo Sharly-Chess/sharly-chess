@@ -17,12 +17,10 @@
                 <i class="bi-x-circle-fill"></i>
             </button>
         {% endif %}
-        {% if screen.timer %}
+        {% if screen.timer and not screen.timer.error %}
             <script>
-                {% if not screen.timer.error %}
-                    <!-- timer.js -->
-                    {% include 'screen/timer.js' %}
-                {% endif %}
+                <!-- timer.js -->
+                {% include 'screen/timer.js' %}
             </script>
         {% endif %}
         {% if display_controller %}
@@ -76,10 +74,10 @@
 {% endblock %}
 
 {% block content %}
-    {% if not rotator and not display_controller %}
-        {% set menu_screens = screen.admin_menu_screens if client.can_view_private_screens else screen.public_menu_screens %}
-        <div id="top-nav-wrapper">
-            <div id="top-nav-content">
+    <div id="top-nav-wrapper">
+        <div id="top-nav-content">
+            {% if not rotator and not display_controller %}
+                {% set menu_screens = screen.admin_menu_screens if client.can_view_private_screens else screen.public_menu_screens %}
                 {% if menu_screens %}
                     <div id="screen-menu" class="screen-menu text-start w-100 m-0 p-2 fw-bold">
                         {% for entry in menu_screens %}
@@ -96,13 +94,12 @@
                         {% endfor %}
                     </div>
                 {% endif %}
-            </div>
-
-            {% if screen.timer %}
-                    <!-- timer.html -->
-                {% include 'screen/timer.html' %}
             {% endif %}
+            {% if screen.timer and not screen.timer.error %}
+                <!-- timer.html -->
+            {% include 'screen/timer.html' %}
         </div>
+    </div>
     {% endif %}
     <div
         id="user-screen-content"

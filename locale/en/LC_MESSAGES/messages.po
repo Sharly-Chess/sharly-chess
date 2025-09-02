@@ -3424,7 +3424,7 @@ msgstr ""
 msgid "Other devices connected to your network can see your public screens. If you have created screens for player check-in and results entry then those features will be enabled."
 msgstr ""
 
-msgid "Other players in this score group are not included since the share would be less than the threshold."
+msgid "Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold."
 msgstr ""
 
 msgid "Other tie-breaks should not be used unless you really know what you do."
