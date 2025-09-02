@@ -23,6 +23,7 @@ class TestTimersFunctionality:
         name = 'Test Timer'
         modal.get_by_role('textbox', name='Name:').fill(name)
         modal.locator('button[type=submit]').click()
+        expect(modal).to_be_visible()
         TestUtils.button_by_text(page, 'Cancel').click()
         TestUtils.button_by_text(page, 'Close').click()
 
