@@ -3,10 +3,10 @@
         <div class="modal-header">
             <h2 class="modal-title">
                 {% if action == 'update' %}
-                    {{ _('Editing of event [%(event_uniq_id)s]', event_uniq_id=admin_event.uniq_id) }}
+                    {{ _('Edit event') }}
                     <span style="font-size: 90%">{{ macros.doc_icon('events-create', 'ms-2') }}</span>
                 {% else %}
-                    {{ _('Event creation') }}<span style="font-size: 70%">{{ macros.doc_icon('events-create', 'ms-2') }}</span>
+                    {{ _('Create event') }}<span style="font-size: 70%">{{ macros.doc_icon('events-create', 'ms-2') }}</span>
                 {% endif %}
             </h2>
         </div>

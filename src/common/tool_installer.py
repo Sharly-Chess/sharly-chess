@@ -301,6 +301,17 @@ class ExecutableInstaller(ToolInstaller, ABC):
             self.executable_path,
         }
 
+    @property
+    def files_to_sign(self) -> list[Path]:
+        """Returns the files that should be signed."""
+        extensions_to_sign: set[str] = {
+            'exe',
+        }
+        files: list[Path] = []
+        for extension in extensions_to_sign:
+            files += [f for f in self.install_dir.glob(f'**/*.{extension}')]
+        return files
+
 
 class BbpPairingsInstaller(ExecutableInstaller):
     def __init__(self):

@@ -81,7 +81,7 @@ APPLE_TEAM_ID=ABCDEFGHIJ
 Run the following command to convert your .p12 certificate to Base64 for secure storage in GitHub and local `.env`:
 
 ```bash
-./scripts/mac/export_cert_to_env.sh
+./scripts/export/macos/export_cert_to_env.sh
 ```
 
 You'll be prompted to enter your system password, and to choose a password for the exported certificate.
@@ -96,7 +96,7 @@ You can now sign and notarize builds locally using the included script:
 python scripts/export/export.py --preserve-build
 
 # Then run the signing and notarization script
-./scripts/mac/build_and_notarize.sh
+./scripts/export/macos/build_and_notarize.sh
 ```
 
 The script will:

@@ -67,13 +67,18 @@ class PrizeGroup:
             None,
         )
 
+    def get_unused_category_name(self, base_name: str | None = None) -> str:
+        return StaticUtils.get_unused_item_name(
+            base_name or _('New category'),
+            (category.name for category in self.categories),
+        )
+
     def get_event_database(self) -> EventDatabase:
         return EventDatabase(self.tournament.event.uniq_id, True)
 
     def update(self):
         with self.get_event_database() as database:
             database.update_stored_prize_group(self.stored_prize_group)
-            database.commit()
 
     def add_category(self, stored_category: StoredPrizeCategory) -> PrizeCategory:
         stored_category.index = (
@@ -81,7 +86,6 @@ class PrizeGroup:
         )
         with self.get_event_database() as database:
             object_id = database.add_stored_prize_category(stored_category)
-            database.commit()
         stored_category.id = object_id
         category = PrizeCategory(self, stored_category)
         self.categories_by_id[object_id] = category
@@ -95,7 +99,6 @@ class PrizeGroup:
     def delete_category(self, category_id: int):
         with self.get_event_database() as database:
             database.delete_stored_prize_category(category_id)
-            database.commit()
         if category_id in self.categories_by_id:
             del self.categories_by_id[category_id]
         self.reorder_categories()
@@ -111,7 +114,6 @@ class PrizeGroup:
                 if index != category.index:
                     category.stored_prize_category.index = index
                     database.update_stored_prize_category_index(category.id, index)
-            database.commit()
 
     # ---------------------------------------------------------------------------------
     # Calculation

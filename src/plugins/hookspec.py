@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from datetime import date
 from decimal import Decimal
 from collections.abc import Iterable
 from typing import Any, TYPE_CHECKING, Optional
@@ -179,6 +180,10 @@ class AppHookSpecs:
     def get_extra_players_update_columns(self) -> Iterable[ExtraAdminColumn]:
         """Provide additional columns for the players update view"""
 
+    @hookspec(firstresult=True)
+    def adjust_category_reference_year(self, reference_date: date) -> int | None:
+        """Adjust the reference date for the category"""
+
     # ---------------------------------------------------------------------------------
     # Events
     # ---------------------------------------------------------------------------------
@@ -229,7 +234,7 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def on_tournament_data_updated(self, tournament: 'Tournament'):
+    def on_tournament_data_updated(self, event_uniq_id: str, tournament_id: int):
         """Called when the (publishable) data of a tournament is updated"""
 
     @hookspec

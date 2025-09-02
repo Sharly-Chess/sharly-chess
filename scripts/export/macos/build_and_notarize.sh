@@ -105,7 +105,7 @@ echo "--- Section 4: Signing Application Files ---"
 APP_SIGNING_IDENTITY="Developer ID Application"
 echo "Using signing identity: $APP_SIGNING_IDENTITY"
 
-ENTITLEMENTS_FILE="scripts/mac/entitlements.plist"
+ENTITLEMENTS_FILE="scripts/export/macos/entitlements.plist"
 
 # Step 4: Sign regular files
 while IFS= read -r file; do

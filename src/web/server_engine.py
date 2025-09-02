@@ -16,7 +16,7 @@ from litestar import Litestar
 from litestar.plugins.htmx import HTMXRequest
 from litestar.logging import LoggingConfig
 
-from common import REQUEST_TIMEOUT, LOG_FILE
+from common import REQUEST_TIMEOUT, LOG_FILE, set_is_server_engine
 from common.engine import Engine
 from common.i18n import _, set_locale
 from common.logger import (
@@ -72,12 +72,17 @@ def launch_browser(url: str):
 class ServerEngine(Engine):
     app: ClassVar[Litestar | None] = None
 
-    def __init__(self, debug: bool = False):
+    def __init__(
+        self,
+        debug: bool = False,
+        port: int | None = None,
+    ):
         super().__init__()
         self.debug = debug
         if self.error:
             return
 
+        set_is_server_engine(True)
         logger.debug('System information:')
         logger.debug(
             ' - Machine/processor: %s/%s', platform.machine(), platform.processor()
@@ -95,23 +100,35 @@ class ServerEngine(Engine):
         for data_source in DataSourceManager.objects():
             data_source.on_app_init()
 
-        for port in sharly_chess_config.web_ports:
+        if port:
             if self.__port_in_use(port):
                 print_interactive_warning(
-                    _('Port [{port}] already in use.').format(port=port)
+                    _(
+                        'Port [{port}] already in use, can not start Sharly Chess server.'
+                    ).format(port=port)
                 )
-                continue
+                return
             sharly_chess_config.web_port = port
-            break
-        if sharly_chess_config.web_port is None:
-            print_interactive_error(
-                _(
-                    'All the candidate ports [{ports}] are already in use, can not start Sharly Chess server.'
-                ).format(
-                    ports=', '.join(str(port) for port in sharly_chess_config.web_ports)
+        else:
+            for port in sharly_chess_config.web_ports:
+                if self.__port_in_use(port):
+                    print_interactive_warning(
+                        _('Port [{port}] already in use.').format(port=port)
+                    )
+                    continue
+                sharly_chess_config.web_port = port
+                break
+            if sharly_chess_config.web_port is None:
+                print_interactive_error(
+                    _(
+                        'All the candidate ports [{ports}] are already in use, can not start Sharly Chess server.'
+                    ).format(
+                        ports=', '.join(
+                            str(port) for port in sharly_chess_config.web_ports
+                        )
+                    )
                 )
-            )
-            return
+                return
 
         print_interactive_info(
             _('Port: {port}').format(port=sharly_chess_config.web_port)

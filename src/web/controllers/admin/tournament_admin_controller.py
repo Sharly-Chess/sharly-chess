@@ -34,11 +34,13 @@ from data.print_documents import PrintDocumentManager
 from data.print_documents.options import PrintOption
 from data.tie_breaks import TieBreak, TieBreakManager
 from data.tournament import Tournament
+from utils import StaticUtils
 from utils.enum import TournamentRating
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredScreen
 from plugins.hookspec import ExtraColumn
 from plugins.manager import plugin_manager
+from utils.time_control import parse_time_control_trf25
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -101,35 +103,9 @@ class TournamentAdminController(BaseEventAdminController):
         errors: dict[str, str] = {}
         if data is None:
             data = {}
-        uniq_id: str = WebContext.form_data_to_str(data, 'uniq_id') or ''
         check_in_open: bool = False
         start: float | None = None
         stop: float | None = None
-        if not uniq_id:
-            errors['uniq_id'] = _('Please enter the tournament ID.')
-        elif uniq_id.find('/') != -1:
-            errors['uniq_id'] = _('Character [{char}] is not allowed.').format(char='/')
-        else:
-            match action:
-                case 'create' | 'clone':
-                    if uniq_id in web_context.admin_event.tournaments_by_uniq_id:
-                        errors['uniq_id'] = _(
-                            'Tournament [{uniq_id}] already exists.'
-                        ).format(uniq_id=uniq_id)
-                case 'update':
-                    tournament = web_context.admin_tournament
-                    assert tournament is not None
-                    if (
-                        uniq_id != tournament.uniq_id
-                        and uniq_id in web_context.admin_event.tournaments_by_uniq_id
-                    ):
-                        errors['uniq_id'] = _(
-                            'Tournament [{uniq_id}] already exists.'
-                        ).format(uniq_id=uniq_id)
-                    check_in_open = tournament.check_in_open
-
-                case _:
-                    raise ValueError(f'action=[{action}]')
         rounds = WebContext.form_data_to_int(data, field := 'rounds') or 1
         if rounds < 1:
             errors[field] = _('A positive integer is expected.')
@@ -222,15 +198,16 @@ class TournamentAdminController(BaseEventAdminController):
                         errors[field] = _(
                             "This field can't be updated once the tournament has started."
                         )
-        name = WebContext.form_data_to_str(data, 'name') or ''
+        name = WebContext.form_data_to_str(data, field := 'name') or ''
         if not name:
-            errors['name'] = _('Please enter the tournament name.')
-        time_control_initial_time = WebContext.form_data_to_int(
-            data, 'time_control_initial_time'
-        )
-        time_control_increment = WebContext.form_data_to_int(
-            data, 'time_control_increment'
-        )
+            errors['name'] = _('This field is required.')
+        else:
+            used_names = list(event.tournaments_by_uniq_id.keys())
+            if action == 'update':
+                used_names.remove(web_context.get_admin_tournament().name)
+            if name in used_names:
+                errors[field] = _('This name is already used.')
+        time_control_trf25 = WebContext.form_data_to_str(data, 'time_control_trf25')
         time_control_handicap_penalty_value = WebContext.form_data_to_int(
             data, 'time_control_handicap_penalty_value'
         )
@@ -240,6 +217,13 @@ class TournamentAdminController(BaseEventAdminController):
         time_control_handicap_min_time = WebContext.form_data_to_int(
             data, 'time_control_handicap_min_time'
         )
+
+        intial_time, inc = parse_time_control_trf25(time_control_trf25)
+        if intial_time == 0 and time_control_handicap_penalty_value:
+            errors['time_control_handicap_penalty_value'] = _(
+                'Penalties require a time control with a single period.'
+            )
+
         record_illegal_moves = cls._admin_validate_record_illegal_moves_update_data(
             data, errors
         )
@@ -280,10 +264,8 @@ class TournamentAdminController(BaseEventAdminController):
                 'clone',
             ]
             else None,
-            uniq_id=uniq_id,
             name=name,
-            time_control_initial_time=time_control_initial_time,
-            time_control_increment=time_control_increment,
+            time_control_trf25=time_control_trf25,
             time_control_handicap_penalty_value=time_control_handicap_penalty_value,
             time_control_handicap_penalty_step=time_control_handicap_penalty_step,
             time_control_handicap_min_time=time_control_handicap_min_time,
@@ -378,28 +360,20 @@ class TournamentAdminController(BaseEventAdminController):
                 pairing_systems = PairingSystemManager.objects()
                 pairing_system: PairingSystem = SwissPairingSystem()
                 if data is None:
-                    uniq_id: str | None = None
-                    name: str | None = None
                     match action:
                         case 'update':
                             assert admin_tournament is not None
-                            uniq_id = admin_tournament.stored_tournament.uniq_id
                             name = admin_tournament.stored_tournament.name
                         case 'create':
-                            uniq_id = admin_event.get_unused_tournament_uniq_id()
                             name = admin_event.get_unused_tournament_name()
                         case 'clone':
                             assert admin_tournament is not None
-                            uniq_id = admin_event.get_unused_tournament_uniq_id(
-                                admin_tournament.stored_tournament.uniq_id
-                            )
                             name = admin_event.get_unused_tournament_name(
                                 admin_tournament.stored_tournament.name
                             )
                         case _:
                             raise ValueError(f'action=[{action}]')
-                    time_control_initial_time: int | None = None
-                    time_control_increment: int | None = None
+                    time_control_trf25: str | None = None
                     time_control_handicap_penalty_value: int | None = None
                     time_control_handicap_penalty_step: int | None = None
                     time_control_handicap_min_time: int | None = None
@@ -427,12 +401,7 @@ class TournamentAdminController(BaseEventAdminController):
                             assert admin_tournament is not None
                             assert admin_tournament.stored_tournament is not None
                             stored_tournament = admin_tournament.stored_tournament
-                            time_control_initial_time = (
-                                stored_tournament.time_control_initial_time
-                            )
-                            time_control_increment = (
-                                stored_tournament.time_control_increment
-                            )
+                            time_control_trf25 = stored_tournament.time_control_trf25
                             time_control_handicap_penalty_value = (
                                 stored_tournament.time_control_handicap_penalty_value
                             )
@@ -497,10 +466,8 @@ class TournamentAdminController(BaseEventAdminController):
                         'stop': WebContext.value_to_datetime_form_data(stop),
                     } | WebContext.values_dict_to_form_data(
                         {
-                            'uniq_id': uniq_id,
                             'name': name,
-                            'time_control_initial_time': time_control_initial_time,
-                            'time_control_increment': time_control_increment,
+                            'time_control_trf25': time_control_trf25,
                             'time_control_handicap_penalty_value': time_control_handicap_penalty_value,
                             'time_control_handicap_penalty_step': time_control_handicap_penalty_step,
                             'time_control_handicap_min_time': time_control_handicap_min_time,
@@ -766,6 +733,11 @@ class TournamentAdminController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(
             request, event_uniq_id, tournament_id, None
         )
+        if web_context.admin_tournament and web_context.admin_tournament.started:
+            return self.redirect_error(
+                request, 'Import only possible before the tournament starts.'
+            )
+
         event = web_context.get_admin_event()
         importer = TournamentImporterManager.get_object(importer_id)
 
@@ -863,8 +835,8 @@ class TournamentAdminController(BaseEventAdminController):
                     stored_tournament
                 )
                 success_message = _(
-                    'Tournament [{tournament_uniq_id}] has been updated.'
-                ).format(tournament_uniq_id=stored_tournament.uniq_id)
+                    'Tournament [{tournament}] has been updated.'
+                ).format(tournament=stored_tournament.name)
             else:
                 stored_tournament = event_database.add_stored_tournament(
                     stored_tournament
@@ -904,7 +876,9 @@ class TournamentAdminController(BaseEventAdminController):
                             StoredScreen(
                                 id=None,
                                 uniq_id=web_context.admin_event.get_unused_screen_uniq_id(
-                                    base_uniq_id=f'{stored_tournament.uniq_id}-{type_}'
+                                    base_uniq_id=StaticUtils.name_to_uniq_id(
+                                        f'{stored_tournament.name}-{type_}'
+                                    )
                                 ),
                                 type=type_,
                                 public=True,
@@ -933,16 +907,15 @@ class TournamentAdminController(BaseEventAdminController):
                             stored_screen.id, stored_tournament.id
                         )
                     success_message = _(
-                        'Tournament [{tournament_uniq_id}] has been created '
+                        'Tournament [{tournament}] has been created '
                         'and default screens have been added.'
-                    ).format(tournament_uniq_id=stored_tournament.uniq_id)
+                    ).format(tournament=stored_tournament.name)
                 else:
                     success_message = _(
-                        'Tournament [{tournament_uniq_id}] has been created.'
-                    ).format(tournament_uniq_id=stored_tournament.uniq_id)
+                        'Tournament [{tournament}] has been created.'
+                    ).format(tournament=stored_tournament.name)
 
                 tournament_id = stored_tournament.id
-            event_database.commit()
 
         if add_other:
             return self._admin_event_tournaments_render(
@@ -1016,11 +989,10 @@ class TournamentAdminController(BaseEventAdminController):
             return web_context.error
         with EventDatabase(event_uniq_id, True) as database:
             database.delete_stored_tournament(tournament_id)
-            database.commit()
         Message.success(
             request,
-            _('Tournament [{tournament_uniq_id}] has been deleted.').format(
-                tournament_uniq_id=web_context.get_admin_tournament().uniq_id
+            _('Tournament [{tournament}] has been deleted.').format(
+                tournament=web_context.get_admin_tournament().name
             ),
         )
         return self._admin_event_tournaments_render(request, event_uniq_id)

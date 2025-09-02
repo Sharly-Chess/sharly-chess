@@ -47,14 +47,14 @@ class FfeBackgroundUploader:
     timeout_threads: dict[str, Timer] = {}
 
     @classmethod
-    def result_id(cls, tournament: Tournament) -> str:
-        return f'{tournament.event.uniq_id}:{tournament.id}'
+    def result_id(cls, event_uniq_id: str, tournament_id: int) -> str:
+        return f'{event_uniq_id}:{tournament_id}'
 
     @classmethod
     def get_updated_tournament_upload_result(
         cls, tournament: Tournament
     ) -> FfeUploadResult:
-        result_id = cls.result_id(tournament)
+        result_id = cls.result_id(tournament.event.uniq_id, tournament.id)
         result = cls.upload_status_messages.get(result_id, None)
 
         # Clear the message if it is a SETTINGS_ERROR, and refresh it later...
@@ -167,9 +167,10 @@ class FfeBackgroundUploader:
             # Skip this tournament if we now have a SETTINGS_ERROR
             return
 
+        result_id = cls.result_id(tournament.event.uniq_id, tournament.id)
         if not force and not FFEUtils.resolve_auto_upload(tournament):
             # Auto upload has been disabled since it was scheduled
-            cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
+            cls.upload_status_messages[result_id] = FfeUploadResult(
                 FfeUploadStatus.CHANGED,
                 _('Modified since last upload'),
             )
@@ -177,14 +178,14 @@ class FfeBackgroundUploader:
 
         if not NetworkMonitor.connected():
             # The network is offline, we can't upload
-            cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
+            cls.upload_status_messages[result_id] = FfeUploadResult(
                 FfeUploadStatus.ERROR,
                 _('Modified, but no internet connection'),
             )
             cls.publish_upload_event()
             return
 
-        cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
+        cls.upload_status_messages[result_id] = FfeUploadResult(
             FfeUploadStatus.IN_PROGRESS,
             _('Uploading tournament…'),
         )
@@ -194,9 +195,7 @@ class FfeBackgroundUploader:
         def report(
             tournament_: Tournament, status: FfeUploadStatus, message: str
         ) -> None:
-            cls.upload_status_messages[cls.result_id(tournament_)] = FfeUploadResult(
-                status, message
-            )
+            cls.upload_status_messages[result_id] = FfeUploadResult(status, message)
 
         try:
             FFESession(
@@ -207,7 +206,7 @@ class FfeBackgroundUploader:
             ).upload(set_visible=False)
         except Exception as e:
             logger.error('Error uploading tournament [%s]: [%s]', tournament.uniq_id, e)
-            cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
+            cls.upload_status_messages[result_id] = FfeUploadResult(
                 FfeUploadStatus.ERROR,
                 _('Error uploading tournament'),
             )
@@ -221,12 +220,14 @@ class FfeBackgroundUploader:
         cls.uploading_event = True
 
         tournaments = cls.update_eligible_tournaments(admin_event)
-        updated_tournaments: list[Tournament] = []
+        updated_tournaments: list[tuple[str, int]] = []
         for tournament in tournaments:
             if cls.ffe_upload_needed(tournament):
-                updated_tournaments.append(tournament)
+                updated_tournaments.append((tournament.event.uniq_id, tournament.id))
             else:
-                cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
+                cls.upload_status_messages[
+                    cls.result_id(tournament.event.uniq_id, tournament.id)
+                ] = FfeUploadResult(
                     FfeUploadStatus.INFO,
                     _('Tournament not modified since last upload'),
                 )
@@ -235,33 +236,37 @@ class FfeBackgroundUploader:
             cls.uploading_event = False
             return
 
-        for tournament in updated_tournaments:
+        for event_uuid, tournament_id in updated_tournaments:
             if not NetworkMonitor.connected():
                 # The network is offline, we can't upload
-                cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
-                    FfeUploadStatus.INFO,
-                    _('No internet connection'),
+                cls.upload_status_messages[cls.result_id(event_uuid, tournament_id)] = (
+                    FfeUploadResult(
+                        FfeUploadStatus.INFO,
+                        _('No internet connection'),
+                    )
                 )
             else:
-                cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
-                    FfeUploadStatus.IN_PROGRESS, _('Uploading tournament…')
+                cls.upload_status_messages[cls.result_id(event_uuid, tournament_id)] = (
+                    FfeUploadResult(
+                        FfeUploadStatus.IN_PROGRESS, _('Uploading tournament…')
+                    )
                 )
 
         def _upload_tournaments(cls_: FfeBackgroundUploader) -> None:
             try:
                 # Set the locale (called in a new thread)
                 set_locale(SharlyChessConfig().locale)
-                for tournament_ in updated_tournaments:
+                for event_uuid, tournament_id in updated_tournaments:
                     scheduled_upload = cls_.timeout_threads.get(
-                        cls_.result_id(tournament_)
+                        cls_.result_id(event_uuid, tournament_id)
                     )
                     if scheduled_upload and scheduled_upload.is_alive():
                         # Cancel the scheduled upload
                         scheduled_upload.cancel()
-                        cls_.timeout_threads.pop(cls_.result_id(tournament_), None)
-                    cls_.upload_tournament(
-                        tournament_.event.uniq_id, tournament_.id, True
-                    )
+                        cls_.timeout_threads.pop(
+                            cls_.result_id(event_uuid, tournament_id), None
+                        )
+                    cls_.upload_tournament(event_uuid, tournament_id, True)
 
             finally:
                 cls.uploading_event = False
@@ -273,6 +278,7 @@ class FfeBackgroundUploader:
     def schedule_upload(cls, tournament: Tournament, force=False) -> None:
         """Schedule the upload of a tournament that has been modified."""
 
+        result_id = cls.result_id(tournament.event.uniq_id, tournament.id)
         if not force:
             result = cls.get_updated_tournament_upload_result(tournament)
             if result.status == FfeUploadStatus.SETTINGS_ERROR:
@@ -283,7 +289,7 @@ class FfeBackgroundUploader:
                 # Latest version already uploaded
                 return
 
-            thread = cls.timeout_threads.get(cls.result_id(tournament))
+            thread = cls.timeout_threads.get(result_id)
             if thread and thread.is_alive():
                 # There's already a thread running for this tournament
                 return
@@ -293,11 +299,11 @@ class FfeBackgroundUploader:
         wait_time = 0.1
         if not force and time() < ffe_last_upload + delay * 60:
             wait_time = max(delay * 60 - (time() - ffe_last_upload), 0.1)
-            cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
+            cls.upload_status_messages[result_id] = FfeUploadResult(
                 FfeUploadStatus.PENDING, _('Tournament modified, awaiting auto-upload')
             )
         else:
-            cls.upload_status_messages[cls.result_id(tournament)] = FfeUploadResult(
+            cls.upload_status_messages[result_id] = FfeUploadResult(
                 FfeUploadStatus.IN_PROGRESS,
                 _('Uploading tournament…'),
             )
@@ -311,5 +317,5 @@ class FfeBackgroundUploader:
                 force,
             ),
         )
-        cls.timeout_threads[cls.result_id(tournament)] = timer
+        cls.timeout_threads[result_id] = timer
         timer.start()

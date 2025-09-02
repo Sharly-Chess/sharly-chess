@@ -2,6 +2,7 @@ from functools import partial
 import re
 import shutil
 import time
+import tempfile
 from datetime import datetime
 from logging import Logger
 from pathlib import Path
@@ -418,71 +419,73 @@ class FFESession(Session):
             ],
             EVENT_VALIDATION_INPUT_ID: self.ffe_state[EVENT_VALIDATION_INPUT_ID],
         }
-        date: str = datetime.fromtimestamp(time.time()).strftime('%Y%m%d%H%M%S')
-        tmp_papi_file: Path = ffe.TMP_DIR / f'{self.tournament.uniq_id}-{date}.papi'
-        tmp_sce_file: Path = ffe.TMP_DIR / f'{self.tournament.event.uniq_id}-{date}.sce'
 
-        tmp_papi_file.parents[0].mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path: Path = Path(tmpdir)
+            tmp_papi_file: Path = tmp_path / 'export.papi'
+            tmp_sce_file: Path = tmp_path / 'event.sce'
 
-        # Copy the event database to the tmp file
-        with EventDatabase(self.tournament.event.uniq_id) as event_database:
+            # Copy the event database to the tmp file
+            with EventDatabase(self.tournament.event.uniq_id) as event_database:
+                try:
+                    logger.debug(
+                        'Copying [%s] to [%s]...', event_database.file, tmp_sce_file
+                    )
+                    shutil.copy(event_database.file, tmp_sce_file)
+                except Exception:
+                    self.report_error(_('Copying to tmp .sce file failed.'))
+                    return
+
+            # Prepare for upload
+            with EventDatabase(
+                file_path=tmp_sce_file, write=True
+            ) as tmp_event_database:
+                tmp_event = Event(tmp_event_database.load_stored_event())
+                tmp_tournament = tmp_event.tournaments_by_id[self.tournament.id]
+                logger.debug("Deleting personal players' data...")
+                tmp_event_database.delete_players_personal_data()
+
+                # Delete all ZPBs if no pairings are found (at any round).
+                # This fixes a display issue on the FFE website."""
+                if not tmp_tournament.has_pairings:
+                    logger.info('Deleting ZPBs...')
+                    for player in tmp_tournament.players:
+                        for pairing in player.pairings.values():
+                            if pairing.zero_point_bye:
+                                tmp_event_database.delete_stored_pairing(
+                                    pairing.stored_pairing
+                                )
+
+                    logger.info('Done.')
+                else:
+                    logger.info('No ZPBs to delete.')
+
             try:
                 logger.debug(
-                    'Copying [%s] to [%s]...', event_database.file, tmp_sce_file
+                    'Converting [%s] to [%s]...',
+                    self.tournament.uniq_id,
+                    tmp_papi_file,
                 )
-                shutil.copy(event_database.file, tmp_sce_file)
+                PapiConverter().write_papi_file(tmp_tournament, tmp_papi_file)
             except Exception:
-                self.report_error(_('Copying to tmp .sce file failed.'))
+                self.report_error(_('Conversion to Papi format failed.'))
                 return
 
-        # Prepare for upload
-        with EventDatabase(file_path=tmp_sce_file, write=True) as tmp_event_database:
-            tmp_event = Event(tmp_event_database.load_stored_event())
-            tmp_tournament = tmp_event.tournaments_by_id[self.tournament.id]
-            logger.debug("Deleting personal players' data...")
-            tmp_event_database.delete_players_personal_data()
-
-            # Delete all ZPBs if no pairings are found (at any round).
-            # This fixes a display issue on the FFE website."""
-            if not tmp_tournament.has_pairings:
-                logger.info('Deleting ZPBs...')
-                for player in tmp_tournament.players:
-                    for pairing in player.pairings.values():
-                        if pairing.zero_point_bye:
-                            tmp_event_database.delete_stored_pairing(
-                                pairing.stored_pairing
-                            )
-
-                logger.info('Done.')
-            else:
-                logger.info('No ZPBs to delete.')
-
-            tmp_event_database.commit()
-
-        try:
-            logger.debug(
-                'Converting [%s] to [%s]...', self.tournament.uniq_id, tmp_papi_file
+            html: str | None = self._read_url(
+                url=url,
+                data=post,
+                files={
+                    UPLOAD_FILE_ID: tmp_papi_file,
+                },
             )
-            PapiConverter().write_papi_file(tmp_tournament, tmp_papi_file)
-        except Exception:
-            self.report_error(_('Conversion to Papi format failed.'))
-            return
 
-        html: str | None = self._read_url(
-            url=url,
-            data=post,
-            files={
-                UPLOAD_FILE_ID: tmp_papi_file,
-            },
-        )
-        tmp_papi_file.unlink()
-        tmp_sce_file.unlink()
-        if not html:
-            return
-        __, error = self._parse_html_content(html)
-        if error:
-            self.report_error(_('Upload failed'))
-            return
+            if not html:
+                return
+            __, error = self._parse_html_content(html)
+            if error:
+                self.report_error(_('Upload failed'))
+                return
+
         with EventDatabase(self.tournament.event.uniq_id, write=True) as event_database:
             now = time.time()
             event_database.execute(
@@ -494,10 +497,10 @@ class FFESession(Session):
                     self.tournament.id,
                 ),
             )
-            event_database.commit()
-        self.report_success(_('Results upload OK'))
         if not set_visible:
+            self.report_success(_('Results upload OK'))
             return
+
         logger.info('Making the tournament visible on the FFE website...')
         logger.debug(
             '> auth_state[%s]=[%s]',
@@ -604,6 +607,5 @@ class FFESession(Session):
                     self.tournament.id,
                 ),
             )
-            event_database.commit()
         logger.info('Rules uploaded')
         self.report_success(_('Rules uploaded'))

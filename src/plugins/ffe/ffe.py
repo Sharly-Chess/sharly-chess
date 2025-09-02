@@ -1,4 +1,5 @@
 import copy
+from datetime import date
 import re
 
 from collections import Counter
@@ -30,7 +31,7 @@ from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
-from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
+from plugins.ffe.ffe_background_uploader import EventLoader, FfeBackgroundUploader
 from plugins.ffe.ffe_tournament_exporters import PapiTournamentExporter
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.ffe_tournament_importers import (
@@ -291,8 +292,8 @@ class FfePlugin(Plugin):
                 if action == 'create' and ffe_id and ffe_id in ffe_ids:
                     errors[field] = _(
                         'The player with FFE ID [{ffe_id}] already '
-                        'plays tournament [{tournament_uniq_id}].'
-                    ).format(ffe_id=ffe_id, tournament_uniq_id=tournament.uniq_id)
+                        'plays tournament [{tournament}].'
+                    ).format(ffe_id=ffe_id, tournament=tournament.name)
             except ValueError:
                 errors[field] = _('Invalid FFE ID [{ffe_id}].').format(
                     ffe_id=data[field]
@@ -321,10 +322,10 @@ class FfePlugin(Plugin):
                     errors[field] = _(
                         'The player with FFE licence number '
                         '[{ffe_licence_number}] already plays '
-                        'tournament [{tournament_uniq_id}].'
+                        'tournament [{tournament}].'
                     ).format(
                         ffe_licence_number=ffe_licence_number,
-                        tournament_uniq_id=tournament.uniq_id,
+                        tournament=tournament.name,
                     )
 
     @hookimpl
@@ -435,10 +436,10 @@ class FfePlugin(Plugin):
         ):
             return _(
                 'FFE licence [{ffe_licence_number}] already '
-                'present in tournament [{tournament_uniq_id}].'
+                'present in tournament [{tournament}].'
             ).format(
                 ffe_licence_number=ffe_licence_number,
-                tournament_uniq_id=tournament.uniq_id,
+                tournament=tournament.name,
             )
 
         if ffe_id and any(
@@ -565,6 +566,13 @@ class FfePlugin(Plugin):
             ),
         ]
 
+    @hookimpl
+    def adjust_category_reference_year(self, reference_date: date) -> int | None:
+        # FFE rule: if month >= September, shift ref to next January 1
+        return (
+            reference_date.year if reference_date.month < 9 else reference_date.year + 1
+        )
+
     # ---------------------------------------------------------------------------------
     # Events
     # ---------------------------------------------------------------------------------
@@ -654,9 +662,12 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def on_tournament_data_updated(self, tournament: 'Tournament'):
-        if FFEUtils.resolve_auto_upload(tournament):
-            FfeBackgroundUploader.schedule_upload(tournament)
+    def on_tournament_data_updated(self, event_uniq_id: str, tournament_id: int):
+        event = EventLoader().events_by_id.get(event_uniq_id, None)
+        if event and tournament_id in event.tournaments_by_id:
+            tournament = event.tournaments_by_id[tournament_id]
+            if FFEUtils.resolve_auto_upload(tournament):
+                FfeBackgroundUploader.schedule_upload(tournament)
 
     @hookimpl
     def augment_tournament_after_db_fetch(

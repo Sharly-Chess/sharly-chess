@@ -22,16 +22,19 @@
                 {% with first_entry=pairing_history[0][1][0] %}
                     <thead>
                         <tr>
-                            <th scope="col" class="text-start  compact-col">
+                            <th scope="col" class="text-start compact-col">
                                 {{ _('No. *** NB FOR TABLE HEADER') }}
-                            </th>
+                            <th scope="col" class="compact-col"></th>
                             <th scope="col" class="text-start">
                                 {{ _('Name') }}
                             </th>
-                            <th scope="col" class="text-start  compact-col">
+                            <th scope="col" class="text-start">
+                                {{ _('Rating') }}
+                            </th>
+                            <th scope="col" class="text-start compact-col">
                                 {{ _('Pref.') }}
                             </th>
-                            <th scope="col" class="text-start  compact-col">
+                            <th scope="col" class="text-start compact-col">
                                 {{ _('Floats') }}
                             </th>
                             <th colspan="{{ first_entry.previous_opponents|length }}" scope="col" class="text-start compact-col">
@@ -64,7 +67,9 @@
                             {% with player=players_by_pairing_number[player_history.id], row_class='even' if loop.index is even else 'odd' %}
                                 <tr id="player-{{ player.id }}" class="{{ row_class }}">
                                     <td class="compact-col">#{{ player_history.id }}</td>
+                                    <td class="compact-col text">{{ player.title.short_name }}</td>
                                     <td>{{ player.full_name }}</td>
+                                    <td>{{ player.rating_str }}</td>
                                     <td class="compact-col text-center">
                                         {% with color_preference=player_history.color_preference, absolute=player_history.color_preference.absolute, strong=player_history.color_preference.strong %}
                                             <span

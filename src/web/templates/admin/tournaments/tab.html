@@ -5,6 +5,9 @@
     {{ macros.refresh_listener(
         hx_get=url_for('admin-event-tournaments-tab', event_uniq_id=admin_event.uniq_id)
     ) }}
+    <script>
+        preparePrintModal()
+    </script>
 {% endblock %}
 
 {% block top_right_nav %}
@@ -90,4 +93,13 @@
             </div>
         {% endif %}
     </div>
+
+    <script>
+        $(document).ready(function() {
+            document.querySelectorAll('.tc-human').forEach(el => {
+                const trf = el.dataset.trf;
+                el.textContent = humanizeTrf25Short(trf);
+            });
+        });
+    </script>
 {% endblock %}

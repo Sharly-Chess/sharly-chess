@@ -167,8 +167,6 @@ class ActionSelector(metaclass=Singleton):
                     tournament.id,
                 ),
             )
-
-            event_database.commit()
         return players_added
 
     @classmethod
@@ -183,13 +181,13 @@ class ActionSelector(metaclass=Singleton):
             if not ChessEventUtils.resolve_tournament_name(tournament):
                 print_interactive_warning(
                     _(
-                        'The ChessEvent connection is not defined for tournament [{tournament_uniq_id}].'
-                    ).format(tournament_uniq_id=tournament.uniq_id)
+                        'The ChessEvent connection is not defined for tournament [{tournament}].'
+                    ).format(tournament=tournament.name)
                 )
             elif tournament.current_round:
                 print_interactive_warning(
-                    _('Tournament [{tournament_uniq_id}] has started.').format(
-                        tournament_uniq_id=tournament.uniq_id
+                    _('Tournament [{tournament}] has started.').format(
+                        tournament=tournament.name
                     )
                 )
             else:
@@ -324,9 +322,9 @@ class ActionSelector(metaclass=Singleton):
                                     f.write(data)
                                 print_interactive_error(
                                     _(
-                                        'Data for tournament [{tournament_uniq_id}] could not be decoded (encoding: [{encoding}]), saved in file [{file}] (error line [{line}], column [{column}], position [{position}]).'
+                                        'Data for tournament [{tournament}] could not be decoded (encoding: [{encoding}]), saved in file [{file}] (error line [{line}], column [{column}], position [{position}]).'
                                     ).format(
-                                        tournament_uniq_id=tournament.uniq_id,
+                                        tournament=tournament.name,
                                         encoding=encoding,
                                         file=error_output,
                                         line=ex.lineno,

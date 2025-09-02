@@ -12,6 +12,7 @@ from _weakref import ReferenceType
 from trf import Tournament as TrfTournament
 
 from common import format_timestamp
+from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
 
@@ -33,7 +34,7 @@ from database.sqlite.event.event_store import (
     StoredTournamentPlayer,
     StoredPairing,
 )
-from utils import SharedUtils
+from utils import SharedUtils, StaticUtils
 from utils.enum import (
     BoardColor,
     PlayerGender,
@@ -46,6 +47,7 @@ from utils.enum import (
 )
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredPrizeGroup
+from utils.time_control import parse_time_control_trf25
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -83,13 +85,16 @@ class Tournament:
 
     @property
     def uniq_id(self) -> str:
-        return self.stored_tournament.uniq_id
+        # TODO (Molrn) replace all the uniq_id usages by the name
+        return self.name
 
     @property
     def name(self) -> str:
-        return (
-            self.stored_tournament.name if self.stored_tournament.name else self.uniq_id
-        )
+        return self.stored_tournament.name
+
+    @property
+    def sanitized_name(self) -> str:
+        return StaticUtils.name_to_uniq_id(self.name)
 
     @property
     def full_name(self) -> str:
@@ -124,12 +129,18 @@ class Tournament:
         return self.stored_tournament.location or self.event.location
 
     @property
-    def time_control_initial_time(self) -> int | None:
-        return self.stored_tournament.time_control_initial_time
+    def time_control_trf25(self) -> str:
+        return self.stored_tournament.time_control_trf25 or ''
 
     @property
-    def time_control_increment(self) -> int | None:
-        return self.stored_tournament.time_control_increment
+    def time_control_initial_time(self) -> int:
+        """Parse initial time from TRF25 format. Returns 0 for invalid formats."""
+        return parse_time_control_trf25(self.stored_tournament.time_control_trf25)[0]
+
+    @property
+    def time_control_increment(self) -> int:
+        """Parse increment from TRF25 format. Returns 0 for invalid formats."""
+        return parse_time_control_trf25(self.stored_tournament.time_control_trf25)[1]
 
     @property
     def time_control_handicap_penalty_value(self) -> int | None:
@@ -281,7 +292,6 @@ class Tournament:
     def update_pairing_settings(self, pairing_settings: dict[str, Any]):
         with EventDatabase(self.event.uniq_id, write=True) as database:
             database.set_tournament_pairing_settings(self.id, pairing_settings)
-            database.commit()
         self.stored_tournament.pairing_settings = pairing_settings
         property_name = 'pairing_settings'
         if property_name in self.__dict__:
@@ -359,7 +369,6 @@ class Tournament:
     def add_prize_group(self, stored_prize_group: StoredPrizeGroup) -> PrizeGroup:
         with EventDatabase(self.event.uniq_id, True) as database:
             object_id = database.add_stored_prize_group(stored_prize_group)
-            database.commit()
         stored_prize_group.id = object_id
         prize_group = PrizeGroup(self, stored_prize_group)
         self.prize_groups_by_id[object_id] = prize_group
@@ -368,10 +377,15 @@ class Tournament:
     def delete_prize_group(self, prize_group_id: int):
         with EventDatabase(self.event.uniq_id, True) as database:
             database.delete_stored_prize_group(prize_group_id)
-            database.commit()
 
         if prize_group_id in self.prize_groups_by_id:
             del self.prize_groups_by_id[prize_group_id]
+
+    def get_unused_prize_group_name(self, base_name: str | None = None) -> str:
+        return StaticUtils.get_unused_item_name(
+            base_name or _('New group'),
+            (group.name for group in self.prize_groups),
+        )
 
     @property
     def players(self) -> Collection[Player]:
@@ -957,14 +971,11 @@ class Tournament:
         round."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
             player.pairings[self.current_round].add_illegal_move(database)
-            database.commit()
 
     def delete_illegal_move(self, player: Player) -> bool:
         """Deletes one illegal move for the given `player` for the current round."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
             deleted = player.pairings[self.current_round].delete_illegal_move(database)
-            if deleted:
-                database.commit()
         return deleted
 
     def correct_ranking_round(self, ranking_round: int | None = None) -> int:
@@ -981,31 +992,42 @@ class Tournament:
         if after_round is None:
             after_round = self.max_ranking_round
 
-        if after_round:
-            # Estimate ratings to ensure we have a defined rating for everyone
-            self._estimate_players(self.players, after_round=after_round)
-            for player in self.players:
-                player.points = player.points_after(after_round)
-                player.compute_tie_break_values(after_round=after_round)
+        self._set_players_pairing_numbers()
+        self._estimate_players(self.players, after_round=after_round)
+        for player in self.players:
+            player.points = player.points_after(after_round)
+            player.compute_tie_break_values(after_round=after_round)
 
-            self._players_by_rank = {
-                rank: player
-                for rank, player in enumerate(
-                    sorted(
-                        self.players,
-                        key=lambda p: p.rank_sort_key,
-                    ),
-                    start=1,
-                )
-            }
+        for index, tie_break in enumerate(self.tie_breaks):
+            if tie_break.is_computed_per_player:
+                continue
+            value_by_player_id = tie_break.compute_all_player_values(
+                self, after_round=after_round
+            )
+            for player_id, tie_break_value in value_by_player_id.items():
+                player = self.players_by_id[player_id]
+                player.tie_break_values[index].value = tie_break_value
 
-        else:
-            # set 0.0 tie-break values for all the players
-            for player in self.players:
-                player.compute_tie_break_values(after_round=0)
-            self._players_by_rank = self.players_by_starting_rank
+        sorted_players = sorted(self.players, key=lambda p: p.rank_sort_key)
+        self._players_by_rank = {
+            rank: player for rank, player in enumerate(sorted_players, start=1)
+        }
         for rank, player in self._players_by_rank.items():
             player.rank = rank
+        for tie_break_index, tie_break in enumerate(self.tie_breaks):
+            if not tie_break.display_rank_delta:
+                continue
+            players_ranked_without_tie_break = sorted(
+                self.players,
+                key=lambda p: p.rank_sort_key_without_tie_break(type(tie_break)),
+            )
+            for rank_without_tie_break, player in enumerate(
+                players_ranked_without_tie_break, start=1
+            ):
+                player.tie_break_values[tie_break_index].rank_progress = (
+                    rank_without_tie_break - player.rank
+                )
+
         return self._players_by_rank
 
     @property
@@ -1029,7 +1051,6 @@ class Tournament:
             )
 
             board.set_last_result_update(board.white_pairing.result, event_database)
-            event_database.commit()
 
         logger.info(
             'Added result: %s %s %d.%d %s %s %d %s %s %s %d.',
@@ -1056,7 +1077,6 @@ class Tournament:
             board.white_pairing.update_result(event_database, Result.NO_RESULT)
             board.black_pairing.update_result(event_database, Result.NO_RESULT)
             board.set_last_result_update(board.white_pairing.result, event_database)
-            event_database.commit()
         logger.info(
             'Removed result: %s %s %d.%d.',
             self.event.uniq_id,
@@ -1072,7 +1092,6 @@ class Tournament:
         """Stores the `check_in` status for the given `player`."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
             database.set_player_check_in(player.id, check_in)
-            database.commit()
         player.stored_player.check_in = check_in
 
     def add_player_to_tournament(
@@ -1103,13 +1122,11 @@ class Tournament:
         else:
             with EventDatabase(self.event.uniq_id, True) as database:
                 database.add_stored_tournament_player(stored_tournament_player)
-                database.commit()
         self.players_by_id[stored_player.id] = Player(self, stored_player)
 
     def delete_player_from_tournament(self, player_id: int):
         with EventDatabase(self.event.uniq_id, True) as database:
             database.delete_stored_tournament_player(self.id, player_id)
-            database.commit()
         if player_id in self.players_by_id:
             del self.players_by_id[player_id]
 
@@ -1158,7 +1175,6 @@ class Tournament:
                 database.set_tournament_player_pairing_number(
                     player.stored_tournament_player
                 )
-            database.commit()
         return sorted_players
 
     def create_round_pairing(
@@ -1208,7 +1224,6 @@ class Tournament:
             white_pairing.stored_pairing.result = result.value
             white_pairing.stored_pairing.board_id = board_id
             white_pairing.update(database)
-            database.commit()
 
     def unpair_boards(self, boards: list[Board]):
         with EventDatabase(self.event.uniq_id, True) as database:
@@ -1221,7 +1236,6 @@ class Tournament:
                 database.delete_stored_board(board.identifier)
                 if board.identifier in self.boards_by_id:
                     del self.boards_by_id[board.identifier]
-            database.commit()
 
     def create_boards(
         self, stored_boards: list[StoredBoard], round_: int, pab_result: Result
@@ -1243,7 +1257,6 @@ class Tournament:
                 else:
                     white_stored_pairing.result = pab_result.value
                 board.white_pairing.update(database)
-            database.commit()
 
     def open_check_in(self):
         """Opens the check-in for the tournament and sets all the present players
@@ -1264,7 +1277,6 @@ class Tournament:
         with EventDatabase(self.event.uniq_id, write=True) as database:
             database.set_tournament_check_in(self.id, True)
             database.set_players_check_in(present_player_ids, False)
-            database.commit()
 
     def close_check_in(self, zpbs_next_round: bool, zpbs_last_rounds: bool):
         """Closes the check-in for the tournament and assigns a ZPB to all the players not checked-in
@@ -1293,16 +1305,13 @@ class Tournament:
                         player.pairings_by_round[round_].update_result(
                             database, Result.ZERO_POINT_BYE
                         )
-            database.commit()
 
     def set_player_byes(self, player: Player, byes: dict[int, Result]):
         """Updates a player's pairings with ZPB, HPB, FPB or not-paired values."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
             for round_, result in byes.items():
                 player.pairings_by_round[round_].update_result(database, result)
-            database.commit()
 
     def set_current_round(self, round_: int):
         with EventDatabase(self.event.uniq_id, True) as database:
             database.set_tournament_current_round(self.id, round_)
-            database.commit()

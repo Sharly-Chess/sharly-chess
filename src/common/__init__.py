@@ -17,9 +17,9 @@ SHARLY_CHESS_VERSION: Version = Version(importlib.metadata.version(APP_NAME))
 
 # True when the program is running in a development environment, False if running as an EXE file.
 DEVEL_ENV: bool = not getattr(sys, 'frozen', False)
-TEST_ENV: bool = os.getenv('TEST_ENV') == 'true'
+TEST_ENV: bool = os.getenv('TEST_ENV') == 'true' or Path(sys.argv[0]).stem == 'pytest'
 
-# True when experimental features are enabled (relying on an engine option), False otherwise.
+# True when experimental features are enabled, False otherwise.
 _EXPERIMENTAL_FEATURES_ENABLED: bool = False
 
 
@@ -31,6 +31,19 @@ def enable_experimental_features(enabled: bool):
 def experimental_features_enabled() -> bool:
     global _EXPERIMENTAL_FEATURES_ENABLED
     return _EXPERIMENTAL_FEATURES_ENABLED
+
+
+_IS_SERVER_ENGINE: bool = False
+
+
+def set_is_server_engine(is_server_engine_: bool):
+    global _IS_SERVER_ENGINE
+    _IS_SERVER_ENGINE = is_server_engine_
+
+
+def is_server_engine() -> bool:
+    global _IS_SERVER_ENGINE
+    return _IS_SERVER_ENGINE
 
 
 REQUEST_TIMEOUT: int = 10

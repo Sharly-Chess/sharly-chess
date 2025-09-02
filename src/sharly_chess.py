@@ -23,6 +23,12 @@ try:
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--server', action='store_true')
+    parser.add_argument(
+        '-p',
+        '--port',
+        type=int,
+        help='force the web port tu use',
+    )
     engine_argument_names: list[str] = []
     plugin_engine_arguments: list['PluginEngineArgument'] = (
         plugin_manager.hook.get_engine_argument()
@@ -54,7 +60,9 @@ try:
                 engine_argument.init_engine()
                 break
         if plugin_engine_argument is None:
-            se: ServerEngine = ServerEngine(debug=(DEVEL_ENV and args.debug))
+            se: ServerEngine = ServerEngine(
+                debug=(DEVEL_ENV and args.debug), port=args.port or None
+            )
     except KeyboardInterrupt:
         pass
 except Exception:

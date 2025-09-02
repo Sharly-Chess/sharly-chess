@@ -3,11 +3,11 @@
         <div class="modal-header">
             <h2 class="modal-title">
                 {% if action == 'create' %}
-                    {{ _('Player creation') }}
+                    {{ _('Create player') }}
                 {% elif action == 'update' %}
-                    {{ _('Editing of player [%(player)s]', player=admin_player.full_name) }}
+                    {{ _('Edit player') }}
                 {% elif action == 'delete' %}
-                    {{ _('Deletion of player [%(player)s]', player=admin_player.full_name) }}
+                    {{ _('Delete player') }}
                 {% else %}
                     ?
                 {% endif %}
@@ -30,7 +30,7 @@
             >
                 {% if action == 'delete' %}
                     <h4 class="text-danger">
-                        {{ _('Warning: the deletion of a player is permanent!') }}
+                        {{ _('Warning: the deletion is permanent!') }}
                     </h4>
                 {% endif %}
 

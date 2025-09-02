@@ -97,3 +97,17 @@
         </table>
     </section>
 {% endwith %}
+
+<script>
+    preparePrintModal("{{ default_print_document }}");
+
+    $(document).ready(function() {
+        $(document).off("htmx:afterSwap.tips");
+
+        $(document).on("htmx:afterSwap.tips", function(evt) {
+            if (evt.target.matches('tbody')) {
+                activateTooltips();
+            }
+        });
+    });
+</script>

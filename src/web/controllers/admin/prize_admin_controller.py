@@ -11,6 +11,10 @@ from litestar_htmx import HTMXRequest, ClientRedirect
 
 from common.i18n import _
 from common.logger import get_logger
+from data.print_documents.documents import (
+    PrizeAssignmentPrintDocument,
+    PrizeListPrintDocument,
+)
 from data.prize.managers import (
     PrizeSharingManager,
     PlayerFilterManager,
@@ -148,6 +152,9 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
             'tournament_options': self.get_tournament_options(),
             'prize_group_options': self.get_prize_group_options(),
             'show_details': self.show_details,
+            'default_print_document': PrizeAssignmentPrintDocument.static_id()
+            if self.admin_tournament and self.admin_tournament.finished
+            else PrizeListPrintDocument.static_id(),
         }
 
     def get_admin_tournament(self) -> Tournament:
@@ -259,6 +266,13 @@ class PrizeAdminController(BaseEventAdminController):
     # Prize groups
     # -------------------------------------------------------------------------
 
+    @staticmethod
+    def _prize_groups_modal_context(tournament: Tournament) -> dict[str, Any]:
+        return {
+            'modal': 'prize_groups',
+            'prize_group_names': [group.name for group in tournament.prize_groups],
+        }
+
     @post(
         path='/admin/prizes/prize-group/create/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-prize-group-create',
@@ -277,13 +291,7 @@ class PrizeAdminController(BaseEventAdminController):
         if first_group:
             name = _('Main group')
         else:
-            name = _('Side group')
-            group_names = [group.name for group in tournament.prize_groups]
-            if name in group_names:
-                index = 1
-                while f'{name} ({index})' in group_names:
-                    index += 1
-                name = f'{name} ({index})'
+            name = tournament.get_unused_prize_group_name()
         prize_group = tournament.add_prize_group(
             StoredPrizeGroup(
                 id=None,
@@ -301,7 +309,7 @@ class PrizeAdminController(BaseEventAdminController):
                 ),
             )
         else:
-            template_context = {'modal': 'prize_groups'}
+            template_context = self._prize_groups_modal_context(tournament)
         return self._admin_event_prizes_render(web_context, template_context)
 
     @patch(
@@ -327,12 +335,15 @@ class PrizeAdminController(BaseEventAdminController):
         )
         if web_context.error:
             return web_context.error
+        tournament = web_context.get_admin_tournament()
         prize_group = web_context.get_admin_prize_group()
         prize_group.stored_prize_group.name = (
             WebContext.form_data_to_str(data, 'name') or ''
         )
         prize_group.update()
-        return self._admin_event_prizes_render(web_context, {'modal': 'prize_groups'})
+        return self._admin_event_prizes_render(
+            web_context, self._prize_groups_modal_context(tournament)
+        )
 
     @delete(
         path=(
@@ -356,7 +367,9 @@ class PrizeAdminController(BaseEventAdminController):
             return web_context.error
         tournament = web_context.get_admin_tournament()
         tournament.delete_prize_group(prize_group_id)
-        return self._admin_event_prizes_render(web_context, {'modal': 'prize_groups'})
+        return self._admin_event_prizes_render(
+            web_context, self._prize_groups_modal_context(tournament)
+        )
 
     @get(
         path='/admin/prizes/prize-groups-modal/{event_uniq_id:str}/{tournament_id:int}',
@@ -368,9 +381,10 @@ class PrizeAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
     ) -> Template | ClientRedirect:
+        web_context = PrizeAdminWebContext(request, event_uniq_id, tournament_id)
+        tournament = web_context.get_admin_tournament()
         return self._admin_event_prizes_render(
-            PrizeAdminWebContext(request, event_uniq_id, tournament_id),
-            {'modal': 'prize_groups'},
+            web_context, self._prize_groups_modal_context(tournament)
         )
 
     @get(
@@ -398,12 +412,20 @@ class PrizeAdminController(BaseEventAdminController):
 
     @staticmethod
     def _validate_prize_category_form_data(
-        data: dict[str, str], prize_category: PrizeCategory | None = None
+        data: dict[str, str],
+        prize_group: PrizeGroup,
+        prize_category: PrizeCategory | None = None,
     ) -> dict[str, str]:
         errors: dict[str, str] = {}
-        field = 'name'
-        if not WebContext.form_data_to_str(data, field):
-            errors[field] = _('Please enter a name.')
+        name = WebContext.form_data_to_str(data, field := 'name')
+        if not name:
+            errors[field] = _('This field is required.')
+        else:
+            used_names = [category.name for category in prize_group.categories]
+            if prize_category:
+                used_names.remove(prize_category.name)
+            if name in used_names:
+                errors[field] = _('This name is already used.')
         is_main = WebContext.form_data_to_bool(data, 'is_main')
         share_prizes = WebContext.form_data_to_bool(data, 'share_prizes')
         if not is_main and share_prizes:
@@ -462,11 +484,11 @@ class PrizeAdminController(BaseEventAdminController):
         }
 
     @staticmethod
-    def _prize_category_default_form_data(tournament: Tournament) -> dict[str, str]:
+    def _prize_category_default_form_data(prize_group: PrizeGroup) -> dict[str, str]:
         return {
-            'name': '',
+            'name': prize_group.get_unused_category_name(),
             'is_main': WebContext.value_to_form_data(
-                tournament.main_prize_category is None
+                prize_group.tournament.main_prize_category is None
             ),
             'share_prizes': WebContext.value_to_form_data(False),
             'sharing_threshold': '',
@@ -500,7 +522,9 @@ class PrizeAdminController(BaseEventAdminController):
         SessionHandler.set_session_admin_prize_category_add_other_active(
             request, add_other
         )
-        if errors := self._validate_prize_category_form_data(data):
+        if errors := self._validate_prize_category_form_data(
+            data, web_context.get_admin_prize_group()
+        ):
             return self._admin_event_prizes_render(
                 web_context,
                 self._prize_category_modal_context(
@@ -534,7 +558,7 @@ class PrizeAdminController(BaseEventAdminController):
         prize_category = prize_group.add_category(stored_category)
 
         if add_other:
-            data = self._prize_category_default_form_data(prize_group.tournament)
+            data = self._prize_category_default_form_data(prize_group)
             template_context = self._prize_category_modal_context(
                 request, data, FormAction.CREATE, errors
             ) | {'previous_category': prize_category}
@@ -573,7 +597,9 @@ class PrizeAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         prize_category = web_context.get_admin_prize_category()
-        if errors := self._validate_prize_category_form_data(data, prize_category):
+        if errors := self._validate_prize_category_form_data(
+            data, web_context.get_admin_prize_group(), prize_category
+        ):
             return self._admin_event_prizes_render(
                 web_context,
                 self._prize_category_modal_context(
@@ -670,6 +696,7 @@ class PrizeAdminController(BaseEventAdminController):
         prize_group = web_context.get_admin_prize_group()
         copy_category = web_context.get_admin_prize_category()
         stored_category = copy.deepcopy(copy_category.stored_prize_category)
+        stored_category.name = prize_group.get_unused_category_name(copy_category.name)
         stored_category.index = len(prize_group.categories)
         stored_category.stored_prizes = []
         stored_category.stored_prize_criteria = []
@@ -737,7 +764,7 @@ class PrizeAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         data = self._prize_category_default_form_data(
-            web_context.get_admin_tournament()
+            web_context.get_admin_prize_group()
         )
         return self._admin_event_prizes_render(
             web_context,

@@ -1,0 +1,54 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+<div class="vstack">
+    <h2 class="modal-title">
+        <span class="pe-1">
+            {{ _('Edit screen family') }}
+        </span>
+    </h2>
+    <div id="uniq-id-field" class="form-text pt-0 mt-0">
+        {{ _('Unique ID: [%(uniq_id)s]', uniq_id=admin_family.uniq_id) }}
+        <span
+            {{ macros.tooltip_attributes(
+                'info', _('Edit the unique ID.'), 'right'
+            ) }}
+        >
+            <button
+                id="uniq-id-update-button"
+                data-testid="uniq-id-update-button"
+                type="button"
+                class="btn btn-sm text-primary text-nowrap"
+            >
+                <i class="bi-pencil"></i>
+            </button>
+        </span>
+    </div>
+    <div
+        id="uniq-id-update-form-container"
+        class="mt-1 mb-1 col-12 col-md-6"
+        style="display: none"
+    >
+        {{ admin_macros.uniq_id_form(
+            current_uniq_id=admin_family.uniq_id,
+            existing_uniq_ids=family_uniq_ids,
+            placeholder=_('E.g.: %(string)s', string=_('my-family')),
+            patch_url=url_for(
+                'admin-family-uniq-id-update',
+                event_uniq_id=admin_event.uniq_id,
+                family_id=admin_family.id
+            ),
+        ) }}
+    </div>
+</div>
+<script>
+    {% set id = 'uniq-id-update' %}
+    $('#{{ id }}-button').click(() => {
+        $('#{{ id }}-form-container').css('display', '');
+        $('#uniq-id-field').css('display', 'none');
+    });
+    $('#{{ id }}-cancel-button').click(() => {
+        $('#{{ id }}-form-container').css('display', 'none');
+        $('#uniq-id-field').css('display', '');
+    });
+</script>

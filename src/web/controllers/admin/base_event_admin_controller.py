@@ -10,6 +10,7 @@ from common.exception import SharlyChessException
 from common.i18n import _
 from data.event import Event
 from data.loader import EventLoader
+from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from plugins.utils import PluginNavBarItem
 from web.controllers.admin.base_admin_controller import (
@@ -17,6 +18,7 @@ from web.controllers.admin.base_admin_controller import (
     BaseAdminController,
 )
 from web.messages import Message
+from web.session import SessionHandler
 
 
 class BaseEventAdminWebContext(AdminWebContext):
@@ -49,6 +51,23 @@ class BaseEventAdminWebContext(AdminWebContext):
 
     def check_admin_tab(self):
         pass
+
+    def default_tournament_for_print_modal(
+        self, tournament_id: int | None
+    ) -> int | None:
+        if (
+            tournament_id is None
+            and (
+                last_tournament
+                := SessionHandler.get_session_admin_print_last_tournament(self.request)
+            )
+            is not None
+        ):
+            event_uniq_id, tid = last_tournament
+            if event_uniq_id == self.get_admin_event().uniq_id:
+                tournament_id = tid
+
+        return tournament_id
 
     @property
     def template_context(self) -> dict[str, Any]:
@@ -153,13 +172,14 @@ class BaseEventAdminWebContext(AdminWebContext):
             'nav_tabs': nav_tabs,
         }
 
-    def get_tournament_options(self) -> dict[str, str]:
-        event = self.get_admin_event()
+    def get_tournament_options(
+        self, tournaments: list[Tournament] | None = None
+    ) -> dict[str, str]:
+        if not tournaments:
+            tournaments = self.get_admin_event().tournaments_sorted_by_uniq_id
         return {
-            self.value_to_form_data(
-                tournament.id
-            ): f'{tournament.name} ({tournament.uniq_id})'
-            for tournament in event.tournaments_sorted_by_uniq_id
+            self.value_to_form_data(tournament.id): tournament.name
+            for tournament in tournaments
         }
 
 

@@ -125,7 +125,7 @@ class Screen:
         return f'{self.family.uniq_id}:{self.family_part:03}'
 
     @property
-    def name(self) -> str | None:
+    def name(self) -> str:
         if self.stored_screen:
             if self.stored_screen.name:
                 return self.stored_screen.name

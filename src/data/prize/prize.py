@@ -62,7 +62,6 @@ class Prize:
     def update(self):
         with self.get_event_database() as database:
             database.update_stored_prize(self.stored_prize)
-            database.commit()
 
     def __eq__(self, other: object) -> bool | NotImplementedType:
         # p1 == p2 calls p1.__eq__(p2)

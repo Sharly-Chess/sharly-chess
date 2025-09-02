@@ -20,6 +20,11 @@
             )
         ) }}
     {% endif %}
+
+    <script>
+        preparePrintModal("{{ default_print_document }}", "{{ admin_tournament.id }}");
+    </script>
+
 {% endblock %}
 
 {% block right_buttons_classes %}d-flex gap-4 align-items-end{% endblock %}

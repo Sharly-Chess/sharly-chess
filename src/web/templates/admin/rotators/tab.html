@@ -5,6 +5,9 @@
     {{ macros.refresh_listener(
         hx_get=url_for('admin-event-rotators-tab', event_uniq_id=admin_event.uniq_id),
     ) }}
+    <script>
+        preparePrintModal()
+    </script>
 {% endblock %}
 
 {% block top_right_nav %}

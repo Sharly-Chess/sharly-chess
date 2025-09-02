@@ -1,13 +1,18 @@
-<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-rotator-edit-modal">
+<div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-rotator-edit-modal"
+    {% if action == 'delete' %}
+        style="--bs-modal-width: fit-content;"
+    {% endif %}
+>
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
                 {% if action in ['create', 'clone', ] %}
-                    {{ _('Rotator creation') }}
+                    {{ _('Create rotator') }}
                 {% elif action == 'update' %}
-                    {{ _('Editing of rotator [%(rotator_uniq_id)s]', rotator_uniq_id=admin_rotator.uniq_id) }}
+                    {{ _('Edit rotator') }}
                 {% elif action == 'delete' %}
-                    {{ _('Deletion of rotator [%(rotator_uniq_id)s]', rotator_uniq_id=admin_rotator.uniq_id) }}
+                    {{ _('Delete rotator') }}
                 {% else %}
                     ?
                 {% endif %}
@@ -29,8 +34,11 @@
                 hx-indicator="#please-wait"
             >
                 {% if action == 'delete' %}
+                    <h4>
+                        {{ _('%(string)s: %(value)s', string=_('Rotator'), value=admin_rotator.name) }}
+                    </h4>
                     <h4 class="text-danger">
-                        {{ _('Warning: the deletion of a rotator is permanent!') }}
+                        {{ _('Warning: the deletion is permanent!') }}
                     </h4>
                 {% else %}
                     <h4>
@@ -48,10 +56,10 @@
                         </div>
                         <div class="col-12 col-md-4 mb-3">
                             {{ admin_macros.text_input(
-                                name='uniq_id',
-                                label=_('ID (unique):'),
-                                placeholder=_('E.g.: my-rotator'),
-                                help_text=_('The Unique ID, used to reference the rotator.'),
+                                name='name',
+                                label=_('%(string)s:', string=_('Name')),
+                                placeholder=_('E.g.: %(string)s', string=_('My rotator')),
+                                help_text=_('The name of the rotator.'),
                                 data=data, errors=errors
                             ) }}
                         </div>

@@ -86,37 +86,15 @@
                         id="uniq-id-update-form-container"
                         style="display: none"
                     >
-                        {{ admin_macros.inline_text_form(
-                            'uniq-id-update',
-                            name='uniq_id',
+                        {{ admin_macros.uniq_id_form(
+                            current_uniq_id=admin_event.uniq_id,
+                            existing_uniq_ids=event_uniq_ids,
                             placeholder=_('E.g.: %(string)s', string=_('my-event')),
-                            value=admin_event.uniq_id,
                             patch_url=url_for('admin-event-uniq-id-update', event_uniq_id=admin_event.uniq_id),
                         ) }}
                     </div>
                     <script>
                         {% set id = 'uniq-id-update' %}
-                        $('#{{ id }}-input').on('input', function() {
-                            let disabled = true;
-                            let error = "";
-                            const value = $(this).val();
-                            if (value === '') {
-                                error = "{{ _('A value is expected.') }}";
-                            } else if (value != "{{ admin_event.uniq_id }}" && {{ event_uniq_ids|tojson }}.includes(value)) {
-                                error = "{{ _('An event with this unique ID already exists.') }}";
-                            } else if (!value.match(/^[0-9a-zA-Z_\-]+$/)) {
-                                error = "{{ _('Accepted characters are letters, numbers, underscore (_) and minus (-).') }}";
-                            } else {
-                                disabled = false;
-                                error = "{{ _('Validate') }}";
-                            }
-
-                            $('#{{ id }}-submit-button').prop('disabled', disabled);
-                            const tooltipElement = document.getElementById('{{ id }}-submit-button-container');
-                            const tooltip = bootstrap.Tooltip.getInstance(tooltipElement);
-                            tooltip.setContent({ '.tooltip-inner': error || "{{ _('Validate') }}" });
-                            tooltip.update();
-                        });
                         $('#{{ id }}-button').click(() => {
                             $('#{{ id }}-form-container').css('display', '');
                             $('#uniq-id-field').css('display', 'none');
@@ -257,3 +235,7 @@
         </tbody>
     </table>
 </div>
+
+<script>
+    preparePrintModal()
+</script>

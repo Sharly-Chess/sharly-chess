@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
 
-from common.exception import SharlyChessException
 from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
@@ -47,17 +46,9 @@ class TournamentImporter(IdentifiableEntity, ABC):
         """Load a tournament into an event.
         If tournament is provided, update this tournament, otherwise create a new one.
         Raises if the tournament already has players."""
-        if tournament and tournament.started:
-            raise SharlyChessException(
-                'Import only possible before the tournament starts.'
-            )
         stored_tournament, stored_players = self.load_stored_tournament(
             source_file, tournament.stored_tournament if tournament else None
         )
-        if not tournament:
-            stored_tournament.uniq_id = event.get_unused_tournament_uniq_id(
-                stored_tournament.uniq_id
-            )
         with EventDatabase(event.uniq_id, True) as database:
             if tournament:
                 database.delete_players_in_tournament(tournament.id)
@@ -74,7 +65,6 @@ class TournamentImporter(IdentifiableEntity, ABC):
                     for index, board in enumerate(sorted(boards, reverse=True)):
                         board.stored_board.index = index
                         database.update_stored_board(board.stored_board)
-                database.commit()
         return tournament
 
     @staticmethod

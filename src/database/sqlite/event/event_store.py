@@ -25,7 +25,7 @@ class StoredTimerHour:
 @dataclass
 class StoredTimer:
     id: int | None
-    uniq_id: str
+    name: str
     colors: dict[int, str | None] | None
     delays: dict[int, int | None] | None
     stored_timer_hours: list[StoredTimerHour] = field(
@@ -136,10 +136,8 @@ class StoredPlayer:
 @dataclass
 class StoredTournament:
     id: int | None
-    uniq_id: str
     name: str
-    time_control_initial_time: int | None = None
-    time_control_increment: int | None = None
+    time_control_trf25: str | None = None
     time_control_handicap_penalty_step: int | None = None
     time_control_handicap_penalty_value: int | None = None
     time_control_handicap_min_time: int | None = None
@@ -263,7 +261,7 @@ class StoredFamily:
 @dataclass
 class StoredRotator:
     id: int | None
-    uniq_id: str
+    name: str
     family_ids: list[int] | None
     screen_ids: list[int] | None
     delay: int | None
@@ -276,12 +274,11 @@ class StoredRotator:
 @dataclass
 class StoredDisplayController:
     id: int | None
-    uniq_id: str
-    name: str | None
+    name: str
     public: bool = True
-    errors: dict[str, str] = field(default_factory=dict[str, str])
     screen_id: int | None = None
     rotator_id: int | None = None
+    errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
 @dataclass

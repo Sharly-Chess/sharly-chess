@@ -342,7 +342,6 @@ class PairingTestCase(TestCase):
         }
         with EventDatabase(EVENT_ID, True) as database:
             database.update_stored_player(player.stored_player)
-            database.commit()
 
         tournament = self._reload_tournament()
         players_by_pairing_number = tournament.players_by_pairing_number
@@ -361,7 +360,6 @@ class PairingTestCase(TestCase):
         }
         with EventDatabase(EVENT_ID, True) as database:
             database.update_stored_player(player.stored_player)
-            database.commit()
 
         tournament = self._reload_tournament()
         players_by_pairing_number = tournament.players_by_pairing_number
@@ -373,7 +371,6 @@ class PairingTestCase(TestCase):
 
         with EventDatabase(EVENT_ID, True) as database:
             database.delete_stored_player(player.id)
-            database.commit()
 
         tournament = self._reload_tournament()
         expected_player_name_by_pairing_number = {
@@ -419,7 +416,6 @@ class PairingTestCase(TestCase):
             database.add_stored_tournament_player(
                 StoredTournamentPlayer(tournament.id, player_id)
             )
-            database.commit()
 
         tournament = self._reload_tournament()
         expected_player_name_by_pairing_number = {

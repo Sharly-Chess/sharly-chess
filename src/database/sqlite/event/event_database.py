@@ -1,4 +1,5 @@
 import shutil
+from sqlite3 import OperationalError
 import time
 from collections.abc import Iterator
 from contextlib import suppress
@@ -9,7 +10,13 @@ from typing import Any, TYPE_CHECKING, override, Self, cast
 
 from packaging.version import Version
 
-from common import format_timestamp_date, format_timestamp_time, DEVEL_ENV, EVENTS_DIR
+from common import (
+    format_timestamp_date,
+    format_timestamp_time,
+    DEVEL_ENV,
+    EVENTS_DIR,
+    is_server_engine,
+)
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from database.sqlite.event.event_store import (
@@ -71,8 +78,23 @@ class EventDatabase(MigrationDatabase):
             self.update_event_loader = True
             super().__init__(self.event_database_path(self.uniq_id), write)
 
-    def __exit__(self, exc_type, exc_value, traceback):
-        super().__exit__(exc_type, exc_value, traceback)
+    def __exit__(self, exc_type, exc_value, tb):
+        dirty_tournaments: list[int] = []
+        if self.write and exc_type is None:
+            try:
+                self.execute('SELECT `id` FROM tournament WHERE dirty = 1;')
+                dirty_tournaments = [row['id'] for row in self.fetchall()]
+                self.execute('UPDATE tournament SET dirty = 0 WHERE dirty = 1;')
+            except OperationalError:
+                pass
+        super().__exit__(exc_type, exc_value, tb)
+
+        # We need call the hook on all dirty tournaments after committing the changes above
+        if self.write and exc_type is None and is_server_engine():
+            for tournament_id in dirty_tournaments:
+                plugin_manager.hook.on_tournament_data_updated(
+                    event_uniq_id=self.uniq_id, tournament_id=tournament_id
+                )
 
     @classmethod
     def create_instance(cls, file: Path, write: bool = False) -> Self:
@@ -543,7 +565,7 @@ class EventDatabase(MigrationDatabase):
     def _row_to_stored_timer(cls, row: dict[str, Any]) -> StoredTimer:
         return StoredTimer(
             id=row['id'],
-            uniq_id=row['uniq_id'],
+            name=row['name'],
             colors=cls.set_dict_int_keys(
                 cls.load_json_from_database_field(row['colors'])
             ),
@@ -563,10 +585,7 @@ class EventDatabase(MigrationDatabase):
         raise RuntimeError('Unable to fetch timer to load')
 
     def get_stored_timer_ids(self) -> Iterator[int]:
-        self.execute(
-            'SELECT `id` FROM `timer` ORDER BY `uniq_id`',
-            (),
-        )
+        self.execute('SELECT `id` FROM `timer` ORDER BY `name`')
         for row in self.fetchall():
             yield row['id']
 
@@ -583,21 +602,16 @@ class EventDatabase(MigrationDatabase):
         self,
         stored_timer: StoredTimer,
     ) -> StoredTimer:
-        fields: list[str] = [
-            'uniq_id',
-            'colors',
-            'delays',
-        ]
-        params: list = [
-            stored_timer.uniq_id,
-            self.dump_to_json_database_timer_colors(stored_timer.colors),
-            self.dump_to_json_database_timer_delays(stored_timer.delays),
-        ]
+        fields = {
+            'name': stored_timer.name,
+            'colors': self.dump_to_json_database_timer_colors(stored_timer.colors),
+            'delays': self.dump_to_json_database_timer_delays(stored_timer.delays),
+        }
         if stored_timer.id is None:
             protected_fields = [f'`{f}`' for f in fields]
             self.execute(
                 f'INSERT INTO `timer`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
-                tuple(params),
+                tuple(fields.values()),
             )
             timer_id: int | None = self._last_inserted_id()
             if timer_id is None:
@@ -605,10 +619,9 @@ class EventDatabase(MigrationDatabase):
             fetched_stored_timer = self.get_stored_timer(timer_id)
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
-            params += [stored_timer.id]
             self.execute(
                 f'UPDATE `timer` SET {", ".join(field_sets)} WHERE `id` = ?',
-                tuple(params),
+                tuple(fields.values()) + (stored_timer.id,),
             )
             fetched_stored_timer = self.get_stored_timer(stored_timer.id)
         if fetched_stored_timer is None:
@@ -648,10 +661,8 @@ class EventDatabase(MigrationDatabase):
     def _row_to_stored_tournament(cls, row: dict[str, Any]) -> StoredTournament:
         stored_tournament = StoredTournament(
             id=row['id'],
-            uniq_id=row['uniq_id'],
             name=row['name'],
-            time_control_initial_time=row['time_control_initial_time'],
-            time_control_increment=row['time_control_increment'],
+            time_control_trf25=row['time_control_trf25'],
             time_control_handicap_penalty_step=row[
                 'time_control_handicap_penalty_step'
             ],
@@ -701,7 +712,7 @@ class EventDatabase(MigrationDatabase):
         return None
 
     def load_stored_tournaments(self) -> list[StoredTournament]:
-        self.execute('SELECT * FROM `tournament` ORDER BY `uniq_id`')
+        self.execute('SELECT * FROM `tournament` ORDER BY `name`')
         stored_tournaments: list[StoredTournament] = []
         for row in self.fetchall():
             stored_tournament = self._row_to_stored_tournament(row)
@@ -734,10 +745,8 @@ class EventDatabase(MigrationDatabase):
             self._get_fields_dict(
                 stored_tournament,
                 [
-                    'uniq_id',
                     'name',
-                    'time_control_initial_time',
-                    'time_control_increment',
+                    'time_control_trf25',
                     'time_control_handicap_penalty_step',
                     'time_control_handicap_penalty_value',
                     'time_control_handicap_min_time',
@@ -786,6 +795,7 @@ class EventDatabase(MigrationDatabase):
             fetched_stored_tournament = self.get_stored_tournament(stored_tournament.id)
         if fetched_stored_tournament is None:
             raise RuntimeError('Tournament write failed')
+
         return fetched_stored_tournament
 
     def add_stored_tournament(
@@ -1747,7 +1757,7 @@ class EventDatabase(MigrationDatabase):
     def _row_to_stored_rotator(cls, row: dict[str, Any]) -> StoredRotator:
         return StoredRotator(
             id=row['id'],
-            uniq_id=row['uniq_id'],
+            name=row['name'],
             public=cls.load_bool_from_database_field(row['public']),
             delay=row['delay'],
             message_default=cls.load_bool_from_database_field(row['message_default']),
@@ -1768,7 +1778,7 @@ class EventDatabase(MigrationDatabase):
 
     def load_stored_rotators(self) -> Iterator[StoredRotator]:
         self.execute(
-            'SELECT * FROM `rotator` ORDER BY `uniq_id`',
+            'SELECT * FROM `rotator` ORDER BY `name`',
             (),
         )
         yield from map(self._row_to_stored_rotator, self.fetchall())
@@ -1777,29 +1787,28 @@ class EventDatabase(MigrationDatabase):
         self,
         stored_rotator: StoredRotator,
     ) -> StoredRotator:
-        fields: list[str] = [
-            'uniq_id',
-            'public',
-            'delay',
-            'message_default',
-            'message_text',
-            'screen_ids',
-            'family_ids',
-        ]
-        params: list = [
-            stored_rotator.uniq_id,
-            stored_rotator.public,
-            stored_rotator.delay,
-            stored_rotator.message_default,
-            stored_rotator.message_text,
-            self.dump_to_json_database_field(stored_rotator.screen_ids, []),
-            self.dump_to_json_database_field(stored_rotator.family_ids, []),
-        ]
+        fields: dict[str, Any] = self._get_fields_dict(
+            stored_rotator,
+            [
+                'name',
+                'public',
+                'delay',
+                'message_default',
+                'message_text',
+            ],
+        ) | {
+            'screen_ids': self.dump_to_json_database_field(
+                stored_rotator.screen_ids, []
+            ),
+            'family_ids': self.dump_to_json_database_field(
+                stored_rotator.family_ids, []
+            ),
+        }
         if stored_rotator.id is None:
             protected_fields = [f'`{f}`' for f in fields]
             self.execute(
                 f'INSERT INTO `rotator`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
-                tuple(params),
+                tuple(fields.values()),
             )
             rotator_id: int | None = self._last_inserted_id()
             if rotator_id is None:
@@ -1807,10 +1816,9 @@ class EventDatabase(MigrationDatabase):
             fetched_stored_rotator = self.get_stored_rotator(rotator_id=rotator_id)
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
-            params += [stored_rotator.id]
             self.execute(
                 f'UPDATE `rotator` SET {", ".join(field_sets)} WHERE `id` = ?',
-                tuple(params),
+                tuple(fields.values()) + (stored_rotator.id,),
             )
             fetched_stored_rotator = self.get_stored_rotator(stored_rotator.id)
         if fetched_stored_rotator is None:
@@ -1844,7 +1852,6 @@ class EventDatabase(MigrationDatabase):
     ) -> StoredDisplayController:
         return StoredDisplayController(
             id=row['id'],
-            uniq_id=row['uniq_id'],
             name=row['name'],
             screen_id=row['screen_id'],
             rotator_id=row['rotator_id'],
@@ -1867,7 +1874,7 @@ class EventDatabase(MigrationDatabase):
         self,
     ) -> Iterator[StoredDisplayController]:
         self.execute(
-            'SELECT * FROM `display_controller` ORDER BY `uniq_id`',
+            'SELECT * FROM `display_controller` ORDER BY `name`',
             (),
         )
         yield from map(self._row_to_stored_display_controller, self.fetchall())
@@ -1877,7 +1884,6 @@ class EventDatabase(MigrationDatabase):
         stored_display_controller: StoredDisplayController,
     ) -> StoredDisplayController:
         fields: list[str] = [
-            'uniq_id',
             'name',
             'public',
             'screen_id',
@@ -1885,7 +1891,6 @@ class EventDatabase(MigrationDatabase):
             'last_update',
         ]
         params: list = [
-            stored_display_controller.uniq_id,
             stored_display_controller.name,
             stored_display_controller.public,
             stored_display_controller.screen_id,

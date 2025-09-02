@@ -54,5 +54,4 @@ class PrizeCriterion:
     def update(self):
         with self.get_event_database() as database:
             database.update_stored_prize_criterion(self.stored_prize_criterion)
-            database.commit()
         self.player_filter = self._get_player_filter()

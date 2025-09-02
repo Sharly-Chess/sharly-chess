@@ -52,10 +52,12 @@ class TestSingleScreensFunctionality:
         TestUtils.button_by_text(page, 'Results entry').click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
-        modal.get_by_role('textbox', name='ID (unique):').fill(SCREEN_ID)
-        modal.get_by_role('textbox', name='Name:').fill('Test Screen')
+        name = 'Test Screen'
+        expected_uniq_id = 'test_screen'
+        modal.get_by_role('textbox', name='Name:').fill(name)
         modal.locator('button[type=submit]').click()
-        card = page.locator("div.card:has-text('Test Screen')")
+
+        card = page.locator(f"div.card:has-text('{name}')")
         expect(card).to_be_visible()
 
         button = card.locator('button[hx-get*="delete"]')
@@ -63,9 +65,9 @@ class TestSingleScreensFunctionality:
         TestUtils.button_by_text(modal, 'Delete').click()
 
         expect(
-            page.get_by_text(f'Screen [{SCREEN_ID}] has been deleted.')
+            page.get_by_text(f'Screen [{expected_uniq_id}] has been deleted.')
         ).to_be_visible()
-        expect(page.locator("div.card:has-text('Test Screen')")).not_to_be_attached()
+        expect(page.locator(f"div.card:has-text('{name}')")).not_to_be_attached()
 
     def test_check_in_screen(
         self,
@@ -86,7 +88,8 @@ class TestSingleScreensFunctionality:
 
         # Should not be checked in
         row = rows.filter(has_text='ALYX')
-        expect(row.locator('i.bi-square')).to_be_visible()
+        expect(row.locator('i.bi-square')).not_to_be_visible()
+        expect(row.locator('i.bi-check-square-fill')).not_to_be_visible()
 
         expect(row.locator('td:nth-child(1)')).not_to_have_attribute(
             'hx-get', re.compile(r'.*checkin-modal.*')

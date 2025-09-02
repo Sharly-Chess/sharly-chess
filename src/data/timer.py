@@ -59,16 +59,17 @@ class TimerHour:
         return format_timestamp_time(self.timestamp) if self.timestamp else None
 
     @property
-    def id(self) -> int | None:
-        return self.stored_timer_hour.id if self.stored_timer_hour else None
+    def id(self) -> int:
+        assert self.stored_timer_hour.id is not None
+        return self.stored_timer_hour.id
 
     @property
-    def uniq_id(self) -> str | None:
-        return self.stored_timer_hour.uniq_id if self.stored_timer_hour else None
+    def uniq_id(self) -> str:
+        return self.stored_timer_hour.uniq_id
 
     @property
     def order(self) -> int | None:
-        return self.stored_timer_hour.order if self.stored_timer_hour else None
+        return self.stored_timer_hour.order
 
     @cached_property
     def round(self) -> int:
@@ -167,8 +168,9 @@ class Timer:
         return event
 
     @property
-    def id(self) -> int | None:
-        return self.stored_timer.id if self.stored_timer else None
+    def id(self) -> int:
+        assert self.stored_timer.id is not None
+        return self.stored_timer.id
 
     @cached_property
     def timer_hour_uniq_ids(self) -> list[str]:
@@ -186,8 +188,13 @@ class Timer:
         )
 
     @property
-    def uniq_id(self) -> str | None:
-        return self.stored_timer.uniq_id if self.stored_timer else None
+    def uniq_id(self) -> str:
+        # TODO (Molrn) replace all the uniq_id usages by the name
+        return self.name
+
+    @property
+    def name(self) -> str:
+        return self.stored_timer.name
 
     def _build_timer_hours(self):
         previous_valid_timer_hour: TimerHour | None = None
