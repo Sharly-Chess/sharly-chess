@@ -23,12 +23,8 @@ class TestTimersFunctionality:
         name = 'Test Timer'
         modal.get_by_role('textbox', name='Name:').fill(name)
         modal.locator('button[type=submit]').click()
-        cancel_button = TestUtils.button_by_text(page, 'Cancel')
-        expect(cancel_button).to_be_visible()
-        cancel_button.click()
-        close_button = TestUtils.button_by_text(page, 'Close')
-        expect(close_button).to_be_enabled()
-        close_button.click()
+        TestUtils.button_by_text(page, 'Cancel').click()
+        TestUtils.button_by_text(page, 'Close').click()
 
         card = page.locator(f"div.card:has-text('{name}')")
         expect(card).to_be_visible()
