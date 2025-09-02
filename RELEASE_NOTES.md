@@ -7,6 +7,7 @@ English version below
 - Support de macOS (Apple Silicon Macs seulement, 3.0.0)
 - Amélioration des temps de réponses de l'interface utilisateur (3.0.0)
 - Signature des exécutables Windows (3.0.0)
+- Correction de la récupération des versions précédentes (3.0.1)
 
 ## Évènements
 
@@ -34,6 +35,7 @@ English version below
 ## Écrans
 
 - Ajout du numéro dans le cas des échiquiers fixes (3.0.0)
+- Correction de l'affichage des chronomètres sur les écrans rotatifs et les pilotes d'afficheurs (3.0.1)
 
 ## Classements
 
@@ -57,6 +59,7 @@ English version below
 - Native macOS support (Apple Silicon Macs only, 3.0.0)
 - Improved UI response times (3.0.0)
 - Use signed programs on Windows (3.0.0)
+- Fixed previous versions recovering (3.0.1)
 
 ## Events
 
@@ -84,6 +87,7 @@ English version below
 ## Screens
 
 - Added board IDs in case of fixed boards (3.0.0)
+- Fixed the display of timers on rotators and display controllers (3.0.1)
 
 ## Rankings
 
