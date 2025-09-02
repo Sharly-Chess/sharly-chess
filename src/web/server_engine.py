@@ -16,7 +16,7 @@ from litestar import Litestar
 from litestar.plugins.htmx import HTMXRequest
 from litestar.logging import LoggingConfig
 
-from common import REQUEST_TIMEOUT, LOG_FILE
+from common import REQUEST_TIMEOUT, LOG_FILE, set_is_server_engine
 from common.engine import Engine
 from common.i18n import _, set_locale
 from common.logger import (
@@ -82,6 +82,7 @@ class ServerEngine(Engine):
         if self.error:
             return
 
+        set_is_server_engine(True)
         logger.debug('System information:')
         logger.debug(
             ' - Machine/processor: %s/%s', platform.machine(), platform.processor()
