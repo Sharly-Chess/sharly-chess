@@ -78,12 +78,41 @@ class ServerEngine(Engine):
         self,
         debug: bool = False,
         port: int | None = None,
+        loop: asyncio.AbstractEventLoop | None = None,
+        handle_signals: bool = True,
     ):
         super().__init__()
         self.debug = debug
+        self.handle_signals = handle_signals
+        self.port = port
         if self.error:
             return
 
+        self.loop = self._ensure_loop(loop)
+
+        for data_source in DataSourceManager.objects():
+            data_source.on_app_init()
+
+    def _ensure_loop(
+        self, loop: asyncio.AbstractEventLoop | None
+    ) -> asyncio.AbstractEventLoop:
+        if loop is not None:
+            return loop
+        # Try running loop first (inside an event-loop callback)
+        try:
+            return asyncio.get_running_loop()
+        except RuntimeError:
+            pass
+        # Try a current loop
+        try:
+            return asyncio.get_event_loop()
+        except RuntimeError:
+            # No loop at all in this thread -> create & set one
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            return loop
+
+    async def serve(self):
         set_is_server_engine(True)
         logger.debug('System information:')
         logger.debug(
@@ -99,18 +128,15 @@ class ServerEngine(Engine):
             )
         )
 
-        for data_source in DataSourceManager.objects():
-            data_source.on_app_init()
-
-        if port:
-            if self.__port_in_use(port):
+        if self.port:
+            if self.__port_in_use(self.port):
                 print_interactive_warning(
                     _(
                         'Port [{port}] already in use, can not start Sharly Chess server.'
-                    ).format(port=port)
+                    ).format(port=self.port)
                 )
                 return
-            sharly_chess_config.web_port = port
+            sharly_chess_config.web_port = self.port
         else:
             for port in sharly_chess_config.web_ports:
                 if self.__port_in_use(port):
@@ -198,11 +224,14 @@ class ServerEngine(Engine):
         # Calling `serve` doesn't allow us to intercept signals, so we use `_serve` instead.  The only
         # difference is that `serve` captures signals before calling `_serve` internally.
 
-        for sig in HANDLED_SIGNALS:
-            signal.signal(sig, handle_exit)
+        if self.handle_signals:
+            import threading
 
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(server._serve())
+            if threading.current_thread() is threading.main_thread():
+                for sig in HANDLED_SIGNALS:
+                    signal.signal(sig, handle_exit)
+
+        await server._serve()
 
     @property
     def log_file_path(self) -> Path:

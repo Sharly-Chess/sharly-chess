@@ -30,8 +30,8 @@ from common.i18n import _
 from common.installation_checker import InstallationChecker
 from common.logger import (
     get_logger,
-    input_interactive,
-    print_interactive_input,
+    input_interactive_choices,
+    input_interactive_yn,
     set_logging_config,
 )
 from common.network import NetworkMonitor
@@ -75,33 +75,23 @@ class Engine(ABC):
             # skip all the upgrade stuff on TEST_ENV (recovering tests run the migrations explicitly)
             return
         if more_recent_version and download_url:
-            yes_answer = _('Y *** THE LETTER TO ANSWER YES')
-            no_answer = _('N *** THE LETTER TO ANSWER NO')
-            while True:
-                choice = input_interactive(
-                    _(
-                        'Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}]? '
-                    ).format(
-                        old_version=sharly_chess_config.version,
-                        new_version=more_recent_version,
-                        y_lc=yes_answer.lower(),
-                        n_uc=no_answer.upper(),
+            if input_interactive_yn(
+                _(
+                    'Do you want to upgrade from [{old_version}] to [{new_version}]'
+                ).format(
+                    old_version=sharly_chess_config.version,
+                    new_version=more_recent_version,
+                ),
+                yes_is_default=False,
+            ):
+                self.error = True
+                if not self._install_new_version(more_recent_version, download_url):
+                    logger.error(
+                        'The installation of release [%s] failed.',
+                        more_recent_version,
                     )
-                )
-                if choice == yes_answer:
-                    self.error = True
-                    if not self._install_new_version(more_recent_version, download_url):
-                        logger.error(
-                            'The installation of release [%s] failed.',
-                            more_recent_version,
-                        )
-                    return
-                if choice in [
-                    '',
-                    no_answer,
-                ]:
-                    break
-                raise ValueError(f'choice=[{choice}]')
+                return
+
         if not EventLoader().event_uniq_ids:
             logger.info(
                 'No event database found, looking for old event databases in the current release...'
@@ -178,48 +168,37 @@ class Engine(ABC):
                 previous_versions.sort()
                 version_num: int | None = None
                 if len(previous_databases) == 1:
-                    yes_answer = _('Y *** THE LETTER TO ANSWER YES')
-                    no_answer = _('N *** THE LETTER TO ANSWER NO')
-                    while True:
-                        choice = input_interactive(
-                            _(
-                                'Do you want to recover the data of release [{version}] [{y_uc}/{n_lc}]? '
-                            ).format(
-                                version=previous_versions[0][0],
-                                y_uc=yes_answer.upper(),
-                                n_lc=no_answer.lower(),
-                            )
-                        )
-                        if choice in [
-                            '',
-                            yes_answer,
-                        ]:
-                            version_num = 1
-                            break
-                        if choice == no_answer:
-                            break
-                        raise ValueError(f'choice=[{choice}]')
+                    if input_interactive_yn(
+                        _(
+                            'Do you want to recover the data of release [{version}]'
+                        ).format(version=previous_versions[0][0]),
+                        yes_is_default=True,
+                    ):
+                        version_num = 1
                 else:
-                    print_interactive_input(_('Please choose the release to recover: '))
                     version_range = range(1, len(previous_versions) + 1)
-                    for num in version_range:
-                        version, version_dir = previous_versions[num - 1]
-                        print_interactive_input(
-                            f'  - [{num}] {version} ({", ".join([file.stem for file in previous_databases[(version, version_dir)]])})'
+                    options = {
+                        str(
+                            num
+                        ): f'{version} ({", ".join(file.stem for file in previous_databases[(version, version_dir)])})'
+                        for num, (version, version_dir) in (
+                            (n, previous_versions[n - 1]) for n in version_range
                         )
+                    }
                     quit_answer: str = _('Q *** THE LETTER TO ANSWER QUIT')
-                    print_interactive_input(
-                        _('  - [{q_uc}] Do not recover').format(q_uc=quit_answer)
-                    )
+                    options[quit_answer] = _('Do not recover')
+
                     while True:
-                        choice = input_interactive(
-                            _(
-                                'Please enter the number of the release to recover [{default_choice}: {default_version}]: '
-                            ).format(
+                        choice = input_interactive_choices(
+                            _('Please choose the release to recover: ').format(
                                 default_choice=len(previous_versions),
                                 default_version=previous_versions[-1][0],
-                            )
+                            ),
+                            options,
+                            default=str(len(previous_versions)),
                         )
+                        if choice is None:
+                            continue
                         if choice == quit_answer:
                             break
                         if choice == '':
@@ -240,26 +219,14 @@ class Engine(ABC):
                         previous_databases[(recovered_version, version_dir)],
                     )
             if DEVEL_ENV and not recovered_version:
-                yes_answer = _('Y *** THE LETTER TO ANSWER YES')
-                no_answer = _('N *** THE LETTER TO ANSWER NO')
-                while True:
-                    choice = input_interactive(
-                        _(
-                            'Do you want to install example event databases [{y_uc}/{n_lc}]? '
-                        ).format(y_uc=yes_answer.upper(), n_lc=no_answer.lower())
-                    )
-                    if choice in [
-                        '',
-                        yes_answer,
-                    ]:
-                        for file in SharlyChessConfig.example_events_path.glob(
-                            f'*.{SharlyChessConfig.event_database_ext}'
-                        ):
-                            shutil.copy(file, EVENTS_DIR / file.name)
-                        break
-                    if choice == no_answer:
-                        break
-                    raise ValueError(f'choice=[{choice}]')
+                if input_interactive_yn(
+                    _('Do you want to install example event databases'),
+                    yes_is_default=True,
+                ):
+                    for file in SharlyChessConfig.example_events_path.glob(
+                        f'*.{SharlyChessConfig.event_database_ext}'
+                    ):
+                        shutil.copy(file, EVENTS_DIR / file.name)
 
     @property
     @abstractmethod
@@ -359,31 +326,21 @@ class Engine(ABC):
             )
             for custom_file in custom_files:
                 logger.info('- %s', str(custom_file).replace(str(custom_dir), ''))
-            yes_answer = _('Y *** THE LETTER TO ANSWER YES')
-            no_answer = _('N *** THE LETTER TO ANSWER NO')
-            while True:
-                choice = input_interactive(
-                    _(
-                        'Do you want to send these custom files to the Sharly Chess developers to enhance futures releases [{y_uc}/{n_lc}]? '
-                    ).format(y_uc=yes_answer, n_lc=no_answer.lower())
+            if input_interactive_yn(
+                _(
+                    'Do you want to send these custom files to the Sharly Chess developers to enhance futures releases'
+                ),
+                yes_is_default=True,
+            ):
+                cls._send_custom_files(
+                    {
+                        str(custom_file)
+                        .replace(str(custom_dir), '')
+                        .replace('\\', '/')
+                        .lstrip('/'): custom_file
+                        for custom_file in custom_files
+                    }
                 )
-                if choice in [
-                    '',
-                    yes_answer,
-                ]:
-                    cls._send_custom_files(
-                        {
-                            str(custom_file)
-                            .replace(str(custom_dir), '')
-                            .replace('\\', '/')
-                            .lstrip('/'): custom_file
-                            for custom_file in custom_files
-                        }
-                    )
-                    break
-                if choice == no_answer:
-                    break
-                raise ValueError(f'choice=[{choice}]')
 
     @classmethod
     def _filebin_url(cls, path: str) -> str:

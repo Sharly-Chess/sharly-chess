@@ -1,3 +1,8 @@
+import asyncio
+from contextlib import suppress
+
+gui_success = False
+
 try:
     import argparse
     import traceback
@@ -23,6 +28,7 @@ try:
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--server', action='store_true')
+    parser.add_argument('--gui', action='store_true', help='Launch in GUI mode')
     parser.add_argument(
         '-p',
         '--port',
@@ -52,19 +58,44 @@ try:
 
     if args.server:
         print_interactive_warning(_('Argument --server is deprecated, ignored.'))
-    try:
-        plugin_engine_argument: 'PluginEngineArgument | None' = None
-        for engine_argument in plugin_engine_arguments:
-            if getattr(args, engine_argument.name, False):
-                plugin_engine_argument = engine_argument
-                engine_argument.init_engine()
-                break
-        if plugin_engine_argument is None:
-            se: ServerEngine = ServerEngine(
-                debug=(DEVEL_ENV and args.debug), port=args.port or None
-            )
-    except KeyboardInterrupt:
-        pass
+
+    # Check if GUI mode is requested
+    if args.gui:
+        # Use the Toga GUI exclusively; do not fall back to Tkinter
+        try:
+            from gui.server_gui_toga import SharlyChessServerToga
+
+            app = SharlyChessServerToga()
+            app.main_loop()
+            gui_success = True
+        except Exception as e:
+            print(f'GUI initialization failed: {e}')
+            print('Falling back to console mode...')
+            args.gui = False
+
+        if gui_success:
+            # GUI ran successfully, exit
+            pass
+        else:
+            # GUI failed, continue to console mode
+            args.gui = False
+
+    if not args.gui:
+        # Original console mode
+        try:
+            plugin_engine_argument: 'PluginEngineArgument | None' = None
+            for engine_argument in plugin_engine_arguments:
+                if getattr(args, engine_argument.name, False):
+                    plugin_engine_argument = engine_argument
+                    engine_argument.init_engine()
+                    break
+            if plugin_engine_argument is None:
+                se: ServerEngine = ServerEngine(
+                    debug=(DEVEL_ENV and args.debug), port=args.port or None
+                )
+                asyncio.run(se.serve())
+        except KeyboardInterrupt:
+            pass
 except Exception:
     message = traceback.format_exc()
     try:
@@ -75,15 +106,14 @@ except Exception:
     except Exception:
         print(message)
     print('An error occurred.')
-from contextlib import suppress
 
 enter_to_end = True
 try:
     from common import TEST_ENV
 
-    enter_to_end = not TEST_ENV
+    enter_to_end = not TEST_ENV and not gui_success
 except Exception:
-    pass
+    enter_to_end = not gui_success
 
 if enter_to_end:
     with suppress(UnicodeDecodeError):

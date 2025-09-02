@@ -385,8 +385,14 @@ class OnlineDataSource(DataSource, ABC):
         If it fails, log the error."""
 
     def on_app_init(self):
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.reload_connection_status())
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            # No running loop yet — safe fallback if someone calls too early
+            loop = asyncio.get_event_loop()
+
+        # Schedule background task
+        loop.create_task(self.reload_connection_status())
 
     @classmethod
     async def reload_connection_status(cls):
