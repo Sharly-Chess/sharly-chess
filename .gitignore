@@ -83,5 +83,5 @@ __pycache__/
 /src/common/i18n/.auto-update
 /tests/screenshots/*.png
 /*.diff
-/locale/*/LC_MESSAGES/messages.updated
+/scripts/roles/*.md
 /scripts/roles/*.md
