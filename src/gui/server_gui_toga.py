@@ -234,8 +234,8 @@ class SharlyChessServerToga(toga.App):
             version = str(SHARLY_CHESS_VERSION)
 
         super().__init__(
-            formal_name='Sharly Chess Server',
-            app_id='com.sharlychess.server',
+            formal_name='Sharly Chess',
+            app_id='com.sharlychess.app',
             icon=BASE_DIR / 'src' / 'gui' / 'icon.png',
             home_page='https://sharly-chess.com',
             version=version,
