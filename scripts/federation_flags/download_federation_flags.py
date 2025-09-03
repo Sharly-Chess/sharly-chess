@@ -14,7 +14,7 @@ def download_federation_url(federation_id: str, flag_file: Path, flag_url) -> bo
         allow_redirects=True,
         timeout=5,
         headers={
-            'User-Agent': f'Sharly Chess/{SharlyChessConfig.version} ({SharlyChessConfig.url}; {SharlyChessConfig.mail})',
+            'User-Agent': f'Sharly Chess/{SharlyChessConfig.version} ({SharlyChessConfig.web_url}; {SharlyChessConfig.mail})',
         },
     )
     try:

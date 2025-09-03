@@ -10,6 +10,7 @@ from database.sqlite.event.event_store import (
     StoredAccess,
 )
 from data.auth.roles import Role, AdministrationRole
+from utils.network import LOCALHOST_IP, LOCALHOST_NAME
 
 
 @dataclass
@@ -97,8 +98,6 @@ class AuthEntity[T: StoredAccess](ABC):
 class Device(AuthEntity[StoredDevice]):
     """A data wrapper around a stored device, made of an IP specification."""
 
-    LOCALHOST_IP: str = '127.0.0.1'
-    LOCALHOST_NAME: str = 'localhost'
     LOCALHOST_ID: int = 1
     ANY_DEVICE_ID: int = 2
     UNKNOWN_IP: str = '0.0.0.0'
@@ -119,8 +118,8 @@ class Device(AuthEntity[StoredDevice]):
     def host_is_localhost(cls, host: str) -> bool:
         """Returns True the host is the server itself."""
         return host in [
-            cls.LOCALHOST_IP,
-            cls.LOCALHOST_NAME,
+            LOCALHOST_IP,
+            LOCALHOST_NAME,
         ]
 
     @property
@@ -138,7 +137,7 @@ class Device(AuthEntity[StoredDevice]):
         """Returns the host address of the device."""
         if self.localhost:
             return '{ip} ({name})'.format(
-                ip=self.LOCALHOST_IP,
+                ip=LOCALHOST_IP,
                 name=_('server'),
             )
         if self.unknown:

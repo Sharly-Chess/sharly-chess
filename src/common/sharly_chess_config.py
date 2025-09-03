@@ -1,8 +1,8 @@
 import locale
 import logging
+import netifaces
 import os
 import re
-import socket
 import subprocess
 import sys
 from pathlib import Path
@@ -33,6 +33,7 @@ from common.singleton import Singleton
 from utils.enum import Result
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredConfig
+from utils.network import IP_V4_ADDR_REGEX, LOCALHOST_IP
 
 if TYPE_CHECKING:
     from data.player import Federation
@@ -265,7 +266,7 @@ class SharlyChessConfig(metaclass=Singleton):
     default_pairing_variation_id = 'SWISS_STANDARD'
 
     """ The URL of the project. """
-    url: str = 'https://sharly-chess.com'
+    web_url: str = 'https://sharly-chess.com'
 
     """ The contact email. """
     mail: str = 'contact@sharly-chess.com'
@@ -343,45 +344,105 @@ class SharlyChessConfig(metaclass=Singleton):
     select2_bootstrap_theme_version: Version = Version('1.3.0')
 
     @overload
-    def _url(self, ip: str) -> str: ...
+    def app_url(self, ip: str) -> str: ...
 
     @overload
-    def _url(self, ip: None) -> None: ...
+    def app_url(self, ip: None) -> None: ...
 
-    def _url(self, ip: str | None) -> str | None:
+    def app_url(self, ip: str | None) -> str | None:
         """Returns the URL of the application for the given IP."""
         if ip is None:
             return None
         return f'http://{ip}{f":{self.web_port}" if self.web_port != 80 else ""}'
 
     @property
-    def lan_ip(self) -> str | None:
+    def lan_ips(self) -> list[str]:
         """Returns the IP of the server on the LAN/WAN."""
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.settimeout(0)
-        try:
-            s.connect(('10.254.254.254', 1))  # doesn't even have to be reachable
-            return s.getsockname()[0]
-        except Exception:  # pylint: disable=broad-exception-caught
-            pass
-        finally:
-            s.close()
-        return None
+        lan_ips: list[str] = []
+        interfaces = netifaces.interfaces()
+        debug: bool = False
+        if debug:
+            logger.debug('interfaces=%s', interfaces)
+        for interface_id in interfaces:
+            interface_data: dict[int, list[dict[str, str]]] = netifaces.ifaddresses(
+                interface_id
+            )
+            if debug:
+                logger.debug('interfaces[%s]=%s', interface_id, interface_data)
+            for network_type in interface_data:
+                network_type_data: list[dict[str, str]] = interface_data[network_type]
+                if debug:
+                    logger.debug(
+                        'addresses[%s][type=%d]=%s',
+                        interface_id,
+                        network_type,
+                        network_type_data,
+                    )
+                for address_no, address_data in enumerate(network_type_data):
+                    if debug:
+                        logger.debug(
+                            'addresses[%s][type=%d][%d]=%s',
+                            interface_id,
+                            network_type,
+                            address_no,
+                            address_data,
+                        )
+                    if 'addr' in address_data:
+                        addr: str = address_data['addr']
+                        if debug:
+                            logger.debug(
+                                'addresses[%s][type=%d][%d][addr]=%s',
+                                interface_id,
+                                network_type,
+                                address_no,
+                                addr,
+                            )
+                        if matches := re.match(IP_V4_ADDR_REGEX, addr):
+                            ip: str = f'{int(matches.group(1))}.{int(matches.group(2))}.{int(matches.group(3))}.{int(matches.group(4))}'
+                            if ip != LOCALHOST_IP:
+                                if debug:
+                                    logger.debug('Found valid IP address [%s]', ip)
+                                lan_ips.append(ip)
+                            else:
+                                if debug:
+                                    logger.debug(
+                                        'Localhost IP address [%s] skipped', ip
+                                    )
+                        else:
+                            if debug:
+                                logger.debug('[%s] is not a valid IP v4 address', addr)
+                    else:
+                        if debug:
+                            logger.debug(
+                                'Field [addr] not found in addresses[%s][AF_INET=%d]',
+                                interface_id,
+                                netifaces.AF_INET,
+                            )
+            else:
+                if debug:
+                    logger.debug(
+                        'AF_INET=%d not found in addresses[%s]',
+                        netifaces.AF_INET,
+                        interface_id,
+                    )
+        if debug:
+            logger.debug(f'{lan_ips=}')
+        return lan_ips
 
     @property
     def local_ip(self) -> str:
         """Returns the local IP (localhost) of the server (with arbiter access)."""
-        return '127.0.0.1'
+        return LOCALHOST_IP
 
     @property
-    def lan_url(self) -> str | None:
-        """The URL of the application on the LAN/WAN."""
-        return self._url(self.lan_ip)
+    def lan_urls(self) -> list[str]:
+        """The URLs of the application on the LAN/WAN."""
+        return [self.app_url(lan_ip) for lan_ip in self.lan_ips]
 
     @property
     def local_url(self) -> str:
         """The local URL of the application (with arbiter access)."""
-        return self._url(self.local_ip)
+        return self.app_url(self.local_ip)
 
     # The default number of illegal moves to record.
     default_record_illegal_moves_number: int = 0

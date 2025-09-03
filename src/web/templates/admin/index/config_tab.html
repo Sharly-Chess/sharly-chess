@@ -54,7 +54,20 @@
             </tr>
             <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">{{ _('Access from the local network (LAN/WAN)') }}</th>
-                <td>{% if sharly_chess_config.lan_url %}<a href="{{ sharly_chess_config.lan_url }}" target="_blank">{{ sharly_chess_config.lan_url }}</a>{% else %}<span class="fst-italic">-</span>{% endif %}</td>
+                <td>
+                    {% if sharly_chess_config.lan_urls %}
+                        {% for lan_url in sharly_chess_config.lan_urls %}
+                            {% if not loop.first %}
+                                <br/>
+                            {% endif %}
+                            <a href="{{ lan_url }}" target="_blank">{{ lan_url }}</a>
+                        {% endfor %}
+                    {% else %}
+                        <span class="fst-italic">
+                            -
+                        </span>
+                    {% endif %}
+                </td>
             </tr>
             <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">{{ _('Default language') }}</th>
