@@ -36,6 +36,8 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
 )
 from web.controllers.base_controller import WebContext
+from web.controllers.user.event_user_controller import EventUserController
+from web.guards import Guard
 from web.messages import Message
 from web.session import SessionHandler
 
@@ -170,7 +172,9 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
 
         self.admin_player: Player | None = None
         if player_id is not None:
-            self.admin_player = next((p for p in unpaired if p.id == player_id), None)
+            self.admin_player = next(
+                (p for p in self.admin_tournament.players if p.id == player_id), None
+            )
 
         self.safety_mode = SafetyMode.SAFE
         if tournament_id:
@@ -293,6 +297,10 @@ class PairingsAdminController(BaseEventAdminController):
             web_context.template_context | (template_context or {}),
         )
 
+    pairings_tab_guards = EventUserController.event_guards + [
+        Guard.client_can_view_pairings_tab,
+    ]
+
     @get(
         path=[
             '/admin/event/{event_uniq_id:str}/pairings',
@@ -300,6 +308,7 @@ class PairingsAdminController(BaseEventAdminController):
             '/admin/event/{event_uniq_id:str}/pairings/{tournament_id:int}/{round:int}',
         ],
         name='admin-event-pairings-tab',
+        guards=pairings_tab_guards,
     )
     async def htmx_admin_pairings_tab(
         self,
@@ -1195,6 +1204,74 @@ class PairingsAdminController(BaseEventAdminController):
         web_context.get_admin_tournament().set_current_round(round_=current_round)
 
         return self._admin_event_pairings_render(web_context)
+
+    illegal_moves_guards = [
+        Guard.tournament_is_playing,
+        Guard.tournament_record_illegal_moves_is_possible,
+        Guard.client_can_set_illegal_moves,
+    ]
+
+    @put(
+        path='/admin/tournament/add-illegal-move/{event_uniq_id:str}/{tournament_id:int}/{round:int}/{player_id:int}',
+        name='admin-tournament-add-illegal-move',
+        guards=illegal_moves_guards,
+        status_code=HTTP_200_OK,
+    )
+    async def htmx_admin_tournament_add_illegal_move(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        round: int,
+        player_id: int,
+    ) -> Template | ClientRedirect:
+        web_context: PairingsAdminWebContext = PairingsAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            player_id=player_id,
+            round_=round,
+        )
+        tournament = web_context.get_admin_tournament()
+        player = web_context.get_admin_player()
+        tournament.store_illegal_move(player)
+        return self._admin_event_pairings_render(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=round,
+        )
+
+    @delete(
+        path='/admin/tournament/delete-illegal-move/{event_uniq_id:str}/{tournament_id:int}/{round:int}/{player_id:int}',
+        name='admin-tournament-delete-illegal-move',
+        guards=illegal_moves_guards,
+        status_code=HTTP_200_OK,
+    )
+    async def htmx_admin_tournament_delete_illegal_move(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        round: int,
+        player_id: int,
+    ) -> Template | ClientRedirect:
+        web_context: PairingsAdminWebContext = PairingsAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            player_id=player_id,
+            round_=round,
+        )
+        tournament = web_context.get_admin_tournament()
+        player = web_context.get_admin_player()
+        tournament.delete_illegal_move(player)
+        return self._admin_event_pairings_render(
+            request,
+            event_uniq_id=event_uniq_id,
+            tournament_id=tournament_id,
+            round_=round,
+        )
 
     @get(
         path='/admin/pairings/needs-refresh-message/{event_uniq_id:str}/{tournament_id:int}/{round:int}/{reason:str}',

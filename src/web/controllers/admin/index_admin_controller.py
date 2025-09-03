@@ -158,53 +158,97 @@ class IndexAdminController(BaseAdminController):
 
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         sorted_archives = ArchiveLoader.get_sorted_archives()
-        passed_events = EventLoader.get_events_metadata('passed')
-        current_events = EventLoader.get_events_metadata('current')
-        coming_events = EventLoader.get_events_metadata('coming')
+        public_only: bool = not web_context.client.can_view_private_events
+        passed_events = EventLoader.get_events_metadata(
+            'passed', public_only=public_only
+        )
+        current_events = EventLoader.get_events_metadata(
+            'current', public_only=public_only
+        )
+        coming_events = EventLoader.get_events_metadata(
+            'coming', public_only=public_only
+        )
         nav_tabs: dict[str, dict[str, Any]] = {
-            'current_events': {
-                'section_title': _('Events'),
-                'title': _('Current ({num})').format(num=len(current_events) or '-'),
-                'template': 'index/events_tab.html',
-                'events': current_events,
-                'disabled': not current_events,
-                'empty_str': _('No current events.'),
-                'icon_class': 'bi-calendar indented',
-            },
-            'coming_events': {
-                'title': _('Upcoming ({num})').format(num=len(coming_events) or '-'),
-                'template': 'index/events_tab.html',
-                'events': coming_events,
-                'disabled': not coming_events,
-                'empty_str': _('No upcoming events.'),
-                'icon_class': 'bi-calendar-check indented',
-            },
-            'passed_events': {
-                'title': _('Passed ({num})').format(num=len(passed_events) or '-'),
-                'template': 'index/events_tab.html',
-                'events': passed_events,
-                'disabled': not passed_events,
-                'empty_str': _('No passed events.'),
-                'icon_class': 'bi-calendar-minus indented',
-            },
-            'archives': {
-                'title': _('Archived ({num})').format(num=len(sorted_archives) or '-'),
-                'template': 'index/archives_tab.html',
-                'archives': sorted_archives,
-                'disabled': not sorted_archives,
-                'empty_str': _('No archived events.'),
-                'icon_class': 'bi-archive indented',
-            },
-            'config': {
-                'divider': True,
-                'title': _('Settings'),
-                'template': 'index/config_tab.html',
-                'icon_class': 'bi-gear',
+            'home': {
+                'title': _('Home'),
+                'template': 'index/home_tab.html',
+                'icon_class': 'bi-qr-code',
                 'disabled': False,
+                'experimental_features_warning': True,
             },
         }
-        if sharly_chess_config.force_edit:
-            web_context.admin_tab = 'config'
+        if web_context.client.can_view_passed_coming_events:
+            nav_tabs |= {
+                'current_events': {
+                    'section_title': _('Events'),
+                    'title': _('Current ({num})').format(
+                        num=len(current_events) or '-'
+                    ),
+                    'template': 'index/events_tab.html',
+                    'events': current_events,
+                    'disabled': not current_events,
+                    'empty_str': _('No current events.'),
+                    'icon_class': 'bi-calendar indented',
+                    'page_title': _('Current events'),
+                    'divider': True,
+                },
+                'coming_events': {
+                    'title': _('Upcoming ({num})').format(
+                        num=len(coming_events) or '-'
+                    ),
+                    'template': 'index/events_tab.html',
+                    'events': coming_events,
+                    'disabled': not coming_events,
+                    'empty_str': _('No upcoming events.'),
+                    'icon_class': 'bi-calendar-check indented',
+                    'page_title': _('Upcoming events'),
+                },
+                'passed_events': {
+                    'title': _('Passed ({num})').format(num=len(passed_events) or '-'),
+                    'template': 'index/events_tab.html',
+                    'events': passed_events,
+                    'disabled': not passed_events,
+                    'empty_str': _('No passed events.'),
+                    'icon_class': 'bi-calendar-minus indented',
+                    'page_title': _('Passed events'),
+                },
+                'archives': {
+                    'title': _('Archived ({num})').format(
+                        num=len(sorted_archives) or '-'
+                    ),
+                    'template': 'index/archives_tab.html',
+                    'archives': sorted_archives,
+                    'disabled': not sorted_archives,
+                    'empty_str': _('No archived events.'),
+                    'icon_class': 'bi-archive indented',
+                    'page_title': _('Archived events'),
+                },
+            }
+        else:
+            nav_tabs |= {
+                'current_events': {
+                    'title': _('Events ({num})').format(num=len(current_events) or '-'),
+                    'template': 'index/events_tab.html',
+                    'events': current_events,
+                    'disabled': not current_events,
+                    'empty_str': _('No events.'),
+                    'icon_class': 'bi-calendar indented',
+                    'page_title': _('Events'),
+                    'divider': True,
+                },
+            }
+        if web_context.client.can_view_application_settings:
+            nav_tabs |= {
+                'config': {
+                    'divider': True,
+                    'title': _('Settings'),
+                    'template': 'index/config_tab.html',
+                    'icon_class': 'bi-gear',
+                    'disabled': False,
+                },
+            }
+            if sharly_chess_config.force_edit:
+                web_context.admin_tab = 'config'
         if not modal and (
             not web_context.admin_tab or nav_tabs[web_context.admin_tab]['disabled']
         ):
@@ -461,7 +505,7 @@ class IndexAdminController(BaseAdminController):
         if web_context.error:
             return web_context.error
         stored_event: StoredEvent = self._admin_validate_event_update_data(
-            'create', None, data
+            'create', web_context, None, data
         )
         if stored_event.errors:
             return self._admin_render(
@@ -546,7 +590,7 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
         archive_name: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         archive = ArchiveLoader.get_archive(archive_name)
         if not archive:
             return self.redirect_error(request, f'Unknown archive [{archive_name}]')
@@ -738,7 +782,7 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
         database_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         try:
             database = LocalSourceDatabaseManager.get_object(database_id)
             database.delete()
@@ -757,7 +801,7 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
         data_source_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         try:
             data_source = OnlineDataSourceManager.get_object(data_source_id)
             await data_source.reload_connection_status()

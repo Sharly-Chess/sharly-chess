@@ -15,6 +15,7 @@ from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from web.controllers.base_controller import BaseController, WebContext
 from web.messages import Message
+from web.urls import admin_url
 
 
 class IndexController(BaseController):
@@ -37,18 +38,8 @@ class IndexController(BaseController):
         locale: str | None,
     ) -> Template | Redirect:
         self.set_locale(request, locale)
-        web_context: WebContext = WebContext(request)
 
-        if not web_context.admin_auth:
-            return Redirect(request.app.route_reverse('user'))
-
-        return HTMXTemplate(
-            template_name='index.html',
-            context=web_context.template_context
-            | {
-                'messages': Message.messages(request),
-            },
-        )
+        return Redirect(path=admin_url(request))
 
     @get(
         path='/wait',

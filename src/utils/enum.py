@@ -2,6 +2,7 @@
 
 from datetime import date, datetime, timedelta
 from enum import Enum, StrEnum, IntEnum
+from typing import Self
 
 from common.i18n import _
 
@@ -921,6 +922,10 @@ class ScreenType(StrEnum):
     RANKING = 'ranking'
     IMAGE = 'image'
 
+    @classmethod
+    def screen_types(cls) -> tuple[Self, ...]:
+        return tuple(cls(st) for st in cls)
+
     @property
     def name(self) -> str:
         match self:
@@ -960,6 +965,17 @@ class ScreenType(StrEnum):
             case _:
                 raise ValueError(f'Invalid screen type: {self}')
 
+    @property
+    def families_allowed(self) -> bool:
+        """Returns True if the screen type can be used for families, False otherwise."""
+        match self:
+            case self.BOARDS | self.INPUT | self.PLAYERS | self.RANKING:
+                return True
+            case self.RESULTS | self.IMAGE:
+                return False
+            case _:
+                raise ValueError(f'Invalid screen type: {self}')
+
 
 class NeedsUpload(Enum):
     YES = 0
@@ -984,5 +1000,5 @@ class TrfType(StrEnum):
 class FormAction(StrEnum):
     UPDATE = 'update'
     CREATE = 'create'
-    DUPLICATE = 'duplicate'
+    CLONE = 'clone'
     DELETE = 'delete'

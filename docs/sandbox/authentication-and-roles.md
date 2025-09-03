@@ -1,105 +1,194 @@
-# _Sharly Chess_ - Authentication and roles
-
-This page is a proposal to add roles in the application, not implemented yet.
-
-## Roles in version 2.4
-
-In version 2.4, _Sharly Chess_ distinguishes two roles:
-- **the arbiter role**, which is obtained by connecting from the server `127.0.0.1`), which can access:
-  - the administration pages, or arbiter pages;
-  - the public pages, with some additional privileges.
-- **the standard role**, which allows:
-  - to view public screens;
-  - to score and enter results (with or without password protection).
-
-## Development Proposal
-
-### Roles
-
-- **Administrator** (of the application)
-- **Organizer** (of an event)
-- **Chief Arbiter** (of an event or tournament)
-- **Arbiter** (of an event or tournament)
-- **Check-in officer** (of an event)
-- **Result officer** (of an event)
-- **Spectator** (of an event)
+# _Sharly Chess_ - Authorizations
 
 > [!NOTE]
-> Amaras 20250501
->
-> We should adapt the FIDE hierarchical system:
-> - One Chief Arbiter with admin-like rights over the event,
-> - One or several Deputy Chief Arbiter(s) with lower rights over basically the whole event
-> - Sector Arbiter(s) with rights over their part of their sector
-> - Match Arbiter(s) who can set and (maybe) correct results for the event (your results officer)
-> - Pairings Officer(s) with full pairings management rights over the part of the event they are assigned to (part of their duty is check-in, of course)
-> In Continental and World events, the CA, DCA and SA roles are mostly management positions (although they can intervene on games if Match Arbiters can't do it, of course), so they wouldn't play with the software once the rights are set up. Match Arbiters are focused on the games, so can enter results, but that's about it (although they should be able to correct wrong results). Pairings Officer are the ones doing the bulk of the work on the pairings software (especially in case of team tournaments)
+> This document is intended to move to the user documentation in version 3.1.
 
-### Actions autorisées par rôle
+## Execution modes
 
-|                                  |  Administrator  | Organizer | Chief arbiter  |    Arbiter     | Check-in officer | Result officer | Spectator |
-|----------------------------------|:---------------:|:---------:|:--------------:|:--------------:|:----------------:|:--------------:|:---------:|
-| **Scope**                        | **Application** | **Event** | **Tournament** | **Tournament** |    **Event**     |   **Event**    | **Event** |
-| **APPLICATION MANAGEMENT**       |                 |           |                |                |                  |                |           |
-| Update application settings      |      :ok:       |    :x:    |      :x:       |      :x:       |       :x:        |      :x:       |    :x:    |
-| Manage dministrators             |      :ok:       |    :x:    |      :x:       |      :x:       |       :x:        |      :x:       |    :x:    |
-| **EVENT MANAGEMENT**             |                 |           |                |                |                  |                |           |
-| Add an Event                     |      :ok:       |    :x:    |      :x:       |      :x:       |       :x:        |      :x:       |    :x:    |
-| Delete an event                  |      :ok:       |    :x:    |      :x:       |      :x:       |       :x:        |      :x:       |    :x:    |
-| Rename an event                  |      :ok:       |    :x:    |      :x:       |      :x:       |       :x:        |      :x:       |    :x:    |
-| Edit an event                    |      :ok:       |   :ok:    |      :x:       |      :x:       |       :x:        |      :x:       |    :x:    | :x: |
-| **TOURNAMENT MANAGEMENT**        |                 |           |                |                |                  |                |           |
-| Add tournaments                  |       :x:       |    :x:    |      :ok:      |      :x:       |       :x:        |      :x:       |    :x:    |
-| Delete a tournament              |       :x:       |    :x:    |      :ok:      |      :x:       |       :x:        |      :x:       |    :x:    |
-| Edit tournaments                 |       :x:       |    :x:    |      :ok:      |      :x:       |       :x:        |      :x:       |    :x:    |
-| Open/close check-in              |       :x:       |    :x:    |      :ok:      |      :x:       |       :x:        |      :x:       |    :x:    |
-| Use the pairing engine           |       :x:       |    :x:    |      :ok:      |      :x:       |       :x:        |      :x:       |    :x:    |
-| Manually pair players            |       :x:       |    :x:    |      :ok:      |      :x:       |       :x:        |      :x:       |    :x:    |
-| Publish pairings                 |       :x:       |    :x:    |      :ok:      |      :x:       |       :x:        |      :x:       |    :x:    |
-| View pairings before publication |       :x:       |    :x:    |      :ok:      |      :ok:      |       :x:        |      :x:       |    :x:    |
-| Calculate rankings               |       :x:       |    :x:    |      :ok:      |      :x:       |       :x:        |      :x:       |    :x:    |
-| Publish rankings                 |       :x:       |    :x:    |      :ok:      |      :x:       |       :x:        |      :x:       |    :x:    |
-| View rankings before publication |       :x:       |    :x:    |      :ok:      |      :ok:      |       :x:        |      :x:       |    :x:    |
-| Publish rankings online          |       :x:       |    :x:    |      :ok:      |      :x:       |       :x:        |      :x:       |    :x:    |
-| **DISPLAY MANAGEMENT**           |                 |           |                |                |                  |                |           |
-| Manage screens/families/rotators |       :x:       |   :ok:    |      :ok:      |      :x:       |       :x:        |      :x:       |    :x:    |
-| Manage timers                    |       :x:       |   :ok:    |      :ok:      |      :x:       |       :x:        |      :x:       |
-| **PLAYERS MANAGEMENT**           |                 |           |                |                |                  |                |           |
-| Add players                      |       :x:       |    :x:    |      :ok:      |      :x:       |       :x:        |      :x:       |    :x:    |
-| Delete players                   |       :x:       |    :x:    |      :ok:      |      :x:       |       :x:        |      :x:       |    :x:    |
-| Edit players                     |       :x:       |    :x:    |      :ok:      |      :x:       |       :x:        |      :x:       |    :x:    |
-| Check-in players                 |       :x:       |    :x:    |      :ok:      |      :ok:      |       :ok:       |      :x:       |    :x:    |
-| **RESULTS MANAGEMENT**           |                 |           |                |                |                  |                |           |
-| Use special results              |       :x:       |    :x:    |      :ok:      |      :x:       |       :x:        |      :x:       |    :x:    |
-| Modify results                   |       :x:       |    :x:    |      :ok:      |      :ok:      |       :x:        |      :x:       |    :x:    |
-| Enter results                    |       :x:       |    :x:    |      :ok:      |      :ok:      |       :x:        |      :ok:      |    :x:    |
-| **VIEWING**                      |                 |           |                |                |                  |                |           |
-| View check-in                    |      :ok:       |   :ok:    |      :ok:      |      :ok:      |       :ok:       |      :ok:      |   :ok:    |
-| View pairings                    |      :ok:       |   :ok:    |      :ok:      |      :ok:      |       :ok:       |      :ok:      |
-| View results                     |      :ok:       |   :ok:    |      :ok:      |      :ok:      |       :ok:       |      :ok:      |   :ok:    |
+Two execution modes are possible, set at event-level (for each event):
 
-### Role Assignment
+- **Standard (by default)**: use connected devices to check-in players and enter results on public screens.
+- **Custom**: grant roles (fixed set of permissions) to accounts and devices.
 
-Roles are assigned:
-- by client (the IP address of the machine accessing the _Sharly Chess_ server);
-- by authentication (a username and password);
-- by client and by authentication.
+The execution mode is set when launching the server (only if the LAN IP of the server has changed).
 
-### Example of role assignment
+Possible solutions to set the execution mode:
+1. Each time we start the server (no database storage)
+2. Never (store the execution mode in the database, edit it on the app config modal)
+3. each time we start the server with a different IP (store the IP and the execution mode in the database, edit the execution mode on the app config modal)
 
-In the example below:
-- Connections from the server automatically have all roles (not configurable);
-- Connections from the client ``192.168.1.115`` and authenticated with the username ``big-boss`` have the organization and chief referee roles for all tournaments;
-- Connections authenticated with the usernames ``boss-1`` and ``boss-2`` have the arbiter role, for tournaments A/B and C/D respectively;
-- The last two workstations allow check-in and results entry, respectively;
-- Other unauthenticated clients can view the display screens.
+## Authentication (custom execution mode only)
 
-|      Client       |      ID      |      Comment      | Tournament | Administrator | Organizer | Chief arbiter | Arbiter | Check-in<br/>officer | Result<br/>officer | Spectator |
-|:-----------------:|:------------:|:-----------------:|:----------:|:-------------:|:---------:|:-------------:|:-------:|:---------------------:|:--------------:|:---------:|
-|   ``127.0.0.1``   |      -       |      Server       |     -      |     :ok:      |   :ok:    |     :ok:      |  :ok:   |         :ok:          |      :ok:      |   :ok:    |
-| ``192.168.1.115`` | ``big-boss`` |   Chief arbiter   |            |      :x:      |   :ok:    |     :ok:      |  :ok:   |         :ok:          |      :ok:      |   :ok:    |
-|         -         |  ``boss-1``  |      Arbiter      |    A, B    |      :x:      |    :x:    |      :x:      |  :ok:   |         :ok:          |      :ok:      |   :ok:    |
-|         -         |  ``boss-2``  |      Arbiter      |    C, D    |      :x:      |    :x:    |      :x:      |  :ok:   |         :ok:          |      :ok:      |   :ok:    |
-| ``192.168.1.27``  |      -       | Check-in computer |            |      :x:      |    :x:    |      :x:      |   :x:   |         :ok:          |      :x:       |   :ok:    |
-| ``192.168.1.226`` |      -       |  Result computer  |            |      :x:      |    :x:    |      :x:      |   :x:   |          :x:          |      :ok:      |   :ok:    |
-|         -         |      -       |                   |            |      :x:      |    :x:    |      :x:      |   :x:   |          :x:          |      :x:       |   :ok:    |
+### Safe / unsafe networks
+
+The _Sharly Chess_ administrator declares the network on which the server is connected as:
+
+- **safe**: all the devices connected to the network are trusted and unknown devices can not connect (e.g. a private Wi-Fi network, protected by a password)
+- **unsafe**: devices connected to the network can not be trusted (e.g. a public Wi-Fi network)
+
+### Accounts
+
+Accounts are declared on the _Sharly Chess_ server by authorized people (ADM, ORG and CA, see below):
+- a username (letters, numbers, ``_`` and ``-`` accepted);
+- a mandatory password.
+
+Unauthenticated accounts are named below "anonymous" (roles can be granted to anonymous, e.g. Spectator).
+
+Access to the _Sharly Chess_ server is allowed for accounts by providing:
+- an existing username;
+- the corresponding password;
+- on unsafe networks, an additional confirmation (One-Time Password generated by the server).
+
+### Devices
+
+Devices are declared on the _Sharly Chess_ server by authorized people (ADM, ORG and CA, see below):
+- an IP address.
+
+On unsafe networks, access to the _Sharly Chess_ server is not possible (accounts must be used):
+
+On safe networks, access to the _Sharly Chess_ server is allowed to devices by providing:
+- their IP address (automatic, no user action);
+- an additional confirmation (One-Time Password generated by the server).
+
+Unauthenticated devices are named below "unknown devices" (roles can be granted to unknown devices, e.g. Spectator).
+
+> [!NOTE]
+> Additional confirmations prevent from man-in-the-middle attacks.
+
+## Roles
+
+The roles are used only when the custom mode is selected, they offer a powerful way to customize the authorizations granted to accounts and devices.
+
+A role:
+- has a **fixed** set of permissions;
+- inherit the permissions of sub-roles.
+
+### Roles inheritance
+
+The diagram below shows the sub-roles each role inherits from.
+
+![Roles inheritance](../images/roles-inheritance.jpg)
+
+### Roles management
+
+The diagram below shows the roles that can be managed by each role.
+
+| Role | Scope | Sub<br/>roles | Inherited<br/>roles | Manageable<br/>roles |
+|-|:-:|:-:|:-:|:-:|
+|ADM: Administration|Application|ORG<br/>CA|_all_|_all_|
+|ORG: Organization|Event|SCR|SPE|SCR<br/>CA<br/>SPE|
+|SCR: Screen Management|Event|SPE|_none_|SPE|
+|CA: Chief Arbitration|Event|DCA|PAI<br/>SEC<br/>CHE<br/>RES<br/>SPE|DCA<br/>PAI<br/>SEC<br/>CHE<br/>RES<br/>SPE|
+|DCA: Deputy Chief Arbitration|Event|PAI|SEC<br/>CHE<br/>RES<br/>SPE|_none_|
+|PAI: Pairing|Tournament|SEC|CHE<br/>RES<br/>SPE|_none_|
+|SEC: Sector arbitration|Tournament|CHE<br/>RES|SPE|_none_|
+|CHE: Check-in via public screens|Tournament|SPE|_none_|_none_|
+|RES: Results Entry via public screens|Tournament|SPE|_none_|_none_|
+|SPE: Spectator|Event|_none_|_none_|_none_|
+
+_Generated by script generate_roles_doc.py on 2025-08-19 16:36_
+
+### Permissions by role
+
+The table below shows what each role can do in the application.
+
+| Permissions / Roles               |                       |                       |                       |                       |                       |                       |                       |                       |                       |                       |                       |
+|-----------------------------------|:---------------------:|:---------------------:|:---------------------:|:---------------------:|:---------------------:|:---------------------:|:---------------------:|:---------------------:|:---------------------:|:---------------------:|:---------------------:|
+| APPLICATION MANAGEMENT            | ADM                   | ORG                   | SCR                   | CA                    | DCA                   | PAI                   | SEC                   | CHE                   | RES                   | SPE                   | _none_                |
+| View application settings         | :white_check_mark:    | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :x:                   |
+| Update application settings       | :white_check_mark:    | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :x:                   |
+| Manage source databases           | :white_check_mark:    | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :x:                   |
+| EVENTS ACCESS                     | ADM                   | ORG                   | SCR                   | CA                    | DCA                   | PAI                   | SEC                   | CHE                   | RES                   | SPE                   | _none_                |
+| View public current events        | :white_check_mark:    | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_check_mark:(*) |
+| View private events               | :white_check_mark:    | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :x:                   |
+| View passed and upcoming events   | :white_check_mark:    | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :x:                   |
+| View event cards details          | :white_check_mark:    | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :white_circle:        | :x:                   |
+| EVENTS MANAGEMENT                 | ADM                   | ORG                   | SCR                   | CA                    | DCA                   | PAI                   | SEC                   | CHE                   | RES                   | SPE                   | _none_                |
+| Add events                        | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Delete events                     | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Rename events                     | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Update events                     | :white_check_mark:    | :white_check_mark:    | :x:                   | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| View complete event configuration | :white_check_mark:    | :white_check_mark:    | :x:                   | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| View basic event configuration    | :white_check_mark:    | :white_check_mark:    | :x:                   | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   |
+| ACCESS CONTROL                    | ADM                   | ORG                   | SCR                   | CA                    | DCA                   | PAI                   | SEC                   | CHE                   | RES                   | SPE                   | _none_                |
+| Manage accounts                   | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Manage devices                    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Give/take away role ADM             | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Give/take away role ORG             | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Give/take away role SCR             | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Give/take away role CA              | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Give/take away role DCA             | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Give/take away role PAI             | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Give/take away role SEC             | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Give/take away role CHE             | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Give/take away role RES             | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Give/take away role SPE             | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| TOURNAMENTS MANAGEMENT            | ADM                   | ORG                   | SCR                   | CA                    | DCA                   | PAI                   | SEC                   | CHE                   | RES                   | SPE                   | _none_                |
+| View the Tournaments tab          | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Add tournaments                   | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Update tournaments                | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Delete tournaments                | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Publish tournament results        | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Publish tournament rules          | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Download tournament fees          | :white_check_mark:    | :white_check_mark:    | :x:                   | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| PLAYERS                           | ADM                   | ORG                   | SCR                   | CA                    | DCA                   | PAI                   | SEC                   | CHE                   | RES                   | SPE                   | _none_                |
+| View Players tab                  | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   |
+| Add players                       | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Update players                    | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Update players' history           | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   |
+| Delete players                    | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| CHECK-IN                          | ADM                   | ORG                   | SCR                   | CA                    | DCA                   | PAI                   | SEC                   | CHE                   | RES                   | SPE                   | _none_                |
+| Open/close check-in               | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Check-in players                  | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   |
+| PAIRINGS                          | ADM                   | ORG                   | SCR                   | CA                    | DCA                   | PAI                   | SEC                   | CHE                   | RES                   | SPE                   | _none_                |
+| View Pairings tab                 | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   |
+| Use pairing engines               | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Manually pair players             | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Unpair all the boards of a round  | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Unpair one board                  | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Permute boards                    | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Set the current round             | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Set Zero-Points Byes              | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Set Half-Points Byes              | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Set Full-Points Byes              | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| View draft pairings               | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Publish pairings                  | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| RANKINGS                          | ADM                   | ORG                   | SCR                   | CA                    | DCA                   | PAI                   | SEC                   | CHE                   | RES                   | SPE                   | _none_                |
+| View draft rankings               | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Publish rankings                  | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| RESULTS                           | ADM                   | ORG                   | SCR                   | CA                    | DCA                   | PAI                   | SEC                   | CHE                   | RES                   | SPE                   | _none_                |
+| Enter results                     | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :white_check_mark:    | :x:                   | :x:                   |
+| Update results                    | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   |
+| Set illegal moves                 | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   |
+| Set special results               | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| SCREENS                           | ADM                   | ORG                   | SCR                   | CA                    | DCA                   | PAI                   | SEC                   | CHE                   | RES                   | SPE                   | _none_                |
+| Manage screens                    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| View private screens              | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| View public screens               | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :white_check_mark:    | :x:                   |
+| PRIZES                            | ADM                   | ORG                   | SCR                   | CA                    | DCA                   | PAI                   | SEC                   | CHE                   | RES                   | SPE                   | _none_                |
+| View Prizes tab                   | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| Manage prizes                     | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+| PRINT                             | ADM                   | ORG                   | SCR                   | CA                    | DCA                   | PAI                   | SEC                   | CHE                   | RES                   | SPE                   | _none_                |
+| Print                             | :white_check_mark:    | :x:                   | :x:                   | :white_check_mark:    | :white_check_mark:    | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   | :x:                   |
+
+_Generated by script generate_roles_doc.py on 2025-08-19 16:31_
+
+(*) Accessing the list of the public events is needed to authenticate (since the accounts are defined at event-level).
+
+### Examples
+
+#### Devices
+
+| :unlock:/:lock: |      Device       | Comment           |
+|:---------------:|:-----------------:|:------------------|
+|     :lock:      |   ``127.0.0.1``   | The server itself |
+|                 | ``192.168.1.115`` | A local device    |
+|     :lock:      |    ``0.0.0.0``    | Any device        |
+
+#### Accounts
+
+| :unlock:/:lock: |        User        | Comment           |
+|:---------------:|:------------------:|:------------------|
+|     :lock:      | from ``127.0.0.1`` | The server itself |
+|                 |    ``arbiter``     | The Chief Arbiter |
+|     :lock:      |   ``anonymous``    | _Unauthenticated_ |

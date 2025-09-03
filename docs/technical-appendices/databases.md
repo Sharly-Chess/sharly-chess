@@ -76,6 +76,7 @@
 | `deprecated_chessevent_event_id` | `TEXT`    |                           |     | _Deprecated_                                                                                                                                                                                                             |
 | `ffe_auto_upload`                | `INTEGER` | NOT NULL<br/>DEFAULT 0    |     | _TODO_                                                                                                                                                                                                                   |
 | `ffe_auto_upload_delay`          | `INTEGER` |                           |     | _TODO_                                                                                                                                                                                                                   |
+| `custom_exec_mode`               | `INTEGER` | NOT NULL<br/>DEFAULT 0    |     | Boolean:<br/>- `0`: the default execution mode is used (by default);<br/>- `1`: roles can be given to clients.                                                                                                           |
 | `override_unrated_rapid_blitz`   | `INTEGER` |                           |     | Boolean:<br/>- `0`: use estimated ratings for rapid/blitz unrated players<br/>- `1`: use standard ratings (by default)                                                                                                   |
 
 ### `metadata` (event metadata)
@@ -114,7 +115,7 @@
 | `time_str`    | `TEXT`    |                                            |     | The time of the schedule in hh:mm format                                                                                              |
 | `text_before` | `TEXT`    |                                            |     | The text to display on the timer before the schedule                                                                                  |
 | `text_after`  | `TEXT`    |                                            |     | The text to display on the timer after the schedule                                                                                   |
-|               |           | UNIQUE(`uniq_id`, `timer_id`)              |     |                                                                                                                                       |---------------------------------------------------|
+|               |           | UNIQUE(`uniq_id`, `timer_id`)              |     |                                                                                                                                       |
 
 ### `tournament` (tournaments)
 
@@ -294,7 +295,7 @@
 | `family_ids`      | `TEXT`    |                                            |     | The list of screen families to display, in JSON format                                                                                                                                                       |
 | `delay`           | `INTEGER` |                                            |     | The screen rotation delay in seconds, optional (default 15)                                                                                                                                                  |
 | `message_default` | `INTEGER` | NOT NULL<br/>DEFAULT 1                     |     | Boolean:<br/>- `1`: The event alert message is used (unless a message is defined for the screens);<br/>- `0`: The alert message for the rotating screen's screens is used instead of the event alert message |
-| `message_text`    | `TEXT`    |                                            |     | The screen's alert message text (by default, no alert message is displayed)                                                                                  |
+| `message_text`    | `TEXT`    |                                            |     | The screen's alert message text (by default, no alert message is displayed)                                                                                                                                  |
 
 ### `display_controller` (display controllers)
 

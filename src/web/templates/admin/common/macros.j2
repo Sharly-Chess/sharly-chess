@@ -171,6 +171,7 @@ select_options: a dict[str, str], keys are the select values and values are the 
 number_min: the minimum value for numbers
 number_max: the maximum value for numbers
 number_step: the step value for numbers
+radio_value: the value of radio buttons
 disabled: if set to true, the field will be disabled
 hx_get: the hx-get attribute of the input, optional
 hx_target: the hx-target attribute of the input, optional
@@ -204,6 +205,7 @@ with_indicator: display a loading indicator, optional
     number_min='',
     number_max='',
     number_step='',
+    radio_value='',
     info='',
     disabled=false,
     hx_get='',
@@ -266,7 +268,13 @@ with_indicator: display a loading indicator, optional
                         name="{{ name }}"
                         id="{{ id }}"
                         data-testid="{{ id }}"
-                        class="form-select {% if error or (name in errors) %}is-invalid{% endif %}"
+                        class="form-select
+                            {% if error or (name in errors) %}
+                                is-invalid
+                            {% endif %}
+                            {% if multiple_select %}
+                                sharly-chess-select2
+                            {% endif %}"
                         aria-describedby="{{ id }}-help {{ id }}-error"
                         {% if disabled or (select_options|length <= 1 and not multiple_select) %}
                             disabled
@@ -325,7 +333,27 @@ with_indicator: display a loading indicator, optional
                             disabled
                         {% endif %}
                     />
-                      {{ placeholder }}{% if doc_icon %}<span >{{ macros.doc_icon(doc_icon, 'ms-2') }}</span>{% endif %}
+                    {{ placeholder }}{% if doc_icon %}<span >{{ macros.doc_icon(doc_icon, 'ms-2') }}</span>{% endif %}
+                {% elif input_type == 'radio' %}
+                    <input
+                        id="{{ id }}"
+                        name="{{ name }}"
+                        type="radio"
+                        class="form-check-input"
+                        value="{{ radio_value }}"
+                        aria-describedby="{{ id }}-help {{ id }}-error"
+                        {% if data[name] == radio_value %}checked{% endif %}
+                        {% if disabled %}
+                            disabled
+                        {% endif %}
+                    />
+                        {{ placeholder }}
+                        {% if info %}
+                            <i
+                                class="bi bi-info-circle-fill"
+                                {{ macros.tooltip_attributes('info', info, 'top') }}
+                            ></i>
+                        {% endif %}
                 {% else %}
                     {% if disabled %}
                         <input
@@ -425,7 +453,7 @@ with_indicator: display a loading indicator, optional
                     {% endif %}
                 {% endif %}
             </div>
-            {% if info %}
+            {% if info and input_type != 'radio' %}
                 <i
                     class="bi bi-info-circle-fill"
                     {{ macros.tooltip_attributes('info', info, 'top') }}
@@ -800,6 +828,33 @@ with_indicator: display a loading indicator, optional
     ) }}
 {% endmacro %}
 
+{% macro radio_input(
+    name,
+    label='NO LABEL',
+    placeholder='NO PLACEHOLDER',
+    help_text='NO HELP TEXT',
+    info='',
+    data={},
+    errors={},
+    error=false,
+    disabled=false,
+    value=''
+) %}
+    {{ _generic_input(
+        name=name,
+        input_type='radio',
+        label=label,
+        placeholder=placeholder,
+        help_text=help_text,
+        info=info,
+        data=data,
+        errors=errors,
+        error=error,
+        disabled=disabled,
+        radio_value=value,
+    ) }}
+{% endmacro %}
+
 {% macro datetime_input(
     name,
     label='NO LABEL',
@@ -992,7 +1047,9 @@ with_indicator: display a loading indicator, optional
     doc_ref
 ) %}
     <h5 class="d-flex align-items-center gap-2 py-0 my-0 text-primary">
-        {% if doc_ref %}{{ macros.doc_icon(doc_ref, 'fs-5') }}{% endif %}
+        {% if doc_ref %}
+            {{ macros.doc_icon(doc_ref, 'fs-5') }}
+        {% endif %}
         {{ title }}
     </h5>
 {% endmacro %}

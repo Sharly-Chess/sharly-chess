@@ -60,7 +60,7 @@ class PairingEngine(ABC):
         if self.pairings_generation_disabled_message(tournament, round_):
             raise ValueError(
                 f'Pairings generation not allowed for round {round_} '
-                f'of tournament [{tournament.uniq_id}].'
+                f'of tournament [{tournament.name}].'
             )
         stored_boards = self._generate_stored_boards(
             tournament, round_, partial_pairings

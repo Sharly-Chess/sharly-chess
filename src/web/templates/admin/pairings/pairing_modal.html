@@ -19,24 +19,31 @@
                     ) %}
                     <button
                         class="result-button white col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        {% if board.exempt %}
+                        {% if
+                            board.exempt
+                            or
+                            not client.can_enter_results(admin_tournament.id)
+                            or
+                            (board.result and not client.can_update_results(admin_tournament.id))
+                        %}
                             disabled
-                        {% endif %}
-                        {% if action in allowed_actions %}
-                            hx-put="{{ action_route }}"
                         {% else %}
-                            hx-get="{{ url_for(
-                                'admin-pairings-safety-mode-modal',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=admin_tournament.id,
-                                round=admin_round,
-                                action=action,
-                                redirect_method='PUT',
-                                redirect_route=action_route,
-                            ) }}"
+                            {% if action in allowed_actions %}
+                                hx-put="{{ action_route }}"
+                            {% else %}
+                                hx-get="{{ url_for(
+                                    'admin-pairings-safety-mode-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=admin_tournament.id,
+                                    round=admin_round,
+                                    action=action,
+                                    redirect_method='PUT',
+                                    redirect_route=action_route,
+                                ) }}"
+                            {% endif %}
+                            hx-target="body"
+                            hx-indicator="#please-wait"
                         {% endif %}
-                        hx-target="body"
-                        hx-indicator="#please-wait"
                     >
                         <div class="text-center">{{ _('WHITE WINS') }}<br/>1 - 0<br/><br/>{{ wp.last_name }}<br/>{{ wp.first_name }}<br/>{{ wp.rating_str }}</div>
                     </button>
@@ -50,24 +57,31 @@
                     ) %}
                     <button
                         class="result-button draw col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        {% if board.exempt %}
+                        {% if
+                            board.exempt
+                            or
+                            not client.can_enter_results(admin_tournament.id)
+                            or
+                            (board.result and not client.can_update_results(admin_tournament.id))
+                        %}
                             disabled
-                        {% endif %}
-                        {% if action in allowed_actions %}
-                            hx-put="{{ action_route }}"
                         {% else %}
-                            hx-get="{{ url_for(
-                                'admin-pairings-safety-mode-modal',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=admin_tournament.id,
-                                round=admin_round,
-                                action=action,
-                                redirect_method='PUT',
-                                redirect_route=action_route,
-                            ) }}"
+                            {% if action in allowed_actions %}
+                                hx-put="{{ action_route }}"
+                            {% else %}
+                                hx-get="{{ url_for(
+                                    'admin-pairings-safety-mode-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=admin_tournament.id,
+                                    round=admin_round,
+                                    action=action,
+                                    redirect_method='PUT',
+                                    redirect_route=action_route,
+                                ) }}"
+                            {% endif %}
+                            hx-target="body"
+                            hx-indicator="#please-wait"
                         {% endif %}
-                        hx-target="body"
-                        hx-indicator="#please-wait"
                     >
                         <div>{{ _('DRAW') }}<br/>½ - ½</div>
                     </button>
@@ -81,24 +95,31 @@
                     ) %}
                     <button
                         class="result-button black col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        {% if board.exempt %}
+                        {% if
+                            board.exempt
+                            or
+                            not client.can_enter_results(admin_tournament.id)
+                            or
+                            (board.result and not client.can_update_results(admin_tournament.id))
+                        %}
                             disabled
-                        {% endif %}
-                        {% if action in allowed_actions %}
-                            hx-put="{{ action_route }}"
                         {% else %}
-                            hx-get="{{ url_for(
-                                'admin-pairings-safety-mode-modal',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=admin_tournament.id,
-                                round=admin_round,
-                                action=action,
-                                redirect_method='PUT',
-                                redirect_route=action_route,
-                            ) }}"
+                            {% if action in allowed_actions %}
+                                hx-put="{{ action_route }}"
+                            {% else %}
+                                hx-get="{{ url_for(
+                                    'admin-pairings-safety-mode-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=admin_tournament.id,
+                                    round=admin_round,
+                                    action=action,
+                                    redirect_method='PUT',
+                                    redirect_route=action_route,
+                                ) }}"
+                            {% endif %}
+                            hx-target="body"
+                            hx-indicator="#please-wait"
                         {% endif %}
-                        hx-target="body"
-                        hx-indicator="#please-wait"
                     >
                         <div>{{ _('BLACK WINS') }}<br/>0 - 1<br/><br/>{{ bp.last_name }}<br/>{{ bp.first_name }}<br/>{{ bp.rating_str }}</div>
                     </button>
@@ -115,24 +136,33 @@
                     ) %}
                     <button
                         class="admin-result-button white col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        {% if board.exempt %}
+                        {% if
+                            board.exempt
+                            or
+                            not client.can_set_special_results(admin_tournament.id)
+                            or
+                            not client.can_enter_results(admin_tournament.id)
+                            or
+                            (board.result and not client.can_update_results(admin_tournament.id))
+                        %}
                             disabled
-                        {% endif %}
-                        {% if action in allowed_actions %}
-                            hx-put="{{ action_route }}"
                         {% else %}
-                            hx-get="{{ url_for(
-                                'admin-pairings-safety-mode-modal',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=admin_tournament.id,
-                                round=admin_round,
-                                action=action,
-                                redirect_method='PUT',
-                                redirect_route=action_route,
-                            ) }}"
+                            {% if action in allowed_actions %}
+                                hx-put="{{ action_route }}"
+                            {% else %}
+                                hx-get="{{ url_for(
+                                    'admin-pairings-safety-mode-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=admin_tournament.id,
+                                    round=admin_round,
+                                    action=action,
+                                    redirect_method='PUT',
+                                    redirect_route=action_route,
+                                ) }}"
+                            {% endif %}
+                            hx-target="body"
+                            hx-indicator="#please-wait"
                         {% endif %}
-                        hx-target="body"
-                        hx-indicator="#please-wait"
                     >
                         <div>{{ _('WHITE WINS') }}<br/>{{ _('BY FORFEIT') }}<br/>1 - F</div>
                     </button>
@@ -146,24 +176,33 @@
                     ) %}
                     <button
                         class="admin-result-button draw col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        {% if board.exempt %}
+                        {% if
+                            board.exempt
+                            or
+                            not client.can_set_special_results(admin_tournament.id)
+                            or
+                            not client.can_enter_results(admin_tournament.id)
+                            or
+                            (board.result and not client.can_update_results(admin_tournament.id))
+                        %}
                             disabled
-                        {% endif %}
-                        {% if action in allowed_actions %}
-                            hx-put="{{ action_route }}"
                         {% else %}
-                            hx-get="{{ url_for(
-                                'admin-pairings-safety-mode-modal',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=admin_tournament.id,
-                                round=admin_round,
-                                action=action,
-                                redirect_method='PUT',
-                                redirect_route=action_route,
-                            ) }}"
+                            {% if action in allowed_actions %}
+                                hx-put="{{ action_route }}"
+                            {% else %}
+                                hx-get="{{ url_for(
+                                    'admin-pairings-safety-mode-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=admin_tournament.id,
+                                    round=admin_round,
+                                    action=action,
+                                    redirect_method='PUT',
+                                    redirect_route=action_route,
+                                ) }}"
+                            {% endif %}
+                            hx-target="body"
+                            hx-indicator="#please-wait"
                         {% endif %}
-                        hx-target="body"
-                        hx-indicator="#please-wait"
                     >
                         <div>{{ _('DOUBLE') }}<br/>{{ _('FORFEIT') }}<br/>F - F</div>
                     </button>
@@ -177,24 +216,33 @@
                     ) %}
                     <button
                         class="admin-result-button black col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        {% if board.exempt %}
+                        {% if
+                            board.exempt
+                            or
+                            not client.can_set_special_results(admin_tournament.id)
+                            or
+                            not client.can_enter_results(admin_tournament.id)
+                            or
+                            (board.result and not client.can_update_results(admin_tournament.id))
+                        %}
                             disabled
-                        {% endif %}
-                        {% if action in allowed_actions %}
-                            hx-put="{{ action_route }}"
                         {% else %}
-                            hx-get="{{ url_for(
-                                'admin-pairings-safety-mode-modal',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=admin_tournament.id,
-                                round=admin_round,
-                                action=action,
-                                redirect_method='PUT',
-                                redirect_route=action_route,
-                            ) }}"
+                            {% if action in allowed_actions %}
+                                hx-put="{{ action_route }}"
+                            {% else %}
+                                hx-get="{{ url_for(
+                                    'admin-pairings-safety-mode-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=admin_tournament.id,
+                                    round=admin_round,
+                                    action=action,
+                                    redirect_method='PUT',
+                                    redirect_route=action_route,
+                                ) }}"
+                            {% endif %}
+                            hx-target="body"
+                            hx-indicator="#please-wait"
                         {% endif %}
-                        hx-target="body"
-                        hx-indicator="#please-wait"
                     >
                         <div>{{ _('BLACK WINS') }}<br/>{{ _('BY FORFEIT') }}<br/>F - 1</div>
                     </button>
@@ -292,25 +340,32 @@
                         board_id=board.id
                     ) %}
                     <button
-                        hx-trigger="click"
                         class="admin-result-button danger col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        {% if action in allowed_actions %}
-                            hx-delete="{{ action_route }}"
-                        {% else %}
-                            hx-get="{{ url_for(
-                                'admin-pairings-safety-mode-modal',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=admin_tournament.id,
-                                round=admin_round,
-                                action=action,
-                                redirect_method='DELETE',
-                                redirect_route=action_route,
-                            ) }}"
-                        {% endif %}
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        {% if action not in existing_actions or (not board.no_result and not board.exempt) %}
+                        {% if
+                            action not in existing_actions
+                            or
+                            (not board.no_result and not board.exempt)
+                            or
+                            not client.can_unpair_boards(admin_tournament.id)
+                        %}
                             disabled
+                        {% else %}
+                            {% if action in allowed_actions %}
+                                hx-delete="{{ action_route }}"
+                            {% else %}
+                                hx-get="{{ url_for(
+                                    'admin-pairings-safety-mode-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=admin_tournament.id,
+                                    round=admin_round,
+                                    action=action,
+                                    redirect_method='DELETE',
+                                    redirect_route=action_route,
+                                ) }}"
+                            {% endif %}
+                            hx-trigger="click"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
                         {% endif %}
                     >
                         <div class="d-flex align-items-center justify-content-center gap-2">
@@ -327,23 +382,33 @@
                         result=0,
                     ) %}
                     <button
-                        hx-trigger="click"
                         class="admin-result-button danger col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        {% if action in allowed_actions %}
-                            hx-put="{{ action_route }}"
+                        {% if
+                            board.no_result
+                            or
+                            board.exempt
+                            or
+                            not client.can_update_results(admin_tournament.id)
+                        %}
+                            disabled
                         {% else %}
-                            hx-get="{{ url_for(
-                                'admin-pairings-safety-mode-modal',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=admin_tournament.id,
-                                round=admin_round,
-                                action=action,
-                                redirect_method='PUT',
-                                redirect_route=action_route,
-                            ) }}"
+                            {% if action in allowed_actions %}
+                                hx-put="{{ action_route }}"
+                            {% else %}
+                                hx-get="{{ url_for(
+                                    'admin-pairings-safety-mode-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=admin_tournament.id,
+                                    round=admin_round,
+                                    action=action,
+                                    redirect_method='PUT',
+                                    redirect_route=action_route,
+                                ) }}"
+                            {% endif %}
+                            hx-trigger="click"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
                         {% endif %}
-                        hx-target="body"
-                        hx-indicator="#please-wait"
                         {% if board.no_result or board.exempt %}
                             disabled
                         {% endif %}
@@ -362,26 +427,31 @@
                         board_id=board.id
                     ) %}
                     <button
-                        hx-trigger="click"
                         class="admin-result-button col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        {% if board.exempt %}
+                        {% if
+                            board.exempt
+                            or
+                            not client.can_permute_boards(admin_tournament.id)
+                        %}
                             disabled
-                        {% endif %}
-                        {% if action in allowed_actions %}
-                            hx-patch="{{ action_route }}"
                         {% else %}
-                            hx-get="{{ url_for(
-                                'admin-pairings-safety-mode-modal',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=admin_tournament.id,
-                                round=admin_round,
-                                action=action,
-                                redirect_method='PATCH',
-                                redirect_route=action_route,
-                            ) }}"
+                            {% if action in allowed_actions %}
+                                hx-patch="{{ action_route }}"
+                            {% else %}
+                                hx-get="{{ url_for(
+                                    'admin-pairings-safety-mode-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=admin_tournament.id,
+                                    round=admin_round,
+                                    action=action,
+                                    redirect_method='PATCH',
+                                    redirect_route=action_route,
+                                ) }}"
+                            {% endif %}
+                            hx-trigger="click"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
                         {% endif %}
-                        hx-target="body"
-                        hx-indicator="#please-wait"
                     >
                         <div class="d-flex align-items-center justify-content-center gap-2">
                             {{ _('PERMUTE WHITE/BLACK') }}

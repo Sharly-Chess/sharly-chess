@@ -1,11 +1,13 @@
 """Test configuration and utilities."""
 
+import time
 from urllib import parse
 from common import BASE_DIR
+from common.sharly_chess_config import SharlyChessConfig
 from data.pairings.variations import StandardSwissVariation
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, Optional, Any
+from typing import Callable, Dict, Optional, Any
 import re
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
@@ -39,13 +41,13 @@ class TestUtils:
     """Utility functions for tests."""
 
     event_defaults = {
+        'custom_exec_mode': SharlyChessConfig.default_custom_exec_mode,
         'federation': 'FRA',
         'public': True,
         'location': 'Paris',
         'hide_background_image': True,
         'background_image': None,
         'background_color': '#ffffff',
-        'update_password': '',
         'record_illegal_moves': 0,
         'rules': '',
         'message_text': '',
@@ -59,21 +61,25 @@ class TestUtils:
     }
 
     @staticmethod
-    def prepare_form_data(data: dict[str, str]):
-        form_data = {
-            k: (
-                ''
-                if v is None
-                else 'off'
-                if v is False
-                else 'on'
-                if v is True
-                else str(v)
-            )
-            for k, v in data.items()
-        }
+    def prepare_form_data(data: dict[str, object]) -> str:
+        out: dict[str, object] = {}
 
-        return parse.urlencode(form_data)
+        for k, v in data.items():
+            if v is None:
+                continue
+            if isinstance(v, bool):
+                if v:
+                    # HTML checkbox semantics
+                    out[k] = 'on'
+                else:
+                    continue
+            elif isinstance(v, (list, tuple)):
+                # leave as sequence; urlencode(doseq=True) expands it
+                out[k] = [str(x) for x in v]
+            else:
+                out[k] = str(v)
+
+        return parse.urlencode(out, doseq=True)
 
     @staticmethod
     def check_api_response(response: APIResponse):
@@ -91,6 +97,30 @@ class TestUtils:
         errors = [(div_id, text.strip()) for div_id, text in matches]
 
         assert not errors, errors
+
+    @staticmethod
+    def wait_for_htmx_idle(page, timeout=5000):
+        page.wait_for_function(
+            "() => !document.querySelector('.htmx-request, .htmx-swapping')",
+            timeout=timeout,
+        )
+
+    @staticmethod
+    def poll_expect_with_reload(
+        page,
+        assertion: Callable[[], None],
+        retries: int = 5,
+        delay_secs: float = 0.2,
+    ):
+        for attempt in range(retries):
+            page.reload()
+            try:
+                assertion()
+                return
+            except AssertionError:
+                if attempt == retries - 1:
+                    raise
+                time.sleep(delay_secs)
 
     @classmethod
     def create_event(
@@ -248,7 +278,7 @@ class TestUtils:
         cls,
         api_request_context: APIRequestContext,
         event_uniq_id: str,
-        uniq_id: str,
+        name: str,
         screen_type: ScreenType,
         overrides: Optional[dict] = None,
     ):
@@ -257,8 +287,7 @@ class TestUtils:
         # Provide defaults
         defaults: dict[str, Any] = {
             'id': None,
-            'uniq_id': uniq_id,
-            'name': uniq_id,
+            'name': name,
             'init_set_tournament_id': None,
             'columns': None,
             'font_size': None,
@@ -299,7 +328,7 @@ class TestUtils:
 
         with EventDatabase(event_uniq_id) as event_database:
             stored_screens = event_database.load_stored_screens()
-            stored_screen = next(s for s in stored_screens if s.uniq_id == uniq_id)
+            stored_screen = next(s for s in stored_screens if s.name == name)
             return stored_screen
 
     @classmethod

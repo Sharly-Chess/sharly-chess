@@ -1059,11 +1059,11 @@ class Tournament:
             board.round,
             board.id,
             board.white_player.last_name,
-            board.white_player.first_name,
+            board.white_player.first_name or '',
             board.white_player.rating,
             white_result,
             board.black_player.last_name,
-            board.black_player.first_name,
+            board.black_player.first_name or '',
             board.black_player.rating,
         )
 

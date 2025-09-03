@@ -2,6 +2,7 @@
 All the classes of this module are basic data classes stored in the event databases.
 """
 
+from abc import ABC
 from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
@@ -282,18 +283,37 @@ class StoredDisplayController:
 
 
 @dataclass
+class StoredAccess(ABC):
+    id: int | None
+    active: bool
+    roles: list[str]
+    tournament_ids: list[int] | None
+
+
+@dataclass
+class StoredDevice(StoredAccess):
+    ip: str | None
+
+
+@dataclass
+class StoredAccount(StoredAccess):
+    username: str | None
+    password_hash: str | None
+
+
+@dataclass
 class BaseStoredEvent:
     uniq_id: str
     name: str
     federation: str
     start: float
     stop: float
+    hide_background_image: bool
+    custom_exec_mode: bool
     public: bool = False
     location: str | None = None
-    hide_background_image: bool = SharlyChessConfig.default_hide_background_image
     background_image: str | None = None
     background_color: str | None = None
-    update_password: str | None = None
     record_illegal_moves: int | None = None
     rules: str | None = None
     timer_colors: dict[int, str | None] | None = None
@@ -320,6 +340,8 @@ class StoredEvent(BaseStoredEvent):
     stored_display_controllers: list[StoredDisplayController] = field(
         default_factory=list[StoredDisplayController]
     )
+    stored_devices: list[StoredDevice] = field(default_factory=list[StoredDevice])
+    stored_accounts: list[StoredAccount] = field(default_factory=list[StoredAccount])
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 

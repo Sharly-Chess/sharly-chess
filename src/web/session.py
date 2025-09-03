@@ -1,9 +1,11 @@
 import time
+from contextlib import suppress
 from typing import TYPE_CHECKING
 
 from litestar.plugins.htmx import HTMXRequest
 
 from common.sharly_chess_config import SharlyChessConfig
+from data.auth.entities import Account
 from data.input_output import DataSourceManager
 from data.player import Federation, Club
 from data.safety_mode import SafetyMode
@@ -15,20 +17,28 @@ if TYPE_CHECKING:
 
 
 class SessionHandler:
-    AUTH_SESSION_KEY: str = 'auth'
+    ACCOUNT_SESSION_KEY: str = 'account'
 
     @classmethod
-    def store_password(cls, request: HTMXRequest, event: 'Event', password: str | None):
-        if cls.AUTH_SESSION_KEY not in request.session:
-            request.session[cls.AUTH_SESSION_KEY] = {}
-        request.session[cls.AUTH_SESSION_KEY][event.uniq_id] = password
+    def store_account(
+        cls, request: HTMXRequest, event: 'Event', account: Account | None
+    ):
+        if cls.ACCOUNT_SESSION_KEY not in request.session:
+            request.session[cls.ACCOUNT_SESSION_KEY] = {}
+        if account:
+            request.session[cls.ACCOUNT_SESSION_KEY][event.uniq_id] = account.id
+        else:
+            with suppress(KeyError):
+                del request.session[cls.ACCOUNT_SESSION_KEY][event.uniq_id]
 
     @classmethod
-    def get_stored_password(cls, request: HTMXRequest, event: 'Event') -> str | None:
+    def get_account(cls, request: HTMXRequest, event: 'Event') -> Account:
         try:
-            return request.session[cls.AUTH_SESSION_KEY][event.uniq_id]
+            return event.accounts_by_id[
+                request.session[cls.ACCOUNT_SESSION_KEY][event.uniq_id]
+            ]
         except KeyError:
-            return None
+            return event.anonymous_account
 
     LAST_RESULT_UPDATED_SESSION_KEY: str = 'last_result_updated'
 
@@ -180,14 +190,7 @@ class SessionHandler:
         return set(
             request.session.get(
                 cls.ADMIN_SCREENS_SCREEN_TYPES_KEY,
-                [
-                    'boards',
-                    'input',
-                    'players',
-                    'results',
-                    'ranking',
-                    'image',
-                ],
+                [],
             )
         )
 

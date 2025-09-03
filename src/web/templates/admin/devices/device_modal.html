@@ -1,0 +1,90 @@
+<div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-device-edit-modal"
+    style="--bs-modal-width: min(90vw, 500px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {% if action in ['create', 'clone', ] %}
+                    {{ _('Device creation') }}
+                {% elif action == 'update' %}
+                    {% if admin_device.unknown %}
+                        {{ _('Editing of unknown devices\' access') }}
+                    {% else %}
+                        {{ _('Editing of device [%(ip)s]', ip=admin_device.ip) }}
+                    {% endif %}
+                {% endif %}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                {% if action in ['create', 'clone', ] %}
+                    hx-post="{{ url_for('admin-device-create', event_uniq_id=admin_event.uniq_id) }}"
+                {% elif action == 'update' %}
+                    hx-patch="{{ url_for('admin-device-' ~ action, event_uniq_id=admin_event.uniq_id, device_id=admin_device.id) }}"
+                {% else %}
+                    hx-get="{{ url_for('unknown-action-' ~ action) }}"
+                {% endif %}
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                {% if action in ['create', 'clone', ] or (admin_device.edit_properties and (admin_device.id in client.manageable_device_ids)) %}
+                    <h4>
+                        {{ _('Identification') }}
+                    </h4>
+                    <div class="row mb-3">
+                        {{ admin_macros.text_input(
+                            name='ip',
+                            label=_('IP address:'),
+                            placeholder=_('E.g.: 192.168.1.43'),
+                            help_text=_('The IP address, used to identify the device.'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="row mb-3">
+                        {{ admin_macros.switch_input(
+                            name='active',
+                            label='',
+                            help_text='',
+                            placeholder=_('Enable this device'),
+                            info=_(
+                                'You can temporarily invalidate devices by turning this switch off.'
+                            ),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                {% endif %}
+                {% if action in ['create', 'clone', ] or (admin_device.edit_permissions and (admin_device.id in client.manageable_device_ids)) %}
+                    <div id="permissions-form">
+                        {% with usage = 'device' %}
+                            {% include '../common/access/permissions_form.html' %}
+                        {% endwith %}
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                data-bs-dismiss="modal"
+                class="btn btn-secondary text-nowrap"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn btn-primary"
+            >
+                <i class="bi-floppy-fill pe-1"></i>
+                {% if action == 'update' %}
+                    {{ _('Save') }}
+                {% else %}
+                    {{ _('Create') }}
+                {% endif %}
+            </button>
+        </div>
+    </div>
+</div>

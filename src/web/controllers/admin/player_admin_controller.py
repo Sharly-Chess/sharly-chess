@@ -49,6 +49,8 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
 )
 from web.controllers.base_controller import WebContext
+from web.controllers.user.event_user_controller import EventUserController
+from web.guards import Guard
 from web.messages import Message
 from web.session import SessionHandler
 
@@ -892,9 +894,14 @@ class PlayerAdminController(BaseEventAdminController):
 
         return cls._admin_event_render(template_context)
 
+    players_tab_guards = EventUserController.event_guards + [
+        Guard.client_can_view_players_tab,
+    ]
+
     @get(
         path='/admin/event/{event_uniq_id:str}/players',
         name='admin-event-players-tab',
+        guards=players_tab_guards,
     )
     async def htmx_admin_event_players_tab(
         self,
@@ -1053,7 +1060,7 @@ class PlayerAdminController(BaseEventAdminController):
         data_source_id: str,
         player_source_id: str,
         tournament_id: str | None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         try:
             data_source = DataSourceManager.get_object(data_source_id)
         except KeyError:

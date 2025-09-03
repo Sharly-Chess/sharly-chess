@@ -38,6 +38,17 @@
                         ) }}
                     </div>
                     <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.switch_input(
+                            name='custom_exec_mode',
+                            label=_('Execution mode:'),
+                            placeholder=_('Customize the permissions'),
+                            help_text=_('Allows to create accounts, declare devices and grant them permissions.'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
                         {{ admin_macros.select_input(
                             name='federation',
                             label=_('Federation:'),
@@ -46,8 +57,6 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                </div>
-                <div class="row">
                     <div class="col-12 col-md-6 mb-3">
                         {{ admin_macros.text_input(
                             name='name',
@@ -57,7 +66,9 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6 col-lg-3 mb-3">
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
                         {{ admin_macros.datetime_input(
                             name='start',
                             label=_('Start:'),
@@ -65,7 +76,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6 col-lg-3 mb-3">
+                    <div class="col-12 col-md-6 mb-3">
                         {{ admin_macros.datetime_input(
                             name='stop',
                             label=_('End:'),
@@ -116,15 +127,6 @@
                     {{ _('Results entry') }}
                 </h4>
                 <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
-                        {{ admin_macros.password_input(
-                            name='update_password',
-                            label=_('Password to enter results:'),
-                            placeholder=_('E.g.: my_password'),
-                            help_text=_('The password required on input screens to enter results (optional).'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
                     <div class="col-12 col-md-6 mb-3">
                         {{ admin_macros.select_input(
                             name='record_illegal_moves',

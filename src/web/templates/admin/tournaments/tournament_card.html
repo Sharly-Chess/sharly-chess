@@ -119,20 +119,22 @@
             {{ _('Actions') }}
         </button>
         <ul class="dropdown-menu">
-            <li class="dropdown-submenu">
-                <span
-                    {{ macros.tooltip_attributes('info', _('Update the players\' information from an external data source.'), 'top') }}
-                >
-                    <button class="dropdown-item d-flex justify-content-between">
-                        <span><i class="bi-arrow-repeat pe-1"></i>
-                        {{ _('Update players') }}</span>
-                        <i class="ps-3 bi bi-caret-right-fill"></i>
-                    </button>
-                </span>
-                <ul class="dropdown-menu">
-                    {% include '/admin/players/players_diff.html' %}
-                </ul>
-            </li>
+            {% if client.can_update_players %}
+                <li class="dropdown-submenu">
+                    <span
+                        {{ macros.tooltip_attributes('info', _('Update the players\' information from an external data source.'), 'top') }}
+                    >
+                        <button class="dropdown-item d-flex justify-content-between">
+                            <span><i class="bi-arrow-repeat pe-1"></i>
+                            {{ _('Update players') }}</span>
+                            <i class="ps-3 bi bi-caret-right-fill"></i>
+                        </button>
+                    </span>
+                    <ul class="dropdown-menu">
+                        {% include '/admin/players/players_diff.html' %}
+                    </ul>
+                </li>
+            {% endif %}
             <li>
                 <span
                     {{ macros.tooltip_attributes('info', _('Print players, results, etc.'), 'top') }}
@@ -265,7 +267,13 @@
 {% endblock %}
 
 {% block card_buttons_right %}
-    <span {{ macros.tooltip_attributes('info', _('Edit the properties of the tournament.'), 'top') }}>
+    <span
+        {% if client.can_update_tournaments %}
+            {{ macros.tooltip_attributes('info', _('Edit the properties of the tournament.'), 'top') }}
+        {% else %}
+            {{ macros.tooltip_attributes('warning', _('You are not allowed to update the tournament.'), 'top') }}
+        {% endif %}
+    >
         <button
             class="btn btn-sm btn-outline-primary text-nowrap"
             hx-get="{{ url_for('admin-tournament-modal', action='update', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
@@ -274,11 +282,20 @@
             preload
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
+            {% if not client.can_update_tournaments %}
+                disabled
+            {% endif %}
         >
             <i class="bi-pencil-fill"></i>
         </button>
     </span>
-    <span {{ macros.tooltip_attributes('info', _('Duplicate the tournament.'), 'top') }}>
+    <span
+        {% if client.can_add_tournament %}
+            {{ macros.tooltip_attributes('info', _('Duplicate the tournament.'), 'top') }}
+        {% else %}
+            {{ macros.tooltip_attributes('warning', _('You are not allowed to create tournaments.'), 'top') }}
+        {% endif %}
+    >
         <button
             class="btn btn-sm btn-outline-primary text-nowrap"
             hx-get="{{ url_for('admin-tournament-modal', action='clone', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
@@ -287,19 +304,31 @@
             preload
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
+            {% if not client.can_add_tournament %}
+                disabled
+            {% endif %}
         >
             <i class="bi-copy"></i>
         </button>
     </span>
-    <span {{ macros.tooltip_attributes('info', _('Delete the tournament.'), 'top') }}>
+    <span
+        {% if client.can_delete_tournaments %}
+            {{ macros.tooltip_attributes('info', _('Delete the tournament.'), 'top') }}
+        {% else %}
+            {{ macros.tooltip_attributes('warning', _('You are not allowed to delete the tournament.'), 'top') }}
+        {% endif %}
+    >
         <button
-            class="btn btn-sm btn-outline-danger text-nowrap"
+            class="btn btn-sm {% if client.can_delete_tournaments %}btn-outline-danger{% else %}btn-outline-primary{% endif %} text-nowrap"
             hx-get="{{ url_for('admin-tournament-delete-modal', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
             hx-target="body"
             hx-indicator="#please-wait"
             preload
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
+            {% if not client.can_delete_tournaments %}
+                disabled
+            {% endif %}
         >
             <i class="bi-trash-fill"></i>
         </button>

@@ -1,14 +1,12 @@
+from abc import ABC, abstractmethod
 from logging import Logger
-from typing import Annotated, Any, Iterable
+from typing import Any, Iterable
 
+from litestar.exceptions import NotFoundException
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
-from litestar.enums import RequestEncodingType
-from litestar.params import Body
 from litestar.response import Template
 
-from common.i18n import _
 from common.logger import get_logger
-from common.sharly_chess_config import SharlyChessConfig
 from data.display_controller import DisplayController
 from data.family import Family
 from data.rotator import Rotator
@@ -16,127 +14,41 @@ from data.screen import Screen
 from utils.enum import ScreenType
 from plugins.manager import plugin_manager
 from plugins.utils import ExtraColumn
-from web.controllers.user.event_user_controller import EventUserWebContext
 from web.controllers.user.base_user_controller import BaseUserController
+from web.controllers.user.event_user_controller import (
+    EventUserWebContext,
+)
 from web.messages import Message
 from web.session import SessionHandler
+from web.utils import RequestUtils
 
 logger: Logger = get_logger()
 
 
-class ScreenOrRotatorUserWebContext(EventUserWebContext):
+class ScreenOrRotatorOrDisplayControllerUserWebContext(EventUserWebContext, ABC):
     def __init__(
         self,
         request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ]
-        | None,
-        event_uniq_id: str,
-        screen_uniq_id: str | None,
-        rotator_id: int | None,
-        rotator_screen_index: int | None,
-        display_controller_id: int | None,
+        user_event_tab: str | None = None,
     ):
-        super().__init__(
-            request, data=data, event_uniq_id=event_uniq_id, user_event_tab=None
-        )
-        self.screen: Screen | None = None
+        super().__init__(request, user_event_tab=user_event_tab)
         self.rotator: Rotator | None = None
-        self.rotator_screen_index: int | None = rotator_screen_index or 0
+        self.rotator_screen_index: int | None = None
         self.display_controller: DisplayController | None = None
         self.is_rotator: bool = False
-        if self.error:
-            return
-        assert self.user_event is not None
-        if screen_uniq_id:
-            try:
-                self.screen = self.user_event.screens_by_uniq_id[screen_uniq_id]
-            except KeyError:
-                self._redirect_error(f'Screen [{screen_uniq_id}] not found.')
-                return
-            if not self.screen.public and not self.admin_auth:
-                self._redirect_error(
-                    f'Access denied for screen [{self.screen.uniq_id}].'
-                )
-                return
-            self.user_event_tab = self.screen.type.value
-        elif rotator_id:
-            assert rotator_id is not None
-            try:
-                self.rotator = self.user_event.rotators_by_id[rotator_id]
-                self.is_rotator = True
-            except KeyError:
-                self._redirect_error(f'Rotator [{rotator_id}] not found.')
-                return
-            if not self.rotator.public and not self.admin_auth:
-                self._redirect_error(
-                    f'Access denied for rotator [{self.rotator.uniq_id}].'
-                )
-                return
-            self.rotator_screen_index = self.rotator_screen_index % len(
-                self.rotator.rotating_screens
-            )
-            self.screen = self.rotator.rotating_screens[self.rotator_screen_index]
-            self.user_event_tab = 'rotators'
-        else:
-            assert display_controller_id is not None
-            try:
-                self.display_controller = self.user_event.display_controllers_by_id[
-                    display_controller_id
-                ]
-            except KeyError:
-                self._redirect_error(
-                    f'Display controller [{display_controller_id}] not found.'
-                )
-                return
-
-            if rotator := self.display_controller.rotator:
-                self.rotator_screen_index = self.rotator_screen_index % len(
-                    rotator.rotating_screens
-                )
-                self.screen = rotator.rotating_screens[self.rotator_screen_index]
-                self.is_rotator = True
-            else:
-                self.screen = self.display_controller.screen
-
-            self.user_event_tab = 'display_controllers'
 
     @property
-    def login_needed(self) -> bool:
-        assert self.user_event is not None
-        if self.screen is not None:
-            if self.screen.type != ScreenType.INPUT:
-                return False
-        if not self.user_event.update_password:
-            return False
-        session_password: str | None = SessionHandler.get_stored_password(
-            self.request, self.user_event
-        )
-        logger.debug('session_password=%s', '*' * (8 if session_password else 0))
-        if session_password is None:
-            Message.error(
-                self.request, _('Access denied, please authenticate to enter results.')
-            )
-            return True
-        if session_password != self.user_event.update_password:
-            Message.error(self.request, _('Incorrect password.'))
-            SessionHandler.store_password(self.request, self.user_event, None)
-            return True
-        return False
+    @abstractmethod
+    def screen(self) -> Screen:
+        pass
 
     @property
-    def background_image(self) -> str | None:
-        return self.screen.background_image if self.screen else None
+    def background_image(self) -> str:
+        return self.screen.background_image
 
     @property
     def background_color(self) -> str:
-        return (
-            self.screen.background_color
-            if self.screen
-            else SharlyChessConfig.default_background_color
-        )
+        return self.screen.background_color
 
     @property
     def template_context(self) -> dict[str, Any]:
@@ -145,105 +57,78 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
             'rotator_screen_index': self.rotator_screen_index,
             'screen': self.screen,
             'display_controller': self.display_controller,
-            'login_needed': self.login_needed,
         }
 
 
-class ScreenUserWebContext(ScreenOrRotatorUserWebContext):
+class ScreenUserWebContext(ScreenOrRotatorOrDisplayControllerUserWebContext):
     def __init__(
         self,
         request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ]
-        | None,
-        event_uniq_id: str,
-        screen_uniq_id: str | None,
-        screen_needed: bool,
     ):
         super().__init__(
             request,
-            data=data,
-            event_uniq_id=event_uniq_id,
-            screen_uniq_id=screen_uniq_id,
-            rotator_id=None,
-            rotator_screen_index=None,
-            display_controller_id=None,
         )
         if self.error:
             return
-        if screen_needed and not self.screen:
-            self._redirect_error('Screen is mandatory.')
+        self._screen: Screen = RequestUtils.get_screen(request)
+        self.user_event_tab = self.screen.type.value
+
+    @property
+    def screen(self) -> Screen:
+        return self._screen
+
+
+class RotatorUserWebContext(ScreenOrRotatorOrDisplayControllerUserWebContext):
+    def __init__(
+        self,
+        request: HTMXRequest,
+    ):
+        super().__init__(
+            request,
+            user_event_tab='rotators',
+        )
+        if self.error:
             return
+        self.rotator, self.rotator_screen_index, self._screen = (
+            RequestUtils.get_rotator(request)
+        )
+        self.is_rotator = True
+
+    @property
+    def screen(self) -> Screen:
+        return self._screen
 
 
-class RotatorUserWebContext(ScreenOrRotatorUserWebContext):
+class DisplayControllerUserWebContext(ScreenOrRotatorOrDisplayControllerUserWebContext):
     def __init__(
         self,
         request: HTMXRequest,
-        data: Annotated[
-            dict[str, str] | None,
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-        event_uniq_id: str,
-        rotator_id: int,
-        rotator_screen_index: int,
     ):
         super().__init__(
             request,
-            data=data,
-            event_uniq_id=event_uniq_id,
-            screen_uniq_id=None,
-            rotator_id=rotator_id,
-            rotator_screen_index=rotator_screen_index,
-            display_controller_id=None,
+            user_event_tab='display_controllers',
         )
-
-
-class DisplayControllerUserWebContext(ScreenOrRotatorUserWebContext):
-    def __init__(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, str] | None,
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-        event_uniq_id: str,
-        display_controller_id: int,
-        rotator_screen_index: int = 0,
-    ):
-        super().__init__(
-            request,
-            data=data,
-            event_uniq_id=event_uniq_id,
-            screen_uniq_id=None,
-            rotator_id=None,
-            rotator_screen_index=rotator_screen_index,
-            display_controller_id=display_controller_id,
+        if self.error:
+            return
+        self.display_controller, self.rotator_screen_index, self._screen = (
+            RequestUtils.get_display_controller(request)
         )
+        if self.display_controller.rotator:
+            self.is_rotator = True
+
+    @property
+    def screen(self) -> Screen:
+        return self._screen
 
 
 class BasicScreenOrFamilyUserWebContext(ScreenUserWebContext):
     def __init__(
         self,
         request: HTMXRequest,
-        data: Annotated[
-            dict[str, str] | None,
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-        event_uniq_id: str,
-        screen_uniq_id: str | None,
     ):
         super().__init__(
             request,
-            data=data,
-            event_uniq_id=event_uniq_id,
-            screen_uniq_id=screen_uniq_id,
-            screen_needed=True,
         )
-        assert self.screen is not None
-        assert self.user_event is not None
         self.family: Family | None = None
         if self.error:
             return
@@ -252,8 +137,7 @@ class BasicScreenOrFamilyUserWebContext(ScreenUserWebContext):
             try:
                 self.family = self.user_event.families_by_uniq_id[family_uniq_id]
             except KeyError:
-                self._redirect_error(f'Family [{family_uniq_id}] not found.')
-                return
+                raise NotFoundException(f'Family [{family_uniq_id}] not found.')
 
     @property
     def template_context(self) -> dict[str, Any]:
@@ -266,7 +150,7 @@ class BaseScreenUserController(BaseUserController):
     @classmethod
     def _user_screen_render(
         cls,
-        web_context: ScreenOrRotatorUserWebContext,
+        web_context: ScreenOrRotatorOrDisplayControllerUserWebContext,
     ) -> Template | ClientRedirect:
         # Allow plugin to provide extra columns
         per_plugin_columns: Iterable[Iterable[ExtraColumn]] = []

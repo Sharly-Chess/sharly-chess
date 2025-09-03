@@ -1,28 +1,41 @@
 {% extends '../../common/admin_cards_container.html' %}
 
-{% block top_right_nav %}
-    {% with id='admin-events-show-details', name='admin_events_show_details', show=admin_events_show_details %}
-        <div
-            class="form-check form-switch d-inline-block pe-3 mt-2"
-            {{ macros.tooltip_attributes('info', _('Enable/disable the details of events on the cards below.'), 'top') }}
-        >
-            <input
-                hx-get="{{ url_for('admin-tab', admin_tab=admin_tab) }}"
-                hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
-                hx-target="body"
-                hx-indicator="#please-wait"
-                class="form-check-input"
-                type="checkbox"
-                id="{{ id }}"
-                {% if show %}checked{% endif %} /><label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
-        </div>
-    {% endwith %}
-    <div class="d-flex gap-2 ms-auto align-items-center">
-        {% include 'create_event_button.html' %}
+{% block top_left_nav %}
+    <div>
+        {{ admin_macros.admin_title(nav_tab.page_title) }}
     </div>
-    <script>
-        preparePrintModal()
-    </script>
+    {{ macros.refresh_listener(
+        hx_get=url_for('admin-tab', admin_tab=admin_tab),
+    ) }}
+{% endblock %}
+
+{% block top_right_nav %}
+    {% if client.can_view_detailed_event_cards %}
+        {% with id='admin-events-show-details', name='admin_events_show_details', show=admin_events_show_details %}
+            <div
+                class="form-check form-switch d-inline-block pe-3 mt-2"
+                {{ macros.tooltip_attributes('info', _('Enable/disable the details of events on the cards below.'), 'top') }}
+            >
+                <input
+                    hx-get="{{ url_for('admin-tab', admin_tab=admin_tab) }}"
+                    hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    class="form-check-input"
+                    type="checkbox"
+                    id="{{ id }}"
+                    {% if show %}checked{% endif %} /><label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
+            </div>
+        {% endwith %}
+    {% endif %}
+    {% if client.can_add_event %}
+        <div class="d-flex gap-2 ms-auto align-items-center">
+            {% include 'create_event_button.html' %}
+        </div>
+        <script>
+            preparePrintModal()
+        </script>
+    {%endif %}
 {% endblock %}
 
 {% block cards_container_cards %}
@@ -31,7 +44,7 @@
             {% for event in nav_tab.events %}
                 {% with
                     card_url=url_for('admin-event', event_uniq_id=event.uniq_id),
-                    card_class='border-danger' if not event.public and admin_auth else ''
+                    card_class='border-danger' if not event.public else ''
                 %}
                     {% include 'event_card.html' %}
                 {% endwith %}

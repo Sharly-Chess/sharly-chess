@@ -1,15 +1,21 @@
 <form class="d-inline-block" hx-post="{{ url }}" hx-target="body" hx-indicator="#please-wait" >
-    <span class="dropdown-center" >
+    <span
+        class="dropdown-center"
+        {% if client.can_open_close_check_in %}
+            {{ macros.tooltip_attributes('info', _('Open/close check-in.'), 'top') }}
+        {% else %}
+            {{ macros.tooltip_attributes('warning', _('You are not allowed to open/close check-in.'), 'top') }}
+        {% endif %}
+    >
         <button
             class="btn btn-outline-primary dropdown-toggle text-nowrap" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
+            {% if not client.can_open_close_check_in %}
+                disabled
+            {% endif %}
         >
-            <span
-                {{ macros.tooltip_attributes('info', _('Open/close check-in.'), 'top') }}
-            >
-                <i class="bi-circle"></i>
-                <i class="bi-check-circle pe-1"></i>
-                {{ _('Check-in') }}
-            </span>
+            <i class="bi-circle"></i>
+            <i class="bi-check-circle pe-1"></i>
+            {{ _('Check-in') }}
         </button>
         <ul class="dropdown-menu players-set-tournament-check-ins p-0 z-3">
             {% with id='admin-players-set-tournament-check-ins' %}

@@ -1,5 +1,3 @@
-"""End-to-end tests for events."""
-
 import pytest
 from playwright.sync_api import Page, expect, APIRequestContext
 from tests.test_config import TestUtils
@@ -22,7 +20,7 @@ class TestEventFunctionality:
             'test-event-e2e'
         )
 
-        page.goto('/admin')
+        page.goto('/admin/current_events')
         card = page.locator("div.card:has-text('Unique ID: test-event-e2e')")
         expect(card).to_be_visible()
         card.click()
