@@ -16,11 +16,7 @@ logger: Logger = get_logger()
 
 
 class BabelUpdater(BabelWrapper):
-    """Update all the files that need to updated (POT, PO, MO), and check the translations.
-    Usage:
-    if BabelUpdater().ok:
-        ...
-    """
+    """A utility class to update translations."""
 
     def __init__(
         self,
@@ -36,6 +32,7 @@ class BabelUpdater(BabelWrapper):
         self,
         generate_doc: bool,
     ):
+        """Update all the files that need to updated (POT, PO, MO), and check the translations."""
         logger.debug('Checking if i18n source files have been updated...')
         old_sources_fingerprint: bytes = self.get_sources_fingerprint()
         new_sources_fingerprint: bytes = text_files_fingerprint(self.sources)

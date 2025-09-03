@@ -20,6 +20,9 @@ dependencies = [
   "AdvancedHTMLParser ~= 9.0.2",
   "XlsxWriter ~= 3.2.2",
   "apluggy ~= 1.1.0",
+  # Latests compatible version should always be preferred due to security reasons
+  # This can be pinned later due to security concerns
+  "argon2-cffi",
   "babel ~= 2.16.0",
   "chardet ~= 5.2.0",
   "colorama ~= 0.4.6",
@@ -28,7 +31,7 @@ dependencies = [
   "httpdate ~= 1.2.0",
   "iso4217parse ~= 0.6.2",
   "Jinja2 ~= 3.1.5",
-  "litestar ~= 2.14.0",
+  "litestar ~= 2.16.0",
   "packaging ~= 25.0",
   # downgrading pefile from 2024.8.26 to 2023.2.7, cf https://github.com/pyinstaller/pyinstaller/issues/8762
   "pefile == 2023.2.7",

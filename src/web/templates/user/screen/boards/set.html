@@ -38,13 +38,21 @@
                                 </thead>
                                 <tbody>
                                 {% for board in boards %}
-                                    {% with wp=board.white_player, bp=board.black_player, editable=screen.type == 'input' and (not board.result_str or (admin_auth and not board.exempt)) %}
+                                    {% with wp=board.white_player, bp=board.black_player %}
+                                    {% set editable =
+                                        screen.type == 'input'
+                                        and (
+                                            client.can_update_results(tournament.id)
+                                            or
+                                            (not board.result_str and client.can_enter_results(tournament.id))
+                                        )
+                                    %}
                                     <tr
                                         id="tournament-{{ tournament.id }}-board-{{ board.id }}-row"
                                         class="
                                             board-row
                                             {% if editable %}editable{% endif %}
-                                            {% if admin_auth %}admin{% endif %}
+                                            {% if client.can_set_special_results(tournament.id) %}special-results-allowed{% endif %}
                                             {% if board.result_str %}result-set{% else %}result-not-set fw-bold{% endif %}
                                             {% if last_result_updated and last_result_updated.expiration > now and last_result_updated.tournament_id == tournament.id and last_result_updated.round == tournament.current_round and last_result_updated.board_id == board.id %}last_result_updated{% endif %}"
                                         >
@@ -94,6 +102,7 @@
                                         {% endwith %}
                                         <td
                                             class="score bg-transparent text-center text-nowrap"
+                                            data-testid="board-score"
                                             {% if editable %}
                                                 hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
                                                 hx-target="body"

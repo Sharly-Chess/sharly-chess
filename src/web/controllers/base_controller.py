@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from functools import cached_property
 from itertools import cycle
 import re
 import time
@@ -12,7 +13,7 @@ from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 from litestar.controller import Controller
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.response import Template
+from litestar.response import Redirect, Template
 
 from common import check_rgb_str, DEVEL_ENV
 from common.i18n import (
@@ -25,6 +26,8 @@ from common.i18n.utils import (
 )
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
+from data.auth.client import Client
+from data.auth.client_tracker import ClientTracker
 from data.player import Federation, Club
 from web.messages import Message
 from web.session import SessionHandler
@@ -53,6 +56,17 @@ class WebContext:
         self.error: ClientRedirect | None = None
         # sets the session locale to the thread
         set_locale(SessionHandler.get_session_locale(request))
+        if request.client:
+            # tracks the visit of the client
+            ClientTracker().track_client(request.client.host)
+        else:
+            logger.warning('Request with no client!')
+
+    @cached_property
+    def client(self) -> Client:
+        """Returns the client (account and device) of the request.
+        This method may be overridden with an event parameter passed to Client()."""
+        return Client(self.request)
 
     @property
     def background_image(self) -> str | None:
@@ -214,7 +228,7 @@ class WebContext:
     def form_data_to_list_int(
         data: dict[str, str], field: str, empty_value: list[int] | None = None
     ) -> list[int]:
-        if field not in data:
+        if field not in data or not data[field]:
             return empty_value or []
         return [int(element) for element in data[field].split(';')]
 
@@ -222,7 +236,7 @@ class WebContext:
     def form_data_to_list_str(
         data: dict[str, str], field: str, empty_value: list[str] | None = None
     ) -> list[str]:
-        if field not in data:
+        if field not in data or not data[field]:
             return empty_value or []
         return [element.strip() for element in data[field].split(';')]
 
@@ -318,20 +332,6 @@ class WebContext:
         self.error = BaseController.redirect_error(self.request, errors)
 
     @property
-    def admin_auth(self) -> bool:
-        """
-        A method that tell if the client is authorized to view admin pages.
-        At this time, local requests (from the server) are allowed, adding an auth mechanism to allow access from other
-        clients is planned.
-        :return: True if the client is allowed to view admin pages.
-        """
-        # NOTE(Amaras): see https://docs.litestar.dev/2/usage/security/index.html
-        # for security considerations in Litestar
-        if self.request.client and self.request.client.host == '127.0.0.1':
-            return True
-        return False
-
-    @property
     def template_context(self) -> dict[str, Any]:
         """
         This method is used by all controllers to get the parameters to pass the template for rendering.
@@ -354,12 +354,12 @@ class WebContext:
             'now': now,
             'now_http_date': unixtime_to_httpdate(int(now)),
             'sharly_chess_config': sharly_chess_config,
-            'admin_auth': self.admin_auth,
             'background_info': self.background_info,
             'theme': self.theme,
             'locale_infos': locale_infos,
             'locale_options': locale_options,
             'locale': SessionHandler.get_session_locale(self.request),
+            'client': self.client,
         }
 
 
@@ -372,9 +372,12 @@ class BaseController(Controller):
     @staticmethod
     def redirect_error(
         request: HTMXRequest, errors: str | list[str] | Exception
-    ) -> ClientRedirect:
-        Message.error(request, errors)
-        return ClientRedirect(redirect_to=index_url(request))
+    ) -> ClientRedirect | Redirect:
+        if request.headers.get('hx-request') == 'true':
+            Message.error(request, errors)
+            return ClientRedirect(redirect_to=index_url(request))
+        else:
+            return Redirect(index_url(request))
 
     @staticmethod
     def render_messages(

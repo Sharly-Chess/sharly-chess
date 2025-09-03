@@ -29,10 +29,6 @@ msgid "%(count)d players unpaired"
 msgstr ""
 
 #, python-format
-msgid "%(family_uniq_id)s %(family_name)s (%(screens_number)d screens)"
-msgstr ""
-
-#, python-format
 msgid "%(lib)s version"
 msgstr ""
 
@@ -164,6 +160,9 @@ msgstr[1] ""
 msgid "(by default)"
 msgstr ""
 
+msgid "(inherited)"
+msgstr ""
+
 msgid "(no screens)"
 msgstr ""
 
@@ -264,10 +263,6 @@ msgstr ""
 msgid "A non-empty string is expected"
 msgstr ""
 
-#, python-format
-msgid "A password is required to enter results for the event %(event_uniq_id)s."
-msgstr ""
-
 msgid "A positive integer is expected."
 msgstr ""
 
@@ -275,6 +270,9 @@ msgid "A positive value is expected."
 msgstr ""
 
 msgid "A value is expected."
+msgstr ""
+
+msgid "ADM"
 msgstr ""
 
 msgid "Absent"
@@ -292,10 +290,13 @@ msgstr ""
 msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
 msgstr ""
 
-msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
+msgid "Access"
 msgstr ""
 
-msgid "Access denied, please authenticate to enter results."
+msgid "Access control"
+msgstr ""
+
+msgid "Access denied (code: [{code}]) for [{user_id}] on tournament [{tournament_name}] ([{chessevent_string}])."
 msgstr ""
 
 msgid "Access from the Sharly Chess server"
@@ -304,10 +305,35 @@ msgstr ""
 msgid "Access from the local network (LAN/WAN)"
 msgstr ""
 
-msgid "Access to the arbiter interface is not allowed from this client."
+msgid "Access unrated and penalty results."
 msgstr ""
 
-msgid "Access unrated and penalty results."
+msgid "Account"
+msgstr ""
+
+msgid "Account [{username}] already exists."
+msgstr ""
+
+msgid "Account [{username}] has been created."
+msgstr ""
+
+msgid "Account [{username}] has been deleted."
+msgstr ""
+
+msgid "Account [{username}] has been updated."
+msgstr ""
+
+msgid "Account creation"
+msgstr ""
+
+#, python-format
+msgid "Account: %(username)s"
+msgstr ""
+
+msgid "Accounts"
+msgstr ""
+
+msgid "Accounts ({num})"
 msgstr ""
 
 msgid "Action"
@@ -326,6 +352,12 @@ msgid "Add"
 msgstr ""
 
 msgid "Add a criterion to the list."
+msgstr ""
+
+msgid "Add a device"
+msgstr ""
+
+msgid "Add a device to the event."
 msgstr ""
 
 msgid "Add a display controller to the event."
@@ -370,13 +402,13 @@ msgstr ""
 msgid "Add a screen to display the pairings by alphabetical order."
 msgstr ""
 
-msgid "Add a screen to display the pairings by board."
+msgid "Add a screen to display the pairings by board number."
 msgstr ""
 
 msgid "Add a screen to display the ranking."
 msgstr ""
 
-msgid "Add a screen to enter the results."
+msgid "Add a screen to enter results."
 msgstr ""
 
 msgid "Add a set"
@@ -391,6 +423,12 @@ msgstr ""
 msgid "Add a tournament to the event."
 msgstr ""
 
+msgid "Add an account to the event."
+msgstr ""
+
+msgid "Add events"
+msgstr ""
+
 msgid "Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!"
 msgstr ""
 
@@ -398,6 +436,18 @@ msgid "Add period"
 msgstr ""
 
 msgid "Add player"
+msgstr ""
+
+msgid "Add players"
+msgstr ""
+
+msgid "Add tournaments"
+msgstr ""
+
+msgid "Adding devices allows you to grant permissions to people on other clients,"
+msgstr ""
+
+msgid "Administration"
 msgstr ""
 
 msgid "Age"
@@ -436,7 +486,40 @@ msgstr ""
 msgid "Allow"
 msgstr ""
 
+msgid "Allows access to Screens marked as public."
+msgstr ""
+
+msgid "Allows access to the Players and Pairings tabs, results and illegal moves update."
+msgstr ""
+
+msgid "Allows check-in via any input Screens that have been marked as public."
+msgstr ""
+
+msgid "Allows entry of results via any input Screens that have been marked as public."
+msgstr ""
+
+msgid "Allows granting or revoking the Chief Arbitration role and editing the event. Also includes the permissions of the Screen Management role."
+msgstr ""
+
+msgid "Allows granting or revoking the Deputy Chief Arbitration role, editing the event, and managing tournaments; Also includes the permissions of the Deputy Chief Arbitration role."
+msgstr ""
+
+msgid "Allows management of Screens and the account and devices that can access them."
+msgstr ""
+
+msgid "Allows managing players, entering results (including special results and their modification), handling check-ins, pairings, and displays."
+msgstr ""
+
+msgid "Allows pairing of the players, either using a pairing engine or manually."
+msgstr ""
+
+msgid "Allows to create accounts, declare devices and grant them permissions."
+msgstr ""
+
 msgid "An unexpected error occurred."
+msgstr ""
+
+msgid "Anonymous"
 msgstr ""
 
 msgid "Any comment on the player (comments are visible only by the arbiters)."
@@ -445,7 +528,10 @@ msgstr ""
 msgid "Any number of devices can be controlled by the same display controller."
 msgstr ""
 
-msgid "Arbiter interface"
+msgid "Application"
+msgstr ""
+
+msgid "Application management"
 msgstr ""
 
 msgid "Archive"
@@ -463,7 +549,13 @@ msgstr ""
 msgid "Archived event"
 msgstr ""
 
+msgid "Archived events"
+msgstr ""
+
 msgid "Argument --server is deprecated, ignored."
+msgstr ""
+
+msgid "Ask your administrator for the username to use."
 msgstr ""
 
 msgid "Assign a screen to the controller."
@@ -505,13 +597,13 @@ msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Authentication"
+msgstr ""
+
 msgid "Authentication error (code: [{code}]) for [{user_id}] ([{chessevent_string}])."
 msgstr ""
 
 msgid "Authentication failed."
-msgstr ""
-
-msgid "Authentication successful!"
 msgstr ""
 
 msgid "Auto-update"
@@ -568,6 +660,12 @@ msgstr "Avg. Perfect Perf."
 
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
 msgstr "B"
+
+msgid "BE CAREFUL TO GIVE SENSITIVE ROLES ONLY TO TRUSTED DEVICES!"
+msgstr ""
+
+msgid "BE CAREFUL TO GIVE SENSITIVE ROLES ONLY TO TRUSTED PEOPLE!"
+msgstr ""
 
 msgid "BLACK WINS"
 msgstr ""
@@ -702,6 +800,12 @@ msgstr "Byes (%(byes)d)"
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr "C"
 
+msgid "CA"
+msgstr ""
+
+msgid "CHE"
+msgstr ""
+
 msgid "CHECK-IN"
 msgstr ""
 
@@ -773,6 +877,12 @@ msgstr ""
 msgid "Check-in is open for tournament [{tournament}]."
 msgstr ""
 
+msgid "Check-in players"
+msgstr ""
+
+msgid "Check-in via public screens"
+msgstr ""
+
 msgid "Checked-in"
 msgstr ""
 
@@ -802,6 +912,9 @@ msgstr ""
 msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
 msgstr ""
 
+msgid "Chief Arbitration"
+msgstr ""
+
 msgid "Choose a player at random"
 msgstr ""
 
@@ -823,6 +936,9 @@ msgstr ""
 msgid "Choose from images in the 'custom' folder"
 msgstr ""
 
+msgid "Choose one, many or no tournaments."
+msgstr ""
+
 msgid "Choose the columns displayed."
 msgstr ""
 
@@ -832,19 +948,17 @@ msgstr ""
 msgid "Clear all the filters."
 msgstr ""
 
-msgid "Click here to access the screens that you have created."
-msgstr ""
-
 msgid "Click to check-in the player."
 msgstr ""
 
 msgid "Click to check-out the player."
 msgstr ""
 
-msgid "Close"
+#, python-format
+msgid "Client: %(host)s"
 msgstr ""
 
-msgid "Close check in"
+msgid "Close"
 msgstr ""
 
 msgid "Close check-in"
@@ -931,10 +1045,13 @@ msgstr ""
 msgid "Configuration"
 msgstr ""
 
-msgid "Connect your devices (computers, tablets, smartphones) to the Sharly Chess server by scanning this QR code (click below to get a printable version)."
+msgid "Connect"
 msgstr ""
 
-msgid "Connect your devices to the Sharly Chess server:"
+msgid "Connect other devices!"
+msgstr ""
+
+msgid "Connect your devices (laptops, tablets, smartphones) to the Sharly Chess server by scanning this QR code (click below to get a printable version)."
 msgstr ""
 
 msgid "Connection French Chess Federation"
@@ -1027,6 +1144,9 @@ msgstr ""
 msgid "Create a prize group"
 msgstr ""
 
+msgid "Create a prize group in which you will then be able to create categories, and then prizes."
+msgstr ""
+
 msgid "Create a rotator"
 msgstr ""
 
@@ -1049,6 +1169,9 @@ msgid "Create a timer now to get started."
 msgstr ""
 
 msgid "Create a tournament"
+msgstr ""
+
+msgid "Create an account"
 msgstr ""
 
 msgid "Create an event"
@@ -1093,6 +1216,9 @@ msgstr ""
 msgid "Create with default screens"
 msgstr ""
 
+msgid "Creating accounts allows you to grant permissions to people on other clients,"
+msgstr ""
+
 msgid "Criteria"
 msgstr ""
 
@@ -1123,7 +1249,7 @@ msgstr ""
 msgid "Current ({num})"
 msgstr ""
 
-msgid "Current events ({num})"
+msgid "Current events"
 msgstr ""
 
 msgid "Current pairings differ from the expected Swiss pairings, possibly due to manual changes, complementary pairings, or renumbering after rating/late-entry adjustments."
@@ -1142,7 +1268,16 @@ msgstr ""
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr ""
 
+msgid "Custom"
+msgstr ""
+
 msgid "Customization"
+msgstr ""
+
+msgid "Customize the permissions"
+msgstr ""
+
+msgid "DCA"
 msgstr ""
 
 msgid "DOUBLE"
@@ -1240,10 +1375,22 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
+msgid "Delete account"
+msgstr ""
+
+msgid "Delete device"
+msgstr ""
+
 msgid "Delete display controller"
 msgstr ""
 
+msgid "Delete events"
+msgstr ""
+
 msgid "Delete player"
+msgstr ""
+
+msgid "Delete players"
 msgstr ""
 
 msgid "Delete prize category"
@@ -1261,7 +1408,13 @@ msgstr ""
 msgid "Delete screen family"
 msgstr ""
 
+msgid "Delete the account."
+msgstr ""
+
 msgid "Delete the category."
+msgstr ""
+
+msgid "Delete the device."
 msgstr ""
 
 msgid "Delete the display controller."
@@ -1285,10 +1438,16 @@ msgstr ""
 msgid "Delete tournament"
 msgstr ""
 
+msgid "Delete tournaments"
+msgstr ""
+
 msgid "Deletes all the criteria of this category."
 msgstr ""
 
 msgid "Deletion date"
+msgstr ""
+
+msgid "Deputy Chief Arbitration"
 msgstr ""
 
 msgid "Description"
@@ -1303,6 +1462,30 @@ msgstr ""
 msgid "Details"
 msgstr ""
 
+msgid "Device"
+msgstr ""
+
+msgid "Device [{ip}] already set."
+msgstr ""
+
+msgid "Device [{ip}] has been created."
+msgstr ""
+
+msgid "Device [{ip}] has been deleted."
+msgstr ""
+
+msgid "Device [{ip}] has been updated."
+msgstr ""
+
+msgid "Device creation"
+msgstr ""
+
+msgid "Devices"
+msgstr ""
+
+msgid "Devices ({num})"
+msgstr ""
+
 msgid "Different for White / Black"
 msgstr ""
 
@@ -1310,6 +1493,9 @@ msgid "Direct encounter"
 msgstr ""
 
 msgid "Disabled"
+msgstr ""
+
+msgid "Disconnect"
 msgstr ""
 
 msgid "Display"
@@ -1339,7 +1525,7 @@ msgstr ""
 msgid "Display controllers ({num})"
 msgstr ""
 
-msgid "Display controllers allow you to control screens at your event from your main computer."
+msgid "Display controllers allow you to control screens at your event from your server (or any allowed device in custom mode)."
 msgstr ""
 
 msgid "Display format for pairings."
@@ -1412,6 +1598,9 @@ msgstr ""
 msgid "Download the vCards of the selected players (VCF format). Warning: players without phone or email won't be included."
 msgstr ""
 
+msgid "Download tournament fees"
+msgstr ""
+
 msgid "Downloading source file…"
 msgstr ""
 
@@ -1427,7 +1616,13 @@ msgstr ""
 msgid "Duplicate"
 msgstr ""
 
+msgid "Duplicate the account."
+msgstr ""
+
 msgid "Duplicate the category and its criteria and prizes."
+msgstr ""
+
+msgid "Duplicate the device."
 msgstr ""
 
 msgid "Duplicate the rotator."
@@ -1475,6 +1670,9 @@ msgstr ""
 
 #, python-format
 msgid "E.g.: %(string)s"
+msgstr ""
+
+msgid "E.g.: 192.168.1.43"
 msgstr ""
 
 msgid "E.g.: 20 (place 20 boards on each screen)"
@@ -1567,6 +1765,9 @@ msgstr ""
 msgid "E.g.: https://my.club.us/tournament.jpg"
 msgstr ""
 
+msgid "E.g.: john"
+msgstr ""
+
 msgid "E.g.: john doe"
 msgstr ""
 
@@ -1628,6 +1829,12 @@ msgstr ""
 msgid "Edit the player's tournament record."
 msgstr ""
 
+msgid "Edit the properties and the permissions of the account."
+msgstr ""
+
+msgid "Edit the properties and the permissions of the device."
+msgstr ""
+
 msgid "Edit the properties of the category."
 msgstr ""
 
@@ -1664,6 +1871,20 @@ msgstr ""
 msgid "Edit tournament"
 msgstr ""
 
+#, python-format
+msgid "Editing of account [%(username)s]"
+msgstr ""
+
+#, python-format
+msgid "Editing of device [%(ip)s]"
+msgstr ""
+
+msgid "Editing of unauthenticated access"
+msgstr ""
+
+msgid "Editing of unknown devices' access"
+msgstr ""
+
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
 msgstr "Elo"
 
@@ -1674,6 +1895,12 @@ msgid "Elo step (handicap):"
 msgstr ""
 
 msgid "Email:"
+msgstr ""
+
+msgid "Enable this account"
+msgstr ""
+
+msgid "Enable this device"
 msgstr ""
 
 msgid "Enable/disable the details of events on the cards below."
@@ -1708,6 +1935,12 @@ msgid "End time needs to be after start time."
 msgstr ""
 
 msgid "End:"
+msgstr ""
+
+msgid "Enter results"
+msgstr ""
+
+msgid "Enter the password associated with the username."
 msgstr ""
 
 msgid "Enter the result"
@@ -1753,6 +1986,21 @@ msgid "Event: {event_name}"
 msgstr ""
 
 msgid "Events"
+msgstr ""
+
+msgid "Events ({num})"
+msgstr ""
+
+msgid "Events access"
+msgstr ""
+
+msgid "Events management"
+msgstr ""
+
+msgid "Execution"
+msgstr ""
+
+msgid "Execution mode:"
 msgstr ""
 
 msgid "Exempt *** FEMALE"
@@ -2093,7 +2341,7 @@ msgstr ""
 msgid "Frequency: {frequency}"
 msgstr ""
 
-msgid "From your main computer find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
+msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
 msgstr ""
 
 msgid "Full-Point Bye"
@@ -2141,10 +2389,10 @@ msgstr ""
 msgid "Generate pairings for this round."
 msgstr ""
 
-msgid "Go back to the events page."
+msgid "Generated by script {script_name} on {date}"
 msgstr ""
 
-msgid "Go back to the home page."
+msgid "Give/take away role {role_short_name}"
 msgstr ""
 
 msgid "Go to the display controller."
@@ -2206,7 +2454,7 @@ msgstr ""
 msgid "Highlights the row if the new result is different when using the keyboard shortcuts (useful when re-entering all the results for verification)."
 msgstr ""
 
-msgid "Home page"
+msgid "Home"
 msgstr ""
 
 msgid "Hort system"
@@ -2239,11 +2487,26 @@ msgstr ""
 msgid "I would like the following custom files to be added to a future release of Sharly Chess:"
 msgstr ""
 
+msgid "ID (unique):"
+msgstr ""
+
 msgid "ID [{user_id}] not found (code: [{code}]): [{error}]."
 msgstr ""
 
 msgid "IM *** SHORT NAME FOR International Master"
 msgstr "IM"
+
+msgid "IP address"
+msgstr ""
+
+msgid "IP address [{ip}] is not valid."
+msgstr ""
+
+msgid "IP address:"
+msgstr ""
+
+msgid "Identification"
+msgstr ""
 
 msgid "Identity"
 msgstr ""
@@ -2261,9 +2524,6 @@ msgid "Image ({num})"
 msgstr ""
 
 msgid "Image screens show an image (local or remote)."
-msgstr ""
-
-msgid "Image:"
 msgstr ""
 
 #, python-format
@@ -2319,10 +2579,10 @@ msgstr ""
 msgid "Include players of these rating types."
 msgstr ""
 
-msgid "Incorrect installation, exiting."
+msgid "Includes all other roles and grants full access to the application. This role is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network)."
 msgstr ""
 
-msgid "Incorrect password."
+msgid "Incorrect installation, exiting."
 msgstr ""
 
 msgid "Incorrect path [{path}]."
@@ -2337,7 +2597,10 @@ msgstr ""
 msgid "Information message"
 msgstr ""
 
-msgid "Input Screens may be used to allow players to enter their own results on a computer or tablet that you make available at the venue."
+msgid "Inherited roles"
+msgstr ""
+
+msgid "Input Screens may be used to allow players to enter their own results on a device that you make available at the venue."
 msgstr ""
 
 msgid "Input screens show pairings by board number and allow people to enter results."
@@ -2430,6 +2693,9 @@ msgstr ""
 msgid "Invalid type [{type}] for field [{field}] (expected: {expected})."
 msgstr ""
 
+msgid "Invalid username or password."
+msgstr ""
+
 msgid "Invalid value [{value}] for field [{field}] (expected one of [{expected_values}])."
 msgstr ""
 
@@ -2459,9 +2725,6 @@ msgid "Koya System (the number of points achieved against all opponents who have
 msgstr ""
 
 msgid "Koya system"
-msgstr ""
-
-msgid "Language"
 msgstr ""
 
 msgid "Language:"
@@ -2516,6 +2779,9 @@ msgid "League:"
 msgstr ""
 
 msgid "Leagues"
+msgstr ""
+
+msgid "Leave empty to grant no permissions at all."
 msgstr ""
 
 msgid "Libraries"
@@ -2588,13 +2854,34 @@ msgstr "Male"
 msgid "Man. *** ACRONYM FOR MANUAL TIEBREAK"
 msgstr "Man."
 
+msgid "Manage accounts"
+msgstr ""
+
+msgid "Manage devices"
+msgstr ""
+
+msgid "Manage prizes"
+msgstr ""
+
+msgid "Manage screens"
+msgstr ""
+
+msgid "Manage source databases"
+msgstr ""
+
 msgid "Manage the prize groups of the tournament."
+msgstr ""
+
+msgid "Manageable roles"
 msgstr ""
 
 msgid "Mandatory for the first hour, optional for next hours."
 msgstr ""
 
 msgid "Manual"
+msgstr ""
+
+msgid "Manually pair players"
 msgstr ""
 
 msgid "Mark this round as over and define the next one as the current round."
@@ -2635,13 +2922,6 @@ msgstr ""
 msgid "Maximum number of results displayed:"
 msgstr ""
 
-#, python-format
-msgid "Maximum number of results: %(num)d"
-msgstr ""
-
-msgid "Maximum number of results: unlimited"
-msgstr ""
-
 msgid "Maximum rating"
 msgstr ""
 
@@ -2657,9 +2937,6 @@ msgstr "Me. Buchholz"
 msgid "Median Buchholz"
 msgstr ""
 
-msgid "Menu label:"
-msgstr ""
-
 msgid "Menu link label:"
 msgstr ""
 
@@ -2668,9 +2945,6 @@ msgid "Menu link label: %(menu_label)s"
 msgstr ""
 
 msgid "Menu link label: none"
-msgstr ""
-
-msgid "Menu:"
 msgstr ""
 
 #, python-format
@@ -2796,6 +3070,9 @@ msgstr ""
 msgid "New group"
 msgstr ""
 
+msgid "New password. Leave blank for no change."
+msgstr ""
+
 msgid "New results are in, refresh your browser"
 msgstr ""
 
@@ -2853,9 +3130,6 @@ msgstr ""
 msgid "No criteria."
 msgstr ""
 
-msgid "No current events (only public events are displayed on clients)."
-msgstr ""
-
 msgid "No current events."
 msgstr ""
 
@@ -2865,10 +3139,10 @@ msgstr ""
 msgid "No display controllers"
 msgstr ""
 
-msgid "No display controllers."
+msgid "No events found."
 msgstr ""
 
-msgid "No events found."
+msgid "No events."
 msgstr ""
 
 msgid "No hours."
@@ -2886,13 +3160,10 @@ msgstr ""
 msgid "No pairings."
 msgstr ""
 
-msgid "No passed events (only public events are displayed on clients)."
-msgstr ""
-
 msgid "No passed events."
 msgstr ""
 
-msgid "No password required"
+msgid "No permissions"
 msgstr ""
 
 msgid "No phone defined."
@@ -2937,9 +3208,6 @@ msgstr ""
 msgid "No rotators"
 msgstr ""
 
-msgid "No rotators."
-msgstr ""
-
 msgid "No rules file set"
 msgstr ""
 
@@ -2950,9 +3218,6 @@ msgid "No screen families."
 msgstr ""
 
 msgid "No screen neither family to rotate."
-msgstr ""
-
-msgid "No screen nor family to rotate."
 msgstr ""
 
 msgid "No screens"
@@ -2985,9 +3250,6 @@ msgstr ""
 msgid "No tournaments."
 msgstr ""
 
-msgid "No upcoming events (only public events are displayed on clients)."
-msgstr ""
-
 msgid "No upcoming events."
 msgstr ""
 
@@ -3009,6 +3271,9 @@ msgstr ""
 msgid "Not assigned"
 msgstr ""
 
+msgid "Not authenticated"
+msgstr ""
+
 msgid "Not checked-in yet"
 msgstr ""
 
@@ -3016,6 +3281,9 @@ msgid "Not connected to internet"
 msgstr ""
 
 msgid "Not connected, impossible to update."
+msgstr ""
+
+msgid "Not paired"
 msgstr ""
 
 msgid "Not paired for this round"
@@ -3054,6 +3322,9 @@ msgid "Numbers {first} and {last} are not compatible ({first} > {last})."
 msgstr ""
 
 msgid "OK"
+msgstr ""
+
+msgid "ORG"
 msgstr ""
 
 msgid "Off"
@@ -3123,6 +3394,9 @@ msgstr ""
 msgid "Open check-in for tournament [%(tournament)s]."
 msgstr ""
 
+msgid "Open/close check-in"
+msgstr ""
+
 msgid "Open/close check-in."
 msgstr ""
 
@@ -3141,7 +3415,13 @@ msgstr ""
 msgid "Opponents"
 msgstr ""
 
+msgid "Organization"
+msgstr ""
+
 msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
+msgstr ""
+
+msgid "Other devices connected to your network can see your public screens. If you have created screens for player check-in and results entry then those features will be enabled."
 msgstr ""
 
 msgid "Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold."
@@ -3180,6 +3460,9 @@ msgstr ""
 msgid "PAB is already assigned"
 msgstr ""
 
+msgid "PAI"
+msgstr ""
+
 msgid "PENALTY"
 msgstr ""
 
@@ -3212,6 +3495,9 @@ msgstr ""
 
 #, python-format
 msgid "Paired against: %(opponent_name)s"
+msgstr ""
+
+msgid "Pairing"
 msgstr ""
 
 msgid "Pairing Allocated Bye"
@@ -3294,16 +3580,10 @@ msgstr ""
 msgid "Passed ({num})"
 msgstr ""
 
-msgid "Passed events ({num})"
+msgid "Passed events"
 msgstr ""
 
-msgid "Password"
-msgstr ""
-
-msgid "Password to enter results"
-msgstr ""
-
-msgid "Password to enter results:"
+msgid "Password:"
 msgstr ""
 
 msgid "Penalties require a time control with a single period."
@@ -3331,6 +3611,18 @@ msgid "Performance indicators for round #{round}"
 msgstr ""
 
 msgid "Period"
+msgstr ""
+
+msgid "Permissions"
+msgstr ""
+
+msgid "Permissions / Roles"
+msgstr ""
+
+msgid "Permissions can not be customized in the current execution mode."
+msgstr ""
+
+msgid "Permute boards"
 msgstr ""
 
 msgid "Personal"
@@ -3437,9 +3729,6 @@ msgstr ""
 msgid "Plays %(board)d *** BOARD STRING FOR PAIRINGS PRINT"
 msgstr "Plays on board %(board)d"
 
-msgid "Please ask the organizer to get the password."
-msgstr ""
-
 msgid "Please choose a federation"
 msgstr ""
 
@@ -3476,6 +3765,9 @@ msgstr ""
 msgid "Please enter a valid time."
 msgstr ""
 
+msgid "Please enter the IP address."
+msgstr ""
+
 msgid "Please enter the date of the first hour."
 msgstr ""
 
@@ -3494,9 +3786,6 @@ msgstr ""
 msgid "Please enter the number of the release to recover [{default_choice}: {default_version}]: "
 msgstr ""
 
-msgid "Please enter the password to enter results:"
-msgstr ""
-
 msgid "Please enter the password."
 msgstr ""
 
@@ -3513,6 +3802,9 @@ msgid "Please enter the text to display before the hour (mandatory except for ro
 msgstr ""
 
 msgid "Please enter the time."
+msgstr ""
+
+msgid "Please enter the username."
 msgstr ""
 
 msgid "Please enter valid date and time."
@@ -3644,6 +3936,9 @@ msgstr ""
 msgid "Proceed"
 msgstr ""
 
+msgid "Profile"
+msgstr ""
+
 msgid "Progressive"
 msgstr ""
 
@@ -3686,11 +3981,20 @@ msgstr ""
 msgid "Public screen"
 msgstr ""
 
+msgid "Publish pairings"
+msgstr ""
+
+msgid "Publish rankings"
+msgstr ""
+
+msgid "Publish tournament results"
+msgstr ""
+
+msgid "Publish tournament rules"
+msgstr ""
+
 msgid "Q *** THE LETTER TO ANSWER QUIT"
 msgstr "Q"
-
-msgid "QR code"
-msgstr ""
 
 msgid "Quit"
 msgstr ""
@@ -3701,6 +4005,9 @@ msgstr "R %(round)d"
 
 msgid "R *** THE LETTER TO ANSWER REPLACE"
 msgstr "R"
+
+msgid "RES"
+msgstr ""
 
 msgid "Random"
 msgstr ""
@@ -3745,6 +4052,9 @@ msgid "Ranking only"
 msgstr ""
 
 msgid "Ranking screens show the players by rank."
+msgstr ""
+
+msgid "Rankings"
 msgstr ""
 
 msgid "Rapid"
@@ -3821,6 +4131,9 @@ msgstr ""
 msgid "Remove the screen from the display controller."
 msgstr ""
 
+msgid "Rename events"
+msgstr ""
+
 msgid "Renaming the database failed: {ex}."
 msgstr ""
 
@@ -3860,6 +4173,9 @@ msgstr ""
 msgid "Results"
 msgstr ""
 
+msgid "Results Entry via public screens"
+msgstr ""
+
 msgid "Results entry"
 msgstr ""
 
@@ -3894,6 +4210,12 @@ msgid "Rk. O. *** RANK OVERALL FOR TABLE HEADER"
 msgstr "Rk. O."
 
 msgid "Rnd.Boa"
+msgstr ""
+
+msgid "Role"
+msgstr ""
+
+msgid "Roles"
 msgstr ""
 
 #, python-format
@@ -4002,6 +4324,15 @@ msgstr "S-Berger"
 msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
 msgstr "SBh"
 
+msgid "SCR"
+msgstr ""
+
+msgid "SEC"
+msgstr ""
+
+msgid "SPE"
+msgstr ""
+
 msgid "Save"
 msgstr ""
 
@@ -4011,6 +4342,9 @@ msgstr ""
 msgid "Save the set or cancel."
 msgstr ""
 
+msgid "Scope"
+msgstr ""
+
 msgid "Score"
 msgstr ""
 
@@ -4018,6 +4352,9 @@ msgid "Score *** PERF IND. FOR TABULAR DISPLAY"
 msgstr "Score"
 
 msgid "Screen"
+msgstr ""
+
+msgid "Screen Management"
 msgstr ""
 
 msgid "Screen [{screen_uniq_id}] has been assigned to controller [{display_controller}]."
@@ -4068,6 +4405,9 @@ msgstr ""
 msgid "Searching…"
 msgstr ""
 
+msgid "Sector arbitration"
+msgstr ""
+
 msgid "See the pairings information for the start of this round."
 msgstr ""
 
@@ -4088,6 +4428,24 @@ msgstr ""
 
 #, python-format
 msgid "Selection: %(selection)s"
+msgstr ""
+
+msgid "Set Full-Points Byes"
+msgstr ""
+
+msgid "Set Half-Points Byes"
+msgstr ""
+
+msgid "Set Zero-Points Byes"
+msgstr ""
+
+msgid "Set illegal moves"
+msgstr ""
+
+msgid "Set special results"
+msgstr ""
+
+msgid "Set the current round"
 msgstr ""
 
 msgid "Set the recommended tie-breaks"
@@ -4114,6 +4472,9 @@ msgstr ""
 msgid "Sharly Chess project"
 msgstr ""
 
+msgid "Sharly Chess server"
+msgstr ""
+
 msgid "Sharly Chess server URL"
 msgstr ""
 
@@ -4135,24 +4496,6 @@ msgstr ""
 msgid "Show warnings"
 msgstr ""
 
-msgid "Show/hide the boards screens."
-msgstr ""
-
-msgid "Show/hide the image screens."
-msgstr ""
-
-msgid "Show/hide the input screens."
-msgstr ""
-
-msgid "Show/hide the players screens."
-msgstr ""
-
-msgid "Show/hide the ranking screens."
-msgstr ""
-
-msgid "Show/hide the results screens."
-msgstr ""
-
 msgid "Show/hide the screens created from screen families."
 msgstr ""
 
@@ -4166,6 +4509,9 @@ msgid "Single Screens ({num})"
 msgstr ""
 
 msgid "Soft Haley system"
+msgstr ""
+
+msgid "Something went wrong. Please ask your administrator to recreate your account."
 msgstr ""
 
 msgid "Sonneborn-Berger"
@@ -4225,6 +4571,9 @@ msgstr ""
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr ""
 
+msgid "Spectator"
+msgstr ""
+
 msgid "Split by:"
 msgstr ""
 
@@ -4259,6 +4608,9 @@ msgid "Storing data…"
 msgstr ""
 
 msgid "Strong"
+msgstr ""
+
+msgid "Sub roles"
 msgstr ""
 
 msgid "Sum of Buchholz"
@@ -4312,13 +4664,16 @@ msgstr ""
 msgid "The ID used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
 msgstr ""
 
+msgid "The IP address, used to identify the device."
+msgstr ""
+
 msgid "The URL of the image to display."
 msgstr ""
 
 msgid "The URL or the path of the image (relative to the 'custom' folder) to display (by default the Sharly Chess logo)."
 msgstr ""
 
-msgid "The arbiter interface allows the management of the events."
+msgid "The Unique ID, used to authenticate."
 msgstr ""
 
 msgid "The background colour is used when the image does not fill the whole screen."
@@ -4520,13 +4875,13 @@ msgstr ""
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr ""
 
-msgid "The password required on input screens to enter results (optional)."
-msgstr ""
-
 msgid "The password used to connect to the ChessEvent platform (by default the password defined for the Sharly Chess event of the tournament)."
 msgstr ""
 
 msgid "The password used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
+msgstr ""
+
+msgid "The password, used to authenticate. It is impossible to see the password once set, but it can be overwritten if necessary."
 msgstr ""
 
 msgid "The phone numbers."
@@ -4619,6 +4974,12 @@ msgstr ""
 msgid "The representation of the event for URLs and file exports."
 msgstr ""
 
+msgid "The roles to attribute to this account."
+msgstr ""
+
+msgid "The roles to attribute to this device."
+msgstr ""
+
 #, python-format
 msgid "The rotating delay between two screens (by default %(default)d seconds)."
 msgstr ""
@@ -4635,7 +4996,7 @@ msgstr ""
 msgid "The screen families to rotate (the input screen families are emphasised because they should not appear on rotators)."
 msgstr ""
 
-msgid "The screens displayed by the display controller are controlled by the administrator."
+msgid "The screens displayed by the display controller are controlled by the screen managers."
 msgstr ""
 
 msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
@@ -4681,6 +5042,12 @@ msgstr ""
 msgid "The tournament to print."
 msgstr ""
 
+msgid "The tournaments on which the account can act (if none, the account can act on all the tournaments)."
+msgstr ""
+
+msgid "The tournaments on which the device can act (if none, the device can act on all the tournaments)."
+msgstr ""
+
 msgid "The type of criterion used to filter the players."
 msgstr ""
 
@@ -4708,13 +5075,31 @@ msgstr ""
 msgid "There is no pairings for this round (last round with pairings: #{round})."
 msgstr ""
 
+msgid "This account can not be deleted."
+msgstr ""
+
+msgid "This account can not be duplicated."
+msgstr ""
+
+msgid "This account can not be updated."
+msgstr ""
+
 msgid "This data source in unavailable (for more details: Menu > Data sources)."
 msgstr ""
 
-msgid "This display controller is private (not visible by the users)."
+msgid "This device can not be deleted."
 msgstr ""
 
-msgid "This display controller is public (visible by the users)."
+msgid "This device can not be duplicated."
+msgstr ""
+
+msgid "This device can not be updated."
+msgstr ""
+
+msgid "This display controller is private (not visible by the spectators)."
+msgstr ""
+
+msgid "This display controller is public (visible by the spectators)."
 msgstr ""
 
 msgid "This document is not available for unpaired tournaments."
@@ -4723,10 +5108,10 @@ msgstr ""
 msgid "This document is only available for Round-Robin tournaments."
 msgstr ""
 
-msgid "This event is private (by default, screens are not visible by the users)."
+msgid "This event is private (by default, screens are not visible by the spectators)."
 msgstr ""
 
-msgid "This event is public (by default, screens are visible by the users)."
+msgid "This event is public (by default, screens are visible by the spectators)."
 msgstr ""
 
 msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
@@ -4750,10 +5135,10 @@ msgstr ""
 msgid "This name is already used."
 msgstr ""
 
-msgid "This rotator is private (not visible by the users)."
+msgid "This rotator is private (not visible by the spectators)."
 msgstr ""
 
-msgid "This rotator is public (visible by the users)."
+msgid "This rotator is public (visible by the spectators)."
 msgstr ""
 
 msgid "This round is not finished (last finished: #{round})."
@@ -4762,16 +5147,16 @@ msgstr ""
 msgid "This round is not valid (the tournament has {rounds} rounds)."
 msgstr ""
 
-msgid "This screen family is private (not visible by the users)."
+msgid "This screen family is private (not visible by the spectators)."
 msgstr ""
 
-msgid "This screen family is public (visible by the users)."
+msgid "This screen family is public (visible by the spectators)."
 msgstr ""
 
-msgid "This screen is private (not visible by the users)."
+msgid "This screen is private (not visible by the spectators)."
 msgstr ""
 
-msgid "This screen is public (visible by the users)."
+msgid "This screen is public (visible by the spectators)."
 msgstr ""
 
 msgid "This unique ID is already used."
@@ -4921,12 +5306,6 @@ msgstr ""
 msgid "Tournament [{tournament}] is finished, you can not add players any longer."
 msgstr ""
 
-msgid "Tournament [{tournament}] is not started yet."
-msgstr ""
-
-msgid "Tournament [{tournament}] is started."
-msgstr ""
-
 msgid "Tournament [{tournament}] successfully imported."
 msgstr ""
 
@@ -4984,6 +5363,9 @@ msgid "Tournaments are finished, you can not add players any longer."
 msgstr ""
 
 msgid "Tournaments displayed:"
+msgstr ""
+
+msgid "Tournaments management"
 msgstr ""
 
 #, python-format
@@ -5067,6 +5449,9 @@ msgstr ""
 msgid "Unable to upload tournament rules."
 msgstr ""
 
+msgid "Unauthenticated access has been updated."
+msgstr ""
+
 msgid "Undefined"
 msgstr ""
 
@@ -5109,6 +5494,9 @@ msgstr ""
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 msgstr ""
 
+msgid "Unknown devices' access has been updated."
+msgstr ""
+
 msgid "Unknown field [{field}]."
 msgstr ""
 
@@ -5127,10 +5515,16 @@ msgstr ""
 msgid "Unpair"
 msgstr ""
 
+msgid "Unpair all the boards of a round"
+msgstr ""
+
 msgid "Unpair all the boards of this round."
 msgstr ""
 
-msgid "Unpair all the rounds the tournament."
+msgid "Unpair all the rounds of the tournament."
+msgstr ""
+
+msgid "Unpair one board"
 msgstr ""
 
 msgid "Unpair tournament"
@@ -5146,12 +5540,6 @@ msgstr "Unpaired"
 msgid "Unpaired *** MALE"
 msgstr "Unpaired"
 
-msgid "Unpaired players: displayed"
-msgstr ""
-
-msgid "Unpaired players: hidden"
-msgstr ""
-
 msgid "Unpaired: displayed"
 msgstr ""
 
@@ -5161,7 +5549,7 @@ msgstr ""
 msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose any manual adjustments."
 msgstr ""
 
-msgid "Unpairing all the boards of this round is not allowed because the round has results."
+msgid "Unpairing all the boards of this round is not possible because the round has results."
 msgstr ""
 
 msgid "Unrated Draw"
@@ -5176,16 +5564,31 @@ msgstr ""
 msgid "Upcoming ({num})"
 msgstr ""
 
-msgid "Upcoming events ({num})"
+msgid "Upcoming events"
 msgstr ""
 
 msgid "Update"
 msgstr ""
 
+msgid "Update application settings"
+msgstr ""
+
+msgid "Update events"
+msgstr ""
+
 msgid "Update players"
 msgstr ""
 
+msgid "Update players' history"
+msgstr ""
+
+msgid "Update results"
+msgstr ""
+
 msgid "Update the players' information from an external data source."
+msgstr ""
+
+msgid "Update tournaments"
 msgstr ""
 
 msgid "Updating"
@@ -5233,6 +5636,12 @@ msgstr ""
 msgid "Use Event's default - {option}"
 msgstr ""
 
+msgid "Use connected devices to check-in players and enter results on public screens"
+msgstr ""
+
+msgid "Use customized permissions"
+msgstr ""
+
 msgid "Use estimated rating for unrated players"
 msgstr ""
 
@@ -5242,10 +5651,19 @@ msgstr ""
 msgid "Use no timer"
 msgstr ""
 
+msgid "Use pairing engines"
+msgstr ""
+
 msgid "Use standard ratings"
 msgstr ""
 
 msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system."
+msgstr ""
+
+msgid "Username"
+msgstr ""
+
+msgid "Username:"
 msgstr ""
 
 msgid "Using colors helps in finding quickly important information on the console."
@@ -5261,6 +5679,51 @@ msgid "Values"
 msgstr ""
 
 msgid "Variation"
+msgstr ""
+
+msgid "View Pairings tab"
+msgstr ""
+
+msgid "View Players tab"
+msgstr ""
+
+msgid "View Prizes tab"
+msgstr ""
+
+msgid "View application settings"
+msgstr ""
+
+msgid "View basic event configuration"
+msgstr ""
+
+msgid "View complete event configuration"
+msgstr ""
+
+msgid "View draft pairings"
+msgstr ""
+
+msgid "View draft rankings"
+msgstr ""
+
+msgid "View event cards details"
+msgstr ""
+
+msgid "View passed and upcoming events"
+msgstr ""
+
+msgid "View private events"
+msgstr ""
+
+msgid "View private screens"
+msgstr ""
+
+msgid "View public current events"
+msgstr ""
+
+msgid "View public screens"
+msgstr ""
+
+msgid "View the Tournaments tab"
 msgstr ""
 
 msgid "View the files on filebin.net"
@@ -5293,6 +5756,9 @@ msgstr "WIM"
 msgid "Warning message"
 msgstr ""
 
+msgid "Warning: by default, only people on your Sharly Chess server can access the application."
+msgstr ""
+
 msgid "Warning: experimental features are enabled!"
 msgstr ""
 
@@ -5305,6 +5771,12 @@ msgid "Warning: the %(player_count)d players in the tournament will be deleted."
 msgstr ""
 
 msgid "Warning: the deletion is permanent!"
+msgstr ""
+
+msgid "Warning: the deletion of a device is permanent!"
+msgstr ""
+
+msgid "Warning: the deletion of an account is permanent!"
 msgstr ""
 
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
@@ -5397,13 +5869,128 @@ msgstr ""
 msgid "Yesterday"
 msgstr ""
 
+#, python-format
+msgid "You are authenticated as \"%(username)s\" but the account is disabled (you get the same permissions as an anonymous user)."
+msgstr ""
+
+#, python-format
+msgid "You are connected on an unknown client (%(host)s)."
+msgstr ""
+
+#, python-format
+msgid "You are connected on client (%(host)s) but the access from this client is disabled (you get the same permissions as an unknown device)."
+msgstr ""
+
+#, python-format
+msgid "You are connected on client (%(host)s)."
+msgstr ""
+
+msgid "You are connected on the Sharly Chess server and have full administration privileges."
+msgstr ""
+
+msgid "You are connected to the Sharly Chess server."
+msgstr ""
+
 msgid "You are in an unsafe editing mode. Change the round to exit this mode."
+msgstr ""
+
+msgid "You are not allowed to add players to the event."
+msgstr ""
+
+msgid "You are not allowed to check-in the player."
+msgstr ""
+
+msgid "You are not allowed to check-out the player."
+msgstr ""
+
+msgid "You are not allowed to create tournaments."
+msgstr ""
+
+msgid "You are not allowed to delete the tournament."
+msgstr ""
+
+msgid "You are not allowed to delete this account."
+msgstr ""
+
+msgid "You are not allowed to delete this device."
+msgstr ""
+
+msgid "You are not allowed to download fees."
+msgstr ""
+
+msgid "You are not allowed to duplicate this account."
+msgstr ""
+
+msgid "You are not allowed to duplicate this device."
+msgstr ""
+
+msgid "You are not allowed to enter results."
+msgstr ""
+
+msgid "You are not allowed to generate complementary pairings."
+msgstr ""
+
+msgid "You are not allowed to generate the pairings."
+msgstr ""
+
+msgid "You are not allowed to manage prizes."
+msgstr ""
+
+msgid "You are not allowed to open/close check-in."
+msgstr ""
+
+msgid "You are not allowed to pair players."
+msgstr ""
+
+msgid "You are not allowed to publish results."
+msgstr ""
+
+msgid "You are not allowed to publish rules."
+msgstr ""
+
+msgid "You are not allowed to set the current round."
+msgstr ""
+
+msgid "You are not allowed to set/unset Half-Point Byes."
+msgstr ""
+
+msgid "You are not allowed to set/unset Zero-Point Byes."
+msgstr ""
+
+msgid "You are not allowed to unpair rounds."
+msgstr ""
+
+msgid "You are not allowed to update results."
+msgstr ""
+
+msgid "You are not allowed to update the players' information from an external data source."
+msgstr ""
+
+msgid "You are not allowed to update the tournament."
+msgstr ""
+
+msgid "You are not allowed to update this account."
+msgstr ""
+
+msgid "You are not allowed to update this device."
+msgstr ""
+
+msgid "You are on the Sharly Chess server."
 msgstr ""
 
 msgid "You are trying to manually edit the pairings of the current round. Pairings should only be altered to handle unusual situations."
 msgstr ""
 
 msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
+msgstr ""
+
+msgid "You can temporarily invalidate accounts by turning this switch off."
+msgstr ""
+
+msgid "You can temporarily invalidate devices by turning this switch off."
+msgstr ""
+
+msgid "You decide which devices and which accounts are allowed to display screens, check-in players, enter results, pair rounds… Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers…"
 msgstr ""
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
@@ -5430,9 +6017,6 @@ msgstr ""
 msgid "You must enter the tournament certification number and password in each tournament's settings."
 msgstr ""
 
-msgid "Your Screens"
-msgstr ""
-
 msgid "Your choice (by default {default}): "
 msgstr ""
 
@@ -5449,6 +6033,9 @@ msgid "[{value}] is not a positive value."
 msgstr ""
 
 msgid "[{value}] is not a valid value format."
+msgstr ""
+
+msgid "all"
 msgstr ""
 
 msgid "all the boards"
@@ -5512,6 +6099,9 @@ msgid "no"
 msgstr ""
 
 msgid "no background image"
+msgstr ""
+
+msgid "none"
 msgstr ""
 
 msgid "player already received a PAB in a previous round"
@@ -5580,6 +6170,9 @@ msgstr ""
 msgid "screens of {number} players from start to #{last}"
 msgstr ""
 
+msgid "server"
+msgstr ""
+
 msgid "some already played each other"
 msgstr ""
 
@@ -5599,6 +6192,9 @@ msgid "then"
 msgstr ""
 
 msgid "time control"
+msgstr ""
+
+msgid "unknown"
 msgstr ""
 
 msgid "value: {value}"

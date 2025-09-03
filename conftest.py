@@ -20,6 +20,10 @@ import requests
 from tests.test_config import TestConfig
 from utils.file import shutil_delete_onerror
 
+# Set up environment variables here to make TEST_ENV available in common.i18n
+env = os.environ.copy()
+env.update(TestConfig.get_test_env_vars())
+
 
 def pytest_configure(config):
     """Register custom markers."""
@@ -62,9 +66,6 @@ class BackendServer:
 
     def start(self):
         """Start the backend server."""
-        # Set up environment variables
-        env = os.environ.copy()
-        env.update(TestConfig.get_test_env_vars())
 
         # Add src directory to PYTHONPATH for server to find modules
         current_pythonpath = env.get('PYTHONPATH', '')
@@ -186,6 +187,7 @@ def setup_page(page, backend_server):
         return None
 
     page.set_default_timeout(15000)
+    page.set_default_navigation_timeout(10000)
     return page
 
 
@@ -202,6 +204,7 @@ def lan_context(browser: Browser):
 def lan_page(lan_context):
     page = lan_context.new_page()
     page.set_default_timeout(15000)
+    page.set_default_navigation_timeout(10000)
     return page
 
 

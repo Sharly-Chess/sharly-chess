@@ -1,5 +1,7 @@
 import copy
+import time
 from collections import defaultdict, Counter
+from contextlib import suppress
 from functools import total_ordering, cached_property
 from logging import Logger
 from operator import attrgetter
@@ -15,6 +17,8 @@ from common.background import inline_image_url
 from common.i18n import _
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
+from data.auth.entities import Device, Account
+from data.auth.roles import CheckInRole, ResultsEntryRole
 from data.display_controller import DisplayController
 from data.family import Family
 from data.player import Player, Club, Federation
@@ -32,6 +36,8 @@ from utils.enum import (
 from database.sqlite.event.event_store import (
     StoredEvent,
     StoredPlayer,
+    StoredDevice,
+    StoredAccount,
 )
 
 logger: Logger = get_logger()
@@ -43,6 +49,8 @@ class Event:
 
     def __init__(self, stored_event: StoredEvent):
         self.stored_event: StoredEvent = stored_event
+        self.devices_by_id = self._get_devices_by_id()
+        self.accounts_by_id = self._get_accounts_by_id()
 
     @property
     def uniq_id(self) -> str:
@@ -60,6 +68,16 @@ class Event:
     def stop(self) -> float:
         return self.stored_event.stop
 
+    def passed(self, now: float | None = None) -> bool:
+        return self.stored_event.stop < (now or time.time())
+
+    def coming(self, now: float | None = None) -> bool:
+        return self.stored_event.start > (now or time.time())
+
+    def current(self, now: float | None = None) -> bool:
+        now = now or time.time()
+        return not self.passed(now) and not self.coming(now)
+
     @property
     def federation(self) -> str:
         return self.stored_event.federation
@@ -73,6 +91,10 @@ class Event:
         if plugin := plugin_manager.hook.get_default_prize_currency():
             return plugin
         return SharlyChessConfig.default_prize_currency
+
+    @property
+    def custom_exec_mode(self) -> bool:
+        return self.stored_event.custom_exec_mode
 
     @property
     def override_unrated_rapid_blitz(self) -> bool:
@@ -126,11 +148,7 @@ class Event:
             or SharlyChessConfig.default_background_color
         )
 
-    @property
-    def update_password(self) -> str | None:
-        return self.stored_event.update_password
-
-    @property
+    @cached_property
     def record_illegal_moves(self) -> int:
         return (
             self.stored_event.record_illegal_moves
@@ -187,7 +205,7 @@ class Event:
         return sorted(self.screens_by_uniq_id.values(), key=lambda screen: screen.name)
 
     @property
-    def screens_of_type_sorted_by_uniq_id(
+    def screens_by_screen_type_sorted_by_uniq_id(
         self,
     ) -> defaultdict[ScreenType, list[Screen]]:
         screens_of_type_sorted_by_uniq_id: defaultdict[ScreenType, list[Screen]] = (
@@ -198,67 +216,19 @@ class Event:
         return screens_of_type_sorted_by_uniq_id
 
     @property
-    def input_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.INPUT]
-
-    @property
-    def boards_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.BOARDS]
-
-    @property
-    def players_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.PLAYERS]
-
-    @property
-    def results_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.RESULTS]
-
-    @property
-    def ranking_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.RANKING]
-
-    @property
-    def image_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.IMAGE]
-
-    @property
     def public_screens_sorted_by_uniq_id(self) -> list[Screen]:
         return [screen for screen in self.screens_by_uniq_id.values() if screen.public]
 
     @property
-    def public_screens_of_type_sorted_by_uniq_id(
+    def public_screens_by_screen_type_sorted_by_uniq_id(
         self,
     ) -> defaultdict[ScreenType, list[Screen]]:
-        public_screens_of_type_sorted_by_uniq_id: defaultdict[
+        public_screens_by_screen_type_sorted_by_uniq_id: defaultdict[
             ScreenType, list[Screen]
         ] = defaultdict(list[Screen])
         for screen in self.public_screens_sorted_by_uniq_id:
-            public_screens_of_type_sorted_by_uniq_id[screen.type].append(screen)
-        return public_screens_of_type_sorted_by_uniq_id
-
-    @property
-    def public_input_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.INPUT]
-
-    @property
-    def public_boards_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.BOARDS]
-
-    @property
-    def public_players_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.PLAYERS]
-
-    @property
-    def public_results_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.RESULTS]
-
-    @property
-    def public_ranking_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.RANKING]
-
-    @property
-    def public_image_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.IMAGE]
+            public_screens_by_screen_type_sorted_by_uniq_id[screen.type].append(screen)
+        return public_screens_by_screen_type_sorted_by_uniq_id
 
     @cached_property
     def rotators_sorted_by_uniq_id(self) -> list[Rotator]:
@@ -522,6 +492,31 @@ class Event:
             ],
         )
 
+    @property
+    def basic_screens_by_screen_type_by_id(
+        self,
+    ) -> defaultdict[ScreenType, dict[int, Screen]]:
+        basic_screens_by_screen_type_by_id: defaultdict[
+            ScreenType, dict[int, Screen]
+        ] = defaultdict(dict[int, Screen])
+        for screen in self.basic_screens_by_id.values():
+            basic_screens_by_screen_type_by_id[screen.type][screen.id] = screen
+        return basic_screens_by_screen_type_by_id
+
+    @property
+    def basic_screens_by_screen_type_sorted_by_uniq_id(
+        self,
+    ) -> defaultdict[ScreenType, list[Screen]]:
+        basic_screens_by_screen_type_sorted_by_uniq_id: defaultdict[
+            ScreenType, list[Screen]
+        ] = defaultdict(list[Screen])
+        for screen_type in self.basic_screens_by_screen_type_by_id:
+            basic_screens_by_screen_type_sorted_by_uniq_id[screen_type] = sorted(
+                self.basic_screens_by_screen_type_by_id[screen_type].values(),
+                key=lambda screen: screen.uniq_id,
+            )
+        return basic_screens_by_screen_type_sorted_by_uniq_id
+
     @cached_property
     def families_by_id(self) -> dict[int, Family]:
         families_by_id: dict[int, Family] = {
@@ -651,6 +646,215 @@ class Event:
                 for display_controller in self.display_controllers_by_id.values()
             ],
         )
+
+    # -------------------------------------------------------------------------
+    # Devices
+    # -------------------------------------------------------------------------
+
+    @staticmethod
+    def predefined_custom_devices() -> list[Device]:
+        """Returns the list of the devices that correspond to the custom execution mode."""
+        localhost_device: Device = Device.localhost_device()
+        unknown_device: Device = Device.unknown_device()
+        return [
+            localhost_device,
+            unknown_device,
+        ]
+
+    @staticmethod
+    def predefined_standard_devices() -> list[Device]:
+        """Returns the list of the devices that correspond to the standard execution mode."""
+        localhost_device: Device = Device.localhost_device()
+        unknown_device: Device = Device.unknown_device()
+        unknown_device.stored_device.roles += [
+            CheckInRole.static_id(),
+            ResultsEntryRole.static_id(),
+        ]
+        return [
+            localhost_device,
+            unknown_device,
+        ]
+
+    @property
+    def predefined_devices(self) -> list[Device]:
+        """Returns the list of the devices that correspond to execution mode of the event."""
+        if self.custom_exec_mode:
+            return self.predefined_custom_devices()
+        else:
+            return self.predefined_standard_devices()
+
+    def _get_devices_by_id(self) -> dict[int, Device]:
+        if self.custom_exec_mode and self.stored_event.stored_devices:
+            # we used the stored devices only for custom exec mode and if found in the database
+            return {
+                stored_device.id: Device(stored_device)
+                for stored_device in self.stored_event.stored_devices
+                if stored_device.id is not None
+            }
+        else:
+            # otherwise we use the predefined devices of the mode
+            return {device.id: device for device in self.predefined_devices}
+
+    def create_device(self, stored_device: StoredDevice) -> Device:
+        with EventDatabase(self.uniq_id, True) as database:
+            stored_device = database.add_stored_device(stored_device)
+            database.commit()
+        self.stored_event.stored_devices.append(stored_device)
+        device = Device(stored_device)
+        self.devices_by_id[device.id] = device
+        return device
+
+    def update_device(self, stored_device: StoredDevice):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.update_stored_device(stored_device)
+            database.commit()
+
+    def delete_device(self, device: Device):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.delete_stored_device(device.id)
+            database.commit()
+        with suppress(ValueError):
+            self.stored_event.stored_devices.remove(device.stored_device)
+        if device.id in self.devices_by_id:
+            del self.devices_by_id[device.id]
+
+    @property
+    def devices_by_ip(self) -> dict[str, Device]:
+        return {device.ip: device for device in self.devices_by_id.values()}
+
+    @property
+    def devices_sorted_by_ip(self) -> list[Device]:
+        return sorted(
+            self.devices_by_ip.values(),
+            key=lambda device: (
+                not device.localhost,
+                device.unknown,
+                device.ip,
+            ),
+        )
+
+    @property
+    def unknown_device(self) -> Device:
+        return self.devices_by_id[Device.ANY_DEVICE_ID]
+
+    # -------------------------------------------------------------------------
+    # Accounts
+    # -------------------------------------------------------------------------
+
+    @staticmethod
+    def predefined_custom_accounts() -> list[Account]:
+        """Returns the list of the accounts that correspond to the custom execution mode."""
+        anonymous_account: Account = Account.anonymous_account()
+        return [
+            anonymous_account,
+        ]
+
+    @staticmethod
+    def predefined_standard_accounts() -> list[Account]:
+        """Returns the list of the accounts that correspond to the standard execution mode."""
+        anonymous_account: Account = Account.anonymous_account()
+        return [
+            anonymous_account,
+        ]
+
+    @property
+    def predefined_accounts(self) -> list[Account]:
+        """Returns the list of the accounts that correspond to execution mode of the event."""
+        if self.custom_exec_mode:
+            return self.predefined_custom_accounts()
+        else:
+            return self.predefined_standard_accounts()
+
+    def _get_accounts_by_id(self) -> dict[int, Account]:
+        if self.custom_exec_mode and self.stored_event.stored_accounts:
+            # we used the stored accounts only for custom exec mode and if found in the database
+            return {
+                stored_account.id: Account(stored_account)
+                for stored_account in self.stored_event.stored_accounts
+                if stored_account.id is not None
+            }
+        else:
+            # otherwise we use the predefined accounts of the mode
+            return {account.id: account for account in self.predefined_accounts}
+
+    def create_account(self, stored_account: StoredAccount) -> Account:
+        with EventDatabase(self.uniq_id, True) as database:
+            stored_account = database.add_stored_account(stored_account)
+            database.commit()
+        self.stored_event.stored_accounts.append(stored_account)
+        account = Account(stored_account)
+        self.accounts_by_id[account.id] = account
+        return account
+
+    def update_account(self, stored_account: StoredAccount):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.update_stored_account(stored_account)
+            database.commit()
+
+    def delete_account(self, account: Account):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.delete_stored_account(account.id)
+            database.commit()
+        with suppress(ValueError):
+            self.stored_event.stored_accounts.remove(account.stored_account)
+        if account.id in self.accounts_by_id:
+            del self.accounts_by_id[account.id]
+
+    @property
+    def accounts_by_username(self) -> dict[str | None, Account]:
+        return {account.username: account for account in self.accounts_by_id.values()}
+
+    @property
+    def accounts_sorted_by_username(self) -> list[Account]:
+        return sorted(
+            self.accounts_by_username.values(),
+            key=lambda account: (
+                account.anonymous,
+                account.username,
+            ),
+        )
+
+    @property
+    def anonymous_account(self) -> Account:
+        return self.accounts_by_id[Account.ANONYMOUS_ID]
+
+    # -------------------------------------------------------------------------
+    # Devices and Accounts
+    # -------------------------------------------------------------------------
+
+    @property
+    def default_custom_mode_objects(self) -> bool:
+        """Returns True if the object has no stored accounts and devices."""
+        return (
+            not self.stored_event.stored_accounts
+            or not self.stored_event.stored_devices
+        )
+
+    def create_custom_exec_mode_objects(self) -> bool:
+        """Add the accounts and devices that correspond to the default
+        permissions of the custom mode. These objects are added juste
+        before doing an action on the fake permissions used from the
+        creation of the object.
+        Returns True if the objects were created, False if they already existed."""
+        if not self.default_custom_mode_objects:
+            return False
+        with EventDatabase(self.uniq_id, True) as database:
+            database.create_custom_exec_mode_objects(
+                self.predefined_custom_devices(),
+                self.predefined_custom_accounts(),
+            )
+            database.commit()
+        for device in self.predefined_custom_devices():
+            self.stored_event.stored_devices.append(device.stored_device)
+            self.devices_by_id[device.id] = device
+        for account in self.predefined_custom_accounts():
+            self.stored_event.stored_accounts.append(account.stored_account)
+            self.accounts_by_id[account.id] = account
+        return True
+
+    # -------------------------------------------------------------------------
+    # Plugins
+    # -------------------------------------------------------------------------
 
     @property
     def plugin_data(self) -> dict[str, dict[str, Any]]:

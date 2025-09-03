@@ -9,7 +9,7 @@ from common.logger import (
     print_interactive_error,
     print_interactive_success,
 )
-from database.access.papi.papi_store import StoredPlayer
+from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_sql_server import FFESqlServer

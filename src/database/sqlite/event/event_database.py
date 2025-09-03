@@ -19,6 +19,7 @@ from common import (
 )
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
+from data.auth.entities import Device, Account
 from database.sqlite.event.event_store import (
     StoredDisplayController,
     StoredTournament,
@@ -38,6 +39,8 @@ from database.sqlite.event.event_store import (
     StoredTournamentPlayer,
     StoredPairing,
     StoredBoard,
+    StoredDevice,
+    StoredAccount,
 )
 from database.sqlite.event import migrations
 from database.sqlite.migration_database import MigrationDatabase
@@ -271,7 +274,6 @@ class EventDatabase(MigrationDatabase):
             ),
             background_image=row['background_image'],
             background_color=row['background_color'],
-            update_password=row['update_password'],
             record_illegal_moves=row['record_illegal_moves'],
             rules=row['rules'],
             timer_colors=self.set_dict_int_keys(
@@ -284,6 +286,9 @@ class EventDatabase(MigrationDatabase):
             message_color=row['message_color'],
             message_background_color=row['message_background_color'],
             prize_currency=row['prize_currency'],
+            custom_exec_mode=self.load_bool_from_database_field(
+                row['custom_exec_mode']
+            ),
             override_unrated_rapid_blitz=self.load_bool_from_database_field(
                 row['override_unrated_rapid_blitz']
             ),
@@ -307,6 +312,8 @@ class EventDatabase(MigrationDatabase):
         stored_event.stored_display_controllers = list(
             self.load_stored_display_controllers()
         )
+        stored_event.stored_devices = list(self.load_stored_devices())
+        stored_event.stored_accounts = list(self.load_stored_accounts())
         return stored_event
 
     def load_stored_event_metadata(self) -> EventMetadata:
@@ -322,9 +329,11 @@ class EventDatabase(MigrationDatabase):
         metadata.rotator_count = self._get_table_count('rotator')
         return metadata
 
-    def update_stored_event(self, stored_event: StoredEvent):
-        """Updates the event database with the information in the provided
-        `stored_event`."""
+    def update_stored_event(
+        self,
+        stored_event: StoredEvent,
+    ):
+        """Updates the event database with the information in the provided `stored_event`."""
 
         per_plugin_event_data = plugin_manager.hook.event_data_for_db_write(
             stored_event=stored_event
@@ -346,13 +355,13 @@ class EventDatabase(MigrationDatabase):
                     'hide_background_image',
                     'background_image',
                     'background_color',
-                    'update_password',
                     'record_illegal_moves',
                     'rules',
                     'message_text',
                     'message_color',
                     'message_background_color',
                     'prize_currency',
+                    'custom_exec_mode',
                     'override_unrated_rapid_blitz',
                 ],
             )
@@ -1599,10 +1608,10 @@ class EventDatabase(MigrationDatabase):
             last_update=row['last_update'],
         )
 
-    def get_stored_screen_set(self, screen_id: int) -> StoredScreenSet | None:
+    def get_stored_screen_set(self, screen_set_id: int) -> StoredScreenSet | None:
         self.execute(
             'SELECT * FROM `screen_set` WHERE `id` = ?',
-            (screen_id,),
+            (screen_set_id,),
         )
         row: dict[str, Any]
         if row := self.fetchone():
@@ -1676,7 +1685,7 @@ class EventDatabase(MigrationDatabase):
             if screen_set_id is None:
                 raise RuntimeError('Screen set insertion failed')
             fetched_stored_screen_set = self.get_stored_screen_set(
-                screen_id=screen_set_id
+                screen_set_id=screen_set_id
             )
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
@@ -1686,7 +1695,7 @@ class EventDatabase(MigrationDatabase):
                 tuple(params),
             )
             fetched_stored_screen_set = self.get_stored_screen_set(
-                screen_id=stored_screen_set.id
+                screen_set_id=stored_screen_set.id
             )
         if fetched_stored_screen_set is None:
             raise RuntimeError('Screen set write failed')
@@ -2200,3 +2209,185 @@ class EventDatabase(MigrationDatabase):
 
     def delete_stored_prize(self, prize_id: int):
         self.execute('DELETE FROM `prize` WHERE `id` = ?;', (prize_id,))
+
+    # ---------------------------------------------------------------------------------
+    # StoredDevice
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_device(cls, row: dict[str, Any]) -> StoredDevice:
+        return StoredDevice(
+            id=row['id'],
+            active=cls.load_bool_from_database_field(row['active']),
+            ip=row['ip'],
+            roles=cls.load_json_from_database_field(row['roles'], []),
+            tournament_ids=cls.load_json_from_database_field(
+                row['tournament_ids'], None
+            ),
+        )
+
+    def get_stored_device(self, device_id: int) -> StoredDevice | None:
+        self.execute(
+            'SELECT * FROM `device` WHERE `id` = ?',
+            (device_id,),
+        )
+        row: dict[str, Any]
+        if row := self.fetchone():
+            return self._row_to_stored_device(row)
+        return None
+
+    def load_stored_devices(self) -> Iterator[StoredDevice]:
+        self.execute(
+            'SELECT * FROM `device` ORDER BY `ip`',
+            (),
+        )
+        yield from map(self._row_to_stored_device, self.fetchall())
+
+    def _write_stored_device(
+        self, stored_device: StoredDevice, insert_id: bool = False
+    ) -> StoredDevice:
+        fields = self._get_fields_dict(stored_device, ['active', 'ip']) | {
+            'roles': self.dump_to_json_database_field(stored_device.roles),
+            'tournament_ids': self.dump_to_json_database_field(
+                stored_device.tournament_ids
+            ),
+        }
+        fetched_stored_device: StoredDevice | None
+        if stored_device.id is None or insert_id:
+            if insert_id:
+                fields |= {'id': stored_device.id}
+            fields_str = ', '.join(f'`{field}`' for field in fields)
+            values_str = ', '.join(['?'] * len(fields))
+            self.execute(
+                f'INSERT INTO `device`({fields_str}) VALUES ({values_str})',
+                tuple(fields.values()),
+            )
+            device_id: int | None = self._last_inserted_id()
+            if device_id is None:
+                raise RuntimeError('Device insertion failed')
+            fetched_stored_device = self.get_stored_device(device_id=device_id)
+        else:
+            field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+            self.execute(
+                f'UPDATE `device` SET {field_sets} WHERE `id` = ?',
+                tuple(fields.values()) + (stored_device.id,),
+            )
+            fetched_stored_device = self.get_stored_device(device_id=stored_device.id)
+        if fetched_stored_device is None:
+            raise RuntimeError('Device write failed')
+        return fetched_stored_device
+
+    def add_stored_device(self, stored_device: StoredDevice) -> StoredDevice:
+        assert stored_device.id is None, f'stored_device.id={stored_device.id}'
+        return self._write_stored_device(stored_device)
+
+    def update_stored_device(
+        self,
+        stored_device: StoredDevice,
+    ) -> StoredDevice:
+        assert stored_device.id is not None
+        return self._write_stored_device(stored_device)
+
+    def delete_stored_device(self, device_id: int):
+        self.execute('DELETE FROM `device` WHERE `id` = ?', (device_id,))
+
+    # ---------------------------------------------------------------------------------
+    # StoredAccount
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_account(cls, row: dict[str, Any]) -> StoredAccount:
+        return StoredAccount(
+            id=row['id'],
+            active=cls.load_bool_from_database_field(row['active']),
+            username=row['username'],
+            password_hash=row['password_hash'],
+            roles=cls.load_json_from_database_field(row['roles'], []),
+            tournament_ids=cls.load_json_from_database_field(
+                row['tournament_ids'], None
+            ),
+        )
+
+    def get_stored_account(self, account_id: int) -> StoredAccount | None:
+        self.execute(
+            'SELECT * FROM `account` WHERE `id` = ?',
+            (account_id,),
+        )
+        row: dict[str, Any]
+        if row := self.fetchone():
+            return self._row_to_stored_account(row)
+        return None
+
+    def load_stored_accounts(self) -> Iterator[StoredAccount]:
+        self.execute(
+            'SELECT * FROM `account` ORDER BY `username`',
+            (),
+        )
+        yield from map(self._row_to_stored_account, self.fetchall())
+
+    def _write_stored_account(
+        self, stored_account: StoredAccount, insert_id: bool = False
+    ) -> StoredAccount:
+        fields = self._get_fields_dict(
+            stored_account, ['active', 'username', 'password_hash']
+        ) | {
+            'roles': self.dump_to_json_database_field(stored_account.roles),
+            'tournament_ids': self.dump_to_json_database_field(
+                stored_account.tournament_ids
+            ),
+        }
+        fetched_stored_account: StoredAccount | None
+        if stored_account.id is None or insert_id:
+            if insert_id:
+                fields |= {'id': stored_account.id}
+            fields_str = ', '.join(f'`{field}`' for field in fields)
+            values_str = ', '.join(['?'] * len(fields))
+            self.execute(
+                f'INSERT INTO `account`({fields_str}) VALUES ({values_str})',
+                tuple(fields.values()),
+            )
+            account_id: int | None = self._last_inserted_id()
+            if account_id is None:
+                raise RuntimeError('Account insertion failed')
+            fetched_stored_account = self.get_stored_account(account_id=account_id)
+        else:
+            field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+            self.execute(
+                f'UPDATE `account` SET {field_sets} WHERE `id` = ?',
+                tuple(fields.values()) + (stored_account.id,),
+            )
+            fetched_stored_account = self.get_stored_account(
+                account_id=stored_account.id
+            )
+        if fetched_stored_account is None:
+            raise RuntimeError('Account write failed')
+        return fetched_stored_account
+
+    def add_stored_account(self, stored_account: StoredAccount) -> StoredAccount:
+        assert stored_account.id is None, f'{stored_account.id=}'
+        return self._write_stored_account(stored_account)
+
+    def update_stored_account(self, stored_account: StoredAccount) -> StoredAccount:
+        assert stored_account.id is not None
+        return self._write_stored_account(stored_account)
+
+    def delete_stored_account(self, account_id: int):
+        self.execute('DELETE FROM `account` WHERE `id` = ?;', (account_id,))
+
+    # ---------------------------------------------------------------------------------
+    # StoredDevice and StoredAccount
+    # ---------------------------------------------------------------------------------
+
+    def create_custom_exec_mode_objects(
+        self,
+        predefined_custom_devices: list[Device],
+        predefined_custom_accounts: list[Account],
+    ):
+        """Add the accounts and devices that correspond to the default
+        permissions of the custom mode. These objects are added juste
+        before doing an action on the fake permissions used from the
+        creation of the object."""
+        for device in predefined_custom_devices:
+            self._write_stored_device(device.stored_device, insert_id=True)
+        for account in predefined_custom_accounts:
+            self._write_stored_account(account.stored_account, insert_id=True)

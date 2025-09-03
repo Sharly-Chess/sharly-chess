@@ -457,7 +457,7 @@
     >
         {% set redirect_url = '' %}
         {% if sharly_chess_config.force_edit %}
-            {% if admin_auth %}
+            {% if client.can_update_application_settings %}
                 {% if request.url.path != '/admin/config' %}
                     {% set redirect_url = '/admin/config' %}
                 {% endif %}
@@ -465,6 +465,10 @@
                 {% if request.url.path != '/wait' %}
                     {% set redirect_url = '/wait' %}
                 {% endif %}
+            {% endif %}
+        {% else %}
+            {% if request.url.path == '/' %}
+                {% set redirect_url = '/admin/home' %}
             {% endif %}
         {% endif %}
         {% if redirect_url %}
@@ -571,6 +575,12 @@
                 // Allow the tooltip content to have a style attribute
                 bootstrap.Tooltip.Default.allowList['*'].push('style')
             }
+
+            $(document).on('select2:close', '.sharly-chess-select2', function (e) {
+                var evt = "scroll.select2";
+                $(e.target).parents().off(evt);
+                $(window).off(evt);
+            })
         </script>
     {% endif %}
 </html>

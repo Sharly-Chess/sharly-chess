@@ -351,65 +351,85 @@ class Screen:
 
     def _menu_screens(self, admin: bool) -> list['Screen']:
         menu_screens: list['Screen'] = []
-
-        for menu_part in map(str.strip, self.menu.split(',')):
-            if not menu_part:
-                continue
-            is_screen_category = True
-            match menu_part:
-                case '@boards':
-                    menu_screens += (
-                        self.event.boards_screens_sorted_by_uniq_id
-                        if admin
-                        else self.event.public_boards_screens_sorted_by_uniq_id
-                    )
-                case '@input':
-                    menu_screens += (
-                        self.event.input_screens_sorted_by_uniq_id
-                        if admin
-                        else self.event.public_input_screens_sorted_by_uniq_id
-                    )
-                case '@players':
-                    menu_screens += (
-                        self.event.players_screens_sorted_by_uniq_id
-                        if admin
-                        else self.event.public_players_screens_sorted_by_uniq_id
-                    )
-                case '@results':
-                    menu_screens += (
-                        self.event.results_screens_sorted_by_uniq_id
-                        if admin
-                        else self.event.public_results_screens_sorted_by_uniq_id
-                    )
-                case '@ranking':
-                    menu_screens += (
-                        self.event.ranking_screens_sorted_by_uniq_id
-                        if admin
-                        else self.event.public_ranking_screens_sorted_by_uniq_id
-                    )
-                case '@family':
-                    if self.family_id is None:
-                        logger.warning(
-                            'Pattern [@family] can be used by screen families only.'
+        if self.menu is not None:
+            for menu_part in map(str.strip, self.menu.split(',')):
+                if not menu_part:
+                    continue
+                is_screen_category = True
+                match menu_part:
+                    case '@boards':
+                        menu_screens += (
+                            self.event.screens_by_screen_type_sorted_by_uniq_id[
+                                ScreenType.BOARDS
+                            ]
+                            if admin
+                            else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
+                                ScreenType.BOARDS
+                            ]
                         )
-                    else:
-                        menu_screens += self.event.families_by_id[
-                            self.family_id
-                        ].screens_by_uniq_id.values()
-                case _:
-                    is_screen_category = False
-            if is_screen_category:
-                continue
-            if '*' in menu_part:
-                menu_part_screen_uniq_ids: list[str] = fnmatch.filter(
-                    self.event.screens_by_uniq_id.keys(), menu_part
-                )
-                menu_screens += [
-                    self.event.screens_by_uniq_id[screen_uniq_id]
-                    for screen_uniq_id in menu_part_screen_uniq_ids
-                ]
-            elif menu_part in self.event.screens_by_uniq_id:
-                menu_screens.append(self.event.screens_by_uniq_id[menu_part])
+                    case '@input':
+                        menu_screens += (
+                            self.event.screens_by_screen_type_sorted_by_uniq_id[
+                                ScreenType.INPUT
+                            ]
+                            if admin
+                            else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
+                                ScreenType.INPUT
+                            ]
+                        )
+                    case '@players':
+                        menu_screens += (
+                            self.event.screens_by_screen_type_sorted_by_uniq_id[
+                                ScreenType.PLAYERS
+                            ]
+                            if admin
+                            else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
+                                ScreenType.PLAYERS
+                            ]
+                        )
+                    case '@results':
+                        menu_screens += (
+                            self.event.screens_by_screen_type_sorted_by_uniq_id[
+                                ScreenType.RESULTS
+                            ]
+                            if admin
+                            else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
+                                ScreenType.RESULTS
+                            ]
+                        )
+                    case '@ranking':
+                        menu_screens += (
+                            self.event.screens_by_screen_type_sorted_by_uniq_id[
+                                ScreenType.RANKING
+                            ]
+                            if admin
+                            else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
+                                ScreenType.RANKING
+                            ]
+                        )
+                    case '@family':
+                        if self.family_id is None:
+                            logger.warning(
+                                'Pattern [@family] can be used by screen families only.'
+                            )
+                        else:
+                            menu_screens += self.event.families_by_id[
+                                self.family_id
+                            ].screens_by_uniq_id.values()
+                    case _:
+                        is_screen_category = False
+                if is_screen_category:
+                    continue
+                if '*' in menu_part:
+                    menu_part_screen_uniq_ids: list[str] = fnmatch.filter(
+                        self.event.screens_by_uniq_id.keys(), menu_part
+                    )
+                    menu_screens += [
+                        self.event.screens_by_uniq_id[screen_uniq_id]
+                        for screen_uniq_id in menu_part_screen_uniq_ids
+                    ]
+                elif menu_part in self.event.screens_by_uniq_id:
+                    menu_screens.append(self.event.screens_by_uniq_id[menu_part])
         return menu_screens
 
     @cached_property

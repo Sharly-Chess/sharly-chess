@@ -85,7 +85,7 @@ Board: {{pa_board}}
 
 ## Sending Engines
 
-Multiple sending engines can be defined on the arbiter's computer, and can be used by all tournaments and all events.
+Multiple sending engines can be defined on the application, and can be used by all tournaments and all events.
 
 ### Email Sending Engine
 

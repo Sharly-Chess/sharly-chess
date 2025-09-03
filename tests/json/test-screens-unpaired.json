@@ -20,7 +20,7 @@
   },
   "players" : [ {
     "federation" : "FRA",
-    "lastName" : "ALYX",
+    "lastName" : "AMOS",
     "fixedBoard" : 0,
     "gender" : "M",
     "checkedIn" : false,
@@ -37,7 +37,7 @@
     "blitzElo" : 1399
   }, {
     "federation" : "FRA",
-    "lastName" : "BRUNO",
+    "lastName" : "BARBARA",
     "fixedBoard" : 0,
     "gender" : "M",
     "checkedIn" : false,
@@ -54,7 +54,7 @@
     "blitzElo" : 1399
   }, {
     "federation" : "FRA",
-    "lastName" : "CHARLINE",
+    "lastName" : "CHARLY",
     "fixedBoard" : 0,
     "gender" : "M",
     "checkedIn" : false,
@@ -71,7 +71,7 @@
     "blitzElo" : 1399
   }, {
     "federation" : "FRA",
-    "lastName" : "DAVID",
+    "lastName" : "DANIEL",
     "fixedBoard" : 0,
     "gender" : "M",
     "checkedIn" : false,
@@ -94,7 +94,7 @@
     "blitzElo" : 1399
   }, {
     "federation" : "FRA",
-    "lastName" : "HELENE",
+    "lastName" : "HOTEL",
     "fixedBoard" : 0,
     "gender" : "M",
     "checkedIn" : false,
@@ -111,7 +111,7 @@
     "blitzElo" : 1399
   }, {
     "federation" : "FRA",
-    "lastName" : "FRANCK",
+    "lastName" : "FOXTROT",
     "fixedBoard" : 0,
     "gender" : "M",
     "checkedIn" : false,
@@ -128,7 +128,7 @@
     "blitzElo" : 1399
   }, {
     "federation" : "FRA",
-    "lastName" : "GENEVIEVE",
+    "lastName" : "GOLF",
     "fixedBoard" : 0,
     "gender" : "M",
     "checkedIn" : false,
@@ -145,7 +145,7 @@
     "blitzElo" : 1399
   }, {
     "federation" : "FRA",
-    "lastName" : "IRINA",
+    "lastName" : "INDIGO",
     "fixedBoard" : 0,
     "gender" : "M",
     "checkedIn" : false,
@@ -162,7 +162,7 @@
     "blitzElo" : 1399
   }, {
     "federation" : "FRA",
-    "lastName" : "JESSICA",
+    "lastName" : "JACK",
     "fixedBoard" : 0,
     "gender" : "M",
     "checkedIn" : false,
@@ -185,7 +185,7 @@
     "blitzElo" : 1399
   }, {
     "federation" : "FRA",
-    "lastName" : "LAIS",
+    "lastName" : "LEMON",
     "fixedBoard" : 0,
     "gender" : "M",
     "checkedIn" : false,
@@ -202,7 +202,7 @@
     "blitzElo" : 1399
   }, {
     "federation" : "FRA",
-    "lastName" : "MARIA",
+    "lastName" : "MARMITE",
     "fixedBoard" : 0,
     "gender" : "M",
     "checkedIn" : false,
@@ -219,7 +219,7 @@
     "blitzElo" : 1399
   }, {
     "federation" : "FRA",
-    "lastName" : "NICK",
+    "lastName" : "NIAGRA",
     "fixedBoard" : 0,
     "gender" : "M",
     "checkedIn" : false,
@@ -322,7 +322,7 @@
     "blitzElo" : 1399
   }, {
     "federation" : "FRA",
-    "lastName" : "OPAL",
+    "lastName" : "ORANGE",
     "fixedBoard" : 0,
     "gender" : "M",
     "checkedIn" : false,
@@ -339,7 +339,7 @@
     "blitzElo" : 1399
   }, {
     "federation" : "FRA",
-    "lastName" : "PAUL",
+    "lastName" : "PETER",
     "fixedBoard" : 0,
     "gender" : "M",
     "checkedIn" : false,
@@ -362,7 +362,7 @@
     "blitzElo" : 1399
   }, {
     "federation" : "FRA",
-    "lastName" : "REINE",
+    "lastName" : "ROBIN",
     "fixedBoard" : 0,
     "gender" : "M",
     "checkedIn" : false,
@@ -379,7 +379,7 @@
     "blitzElo" : 1399
   }, {
     "federation" : "FRA",
-    "lastName" : "STEPHAN",
+    "lastName" : "SIMON",
     "fixedBoard" : 0,
     "gender" : "M",
     "checkedIn" : false,

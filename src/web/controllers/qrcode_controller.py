@@ -28,7 +28,10 @@ class QRCodeController(BaseController):
         # fallback to the website if no URL provided
         qr.add_data(url or SharlyChessConfig().url)
         qr.make()
-        img = qr.make_image(fill_color='black', back_color='white')
+        img = qr.make_image(
+            fill_color='black' if logo else 'rgb(223, 226, 230)',
+            back_color='white' if logo else 'rgb(34, 37, 41)',
+        )
         if logo:
             logo_file: Path = (
                 BASE_DIR

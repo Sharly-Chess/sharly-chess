@@ -151,11 +151,24 @@ class RotatorAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         event = web_context.get_admin_event()
+
+        admin_rotators_sorted_by_uniq_id: list[Rotator]
+        if web_context.client.can_view_private_screens:
+            admin_rotators_sorted_by_uniq_id = (
+                web_context.admin_event.rotators_sorted_by_uniq_id
+            )
+        elif web_context.client.can_view_public_screens:
+            admin_rotators_sorted_by_uniq_id = (
+                web_context.admin_event.public_rotators_sorted_by_uniq_id
+            )
+        else:
+            admin_rotators_sorted_by_uniq_id = []
         template_context = web_context.template_context | {
             'admin_event_tab': 'admin-event-rotators-tab',
             'admin_rotators_show_details': SessionHandler.get_session_admin_rotators_show_details(
                 web_context.request
             ),
+            'admin_rotators': admin_rotators_sorted_by_uniq_id,
         }
 
         match modal:

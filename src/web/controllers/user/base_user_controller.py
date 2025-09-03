@@ -1,8 +1,6 @@
-from typing import Annotated, Any
+from typing import Any
 
 from litestar.plugins.htmx import HTMXRequest
-from litestar.enums import RequestEncodingType
-from litestar.params import Body
 
 from common.sharly_chess_config import SharlyChessConfig
 from web.controllers.base_controller import BaseController, WebContext
@@ -16,13 +14,9 @@ class UserWebContext(WebContext):
     def __init__(
         self,
         request: HTMXRequest,
-        data: Annotated[
-            dict[str, str] | None,
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
         user_tab: str | None,
     ):
-        super().__init__(request, data=data)
+        super().__init__(request, data=None)
         self.user_tab: str | None = user_tab
         if self.error:
             return

@@ -1,4 +1,5 @@
 import logging
+from functools import cached_property
 from typing import Annotated, Any
 
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
@@ -8,11 +9,17 @@ from litestar.response import Template
 
 from common.exception import SharlyChessException
 from common.i18n import _
+from data.auth.client import Client
+from data.auth.client_tracker import ClientTracker
+from data.display_controller import DisplayController
 from data.event import Event
 from data.loader import EventLoader
+from data.rotator import Rotator
+from data.screen import Screen
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from plugins.utils import PluginNavBarItem
+from utils.enum import ScreenType
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
@@ -32,7 +39,6 @@ class BaseEventAdminWebContext(AdminWebContext):
         ] = None,
     ):
         super().__init__(request, data=data, admin_tab=None)
-        self.request: HTMXRequest = request
         self.admin_event: Event | None = None
         if self.error:
             return
@@ -44,6 +50,17 @@ class BaseEventAdminWebContext(AdminWebContext):
             except SharlyChessException as pwe:
                 self._redirect_error(f'Event [{event_uniq_id}] not found: {pwe}')
                 return
+        # tracks the visit of the client
+        ClientTracker().track_client(
+            self.client.host,
+            self.client.event.uniq_id if self.client.event else None,
+            self.client.account.username if self.client.account else None,
+        )
+
+    @cached_property
+    def client(self) -> Client:
+        """Returns the client (account and device) of the request."""
+        return Client(self.request, self.admin_event)
 
     def get_admin_event(self) -> Event:
         assert self.admin_event is not None
@@ -98,72 +115,207 @@ class BaseEventAdminWebContext(AdminWebContext):
                 'icon_class': 'bi-sign-stop',
             },
         }
-        event = self.get_admin_event()
-        nav_tabs: dict[str, dict[str, str | dict[str, dict[str, str]]]] = {
-            'admin-event-config-tab': {
-                'title': _('Configuration'),
-                'template': 'event/tab.html',
-                'icon_class': 'bi-gear-fill',
-            },
-            'admin-event-tournaments-tab': {
-                'title': _('Tournaments ({num})').format(
-                    num=len(event.tournaments_by_id) or '-'
-                ),
-                'template': 'tournaments/tab.html',
-                'icon_class': 'bi-diagram-3-fill',
-            },
-            'admin-event-players-tab': {
-                'title': _('Players ({num})').format(num=event.player_count or '-'),
-                'template': 'players/tab.html',
-                'icon_class': 'bi-people-fill',
-            },
-            'admin-event-pairings-tab': {
-                'title': _('Pairings'),
-                'template': 'pairings/tab.html',
-                'icon_class': 'bi-arrow-left-right',
-            },
-            'admin-event-prizes-tab': {
-                'title': _('Prizes'),
-                'template': 'prizes/tab.html',
-                'icon_class': 'bi-trophy-fill',
-            },
-            'admin-event-views': {
-                'title': _('Screens'),
-                'icon_class': 'bi-display-fill',
-                'submenu': {
-                    'admin-event-screens-tab': {
-                        'title': _('Single Screens ({num})').format(
-                            num=len(event.basic_screens_by_id) or '-'
-                        ),
-                        'template': 'screens/tab.html',
-                    },
-                    'admin-event-families-tab': {
-                        'title': _('Families ({num})').format(
-                            num=len(event.families_by_id) or '-'
-                        ),
-                        'template': 'families/tab.html',
-                    },
-                    'admin-event-rotators-tab': {
-                        'title': _('Rotators ({num})').format(
-                            num=len(event.rotators_by_id) or '-'
-                        ),
-                        'template': 'rotators/tab.html',
-                    },
-                    'admin-event-timers-tab': {
-                        'title': _('Timers ({num})').format(
-                            num=len(event.timers_by_id) or '-'
-                        ),
-                        'template': 'timers/tab.html',
-                    },
-                    'admin-event-display-controllers-tab': {
-                        'title': _('Display controllers ({num})').format(
-                            num=len(event.display_controllers_by_id) or '-'
-                        ),
-                        'template': 'display_controllers/tab.html',
+        event: Event = self.get_admin_event()
+        nav_tabs: dict[
+            str, dict[str, str | bool | dict[str, dict[str, str | bool]]]
+        ] = {}
+        if self.client.can_view_event_basic_config:
+            nav_tabs |= {
+                'admin-event-config-tab': {
+                    'title': _('Configuration'),
+                    'template': 'event/tab.html',
+                    'icon_class': 'bi-gear-fill',
+                },
+            }
+        if self.client.can_view_tournaments_tab:
+            nav_tabs |= {
+                'admin-event-tournaments-tab': {
+                    'title': _('Tournaments ({num})').format(
+                        num=len(event.tournaments_by_id) or '-'
+                    ),
+                    'template': 'tournaments/tab.html',
+                    'icon_class': 'bi-diagram-3-fill',
+                },
+            }
+        if self.client.can_view_players_tab:
+            nav_tabs |= {
+                'admin-event-players-tab': {
+                    'title': _('Players ({num})').format(num=event.player_count or '-'),
+                    'template': 'players/tab.html',
+                    'icon_class': 'bi-people-fill',
+                },
+            }
+        if self.client.can_view_pairings_tab:
+            nav_tabs |= {
+                'admin-event-pairings-tab': {
+                    'title': _('Pairings'),
+                    'template': 'pairings/tab.html',
+                    'icon_class': 'bi-arrow-left-right',
+                },
+            }
+        if self.client.can_view_prizes_tab:
+            nav_tabs |= {
+                'admin-event-prizes-tab': {
+                    'title': _('Prizes'),
+                    'template': 'prizes/tab.html',
+                    'icon_class': 'bi-trophy-fill',
+                },
+            }
+        if self.client.can_manage_screens:
+            nav_tabs |= {
+                'admin-event-views': {
+                    'title': _('Screens'),
+                    'icon_class': 'bi-display-fill',
+                    'submenu': {
+                        'admin-event-screens-tab': {
+                            'title': _('Single Screens ({num})').format(
+                                num=len(event.basic_screens_by_id) or '-'
+                            ),
+                            'template': 'screens/tab.html',
+                        },
+                        'admin-event-families-tab': {
+                            'title': _('Families ({num})').format(
+                                num=len(event.families_by_id) or '-'
+                            ),
+                            'template': 'families/tab.html',
+                        },
+                        'admin-event-rotators-tab': {
+                            'title': _('Rotators ({num})').format(
+                                num=len(event.rotators_by_id) or '-'
+                            ),
+                            'template': 'rotators/tab.html',
+                        },
+                        'admin-event-timers-tab': {
+                            'title': _('Timers ({num})').format(
+                                num=len(event.timers_by_id) or '-'
+                            ),
+                            'template': 'timers/tab.html',
+                        },
+                        'admin-event-display-controllers-tab': {
+                            'title': _('Display controllers ({num})').format(
+                                num=len(event.display_controllers_by_id) or '-'
+                            ),
+                            'template': 'display_controllers/tab.html',
+                        },
                     },
                 },
-            },
-        }
+            }
+        elif self.client.can_view_public_screens:
+            screens_by_screen_type_sorted_by_uniq_id: dict[ScreenType, list[Screen]]
+            rotators: list[Rotator]
+            display_controllers: list[DisplayController]
+            if self.client.can_view_private_screens:
+                screens_by_screen_type_sorted_by_uniq_id = (
+                    event.screens_by_screen_type_sorted_by_uniq_id
+                )
+                rotators = event.rotators_sorted_by_uniq_id
+                display_controllers = event.display_controllers_sorted_by_uniq_id
+            else:
+                screens_by_screen_type_sorted_by_uniq_id = (
+                    event.public_screens_by_screen_type_sorted_by_uniq_id
+                )
+                rotators = event.public_rotators_sorted_by_uniq_id
+                display_controllers = event.public_display_controllers_sorted_by_uniq_id
+            screens: list[Screen]
+            screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.BOARDS]
+            nav_tabs |= {
+                'admin-event-boards-screens-tab': {
+                    'title': _('Pairings by board ({num})').format(
+                        num=len(screens) or '-'
+                    ),
+                    'template': 'screens/view_tab.html',
+                    'disabled': not screens,
+                    'icon_class': ScreenType.BOARDS.icon_str,
+                },
+            }
+            screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.INPUT]
+            nav_tabs |= {
+                'admin-event-input-screens-tab': {
+                    'title': _('Results entry ({num})').format(num=len(screens) or '-'),
+                    'template': 'screens/view_tab.html',
+                    'disabled': not screens,
+                    'icon_class': ScreenType.INPUT.icon_str,
+                },
+            }
+            screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.PLAYERS]
+            nav_tabs |= {
+                'admin-event-players-screens-tab': {
+                    'title': _('Pairings by player ({num})').format(
+                        num=len(screens) or '-'
+                    ),
+                    'template': 'screens/view_tab.html',
+                    'disabled': not screens,
+                    'icon_class': ScreenType.PLAYERS.icon_str,
+                },
+            }
+            screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.RESULTS]
+            nav_tabs |= {
+                'admin-event-results-screens-tab': {
+                    'title': _('Last results ({num})').format(num=len(screens) or '-'),
+                    'template': 'screens/view_tab.html',
+                    'disabled': not screens,
+                    'icon_class': ScreenType.RESULTS.icon_str,
+                },
+            }
+            screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.RANKING]
+            nav_tabs |= {
+                'admin-event-ranking-screens-tab': {
+                    'title': _('Ranking ({num})').format(num=len(screens) or '-'),
+                    'template': 'screens/view_tab.html',
+                    'disabled': not screens,
+                    'icon_class': ScreenType.RANKING.icon_str,
+                },
+            }
+            screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.IMAGE]
+            nav_tabs |= {
+                'admin-event-image-screens-tab': {
+                    'title': _('Image ({num})').format(num=len(screens) or '-'),
+                    'template': 'screens/view_tab.html',
+                    'disabled': not screens,
+                    'icon_class': ScreenType.IMAGE.icon_str,
+                },
+            }
+            nav_tabs |= {
+                'admin-event-rotators-tab': {
+                    'title': _('Rotators ({num})').format(num=len(rotators) or '-'),
+                    'template': 'rotators/tab.html',
+                    'disabled': not rotators,
+                    'icon_class': 'bi-repeat',
+                },
+            }
+            nav_tabs |= {
+                'admin-event-display-controllers-tab': {
+                    'title': _('Display controllers ({num})').format(
+                        num=len(display_controllers) or '-'
+                    ),
+                    'template': 'display_controllers/tab.html',
+                    'disabled': not display_controllers,
+                    'icon_class': 'bi-box-arrow-in-right',
+                },
+            }
+        if self.admin_event.custom_exec_mode and (
+            self.client.can_manage_accounts or self.client.can_manage_devices
+        ):
+            nav_tab: dict[str, Any] = {
+                'title': _('Access'),
+                'icon_class': 'bi-key',
+                'submenu': {},
+            }
+            if self.client.can_manage_accounts:
+                nav_tab['submenu']['admin-event-accounts-tab'] = {
+                    'title': _('Accounts ({num})').format(
+                        num=len(event.accounts_by_id) or '-'
+                    ),
+                    'template': 'accounts/tab.html',
+                }
+            if self.client.can_manage_accounts:
+                nav_tab['submenu']['admin-event-devices-tab'] = {
+                    'title': _('Devices ({num})').format(
+                        num=len(event.devices_by_id) or '-'
+                    ),
+                    'template': 'devices/tab.html',
+                }
+            nav_tabs['admin-event-access'] = nav_tab
 
         return super().template_context | {
             'admin_event': self.admin_event,

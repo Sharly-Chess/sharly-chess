@@ -1,7 +1,10 @@
 {% extends '../common/card.html' %}
 
 {% block card_header %}
-    {{ macros.screen_visibility_icon(screen, 'pe-1') }}{{ screen.name }}
+    {% if client.can_manage_screens %}
+        {{ macros.screen_visibility_icon(screen, 'pe-1') }}
+    {% endif %}
+    {{ screen.name }}
 {% endblock %}
 
 {% block card_title %}
@@ -10,13 +13,15 @@
 
 {% block card_text %}
     <div class="d-flex flex-column gap-1">
-        {% if admin_screens_show_details %}
+        {% if admin_screens_show_details and client.can_manage_screens %}
             {% if screen.type in ['input', 'boards', 'players', 'results', 'ranking', ] %}
                 <div>
                     <span class="pe-1">{{ macros.screen_type_icon(screen.type, true) }}</span>
                     {{ _('Type: %(screen_type)s', screen_type=screen.type_str) }}
                 </div>
             {% endif %}
+        {% endif %}
+        {% if admin_screens_show_details and client.can_view_public_screens %}
             {% if screen.type == 'ranking' %}
                 <div class="{% if not screen.ranking_round %}text-secondary{% endif %}">
                     {% if screen.ranking_round %}
@@ -109,34 +114,36 @@
                     {% endif %}
                 </div>
             {% endif %}
-            {% if screen.type in ['input', 'boards', 'players', 'results', 'ranking', ] %}
-                <div>
-                    {{ _('Columns:') }} {% for i in range(screen.columns) %}<i class="bi-square-fill"></i> {% endfor %}
-                </div>
-                <div class="{% if not screen.menu_link %}text-secondary{% endif %}">
-                    <i class="bi-hand-index pe-1"></i>
-                    {% if screen.menu_link %}
-                        {{ _('Menu link label: %(menu_label)s', menu_label=screen.menu_label) }}
-                        {% if not screen.menu_text %}
-                            <span class="fst-italic">
-                                {{ _('(by default)') }}
-                            </span>
-                        {% endif %}
-                    {% else %}
+        {% endif %}
+        {% if screen.type in ['input', 'boards', 'players', 'results', 'ranking', ] %}
+            <div>
+                {{ _('Columns:') }} {% for i in range(screen.columns) %}<i class="bi-square-fill"></i> {% endfor %}
+            </div>
+            <div class="{% if not screen.menu_link %}text-secondary{% endif %}">
+                <i class="bi-hand-index pe-1"></i>
+                {% if screen.menu_link %}
+                    {{ _('Menu link label: %(menu_label)s', menu_label=screen.menu_label) }}
+                    {% if not screen.menu_text %}
                         <span class="fst-italic">
-                            {{ _('Menu link label: none') }}
+                            {{ _('(by default)') }}
                         </span>
                     {% endif %}
-                </div>
-                <div class="{% if not screen.menu %}text-secondary{% endif %}">
-                    <i class="bi-three-dots pe-1"></i>
-                    {% if screen.menu %}{{ _('Menu: %(menu)s', menu=screen.menu) }}{% else %}<span class="fst-italic">{{ _('Menu: none') }}</span>{% endif %}
-                </div>
-                <div class="{% if not screen.timer %}text-secondary{% endif %}">
-                    <i class="bi-clock-fill pe-1"></i>
-                    {% if screen.timer %}{{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=screen.timer.uniq_id) }}{% else %}<span class="fst-italic">{{ _('Timer: none') }}</span>{% endif %}
-                </div>
-            {% endif %}
+                {% else %}
+                    <span class="fst-italic">
+                        {{ _('Menu link label: none') }}
+                    </span>
+                {% endif %}
+            </div>
+            <div class="{% if not screen.menu %}text-secondary{% endif %}">
+                <i class="bi-three-dots pe-1"></i>
+                {% if screen.menu %}{{ _('Menu: %(menu)s', menu=screen.menu) }}{% else %}<span class="fst-italic">{{ _('Menu: none') }}</span>{% endif %}
+            </div>
+            <div class="{% if not screen.timer %}text-secondary{% endif %}">
+                <i class="bi-clock-fill pe-1"></i>
+                {% if screen.timer %}{{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=screen.timer.uniq_id) }}{% else %}<span class="fst-italic">{{ _('Timer: none') }}</span>{% endif %}
+            </div>
+        {% endif %}
+        {% if admin_screens_show_details and client.can_manage_screens %}
             {% if screen.type == 'input' %}
                 <div>
                     <i class="bi-x-circle pe-1"></i>
@@ -150,12 +157,11 @@
                         {{ _('(by default)') }}
                     {% endif %}
                 </div>
-            {% else %}
-                <div class="fst-italic">
-                    {{ _('No alert message') }}
-                    {% if screen.message_default %}{{ _('(by default)') }}{% endif %}
-                </div>
             {% endif %}
+            <div class="fst-italic">
+                {{ _('No alert message') }}
+                {% if screen.message_default %}{{ _('(by default)') }}{% endif %}
+            </div>
             <hr/>
         {% endif %}
 
@@ -175,95 +181,98 @@
             {% endif %}
         {% endif %}
     </div>
-
 {% endblock %}
 
 {% block card_buttons_left %}
-    {% if not screen.family and screen.type in ['boards', 'input', 'players', 'ranking', ] %}
-        <span
-            {{ macros.tooltip_attributes(
-                'info',
-                _('Edit the sets of boards displayed on the screen.')
-                if screen.type in ['boards', 'input'] else
-                _('Edit the sets of players displayed on the screen.'),
-                'top')
-            }}
-        >
-            <button
-                class="btn btn-sm btn-outline-primary"
-                hx-get="{{ url_for('admin-screen-sets-modal', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                preload
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
+    {% if client.can_manage_screens %}
+        {% if not screen.family and screen.type in ['boards', 'input', 'players', 'ranking', ] %}
+            <span
+                {{ macros.tooltip_attributes(
+                    'info',
+                    _('Edit the sets of boards displayed on the screen.')
+                    if screen.type in ['boards', 'input'] else
+                    _('Edit the sets of players displayed on the screen.'),
+                    'top')
+                }}
             >
-                <i class="bi-collection-fill pe-1"></i>
-                {% if screen.type in ['boards', 'input'] %}
-                    {{ _('Boards') }}
-                {% else %}
-                    {{ _('Players') }}
-                {% endif %}
-            </button>
-        </span>
-    {% endif %}
-    {% if not screen.family %}
-        <span {{ macros.tooltip_attributes('info', _('Go to the screen.'), 'top') }}>
+                <button
+                    class="btn btn-sm btn-outline-primary"
+                    hx-get="{{ url_for('admin-screen-sets-modal', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    preload
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                >
+                    <i class="bi-collection-fill pe-1"></i>
+                    {% if screen.type in ['boards', 'input'] %}
+                        {{ _('Boards') }}
+                    {% else %}
+                        {{ _('Players') }}
+                    {% endif %}
+                </button>
+            </span>
+        {% endif %}
+        {% if not screen.family %}
+            <span {{ macros.tooltip_attributes('info', _('Go to the screen.'), 'top') }}>
 
-            <a
-                class="btn btn-sm btn-outline-primary"
-                href="{{ url_for('user-screen', event_uniq_id=admin_event.uniq_id, screen_uniq_id=screen.uniq_id) }}"
-                target="_blank"
-            >
-                <i class="bi bi-eye"></i>
-            </a>
-        </span>
-        {{ admin_macros.display_controller_assign_dropdown(admin_event.display_controllers_sorted_by_uniq_id, 'screen', screen.uniq_id) }}
+                <a
+                    class="btn btn-sm btn-outline-primary"
+                    href="{{ url_for('user-screen', event_uniq_id=admin_event.uniq_id, screen_uniq_id=screen.uniq_id) }}"
+                    target="_blank"
+                >
+                    <i class="bi bi-eye"></i>
+                </a>
+            </span>
+            {{ admin_macros.display_controller_assign_dropdown(admin_event.display_controllers_sorted_by_uniq_id, 'screen', screen.uniq_id) }}
+        {% endif %}
     {% endif %}
 {% endblock %}
 
 {% block card_buttons_right %}
-    {% if not screen.family  %}
-        <span
-            {{ macros.tooltip_attributes('info', _('Edit the properties of the screen.'), 'top') }}
-        >
-            <button
-                class="btn btn-sm btn-outline-primary"
-                hx-get="{{ url_for('admin-screen-modal', action='update', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
-                preload
+    {% if client.can_manage_screens %}
+        {% if not screen.family  %}
+            <span
+                {{ macros.tooltip_attributes('info', _('Edit the properties of the screen.'), 'top') }}
             >
-                <i class="bi-pencil-fill"></i>
-            </button>
-        </span>
-        <span {{ macros.tooltip_attributes('info', 'Duplicate the screen.', 'top') }}>
-            <button
-                class="btn btn-sm btn-outline-primary"
-                hx-get="{{ url_for('admin-screen-modal', action='clone', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                preload
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
-            >
-                <i class="bi-copy"></i>
-            </button>
-        </span>
-        <span {{ macros.tooltip_attributes('info', 'Delete the screen.', 'top') }}>
-            <button
-                class="btn btn-sm btn-outline-danger"
-                hx-get="{{ url_for('admin-screen-modal', action='delete', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                preload
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
-            >
-                <i class="bi-trash-fill"></i>
-            </button>
-        </span>
+                <button
+                    class="btn btn-sm btn-outline-primary"
+                    hx-get="{{ url_for('admin-screen-modal', action='update', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                    preload
+                >
+                    <i class="bi-pencil-fill"></i>
+                </button>
+            </span>
+            <span {{ macros.tooltip_attributes('info', 'Duplicate the screen.', 'top') }}>
+                <button
+                    class="btn btn-sm btn-outline-primary"
+                    hx-get="{{ url_for('admin-screen-modal', action='clone', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    preload
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                >
+                    <i class="bi-copy"></i>
+                </button>
+            </span>
+            <span {{ macros.tooltip_attributes('info', 'Delete the screen.', 'top') }}>
+                <button
+                    class="btn btn-sm btn-outline-danger"
+                    hx-get="{{ url_for('admin-screen-modal', action='delete', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    preload
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                >
+                    <i class="bi-trash-fill"></i>
+                </button>
+            </span>
+        {% endif %}
     {% endif %}
 {% endblock %}

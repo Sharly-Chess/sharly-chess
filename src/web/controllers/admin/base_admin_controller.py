@@ -5,11 +5,9 @@ from typing import Annotated, Any
 
 import requests
 import validators
-from litestar.exceptions import HTTPException
 from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.status_codes import HTTP_403_FORBIDDEN
 
 from common import REQUEST_TIMEOUT, format_timestamp_date
 from common.i18n import _, ngettext
@@ -38,8 +36,6 @@ class AdminWebContext(WebContext):
         admin_tab: str | None,
     ):
         super().__init__(request, data=data)
-        if not self.admin_auth:
-            raise HTTPException(status_code=HTTP_403_FORBIDDEN)
         self.admin_tab: str | None = admin_tab
         if self.error:
             return
@@ -48,6 +44,7 @@ class AdminWebContext(WebContext):
     def check_admin_tab(self):
         if self.admin_tab not in [
             None,
+            'home',
             'config',
             'passed_events',
             'current_events',
@@ -96,7 +93,7 @@ class BaseAdminController(BaseController):
         default_federation: str | None,
         default_federation_text: str,
         may_be_empty: bool,
-    ):
+    ) -> dict[str, str]:
         # Base options
         options = {
             federation_id: f'{federation_id} - {federation_name}'
@@ -354,11 +351,13 @@ class BaseAdminController(BaseController):
     def _admin_validate_event_update_data(
         cls,
         action: str,
+        web_context: WebContext,
         admin_event: Event | None,
         data: dict[str, str] | None = None,
     ) -> StoredEvent:
         if data is None:
             data = {}
+        uniq_id: str | None
         errors: dict[str, str] = {}
         start: float | None = None
         stop: float | None = None
@@ -366,10 +365,11 @@ class BaseAdminController(BaseController):
         message_color: str | None = None
         message_background_color: str | None = None
 
+        custom_exec_mode = WebContext.form_data_to_bool(data, 'custom_exec_mode')
         name = WebContext.form_data_to_str(data, field := 'name') or ''
         if not name:
             errors[field] = _('Please enter the name of the event.')
-        if action == 'update':
+        if action == 'update' and web_context.client.can_rename_event:
             assert admin_event is not None
             uniq_id = admin_event.uniq_id
         else:
@@ -406,7 +406,6 @@ class BaseAdminController(BaseController):
             errors[field] = _('Please enter a date after the start date.')
         public = WebContext.form_data_to_bool(data, 'public')
         location = WebContext.form_data_to_str(data, 'location')
-        update_password = WebContext.form_data_to_str(data, 'update_password')
         field = 'background_image'
         hide_background_image = WebContext.form_data_to_bool(data, field + '_checkbox')
         if not hide_background_image:
@@ -500,13 +499,13 @@ class BaseAdminController(BaseController):
             hide_background_image=bool(hide_background_image),
             background_image=background_image,
             background_color=background_color,
-            update_password=update_password,
             record_illegal_moves=record_illegal_moves,
             rules=rules,
             message_text=message_text,
             message_color=message_color,
             message_background_color=message_background_color,
             prize_currency=prize_currency,
+            custom_exec_mode=bool(custom_exec_mode),
             override_unrated_rapid_blitz=override_unrated_rapid_blitz,
             errors=errors,
             # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
@@ -636,13 +635,13 @@ class BaseAdminController(BaseController):
         background_image: str | None = None
         background_color: str | None = None
         location: str | None = None
-        update_password: str | None = None
         record_illegal_moves: int | None = None
         rules: str | None = None
         message_text: str | None = None
         message_color: str | None = None
         message_background_color: str | None = None
         prize_currency: str | None = None
+        custom_exec_mode: bool
         match action:
             case 'update' | 'clone':
                 if admin_event is None:
@@ -654,17 +653,17 @@ class BaseAdminController(BaseController):
                 background_image = stored_event.background_image
                 background_color = stored_event.background_color
                 location = stored_event.location
-                update_password = stored_event.update_password
                 record_illegal_moves = stored_event.record_illegal_moves
                 rules = stored_event.rules
                 message_text = stored_event.message_text
                 message_color = admin_event.message_color
                 message_background_color = admin_event.message_background_color
                 prize_currency = stored_event.prize_currency
+                custom_exec_mode = stored_event.custom_exec_mode
                 override_unrated_rapid_blitz = stored_event.override_unrated_rapid_blitz
             case 'create':
-                public = False
                 sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
+                public = False
                 federation = (
                     sharly_chess_config.federation.name
                     if sharly_chess_config.federation
@@ -673,6 +672,7 @@ class BaseAdminController(BaseController):
                 hide_background_image = (
                     sharly_chess_config.default_hide_background_image
                 )
+                custom_exec_mode = sharly_chess_config.default_custom_exec_mode
                 override_unrated_rapid_blitz = True
             case _:
                 raise ValueError(f'action=[{action}]')
@@ -700,7 +700,6 @@ class BaseAdminController(BaseController):
                 background_color is None
             ),
             'location': WebContext.value_to_form_data(location),
-            'update_password': WebContext.value_to_form_data(update_password),
             'record_illegal_moves': WebContext.value_to_form_data(record_illegal_moves),
             'rules': WebContext.value_to_form_data(rules),
             'message_text': WebContext.value_to_form_data(message_text),
@@ -715,6 +714,7 @@ class BaseAdminController(BaseController):
                 message_background_color
             ),
             'prize_currency': WebContext.value_to_form_data(prize_currency),
+            'custom_exec_mode': WebContext.value_to_form_data(custom_exec_mode),
             'override_unrated_rapid_blitz': WebContext.value_to_form_data(
                 override_unrated_rapid_blitz
             ),

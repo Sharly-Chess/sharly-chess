@@ -47,19 +47,27 @@
                 {% if not display_rankings %}
                     <div class="d-flex gap-2 justify-content-end mb-2 align-items-end">
                         {% if admin_tournament.check_in_open %}
-                            <button
-                                class="btn btn-outline-primary text-nowrap"
-                                hx-get="{{ url_for('admin-tournament-close-check-in-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
-                                hx-trigger="click"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                preload
-                                data-bs-toggle="modal"
-                                data-bs-target="#modal-wrapper"
-                                {{ macros.tooltip_attributes('info', _('Close check-in for tournament [%(tournament)s].', tournament=admin_tournament.name), 'top') }}
+                            <span
+                                {% if client.can_open_close_check_in %}
+                                    {{ macros.tooltip_attributes('info', _('Pairings disabled while check-in is open.'), 'top') }}
+                                {% else %}
+                                    {{ macros.tooltip_attributes('warning', _('You are not allowed to open/close check-in.'), 'top') }}
+                                {% endif %}
                             >
-                                {{ _('Close check in') }}
-                            </button>
+                                <button
+                                    class="btn btn-outline-primary text-nowrap"
+                                    hx-get="{{ url_for('admin-tournament-close-check-in-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                                    hx-trigger="click"
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                    preload
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modal-wrapper"
+                                    {{ macros.tooltip_attributes('info', _('Close check-in for tournament [%(tournament)s].', tournament=admin_tournament.name), 'top') }}
+                                >
+                                    {{ _('Close check-in') }}
+                                </button>
+                            </span>
                         {% endif %}
                         {% include admin_tournament.pairing_system.pairing_buttons_template %}
 
@@ -393,4 +401,4 @@
             {{ _('No pairings.') }}
         </h5>
     </div>
-{% endif%}
+{% endif %}

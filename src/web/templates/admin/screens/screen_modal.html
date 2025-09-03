@@ -52,8 +52,9 @@
                         {{ _('Properties') }}
                     </h4>
 
+                    {% set col = 6 if action == 'create' and screen_type.value in ['input', 'boards', 'players', 'ranking', ] else 4 %}
                     <div class="row">
-                        <div class="col-12 col-md-6 mb-3">
+                        <div class="col-12 col-xl-{{col}} mb-3">
                             {{ admin_macros.switch_input(
                                 name='public',
                                 label=_('Visibility:'),
@@ -62,7 +63,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6 mb-3">
+                        <div class="col-12 col-md-6 col-xl-{{col}} mb-3">
                             {{ admin_macros.text_input(
                                 name='name',
                                 label=_('Name:'),
@@ -71,8 +72,8 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        {% if action == 'create' and screen_type in ['input', 'boards', 'players', 'ranking', ] %}
-                            <div class="col-12 mb-3">
+                        {% if action == 'create' and screen_type.value in ['input', 'boards', 'players', 'ranking', ] %}
+                            <div class="col-12 col-xl-{{col}} mb-3">
                                 {{ admin_macros.select_input(
                                     name='init_set_tournament_id',
                                     label=_('Tournament:'),
@@ -82,7 +83,7 @@
                                 ) }}
                             </div>
                         {% endif %}
-                        {% if screen_type == 'ranking' %}
+                        {% if screen_type.value == 'ranking' %}
                             <div class="col-12 col-md-6 mb-3">
                                 {% include '../common/modal/ranking_crosstable.html' %}
                             </div>
@@ -90,7 +91,7 @@
                                 {% include '../common/modal/ranking_round.html' %}
                             </div>
                         {% endif %}
-                        {% if screen_type == 'image' %}
+                        {% if screen_type.value == 'image' %}
                             <div class="col-12 col-md-6 mb-3">
                                 {{ admin_macros.text_input(
                                     name='background_image',
@@ -115,12 +116,12 @@
                         {% endif %}
                     </div>
 
-                    {% if screen_type in ['players', 'ranking', 'results', ] %}
+                    {% if screen_type.value in ['players', 'ranking', 'results', ] %}
                         <h4>
                             {{ _('Selection') }}
                         </h4>
                         <div class="row">
-                            {% if screen_type == 'players' %}
+                            {% if screen_type.value == 'players' %}
                                 <div class="col-12 mb-3">
                                     {% include '../common/modal/show_unpaired.html' %}
                                 </div>
@@ -128,7 +129,7 @@
                                     {% include '../common/modal/show_opponent.html' %}
                                 </div>
                             {% endif %}
-                            {% if screen_type == 'ranking' %}
+                            {% if screen_type.value == 'ranking' %}
                                 <div class="col-12 col-md-6 mb-3">
                                     {% include '../common/modal/ranking_min_points.html' %}
                                 </div>
@@ -136,7 +137,7 @@
                                     {% include '../common/modal/ranking_max_points.html' %}
                                 </div>
                             {% endif %}
-                            {% if screen_type == 'results' %}
+                            {% if screen_type.value == 'results' %}
                                 <div class="col-12 col-md-6 mb-3">
                                     {{ admin_macros.number_input(
                                         name='results_limit',
@@ -181,7 +182,7 @@
                         </div>
                     {% endif %}
 
-                    {% if screen_type in ['input', 'boards', 'players', 'results', 'ranking', ] %}
+                    {% if screen_type.value in ['input', 'boards', 'players', 'results', 'ranking', ] %}
                         <h4>
                             {{ _('Layout') }}
                         </h4>
@@ -213,7 +214,7 @@
                                     data=data, errors=errors
                                 ) }}
                             </div>
-                            {% if screen_type == 'input' %}
+                            {% if screen_type.value == 'input' %}
                                 <div class="col-12 col-md-6 mb-3">
                                     {% include '../common/modal/exit_button.html' %}
                                 </div>
