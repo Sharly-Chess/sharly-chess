@@ -1,5 +1,7 @@
 import asyncio
 
+from common import TEST_ENV
+
 gui_success = False
 
 try:
@@ -69,7 +71,7 @@ try:
     )
 
     # Check if GUI mode should be used
-    if not args.cli and not has_plugin_engine_arg:
+    if not args.cli and not has_plugin_engine_arg and not TEST_ENV:
         try:
             from gui.server_gui_toga import SharlyChessServerToga
 
