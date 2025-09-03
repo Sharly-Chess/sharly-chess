@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from pathlib import Path
 import queue
 import re
 import tomllib
@@ -23,7 +22,7 @@ import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
 
-from common import BASE_DIR
+from common import BASE_DIR, DEVEL_ENV, SHARLY_CHESS_VERSION
 from common.i18n import _
 from gui.gui_logger import GUILogHandler
 from web.server_engine import ServerEngine
@@ -224,14 +223,20 @@ class SharlyChessServerToga(toga.App):
     """Main Toga GUI app for Sharly Chess server."""
 
     def __init__(self):
-        version: str | None = None
-        with open(BASE_DIR / 'pyproject.toml', 'rb') as f:
-            version = tomllib.load(f)['project']['version']
+        # Get version - from pyproject.toml in development, from package metadata in production
+        if DEVEL_ENV:
+            try:
+                with open(BASE_DIR / 'pyproject.toml', 'rb') as f:
+                    version = tomllib.load(f)['project']['version']
+            except (FileNotFoundError, KeyError):
+                version = str(SHARLY_CHESS_VERSION)
+        else:
+            version = str(SHARLY_CHESS_VERSION)
 
         super().__init__(
             formal_name='Sharly Chess Server',
             app_id='com.sharlychess.server',
-            icon=Path('icon.png'),
+            icon=BASE_DIR / 'src' / 'gui' / 'icon.png',
             home_page='https://sharly-chess.com',
             version=version,
         )

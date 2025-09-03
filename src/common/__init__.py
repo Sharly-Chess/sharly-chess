@@ -54,12 +54,42 @@ RGB = namedtuple('RGB', ['red', 'green', 'blue'])
 """ The temporary directory. """
 TMP_DIR: Path = Path('tmp')
 
-# The base directory, differs for developers. base_dir must be used when looking for application files
-# (images, templates, ...) while user file should be search in the current directory.
-BASE_DIR: Path = (
-    Path(__file__).resolve().parents[2] if DEVEL_ENV else Path(sys._MEIPASS)  # type: ignore
-)
 
+def app_base_dir() -> Path:
+    """
+    Return the directory that holds bundled resources for:
+      - Dev:      repo/source tree
+      - Onefile:  sys._MEIPASS
+      - macOS .app onedir: .../My.app/Contents/Resources
+      - Other frozen onedir: directory next to the executable
+    """
+
+    # PyInstaller onefile
+    meipass = getattr(sys, '_MEIPASS', None)
+    if meipass:
+        return Path(meipass)
+
+    # macOS .app onedir
+    try:
+        exe = Path(sys.argv[0]).resolve()
+        # .../My.app/Contents/MacOS/<exe>
+        contents = exe.parent.parent
+        if contents.name == 'Contents' and contents.parent.suffix == '.app':
+            resources = contents / 'Resources'
+            if resources.is_dir():
+                return resources
+    except Exception:
+        pass
+
+    # Other frozen (non-.app) onedir
+    if getattr(sys, 'frozen', False):
+        return Path(sys.executable).resolve().parent
+
+    # Dev: project / package root (adjust levels to your layout)
+    return Path(__file__).resolve().parents[2]
+
+
+BASE_DIR: Path = app_base_dir()
 
 """The events folder name, used to recover events from previous releases."""
 EVENTS_FOLDER: str = 'events'

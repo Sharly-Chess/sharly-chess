@@ -628,6 +628,15 @@ class ProjectBuilder(ABC):
             PLUGINS_DIR / 'ffe' / '.credentials',
         ]
 
+        # Add pyproject.toml for development mode detection and version info
+        files += [
+            BASE_DIR / 'pyproject.toml',
+        ]
+
+        # Add GUI resources
+        gui_dir: Path = self.src_dir / 'gui'
+        files += [file for file in gui_dir.glob('**/*') if file.is_file()]
+
         # Use correct path separator for PyInstaller --add-data based on OS
         data_separator = ':' if os.name != 'nt' else ';'
 

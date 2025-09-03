@@ -3795,9 +3795,6 @@ msgstr ""
 msgid "Please enter the name of the event."
 msgstr ""
 
-msgid "Please enter the password to enter results:"
-msgstr ""
-
 msgid "Please enter the password."
 msgstr ""
 
@@ -4442,6 +4439,12 @@ msgstr ""
 msgid "Selection: %(selection)s"
 msgstr ""
 
+msgid "Server Setup"
+msgstr ""
+
+msgid "Server is already running!"
+msgstr ""
+
 msgid "Set Full-Points Byes"
 msgstr ""
 
@@ -4458,12 +4461,6 @@ msgid "Set special results"
 msgstr ""
 
 msgid "Set the current round"
-msgstr ""
-
-msgid "Server Setup"
-msgstr ""
-
-msgid "Server is already running!"
 msgstr ""
 
 msgid "Set the recommended tie-breaks"
@@ -6284,4 +6281,3 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-

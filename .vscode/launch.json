@@ -5,7 +5,6 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/src/sharly_chess.py",
-            "args": ["--gui"]
         },
         {
             "name": "Sharly Chess Tests",

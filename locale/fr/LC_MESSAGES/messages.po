@@ -3795,9 +3795,6 @@ msgstr "Veuillez entrer le nom de famille."
 msgid "Please enter the name of the event."
 msgstr "Veuillez entrer le nom de l'évènement."
 
-msgid "Please enter the password to enter results:"
-msgstr "Veuillez entrer le mot de passe pour saisir des résultats :"
-
 msgid "Please enter the password."
 msgstr "Veuillez entrer le mot de passe."
 
@@ -4442,6 +4439,12 @@ msgstr "Sélection"
 msgid "Selection: %(selection)s"
 msgstr "Sélection : %(selection)s"
 
+msgid "Server Setup"
+msgstr "Configuration du serveur"
+
+msgid "Server is already running!"
+msgstr "Le serveur est déjà en cours d’exécution !"
+
 msgid "Set Full-Points Byes"
 msgstr "Allouer des points joker"
 
@@ -4459,12 +4462,6 @@ msgstr "Noter des résultats spéciaux"
 
 msgid "Set the current round"
 msgstr "Changer la ronde courante"
-
-msgid "Server Setup"
-msgstr "Configuration du serveur"
-
-msgid "Server is already running!"
-msgstr "Le serveur est déjà en cours d’exécution !"
 
 msgid "Set the recommended tie-breaks"
 msgstr "Utiliser les départages recommandés"
@@ -6284,4 +6281,3 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
