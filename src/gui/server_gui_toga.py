@@ -12,7 +12,6 @@ import asyncio
 import logging
 import queue
 import re
-import tomllib
 import threading
 import webbrowser
 from datetime import datetime
@@ -22,7 +21,7 @@ import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
 
-from common import BASE_DIR, DEVEL_ENV, SHARLY_CHESS_VERSION
+from common import BASE_DIR, SHARLY_CHESS_VERSION
 from common.i18n import _
 from gui.gui_logger import GUILogHandler
 from web.server_engine import ServerEngine
@@ -191,7 +190,7 @@ LOG_HTML = f"""<!doctype html>
             /* ANSI-ish classes */
             .bold {{ font-weight: bold; }}
             .dim {{ color: #888; }}
-            .red {{ color: #ff6666; }}
+            .red {{ color: #ff6666; }}SHARLY_CHESS_VERSION
             .green {{ color: #66ff66; }}
             .yellow {{ color: #ffff66; }}
             .blue {{ color: #66aaff; }}
@@ -223,22 +222,12 @@ class SharlyChessServerToga(toga.App):
     """Main Toga GUI app for Sharly Chess server."""
 
     def __init__(self):
-        # Get version - from pyproject.toml in development, from package metadata in production
-        if DEVEL_ENV:
-            try:
-                with open(BASE_DIR / 'pyproject.toml', 'rb') as f:
-                    version = tomllib.load(f)['project']['version']
-            except (FileNotFoundError, KeyError):
-                version = str(SHARLY_CHESS_VERSION)
-        else:
-            version = str(SHARLY_CHESS_VERSION)
-
         super().__init__(
             formal_name='Sharly Chess',
             app_id='com.sharlychess.app',
             icon=BASE_DIR / 'src' / 'gui' / 'icon.png',
             home_page='https://sharly-chess.com',
-            version=version,
+            version=str(SHARLY_CHESS_VERSION),
         )
 
         self._logview_ready = False
