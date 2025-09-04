@@ -55,12 +55,13 @@
             <tr class="{{ row_cycler() }}">
                 <th scope="row" class="text-nowrap">{{ _('Access from the local network (LAN/WAN)') }}</th>
                 <td>
-                    {% if sharly_chess_config.lan_urls %}
-                        {% for lan_url in sharly_chess_config.lan_urls %}
+                    {% if sharly_chess_config.lan_ifaces %}
+                        {% for lan_iface in sharly_chess_config.lan_ifaces %}
+                            {% set lan_url=sharly_chess_config.app_url(lan_iface.ip) %}
                             {% if not loop.first %}
                                 <br/>
                             {% endif %}
-                            <a href="{{ lan_url }}" target="_blank">{{ lan_url }}</a>
+                            <a href="{{ lan_url }}" target="_blank">{{ lan_iface.ip }} ({{ lan_iface.label }})</a>
                         {% endfor %}
                     {% else %}
                         <span class="fst-italic">

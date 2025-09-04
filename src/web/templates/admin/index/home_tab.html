@@ -74,7 +74,6 @@
                         <div class="text-muted small">
                             {{ item.label }}{% if item.type and item.type != item.label %} ({{ item.type }}){% endif %}
                         </div>
-                        <br/>
                         <a href="{{ url_for('qrcode-lan-url', ip=ip) }}?logo=&time={{ now }}" target="_blank">
                             ({{ _('printable version') }})
                         </a>
