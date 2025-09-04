@@ -8,6 +8,7 @@ the server without duplicating server logic.
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 import queue
 import re
@@ -339,16 +340,17 @@ class SharlyChessServerToga(toga.App):
                 message.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
             )
 
-        level_js = (level or 'info').replace("'", "\\'")
-        ts_js = ts.replace("'", "\\'")
+        # Use json.dumps to make safe JS string literals
+        ts_js = json.dumps(ts)
+        html_js = json.dumps(html)
+        level_js = json.dumps((level or 'info'))
 
-        # Bootstrap appendLog if the page was reloaded (or not yet defined)
         js = f"""
         (function() {{
             if (typeof appendLog !== 'function') {{
                 window.appendLog = {APPEND_LOG_JS}
             }}
-            appendLog('{ts_js}', `{html}`, '{level_js}');
+            appendLog({ts_js}, {html_js}, {level_js});
         }})();"""
 
         self._eval_or_buffer_js(js)
