@@ -138,7 +138,7 @@ class PapiBuchholzTieBreak(FfeTieBreak, BuchholzTieBreak, ABC):
         self,
         player: Player,
         *,
-        after_round: int | None,
+        after_round: int,
         use_cut_top: bool = False,
         use_cut_btm: bool = False,
     ) -> float:

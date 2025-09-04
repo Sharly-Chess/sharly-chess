@@ -145,7 +145,7 @@ class IndexAdminController(BaseAdminController):
         admin_events_show_details: bool | None = None,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: AdminWebContext = AdminWebContext(
             request, data=None, admin_tab=admin_tab
         )
@@ -452,7 +452,7 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
         admin_events_show_details: bool | None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_render(
             request,
             admin_tab=None,
@@ -468,7 +468,7 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
         admin_tab: str,
         admin_events_show_details: bool | None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_render(
             request,
             admin_tab=admin_tab,
@@ -483,7 +483,7 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
         admin_tab: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_render(
             request,
             admin_tab=admin_tab,
@@ -551,7 +551,7 @@ class IndexAdminController(BaseAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         stored_config: StoredConfig = self._admin_validate_config_update_data(data)
         stored_plugins: list[StoredPlugin] = self._admin_validate_plugins_update_data(
             data
@@ -611,7 +611,7 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
         locale: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         if locale in locales:
             stored_config: StoredConfig = sharly_chess_config.stored_config
@@ -628,7 +628,7 @@ class IndexAdminController(BaseAdminController):
     async def htmx_admin_config_modal(
         self,
         request: HTMXRequest,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         return self._admin_render(
             request,
@@ -644,7 +644,7 @@ class IndexAdminController(BaseAdminController):
     async def htmx_admin_status_badge(
         self,
         request: HTMXRequest,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         source_databases: list[LocalSourceDatabase] = (
             LocalSourceDatabaseManager.objects()
         )
@@ -688,7 +688,7 @@ class IndexAdminController(BaseAdminController):
     async def htmx_admin_database_modal(
         self,
         request: HTMXRequest,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_render(
             request,
             admin_tab=None,
@@ -706,7 +706,7 @@ class IndexAdminController(BaseAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         source_databases: list[LocalSourceDatabase] = (
             LocalSourceDatabaseManager.objects()
         )
@@ -753,7 +753,7 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
         database_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         database = LocalSourceDatabaseManager.get_object(database_id)
         return HTMXTemplate(
             template_name='/admin/common/database/database_update_buttons.html',

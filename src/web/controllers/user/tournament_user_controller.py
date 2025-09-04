@@ -13,6 +13,7 @@ from data.tournament import Tournament
 from utils.enum import Result
 from web.controllers.admin.pairings_admin_controller import PairingsAdminController
 from web.controllers.admin.player_admin_controller import PlayerAdminController
+from web.controllers.base_controller import Redirect
 from web.controllers.user.base_screen_user_controller import (
     ScreenUserWebContext,
     BaseScreenUserController,
@@ -125,7 +126,7 @@ class CheckInUserController(BaseInputUserController):
         screen_uniq_id: str,
         tournament_id: int,
         player_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PlayerUserWebContext = PlayerUserWebContext(
             request,
         )
@@ -152,7 +153,7 @@ class CheckInUserController(BaseInputUserController):
         screen_uniq_id: str,
         tournament_id: int,
         player_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         player_web_context: PlayerUserWebContext = PlayerUserWebContext(
             request,
         )
@@ -189,7 +190,7 @@ class IllegalMoveUserController(BaseInputUserController):
         self,
         request: HTMXRequest,
         add: bool,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         player_web_context: PlayerUserWebContext = PlayerUserWebContext(
             request,
         )
@@ -238,7 +239,7 @@ class IllegalMoveUserController(BaseInputUserController):
         screen_uniq_id: str,
         tournament_id: int,
         player_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._delete_or_add_illegal_move(
             request,
             add=True,
@@ -257,7 +258,7 @@ class IllegalMoveUserController(BaseInputUserController):
         screen_uniq_id: str,
         tournament_id: int,
         player_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._delete_or_add_illegal_move(
             request,
             add=False,
@@ -282,7 +283,7 @@ class ResultUserController(BaseInputUserController):
         screen_uniq_id: str,
         tournament_id: int,
         board_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: BoardUserWebContext = BoardUserWebContext(
             request,
         )
@@ -300,7 +301,7 @@ class ResultUserController(BaseInputUserController):
         self,
         request: HTMXRequest,
         channels: ChannelsPlugin,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         result_web_context: ResultUserWebContext = ResultUserWebContext(
             request,
         )
@@ -354,7 +355,7 @@ class ResultUserController(BaseInputUserController):
         round: int,
         board_id: int,
         result: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._user_update_result(
             request,
             channels=channels,
@@ -379,7 +380,7 @@ class ResultUserController(BaseInputUserController):
         tournament_id: int,
         round: int,
         board_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._user_update_result(
             request,
             channels=channels,

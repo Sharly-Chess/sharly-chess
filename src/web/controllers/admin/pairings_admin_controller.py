@@ -35,7 +35,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
-from web.controllers.base_controller import WebContext
+from web.controllers.base_controller import Redirect, WebContext
 from web.controllers.user.event_user_controller import EventUserController
 from web.guards import Guard
 from web.messages import Message
@@ -172,6 +172,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
 
         self.admin_player: Player | None = None
         if player_id is not None:
+            assert self.admin_tournament is not None
             self.admin_player = next(
                 (p for p in self.admin_tournament.players if p.id == player_id), None
             )
@@ -289,7 +290,7 @@ class PairingsAdminController(BaseEventAdminController):
         cls,
         web_context: PairingsAdminWebContext,
         template_context: dict[str, Any] | None = None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         if web_context.error:
             return web_context.error
 
@@ -317,7 +318,7 @@ class PairingsAdminController(BaseEventAdminController):
         tournament_id: int | None,
         round: int | None,
         show_without_results: bool | None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         if show_without_results is not None:
             SessionHandler.set_session_admin_pairings_show_without_results(
                 request, show_without_results
@@ -344,7 +345,7 @@ class PairingsAdminController(BaseEventAdminController):
         tournament_id: int,
         round: int,
         board_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PairingsAdminWebContext(
             request, event_uniq_id, tournament_id, round, board_id
         )
@@ -369,7 +370,7 @@ class PairingsAdminController(BaseEventAdminController):
         tournament_id: int,
         round: int,
         player_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PairingsAdminWebContext(
             request, event_uniq_id, tournament_id, round, player_id=player_id
         )
@@ -407,7 +408,7 @@ class PairingsAdminController(BaseEventAdminController):
         result: int,
         trigger_event: str | None = None,
         validate_result: bool = False,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -494,7 +495,7 @@ class PairingsAdminController(BaseEventAdminController):
         round: int,
         board_id: int,
         result: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_update_result(
             request,
             event_uniq_id=event_uniq_id,
@@ -518,7 +519,7 @@ class PairingsAdminController(BaseEventAdminController):
         tournament_id: int,
         round: int,
         board_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -554,7 +555,7 @@ class PairingsAdminController(BaseEventAdminController):
         tournament_id: int,
         round: int,
         board_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -584,7 +585,7 @@ class PairingsAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         board_id: int = int(data['board_id'])
         key: str = data['key']
         match key:
@@ -627,7 +628,7 @@ class PairingsAdminController(BaseEventAdminController):
         round: int,
         player_id: int,
         action: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PairingsAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -730,7 +731,7 @@ class PairingsAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         round: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -765,7 +766,7 @@ class PairingsAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         round: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -833,7 +834,7 @@ class PairingsAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -881,7 +882,7 @@ class PairingsAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         round: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -911,7 +912,7 @@ class PairingsAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -950,7 +951,7 @@ class PairingsAdminController(BaseEventAdminController):
         action: str,
         redirect_method: str,
         redirect_route: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         try:
             protected_action = PairingAction(action)
         except ValueError:
@@ -996,7 +997,7 @@ class PairingsAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         round: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         mode = WebContext.form_data_to_str(data, 'mode') or ''
         try:
             SessionHandler.set_session_admin_pairings_safety_mode(
@@ -1020,7 +1021,7 @@ class PairingsAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         round: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -1056,7 +1057,7 @@ class PairingsAdminController(BaseEventAdminController):
         player_id: int,
         check_in: int,
         round: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -1083,7 +1084,7 @@ class PairingsAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         round: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request, event_uniq_id, tournament_id, round
         )
@@ -1118,7 +1119,7 @@ class PairingsAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         round: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -1193,7 +1194,7 @@ class PairingsAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         current_round: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -1224,7 +1225,7 @@ class PairingsAdminController(BaseEventAdminController):
         tournament_id: int,
         round: int,
         player_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -1236,10 +1237,7 @@ class PairingsAdminController(BaseEventAdminController):
         player = web_context.get_admin_player()
         tournament.store_illegal_move(player)
         return self._admin_event_pairings_render(
-            request,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-            round_=round,
+            web_context=web_context,
         )
 
     @delete(
@@ -1255,7 +1253,7 @@ class PairingsAdminController(BaseEventAdminController):
         tournament_id: int,
         round: int,
         player_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -1267,10 +1265,7 @@ class PairingsAdminController(BaseEventAdminController):
         player = web_context.get_admin_player()
         tournament.delete_illegal_move(player)
         return self._admin_event_pairings_render(
-            request,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-            round_=round,
+            web_context=web_context,
         )
 
     @get(
@@ -1331,7 +1326,7 @@ class PairingsAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         round: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -1391,7 +1386,7 @@ class PairingsAdminController(BaseEventAdminController):
             dict[str, str | list[int]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,

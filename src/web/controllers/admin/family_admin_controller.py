@@ -19,7 +19,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
-from web.controllers.base_controller import WebContext
+from web.controllers.base_controller import Redirect, WebContext
 from web.messages import Message
 from web.session import SessionHandler
 
@@ -302,7 +302,7 @@ class FamilyAdminController(BaseEventAdminController):
         family_type: str | None = None,
         data: dict[str, str] | None = None,  # type: ignore
         errors: dict[str, str] | None = None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: FamilyAdminWebContext = FamilyAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -503,7 +503,7 @@ class FamilyAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         admin_families_show_details: bool | None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         if admin_families_show_details is not None:
             SessionHandler.set_session_admin_families_show_details(
                 request, admin_families_show_details
@@ -522,7 +522,7 @@ class FamilyAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         family_type: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_families_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -542,7 +542,7 @@ class FamilyAdminController(BaseEventAdminController):
         event_uniq_id: str,
         action: str,
         family_id: int | None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_families_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -562,7 +562,7 @@ class FamilyAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         match action:
             case 'update' | 'delete' | 'clone' | 'create':
                 web_context: FamilyAdminWebContext = FamilyAdminWebContext(
@@ -639,7 +639,7 @@ class FamilyAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_family_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -662,7 +662,7 @@ class FamilyAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_family_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -685,7 +685,7 @@ class FamilyAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_family_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -708,7 +708,7 @@ class FamilyAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         family_id: int,
-    ) -> HTMXTemplate | ClientRedirect:
+    ) -> HTMXTemplate | ClientRedirect | Redirect:
         web_context = FamilyAdminWebContext(request, event_uniq_id, family_id)
         event = web_context.get_admin_event()
         family = web_context.get_admin_family()
@@ -753,7 +753,7 @@ class FamilyAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_family_update(
             request,
             event_uniq_id=event_uniq_id,

@@ -5,7 +5,6 @@ from typing import Annotated, Any
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.response import Template
 
 from common.exception import SharlyChessException
 from common.i18n import _
@@ -293,7 +292,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'icon_class': 'bi-box-arrow-in-right',
                 },
             }
-        if self.admin_event.custom_exec_mode and (
+        if self.get_admin_event().custom_exec_mode and (
             self.client.can_manage_accounts or self.client.can_manage_devices
         ):
             nav_tab: dict[str, Any] = {
@@ -340,7 +339,7 @@ class BaseEventAdminController(BaseAdminController):
     def _admin_event_render(
         cls,
         template_context: dict[str, Any],
-    ) -> Template:
+    ) -> HTMXTemplate:
         if 'modal' in template_context:
             return HTMXTemplate(
                 template_name='admin/modals.html',

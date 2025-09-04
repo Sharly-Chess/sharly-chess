@@ -30,7 +30,7 @@ class EventPrintController(BaseEventAdminController):
         cls,
         web_context: BaseEventAdminWebContext,
         template_context: dict[str, Any] | None = None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         if web_context.error:
             return web_context.error
         return cls._admin_event_render(
@@ -98,7 +98,7 @@ class EventPrintController(BaseEventAdminController):
         document_id: str | None = None,
         tournament_id: int | None = None,
         round: int | None = None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = BaseEventAdminWebContext(request, event_uniq_id)
         tournament_id = web_context.default_tournament_for_print_modal(tournament_id)
 

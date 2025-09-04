@@ -21,7 +21,7 @@ from web.controllers.admin.base_event_admin_controller import (
 )
 from web.controllers.admin.player_admin_controller import PlayerAdminController
 from web.controllers.admin.tournament_admin_controller import TournamentAdminWebContext
-from web.controllers.base_controller import WebContext
+from web.controllers.base_controller import Redirect, WebContext
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
@@ -37,7 +37,7 @@ class FfeAdminEventController(BaseEventAdminController):
         event_uniq_id: str,
         admin_players_filter_leagues: list[str] | None = None,
         admin_players_filter_licences: list[int] | None = None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -81,7 +81,7 @@ class FfeAdminEventController(BaseEventAdminController):
             dict[str, Any],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         ffe_auth_valid: bool | None = None
 
         if NetworkMonitor.connected():
@@ -124,7 +124,7 @@ class FfeAdminEventController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -154,7 +154,7 @@ class FfeAdminEventController(BaseEventAdminController):
     def _render_upload_results(
         request: HTMXRequest,
         web_context: BaseEventAdminWebContext,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         assert web_context.admin_event is not None
 
         return HTMXTemplate(
@@ -176,7 +176,7 @@ class FfeAdminEventController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -194,7 +194,7 @@ class FfeAdminEventController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -218,7 +218,7 @@ class FfeAdminEventController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: TournamentAdminWebContext = TournamentAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -245,7 +245,7 @@ class FfeAdminEventController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,

@@ -18,7 +18,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
-from web.controllers.base_controller import WebContext
+from web.controllers.base_controller import Redirect, WebContext
 from web.messages import Message
 
 
@@ -118,7 +118,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
         display_controller_id: int | None = None,
         data: dict[str, str] | None = None,  # type: ignore
         errors: dict[str, str] | None = None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = DisplayControllerAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -139,12 +139,10 @@ class DisplayControllerAdminController(BaseEventAdminController):
         admin_display_controllers_sorted_by_uniq_id: list[DisplayController]
         if web_context.client.can_view_private_screens:
             admin_display_controllers_sorted_by_uniq_id = (
-                web_context.admin_event.display_controllers_sorted_by_uniq_id
+                web_context.get_admin_event().display_controllers_sorted_by_uniq_id
             )
         elif web_context.client.can_view_public_screens:
-            admin_display_controllers_sorted_by_uniq_id = (
-                web_context.admin_event.public_display_controllers_sorted_by_uniq_id
-            )
+            admin_display_controllers_sorted_by_uniq_id = web_context.get_admin_event().public_display_controllers_sorted_by_uniq_id
         else:
             admin_display_controllers_sorted_by_uniq_id = []
 
@@ -213,7 +211,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_display_controllers_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -227,7 +225,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_display_controllers_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -246,7 +244,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
         event_uniq_id: str,
         action: str,
         display_controller_id: int | None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_display_controllers_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -265,7 +263,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         match action:
             case 'update' | 'delete' | 'create':
                 web_context: DisplayControllerAdminWebContext = (
@@ -350,7 +348,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_display_controller_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -372,7 +370,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_display_controller_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -395,7 +393,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_display_controller_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -415,7 +413,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
         display_controller_id: int | None,
         type: str,
         object_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: DisplayControllerAdminWebContext = (
             DisplayControllerAdminWebContext(
                 request,
@@ -484,7 +482,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         display_controller_id: int | None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: DisplayControllerAdminWebContext = (
             DisplayControllerAdminWebContext(
                 request,
