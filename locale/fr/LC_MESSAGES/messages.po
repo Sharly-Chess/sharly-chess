@@ -4478,6 +4478,9 @@ msgstr "Prix partagés"
 msgid "Sharing threshold"
 msgstr "Seuil de partage"
 
+msgid "Sharly Chess Server"
+msgstr "Serveur Sharly Chess"
+
 msgid "Sharly Chess can automatically launch a web browser when starting the web server."
 msgstr "Sharly Chess peut automatiquement lancer la navigateur au démarrage du serveur web."
 

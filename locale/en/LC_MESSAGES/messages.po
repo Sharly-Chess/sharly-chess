@@ -4478,6 +4478,9 @@ msgstr ""
 msgid "Sharing threshold"
 msgstr ""
 
+msgid "Sharly Chess Server"
+msgstr ""
+
 msgid "Sharly Chess can automatically launch a web browser when starting the web server."
 msgstr ""
 

@@ -20,7 +20,7 @@ from litestar.logging import LoggingConfig
 
 from common import REQUEST_TIMEOUT, LOG_FILE, set_is_server_engine
 from common.engine import Engine
-from common.i18n import _, set_locale
+from common.i18n import _
 from common.logger import (
     print_interactive_info,
     print_interactive_error,
@@ -54,7 +54,7 @@ if sys.platform == 'win32':  # pragma: py-not-win32
 
 def launch_browser(url: str):
     # Set the locale as the function is called in a new thread.
-    set_locale(SharlyChessConfig().locale)
+    SharlyChessConfig().load_and_set_env()
     print_interactive_info(
         _('Opening the welcome page [{url}] in a browser…').format(url=url)
     )

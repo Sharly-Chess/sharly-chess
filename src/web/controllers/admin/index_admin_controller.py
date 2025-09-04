@@ -572,7 +572,7 @@ class IndexAdminController(BaseAdminController):
             config_database.update_stored_config(stored_config)
             for stored_plugin in stored_plugins:
                 config_database.update_stored_plugin(stored_plugin)
-        SharlyChessConfig.reload()
+        SharlyChessConfig().load_and_set_env()
         previous_enabled_plugins = set(
             plugin.id for plugin in plugin_manager.enabled_plugins
         )
@@ -618,7 +618,7 @@ class IndexAdminController(BaseAdminController):
             stored_config.locale = locale
             with ConfigDatabase(write=True) as config_database:
                 config_database.update_stored_config(sharly_chess_config.stored_config)
-            sharly_chess_config.reload()
+            sharly_chess_config.load_and_set_env()
         return self._admin_render(request=request, data=None, admin_tab='config')
 
     @get(
