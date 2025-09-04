@@ -1,6 +1,5 @@
 import locale
 import logging
-import netifaces
 import os
 import re
 import subprocess
@@ -29,11 +28,12 @@ from common.i18n import (
     set_locale,
 )
 from common.logger import set_logging_config, get_logger
+from common.network import find_lan_interfaces
 from common.singleton import Singleton
 from utils.enum import Result
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredConfig
-from utils.network import IP_V4_ADDR_REGEX, LOCALHOST_IP
+from utils.network import LOCALHOST_IP
 
 if TYPE_CHECKING:
     from data.player import Federation
@@ -356,78 +356,19 @@ class SharlyChessConfig(metaclass=Singleton):
         return f'http://{ip}{f":{self.web_port}" if self.web_port != 80 else ""}'
 
     @property
+    def lan_ifaces(self) -> list[dict[str, str]]:
+        """[{ip, iface, type, label}]"""
+        try:
+            data = find_lan_interfaces()
+            logger.debug('LAN ifaces: %s', data)
+            return data
+        except Exception as e:
+            logger.debug('find_lan_interfaces failed: %s', e)
+            return []
+
+    @property
     def lan_ips(self) -> list[str]:
-        """Returns the IP of the server on the LAN/WAN."""
-        lan_ips: list[str] = []
-        interfaces = netifaces.interfaces()
-        debug: bool = False
-        if debug:
-            logger.debug('interfaces=%s', interfaces)
-        for interface_id in interfaces:
-            interface_data: dict[int, list[dict[str, str]]] = netifaces.ifaddresses(
-                interface_id
-            )
-            if debug:
-                logger.debug('interfaces[%s]=%s', interface_id, interface_data)
-            for network_type in interface_data:
-                network_type_data: list[dict[str, str]] = interface_data[network_type]
-                if debug:
-                    logger.debug(
-                        'addresses[%s][type=%d]=%s',
-                        interface_id,
-                        network_type,
-                        network_type_data,
-                    )
-                for address_no, address_data in enumerate(network_type_data):
-                    if debug:
-                        logger.debug(
-                            'addresses[%s][type=%d][%d]=%s',
-                            interface_id,
-                            network_type,
-                            address_no,
-                            address_data,
-                        )
-                    if 'addr' in address_data:
-                        addr: str = address_data['addr']
-                        if debug:
-                            logger.debug(
-                                'addresses[%s][type=%d][%d][addr]=%s',
-                                interface_id,
-                                network_type,
-                                address_no,
-                                addr,
-                            )
-                        if matches := re.match(IP_V4_ADDR_REGEX, addr):
-                            ip: str = f'{int(matches.group(1))}.{int(matches.group(2))}.{int(matches.group(3))}.{int(matches.group(4))}'
-                            if ip != LOCALHOST_IP:
-                                if debug:
-                                    logger.debug('Found valid IP address [%s]', ip)
-                                lan_ips.append(ip)
-                            else:
-                                if debug:
-                                    logger.debug(
-                                        'Localhost IP address [%s] skipped', ip
-                                    )
-                        else:
-                            if debug:
-                                logger.debug('[%s] is not a valid IP v4 address', addr)
-                    else:
-                        if debug:
-                            logger.debug(
-                                'Field [addr] not found in addresses[%s][AF_INET=%d]',
-                                interface_id,
-                                netifaces.AF_INET,
-                            )
-            else:
-                if debug:
-                    logger.debug(
-                        'AF_INET=%d not found in addresses[%s]',
-                        netifaces.AF_INET,
-                        interface_id,
-                    )
-        if debug:
-            logger.debug(f'{lan_ips=}')
-        return lan_ips
+        return [d['ip'] for d in self.lan_ifaces]
 
     @property
     def local_ip(self) -> str:
@@ -436,8 +377,7 @@ class SharlyChessConfig(metaclass=Singleton):
 
     @property
     def lan_urls(self) -> list[str]:
-        """The URLs of the application on the LAN/WAN."""
-        return [self.app_url(lan_ip) for lan_ip in self.lan_ips]
+        return [self.app_url(ip_info['ip']) for ip_info in self.lan_ifaces]
 
     @property
     def local_url(self) -> str:
