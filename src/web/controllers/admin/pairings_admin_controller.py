@@ -88,7 +88,6 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         if not self.admin_event:
             return
 
-        self.admin_tournament: Tournament | None = None
         if self.error:
             return
 
@@ -102,32 +101,39 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                 return
             self.admin_tournament = event.tournaments_by_id[tournament_id]
         elif event.tournaments:
-            self.admin_tournament = event.tournaments_sorted_by_uniq_id[0]
-            if (
-                last_tournament
-                := SessionHandler.get_session_admin_pairings_last_tournament(
-                    self.request
-                )
-            ) is not None:
-                event_uniq_id, tid = last_tournament
-                if (
-                    event_uniq_id == self.get_admin_event().uniq_id
-                    and tid in event.tournaments_by_id
-                ):
-                    self.admin_tournament = event.tournaments_by_id[tid]
+            self.admin_tournament = event.tournaments_by_id.get(
+                SessionHandler.get_session_admin_pairings_selected_tournament(
+                    self.request,
+                    event.uniq_id,
+                ),
+                event.tournaments_sorted_by_uniq_id[0],
+            )
 
         self.display_rankings = self.admin_tournament and (
             self.admin_tournament.finished
             and (round_ is None or round_ > self.admin_tournament.rounds)
         )
 
-        self.admin_round = (
-            round_
-            if round_ is not None
-            else self.admin_tournament.current_round or 1
-            if self.admin_tournament is not None
-            else 0
-        )
+        if self.admin_tournament is None:
+            self.admin_round = 0
+        elif round_ is not None:
+            self.admin_round = round_
+        else:
+            self.admin_round = SessionHandler.get_session_admin_pairings_selected_round(
+                self.request,
+                event.uniq_id,
+                self.admin_tournament.id,
+            )
+            if self.admin_round is None:
+                self.admin_round = 1
+            elif self.admin_tournament.finished:
+                self.admin_round = min(
+                    self.admin_round, self.admin_tournament.current_round + 1
+                )
+            else:
+                self.admin_round = min(
+                    self.admin_round, self.admin_tournament.current_round
+                )
 
         if self.admin_tournament and (
             self.admin_round > self.admin_tournament.rounds or self.display_rankings
@@ -361,11 +367,18 @@ class PairingsAdminController(BaseEventAdminController):
             return web_context.error
 
         if web_context.admin_tournament:
-            SessionHandler.set_session_admin_pairings_last_tournament(
+            SessionHandler.set_session_admin_pairings_selected_tournament(
                 request,
                 web_context.get_admin_event().uniq_id,
                 web_context.admin_tournament.id,
             )
+            if web_context.admin_round:
+                SessionHandler.set_session_admin_pairings_selected_round(
+                    request,
+                    web_context.get_admin_event().uniq_id,
+                    web_context.admin_tournament.id,
+                    web_context.admin_round,
+                )
 
         return self._admin_event_pairings_render(
             web_context,
