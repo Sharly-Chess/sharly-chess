@@ -596,7 +596,7 @@ class ScreenAdminController(BaseEventAdminController):
                                         f'screen_type=[{web_context.screen_type}]'
                                     )
                             name = event.get_unused_screen_name(
-                                screen_type=ScreenType(screen_type)
+                                screen_type=ScreenType(web_context.screen_type)
                             )
                             match web_context.screen_type:
                                 case ScreenType.RANKING:

@@ -155,11 +155,11 @@ class RotatorAdminController(BaseEventAdminController):
         admin_rotators_sorted_by_uniq_id: list[Rotator]
         if web_context.client.can_view_private_screens:
             admin_rotators_sorted_by_uniq_id = (
-                web_context.admin_event.rotators_sorted_by_uniq_id
+                web_context.get_admin_event().rotators_sorted_by_uniq_id
             )
         elif web_context.client.can_view_public_screens:
             admin_rotators_sorted_by_uniq_id = (
-                web_context.admin_event.public_rotators_sorted_by_uniq_id
+                web_context.get_admin_event().public_rotators_sorted_by_uniq_id
             )
         else:
             admin_rotators_sorted_by_uniq_id = []
