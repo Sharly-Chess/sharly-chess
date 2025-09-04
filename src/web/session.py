@@ -538,3 +538,17 @@ class SessionHandler:
         cls, request: HTMXRequest
     ) -> tuple[str, int] | None:
         return request.session.get(cls.PRINT_TOURNAMENT_KEY, None)
+
+    PAIRINGS_TOURNAMENT_KEY: str = 'admin_pairings_last_tournament'
+
+    @classmethod
+    def set_session_admin_pairings_last_tournament(
+        cls, request: HTMXRequest, event_uniq_id: str, tournament_id: int
+    ):
+        request.session[cls.PAIRINGS_TOURNAMENT_KEY] = (event_uniq_id, tournament_id)
+
+    @classmethod
+    def get_session_admin_pairings_last_tournament(
+        cls, request: HTMXRequest
+    ) -> tuple[str, int] | None:
+        return request.session.get(cls.PAIRINGS_TOURNAMENT_KEY, None)
