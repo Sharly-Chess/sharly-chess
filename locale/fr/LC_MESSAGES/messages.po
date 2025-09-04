@@ -1,5 +1,8 @@
-msgid "  - [{q_uc}] Do not recover"
-msgstr "  - [{q_uc}] Ne rien récupérer"
+msgid " [{default_choice}: {default_value}]: "
+msgstr " [{default_choice} : {default_value}] : "
+
+msgid " [{yes_answer}/{no_answer}]?"
+msgstr " [{yes_answer}/{no_answer}] ?"
 
 msgid "\"Niçois\" accelerated system"
 msgstr "Système accéléré niçois"
@@ -945,6 +948,9 @@ msgstr "Choisir les colonnes affichées."
 msgid "Choose your language"
 msgstr "Veuillez choisir votre langue"
 
+msgid "Clear Log"
+msgstr "Effacer le journal"
+
 msgid "Clear all the filters."
 msgstr "Effacer tous les filtres."
 
@@ -1556,17 +1562,20 @@ msgstr "Ronde affichée : %(round)d"
 msgid "Do not assign zero-point bye (players will be eligible for pairing)"
 msgstr "Ne pas marquer forfait (les joueur·euses seront apparié·es) "
 
-msgid "Do you want to install example event databases [{y_uc}/{n_lc}]? "
-msgstr "Voulez-vous installer des bases d'évènement d'exemple [{y_uc}/{n_lc}] ? "
+msgid "Do not recover"
+msgstr "Ne pas restaurer"
 
-msgid "Do you want to recover the data of release [{version}] [{y_uc}/{n_lc}]? "
-msgstr "Voulez-vous récupérer les données de la version [{version}] [{y_uc}/{n_lc}] ? "
+msgid "Do you want to install example event databases"
+msgstr "Voulez-vous installer des bases d'évènement d'exemple"
 
-msgid "Do you want to send these custom files to the Sharly Chess developers to enhance futures releases [{y_uc}/{n_lc}]? "
-msgstr "Voulez-vous envoyer ces fichiers aux développeur·euses de Sharly Chess pour améliorer les futures versions [{y_uc}/{n_lc}] ? "
+msgid "Do you want to recover the data of release [{version}]"
+msgstr "Voulez-vous récupérer les données de la version [{version}]"
 
-msgid "Do you want to upgrade from [{old_version}] to [{new_version}] [{y_lc}/{n_uc}]? "
-msgstr "Voulez-vous faire la mise à jour de [{old_version}] à [{new_version}] [{y_lc}/{n_uc}] ? "
+msgid "Do you want to send these custom files to the Sharly Chess developers to enhance futures releases"
+msgstr "Voulez-vous envoyer ces fichiers aux développeur·euses de Sharly Chess pour améliorer les futures versions"
+
+msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
+msgstr "Voulez-vous faire la mise à jour de [{old_version}] à [{new_version}]"
 
 msgid "Document:"
 msgstr "Document :"
@@ -3390,6 +3399,9 @@ msgstr "N'inclure que les joueur·euses de ce genre."
 msgid "Only one age category is expected with options including other categories."
 msgstr "Une seule catégorie d'age est attendue avec les options incluant d'autres catégories."
 
+msgid "Open Browser"
+msgstr "Ouvrir le navigateur"
+
 #, python-format
 msgid "Open check-in for tournament [%(tournament)s]."
 msgstr "Ouvrir le pointage pour le tournoi [%(tournament)s]."
@@ -3782,9 +3794,6 @@ msgstr "Veuillez entrer le nom de famille."
 
 msgid "Please enter the name of the event."
 msgstr "Veuillez entrer le nom de l'évènement."
-
-msgid "Please enter the number of the release to recover [{default_choice}: {default_version}]: "
-msgstr "Veuillez entrer le numéro de la version que vous souhaitez restaurer [{default_choice} : {default_version}] : "
 
 msgid "Please enter the password."
 msgstr "Veuillez entrer le mot de passe."
@@ -4429,6 +4438,12 @@ msgstr "Sélection"
 #, python-format
 msgid "Selection: %(selection)s"
 msgstr "Sélection : %(selection)s"
+
+msgid "Server Setup"
+msgstr "Configuration du serveur"
+
+msgid "Server is already running!"
+msgstr "Le serveur est déjà en cours d'exécution !"
 
 msgid "Set Full-Points Byes"
 msgstr "Allouer des points joker"
@@ -6263,4 +6278,7 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "Starting server..."
+#~ msgstr "Démarrage du serveur..."
 

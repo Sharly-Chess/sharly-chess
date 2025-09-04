@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # macOS Sign and Notarize Script (using Environment Variables)
 #
@@ -11,10 +11,39 @@
 #      Required variables: MACOS_SIGNING_CERT_BASE64, MACOS_SIGNING_CERT_PASSWORD,
 #      APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, APPLE_TEAM_ID
 #
+# Options:
+#   --build-only: Skip notarization steps (for testing)
+#
 
 set -e
 
-echo "=== macOS Sign & Notarize Script (using Environment Variables) ==="
+# Parse command line arguments
+BUILD_ONLY=false
+SIGN_ONLY=false
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --build-only)
+            BUILD_ONLY=true
+            ;;
+        --sign-only)
+            SIGN_ONLY=true
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Usage: $0 [--build-only|--sign-only]"
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+if [ "$BUILD_ONLY" = true ]; then
+    echo "=== macOS Build Script (Build Only Mode - Sign but Skip Notarization) ==="
+elif [ "$SIGN_ONLY" = true ]; then
+    echo "=== macOS Sign Script (Sign Only Mode) ==="
+else
+    echo "=== macOS Sign & Notarize Script (using Environment Variables) ==="
+fi
 echo
 
 # --- 1. Environment and Prerequisite Checks ---
@@ -29,7 +58,9 @@ else
     if [ ! -f ".env" ]; then
         echo "Error: .env file not found. Please create one with your signing and notarization secrets."
         echo "It should contain: MACOS_SIGNING_CERT_BASE64, MACOS_SIGNING_CERT_PASSWORD,"
-        echo "                   APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, and APPLE_TEAM_ID"
+        if [ "$BUILD_ONLY" = false ]; then
+            echo "                   APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, and APPLE_TEAM_ID"
+        fi
         exit 1
     fi
 
@@ -39,11 +70,15 @@ else
     set +o allexport
 fi
 
-if [ -z "$APPLE_ID" ] || [ -z "$APPLE_APP_SPECIFIC_PASSWORD" ] || [ -z "$APPLE_TEAM_ID" ]; then
-    echo "Error: Ensure APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, and APPLE_TEAM_ID are set."
-    exit 1
+# Check notarization credentials (not needed in build-only mode)
+if [ "$BUILD_ONLY" = false ]; then
+    if [ -z "$APPLE_ID" ] || [ -z "$APPLE_APP_SPECIFIC_PASSWORD" ] || [ -z "$APPLE_TEAM_ID" ]; then
+        echo "Error: Ensure APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, and APPLE_TEAM_ID are set."
+        exit 1
+    fi
 fi
 
+# Check signing credentials (needed for both modes)
 if [ -z "$MACOS_SIGNING_CERT_BASE64" ] || [ -z "$MACOS_SIGNING_CERT_PASSWORD" ]; then
     echo "Error: Ensure MACOS_SIGNING_CERT_BASE64 and MACOS_SIGNING_CERT_PASSWORD are set."
     exit 1
@@ -58,7 +93,8 @@ echo "Note: This script requires you to build the application first using:"
 echo "  python scripts/export/export.py --preserve-build"
 echo
 
-PROJECT_DIR=$(find "dist" -type d -name "sharly-chess-*" -print -quit 2>/dev/null || true)
+# Find the project directory (not the .app bundle)
+PROJECT_DIR=$(find "dist" -type d -name "sharly-chess-*" ! -name "*.app" -print -quit 2>/dev/null || true)
 if [ -z "$PROJECT_DIR" ]; then
     echo "Error: No PyInstaller project directory found in dist/"
     exit 1
@@ -66,9 +102,83 @@ fi
 echo "Found pre-built project directory: $PROJECT_DIR"
 echo
 
-# --- 3. Setup Temporary Keychain and Sign Application Files ---
+# --- 3. Configure SharlyChess.app Bundle ---
 
-echo "--- Section 3: Setting up temporary keychain and signing certificates ---"
+echo "--- Section 3: Configuring PyInstaller-generated app bundle ---"
+
+# Extract version from the project directory name
+VERSION_FOLDER=$(basename "$PROJECT_DIR")
+VERSION=$(echo "$VERSION_FOLDER" | sed 's/sharly-chess-//')
+EXECUTABLE_NAME="sharly-chess-${VERSION}"
+
+# PyInstaller creates the app bundle at dist/ root with --windowed flag
+PYINSTALLER_APP_BUNDLE=$(find "dist" -maxdepth 1 -name "*.app" -type d -print -quit 2>/dev/null || true)
+APP_BUNDLE="$PROJECT_DIR/SharlyChess.app"
+
+if [ -z "$PYINSTALLER_APP_BUNDLE" ]; then
+    # Check if SharlyChess.app already exists in project directory
+    if [ -d "$APP_BUNDLE" ]; then
+        echo "Found existing SharlyChess.app bundle in project directory: $APP_BUNDLE"
+    else
+        echo "Error: No .app bundle found. PyInstaller may not have created it properly."
+        echo "Expected either a .app in dist/ or SharlyChess.app in $PROJECT_DIR"
+        exit 1
+    fi
+else
+    echo "Found PyInstaller-generated app bundle: $PYINSTALLER_APP_BUNDLE"
+    # Move and rename the app bundle to the project directory as SharlyChess.app
+    echo "Moving app bundle to project directory and renaming to SharlyChess.app..."
+    mv "$PYINSTALLER_APP_BUNDLE" "$APP_BUNDLE"
+fi
+
+# Convert and copy the icon
+echo "Adding application icon..."
+if [ -f "src/gui/icon.png" ]; then
+    # Convert PNG to ICNS format for macOS app bundles
+    ICONSET_DIR="$APP_BUNDLE/Contents/Resources/icon.iconset"
+    mkdir -p "$ICONSET_DIR"
+
+    # Create different icon sizes (using sips command)
+    sips -z 16 16     "src/gui/icon.png" --out "$ICONSET_DIR/icon_16x16.png"
+    sips -z 32 32     "src/gui/icon.png" --out "$ICONSET_DIR/icon_16x16@2x.png"
+    sips -z 32 32     "src/gui/icon.png" --out "$ICONSET_DIR/icon_32x32.png"
+    sips -z 64 64     "src/gui/icon.png" --out "$ICONSET_DIR/icon_32x32@2x.png"
+    sips -z 128 128   "src/gui/icon.png" --out "$ICONSET_DIR/icon_128x128.png"
+    sips -z 256 256   "src/gui/icon.png" --out "$ICONSET_DIR/icon_128x128@2x.png"
+    sips -z 256 256   "src/gui/icon.png" --out "$ICONSET_DIR/icon_256x256.png"
+    sips -z 512 512   "src/gui/icon.png" --out "$ICONSET_DIR/icon_256x256@2x.png"
+    sips -z 512 512   "src/gui/icon.png" --out "$ICONSET_DIR/icon_512x512.png"
+    sips -z 1024 1024 "src/gui/icon.png" --out "$ICONSET_DIR/icon_512x512@2x.png"
+
+    # Convert iconset to icns
+    iconutil -c icns "$ICONSET_DIR" -o "$APP_BUNDLE/Contents/Resources/icon.icns"
+
+    # Clean up iconset directory
+    rm -rf "$ICONSET_DIR"
+
+    echo "Icon added successfully."
+else
+    echo "Warning: Icon file not found at src/gui/icon.png"
+fi
+
+# Update Info.plist to reference our custom icon
+if [ -f "$APP_BUNDLE/Contents/Info.plist" ]; then
+    # PyInstaller already set an icon file, replace it with our custom one
+    plutil -replace CFBundleIconFile -string "icon" "$APP_BUNDLE/Contents/Info.plist"
+    # Update the display name and bundle name
+    plutil -replace CFBundleDisplayName -string "Sharly Chess" "$APP_BUNDLE/Contents/Info.plist"
+    plutil -replace CFBundleName -string "SharlyChess" "$APP_BUNDLE/Contents/Info.plist"
+    echo "Updated Info.plist with custom icon and names"
+else
+    echo "Warning: Info.plist not found in app bundle"
+fi
+
+echo "Created SharlyChess.app bundle at: $APP_BUNDLE"
+echo
+
+# --- 4. Setup Temporary Keychain and Sign Application Files ---
+
+echo "--- Section 4: Setting up temporary keychain and signing certificates ---"
 
 # Create a temporary keychain
 if [ -z "$RUNNER_TEMP" ]; then
@@ -101,7 +211,7 @@ fi
 
 echo "Certificate imported successfully."
 
-echo "--- Section 4: Signing Application Files ---"
+echo "--- Section 5: Signing Application Files ---"
 APP_SIGNING_IDENTITY="Developer ID Application"
 echo "Using signing identity: $APP_SIGNING_IDENTITY"
 
@@ -122,11 +232,10 @@ while IFS= read -r file; do
 done <<<"$(find "$PROJECT_DIR" -type f \( -name "*.dylib" -o -name "*.so" -o -perm +111 \) -o -name "*.app")"
 
 echo "Application file signing complete."
-echo
 
-# --- 5. Create DMG ---
+# --- 6. Create DMG ---
 
-echo "--- Section 5: Creating DMG Disk Image ---"
+echo "--- Section 6: Creating DMG Disk Image ---"
 
 VERSION_FOLDER=$(basename "$PROJECT_DIR")
 VERSION=$(echo "$VERSION_FOLDER" | sed 's/sharly-chess-//')
@@ -136,10 +245,17 @@ STAGING_DIR=$(mktemp -d)
 VOLUME_NAME="Sharly Chess ${VERSION}"
 
 echo "Staging application content..."
-# Create a directory inside staging with the project name
-mkdir -p "$STAGING_DIR/$VERSION_FOLDER"
-# Copy the application content into it
-rsync -a "$PROJECT_DIR/" "$STAGING_DIR/$VERSION_FOLDER/"
+# Create the staging structure with versioned folder containing all contents
+mkdir -p "$STAGING_DIR/sharly-chess-${VERSION}"
+rsync -a "$APP_BUNDLE" "$STAGING_DIR/sharly-chess-${VERSION}/"
+
+# Copy other files and folders except _internal, executable, and Launch Sharly Chess.app
+for item in "$PROJECT_DIR"/*; do
+    item_name=$(basename "$item")
+    if [[ "$item_name" != "_internal" && "$item_name" != "$EXECUTABLE_NAME" && "$item_name" != "SharlyChess.app" && "$item_name" != "Launch Sharly Chess.app" ]]; then
+        rsync -a "$item" "$STAGING_DIR/sharly-chess-${VERSION}/"
+    fi
+done
 
 # Calculate the size needed for the DMG. du -sk gives size in KB.
 SIZE_KB=$(du -sk "$STAGING_DIR" | awk '{print $1}')
@@ -161,27 +277,32 @@ echo "DMG created successfully at: $DMG_PATH"
 echo
 
 
-# --- 6. Sign and Notarize .dmg ---
-echo "--- Section 6: Signing and Notarizing the DMG ---"
+# --- 7. Sign and Notarize .dmg ---
+if [ "$BUILD_ONLY" = true ]; then
+    echo "--- Section 7: Signing DMG (Build-Only Mode) ---"
+    echo "Build-only mode: Skipping DMG signing and notarization."
+else
+    echo "--- Section 7: Signing and Notarizing the DMG ---"
 
-echo "Signing the DMG..."
-codesign --force --timestamp --options=runtime --sign "$APP_SIGNING_IDENTITY" --keychain "$KEYCHAIN_PATH" "$DMG_PATH" --verbose=2
+    echo "Signing the DMG..."
+    codesign --force --timestamp --options=runtime --sign "$APP_SIGNING_IDENTITY" --keychain "$KEYCHAIN_PATH" "$DMG_PATH" --verbose=2
 
-echo "Notarizing the DMG... (this may take a while)"
-xcrun notarytool submit "$DMG_PATH" \
-    --apple-id "$APPLE_ID" \
-    --password "$APPLE_APP_SPECIFIC_PASSWORD" \
-    --team-id "$APPLE_TEAM_ID" \
-    --wait
+    echo "Notarizing the DMG... (this may take a while)"
+    xcrun notarytool submit "$DMG_PATH" \
+        --apple-id "$APPLE_ID" \
+        --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+        --team-id "$APPLE_TEAM_ID" \
+        --wait
 
-echo "Notarization successful. Stapling ticket..."
-xcrun stapler staple "$DMG_PATH"
-echo "Stapling complete."
+    echo "Notarization successful. Stapling ticket..."
+    xcrun stapler staple "$DMG_PATH"
+    echo "Stapling complete."
+fi
 echo
 
 
-# --- 7. Clean up temporary keychain ---
-echo "--- Section 7: Cleaning up temporary keychain ---"
+# --- 8. Clean up temporary keychain ---
+echo "--- Section 8: Cleaning up temporary keychain ---"
 echo "Removing temporary keychain and certificate..."
 
 # Restore original default keychain if we changed it
@@ -194,17 +315,31 @@ rm -f "$CERT_PATH"
 echo "Cleanup complete."
 echo
 
-# --- 8. Final Verification ---
-echo "--- Section 8: Final Verification ---"
-echo "Verifying stapled ticket..."
-xcrun stapler validate "$DMG_PATH"
-echo
+# --- 9. Final Verification ---
+if [ "$BUILD_ONLY" = false ]; then
+    echo "--- Section 9: Final Verification ---"
+    echo "Verifying stapled ticket..."
+    xcrun stapler validate "$DMG_PATH"
+    echo
+fi
 
-# --- 9. Summary ---
+# --- 10. Summary ---
 echo "=== Summary ==="
-echo "Process finished successfully!"
+if [ "$BUILD_ONLY" = true ]; then
+    echo "Build process finished successfully (signed but not notarized)!"
+else
+    echo "Process finished successfully!"
+fi
 echo "Final distributable disk image is at: $DMG_PATH"
-echo "  - To install, open the DMG and drag the '$VERSION_FOLDER' folder to:"
-echo "    • Any writable folder in your home directory"
+echo "  - Contains versioned folder: sharly-chess-${VERSION}/"
+echo "    - SharlyChess.app (properly signed app bundle with all dependencies)"
+echo "    - License files and support folders"
+echo "  - The SharlyChess.app will launch the application in GUI mode"
+if [ "$BUILD_ONLY" = true ]; then
+    echo "  - Note: This app is signed but NOT notarized (build-only mode)"
+else
+    echo "  - This app is fully signed and notarized for distribution"
+fi
+echo "  - To install, extract the DMG contents to any writable folder in your home directory"
 echo "  - Note: Do NOT place in /Applications - the app needs write access to its folder."
 echo

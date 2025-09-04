@@ -92,8 +92,8 @@ The Base64 encoded certificate and the password will be added to your `.env` fil
 You can now sign and notarize builds locally using the included script:
 
 ```bash
-# First, build the application with preserved artifacts
-python scripts/export/export.py --preserve-build
+# First, build the application
+python scripts/export/export.py
 
 # Then run the signing and notarization script
 ./scripts/export/macos/build_and_notarize.sh

@@ -7,6 +7,7 @@ from typing import Any
 from colorama import Fore, Style
 
 from common import APP_NAME
+from gui.gui_logger import GUILogHandler
 
 
 class LoggingConfigValues:
@@ -69,6 +70,7 @@ def get_logging_config() -> dict[str, Any]:
     }{"%(asctime)s " if _LOGGING_CONFIG_VALUES.console_show_date else ""}{
         "%(levelname)-10s" if _LOGGING_CONFIG_VALUES.console_show_level else ""
     }%(message)s{"%(reset)s" if _LOGGING_CONFIG_VALUES.console_color else ""}'
+
     logging_config: dict[str, Any] = {
         'version': 1,
         'disable_existing_loggers': False,
@@ -101,34 +103,38 @@ def get_logging_config() -> dict[str, Any]:
                 'formatter': 'console_formatter',
                 'stream': 'ext://sys.stdout',
             },
+            'gui': {
+                '()': 'gui.gui_logger.build_gui_handler',
+                'level': _LOGGING_CONFIG_VALUES.console_log_level,
+            },
         },
         'loggers': {
             APP_NAME: {
-                'handlers': ['console'],
+                'handlers': ['console', 'gui'],
                 'level': logging.DEBUG,
                 'propagate': False,
             },
             'litestar': {
-                'handlers': ['console'],
+                'handlers': ['console', 'gui'],
                 'level': logging.INFO,
             },
             'uvicorn': {
-                'handlers': ['console'],
+                'handlers': ['console', 'gui'],
                 'level': logging.INFO,
                 'propagate': False,
             },
             'uvicorn.error': {
-                'handlers': ['console'],
+                'handlers': ['console', 'gui'],
                 'level': logging.INFO,
                 'propagate': False,
             },
             'uvicorn.access': {
-                'handlers': ['console'],
+                'handlers': ['console', 'gui'],
                 'level': logging.INFO,
                 'propagate': False,
             },
             'pytds': {
-                'handlers': ['console'],
+                'handlers': ['console', 'gui'],
                 'level': logging.WARNING,
                 'propagate': False,
             },
@@ -197,9 +203,76 @@ def input_interactive(string: str) -> str:
     """Prints the message to stdout with color, and returns the user input.
     If the message could not be Unicode decoded, raises KeyboardInterrupt."""
     __flush_logger()
+
+    if GUILogHandler.instance:
+        return GUILogHandler.instance.gui.handle_interactive_input(string)
+
     print(Fore.CYAN + Style.BRIGHT + string + Style.RESET_ALL, end='')
     try:
         result = input().strip().upper()
     except UnicodeDecodeError as exc:
         raise KeyboardInterrupt() from exc
     return result
+
+
+def input_interactive_choices(
+    question: str, choices: dict[str, str], default: str
+) -> str | None:
+    """Prints the message to stdout with color, and returns the user input.
+    If the message could not be Unicode decoded, raises KeyboardInterrupt."""
+    from common.i18n import _
+
+    __flush_logger()
+
+    if GUILogHandler.instance:
+        return GUILogHandler.instance.gui.handle_interactive_choices(
+            question, choices, default
+        )
+
+    question = question + _(' [{default_choice}: {default_value}]: ').format(
+        default_choice=default,
+        default_value=choices[default],
+    )
+
+    print_interactive_input(question)
+    for choice, text in choices.items():
+        print_interactive_input(f'  - [{choice}] {text}')
+
+    try:
+        result = input().strip().upper()
+    except UnicodeDecodeError as exc:
+        raise KeyboardInterrupt() from exc
+    return result
+
+
+def input_interactive_yn(question: str, yes_is_default: bool = False) -> bool:
+    """Prints the message to stdout with color postfixed with [Y/n] etc, and returns the user input.
+    If the message could not be Unicode decoded, raises KeyboardInterrupt."""
+    from common.i18n import _
+
+    __flush_logger()
+
+    if GUILogHandler.instance:
+        return GUILogHandler.instance.gui.handle_interactive_yn(
+            question, yes_is_default
+        )
+
+    yes_answer = _('Y *** THE LETTER TO ANSWER YES')
+    no_answer = _('N *** THE LETTER TO ANSWER NO')
+    question = question + _(' [{yes_answer}/{no_answer}]?').format(
+        yes_answer=yes_answer.upper() if yes_is_default else yes_answer.lower(),
+        no_answer=no_answer.upper() if not yes_is_default else no_answer.lower(),
+    )
+
+    while True:
+        print(Fore.CYAN + Style.BRIGHT + question + Style.RESET_ALL, end='')
+
+        try:
+            result = input().strip().upper()
+        except UnicodeDecodeError as exc:
+            raise KeyboardInterrupt() from exc
+
+        if result == yes_answer or (result == '' and yes_is_default):
+            return True
+        if result == no_answer or (result == '' and not yes_is_default):
+            return False
