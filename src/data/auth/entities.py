@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from functools import cached_property
 
 from common.i18n import _
+from common.network import LOCALHOST_IP, LOCALHOST_NAME
 from data.auth.managers import RoleManager
 from database.sqlite.event.event_store import (
     StoredDevice,
@@ -10,7 +11,6 @@ from database.sqlite.event.event_store import (
     StoredAccess,
 )
 from data.auth.roles import Role, AdministrationRole
-from utils.network import LOCALHOST_IP, LOCALHOST_NAME
 
 
 @dataclass

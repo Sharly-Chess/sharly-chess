@@ -17,6 +17,11 @@ from threading import Thread
 
 from common.logger import get_logger
 
+IP_V4_ADDR_REGEX: str = r'^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[1-9])$'
+
+LOCALHOST_IP: str = '127.0.0.1'
+LOCALHOST_NAME: str = 'localhost'
+
 logger: Logger = get_logger()
 
 SLEEP_TIME = 15

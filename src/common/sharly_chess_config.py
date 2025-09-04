@@ -28,12 +28,11 @@ from common.i18n import (
     set_locale,
 )
 from common.logger import set_logging_config, get_logger
-from common.network import find_lan_interfaces
+from common.network import find_lan_interfaces, LOCALHOST_IP
 from common.singleton import Singleton
 from utils.enum import Result
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredConfig
-from utils.network import LOCALHOST_IP
 
 if TYPE_CHECKING:
     from data.player import Federation

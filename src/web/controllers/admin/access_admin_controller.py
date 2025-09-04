@@ -11,12 +11,12 @@ from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
+from common.network import IP_V4_ADDR_REGEX
 from data.auth.entities import Account, Device
 from data.auth.managers import RoleManager
 from data.auth.roles import Role, RoleScope
 from database.sqlite.event.event_store import StoredAccount, StoredDevice
 from utils.enum import FormAction
-from utils.network import IP_V4_ADDR_REGEX
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
