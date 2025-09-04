@@ -57,6 +57,7 @@ class Engine(ABC):
             sharly_chess_config.copyright,
             sharly_chess_config.url,
         )
+        logger.info('Locale: %s', sharly_chess_config.locale)
         more_recent_version: Version | None = None
         download_url: str | None = None
         if NetworkMonitor.connected(use_cached=False):

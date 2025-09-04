@@ -1566,16 +1566,16 @@ msgid "Do not recover"
 msgstr "Ne pas restaurer"
 
 msgid "Do you want to install example event databases"
-msgstr "Voulez‑vous installer des bases d’événements d’exemple"
+msgstr "Voulez-vous installer des bases d'évènement d'exemple"
 
 msgid "Do you want to recover the data of release [{version}]"
-msgstr "Voulez‑vous restaurer les données de la version [{version}]"
+msgstr "Voulez-vous récupérer les données de la version [{version}]"
 
 msgid "Do you want to send these custom files to the Sharly Chess developers to enhance futures releases"
-msgstr "Voulez‑vous envoyer ces fichiers personnalisés aux développeur·euses de Sharly Chess pour améliorer les futures versions"
+msgstr "Voulez-vous envoyer ces fichiers aux développeur·euses de Sharly Chess pour améliorer les futures versions"
 
 msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
-msgstr "Voulez‑vous mettre à niveau de [{old_version}] vers [{new_version}]"
+msgstr "Voulez-vous faire la mise à jour de [{old_version}] à [{new_version}]"
 
 msgid "Document:"
 msgstr "Document :"
@@ -4443,7 +4443,7 @@ msgid "Server Setup"
 msgstr "Configuration du serveur"
 
 msgid "Server is already running!"
-msgstr "Le serveur est déjà en cours d’exécution !"
+msgstr "Le serveur est déjà en cours d'exécution !"
 
 msgid "Set Full-Points Byes"
 msgstr "Allouer des points joker"
@@ -4615,9 +4615,6 @@ msgstr "Démarrage du serveur Sharly Chess, veuillez patienter…"
 
 msgid "Starting rank"
 msgstr "Classement initial"
-
-msgid "Starting server..."
-msgstr "Démarrage du serveur..."
 
 msgid "Status"
 msgstr "Statut"
@@ -6281,3 +6278,7 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "Starting server..."
+#~ msgstr "Démarrage du serveur..."
+

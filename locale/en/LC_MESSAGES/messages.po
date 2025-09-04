@@ -4616,9 +4616,6 @@ msgstr ""
 msgid "Starting rank"
 msgstr ""
 
-msgid "Starting server..."
-msgstr ""
-
 msgid "Status"
 msgstr ""
 
@@ -6281,3 +6278,7 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "Starting server..."
+#~ msgstr ""
+

@@ -2,8 +2,7 @@
 Toga GUI interface for Sharly Chess server.
 
 This module provides a Toga-based GUI that can display server logs and control
-the server without duplicating server logic. It is an alternative to the
-Tkinter-based GUI in src/gui/server_gui.py.
+the server without duplicating server logic.
 """
 
 from __future__ import annotations
@@ -530,13 +529,8 @@ class SharlyChessServerToga(toga.App):
         else:
             self._pending_js.append(js)
 
-    async def _welcome(self):
-        await asyncio.sleep(0.1)
-        self.add_log_message('Welcome to Sharly Chess Server!', 'success')
-
     def on_running(self):
         # Start message processing and kick the server immediately
         asyncio.create_task(self._process_message_queue())
-        asyncio.create_task(self._welcome())
         if not self.server_running:
             self._on_start_server(None)
