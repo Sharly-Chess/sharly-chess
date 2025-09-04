@@ -47,7 +47,7 @@ class EventAdminController(BaseEventAdminController):
         action: str | None = None,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -219,7 +219,7 @@ class EventAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_config_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -234,7 +234,7 @@ class EventAdminController(BaseEventAdminController):
         request: HTMXRequest,
         action: str,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_config_render(
             request,
             modal='event',
@@ -250,7 +250,7 @@ class EventAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = BaseEventAdminWebContext(request, event_uniq_id)
         return self._admin_event_render(
             web_context.template_context | {'modal': 'event-delete'}

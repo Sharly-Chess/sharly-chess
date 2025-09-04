@@ -53,7 +53,7 @@ class WebContext:
     ):
         self.request: HTMXRequest = request
         self.data: dict[str, str] | None = data
-        self.error: ClientRedirect | None = None
+        self.error: ClientRedirect | Redirect | None = None
         # sets the session locale to the thread
         set_locale(SessionHandler.get_session_locale(request))
         if request.client:

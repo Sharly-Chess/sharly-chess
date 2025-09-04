@@ -691,7 +691,7 @@ class Player:
             if isinstance(tie_break_value.tie_break, tie_break_type):
                 tie_break_found = True
                 break
-            tie_break_sort_key.append(-tie_break_value.value)
+            tie_break_sort_key.append(-float(tie_break_value.value))
         if not tie_break_found:
             tie_break_sort_key = []
         return (-(self.points or 0.0),) + tuple(tie_break_sort_key)
@@ -702,7 +702,7 @@ class Player:
         """Returns a rank sort key as if the tie-break of type *tie_break_type* was not set."""
 
         tie_break_sort_key = tuple(
-            -tie_break_value.value
+            -float(tie_break_value.value)
             for tie_break_value in self.tie_break_values
             if not isinstance(tie_break_value.tie_break, tie_break_type)
         )
@@ -712,7 +712,7 @@ class Player:
     @property
     def rank_sort_key(self) -> tuple:
         tie_break_sort_key = tuple(
-            -tie_break_value.value for tie_break_value in self.tie_break_values
+            -float(tie_break_value.value) for tie_break_value in self.tie_break_values
         )
         return (-(self.points or 0.0),) + tie_break_sort_key + (self.pairing_number,)
 

@@ -78,7 +78,7 @@ class Client:
     ) -> str | None:
         """Returns"""
         tournaments: list[Tournament]
-        if permission.tournament_ids is None:
+        if permission.tournament_ids is None or self.event is None:
             tournaments = []
         else:
             tournaments = [

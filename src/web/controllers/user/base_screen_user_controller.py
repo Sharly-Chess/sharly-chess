@@ -4,7 +4,6 @@ from typing import Any, Iterable
 
 from litestar.exceptions import NotFoundException
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
-from litestar.response import Template
 
 from common.logger import get_logger
 from data.display_controller import DisplayController
@@ -14,6 +13,7 @@ from data.screen import Screen
 from utils.enum import ScreenType
 from plugins.manager import plugin_manager
 from plugins.utils import ExtraColumn
+from web.controllers.base_controller import Redirect
 from web.controllers.user.base_user_controller import BaseUserController
 from web.controllers.user.event_user_controller import (
     EventUserWebContext,
@@ -151,7 +151,7 @@ class BaseScreenUserController(BaseUserController):
     def _user_screen_render(
         cls,
         web_context: ScreenOrRotatorOrDisplayControllerUserWebContext,
-    ) -> Template | ClientRedirect:
+    ) -> HTMXTemplate | ClientRedirect | Redirect:
         # Allow plugin to provide extra columns
         per_plugin_columns: Iterable[Iterable[ExtraColumn]] = []
         if web_context.screen is not None:

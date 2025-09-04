@@ -23,7 +23,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
-from web.controllers.base_controller import WebContext, BaseController
+from web.controllers.base_controller import Redirect, WebContext, BaseController
 from web.messages import Message
 from web.session import SessionHandler
 
@@ -424,7 +424,7 @@ class ScreenAdminController(BaseEventAdminController):
         screen_set_id: int | None = None,
         data: dict[str, str] | None = None,  # type: ignore
         errors: dict[str, str] | None = None,
-    ) -> Template | ClientRedirect:
+    ) -> HTMXTemplate | ClientRedirect | Redirect:
         web_context: ScreenAdminWebContext = ScreenAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -596,7 +596,7 @@ class ScreenAdminController(BaseEventAdminController):
                                         f'screen_type=[{web_context.screen_type}]'
                                     )
                             name = event.get_unused_screen_name(
-                                screen_type=ScreenType(screen_type)
+                                screen_type=ScreenType(web_context.screen_type)
                             )
                             match web_context.screen_type:
                                 case ScreenType.RANKING:
@@ -844,7 +844,7 @@ class ScreenAdminController(BaseEventAdminController):
         admin_screens_show_results: bool | None,
         admin_screens_show_ranking: bool | None,
         admin_screens_show_image: bool | None,
-    ) -> Template | ClientRedirect:
+    ) -> HTMXTemplate | ClientRedirect | Redirect:
         if admin_screens_show_family_screens is not None:
             SessionHandler.set_session_admin_screens_show_family_screens(
                 request, admin_screens_show_family_screens
@@ -890,7 +890,7 @@ class ScreenAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         screen_type: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_screens_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -910,7 +910,7 @@ class ScreenAdminController(BaseEventAdminController):
         action: str,
         event_uniq_id: str,
         screen_id: int | None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_screens_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -930,7 +930,7 @@ class ScreenAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         assert screen_id is not None or screen_type is not None
         match action:
             case 'update' | 'delete' | 'clone' | 'create':
@@ -1049,7 +1049,7 @@ class ScreenAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         screen_type: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_screen_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -1072,7 +1072,7 @@ class ScreenAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_screen_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -1095,7 +1095,7 @@ class ScreenAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_screen_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -1118,7 +1118,7 @@ class ScreenAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         screen_id: int,
-    ) -> HTMXTemplate | ClientRedirect:
+    ) -> HTMXTemplate | ClientRedirect | Redirect:
         web_context = ScreenAdminWebContext(request, event_uniq_id, screen_id)
         event = web_context.get_admin_event()
         screen = web_context.get_admin_screen()
@@ -1163,7 +1163,7 @@ class ScreenAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_screen_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -1182,7 +1182,7 @@ class ScreenAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         screen_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_screens_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -1201,7 +1201,7 @@ class ScreenAdminController(BaseEventAdminController):
         event_uniq_id: str,
         screen_id: int,
         screen_set_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_screens_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -1221,7 +1221,7 @@ class ScreenAdminController(BaseEventAdminController):
             dict[str, Any],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> HTMXTemplate | ClientRedirect | Redirect:
         match action:
             case 'delete' | 'clone' | 'update' | 'add' | 'reorder':
                 web_context: ScreenAdminWebContext = ScreenAdminWebContext(
@@ -1308,7 +1308,7 @@ class ScreenAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_screen_sets_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -1332,7 +1332,7 @@ class ScreenAdminController(BaseEventAdminController):
             dict[str, str | list[int]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_screen_sets_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -1356,7 +1356,7 @@ class ScreenAdminController(BaseEventAdminController):
             dict[str, str | list[int]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_screen_sets_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -1381,7 +1381,7 @@ class ScreenAdminController(BaseEventAdminController):
         event_uniq_id: str,
         screen_id: int,
         screen_set_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_screen_sets_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -1404,7 +1404,7 @@ class ScreenAdminController(BaseEventAdminController):
             dict[str, str | list[int]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_screen_sets_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -1422,7 +1422,7 @@ class ScreenAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_screens_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -1437,7 +1437,7 @@ class ScreenAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_screens_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -1452,7 +1452,7 @@ class ScreenAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_screens_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -1467,7 +1467,7 @@ class ScreenAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_screens_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -1482,7 +1482,7 @@ class ScreenAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_screens_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -1497,7 +1497,7 @@ class ScreenAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_screens_render(
             request,
             event_uniq_id=event_uniq_id,
