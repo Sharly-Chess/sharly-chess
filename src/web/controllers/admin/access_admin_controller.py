@@ -11,6 +11,7 @@ from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
+from common.network import IP_V4_ADDR_REGEX
 from data.auth.entities import Account, Device
 from data.auth.managers import RoleManager
 from data.auth.roles import Role, RoleScope
@@ -603,10 +604,7 @@ class AccessAdminController(BaseEventAdminController):
             ip = WebContext.form_data_to_str(data, field := 'ip')
             if not ip:
                 errors[field] = _('Please enter the IP address.')
-            elif matches := re.match(
-                r'^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[1-9])$',
-                ip,
-            ):
+            elif matches := re.match(IP_V4_ADDR_REGEX, ip):
                 ip = f'{int(matches.group(1))}.{int(matches.group(2))}.{int(matches.group(3))}.{int(matches.group(4))}'
                 data[field] = ip
                 if ip in event.devices_by_ip and (
