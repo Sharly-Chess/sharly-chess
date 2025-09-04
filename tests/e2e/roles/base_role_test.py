@@ -46,7 +46,7 @@ class BaseRoleTest:
         config = SharlyChessConfig()
         config.web_port = 9000
         auth_context = browser.new_context(
-            base_url=config.lan_url,
+            base_url=config.lan_urls[0],
             viewport={'width': 1600, 'height': 1000},
         )
         auth_page = auth_context.new_page()

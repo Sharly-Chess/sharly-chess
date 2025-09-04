@@ -195,7 +195,7 @@ def setup_page(page, backend_server):
 def lan_context(browser: Browser):
     config = SharlyChessConfig()
     config.web_port = 9000
-    context = browser.new_context(base_url=config.lan_url)
+    context = browser.new_context(base_url=config.lan_urls[0])
     yield context
     context.close()
 
