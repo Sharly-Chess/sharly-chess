@@ -1749,6 +1749,7 @@ class PlayerAdminController(BaseEventAdminController):
                 if count
                 else _('No players updated.'),
             )
+        self.set_players_search_results(request, event_uniq_id)
         return self._admin_event_players_render(request, event_uniq_id=event_uniq_id)
 
     @get(
