@@ -14,7 +14,7 @@ from data.auth.entities import Account
 from database.sqlite.event.event_database import EventDatabase
 from web.controllers.admin.base_admin_controller import AdminWebContext
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminWebContext
-from web.controllers.base_controller import WebContext, BaseController
+from web.controllers.base_controller import Redirect, WebContext, BaseController
 from web.session import SessionHandler
 
 
@@ -32,7 +32,7 @@ class ProfileController(BaseController):
         ]
         | None = None,
         errors: dict[str, str] | None = None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return HTMXTemplate(
             template_name='common/profile/profile_modal.html',
             context=web_context.template_context
@@ -55,7 +55,7 @@ class ProfileController(BaseController):
         request: HTMXRequest,
         event_uniq_id: str | None,
         locale: str | None = None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: AdminWebContext
         if event_uniq_id:
             web_context = ProfileWebContext(
@@ -88,7 +88,7 @@ class ProfileController(BaseController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: ProfileWebContext = ProfileWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -182,7 +182,7 @@ class ProfileController(BaseController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: ProfileWebContext = ProfileWebContext(
             request,
             event_uniq_id=event_uniq_id,

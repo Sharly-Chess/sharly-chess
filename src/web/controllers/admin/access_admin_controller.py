@@ -21,7 +21,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
-from web.controllers.base_controller import WebContext
+from web.controllers.base_controller import Redirect, WebContext
 from web.messages import Message
 
 
@@ -119,7 +119,7 @@ class AccessAdminController(BaseEventAdminController):
         cls,
         web_context: AccessAdminWebContext,
         template_context: dict[str, Any] | None = None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         if web_context.error:
             return web_context.error
         return cls._admin_event_render(
@@ -161,7 +161,7 @@ class AccessAdminController(BaseEventAdminController):
         event_uniq_id: str,
         roles: list[str] | None,
         tournament_ids: list[str] | None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = DeviceAdminWebContext(request, event_uniq_id)
         if web_context.error:
             return web_context.error
@@ -226,7 +226,7 @@ class AccessAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_access_render(
             AccountAdminWebContext(request, event_uniq_id)
         )
@@ -239,7 +239,7 @@ class AccessAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = AccountAdminWebContext(request, event_uniq_id)
         if web_context.error:
             return web_context.error
@@ -257,7 +257,7 @@ class AccessAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         account_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
         if web_context.error:
             return web_context.error
@@ -277,7 +277,7 @@ class AccessAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         account_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
         if web_context.error:
             return web_context.error
@@ -298,7 +298,7 @@ class AccessAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         account_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_access_render(
             AccountAdminWebContext(request, event_uniq_id, account_id),
             {'modal': 'account_delete'},
@@ -343,7 +343,7 @@ class AccessAdminController(BaseEventAdminController):
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = AccountAdminWebContext(request, event_uniq_id)
         if web_context.error:
             return web_context.error
@@ -396,7 +396,7 @@ class AccessAdminController(BaseEventAdminController):
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
         if web_context.error:
             return web_context.error
@@ -449,7 +449,7 @@ class AccessAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         account_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
         if web_context.error:
             return web_context.error
@@ -513,7 +513,7 @@ class AccessAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_access_render(
             DeviceAdminWebContext(request, event_uniq_id)
         )
@@ -526,7 +526,7 @@ class AccessAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = DeviceAdminWebContext(request, event_uniq_id)
         if web_context.error:
             return web_context.error
@@ -544,7 +544,7 @@ class AccessAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         device_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = DeviceAdminWebContext(request, event_uniq_id, device_id)
         if web_context.error:
             return web_context.error
@@ -564,7 +564,7 @@ class AccessAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         device_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = DeviceAdminWebContext(request, event_uniq_id, device_id)
         if web_context.error:
             return web_context.error
@@ -585,7 +585,7 @@ class AccessAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         device_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_access_render(
             DeviceAdminWebContext(request, event_uniq_id, device_id),
             {'modal': 'device_delete'},
@@ -625,7 +625,7 @@ class AccessAdminController(BaseEventAdminController):
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = DeviceAdminWebContext(request, event_uniq_id)
         if web_context.error:
             return web_context.error
@@ -672,7 +672,7 @@ class AccessAdminController(BaseEventAdminController):
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = DeviceAdminWebContext(request, event_uniq_id, device_id)
         if web_context.error:
             return web_context.error
@@ -719,7 +719,7 @@ class AccessAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         device_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = DeviceAdminWebContext(request, event_uniq_id, device_id)
         if web_context.error:
             return web_context.error

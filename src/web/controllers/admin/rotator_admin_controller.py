@@ -15,7 +15,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
-from web.controllers.base_controller import WebContext
+from web.controllers.base_controller import Redirect, WebContext
 from web.messages import Message
 from web.session import SessionHandler
 
@@ -141,7 +141,7 @@ class RotatorAdminController(BaseEventAdminController):
         rotator_id: int | None = None,
         data: dict[str, str] | None = None,  # type: ignore
         errors: dict[str, str] | None = None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: RotatorAdminWebContext = RotatorAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -255,7 +255,7 @@ class RotatorAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         admin_rotators_show_details: bool | None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         if admin_rotators_show_details is not None:
             SessionHandler.set_session_admin_rotators_show_details(
                 request, admin_rotators_show_details
@@ -273,7 +273,7 @@ class RotatorAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_rotators_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -292,7 +292,7 @@ class RotatorAdminController(BaseEventAdminController):
         action: str,
         event_uniq_id: str,
         rotator_id: int | None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_rotators_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -311,7 +311,7 @@ class RotatorAdminController(BaseEventAdminController):
         action: str,
         event_uniq_id: str,
         rotator_id: int | None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         match action:
             case 'update' | 'delete' | 'create':
                 web_context: RotatorAdminWebContext = RotatorAdminWebContext(
@@ -381,7 +381,7 @@ class RotatorAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_rotator_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -403,7 +403,7 @@ class RotatorAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_rotator_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -426,7 +426,7 @@ class RotatorAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_rotator_update(
             request,
             event_uniq_id=event_uniq_id,

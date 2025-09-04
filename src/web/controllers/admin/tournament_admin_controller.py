@@ -45,7 +45,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
-from web.controllers.base_controller import WebContext
+from web.controllers.base_controller import Redirect, WebContext
 from web.messages import Message
 from web.session import SessionHandler
 
@@ -299,7 +299,7 @@ class TournamentAdminController(BaseEventAdminController):
         tournament_id: int | None = None,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: TournamentAdminWebContext = TournamentAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -582,7 +582,7 @@ class TournamentAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         admin_tournaments_show_details: bool | None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         if admin_tournaments_show_details is not None:
             SessionHandler.set_session_admin_tournaments_show_details(
                 request, admin_tournaments_show_details
@@ -600,7 +600,7 @@ class TournamentAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_tournaments_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -618,7 +618,7 @@ class TournamentAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int | None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = TournamentAdminWebContext(request, event_uniq_id, tournament_id)
         return self._admin_event_render(
             web_context.template_context | {'modal': 'tournament-delete'}
@@ -634,7 +634,7 @@ class TournamentAdminController(BaseEventAdminController):
         action: str,
         event_uniq_id: str,
         tournament_id: int | None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_tournaments_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -699,7 +699,7 @@ class TournamentAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int | None,
         importer_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: TournamentAdminWebContext = TournamentAdminWebContext(
             request, event_uniq_id=event_uniq_id, tournament_id=tournament_id, data={}
         )
@@ -729,7 +729,7 @@ class TournamentAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int | None,
         importer_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = TournamentAdminWebContext(
             request, event_uniq_id, tournament_id, None
         )
@@ -792,7 +792,7 @@ class TournamentAdminController(BaseEventAdminController):
         action: str,
         event_uniq_id: str,
         tournament_id: int | None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = TournamentAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -942,7 +942,7 @@ class TournamentAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_tournament_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -964,7 +964,7 @@ class TournamentAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_tournament_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -983,7 +983,7 @@ class TournamentAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = TournamentAdminWebContext(request, event_uniq_id, tournament_id)
         if web_context.error:
             return web_context.error
@@ -1008,7 +1008,7 @@ class TournamentAdminController(BaseEventAdminController):
         tournament_id: int,
         document: str,
         options: str | None = None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: TournamentAdminWebContext = TournamentAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -1072,7 +1072,7 @@ class TournamentAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: TournamentAdminWebContext = TournamentAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,

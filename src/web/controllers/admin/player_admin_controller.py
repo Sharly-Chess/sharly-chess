@@ -482,7 +482,7 @@ class PlayerAdminController(BaseEventAdminController):
         page: int | None = None,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -918,7 +918,7 @@ class PlayerAdminController(BaseEventAdminController):
         admin_players_filter_categories: list[int] | None = None,
         admin_players_filter_name: str | None = None,
         admin_players_clear_filters: int | None = None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         if admin_players_sort is not None:
             SessionHandler.set_session_admin_players_sort(request, admin_players_sort)
         elif admin_players_filter_columns is not None:
@@ -1021,7 +1021,7 @@ class PlayerAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         page: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_players_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -1036,7 +1036,7 @@ class PlayerAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_players_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -1108,7 +1108,7 @@ class PlayerAdminController(BaseEventAdminController):
         action: str,
         event_uniq_id: str,
         player_id: int | None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_players_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -1126,7 +1126,7 @@ class PlayerAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         player_id: int | None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_players_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -1144,7 +1144,7 @@ class PlayerAdminController(BaseEventAdminController):
         action: str,
         event_uniq_id: str,
         player_id: int | None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         match action:
             case 'update' | 'create':
                 web_context: PlayerAdminWebContext = PlayerAdminWebContext(
@@ -1238,7 +1238,7 @@ class PlayerAdminController(BaseEventAdminController):
         event_uniq_id: str,
         player_id: int,
         tournament_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -1327,7 +1327,7 @@ class PlayerAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_player_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -1349,7 +1349,7 @@ class PlayerAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         player_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_player_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -1440,7 +1440,7 @@ class PlayerAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         player_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -1474,7 +1474,7 @@ class PlayerAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         player_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PlayerAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -1518,7 +1518,7 @@ class PlayerAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -1548,7 +1548,7 @@ class PlayerAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_players_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -1567,7 +1567,7 @@ class PlayerAdminController(BaseEventAdminController):
         tournament_id: int,
         zpbs_next_round: bool = False,
         zpbs_all_rounds: bool = False,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -1606,7 +1606,7 @@ class PlayerAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         action = WebContext.form_data_to_str(data, 'action') or ''
 
         return self._admin_tournament_close_check_in(
@@ -1628,7 +1628,7 @@ class PlayerAdminController(BaseEventAdminController):
         event_uniq_id: str,
         player_id: int,
         check_in: bool,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -1662,7 +1662,7 @@ class PlayerAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         player_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_player_check_in_out(
             request=request,
             data=data,
@@ -1684,7 +1684,7 @@ class PlayerAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         player_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_player_check_in_out(
             request=request,
             data=data,
@@ -1871,7 +1871,7 @@ class PlayerAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         data_source_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,

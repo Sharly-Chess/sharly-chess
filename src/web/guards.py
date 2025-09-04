@@ -1,5 +1,7 @@
 import time
+from typing import cast
 
+from litestar.connection.base import ASGIConnection
 from litestar.exceptions import PermissionDeniedException
 from litestar.handlers import BaseRouteHandler
 from litestar_htmx import HTMXRequest
@@ -13,8 +15,9 @@ from web.utils import RequestUtils
 
 class Guard:
     @classmethod
-    def event_is_visible(cls, request: HTMXRequest, _: BaseRouteHandler) -> None:
+    def event_is_visible(cls, connection: ASGIConnection, _: BaseRouteHandler) -> None:
         """Raises an exception if the event of the request is not visible."""
+        request = cast(HTMXRequest, connection)
         event: Event = RequestUtils.get_event(request)
         client: Client = RequestUtils.get_client(request)
         if not event.public:
@@ -34,8 +37,9 @@ class Guard:
                     )
 
     @classmethod
-    def screen_is_visible(cls, request: HTMXRequest, _: BaseRouteHandler) -> None:
+    def screen_is_visible(cls, connection: ASGIConnection, _: BaseRouteHandler) -> None:
         """Raises an exception if the screen of the request is not visible."""
+        request = cast(HTMXRequest, connection)
         client: Client = RequestUtils.get_client(request)
         screen: Screen = RequestUtils.get_screen(request)
         if screen.public:
@@ -50,8 +54,11 @@ class Guard:
                 )
 
     @classmethod
-    def rotator_is_visible(cls, request: HTMXRequest, _: BaseRouteHandler) -> None:
+    def rotator_is_visible(
+        cls, connection: ASGIConnection, _: BaseRouteHandler
+    ) -> None:
         """Raises an exception if the rotator of the request is not visible."""
+        request = cast(HTMXRequest, connection)
         client: Client = RequestUtils.get_client(request)
         rotator, screen_index, screen = RequestUtils.get_rotator(request)
         if rotator.public:
@@ -67,9 +74,10 @@ class Guard:
 
     @classmethod
     def display_controller_is_visible(
-        cls, request: HTMXRequest, _: BaseRouteHandler
+        cls, connection: ASGIConnection, _: BaseRouteHandler
     ) -> None:
         """Raises an exception if the display controller of the request is not visible."""
+        request = cast(HTMXRequest, connection)
         client: Client = RequestUtils.get_client(request)
         display_controller, rotator_screen_index, screen = (
             RequestUtils.get_display_controller(request)
@@ -87,9 +95,10 @@ class Guard:
 
     @classmethod
     def tournament_check_in_is_open(
-        cls, request: HTMXRequest, _: BaseRouteHandler
+        cls, connection: ASGIConnection, _: BaseRouteHandler
     ) -> None:
         """Raises an exception if the check-in of tournament of the request is not open."""
+        request = cast(HTMXRequest, connection)
         tournament: Tournament = RequestUtils.get_tournament(request)
         if not tournament.check_in_open:
             raise PermissionDeniedException(
@@ -97,8 +106,11 @@ class Guard:
             )
 
     @classmethod
-    def client_can_check_in(cls, request: HTMXRequest, _: BaseRouteHandler) -> None:
+    def client_can_check_in(
+        cls, connection: ASGIConnection, _: BaseRouteHandler
+    ) -> None:
         """Raises an exception if the check-in of tournament of the request is not allowed."""
+        request = cast(HTMXRequest, connection)
         client: Client = RequestUtils.get_client(request)
         tournament: Tournament = RequestUtils.get_tournament(request)
         if not client.can_check_in_players(tournament.id):
@@ -107,8 +119,11 @@ class Guard:
             )
 
     @classmethod
-    def tournament_is_playing(cls, request: HTMXRequest, _: BaseRouteHandler) -> None:
+    def tournament_is_playing(
+        cls, connection: ASGIConnection, _: BaseRouteHandler
+    ) -> None:
         """Raises an exception if the tournament of the request is not playing."""
+        request = cast(HTMXRequest, connection)
         tournament: Tournament = RequestUtils.get_tournament(request)
         if not tournament.playing:
             raise PermissionDeniedException(
@@ -117,9 +132,10 @@ class Guard:
 
     @classmethod
     def tournament_record_illegal_moves_is_possible(
-        cls, request: HTMXRequest, _: BaseRouteHandler
+        cls, connection: ASGIConnection, _: BaseRouteHandler
     ) -> None:
         """Raises an exception if recording illegal moves for the tournament of the request is not possible."""
+        request = cast(HTMXRequest, connection)
         tournament: Tournament = RequestUtils.get_tournament(request)
         if not tournament.record_illegal_moves:
             raise PermissionDeniedException(
@@ -128,9 +144,10 @@ class Guard:
 
     @classmethod
     def client_can_set_illegal_moves(
-        cls, request: HTMXRequest, _: BaseRouteHandler
+        cls, connection: ASGIConnection, _: BaseRouteHandler
     ) -> None:
         """Raises an exception if adding/deleting illegal moves for the tournament of the request is not allowed."""
+        request = cast(HTMXRequest, connection)
         client: Client = RequestUtils.get_client(request)
         tournament: Tournament = RequestUtils.get_tournament(request)
         if not client.can_set_illegal_moves(tournament.id):
@@ -140,9 +157,10 @@ class Guard:
 
     @classmethod
     def client_can_enter_results(
-        cls, request: HTMXRequest, _: BaseRouteHandler
+        cls, connection: ASGIConnection, _: BaseRouteHandler
     ) -> None:
         """Raises an exception if entering results for the tournament of the request is not allowed."""
+        request = cast(HTMXRequest, connection)
         client: Client = RequestUtils.get_client(request)
         tournament: Tournament = RequestUtils.get_tournament(request)
         if not client.can_enter_results(tournament.id):
@@ -152,9 +170,10 @@ class Guard:
 
     @classmethod
     def client_can_delete_result(
-        cls, request: HTMXRequest, _: BaseRouteHandler
+        cls, connection: ASGIConnection, _: BaseRouteHandler
     ) -> None:
         """Raises an exception if deleting the result of the request is not allowed."""
+        request = cast(HTMXRequest, connection)
         client: Client = RequestUtils.get_client(request)
         tournament: Tournament = RequestUtils.get_tournament(request)
         if not client.can_update_results(tournament.id):
@@ -163,8 +182,11 @@ class Guard:
             )
 
     @classmethod
-    def client_can_add_result(cls, request: HTMXRequest, _: BaseRouteHandler) -> None:
+    def client_can_add_result(
+        cls, connection: ASGIConnection, _: BaseRouteHandler
+    ) -> None:
         """Raises an exception if updating the result of the request is not allowed."""
+        request = cast(HTMXRequest, connection)
         client: Client = RequestUtils.get_client(request)
         tournament: Tournament = RequestUtils.get_tournament(request)
         round_, board, result = RequestUtils.get_round_board_result(request)
@@ -181,9 +203,10 @@ class Guard:
 
     @classmethod
     def client_can_view_players_tab(
-        cls, request: HTMXRequest, _: BaseRouteHandler
+        cls, connection: ASGIConnection, _: BaseRouteHandler
     ) -> None:
         """Raises an exception if viewing the players tab is not allowed."""
+        request = cast(HTMXRequest, connection)
         client: Client = RequestUtils.get_client(request)
         if not client.can_view_players_tab:
             raise PermissionDeniedException(
@@ -192,9 +215,10 @@ class Guard:
 
     @classmethod
     def client_can_view_pairings_tab(
-        cls, request: HTMXRequest, _: BaseRouteHandler
+        cls, connection: ASGIConnection, _: BaseRouteHandler
     ) -> None:
         """Raises an exception if viewing the pairings tab is not allowed."""
+        request = cast(HTMXRequest, connection)
         client: Client = RequestUtils.get_client(request)
         if not client.can_view_pairings_tab:
             raise PermissionDeniedException(

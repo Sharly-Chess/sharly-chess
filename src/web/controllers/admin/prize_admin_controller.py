@@ -40,7 +40,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
-from web.controllers.base_controller import WebContext
+from web.controllers.base_controller import Redirect, WebContext
 from web.messages import Message
 from web.session import SessionHandler
 
@@ -192,7 +192,7 @@ class PrizeAdminController(BaseEventAdminController):
         cls,
         web_context: PrizeAdminWebContext,
         template_context: dict[str, Any] | None = None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         if web_context.error:
             return web_context.error
         return cls._admin_event_render(
@@ -214,7 +214,7 @@ class PrizeAdminController(BaseEventAdminController):
         tournament_id: int | None,
         prize_group_id: int | None,
         show_details: bool | None,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         if show_details is not None:
             SessionHandler.set_session_admin_prizes_show_details(request, show_details)
         web_context = PrizeAdminWebContext(request, event_uniq_id, tournament_id)
@@ -242,7 +242,7 @@ class PrizeAdminController(BaseEventAdminController):
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PrizeAdminWebContext(
             request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
         )
@@ -282,7 +282,7 @@ class PrizeAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PrizeAdminWebContext(request, event_uniq_id, tournament_id)
         if web_context.error:
             return web_context.error
@@ -329,7 +329,7 @@ class PrizeAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PrizeAdminWebContext(
             request, event_uniq_id, tournament_id, prize_group_id
         )
@@ -359,7 +359,7 @@ class PrizeAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PrizeAdminWebContext(
             request, event_uniq_id, tournament_id, prize_group_id
         )
@@ -380,7 +380,7 @@ class PrizeAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PrizeAdminWebContext(request, event_uniq_id, tournament_id)
         tournament = web_context.get_admin_tournament()
         return self._admin_event_prizes_render(
@@ -400,7 +400,7 @@ class PrizeAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_prizes_render(
             PrizeAdminWebContext(request, event_uniq_id, tournament_id, prize_group_id),
             {'modal': 'prize_group_delete'},
@@ -512,7 +512,7 @@ class PrizeAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PrizeAdminWebContext(
             request, event_uniq_id, tournament_id, prize_group_id
         )
@@ -590,7 +590,7 @@ class PrizeAdminController(BaseEventAdminController):
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PrizeAdminWebContext(
             request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
         )
@@ -655,7 +655,7 @@ class PrizeAdminController(BaseEventAdminController):
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PrizeAdminWebContext(
             request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
         )
@@ -687,7 +687,7 @@ class PrizeAdminController(BaseEventAdminController):
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PrizeAdminWebContext(
             request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
         )
@@ -734,7 +734,7 @@ class PrizeAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PrizeAdminWebContext(
             request, event_uniq_id, tournament_id, prize_group_id
         )
@@ -757,7 +757,7 @@ class PrizeAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PrizeAdminWebContext(
             request, event_uniq_id, tournament_id, prize_group_id
         )
@@ -785,7 +785,7 @@ class PrizeAdminController(BaseEventAdminController):
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PrizeAdminWebContext(
             request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
         )
@@ -822,7 +822,7 @@ class PrizeAdminController(BaseEventAdminController):
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_prizes_render(
             PrizeAdminWebContext(
                 request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
@@ -915,7 +915,7 @@ class PrizeAdminController(BaseEventAdminController):
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PrizeAdminWebContext(
             request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
         )
@@ -971,7 +971,7 @@ class PrizeAdminController(BaseEventAdminController):
         prize_group_id: int,
         prize_category_id: int,
         prize_criterion_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PrizeAdminWebContext(
             request,
             event_uniq_id,
@@ -1016,7 +1016,7 @@ class PrizeAdminController(BaseEventAdminController):
         prize_group_id: int,
         prize_category_id: int,
         prize_criterion_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PrizeAdminWebContext(
             request,
             event_uniq_id,
@@ -1045,7 +1045,7 @@ class PrizeAdminController(BaseEventAdminController):
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_prizes_render(
             PrizeAdminWebContext(
                 request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
@@ -1067,7 +1067,7 @@ class PrizeAdminController(BaseEventAdminController):
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PrizeAdminWebContext(
             request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
         )
@@ -1092,7 +1092,7 @@ class PrizeAdminController(BaseEventAdminController):
         prize_group_id: int,
         prize_category_id: int,
         prize_criterion_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PrizeAdminWebContext(
             request,
             event_uniq_id,
@@ -1222,7 +1222,7 @@ class PrizeAdminController(BaseEventAdminController):
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PrizeAdminWebContext(
             request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
         )
@@ -1285,7 +1285,7 @@ class PrizeAdminController(BaseEventAdminController):
         prize_group_id: int,
         prize_category_id: int,
         prize_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PrizeAdminWebContext(
             request,
             event_uniq_id,
@@ -1333,7 +1333,7 @@ class PrizeAdminController(BaseEventAdminController):
         prize_group_id: int,
         prize_category_id: int,
         prize_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PrizeAdminWebContext(
             request,
             event_uniq_id,
@@ -1362,7 +1362,7 @@ class PrizeAdminController(BaseEventAdminController):
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         return self._admin_event_prizes_render(
             PrizeAdminWebContext(
                 request,
@@ -1388,7 +1388,7 @@ class PrizeAdminController(BaseEventAdminController):
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PrizeAdminWebContext(
             request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
         )
@@ -1413,7 +1413,7 @@ class PrizeAdminController(BaseEventAdminController):
         prize_group_id: int,
         prize_category_id: int,
         prize_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template | ClientRedirect | Redirect:
         web_context = PrizeAdminWebContext(
             request,
             event_uniq_id,
