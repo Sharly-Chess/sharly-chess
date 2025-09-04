@@ -217,6 +217,21 @@ LOG_HTML = f"""<!doctype html>
 </html>
 """
 
+# Fix a Windows Toga issue in v0.52 - _on_gain_focus is called by doesn't exist
+if not hasattr(toga.Window, '_on_gain_focus'):
+
+    def _noop_gain(self, *_, **__):  # bound method signature (self will be bound)
+        pass
+
+    toga.Window._on_gain_focus = _noop_gain
+
+if not hasattr(toga.Window, '_on_lose_focus'):
+
+    def _noop_lose(self, *_, **__):
+        pass
+
+    toga.Window._on_lose_focus = _noop_lose
+
 
 class SharlyChessServerToga(toga.App):
     """Main Toga GUI app for Sharly Chess server."""
@@ -284,10 +299,18 @@ class SharlyChessServerToga(toga.App):
         main_box.add(self.log_view)
 
         self.main_window = toga.MainWindow(
-            title='Sharly Chess Server', size=(1200, 700), content=main_box
+            title='Sharly Chess Server',
+            size=(1200, 700),
+            content=main_box,
+            on_gain_focus=self._noop,
+            on_lose_focus=self._noop,
         )
+
         assert isinstance(self.main_window, toga.MainWindow)
         self.main_window.show()
+
+    def _noop(self, widget: toga.Widget):
+        pass
 
     # ------- Public API used by handler / background code -------
     def add_log_message(self, message: str, tag: Optional[str] = None):
@@ -337,7 +360,6 @@ class SharlyChessServerToga(toga.App):
             self.add_log_message(_('Server is already running!'), 'warning')
             return
 
-        self.add_log_message(_('Starting server...'), 'info')
         self.server_running = True
 
         # Start server in background thread
@@ -400,10 +422,11 @@ class SharlyChessServerToga(toga.App):
         async def _ask_on_ui():
             # Show the dialog on the main window; returns True/False
             assert isinstance(self.main_window, toga.MainWindow)
-            return await self.main_window.question_dialog(
-                title='Server Setup',
+            dialog = toga.QuestionDialog(
+                title=_('Server Setup'),
                 message=text,
             )
+            return await self.main_window.dialog(dialog)
 
         # Schedule the coroutine on the UI loop and wait for the result
         fut = asyncio.run_coroutine_threadsafe(_ask_on_ui(), self.loop)
@@ -516,5 +539,4 @@ class SharlyChessServerToga(toga.App):
         asyncio.create_task(self._process_message_queue())
         asyncio.create_task(self._welcome())
         if not self.server_running:
-            self.add_log_message('Starting server...', 'info')
             self._on_start_server(None)
