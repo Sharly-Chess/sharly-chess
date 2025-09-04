@@ -40,6 +40,7 @@ from web.settings import (
     listeners,
 )
 from web.channels import channels_plugin
+from web.utils import NotFoundException
 
 logger = get_logger()
 
@@ -191,7 +192,7 @@ class ServerEngine(Engine):
             template_config=template_config,
             logging_config=LoggingConfig(
                 **logging_config,
-                disable_stack_trace={403, PermissionDeniedException},
+                disable_stack_trace={403, PermissionDeniedException, NotFoundException},
             ),  # type: ignore
             after_exception=[log_permission_denied],
             middleware=middlewares,

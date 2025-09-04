@@ -195,12 +195,12 @@ def setup_page(page, backend_server):
 def lan_context(browser: Browser):
     config = SharlyChessConfig()
     config.web_port = 9000
-    context = browser.new_context(base_url=config.lan_url)
+    context = browser.new_context(base_url=config.lan_urls[0])
     yield context
     context.close()
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def lan_page(lan_context):
     page = lan_context.new_page()
     page.set_default_timeout(15000)

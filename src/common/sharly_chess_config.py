@@ -2,7 +2,6 @@ import locale
 import logging
 import os
 import re
-import socket
 import subprocess
 import sys
 from pathlib import Path
@@ -29,6 +28,7 @@ from common.i18n import (
     set_locale,
 )
 from common.logger import set_logging_config, get_logger
+from common.network import find_lan_interfaces, LOCALHOST_IP
 from common.singleton import Singleton
 from utils.enum import Result
 from database.sqlite.config.config_database import ConfigDatabase
@@ -265,7 +265,7 @@ class SharlyChessConfig(metaclass=Singleton):
     default_pairing_variation_id = 'SWISS_STANDARD'
 
     """ The URL of the project. """
-    url: str = 'https://sharly-chess.com'
+    web_url: str = 'https://sharly-chess.com'
 
     """ The contact email. """
     mail: str = 'contact@sharly-chess.com'
@@ -343,45 +343,45 @@ class SharlyChessConfig(metaclass=Singleton):
     select2_bootstrap_theme_version: Version = Version('1.3.0')
 
     @overload
-    def _url(self, ip: str) -> str: ...
+    def app_url(self, ip: str) -> str: ...
 
     @overload
-    def _url(self, ip: None) -> None: ...
+    def app_url(self, ip: None) -> None: ...
 
-    def _url(self, ip: str | None) -> str | None:
+    def app_url(self, ip: str | None) -> str | None:
         """Returns the URL of the application for the given IP."""
         if ip is None:
             return None
         return f'http://{ip}{f":{self.web_port}" if self.web_port != 80 else ""}'
 
     @property
-    def lan_ip(self) -> str | None:
-        """Returns the IP of the server on the LAN/WAN."""
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.settimeout(0)
+    def lan_ifaces(self) -> list[dict[str, str]]:
+        """[{ip, iface, type, label}]"""
         try:
-            s.connect(('10.254.254.254', 1))  # doesn't even have to be reachable
-            return s.getsockname()[0]
-        except Exception:  # pylint: disable=broad-exception-caught
-            pass
-        finally:
-            s.close()
-        return None
+            data = find_lan_interfaces()
+            logger.debug('LAN ifaces: %s', data)
+            return data
+        except Exception as e:
+            logger.debug('find_lan_interfaces failed: %s', e)
+            return []
+
+    @property
+    def lan_ips(self) -> list[str]:
+        return [d['ip'] for d in self.lan_ifaces]
 
     @property
     def local_ip(self) -> str:
         """Returns the local IP (localhost) of the server (with arbiter access)."""
-        return '127.0.0.1'
+        return LOCALHOST_IP
 
     @property
-    def lan_url(self) -> str | None:
-        """The URL of the application on the LAN/WAN."""
-        return self._url(self.lan_ip)
+    def lan_urls(self) -> list[str]:
+        return [self.app_url(ip_info['ip']) for ip_info in self.lan_ifaces]
 
     @property
     def local_url(self) -> str:
         """The local URL of the application (with arbiter access)."""
-        return self._url(self.local_ip)
+        return self.app_url(self.local_ip)
 
     # The default number of illegal moves to record.
     default_record_illegal_moves_number: int = 0

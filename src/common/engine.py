@@ -55,7 +55,7 @@ class Engine(ABC):
             'Sharly Chess %s - %s - %s',
             sharly_chess_config.version,
             sharly_chess_config.copyright,
-            sharly_chess_config.url,
+            sharly_chess_config.web_url,
         )
         logger.info('Locale: %s', sharly_chess_config.locale)
         more_recent_version: Version | None = None
