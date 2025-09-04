@@ -242,12 +242,32 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             ):
                 default_print_document = PlayerRankingPrintDocument.static_id()
 
+        tournament_ids = [
+            tournament.id
+            for tournament in self.get_admin_event().tournaments_sorted_by_uniq_id
+        ]
+        current_index = (
+            tournament_ids.index(self.admin_tournament.id)
+            if self.admin_tournament
+            else 0
+        )
+        prev_tournament_id = (
+            tournament_ids[current_index - 1] if current_index > 0 else None
+        )
+        next_tournament_id = (
+            tournament_ids[current_index + 1]
+            if current_index < len(tournament_ids) - 1
+            else None
+        )
+
         return super().template_context | {
             'admin_event_tab': 'admin-event-pairings-tab',
             'admin_tournament': self.admin_tournament,
             'admin_tournament_id': self.value_to_form_data(self.admin_tournament.id)
             if self.admin_tournament
             else None,
+            'prev_tournament_id': prev_tournament_id,
+            'next_tournament_id': next_tournament_id,
             'admin_round': self.admin_round,
             'admin_boards': self.admin_boards,
             'round_status': self.round_status,
