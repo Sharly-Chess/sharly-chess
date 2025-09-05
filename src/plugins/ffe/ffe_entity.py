@@ -6,7 +6,7 @@ from types import UnionType
 from typing import override, Any
 
 from common import unicode_normalize
-from common.exception import SharlyChessException
+from common.exception import SharlyChessException, OptionError
 from common.i18n import _
 from data.input_output.data_source import (
     FidePlayerComparator,
@@ -38,7 +38,6 @@ from plugins.pairing_acceleration.pairing_settings import (
 )
 from plugins.utils import PluginUtils
 from utils.enum import Result
-from utils.option import OptionError
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 

@@ -22,6 +22,11 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
+                {% if errors.alert %}
+                    {% with type='error', message=errors.alert %}
+                        {% include '/common/alert.html' %}
+                    {% endwith %}
+                {% endif %}
                 {% if admin_tournament %}
                     <h4>
                         {{ _('Tournament: %(tournament_name)s', tournament_name=admin_tournament.name) }}
@@ -35,16 +40,9 @@
                         </h5>
                     {% endif %}
                 {% endif %}
-                <div class="row">
-                    <div class="col-12">
-                        {{ admin_macros.file_input(
-                            name='file',
-                            label=_('%(string)s:', string=_('File')),
-                            help_text=_('The file to import.'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                </div>
+                {% for option in importer.default_options() %}
+                    {% include option.template_name %}
+                {% endfor %}
                 {% if admin_tournament and admin_tournament.players %}
                     <div class="mt-2">
                         {{ admin_macros.checkbox_input(

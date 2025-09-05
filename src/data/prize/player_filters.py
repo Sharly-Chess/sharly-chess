@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from functools import cached_property
 
+from common.exception import OptionError
 from common.i18n import _
 from data.player import Player, Club, Federation
 from data.prize.player_filter_options import (
@@ -17,7 +18,7 @@ from data.prize.player_filter_options import (
     RatingTypesFilterOption,
 )
 from utils.enum import PlayerGender, PlayerCategory, PlayerRatingType
-from utils.option import OptionHandler, OptionError
+from utils.option import OptionHandler
 
 
 class PlayerFilter(OptionHandler[PlayerFilterOption], ABC):

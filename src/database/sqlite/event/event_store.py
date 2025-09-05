@@ -109,21 +109,21 @@ class StoredTournamentPlayer:
 class StoredPlayer:
     id: int | None
     last_name: str
-    first_name: str | None
-    date_of_birth: date | None
-    gender: int
-    mail: str | None
-    phone: str | None
-    comment: str | None
-    owed: float
-    paid: float
-    title: int
     ratings: dict[int, dict[str, int]]
-    fide_id: int | None
-    federation: str
-    club: str | None
-    fixed: int | None
-    check_in: bool
+    first_name: str | None = None
+    date_of_birth: date | None = None
+    gender: int = 0
+    mail: str | None = None
+    phone: str | None = None
+    comment: str | None = None
+    owed: float = 0.0
+    paid: float = 0.0
+    title: int = 0
+    fide_id: int | None = None
+    federation: str = 'FID'
+    club: str | None = None
+    fixed: int | None = None
+    check_in: bool = False
     # TODO (Molrn - multi tournament) move to a list in StoredTournament
     stored_tournament_player: StoredTournamentPlayer = field(
         default_factory=StoredTournamentPlayer

@@ -118,22 +118,17 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             self.admin_round = 0
         elif round_ is not None:
             self.admin_round = round_
+        elif session_round := SessionHandler.get_session_admin_pairings_selected_round(
+            self.request,
+            event.uniq_id,
+            self.admin_tournament.id,
+        ):
+            max_round = (
+                self.admin_tournament.current_round or 1
+            ) + self.admin_tournament.finished
+            self.admin_round = min(session_round, max_round)
         else:
-            self.admin_round = SessionHandler.get_session_admin_pairings_selected_round(
-                self.request,
-                event.uniq_id,
-                self.admin_tournament.id,
-            )
-            if self.admin_round is None:
-                self.admin_round = 1
-            elif self.admin_tournament.finished:
-                self.admin_round = min(
-                    self.admin_round, self.admin_tournament.current_round + 1
-                )
-            else:
-                self.admin_round = min(
-                    self.admin_round, self.admin_tournament.current_round
-                )
+            self.admin_round = self.admin_tournament.current_round or 1
 
         if self.admin_tournament and (
             self.admin_round > self.admin_tournament.rounds or self.display_rankings

@@ -3,18 +3,19 @@ from collections import Counter
 from types import UnionType
 from typing import Any, TYPE_CHECKING
 
+from common.exception import OptionError
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.player import Club, Federation
 from utils.enum import PlayerGender, PlayerCategory, PlayerRatingType
-from utils.option import Option, OptionError
+from utils.option import Option
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
 
 
 class PlayerFilterOption(Option, ABC):
-    """Parent class of all the option of player filters."""
+    """Parent class of all the options of player filters."""
 
     @property
     def template_name(self) -> str:

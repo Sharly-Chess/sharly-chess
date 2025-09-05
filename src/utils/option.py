@@ -2,13 +2,8 @@ from abc import ABC, abstractmethod
 from types import UnionType
 from typing import Any
 
+from common.exception import OptionError
 from utils.entity import IdentifiableEntity
-
-
-class OptionError(ValueError):
-    def __init__(self, message: str, option: 'Option'):
-        super().__init__(message)
-        self.option = option
 
 
 class Option(IdentifiableEntity, ABC):
