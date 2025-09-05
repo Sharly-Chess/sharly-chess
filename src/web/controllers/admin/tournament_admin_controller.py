@@ -846,7 +846,7 @@ class TournamentAdminController(BaseEventAdminController):
                         (
                             'input',
                             '@input',
-                            _('Results entry ({tournament_name})').format(
+                            _('Check-in / Results entry ({tournament_name})').format(
                                 tournament_name=stored_tournament.name
                             ),
                         ),

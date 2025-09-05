@@ -209,7 +209,7 @@ class BaseAdminController(BaseController):
     def _get_screen_type_options(family_screens_only: bool) -> dict[str, str]:
         options: dict[str, str] = {
             '': '-',
-            'input': _('Results entry'),
+            'input': _('Check-in / Results entry'),
             'boards': _('Pairings by board'),
             'players': _('Pairings by player'),
         }
