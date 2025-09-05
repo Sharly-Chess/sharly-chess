@@ -473,6 +473,7 @@ class PlayerPairingPrintDocument(PlayerPrintDocument):
     @property
     def ordered_players(self) -> list[Player]:
         assert self.tournament is not None
+        self.tournament.set_for_round(self.at_round)
         return self.tournament.players_by_name_without_unpaired
 
     @override
