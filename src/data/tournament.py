@@ -814,7 +814,7 @@ class Tournament:
 
         fields: dict[str, str] = {
             'XXR': str(self.rounds),
-            'XXC': TrfSeedColor.get_outer_value(ColorSeedSetting.get_value(self)),
+            'XXC': TrfSeedColor.get_outer_value(ColorSeedSetting.get_value(self)) or '',
             'XXZ': ' '.join(
                 [
                     str(trf_id)

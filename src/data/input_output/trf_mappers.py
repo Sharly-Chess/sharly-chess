@@ -90,7 +90,7 @@ class TrfSeedColor(OuterCoreMapper[str, BoardColor]):
         }
 
 
-class TrfColor(OuterCoreMapper[str, BoardColor | None]):
+class TrfColor(OuterCoreMapper[str, BoardColor | None]):  # type: ignore
     @staticmethod
     def _core_object_by_outer_value() -> dict[str, BoardColor | None]:
         return {
