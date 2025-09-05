@@ -34,7 +34,8 @@ English version below
 - Suppression de la renumérotation automatique des échiquiers en cas d'appariement manuel (3.0.0)
 - Saisie des résultats non comptabilisés et des pénalités (3.0.0)
 - Ajout de la recherche de joueur·euse sur l'onglet Appariements (3.0.0)
-- Correction de la recherche des joueur·euses et amélioration de la navigation sur l'onglet Appariements (3.0.2)
+- Correction de la recherche des joueur·euses sur l'onglet Appariements (3.0.2)
+- Amélioration de la navigation sur l'onglet Appariements (3.0.2)
 
 ## Écrans
 
@@ -93,8 +94,9 @@ English version below
 - Allow overriding of unrated rapid/blitz ratings by standard ratings (3.0.0)
 - Removed automatic renumbering of boards when manually pairing (3.0.0)
 - Entry of unrated and penalty results (3.0.0)
-- Added player search on the pairings tab (3.0.0)
-- Fixed player search and improved navigation on the Pairings tab (3.0.2)
+- Added player search on the Pairings tab (3.0.0)
+- Fixed player search on the Pairings tab (3.0.2)
+- Improved navigation on the Pairings tab (3.0.2)
 
 ## Screens
 
