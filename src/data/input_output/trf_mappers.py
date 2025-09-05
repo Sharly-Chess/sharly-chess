@@ -1,8 +1,8 @@
-from utils import OuterCoreMapper
+from utils import CoreMapper
 from utils.enum import PlayerGender, PlayerTitle, Result, BoardColor
 
 
-class TrfPlayerGender(OuterCoreMapper[str, PlayerGender]):
+class TrfPlayerGender(CoreMapper[str, PlayerGender]):
     @staticmethod
     def _core_object_by_outer_value() -> dict[str, PlayerGender]:
         return {
@@ -12,7 +12,7 @@ class TrfPlayerGender(OuterCoreMapper[str, PlayerGender]):
         }
 
 
-class TrfPlayerTitle(OuterCoreMapper[str, PlayerTitle]):
+class TrfPlayerTitle(CoreMapper[str, PlayerTitle]):
     @staticmethod
     def _core_object_by_outer_value() -> dict[str, PlayerTitle]:
         return {
@@ -28,7 +28,7 @@ class TrfPlayerTitle(OuterCoreMapper[str, PlayerTitle]):
         }
 
 
-class TrfResult(OuterCoreMapper[str, Result]):
+class TrfResult(CoreMapper[str, Result]):
     @staticmethod
     def _core_object_by_outer_value() -> dict[str, Result]:
         return {
@@ -81,7 +81,7 @@ class TrfResult(OuterCoreMapper[str, Result]):
         return super().get_core_object(outer_value)
 
 
-class TrfSeedColor(OuterCoreMapper[str, BoardColor]):
+class TrfSeedColor(CoreMapper[str, BoardColor]):
     @staticmethod
     def _core_object_by_outer_value() -> dict[str, BoardColor]:
         return {
@@ -90,7 +90,7 @@ class TrfSeedColor(OuterCoreMapper[str, BoardColor]):
         }
 
 
-class TrfColor(OuterCoreMapper[str, BoardColor | None]):  # type: ignore
+class TrfColor(CoreMapper[str, BoardColor | None]):  # type: ignore
     @staticmethod
     def _core_object_by_outer_value() -> dict[str, BoardColor | None]:
         return {

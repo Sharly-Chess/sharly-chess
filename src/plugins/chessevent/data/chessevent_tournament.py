@@ -12,7 +12,7 @@ from plugins.pairing_acceleration.pairing_variations import (
     ProgressiveSwissVariation,
     HaleySoftSwissVariation,
 )
-from utils import OuterCoreMapper
+from utils import CoreMapper
 from utils.enum import TournamentRating
 from plugins.chessevent.data.chessevent_field_reader import ChessEventFieldReader
 from plugins.chessevent.data.chessevent_player import ChessEventPlayer
@@ -21,7 +21,7 @@ from plugins.ffe import ffe_tie_breaks
 logger: Logger = get_logger()
 
 
-class ChessEventPairingSystem(OuterCoreMapper[int, PairingSystem]):
+class ChessEventPairingSystem(CoreMapper[int, PairingSystem]):
     @staticmethod
     def _core_object_by_outer_value() -> dict[int, PairingSystem]:
         return {
@@ -30,7 +30,7 @@ class ChessEventPairingSystem(OuterCoreMapper[int, PairingSystem]):
         }
 
 
-class ChessEventPairingVariation(OuterCoreMapper[int, PairingVariation]):
+class ChessEventPairingVariation(CoreMapper[int, PairingVariation]):
     @staticmethod
     def _core_object_by_outer_value() -> dict[int, PairingVariation]:
         return {

@@ -2258,7 +2258,7 @@ msgid "File [{file}] not found."
 msgstr "Fichier [{file}] non trouvé."
 
 msgid "File has invalid suffix [{suffix}] (expected: {expected})."
-msgstr "Le fichier a une extension invalide (attendu : {expected})."
+msgstr "L'extension du fichier [{suffix}] est invalide (attendu : {expected})."
 
 msgid "Filter out players with a greater rating."
 msgstr "Exclure les joueur·euses ayant un Elo plus élevé."
@@ -6344,3 +6344,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+

@@ -236,8 +236,8 @@ class SupportsEquals(Protocol):
     def __eq__(self, other: object) -> bool: ...
 
 
-class OuterCoreMapper[OuterType: Hashable, CoreType: SupportsEquals](ABC):
-    """Class mapping values non-application values to objects of the core.
+class CoreMapper[OuterType: Hashable, CoreType: SupportsEquals](ABC):
+    """Class mapping non-application values to objects of the core.
     Example: map values of a database to their representation."""
 
     @staticmethod

@@ -13,7 +13,7 @@ from data.tie_breaks import tie_breaks, TieBreak
 from plugins.ffe import ffe_tie_breaks
 from plugins.ffe.utils import PlayerFFELicence
 from plugins.pairing_acceleration import pairing_variations as accelerations
-from utils import OuterCoreMapper
+from utils import CoreMapper
 from utils.enum import (
     TournamentRating,
     PlayerGender,
@@ -25,7 +25,7 @@ from utils.enum import (
 )
 
 
-class PapiPairingVariation(OuterCoreMapper[str, PairingVariation]):
+class PapiPairingVariation(CoreMapper[str, PairingVariation]):
     """Mapper of the pairing variations in the Papi database."""
 
     @classmethod
@@ -48,7 +48,7 @@ class PapiPairingVariation(OuterCoreMapper[str, PairingVariation]):
         return super().get_outer_value(core_object)
 
 
-class PapiPairingSystem(OuterCoreMapper[str, PairingSystem]):
+class PapiPairingSystem(CoreMapper[str, PairingSystem]):
     @staticmethod
     def _core_object_by_outer_value() -> dict[str, PairingSystem]:
         return {
@@ -57,7 +57,7 @@ class PapiPairingSystem(OuterCoreMapper[str, PairingSystem]):
         }
 
 
-class PapiTieBreak(OuterCoreMapper[str, TieBreak]):
+class PapiTieBreak(CoreMapper[str, TieBreak]):
     @classmethod
     def _core_object_by_outer_value(cls) -> dict[str, TieBreak]:
         return {
@@ -75,7 +75,7 @@ class PapiTieBreak(OuterCoreMapper[str, TieBreak]):
         }
 
 
-class PapiTournamentRating(OuterCoreMapper[str, TournamentRating]):
+class PapiTournamentRating(CoreMapper[str, TournamentRating]):
     @staticmethod
     def _core_object_by_outer_value() -> dict[str, TournamentRating]:
         return {
@@ -85,7 +85,7 @@ class PapiTournamentRating(OuterCoreMapper[str, TournamentRating]):
         }
 
 
-class PapiPlayerGender(OuterCoreMapper[str, PlayerGender]):
+class PapiPlayerGender(CoreMapper[str, PlayerGender]):
     @classmethod
     def _core_object_by_outer_value(cls) -> dict[str, PlayerGender]:
         return {
@@ -99,7 +99,7 @@ class PapiPlayerGender(OuterCoreMapper[str, PlayerGender]):
         return cls._core_object_by_outer_value()[plugin_value.upper()]
 
 
-class PapiThreePointsForAWin(OuterCoreMapper[str, bool]):
+class PapiThreePointsForAWin(CoreMapper[str, bool]):
     @classmethod
     def _core_object_by_outer_value(cls) -> dict[str, bool]:
         return {
@@ -112,7 +112,7 @@ class PapiThreePointsForAWin(OuterCoreMapper[str, bool]):
         return cls._core_object_by_outer_value()[plugin_value.upper()]
 
 
-class PapiPlayerTitle(OuterCoreMapper[str, PlayerTitle]):
+class PapiPlayerTitle(CoreMapper[str, PlayerTitle]):
     @classmethod
     def _core_object_by_outer_value(cls) -> dict[str, PlayerTitle]:
         return {
@@ -132,7 +132,7 @@ class PapiPlayerTitle(OuterCoreMapper[str, PlayerTitle]):
         return cls._core_object_by_outer_value()[plugin_value.strip()]
 
 
-class PapiPlayerCategory(OuterCoreMapper[str, PlayerCategory]):
+class PapiPlayerCategory(CoreMapper[str, PlayerCategory]):
     @staticmethod
     def _core_object_by_outer_value() -> dict[str, PlayerCategory]:
         return {
@@ -150,7 +150,7 @@ class PapiPlayerCategory(OuterCoreMapper[str, PlayerCategory]):
         }
 
 
-class PapiPlayerRatingType(OuterCoreMapper[str | None, PlayerRatingType]):
+class PapiPlayerRatingType(CoreMapper[str | None, PlayerRatingType]):
     @staticmethod
     def _core_object_by_outer_value() -> dict[str | None, PlayerRatingType]:
         return {
@@ -166,7 +166,7 @@ class PapiPlayerRatingType(OuterCoreMapper[str | None, PlayerRatingType]):
         return super().get_core_object(plugin_value)
 
 
-class PapiPlayerFFELicence(OuterCoreMapper[str, PlayerFFELicence]):
+class PapiPlayerFFELicence(CoreMapper[str, PlayerFFELicence]):
     @staticmethod
     def _core_object_by_outer_value() -> dict[str, PlayerFFELicence]:
         return {

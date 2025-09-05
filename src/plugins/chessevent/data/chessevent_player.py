@@ -3,7 +3,7 @@ from typing import Any
 
 from common import unicode_normalize
 from common.logger import get_logger
-from utils import OuterCoreMapper
+from utils import CoreMapper
 from utils.enum import (
     PlayerGender,
     PlayerCategory,
@@ -16,7 +16,7 @@ from plugins.ffe.utils import PlayerFFELicence
 logger: Logger = get_logger()
 
 
-class ChessEventFFELicence(OuterCoreMapper[int, PlayerFFELicence]):
+class ChessEventFFELicence(CoreMapper[int, PlayerFFELicence]):
     @staticmethod
     def _core_object_by_outer_value() -> dict[int, PlayerFFELicence]:
         return {
@@ -27,7 +27,7 @@ class ChessEventFFELicence(OuterCoreMapper[int, PlayerFFELicence]):
         }
 
 
-class ChessEventRatingType(OuterCoreMapper[int, PlayerRatingType]):
+class ChessEventRatingType(CoreMapper[int, PlayerRatingType]):
     @staticmethod
     def _core_object_by_outer_value() -> dict[int, PlayerRatingType]:
         return {
@@ -37,7 +37,7 @@ class ChessEventRatingType(OuterCoreMapper[int, PlayerRatingType]):
         }
 
 
-class ChessEventTitle(OuterCoreMapper[int, PlayerTitle]):
+class ChessEventTitle(CoreMapper[int, PlayerTitle]):
     @staticmethod
     def _core_object_by_outer_value() -> dict[int, PlayerTitle]:
         return {
