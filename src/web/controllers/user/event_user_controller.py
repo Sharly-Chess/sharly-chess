@@ -123,7 +123,7 @@ class EventUserController(BaseUserController):
             )
         nav_tabs: dict[str, dict] = {
             'input': {
-                'title': _('Results entry ({num})').format(
+                'title': _('Check-in / Results entry ({num})').format(
                     num=len(input_screens) or '-'
                 ),
                 'screens': input_screens,

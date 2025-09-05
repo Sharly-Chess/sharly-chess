@@ -331,6 +331,9 @@ msgstr "Ajouter un critère à la liste."
 msgid "Add a display controller to the event."
 msgstr "Ajouter un pilote d'afficheurs."
 
+msgid "Add a family of screens to check-in players or enter results."
+msgstr "Ajouter une famille d'écrans à l'évènement."
+
 msgid "Add a family of screens to display the pairings by alphabetical order."
 msgstr "Ajouter à l'évènement une nouvelle famille d'écrans d'affichage des appariements par échiquier."
 
@@ -339,9 +342,6 @@ msgstr "Ajouter à l'évènement une nouvelle famille d'écrans de saisie des r�
 
 msgid "Add a family of screens to display the ranking."
 msgstr "Ajouter à l'évènement une nouvelle famille d'écrans d'affichage du classement."
-
-msgid "Add a family of screens to enter the results."
-msgstr "Ajouter une famille d'écrans à l'évènement."
 
 msgid "Add a group to the list."
 msgstr "Ajouter un groupe à la liste"
@@ -361,6 +361,9 @@ msgstr "Ajouter un prix à la liste."
 msgid "Add a rotator to the event."
 msgstr "Ajouter un écran rotatif à l'évènement."
 
+msgid "Add a screen to check-in players or enter results."
+msgstr "Ajouter un écran de saisie des résultats."
+
 msgid "Add a screen to display an image."
 msgstr "Ajouter un écran d'affichage d'une image."
 
@@ -375,9 +378,6 @@ msgstr "Ajouter un écran d'affichage des appariements par échiquier."
 
 msgid "Add a screen to display the ranking."
 msgstr "Ajouter un écran d'affichage du classement."
-
-msgid "Add a screen to enter the results."
-msgstr "Ajouter un écran de saisie des résultats."
 
 msgid "Add a set"
 msgstr "Ajouter un ensemble"
@@ -762,6 +762,15 @@ msgstr "Pointage"
 
 msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
 msgstr "Pointage"
+
+msgid "Check-in / Results entry"
+msgstr "Pointage / Saisie des résultats"
+
+msgid "Check-in / Results entry ({num})"
+msgstr "Pointage / Saisie des résultats ({num})"
+
+msgid "Check-in / Results entry ({tournament_name})"
+msgstr "Pointage / Saisie des résultats ({tournament_name})"
 
 #, python-format
 msgid "Check-in is closed for tournament [%(tournament)s]."
@@ -3303,9 +3312,6 @@ msgstr "Mot de passe"
 msgid "Password to enter results"
 msgstr "Mot de passe de saisie des résultats"
 
-msgid "Password to enter results:"
-msgstr "Mot de passe de saisie des résultats :"
-
 msgid "Penalties require a time control with a single period."
 msgstr "Les pénalités nécessitent une cadence avec une seule période."
 
@@ -3656,6 +3662,9 @@ msgstr "Cumulatif"
 msgid "Properties"
 msgstr "Propriétés"
 
+msgid "Properties (check-in and results entry)"
+msgstr "Propriétés (pointage et saisie des résultats)"
+
 msgid "Properties (pairings by board)"
 msgstr "Propriétés (appariements par échiquier)"
 
@@ -3664,9 +3673,6 @@ msgstr "Propriétés (appariements par ordre alphabétique)"
 
 msgid "Properties (ranking)"
 msgstr "Propriétés (classement)"
-
-msgid "Properties (results entry)"
-msgstr "Propriétés (saisie des résultats)"
 
 msgid "Protected pairings editing"
 msgstr "Édition d'appariements protégés"
@@ -3859,15 +3865,6 @@ msgstr "Le résultat [{result}] n’est pas compatible avec le format PAPI."
 
 msgid "Results"
 msgstr "Résultats"
-
-msgid "Results entry"
-msgstr "Saisie des résultats"
-
-msgid "Results entry ({num})"
-msgstr "Saisie des résultats ({num})"
-
-msgid "Results entry ({tournament_name})"
-msgstr "Saisie des résultats ({tournament_name})"
 
 msgid "Results for round #{round}"
 msgstr "Résultats de la ronde {round}"
@@ -4519,9 +4516,6 @@ msgstr "La mot de passe est composé de 10 caractères majuscules, il est utilis
 
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "Le mot de passe du tournoi sur le site FFE doit être composé de 10 lettres majuscules."
-
-msgid "The password required on input screens to enter results (optional)."
-msgstr "Le mot de passe qui sera demandé sur les écrans de saisie pour entrer les résultats (facultatif)."
 
 msgid "The password used to connect to the ChessEvent platform (by default the password defined for the Sharly Chess event of the tournament)."
 msgstr "Le mot de passe utilisé pour se connecter sur la plateforme ChessEvent (par défaut le mot de passe ChessEvent défini pour l'évènement Sharly Chess du tournoi)."
@@ -5667,4 +5661,10 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "Password to enter results:"
+#~ msgstr "Mot de passe de saisie des résultats :"
+
+#~ msgid "The password required on input screens to enter results (optional)."
+#~ msgstr "Le mot de passe qui sera demandé sur les écrans de saisie pour entrer les résultats (facultatif)."
 

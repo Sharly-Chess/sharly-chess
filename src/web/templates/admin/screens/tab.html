@@ -61,7 +61,7 @@
         </button>
         <ul class="dropdown-menu">
             {% for screen_type, screen_data in {
-                'input': { 'title': _('Results entry'), 'icon_class': 'bi-pencil','tooltip_text': _('Add a screen to enter the results.'),  },
+                'input': { 'title': _('Check-in / Results entry'), 'icon_class': 'bi-pencil','tooltip_text': _('Add a screen to check-in players or enter results.'),  },
                 'boards': { 'title': _('Pairings by board'), 'icon_class': 'bi-card-list', 'tooltip_text': _('Add a screen to display the pairings by board.'), },
                 'players': { 'title': _('Pairings by player'), 'icon_class': 'bi-people', 'tooltip_text': _('Add a screen to display the pairings by alphabetical order.'), },
                 'results': { 'title': _('Last results'), 'icon_class': 'bi-1-square', 'tooltip_text': _('Add a screen to display the last results.'), },
@@ -125,7 +125,7 @@
         {% else %}
             {% for screen_type, screen_data in {
                 'input': {
-                    'title': _('Results entry'),
+                    'title': _('Check-in / Results entry'),
                     'checkbox_tooltip_text': _('Show/hide the input screens.'),
                     'icon_class': 'bi-pencil',
                 },
