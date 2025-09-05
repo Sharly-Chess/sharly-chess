@@ -3,7 +3,7 @@ from typing import Any
 
 from common import unicode_normalize
 from common.logger import get_logger
-from plugins.utils import PluginCoreMapper
+from utils import OuterCoreMapper
 from utils.enum import (
     PlayerGender,
     PlayerCategory,
@@ -16,9 +16,9 @@ from plugins.ffe.utils import PlayerFFELicence
 logger: Logger = get_logger()
 
 
-class ChessEventFFELicence(PluginCoreMapper[int, PlayerFFELicence]):
+class ChessEventFFELicence(OuterCoreMapper[int, PlayerFFELicence]):
     @staticmethod
-    def _core_object_by_plugin_value() -> dict[int, PlayerFFELicence]:
+    def _core_object_by_outer_value() -> dict[int, PlayerFFELicence]:
         return {
             0: PlayerFFELicence.NONE,
             1: PlayerFFELicence.N,
@@ -27,9 +27,9 @@ class ChessEventFFELicence(PluginCoreMapper[int, PlayerFFELicence]):
         }
 
 
-class ChessEventRatingType(PluginCoreMapper[int, PlayerRatingType]):
+class ChessEventRatingType(OuterCoreMapper[int, PlayerRatingType]):
     @staticmethod
-    def _core_object_by_plugin_value() -> dict[int, PlayerRatingType]:
+    def _core_object_by_outer_value() -> dict[int, PlayerRatingType]:
         return {
             1: PlayerRatingType.ESTIMATED,
             2: PlayerRatingType.NATIONAL,
@@ -37,9 +37,9 @@ class ChessEventRatingType(PluginCoreMapper[int, PlayerRatingType]):
         }
 
 
-class ChessEventTitle(PluginCoreMapper[int, PlayerTitle]):
+class ChessEventTitle(OuterCoreMapper[int, PlayerTitle]):
     @staticmethod
-    def _core_object_by_plugin_value() -> dict[int, PlayerTitle]:
+    def _core_object_by_outer_value() -> dict[int, PlayerTitle]:
         return {
             0: PlayerTitle.NONE,
             1: PlayerTitle.WOMAN_FIDE_MASTER,

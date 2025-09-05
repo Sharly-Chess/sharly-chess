@@ -3,7 +3,7 @@
         name=option.id,
         label=_('%(string)s:', string=_('File')),
         help_text=_('The file to import.'),
-        file_accept=', '.join(option.accepted_file_suffixes),
+        file_accept=', '.join(importer.accepted_file_suffixes),
         data=data, errors=errors
     ) }}
 </div>

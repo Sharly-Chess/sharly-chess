@@ -1,3 +1,4 @@
+import tempfile
 from collections.abc import Callable
 from functools import cached_property
 from itertools import cycle
@@ -114,6 +115,19 @@ class WebContext:
             for key, value in data.items()
         }
 
+    @staticmethod
+    async def normalize_file_data(data: dict[str, str | UploadFile]) -> dict[str, str]:
+        normalized_data: dict[str, str] = {}
+        for key, value in data.items():
+            if isinstance(value, UploadFile):
+                suffix = Path(value.filename).suffix
+                __, tmp_name = tempfile.mkstemp(suffix=suffix)
+                Path(tmp_name).write_bytes(await value.read())
+                normalized_data[key] = tmp_name
+            else:
+                normalized_data[key] = value
+        return normalized_data
+
     @classmethod
     def form_data_to_value[T](
         cls,
@@ -129,7 +143,7 @@ class WebContext:
             date: cls.form_data_to_date,
             list[int]: cls.form_data_to_list_int,
             list[str]: cls.form_data_to_list_str,
-            UploadFile: cls.form_data_to_upload_file,
+            Path: cls.form_data_to_path,
         }
         for type_, function in type_functions.items():
             if expected_type in (type_, type_ | None):
@@ -243,10 +257,10 @@ class WebContext:
         return [element.strip() for element in data[field].split(';')]
 
     @staticmethod
-    def form_data_to_upload_file(data: dict[str, Any], field: str) -> UploadFile | None:
-        if field not in data or not isinstance(data[field], UploadFile):
+    def form_data_to_path(data: dict[str, str], field: str) -> Path | None:
+        if field not in data or not data[field]:
             return None
-        return data[field]
+        return Path(data[field])
 
     @staticmethod
     def form_data_to_rgb(

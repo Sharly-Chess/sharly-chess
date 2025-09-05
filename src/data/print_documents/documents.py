@@ -3,7 +3,7 @@ from functools import cached_property, partial
 import itertools
 from typing import Any, override
 
-from common.exception import SharlyChessException
+from common.exception import SharlyChessException, OptionError
 from common.i18n import _
 from data.board import Board
 from data.pairings.engines import RoundRobinPairingEngine
@@ -20,7 +20,7 @@ from data.print_documents.options import (
 from data.tournament import Tournament
 from utils import StaticUtils
 from utils.enum import Result
-from utils.option import OptionHandler, OptionError
+from utils.option import OptionHandler
 
 
 class PrintDocument(OptionHandler[PrintOption], ABC):

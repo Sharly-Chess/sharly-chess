@@ -778,7 +778,7 @@ class Tournament:
             after_round = self.rounds
         self.compute_player_ranks(after_round=after_round)
         return TrfTournament(
-            name=self.full_name,
+            name=self.name,
             city=self.location,
             startdate=format_timestamp(self.start_timestamp, '%Y/%m/%d'),
             enddate=format_timestamp(self.stop_timestamp, '%Y/%m/%d'),
@@ -809,11 +809,12 @@ class Tournament:
         return self.players_by_id[player_id].rank
 
     def _trf_xx_fields(self, next_round: int):
+        from data.input_output.trf_mappers import TrfSeedColor
         from data.pairings.settings import ColorSeedSetting
 
         fields: dict[str, str] = {
             'XXR': str(self.rounds),
-            'XXC': ColorSeedSetting.get_value(self).to_trf_first_round_pairing,
+            'XXC': TrfSeedColor.get_outer_value(ColorSeedSetting.get_value(self)),
             'XXZ': ' '.join(
                 [
                     str(trf_id)

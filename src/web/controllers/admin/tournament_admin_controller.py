@@ -12,8 +12,8 @@ from litestar.params import Body
 from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
+from common.exception import SharlyChessException, OptionError, ImporterError
 from common.logger import get_logger
-from common.exception import SharlyChessException
 from common.i18n import _
 from data.board import Board
 from data.event import Event
@@ -38,7 +38,6 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredScreen
 from plugins.hookspec import ExtraColumn
 from plugins.manager import plugin_manager
-from utils.option import OptionError
 from utils.time_control import parse_time_control_trf25
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
@@ -735,42 +734,45 @@ class TournamentAdminController(BaseEventAdminController):
             return self.redirect_error(
                 request, 'Import only possible before the tournament starts.'
             )
-
+        errors: dict[str, str] = {}
         event = web_context.get_admin_event()
+        normalized_data = await WebContext.normalize_file_data(data)
         importer_type = TournamentImporterManager.get_type(importer_id)
         importer_options: list[TournamentImporterOption] = []
         for importer_option in importer_type.default_options():
             value = WebContext.form_data_to_value(
-                data, importer_option.id, importer_option.type
+                normalized_data, importer_option.id, importer_option.type
             )
             importer_options.append(type(importer_option)(value))
         importer = importer_type(importer_options)
         try:
             importer.validate_options()
-            tournament = await importer.load_tournament(
-                event, web_context.admin_tournament
-            )
+            tournament = importer.load_tournament(event, web_context.admin_tournament)
             Message.success(
                 request,
                 _('Tournament [{tournament}] successfully imported.').format(
                     tournament=tournament.uniq_id
                 ),
             )
-        except OptionError as error:
-            errors = {error.option.id: str(error)}
-            template_context = (
-                web_context.template_context
-                | self._tournament_import_modal_context(importer_id, errors=errors)
+            return self._admin_event_tournaments_render(
+                request, event_uniq_id=event_uniq_id
             )
-            return self._admin_event_render(template_context)
+        except OptionError as error:
+            errors[error.option.id] = str(error)
+        except ImporterError as error:
+            errors['alert'] = str(error)
         except SharlyChessException as error:
             logger.error(f'Tournament importer [{importer.id}] error: {error}')
             Message.error(
                 request, _('An error occurred. Consult the logs for more details.')
             )
-        return self._admin_event_tournaments_render(
-            request, event_uniq_id=event_uniq_id
+        finally:
+            importer.on_import_finished()
+        template_context = (
+            web_context.template_context
+            | self._tournament_import_modal_context(importer_id, errors=errors)
         )
+        return self._admin_event_render(template_context)
 
     def _admin_tournament_update(
         self,

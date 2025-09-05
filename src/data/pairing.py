@@ -75,6 +75,7 @@ class Pairing:
                 'An illegal move has been recorded for player [%s].', self.player.id
             )
             return True
+        return False
 
     def delete_illegal_move(self, event_database: EventDatabase):
         if self.illegal_moves > 0:
@@ -102,43 +103,27 @@ class Pairing:
 
     @property
     def exempt(self) -> bool:
-        return self.result in (Result.PAIRING_ALLOCATED_BYE, Result.REST_GAME)
+        return self.result.is_no_board_bye
 
     @property
     def loss(self) -> bool:
-        return self.result in (
-            Result.LOSS,
-            Result.UNRATED_LOSS,
-            Result.PENALTY_LL,
-            Result.PENALTY_LD,
-            Result.UNRATED_PENALTY_LL,
-            Result.UNRATED_PENALTY_LD,
-        )
+        return self.result.is_loss
 
     @property
     def unrated_loss(self) -> bool:
-        return self.result in (
-            Result.UNRATED_LOSS,
-            Result.UNRATED_PENALTY_LL,
-            Result.UNRATED_PENALTY_LD,
-        )
+        return self.result.is_unrated_loss
 
     @property
     def draw(self) -> bool:
-        return self.result in (
-            Result.DRAW,
-            Result.UNRATED_DRAW,
-            Result.PENALTY_DL,
-            Result.UNRATED_PENALTY_DL,
-        )
+        return self.result.is_draw
 
     @property
     def unrated_draw(self) -> bool:
-        return self.result in (Result.UNRATED_DRAW, Result.UNRATED_PENALTY_DL)
+        return self.result.is_unrated_draw
 
     @property
     def win(self) -> bool:
-        return self.result in (Result.WIN, Result.UNRATED_WIN)
+        return self.result.is_win
 
     @property
     def unrated_gain(self) -> bool:
@@ -166,17 +151,7 @@ class Pairing:
 
     @property
     def unplayed(self) -> bool:
-        return self.result in (
-            Result.NO_RESULT,
-            Result.FORFEIT_WIN,
-            Result.FORFEIT_LOSS,
-            Result.DOUBLE_FORFEIT,
-            Result.HALF_POINT_BYE,
-            Result.ZERO_POINT_BYE,
-            Result.FULL_POINT_BYE,
-            Result.PAIRING_ALLOCATED_BYE,
-            Result.REST_GAME,
-        )
+        return self.result.is_unplayed
 
     @property
     def played(self) -> bool:
@@ -184,38 +159,26 @@ class Pairing:
 
     @property
     def voluntary_unplayed(self) -> bool:
-        return self.result in (
-            Result.FORFEIT_LOSS,
-            Result.DOUBLE_FORFEIT,
-            Result.HALF_POINT_BYE,
-            Result.ZERO_POINT_BYE,
-        )
+        return self.result.is_voluntary_unplayed
 
     @property
     def requested_bye(self) -> bool:
-        return self.result in (Result.HALF_POINT_BYE, Result.ZERO_POINT_BYE)
+        return self.result.is_requested_bye
 
     @property
     def next_round_bye(self) -> bool:
-        return self.result in (
-            Result.ZERO_POINT_BYE,
-            Result.HALF_POINT_BYE,
-            Result.FULL_POINT_BYE,
-        )
+        return self.result.is_next_round_bye
 
     def to_trf(self, round_number: int) -> TrfGame:
-        opponent = self.opponent
+        from data.input_output.trf_mappers import TrfColor
+
         return TrfGame(
             startrank=(
-                '0000'
+                0
                 if self.result.is_bye
-                else opponent.pairing_number
-                if opponent
-                else ''
+                else getattr(self.opponent, 'pairing_number', None)
             ),
-            color=(
-                '-' if self.result.is_bye else self.color.to_trf if self.color else ''
-            ),
+            color=TrfColor.get_outer_value(self.color, self.result.is_bye),
             result=self.result.to_trf,
             round=round_number,
         )

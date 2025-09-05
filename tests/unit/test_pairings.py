@@ -1,4 +1,3 @@
-# Needs to be imported first to avoid circular import
 from datetime import datetime
 from pathlib import Path
 import time
@@ -6,6 +5,7 @@ from unittest import TestCase
 
 from data.board import Board
 from data.event import Event
+from data.input_output.tournament_importer_options import FileOption
 from data.loader import EventLoader
 
 import pytest
@@ -52,7 +52,9 @@ class PairingTestCase(TestCase):
         leaf_name = f'{json_file}.json'
         json_path = Path('../json') / leaf_name
         assert json_path.exists(), f'JSON file [{leaf_name}] not found'
-        PapiJsonTournamentImporter().load_tournament(json_path, self.event, tournament)
+        PapiJsonTournamentImporter([FileOption(json_path)]).load_tournament(
+            self.event, tournament
+        )
         return self._reload_tournament()
 
     def _reload_tournament(self):

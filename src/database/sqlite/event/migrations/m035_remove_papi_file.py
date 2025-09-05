@@ -57,6 +57,7 @@ class Migration(BaseMigration):
     def import_papi_file(self, tournament_id: int, papi_file_path: Path):
         from common.logger import get_logger
         from common.exception import SharlyChessException
+        from data.input_output.tournament_importer_options import FileOption
         from data.loader import EventLoader
         from plugins.ffe.ffe_tournament_importers import PapiTournamentImporter
 
@@ -65,7 +66,9 @@ class Migration(BaseMigration):
         event = EventLoader().load_event(self.database.file.stem)
         tournament = event.tournaments_by_id[tournament_id]
         try:
-            PapiTournamentImporter().load_tournament(papi_file_path, event, tournament)
+            PapiTournamentImporter([FileOption(papi_file_path)]).load_tournament(
+                event, tournament
+            )
             logger.info(
                 tournament.log_prefix + 'Papi file [%s] successfully imported.',
                 papi_file_path,

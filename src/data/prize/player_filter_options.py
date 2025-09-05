@@ -3,11 +3,12 @@ from collections import Counter
 from types import UnionType
 from typing import Any, TYPE_CHECKING
 
+from common.exception import OptionError
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.player import Club, Federation
 from utils.enum import PlayerGender, PlayerCategory, PlayerRatingType
-from utils.option import Option, OptionError
+from utils.option import Option
 
 if TYPE_CHECKING:
     from data.tournament import Tournament

@@ -5,6 +5,7 @@ from typing import Callable, Any
 from unittest import TestCase
 
 from data.event import Event
+from data.input_output.tournament_importer_options import FileOption
 from data.loader import EventLoader
 
 import pytest
@@ -38,8 +39,8 @@ class TieBreakTestCase(TestCase, ABC):
         json_path = Path('../json') / leaf_name
         assert json_path.exists(), f'JSON file [{leaf_name}] not found'
 
-        PapiJsonTournamentImporter().load_tournament(
-            json_path, self.event, self.tournament
+        PapiJsonTournamentImporter([FileOption(json_path)]).load_tournament(
+            self.event, self.tournament
         )
 
         self.event = EventLoader().load_event(EVENT_ID)

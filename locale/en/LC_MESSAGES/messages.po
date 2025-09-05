@@ -519,6 +519,9 @@ msgstr ""
 msgid "Allows to create accounts, declare devices and grant them permissions."
 msgstr ""
 
+msgid "An error occurred. Consult the logs for more details."
+msgstr ""
+
 msgid "An unexpected error occurred."
 msgstr ""
 
@@ -741,6 +744,9 @@ msgstr ""
 
 #, python-format
 msgid "Board (%(remaining)d)"
+msgstr ""
+
+msgid "Board is not the same as the opponent's."
 msgstr ""
 
 msgid "Board selection (by number)"
@@ -997,6 +1003,12 @@ msgid "Clubs"
 msgstr ""
 
 msgid "Color"
+msgstr ""
+
+msgid "Color [{color}] can't be used with an opponent."
+msgstr ""
+
+msgid "Color [{color}] can't be used without an opponent."
 msgstr ""
 
 msgid "Colorblind people can print the logging level to distinguish important information on the console."
@@ -2245,7 +2257,7 @@ msgstr ""
 msgid "File [{file}] not found."
 msgstr ""
 
-msgid "File is expected to have the [{suffix}] suffix"
+msgid "File has invalid suffix [{suffix}] (expected: {expected})."
 msgstr ""
 
 msgid "Filter out players with a greater rating."
@@ -2548,6 +2560,9 @@ msgstr ""
 msgid "Import Papi file"
 msgstr ""
 
+msgid "Import TRF file"
+msgstr ""
+
 msgid "Import a tournament"
 msgstr ""
 
@@ -2806,6 +2821,9 @@ msgid "Licence number:"
 msgstr ""
 
 msgid "Licence:"
+msgstr ""
+
+msgid "Link to a board not involving the player."
 msgstr ""
 
 msgid "Links displayed on the screen menu:"
@@ -3519,6 +3537,9 @@ msgstr ""
 msgid "Pairing information for round %(round)d"
 msgstr ""
 
+msgid "Pairing not found."
+msgstr ""
+
 msgid "Pairing number"
 msgstr ""
 
@@ -3668,6 +3689,12 @@ msgstr ""
 
 #, python-format
 msgid "Player [%(player)s] is absent for the next round in tournament [%(tournament)s]."
+msgstr ""
+
+msgid "Player [{player_id}] - round {round}: "
+msgstr ""
+
+msgid "Player [{player_id}]: {error}"
 msgstr ""
 
 msgid "Player [{player}] has been moved from tournament [{src_tournament}] to tournament [{dst_tournament}]."
@@ -4125,6 +4152,12 @@ msgstr ""
 msgid "Record *** RECORD FOR PLAYERS COLUMNS"
 msgstr "Record"
 
+msgid "Reference to unknown board [{board_id}]."
+msgstr ""
+
+msgid "Reference to unknown player [{player_id}]."
+msgstr ""
+
 msgid "Refresh"
 msgstr ""
 
@@ -4174,6 +4207,21 @@ msgid "Restore"
 msgstr ""
 
 msgid "Result"
+msgstr ""
+
+msgid "Result [{result}] can't be used with a board."
+msgstr ""
+
+msgid "Result [{result}] can't be used with an opponent."
+msgstr ""
+
+msgid "Result [{result}] can't be used without a board."
+msgstr ""
+
+msgid "Result [{result}] can't be used without an opponent."
+msgstr ""
+
+msgid "Result [{result}] is incompatible with the opponent's result [{opponent_result}]."
 msgstr ""
 
 msgid "Result [{result}] is not compatible with the PAPI format."
@@ -4638,6 +4686,9 @@ msgid "Support for the ChessEvent platform used for organising tournaments in Fr
 msgstr ""
 
 msgid "Swiss"
+msgstr ""
+
+msgid "TRF file"
 msgstr ""
 
 msgid "Text after the hour:"
@@ -5509,16 +5560,31 @@ msgstr ""
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 msgstr ""
 
+msgid "Unknown color [{color}]."
+msgstr ""
+
 msgid "Unknown devices' access has been updated."
 msgstr ""
 
+msgid "Unknown federation [{federation}]."
+msgstr ""
+
 msgid "Unknown field [{field}]."
+msgstr ""
+
+msgid "Unknown gender [{gender}]."
 msgstr ""
 
 msgid "Unknown player ID [{player_id}]"
 msgstr ""
 
 msgid "Unknown response code: [{code}] ([{chessevent_string}])."
+msgstr ""
+
+msgid "Unknown result [{result}]."
+msgstr ""
+
+msgid "Unknown title [{title}]."
 msgstr ""
 
 msgid "Unknown value [{value}]"
@@ -6280,5 +6346,20 @@ msgid "½ - ½ (U)"
 msgstr ""
 
 #~ msgid "Starting server..."
+#~ msgstr ""
+
+#~ msgid "File is expected to have the [{suffix}] suffix"
+#~ msgstr ""
+
+#~ msgid "Result [{result}] used with a board."
+#~ msgstr ""
+
+#~ msgid "Result [{result}] used with an opponent."
+#~ msgstr ""
+
+#~ msgid "Result [{result}] used without a board."
+#~ msgstr ""
+
+#~ msgid "Result [{result}] used without an opponent."
 #~ msgstr ""
 

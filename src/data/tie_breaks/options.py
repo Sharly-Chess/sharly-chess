@@ -2,8 +2,9 @@ from abc import ABC
 from types import UnionType
 from typing import Any, override
 
+from common.exception import OptionError
 from common.i18n import _
-from utils.option import Option, OptionError
+from utils.option import Option
 
 
 class TieBreakOption(Option, ABC):

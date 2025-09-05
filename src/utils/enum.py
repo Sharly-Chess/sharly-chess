@@ -39,8 +39,10 @@ class Result(IntEnum):
                 return '1-0'
             case Result.LOSS:
                 return '0-1'
-            case Result.DRAW | Result.HALF_POINT_BYE:
+            case Result.DRAW:
                 return '½-½'
+            case Result.HALF_POINT_BYE:
+                return '½-F'
             case Result.NO_RESULT | Result.ZERO_POINT_BYE:
                 return ''
             case Result.FORFEIT_LOSS:
@@ -227,85 +229,9 @@ class Result(IntEnum):
 
     @property
     def to_trf(self) -> str:
-        match self:
-            case Result.LOSS | Result.PENALTY_LL | Result.PENALTY_LD:
-                return '0'
-            case Result.DRAW | Result.PENALTY_DL:
-                return '='
-            case Result.WIN:
-                return '1'
-            case (
-                Result.UNRATED_LOSS
-                | Result.UNRATED_PENALTY_LL
-                | Result.UNRATED_PENALTY_LD
-            ):
-                return 'L'
-            case Result.UNRATED_DRAW | Result.UNRATED_PENALTY_DL:
-                return 'D'
-            case Result.UNRATED_WIN:
-                return 'W'
-            case Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT:
-                return '-'
-            case Result.FORFEIT_WIN:
-                return '+'
-            case Result.HALF_POINT_BYE:
-                return 'H'
-            case Result.FULL_POINT_BYE:
-                return 'F'
-            case Result.PAIRING_ALLOCATED_BYE:
-                return 'U'
-            case Result.ZERO_POINT_BYE:
-                return 'Z'
-            case Result.NO_RESULT | Result.REST_GAME:
-                return ' '
-            case _:
-                raise ValueError(f'Unknown value: {self}')
+        from data.input_output.trf_mappers import TrfResult
 
-    @classmethod
-    def from_trf(cls, value: str, opponent_value: str):
-        match value.upper():
-            case '' | 'Z':
-                return cls.ZERO_POINT_BYE
-            case '1':
-                return cls.WIN
-            case '=':
-                return cls.PENALTY_DL if opponent_value == '0' else cls.DRAW
-            case '0':
-                match opponent_value:
-                    case '0':
-                        return cls.PENALTY_LL
-                    case '=':
-                        return cls.PENALTY_LD
-                    case _:
-                        return cls.LOSS
-            case 'W':
-                return cls.UNRATED_WIN
-            case 'D':
-                return (
-                    cls.UNRATED_PENALTY_DL
-                    if opponent_value == 'L'
-                    else cls.UNRATED_DRAW
-                )
-            case 'L':
-                match opponent_value:
-                    case 'L':
-                        return cls.UNRATED_PENALTY_LL
-                    case 'D':
-                        return cls.UNRATED_PENALTY_LD
-                    case _:
-                        return cls.UNRATED_LOSS
-            case '+':
-                return cls.FORFEIT_WIN
-            case '-':
-                return cls.FORFEIT_LOSS
-            case 'U':
-                return cls.PAIRING_ALLOCATED_BYE
-            case 'F':
-                return cls.FULL_POINT_BYE
-            case 'H':
-                return cls.HALF_POINT_BYE
-            case _:
-                raise ValueError(f'Unknown value: {value}')
+        return TrfResult.get_outer_value(self)
 
     @property
     def to_crosstable(self) -> str:
@@ -388,17 +314,83 @@ class Result(IntEnum):
                 raise ValueError(f'Result with no matching BBP field: {self}')
 
     @property
-    def is_bye(self) -> bool:
+    def is_win(self) -> bool:
         return self in (
-            Result.ZERO_POINT_BYE,
-            Result.HALF_POINT_BYE,
-            Result.FULL_POINT_BYE,
+            Result.WIN,
+            Result.UNRATED_WIN,
+        )
+
+    @property
+    def is_draw(self) -> bool:
+        return self in (
+            Result.DRAW,
+            Result.UNRATED_DRAW,
+            Result.PENALTY_DL,
+            Result.UNRATED_PENALTY_DL,
+        )
+
+    @property
+    def is_unrated_draw(self) -> bool:
+        return self in (
+            Result.UNRATED_DRAW,
+            Result.UNRATED_PENALTY_DL,
+        )
+
+    @property
+    def is_loss(self) -> bool:
+        return self in (
+            Result.LOSS,
+            Result.UNRATED_LOSS,
+            Result.PENALTY_LL,
+            Result.PENALTY_LD,
+            Result.UNRATED_PENALTY_LL,
+            Result.UNRATED_PENALTY_LD,
+        )
+
+    @property
+    def is_unrated_loss(self) -> bool:
+        return self in (
+            Result.UNRATED_LOSS,
+            Result.UNRATED_PENALTY_LL,
+            Result.UNRATED_PENALTY_LD,
+        )
+
+    @property
+    def is_bye(self) -> bool:
+        return self.is_no_board_bye or self.is_board_bye
+
+    @property
+    def is_board_bye(self) -> bool:
+        return self in (
             Result.PAIRING_ALLOCATED_BYE,
             Result.REST_GAME,
         )
 
     @property
-    def unplayed(self) -> bool:
+    def is_no_board_bye(self) -> bool:
+        return self in (
+            Result.ZERO_POINT_BYE,
+            Result.HALF_POINT_BYE,
+            Result.FULL_POINT_BYE,
+        )
+
+    @property
+    def is_next_round_bye(self) -> bool:
+        return self in (
+            Result.ZERO_POINT_BYE,
+            Result.HALF_POINT_BYE,
+            Result.FULL_POINT_BYE,
+        )
+
+    @property
+    def is_requested_bye(self) -> bool:
+        return self in (
+            Result.ZERO_POINT_BYE,
+            Result.HALF_POINT_BYE,
+        )
+
+    @property
+    def is_unplayed(self) -> bool:
         return self in (
             Result.NO_RESULT,
             Result.FORFEIT_WIN,
@@ -409,6 +401,15 @@ class Result(IntEnum):
             Result.FULL_POINT_BYE,
             Result.PAIRING_ALLOCATED_BYE,
             Result.REST_GAME,
+        )
+
+    @property
+    def is_voluntary_unplayed(self) -> bool:
+        return self in (
+            Result.FORFEIT_LOSS,
+            Result.DOUBLE_FORFEIT,
+            Result.HALF_POINT_BYE,
+            Result.ZERO_POINT_BYE,
         )
 
     @property
@@ -529,18 +530,6 @@ class PlayerGender(IntEnum):
                 return cls.MALE
             case _:
                 raise ValueError(f'Unknown value: {value}')
-
-    @property
-    def to_trf(self) -> str:
-        match self:
-            case PlayerGender.NONE:
-                return ''
-            case PlayerGender.FEMALE:
-                return 'w'
-            case PlayerGender.MALE:
-                return 'm'
-            case _:
-                raise ValueError(f'Unknown value: {self}')
 
     @property
     def name(self) -> str:
@@ -791,30 +780,6 @@ class PlayerTitle(IntEnum):
                 raise ValueError(f'Unknown title: {self}')
 
     @property
-    def to_trf(self) -> str:
-        match self:
-            case PlayerTitle.NONE:
-                return ''
-            case PlayerTitle.WOMAN_CANDIDATE_MASTER:
-                return 'cf'
-            case PlayerTitle.CANDIDATE_MASTER:
-                return 'c'
-            case PlayerTitle.WOMAN_FIDE_MASTER:
-                return 'ff'
-            case PlayerTitle.FIDE_MASTER:
-                return 'f'
-            case PlayerTitle.WOMAN_INTERNATIONAL_MASTER:
-                return 'mf'
-            case PlayerTitle.INTERNATIONAL_MASTER:
-                return 'm'
-            case PlayerTitle.WOMAN_GRANDMASTER:
-                return 'gf'
-            case PlayerTitle.GRANDMASTER:
-                return 'g'
-            case _:
-                raise ValueError(f'Unknown title: {self}')
-
-    @property
     def name(self) -> str:
         match self:
             case PlayerTitle.NONE:
@@ -869,26 +834,6 @@ class PlayerTitle(IntEnum):
 class BoardColor(StrEnum):
     WHITE = 'W'
     BLACK = 'B'
-
-    @property
-    def to_trf(self) -> str:
-        match self:
-            case BoardColor.WHITE:
-                return 'w'
-            case BoardColor.BLACK:
-                return 'b'
-            case _:
-                raise ValueError(f'Unknown value:  {self}')
-
-    @property
-    def to_trf_first_round_pairing(self) -> str:
-        match self:
-            case BoardColor.WHITE:
-                return 'white1'
-            case BoardColor.BLACK:
-                return 'black1'
-            case _:
-                raise ValueError(f'Unknown value:  {self}')
 
     @property
     def to_crosstable(self) -> str:
