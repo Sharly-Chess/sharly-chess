@@ -19,10 +19,12 @@ English version below
 - Création des tournois par import d'un fichier Papi (3.0.0)
 - Export des tournois au format Papi (3.0.0)
 - Éditeur interactif de la cadence de jeu (3.0.0)
+- Correction de l'import Papi (3.0.2)
 
 ## Joueur·euses
 
 - Suppression de la limite à 10 caractères des numéros de téléphone (3.0.0)
+- Prise en compte des accents dans la recherche dans la base locale FFE (3.0.2)
 
 ## Appariements
 
@@ -31,7 +33,7 @@ English version below
 - Suppression de la renumérotation automatique des échiquiers en cas d'appariement manuel (3.0.0)
 - Saisie des résultats non comptabilisés et des pénalités (3.0.0)
 - Ajout de la recherche de joueur·euse sur l'onglet Appariements (3.0.0)
-- Correction de la recherche des joueur·euses sur l'onglet Appariements (3.0.2)
+- Correction de la recherche des joueur·euses et amélioration de la navigation sur l'onglet Appariements (3.0.2)
 
 ## Écrans
 
@@ -76,10 +78,12 @@ English version below
 - Create tournaments from Papi files (3.0.0)
 - Export tournaments to Papi format (3.0.0)
 - Interactive time control editor (3.0.0)
+- Fixed Papi import (3.0.2)
 
 ## Players
 
 - Removed the 10-character limit on phone numbers (3.0.0)
+- Accents handling for local FFE database search (3.0.2)
 
 ## Pairings
 
@@ -88,7 +92,7 @@ English version below
 - Removed automatic renumbering of boards when manually pairing (3.0.0)
 - Entry of unrated and penalty results (3.0.0)
 - Added player search on the pairings tab (3.0.0)
-- Fixed player search on the Pairings tab (3.0.2)
+- Fixed player search and improved navigation on the Pairings tab (3.0.2)
 
 ## Screens
 
