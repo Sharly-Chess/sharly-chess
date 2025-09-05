@@ -414,7 +414,9 @@ class TestUtils:
         """
         Returns a button by visible text (case-insensitive), ignoring icons or extra whitespace.
         """
-        return obj.get_by_role('button', name=re.compile(rf'\b{text}\b', re.IGNORECASE))
+        return obj.get_by_role(
+            'button', name=re.compile(rf'\b{text.replace("/", "\\/")}\b', re.IGNORECASE)
+        )
 
     @staticmethod
     def take_screenshot(page, name: str):

@@ -366,6 +366,9 @@ msgstr ""
 msgid "Add a display controller to the event."
 msgstr ""
 
+msgid "Add a family of screens to check-in players or enter results."
+msgstr ""
+
 msgid "Add a family of screens to display the pairings by alphabetical order."
 msgstr ""
 
@@ -373,9 +376,6 @@ msgid "Add a family of screens to display the pairings by board."
 msgstr ""
 
 msgid "Add a family of screens to display the ranking."
-msgstr ""
-
-msgid "Add a family of screens to enter the results."
 msgstr ""
 
 msgid "Add a group to the list."
@@ -869,6 +869,15 @@ msgstr ""
 
 msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
 msgstr "Check-in"
+
+msgid "Check-in / Results entry"
+msgstr ""
+
+msgid "Check-in / Results entry ({num})"
+msgstr ""
+
+msgid "Check-in / Results entry ({tournament_name})"
+msgstr ""
 
 #, python-format
 msgid "Check-in is closed for tournament [%(tournament)s]."
@@ -3097,6 +3106,9 @@ msgstr ""
 msgid "Next round"
 msgstr ""
 
+msgid "Next tournament"
+msgstr ""
+
 msgid "No"
 msgstr ""
 
@@ -3879,6 +3891,9 @@ msgstr ""
 msgid "Previous round"
 msgstr ""
 
+msgid "Previous tournament"
+msgstr ""
+
 msgid "Print"
 msgstr ""
 
@@ -3960,6 +3975,9 @@ msgstr ""
 msgid "Properties"
 msgstr ""
 
+msgid "Properties (check-in and results entry)"
+msgstr ""
+
 msgid "Properties (pairings by board)"
 msgstr ""
 
@@ -3967,9 +3985,6 @@ msgid "Properties (pairings by player)"
 msgstr ""
 
 msgid "Properties (ranking)"
-msgstr ""
-
-msgid "Properties (results entry)"
 msgstr ""
 
 msgid "Protected pairings editing"
@@ -4183,15 +4198,6 @@ msgid "Results"
 msgstr ""
 
 msgid "Results Entry via public screens"
-msgstr ""
-
-msgid "Results entry"
-msgstr ""
-
-msgid "Results entry ({num})"
-msgstr ""
-
-msgid "Results entry ({tournament_name})"
 msgstr ""
 
 msgid "Results for round #{round}"
@@ -6278,7 +6284,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "Starting server..."
-#~ msgstr ""
 

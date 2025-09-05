@@ -560,12 +560,14 @@ class IndexAdminController(BaseAdminController):
         for plugin in stored_plugins:
             errors |= plugin.errors
         if errors:
+            sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
             return self._admin_render(
                 request=request,
                 admin_tab='config',
                 modal='config',
                 data=data,
                 errors=errors,
+                keep_modal_open=sharly_chess_config.force_edit,
             )
         with ConfigDatabase(write=True) as config_database:
             stored_config.force_edit = False

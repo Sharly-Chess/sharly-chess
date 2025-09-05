@@ -366,6 +366,9 @@ msgstr "Ajouter un appareil à l'évènement."
 msgid "Add a display controller to the event."
 msgstr "Ajouter un pilote d'afficheurs."
 
+msgid "Add a family of screens to check-in players or enter results."
+msgstr "Ajouter une famille d'écrans à l'évènement."
+
 msgid "Add a family of screens to display the pairings by alphabetical order."
 msgstr "Ajouter à l'évènement une nouvelle famille d'écrans d'affichage des appariements par échiquier."
 
@@ -374,9 +377,6 @@ msgstr "Ajouter à l'évènement une nouvelle famille d'écrans de saisie des r�
 
 msgid "Add a family of screens to display the ranking."
 msgstr "Ajouter à l'évènement une nouvelle famille d'écrans d'affichage du classement."
-
-msgid "Add a family of screens to enter the results."
-msgstr "Ajouter une famille d'écrans à l'évènement."
 
 msgid "Add a group to the list."
 msgstr "Ajouter un groupe à la liste"
@@ -869,6 +869,15 @@ msgstr "Pointage"
 
 msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
 msgstr "Pointage"
+
+msgid "Check-in / Results entry"
+msgstr "Pointage / Saisie des résultats"
+
+msgid "Check-in / Results entry ({num})"
+msgstr "Pointage / Saisie des résultats ({num})"
+
+msgid "Check-in / Results entry ({tournament_name})"
+msgstr "Pointage / Saisie des résultats ({tournament_name})"
 
 #, python-format
 msgid "Check-in is closed for tournament [%(tournament)s]."
@@ -3097,6 +3106,9 @@ msgstr "Nouveau tournoi"
 msgid "Next round"
 msgstr "Ronde suivante"
 
+msgid "Next tournament"
+msgstr "Tournois suivant"
+
 msgid "No"
 msgstr "Non"
 
@@ -3879,6 +3891,9 @@ msgstr "Présent·e"
 msgid "Previous round"
 msgstr "Ronde précédente"
 
+msgid "Previous tournament"
+msgstr "Tournoi précédent"
+
 msgid "Print"
 msgstr "Imprimer"
 
@@ -3960,6 +3975,9 @@ msgstr "Cumulatif"
 msgid "Properties"
 msgstr "Propriétés"
 
+msgid "Properties (check-in and results entry)"
+msgstr "Propriétés (pointage et saisie des résultats)"
+
 msgid "Properties (pairings by board)"
 msgstr "Propriétés (appariements par échiquier)"
 
@@ -3968,9 +3986,6 @@ msgstr "Propriétés (appariements par ordre alphabétique)"
 
 msgid "Properties (ranking)"
 msgstr "Propriétés (classement)"
-
-msgid "Properties (results entry)"
-msgstr "Propriétés (saisie des résultats)"
 
 msgid "Protected pairings editing"
 msgstr "Édition d'appariements protégés"
@@ -4184,15 +4199,6 @@ msgstr "Résultats"
 
 msgid "Results Entry via public screens"
 msgstr "Saisie des résultats sur écrans publics"
-
-msgid "Results entry"
-msgstr "Saisie des résultats"
-
-msgid "Results entry ({num})"
-msgstr "Saisie des résultats ({num})"
-
-msgid "Results entry ({tournament_name})"
-msgstr "Saisie des résultats ({tournament_name})"
 
 msgid "Results for round #{round}"
 msgstr "Résultats de la ronde {round}"
@@ -6278,7 +6284,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
-#~ msgid "Starting server..."
-#~ msgstr "Démarrage du serveur..."
 
