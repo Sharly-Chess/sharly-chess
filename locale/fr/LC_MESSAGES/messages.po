@@ -4002,18 +4002,6 @@ msgstr "Cumulatif"
 msgid "Properties"
 msgstr "Propriétés"
 
-msgid "Properties (check-in and results entry)"
-msgstr "Propriétés (pointage et saisie des résultats)"
-
-msgid "Properties (pairings by board)"
-msgstr "Propriétés (appariements par échiquier)"
-
-msgid "Properties (pairings by player)"
-msgstr "Propriétés (appariements par ordre alphabétique)"
-
-msgid "Properties (ranking)"
-msgstr "Propriétés (classement)"
-
 msgid "Protected pairings editing"
 msgstr "Édition d'appariements protégés"
 
