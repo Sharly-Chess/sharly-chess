@@ -11,6 +11,7 @@ from packaging.version import Version
 from requests import Response, get
 from requests.exceptions import ConnectionError
 
+from common import unicode_normalize
 from common.i18n import _
 from common.logger import get_logger
 from data.player import PlayerRating
@@ -193,7 +194,7 @@ class FfeDatabase(LocalSourceDatabase):
     def search_player(
         self, string: str, limit: int | None = None
     ) -> list[StoredPlayer]:
-        tokens: list[str] = string.split(' ')
+        tokens: list[str] = [unicode_normalize(token) for token in string.split(' ')]
         str_fields: tuple[tuple[str, str, str], ...] = (
             ('last_name', '%', '%'),
             ('first_name', '', '%'),
