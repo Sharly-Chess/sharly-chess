@@ -49,7 +49,7 @@ class TestSingleScreensFunctionality:
     ):
         page.goto(f'/admin/event/{EVENT_ID}/screens')
         TestUtils.button_by_text(page, 'Create a screen').click()
-        TestUtils.button_by_text(page, 'Results entry').click()
+        TestUtils.button_by_text(page, 'Check-in / Results entry').click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
         name = 'Test Screen'
