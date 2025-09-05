@@ -207,7 +207,7 @@ class WinProjectBuilder(ProjectBuilder):
             f.write(
                 f'@echo off\n'
                 f'echo Starting Sharly Chess ChessEvent client, please wait...\n'
-                f'@rem Sharly Chess {SHARLY_CHESS_VERSION} - {SharlyChessConfig.en_copyright} - {SharlyChessConfig.url}\n'
+                f'@rem Sharly Chess {SHARLY_CHESS_VERSION} - {SharlyChessConfig.en_copyright} - {SharlyChessConfig.web_url}\n'
                 f'cd ..\n'
                 f'{self.exe_filename} --chessevent\n'
                 f'pause\n'
