@@ -877,7 +877,7 @@ class ScreenType(StrEnum):
             case ScreenType.BOARDS:
                 return _('Pairings by board')
             case ScreenType.INPUT:
-                return _('Results entry')
+                return _('Check-in / Results entry')
             case ScreenType.PLAYERS:
                 return _('Parings by player')
             case ScreenType.RESULTS:

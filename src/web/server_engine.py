@@ -2,8 +2,8 @@ import asyncio
 import platform
 import signal
 import socket
-from pathlib import Path
 import sys
+from pathlib import Path
 from threading import Thread
 from time import sleep
 from types import FrameType
@@ -12,11 +12,11 @@ from webbrowser import open
 
 import requests
 import uvicorn
-from litestar.types import Scope, HTTPScope
 from litestar import Litestar
 from litestar.exceptions import PermissionDeniedException
-from litestar.plugins.htmx import HTMXRequest
 from litestar.logging import LoggingConfig
+from litestar.plugins.htmx import HTMXRequest
+from litestar.types import Scope, HTTPScope
 
 from common import REQUEST_TIMEOUT, LOG_FILE, set_is_server_engine
 from common.engine import Engine
@@ -28,9 +28,10 @@ from common.logger import (
     get_logger,
     set_logging_config,
 )
-from common.sharly_chess_config import SharlyChessConfig
 from common.network import NetworkMonitor
+from common.sharly_chess_config import SharlyChessConfig
 from data.input_output import DataSourceManager
+from web.channels import channels_plugin
 from web.settings import (
     route_handlers,
     template_config,
@@ -39,7 +40,6 @@ from web.settings import (
     exception_handlers,
     listeners,
 )
-from web.channels import channels_plugin
 from web.utils import NotFoundException
 
 logger = get_logger()

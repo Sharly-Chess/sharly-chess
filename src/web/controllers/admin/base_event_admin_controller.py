@@ -230,7 +230,9 @@ class BaseEventAdminWebContext(AdminWebContext):
             screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.INPUT]
             nav_tabs |= {
                 'admin-event-input-screens-tab': {
-                    'title': _('Results entry ({num})').format(num=len(screens) or '-'),
+                    'title': _('Check-in / Results entry ({num})').format(
+                        num=len(screens) or '-'
+                    ),
                     'template': 'screens/view_tab.html',
                     'disabled': not screens,
                     'icon_class': ScreenType.INPUT.icon_str,

@@ -191,6 +191,19 @@ body[data-bs-theme="dark"] #top-nav-wrapper {
     border-color: var(--bs-form-valid-border-color);
 }
 
+.input-group .form-control:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: var(--bs-border-color);
+}
+
+[data-bs-theme=dark] .input-group:focus-within {
+    box-shadow: none;
+    outline: 0.15rem solid rgba(var(--bs-primary-rgb), 0.70);
+    outline-offset: 4px;
+    border-radius: var(--bs-border-radius)
+}
+
 .is-invalid {
     scroll-margin-top: 40px
 }
