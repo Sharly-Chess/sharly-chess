@@ -1,5 +1,4 @@
 import time
-from collections import defaultdict
 from contextlib import suppress
 from logging import Logger
 from typing import TYPE_CHECKING
@@ -551,7 +550,7 @@ class SessionHandler:
         cls, request: HTMXRequest, event_uniq_id: str, tournament_id: int
     ):
         if cls.PAIRINGS_SELECTED_TOURNAMENT_KEY not in request.session:
-            request.session[cls.PAIRINGS_SELECTED_TOURNAMENT_KEY] = defaultdict(int)
+            request.session[cls.PAIRINGS_SELECTED_TOURNAMENT_KEY] = {}
         request.session[cls.PAIRINGS_SELECTED_TOURNAMENT_KEY][event_uniq_id] = (
             tournament_id
         )
@@ -579,9 +578,9 @@ class SessionHandler:
     ):
         # dict keys are stored as strings because they are always read as strings
         if cls.PAIRINGS_SELECTED_ROUND_KEY not in request.session:
-            request.session[cls.PAIRINGS_SELECTED_ROUND_KEY] = defaultdict(
-                lambda: defaultdict(int)
-            )
+            request.session[cls.PAIRINGS_SELECTED_ROUND_KEY] = {}
+        if event_uniq_id not in request.session[cls.PAIRINGS_SELECTED_ROUND_KEY]:
+            request.session[cls.PAIRINGS_SELECTED_ROUND_KEY][event_uniq_id] = {}
         request.session[cls.PAIRINGS_SELECTED_ROUND_KEY][event_uniq_id][
             str(tournament_id)
         ] = round
@@ -592,7 +591,7 @@ class SessionHandler:
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-    ) -> tuple[str, int, int] | None:
+    ) -> int | None:
         # dict keys are stored as strings because they are always read as strings
         try:
             return request.session[cls.PAIRINGS_SELECTED_ROUND_KEY][event_uniq_id][
