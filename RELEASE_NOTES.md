@@ -20,6 +20,7 @@ English version below
 - Export des tournois au format Papi (3.0.0)
 - Éditeur interactif de la cadence de jeu (3.0.0)
 - Correction de l'import Papi (3.0.2)
+- Correction des boutons d'export exportant le mauvais tournoi (3.0.2)
 
 ## Joueur·euses
 
@@ -79,6 +80,7 @@ English version below
 - Export tournaments to Papi format (3.0.0)
 - Interactive time control editor (3.0.0)
 - Fixed Papi import (3.0.2)
+- Fixed export buttons exporting the wrong tournament (3.0.2)
 
 ## Players
 
