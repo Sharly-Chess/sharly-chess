@@ -1,11 +1,9 @@
 from abc import abstractmethod, ABC
 from decimal import Decimal
-from pathlib import Path
 from typing import Callable, Any
 from unittest import TestCase
 
 from data.event import Event
-from data.input_output.tournament_importer_options import FileOption
 from data.loader import EventLoader
 
 import pytest
@@ -13,7 +11,6 @@ from data.tie_breaks import tie_breaks, options
 from data.tournament import Tournament
 from data.player import Player
 from plugins.ffe import ffe_tie_breaks
-from plugins.ffe.ffe_tournament_importers import PapiJsonTournamentImporter
 from tests.test_config import TestUtils
 
 EVENT_ID = 'test-tiebreaks-event'
@@ -30,19 +27,7 @@ class TieBreakTestCase(TestCase, ABC):
     def setUp(self):
         super().setUp()
         TestUtils.create_event(EVENT_ID)
-        TestUtils.create_tournament(EVENT_ID, TOURNAMENT_ID)
-
-        self.event = EventLoader().load_event(EVENT_ID)
-
-        # Import the test players and pairings from the json file
-        leaf_name = f'{self.json_file}.json'
-        json_path = Path('../json') / leaf_name
-        assert json_path.exists(), f'JSON file [{leaf_name}] not found'
-
-        PapiJsonTournamentImporter([FileOption(json_path)]).load_tournament(
-            self.event, self.tournament
-        )
-
+        TestUtils.create_tournament(EVENT_ID, TOURNAMENT_ID, json_file=self.json_file)
         self.event = EventLoader().load_event(EVENT_ID)
 
     def tearDown(self):

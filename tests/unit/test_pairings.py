@@ -1,18 +1,15 @@
 from datetime import datetime
-from pathlib import Path
 import time
 from unittest import TestCase
 
 from data.board import Board
 from data.event import Event
-from data.input_output.tournament_importer_options import FileOption
 from data.loader import EventLoader
 
 import pytest
 from data.pairings.engines import BergerPairingEngine
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournamentPlayer
-from plugins.ffe.ffe_tournament_importers import PapiJsonTournamentImporter
 from tests.test_config import TestUtils
 
 EVENT_ID = 'test-pairings-event'
@@ -36,7 +33,6 @@ class PairingTestCase(TestCase):
                 ),
             },
         )
-        TestUtils.create_tournament(EVENT_ID, TOURNAMENT_ID)
         self.event = EventLoader().load_event(EVENT_ID)
 
     def tearDown(self):
@@ -46,15 +42,7 @@ class PairingTestCase(TestCase):
     """Tests for all the pairing systems."""
 
     def _tournament_from_json(self, json_file: str):
-        tournament = self.event.tournaments_by_uniq_id[TOURNAMENT_ID]
-
-        # Import the test players and pairings from the json file
-        leaf_name = f'{json_file}.json'
-        json_path = Path('../json') / leaf_name
-        assert json_path.exists(), f'JSON file [{leaf_name}] not found'
-        PapiJsonTournamentImporter([FileOption(json_path)]).load_tournament(
-            self.event, tournament
-        )
+        TestUtils.create_tournament(EVENT_ID, TOURNAMENT_ID, json_file=json_file)
         return self._reload_tournament()
 
     def _reload_tournament(self):

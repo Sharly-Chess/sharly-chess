@@ -3115,6 +3115,9 @@ msgstr ""
 msgid "Next round"
 msgstr ""
 
+msgid "Next tournament"
+msgstr ""
+
 msgid "No"
 msgstr ""
 
@@ -3904,6 +3907,9 @@ msgid "Present"
 msgstr ""
 
 msgid "Previous round"
+msgstr ""
+
+msgid "Previous tournament"
 msgstr ""
 
 msgid "Print"
