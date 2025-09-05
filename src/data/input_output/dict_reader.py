@@ -3,14 +3,8 @@ from enum import Enum
 from types import UnionType, GenericAlias
 from typing import Any, get_origin, get_args, cast
 
-from common.exception import SharlyChessException
+from common.exception import DictReaderException
 from common.i18n import _
-
-
-class DictReaderException(SharlyChessException):
-    def __init__(self, path: list[str], message: str):
-        log_prefix = '.'.join(path) + ' - ' if path else ''
-        super().__init__(log_prefix + message)
 
 
 def dict_to_dataclass[T](

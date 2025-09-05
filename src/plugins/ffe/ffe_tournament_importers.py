@@ -1,13 +1,14 @@
-from pathlib import Path
+import json
+from json import JSONDecodeError
 
-from common.exception import SharlyChessException
+from common.exception import SharlyChessException, DictReaderException, ImporterError
 from common.i18n import _
-from data.input_output import TournamentImporter
+from data.input_output.tournament_importers import FileTournamentImporter
 from database.sqlite.event.event_store import StoredTournament, StoredPlayer
 from plugins.ffe.papi_converter import PapiConverter
 
 
-class PapiTournamentImporter(TournamentImporter):
+class PapiTournamentImporter(FileTournamentImporter):
     @staticmethod
     def static_id() -> str:
         return 'PAPI'
@@ -24,19 +25,21 @@ class PapiTournamentImporter(TournamentImporter):
     def reorder_boards(self) -> bool:
         return True
 
+    @property
+    def accepted_file_suffixes(self) -> list[str]:
+        return ['.papi']
+
     def load_stored_tournament(
-        self, source_file: Path, stored_tournament: StoredTournament | None = None
+        self, stored_tournament: StoredTournament | None = None
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
-        if source_file.suffix != '.papi':
-            raise SharlyChessException(
-                _('File is expected to have the [{suffix}] suffix').format(
-                    suffix='papi'
-                )
-            )
-        return PapiConverter().read_papi_file(source_file, stored_tournament)
+        (file_path,) = self.get_option_values()
+        try:
+            return PapiConverter().read_papi_file(file_path, stored_tournament)
+        except DictReaderException as exception:
+            raise ImporterError(str(exception))
 
 
-class PapiJsonTournamentImporter(TournamentImporter):
+class PapiJsonTournamentImporter(FileTournamentImporter):
     @staticmethod
     def static_id() -> str:
         return 'PAPI_JSON'
@@ -50,16 +53,22 @@ class PapiJsonTournamentImporter(TournamentImporter):
         return _('Import JSON file (papi-converter format)')
 
     @property
+    def accepted_file_suffixes(self) -> list[str]:
+        return ['.json']
+
+    @property
     def reorder_boards(self) -> bool:
         return True
 
     def load_stored_tournament(
-        self, source_file: Path, stored_tournament: StoredTournament | None = None
+        self, stored_tournament: StoredTournament | None = None
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
-        if source_file.suffix != '.json':
-            raise SharlyChessException(
-                _('File is expected to have the [{suffix}] suffix').format(
-                    suffix='json'
-                )
-            )
-        return PapiConverter().read_papi_file(source_file, stored_tournament)
+        (file_path,) = self.get_option_values()
+        try:
+            with open(file_path, 'r', encoding='utf-8') as file:
+                papi_data_dict = json.load(file)
+            return PapiConverter().read_papi_data(papi_data_dict, stored_tournament)
+        except (UnicodeDecodeError, JSONDecodeError) as error:
+            raise SharlyChessException(f'Error while reading JSON file: {error}')
+        except DictReaderException as exception:
+            raise ImporterError(str(exception))

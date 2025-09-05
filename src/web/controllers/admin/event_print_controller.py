@@ -7,6 +7,7 @@ from litestar.params import Body
 from litestar.response import Template, Redirect
 from litestar_htmx import ClientRedirect
 
+from common.exception import OptionError
 from common.i18n import _
 from data.print_documents import (
     PrintDocument,
@@ -15,7 +16,6 @@ from data.print_documents import (
 )
 from data.print_documents.documents import PlayerListPrintDocument
 from data.tournament import Tournament
-from utils.option import OptionError
 from web.controllers.base_controller import WebContext
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,

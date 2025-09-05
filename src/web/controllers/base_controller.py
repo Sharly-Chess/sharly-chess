@@ -1,3 +1,4 @@
+import tempfile
 from collections.abc import Callable
 from functools import cached_property
 from itertools import cycle
@@ -9,6 +10,7 @@ from pathlib import Path
 from typing import Annotated, Any
 
 from httpdate.httpdate import httpdate_to_unixtime, unixtime_to_httpdate
+from litestar.datastructures import UploadFile
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 from litestar.controller import Controller
 from litestar.enums import RequestEncodingType
@@ -113,6 +115,19 @@ class WebContext:
             for key, value in data.items()
         }
 
+    @staticmethod
+    async def normalize_file_data(data: dict[str, str | UploadFile]) -> dict[str, str]:
+        normalized_data: dict[str, str] = {}
+        for key, value in data.items():
+            if isinstance(value, UploadFile):
+                suffix = Path(value.filename).suffix
+                __, tmp_name = tempfile.mkstemp(suffix=suffix)
+                Path(tmp_name).write_bytes(await value.read())
+                normalized_data[key] = tmp_name
+            else:
+                normalized_data[key] = value
+        return normalized_data
+
     @classmethod
     def form_data_to_value[T](
         cls,
@@ -128,6 +143,7 @@ class WebContext:
             date: cls.form_data_to_date,
             list[int]: cls.form_data_to_list_int,
             list[str]: cls.form_data_to_list_str,
+            Path: cls.form_data_to_path,
         }
         for type_, function in type_functions.items():
             if expected_type in (type_, type_ | None):
@@ -239,6 +255,12 @@ class WebContext:
         if field not in data or not data[field]:
             return empty_value or []
         return [element.strip() for element in data[field].split(';')]
+
+    @staticmethod
+    def form_data_to_path(data: dict[str, str], field: str) -> Path | None:
+        if field not in data or not data[field]:
+            return None
+        return Path(data[field])
 
     @staticmethod
     def form_data_to_rgb(
