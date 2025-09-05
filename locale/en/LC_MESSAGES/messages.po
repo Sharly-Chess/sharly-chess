@@ -4002,18 +4002,6 @@ msgstr ""
 msgid "Properties"
 msgstr ""
 
-msgid "Properties (check-in and results entry)"
-msgstr ""
-
-msgid "Properties (pairings by board)"
-msgstr ""
-
-msgid "Properties (pairings by player)"
-msgstr ""
-
-msgid "Properties (ranking)"
-msgstr ""
-
 msgid "Protected pairings editing"
 msgstr ""
 
