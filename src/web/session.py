@@ -1,9 +1,11 @@
 import time
 from contextlib import suppress
+from logging import Logger
 from typing import TYPE_CHECKING
 
 from litestar.plugins.htmx import HTMXRequest
 
+from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.auth.entities import Account
 from data.input_output import DataSourceManager
@@ -14,6 +16,8 @@ from utils.enum import PlayerGender, PlayerCategory
 if TYPE_CHECKING:
     from data.event import Event
     from web.controllers.admin.pairings_admin_controller import PageIdentifier
+
+logger: Logger = get_logger()
 
 
 class SessionHandler:
@@ -538,3 +542,60 @@ class SessionHandler:
         cls, request: HTMXRequest
     ) -> tuple[str, int] | None:
         return request.session.get(cls.PRINT_TOURNAMENT_KEY, None)
+
+    PAIRINGS_SELECTED_TOURNAMENT_KEY: str = 'admin_pairings_selected_tournament'
+
+    @classmethod
+    def set_session_admin_pairings_selected_tournament(
+        cls, request: HTMXRequest, event_uniq_id: str, tournament_id: int
+    ):
+        if cls.PAIRINGS_SELECTED_TOURNAMENT_KEY not in request.session:
+            request.session[cls.PAIRINGS_SELECTED_TOURNAMENT_KEY] = {}
+        request.session[cls.PAIRINGS_SELECTED_TOURNAMENT_KEY][event_uniq_id] = (
+            tournament_id
+        )
+
+    @classmethod
+    def get_session_admin_pairings_selected_tournament(
+        cls,
+        request: HTMXRequest,
+        event_uniq_id: str,
+    ) -> int | None:
+        try:
+            return request.session[cls.PAIRINGS_SELECTED_TOURNAMENT_KEY][event_uniq_id]
+        except KeyError:
+            return None
+
+    PAIRINGS_SELECTED_ROUND_KEY: str = 'admin_pairings_selected_round'
+
+    @classmethod
+    def set_session_admin_pairings_selected_round(
+        cls,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        round: int,
+    ):
+        # dict keys are stored as strings because they are always read as strings
+        if cls.PAIRINGS_SELECTED_ROUND_KEY not in request.session:
+            request.session[cls.PAIRINGS_SELECTED_ROUND_KEY] = {}
+        if event_uniq_id not in request.session[cls.PAIRINGS_SELECTED_ROUND_KEY]:
+            request.session[cls.PAIRINGS_SELECTED_ROUND_KEY][event_uniq_id] = {}
+        request.session[cls.PAIRINGS_SELECTED_ROUND_KEY][event_uniq_id][
+            str(tournament_id)
+        ] = round
+
+    @classmethod
+    def get_session_admin_pairings_selected_round(
+        cls,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+    ) -> int | None:
+        # dict keys are stored as strings because they are always read as strings
+        try:
+            return request.session[cls.PAIRINGS_SELECTED_ROUND_KEY][event_uniq_id][
+                str(tournament_id)
+            ]
+        except KeyError:
+            return None
