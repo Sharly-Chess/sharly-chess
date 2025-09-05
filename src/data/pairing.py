@@ -103,7 +103,7 @@ class Pairing:
 
     @property
     def exempt(self) -> bool:
-        return self.result.is_no_board_bye
+        return self.result.is_board_bye
 
     @property
     def loss(self) -> bool:
