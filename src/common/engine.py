@@ -49,8 +49,9 @@ class Engine(ABC):
 
     def __init__(self):
         # before all the rest, initialize a SharlyChessConfig instance to set the language.
-        set_logging_config(file_path=self.log_file_path)
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
+        sharly_chess_config.load_and_set_env()
+        set_logging_config(file_path=self.log_file_path)
         logger.info(
             'Sharly Chess %s - %s - %s',
             sharly_chess_config.version,
@@ -248,7 +249,7 @@ class Engine(ABC):
             # copy the configuration database to its new destination
             shutil.copy(config_database_file, ConfigDatabase().file)
             ConfigDatabase.setup()
-            SharlyChessConfig.reload()
+            SharlyChessConfig().load_and_set_env()
         else:
             logger.debug(
                 'Can not recover configuration from version [%s] (file [%s] not found).',
