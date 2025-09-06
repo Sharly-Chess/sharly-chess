@@ -268,6 +268,7 @@ class SharlyChessServerToga(toga.App):
 
     # --- Toga lifecycle ---
     def startup(self):
+        SharlyChessConfig().load_and_set_env()
         # Delete unused menus
         for cmd in list(self.commands):
             grp = getattr(cmd, 'group', None)
@@ -299,7 +300,7 @@ class SharlyChessServerToga(toga.App):
         main_box.add(self.log_view)
 
         self.main_window = toga.MainWindow(
-            title='Sharly Chess Server',
+            title=_('Sharly Chess Server'),
             size=(1200, 700),
             content=main_box,
             on_gain_focus=self._noop,

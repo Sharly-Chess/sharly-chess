@@ -5,7 +5,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
-from typing import Optional, overload, ClassVar, TYPE_CHECKING
+from typing import Optional, overload, TYPE_CHECKING
 
 import jinja2
 import litestar
@@ -43,14 +43,9 @@ logger: logging.Logger = get_logger()
 class SharlyChessConfig(metaclass=Singleton):
     """The configuration for the application, read from the database."""
 
-    _stored_config: ClassVar[StoredConfig | None] = None
-
     def __init__(self):
         self.web_port: int | None = None
-
-    @classmethod
-    def reload(cls):
-        cls._stored_config = cls.load_stored_config()
+        self._stored_config: StoredConfig | None = None
 
     @staticmethod
     def _get_system_user_locale() -> str | None:
@@ -152,18 +147,16 @@ class SharlyChessConfig(metaclass=Singleton):
             )
         return DEFAULT_LOCALE
 
-    @classmethod
-    def load_stored_config(cls) -> StoredConfig:
+    def load_and_set_env(self):
         with ConfigDatabase() as config_database:
             stored_config: StoredConfig = config_database.load_stored_config()
         if not stored_config.locale:
-            system_user_locale: str | None = cls._get_system_user_locale()
-            stored_config.locale = cls._get_user_locale(system_user_locale)
-
-            if TEST_ENV:
-                stored_config.federation = SharlyChessConfig.tests_federation
+            system_user_locale: str | None = self._get_system_user_locale()
+            stored_config.locale = self._get_user_locale(system_user_locale)
             with ConfigDatabase(write=True) as config_database:
                 config_database.update_stored_config(stored_config)
+        if TEST_ENV:
+            stored_config.federation = SharlyChessConfig.tests_federation
         set_locale(stored_config.locale)
         set_logging_config(
             console_log_level=stored_config.console_log_level,
@@ -172,14 +165,14 @@ class SharlyChessConfig(metaclass=Singleton):
             console_show_level=stored_config.console_show_level,
         )
         enable_experimental_features(stored_config.experimental)
-        return stored_config
+        self._stored_config = stored_config
 
     @property
     def stored_config(self) -> StoredConfig:
-        cls = self.__class__
-        if not cls._stored_config:
-            cls._stored_config = self.load_stored_config()
-        return cls._stored_config
+        if not self._stored_config:
+            self.load_and_set_env()
+            assert self._stored_config is not None
+        return self._stored_config
 
     @property
     def force_edit(self) -> bool:
