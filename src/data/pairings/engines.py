@@ -114,7 +114,7 @@ class PairingEngine(ABC):
                 Board(tournament, round_, stored_board)
                 for stored_board in expected_stored_boards
             ),
-            key=0 if ignore_order or self.reorder_boards else attrgetter('index'),
+            key=None if ignore_order or self.reorder_boards else attrgetter('index'),
             reverse=ignore_order or self.reorder_boards,
         )
         for i in range(len(real_boards)):
