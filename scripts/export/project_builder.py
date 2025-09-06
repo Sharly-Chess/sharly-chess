@@ -500,7 +500,7 @@ class ProjectBuilder(ABC):
         with open(notice_file, 'w', encoding='utf-8') as f:
             f.write(f"""SHARLY CHESS {SHARLY_CHESS_VERSION}
     {SharlyChessConfig.en_copyright}
-    {SharlyChessConfig.url}
+    {SharlyChessConfig.web_url}
 
     This software includes third-party libraries and components.
     See THIRD_PARTY_LICENSES.txt for detailed license information.
