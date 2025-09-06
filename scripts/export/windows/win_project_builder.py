@@ -61,7 +61,10 @@ class WinProjectBuilder(ProjectBuilder):
         pass
 
     def hook_pyinstaller_additional_params(self) -> list[str]:
-        return []
+        return [
+            # TODO Used for MacOS and Windows, move this to a normal option if also needed on Linux.
+            '--windowed',
+        ]
 
     def hook_post_build_project(self) -> bool:
         if not self._sign_files():
