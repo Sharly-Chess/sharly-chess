@@ -300,7 +300,7 @@ class SharlyChessServerToga(toga.App):
         main_box.add(self.log_view)
 
         self.main_window = toga.MainWindow(
-            title=_('Sharly Chess Server'),
+            title=_('Sharly Chess server'),
             size=(1200, 700),
             content=main_box,
             on_gain_focus=self._noop,
