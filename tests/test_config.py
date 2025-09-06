@@ -4,6 +4,8 @@ import time
 from urllib import parse
 from common import BASE_DIR
 from common.sharly_chess_config import SharlyChessConfig
+from data.input_output.tournament_importer_options import FileOption
+from data.loader import EventLoader
 from data.pairings.variations import StandardSwissVariation
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -15,6 +17,8 @@ from database.sqlite.event.event_store import (
     StoredTournament,
 )
 from playwright.sync_api import Page, Locator, APIRequestContext, APIResponse
+
+from plugins.ffe.ffe_tournament_importers import PapiJsonTournamentImporter
 from utils.enum import ScreenType
 
 
@@ -240,23 +244,28 @@ class TestUtils:
             tournaments = event_database.load_stored_tournaments()
             stored_tournament = next(t for t in tournaments if t.name == name)
 
-        if json_file and via_api_request_context:
+        if json_file:
             json_path = BASE_DIR / 'tests' / 'json' / f'{json_file}.json'
             assert json_path.exists(), f'Missing test file: {json_path}'
 
-            # Send as multipart/form-data with a real file field named "file"
-            res = via_api_request_context.post(
-                f'/admin/tournament-import/{event_uniq_id}/{stored_tournament.id}/PAPI_JSON',
-                multipart={
-                    # UploadFile field name in your handler is "file"
-                    'file': {
-                        'name': f'{json_file}.json',
-                        'mimeType': 'application/json',
-                        'buffer': json_path.read_bytes(),
+            if via_api_request_context:
+                # Send as multipart/form-data with a real file field named "file"
+                res = via_api_request_context.post(
+                    f'/admin/tournament-import/{event_uniq_id}/{stored_tournament.id}/PAPI_JSON',
+                    multipart={
+                        # UploadFile field name in your handler is "file"
+                        'file': {
+                            'name': f'{json_file}.json',
+                            'mimeType': 'application/json',
+                            'buffer': json_path.read_bytes(),
+                        },
                     },
-                },
-            )
-            cls.check_api_response(res)
+                )
+                cls.check_api_response(res)
+            else:
+                event = EventLoader().load_event(event_uniq_id)
+                importer = PapiJsonTournamentImporter([FileOption(json_path)])
+                importer.load_tournament(event, event.tournaments_by_uniq_id[name])
 
         return stored_tournament
 
@@ -414,7 +423,9 @@ class TestUtils:
         """
         Returns a button by visible text (case-insensitive), ignoring icons or extra whitespace.
         """
-        return obj.get_by_role('button', name=re.compile(rf'\b{text}\b', re.IGNORECASE))
+        return obj.get_by_role(
+            'button', name=re.compile(rf'\b{text.replace("/", "\\/")}\b', re.IGNORECASE)
+        )
 
     @staticmethod
     def take_screenshot(page, name: str):

@@ -3,6 +3,7 @@ from functools import cached_property
 from types import UnionType
 from typing import override, Any
 
+from common.exception import OptionError
 from common.i18n import _
 from data.print_documents.pairing_styles import BoardsPairingStyle, PairingStyle
 from data.print_documents.player_sorters import (
@@ -10,7 +11,7 @@ from data.print_documents.player_sorters import (
     NamePlayerSorter,
 )
 from data.print_documents.player_splitters import PlayerSplitter, NoSplitPlayerSplitter
-from utils.option import Option, OptionError
+from utils.option import Option
 
 
 class PrintOption(Option, ABC):

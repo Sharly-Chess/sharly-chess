@@ -1,7 +1,4 @@
-from dataclasses import dataclass
-from pathlib import Path
 import random
-import tempfile
 import time
 from datetime import datetime
 from tempfile import NamedTemporaryFile
@@ -13,10 +10,10 @@ from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template, File
-from litestar.datastructures import UploadFile
 from litestar.status_codes import HTTP_200_OK
 
-from common.exception import SharlyChessException
+from common.exception import SharlyChessException, OptionError, ImporterError
+from common.logger import get_logger
 from common.i18n import _
 from data.board import Board
 from data.event import Event
@@ -26,6 +23,7 @@ from data.input_output import (
     TournamentExporterManager,
     TournamentImporterManager,
 )
+from data.input_output.tournament_importer_options import TournamentImporterOption
 from data.input_output.tournament_importers import TournamentImporter
 from data.pairings import PairingSystem, PairingSystemManager
 from data.pairings.systems import SwissPairingSystem
@@ -48,6 +46,9 @@ from web.controllers.admin.base_event_admin_controller import (
 from web.controllers.base_controller import Redirect, WebContext
 from web.messages import Message
 from web.session import SessionHandler
+
+
+logger = get_logger()
 
 
 class TournamentAdminWebContext(BaseEventAdminWebContext):
@@ -709,10 +710,6 @@ class TournamentAdminController(BaseEventAdminController):
         )
         return self._admin_event_render(template_context)
 
-    @dataclass
-    class TournamentImportForm:
-        file: UploadFile | None = None
-
     @post(
         path=[
             '/admin/tournament-import/{event_uniq_id:str}//{importer_id:str}',
@@ -724,7 +721,7 @@ class TournamentAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         data: Annotated[
-            TournamentImportForm, Body(media_type=RequestEncodingType.MULTI_PART)
+            dict[str, Any], Body(media_type=RequestEncodingType.MULTI_PART)
         ],
         event_uniq_id: str,
         tournament_id: int | None,
@@ -737,50 +734,45 @@ class TournamentAdminController(BaseEventAdminController):
             return self.redirect_error(
                 request, 'Import only possible before the tournament starts.'
             )
-
+        errors: dict[str, str] = {}
         event = web_context.get_admin_event()
-        importer = TournamentImporterManager.get_object(importer_id)
-
-        tmp_path: Path
-        if data.file is not None:
-            suffix = Path(data.file.filename or 'upload').suffix
-            fd, tmp_name = tempfile.mkstemp(prefix='tournament-import-', suffix=suffix)
-            Path(tmp_name).write_bytes(await data.file.read())
-            tmp_path = Path(tmp_name)
-        else:
-            errors: dict[str, str] = {'file': _('A file is expected.')}
-            template_context = (
-                web_context.template_context
-                | self._tournament_import_modal_context(importer_id, errors=errors)
+        normalized_data = await WebContext.normalize_file_data(data)
+        importer_type = TournamentImporterManager.get_type(importer_id)
+        importer_options: list[TournamentImporterOption] = []
+        for importer_option in importer_type.default_options():
+            value = WebContext.form_data_to_value(
+                normalized_data, importer_option.id, importer_option.type
             )
-            return self._admin_event_render(template_context)
-
+            importer_options.append(type(importer_option)(value))
+        importer = importer_type(importer_options)
         try:
-            tournament = importer.load_tournament(
-                tmp_path, event, web_context.admin_tournament
-            )
+            importer.validate_options()
+            tournament = importer.load_tournament(event, web_context.admin_tournament)
             Message.success(
                 request,
                 _('Tournament [{tournament}] successfully imported.').format(
                     tournament=tournament.uniq_id
                 ),
             )
-        except SharlyChessException as e:
-            errors = {'file': str(e)}
-            template_context = (
-                web_context.template_context
-                | self._tournament_import_modal_context(importer_id, errors=errors)
+            return self._admin_event_tournaments_render(
+                request, event_uniq_id=event_uniq_id
             )
-            return self._admin_event_render(template_context)
+        except OptionError as error:
+            errors[error.option.id] = str(error)
+        except ImporterError as error:
+            errors['alert'] = str(error)
+        except SharlyChessException as error:
+            logger.error(f'Tournament importer [{importer.id}] error: {error}')
+            Message.error(
+                request, _('An error occurred. Consult the logs for more details.')
+            )
         finally:
-            if tmp_path:
-                try:
-                    tmp_path.unlink(missing_ok=True)
-                except OSError:
-                    pass
-        return self._admin_event_tournaments_render(
-            request, event_uniq_id=event_uniq_id
+            importer.on_import_finished()
+        template_context = (
+            web_context.template_context
+            | self._tournament_import_modal_context(importer_id, errors=errors)
         )
+        return self._admin_event_render(template_context)
 
     def _admin_tournament_update(
         self,
@@ -846,7 +838,7 @@ class TournamentAdminController(BaseEventAdminController):
                         (
                             'input',
                             '@input',
-                            _('Results entry ({tournament_name})').format(
+                            _('Check-in / Results entry ({tournament_name})').format(
                                 tournament_name=stored_tournament.name
                             ),
                         ),

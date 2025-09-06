@@ -9,6 +9,7 @@ from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXRequest, ClientRedirect
 
+from common.exception import OptionError
 from common.i18n import _
 from common.logger import get_logger
 from data.print_documents.documents import (
@@ -35,7 +36,6 @@ from database.sqlite.event.event_store import (
 )
 from utils import StaticUtils
 from utils.enum import FormAction
-from utils.option import OptionError
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,

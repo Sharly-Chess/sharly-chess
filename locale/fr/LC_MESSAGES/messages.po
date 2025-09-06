@@ -366,6 +366,9 @@ msgstr "Ajouter un appareil à l'évènement."
 msgid "Add a display controller to the event."
 msgstr "Ajouter un pilote d'afficheurs."
 
+msgid "Add a family of screens to check-in players or enter results."
+msgstr "Ajouter une famille d'écrans à l'évènement."
+
 msgid "Add a family of screens to display the pairings by alphabetical order."
 msgstr "Ajouter à l'évènement une nouvelle famille d'écrans d'affichage des appariements par échiquier."
 
@@ -374,9 +377,6 @@ msgstr "Ajouter à l'évènement une nouvelle famille d'écrans de saisie des r�
 
 msgid "Add a family of screens to display the ranking."
 msgstr "Ajouter à l'évènement une nouvelle famille d'écrans d'affichage du classement."
-
-msgid "Add a family of screens to enter the results."
-msgstr "Ajouter une famille d'écrans à l'évènement."
 
 msgid "Add a group to the list."
 msgstr "Ajouter un groupe à la liste"
@@ -518,6 +518,9 @@ msgstr "Autorise l'appariement des joueur·euses, en utilisant un moteur d'appar
 
 msgid "Allows to create accounts, declare devices and grant them permissions."
 msgstr "Permet la création de comptes, la déclaration d'appareils et l'assignation de permissions."
+
+msgid "An error occurred. Consult the logs for more details."
+msgstr "Une erreur s'est produite. Consultez les logs pour plus de détails."
 
 msgid "An unexpected error occurred."
 msgstr "Une erreur inattendue s'est produite."
@@ -743,6 +746,9 @@ msgstr "Échiquier & couleur"
 msgid "Board (%(remaining)d)"
 msgstr "Éch. (%(remaining)d)"
 
+msgid "Board is not the same as the opponent's."
+msgstr "L'échiquier n'est pas le même que celui de l'adversaire."
+
 msgid "Board selection (by number)"
 msgstr "Sélection des échiquiers (par numéro)"
 
@@ -869,6 +875,15 @@ msgstr "Pointage"
 
 msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
 msgstr "Pointage"
+
+msgid "Check-in / Results entry"
+msgstr "Pointage / Saisie des résultats"
+
+msgid "Check-in / Results entry ({num})"
+msgstr "Pointage / Saisie des résultats ({num})"
+
+msgid "Check-in / Results entry ({tournament_name})"
+msgstr "Pointage / Saisie des résultats ({tournament_name})"
 
 #, python-format
 msgid "Check-in is closed for tournament [%(tournament)s]."
@@ -998,6 +1013,12 @@ msgstr "Clubs"
 
 msgid "Color"
 msgstr "Couleur"
+
+msgid "Color [{color}] can't be used with an opponent."
+msgstr "La couleur [{color}] ne peut être utilisée avec un adversaire."
+
+msgid "Color [{color}] can't be used without an opponent."
+msgstr "La couleur [{color}] ne peut être utilisée sans adversaire"
 
 msgid "Colorblind people can print the logging level to distinguish important information on the console."
 msgstr "Les personnes percevant mal les couleurs peuvent imprimer le niveau de log pour distinguer les différents niveaux d'information sur la console."
@@ -2245,8 +2266,8 @@ msgstr "Fichier"
 msgid "File [{file}] not found."
 msgstr "Fichier [{file}] non trouvé."
 
-msgid "File is expected to have the [{suffix}] suffix"
-msgstr "Le fichier doit avoir l'extension [{suffix}]."
+msgid "File has invalid suffix [{suffix}] (expected: {expected})."
+msgstr "L'extension du fichier [{suffix}] est invalide (attendu : {expected})."
 
 msgid "Filter out players with a greater rating."
 msgstr "Exclure les joueur·euses ayant un Elo plus élevé."
@@ -2548,6 +2569,9 @@ msgstr "Importer un fichier JSON (format papi-converter)"
 msgid "Import Papi file"
 msgstr "Importer un fichier Papi"
 
+msgid "Import TRF file"
+msgstr "Importer un fichier TRF"
+
 msgid "Import a tournament"
 msgstr "Importer un tournoi"
 
@@ -2807,6 +2831,9 @@ msgstr "Numéro de licence :"
 
 msgid "Licence:"
 msgstr "Licence :"
+
+msgid "Link to a board not involving the player."
+msgstr "Lien à un échiquier n'impliquant pas le·la joueur·euse."
 
 msgid "Links displayed on the screen menu:"
 msgstr "Liens affichés sur le menu de l'écran :"
@@ -3096,6 +3123,9 @@ msgstr "Nouveau tournoi"
 
 msgid "Next round"
 msgstr "Ronde suivante"
+
+msgid "Next tournament"
+msgstr "Tournoi suivant"
 
 msgid "No"
 msgstr "Non"
@@ -3519,6 +3549,9 @@ msgstr "Exempt·e"
 msgid "Pairing information for round %(round)d"
 msgstr "Informations d’appariement pour la ronde %(round)d"
 
+msgid "Pairing not found."
+msgstr "Appariement non-trouvé."
+
 msgid "Pairing number"
 msgstr "Numéro d'appariement"
 
@@ -3669,6 +3702,12 @@ msgstr "Le·la joueur·euse [%(player)s] a été créé·e."
 #, python-format
 msgid "Player [%(player)s] is absent for the next round in tournament [%(tournament)s]."
 msgstr "Le·la joueur·euse [%(player)s] est forfait pour la prochaine ronde dans le tournoi [%(tournament)s]."
+
+msgid "Player [{player_id}] - round {round}: "
+msgstr "Joueur·euse [{player_id}] - ronde {round} : "
+
+msgid "Player [{player_id}]: {error}"
+msgstr "Joueur·euse [{player_id}] : {error}"
 
 msgid "Player [{player}] has been moved from tournament [{src_tournament}] to tournament [{dst_tournament}]."
 msgstr "Le·la joueur·euse [{player}] a été déplacé·e du tournoi [{src_tournament}] au tournoi [{dst_tournament}]."
@@ -3879,6 +3918,9 @@ msgstr "Présent·e"
 msgid "Previous round"
 msgstr "Ronde précédente"
 
+msgid "Previous tournament"
+msgstr "Tournoi précédent"
+
 msgid "Print"
 msgstr "Imprimer"
 
@@ -3959,18 +4001,6 @@ msgstr "Cumulatif"
 
 msgid "Properties"
 msgstr "Propriétés"
-
-msgid "Properties (pairings by board)"
-msgstr "Propriétés (appariements par échiquier)"
-
-msgid "Properties (pairings by player)"
-msgstr "Propriétés (appariements par ordre alphabétique)"
-
-msgid "Properties (ranking)"
-msgstr "Propriétés (classement)"
-
-msgid "Properties (results entry)"
-msgstr "Propriétés (saisie des résultats)"
 
 msgid "Protected pairings editing"
 msgstr "Édition d'appariements protégés"
@@ -4125,6 +4155,12 @@ msgstr "Historique"
 msgid "Record *** RECORD FOR PLAYERS COLUMNS"
 msgstr "Historique"
 
+msgid "Reference to unknown board [{board_id}]."
+msgstr "Référence à un échiquier inconnu [{board_id}]."
+
+msgid "Reference to unknown player [{player_id}]."
+msgstr "Référence à un·e joueur·euse inconnu·e [{player_id}]."
+
 msgid "Refresh"
 msgstr "Actualiser"
 
@@ -4176,6 +4212,21 @@ msgstr "Restaurer"
 msgid "Result"
 msgstr "Résultat"
 
+msgid "Result [{result}] can't be used with a board."
+msgstr "Le résultat [{result}] ne peut être utilisé avec un échiquier."
+
+msgid "Result [{result}] can't be used with an opponent."
+msgstr "Le résultat [{result}] ne peut être utilisé avec un adversaire."
+
+msgid "Result [{result}] can't be used without a board."
+msgstr "Le résultat [{result}] ne peut être utilisé sans échiquier."
+
+msgid "Result [{result}] can't be used without an opponent."
+msgstr "Le résultat [{result}] ne peut être utilisé sans adversaire."
+
+msgid "Result [{result}] is incompatible with the opponent's result [{opponent_result}]."
+msgstr "Le résultat [{result}] est incompatible avec le résultat de l'adversaire [{opponent_result}]."
+
 msgid "Result [{result}] is not compatible with the PAPI format."
 msgstr "Le résultat [{result}] n’est pas compatible avec le format PAPI."
 
@@ -4184,15 +4235,6 @@ msgstr "Résultats"
 
 msgid "Results Entry via public screens"
 msgstr "Saisie des résultats sur écrans publics"
-
-msgid "Results entry"
-msgstr "Saisie des résultats"
-
-msgid "Results entry ({num})"
-msgstr "Saisie des résultats ({num})"
-
-msgid "Results entry ({tournament_name})"
-msgstr "Saisie des résultats ({tournament_name})"
 
 msgid "Results for round #{round}"
 msgstr "Résultats de la ronde {round}"
@@ -4642,6 +4684,9 @@ msgstr "Support pour la plateforme ChessEvent utilsée pour l'organisation de to
 
 msgid "Swiss"
 msgstr "Suisse"
+
+msgid "TRF file"
+msgstr "Fichier TRF"
 
 msgid "Text after the hour:"
 msgstr "Texte après l'horaire :"
@@ -5325,7 +5370,7 @@ msgid "Tournament [{tournament}] is finished, you can not add players any longer
 msgstr "Le tournoi [{tournament}] est terminé, on ne peut plus y ajouter de joueur·euses."
 
 msgid "Tournament [{tournament}] successfully imported."
-msgstr "Le tournoi [{tournament}] importé avec succès."
+msgstr "Le tournoi [{tournament}] a été importé avec succès."
 
 msgid "Tournament exempt from registration fees."
 msgstr "Tournoi exempt de droits d'homologation."
@@ -5512,11 +5557,20 @@ msgstr "Identifiant unique : [%(uniq_id)s]"
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 msgstr "Type de FFE Licence FFE inconnu [%(ffe_licence)s]."
 
+msgid "Unknown color [{color}]."
+msgstr "Couleur [{color}] inconnue."
+
 msgid "Unknown devices' access has been updated."
 msgstr "L'accès des appareils inconnus a été mis à jour."
 
+msgid "Unknown federation [{federation}]."
+msgstr "Fédération [{federation}] inconnue."
+
 msgid "Unknown field [{field}]."
-msgstr "Champ inconnu [{field}]."
+msgstr "Champ [{field}] inconnu."
+
+msgid "Unknown gender [{gender}]."
+msgstr "Genre [{gender}] inconnu."
 
 msgid "Unknown player ID [{player_id}]"
 msgstr "Identifiant de joueur inconnu [{player_id}]."
@@ -5524,8 +5578,14 @@ msgstr "Identifiant de joueur inconnu [{player_id}]."
 msgid "Unknown response code: [{code}] ([{chessevent_string}])."
 msgstr "Code de réponse inconnu : [{code}] ([{chessevent_string}])."
 
+msgid "Unknown result [{result}]."
+msgstr "Résultat [{result}] inconnu."
+
+msgid "Unknown title [{title}]."
+msgstr "Titre [{title}] inconnu."
+
 msgid "Unknown value [{value}]"
-msgstr "Valeur inconnue [{value}]."
+msgstr "Valeur [{value}] inconnue."
 
 msgid "Unlike single Screens, families can only be used to display information about a single tournament."
 msgstr "Contrairement aux écrans simples, les familles d’écrans ne peuvent être utilisées que pour afficher des informations sur un seul tournoi."
@@ -6281,7 +6341,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
-#~ msgid "Starting server..."
-#~ msgstr "Démarrage du serveur..."
 

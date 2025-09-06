@@ -215,11 +215,11 @@
                         {% else %}
                             <li
                                 class="dropdown-item text-start cursor-pointer"
-                                onclick="$('#export-form-{{ exporter.id }}').submit()"
+                                onclick="$('#export-form-{{ tournament.id }}-{{ exporter.id }}').submit()"
                                {{ macros.tooltip_attributes('info', exporter.tooltip, 'right') }}
                             >
                                 <form
-                                    id="export-form-{{ exporter.id }}"
+                                    id="export-form-{{ tournament.id }}-{{ exporter.id }}"
                                     action="{{ url_for(
                                         'admin-tournament-export',
                                         event_uniq_id=admin_event.uniq_id,

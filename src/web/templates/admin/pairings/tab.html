@@ -358,7 +358,7 @@
 
         function searchPlayerHandler(e) {
             const value = normalizeText($("#search-player").val().trim());
-            $("table").each(function() {
+            $("table:not([id^='popover-content-'])").each(function() {
                 const $table = $(this);
                 const $rows = $table.find("tbody tr");
 
@@ -370,10 +370,13 @@
 
                 let matchFound = false;
 
-                $("table tbody tr").each(function() {
+                $rows.each(function() {
                     const text = normalizeText($(this).text());
-                    $(this).toggle(text.indexOf(value) > -1);
+                    const isMatch = text.indexOf(value) > -1;
+                    $(this).toggle(isMatch);
+                    if (isMatch) matchFound = true;
                 });
+
 
                 $table.addClass("table-danger-warning");
             });

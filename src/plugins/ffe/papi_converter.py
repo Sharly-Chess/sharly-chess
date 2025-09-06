@@ -8,12 +8,12 @@ import subprocess
 import glob
 import sqlite3
 
-from common.exception import SharlyChessException
+from common.exception import SharlyChessException, DictReaderException
 from common.i18n import _
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from common.tool_installer import PapiConverterInstaller
-from data.input_output.dict_reader import dict_to_dataclass, DictReaderException
+from data.input_output.dict_reader import dict_to_dataclass
 from data.pairings.engines import DoubleBergerPairingEngine
 from data.pairings.variations import (
     BergerRoundRobinVariation,
@@ -225,28 +225,22 @@ class PapiConverter:
         If a StoredTournament object is provided, add the values to this one,
         otherwise creates a new one.
         Raises a SharlyChessException if the conversion fails."""
-        if source_file.suffix == '.papi':
-            target_file = TMP_DIR / 'papi-converter-output.json'
-            result = subprocess.run(
-                [
-                    self.executable_path,
-                    source_file,
-                    target_file,
-                ],
-                capture_output=True,
-                encoding='utf-8',
-            )
-            if not target_file.exists():
-                raise SharlyChessException(
-                    f'Papi file conversion to JSON failed.'
-                    f'PapiConverter failed with status {result.returncode}.\n'
-                    f'stdout: {result.stdout}\nstderr: {result.stderr}'
-                )
-        elif source_file.suffix == '.json':
-            target_file = source_file
-        else:
+        target_file = TMP_DIR / 'papi-converter-output.json'
+        target_file.unlink(missing_ok=True)
+        result = subprocess.run(
+            [
+                self.executable_path,
+                source_file,
+                target_file,
+            ],
+            capture_output=True,
+            encoding='utf-8',
+        )
+        if not target_file.exists():
             raise SharlyChessException(
-                'PapiConverter only supports .papi and .json files.'
+                f'Papi file conversion to JSON failed.'
+                f'PapiConverter failed with status {result.returncode}.\n'
+                f'stdout: {result.stdout}\nstderr: {result.stderr}'
             )
 
         with open(target_file, 'r', encoding='utf-8') as file:
@@ -734,10 +728,10 @@ class PapiConverter:
         # Convert tournament variables
         variables = PapiVariables(
             name=tournament.name,
-            type=PapiPairingSystem.get_plugin_value(tournament.pairing_system),
+            type=PapiPairingSystem.get_outer_value(tournament.pairing_system),
             rounds=str(tournament.rounds),
-            pairing=PapiPairingVariation.get_plugin_value(tournament.pairing_variation),
-            ratingClass=PapiTournamentRating.get_plugin_value(tournament.rating),
+            pairing=PapiPairingVariation.get_outer_value(tournament.pairing_variation),
+            ratingClass=PapiTournamentRating.get_outer_value(tournament.rating),
             venue=tournament.location,
             startDate=self._format_date_for_papi(tournament.start_timestamp)
             if tournament.start_timestamp
@@ -745,16 +739,16 @@ class PapiConverter:
             endDate=self._format_date_for_papi(tournament.stop_timestamp)
             if tournament.stop_timestamp
             else None,
-            tiebreak1=PapiTieBreak.get_plugin_value(tournament.tie_breaks[0])
+            tiebreak1=PapiTieBreak.get_outer_value(tournament.tie_breaks[0])
             if tournament.tie_breaks and tournament.tie_breaks[0]
             else None,
-            tiebreak2=PapiTieBreak.get_plugin_value(tournament.tie_breaks[1])
+            tiebreak2=PapiTieBreak.get_outer_value(tournament.tie_breaks[1])
             if len(tournament.tie_breaks) > 1 and tournament.tie_breaks[1]
             else None,
-            tiebreak3=PapiTieBreak.get_plugin_value(tournament.tie_breaks[2])
+            tiebreak3=PapiTieBreak.get_outer_value(tournament.tie_breaks[2])
             if len(tournament.tie_breaks) > 2 and tournament.tie_breaks[2]
             else None,
-            pointSystem=PapiThreePointsForAWin.get_plugin_value(
+            pointSystem=PapiThreePointsForAWin.get_outer_value(
                 tournament.three_points_for_a_win
             ),
             arbiter='',
@@ -811,14 +805,14 @@ class PapiConverter:
             birthDate=player.date_of_birth.strftime('%d/%m/%Y')
             if player.date_of_birth
             else None,
-            category=PapiPlayerCategory.get_plugin_value(player.category),
-            gender=PapiPlayerGender.get_plugin_value(player.gender),
+            category=PapiPlayerCategory.get_outer_value(player.category),
+            gender=PapiPlayerGender.get_outer_value(player.gender),
             email=player.mail,
             phone=player.phone,
             comment=player.comment,
             owed=player.owed if player.owed != 0 else None,
             paid=player.paid if player.paid != 0 else None,
-            fideTitle=PapiPlayerTitle.get_plugin_value(player.title),
+            fideTitle=PapiPlayerTitle.get_outer_value(player.title),
             fideCode=str(player.fide_id) if player.fide_id else None,
             federation=player.federation.name,
             club=player.club.name,
@@ -830,7 +824,7 @@ class PapiConverter:
             fideRapidElo=self._get_papi_elo_type(player, TournamentRating.RAPID),
             blitzElo=self._get_papi_elo(player, TournamentRating.BLITZ),
             fideBlitzElo=self._get_papi_elo_type(player, TournamentRating.BLITZ),
-            licenceType=PapiPlayerFFELicence.get_plugin_value(plugin_data.ffe_licence),
+            licenceType=PapiPlayerFFELicence.get_outer_value(plugin_data.ffe_licence),
             refFFE=plugin_data.ffe_id,
             nrFFE=plugin_data.ffe_licence_number,
             league=plugin_data.league,
@@ -867,12 +861,12 @@ class PapiConverter:
         else:
             rating = player.ratings.get(tournament_rating, None)
             rating_type = rating.type if rating else None
-        default_rating = PapiPlayerRatingType.get_plugin_value(
+        default_rating = PapiPlayerRatingType.get_outer_value(
             PlayerRatingType.ESTIMATED
         )
         assert default_rating is not None
         if rating_type:
-            return PapiPlayerRatingType.get_plugin_value(rating_type) or default_rating
+            return PapiPlayerRatingType.get_outer_value(rating_type) or default_rating
         return default_rating
 
     def _papi_player_to_dict(self, papi_player: PapiPlayer) -> dict:

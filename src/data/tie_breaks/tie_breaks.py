@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 from math import isclose
 from typing import TYPE_CHECKING, SupportsFloat
-
+from common.exception import OptionError
 from common.i18n import _
 from data.pairing import Pairing
 from data.pairings import PairingSystem
@@ -24,7 +24,7 @@ from data.tie_breaks.options import (
 )
 from utils import StaticUtils
 from utils.enum import BoardColor, Result
-from utils.option import OptionHandler, OptionError
+from utils.option import OptionHandler
 
 if TYPE_CHECKING:
     from data.tournament import Tournament

@@ -488,6 +488,8 @@ class Player:
         include_next_round_bye: bool,
     ) -> TrfPlayer:
         games: list[TrfGame] = []
+        from data.input_output.trf_mappers import TrfPlayerGender, TrfPlayerTitle
+
         for round_nb, pairing in self.pairings.items():
             trf_game = pairing.to_trf(round_nb)
             if round_nb <= after_round:
@@ -498,7 +500,7 @@ class Player:
                 elif next_round_pairings_as_zpb and not pairing.not_paired:
                     games.append(
                         TrfGame(
-                            startrank='0000',  # type: ignore
+                            startrank=0,
                             color='-',
                             result=Result.ZERO_POINT_BYE.to_trf,
                             round=round_nb,
@@ -508,8 +510,8 @@ class Player:
         return TrfPlayer(
             startrank=self.pairing_number,
             name=f'{self.last_name}, {self.first_name or ""}'[:32],
-            sex=self.gender.to_trf,
-            title=self.title.to_trf,
+            sex=TrfPlayerGender.get_outer_value(self.gender),
+            title=TrfPlayerTitle.get_outer_value(self.title),
             rating=self.rating,
             fed=self.federation.name,
             id=self.fide_id,

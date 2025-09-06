@@ -1,8 +1,9 @@
 import re
+from abc import ABC, abstractmethod
 from decimal import Decimal
 from functools import lru_cache, cache
 from math import floor
-from typing import Callable, Iterable
+from typing import Callable, Iterable, Protocol, Hashable, Collection
 
 import iso4217parse
 import pycountry
@@ -229,3 +230,44 @@ class SharedUtils:
         return cls._get_function(
             'get_round_ranking_function', StaticUtils.round_ranking
         )(num)
+
+
+class SupportsEquals(Protocol):
+    def __eq__(self, other: object) -> bool: ...
+
+
+class CoreMapper[OuterType: Hashable, CoreType: SupportsEquals](ABC):
+    """Class mapping non-application values to objects of the core.
+    Example: map values of a database to their representation."""
+
+    @staticmethod
+    @abstractmethod
+    def _core_object_by_outer_value() -> dict[OuterType, CoreType]:
+        """Objects from the core mapped by outer value.
+        Every possible value should be represented."""
+
+    @classmethod
+    def get_core_object(cls, outer_value: OuterType) -> CoreType:
+        """Retrieve the core object associated to the outer value."""
+        return cls._core_object_by_outer_value()[outer_value]
+
+    @classmethod
+    def get_outer_value(cls, core_object: CoreType) -> OuterType | None:
+        """Get an outer value from a core object.
+        Returns None if the core object does not exist as an outer value."""
+        return next(
+            (
+                outer_value
+                for outer_value, mapped_core_object in cls._core_object_by_outer_value().items()
+                if mapped_core_object == core_object
+            ),
+            None,
+        )
+
+    @classmethod
+    def core_objects(cls) -> Collection[CoreType]:
+        return cls._core_object_by_outer_value().values()
+
+    @classmethod
+    def outer_values(cls) -> Collection[OuterType]:
+        return cls._core_object_by_outer_value().keys()

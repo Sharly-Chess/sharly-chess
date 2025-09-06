@@ -32,15 +32,9 @@ __pycache__/
 *.ldb
 
 # Generated database files
-*.db
-*.db-shm
-*.db-wal
+*-shm
+*-wal
 .scc
-.scc-wal
-.scc-shm
-.sce
-.sce-wal
-.sce-shm
 
 # MacOS files
 .DS_Store
@@ -83,5 +77,4 @@ __pycache__/
 /src/common/i18n/.auto-update
 /tests/screenshots/*.png
 /*.diff
-/scripts/roles/*.md
 /scripts/roles/*.md
