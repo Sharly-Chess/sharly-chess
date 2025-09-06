@@ -406,7 +406,7 @@ class Event:
     def players_sorted_by_name(self) -> list[Player]:
         return sorted(
             self.players_by_id.values(),
-            key=lambda player: (player.last_name, player.first_name),
+            key=lambda player: (player.last_name, player.first_name or ''),
         )
 
     @cached_property

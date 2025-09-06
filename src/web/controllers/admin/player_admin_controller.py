@@ -392,24 +392,32 @@ class PlayerAdminController(BaseEventAdminController):
         def get_sort_key(player: Player) -> tuple:
             match sort_type:
                 case 'alpha':
-                    return player.last_name, player.first_name
+                    return player.last_name, player.first_name or ''
                 case 'rating_desc':
-                    return -player.rating, player.last_name, player.first_name
+                    return -player.rating, player.last_name, player.first_name or ''
                 case 'rating_asc':
-                    return player.rating, player.last_name, player.first_name
+                    return player.rating, player.last_name, player.first_name or ''
                 case 'yob_desc':
-                    return -player.year_of_birth, player.last_name, player.first_name
+                    return (
+                        -player.year_of_birth,
+                        player.last_name,
+                        player.first_name or '',
+                    )
                 case 'yob_asc':
-                    return player.year_of_birth, player.last_name, player.first_name
+                    return (
+                        player.year_of_birth,
+                        player.last_name,
+                        player.first_name or '',
+                    )
                 case 'category_desc':
-                    return -player.category, player.last_name, player.first_name
+                    return -player.category, player.last_name, player.first_name or ''
                 case 'category_asc':
-                    return player.category, player.last_name, player.first_name
+                    return player.category, player.last_name, player.first_name or ''
                 case 'club':
                     return plugin_manager.hook.player_club_sort_key(player=player) or (
                         player.club,
                         player.last_name,
-                        player.first_name,
+                        player.first_name or '',
                     )
                 case 'tournament':
                     assert player.tournament is not None
@@ -417,7 +425,7 @@ class PlayerAdminController(BaseEventAdminController):
                         player.tournament.uniq_id,
                         -player.rating,
                         player.last_name,
-                        player.first_name,
+                        player.first_name or '',
                     )
                 case _:
                     raise ValueError(f'sort={sort_type}')
