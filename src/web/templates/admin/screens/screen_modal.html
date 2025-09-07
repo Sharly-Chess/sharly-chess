@@ -217,11 +217,7 @@
                                 </div>
                             {% endif %}
                             <div class="col-12 mb-3">
-                                {% with
-                                    message_help_text=_('When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed).')
-                                %}
-                                    {% include '../common/modal/alert_message.html' %}
-                                {% endwith %}
+                                {% include '../common/modal/alert_message.html' %}
                             </div>
                         </div>
 

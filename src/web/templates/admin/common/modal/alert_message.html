@@ -1,8 +1,12 @@
 {{ admin_macros.text_input(
     name='message_text',
     label=_('Alert message:'),
-    placeholder=_('E.g.: Please keep quiet until the end of the round!'),
-    help_text=_('When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level.'),
+    placeholder=(
+        _('Default: %(string)s', string=admin_event.message_text)
+        if admin_event.message_text else
+        _('E.g.: Please keep quiet until the end of the round!')
+    ),
+    help_text=_('The message displayed on the scrolling banner at the bottom of the screen.'),
     default_checkbox=true,
     data=data, errors=errors
 ) }}

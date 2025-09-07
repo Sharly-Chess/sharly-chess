@@ -99,16 +99,16 @@
                     <div class="row">
                         <div class="col-12 col-md-6 mb-3">
                             {% if family_type in ['boards', 'input'] %}
-                                {% set help_text=_('The number of the first board to select, optional (the first board by default).') %}
+                                {% set help_text=_('The number of the first board to select.') %}
                             {% elif family_type == 'players' %}
-                                {% set help_text=_('The number of the first player to select, optional (the first player by alphabetical order by default).') %}
+                                {% set help_text=_('The number of the first player to select.') %}
                             {% else %}
-                                {% set help_text=_('The rank of the first player to select, optional (1 by default).') %}
+                                {% set help_text=_('The rank of the first player to select.') %}
                             {% endif %}
                             {{ admin_macros.number_input(
                                 name='first',
                                 label=_('First board:') if family_type in ['boards', 'input'] else _('First player:'),
-                                placeholder=_('E.g.: %(num)d', num=15),
+                                placeholder=_('Default: %(string)s', string=1),
                                 help_text=help_text,
                                 data=data, errors=errors,
                                 min=1
@@ -116,16 +116,16 @@
                         </div>
                         <div class="col-12 col-md-6 mb-3">
                             {% if family_type in ['boards', 'input'] %}
-                                {% set help_text=_('The number of the last board to select, optional (the last board by default).') %}
+                                {% set help_text=_('The number of the last board to select.') %}
                             {% elif family_type == 'players' %}
-                                {% set help_text=_('The number of the last player to select, optional (the last player by alphabetical order by default).') %}
+                                {% set help_text=_('The number of the last player to select.') %}
                             {% else %}
-                                {% set help_text=_('The rank of the last player to select, optional (the rank of the last rank player by default).') %}
+                                {% set help_text=_('The rank of the last player to select.') %}
                             {% endif %}
                             {{ admin_macros.number_input(
                                 name='last',
                                 label=_('Last board:') if family_type in ['boards', 'input'] else _('Last player:'),
-                                placeholder=_('E.g.: %(num)d', num=40),
+                                placeholder=_('Default: %(string)s', string=_('last')),
                                 help_text=help_text,
                                 data=data, errors=errors,
                                 min=1
@@ -215,13 +215,9 @@
                                 {% include '../common/modal/exit_button.html' %}
                             </div>
                         {% endif %}
-                        {% with
-                            message_help_text=_('When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed).')
-                        %}
-                            <div class="col-12 mb-3">
-                                {% include '../common/modal/alert_message.html' %}
-                            </div>
-                        {% endwith %}
+                        <div class="col-12 mb-3">
+                            {% include '../common/modal/alert_message.html' %}
+                        </div>
                     </div>
 
                     <h4 class="mt-4">

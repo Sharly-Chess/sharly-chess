@@ -339,7 +339,6 @@ class TournamentAdminController(BaseEventAdminController):
             web_context.template_context
             | {
                 'admin_event_tab': 'admin-event-tournaments-tab',
-                'paired_bye_result_options': cls._get_paired_bye_result_options(),
                 'tournament_card_blocks': tournament_card_blocks,
                 'tournament_importers': tournament_importers,
                 'tournament_exporters': tournament_exporters,
@@ -544,10 +543,6 @@ class TournamentAdminController(BaseEventAdminController):
                 )
 
                 template_context |= {
-                    'record_illegal_moves_options': cls._get_record_illegal_moves_options(
-                        admin_event.record_illegal_moves
-                    ),
-                    'paired_bye_result_options': cls._get_paired_bye_result_options(),
                     'tie_break_options': tie_break_options,
                     'rating_options': cls._get_rating_options(),
                     'override_unrated_rapid_blitz_options': override_unrated_rapid_blitz_options,
