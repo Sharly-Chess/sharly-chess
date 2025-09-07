@@ -15,8 +15,8 @@
         {{ admin_macros.number_input(
             name='ffe_auto_upload_delay',
             label=_('Minimum delay between uploads (minutes):'),
-            placeholder=_('E.g.: %(num)d', num=15),
-            help_text=_("The minimum delay between auto-uploads to the FFE server (%(num)d minutes by default)", num=FFE_DEFAULT_UPLOAD_DELAY),
+            placeholder=_('Default: %(string)s', string=FFE_DEFAULT_UPLOAD_DELAY),
+            help_text=_("The minimum delay between auto-uploads to the FFE server."),
             data=data, errors=errors,
             min=1
         ) }}

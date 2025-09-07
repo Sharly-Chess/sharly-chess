@@ -206,8 +206,8 @@
                                 {{ admin_macros.number_input(
                                     name='font_size',
                                     label=_('Font size adjustment (%%):'),
-                                    placeholder=_('E.g.: %(num)d%%', num=105),
-                                    help_text=_('Font size adjustment for the screen where 100%% is the default font size.'),
+                                    placeholder=_('Default: %(string)s', string='100%'),
+                                    help_text=_('Font size adjustment for the screen.'),
                                     data=data, errors=errors
                                 ) }}
                             </div>
@@ -217,11 +217,7 @@
                                 </div>
                             {% endif %}
                             <div class="col-12 mb-3">
-                                {% with
-                                    message_help_text=_('When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed).')
-                                %}
-                                    {% include '../common/modal/alert_message.html' %}
-                                {% endwith %}
+                                {% include '../common/modal/alert_message.html' %}
                             </div>
                         </div>
 

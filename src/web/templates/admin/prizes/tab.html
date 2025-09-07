@@ -41,7 +41,11 @@
                         {{ macros.tooltip_attributes('info', _('Enable/disable the details of prizes on the cards below.'), 'top') }}
                     >
                         <input
-                            hx-get="{{ url_for('admin-event-prizes-tab', event_uniq_id=admin_event.uniq_id) }}"
+                            hx-get="{{ url_for(
+                                'admin-event-prizes-tab',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id
+                            ) }}"
                             hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
                             hx-target="body"
                             hx-indicator="#please-wait"
@@ -86,7 +90,36 @@
                 </button>
             </span>
         </div>
-        {% if admin_prize_group %}
+        {% if admin_prize_group and admin_tournament.prize_groups|length == 1 %}
+            <span
+                {% if not client.can_manage_prizes %}
+                    {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
+                {% else %}
+                    {{ macros.tooltip_attributes('info', _('Manage the prize groups of the tournament.'), 'bottom') }}
+                {% endif %}
+            >
+                <button
+                    class="btn btn-primary"
+                    {% if not client.can_manage_prizes %}
+                        disabled
+                    {% else %}
+                        hx-get="{{ url_for(
+                            'admin-prize-groups-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                        ) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        preload
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                    {% endif %}
+                >
+                    <i class="bi-gear-fill pe-1"></i>
+                    {{ _('Manage the prize groups') }}
+                </button>
+            </span>
+        {% elif admin_prize_group %}
             <div class="d-flex flex-column">
                 <div style="font-size: 0.8rem;">
                     {{ _('%(string)s:', string=_('Prize groups')) }}

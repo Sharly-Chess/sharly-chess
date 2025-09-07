@@ -641,10 +641,6 @@ class PlayerAdminController(BaseEventAdminController):
             case None:
                 pass
             case 'player':
-                federation_options = cls._get_federation_options_with_event_default(
-                    default_federation=admin_event.federation
-                )
-
                 if data is None:
                     first_name: str | None = None
                     last_name: str | None = None
@@ -705,10 +701,6 @@ class PlayerAdminController(BaseEventAdminController):
                                 ].id
                         case _:
                             raise ValueError(f'action=[{action}]')
-
-                    federation_options = cls._get_federation_options_with_event_default(
-                        admin_event.federation if federation is None else None
-                    )
 
                     rating_data: dict[str, Any] = {}
                     for tournament_rating in TournamentRating:
@@ -811,7 +803,7 @@ class PlayerAdminController(BaseEventAdminController):
                     'licence_options': {
                         str(licence.value): licence.name for licence in PlayerFFELicence
                     },
-                    'federation_options': federation_options,
+                    'federation_options': cls._get_federation_options(),
                     'tournament_options': tournament_options,
                     'data_source_options': DataSourceManager.options(),
                     'plugin_form_fields_templates': plugin_form_fields_templates,
