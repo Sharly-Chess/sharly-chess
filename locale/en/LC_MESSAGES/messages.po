@@ -1692,10 +1692,6 @@ msgid "E.g.: %(num)d"
 msgstr ""
 
 #, python-format
-msgid "E.g.: %(num)d%%"
-msgstr ""
-
-#, python-format
 msgid "E.g.: %(seconds)d (seconds)"
 msgstr ""
 
@@ -2338,8 +2334,7 @@ msgstr ""
 msgid "Font size adjustment (%%):"
 msgstr ""
 
-#, python-format
-msgid "Font size adjustment for the screen where 100%% is the default font size."
+msgid "Font size adjustment for the screen."
 msgstr ""
 
 msgid "For non-monetary prizes, the value is used for reward priority."

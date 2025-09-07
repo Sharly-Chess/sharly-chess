@@ -205,8 +205,8 @@
                             {{ admin_macros.number_input(
                                 name='font_size',
                                 label=_('Font size adjustment (%%):'),
-                                placeholder=_('E.g.: %(num)d%%', num=105),
-                                help_text=_('Font size adjustment for the screen where 100%% is the default font size.'),
+                                placeholder=_('Default: %(string)s', string='100%'),
+                                help_text=_('Font size adjustment for the screen.'),
                                 data=data, errors=errors
                             ) }}
                         </div>

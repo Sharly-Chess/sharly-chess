@@ -1692,10 +1692,6 @@ msgid "E.g.: %(num)d"
 msgstr "Exemple : %(num)d"
 
 #, python-format
-msgid "E.g.: %(num)d%%"
-msgstr "Exemple : %(num)d%%"
-
-#, python-format
 msgid "E.g.: %(seconds)d (seconds)"
 msgstr "Exemple : %(seconds)d (secondes)"
 
@@ -2338,9 +2334,8 @@ msgstr "Flotteurs"
 msgid "Font size adjustment (%%):"
 msgstr "Ajustement de la taille de police (%%) :"
 
-#, python-format
-msgid "Font size adjustment for the screen where 100%% is the default font size."
-msgstr "Ajustement de la taille de police pour l'écran, 100%% par défaut."
+msgid "Font size adjustment for the screen."
+msgstr "Ajustement de la taille de police pour l'écran."
 
 msgid "For non-monetary prizes, the value is used for reward priority."
 msgstr "Pour les prix non-monétaires, la valeur est utiliée pour prioriser les récompenses."
