@@ -121,7 +121,7 @@ English version below
 - Added FIDE titles on prize assignments (3.0.0)
 - Added tie-breaks to Berger grids (3.0.0)
 - Fixed printing of pairings in alphabetical order (3.0.2)
-- Re-added board 1 players to pairings in alphabetcal order (3.0.3)
+- Re-added board #1 players to pairings in alphabetical order (3.0.3)
 
 ## ChessEvent
 
