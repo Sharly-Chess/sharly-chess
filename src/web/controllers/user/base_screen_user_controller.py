@@ -75,10 +75,11 @@ class ScreenOrRotatorUserWebContext(EventUserWebContext):
                     f'Access denied for rotator [{self.rotator.uniq_id}].'
                 )
                 return
-            self.rotator_screen_index = self.rotator_screen_index % len(
-                self.rotator.rotating_screens
-            )
-            self.screen = self.rotator.rotating_screens[self.rotator_screen_index]
+            if self.rotator.rotating_screens:
+                self.rotator_screen_index = self.rotator_screen_index % len(
+                    self.rotator.rotating_screens
+                )
+                self.screen = self.rotator.rotating_screens[self.rotator_screen_index]
             self.user_event_tab = 'rotators'
         else:
             assert display_controller_id is not None
