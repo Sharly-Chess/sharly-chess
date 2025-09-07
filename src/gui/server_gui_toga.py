@@ -256,11 +256,18 @@ class SharlyChessServerToga(toga.App):
         # Thread-safe communication
         self.message_queue: queue.Queue[tuple[str, str, Optional[str]]] = queue.Queue()
         self.log_cleared = False
+        self.log_visible = False
+        self.compact_size = (500, 100)
+        self.expanded_size = (1200, 700)
 
         # GUI elements (initialized in startup)
+        self.main_box: toga.Box
         self.browser_btn: toga.Button
+        self.website_btn: toga.Button
         self.clear_btn: toga.Button
+        self.toggle_log_btn: toga.Button
         self.log_view: toga.WebView
+        self.info_view: toga.Box
 
         # Logging handler
         self.gui_handler = GUILogHandler(self)
@@ -273,7 +280,7 @@ class SharlyChessServerToga(toga.App):
         for cmd in list(self.commands):
             grp = getattr(cmd, 'group', None)
             id_ = getattr(cmd, 'id', None)
-            if id_ and grp is not toga.Group.APP and grp is not toga.Group.HELP:
+            if id_ and grp is not toga.Group.APP:
                 del self.commands[id_]
 
         # Toolbar (buttons row)
@@ -281,11 +288,27 @@ class SharlyChessServerToga(toga.App):
         self.browser_btn = toga.Button(
             text=_('Open Browser'), on_press=self._open_browser
         )
+        self.website_btn = toga.Button(
+            text=_('Open documentation'), on_press=self._open_website
+        )
         self.clear_btn = toga.Button(text=_('Clear Log'), on_press=self._clear_log)
+        self.clear_btn.style.visibility = 'hidden'
+        self.toggle_log_btn = toga.Button(
+            text=_('Show Log'),
+            on_press=self._toggle_log_view,
+        )
 
-        for b in (self.browser_btn, self.clear_btn):
+        for b in (
+            self.browser_btn,
+            self.website_btn,
+            self.clear_btn,
+            self.toggle_log_btn,
+        ):
             b.style.margin_right = 4
+
         btn_row.add(self.browser_btn)
+        btn_row.add(self.website_btn)
+        btn_row.add(self.toggle_log_btn)
         btn_row.add(self.clear_btn)
 
         # Log view: WebView with HTML for ANSI color support
@@ -294,15 +317,34 @@ class SharlyChessServerToga(toga.App):
         )
         self.log_view.set_content('about:blank', LOG_HTML)
 
+        self.info_view = toga.Box(
+            style=Pack(direction=COLUMN, margin=10, align_items='center')
+        )
+        self.info_view.add(
+            toga.Label(text=_('Sharly Chess Server'), style=Pack(margin_bottom=7))
+        )
+        self.info_view.add(
+            toga.Label(
+                text=_('Version: {version}').format(version=SHARLY_CHESS_VERSION),
+                style=Pack(margin_bottom=7),
+            )
+        )
+        self.info_view.add(
+            toga.Label(
+                text=_('Warning: closing this window will stop Sharly Chess.'),
+                style=Pack(margin_bottom=7),
+            )
+        )
+
         # Layout container
-        main_box = toga.Box(style=Pack(direction=COLUMN, margin=10))
-        main_box.add(btn_row)
-        main_box.add(self.log_view)
+        self.main_box = toga.Box(style=Pack(direction=COLUMN, margin=10))
+        self.main_box.add(btn_row)
+        self.main_box.add(self.info_view)
 
         self.main_window = toga.MainWindow(
             title=_('Sharly Chess Server'),
-            size=(1200, 700),
-            content=main_box,
+            size=self.compact_size,
+            content=self.main_box,
             on_gain_focus=self._noop,
             on_lose_focus=self._noop,
         )
@@ -397,6 +439,35 @@ class SharlyChessServerToga(toga.App):
             self.add_log_message(f'Opening browser: {url}', 'success')
         except Exception as e:
             self.add_log_message(f'Failed to open browser: {e}', 'error')
+
+    def _open_website(self, widget: Any = None, **kwargs) -> None:
+        webbrowser.open(_('*** Doc Link'))
+
+    def _toggle_log_view(self, widget: Any = None, **kwargs):
+        self.log_visible = not self.log_visible
+
+        # Show/hide log view
+        self.log_view.style.visibility = 'visible' if self.log_visible else 'hidden'
+        self.clear_btn.style.visibility = 'visible' if self.log_visible else 'hidden'
+        self.log_view.refresh()
+
+        # Update button label
+        self.toggle_log_btn.text = _('Hide Log') if self.log_visible else _('Show Log')
+
+        # Resize window to fit content
+        assert isinstance(self.main_window, toga.MainWindow)
+        if self.log_visible:
+            if self.log_view not in self.main_box.children:
+                self.main_box.add(self.log_view)
+            if self.info_view in self.main_box.children:
+                self.main_box.remove(self.info_view)
+            self.main_window.size = self.expanded_size
+        else:
+            if self.log_view in self.main_box.children:
+                self.main_box.remove(self.log_view)
+            if self.info_view not in self.main_box.children:
+                self.main_box.add(self.info_view)
+            self.main_window.size = self.compact_size
 
     def _clear_log(self, widget: Any = None, **kwargs) -> None:
         self.log_cleared = True

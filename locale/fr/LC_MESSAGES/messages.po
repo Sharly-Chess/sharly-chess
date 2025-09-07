@@ -173,6 +173,9 @@ msgstr "(aucun écran)"
 msgid "(replace [%(object_uniq_id)s])"
 msgstr "(remplace [%(object_uniq_id)s])"
 
+msgid "*** Doc Link"
+msgstr "https://sharly-chess.com/fr/bien-demarrer/"
+
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
 
@@ -2471,6 +2474,9 @@ msgstr "Bonjour,"
 msgid "Hide"
 msgstr "Cacher"
 
+msgid "Hide Log"
+msgstr "Cacher les logs"
+
 msgid "Hide the exit button"
 msgstr "Ne pas afficher de bouton de sortie d'écran"
 
@@ -3428,6 +3434,9 @@ msgstr "Ouvrir le navigateur"
 #, python-format
 msgid "Open check-in for tournament [%(tournament)s]."
 msgstr "Ouvrir le pointage pour le tournoi [%(tournament)s]."
+
+msgid "Open documentation"
+msgstr "Ouvrir la documentation"
 
 msgid "Open/close check-in"
 msgstr "Ouvrir/fermer le pointage"
@@ -4527,6 +4536,9 @@ msgstr "Configuration de Sharly Chess"
 
 msgid "Sharly Chess settings have been updated."
 msgstr "La configuration de Sharly Chess a été mise à jour."
+
+msgid "Show Log"
+msgstr "Montrer les logs"
 
 msgid "Show all the players"
 msgstr "Afficher tou·tes les joueur·euses"
@@ -5733,6 +5745,9 @@ msgstr "Valeurs"
 msgid "Variation"
 msgstr "Variante"
 
+msgid "Version: {version}"
+msgstr "Version : {version}"
+
 msgid "View Pairings tab"
 msgstr "Voir l'onglet Appariements"
 
@@ -5810,6 +5825,9 @@ msgstr "Message d'avertissement"
 
 msgid "Warning: by default, only people on your Sharly Chess server can access the application."
 msgstr "Attention : par défaut, seules les personnes connectées sur le serveur Sharly Chess peuvent accéder à l'application."
+
+msgid "Warning: closing this window will stop Sharly Chess."
+msgstr "Avertissement : la fermeture de cette fenêtre arrête Sharly Chess."
 
 msgid "Warning: experimental features are enabled!"
 msgstr "Avertissement : les fonctionnalités expérimentales sont activées !"
@@ -6305,3 +6323,8 @@ msgstr "½ - 0 (NC)"
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
 
+#~ msgid "Warning: closing this window stops Sharly Chess."
+#~ msgstr "Avertissement : la fermerture de cette fenêtre arrête Sharly Chess."
+
+#~ msgid "Help"
+#~ msgstr "Aide"
