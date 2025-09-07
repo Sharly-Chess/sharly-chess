@@ -221,20 +221,26 @@
                         {{ admin_macros.text_input(
                             name='rules',
                             label=_('Rules file location:'),
-                            placeholder=_('E.g.: c:\\chess\\tournaments\\main\\rules.pdf'),
-                            help_text=_('A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event).'),
+                            placeholder=(
+                                _('Default: %(string)s', string=admin_event.rules)
+                                if admin_event.rules else
+                                _('E.g.: c:\\chess\\tournaments\\main\\rules.pdf')
+                            ),
+                            help_text=_('A URL, or the path to the rules file on the server, in PDF format.'),
                             data=data, errors=errors
                         ) }}
                     </div>
                     <div class="col-12 col-md-6 mb-3">
-                        {{ admin_macros.select_input(
+                        {{ admin_macros.number_input(
                             name='record_illegal_moves',
                             label=_('Illegal moves recording:'),
+                            placeholder=_('Default: %(string)s', string=admin_event.record_illegal_moves),
+                            min=0,
+                            max=3,
                             help_text=_(
-                                'The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d).',
-                                default=admin_event.record_illegal_moves
+                                'The maximum number of illegal moves that '
+                                'can be recorded per round for a player.',
                             ),
-                            select_options=record_illegal_moves_options,
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -301,34 +307,17 @@
                         {{ admin_macros.number_input(
                             name='first_board_number',
                             label=_('First board number:'),
-                            placeholder=_('E.g.: %(num)d', num=20),
-                            help_text=_(
-                                'The number of the first board of the tournament (if not set, defaults to %(default)d).',
-                                default=sharly_chess_config.default_first_board_number
-                            ),
+                            placeholder=_('Default: %(string)s', string=sharly_chess_config.default_first_board_number),
+                            help_text=_('The number of the first board of the tournament.'),
                             data=data, errors=errors
                         ) }}
                     </div>
-                    {#
-                    <div class="col-12 col-md-6 mb-3">
-                        {{ admin_macros.select_input(
-                            name='paired_bye_result',
-                            label=_('Paired bye points:'),
-                            help_text=_('The points scored by players who are paired bye.'),
-                            select_options=paired_bye_result_options,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    #}
                     <div class="col-12 col-md-6 mb-3">
                         {{ admin_macros.number_input(
                             name='max_byes',
                             label=_('Max byes:'),
-                            placeholder=_('E.g.: %(num)d', num=2),
-                            help_text=_(
-                                'The maximum number of byes a player can pretend to (if not set, defaults to %(default)d).',
-                                default=sharly_chess_config.default_max_byes
-                            ),
+                            placeholder=_('Default: %(string)s', string=sharly_chess_config.default_max_byes),
+                            help_text=_('The maximum number of byes a player can pretend to.'),
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -336,11 +325,8 @@
                         {{ admin_macros.number_input(
                             name='last_rounds_no_byes',
                             label=_('No. final rounds without byes:'),
-                            placeholder=_('E.g.: %(num)d', num=3),
-                            help_text=_(
-                                'The number of final rounds in which byes are not permitted (if not set, defaults to %(default)d).',
-                                default=sharly_chess_config.default_last_rounds_no_byes
-                            ),
+                            placeholder=_('Default: %(string)s', string=sharly_chess_config.default_last_rounds_no_byes),
+                            help_text=_('The number of final rounds in which byes are not permitted.'),
                             data=data, errors=errors
                         ) }}
                     </div>
