@@ -53,6 +53,7 @@ English version below
 - Ajout des titres FIDE dans les attributions de prix (3.0.0)
 - Ajout des départages sur les grilles Berger (3.0.0)
 - Correction de l'impression des appariements par ordre alphabétique (3.0.2)
+- Affichage des joueur⋅euses de la table 1 dans l'impression des appariements par ordre alphabétique (3.0.3)
 
 ## ChessEvent
 
@@ -114,6 +115,7 @@ English version below
 - Added FIDE titles on prize assignments (3.0.0)
 - Added tie-breaks to Berger grids (3.0.0)
 - Fixed printing of pairings in alphabetical order (3.0.2)
+- Re-added board 1 players to pairings in alphabetcal order (3.0.3)
 
 ## ChessEvent
 
