@@ -124,38 +124,33 @@
                 </div>
 
                 <h4>
-                    {{ _('Check-in / Results entry') }}
-                </h4>
-                <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
-                        {{ admin_macros.select_input(
-                            name='record_illegal_moves',
-                            label=_('Illegal moves recording:'),
-                            help_text=_(
-                                'The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d). This value can be modified for each tournament.',
-                                default=sharly_chess_config.default_record_illegal_moves_number
-                            ),
-                            select_options=record_illegal_moves_options,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                </div>
-
-                <h4>
                     {{ _('Rules') }}
                 </h4>
                 <div class="row">
-                    <div class="col-12 mb-3">
+                    <div class="col-12 col-md-6 mb-3">
                         {{ admin_macros.text_input(
                             name='rules',
                             label=_('Rules file location:'),
                             placeholder=_('E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf'),
-                            help_text=_('A URL, or the path to the rules file on the server, in PDF format (optional).'),
+                            help_text=_('A URL, or the path to the rules file on the server, in PDF format.'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        {{ admin_macros.number_input(
+                            name='record_illegal_moves',
+                            label=_('Illegal moves recording:'),
+                            placeholder=_('Default: %(string)s', string=sharly_chess_config.default_record_illegal_moves_number),
+                            min=0,
+                            max=3,
+                            help_text=_(
+                                'The maximum number of illegal moves that '
+                                'can be recorded per round for a player.',
+                            ),
                             data=data, errors=errors
                         ) }}
                     </div>
                 </div>
-
                 <h4>
                     {{ _('Display') }}
                 </h4>
@@ -165,7 +160,7 @@
                             {{ admin_macros.text_input(
                                 name='background_image',
                                 label=_('Background image:'),
-                                help_text=_("The URL or the path of the image (relative to the 'custom' folder) to display (by default the Sharly Chess logo)."),
+                                help_text=_("The URL or the path of the image (relative to the 'custom' folder) to display."),
                                 default_checkbox=true,
                                 default_checkbox_text=_('no background image'),
                                 data=data, errors=errors
@@ -234,7 +229,6 @@
                             name='background_color',
                             label=_('Background colour:'),
                             help_text=_('The background colour is used when the image does not fill the whole screen.'),
-                            default_checkbox=true,
                             default_color=sharly_chess_config.default_background_color,
                             data=data, errors=errors
                         ) }}
@@ -279,7 +273,6 @@
                             name='message_background_color',
                             label=_('Background colour:'),
                             help_text=_('The background colour of the alert messages.'),
-                            default_checkbox=true,
                             default_color=sharly_chess_config.default_message_background_color,
                             data=data, errors=errors
                         ) }}
@@ -289,17 +282,21 @@
                             name='message_color',
                             label=_('Text colour:'),
                             help_text=_('The text colour of the alert messages.'),
-                            default_checkbox=true,
                             default_color=sharly_chess_config.default_message_color,
                             data=data, errors=errors
                         ) }}
                     </div>
                     <div class="col-12 col-xl-6 mb-3">
-                        {% with
-                            message_help_text=_('When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level.')
-                        %}
-                            {% include '../common/modal/alert_message.html' %}
-                        {% endwith %}
+                        {{ admin_macros.text_input(
+                            name='message_text',
+                            label=_('Alert message:'),
+                            placeholder=_('E.g.: Please keep quiet until the end of the round!'),
+                            help_text=_(
+                                'When defined, the alert message is displayed in a '
+                                'scrolling banner at the bottom of the screens.'
+                            ),
+                            data=data, errors=errors
+                        ) }}
                     </div>
                 </div>
             </form>

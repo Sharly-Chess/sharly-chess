@@ -254,10 +254,7 @@ msgstr ""
 msgid "<smart_count> week |||| <smart_count> weeks"
 msgstr ""
 
-msgid "A URL, or the path to the rules file on the server, in PDF format (optional)."
-msgstr ""
-
-msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
+msgid "A URL, or the path to the rules file on the server, in PDF format."
 msgstr ""
 
 msgid "A file is expected."
@@ -1377,6 +1374,10 @@ msgstr ""
 msgid "Default timer configuration"
 msgstr ""
 
+#, python-format
+msgid "Default: %(string)s"
+msgstr ""
+
 msgid "Define as main category"
 msgstr ""
 
@@ -1396,7 +1397,7 @@ msgstr ""
 msgid "Delay #%(num)d:"
 msgstr ""
 
-msgid "Delay:"
+msgid "Delay (seconds):"
 msgstr ""
 
 msgid "Delete"
@@ -1688,10 +1689,6 @@ msgstr ""
 
 #, python-format
 msgid "E.g.: %(num)d"
-msgstr ""
-
-#, python-format
-msgid "E.g.: %(num)d%%"
 msgstr ""
 
 #, python-format
@@ -2337,8 +2334,7 @@ msgstr ""
 msgid "Font size adjustment (%%):"
 msgstr ""
 
-#, python-format
-msgid "Font size adjustment for the screen where 100%% is the default font size."
+msgid "Font size adjustment for the screen."
 msgstr ""
 
 msgid "For non-monetary prizes, the value is used for reward priority."
@@ -3253,16 +3249,10 @@ msgstr ""
 msgid "No screen families"
 msgstr ""
 
-msgid "No screen families."
-msgstr ""
-
 msgid "No screen neither family to rotate."
 msgstr ""
 
 msgid "No screens"
-msgstr ""
-
-msgid "No screens."
 msgstr ""
 
 msgid "No such screens."
@@ -3874,15 +3864,6 @@ msgid "Plugins"
 msgstr ""
 
 msgid "Point counting"
-msgstr ""
-
-msgid "Points for draw (Half-Point Bye)"
-msgstr ""
-
-msgid "Points for loss (Zero-Point Bye)"
-msgstr ""
-
-msgid "Points for win (Full-Point Bye)"
 msgstr ""
 
 #, python-format
@@ -4733,7 +4714,7 @@ msgstr ""
 msgid "The URL of the image to display."
 msgstr ""
 
-msgid "The URL or the path of the image (relative to the 'custom' folder) to display (by default the Sharly Chess logo)."
+msgid "The URL or the path of the image (relative to the 'custom' folder) to display."
 msgstr ""
 
 msgid "The Unique ID, used to authenticate."
@@ -4820,16 +4801,10 @@ msgstr ""
 msgid "The maximum age of the results, in minutes (by default %(minutes)d minutes)."
 msgstr ""
 
-#, python-format
-msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)d)."
+msgid "The maximum number of byes a player can pretend to."
 msgstr ""
 
-#, python-format
-msgid "The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d)."
-msgstr ""
-
-#, python-format
-msgid "The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d). This value can be modified for each tournament."
+msgid "The maximum number of illegal moves that can be recorded per round for a player."
 msgstr ""
 
 msgid "The maximum number of points of the players displayed (if left empty, all the players are displayed)."
@@ -4841,8 +4816,10 @@ msgstr ""
 msgid "The maximum rating must be at most equal to the minimum rating."
 msgstr ""
 
-#, python-format
-msgid "The minimum delay between auto-uploads to the FFE server (%(num)d minutes by default)"
+msgid "The message displayed on the scrolling banner at the bottom of the screen."
+msgstr ""
+
+msgid "The minimum delay between auto-uploads to the FFE server."
 msgstr ""
 
 msgid "The minimum level of logs that will be printed on the console (all the detailed logs are always printed to the log files)."
@@ -4870,7 +4847,7 @@ msgstr ""
 msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
 msgstr ""
 
-msgid "The name of the screen set (the name of the first set of a screen is by default the name of the screen)."
+msgid "The name of the screen set."
 msgstr ""
 
 msgid "The name of the screen, displayed on event screens."
@@ -4891,8 +4868,7 @@ msgstr ""
 msgid "The number of columns used to display data."
 msgstr ""
 
-#, python-format
-msgid "The number of final rounds in which byes are not permitted (if not set, defaults to %(default)d)."
+msgid "The number of final rounds in which byes are not permitted."
 msgstr ""
 
 msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
@@ -4910,20 +4886,19 @@ msgstr ""
 msgid "The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players."
 msgstr ""
 
-#, python-format
-msgid "The number of the first board of the tournament (if not set, defaults to %(default)d)."
+msgid "The number of the first board of the tournament."
 msgstr ""
 
-msgid "The number of the first board to select, optional (the first board by default)."
+msgid "The number of the first board to select."
 msgstr ""
 
-msgid "The number of the first player to select, optional (the first player by alphabetical order by default)."
+msgid "The number of the first player to select."
 msgstr ""
 
-msgid "The number of the last board to select, optional (the last board by default)."
+msgid "The number of the last board to select."
 msgstr ""
 
-msgid "The number of the last player to select, optional (the last player by alphabetical order by default)."
+msgid "The number of the last player to select."
 msgstr ""
 
 msgid "The pairing number can't be greater than the player count."
@@ -5016,10 +4991,10 @@ msgstr ""
 msgid "The qualification number given by the French Federation is an integer, it is used to connect to the FFE website."
 msgstr ""
 
-msgid "The rank of the first player to select, optional (1 by default)."
+msgid "The rank of the first player to select."
 msgstr ""
 
-msgid "The rank of the last player to select, optional (the rank of the last rank player by default)."
+msgid "The rank of the last player to select."
 msgstr ""
 
 msgid "The rating used when the time control is at least 60 minutes."
@@ -5043,8 +5018,7 @@ msgstr ""
 msgid "The roles to attribute to this device."
 msgstr ""
 
-#, python-format
-msgid "The rotating delay between two screens (by default %(default)d seconds)."
+msgid "The rotating delay between two screens."
 msgstr ""
 
 msgid "The round after which the ranking is displayed (if left empty, the last round finished)."
@@ -5099,7 +5073,7 @@ msgstr ""
 msgid "The tournament of the screens of the family, mandatory (unlike basic screens, only one tournament can be displayed on family screens)."
 msgstr ""
 
-msgid "The tournament of which you want to show the pairings, mandatory."
+msgid "The tournament of which you want to show the pairings."
 msgstr ""
 
 msgid "The tournament to print."
@@ -5708,9 +5682,6 @@ msgstr ""
 msgid "Upper rating limit"
 msgstr ""
 
-msgid "Use Application's default - {option}"
-msgstr ""
-
 msgid "Use Event's default - {option}"
 msgstr ""
 
@@ -5872,16 +5843,7 @@ msgstr ""
 msgid "Welcome to Sharly Chess!"
 msgstr ""
 
-msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level."
-msgstr ""
-
-msgid "When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed)."
-msgstr ""
-
-msgid "When not defined at rotator-level, the alert message defined at event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed). The alert message defined at rotator-level can be overridden at screen or family-level."
-msgstr ""
-
-msgid "When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed)."
+msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens."
 msgstr ""
 
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
@@ -6158,6 +6120,9 @@ msgstr ""
 msgid "from move 1"
 msgstr ""
 
+msgid "last"
+msgstr ""
+
 msgid "min"
 msgstr ""
 
@@ -6307,11 +6272,6 @@ msgstr ""
 
 msgid "{number} players written to the database."
 msgstr ""
-
-msgid "{num} illegal move max"
-msgid_plural "{num} illegal moves max"
-msgstr[0] ""
-msgstr[1] ""
 
 msgid "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."
 msgstr ""

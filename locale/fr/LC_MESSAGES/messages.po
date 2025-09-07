@@ -254,11 +254,8 @@ msgstr "<smart_count> seconde |||| <smart_count> secondes"
 msgid "<smart_count> week |||| <smart_count> weeks"
 msgstr "<smart_count> semaine |||| <smart_count> semaines"
 
-msgid "A URL, or the path to the rules file on the server, in PDF format (optional)."
-msgstr "Une URL, ou le chemin du règlement sur le serveur, au format PDF (facultatif)."
-
-msgid "A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event)."
-msgstr "Une URL, ou l'emplacement du règlement sur le serveur, au format PDF (facultatif, par défaut l'emplacement du règlement de l'évènement)."
+msgid "A URL, or the path to the rules file on the server, in PDF format."
+msgstr "Une URL, ou l'emplacement du règlement sur le serveur, au format PDF."
 
 msgid "A file is expected."
 msgstr "Un fichier est attendu."
@@ -1377,6 +1374,10 @@ msgstr "Langue par défaut"
 msgid "Default timer configuration"
 msgstr "Configuration par défaut des chronomètres"
 
+#, python-format
+msgid "Default: %(string)s"
+msgstr "Par défaut : %(string)s"
+
 msgid "Define as main category"
 msgstr "Définir comme catégorie générale"
 
@@ -1396,8 +1397,8 @@ msgstr "Définir les prix de la catégorie."
 msgid "Delay #%(num)d:"
 msgstr "Délai n°%(num)d :"
 
-msgid "Delay:"
-msgstr "Délai :"
+msgid "Delay (seconds):"
+msgstr "Délai (secondes) :"
 
 msgid "Delete"
 msgstr "Supprimer"
@@ -1689,10 +1690,6 @@ msgstr "Exemple : %(minutes)d (minutes)"
 #, python-format
 msgid "E.g.: %(num)d"
 msgstr "Exemple : %(num)d"
-
-#, python-format
-msgid "E.g.: %(num)d%%"
-msgstr "Exemple : %(num)d%%"
 
 #, python-format
 msgid "E.g.: %(seconds)d (seconds)"
@@ -2337,9 +2334,8 @@ msgstr "Flotteurs"
 msgid "Font size adjustment (%%):"
 msgstr "Ajustement de la taille de police (%%) :"
 
-#, python-format
-msgid "Font size adjustment for the screen where 100%% is the default font size."
-msgstr "Ajustement de la taille de police pour l'écran, 100%% par défaut."
+msgid "Font size adjustment for the screen."
+msgstr "Ajustement de la taille de police pour l'écran."
 
 msgid "For non-monetary prizes, the value is used for reward priority."
 msgstr "Pour les prix non-monétaires, la valeur est utiliée pour prioriser les récompenses."
@@ -3253,17 +3249,11 @@ msgstr "Règlement non défini"
 msgid "No screen families"
 msgstr "Aucune famille d'écrans"
 
-msgid "No screen families."
-msgstr "Aucune famille d'écrans."
-
 msgid "No screen neither family to rotate."
 msgstr "Aucun écran ni famille à afficher."
 
 msgid "No screens"
 msgstr "Aucun écran"
-
-msgid "No screens."
-msgstr "Aucun écran."
 
 msgid "No such screens."
 msgstr "Aucun écran de ce type."
@@ -3875,15 +3865,6 @@ msgstr "Plug-ins"
 
 msgid "Point counting"
 msgstr "Comptage des points"
-
-msgid "Points for draw (Half-Point Bye)"
-msgstr "Points de match nul (demi-point joker)"
-
-msgid "Points for loss (Zero-Point Bye)"
-msgstr "Points de défaite (absence)"
-
-msgid "Points for win (Full-Point Bye)"
-msgstr "Points de victoire (point joker entier)"
 
 #, python-format
 msgid "Points: %(min)s or more"
@@ -4733,8 +4714,8 @@ msgstr "L'adresse IP, utilisée pour identifier l'appareil."
 msgid "The URL of the image to display."
 msgstr "L'URL de l'image à afficher."
 
-msgid "The URL or the path of the image (relative to the 'custom' folder) to display (by default the Sharly Chess logo)."
-msgstr "L'URL ou le chemin de l'image (relatif au dossier 'custom') à afficher (par défaut le logo Sharly Chess)."
+msgid "The URL or the path of the image (relative to the 'custom' folder) to display."
+msgstr "L'URL ou le chemin de l'image (relatif au dossier 'custom') à afficher."
 
 msgid "The Unique ID, used to authenticate."
 msgstr "L'identifiant unique, utilisé pour s'authentifier."
@@ -4820,17 +4801,11 @@ msgstr "La catégorie générale est ouverte à tou·tes les joueur·euses."
 msgid "The maximum age of the results, in minutes (by default %(minutes)d minutes)."
 msgstr "L'âge maximal des résultats affichés sur l'écran, en minutes (par défaut %(minutes)d minutes)."
 
-#, python-format
-msgid "The maximum number of byes a player can pretend to (if not set, defaults to %(default)d)."
-msgstr "Le nombre maximum de byes auquel un·e joueur·euse peut prétendre (si non défini, %(default)d par défaut)."
+msgid "The maximum number of byes a player can pretend to."
+msgstr "Le nombre maximum de byes auquel un·e joueur·euse peut prétendre."
 
-#, python-format
-msgid "The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d)."
-msgstr "Le nombre maximum de coups illégaux que l'on peut enregistrer par ronde pour un·e joueur·euse (de 0 à 3, par défaut %(default)d)."
-
-#, python-format
-msgid "The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d). This value can be modified for each tournament."
-msgstr "Le nombre maximum de coups illégaux que l'on peut enregistrer par ronde pour un·e joueur·euse (de 0 à 3, par défaut %(default)d). Cette valeur peut être modifiée pour chaque tournoi."
+msgid "The maximum number of illegal moves that can be recorded per round for a player."
+msgstr "Le nombre maximum de coups illégaux que l'on peut enregistrer par ronde pour un·e joueur·euse."
 
 msgid "The maximum number of points of the players displayed (if left empty, all the players are displayed)."
 msgstr "Le nombre maximum de points réalisé par les joueur·euses affiché·es (si vide, tou·tes les joueur·euses sont affiché·es)."
@@ -4841,9 +4816,11 @@ msgstr "Le nombre maximum de résultats à afficher sur l'écran, facultatif (si
 msgid "The maximum rating must be at most equal to the minimum rating."
 msgstr "Le Elo maximum doit au moins être égal au Elo minimum."
 
-#, python-format
-msgid "The minimum delay between auto-uploads to the FFE server (%(num)d minutes by default)"
-msgstr "Le délai minimum entre deux envois automatiques vers le serveur de la FFE (par défaut : %(num)d minutes)"
+msgid "The message displayed on the scrolling banner at the bottom of the screen."
+msgstr "Le message affiché sur le bandeau déroulant en bas de l'écran."
+
+msgid "The minimum delay between auto-uploads to the FFE server."
+msgstr "Le délai minimum entre deux envois automatiques vers le serveur de la FFE."
 
 msgid "The minimum level of logs that will be printed on the console (all the detailed logs are always printed to the log files)."
 msgstr "Le niveau minimum des log affichés sur la console (tous les logs détaillés sont toujours écrits dans les fichiers de log)."
@@ -4870,8 +4847,8 @@ msgstr "Le nom de l'écran rotatif."
 msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
 msgstr "Le nom de la famille d' écrans, facultatif. Les mots-clés suivants sont remplacés automatiquement par les numéros des échiquiers ou les noms des joueur·euses : %%f=first (premier), %%l=last (dernier), %%t=tournament (tournoi)."
 
-msgid "The name of the screen set (the name of the first set of a screen is by default the name of the screen)."
-msgstr "Le nom de l'ensemble (le nom du premier ensemble d'un écran est par défaut le nom de l'écran)."
+msgid "The name of the screen set."
+msgstr "Le nom de l'ensemble."
 
 msgid "The name of the screen, displayed on event screens."
 msgstr "Le nom de l'écran, affiché sur les écrans des évènements."
@@ -4891,9 +4868,8 @@ msgstr "Le nombre d'échiquiers par écran, facultatif (le nombre d'écrans s'ad
 msgid "The number of columns used to display data."
 msgstr "Le nombre de colonnes utilisé pour afficher les données."
 
-#, python-format
-msgid "The number of final rounds in which byes are not permitted (if not set, defaults to %(default)d)."
-msgstr "Le nombre de rondes finales pour lesquelles les joueur·euses ne peuvent prendre de bye (si non défini, %(default)d par défaut)."
+msgid "The number of final rounds in which byes are not permitted."
+msgstr "Le nombre de rondes finales pour lesquelles les joueur·euses ne peuvent prendre de bye."
 
 msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
 msgstr "Le nombre de joueur·euses par écran, facultatif (le nombre d'écrans s'adapte au nombre de joueur·euses)."
@@ -4910,21 +4886,20 @@ msgstr "Le nombre d'écrans sur lesquels les échiquiers seront répartis, facul
 msgid "The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players."
 msgstr "Le nombre d'écrans sur lesquels les joueur·euses seront réparti·es, facultatif (le nombre d'écrans reste toujours le même et le nombre de joueur·euses par écran s'adapte)."
 
-#, python-format
-msgid "The number of the first board of the tournament (if not set, defaults to %(default)d)."
-msgstr "Le numéro du premier échiquier du tournoi (si non défini, %(default)d par défaut)."
+msgid "The number of the first board of the tournament."
+msgstr "Le numéro du premier échiquier du tournoi."
 
-msgid "The number of the first board to select, optional (the first board by default)."
-msgstr "Le numéro du premier échiquier à prendre en compte, facultatif (par défaut le premier échiquier)."
+msgid "The number of the first board to select."
+msgstr "Le numéro du premier échiquier à prendre en compte."
 
-msgid "The number of the first player to select, optional (the first player by alphabetical order by default)."
-msgstr "Le numéro du·de la premier·e joueur·euse, facultatif (par défaut le·la premier·e par ordre alphabétique)."
+msgid "The number of the first player to select."
+msgstr "Le numéro du·de la premier·e joueur·euse."
 
-msgid "The number of the last board to select, optional (the last board by default)."
-msgstr "Le numéro du dernier échiquier à prendre en compte, facultatif (par défaut le dernier échiquier)."
+msgid "The number of the last board to select."
+msgstr "Le numéro du dernier échiquier à prendre en compte."
 
-msgid "The number of the last player to select, optional (the last player by alphabetical order by default)."
-msgstr "Le numéro du·de la dernier·e joueur·euse, facultatif (par défaut le·la dernier·e par ordre alphabétique)."
+msgid "The number of the last player to select."
+msgstr "Le numéro du·de la dernier·e joueur·euse."
 
 msgid "The pairing number can't be greater than the player count."
 msgstr "Le numéro d'appariement ne peut pas être supérieur au nombre de joueur·euses."
@@ -5016,11 +4991,11 @@ msgstr "Le montant de l'inscription du·de la joueur·euse."
 msgid "The qualification number given by the French Federation is an integer, it is used to connect to the FFE website."
 msgstr "Le numéro d'homologation donné par la Fédération Française est un entier, il est utilisé pour la connexion au site web de la FFE."
 
-msgid "The rank of the first player to select, optional (1 by default)."
-msgstr "Le classement du·de la premier·e joueur·euse, facultatif (par défaut 1)."
+msgid "The rank of the first player to select."
+msgstr "Le classement du·de la premier·e joueur·euse."
 
-msgid "The rank of the last player to select, optional (the rank of the last rank player by default)."
-msgstr "Le classement du·de la dernier·e joueur·euse, facultatif (par défaut le·la dernier·e par ordre de classement)."
+msgid "The rank of the last player to select."
+msgstr "Le classement du·de la dernier·e joueur·euse."
 
 msgid "The rating used when the time control is at least 60 minutes."
 msgstr "Le classement utilisé lorsque la cadence est d'au moins 60 minutes."
@@ -5043,9 +5018,8 @@ msgstr "Les rôles à attribuer à ce compte."
 msgid "The roles to attribute to this device."
 msgstr "Les rôles à attribuer à cet appareil."
 
-#, python-format
-msgid "The rotating delay between two screens (by default %(default)d seconds)."
-msgstr "Le délai de rotation entre deux écrans (par défaut %(default)d secondes)."
+msgid "The rotating delay between two screens."
+msgstr "Le délai de rotation entre deux écrans."
 
 msgid "The round after which the ranking is displayed (if left empty, the last round finished)."
 msgstr "La ronde après laquelle le classement est affiché (si vide, la dernière ronde terminée)."
@@ -5099,8 +5073,8 @@ msgstr "Le tournoi est terminé."
 msgid "The tournament of the screens of the family, mandatory (unlike basic screens, only one tournament can be displayed on family screens)."
 msgstr "Le tournoi des écrans de la famille, obligatoire (contrairement aux écrans basiques, un seul tournoi peut être affiché sur les écrans de famille)."
 
-msgid "The tournament of which you want to show the pairings, mandatory."
-msgstr "Le tournoi dont on souhaite afficher les appariements, obligatoire."
+msgid "The tournament of which you want to show the pairings."
+msgstr "Le tournoi dont on souhaite afficher les appariements"
 
 msgid "The tournament to print."
 msgstr "Le tournoi à imprimer."
@@ -5708,9 +5682,6 @@ msgstr "La limite Elo haute doit être supérieure à la limite Elo basse."
 msgid "Upper rating limit"
 msgstr "Limite Elo haute"
 
-msgid "Use Application's default - {option}"
-msgstr "Par défaut de l’application : {option} "
-
 msgid "Use Event's default - {option}"
 msgstr "Défaut de l’événement – {option}"
 
@@ -5872,17 +5843,8 @@ msgstr "Une semaine"
 msgid "Welcome to Sharly Chess!"
 msgstr "Bienvenue dans Sharly Chess !"
 
-msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level."
-msgstr "Lorsqu'il est défini, le message d'alerte est utilisé par défaut dans le bandeau défilant en bas des écrans. Ce message peut être surchargé par les écrans rotatifs, les écrans et les familles d'écrans."
-
-msgid "When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed)."
-msgstr "Lorsqu'il n'est pas défini au niveau de la famille, le message d'alerte défini au niveau de l'écran rotatif ou de l'évènement est utilisé (le bandeau défilant en bas des écrans de la famille n'est pas affiché si aucun message d'alerte n'est configuré)."
-
-msgid "When not defined at rotator-level, the alert message defined at event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed). The alert message defined at rotator-level can be overridden at screen or family-level."
-msgstr "Lorsqu'il n'est pas défini au niveau de l'écran rotatif, le message d'alerte défini au niveau de l'évènement est utilisé (le bandeau défilant en bas de l'écran n'est pas affiché si aucun message d'alerte n'est configuré). Le message d'alerte défini au niveau de l'écran rotatif peut être redéfini au niveau famille ou écran."
-
-msgid "When not defined at screen-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed)."
-msgstr "Lorsqu'il n'est pas défini au niveau de l'écran, le message d'alerte défini au niveau de l'écran rotatif ou de l'évènement est utilisé (le bandeau défilant en bas de l'écran n'est pas affiché si aucun message d'alerte n'est configuré)."
+msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens."
+msgstr "Lorsqu'il est défini, le message d'alerte est utilisé par défaut dans le bandeau défilant en bas des écrans."
 
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
 msgstr "Lorsque l'on n'affiche pas le bouton de sortie, les utilisateur·ices ne peuvent quitter l'écran accidentellement."
@@ -6158,6 +6120,9 @@ msgstr "évènement"
 msgid "from move 1"
 msgstr "dès le 1er coup"
 
+msgid "last"
+msgstr "dernier"
+
 msgid "min"
 msgstr "min"
 
@@ -6307,11 +6272,6 @@ msgstr "{last_name} {first_name}"
 
 msgid "{number} players written to the database."
 msgstr "{number} joueur·euses écrit·es dans la base de données."
-
-msgid "{num} illegal move max"
-msgid_plural "{num} illegal moves max"
-msgstr[0] "Maximum {num} coup illégal"
-msgstr[1] "Maximum {num} coups illégaux"
 
 msgid "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."
 msgstr "{player.last_name} {player.first_name} avait remporté {previous_value} dans le groupe principal, mais a ensuite reçu un prix de {next_value} dans la catégorie « {cat_name} ». En quittant le groupe principal, la part du prix à sa place vaut désormais {new_share}."

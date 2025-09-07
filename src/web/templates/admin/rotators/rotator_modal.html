@@ -66,9 +66,9 @@
                         <div class="col-12 col-md-4 mb-3">
                             {{ admin_macros.number_input(
                                 name='delay',
-                                label=_('Delay:'),
-                                placeholder=_('E.g.: %(seconds)d (seconds)', seconds=sharly_chess_config.default_rotator_delay),
-                                help_text=_('The rotating delay between two screens (by default %(default)d seconds).', default=sharly_chess_config.default_rotator_delay),
+                                label=_('Delay (seconds):'),
+                                placeholder=_('Default: %(string)s', string=sharly_chess_config.default_rotator_delay),
+                                help_text=_('The rotating delay between two screens.'),
                                 data=data, errors=errors,
                                 min=1
                             ) }}
@@ -79,13 +79,13 @@
                         {{ _('Selection') }}
                     </h4>
                     <div class="row">
-                        <div class="col-12 mb-3">
-                            <label class="form-check-label">{{ _('Screens:') }}</label>
-                            <div class="form-text">
-                                {{ _('The screens to rotate (the input screens are emphasised because they should not appear on rotators).') }}
-                            </div>
-                            <div class="d-flex flex-wrap gap-2 mt-2">
-                                {% if admin_event.basic_screens_by_id %}
+                        {% if admin_event.basic_screens_by_id %}
+                            <div class="col-12 mb-3">
+                                <label class="form-check-label">{{ _('Screens:') }}</label>
+                                <div class="form-text">
+                                    {{ _('The screens to rotate (the input screens are emphasised because they should not appear on rotators).') }}
+                                </div>
+                                <div class="d-flex flex-wrap gap-2 mt-2">
                                     {% for first in [true, false] %}
                                         {% with class='' if first else 'opacity-75' %}
                                             {% for screen in admin_event.basic_screens_by_id.values() %}
@@ -109,18 +109,16 @@
                                             {% endfor %}
                                         {% endwith %}
                                     {% endfor %}
-                                {% else %}
-                                    {{ _('No screens.') }}
-                                {% endif %}
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-12 mb-3">
-                            <label class="form-check-label">{{ _('Screen families:') }}</label>
-                            <div id="" class="form-text">
-                                {{ _('The screen families to rotate (the input screen families are emphasised because they should not appear on rotators).') }}
-                            </div>
-                            <div class="d-flex flex-wrap gap-2 mt-2">
-                                {% if admin_event.families_by_id %}
+                        {% endif %}
+                        {% if admin_event.families_by_id %}
+                            <div class="col-12 mb-3">
+                                <label class="form-check-label">{{ _('Screen families:') }}</label>
+                                <div id="" class="form-text">
+                                    {{ _('The screen families to rotate (the input screen families are emphasised because they should not appear on rotators).') }}
+                                </div>
+                                <div class="d-flex flex-wrap gap-2 mt-2">
                                     {% for first in [true, false] %}
                                         {% with class='' if first else 'border-secondary-subtle text-secondary-subtle' %}
                                             {% for family in admin_event.families_by_id.values() %}
@@ -144,25 +142,19 @@
                                             {% endfor %}
                                         {% endwith %}
                                     {% endfor %}
-                                {% else %}
-                                    {{ _('No screen families.') }}
-                                {% endif %}
+                                </div>
                             </div>
-                        </div>
+                        {% endif %}
                     </div>
 
                     <h4>
                         {{ _('Display') }}
                     </h4>
-                    {% with
-                        message_help_text=_('When not defined at rotator-level, the alert message defined at event-level is used (if no alert message is set, the scrolling banner at the bottom of the screen is not displayed). The alert message defined at rotator-level can be overridden at screen or family-level.')
-                    %}
-                        <div class="row">
-                            <div class="col-12 mb-3">
-                                {% include '../common/modal/alert_message.html' %}
-                            </div>
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            {% include '../common/modal/alert_message.html' %}
                         </div>
-                    {% endwith %}
+                    </div>
                 {% endif %}
             </form>
         </div>

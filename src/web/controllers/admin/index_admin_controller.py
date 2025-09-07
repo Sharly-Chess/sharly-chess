@@ -309,33 +309,19 @@ class IndexAdminController(BaseAdminController):
                 pass
             case 'config':
                 if data is None:
-                    sharly_chess_config = SharlyChessConfig()
-                    data = {
-                        'console_log_level': WebContext.value_to_form_data(
-                            sharly_chess_config.stored_config.console_log_level
-                        ),
-                        'console_color': WebContext.value_to_form_data(
-                            sharly_chess_config.stored_config.console_color
-                        ),
-                        'console_show_date': WebContext.value_to_form_data(
-                            sharly_chess_config.stored_config.console_show_date
-                        ),
-                        'console_show_level': WebContext.value_to_form_data(
-                            sharly_chess_config.stored_config.console_show_level
-                        ),
-                        'experimental': WebContext.value_to_form_data(
-                            sharly_chess_config.stored_config.experimental
-                        ),
-                        'launch_browser': WebContext.value_to_form_data(
-                            sharly_chess_config.stored_config.launch_browser
-                        ),
-                        'federation': WebContext.value_to_form_data(
-                            sharly_chess_config.stored_config.federation
-                        ),
-                        'locale': WebContext.value_to_form_data(
-                            sharly_chess_config.stored_config.locale
-                        ),
-                    }
+                    config = SharlyChessConfig()
+                    data = WebContext.values_dict_to_form_data(
+                        {
+                            'console_log_level': config.console_log_level,
+                            'console_color': config.console_color,
+                            'console_show_date': config.console_show_date,
+                            'console_show_level': config.console_show_level,
+                            'experimental': config.experimental,
+                            'launch_browser': config.launch_browser,
+                            'federation': config.stored_config.federation,
+                            'locale': config.locale,
+                        }
+                    )
 
                 for plugin in plugin_manager.all_plugins:
                     if plugin.form_key not in data:
@@ -346,18 +332,9 @@ class IndexAdminController(BaseAdminController):
                 if errors is None:
                     errors = {}
                 console_log_level_options: dict[str, str] = {
-                    '': '-',
-                } | {
                     str(console_log_level): console_log_level_str
                     for console_log_level, console_log_level_str in sharly_chess_config.console_log_levels.items()
                 }
-                console_log_level_options[''] = _(
-                    "Use Application's default - {option}"
-                ).format(
-                    option=console_log_level_options[
-                        str(SharlyChessConfig.default_console_log_level)
-                    ]
-                )
                 locale_options: dict[str, str] = {
                     locale: locale_localized_name(locale) for locale in locales
                 }
@@ -368,9 +345,12 @@ class IndexAdminController(BaseAdminController):
                     'console_log_level_options': console_log_level_options,
                     'locale_options': locale_options,
                     'plugin_form_fields_templates': plugin_form_fields_templates,
-                    'federation_options': cls._get_federation_options_with_application_default(
-                        default_federation=None, may_be_empty=not data['federation']
-                    ),
+                    'federation_options': (
+                        {}
+                        if data['federation']
+                        else {'': _('Please choose a federation')}
+                    )
+                    | cls._get_federation_options(),
                     'modal': modal,
                     'data': data,
                     'errors': errors,
@@ -387,9 +367,6 @@ class IndexAdminController(BaseAdminController):
                 )
 
                 context |= {
-                    'record_illegal_moves_options': cls._get_record_illegal_moves_options(
-                        SharlyChessConfig.default_record_illegal_moves_number
-                    ),
                     'timer_color_texts': cls._get_timer_color_texts(
                         SharlyChessConfig.default_timer_delays
                     ),
@@ -399,9 +376,7 @@ class IndexAdminController(BaseAdminController):
                     if 'background_image' in data
                     else {},
                     'plugin_form_fields_templates': plugin_form_fields_templates,
-                    'federation_options': cls._get_federation_options_with_application_default(
-                        default_federation=None
-                    ),
+                    'federation_options': cls._get_federation_options(),
                     'modal': modal,
                     'action': action,
                     'data': data,

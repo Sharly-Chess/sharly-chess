@@ -641,10 +641,6 @@ class PlayerAdminController(BaseEventAdminController):
             case None:
                 pass
             case 'player':
-                federation_options = cls._get_federation_options_with_event_default(
-                    default_federation=admin_event.federation
-                )
-
                 if data is None:
                     first_name: str | None = None
                     last_name: str | None = None
@@ -706,9 +702,7 @@ class PlayerAdminController(BaseEventAdminController):
                         case _:
                             raise ValueError(f'action=[{action}]')
 
-                    federation_options = cls._get_federation_options_with_event_default(
-                        admin_event.federation if federation is None else None
-                    )
+                    federation_options = cls._get_federation_options()
 
                     rating_data: dict[str, Any] = {}
                     for tournament_rating in TournamentRating:
