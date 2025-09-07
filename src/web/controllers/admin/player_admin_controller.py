@@ -702,8 +702,6 @@ class PlayerAdminController(BaseEventAdminController):
                         case _:
                             raise ValueError(f'action=[{action}]')
 
-                    federation_options = cls._get_federation_options()
-
                     rating_data: dict[str, Any] = {}
                     for tournament_rating in TournamentRating:
                         rating_ = ratings[tournament_rating]
@@ -805,7 +803,7 @@ class PlayerAdminController(BaseEventAdminController):
                     'licence_options': {
                         str(licence.value): licence.name for licence in PlayerFFELicence
                     },
-                    'federation_options': federation_options,
+                    'federation_options': cls._get_federation_options(),
                     'tournament_options': tournament_options,
                     'data_source_options': DataSourceManager.options(),
                     'plugin_form_fields_templates': plugin_form_fields_templates,
