@@ -140,6 +140,9 @@ class PrizeCategory:
         return sum(prize.value for prize in self.prizes)
 
     def format_total_prize_value(self, currency: str) -> str:
+        if self.has_non_monetary_prizes:
+            value = self.total_prize_value
+            return str(int(value)) if value.is_integer() else f'{value:.2f}'
         return StaticUtils.currency_value_str(self.total_prize_value, currency)
 
     def get_event_database(self) -> EventDatabase:

@@ -10,12 +10,12 @@ from litestar.enums import RequestEncodingType
 from litestar.params import Body
 
 from common import REQUEST_TIMEOUT, format_timestamp_date
-from common.i18n import _, ngettext
+from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
 from data.loader import EventLoader
 from utils import StaticUtils
-from utils.enum import Result, TournamentRating
+from utils.enum import TournamentRating
 from database.sqlite.event.event_store import StoredEvent
 from plugins.manager import plugin_manager
 from web.controllers.base_controller import BaseController, WebContext
@@ -89,97 +89,11 @@ class BaseAdminController(BaseController):
     """A base class inherited by all the admin controllers."""
 
     @staticmethod
-    def __get_federation_options(
-        default_federation: str | None,
-        default_federation_text: str,
-        may_be_empty: bool,
-    ) -> dict[str, str]:
-        # Base options
-        options = {
+    def _get_federation_options() -> dict[str, str]:
+        return {
             federation_id: f'{federation_id} - {federation_name}'
             for federation_id, federation_name in SharlyChessConfig.federations.items()
         }
-
-        if default_federation:
-            options = {
-                default_federation: default_federation_text.format(
-                    option=f'{default_federation} - {SharlyChessConfig.federations[default_federation]}'
-                ),
-                **{
-                    fid: name
-                    for fid, name in options.items()
-                    if fid != default_federation
-                },
-            }
-
-        if may_be_empty:
-            # Add placeholder at the top
-            options = {
-                '': _('Please choose a federation'),
-                **options,
-            }
-
-        return options
-
-    @classmethod
-    def _get_federation_options_with_event_default(
-        cls,
-        default_federation: str | None,
-        may_be_empty: bool = False,
-    ):
-        return cls.__get_federation_options(
-            default_federation, _("Use Event's default - {option}"), may_be_empty
-        )
-
-    @classmethod
-    def _get_federation_options_with_application_default(
-        cls,
-        default_federation: str | None,
-        may_be_empty: bool = False,
-    ):
-        return cls.__get_federation_options(
-            default_federation, _("Use Application's default - {option}"), may_be_empty
-        )
-
-    @staticmethod
-    def _get_record_illegal_moves_options(
-        default: int | None,
-    ) -> dict[str, str]:
-        options: dict[str, str] = {
-            '': '',
-            WebContext.value_to_form_data(0): _('No recording'),
-        } | {
-            WebContext.value_to_form_data(i): ngettext(
-                '{num} illegal move max', '{num} illegal moves max', i
-            ).format(num=i)
-            for i in range(1, 4)
-        }
-        options[''] = _("Use Event's default - {option}").format(
-            option=options[str(default)]
-        )
-        return options
-
-    @staticmethod
-    def _get_paired_bye_result_options() -> dict[str, str]:
-        options: dict[str, str] = {
-            '': '',
-            WebContext.value_to_form_data(Result.WIN.value): _(
-                'Points for win (Full-Point Bye)'
-            ),
-            WebContext.value_to_form_data(Result.DRAW.value): _(
-                'Points for draw (Half-Point Bye)'
-            ),
-            WebContext.value_to_form_data(Result.LOSS.value): _(
-                'Points for loss (Zero-Point Bye)'
-            ),
-        }
-        default_option: str = WebContext.value_to_form_data(
-            SharlyChessConfig.default_paired_bye_result.value
-        )
-        options[''] = _("Use Event's default - {option}").format(
-            option=options[default_option]
-        )
-        return options
 
     @staticmethod
     def _get_rating_options() -> dict[str, str]:
@@ -229,43 +143,25 @@ class BaseAdminController(BaseController):
     @staticmethod
     def _get_input_exit_button_options() -> dict[str, str]:
         options: dict[str, str] = {
-            '': '-',
             'on': _('Display the exit button'),
             'off': _('Hide the exit button'),
         }
-        options[''] = _("Use Event's default - {option}").format(
-            option=options[
-                'on' if SharlyChessConfig.default_input_exit_button else 'off'
-            ]
-        )
         return options
 
     @staticmethod
     def _get_players_show_unpaired_options() -> dict[str, str]:
         options: dict[str, str] = {
-            '': '-',
             'off': _('Display only paired players'),
             'on': _('Display all the players, paired and unpaired'),
         }
-        options[''] = _("Use Event's default - {option}").format(
-            option=options[
-                'on' if SharlyChessConfig.default_players_show_unpaired else 'off'
-            ]
-        )
         return options
 
     @staticmethod
     def _get_players_show_opponent_options() -> dict[str, str]:
         options: dict[str, str] = {
-            '': '-',
             'off': _('Display only color and board number'),
             'on': _('Display color, board number and opponent'),
         }
-        options[''] = _("Use Event's default - {option}").format(
-            option=options[
-                'on' if SharlyChessConfig.default_players_show_opponent else 'off'
-            ]
-        )
         return options
 
     @staticmethod
@@ -696,20 +592,11 @@ class BaseAdminController(BaseController):
             ),
             'background_image': WebContext.value_to_form_data(background_image),
             'background_color': WebContext.value_to_form_data(background_color),
-            'background_color_checkbox': WebContext.value_to_form_data(
-                background_color is None
-            ),
             'location': WebContext.value_to_form_data(location),
             'record_illegal_moves': WebContext.value_to_form_data(record_illegal_moves),
             'rules': WebContext.value_to_form_data(rules),
             'message_text': WebContext.value_to_form_data(message_text),
-            'message_color_checkbox': WebContext.value_to_form_data(
-                message_color is None
-            ),
             'message_color': WebContext.value_to_form_data(message_color),
-            'message_background_color_checkbox': WebContext.value_to_form_data(
-                message_background_color is None
-            ),
             'message_background_color': WebContext.value_to_form_data(
                 message_background_color
             ),
