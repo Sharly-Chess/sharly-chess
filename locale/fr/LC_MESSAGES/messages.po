@@ -803,7 +803,7 @@ msgid "Bye limit (%(limit)d) is already reached for this tournament."
 msgstr "La limite de points joker (%(limit)d) est déjà atteinte pour ce tournoi."
 
 #, python-format
-msgid "Byes (%(byes)d) *** Players with byes"
+msgid "Byes (%(byes)d) *** PLAYERS WITH BYES"
 msgstr "Forfaits et absences (%(byes)d)"
 
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
@@ -2904,6 +2904,9 @@ msgstr "Gestion des écrans"
 
 msgid "Manage source databases"
 msgstr "Gestion des bases de données sources"
+
+msgid "Manage the prize groups"
+msgstr "Gérer les groupes de prix"
 
 msgid "Manage the prize groups of the tournament."
 msgstr "Gérer les groupes de prix du tournoi."
