@@ -124,11 +124,13 @@ class RequestUtils:
             except KeyError:
                 raise NotFoundException(f'Rotator [{rotator_id}] not found.')
             rotator_screen_index: int = 0
-            if cls.ROTATOR_SCREEN_INDEX_PARAM in request.path_params:
-                rotator_screen_index = request.path_params[
-                    cls.ROTATOR_SCREEN_INDEX_PARAM
-                ] % len(rotator.rotating_screens)
-            screen: Screen = rotator.rotating_screens[rotator_screen_index]
+            screen: Screen | None = None
+            if rotator.rotating_screens:
+                if cls.ROTATOR_SCREEN_INDEX_PARAM in request.path_params:
+                    rotator_screen_index = request.path_params[
+                        cls.ROTATOR_SCREEN_INDEX_PARAM
+                    ] % len(rotator.rotating_screens)
+                screen = rotator.rotating_screens[rotator_screen_index]
             request.state[cls.REQUEST_ROTATOR_ATTR] = rotator
             request.state[cls.REQUEST_ROTATOR_SCREEN_INDEX_ATTR] = rotator_screen_index
             request.state[cls.REQUEST_SCREEN_ATTR] = screen
