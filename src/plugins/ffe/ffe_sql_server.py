@@ -237,7 +237,6 @@ class FFESqlServer(SqlServer):
             f'WHERE {condition} '
             f'ORDER BY (CASE WHEN {order} THEN 0 ELSE 1 END), Joueur.Nom, Joueur.Prenom'
         )
-        print(query.count('%s'), len(params))
         if limit:
             query += ' OFFSET 0 ROWS FETCH NEXT %s ROWS ONLY'
             params += [
