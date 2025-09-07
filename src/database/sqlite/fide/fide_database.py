@@ -248,7 +248,7 @@ class FideDatabase(LocalSourceDatabase):
         tokens: list[str] = string.split(' ')
         str_fields: tuple[tuple[str, str, str], ...] = (
             ('last_name', '%', '%'),
-            ('first_name', '', '%'),
+            ('first_name', '%', '%'),
         )
         int_fields: tuple[str, ...] = ('fide_id',)
         token_conditions: dict[str, str] = {}
@@ -270,10 +270,12 @@ class FideDatabase(LocalSourceDatabase):
         order_conditions = ' OR '.join(
             [
                 '(last_name LIKE ?)',
+                '(first_name LIKE ?)',
             ]
             * len(tokens)
         )
-        params += [f'{token}%' for token in tokens]
+        for token in tokens:
+            params += [f'{token}%'] * 2
         query: str = f'SELECT * FROM player WHERE {conditions} ORDER BY (CASE WHEN {order_conditions} THEN 0 ELSE 1 END), last_name'
         if limit:
             query += ' LIMIT ?'
