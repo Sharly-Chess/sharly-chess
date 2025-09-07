@@ -829,6 +829,9 @@ class TournamentAdminController(BaseEventAdminController):
                     stored_tournament
                 )
                 if 'add_screens' in data:
+                    timer_id: int | None = None
+                    if len(web_context.admin_event.timers_by_id) == 1:
+                        timer_id = list(web_context.admin_event.timers_by_id.keys())[0]
                     for type_, menu, name in [
                         (
                             'input',
@@ -875,7 +878,7 @@ class TournamentAdminController(BaseEventAdminController):
                                 menu_link=True,
                                 menu_text=None,
                                 menu=menu,
-                                timer_id=None,
+                                timer_id=timer_id,
                                 input_exit_button=None,
                                 players_show_unpaired=None,
                                 players_show_opponent=None,
