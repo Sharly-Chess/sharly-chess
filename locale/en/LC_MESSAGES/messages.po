@@ -5662,9 +5662,3 @@ msgstr ""
 msgid "½ - ½ (U)"
 msgstr ""
 
-#~ msgid "Password to enter results:"
-#~ msgstr ""
-
-#~ msgid "The password required on input screens to enter results (optional)."
-#~ msgstr ""
-

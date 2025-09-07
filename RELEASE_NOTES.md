@@ -26,6 +26,7 @@ English version below
 
 - Suppression de la limite à 10 caractères des numéros de téléphone (3.0.0)
 - Prise en compte des accents dans la recherche dans la base locale FFE (3.0.2)
+- Correction du tri des joueur·euses sans prénom (3.0.3)
 
 ## Appariements
 
@@ -40,6 +41,7 @@ English version below
 
 - Ajout du numéro dans le cas des échiquiers fixes (3.0.0)
 - Correction de l'affichage des chronomètres sur les écrans rotatifs et les pilotes d'afficheurs (3.0.1)
+- Correction de l'affichage des écrans rotatifs lorsqu'aucun écran n'est sélectionné (3.0.3)
 
 ## Classements
 
@@ -87,6 +89,7 @@ English version below
 
 - Removed the 10-character limit on phone numbers (3.0.0)
 - Accents handling for local FFE database search (3.0.2)
+- Fixed players sort with no firstname (3.0.3)
 
 ## Pairings
 
@@ -101,6 +104,7 @@ English version below
 
 - Added board IDs in case of fixed boards (3.0.0)
 - Fixed the display of timers on rotators and display controllers (3.0.1)
+- Fixed the display of rotators when no screen is selected (3.0.3)
 
 ## Rankings
 

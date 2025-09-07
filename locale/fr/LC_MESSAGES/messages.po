@@ -5662,9 +5662,3 @@ msgstr "½ - 0 (NC)"
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
 
-#~ msgid "Password to enter results:"
-#~ msgstr "Mot de passe de saisie des résultats :"
-
-#~ msgid "The password required on input screens to enter results (optional)."
-#~ msgstr "Le mot de passe qui sera demandé sur les écrans de saisie pour entrer les résultats (facultatif)."
-
