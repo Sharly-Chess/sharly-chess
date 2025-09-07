@@ -800,7 +800,7 @@ msgid "Bye limit (%(limit)d) is already reached for this tournament."
 msgstr ""
 
 #, python-format
-msgid "Byes (%(byes)d) *** Players with byes"
+msgid "Byes (%(byes)d) *** PLAYERS WITH BYES"
 msgstr "Byes (%(byes)d)"
 
 msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
@@ -2899,6 +2899,9 @@ msgid "Manage screens"
 msgstr ""
 
 msgid "Manage source databases"
+msgstr ""
+
+msgid "Manage the prize groups"
 msgstr ""
 
 msgid "Manage the prize groups of the tournament."
