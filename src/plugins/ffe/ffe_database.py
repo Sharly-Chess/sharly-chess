@@ -197,7 +197,7 @@ class FfeDatabase(LocalSourceDatabase):
         tokens: list[str] = [unicode_normalize(token) for token in string.split(' ')]
         str_fields: tuple[tuple[str, str, str], ...] = (
             ('last_name', '%', '%'),
-            ('first_name', '', '%'),
+            ('first_name', '%', '%'),
             ('ffe_licence_number', '', ''),
         )
         int_fields: tuple[str, ...] = ('fide_id',)
@@ -220,10 +220,12 @@ class FfeDatabase(LocalSourceDatabase):
         order_conditions = ' OR '.join(
             [
                 '(last_name LIKE ?)',
+                '(first_name LIKE ?)',
             ]
             * len(tokens)
         )
-        params += [f'{token}%' for token in tokens]
+        for token in tokens:
+            params += [f'{token}%'] * 2
         query: str = f'SELECT * FROM player WHERE {conditions} ORDER BY (CASE WHEN {order_conditions} THEN 0 ELSE 1 END), last_name'
         if limit:
             query += ' LIMIT ?'
