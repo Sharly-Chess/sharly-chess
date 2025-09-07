@@ -263,6 +263,7 @@ class SharlyChessServerToga(toga.App):
         # GUI elements (initialized in startup)
         self.main_box: toga.Box
         self.browser_btn: toga.Button
+        self.website_btn: toga.Button
         self.clear_btn: toga.Button
         self.toggle_log_btn: toga.Button
         self.log_view: toga.WebView
@@ -279,21 +280,16 @@ class SharlyChessServerToga(toga.App):
         for cmd in list(self.commands):
             grp = getattr(cmd, 'group', None)
             id_ = getattr(cmd, 'id', None)
-            if id_ and grp is not toga.Group.APP and grp is not toga.Group.HELP:
+            if id_ and grp is not toga.Group.APP:
                 del self.commands[id_]
-
-        # Move help commands to our own group with a custom title
-        self.help_group = toga.Group(_('Help'))
-        for cmd in list(self.commands):
-            grp = getattr(cmd, 'group', None)
-            id_ = getattr(cmd, 'id', None)
-            if id_ and grp is toga.Group.HELP:
-                cmd.group = self.help_group
 
         # Toolbar (buttons row)
         btn_row = toga.Box(style=Pack(direction=ROW, margin=(0, 0, 8, 0)))
         self.browser_btn = toga.Button(
             text=_('Open Browser'), on_press=self._open_browser
+        )
+        self.website_btn = toga.Button(
+            text=_('Open documentation'), on_press=self._open_website
         )
         self.clear_btn = toga.Button(text=_('Clear Log'), on_press=self._clear_log)
         self.clear_btn.style.visibility = 'hidden'
@@ -302,10 +298,16 @@ class SharlyChessServerToga(toga.App):
             on_press=self._toggle_log_view,
         )
 
-        for b in (self.browser_btn, self.clear_btn, self.toggle_log_btn):
+        for b in (
+            self.browser_btn,
+            self.website_btn,
+            self.clear_btn,
+            self.toggle_log_btn,
+        ):
             b.style.margin_right = 4
 
         btn_row.add(self.browser_btn)
+        btn_row.add(self.website_btn)
         btn_row.add(self.toggle_log_btn)
         btn_row.add(self.clear_btn)
 
@@ -313,7 +315,6 @@ class SharlyChessServerToga(toga.App):
         self.log_view = toga.WebView(
             style=Pack(flex=1), on_webview_load=self._on_logview_load
         )
-        self.log_view.style.display = 'none'
         self.log_view.set_content('about:blank', LOG_HTML)
 
         self.info_view = toga.Box(
@@ -438,6 +439,9 @@ class SharlyChessServerToga(toga.App):
             self.add_log_message(f'Opening browser: {url}', 'success')
         except Exception as e:
             self.add_log_message(f'Failed to open browser: {e}', 'error')
+
+    def _open_website(self, widget: Any = None, **kwargs) -> None:
+        webbrowser.open(_('*** Doc Link'))
 
     def _toggle_log_view(self, widget: Any = None, **kwargs):
         self.log_visible = not self.log_visible

@@ -173,6 +173,9 @@ msgstr ""
 msgid "(replace [%(object_uniq_id)s])"
 msgstr ""
 
+msgid "*** Doc Link"
+msgstr "https://sharly-chess.com/getting-started/"
+
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
 
@@ -2468,9 +2471,6 @@ msgstr ""
 msgid "Hello,"
 msgstr ""
 
-msgid "Help"
-msgstr ""
-
 msgid "Hide"
 msgstr ""
 
@@ -3433,6 +3433,9 @@ msgstr ""
 
 #, python-format
 msgid "Open check-in for tournament [%(tournament)s]."
+msgstr ""
+
+msgid "Open documentation"
 msgstr ""
 
 msgid "Open/close check-in"
@@ -6319,4 +6322,7 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "Help"
+#~ msgstr ""
 
