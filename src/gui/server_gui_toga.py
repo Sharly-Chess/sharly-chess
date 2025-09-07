@@ -320,16 +320,17 @@ class SharlyChessServerToga(toga.App):
             style=Pack(direction=COLUMN, margin=10, align_items='center')
         )
         self.info_view.add(
-            toga.Label(text='Sharly Chess Server', style=Pack(margin_bottom=7))
+            toga.Label(text=_('Sharly Chess Server'), style=Pack(margin_bottom=7))
         )
         self.info_view.add(
             toga.Label(
-                text=f'Version: {SHARLY_CHESS_VERSION}', style=Pack(margin_bottom=7)
+                text=_('Version: {version}').format(version=SHARLY_CHESS_VERSION),
+                style=Pack(margin_bottom=7),
             )
         )
         self.info_view.add(
             toga.Label(
-                text='Running: Closing this window will stop the server.',
+                text=_('Warning: closing this window will stop Sharly Chess.'),
                 style=Pack(margin_bottom=7),
             )
         )

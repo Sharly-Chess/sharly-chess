@@ -2468,7 +2468,13 @@ msgstr ""
 msgid "Hello,"
 msgstr ""
 
+msgid "Help"
+msgstr ""
+
 msgid "Hide"
+msgstr ""
+
+msgid "Hide Log"
 msgstr ""
 
 msgid "Hide the exit button"
@@ -4528,6 +4534,9 @@ msgstr ""
 msgid "Sharly Chess settings have been updated."
 msgstr ""
 
+msgid "Show Log"
+msgstr ""
+
 msgid "Show all the players"
 msgstr ""
 
@@ -5733,6 +5742,9 @@ msgstr ""
 msgid "Variation"
 msgstr ""
 
+msgid "Version: {version}"
+msgstr ""
+
 msgid "View Pairings tab"
 msgstr ""
 
@@ -5809,6 +5821,9 @@ msgid "Warning message"
 msgstr ""
 
 msgid "Warning: by default, only people on your Sharly Chess server can access the application."
+msgstr ""
+
+msgid "Warning: closing this window will stop Sharly Chess."
 msgstr ""
 
 msgid "Warning: experimental features are enabled!"
