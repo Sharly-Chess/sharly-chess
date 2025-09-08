@@ -58,6 +58,10 @@ English version below
 - Correction de l'impression des appariements par ordre alphabétique (3.0.2)
 - Affichage des joueur⋅euses de la table 1 dans l'impression des appariements par ordre alphabétique (3.0.3)
 
+## FFE
+
+- Correction des données de classement utilisées lors de l'export Papi (3.0.4)
+
 ## ChessEvent
 
 - Correction du téléversement FFE après mise à jour ChessEvent (3.0.1)
@@ -122,6 +126,10 @@ English version below
 - Added tie-breaks to Berger grids (3.0.0)
 - Fixed printing of pairings in alphabetical order (3.0.2)
 - Re-added board #1 players to pairings in alphabetical order (3.0.3)
+
+## FFE
+
+- Fixed a data difference on rankings in the Papi export (3.0.4)
 
 ## ChessEvent
 
