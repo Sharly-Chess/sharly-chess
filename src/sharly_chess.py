@@ -1,24 +1,19 @@
-import asyncio
-
-from common import TEST_ENV
-
-gui_success = False
-
 try:
     import argparse
-    import traceback
+    import asyncio
     from typing import TYPE_CHECKING
 
     from utils.scripts import init_script
 
     arguments = init_script()
 
-    from common import DEVEL_ENV
+    from common import DEVEL_ENV, TEST_ENV
     from common.i18n import _
     from common.logger import (
         get_logger,
         print_interactive_warning,
     )
+    from gui.server_gui_toga import SharlyChessServerToga
     from plugins.manager import plugin_manager
     from web.server_engine import ServerEngine
 
@@ -72,28 +67,10 @@ try:
 
     # Check if GUI mode should be used
     if not args.cli and not has_plugin_engine_arg and not TEST_ENV:
-        try:
-            from gui.server_gui_toga import SharlyChessServerToga
-
-            # Create and run the Toga app - this should block until the app exits
-            app = SharlyChessServerToga()
-
-            try:
-                app.main_loop()
-            except Exception as e:
-                error_msg = f'main_loop() failed with exception: {e}'
-                print(error_msg)
-
-            gui_success = True
-            exit(0)
-        except Exception as e:
-            error_msg = f'GUI initialization failed: {e}'
-            print(error_msg)
-            import traceback
-
-            traceback.print_exc()
-
-            raise e
+        # Create and run the Toga app - this should block until the app exits
+        app = SharlyChessServerToga()
+        app.main_loop()
+        exit(0)
 
     # Original console mode
     try:
@@ -112,12 +89,35 @@ try:
         pass
 
 except Exception:
+    import os
+    import sys
+    import tkinter
+    from tkinter import messagebox
+    import traceback
+
     message = traceback.format_exc()
+    error_logged = False
     try:
         from common.logger import get_logger
 
         logger = get_logger()
         logger.error(message)
+        error_logged = True
     except Exception:
-        print(message)
-    print('An error occurred.')
+        pass
+
+    test_env = os.getenv('TEST_ENV') == 'true'
+    devel_env = not getattr(sys, 'frozen', False)
+
+    if test_env:
+        sys.exit(1)
+
+    root = tkinter.Tk()
+    root.withdraw()
+
+    if error_logged and not devel_env:
+        message = 'Consult the logs for more details.'
+    elif not error_logged:
+        message = 'Error could not be logged:\n\n' + message
+    messagebox.showerror('Sharly Chess startup error', message)
+    root.destroy()

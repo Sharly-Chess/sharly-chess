@@ -2,7 +2,7 @@ import json
 import os
 import shutil
 import subprocess
-from abc import ABC, abstractmethod
+from abc import ABC
 from argparse import ArgumentParser, Namespace
 from logging import Logger
 from pathlib import Path
@@ -80,20 +80,17 @@ class ProjectBuilder(ABC):
         self.clean_on_exit()
         return True
 
-    @abstractmethod
     def hook_extend_sys_path(
         self,
     ):
         """Let the builder extend to path (needed by external commands)."""
 
-    @abstractmethod
     def hook_add_params(
         self,
         parser: ArgumentParser,
     ):
         """Let the builder add params (for example to pass secrets on the command line)."""
 
-    @abstractmethod
     def hook_check_params(
         self,
         args: Namespace,
@@ -123,9 +120,8 @@ class ProjectBuilder(ABC):
         self._delete_file(self.zip_file)
         self.hook_post_clean_on_startup()
 
-    @abstractmethod
     def hook_post_clean_on_startup(self):
-        pass
+        """Runs at the end of `clean_on_startup`"""
 
     def clean_on_exit(self):
         self._delete_folder(self.build_dir)
@@ -662,12 +658,11 @@ class ProjectBuilder(ABC):
         run(pyinstaller_params)
         return True
 
-    @abstractmethod
     def hook_pyinstaller_additional_params(self) -> list[str]:
         return []
 
-    @abstractmethod
     def hook_post_build_project(self) -> bool:
+        """Executed after the project build, return True on success and False on failure."""
         return True
 
     def build_zip_file(self) -> bool:
