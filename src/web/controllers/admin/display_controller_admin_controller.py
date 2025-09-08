@@ -131,8 +131,8 @@ class DisplayControllerAdminController(BaseEventAdminController):
         sorted_screens: list[Screen] = sorted(
             event.basic_screens_by_id.values(),
             key=lambda screen: (
-                screen.stored_screen.type if screen.stored_screen else None,
-                screen.stored_screen.uniq_id if screen.stored_screen else None,
+                screen.stored_screen.type if screen.stored_screen else '',
+                screen.stored_screen.uniq_id if screen.stored_screen else '',
             ),
         )
 

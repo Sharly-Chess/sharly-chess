@@ -377,7 +377,7 @@ class PrizeGroup:
                 key=lambda prize: (
                     prize.place_index,
                     prize.assigned_to is None,
-                    prize.assigned_to.rank if prize.assigned_to else None,
+                    prize.assigned_to.rank if prize.assigned_to else 0,
                 ),
             )
         return assigned_prizes_by_category_id
