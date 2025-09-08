@@ -12,11 +12,12 @@
     <div class="d-inline-flex gap-1">
         <span {{ macros.tooltip_attributes('info', _('First round'), 'top') }}>
             <button
-                class="btn btn-outline-primary text-nowrap
+                class="btn btn-outline-primary text-nowrap"
                 hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=1) }}"
                 hx-target="body"
                 hx-replace-url="true"
                 hx-indicator="#please-wait"
+                hx-on::after-request="window.scrollTo(0, 0)"
                 {% if admin_round <= 1 %}
                     disabled
                 {% endif %}
@@ -32,6 +33,7 @@
                 hx-target="body"
                 hx-replace-url="true"
                 hx-indicator="#please-wait"
+                hx-on::after-request="window.scrollTo(0, 0)"
                 {% if admin_round <= 1 %}
                     disabled
                 {% endif %}
@@ -48,6 +50,7 @@
             hx-target="body"
             hx-replace-url="true"
             hx-indicator="#please-wait"
+            hx-on::after-request="window.scrollTo(0, 0)"
         >
             {% with rounds=admin_tournament.current_round if admin_tournament.current_round > admin_round else admin_round %}
                 {% for round in range(1, rounds + 1) %}
@@ -79,6 +82,7 @@
                 {% endif %}
                 hx-target="body"
                 hx-indicator="#please-wait"
+                hx-on::after-request="window.scrollTo(0, 0)"
                 {% if display_rankings or (admin_round >= admin_tournament.rounds and not admin_tournament.finished) %}
                     disabled
                 {% endif %}
@@ -97,6 +101,7 @@
                 hx-target="body"
                 hx-replace-url="true"
                 hx-indicator="#please-wait"
+                hx-on::after-request="window.scrollTo(0, 0)"
                 {% if display_rankings or (admin_round >= admin_tournament.rounds and not admin_tournament.finished) %}
                     disabled
                 {% endif %}
@@ -115,6 +120,7 @@
                 hx-target="body"
                 hx-replace-url="true"
                 hx-indicator="#please-wait"
+                hx-on::after-request="window.scrollTo(0, 0)"
                 {% if admin_tournament_id == tournament_options.keys()|list|first %}
                     disabled
                 {% endif %}
@@ -134,6 +140,7 @@
             hx-target="body"
             hx-replace-url="true"
             hx-indicator="#please-wait"
+            hx-on::after-request="window.scrollTo(0, 0)"
         >
             {% for value, text in tournament_options.items() %}
                 <option value="{{ value }}" {% if value == admin_tournament_id %}selected{%endif %}>
@@ -149,6 +156,7 @@
                 hx-target="body"
                 hx-replace-url="true"
                 hx-indicator="#please-wait"
+                hx-on::after-request="window.scrollTo(0, 0)"
                 {% if admin_tournament_id == tournament_options.keys()|list|last %}
                     disabled
                 {% endif %}
