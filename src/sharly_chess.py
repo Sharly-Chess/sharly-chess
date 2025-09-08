@@ -2,6 +2,7 @@ try:
     import argparse
     import asyncio
     from typing import TYPE_CHECKING
+    import sys
 
     from utils.scripts import init_script
 
@@ -70,7 +71,7 @@ try:
         # Create and run the Toga app - this should block until the app exits
         app = SharlyChessServerToga()
         app.main_loop()
-        exit(0)
+        sys.exit(0)
 
     # Original console mode
     try:
@@ -96,28 +97,19 @@ except Exception:
     import traceback
 
     message = traceback.format_exc()
-    error_logged = False
     try:
         from common.logger import get_logger
 
         logger = get_logger()
         logger.error(message)
-        error_logged = True
     except Exception:
         pass
 
     test_env = os.getenv('TEST_ENV') == 'true'
-    devel_env = not getattr(sys, 'frozen', False)
-
     if test_env:
         sys.exit(1)
 
     root = tkinter.Tk()
     root.withdraw()
-
-    if error_logged and not devel_env:
-        message = 'Consult the logs for more details.'
-    elif not error_logged:
-        message = 'Error could not be logged:\n\n' + message
     messagebox.showerror('Sharly Chess startup error', message)
     root.destroy()
