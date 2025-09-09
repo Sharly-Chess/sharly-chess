@@ -14,13 +14,13 @@ from packaging.version import Version
 
 from common import TEST_ENV, DEVEL_ENV
 from common.exception import SharlyChessException
-from common.i18n import _
+from common.i18n import _, ngettext
 from data.input_output import DataSource, TournamentExporter, TournamentImporter
 from data.input_output.data_source import FideDataSource
 from data.pairings.managers import PairingVariationManager
 from data.pairings.variations import SwissVariation
 from data.print_documents import PlayerSplitter, PrintDocument
-from data.print_documents.documents import PlayerPrintDocument
+from data.print_documents.documents import PlayerPrintDocument, StatisticsPrintDocument
 from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.prize.player_filter_options import PlayerFilterOption, ClubsFilterOption
 from data.prize.player_filters import PlayerFilter, ClubPlayerFilter
@@ -70,7 +70,13 @@ from plugins.ffe.ffe_tie_breaks import papi_performance_bonus
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from plugins.hookspec import ExtraAdminColumn, hookimpl, ExtraColumn
 from plugins.migration import PluginMigrationManager
-from plugins.utils import Plugin, PluginNavBarItem, PluginUtils, PluginData
+from plugins.utils import (
+    ExtraStatisticsSection,
+    Plugin,
+    PluginNavBarItem,
+    PluginUtils,
+    PluginData,
+)
 
 from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController, WebContext
@@ -864,6 +870,38 @@ class FfePlugin(Plugin):
         if isinstance(document, PlayerPrintDocument):
             return '.player-table .league { text-align: center; }'
         return ''
+
+    @hookimpl
+    def get_extra_statistics_sections(
+        self, document: PrintDocument, tournament: 'Tournament'
+    ) -> Iterable[ExtraStatisticsSection]:
+        if isinstance(document, StatisticsPrintDocument):
+            counter = Counter[str](
+                league
+                for p in tournament.players
+                if (league := FFEUtils.get_player_plugin_data(p).league) is not None
+            )
+
+            if not counter:
+                return []
+
+            items: list[tuple[str, int]] = list(counter.items())
+            items = sorted(items, key=lambda item: (-item[1], item[0]))
+            rows = {k: v for k, v in items}
+
+            return [
+                ExtraStatisticsSection(
+                    at='club',
+                    title=_('Leagues'),
+                    rows=rows,
+                    subtitle=ngettext(
+                        '{count} league represented',
+                        '{count} leagues represented',
+                        len(rows),
+                    ).format(count=len(rows)),
+                )
+            ]
+        return []
 
     # ---------------------------------------------------------------------------------
     # Nav bar

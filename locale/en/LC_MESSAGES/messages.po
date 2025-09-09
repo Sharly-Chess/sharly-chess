@@ -396,9 +396,6 @@ msgstr ""
 msgid "Add a rotator to the event."
 msgstr ""
 
-msgid "Add a screen to check-in players or enter results."
-msgstr ""
-
 msgid "Add a screen to display an image."
 msgstr ""
 
@@ -412,6 +409,9 @@ msgid "Add a screen to display the pairings by board number."
 msgstr ""
 
 msgid "Add a screen to display the ranking."
+msgstr ""
+
+msgid "Add a screen to enter results."
 msgstr ""
 
 msgid "Add a set"
@@ -659,6 +659,9 @@ msgid "Average rating"
 msgstr ""
 
 msgid "Average rating of opponents"
+msgstr ""
+
+msgid "Average rating:"
 msgstr ""
 
 msgid "Avg. Perfect Perf. *** SHORT NAME FOR AVERAGE PERFECT PERFORMANCE"
@@ -1004,6 +1007,9 @@ msgstr "Club"
 
 msgid "Club *** CLUB FOR TABLE HEADER"
 msgstr "Club"
+
+msgid "Club threshold"
+msgstr ""
 
 msgid "Club:"
 msgstr ""
@@ -2409,6 +2415,9 @@ msgstr "Gender"
 msgid "Gender:"
 msgstr ""
 
+msgid "Genders"
+msgstr ""
+
 msgid "General"
 msgstr ""
 
@@ -3624,6 +3633,9 @@ msgstr ""
 msgid "Parings by player"
 msgstr ""
 
+msgid "Participation Statistics"
+msgstr ""
+
 msgid "Passed ({num})"
 msgstr ""
 
@@ -3995,9 +4007,6 @@ msgstr ""
 msgid "Properties"
 msgstr ""
 
-msgid "Properties (check-in and results entry)"
-msgstr ""
-
 msgid "Protected pairings editing"
 msgstr ""
 
@@ -4114,6 +4123,9 @@ msgid "Rating limit"
 msgstr ""
 
 msgid "Rating limits"
+msgstr ""
+
+msgid "Rating ranges"
 msgstr ""
 
 msgid "Rating seed for unrated rapid/blitz"
@@ -4329,6 +4341,10 @@ msgid "Round performance indicators"
 msgstr ""
 
 msgid "Round skipped"
+msgstr ""
+
+#, python-format
+msgid "Round {} started for %s"
 msgstr ""
 
 msgid "Round-Robin"
@@ -4651,6 +4667,10 @@ msgstr ""
 msgid "Standard:"
 msgstr ""
 
+#, python-format
+msgid "Start of round {} in %s"
+msgstr ""
+
 msgid "Start:"
 msgstr ""
 
@@ -4658,6 +4678,9 @@ msgid "Starting Sharly Chess server, Please wait…"
 msgstr ""
 
 msgid "Starting rank"
+msgstr ""
+
+msgid "Statistics"
 msgstr ""
 
 msgid "Status"
@@ -4841,6 +4864,9 @@ msgid "The minimum delay between auto-uploads to the FFE server."
 msgstr ""
 
 msgid "The minimum level of logs that will be printed on the console (all the detailed logs are always printed to the log files)."
+msgstr ""
+
+msgid "The minimum number of players needed for a club to be displayed."
 msgstr ""
 
 msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
@@ -5295,6 +5321,9 @@ msgstr ""
 msgid "Timers: %(num)d"
 msgstr ""
 
+msgid "Titled players"
+msgstr ""
+
 msgid "Today"
 msgstr ""
 
@@ -5620,6 +5649,9 @@ msgid "Unpairing a published round can be very inconvenient for players. Additio
 msgstr ""
 
 msgid "Unpairing all the boards of this round is not possible because the round has results."
+msgstr ""
+
+msgid "Unrated"
 msgstr ""
 
 msgid "Unrated Draw"
@@ -6277,6 +6309,21 @@ msgstr ""
 msgid "yes"
 msgstr ""
 
+msgid "{count} club represented"
+msgid_plural "{count} clubs represented"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{count} federation represented"
+msgid_plural "{count} federations represented"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{count} league represented"
+msgid_plural "{count} leagues represented"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "{count} player updated."
 msgid_plural "{count} players updated."
 msgstr[0] ""
@@ -6309,6 +6356,9 @@ msgid "{prefix}{int_value}<sup>{suffix}</sup>"
 msgstr ""
 
 msgid "{screen_type}-screen"
+msgstr ""
+
+msgid "{start} → {end}"
 msgstr ""
 
 msgid "{status_code} - Unknown error"
