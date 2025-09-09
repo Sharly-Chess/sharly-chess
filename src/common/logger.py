@@ -105,6 +105,7 @@ def get_logging_config() -> dict[str, Any]:
             },
             'gui': {
                 '()': 'gui.gui_logger.build_gui_handler',
+                'formatter': 'console_formatter',
                 'level': _LOGGING_CONFIG_VALUES.console_log_level,
             },
         },
