@@ -1,14 +1,16 @@
 from abc import ABC, abstractmethod
 from functools import cached_property, partial
 import itertools
-from typing import Any, override
+from typing import Any, Callable, override
+from collections import Counter
 
+from common import unicode_normalize
 from common.exception import SharlyChessException, OptionError
-from common.i18n import _
+from common.i18n import _, ngettext
 from data.board import Board
 from data.pairings.engines import RoundRobinPairingEngine
 from data.pairings.systems import RoundRobinPairingSystem
-from data.player import Player
+from data.player import Player, PlayerTitle, dataclass, plugin_manager
 from data.print_documents.options import (
     PairingStylePrintOption,
     PlayerSplitPrintOption,
@@ -16,6 +18,7 @@ from data.print_documents.options import (
     RoundPrintOption,
     PlayerSortPrintOption,
     ShowWarningsPrintOption,
+    ClubThresholdPrintOption,
 )
 from data.tournament import Tournament
 from utils import StaticUtils
@@ -684,3 +687,214 @@ class PrizeAssignmentPrintDocument(PrintDocument):
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
         return [ShowWarningsPrintOption]
+
+
+@dataclass
+class StatisticsSection:
+    title: str
+    rows: dict[str, int]
+    subtitle: str | None = None
+
+
+class StatisticsPrintDocument(PrintDocument):
+    @staticmethod
+    def static_id() -> str:
+        return 'statistics'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Statistics')
+
+    @property
+    def title(self) -> str:
+        return _('Participation Statistics')
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [ClubThresholdPrintOption]
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/statistics.html'
+
+    def stat_section(
+        self,
+        attr_name: str,
+        title: str,
+        *,
+        sort_key: Callable[[tuple[Any, int]], Any] | None = None,
+        label_getter: Callable[[Any], Any] = lambda x: x.name
+        if hasattr(x, 'name')
+        else x,
+        min_count: int | None = None,
+        filter_func: Callable[[Any], bool] | None = None,
+        subtitle_fn: Callable[[int], str] | None = None,
+    ) -> StatisticsSection | None:
+        assert self.tournament is not None
+
+        values = [
+            value
+            for p in self.tournament.players
+            if (value := getattr(p, attr_name)) is not None
+            and (filter_func(value) if filter_func else True)
+        ]
+
+        full_counter = Counter(values)
+
+        if not full_counter:
+            return None
+
+        items: list[tuple[Any, int]] = list(full_counter.items())
+        if min_count is not None:
+            items = [(k, v) for k, v in items if v >= min_count]
+
+        if sort_key:
+            items = sorted(items, key=sort_key)
+
+        subtitle = subtitle_fn(len(full_counter)) if subtitle_fn else None
+
+        return StatisticsSection(
+            title=title,
+            rows={label_getter(k): v for k, v in items},
+            subtitle=subtitle,
+        )
+
+    def rating_range_section(self) -> StatisticsSection | None:
+        assert self.tournament is not None
+        players = self.tournament.players
+
+        ratings = [p.rating for p in players if not p.estimated]
+        estimated_count = sum(1 for p in players if p.estimated)
+
+        if not ratings and not estimated_count:
+            return None
+
+        max_rating = max(ratings, default=0)
+        buckets = [(0, 1000)]
+        r = 1001
+        while r <= max_rating:
+            buckets.append((r, r + 199))
+            r += 200
+
+        # Count players per bucket
+        counter: Counter[tuple[int, int]] = Counter()
+        for p in players:
+            if p.estimated:
+                continue
+            for start, end in buckets:
+                if start <= p.rating <= end:
+                    counter[(start, end)] += 1
+                    break
+
+        rows: dict[str, int] = {
+            _('{start} → {end}').format(start=start, end=end): counter[(start, end)]
+            for (start, end) in reversed(buckets)
+            if counter[(start, end)] > 0
+        }
+
+        if estimated_count:
+            rows[_('Unrated')] = estimated_count
+
+        return StatisticsSection(title=_('Rating ranges'), rows=rows)
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        assert self.tournament is not None
+
+        club_threshold = self._get_option(ClubThresholdPrintOption).value or 0
+
+        statistics: list[StatisticsSection] = []
+
+        per_plugin_sections = plugin_manager.hook.get_extra_statistics_sections(
+            document=self, tournament=self.tournament
+        )
+
+        for attr_name, title, sort_key, min_count, filter_func, subtitle_fn in [
+            (
+                'title',
+                _('Titled players'),
+                lambda item: -item[0].value,
+                None,
+                lambda x: x != PlayerTitle.NONE,
+                None,
+            ),
+            (
+                'rating_type',
+                _('Rating types'),
+                lambda item: -item[0].value,
+                None,
+                None,
+                None,
+            ),
+            (
+                'category',
+                _('Age categories'),
+                lambda item: -item[0].value,
+                None,
+                None,
+                None,
+            ),
+            ('gender', _('Genders'), lambda item: item[0].value, None, None, None),
+            (
+                'federation',
+                _('Federations'),
+                lambda item: (-item[1], item[0].name),
+                None,
+                None,
+                lambda count: ngettext(
+                    '{count} federation represented',
+                    '{count} federations represented',
+                    count,
+                ).format(count=count),
+            ),
+            (
+                'club',
+                _('Clubs'),
+                lambda item: (
+                    -item[1],
+                    unicode_normalize(
+                        item[0].name.lower().translate(str.maketrans('', '', '"\''))
+                    ),
+                ),
+                club_threshold,
+                lambda item: item.name != '',
+                lambda count: ngettext(
+                    '{count} club represented', '{count} clubs represented', count
+                ).format(count=count),
+            ),
+        ]:
+            for sections in per_plugin_sections:
+                for section in sections:
+                    if section.at == attr_name:
+                        statistics.append(section)
+
+            section = self.stat_section(
+                attr_name,
+                title,
+                sort_key=sort_key,
+                min_count=min_count,
+                filter_func=filter_func,
+                subtitle_fn=subtitle_fn,
+            )
+
+            if section:
+                statistics.append(section)
+
+            if attr_name == 'rating_type':
+                section = self.rating_range_section()
+                if section:
+                    statistics.append(section)
+
+        non_estimated_players = [
+            player for player in self.tournament.players if not player.estimated
+        ]
+        average_rating = (
+            round(
+                sum(player.rating for player in non_estimated_players)
+                / len(non_estimated_players)
+            )
+            if non_estimated_players
+            else None
+        )
+
+        return {'average_rating': average_rating, 'statistics': statistics}

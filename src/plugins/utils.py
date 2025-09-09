@@ -229,6 +229,13 @@ class ExtraAdminColumn(NamedTuple):
     cell_template: str
 
 
+class ExtraStatisticsSection(NamedTuple):
+    at: str
+    title: str
+    rows: dict[str, int]
+    subtitle: str | None
+
+
 class PluginNavBarItem(NamedTuple):
     """Class representing a plugin item in the navigation bar."""
 

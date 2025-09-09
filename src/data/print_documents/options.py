@@ -165,3 +165,27 @@ class ShowWarningsPrintOption(PrintOption):
     @property
     def default_value(self) -> Any:
         return True
+
+
+class ClubThresholdPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'club-threshold'
+
+    @property
+    def type(self) -> type | UnionType:
+        return int | None
+
+    @property
+    def default_value(self) -> Any:
+        return None
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/event/print_options/club_threshold.html'
+
+    @override
+    def validate(self):
+        super().validate()
+        if self.value is not None and self.value < 0:
+            raise OptionError(_('A positive value is expected.'), self)

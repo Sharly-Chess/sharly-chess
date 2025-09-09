@@ -1,0 +1,82 @@
+{% extends '/admin/print/base.html' %}
+
+{% block content %}
+<style>
+    .stats-container {
+        font-family: sans-serif;
+        max-width: 800px;
+        margin: 2em auto;
+
+        display: grid;
+        grid-template-columns: max-content 1fr auto;
+        column-gap: 1em;
+        row-gap: 0.4em;
+        align-items: center;
+    }
+
+    .stats-title {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-top: 1.5em;
+        border-bottom: 1px solid #ccc;
+        padding: 0.2em 0;
+        grid-column: 1 / -1;
+    }
+
+    .stats-subtitle {
+        font-size: 0.9em;
+        font-weight: normal;
+        color: #666;
+        margin-top: 0.2em;
+    }
+
+    .stats-label {
+        text-align: right;
+        font-size: 0.95em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .stats-bar-container {
+        background-color: #eee;
+        height: 1.3em;
+        width: 100%;
+        position: relative;
+        text-align: left;
+    }
+
+    .stats-bar {
+        background-color: #333;
+        height: 100%;
+    }
+
+    .stats-count {
+        font-size: 0.9em;
+        text-align: right;
+    }
+</style>
+
+<div class="section-title">
+    {{ _('Average rating:') }} {{ average_rating }}
+</div>
+
+<div class="stats-container">
+    {% for section in statistics %}
+        <div class="stats-title">
+            {{ section.title }}
+            {% if section.subtitle %}
+                <div class="stats-subtitle">{{ section.subtitle }}</div>
+            {% endif %}
+        </div>
+        {% set max_value = section.rows.values() | max %}
+        {% for label, value in section.rows.items() %}
+            <div class="stats-label">{{ label }}</div>
+            <div class="stats-bar-container">
+                <div class="stats-bar" style="width: {{ (value / max_value * 100) | round(1) }}%;"></div>
+            </div>
+            <div class="stats-count">{{ value }}</div>
+        {% endfor %}
+    {% endfor %}
+</div>
+{% endblock %}
