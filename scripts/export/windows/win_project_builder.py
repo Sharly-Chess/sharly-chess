@@ -68,6 +68,7 @@ class WinProjectBuilder(ProjectBuilder):
             return False
         if not self._build_chessevent_batch():
             return False
+        Path(self.project_dir / '_internal' / '.unblock_files').touch()
         return True
 
     @staticmethod
