@@ -396,6 +396,9 @@ msgstr "Ajouter un prix à la liste."
 msgid "Add a rotator to the event."
 msgstr "Ajouter un écran rotatif à l'évènement."
 
+msgid "Add a screen to check-in players or enter results."
+msgstr "Ajouter un écran de pointage des joueur·euses ou de saisie des résultats."
+
 msgid "Add a screen to display an image."
 msgstr "Ajouter un écran d'affichage d'une image."
 
@@ -410,9 +413,6 @@ msgstr "Ajouter un écran d'affichage des appariements par échiquier."
 
 msgid "Add a screen to display the ranking."
 msgstr "Ajouter un écran d'affichage du classement."
-
-msgid "Add a screen to enter results."
-msgstr ""
 
 msgid "Add a set"
 msgstr "Ajouter un ensemble"
