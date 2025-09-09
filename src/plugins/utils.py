@@ -233,6 +233,7 @@ class ExtraStatisticsSection(NamedTuple):
     at: str
     title: str
     rows: dict[str, int]
+    subtitle: str | None
 
 
 class PluginNavBarItem(NamedTuple):

@@ -23,6 +23,13 @@
         grid-column: 1 / -1;
     }
 
+    .stats-subtitle {
+        font-size: 0.9em;
+        font-weight: normal;
+        color: #666;
+        margin-top: 0.2em;
+    }
+
     .stats-label {
         text-align: right;
         font-size: 0.95em;
@@ -56,7 +63,12 @@
 
 <div class="stats-container">
     {% for section in statistics %}
-        <div class="stats-title">{{ section.title }}</div>
+        <div class="stats-title">
+            {{ section.title }}
+            {% if section.subtitle %}
+                <div class="stats-subtitle">{{ section.subtitle }}</div>
+            {% endif %}
+        </div>
         {% set max_value = section.rows.values() | max %}
         {% for label, value in section.rows.items() %}
             <div class="stats-label">{{ label }}</div>

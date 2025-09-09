@@ -4116,6 +4116,9 @@ msgstr ""
 msgid "Rating *** RATING FOR PLAYERS COLUMNS"
 msgstr "Rating"
 
+msgid "Rating between {start} and {end}"
+msgstr ""
+
 msgid "Rating limit"
 msgstr ""
 
@@ -6294,6 +6297,21 @@ msgstr ""
 
 msgid "yes"
 msgstr ""
+
+msgid "{count} club represented"
+msgid_plural "{count} clubs represented"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{count} federation represented"
+msgid_plural "{count} federations represented"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{count} league represented"
+msgid_plural "{count} leagues represented"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "{count} player updated."
 msgid_plural "{count} players updated."

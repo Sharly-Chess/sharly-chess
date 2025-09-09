@@ -4116,6 +4116,9 @@ msgstr "Elo"
 msgid "Rating *** RATING FOR PLAYERS COLUMNS"
 msgstr "Classement"
 
+msgid "Rating between {start} and {end}"
+msgstr "Classement entre {start} et {end}"
+
 msgid "Rating limit"
 msgstr "Limite Elo"
 
@@ -6294,6 +6297,21 @@ msgstr "contre %(player)s"
 
 msgid "yes"
 msgstr "oui"
+
+msgid "{count} club represented"
+msgid_plural "{count} clubs represented"
+msgstr[0] "{count} club représenté"
+msgstr[1] "{count} clubs représentés"
+
+msgid "{count} federation represented"
+msgid_plural "{count} federations represented"
+msgstr[0] "{count} fédération représentée"
+msgstr[1] "{count} fédérations représentées"
+
+msgid "{count} league represented"
+msgid_plural "{count} leagues represented"
+msgstr[0] "{count} ligue représentée"
+msgstr[1] "{count} ligues représentées"
 
 msgid "{count} player updated."
 msgid_plural "{count} players updated."

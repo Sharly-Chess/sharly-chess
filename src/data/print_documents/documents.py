@@ -4,8 +4,9 @@ import itertools
 from typing import Any, Callable, override
 from collections import Counter
 
+from common import unicode_normalize
 from common.exception import SharlyChessException, OptionError
-from common.i18n import _
+from common.i18n import _, ngettext
 from data.board import Board
 from data.pairings.engines import RoundRobinPairingEngine
 from data.pairings.systems import RoundRobinPairingSystem
@@ -691,6 +692,7 @@ class PrizeAssignmentPrintDocument(PrintDocument):
 class StatisticsSection:
     title: str
     rows: dict[str, int]
+    subtitle: str | None = None
 
 
 class StatisticsPrintDocument(PrintDocument):
@@ -719,12 +721,13 @@ class StatisticsPrintDocument(PrintDocument):
         label_getter: Callable[[Any], Any] = lambda x: x.name
         if hasattr(x, 'name')
         else x,
+        subtitle_fn: Callable[[int], str] | None = None,
     ) -> StatisticsSection | None:
         assert self.tournament is not None
         counter = Counter(
             getattr(p, attr_name)
             for p in self.tournament.players
-            if getattr(p, attr_name) is not None
+            if getattr(p, attr_name)
         )
 
         if not counter:
@@ -734,8 +737,12 @@ class StatisticsPrintDocument(PrintDocument):
         if sort_key:
             items = sorted(items, key=sort_key)
 
+        subtitle = subtitle_fn(len(counter)) if subtitle_fn else None
+
         return StatisticsSection(
-            title=title, rows={label_getter(k): v for k, v in items}
+            title=title,
+            rows={label_getter(k): v for k, v in items},
+            subtitle=subtitle,
         )
 
     def rating_range_section(self) -> StatisticsSection | None:
@@ -766,8 +773,10 @@ class StatisticsPrintDocument(PrintDocument):
                     break
 
         rows: dict[str, int] = {
-            f'Rating between {start} and {end}': counter[(start, end)]
-            for (start, end) in buckets
+            _('Rating between {start} and {end}').format(start=start, end=end): counter[
+                (start, end)
+            ]
+            for (start, end) in reversed(buckets)
             if counter[(start, end)] > 0
         }
 
@@ -786,20 +795,43 @@ class StatisticsPrintDocument(PrintDocument):
             document=self, tournament=self.tournament
         )
 
-        for attr_name, title, sort_key in [
-            ('title', _('Titled players'), lambda item: -item[0].value),
-            ('rating_type', _('Rating types'), lambda item: -item[0].value),
-            ('category', _('Age categories'), lambda item: item[0].value),
-            ('gender', _('Genders'), lambda item: item[0].value),
-            ('federation', _('Federations'), lambda item: item[0].name),
-            ('club', _('Clubs'), lambda item: -item[1]),
+        for attr_name, title, sort_key, subtitle_fn in [
+            ('title', _('Titled players'), lambda item: -item[0].value, None),
+            ('rating_type', _('Rating types'), lambda item: -item[0].value, None),
+            ('category', _('Age categories'), lambda item: -item[0].value, None),
+            ('gender', _('Genders'), lambda item: item[0].value, None),
+            (
+                'federation',
+                _('Federations'),
+                lambda item: (-item[1], item[0].name),
+                lambda count: ngettext(
+                    '{count} federation represented',
+                    '{count} federations represented',
+                    count,
+                ).format(count=count),
+            ),
+            (
+                'club',
+                _('Clubs'),
+                lambda item: (
+                    -item[1],
+                    unicode_normalize(
+                        item[0].name.lower().translate(str.maketrans('', '', '"\''))
+                    ),
+                ),
+                lambda count: ngettext(
+                    '{count} club represented', '{count} clubs represented', count
+                ).format(count=count),
+            ),
         ]:
             for sections in per_plugin_sections:
                 for section in sections:
                     if section.at == attr_name:
                         statistics.append(section)
 
-            section = self.stat_section(attr_name, title, sort_key=sort_key)
+            section = self.stat_section(
+                attr_name, title, sort_key=sort_key, subtitle_fn=subtitle_fn
+            )
             if section:
                 statistics.append(section)
 

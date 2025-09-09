@@ -14,7 +14,7 @@ from packaging.version import Version
 
 from common import TEST_ENV, DEVEL_ENV
 from common.exception import SharlyChessException
-from common.i18n import _
+from common.i18n import _, ngettext
 from data.input_output import DataSource, TournamentExporter, TournamentImporter
 from data.input_output.data_source import FideDataSource
 from data.pairings.managers import PairingVariationManager
@@ -886,10 +886,21 @@ class FfePlugin(Plugin):
                 return []
 
             items: list[tuple[str, int]] = list(counter.items())
-            items = sorted(items, key=lambda item: -item[1])
+            items = sorted(items, key=lambda item: (-item[1], item[0]))
             rows = {k: v for k, v in items}
 
-            return [ExtraStatisticsSection(at='club', title=_('Leagues'), rows=rows)]
+            return [
+                ExtraStatisticsSection(
+                    at='club',
+                    title=_('Leagues'),
+                    rows=rows,
+                    subtitle=ngettext(
+                        '{count} league represented',
+                        '{count} leagues represented',
+                        len(rows),
+                    ).format(count=len(rows)),
+                )
+            ]
         return []
 
     # ---------------------------------------------------------------------------------
