@@ -4116,9 +4116,6 @@ msgstr "Elo"
 msgid "Rating *** RATING FOR PLAYERS COLUMNS"
 msgstr "Classement"
 
-msgid "Rating between {start} and {end}"
-msgstr "Classement entre {start} et {end}"
-
 msgid "Rating limit"
 msgstr "Limite Elo"
 
@@ -6347,6 +6344,9 @@ msgstr "{prefix}{int_value}<sup>{suffix}</sup>"
 msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
 
+msgid "{start} → {end}"
+msgstr ""
+
 msgid "{status_code} - Unknown error"
 msgstr "{status_code} - Erreur inconnue"
 
@@ -6370,4 +6370,3 @@ msgstr "½ - ½ (NC)"
 
 #~ msgid "Add a screen to check-in players or enter results."
 #~ msgstr "Ajouter un écran de saisie des résultats."
-

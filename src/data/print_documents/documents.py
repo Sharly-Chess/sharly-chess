@@ -775,9 +775,7 @@ class StatisticsPrintDocument(PrintDocument):
                     break
 
         rows: dict[str, int] = {
-            _('Rating between {start} and {end}').format(start=start, end=end): counter[
-                (start, end)
-            ]
+            _('{start} → {end}').format(start=start, end=end): counter[(start, end)]
             for (start, end) in reversed(buckets)
             if counter[(start, end)] > 0
         }

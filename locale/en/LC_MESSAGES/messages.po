@@ -4116,9 +4116,6 @@ msgstr ""
 msgid "Rating *** RATING FOR PLAYERS COLUMNS"
 msgstr "Rating"
 
-msgid "Rating between {start} and {end}"
-msgstr ""
-
 msgid "Rating limit"
 msgstr ""
 
@@ -6347,6 +6344,9 @@ msgstr ""
 msgid "{screen_type}-screen"
 msgstr ""
 
+msgid "{start} → {end}"
+msgstr ""
+
 msgid "{status_code} - Unknown error"
 msgstr ""
 
@@ -6370,4 +6370,3 @@ msgstr ""
 
 #~ msgid "Properties (check-in and results entry)"
 #~ msgstr ""
-
