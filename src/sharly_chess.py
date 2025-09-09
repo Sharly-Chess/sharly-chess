@@ -91,9 +91,8 @@ try:
 
 except Exception:
     import os
+    import platform
     import sys
-    import tkinter
-    from tkinter import messagebox
     import traceback
 
     message = traceback.format_exc()
@@ -109,7 +108,24 @@ except Exception:
     if test_env:
         sys.exit(1)
 
-    root = tkinter.Tk()
-    root.withdraw()
-    messagebox.showerror('Sharly Chess startup error', message)
-    root.destroy()
+    title = 'Sharly Chess startup error'
+
+    match platform.system():
+        case 'Windows':
+            import tkinter
+            from tkinter import messagebox
+
+            root = tkinter.Tk()
+            root.withdraw()
+            messagebox.showerror('Sharly Chess startup error', message)
+            root.destroy()
+
+        case 'Darwin':
+            import subprocess
+
+            message = message.replace('"', '\\"')
+            script = (
+                f'display alert "{title}" message "{message}" '
+                'as critical buttons {"OK"}'
+            )
+            subprocess.run(['osascript', '-e', script], check=True)
