@@ -396,9 +396,6 @@ msgstr ""
 msgid "Add a rotator to the event."
 msgstr ""
 
-msgid "Add a screen to check-in players or enter results."
-msgstr ""
-
 msgid "Add a screen to display an image."
 msgstr ""
 
@@ -412,6 +409,9 @@ msgid "Add a screen to display the pairings by board number."
 msgstr ""
 
 msgid "Add a screen to display the ranking."
+msgstr ""
+
+msgid "Add a screen to enter results."
 msgstr ""
 
 msgid "Add a set"
@@ -659,6 +659,9 @@ msgid "Average rating"
 msgstr ""
 
 msgid "Average rating of opponents"
+msgstr ""
+
+msgid "Average rating:"
 msgstr ""
 
 msgid "Avg. Perfect Perf. *** SHORT NAME FOR AVERAGE PERFECT PERFORMANCE"
@@ -2409,6 +2412,9 @@ msgstr "Gender"
 msgid "Gender:"
 msgstr ""
 
+msgid "Genders"
+msgstr ""
+
 msgid "General"
 msgstr ""
 
@@ -3624,6 +3630,9 @@ msgstr ""
 msgid "Parings by player"
 msgstr ""
 
+msgid "Participation Statistics"
+msgstr ""
+
 msgid "Passed ({num})"
 msgstr ""
 
@@ -3995,9 +4004,6 @@ msgstr ""
 msgid "Properties"
 msgstr ""
 
-msgid "Properties (check-in and results entry)"
-msgstr ""
-
 msgid "Protected pairings editing"
 msgstr ""
 
@@ -4114,6 +4120,9 @@ msgid "Rating limit"
 msgstr ""
 
 msgid "Rating limits"
+msgstr ""
+
+msgid "Rating ranges"
 msgstr ""
 
 msgid "Rating seed for unrated rapid/blitz"
@@ -4658,6 +4667,9 @@ msgid "Starting Sharly Chess server, Please wait…"
 msgstr ""
 
 msgid "Starting rank"
+msgstr ""
+
+msgid "Statistics"
 msgstr ""
 
 msgid "Status"
@@ -5295,6 +5307,9 @@ msgstr ""
 msgid "Timers: %(num)d"
 msgstr ""
 
+msgid "Titled players"
+msgstr ""
+
 msgid "Today"
 msgstr ""
 
@@ -5620,6 +5635,9 @@ msgid "Unpairing a published round can be very inconvenient for players. Additio
 msgstr ""
 
 msgid "Unpairing all the boards of this round is not possible because the round has results."
+msgstr ""
+
+msgid "Unrated"
 msgstr ""
 
 msgid "Unrated Draw"
@@ -6327,5 +6345,11 @@ msgid "½ - ½ (U)"
 msgstr ""
 
 #~ msgid "Help"
+#~ msgstr ""
+
+#~ msgid "Add a screen to check-in players or enter results."
+#~ msgstr ""
+
+#~ msgid "Properties (check-in and results entry)"
 #~ msgstr ""
 

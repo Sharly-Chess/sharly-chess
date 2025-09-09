@@ -396,9 +396,6 @@ msgstr "Ajouter un prix à la liste."
 msgid "Add a rotator to the event."
 msgstr "Ajouter un écran rotatif à l'évènement."
 
-msgid "Add a screen to check-in players or enter results."
-msgstr "Ajouter un écran de saisie des résultats."
-
 msgid "Add a screen to display an image."
 msgstr "Ajouter un écran d'affichage d'une image."
 
@@ -413,6 +410,9 @@ msgstr "Ajouter un écran d'affichage des appariements par échiquier."
 
 msgid "Add a screen to display the ranking."
 msgstr "Ajouter un écran d'affichage du classement."
+
+msgid "Add a screen to enter results."
+msgstr ""
 
 msgid "Add a set"
 msgstr "Ajouter un ensemble"
@@ -660,6 +660,9 @@ msgstr "ELO moyen"
 
 msgid "Average rating of opponents"
 msgstr "Classement ELO moyen des adversaires"
+
+msgid "Average rating:"
+msgstr "Moyenne Elo"
 
 msgid "Avg. Perfect Perf. *** SHORT NAME FOR AVERAGE PERFECT PERFORMANCE"
 msgstr "Perf. parfaite moyenne"
@@ -2409,6 +2412,9 @@ msgstr "Genre"
 msgid "Gender:"
 msgstr "Genre :"
 
+msgid "Genders"
+msgstr "Genres"
+
 msgid "General"
 msgstr "Général"
 
@@ -3624,6 +3630,9 @@ msgstr "Fichier Papi"
 msgid "Parings by player"
 msgstr "Appariements par ordre alphabétique"
 
+msgid "Participation Statistics"
+msgstr "Statistiques de participation"
+
 msgid "Passed ({num})"
 msgstr "Passés ({num})"
 
@@ -4112,6 +4121,9 @@ msgstr "Limite Elo"
 
 msgid "Rating limits"
 msgstr "Limites Elo"
+
+msgid "Rating ranges"
+msgstr "Tranches de classement"
 
 msgid "Rating seed for unrated rapid/blitz"
 msgstr "Classement des joueur·euses sans classement FIDE rapide/blitz"
@@ -4656,6 +4668,9 @@ msgstr "Démarrage du serveur Sharly Chess, veuillez patienter…"
 
 msgid "Starting rank"
 msgstr "Classement initial"
+
+msgid "Statistics"
+msgstr "Statistiques"
 
 msgid "Status"
 msgstr "Statut"
@@ -5292,6 +5307,9 @@ msgstr "Les chronomètres peuvent être placés sur n’importe quel écran, fam
 msgid "Timers: %(num)d"
 msgstr "Chronomètres : %(num)d"
 
+msgid "Titled players"
+msgstr "Joueur·euses titré·es"
+
 msgid "Today"
 msgstr "Aujourd'hui"
 
@@ -5618,6 +5636,9 @@ msgstr "Désapparier une ronde publiée peut être très désagréable pour les 
 
 msgid "Unpairing all the boards of this round is not possible because the round has results."
 msgstr "Désapparier tous les échiquiers est impossible tant que la ronde a des résultats enregistrés."
+
+msgid "Unrated"
+msgstr "Non-classés"
 
 msgid "Unrated Draw"
 msgstr "Nulle non comptabilisé pour le classement Elo"
@@ -6328,3 +6349,7 @@ msgstr "½ - ½ (NC)"
 
 #~ msgid "Help"
 #~ msgstr "Aide"
+
+#~ msgid "Add a screen to check-in players or enter results."
+#~ msgstr "Ajouter un écran de saisie des résultats."
+
