@@ -6,6 +6,8 @@ English version below
 - Permissions des clients connectés au serveur (3.1.0)
 - Prise en charge des serveurs avec plusieurs adresses IP (3.1.0)
 - Amélioration de la console du serveur (3.1.0)
+- Vue imprimable des statistiques des joueur·euses (3.1.0)
+
 
 ## Appariements
 
@@ -20,6 +22,7 @@ English version below
 - Support for servers with multiple IP addresses (3.1.0)
 - Permissions for clients connected to the server (3.1.0)
 - Improved the server console (3.1.0)
+- Statistics print view (3.1.0)
 
 ## Pairings
 

@@ -28,6 +28,7 @@ class PrintDocumentManager(EntityManager[PrintDocument]):
             documents.BergerGridPrintDocument,
             documents.PrizeListPrintDocument,
             documents.PrizeAssignmentPrintDocument,
+            documents.StatisticsPrintDocument,
         ]
 
 
@@ -40,6 +41,7 @@ class PrintDocumentOptionManager(EntityManager[PrintOption]):
             options.PlayerSplitPrintOption,
             options.PlayerSortPrintOption,
             options.ShowWarningsPrintOption,
+            options.ClubThresholdPrintOption,
         ]
 
 
