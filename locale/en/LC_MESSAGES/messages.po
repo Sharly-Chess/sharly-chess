@@ -3995,9 +3995,6 @@ msgstr ""
 msgid "Properties"
 msgstr ""
 
-msgid "Properties (check-in and results entry)"
-msgstr ""
-
 msgid "Protected pairings editing"
 msgstr ""
 
@@ -4331,6 +4328,10 @@ msgstr ""
 msgid "Round skipped"
 msgstr ""
 
+#, python-format
+msgid "Round {} started for %s"
+msgstr ""
+
 msgid "Round-Robin"
 msgstr ""
 
@@ -4649,6 +4650,10 @@ msgid "Standard swiss system"
 msgstr ""
 
 msgid "Standard:"
+msgstr ""
+
+#, python-format
+msgid "Start of round {} in %s"
 msgstr ""
 
 msgid "Start:"
@@ -6325,7 +6330,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "Help"
-#~ msgstr ""
 
