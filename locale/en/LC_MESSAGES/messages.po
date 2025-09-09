@@ -4343,6 +4343,10 @@ msgstr ""
 msgid "Round skipped"
 msgstr ""
 
+#, python-format
+msgid "Round {} started for %s"
+msgstr ""
+
 msgid "Round-Robin"
 msgstr ""
 
@@ -4661,6 +4665,10 @@ msgid "Standard swiss system"
 msgstr ""
 
 msgid "Standard:"
+msgstr ""
+
+#, python-format
+msgid "Start of round {} in %s"
 msgstr ""
 
 msgid "Start:"
@@ -6367,13 +6375,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "Help"
-#~ msgstr ""
-
-#~ msgid "Add a screen to check-in players or enter results."
-#~ msgstr ""
-
-#~ msgid "Properties (check-in and results entry)"
-#~ msgstr ""
 
