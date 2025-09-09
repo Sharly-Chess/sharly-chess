@@ -396,6 +396,9 @@ msgstr ""
 msgid "Add a rotator to the event."
 msgstr ""
 
+msgid "Add a screen to check-in players or enter results."
+msgstr ""
+
 msgid "Add a screen to display an image."
 msgstr ""
 
@@ -409,9 +412,6 @@ msgid "Add a screen to display the pairings by board number."
 msgstr ""
 
 msgid "Add a screen to display the ranking."
-msgstr ""
-
-msgid "Add a screen to enter results."
 msgstr ""
 
 msgid "Add a set"
@@ -3993,6 +3993,9 @@ msgid "Progressive scores"
 msgstr ""
 
 msgid "Properties"
+msgstr ""
+
+msgid "Properties (check-in and results entry)"
 msgstr ""
 
 msgid "Protected pairings editing"

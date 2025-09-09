@@ -6,6 +6,7 @@ from litestar.exceptions import NotFoundException
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
 
 from common.logger import get_logger
+from common.sharly_chess_config import SharlyChessConfig
 from data.display_controller import DisplayController
 from data.family import Family
 from data.rotator import Rotator
@@ -43,12 +44,26 @@ class ScreenOrRotatorOrDisplayControllerUserWebContext(EventUserWebContext, ABC)
         pass
 
     @property
-    def background_image(self) -> str:
-        return self.screen.background_image
+    def background_image(self) -> str | None:
+        if self.screen:
+            return self.screen.background_image
+        elif self.rotator:
+            return self.rotator.event.background_image
+        elif self.display_controller:
+            return self.display_controller.event.background_image
+        else:
+            return SharlyChessConfig.default_background_image
 
     @property
     def background_color(self) -> str:
-        return self.screen.background_color
+        if self.screen:
+            return self.screen.background_color
+        elif self.rotator:
+            return self.rotator.event.background_color
+        elif self.display_controller:
+            return self.display_controller.event.background_color
+        else:
+            return SharlyChessConfig.default_background_color
 
     @property
     def template_context(self) -> dict[str, Any]:

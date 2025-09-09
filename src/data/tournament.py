@@ -418,7 +418,7 @@ class Tournament:
     def players_by_name_with_unpaired(self) -> list[Player]:
         return sorted(
             self.players,
-            key=lambda player: (player.last_name, player.first_name),
+            key=lambda player: (player.last_name, player.first_name or ''),
         )
 
     @cached_property
@@ -428,10 +428,10 @@ class Tournament:
                 player
                 for player in self.players
                 if not self.current_round
-                or player.board_id
+                or player.board_id is not None
                 and player not in self.unpaired_players
             ],
-            key=lambda p: (p.last_name, p.first_name),
+            key=lambda p: (p.last_name, p.first_name or ''),
         )
 
     @property

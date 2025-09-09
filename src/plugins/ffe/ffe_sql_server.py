@@ -196,7 +196,7 @@ class FFESqlServer(SqlServer):
         tokens: list[str] = string.split(' ')
         str_fields: tuple[tuple[str, str, str], ...] = (
             ('joueur.Nom', '%', '%'),
-            ('joueur.Prenom', '', '%'),
+            ('joueur.Prenom', '%', '%'),
             ('joueur.NrFFE', '', ''),
         )
         conditions: list[str] = [
@@ -225,10 +225,12 @@ class FFESqlServer(SqlServer):
         order = ' OR '.join(
             [
                 '(UPPER(joueur.Nom) LIKE %s)',
+                '(UPPER(joueur.Prenom) LIKE %s)',
             ]
             * len(tokens)
         )
-        params += [f'{token}%' for token in tokens]
+        for token in tokens:
+            params += [f'{token}%'] * 2
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
             f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
