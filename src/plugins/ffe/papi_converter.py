@@ -854,13 +854,10 @@ class PapiConverter:
     def _get_papi_elo_type(
         self, player: Player, tournament_rating: TournamentRating
     ) -> str:
-        # If we're overriding, export it as estimated
-        rating_type: PlayerRatingType | None
         if player.rating_is_overridden(tournament_rating):
-            rating_type = PlayerRatingType.ESTIMATED
-        else:
-            rating = player.ratings.get(tournament_rating, None)
-            rating_type = rating.type if rating else None
+            tournament_rating = TournamentRating.STANDARD
+        rating = player.ratings.get(tournament_rating, None)
+        rating_type = rating.type if rating else None
         default_rating = PapiPlayerRatingType.get_outer_value(
             PlayerRatingType.ESTIMATED
         )
