@@ -10,7 +10,7 @@ from common.i18n import _, ngettext
 from data.board import Board
 from data.pairings.engines import RoundRobinPairingEngine
 from data.pairings.systems import RoundRobinPairingSystem
-from data.player import Player, dataclass, plugin_manager
+from data.player import Player, PlayerTitle, dataclass, plugin_manager
 from data.print_documents.options import (
     PairingStylePrintOption,
     PlayerSplitPrintOption,
@@ -721,13 +721,15 @@ class StatisticsPrintDocument(PrintDocument):
         label_getter: Callable[[Any], Any] = lambda x: x.name
         if hasattr(x, 'name')
         else x,
+        filter_func: Callable[[Any], bool] | None = None,
         subtitle_fn: Callable[[int], str] | None = None,
     ) -> StatisticsSection | None:
         assert self.tournament is not None
         counter = Counter(
-            getattr(p, attr_name)
+            value
             for p in self.tournament.players
-            if getattr(p, attr_name)
+            if (value := getattr(p, attr_name)) is not None
+            and (filter_func(value) if filter_func else True)
         )
 
         if not counter:
@@ -795,15 +797,22 @@ class StatisticsPrintDocument(PrintDocument):
             document=self, tournament=self.tournament
         )
 
-        for attr_name, title, sort_key, subtitle_fn in [
-            ('title', _('Titled players'), lambda item: -item[0].value, None),
-            ('rating_type', _('Rating types'), lambda item: -item[0].value, None),
-            ('category', _('Age categories'), lambda item: -item[0].value, None),
-            ('gender', _('Genders'), lambda item: item[0].value, None),
+        for attr_name, title, sort_key, filter_func, subtitle_fn in [
+            (
+                'title',
+                _('Titled players'),
+                lambda item: -item[0].value,
+                lambda x: x != PlayerTitle.NONE,
+                None,
+            ),
+            ('rating_type', _('Rating types'), lambda item: -item[0].value, None, None),
+            ('category', _('Age categories'), lambda item: -item[0].value, None, None),
+            ('gender', _('Genders'), lambda item: item[0].value, None, None),
             (
                 'federation',
                 _('Federations'),
                 lambda item: (-item[1], item[0].name),
+                None,
                 lambda count: ngettext(
                     '{count} federation represented',
                     '{count} federations represented',
@@ -819,6 +828,7 @@ class StatisticsPrintDocument(PrintDocument):
                         item[0].name.lower().translate(str.maketrans('', '', '"\''))
                     ),
                 ),
+                lambda item: item.name != '',
                 lambda count: ngettext(
                     '{count} club represented', '{count} clubs represented', count
                 ).format(count=count),
@@ -830,7 +840,11 @@ class StatisticsPrintDocument(PrintDocument):
                         statistics.append(section)
 
             section = self.stat_section(
-                attr_name, title, sort_key=sort_key, subtitle_fn=subtitle_fn
+                attr_name,
+                title,
+                sort_key=sort_key,
+                filter_func=filter_func,
+                subtitle_fn=subtitle_fn,
             )
             if section:
                 statistics.append(section)
