@@ -155,7 +155,7 @@ APPEND_LOG_JS = """
         if (!cont) return;
         var div = document.createElement('div');
         div.className = 'line ' + (level || 'info');
-        div.innerHTML = '<span class="ts">[' + ts + ']</span> ' + html;
+        div.innerHTML = html;
         cont.appendChild(div);
         window.scrollTo(0, document.body.scrollHeight);
     }};
