@@ -25,11 +25,7 @@ try:
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--server', action='store_true')
-    parser.add_argument(
-        '--cli',
-        action='store_true',
-        help='Force console/CLI mode (default is GUI for bundled apps)',
-    )
+
     parser.add_argument(
         '-p',
         '--port',
@@ -54,6 +50,12 @@ try:
             '--debug',
             help='on the webserver, if there is an uncaught exception, drop to PDB',
             action='store_true',
+        )
+    if DEVEL_ENV or TEST_ENV:
+        parser.add_argument(
+            '--cli',
+            action='store_true',
+            help='Force console/CLI mode (default is GUI for bundled apps)',
         )
     args = parser.parse_args(arguments)
 
