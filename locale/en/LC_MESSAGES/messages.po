@@ -1008,6 +1008,9 @@ msgstr "Club"
 msgid "Club *** CLUB FOR TABLE HEADER"
 msgstr "Club"
 
+msgid "Club threshold"
+msgstr ""
+
 msgid "Club:"
 msgstr ""
 
@@ -4855,6 +4858,9 @@ msgstr ""
 msgid "The minimum level of logs that will be printed on the console (all the detailed logs are always printed to the log files)."
 msgstr ""
 
+msgid "The minimum number of players needed for a club to be displayed."
+msgstr ""
+
 msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
 msgstr ""
 
@@ -6370,3 +6376,4 @@ msgstr ""
 
 #~ msgid "Properties (check-in and results entry)"
 #~ msgstr ""
+

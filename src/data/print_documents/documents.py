@@ -18,6 +18,7 @@ from data.print_documents.options import (
     RoundPrintOption,
     PlayerSortPrintOption,
     ShowWarningsPrintOption,
+    ClubThresholdPrintOption,
 )
 from data.tournament import Tournament
 from utils import StaticUtils
@@ -708,6 +709,10 @@ class StatisticsPrintDocument(PrintDocument):
     def title(self) -> str:
         return _('Participation Statistics')
 
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [ClubThresholdPrintOption]
+
     @property
     def template_name(self) -> str:
         return '/admin/print/statistics.html'
@@ -721,25 +726,32 @@ class StatisticsPrintDocument(PrintDocument):
         label_getter: Callable[[Any], Any] = lambda x: x.name
         if hasattr(x, 'name')
         else x,
+        min_count: int | None = None,
         filter_func: Callable[[Any], bool] | None = None,
         subtitle_fn: Callable[[int], str] | None = None,
     ) -> StatisticsSection | None:
         assert self.tournament is not None
-        counter = Counter(
+
+        values = [
             value
             for p in self.tournament.players
             if (value := getattr(p, attr_name)) is not None
             and (filter_func(value) if filter_func else True)
-        )
+        ]
 
-        if not counter:
+        full_counter = Counter(values)
+
+        if not full_counter:
             return None
 
-        items: list[tuple[Any, int]] = list(counter.items())
+        items: list[tuple[Any, int]] = list(full_counter.items())
+        if min_count is not None:
+            items = [(k, v) for k, v in items if v >= min_count]
+
         if sort_key:
             items = sorted(items, key=sort_key)
 
-        subtitle = subtitle_fn(len(counter)) if subtitle_fn else None
+        subtitle = subtitle_fn(len(full_counter)) if subtitle_fn else None
 
         return StatisticsSection(
             title=title,
@@ -789,27 +801,45 @@ class StatisticsPrintDocument(PrintDocument):
     def template_context(self) -> dict[str, Any]:
         assert self.tournament is not None
 
+        club_threshold = self._get_option(ClubThresholdPrintOption).value or 0
+
         statistics: list[StatisticsSection] = []
 
         per_plugin_sections = plugin_manager.hook.get_extra_statistics_sections(
             document=self, tournament=self.tournament
         )
 
-        for attr_name, title, sort_key, filter_func, subtitle_fn in [
+        for attr_name, title, sort_key, min_count, filter_func, subtitle_fn in [
             (
                 'title',
                 _('Titled players'),
                 lambda item: -item[0].value,
+                None,
                 lambda x: x != PlayerTitle.NONE,
                 None,
             ),
-            ('rating_type', _('Rating types'), lambda item: -item[0].value, None, None),
-            ('category', _('Age categories'), lambda item: -item[0].value, None, None),
-            ('gender', _('Genders'), lambda item: item[0].value, None, None),
+            (
+                'rating_type',
+                _('Rating types'),
+                lambda item: -item[0].value,
+                None,
+                None,
+                None,
+            ),
+            (
+                'category',
+                _('Age categories'),
+                lambda item: -item[0].value,
+                None,
+                None,
+                None,
+            ),
+            ('gender', _('Genders'), lambda item: item[0].value, None, None, None),
             (
                 'federation',
                 _('Federations'),
                 lambda item: (-item[1], item[0].name),
+                None,
                 None,
                 lambda count: ngettext(
                     '{count} federation represented',
@@ -826,6 +856,7 @@ class StatisticsPrintDocument(PrintDocument):
                         item[0].name.lower().translate(str.maketrans('', '', '"\''))
                     ),
                 ),
+                club_threshold,
                 lambda item: item.name != '',
                 lambda count: ngettext(
                     '{count} club represented', '{count} clubs represented', count
@@ -841,9 +872,11 @@ class StatisticsPrintDocument(PrintDocument):
                 attr_name,
                 title,
                 sort_key=sort_key,
+                min_count=min_count,
                 filter_func=filter_func,
                 subtitle_fn=subtitle_fn,
             )
+
             if section:
                 statistics.append(section)
 

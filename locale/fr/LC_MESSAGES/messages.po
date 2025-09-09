@@ -1008,6 +1008,9 @@ msgstr "Club"
 msgid "Club *** CLUB FOR TABLE HEADER"
 msgstr "Club"
 
+msgid "Club threshold"
+msgstr "Seuil pour les clubs"
+
 msgid "Club:"
 msgstr "Club :"
 
@@ -4855,6 +4858,9 @@ msgstr "Le délai minimum entre deux envois automatiques vers le serveur de la F
 msgid "The minimum level of logs that will be printed on the console (all the detailed logs are always printed to the log files)."
 msgstr "Le niveau minimum des log affichés sur la console (tous les logs détaillés sont toujours écrits dans les fichiers de log)."
 
+msgid "The minimum number of players needed for a club to be displayed."
+msgstr "Nombre minimum de joueurs requis pour qu’un club soit affiché."
+
 msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
 msgstr "Le nombre minimum de points réalisé par les joueur·euses affiché·es (si vide, tou·tes les joueur·euses sont affiché·es)."
 
@@ -5638,7 +5644,7 @@ msgid "Unpairing all the boards of this round is not possible because the round 
 msgstr "Désapparier tous les échiquiers est impossible tant que la ronde a des résultats enregistrés."
 
 msgid "Unrated"
-msgstr "Non-classés"
+msgstr "Non-classé·es"
 
 msgid "Unrated Draw"
 msgstr "Nulle non comptabilisé pour le classement Elo"
@@ -6345,7 +6351,7 @@ msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
 
 msgid "{start} → {end}"
-msgstr ""
+msgstr "{start} → {end}"
 
 msgid "{status_code} - Unknown error"
 msgstr "{status_code} - Erreur inconnue"

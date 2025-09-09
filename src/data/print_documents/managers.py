@@ -41,6 +41,7 @@ class PrintDocumentOptionManager(EntityManager[PrintOption]):
             options.PlayerSplitPrintOption,
             options.PlayerSortPrintOption,
             options.ShowWarningsPrintOption,
+            options.ClubThresholdPrintOption,
         ]
 
 
