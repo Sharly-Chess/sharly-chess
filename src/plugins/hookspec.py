@@ -12,6 +12,7 @@ from common import APP_NAME
 from plugins.utils import (
     ExtraAdminColumn,
     ExtraColumn,
+    ExtraStatisticsSection,
     PluginEngineArgument,
     PluginNavBarItem,
     PluginData,
@@ -306,13 +307,19 @@ class AppHookSpecs:
 
     @hookspec
     def get_extra_print_view_columns(
-        self, document: 'PrintDocument'
+        self, document: 'PrintDocument', tournament: 'Tournament'
     ) -> Iterable[ExtraColumn]:
         """Provide extra columns for the print view"""
 
     @hookspec
     def get_extra_print_view_css(self, document: 'PrintDocument') -> str:
         """Provide extra CSS for the print view"""
+
+    @hookspec
+    def get_extra_statistics_sections(
+        self, document: 'PrintDocument', tournament: 'Tournament'
+    ) -> Iterable[ExtraStatisticsSection]:
+        """Provide extra sections for the statistics print view"""
 
     # ---------------------------------------------------------------------------------
     # Nav bar

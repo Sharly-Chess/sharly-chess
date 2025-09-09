@@ -28,6 +28,7 @@ class PrintDocumentManager(EntityManager[PrintDocument]):
             documents.BergerGridPrintDocument,
             documents.PrizeListPrintDocument,
             documents.PrizeAssignmentPrintDocument,
+            documents.StatisticsPrintDocument,
         ]
 
 
