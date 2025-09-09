@@ -1,3 +1,31 @@
+import platform
+from common import DEVEL_ENV, TEST_ENV, BASE_DIR
+
+if not DEVEL_ENV and not TEST_ENV and platform.system() == 'Windows':
+    # Windows marks the downloaded files as unsure and blocks their usage.
+    # On the first run, all the files of the distribution are unmarked.
+    from pathlib import Path
+
+    tracer: Path = BASE_DIR / '_internal' / '.unblock_files'
+    if tracer.exists():
+        import os
+
+        print(f'Unblocking files in : {BASE_DIR}')
+        for root, _, files in os.walk(BASE_DIR):
+            for name in files:
+                path = os.path.join(root, name)
+                # Remove Zone.Identifier ADS if it exists
+                ads_path = path + ':Zone.Identifier'
+                try:
+                    os.remove(ads_path)
+                    print(f'Unblocked: {path}')
+                except FileNotFoundError:
+                    pass  # Already unblocked
+                except Exception as e:
+                    print(f'Failed to unblock {path}: {e}')
+        # Remove not to run twice
+        tracer.unlink()
+
 try:
     import argparse
     import asyncio
@@ -8,7 +36,6 @@ try:
 
     arguments = init_script()
 
-    from common import DEVEL_ENV, TEST_ENV
     from common.i18n import _
     from common.logger import (
         get_logger,
