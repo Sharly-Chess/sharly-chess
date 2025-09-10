@@ -3947,12 +3947,6 @@ msgstr "Prix"
 msgid "Prize assignment"
 msgstr "Attribution des prix"
 
-msgid "Prize assignment after round #{round}"
-msgstr "Attribution des prix après la ronde n°{round}"
-
-msgid "Prize assignment before the first round"
-msgstr "Attribution des prix avant la première ronde"
-
 msgid "Prize category [{prize_category}] has been duplicated."
 msgstr "La catégorie de prix [{prize_category}] a été dupliquée."
 
@@ -6390,5 +6384,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
 

@@ -3947,12 +3947,6 @@ msgstr "Prize"
 msgid "Prize assignment"
 msgstr ""
 
-msgid "Prize assignment after round #{round}"
-msgstr ""
-
-msgid "Prize assignment before the first round"
-msgstr ""
-
 msgid "Prize category [{prize_category}] has been duplicated."
 msgstr ""
 

@@ -634,7 +634,7 @@ class PrizeListPrintDocument(PrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [TournamentPrintOption]
+        return [TournamentsPrintOption]
 
     @property
     def title(self) -> str:
@@ -646,10 +646,10 @@ class PrizeListPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
-        prize_currency = self.tournament.event.prize_currency
+        assert self.event is not None
+        prize_currency = self.event.prize_currency
         return {
-            'tournament': self.tournament,
-            'subtitle': self.tournament.name,
+            'tournaments': self.tournaments,
             'ordinal_integer': StaticUtils.ordinal_integer,
             'prize_currency': prize_currency,
             'format_prize_value': partial(
@@ -670,16 +670,11 @@ class PrizeAssignmentPrintDocument(PrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [TournamentPrintOption, ShowWarningsPrintOption]
+        return [TournamentsPrintOption, ShowWarningsPrintOption]
 
     @property
     def title(self) -> str:
-        after_round = self.tournament.max_ranking_round
-        if after_round == self.tournament.rounds:
-            return self.name
-        if after_round == 0:
-            return _('Prize assignment before the first round')
-        return _('Prize assignment after round #{round}').format(round=after_round)
+        return _('Prize assignment')
 
     @property
     def template_name(self) -> str:
@@ -687,10 +682,10 @@ class PrizeAssignmentPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
-        prize_currency = self.tournament.event.prize_currency
+        assert self.event is not None
+        prize_currency = self.event.prize_currency
         return {
-            'tournament': self.tournament,
-            'subtitle': self.tournament.name,
+            'tournaments': self.tournaments,
             'show_warnings': self.get_option_values()[0],
             'ordinal_integer': StaticUtils.ordinal_integer,
             'prize_currency': prize_currency,
