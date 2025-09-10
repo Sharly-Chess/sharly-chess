@@ -111,7 +111,7 @@
                     {% for rotating_screen in admin_rotator.rotating_screen_objects %}
                         {% set screen = rotating_screen.screen %}
                         {% set family = rotating_screen.family %}
-                        <div class="border border-secondary {% if reorder_screens %}cursor-grab{% endif %}">
+                        <div class="border border-secondary bg-body-tertiary {% if reorder_screens %}cursor-grab{% endif %}">
                             <input type="hidden" name="rotating_screen" value="{{ rotating_screen.form_id }}"/>
                             <div class="p-2 d-flex align-items-center gap-4">
                                 {% if reorder_screens %}
