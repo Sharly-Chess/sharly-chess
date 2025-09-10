@@ -27,6 +27,31 @@ class PrintOption(Option, ABC):
         return self.id.replace('-', '_')
 
 
+class TournamentPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'tournament'
+
+    @property
+    def type(self) -> type | UnionType:
+        return int | None
+
+    @property
+    def default_value(self) -> Any:
+        # This is managed by the print controller
+        return None
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/event/print_options/tournament.html'
+
+    @override
+    def validate(self):
+        super().validate()
+        if self.value is None:
+            raise OptionError(_('Please choose the tournament.'), self)
+
+
 class RoundPrintOption(PrintOption):
     @staticmethod
     def static_id() -> str:

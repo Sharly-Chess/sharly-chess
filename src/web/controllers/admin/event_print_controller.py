@@ -9,13 +9,14 @@ from litestar_htmx import ClientRedirect
 
 from common.exception import OptionError
 from common.i18n import _
+from data.tournament import Tournament
 from data.print_documents import (
     PrintDocument,
     PrintDocumentManager,
     PrintDocumentOptionManager,
 )
 from data.print_documents.documents import PlayerListPrintDocument
-from data.tournament import Tournament
+from data.print_documents.options import TournamentPrintOption
 from web.controllers.base_controller import WebContext
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
@@ -51,14 +52,19 @@ class EventPrintController(BaseEventAdminController):
             event = web_context.get_admin_event()
             if len(event.tournaments_sorted_by_uniq_id) == 1:
                 tournament_id = event.tournaments_sorted_by_uniq_id[0].id
-            data = {
-                'tournament_id': WebContext.value_to_form_data(tournament_id),
-                'document': document_id or PlayerListPrintDocument.static_id(),
-                'round': WebContext.value_to_form_data(_round),
-            } | {
-                option.id: WebContext.value_to_form_data(option.default_value)
-                for option in print_options
-            }
+            data = (
+                {
+                    'document': document_id or PlayerListPrintDocument.static_id(),
+                    'round': WebContext.value_to_form_data(_round),
+                }
+                | {
+                    option.id: WebContext.value_to_form_data(option.default_value)
+                    for option in print_options
+                }
+                | {
+                    'tournament': WebContext.value_to_form_data(tournament_id),
+                }
+            )
         containers_by_document: dict[str, list[str]] = {'': []} | {
             document.id: [option.container_id for option in document.default_options()]
             for document in PrintDocumentManager.objects()
@@ -85,9 +91,7 @@ class EventPrintController(BaseEventAdminController):
     @get(
         path=[
             '/admin/print-modal/{event_uniq_id:str}',
-            '/admin/print-modal/{event_uniq_id:str}/{document_id:str}',
-            '/admin/print-modal/{event_uniq_id:str}/{document_id:str}/{tournament_id:int}',
-            '/admin/print-modal/{event_uniq_id:str}/{document_id:str}/{tournament_id:int}/{round:int}',
+            '/admin/print-modal/{event_uniq_id:str}/{tournament_id:int}',
         ],
         name='admin-print-modal',
     )
@@ -135,25 +139,6 @@ class EventPrintController(BaseEventAdminController):
             return web_context.error
 
         errors: dict[str, str] = {}
-        tournament: Tournament | None = None
-        field = 'tournament_id'
-
-        try:
-            tournament_id = WebContext.form_data_to_int(data, field)
-            if not tournament_id:
-                raise ValueError('Tournament ID not supplied')
-            tournament = (
-                web_context.get_admin_event().tournaments_by_id[tournament_id]
-                if tournament_id
-                else None
-            )
-        except (ValueError, KeyError):
-            errors[field] = _('Please choose the tournament.')
-
-        if tournament:
-            SessionHandler.set_session_admin_print_last_tournament(
-                request, web_context.get_admin_event().uniq_id, tournament.id
-            )
 
         document_type: type[PrintDocument] | None = None
         field = 'document'
@@ -163,20 +148,34 @@ class EventPrintController(BaseEventAdminController):
             )
         except KeyError:
             errors[field] = _('Please choose the document.')
-        if tournament and document_type:
-            if error_message := document_type.validate_for_tournament(tournament):
-                errors[field] = error_message
+
+        tournament: Tournament | None = None
+        if document_type:
             options = []
+            tournament_id: int | None = None
             for option in document_type.default_options():
                 value = WebContext.form_data_to_value(data, option.id, option.type)
                 options.append(type(option)(value))
-            document = document_type(options, tournament)
+                if isinstance(option, TournamentPrintOption):
+                    assert isinstance(value, int | None)
+                    tournament_id = value
+            document = document_type(web_context.get_admin_event(), options)
+            if tournament_id:
+                tournament = web_context.get_admin_event().tournaments_by_id[
+                    tournament_id
+                ]
+                SessionHandler.set_session_admin_print_last_tournament(
+                    request, web_context.get_admin_event().uniq_id, tournament.id
+                )
+                if error_message := document_type.validate_for_tournament(tournament):
+                    errors[field] = error_message
+
             try:
                 document.validate_options()
             except OptionError as error:
                 errors[error.option.id] = str(error)
 
-        if tournament and document_type and not errors:
+        if document_type and not errors:
             # Clear the modal contents, and send an event
             return HTMXTemplate(
                 template_name='common/empty_modal.html',

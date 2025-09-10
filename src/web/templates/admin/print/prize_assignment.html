@@ -8,7 +8,7 @@
 {% block content %}
     <div class="centered">
         <div class="prize-table">
-            {% for prize_group in document.tournament.sorted_prize_groups %}
+            {% for prize_group in tournament.sorted_prize_groups %}
                 {% if not loop.first %}
                     <hr/>
                 {% endif %}
@@ -24,7 +24,7 @@
                     <div class="header">{{ _('Rk. O. *** RANK OVERALL FOR TABLE HEADER') }}</div>
                     <div class="header">&nbsp;</div> {# Title #}
                     <div class="header">{{ _('Name *** NAME FOR TABLE HEADER') }}</div>
-                    <div class="header">{{ document.tournament.rating.print_view_header }}</div>
+                    <div class="header">{{ tournament.rating.print_view_header }}</div>
                     <div class="header">{{ _("Cat *** CATEGORY FOR TABLE HEADER") }}</div>
                     <div class="header">{{ _('Gen *** GENDER FOR TABLE HEADER') }}</div>
                     <div class="header">{{ _('Fed *** FEDERATION FOR TABLE HEADER') }}</div>

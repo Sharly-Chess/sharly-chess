@@ -2,7 +2,7 @@
 
 {% block content %}
 
-    {% for prize_group in document.tournament.sorted_prize_groups %}
+    {% for prize_group in tournament.sorted_prize_groups %}
         {% if not loop.first %}
             <hr/>
         {% endif %}

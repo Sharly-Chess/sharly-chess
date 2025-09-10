@@ -1009,7 +1009,6 @@ class TournamentAdminController(BaseEventAdminController):
             return web_context.error
         if web_context.admin_tournament is None:
             raise RuntimeError('admin_tournament not defined')
-        admin_tournament: Tournament = web_context.admin_tournament
         document_type = PrintDocumentManager.get_type(document)
         option_data: dict[str, str] = {}
         if options:
@@ -1022,7 +1021,7 @@ class TournamentAdminController(BaseEventAdminController):
                 option_data, print_option.id, print_option.type
             )
             print_options.append(type(print_option)(value))
-        print_document = document_type(print_options, admin_tournament)
+        print_document = document_type(web_context.get_admin_event(), print_options)
 
         per_plugin_columns = plugin_manager.hook.get_extra_print_view_columns(
             document=print_document
