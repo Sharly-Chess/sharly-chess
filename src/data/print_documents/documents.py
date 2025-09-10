@@ -21,6 +21,7 @@ from data.print_documents.options import (
     ShowWarningsPrintOption,
     ClubThresholdPrintOption,
     TournamentPrintOption,
+    TournamentsPrintOption,
 )
 from data.tournament import Tournament
 from utils import StaticUtils
@@ -43,6 +44,16 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
         assert self.event is not None
         tournament_id = self._get_option(TournamentPrintOption).value
         return self.event.tournaments_by_id[tournament_id]
+
+    @property
+    def tournaments(self) -> list[Tournament]:
+        """The tournaments for which the document is printed."""
+        assert self.event is not None
+        tournament_ids = self._get_option(TournamentsPrintOption).value
+        return [
+            self.event.tournaments_by_id[int(tournament_id)]
+            for tournament_id in tournament_ids.split(',')
+        ]
 
     @property
     @abstractmethod
@@ -129,6 +140,7 @@ class PlayerPrintDocument(PrintDocument, ABC):
         # ex: show_{var} instead of is_{document}
         return {
             'tournament': self.tournament,
+            'subtitle': self.tournament.name,
             'players': self.ordered_splitted_players,
             'crosstable': self.is_crosstable,
             'ranking': self.is_ranking,
@@ -348,6 +360,7 @@ class PlayerRoundPerformanceIndicatorPrintDocument(PrintDocument):
     def template_context(self) -> dict[str, Any]:
         return {
             'tournament': self.tournament,
+            'subtitle': self.tournament.name,
             'scores': self.ordered_players,
         }
 
@@ -375,6 +388,7 @@ class BoardPrintDocument(PrintDocument, ABC):
     def template_context(self) -> dict[str, Any]:
         return {
             'tournament': self.tournament,
+            'subtitle': self.tournament.name,
             'show_result': self.show_results,
             'boards': self.boards,
             'selected_round': self.at_round,
@@ -635,6 +649,7 @@ class PrizeListPrintDocument(PrintDocument):
         prize_currency = self.tournament.event.prize_currency
         return {
             'tournament': self.tournament,
+            'subtitle': self.tournament.name,
             'ordinal_integer': StaticUtils.ordinal_integer,
             'prize_currency': prize_currency,
             'format_prize_value': partial(
@@ -675,6 +690,7 @@ class PrizeAssignmentPrintDocument(PrintDocument):
         prize_currency = self.tournament.event.prize_currency
         return {
             'tournament': self.tournament,
+            'subtitle': self.tournament.name,
             'show_warnings': self.get_option_values()[0],
             'ordinal_integer': StaticUtils.ordinal_integer,
             'prize_currency': prize_currency,
@@ -703,7 +719,7 @@ class StatisticsPrintDocument(PrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [TournamentPrintOption, ClubThresholdPrintOption]
+        return [TournamentsPrintOption, ClubThresholdPrintOption]
 
     @property
     def title(self) -> str:
@@ -728,7 +744,8 @@ class StatisticsPrintDocument(PrintDocument):
     ) -> StatisticsSection | None:
         values = [
             value
-            for p in self.tournament.players
+            for tournament in self.tournaments
+            for p in tournament.players
             if (value := getattr(p, attr_name)) is not None
             and (filter_func(value) if filter_func else True)
         ]
@@ -754,10 +771,10 @@ class StatisticsPrintDocument(PrintDocument):
         )
 
     def rating_range_section(self) -> StatisticsSection | None:
-        players = self.tournament.players
+        all_players = [p for t in self.tournaments for p in t.players]
 
-        ratings = [p.rating for p in players if not p.estimated]
-        estimated_count = sum(1 for p in players if p.estimated)
+        ratings = [p.rating for p in all_players if not p.estimated]
+        estimated_count = sum(1 for p in all_players if p.estimated)
 
         if not ratings and not estimated_count:
             return None
@@ -771,7 +788,7 @@ class StatisticsPrintDocument(PrintDocument):
 
         # Count players per bucket
         counter: Counter[tuple[int, int]] = Counter()
-        for p in players:
+        for p in all_players:
             if p.estimated:
                 continue
             for start, end in buckets:
@@ -797,7 +814,7 @@ class StatisticsPrintDocument(PrintDocument):
         statistics: list[StatisticsSection] = []
 
         per_plugin_sections = plugin_manager.hook.get_extra_statistics_sections(
-            document=self, tournament=self.tournament
+            document=self, tournaments=self.tournaments
         )
 
         for attr_name, title, sort_key, min_count, filter_func, subtitle_fn in [
@@ -877,7 +894,10 @@ class StatisticsPrintDocument(PrintDocument):
                     statistics.append(section)
 
         non_estimated_players = [
-            player for player in self.tournament.players if not player.estimated
+            player
+            for tournament in self.tournaments
+            for player in tournament.players
+            if not player.estimated
         ]
         average_rating = (
             round(
@@ -888,8 +908,16 @@ class StatisticsPrintDocument(PrintDocument):
             else None
         )
 
+        assert self.event is not None
+        subtitle = (
+            self.event.name
+            if len(self.tournaments) == len(list(self.event.tournaments))
+            else ', '.join(tournament.name for tournament in self.tournaments)
+        )
+
         return {
-            'tournament': self.tournament,
+            'tournaments': self.tournaments,
+            'subtitle': subtitle,
             'average_rating': average_rating,
             'statistics': statistics,
         }

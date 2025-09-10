@@ -52,6 +52,31 @@ class TournamentPrintOption(PrintOption):
             raise OptionError(_('Please choose the tournament.'), self)
 
 
+class TournamentsPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'tournaments'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str | None
+
+    @property
+    def default_value(self) -> Any:
+        # This is managed by the print controller
+        return None
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/event/print_options/tournaments.html'
+
+    @override
+    def validate(self):
+        super().validate()
+        if not self.value:
+            raise OptionError(_('Please choose the tournaments.'), self)
+
+
 class RoundPrintOption(PrintOption):
     @staticmethod
     def static_id() -> str:

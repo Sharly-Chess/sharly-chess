@@ -130,15 +130,16 @@ class EventPrintController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         event_uniq_id: str,
     ) -> Template | ClientRedirect | Redirect:
+        flat_data = WebContext.flatten_list_data(data)
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
-            data=data,
+            data=flat_data,
         )
         if web_context.error:
             return web_context.error
@@ -149,7 +150,7 @@ class EventPrintController(BaseEventAdminController):
         field = 'document'
         try:
             document_type = PrintDocumentManager.get_type(
-                WebContext.form_data_to_str(data, field) or ''
+                WebContext.form_data_to_str(flat_data, field) or ''
             )
         except KeyError:
             errors[field] = _('Please choose the document.')
@@ -159,7 +160,7 @@ class EventPrintController(BaseEventAdminController):
             options = []
             tournament_id: int | None = None
             for option in document_type.default_options():
-                value = WebContext.form_data_to_value(data, option.id, option.type)
+                value = WebContext.form_data_to_value(flat_data, option.id, option.type)
                 options.append(type(option)(value))
                 if isinstance(option, TournamentPrintOption):
                     assert isinstance(value, int | None)
@@ -200,7 +201,7 @@ class EventPrintController(BaseEventAdminController):
             )
 
         template_context = self._print_modal_context(
-            web_context, tournament_id=tournament_id, data=data, errors=errors
+            web_context, tournament_id=tournament_id, data=flat_data, errors=errors
         )
         return self._admin_print_render(
             web_context=web_context,

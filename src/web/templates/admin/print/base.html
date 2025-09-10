@@ -12,8 +12,8 @@
     <body class="{{ document.id }}">
         <div align="center">
             <div class="page-title">{{ document.title }}</div>
-            {% if tournament %}
-                <div class="page-subtitle">{{ tournament.name }}</div>
+            {% if subtitle %}
+                <div class="page-subtitle">{{ subtitle }}</div>
             {% endif %}
             {% block content %}{% endblock %}
         </div>

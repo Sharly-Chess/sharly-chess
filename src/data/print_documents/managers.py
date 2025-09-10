@@ -37,6 +37,7 @@ class PrintDocumentOptionManager(EntityManager[PrintOption]):
     def entity_types() -> list[type[options.PrintOption]]:
         return [
             options.TournamentPrintOption,
+            options.TournamentsPrintOption,
             options.PairingStylePrintOption,
             options.RoundPrintOption,
             options.PlayerSplitPrintOption,

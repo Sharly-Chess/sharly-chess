@@ -157,7 +157,7 @@
                     input.name = 'options';
                     input.value = Object.keys(event.detail.options).map(k => k + '=' + event.detail.options[k]).join('|');
                     form.appendChild(input);
-                    form.target = 'PrintWindow';
+                    form.target = '_blank';
                     document.body.appendChild(form);
                     form.submit();
                     document.body.removeChild(form);
