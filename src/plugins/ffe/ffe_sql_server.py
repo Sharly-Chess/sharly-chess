@@ -175,7 +175,7 @@ class FFESqlServer(SqlServer):
         return f"'{fide_id}'"
 
     async def search_player(
-        self, string: str, limit: int | None = None
+        self, string: str, federation: str, limit: int | None = None
     ) -> list[StoredPlayer]:
         """Searches the SQL server for the given tokens, raises SharlyChessException on error."""
         # NOTE(Amaras): Quicken search if the string looks like a complete FFE
@@ -222,21 +222,38 @@ class FFESqlServer(SqlServer):
             ]
             params += token_params
         condition: str = ' AND '.join(map(lambda c: f'({c})', conditions))
-        order = ' OR '.join(
-            [
-                '(UPPER(joueur.Nom) LIKE %s)',
-                '(UPPER(joueur.Prenom) LIKE %s)',
-            ]
-            * len(tokens)
-        )
+
+        # We build one CASE block that sorts best → worst
+        order_clauses = []
         for token in tokens:
-            params += [f'{token}%'] * 2
+            order_clauses.append("""
+                CASE
+                    WHEN (UPPER(joueur.Nom) LIKE %s OR UPPER(joueur.Prenom) LIKE %s) AND federation = %s THEN 0
+                    WHEN (UPPER(joueur.Nom) LIKE %s OR UPPER(joueur.Prenom) LIKE %s) THEN 1
+                    WHEN federation = %s THEN 2
+                    ELSE 3
+                END
+            """)
+
+            # Params for this token in the same order
+            params += [
+                f'{token}%',
+                f'{token}%',
+                federation,
+                f'{token}%',
+                f'{token}%',
+                federation,
+            ]
+
+        order_expr = ' + '.join(order_clauses)
+
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
             f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
             f'WHERE {condition} '
-            f'ORDER BY (CASE WHEN {order} THEN 0 ELSE 1 END), Joueur.Nom, Joueur.Prenom'
+            f'ORDER BY {order_expr}, Joueur.Nom, Joueur.Prenom'
         )
+
         if limit:
             query += ' OFFSET 0 ROWS FETCH NEXT %s ROWS ONLY'
             params += [

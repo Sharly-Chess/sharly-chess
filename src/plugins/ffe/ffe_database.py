@@ -192,7 +192,10 @@ class FfeDatabase(LocalSourceDatabase):
         )
 
     def search_player(
-        self, string: str, limit: int | None = None
+        self,
+        string: str,
+        federation: str,
+        limit: int | None = None,
     ) -> list[StoredPlayer]:
         tokens: list[str] = [unicode_normalize(token) for token in string.split(' ')]
         str_fields: tuple[tuple[str, str, str], ...] = (
@@ -206,7 +209,6 @@ class FfeDatabase(LocalSourceDatabase):
         for token in tokens:
             expressions = [f'({field[0]} LIKE ?)' for field in str_fields]
             params += [f'{field[1]}{token}{field[2]}' for field in str_fields]
-            int_value: int
             with suppress(ValueError):
                 int_value = int(token.strip())
                 expressions += [f'({field} = ?)' for field in int_fields]
@@ -217,16 +219,38 @@ class FfeDatabase(LocalSourceDatabase):
         conditions: str = ' AND '.join(
             map(lambda condition: f'({condition})', token_conditions.values())
         )
-        order_conditions = ' OR '.join(
-            [
-                '(last_name LIKE ?)',
-                '(first_name LIKE ?)',
-            ]
-            * len(tokens)
-        )
+
+        # We build one CASE block that sorts best → worst
+        order_clauses = []
         for token in tokens:
-            params += [f'{token}%'] * 2
-        query: str = f'SELECT * FROM player WHERE {conditions} ORDER BY (CASE WHEN {order_conditions} THEN 0 ELSE 1 END), last_name'
+            order_clauses.append("""
+                CASE
+                    WHEN (last_name LIKE ? OR first_name LIKE ?) AND federation = ? THEN 0
+                    WHEN (last_name LIKE ? OR first_name LIKE ?) THEN 1
+                    WHEN federation = ? THEN 2
+                    ELSE 3
+                END
+            """)
+
+            # Params for this token in the same order
+            params += [
+                f'{token}%',
+                f'{token}%',
+                federation,
+                f'{token}%',
+                f'{token}%',
+                federation,
+            ]
+
+        order_expr = ' + '.join(order_clauses)
+
+        query: str = f"""
+            SELECT *
+            FROM player
+            WHERE {conditions}
+            ORDER BY {order_expr}, last_name, first_name
+        """
+
         if limit:
             query += ' LIMIT ?'
             params += [
@@ -236,6 +260,7 @@ class FfeDatabase(LocalSourceDatabase):
             query,
             tuple(params),
         )
+        print(query, params)
         return [self.get_stored_player_from_row(row) for row in self.fetchall()]
 
     def _get_stored_player_by_id(

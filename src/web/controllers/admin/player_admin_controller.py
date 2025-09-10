@@ -1896,7 +1896,9 @@ class PlayerAdminController(BaseEventAdminController):
             )
             try:
                 stored_players = await data_source.search_player(
-                    search, DataSource.SEARCH_LIMIT
+                    search,
+                    web_context.get_admin_event().federation,
+                    DataSource.SEARCH_LIMIT,
                 )
                 players = []
                 for stored_player in stored_players:

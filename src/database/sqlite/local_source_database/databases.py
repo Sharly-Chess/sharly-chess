@@ -119,6 +119,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
     def search_player(
         self,
         string: str,
+        federation: str,
         limit: int | None = None,
     ) -> list[StoredPlayer]:
         """Search a player in the database.

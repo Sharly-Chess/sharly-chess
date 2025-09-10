@@ -270,10 +270,12 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
             )
 
     async def search_player(
-        self, string: str, limit: int | None = None
+        self, string: str, federation: str, limit: int | None = None
     ) -> list[StoredPlayer]:
         async with FFESqlServer() as ffe_sql_server:
-            return await ffe_sql_server.search_player(unicode_normalize(string), limit)
+            return await ffe_sql_server.search_player(
+                unicode_normalize(string), federation, limit
+            )
 
 
 class LeaguePlayerSplitter(PlayerSplitter):
