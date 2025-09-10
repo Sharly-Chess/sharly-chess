@@ -98,7 +98,7 @@ try:
     )
 
     # Check if GUI mode should be used
-    if not args.cli and not has_plugin_engine_arg and not TEST_ENV:
+    if not TEST_ENV and not (DEVEL_ENV and args.cli) and not has_plugin_engine_arg:
         # Create and run the Toga app - this should block until the app exits
         app = SharlyChessServerToga()
         app.main_loop()
