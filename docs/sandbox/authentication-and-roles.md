@@ -25,8 +25,8 @@ When starting the _Sharly Chess_ server, the administrator is asked if the netwo
 > - Timothy: OK/NOK
 > - Youri: NOK
 >> Any question we add at the startup of the server is gonna be a pain for user experience, this is not a question that is enough important to do so (plus it can change mid-event).
->> Suggestion 1: A network interface, with a checkbox 'Trust network' (not trusted by default, stored in the config)
->> Suggestion 2 (preferred): Clear documentation in the roles tab that no important role (>= Sector Arbiter) should be granted if you are connected to a public network
+>> - Suggestion 1: A network interface, with a checkbox 'Trust network' (not trusted by default, stored in the config).
+>> - Suggestion 2 (preferred): Clear documentation in the roles tab that no important role (>= Sector Arbiter) should be granted if you are connected to a public network.
 
 ## Execution modes
 
@@ -148,9 +148,10 @@ Account authentication is stronger on public networks than on private networks:
 > - Sammy: awaiting specification
 > - Timothy: OK/NOK
 > - Youri: Section only relevant if we identify networks.
->> Suggestion 1: Longer refresh tokens
->> Suggestion 2 (preferred): Always consider connections from untrusted networks as unknown, and block auth
->> Suggestion 3: not identifying such networks
+>> - Suggestion 1: Longer refresh tokens.
+>> - Suggestion 2 (preferred): Always consider connections from untrusted networks as unknown, and block auth.
+>> - Suggestion 3: not identifying such networks.
+>>
 >> I also suggest we switch to `trusted / not trusted` instead of `private / public` in how we talk about it to the users, slightly less confusing.
 
 ### Roles for accounts
