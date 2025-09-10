@@ -95,7 +95,7 @@ class Migration(BaseMigration):
 
             self.database.execute(
                 'UPDATE `rotator` SET `screen_ids` = ?, `family_ids` = ? WHERE `id` = ?',
-                (json.dumps(screen_ids), json.dumps(family_ids)),
+                (json.dumps(screen_ids), json.dumps(family_ids), rotator_id),
             )
 
         self.database.execute('DROP TABLE `rotating_screen`')

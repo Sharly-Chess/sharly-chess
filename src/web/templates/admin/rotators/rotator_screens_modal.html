@@ -1,6 +1,6 @@
 <div
     class="modal-dialog modal-dialog-scrollable modal-dialog-centered"
-    style="--bs-modal-width: min(90vw, 450px);"
+    style="--bs-modal-width: fit-content; min-width: min(90vw, 450px);"
 >
     <div class="modal-content">
         <div class="modal-header">
@@ -113,7 +113,7 @@
                         {% set family = rotating_screen.family %}
                         <div class="border border-secondary {% if reorder_screens %}cursor-grab{% endif %}">
                             <input type="hidden" name="rotating_screen" value="{{ rotating_screen.form_id }}"/>
-                            <div class="p-2 d-flex align-items-start gap-4">
+                            <div class="p-2 d-flex align-items-center gap-4">
                                 {% if reorder_screens %}
                                     <i class="bi-grip-horizontal"></i>
                                 {% endif %}
