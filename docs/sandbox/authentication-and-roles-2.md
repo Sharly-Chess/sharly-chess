@@ -100,11 +100,12 @@ Limited roles can be granted to anonymous users (up to _Check-in_ and _Results e
 
 ### Examples
 
-| :unlock:/:lock: |     User      | Comment                | Roles                    |
-|:---------------:|:-------------:|:-----------------------|:-------------------------|
-|                 |  ``anneth``   | The Chief Arbiter      | CA                       |
-|                 |   ``john``    | A deputy Chief Arbiter | DCA for some tournaments |
-|     :lock:      | ``anonymous`` | _Unauthenticated_      | SPE                      |
+| :unlock:/:lock: |       User       | Comment                | Roles                    |
+|:---------------:|:----------------:|:-----------------------|:-------------------------|
+|                 |    ``anneth``    | The Chief Arbiter      | CA                       |
+|                 |     ``john``     | A deputy Chief Arbiter | DCA for some tournaments |
+|     :lock:      | ``anonymous``(*) | _Unauthenticated_      | SPE                      |
+(*) can not be modified.
 
 > [!WARNING] **NOT CLEAR**
 >
