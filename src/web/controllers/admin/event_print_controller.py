@@ -190,7 +190,6 @@ class EventPrintController(BaseEventAdminController):
                 after='receive',
                 params={
                     'event_uniq_id': event_uniq_id,
-                    'tournament_id': tournament.id if tournament else None,
                     'document': data['document'],
                     'options': {
                         option.id: data[option.id]

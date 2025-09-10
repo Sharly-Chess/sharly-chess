@@ -819,6 +819,14 @@ class StatisticsPrintDocument(PrintDocument):
 
         for attr_name, title, sort_key, min_count, filter_func, subtitle_fn in [
             (
+                'tournament',
+                _('Tournaments'),
+                lambda item: (-item[1], item[0].name),
+                None,
+                lambda x: x is not None,
+                None,
+            ),
+            (
                 'title',
                 _('Titled players'),
                 lambda item: -item[0].value,
@@ -871,6 +879,9 @@ class StatisticsPrintDocument(PrintDocument):
                 ).format(count=count),
             ),
         ]:
+            if attr_name == 'tournament' and len(self.tournaments) <= 1:
+                continue  # Skip if there's only one tournament
+
             for sections in per_plugin_sections:
                 for section in sections:
                     if section.at == attr_name:
