@@ -119,8 +119,14 @@
                                 {% endif %}
                                 <div class="text-start flex-grow-1">
                                     {% if screen %}
+                                        <span class="pe-1">
+                                            {{ macros.screen_type_icon(screen.type, true) }}
+                                        </span>
                                         {{ screen.name }}
                                     {% elif family %}
+                                        <span class="pe-1">
+                                            {{ macros.screen_type_icon(family.type, true) }}
+                                        </span>
                                         {{ family.name }}
                                         <i class="ps-1">{{ _('(family)') }}</i>
                                     {% endif %}
