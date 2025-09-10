@@ -202,6 +202,7 @@ with_indicator: display a loading indicator, optional
     select_options={},
     onchange='',
     multiple_select=false,
+    select_all=false,
     file_accept='',
     number_min='',
     number_max='',
@@ -291,6 +292,12 @@ with_indicator: display a loading indicator, optional
                             onchange="{{ onchange }}"
                         {% endif %}
                     >
+                        {% if select_all %}
+                            <option value="__all__">
+                                {{ _('Select All') }}
+                            </option>
+                            <option value="__divider__" disabled></option>
+                        {% endif %}
                         {% for key, text_or_options in select_options.items() %}
                             {% if text_or_options is string %}
                                 <option value="{{ key }}" {% if key in selected %}selected{% endif %}>
@@ -313,7 +320,26 @@ with_indicator: display a loading indicator, optional
                                 theme: 'bootstrap-5',
                                 width: '100%',
                                 placeholder: $(this).data('placeholder'),
+                                templateResult: function (data) {
+                                    if (data.id === '__divider__') {
+                                        const $div = $('<span style="pointer-events: none; border-bottom: 1px solid #ccc; display: block; margin: 4px 0;"></span>');
+                                        return $div;
+                                    }
+                                    return data.text;
+                                }
                             });
+                            $('#{{ id }}').on('select2:select', function (e) {
+                                if (e.params.data.id === '__all__') {
+                                const allValues = $('#{{ id }}').find('option')
+                                        .map(function () {
+                                        const val = $(this).val();
+                                        return val !== '__all__' && val !== '__divider__' ? val : null;
+                                        })
+                                        .get();
+                                    $('#{{ id }}').val(allValues).trigger('change');
+                                }
+                            });
+
                             $('.select2-search__field').css('width', '100%');
                         </script>
                     {% elif select_options|length == 1 and not disabled %}
@@ -734,6 +760,7 @@ with_indicator: display a loading indicator, optional
     select_options={'': 'NO OPTIONS'},
     onchange='',
     multiple_select=false,
+    select_all=false,
     placeholder='',
     disabled=false
 ) %}
@@ -749,6 +776,7 @@ with_indicator: display a loading indicator, optional
         select_options=select_options,
         onchange=onchange,
         multiple_select=multiple_select,
+        select_all=select_all,
         placeholder=placeholder,
         disabled=disabled,
     ) }}
