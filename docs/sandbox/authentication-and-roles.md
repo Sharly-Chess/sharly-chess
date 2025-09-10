@@ -23,7 +23,10 @@ When starting the _Sharly Chess_ server, the administrator is asked if the netwo
 >> For Avoine, I had a network called "CULTUREL PRIVE", provided by the city of Avoine, that was technically closed, but anyone with the password could connect to. Is that a private or a public network? If it's a public network, then basically all big events--which are the only ones which definitely need the roles--will be on public events.
 >> Furthemore, a malicious network administrator can change the network config mid-event. Is this in our threat model?
 > - Timothy: OK/NOK
-> - Youri: OK/NOK
+> - Youri: NOK
+>> Any question we add at the startup of the server is gonna be a pain for user experience, this is not a question that is enough important to do so (plus it can change mid-event).
+>> Suggestion 1: A network interface, with a checkbox 'Trust network' (not trusted by default, stored in the config)
+>> Suggestion 2 (preferred): Clear documentation in the roles tab that no important role (>= Sector Arbiter) should be granted if you are connected to a public network
 
 ## Execution modes
 
@@ -38,7 +41,9 @@ Whatever the execution mode of the event, administrators (connected to the _Shar
 > - Pascal: OK
 > - Sammy: OK
 > - Timothy: OK/NOK
-> - Youri: OK/NOK
+> - Youri: NOK
+>> If the interface is user-friendly enough (i.e. one tab, IMO no device), there is no need to have distinct execution modes just to hide the menu.
+>> Standard can simply be the default mode, until you've added your first access, with a clear doc (implemented like what is on families) stating what the default values are.
 
 ## Standard mode
 
@@ -53,7 +58,9 @@ The other devices connected to the network can:
 > - Pascal: OK
 > - Sammy: OK
 > - Timothy: OK/NOK
-> - Youri: OK/NOK
+> - Youri: OK
+>> OK with those permissions being the default.
+>> Suggestion: no auth possible if there are no account defined
 
 ## Roles (custom mode only)
 
@@ -68,7 +75,7 @@ A role:
 > - Sammy: NOK
 >> Roles != permissions
 > - Timothy: OK/NOK
-> - Youri: OK/NOK
+> - Youri: OK
 
 The roles in _Shary Chess_ are:
 
@@ -94,7 +101,7 @@ The diagram below shows the sub-roles each role inherits from.
 > - Sammy: NOK
 >> RES is not a role, it's a set of permissions, same for CHE.
 > - Timothy: OK/NOK
-> - Youri: OK/NOK
+> - Youri: OK
 
 ## Custom mode
 
@@ -109,7 +116,8 @@ In custom mode, roles can be granted to accounts and devices.
 > - Pascal: OK
 > - Sammy: OK
 > - Timothy: OK/NOK
-> - Youri: OK/NOK
+> - Youri: OK
+>> Ok with this being what you can do with roles, NOK with the concept of custom mode itself (see ## Execution modes)
 
 ## Accounts
 
@@ -123,7 +131,7 @@ Unauthenticated accounts are named "anonymous" (roles can be granted to anonymou
 > - Pascal: OK
 > - Sammy: OK
 > - Timothy: OK/NOK
-> - Youri: OK/NOK
+> - Youri: OK
 
 ### Authentication for accounts
 
@@ -139,7 +147,11 @@ Account authentication is stronger on public networks than on private networks:
 > - Pascal: waiting for proposals
 > - Sammy: awaiting specification
 > - Timothy: OK/NOK
-> - Youri: OK/NOK
+> - Youri: Section only relevant if we identify networks.
+>> Suggestion 1: Longer refresh tokens
+>> Suggestion 2 (preferred): Always consider connections from untrusted networks as unknown, and block auth
+>> Suggestion 3: not identifying such networks
+>> I also suggest we switch to `trusted / not trusted` instead of `private / public` in how we talk about it to the users, slightly less confusing.
 
 ### Roles for accounts
 
@@ -149,7 +161,7 @@ On any network (public or private), any role can be granted or revoked to accoun
 > - Pascal: OK
 > - Sammy: OK
 > - Timothy: OK/NOK
-> - Youri: OK/NOK
+> - Youri: OK
 
 ### Examples
 
@@ -162,7 +174,7 @@ On any network (public or private), any role can be granted or revoked to accoun
 > - Pascal: OK
 > - Sammy: NOK I don't understand the table
 > - Timothy: OK/NOK
-> - Youri: OK/NOK
+> - Youri: not understood
 
 ## Devices
 
@@ -175,7 +187,24 @@ Unauthenticated devices are named "unknown devices" (roles can be granted to unk
 > - Pascal: OK
 > - Sammy: OK
 > - Timothy: OK/NOK
-> - Youri: OK/NOK
+> - Youri: NOK
+>> I strongly disagree with having devices in the app:
+>> - It complexifies the interface a lot
+>>> - users handling IPs
+>>> - double connection for the same user (device + account)
+>>> - twice the roles interface
+>> - IPs can change
+>> - It unclearly is much less secure than accounts
+>> - The advantages it currently has over accounts could be implemented into accounts
+>>> Keeping connections alive: Refresh tokens not revoked on startup
+>>> IP restriction: could be a field in accounts, such that only these IPs would be allowed to connect to the account
+>>> Trade security for an easier usage:
+>>> - Unknown devices
+>>> - Allowing passwordless accounts with a much longer refresh token (1d --> 7d)
+>>>
+>>> Both of these options have the advantage of being clearly not secure to users.
+>>
+>> I honestly can't see a good use-case (all the ones you've told me about are listed above), for a massive UX trade-off.
 
 ### Authentication for devices
 
@@ -188,7 +217,7 @@ On private networks, devices are authenticated by:
 > - Pascal: waiting for proposals
 > - Sammy: awaiting specification
 > - Timothy: OK/NOK
-> - Youri: OK/NOK
+> - Youri: username / password
 
 ### Roles for devices
 
@@ -199,7 +228,7 @@ Any device (authenticated or unknown) can be granted limited roles, up to _Check
 > - Sammy: NOK
 >> Those are permissions, not roles. I also used devices with PAI-level permissions during Avoine because repeated authentication with changing IP addresses was a pain. While I understand the need to lower priviledge, I don't understand why arbiters can't give specific devices more permissions
 > - Timothy: OK/NOK
-> - Youri: OK/NOK
+> - Youri: NOK
 
 ### Examples
 
@@ -214,7 +243,7 @@ Any device (authenticated or unknown) can be granted limited roles, up to _Check
 > - Sammy: NOK
 >> I don't understand what the table aims to illustrate.
 > - Timothy: OK/NOK
-> - Youri: OK/NOK
+> - Youri: Not understood
 
 ## Roles management
 
@@ -239,7 +268,7 @@ _Generated by script generate_roles_doc.py on 2025-08-19 16:36_
 > - Pascal: OK
 > - Sammy: OK/NOK
 > - Timothy: OK/NOK
-> - Youri: OK/NOK
+> - Youri: OK
 
 ## Permissions by role
 
@@ -332,4 +361,4 @@ _Generated by script generate_roles_doc.py on 2025-08-19 16:31_
 > - Pascal: OK
 > - Sammy: OK/NOK
 > - Timothy: OK/NOK
-> - Youri: OK/NOK
+> - Youri: OK (complex so might have missed something)
