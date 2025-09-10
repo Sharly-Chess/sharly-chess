@@ -396,6 +396,9 @@ msgstr ""
 msgid "Add a rotator to the event."
 msgstr ""
 
+msgid "Add a screen to check-in players or enter results."
+msgstr ""
+
 msgid "Add a screen to display an image."
 msgstr ""
 
@@ -409,9 +412,6 @@ msgid "Add a screen to display the pairings by board number."
 msgstr ""
 
 msgid "Add a screen to display the ranking."
-msgstr ""
-
-msgid "Add a screen to enter results."
 msgstr ""
 
 msgid "Add a set"
@@ -2853,6 +2853,9 @@ msgid "Links to this screen:"
 msgstr ""
 
 msgid "List of players"
+msgstr ""
+
+msgid "Loading more results…"
 msgstr ""
 
 msgid "Local URL: {local_url}"
@@ -6375,4 +6378,7 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "Add a screen to enter results."
+#~ msgstr ""
 

@@ -267,7 +267,7 @@ class FfeDatabase(LocalSourceDatabase):
             query,
             tuple(params),
         )
-        print(query, params)
+
         return [self.get_stored_player_from_row(row) for row in self.fetchall()]
 
     def _get_stored_player_by_id(
