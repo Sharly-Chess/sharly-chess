@@ -15,9 +15,13 @@ When starting the _Sharly Chess_ server, the administrator is asked if the netwo
   strong authentication will be asked to connect to the _Sharly Chess_ server.
 
 > [!NOTE]
-> Notes:
-> - If several networks, the administrator should be asked if all the networks are private, or asked for each of the networks, but this is too complex.
-> - The administrator is asked on startup only when the networks (IP addresses) changed since the last startup.
+> The administrator is asked on startup only when the networks (IP addresses) changed since the last startup.
+
+> [!NOTE]
+> - Pascal: OK (Note: if several networks, the administrator should be asked if all the networks are private, or asked for each of the networks, but this is too complex)
+> - Sammy: OK/NOK
+> - Timothy: OK/NOK
+> - Sammy: OK/NOK
 
 ## Execution modes
 
@@ -28,6 +32,12 @@ Two execution modes are possible, set at event-level (for each event):
 
 Whatever the execution mode of the event, administrators (connected to the _Sharky Chess_) server have full privileges.
 
+> [!NOTE]
+> - Pascal: OK
+> - Sammy: OK/NOK
+> - Timothy: OK/NOK
+> - Sammy: OK/NOK
+
 ## Standard mode
 
 The other devices connected to the network can:
@@ -37,6 +47,12 @@ The other devices connected to the network can:
 > [!NOTE]
 > Administrators who do not want to let devices check-in players or enter results do not propose the corresponding screens.
 
+> [!NOTE]
+> - Pascal: OK
+> - Sammy: OK/NOK
+> - Timothy: OK/NOK
+> - Sammy: OK/NOK
+
 ## Roles (custom mode only)
 
 The roles are used only when the custom mode is selected, they offer a powerful way to customize the authorizations granted to accounts and devices.
@@ -44,6 +60,12 @@ The roles are used only when the custom mode is selected, they offer a powerful 
 A role:
 - is a **fixed** set of permissions;
 - inherit the permissions of sub-roles.
+
+> [!NOTE]
+> - Pascal: OK
+> - Sammy: OK/NOK
+> - Timothy: OK/NOK
+> - Sammy: OK/NOK
 
 The roles in _Shary Chess_ are:
 
@@ -64,6 +86,12 @@ The diagram below shows the sub-roles each role inherits from.
 
 ![Roles inheritance](../images/roles-inheritance.jpg)
 
+> [!NOTE]
+> - Pascal: OK
+> - Sammy: OK/NOK
+> - Timothy: OK/NOK
+> - Sammy: OK/NOK
+
 ## Custom mode
 
 By default (when setting the custom mode), the devices connected have the same privileges as in standard mode (roles _Check-in_ and _Results entry_).
@@ -73,6 +101,12 @@ By default (when setting the custom mode), the devices connected have the same p
 
 In custom mode, roles can be granted to accounts and devices.
 
+> [!NOTE]
+> - Pascal: OK
+> - Sammy: OK/NOK
+> - Timothy: OK/NOK
+> - Sammy: OK/NOK
+
 ## Accounts
 
 Accounts are declared on the _Sharly Chess_ server by authorized people (ADM, ORG and CA, see below):
@@ -80,6 +114,12 @@ Accounts are declared on the _Sharly Chess_ server by authorized people (ADM, OR
 - a mandatory password.
 
 Unauthenticated accounts are named "anonymous" (roles can be granted to anonymous, e.g. _Spectator_).
+
+> [!NOTE]
+> - Pascal: OK
+> - Sammy: OK/NOK
+> - Timothy: OK/NOK
+> - Sammy: OK/NOK
 
 ### Authentication for accounts
 
@@ -91,17 +131,34 @@ Account authentication is stronger on public networks than on private networks:
 > [!NOTE]
 > On public networks, enhanced security prevents from man-in-the-middle attacks.
 
+> [!NOTE]
+> - Pascal: OK
+> - Sammy: OK/NOK
+> - Timothy: OK/NOK
+> - Sammy: OK/NOK
+
 ### Roles for accounts
 
 On any network (public or private), any role can be granted or revoked to accounts (except _Administration_).
 
-### Accounts
+> [!NOTE]
+> - Pascal: OK
+> - Sammy: OK/NOK
+> - Timothy: OK/NOK
+> - Sammy: OK/NOK
+
+### Examples
 
 | :unlock:/:lock: |        User        | Comment           | Roles |
 |:---------------:|:------------------:|:------------------|:-----:|
-|     :lock:      | from ``127.0.0.1`` | The server itself |  ADM  |
 |                 |    ``arbiter``     | The Chief Arbiter |  CA   |
 |     :lock:      |   ``anonymous``    | _Unauthenticated_ |  SPE  |
+
+> [!NOTE]
+> - Pascal: OK
+> - Sammy: OK/NOK
+> - Timothy: OK/NOK
+> - Sammy: OK/NOK
 
 ## Devices
 
@@ -110,6 +167,12 @@ Devices are declared on the _Sharly Chess_ server by authorized people (ADM, ORG
 
 Unauthenticated devices are named "unknown devices" (roles can be granted to unknown devices, e.g. _Spectator_).
 
+> [!NOTE]
+> - Pascal: OK
+> - Sammy: OK/NOK
+> - Timothy: OK/NOK
+> - Sammy: OK/NOK
+
 ### Authentication for devices
 
 On public networks, authentication is not possible for devices: all the devices except the _Sharly Chess_ server are unknown devices.
@@ -117,9 +180,21 @@ On public networks, authentication is not possible for devices: all the devices 
 On private networks, devices are authenticated by:
 - **to be completed**
 
+> [!NOTE]
+> - Pascal: OK
+> - Sammy: OK/NOK
+> - Timothy: OK/NOK
+> - Sammy: OK/NOK
+
 ### Roles for devices
 
 Any device (authenticated or unknown) can be granted limited roles, up to _Check-in_ and _Results entry_.
+
+> [!NOTE]
+> - Pascal: OK
+> - Sammy: OK/NOK
+> - Timothy: OK/NOK
+> - Sammy: OK/NOK
 
 ### Examples
 
@@ -128,6 +203,12 @@ Any device (authenticated or unknown) can be granted limited roles, up to _Check
 |     :lock:      |   ``127.0.0.1``   | The server itself                                 |  ADM  |
 |                 | ``192.168.1.115`` | A local device (allowed on private networks only) |  CHE  |
 |     :lock:      |    ``0.0.0.0``    | Any (unknown) device                              |  SPE  |
+
+> [!NOTE]
+> - Pascal: OK
+> - Sammy: OK/NOK
+> - Timothy: OK/NOK
+> - Sammy: OK/NOK
 
 ## Roles management
 
@@ -147,6 +228,12 @@ The diagram below shows the roles that can be managed by each role.
 | SPE: Spectator                        |    Event    |    _none_     |               _none_                |                   _none_                    |
 
 _Generated by script generate_roles_doc.py on 2025-08-19 16:36_
+
+> [!NOTE]
+> - Pascal: OK
+> - Sammy: OK/NOK
+> - Timothy: OK/NOK
+> - Sammy: OK/NOK
 
 ## Permissions by role
 
@@ -234,3 +321,9 @@ The table below shows what each role can do in the application.
 _Generated by script generate_roles_doc.py on 2025-08-19 16:31_
 
 (*) Accessing the list of the public events is needed to authenticate (since the accounts are defined at event-level).
+
+> [!NOTE]
+> - Pascal: OK
+> - Sammy: OK/NOK
+> - Timothy: OK/NOK
+> - Sammy: OK/NOK
