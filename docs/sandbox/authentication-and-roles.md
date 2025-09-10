@@ -132,7 +132,7 @@ Account authentication is stronger on public networks than on private networks:
 > On public networks, enhanced security prevents from man-in-the-middle attacks.
 
 > [!NOTE]
-> - Pascal: OK
+> - Pascal: waiting for proposals
 > - Sammy: OK/NOK
 > - Timothy: OK/NOK
 > - Sammy: OK/NOK
@@ -181,7 +181,7 @@ On private networks, devices are authenticated by:
 - **to be completed**
 
 > [!NOTE]
-> - Pascal: OK
+> - Pascal: waiting for proposals
 > - Sammy: OK/NOK
 > - Timothy: OK/NOK
 > - Sammy: OK/NOK
