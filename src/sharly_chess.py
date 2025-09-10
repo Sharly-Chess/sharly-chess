@@ -12,9 +12,9 @@ if platform.system() == 'Windows':
         import os
 
         print(f'Unblocking files in : {base_dir}')
-        for root, _, files in os.walk(base_dir):
+        for root_, __, files in os.walk(base_dir):
             for name in files:
-                path = os.path.join(root, name)
+                path = os.path.join(root_, name)
                 # Remove Zone.Identifier ADS if it exists
                 ads_path = path + ':Zone.Identifier'
                 try:
