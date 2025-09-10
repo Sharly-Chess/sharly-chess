@@ -1,161 +1,77 @@
 <div
     class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-rotator-edit-modal"
-    {% if action == 'delete' %}
-        style="--bs-modal-width: fit-content;"
-    {% endif %}
+    style="--bs-modal-width: min(90vw, 500px);"
 >
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                {% if action in ['create', 'clone', ] %}
-                    {{ _('Create rotator') }}
-                {% elif action == 'update' %}
+                {% if action == 'update' %}
                     {{ _('Edit rotator') }}
-                {% elif action == 'delete' %}
-                    {{ _('Delete rotator') }}
                 {% else %}
-                    ?
+                    {{ _('Create rotator') }}
                 {% endif %}
             </h2>
         </div>
         <div class="modal-body">
             <form
                 id="modal-form"
-                {% if action in ['create', 'clone', ] %}
+                {% if action == 'create' %}
                     hx-post="{{ url_for('admin-rotator-create', event_uniq_id=admin_event.uniq_id) }}"
-                {% elif action == 'update' %}
-                    hx-patch="{{ url_for('admin-rotator-' ~ action, event_uniq_id=admin_event.uniq_id, rotator_id=admin_rotator.id) }}"
-                {% elif action == 'delete' %}
-                    hx-delete="{{ url_for('admin-rotator-' ~ action, event_uniq_id=admin_event.uniq_id, rotator_id=admin_rotator.id) }}"
+                {% elif action == 'clone' %}
+                    hx-post="{{ url_for(
+                        'admin-rotator-clone',
+                        event_uniq_id=admin_event.uniq_id,
+                        rotator_id=admin_rotator.id
+                    ) }}"
                 {% else %}
-                    hx-get="{{ url_for('unknown-action-' ~ action) }}"
+                    hx-patch="{{ url_for(
+                        'admin-rotator-update',
+                        event_uniq_id=admin_event.uniq_id,
+                        rotator_id=admin_rotator.id
+                    ) }}"
                 {% endif %}
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                {% if action == 'delete' %}
-                    <h4>
-                        {{ _('%(string)s: %(value)s', string=_('Rotator'), value=admin_rotator.name) }}
-                    </h4>
-                    <h4 class="text-danger">
-                        {{ _('Warning: the deletion is permanent!') }}
-                    </h4>
-                {% else %}
-                    <h4>
-                        {{ _('Properties') }}
-                    </h4>
-                    <div class="row">
-                        <div class="col-12 col-md-4 mb-3">
-                            {{ admin_macros.switch_input(
-                                name='public',
-                                label=_('Visibility:'),
-                                placeholder=_('Public rotator'),
-                                help_text=_('Only arbiters can view private rotators.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-4 mb-3">
-                            {{ admin_macros.text_input(
-                                name='name',
-                                label=_('%(string)s:', string=_('Name')),
-                                placeholder=_('E.g.: %(string)s', string=_('My rotator')),
-                                help_text=_('The name of the rotator.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-4 mb-3">
-                            {{ admin_macros.number_input(
-                                name='delay',
-                                label=_('Delay (seconds):'),
-                                placeholder=_('Default: %(string)s', string=sharly_chess_config.default_rotator_delay),
-                                help_text=_('The rotating delay between two screens.'),
-                                data=data, errors=errors,
-                                min=1
-                            ) }}
-                        </div>
-                    </div>
+                <div class="d-flex mb-3">
+                    {{ admin_macros.switch_input(
+                        name='public',
+                        label='',
+                        placeholder=_('Define as public'),
+                        help_text='',
+                        data=data, errors=errors
+                    ) }}
+                    <i class="bi bi-info-circle-fill"
+                        {{ macros.tooltip_attributes(
+                            'info', _('Only allowed users can view private objects.'), 'top'
+                        ) }}
+                    ></i>
+                </div>
+                <div class="col-12 mb-3">
+                    {{ admin_macros.text_input(
+                        name='name',
+                        label=_('%(string)s:', string=_('Name')),
+                        placeholder=_('E.g.: %(string)s', string=_('My rotator')),
+                        help_text='',
+                        data=data, errors=errors
+                    ) }}
+                </div>
 
-                    <h4 class="mt-3">
-                        {{ _('Selection') }}
-                    </h4>
-                    <div class="row">
-                        {% if admin_event.basic_screens_by_id %}
-                            <div class="col-12 mb-3">
-                                <label class="form-check-label">{{ _('Screens:') }}</label>
-                                <div class="form-text">
-                                    {{ _('The screens to rotate (the input screens are emphasised because they should not appear on rotators).') }}
-                                </div>
-                                <div class="d-flex flex-wrap gap-2 mt-2">
-                                    {% for first in [true, false] %}
-                                        {% with class='' if first else 'opacity-75' %}
-                                            {% for screen in admin_event.basic_screens_by_id.values() %}
-                                                {% with is_first=(screen.type != 'input') %}
-                                                    {% if first == is_first %}
-                                                        {% with id='screen-' ~ screen.id, name='screen_' ~ screen.id %}
-                                                            <div class="d-flex border {{ class }} px-2 py-1 align-items-center">
-                                                                <input
-                                                                    name="{{ name }}"
-                                                                    type="checkbox" id="{{ id }}"
-                                                                    {% if data[name] == 'on' %}checked{% endif %}
-                                                                />
-                                                                <label for="{{ id }}" class="form-label {% if not first %}fst-italic{%endif %} p-0 m-0">
-                                                                    <i class="{{ screen.icon_str }} ps-3 pe-1"></i>
-                                                                    {{ screen.name }}
-                                                                </label>
-                                                            </div>
-                                                        {% endwith %}
-                                                    {% endif %}
-                                                {% endwith %}
-                                            {% endfor %}
-                                        {% endwith %}
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        {% endif %}
-                        {% if admin_event.families_by_id %}
-                            <div class="col-12 mb-3">
-                                <label class="form-check-label">{{ _('Screen families:') }}</label>
-                                <div id="" class="form-text">
-                                    {{ _('The screen families to rotate (the input screen families are emphasised because they should not appear on rotators).') }}
-                                </div>
-                                <div class="d-flex flex-wrap gap-2 mt-2">
-                                    {% for first in [true, false] %}
-                                        {% with class='' if first else 'border-secondary-subtle text-secondary-subtle' %}
-                                            {% for family in admin_event.families_by_id.values() %}
-                                                {% with is_first=family.type != 'input' %}
-                                                    {% if first == is_first %}
-                                                        {% with id='family-' ~ family.id, name='family_' ~ family.id %}
-                                                            <div class="d-flex border {{ class }} px-2 py-1 align-items-center">
-                                                                <input
-                                                                    name="{{ name }}"
-                                                                    type="checkbox" id="{{ id }}"
-                                                                    {% if data[name] == "on" %}checked{% endif %}
-                                                                />
-                                                                <label for="{{ id }}" class="form-label {% if not first %}fst-italic{%endif %} p-0 m-0">
-                                                                    <i class="{{ family.icon_str }} ps-3 pe-1"></i>
-                                                                    {{ family.name }}
-                                                                </label>
-                                                            </div>
-                                                        {% endwith %}
-                                                    {% endif %}
-                                                {% endwith %}
-                                            {% endfor %}
-                                        {% endwith %}
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        {% endif %}
+                <div class="col-12 mb-3">
+                    {{ admin_macros.number_input(
+                        name='delay',
+                        label=_('Delay (seconds):'),
+                        placeholder=_('Default: %(string)s', string=sharly_chess_config.default_rotator_delay),
+                        help_text=_('The rotating delay between two screens.'),
+                        data=data, errors=errors,
+                        min=1
+                    ) }}
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        {% include '../common/modal/alert_message.html' %}
                     </div>
-
-                    <h4>
-                        {{ _('Display') }}
-                    </h4>
-                    <div class="row">
-                        <div class="col-12 mb-3">
-                            {% include '../common/modal/alert_message.html' %}
-                        </div>
-                    </div>
-                {% endif %}
+                </div>
             </form>
         </div>
         <div class="modal-footer">
@@ -170,20 +86,10 @@
             <button
                 type="submit"
                 form="modal-form"
-                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                class="text-nowrap white btn btn-primary"
             >
-                {% if action in ['create', 'clone', ] %}
-                    <i class="bi-floppy-fill pe-1"></i>
-                    {{ _('Create') }}
-                {% elif action == 'update' %}
-                    <i class="bi-floppy-fill pe-1"></i>
-                    {{ _('Save') }}
-                {% elif action == 'delete' %}
-                    <i class="bi-trash pe-1"></i>
-                    {{ _('Delete') }}
-                {% else %}
-                    ?
-                {% endif %}
+                <i class="bi-floppy-fill pe-1"></i>
+                {{ _('Save') if action == 'update' else _('Create') }}
             </button>
         </div>
     </div>

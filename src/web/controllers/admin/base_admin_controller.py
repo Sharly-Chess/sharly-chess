@@ -131,14 +131,9 @@ class BaseAdminController(BaseController):
 
     @staticmethod
     def _get_timer_options(event: Event) -> dict[str, str]:
-        options: dict[str, str] = {
-            '': _('Use no timer') if event.timers_by_id else _('No timer defined'),
+        return {'': '-'} | {
+            str(timer.id): timer.name for timer in event.timers_by_id.values()
         }
-        for timer in event.timers_by_id.values():
-            options[WebContext.value_to_form_data(timer.id)] = _(
-                'Timer {timer_uniq_id}'
-            ).format(timer_uniq_id=timer.uniq_id)
-        return options
 
     @staticmethod
     def _get_input_exit_button_options() -> dict[str, str]:

@@ -8,7 +8,22 @@
 {% endblock %}
 
 {% block card_title %}
-    {{ rotator.uniq_id }}
+    <div class="d-flex gap-2 align-items-center justify-content-center">
+        <div
+            class="text-nowrap"
+            {{ macros.tooltip_attributes('info', _('Number of screens'), 'top') }}
+        >
+            <i class="bi-window pe-1"></i>
+            {{ rotator.screens|length }}
+        </div>
+        <div
+            class="text-nowrap"
+            {{ macros.tooltip_attributes('info', _('Number of screen families'), 'top') }}
+        >
+            <i class="bi-window-split pe-1"></i>
+            {{ rotator.families|length }}
+        </div>
+    </div>
 {% endblock %}
 
 {% block card_text %}
@@ -23,7 +38,7 @@
                 {%endif %}
             {% endif %}
         </div>
-        {% if client.can_manage_screens and admin_rotators_show_details %}
+        {% if client.can_manage_screens %}
             {% if rotator.message_text %}
                 <div
                     class="px-2 alert-message rotator-alert-message"
@@ -44,18 +59,19 @@
             {% endif %}
         {% endif %}
 
-        {% if not rotator.families and not rotator.screens %}
-            {{ _('No screen neither family to rotate.') }}
-        {% else %}
+        {% if admin_rotators_show_details %}
             {% if rotator.screens %}
                 <hr/>
                 {{ _('Screens:') }}
                 {% for screen in rotator.screens %}
                     <div>
-                        {% if client.can_manage_screens %}
-                            {{ macros.screen_visibility_icon(screen, 'pe-1') }}
-                        {% endif %}
-                        {{ macros.screen_type_icon(screen.type, true) }} {{ screen.name }}
+                        <span class="pe-1">
+                            {% if client.can_manage_screens %}
+                                {{ macros.screen_visibility_icon(screen, 'pe-1') }}
+                            {% endif %}
+                            {{ macros.screen_type_icon(screen.type, true) }}
+                        </span>
+                        {{ screen.name }}
                     </div>
                 {% endfor %}
             {% endif %}
@@ -70,14 +86,13 @@
                             {% endif %}
                             {{ macros.screen_type_icon(family.type, true) }}
                         </span>
-                        {{ family.uniq_id }}
                         {{ family.name }}
                         {% if family.screens_by_uniq_id %}
-                        {{ ngettext(
-                            '(%(num)d screen)',
-                            '(%(num)d screens)',
-                            family.screens_by_uniq_id|length
-                        ) }}
+                            {{ ngettext(
+                                '(%(num)d screen)',
+                                '(%(num)d screens)',
+                                family.screens_by_uniq_id|length
+                            ) }}
                         {% else %}
                             {{ _('(no screens)') }}
                         {% endif %}
@@ -90,6 +105,20 @@
 
 {% block card_buttons_left %}
     {% if client.can_manage_screens %}
+        <span
+            class="btn btn-sm btn-outline-primary"
+            hx-get="{{ url_for(
+                'admin-rotator-screens-modal',
+                event_uniq_id=admin_event.uniq_id,
+                rotator_id=rotator.id
+            ) }}"
+            {{ macros.tooltip_attributes(
+                'info', _('Define the screens and screen families to display.'), 'top'
+            ) }}
+        >
+            <i class="bi-window-stack pe-1"></i>
+            {{ _('Screens') }}
+        </span>
         {% if rotator.families or rotator.screens %}
             <span {{ macros.tooltip_attributes('info', _('Go to the rotator.'), 'top') }}>
                 <a
@@ -114,7 +143,11 @@
         <span {{ macros.tooltip_attributes('info', _('Edit the properties of the rotator.'), 'top') }}>
             <button
                 class="btn btn-sm btn-outline-primary"
-                hx-get="{{ url_for('admin-rotator-modal', action='update', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id) }}"
+                hx-get="{{ url_for(
+                    'admin-rotator-update-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    rotator_id=rotator.id
+                ) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
                 preload
@@ -127,7 +160,11 @@
         <span {{ macros.tooltip_attributes('info', _('Duplicate the rotator.'), 'top') }}>
             <button
                 class="btn btn-sm btn-outline-primary"
-                hx-get="{{ url_for('admin-rotator-modal', action='clone', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id) }}"
+                hx-get="{{ url_for(
+                    'admin-rotator-clone-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    rotator_id=rotator.id
+                ) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
                 preload
@@ -140,7 +177,12 @@
         <span {{ macros.tooltip_attributes('info', _('Delete the rotator.'), 'top') }}>
             <button
                 class="btn btn-sm btn-outline-danger"
-                hx-get="{{ url_for('admin-rotator-modal', action='delete', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id) }}"
+                hx-get="{{ url_for(
+                    'admin-rotator-delete-modal',
+                    action='delete',
+                    event_uniq_id=admin_event.uniq_id,
+                    rotator_id=rotator.id
+                ) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
                 preload
