@@ -195,6 +195,7 @@ class FfeDatabase(LocalSourceDatabase):
         self,
         string: str,
         federation: str,
+        page: int = 0,
         limit: int | None = None,
     ) -> list[StoredPlayer]:
         tokens: list[str] = [unicode_normalize(token) for token in string.split(' ')]
@@ -256,6 +257,12 @@ class FfeDatabase(LocalSourceDatabase):
             params += [
                 limit,
             ]
+        if page and limit:
+            query += ' OFFSET ?'
+            params += [
+                page * limit,
+            ]
+
         self.execute(
             query,
             tuple(params),

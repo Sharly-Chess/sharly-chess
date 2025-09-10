@@ -120,6 +120,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         self,
         string: str,
         federation: str,
+        page: int = 0,
         limit: int | None = None,
     ) -> list[StoredPlayer]:
         """Search a player in the database.

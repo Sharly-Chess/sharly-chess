@@ -16,6 +16,24 @@
             >
                 {% include data_source.player_search_result_template %}
             </li>
+            {% if loop.last and has_more_results %}
+                {% set id=data_source.search_element_name|replace('_', '-') %}
+                <li
+                    class="dropdown-item text-nowrap"
+                    hx-get="{{ url_for(
+                        'admin-search-player',
+                        event_uniq_id=admin_event.uniq_id,
+                        data_source_id=data_source.id,
+                        page=page + 1,
+                    )}}?{{ data_source.search_element_name }}={{ search }}"
+                    hx-target="this"
+                    hx-swap="outerHTML"
+                    hx-trigger="intersect once"
+                    hx-indicator="#{{ id }}_indicator"
+                >
+                    <span class="fst-italic">{{ _('Loading more results…') }}</span>
+                </li>
+            {% endif %}
         {% endfor %}
     {% else %}
         <li class="dropdown-item no-hover text-nowrap">

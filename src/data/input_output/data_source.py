@@ -281,7 +281,7 @@ class DataSource(IdentifiableEntity, ABC):
 
     @abstractmethod
     async def search_player(
-        self, string: str, federation: str, limit: int | None = None
+        self, string: str, federation: str, page: int = 0, limit: int | None = None
     ) -> list[StoredPlayer]:
         """Search a player in the data source from a string.
         Returns maximum *limit* results (no limit if *limit* is None)."""
@@ -368,10 +368,10 @@ class LocalDataSource(DataSource, ABC):
         self.local_database_type().check()
 
     async def search_player(
-        self, string: str, federation: str, limit: int | None = None
+        self, string: str, federation: str, page: int = 0, limit: int | None = None
     ) -> list[StoredPlayer]:
         with self.local_database_type() as database:
-            return database.search_player(string, federation, limit)
+            return database.search_player(string, federation, page, limit)
 
 
 class OnlineDataSource(DataSource, ABC):

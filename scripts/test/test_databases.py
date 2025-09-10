@@ -70,7 +70,10 @@ def test_fide_local_database():
                     with FideDatabase() as fide_database:
                         # print(f'Token [{token}]: {len(list(fide_database.search_player(random_search_token(), limit=limit)))}')
                         fide_database.search_player(
-                            random_search_token(), federation='FRA', limit=search_limit
+                            random_search_token(),
+                            federation='FRA',
+                            page=0,
+                            limit=search_limit,
                         )
                 duration: float = time.perf_counter() - start
                 print(f'{duration:.2f} seconds.')
@@ -83,7 +86,10 @@ def test_fide_local_database():
                     for _ in range(searches):
                         # print(f'Token [{token}]: {len(list(fide_database.search_player(random_search_token(), limit=limit)))}')
                         fide_database.search_player(
-                            random_search_token(), federation='FRA', limit=search_limit
+                            random_search_token(),
+                            federation='FRA',
+                            page=0,
+                            limit=search_limit,
                         )
                 duration: float = time.perf_counter() - start
                 print(f'{duration:.2f} seconds.')
@@ -97,7 +103,10 @@ def test_fide_local_database():
                     with FideDatabase() as fide_database:
                         # print(f'Id [{id}]: {len(list(fide_database.search_player(str(id), limit=limit)))}')
                         fide_database.search_player(
-                            random_search_id(), federation='FRA', limit=search_limit
+                            random_search_id(),
+                            federation='FRA',
+                            page=0,
+                            limit=search_limit,
                         )
                 duration: float = time.perf_counter() - start
                 print(f'{duration:.2f} seconds.')
@@ -110,7 +119,10 @@ def test_fide_local_database():
                     for _ in range(searches):
                         # print(f'Id [{id}]: {len(list(fide_database.search_player(str(id), limit=limit)))}')
                         fide_database.search_player(
-                            random_search_id(), federation='FRA', limit=search_limit
+                            random_search_id(),
+                            federation='FRA',
+                            page=0,
+                            limit=search_limit,
                         )
                 duration: float = time.perf_counter() - start
                 print(f'{duration:.2f} seconds.')
@@ -132,7 +144,7 @@ def test_ffe_local_database():
         for _ in range(searches):
             with FfeDatabase() as ffe_database:
                 ffe_database.search_player(
-                    random_search_token(), federation='FRA', limit=search_limit
+                    random_search_token(), federation='FRA', page=0, limit=search_limit
                 )
         duration: float = time.perf_counter() - start
         print(f'Done in {duration:.2f} seconds.')
@@ -148,7 +160,7 @@ async def search_ffe_sql_server_token(token: str, limit: int = 0) -> list[Stored
     try:
         async with FFESqlServer() as ffe_sql_server:
             for player in await ffe_sql_server.search_player(
-                str(token), federation='FRA', limit=limit
+                str(token), federation='FRA', page=0, limit=limit
             ):
                 if player.fide_id:
                     print_interactive_info(f'{player=}')
@@ -169,7 +181,7 @@ async def search_ffe_sql_server_fide_id(player_fide_id: int) -> list[StoredPlaye
     try:
         async with FFESqlServer() as ffe_sql_server:
             for player in await ffe_sql_server.search_player(
-                str(player_fide_id), federation='FRA', limit=2
+                str(player_fide_id), federation='FRA', page=0, limit=2
             ):
                 result.append(player)
                 print_interactive_success(f'{player_fide_id=}, {player=}')

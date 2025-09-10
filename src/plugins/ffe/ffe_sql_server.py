@@ -175,7 +175,7 @@ class FFESqlServer(SqlServer):
         return f"'{fide_id}'"
 
     async def search_player(
-        self, string: str, federation: str, limit: int | None = None
+        self, string: str, federation: str, page: int = 0, limit: int | None = None
     ) -> list[StoredPlayer]:
         """Searches the SQL server for the given tokens, raises SharlyChessException on error."""
         # NOTE(Amaras): Quicken search if the string looks like a complete FFE
@@ -255,10 +255,12 @@ class FFESqlServer(SqlServer):
         )
 
         if limit:
-            query += ' OFFSET 0 ROWS FETCH NEXT %s ROWS ONLY'
+            query += ' OFFSET %s ROWS FETCH NEXT %s ROWS ONLY'
             params += [
+                page * limit,
                 limit,
             ]
+
         await self.execute(
             query,
             tuple(params),

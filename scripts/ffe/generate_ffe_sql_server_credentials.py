@@ -74,7 +74,7 @@ async def main():
         try:
             async with FFESqlServer() as ffe_sql_server:
                 players = await ffe_sql_server.search_player(
-                    'pascal aubry', federation='FRA', limit=8
+                    'pascal aubry', federation='FRA', page=0, limit=8
                 )
                 for player in players:
                     print_interactive_info(f'{player=}')

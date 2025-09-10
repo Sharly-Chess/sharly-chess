@@ -270,11 +270,11 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
             )
 
     async def search_player(
-        self, string: str, federation: str, limit: int | None = None
+        self, string: str, federation: str, page: int = 0, limit: int | None = None
     ) -> list[StoredPlayer]:
         async with FFESqlServer() as ffe_sql_server:
             return await ffe_sql_server.search_player(
-                unicode_normalize(string), federation, limit
+                unicode_normalize(string), federation, page, limit
             )
 
 

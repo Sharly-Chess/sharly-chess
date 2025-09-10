@@ -244,6 +244,7 @@ class FideDatabase(LocalSourceDatabase):
         self,
         string: str,
         federation: str,
+        page: int = 0,
         limit: int | None = None,
     ) -> list[StoredPlayer]:
         tokens: list[str] = string.split(' ')
@@ -305,6 +306,12 @@ class FideDatabase(LocalSourceDatabase):
             params += [
                 limit,
             ]
+        if page and limit:
+            query += ' OFFSET ?'
+            params += [
+                page * limit,
+            ]
+
         self.execute(query, tuple(params))
         return [self._get_player_from_row(row) for row in self.fetchall()]
 
