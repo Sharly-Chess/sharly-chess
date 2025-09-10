@@ -149,9 +149,8 @@
                     const form = document.createElement('form');
                     form.method = 'get';
                     form.action = window.location.origin +
-                        '/admin/tournament-print-view/' +
+                        '/admin/print-view/' +
                         event.detail.event_uniq_id + '/' +
-                        event.detail.tournament_id + '/' +
                         event.detail.document;
                     const input = document.createElement('input');
                     input.type = 'hidden';
