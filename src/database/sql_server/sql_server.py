@@ -96,7 +96,7 @@ class SqlServer:
 
             if self.database is not None:
                 self.cursor = self.database.cursor()
-                logger.info('Successfully connected using python-tds')
+                logger.debug('Successfully connected using python-tds')
         except (pytds.Error, TimeoutError) as e:
             NetworkMonitor.set_connected(False)
             if DEVEL_ENV:

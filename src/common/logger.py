@@ -2,12 +2,21 @@ import logging
 from logging import Logger, getLogger
 from logging.config import dictConfig
 from pathlib import Path
+import sys
 from typing import Any
 
 from colorama import Fore, Style
 
-from common import APP_NAME
+from common import APP_NAME, DEVEL_ENV
 from gui.gui_logger import GUILogHandler
+
+
+class ConsoleOrNullHandler(logging.Handler):
+    def __new__(cls, *args, **kwargs):
+        if DEVEL_ENV:
+            return logging.StreamHandler(sys.stdout)
+        else:
+            return logging.NullHandler()
 
 
 class LoggingConfigValues:
@@ -98,7 +107,7 @@ def get_logging_config() -> dict[str, Any]:
         },
         'handlers': {
             'console': {
-                'class': 'logging.StreamHandler',
+                'class': ConsoleOrNullHandler,
                 'level': _LOGGING_CONFIG_VALUES.console_log_level,
                 'formatter': 'console_formatter',
                 'stream': 'ext://sys.stdout',
