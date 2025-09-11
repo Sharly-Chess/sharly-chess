@@ -30,6 +30,7 @@ logger: Logger = get_logger()
 class EventLoader:
     _valid_event_ids: set[str] = set()
     _invalid_uniq_ids: set[str] = set()
+    _views_generated: dict[str, bool] = {}
 
     @classmethod
     def get(cls, request: HTMXRequest | None):
@@ -148,8 +149,13 @@ class EventLoader:
         return name
 
     def load_event(self, uniq_id: str) -> Event:
+        views_generated = self.__class__._views_generated.get(uniq_id, False)
         self.load_event_ids(uniq_id)
-        with EventDatabase(uniq_id, generate_views=True) as event_database:
+        with EventDatabase(
+            uniq_id, generate_views=not views_generated
+        ) as event_database:
+            if not views_generated:
+                self.__class__._views_generated[uniq_id] = True
             event = Event(event_database.load_stored_event())
         return event
 

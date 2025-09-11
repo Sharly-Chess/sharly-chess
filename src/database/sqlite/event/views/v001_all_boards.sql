@@ -1,5 +1,5 @@
 DROP VIEW IF EXISTS "all_boards";
-CREATE VIEW all_boards AS
+CREATE VIEW "all_boards" AS
 SELECT `p`.`tournament_id`, `p`.`round`,
 COALESCE(LIKELY(NULLIF(`white_player`.`fixed`, 0)), LIKELY(NULLIF(`black_player`.`fixed`, 0)), `board`.`index` + 1) as `board_number`,
 `p`.`board_id`,

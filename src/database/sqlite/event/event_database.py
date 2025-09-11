@@ -84,10 +84,11 @@ class EventDatabase(MigrationDatabase):
         self.generate_views = generate_views
 
     def __enter__(self) -> Self:
-        self = super().__enter__(self)
+        write = self.write
         if self.generate_views:
-            write = self.write
             self.write = True
+        self = super().__enter__()
+        if self.generate_views:
             # NOTE(Amaras): Delete all views to generate only the necessary ones.
             # This WILL remove all the debug views that devs might have put in.
             # I recommend creating temporary views for debug purposes.

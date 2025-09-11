@@ -1,5 +1,6 @@
 DROP VIEW IF EXISTS "all_byes";
-CREATE VIEW "all_byes" as `SELECT` `pairing`.`tournament_id`, `pairing`.`round`,
+CREATE VIEW "all_byes" AS
+SELECT `pairing`.`tournament_id`, `pairing`.`round`,
 `player`.`id` as `player_id`, `player`.`fide_id`, `player`.`title`,
 CASE
     WHEN `player`.`first_name` IS NULL OR `player`.`first_name` = '' THEN
