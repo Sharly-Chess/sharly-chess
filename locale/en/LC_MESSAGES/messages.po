@@ -2855,6 +2855,9 @@ msgstr ""
 msgid "List of players"
 msgstr ""
 
+msgid "Loading more results…"
+msgstr ""
+
 msgid "Local URL: {local_url}"
 msgstr ""
 

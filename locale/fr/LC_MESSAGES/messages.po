@@ -1,5 +1,5 @@
 msgid " [{default_choice}: {default_value}]: "
-msgstr " [{default_choice} : {default_value}] : "
+msgstr " [{default_choice} : {default_value}] : "
 
 msgid " [{yes_answer}/{no_answer}]?"
 msgstr " [{yes_answer}/{no_answer}] ?"
@@ -2854,6 +2854,9 @@ msgstr "Liens vers cet écran :"
 
 msgid "List of players"
 msgstr "Liste des participant·es"
+
+msgid "Loading more results…"
+msgstr "Plus de résultats en cours de chargement…"
 
 msgid "Local URL: {local_url}"
 msgstr "URL locale : {local_url}"

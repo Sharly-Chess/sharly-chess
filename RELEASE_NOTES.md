@@ -8,6 +8,9 @@ English version below
 - Amélioration de la console du serveur (3.1.0)
 - Vue imprimable des statistiques des joueur·euses (3.1.0)
 
+## Joueur·euses
+
+- Amélioration de la recherche de joueur·euses (3.1.0)
 
 ## Appariements
 
@@ -23,6 +26,10 @@ English version below
 - Permissions for clients connected to the server (3.1.0)
 - Improved the server console (3.1.0)
 - Statistics print view (3.1.0)
+
+## Players
+
+- Improved player search results (3.1.0)
 
 ## Pairings
 

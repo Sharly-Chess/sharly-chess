@@ -243,6 +243,8 @@ class FideDatabase(LocalSourceDatabase):
     def search_player(
         self,
         string: str,
+        federation: str,
+        page: int = 0,
         limit: int | None = None,
     ) -> list[StoredPlayer]:
         tokens: list[str] = string.split(' ')
@@ -267,21 +269,49 @@ class FideDatabase(LocalSourceDatabase):
         conditions: str = ' AND '.join(
             map(lambda condition: f'({condition})', token_conditions.values())
         )
-        order_conditions = ' OR '.join(
-            [
-                '(last_name LIKE ?)',
-                '(first_name LIKE ?)',
-            ]
-            * len(tokens)
-        )
+
+        # We build one CASE block that sorts best → worst
+        order_clauses = []
         for token in tokens:
-            params += [f'{token}%'] * 2
-        query: str = f'SELECT * FROM player WHERE {conditions} ORDER BY (CASE WHEN {order_conditions} THEN 0 ELSE 1 END), last_name'
+            order_clauses.append("""
+                CASE
+                    WHEN (last_name LIKE ? OR first_name LIKE ?) AND federation = ? THEN 0
+                    WHEN (last_name LIKE ? OR first_name LIKE ?) THEN 1
+                    WHEN federation = ? THEN 2
+                    ELSE 3
+                END
+            """)
+
+            # Params for this token in the same order
+            params += [
+                f'{token}%',
+                f'{token}%',
+                federation,
+                f'{token}%',
+                f'{token}%',
+                federation,
+            ]
+
+        order_expr = ' + '.join(order_clauses)
+
+        query: str = f"""
+            SELECT *
+            FROM player
+            WHERE {conditions}
+            ORDER BY {order_expr}, last_name, first_name
+        """
+
         if limit:
             query += ' LIMIT ?'
             params += [
                 limit,
             ]
+        if page and limit:
+            query += ' OFFSET ?'
+            params += [
+                page * limit,
+            ]
+
         self.execute(query, tuple(params))
         return [self._get_player_from_row(row) for row in self.fetchall()]
 

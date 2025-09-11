@@ -73,7 +73,9 @@ async def main():
         print_interactive_info('Now testing the remote database...')
         try:
             async with FFESqlServer() as ffe_sql_server:
-                players = await ffe_sql_server.search_player('pascal aubry', limit=8)
+                players = await ffe_sql_server.search_player(
+                    'pascal aubry', federation='FRA', page=0, limit=8
+                )
                 for player in players:
                     print_interactive_info(f'{player=}')
         except SharlyChessException as exception:
