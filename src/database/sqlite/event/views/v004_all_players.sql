@@ -27,19 +27,9 @@ SELECT
     END AS name,
     p.check_in,
 
-    CASE
-        WHEN ro.is_overridden = 1
-            THEN json_extract(p.ratings, '$."1".value')
-        ELSE json_extract(p.ratings, '$.' || t.rating || '.value')
-    END AS rating,
-
-    CASE
-        WHEN ro.is_overridden = 1
-            THEN json_extract(p.ratings, '$."1".type')
-        ELSE json_extract(p.ratings, '$.' || t.rating || '.type')
-    END AS rating_type,
-
-    ro.is_overridden AS overridden,
+    pr.effective_rating AS rating,
+    pr.effective_rating_type AS rating_type,
+    pr.is_overridden AS overridden,
 
     p.federation,
     p.club,
@@ -87,6 +77,6 @@ LEFT JOIN tournament t ON t.id = tp.tournament_id
 LEFT JOIN pairing pa ON pa.player_id = p.id AND pa.tournament_id = t.id
 LEFT JOIN board b ON b.id = pa.board_id
 JOIN info i ON i.ROWID = 1
-LEFT JOIN rating_override ro ON ro.player_id = p.id AND ro.tournament_id = t.id
+LEFT JOIN player_effective_ratings pr ON pr.player_id = p.id AND pr.tournament_id = t.id
 
 GROUP BY p.id, t.id;
