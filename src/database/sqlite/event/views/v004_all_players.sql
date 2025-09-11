@@ -38,7 +38,8 @@ SELECT
     json_group_object(
         pa.round,
         CASE
-            WHEN b.white_player_id = p.id THEN 'W'
+            -- the PAB has a board without an opponent, and has no color
+            WHEN b.white_player_id = p.id AND b.black_player_id IS NOT NULL THEN 'W'
             WHEN b.black_player_id = p.id THEN 'B'
             ELSE NULL
         END
@@ -47,7 +48,7 @@ SELECT
     -- results == {"1": 1, "2": 9, ...}
     json_group_object(pa.round, pa.result) AS results,
 
-    -- board_ids == {"1": 276, "2": NULL, ...}
+    -- opponents = {"1": 67, "2": NULL, ...}
     json_group_object(
         pa.round,
         CASE
@@ -57,6 +58,7 @@ SELECT
         END
     ) AS opponents,
 
+    -- board_ids == {"1": 276, "2": 485, ...}
     json_group_object(pa.round, pa.board_id) AS board_ids
 
 FROM player p

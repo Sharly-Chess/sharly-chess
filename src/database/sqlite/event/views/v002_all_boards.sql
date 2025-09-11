@@ -36,6 +36,7 @@ SELECT
     o.result AS black_result,
 
     -- BLACK PLAYER
+    -- NOTE(Amaras): this table includes the PAB, since a board is created for them, but without an opponent
     bp.id AS black_id,
     bp.fide_id AS black_fide_id,
     bp.title AS black_title,
