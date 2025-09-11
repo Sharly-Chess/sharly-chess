@@ -300,15 +300,11 @@ with_indicator: display a loading indicator, optional
                         {% endif %}
                         {% for key, text_or_options in select_options.items() %}
                             {% if text_or_options is string %}
-                                <option value="{{ key }}" {% if key in selected %}selected{% endif %}>
-                                    {{ text_or_options }}
-                                </option>
-                            {% else %}
+                                <option value="{{ key }}" {% if key in selected %}selected{% endif %}>{{ text_or_options }}</option>
+                            {% else -%}
                                 <optgroup label="{{ key }}">
                                     {% for value, text in text_or_options.items() %}
-                                        <option value="{{ value }}" {% if value in selected %}selected{% endif %}>
-                                            {{ text }}
-                                        </option>
+                                        <option value="{{ value }}" {% if value in selected %}selected{% endif %}>{{ text }}</option>
                                     {% endfor %}
                                 </optgroup>
                             {% endif %}
