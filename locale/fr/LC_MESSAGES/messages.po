@@ -3815,6 +3815,9 @@ msgstr "Veuillez choisir la version à restaurer : "
 msgid "Please choose the tournament."
 msgstr "Veuillez choisir le tournoi."
 
+msgid "Please choose the tournaments."
+msgstr "Veuillez choisir les tournois."
+
 msgid "Please close the time control editor before saving."
 msgstr "Veuillez fermer l'éditeur de cadence avant d'enregistrer."
 
@@ -3943,12 +3946,6 @@ msgstr "Prix"
 
 msgid "Prize assignment"
 msgstr "Attribution des prix"
-
-msgid "Prize assignment after round #{round}"
-msgstr "Attribution des prix après la ronde n°{round}"
-
-msgid "Prize assignment before the first round"
-msgstr "Attribution des prix avant la première ronde"
 
 msgid "Prize category [{prize_category}] has been duplicated."
 msgstr "La catégorie de prix [{prize_category}] a été dupliquée."
@@ -4485,6 +4482,9 @@ msgstr "La couleur initiale ne peut être modifiée une fois que le tournoi a co
 
 msgid "Seeding of unrated rapid/blitz"
 msgstr "Classement des joueur·euses sans classement FIDE rapide/blitz"
+
+msgid "Select All"
+msgstr "Tout sélectionner"
 
 msgid "Select the players and the data to update:"
 msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"
@@ -5132,6 +5132,9 @@ msgstr "Les tournois sur lesquels le compte pourra agir (si aucun, le compte peu
 msgid "The tournaments on which the device can act (if none, the device can act on all the tournaments)."
 msgstr "Les tournois sur lesquels l'appareil pourra agir (si aucun, l'appareil peut agir sur tous les tournois)."
 
+msgid "The tournaments to print."
+msgstr "Les tournois à imprimer."
+
 msgid "The type of criterion used to filter the players."
 msgstr "Le type de critère utilisé pour filtrer les joueur·euses."
 
@@ -5454,6 +5457,9 @@ msgstr "Tournois affichés :"
 
 msgid "Tournaments management"
 msgstr "Gestion des tournois"
+
+msgid "Tournaments:"
+msgstr "Tournois :"
 
 #, python-format
 msgid "Tournaments: %(num)d"

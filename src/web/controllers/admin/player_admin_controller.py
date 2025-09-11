@@ -93,13 +93,16 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
                 self._redirect_error(f'Tournament [{tournament_id}] not found.')
                 return
 
-        print_tournament_id = self.default_tournament_for_print_modal(
+        print_tournament_ids = self.default_tournament_for_print_modal(
             tournament_id=None
         )
-        if print_tournament_id is None:
+        if print_tournament_ids is None:
             tournaments = list(self.admin_event.tournaments_by_id.values())
         else:
-            tournaments = [self.admin_event.tournaments_by_id[print_tournament_id]]
+            tournaments = [
+                self.admin_event.tournaments_by_id[tournament_id]
+                for tournament_id in print_tournament_ids
+            ]
         check_in_open = all(tournament.check_in_open for tournament in tournaments)
         self.default_print_document = (
             PlayerCheckinListPrintDocument.static_id()

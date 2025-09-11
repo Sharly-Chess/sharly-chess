@@ -21,12 +21,12 @@ class PlayerSplitter(IdentifiableEntity, ABC):
         return sorted(split_keys)
 
     def split_players(self, players: list[Player]) -> dict[str, list[Player]]:
-        splitted_players = defaultdict(list)
+        split_players = defaultdict(list)
         for player in players:
-            splitted_players[self.get_split_key(player)].append(player)
+            split_players[self.get_split_key(player)].append(player)
         return {
-            key: splitted_players[key]
-            for key in self.sorted_split_keys(splitted_players.keys())
+            key: split_players[key]
+            for key in self.sorted_split_keys(split_players.keys())
         }
 
 

@@ -6,71 +6,77 @@
 
 
 {% block content %}
-    <div class="centered">
-        <div class="prize-table">
-            {% for prize_group in document.tournament.sorted_prize_groups %}
-                {% if not loop.first %}
-                    <hr/>
-                {% endif %}
-                {% set assigned_prizes_by_category_id=prize_group.get_assigned_prizes_by_category_id() %}
-                {% for prize_category in prize_group.sorted_categories %}
-                    <div class="section-title">
-                        {{ prize_category.name }}
-                    </div>
-                    <div class="subheading">
-                        {{ prize_category.format_shared_prizes(prize_currency) }}
-                    </div>
-                    <div class="header">{{ _('Rk. *** RANK FOR TABLE HEADER') }}</div>
-                    <div class="header">{{ _('Rk. O. *** RANK OVERALL FOR TABLE HEADER') }}</div>
-                    <div class="header">&nbsp;</div> {# Title #}
-                    <div class="header">{{ _('Name *** NAME FOR TABLE HEADER') }}</div>
-                    <div class="header">{{ document.tournament.rating.print_view_header }}</div>
-                    <div class="header">{{ _("Cat *** CATEGORY FOR TABLE HEADER") }}</div>
-                    <div class="header">{{ _('Gen *** GENDER FOR TABLE HEADER') }}</div>
-                    <div class="header">{{ _('Fed *** FEDERATION FOR TABLE HEADER') }}</div>
-                    <div class="header">{{ _('Club *** CLUB FOR TABLE HEADER') }}</div>
-                    <div class="header">{{ _('Pts *** POINTS FOR TABLE HEADER') }}</div>
-                    <div class="header">{{ _('Prize *** PRIZE FOR TABLE HEADER') }}</div>
-                    {% for assigned_prize in assigned_prizes_by_category_id[prize_category.id] %}
-                        {% set player=assigned_prize.assigned_to %}
-                        <div class="cell place">
-                            {{ ordinal_integer(loop.index)|safe }}
+    {% for tournament in tournaments %}
+        {% if not loop.first %}
+            <div class="separator"></div>
+        {% endif %}
+        <div class="tournament-title">{{ tournament.name }}</div>
+        {% for prize_group in tournament.sorted_prize_groups %}
+            {% if not loop.first %}
+                <div class="short-separator"></div>
+            {% endif %}
+            <div class="centered">
+                <div class="prize-table">
+                    {% set assigned_prizes_by_category_id=prize_group.get_assigned_prizes_by_category_id() %}
+                    {% for prize_category in prize_group.sorted_categories %}
+                        <div class="section-title">
+                            {{ prize_category.name }}
                         </div>
-                        {% if player %}
-                            <div class="cell place">({{ ordinal_integer(player.rank)|safe }})</div>
-                            <div class="cell title">{{ player.title.short_name }}</div>
-                            <div class="cell name">{{ player.full_name }}</div>
-                            <div class="cell">{{ player.rating_str }}</div>
-                            <div class="cell">{{ player.category.short_name }}</div>
-                            <div class="cell">{{ player.gender.short_name }}</div>
-                            <div class="cell">{{ player.federation }}</div>
-                            <div class="cell club">{{ player.club }}</div>
-                            <div class="cell">{{ player.points_str }}</div>
-                        {% else %}
-                            <div class="cell"></div>
-                            <div class="cell"><i>{{ _('Not assigned') }}</i></div>
-                            <div class="cell"></div>
-                            <div class="cell"></div>
-                            <div class="cell"></div>
-                            <div class="cell"></div>
-                            <div class="cell"></div>
-                            <div class="cell"></div>
-                        {% endif %}
-                        <div class="cell prize">
-                            {% if assigned_prize.prize.is_monetary %}
-                                {{ format_prize_value(assigned_prize.value) }}
-                            {% else %}
-                                {{ assigned_prize.prize.description }}
-                            {% endif %}
+                        <div class="subheading">
+                            {{ prize_category.format_shared_prizes(prize_currency) }}
                         </div>
-                        {% if show_warnings and assigned_prize.warning %}
-                            <div class="warning">
-                                {{ assigned_prize.warning|replace('. ', '.<br>', 1)|safe }}
+                        <div class="header">{{ _('Rk. *** RANK FOR TABLE HEADER') }}</div>
+                        <div class="header">{{ _('Rk. O. *** RANK OVERALL FOR TABLE HEADER') }}</div>
+                        <div class="header">&nbsp;</div> {# Title #}
+                        <div class="header">{{ _('Name *** NAME FOR TABLE HEADER') }}</div>
+                        <div class="header">{{ tournament.rating.print_view_header }}</div>
+                        <div class="header">{{ _("Cat *** CATEGORY FOR TABLE HEADER") }}</div>
+                        <div class="header">{{ _('Gen *** GENDER FOR TABLE HEADER') }}</div>
+                        <div class="header">{{ _('Fed *** FEDERATION FOR TABLE HEADER') }}</div>
+                        <div class="header">{{ _('Club *** CLUB FOR TABLE HEADER') }}</div>
+                        <div class="header">{{ _('Pts *** POINTS FOR TABLE HEADER') }}</div>
+                        <div class="header">{{ _('Prize *** PRIZE FOR TABLE HEADER') }}</div>
+                        {% for assigned_prize in assigned_prizes_by_category_id[prize_category.id] %}
+                            {% set player=assigned_prize.assigned_to %}
+                            <div class="cell place">
+                                {{ ordinal_integer(loop.index)|safe }}
                             </div>
-                        {% endif %}
+                            {% if player %}
+                                <div class="cell place">({{ ordinal_integer(player.rank)|safe }})</div>
+                                <div class="cell title">{{ player.title.short_name }}</div>
+                                <div class="cell name">{{ player.full_name }}</div>
+                                <div class="cell">{{ player.rating_str }}</div>
+                                <div class="cell">{{ player.category.short_name }}</div>
+                                <div class="cell">{{ player.gender.short_name }}</div>
+                                <div class="cell">{{ player.federation }}</div>
+                                <div class="cell club">{{ player.club }}</div>
+                                <div class="cell">{{ player.points_str }}</div>
+                            {% else %}
+                                <div class="cell"></div>
+                                <div class="cell"><i>{{ _('Not assigned') }}</i></div>
+                                <div class="cell"></div>
+                                <div class="cell"></div>
+                                <div class="cell"></div>
+                                <div class="cell"></div>
+                                <div class="cell"></div>
+                                <div class="cell"></div>
+                            {% endif %}
+                            <div class="cell prize">
+                                {% if assigned_prize.prize.is_monetary %}
+                                    {{ format_prize_value(assigned_prize.value) }}
+                                {% else %}
+                                    {{ assigned_prize.prize.description }}
+                                {% endif %}
+                            </div>
+                            {% if show_warnings and assigned_prize.warning %}
+                                <div class="warning">
+                                    {{ assigned_prize.warning|replace('. ', '.<br>', 1)|safe }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
                     {% endfor %}
-                {% endfor %}
-            {% endfor %}
-        </div>
-    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endfor %}
 {% endblock %}

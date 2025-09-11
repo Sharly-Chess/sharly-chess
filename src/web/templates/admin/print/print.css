@@ -15,9 +15,13 @@ tr td, tr th {
 }
 .section-title { margin: 16px 0 12px; }
 .section-sub-title {margin: 0 0 8px;}
+.separator { width: 50vw; height: 1px; margin: 30pt 0 30pt; border-top: 1px solid #CCCCCC; }
+.short-separator { width: 10vw; height: 1px; margin: 30pt 0 30pt; border-top: 1px solid #CCCCCC; }
+
 {# ========== FONT SIZE ========== #}
-.page-title { font-size: 24pt; }
+.page-title { font-size: 24pt; padding-top: 10pt; }
 .page-subtitle { font-size: 16pt; }
+.tournament-title { font-size: 20pt; margin-top: 30pt; }
 .section-title { font-size: 18px; }
 .section-sub-title { font-size: 15px; }
 {# ========== FONT WEIGHT ========== #}
