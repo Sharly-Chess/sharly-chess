@@ -1,5 +1,5 @@
 msgid " [{default_choice}: {default_value}]: "
-msgstr " [{default_choice} : {default_value}] : "
+msgstr " [{default_choice} : {default_value}] : "
 
 msgid " [{yes_answer}/{no_answer}]?"
 msgstr " [{yes_answer}/{no_answer}] ?"
@@ -397,7 +397,7 @@ msgid "Add a rotator to the event."
 msgstr "Ajouter un écran rotatif à l'évènement."
 
 msgid "Add a screen to check-in players or enter results."
-msgstr ""
+msgstr "Ajouter un écran de pointage des joueur·euses ou de saisie de résultats."
 
 msgid "Add a screen to display an image."
 msgstr "Ajouter un écran d'affichage d'une image."
@@ -6379,5 +6379,3 @@ msgstr "½ - 0 (NC)"
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
 
-#~ msgid "Add a screen to enter results."
-#~ msgstr ""
