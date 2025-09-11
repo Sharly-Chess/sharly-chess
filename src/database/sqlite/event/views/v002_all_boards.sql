@@ -10,6 +10,7 @@ SELECT
         LIKELY(NULLIF(bp.fixed, 0)),
         b."index" + 1
     ) AS board_number,
+    b."index" + 1 as board_index,
     pa.board_id,
 
     -- WHITE PLAYER
@@ -65,3 +66,4 @@ LEFT JOIN player bp ON bp.id = b.black_player_id
 LEFT JOIN tournament t ON t.id = pa.tournament_id
 LEFT JOIN player_effective_ratings rw ON rw.player_id = wp.id AND rw.tournament_id = pa.tournament_id
 LEFT JOIN player_effective_ratings rb ON rb.player_id = bp.id AND rb.tournament_id = pa.tournament_id
+WHERE b.white_player_id IS NOT NULL
