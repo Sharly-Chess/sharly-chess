@@ -615,7 +615,9 @@ class Event:
             stored_rotator.id = rotator_id
             for rotating_screen in stored_rotator.stored_rotating_screens:
                 rotating_screen.rotator_id = rotator_id
-                database.add_stored_rotating_screen(rotating_screen)
+                rotating_screen.id = database.add_stored_rotating_screen(
+                    rotating_screen
+                )
         self.stored_event.stored_rotators.append(stored_rotator)
         rotator = Rotator(self, stored_rotator)
         self.rotators_by_id[rotator.id] = rotator

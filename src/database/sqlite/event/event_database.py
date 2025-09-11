@@ -1835,6 +1835,7 @@ class EventDatabase(MigrationDatabase):
         cls, row: dict[str, Any]
     ) -> StoredRotatingScreen:
         return StoredRotatingScreen(
+            id=row['id'],
             rotator_id=row['rotator_id'],
             screen_id=row['screen_id'],
             family_id=row['family_id'],
@@ -1869,28 +1870,22 @@ class EventDatabase(MigrationDatabase):
             f'INSERT INTO `rotating_screen`({fields_str}) VALUES ({values_str})',
             tuple(fields.values()),
         )
+        if not (rotating_screen_id := self._last_inserted_id()):
+            raise RuntimeError('Insertion failed')
+        return rotating_screen_id
 
     def update_stored_rotating_screen(
         self, stored_rotating_screen: StoredRotatingScreen
     ):
-        screen = stored_rotating_screen
-        if screen.screen_id:
-            self.execute(
-                'UPDATE `rotating_screen` SET `index` = ? '
-                'WHERE `rotator_id` = ? AND `screen_id` = ?',
-                (screen.index, screen.rotator_id, screen.screen_id),
-            )
-        if screen.family_id:
-            self.execute(
-                'UPDATE `rotating_screen` SET `index` = ? '
-                'WHERE `rotator_id` = ? AND `family_id` = ?',
-                (screen.index, screen.rotator_id, screen.family_id),
-            )
-
-    def delete_stored_rotating_screen(self, rotator_id: int, index: int):
         self.execute(
-            'DELETE FROM `rotating_screen` WHERE `rotator_id` = ? AND `index` = ?',
-            (rotator_id, index),
+            'UPDATE `rotating_screen` SET `index` = ? WHERE `id` = ?',
+            (stored_rotating_screen.index, stored_rotating_screen.id),
+        )
+
+    def delete_stored_rotating_screen(self, rotating_screen_id: int):
+        self.execute(
+            'DELETE FROM `rotating_screen` WHERE `id` = ?',
+            (rotating_screen_id,),
         )
 
     # ---------------------------------------------------------------------------------

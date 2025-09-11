@@ -206,9 +206,6 @@ msgstr "1"
 msgid "1 - 0 (U)"
 msgstr ""
 
-msgid "1 item selected"
-msgstr ""
-
 msgid "1st day of the month"
 msgstr ""
 
@@ -249,6 +246,9 @@ msgid "<smart_count> day |||| <smart_count> days"
 msgstr ""
 
 msgid "<smart_count> hour |||| <smart_count> hours"
+msgstr ""
+
+msgid "<smart_count> item selected |||| <smart_count> items selected"
 msgstr ""
 
 msgid "<smart_count> minute |||| <smart_count> minutes"
@@ -3440,18 +3440,19 @@ msgstr ""
 msgid "Online sources"
 msgstr ""
 
+msgid "Only allowed users can see private events."
+msgstr ""
+
+msgid "Only allowed users can see private screen families."
+msgstr ""
+
+msgid "Only allowed users can see private screens."
+msgstr ""
+
 msgid "Only allowed users can view private display controllers."
 msgstr ""
+
 msgid "Only allowed users can view private rotators."
-msgstr ""
-
-msgid "Only arbiters can see private events."
-msgstr ""
-
-msgid "Only arbiters can see private screen families."
-msgstr ""
-
-msgid "Only arbiters can see private screens."
 msgstr ""
 
 msgid "Only estimated ratings are optional."
@@ -4842,7 +4843,7 @@ msgstr ""
 msgid "The file to import."
 msgstr ""
 
-msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
+msgid "The first tournament of the screen."
 msgstr ""
 
 msgid "The following categories will also be deleted:"
@@ -6359,9 +6360,6 @@ msgid "{family_type}-screen"
 msgstr ""
 
 msgid "{first_name} {last_name}"
-msgstr ""
-
-msgid "{items} items selected"
 msgstr ""
 
 msgid "{number} players written to the database."

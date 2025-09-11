@@ -1,3 +1,4 @@
+from operator import attrgetter
 from typing import TYPE_CHECKING
 import weakref
 from _weakref import ReferenceType
@@ -30,6 +31,11 @@ class RotatingScreen:
         if event is None:
             raise RuntimeError('Event reference has been garbage collected')
         return event
+
+    @property
+    def id(self) -> int:
+        assert self.stored_rotating_screen.id is not None
+        return self.stored_rotating_screen.id
 
     @property
     def rotator(self) -> 'Rotator':
@@ -70,10 +76,7 @@ class Rotator:
     ):
         self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
         self.stored_rotator = stored_rotator
-        self.rotating_screen_objects = [
-            RotatingScreen(event, stored_rotating_screen)
-            for stored_rotating_screen in self.stored_rotating_screens
-        ]
+        self.rotating_screens_by_id = self._get_rotating_screens_by_id()
 
     @property
     def event(self) -> 'Event':
@@ -128,7 +131,7 @@ class Rotator:
     def screens(self) -> list[Screen]:
         return [
             rotating_screen.screen
-            for rotating_screen in self.rotating_screen_objects
+            for rotating_screen in self.sorted_rotating_screens
             if rotating_screen.screen
         ]
 
@@ -136,14 +139,18 @@ class Rotator:
     def families(self) -> list[Family]:
         return [
             rotating_screen.family
-            for rotating_screen in self.rotating_screen_objects
+            for rotating_screen in self.sorted_rotating_screens
             if rotating_screen.family
         ]
 
     @property
+    def sorted_rotating_screens(self) -> list[RotatingScreen]:
+        return sorted(self.rotating_screens_by_id.values(), key=attrgetter('index'))
+
+    @property
     def rotating_screens(self) -> list[Screen]:
         rotating_screens: list[Screen] = []
-        for rotating_screen in self.rotating_screen_objects:
+        for rotating_screen in self.sorted_rotating_screens:
             if rotating_screen.screen:
                 rotating_screens.append(rotating_screen.screen)
             elif rotating_screen.family:
@@ -151,42 +158,49 @@ class Rotator:
                     rotating_screens.append(screen)
         return rotating_screens
 
-    def delete_rotating_screen(self, index: int):
-        if not 0 <= index < len(self.rotating_screen_objects):
-            raise ValueError(f'Invalid index for rotator [{self.id}].')
-        self.rotating_screen_objects.pop(index)
-        with EventDatabase(self.event.uniq_id, True) as database:
-            database.delete_stored_rotating_screen(self.id, index)
-            self._set_rotating_screens_indexes(database)
-
-    def reorder_rotating_screens(self, ordered_form_ids: list[str]):
-        if len(ordered_form_ids) != len(self.rotating_screen_objects):
-            raise ValueError(f'{ordered_form_ids=}')
-        if len(ordered_form_ids) != len(set(ordered_form_ids)):
-            raise ValueError(f'Duplicate in {ordered_form_ids=}')
-        rotating_screens: list[RotatingScreen] = []
-        for form_id in ordered_form_ids:
-            rotating_screen = next(
-                (
-                    rotating_screen
-                    for rotating_screen in self.rotating_screen_objects
-                    if rotating_screen.form_id == form_id
-                ),
-                None,
+    def _get_rotating_screens_by_id(self) -> dict[int, RotatingScreen]:
+        rotating_screens_by_id = {}
+        for stored_rotating_screen in self.stored_rotator.stored_rotating_screens:
+            assert stored_rotating_screen.id is not None
+            rotating_screens_by_id[stored_rotating_screen.id] = RotatingScreen(
+                self.event, stored_rotating_screen
             )
-            if not rotating_screen:
-                raise ValueError(f'Unknown {form_id=} for rotator {self.id}')
-            rotating_screens.append(rotating_screen)
-        self.rotating_screen_objects = rotating_screens
-        with EventDatabase(self.event.uniq_id, True) as database:
-            self._set_rotating_screens_indexes(database)
+        return rotating_screens_by_id
 
-    def _set_rotating_screens_indexes(self, database: EventDatabase):
-        for index, rotating_screen in enumerate(self.rotating_screen_objects):
-            rotating_screen.stored_rotating_screen.index = index
-            database.update_stored_rotating_screen(
-                rotating_screen.stored_rotating_screen
+    def delete_rotating_screen(self, rotating_screen_id: int):
+        if rotating_screen_id not in self.rotating_screens_by_id:
+            raise ValueError(
+                f'Rotating screen [{rotating_screen_id}] '
+                f'not part of rotator [{self.id}].'
             )
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.delete_stored_rotating_screen(rotating_screen_id)
+            del self.rotating_screens_by_id[rotating_screen_id]
+            ordered_ids = [
+                rotating_screen.id for rotating_screen in self.sorted_rotating_screens
+            ]
+            self._set_rotating_screens_indexes(database, ordered_ids)
+
+    def reorder_rotating_screens(self, ordered_ids: list[int]):
+        if len(ordered_ids) != len(self.rotating_screens_by_id):
+            raise ValueError(f'{ordered_ids=}')
+        for rotating_screen in self.rotating_screens_by_id.values():
+            if rotating_screen.id not in ordered_ids:
+                raise ValueError(
+                    f'Rotating_screen {rotating_screen.id} missing for rotator {self.id}'
+                )
+        with EventDatabase(self.event.uniq_id, True) as database:
+            self._set_rotating_screens_indexes(database, ordered_ids)
+
+    def _set_rotating_screens_indexes(
+        self, database: EventDatabase, ordered_ids: list[int]
+    ):
+        for index, rotating_screen_id in enumerate(ordered_ids):
+            stored_rotating_screen = self.rotating_screens_by_id[
+                rotating_screen_id
+            ].stored_rotating_screen
+            stored_rotating_screen.index = index
+            database.update_stored_rotating_screen(stored_rotating_screen)
 
     def add_rotating_screens(self, screen_ids: list[int], family_ids: list[int]):
         stored_rotating_screens: list[StoredRotatingScreen] = []
@@ -194,18 +208,27 @@ class Rotator:
             if screen_id not in self.event.basic_screens_by_id:
                 raise ValueError(f'Unknown screen ID [{screen_id}]')
             stored_rotating_screens.append(
-                StoredRotatingScreen(self.id, screen_id=screen_id)
+                StoredRotatingScreen(
+                    id=None,
+                    rotator_id=self.id,
+                    screen_id=screen_id,
+                )
             )
         for family_id in family_ids:
             if family_id not in self.event.families_by_id:
                 raise ValueError(f'Unknown family ID [{family_id}]')
             stored_rotating_screens.append(
-                StoredRotatingScreen(self.id, family_id=family_id)
+                StoredRotatingScreen(
+                    id=None,
+                    rotator_id=self.id,
+                    family_id=family_id,
+                )
             )
         with EventDatabase(self.event.uniq_id, True) as database:
             for stored_rotating_screen in stored_rotating_screens:
-                stored_rotating_screen.index = len(self.rotating_screen_objects)
-                database.add_stored_rotating_screen(stored_rotating_screen)
-                self.rotating_screen_objects.append(
-                    RotatingScreen(self.event, stored_rotating_screen)
+                stored_rotating_screen.index = len(self.rotating_screens_by_id)
+                new_id = database.add_stored_rotating_screen(stored_rotating_screen)
+                stored_rotating_screen.id = new_id
+                self.rotating_screens_by_id[new_id] = RotatingScreen(
+                    self.event, stored_rotating_screen
                 )

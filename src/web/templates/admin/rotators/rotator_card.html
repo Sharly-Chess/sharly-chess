@@ -11,6 +11,7 @@
     <div class="d-flex gap-2 align-items-center justify-content-center">
         <div
             class="text-nowrap"
+            data-testid="screens-count"
             {{ macros.tooltip_attributes('info', _('Number of screens'), 'top') }}
         >
             <i class="bi-window pe-1"></i>
@@ -18,6 +19,7 @@
         </div>
         <div
             class="text-nowrap"
+            data-testid="families-count"
             {{ macros.tooltip_attributes('info', _('Number of screen families'), 'top') }}
         >
             <i class="bi-window-split pe-1"></i>
@@ -105,7 +107,7 @@
 
 {% block card_buttons_left %}
     {% if client.can_manage_screens %}
-        <span
+        <button
             class="btn btn-sm btn-outline-primary"
             hx-get="{{ url_for(
                 'admin-rotator-screens-modal',
@@ -118,7 +120,7 @@
         >
             <i class="bi-window-stack pe-1"></i>
             {{ _('Screens') }}
-        </span>
+        </button>
         {% if rotator.families or rotator.screens %}
             <span {{ macros.tooltip_attributes('info', _('Go to the rotator.'), 'top') }}>
                 <a

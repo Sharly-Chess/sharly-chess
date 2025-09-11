@@ -10,7 +10,9 @@ from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _
+from data.family import Family
 from data.rotator import Rotator
+from data.screen import Screen
 from database.sqlite.event.event_store import StoredRotator
 from utils.enum import FormAction, ScreenType
 from web.controllers.admin.base_event_admin_controller import (
@@ -137,55 +139,45 @@ class RotatorAdminController(BaseEventAdminController):
             'errors': errors or {},
         }
 
-    @staticmethod
+    @classmethod
     def _rotator_screens_modal_context(
+        cls,
         web_context: RotatorAdminWebContext,
     ) -> dict[str, Any]:
         event = web_context.get_admin_event()
         rotator = web_context.get_admin_rotator()
-
-        screen_options: dict[str, dict[str, str]] = {
-            screen_type.name: {} for screen_type in ScreenType
-        }
-        rotator_screen_ids = [screen.id for screen in rotator.screens]
-        for (
-            screen_type,
-            screens,
-        ) in event.basic_screens_by_screen_type_sorted_by_uniq_id.items():
-            if screen_type == ScreenType.INPUT:
-                continue
-
-            screen_options[screen_type.name] = {
-                str(screen.id): screen.name
-                for screen in sorted(screens, key=attrgetter('name'))
-                if screen.id not in rotator_screen_ids
-            }
-        for screen_type in ScreenType:
-            if not screen_options[screen_type.name]:
-                del screen_options[screen_type.name]
-
-        family_options: dict[str, dict[str, str]] = {
-            screen_type.name: {} for screen_type in ScreenType
-        }
-        rotator_family_ids = [family.id for family in rotator.families]
-        for screen_type, families in event.families_by_screen_type.items():
-            if screen_type == ScreenType.INPUT:
-                continue
-
-            family_options[screen_type.name] = {
-                str(family.id): family.name
-                for family in sorted(families, key=attrgetter('name'))
-                if family.id not in rotator_family_ids
-            }
-        for screen_type in ScreenType:
-            if not family_options[screen_type.name]:
-                del family_options[screen_type.name]
-
         return {
             'modal': 'rotator_screens',
-            'screen_options': screen_options,
-            'family_options': family_options,
+            'screen_options': cls._screen_or_family_options(
+                event.basic_screens_by_screen_type_sorted_by_uniq_id,
+                rotator.screens,
+            ),
+            'family_options': cls._screen_or_family_options(
+                event.families_by_screen_type, rotator.families
+            ),
         }
+
+    @staticmethod
+    def _screen_or_family_options[T: Screen | Family](
+        entities_by_screen_type: dict[ScreenType, list[T]],
+        rotator_entities: list[T],
+    ) -> dict[str, dict[str, str]]:
+        options: dict[str, dict[str, str]] = {
+            screen_type.name: {} for screen_type in ScreenType
+        }
+        rotator_ids = [entity.id for entity in rotator_entities]
+        for screen_type, entities in entities_by_screen_type.items():
+            if screen_type == ScreenType.INPUT:
+                continue
+            for entity in sorted(entities, key=attrgetter('name')):
+                suffix = ''
+                if rotator_count := rotator_ids.count(getattr(entity, 'id')):
+                    suffix = f' (x{rotator_count})'
+                options[screen_type.name][str(entity.id)] = entity.name + suffix
+        for screen_type in ScreenType:
+            if not options[screen_type.name]:
+                del options[screen_type.name]
+        return options
 
     @get(
         path='/admin/rotator-modal/create/{event_uniq_id:str}',
@@ -451,7 +443,7 @@ class RotatorAdminController(BaseEventAdminController):
     @delete(
         path=(
             '/admin/rotator-screen-delete/{event_uniq_id:str}/'
-            '{rotator_id:int}/{rotating_screen_index:int}'
+            '{rotator_id:int}/{rotating_screen_id:int}'
         ),
         name='admin-rotator-screen-delete',
         status_code=HTTP_200_OK,
@@ -461,14 +453,14 @@ class RotatorAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         rotator_id: int,
-        rotating_screen_index: int,
+        rotating_screen_id: int,
     ) -> Template | ClientRedirect | Redirect:
         web_context = RotatorAdminWebContext(request, event_uniq_id, rotator_id)
         if web_context.error:
             return web_context.error
         rotator = web_context.get_admin_rotator()
         try:
-            rotator.delete_rotating_screen(rotating_screen_index)
+            rotator.delete_rotating_screen(rotating_screen_id)
         except ValueError as error:
             return self.redirect_error(request, str(error))
         return self._admin_event_rotator_render(
@@ -485,7 +477,7 @@ class RotatorAdminController(BaseEventAdminController):
         event_uniq_id: str,
         rotator_id: int,
         data: Annotated[
-            dict[str, list[str]],
+            dict[str, list[int]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template | ClientRedirect | Redirect:
@@ -493,10 +485,7 @@ class RotatorAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         rotator = web_context.get_admin_rotator()
-        try:
-            rotator.reorder_rotating_screens(data.get('rotating_screen', []))
-        except ValueError as error:
-            return self.redirect_error(request, str(error))
+        rotator.reorder_rotating_screens(data.get('rotating_screen_ids', []))
         return self._admin_event_rotator_render(
             web_context, self._rotator_screens_modal_context(web_context)
         )

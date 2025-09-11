@@ -418,6 +418,67 @@ class TestUtils:
         )
         cls.check_api_response(res)
 
+    @classmethod
+    def create_rotator(
+        cls,
+        api_request_context: APIRequestContext,
+        event_uniq_id: str,
+        name: str,
+        overrides: Optional[dict] = None,
+        screen_ids: list | None = None,
+        family_ids: list | None = None,
+    ) -> int:
+        overrides = overrides or {}
+
+        # Provide defaults
+        defaults = {
+            'name': name,
+            'public': True,
+            'delay': None,
+            'message_text_checkbox': True,
+            'message_text': '',
+        }
+
+        # Merge overrides
+        data = {**defaults, **overrides}
+
+        form_data = cls.prepare_form_data(data)
+        res = api_request_context.post(
+            f'/admin/rotator-create/{event_uniq_id}',
+            headers={'Content-Type': 'application/x-www-form-urlencoded'},
+            data=form_data,
+        )
+        cls.check_api_response(res)
+        with EventDatabase(event_uniq_id) as event_database:
+            stored_rotators = event_database.load_stored_rotators()
+        stored_rotator = next(r for r in stored_rotators if r.name == name)
+        assert stored_rotator.id is not None
+
+        if screen_ids or family_ids:
+            form_data = cls.prepare_form_data(
+                {
+                    'screen_ids': screen_ids,
+                    'family_ids': family_ids,
+                }
+            )
+            res = api_request_context.post(
+                f'/admin/rotating-screens-create/{event_uniq_id}/{stored_rotator.id}',
+                headers={'Content-Type': 'application/x-www-form-urlencoded'},
+                data=form_data,
+            )
+            cls.check_api_response(res)
+        return stored_rotator.id
+
+    @classmethod
+    def delete_rotator(
+        cls, api_request_context: APIRequestContext, event_uniq_id: str, rotator_id: int
+    ):
+        res = api_request_context.delete(
+            f'/admin/rotator-delete/{event_uniq_id}/{rotator_id}',
+            headers={'Content-Type': 'application/x-www-form-urlencoded'},
+        )
+        cls.check_api_response(res)
+
     @staticmethod
     def button_by_text(obj: Page | Locator, text: str) -> Locator:
         """

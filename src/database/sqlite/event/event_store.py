@@ -261,6 +261,7 @@ class StoredFamily:
 
 @dataclass
 class StoredRotatingScreen:
+    id: int | None
     rotator_id: int
     screen_id: int | None = None
     family_id: int | None = None

@@ -13,6 +13,10 @@ English version below
 
 - Amélioration de la recherche de joueur·euses (3.1.0)
 
+## Écrans
+
+- Réorganisation des écrans composant les écrans rotatifs (3.1.0)
+
 ## Appariements
 
 - Amélioration de la navigation de l'onglet Appariements (3.1.0)
@@ -32,6 +36,10 @@ English version below
 ## Players
 
 - Improved player search results (3.1.0)
+
+## Screens
+
+- Rotator screens reordering (3.1.0)
 
 ## Pairings
 

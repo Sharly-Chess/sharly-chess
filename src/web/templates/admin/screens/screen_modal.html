@@ -56,7 +56,7 @@
                                 name='public',
                                 label=_('Visibility:'),
                                 placeholder=_('Public screen'),
-                                help_text=_('Only arbiters can see private screens.'),
+                                help_text=_('Only allowed users can see private screens.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -74,7 +74,7 @@
                                 {{ admin_macros.select_input(
                                     name='init_set_tournament_id',
                                     label=_('Tournament:'),
-                                    help_text=_('The first tournament of the screen, mandatory (it is possible to add other tournaments later).'),
+                                    help_text=_('The first tournament of the screen.'),
                                     select_options=tournament_options,
                                     data=data, errors=errors
                                 ) }}

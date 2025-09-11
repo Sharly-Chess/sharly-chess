@@ -206,9 +206,6 @@ msgstr "1"
 msgid "1 - 0 (U)"
 msgstr "1 - 0 (NC)"
 
-msgid "1 item selected"
-msgstr "1 élément sélectionné"
-
 msgid "1st day of the month"
 msgstr "1er jour du mois"
 
@@ -250,6 +247,9 @@ msgstr "<smart_count> jour |||| <smart_count> jours"
 
 msgid "<smart_count> hour |||| <smart_count> hours"
 msgstr "<smart_count> heure |||| <smart_count> heures"
+
+msgid "<smart_count> item selected |||| <smart_count> items selected"
+msgstr "<smart_count> élément sélectionné |||| <smart_count> éléments sélectionnés"
 
 msgid "<smart_count> minute |||| <smart_count> minutes"
 msgstr "<smart_count> minute |||| <smart_count> minutes"
@@ -3440,19 +3440,20 @@ msgstr "En cours"
 msgid "Online sources"
 msgstr "Sources en ligne"
 
+msgid "Only allowed users can see private events."
+msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les évènements privés."
+
+msgid "Only allowed users can see private screen families."
+msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les écrans des familles privées."
+
+msgid "Only allowed users can see private screens."
+msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les écrans privés."
+
 msgid "Only allowed users can view private display controllers."
-msgstr "Seuls les utilisateur·ices autorisé·es peuvent voir les pilotes d'afficheurs privés."
+msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les pilotes d'afficheurs privés."
+
 msgid "Only allowed users can view private rotators."
-msgstr "Seuls les utilisateur·ices autorisé·es peuvent voir les écrans rotatifs privés."
-
-msgid "Only arbiters can see private events."
-msgstr "Seul·es les arbitres peuvent voir les évènements privés."
-
-msgid "Only arbiters can see private screen families."
-msgstr "Seul·es les arbitres peuvent voir les écrans des familles privées."
-
-msgid "Only arbiters can see private screens."
-msgstr "Seul·es les arbitres peuvent voir les écrans privés."
+msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les écrans rotatifs privés."
 
 msgid "Only estimated ratings are optional."
 msgstr "Seuls les classements estimés sont optionnels."
@@ -4842,8 +4843,8 @@ msgstr "La fédération qui organise l’évènement. Sharly Chess peut proposer
 msgid "The file to import."
 msgstr "Le fichier à importer."
 
-msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
-msgstr "Le premier tournoi de l'écran, obligatoire (il est possible d'ajouter ultérieurement des tournois sur l'écran)."
+msgid "The first tournament of the screen."
+msgstr "Le premier tournoi de l'écran."
 
 msgid "The following categories will also be deleted:"
 msgstr "Les catégories suivantes vont aussi être supprimées :"
@@ -6360,9 +6361,6 @@ msgstr "ecran-{family_type}"
 
 msgid "{first_name} {last_name}"
 msgstr "{last_name} {first_name}"
-
-msgid "{items} items selected"
-msgstr "{items} éléments sélectionnés"
 
 msgid "{number} players written to the database."
 msgstr "{number} joueur·euses écrit·es dans la base de données."

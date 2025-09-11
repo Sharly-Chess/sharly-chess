@@ -11,6 +11,7 @@
         <div class="modal-body">
             <div
                 id="screens-form-container"
+                data-testid="screens-form-container"
                 style="display: none"
             >
                 {{ admin_macros.inline_multi_select_form(
@@ -51,6 +52,7 @@
                 >
                     <button
                         id="screens-add-button"
+                        data-testid="screens-add-button"
                         class="btn btn-primary text-nowrap rotating-screen-button"
                         {% if not screen_options %}disabled{% endif %}
                     >
@@ -67,6 +69,7 @@
                 >
                     <button
                         id="families-add-button"
+                        data-testid="families-add-button"
                         class="btn btn-primary text-nowrap rotating-screen-button"
                         {% if not family_options %}disabled{% endif %}
                     >
@@ -93,7 +96,8 @@
                     $('.rotating-screen-button').css('display', '');
                 });
             </script>
-            {% if not admin_rotator.rotating_screen_objects %}
+            {% set rotating_screens = admin_rotator.sorted_rotating_screens %}
+            {% if not rotating_screens %}
                 <div class="text-danger">{{ _('No screens.') }}</div>
             {% else %}
                 <form
@@ -107,13 +111,13 @@
                     hx-trigger="end"
                     hx-indicator="#please-wait"
                 >
-                    {% set reorder_screens = admin_rotator.rotating_screen_objects|length > 1 %}
-                    {% for rotating_screen in admin_rotator.rotating_screen_objects %}
+                    {% set reorder_screens = rotating_screens|length > 1 %}
+                    {% for rotating_screen in rotating_screens %}
                         {% set screen = rotating_screen.screen %}
                         {% set family = rotating_screen.family %}
                         <div class="border border-secondary bg-body-tertiary {% if reorder_screens %}cursor-grab{% endif %}">
-                            <input type="hidden" name="rotating_screen" value="{{ rotating_screen.form_id }}"/>
-                            <div class="p-2 d-flex align-items-center gap-4">
+                            <input type="hidden" name="rotating_screen_ids" value="{{ rotating_screen.id }}"/>
+                            <div class="p-2 d-flex align-items-center gap-4 rotating-screen-row">
                                 {% if reorder_screens %}
                                     <i class="bi-grip-horizontal"></i>
                                 {% endif %}
@@ -138,7 +142,7 @@
                                             'admin-rotator-screen-delete',
                                             event_uniq_id=admin_event.uniq_id,
                                             rotator_id=admin_rotator.id,
-                                            rotating_screen_index=rotating_screen.index,
+                                            rotating_screen_id=rotating_screen.id,
                                         ) }}"
                                         preload
                                         hx-target="body"

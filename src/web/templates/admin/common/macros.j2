@@ -1045,6 +1045,7 @@ with_indicator: display a loading indicator, optional
         <select
             name="{{ name }}"
             id="{{ id }}-select"
+            data-testid="{{ id }}-select"
             class="form-select sharly-chess-select2"
             multiple
             style="display:none"
@@ -1073,24 +1074,24 @@ with_indicator: display a loading indicator, optional
                 theme: 'bootstrap-5',
                 width: '100%',
                 placeholder: $(this).data('placeholder'),
-                minimumResultsForSearch: Infinity,
                 closeOnSelect: false,
             });
             $('.select2-search__field').css('width', '100%');
+            var polyglot = new Polyglot({
+                locale: '{{ locale }}',
+                phrases: {'items': "{{ _('<smart_count> item selected |||| <smart_count> items selected') }}"},
+                interpolation: {prefix: '<', suffix: '>'},
+            });
+
             $('#{{ id }}-select').on('change', function() {
                 $('.select2-selection__choice').remove();
                 var items = $(this).val() ? $(this).val().length : 0;
                 var placeholderText = $(this).data('placeholder');
-                let message = '';
-                if (items === 0) {
-                    message = "{{ placeholder }}";
-                } else if (items === 1) {
-                    message = "{{ _('1 item selected') }}";
-                } else {
-                    message = "{{ _('{items} items selected') }}".replace('{items}', items);
-                }
                 const searchField = $('#{{ id }}-form .select2-search__field');
-                searchField.prop('placeholder', message);
+                searchField.prop(
+                    'placeholder',
+                    items > 0 ? polyglot.t('items', items) : "{{ placeholder }}",
+                );
                 searchField.css('width', '100%');
             });
         </script>

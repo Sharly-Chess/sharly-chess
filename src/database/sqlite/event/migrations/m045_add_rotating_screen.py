@@ -7,17 +7,18 @@ class Migration(BaseMigration):
     def forward(self):
         self.database.execute(
             'CREATE TABLE `rotating_screen` ('
+            '   `id` INTEGER NOT NULL,'
             '   `rotator_id` INTEGER NOT NULL,'
             '   `screen_id` INTEGER,'
             '   `family_id` INTEGER,'
             '   `index` INTEGER NOT NULL,'
+            '   PRIMARY KEY(`id` AUTOINCREMENT),'
             '   FOREIGN KEY (`rotator_id`) REFERENCES '
             '   `rotator`(`id`) ON DELETE CASCADE,'
             '   FOREIGN KEY (`screen_id`) REFERENCES '
             '   `screen`(`id`) ON DELETE CASCADE,'
             '   FOREIGN KEY (`family_id`) REFERENCES '
-            '   `family`(`id`) ON DELETE CASCADE,'
-            '   UNIQUE(`rotator_id`, `screen_id`, `family_id`)'
+            '   `family`(`id`) ON DELETE CASCADE'
             ')'
         )
 
@@ -89,9 +90,11 @@ class Migration(BaseMigration):
             family_ids = []
             for row_ in self.database.fetchall():
                 if screen_id := row_['screen_id']:
-                    screen_ids.append(screen_id)
-                if family_id := row_['family_id']:
-                    family_ids.append(family_id)
+                    if screen_id not in screen_ids:
+                        screen_ids.append(screen_id)
+                elif family_id := row_['family_id']:
+                    if family_id not in family_ids:
+                        family_ids.append(family_id)
 
             self.database.execute(
                 'UPDATE `rotator` SET `screen_ids` = ?, `family_ids` = ? WHERE `id` = ?',
