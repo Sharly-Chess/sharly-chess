@@ -316,6 +316,7 @@ with_indicator: display a loading indicator, optional
                                 theme: 'bootstrap-5',
                                 width: '100%',
                                 placeholder: $(this).data('placeholder'),
+                                closeOnSelect: false,
                                 templateResult: function (data) {
                                     if (data.id === '__divider__') {
                                         const $div = $('<span style="pointer-events: none; border-bottom: 1px solid #ccc; display: block; margin: 4px 0;"></span>');
