@@ -81,8 +81,13 @@
         }
         if (default_print_tournament_id) {
             const select = $('#tournament');
-            if (!select.prop('disabled')) {
+            if (select && !select.prop('disabled')) {
                 select.val(default_print_tournament_id).trigger('change');
+            }
+
+            const multipleSelect = $('#tournaments');
+            if (multipleSelect && !multipleSelect.prop('disabled')) {
+                multipleSelect.val(default_print_tournament_id).trigger('change');
             }
         }
         if (default_print_round && $('#round')) {

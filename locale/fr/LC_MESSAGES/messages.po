@@ -5459,7 +5459,7 @@ msgid "Tournaments management"
 msgstr "Gestion des tournois"
 
 msgid "Tournaments:"
-msgstr "Tournois ;"
+msgstr "Tournois :"
 
 #, python-format
 msgid "Tournaments: %(num)d"

@@ -70,12 +70,6 @@ class TournamentsPrintOption(PrintOption):
     def template_name(self) -> str:
         return '/admin/event/print_options/tournaments.html'
 
-    @override
-    def validate(self):
-        super().validate()
-        if not self.value:
-            raise OptionError(_('Please choose the tournaments.'), self)
-
 
 class RoundPrintOption(PrintOption):
     @staticmethod

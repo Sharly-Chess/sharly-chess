@@ -50,6 +50,8 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
         """The tournaments for which the document is printed."""
         assert self.event is not None
         tournament_ids = self._get_option(TournamentsPrintOption).value
+        if not tournament_ids:
+            return list(self.event.tournaments)
         return [
             self.event.tournaments_by_id[int(tournament_id)]
             for tournament_id in tournament_ids.split(',')
@@ -800,7 +802,26 @@ class StatisticsPrintDocument(PrintDocument):
         if estimated_count:
             rows[_('Unrated')] = estimated_count
 
-        return StatisticsSection(title=_('Rating ranges'), rows=rows)
+        non_estimated_players = [
+            player
+            for tournament in self.tournaments
+            for player in tournament.players
+            if not player.estimated
+        ]
+        average_rating = (
+            round(
+                sum(player.rating for player in non_estimated_players)
+                / len(non_estimated_players)
+            )
+            if non_estimated_players
+            else None
+        )
+
+        return StatisticsSection(
+            title=_('Rating ranges'),
+            rows=rows,
+            subtitle=_('Average rating: {rating}').format(rating=average_rating),
+        )
 
     @property
     def template_context(self) -> dict[str, Any]:
@@ -816,7 +837,7 @@ class StatisticsPrintDocument(PrintDocument):
             (
                 'tournament',
                 _('Tournaments'),
-                lambda item: (-item[1], item[0].name),
+                lambda item: item[0].name,
                 None,
                 lambda x: x is not None,
                 None,
@@ -899,21 +920,6 @@ class StatisticsPrintDocument(PrintDocument):
                 if section:
                     statistics.append(section)
 
-        non_estimated_players = [
-            player
-            for tournament in self.tournaments
-            for player in tournament.players
-            if not player.estimated
-        ]
-        average_rating = (
-            round(
-                sum(player.rating for player in non_estimated_players)
-                / len(non_estimated_players)
-            )
-            if non_estimated_players
-            else None
-        )
-
         assert self.event is not None
         subtitle = (
             self.event.name
@@ -924,6 +930,5 @@ class StatisticsPrintDocument(PrintDocument):
         return {
             'tournaments': self.tournaments,
             'subtitle': subtitle,
-            'average_rating': average_rating,
             'statistics': statistics,
         }
