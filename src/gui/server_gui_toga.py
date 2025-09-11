@@ -357,7 +357,6 @@ class SharlyChessServerToga(toga.App):
 
     # ------- Public API used by handler / background code -------
     def add_log_message(self, message: str, tag: Optional[str] = None):
-        print(message, tag)
         self.message_queue.put(('log', message, tag))
 
     # ------- Internals -------
