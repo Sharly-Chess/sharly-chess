@@ -7,7 +7,7 @@ English version below
 - Prise en charge des serveurs avec plusieurs adresses IP (3.1.0)
 - Amélioration de la console du serveur (3.1.0)
 - Vue imprimable des statistiques des joueur·euses (3.1.0)
-– Il est désormais possible de sélectionner plusieurs tournois pour différents aperçus d’impression : liste des joueur·euse·s, liste de pointage, liste et attribution des prix, ainsi que les statistiques (3.1.0). ✅
+– Il est désormais possible de sélectionner plusieurs tournois pour différents aperçus d’impression : liste des joueur·euses, liste de pointage, liste et attribution des prix, ainsi que les statistiques (3.1.0)
 
 ## Joueur·euses
 
