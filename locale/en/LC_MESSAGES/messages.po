@@ -3815,6 +3815,9 @@ msgstr ""
 msgid "Please choose the tournament."
 msgstr ""
 
+msgid "Please choose the tournaments."
+msgstr ""
+
 msgid "Please close the time control editor before saving."
 msgstr ""
 
@@ -3942,12 +3945,6 @@ msgid "Prize *** PRIZE FOR TABLE HEADER"
 msgstr "Prize"
 
 msgid "Prize assignment"
-msgstr ""
-
-msgid "Prize assignment after round #{round}"
-msgstr ""
-
-msgid "Prize assignment before the first round"
 msgstr ""
 
 msgid "Prize category [{prize_category}] has been duplicated."
@@ -4484,6 +4481,9 @@ msgid "Seed color can't be modified once the tournament has started."
 msgstr ""
 
 msgid "Seeding of unrated rapid/blitz"
+msgstr ""
+
+msgid "Select All"
 msgstr ""
 
 msgid "Select the players and the data to update:"
@@ -5132,6 +5132,9 @@ msgstr ""
 msgid "The tournaments on which the device can act (if none, the device can act on all the tournaments)."
 msgstr ""
 
+msgid "The tournaments to print."
+msgstr ""
+
 msgid "The type of criterion used to filter the players."
 msgstr ""
 
@@ -5453,6 +5456,9 @@ msgid "Tournaments displayed:"
 msgstr ""
 
 msgid "Tournaments management"
+msgstr ""
+
+msgid "Tournaments:"
 msgstr ""
 
 #, python-format

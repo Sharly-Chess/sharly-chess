@@ -873,11 +873,12 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def get_extra_statistics_sections(
-        self, document: PrintDocument, tournament: 'Tournament'
+        self, document: PrintDocument, tournaments: list['Tournament']
     ) -> Iterable[ExtraStatisticsSection]:
         if isinstance(document, StatisticsPrintDocument):
             counter = Counter[str](
                 league
+                for tournament in tournaments
                 for p in tournament.players
                 if (league := FFEUtils.get_player_plugin_data(p).league) is not None
             )

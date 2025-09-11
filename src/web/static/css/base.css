@@ -191,6 +191,11 @@ body[data-bs-theme="dark"] #top-nav-wrapper {
     border-color: var(--bs-form-valid-border-color);
 }
 
+.form-control:focus {
+  border-color: var(--bs-border-color);
+  box-shadow: none;
+}
+
 .input-group .form-control:focus {
   outline: none !important;
   box-shadow: none !important;
