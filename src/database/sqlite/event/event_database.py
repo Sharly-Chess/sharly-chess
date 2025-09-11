@@ -62,6 +62,7 @@ class EventDatabase(MigrationDatabase):
         write: bool = False,
         *,
         file_path: Path | None = None,
+        generate_views: bool = False,
     ):
         """Initialize EventDatabase with either a unique ID or a file path."""
         if uniq_id is not None and file_path is not None:
@@ -80,6 +81,24 @@ class EventDatabase(MigrationDatabase):
             self.uniq_id = uniq_id
             self.update_event_loader = True
             super().__init__(self.event_database_path(self.uniq_id), write)
+        self.generate_views = generate_views
+
+    def __enter__(self) -> Self:
+        self = super().__enter__(self)
+        if self.generate_views:
+            write = self.write
+            self.write = True
+            # NOTE(Amaras): Delete all views to generate only the necessary ones.
+            # This WILL remove all the debug views that devs might have put in.
+            # I recommend creating temporary views for debug purposes.
+            self.execute(
+                """SELECT 'DROP VIEW IF EXISTS "' || name || '";'
+                FROM sqlite_master
+                WHERE type = 'view';"""
+            )
+            self.create_views()
+            self.write = write
+        return self
 
     def __exit__(self, exc_type, exc_value, tb):
         dirty_tournaments: list[int] = []
@@ -98,6 +117,10 @@ class EventDatabase(MigrationDatabase):
                 plugin_manager.hook.on_tournament_data_updated(
                     event_uniq_id=self.uniq_id, tournament_id=tournament_id
                 )
+
+    def create_views(self) -> None:
+        for script in (Path(__file__).parent / 'views').glob('v*.sql'):
+            self.executescript(script.read_text(encoding='utf-8'))
 
     @classmethod
     def create_instance(cls, file: Path, write: bool = False) -> Self:

@@ -149,7 +149,7 @@ class EventLoader:
 
     def load_event(self, uniq_id: str) -> Event:
         self.load_event_ids(uniq_id)
-        with EventDatabase(uniq_id) as event_database:
+        with EventDatabase(uniq_id, generate_views=True) as event_database:
             event = Event(event_database.load_stored_event())
         return event
 
