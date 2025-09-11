@@ -22,7 +22,8 @@
 }
 {# ========== TEXT ALIGN ========== #}
 .player-table .name,
-.player-table .club { text-align: left; }
+.player-table .club,
+.player-table .tournament { text-align: left; }
 .player-table .rank,
 .player-table .title,
 .player-table .rating,
@@ -32,4 +33,5 @@
 .player-table .round,
 .player-table .points,
 .player-table .result,
+.player-table .gender,
 .player-table .tie-break { text-align: center; }

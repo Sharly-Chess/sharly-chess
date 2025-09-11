@@ -43,7 +43,9 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
         """The tournament for which the document is printed."""
         assert self.event is not None
         tournament_id = self._get_option(TournamentPrintOption).value
-        return self.event.tournaments_by_id[tournament_id]
+        if tournament_id:
+            return self.event.tournaments_by_id[tournament_id]
+        return self.tournaments[0]
 
     @property
     def tournaments(self) -> list[Tournament]:
@@ -56,6 +58,16 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
             self.event.tournaments_by_id[int(tournament_id)]
             for tournament_id in tournament_ids.split(',')
         ]
+
+    @property
+    def subtitle(self) -> str:
+        """Subtitle of the print document."""
+        assert self.event is not None
+        return (
+            self.event.name
+            if len(self.tournaments) == len(list(self.event.tournaments))
+            else ', '.join(tournament.name for tournament in self.tournaments)
+        )
 
     @property
     @abstractmethod
@@ -97,13 +109,17 @@ class PlayerPrintDocument(PrintDocument, ABC):
         """List of players in the order they should appear in the document."""
 
     @property
-    def ordered_splitted_players(self) -> dict[str, list[Player]]:
+    def ordered_split_players(self) -> dict[str, list[Player]]:
         splitter = self._get_option(PlayerSplitPrintOption).player_splitter
         return splitter.split_players(self.ordered_players)
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [TournamentPrintOption, PlayerSplitPrintOption]
+        return [TournamentsPrintOption, PlayerSplitPrintOption]
+
+    @property
+    def multiple_tournaments(self) -> bool:
+        return True
 
     @property
     def is_crosstable(self) -> bool:
@@ -133,6 +149,14 @@ class PlayerPrintDocument(PrintDocument, ABC):
     def ranking_round(self) -> int | None:
         return None
 
+    @override
+    @property
+    def subtitle(self) -> str:
+        """Subtitle of the print document."""
+        return (
+            self.tournament.name if not self.multiple_tournaments else super().subtitle
+        )
+
     @property
     def template_context(self) -> dict[str, Any]:
         # As 'players.html' template is shared with player screens,
@@ -142,8 +166,11 @@ class PlayerPrintDocument(PrintDocument, ABC):
         # ex: show_{var} instead of is_{document}
         return {
             'tournament': self.tournament,
-            'subtitle': self.tournament.name,
-            'players': self.ordered_splitted_players,
+            'tournaments': self.tournaments,
+            'multiple_tournaments': self.multiple_tournaments
+            and len(self.tournaments) > 1,
+            'subtitle': self.subtitle,
+            'players': self.ordered_split_players,
             'crosstable': self.is_crosstable,
             'ranking': self.is_ranking,
             'player_list': self.is_player_list,
@@ -169,7 +196,13 @@ class PlayerListPrintDocument(PlayerPrintDocument):
 
     @property
     def ordered_players(self) -> list[Player]:
-        return self.tournament.players_by_name_with_unpaired
+        assert self.event is not None
+        tournament_ids = [tournament.id for tournament in self.tournaments]
+        return [
+            player
+            for player in self.event.players_sorted_by_name
+            if player.tournament.id in tournament_ids
+        ]
 
     @override
     @property
@@ -192,7 +225,13 @@ class PlayerCheckinListPrintDocument(PlayerPrintDocument):
 
     @property
     def ordered_players(self) -> list[Player]:
-        return self.tournament.players_by_name_with_unpaired
+        assert self.event is not None
+        tournament_ids = [tournament.id for tournament in self.tournaments]
+        return [
+            player
+            for player in self.event.players_sorted_by_name
+            if player.tournament.id in tournament_ids
+        ]
 
     @override
     @property
@@ -220,6 +259,11 @@ class AbstractPlayerRankingPrintDocument(PlayerPrintDocument, ABC):
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
         return [TournamentPrintOption, PlayerSplitPrintOption, RoundPrintOption]
+
+    @override
+    @property
+    def multiple_tournaments(self) -> bool:
+        return False
 
     @override
     def validate_options(self):
@@ -484,6 +528,11 @@ class PlayerPairingPrintDocument(PlayerPrintDocument):
     @property
     def at_round(self) -> int:
         return self._get_option(RoundPrintOption).value or self.tournament.current_round
+
+    @override
+    @property
+    def multiple_tournaments(self) -> bool:
+        return False
 
     @override
     @property
@@ -920,15 +969,8 @@ class StatisticsPrintDocument(PrintDocument):
                 if section:
                     statistics.append(section)
 
-        assert self.event is not None
-        subtitle = (
-            self.event.name
-            if len(self.tournaments) == len(list(self.event.tournaments))
-            else ', '.join(tournament.name for tournament in self.tournaments)
-        )
-
         return {
             'tournaments': self.tournaments,
-            'subtitle': subtitle,
+            'subtitle': self.subtitle,
             'statistics': statistics,
         }
