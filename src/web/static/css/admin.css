@@ -120,3 +120,51 @@
     .tc .tc-field { grid-column: 1; }
     .tc .tc-del-wrap { position: absolute; right: 0; top: 50%; transform: translateY(-50%); height: 40px; display: flex; align-items: center; justify-content: center; }
 }
+
+/* Select2 */
+
+[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option.select2-results__option--highlighted {
+    color: white;
+    background-color: var(--pw-nav-bg);
+}
+[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option.select2-results__option--selected,
+[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option[aria-selected=true]:not(.select2-results__option--highlighted) {
+    color: var(--bs-body-bg);
+    background-color: var(--bs-primary);
+}
+[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option[aria-selected=true] {
+    color: var(--pw-contrast-text);
+    background-color: var(--bs-link-hover-color);
+}
+[data-bs-theme=dark] .select2-container--bootstrap-5.select2-container--focus .select2-selection, .select2-container--bootstrap-5.select2-container--open .select2-selection {
+    box-shadow: none;
+    border-color: var(--bs-border-color);
+    outline: 0.15rem solid rgba(var(--bs-primary-rgb), 0.70);
+    outline-offset: 4px;
+}
+[data-bs-theme=dark] .select2-container--bootstrap-5.select2-container--open.select2-container--below .select2-selection {
+    border-bottom: 0 solid transparent;
+    border-bottom-right-radius: 0.25rem;
+    border-bottom-left-radius:  0.25rem;
+}
+[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice {
+    padding: 0 0.5em;
+    margin-right: 0;
+    margin-bottom: 0;
+    background-color: var(--bs-modal-bg);
+}
+[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection {
+    padding: .375rem .375rem;
+}
+[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: .375rem;
+}
+[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection--multiple .select2-search {
+    display: none;
+}
+[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice .select2-selection__choice__remove:hover {
+    filter: invert(1);
+}
