@@ -4343,6 +4343,10 @@ msgstr "Indicateurs de performance pour la ronde"
 msgid "Round skipped"
 msgstr "Absent·e"
 
+#, python-format
+msgid "Round {} started for %s"
+msgstr "Ronde {} commencée depuis %s"
+
 msgid "Round-Robin"
 msgstr "Toutes rondes"
 
@@ -4662,6 +4666,10 @@ msgstr "Système suisse standard"
 
 msgid "Standard:"
 msgstr "Standard :"
+
+#, python-format
+msgid "Start of round {} in %s"
+msgstr "Début de la ronde {} dans %s"
 
 msgid "Start:"
 msgstr "Début :"
@@ -6368,11 +6376,3 @@ msgstr "½ - 0 (NC)"
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
 
-#~ msgid "Warning: closing this window stops Sharly Chess."
-#~ msgstr "Avertissement : la fermerture de cette fenêtre arrête Sharly Chess."
-
-#~ msgid "Help"
-#~ msgstr "Aide"
-
-#~ msgid "Add a screen to check-in players or enter results."
-#~ msgstr "Ajouter un écran de saisie des résultats."
