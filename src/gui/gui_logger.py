@@ -3,10 +3,7 @@ import logging
 
 def build_gui_handler():
     if GUILogHandler.instance is None:
-        # Fallback to a plain stream handler so dictConfig doesn't break
-        h = logging.StreamHandler()
-        h.setFormatter(logging.Formatter('%(asctime)s %(levelname)-8s %(message)s'))
-        return h
+        return logging.NullHandler()
 
     return GUILogHandler.instance
 
