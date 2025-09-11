@@ -1864,7 +1864,10 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/search-player/{event_uniq_id:str}/{data_source_id:str}',
+        path=[
+            '/admin/search-player/{event_uniq_id:str}/{data_source_id:str}',
+            '/admin/search-player/{event_uniq_id:str}/{data_source_id:str}/{page:int}',
+        ],
         name='admin-search-player',
     )
     async def htmx_admin_search_player(
@@ -1872,6 +1875,7 @@ class PlayerAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         data_source_id: str,
+        page: int = 0,
     ) -> Template | ClientRedirect | Redirect:
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
@@ -1887,7 +1891,7 @@ class PlayerAdminController(BaseEventAdminController):
                 request, f'Unknown data source [{data_source_id}].'
             )
         search = request.query_params.get(data_source.search_element_name)
-        players: list[Player] | None = None
+        players: list[Player] = []
         connection_error: str | None = None
         if search:
             # TODO (Molrn - multi tournament) Remove the tournament and use the Player wrapper
@@ -1896,7 +1900,10 @@ class PlayerAdminController(BaseEventAdminController):
             )
             try:
                 stored_players = await data_source.search_player(
-                    search, DataSource.SEARCH_LIMIT
+                    search,
+                    web_context.get_admin_event().federation,
+                    page,
+                    DataSource.SEARCH_LIMIT,
                 )
                 players = []
                 for stored_player in stored_players:
@@ -1911,7 +1918,10 @@ class PlayerAdminController(BaseEventAdminController):
             template_name='admin/players/search_results.html',
             context=web_context.template_context
             | {
+                'search': search,
                 'search_results': players,
+                'has_more_results': len(players) == DataSource.SEARCH_LIMIT,
+                'page': page,
                 'data_source': data_source,
                 'connection_error': connection_error,
             },
