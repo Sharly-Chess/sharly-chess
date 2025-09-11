@@ -11,7 +11,7 @@ Default permissions are set at event creation and can be changed later at nay ti
 
 ## Default permissions
 
-Administrators (connected to the _Sharky Chess_ server) have full permissions.
+Administrators (connected to the _Sharly Chess_ server) have full permissions.
 
 The other devices connected to the network can:
 - display the public screens;

@@ -37,7 +37,7 @@
 - ~~**Standard (by default)**: default permissions are assigned to the devices connected to the network.~~
 - ~~**Custom**: roles (fixed set of permissions) are customized.~~
 
-~~Whatever the execution mode of the event, administrators (connected to the _Sharky Chess_ server) have full privileges.~~
+Remove sharks~~Whatever the execution mode of the event, administrators (connected to the _Sharly Chess_ server) have full privileges.~~
 
 > **CLOSED**
 >
@@ -57,7 +57,7 @@ Default permissions are set at event creation and can be changed later at nay ti
 
 ## ~~Standard mode~~ Default permissions
 
-Administrators (connected to the _Sharky Chess_ server) have full permissions.
+Administrators (connected to the _Sharly Chess_ server) have full permissions.
 
 The other devices connected to the network can:
 - display the public screens;
