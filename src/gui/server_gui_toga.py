@@ -286,7 +286,7 @@ class SharlyChessServerToga(toga.App):
         # Toolbar (buttons row)
         btn_row = toga.Box(style=Pack(direction=ROW, margin=(0, 0, 8, 0)))
         self.browser_btn = toga.Button(
-            text=_('Open Browser'), on_press=self._open_browser
+            text=_('Open Admin Interface'), on_press=self._open_browser
         )
         self.website_btn = toga.Button(
             text=_('Open documentation'), on_press=self._open_website
@@ -342,7 +342,7 @@ class SharlyChessServerToga(toga.App):
         self.main_box.add(self.info_view)
 
         self.main_window = toga.MainWindow(
-            title=_('Sharly Chess Server'),
+            title=_('Sharly Chess server'),
             size=self.compact_size,
             content=self.main_box,
             on_gain_focus=self._noop,

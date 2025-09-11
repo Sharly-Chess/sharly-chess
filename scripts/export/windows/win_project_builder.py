@@ -45,15 +45,12 @@ class WinProjectBuilder(ProjectBuilder):
             '--windows-signtool-cert-fingerprint',
             type=str,
             help='The user.',
-            required=True,
         )
 
     def hook_check_params(
         self,
         args: Namespace,
     ):
-        if not args.windows_signtool_cert_fingerprint:
-            raise RuntimeError('Option --windows-signtool-cert-fingerprint not found.')
         self.signtool_cert_fingerprint = args.windows_signtool_cert_fingerprint
 
     def hook_post_clean_on_startup(self):
@@ -61,13 +58,17 @@ class WinProjectBuilder(ProjectBuilder):
         pass
 
     def hook_pyinstaller_additional_params(self) -> list[str]:
-        return []
+        return [
+            # TODO Used for MacOS and Windows, move this to a normal option if also needed on Linux.
+            '--windowed',
+        ]
 
     def hook_post_build_project(self) -> bool:
-        if not self._sign_files():
+        if self.signtool_cert_fingerprint and not self._sign_files():
             return False
         if not self._build_chessevent_batch():
             return False
+        Path(self.project_dir / '_internal' / '.unblock_files').touch()
         return True
 
     @staticmethod

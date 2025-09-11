@@ -397,7 +397,7 @@ msgid "Add a rotator to the event."
 msgstr "Ajouter un écran rotatif à l'évènement."
 
 msgid "Add a screen to check-in players or enter results."
-msgstr "Ajouter un écran de pointage des joueur·euses ou de saisie de résultats."
+msgstr "Ajouter un écran de pointage des joueur·euses ou de saisie des résultats."
 
 msgid "Add a screen to display an image."
 msgstr "Ajouter un écran d'affichage d'une image."
@@ -3440,8 +3440,8 @@ msgstr "N'inclure que les joueur·euses de ce genre."
 msgid "Only one age category is expected with options including other categories."
 msgstr "Une seule catégorie d'age est attendue avec les options incluant d'autres catégories."
 
-msgid "Open Browser"
-msgstr "Ouvrir le navigateur"
+msgid "Open Admin Interface"
+msgstr "Ouvrir l'interface d'administration"
 
 #, python-format
 msgid "Open check-in for tournament [%(tournament)s]."

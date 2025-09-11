@@ -11,6 +11,7 @@ from pathlib import Path
 import unicodedata
 from packaging.version import Version
 
+from common.exception import SharlyChessException
 
 APP_NAME: str = 'sharly-chess'
 SHARLY_CHESS_VERSION: Version = Version(importlib.metadata.version(APP_NAME))
@@ -105,13 +106,12 @@ try:
     with open(LOG_FILE, 'a'):
         pass
 except OSError as error:
-    input(
+    raise SharlyChessException(
         f'Log file [{LOG_FILE.absolute()}] could not be opened: {error}\n'
         f'Write permission is most likely missing from '
         f'[{LOG_FILE.parent.parent.absolute()}].\n'
         f'Check the permissions then try again.'
     )
-    sys.exit(1)
 
 
 for directory in (EVENTS_DIR, TMP_DIR):
@@ -120,13 +120,9 @@ for directory in (EVENTS_DIR, TMP_DIR):
     except PermissionError as error:
         from common.logger import get_logger
 
-        get_logger().critical(
-            'Could not create directory [%s]: %s',
-            directory.absolute(),
-            error,
-        )
-        input()
-        sys.exit(1)
+        message = f'Could not create directory [{directory.absolute()}]: {error}'
+        get_logger().critical(message)
+        raise SharlyChessException(message)
 
 
 if DEVEL_ENV:

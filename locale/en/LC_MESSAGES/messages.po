@@ -3440,7 +3440,7 @@ msgstr ""
 msgid "Only one age category is expected with options including other categories."
 msgstr ""
 
-msgid "Open Browser"
+msgid "Open Admin Interface"
 msgstr ""
 
 #, python-format
