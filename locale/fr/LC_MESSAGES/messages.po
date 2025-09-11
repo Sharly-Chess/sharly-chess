@@ -3440,8 +3440,10 @@ msgstr "En cours"
 msgid "Online sources"
 msgstr "Sources en ligne"
 
-msgid "Only allowed users can view private objects."
-msgstr "Seuls les utilisateurs autorisés peuvent voir les objets privés."
+msgid "Only allowed users can view private display controllers."
+msgstr "Seuls les utilisateur·ices autorisé·es peuvent voir les pilotes d'afficheurs privés."
+msgid "Only allowed users can view private rotators."
+msgstr "Seuls les utilisateur·ices autorisé·es peuvent voir les écrans rotatifs privés."
 
 msgid "Only arbiters can see private events."
 msgstr "Seul·es les arbitres peuvent voir les évènements privés."
