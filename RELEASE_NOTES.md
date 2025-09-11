@@ -7,6 +7,7 @@ English version below
 - Prise en charge des serveurs avec plusieurs adresses IP (3.1.0)
 - Amélioration de la console du serveur (3.1.0)
 - Vue imprimable des statistiques des joueur·euses (3.1.0)
+– Il est désormais possible de sélectionner plusieurs tournois pour différents aperçus d’impression : liste des joueur·euse·s, liste de pointage, liste et attribution des prix, ainsi que les statistiques (3.1.0). ✅
 
 ## Joueur·euses
 
@@ -26,6 +27,7 @@ English version below
 - Permissions for clients connected to the server (3.1.0)
 - Improved the server console (3.1.0)
 - Statistics print view (3.1.0)
+- Multiple tournaments can now be selected for several print views: Players List, Check-in List, Prize List and Assignment, and Statistics (3.1.0)
 
 ## Players
 
