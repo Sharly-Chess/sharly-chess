@@ -18,6 +18,7 @@ SELECT
     wp.title AS white_title,
     wp.gender AS white_gender,
     CASE
+        -- Only show the name in format "LAST_NAME, First_Name" if they have a non-empty first name
         WHEN wp.first_name IS NULL OR wp.first_name = ''
             THEN wp.last_name
         ELSE wp.last_name || ', ' || wp.first_name
@@ -30,6 +31,8 @@ SELECT
 
     -- RESULTS
     pa.result AS white_result,
+    -- Note that black's result can be different from the opposite of white's result.
+    -- This is the case when one player gets a score penalty.
     o.result AS black_result,
 
     -- BLACK PLAYER
@@ -59,6 +62,5 @@ LEFT JOIN pairing o
 LEFT JOIN player wp ON wp.id = b.white_player_id
 LEFT JOIN player bp ON bp.id = b.black_player_id
 LEFT JOIN tournament t ON t.id = pa.tournament_id
-JOIN info i ON i.ROWID = 1
 LEFT JOIN player_effective_ratings rw ON rw.player_id = wp.id AND rw.tournament_id = pa.tournament_id
 LEFT JOIN player_effective_ratings rb ON rb.player_id = bp.id AND rb.tournament_id = pa.tournament_id

@@ -1,22 +1,6 @@
 DROP VIEW IF EXISTS all_players;
 
 CREATE VIEW all_players AS
-WITH rating_override AS (
-    SELECT
-        tp.player_id,
-        tp.tournament_id,
-        CASE
-            WHEN t.rating <> 1
-              AND json_extract(p.ratings, '$.' || t.rating || '.type') <> 3
-              AND coalesce(t.override_unrated_rapid_blitz, i.override_unrated_rapid_blitz) = 1
-              AND json_extract(p.ratings, '$."1".type') <> 1
-            THEN 1 ELSE 0
-        END AS is_overridden
-    FROM player p
-    JOIN tournament_player tp ON tp.player_id = p.id
-    JOIN tournament t ON t.id = tp.tournament_id
-    JOIN info i ON i.ROWID = 1
-)
 SELECT
     -- PLAYER INFO
     p.id AS player_id,
@@ -48,7 +32,9 @@ SELECT
     t.id AS tournament_id,
     tp.pairing_number,
 
-    -- GAME INFO (per round JSON objects)
+    -- GAMES INFO
+
+    -- colors == {"1": "B", "2": NULL, ...}
     json_group_object(
         pa.round,
         CASE
@@ -58,8 +44,10 @@ SELECT
         END
     ) AS colors,
 
+    -- results == {"1": 1, "2": 9, ...}
     json_group_object(pa.round, pa.result) AS results,
 
+    -- board_ids == {"1": 276, "2": NULL, ...}
     json_group_object(
         pa.round,
         CASE
@@ -76,7 +64,7 @@ LEFT JOIN tournament_player tp ON tp.player_id = p.id
 LEFT JOIN tournament t ON t.id = tp.tournament_id
 LEFT JOIN pairing pa ON pa.player_id = p.id AND pa.tournament_id = t.id
 LEFT JOIN board b ON b.id = pa.board_id
-JOIN info i ON i.ROWID = 1
 LEFT JOIN player_effective_ratings pr ON pr.player_id = p.id AND pr.tournament_id = t.id
 
+-- json_group_object is an aggregation function, so there needs to be a GROUP BY clause
 GROUP BY p.id, t.id;

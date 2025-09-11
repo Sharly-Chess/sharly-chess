@@ -26,6 +26,7 @@ SELECT
 FROM pairing pa
 LEFT JOIN player p ON p.id = pa.player_id
 LEFT JOIN tournament t ON t.id = pa.tournament_id
-JOIN info i ON i.ROWID = 1
 LEFT JOIN player_effective_ratings pr ON pr.player_id = p.id AND pr.tournament_id = pa.tournament_id
+-- Only pairings without a board are games not scheduled.
+-- However, this also includes the Pairing Allocated Bye so this is a special case
 WHERE pa.board_id IS NULL;
