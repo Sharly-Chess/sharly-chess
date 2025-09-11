@@ -67,7 +67,7 @@ def get_logging_config() -> dict[str, Any]:
     global _LOGGING_CONFIG_VALUES
     console_format: str = f'{
         "%(log_color)s" if _LOGGING_CONFIG_VALUES.console_color else ""
-    }{"%(asctime)s " if _LOGGING_CONFIG_VALUES.console_show_date else ""}{
+    }{"[%(asctime)s] " if _LOGGING_CONFIG_VALUES.console_show_date else ""}{
         "%(levelname)-10s" if _LOGGING_CONFIG_VALUES.console_show_level else ""
     }%(message)s{"%(reset)s" if _LOGGING_CONFIG_VALUES.console_color else ""}'
 
@@ -78,7 +78,7 @@ def get_logging_config() -> dict[str, Any]:
             'console_formatter': {
                 '()': 'colorlog.ColoredFormatter',
                 'fmt': console_format,
-                'datefmt': '%Y-%m-%d %H:%M:%S',
+                'datefmt': '%H:%M:%S',
                 'reset': True,
                 'log_colors': {
                     'DEBUG': 'white',
@@ -105,6 +105,7 @@ def get_logging_config() -> dict[str, Any]:
             },
             'gui': {
                 '()': 'gui.gui_logger.build_gui_handler',
+                'formatter': 'console_formatter',
                 'level': _LOGGING_CONFIG_VALUES.console_log_level,
             },
         },
