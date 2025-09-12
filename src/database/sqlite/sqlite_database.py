@@ -71,6 +71,12 @@ class SQLiteDatabase:
         return self
 
     def __exit__(self, exc_type, exc_value, tb):
+        if self.database and self.write:
+            if exc_type is None:
+                self.database.commit()
+            else:
+                print(f'Rolling back {self.file} due to exception')
+                self.database.rollback()
         if self.cursor is not None:
             self.cursor.close()
             del self.cursor
