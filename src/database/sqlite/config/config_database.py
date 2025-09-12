@@ -75,6 +75,16 @@ class ConfigDatabase(MigrationDatabase):
                 database.file.unlink(missing_ok=True)
                 database.create()
 
+    def __exit__(self, exc_type, exc_value, tb):
+        if self.write:
+            assert self.database is not None
+            if exc_type is None:
+                self.database.commit()
+            else:
+                print(f'Rolling back {self.file} due to exception')
+                self.database.rollback()
+        super().__exit__(exc_type, exc_value, tb)
+
     # ---------------------------------------------------------------------------------
     # StoredConfig
     # ---------------------------------------------------------------------------------

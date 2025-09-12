@@ -78,6 +78,14 @@ class EventDatabase(MigrationDatabase):
             super().__init__(self.event_database_path(self.uniq_id), write)
 
     def __exit__(self, exc_type, exc_value, tb):
+        if self.write:
+            assert self.database is not None
+            if exc_type is None:
+                self.database.commit()
+            else:
+                print(f'Rolling back {self.file} due to exception')
+                self.database.rollback()
+
         dirty_tournaments: list[StoredTournament] = []
         stored_event: StoredEvent | None = None
         if self.write and exc_type is None and is_server_engine():
@@ -91,7 +99,7 @@ class EventDatabase(MigrationDatabase):
                     self.fetchone(), StoredEvent
                 )
                 self.execute('UPDATE tournament SET dirty = 0 WHERE dirty = 1;')
-
+                self.commit()
         super().__exit__(exc_type, exc_value, tb)
 
         # We need call the hook on all dirty tournaments after committing the changes above
