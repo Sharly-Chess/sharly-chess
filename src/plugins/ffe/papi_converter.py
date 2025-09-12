@@ -439,15 +439,16 @@ class PapiConverter:
         stored_tournament.location = variables.venue
         ffe_id = None
         if variables.homologation:
-            if not variables.homologation.isdigit():
+            homologation = variables.homologation.strip()
+            if not homologation.isdigit():
                 # Papi form allows for a non-integer value,
                 # so the value is ignored instead of raising
                 logger.warning(
                     'Homologation number [%s] is not an integer, its value is ignored.',
-                    variables.homologation,
+                    homologation,
                 )
             else:
-                ffe_id = int(variables.homologation)
+                ffe_id = int(homologation)
         plugin_data = stored_tournament.plugin_data or {}
         if PLUGIN_NAME not in plugin_data:
             plugin_data[PLUGIN_NAME] = {}
