@@ -77,7 +77,7 @@ msgstr[1] "%(num)d joueur·euses n’ont pas confirmé leur présence"
 msgid "%(num)d player does not match criteria."
 msgid_plural "%(num)d players do not match criteria."
 msgstr[0] "%(num)d joueur·euse ne correspond pas aux critères."
-msgstr[1] "%(num)d joueur·euse·s ne correspondent pas aux critères."
+msgstr[1] "%(num)d joueur·euses ne correspondent pas aux critères."
 
 #, python-format
 msgid "%(num)d prize"
@@ -1424,7 +1424,7 @@ msgid "Define the criteria for players to belong to this category."
 msgstr "Définir les critères selon lesquels les joueur·euses appartiennent à cette catégorie."
 
 msgid "Define the criteria for players to participate in this tournament."
-msgstr "Définissez les critères permettant aux joueur·euse·s de participer à ce tournoi."
+msgstr "Définissez les critères permettant aux joueur·euses de participer à ce tournoi."
 
 msgid "Define the prizes of the category."
 msgstr "Définir les prix de la catégorie."

@@ -11,7 +11,7 @@ English version below
 
 ## Tournois
 
-- Les tournois peuvent désormais avoir des critères de joueur·euse·s associés (3.1.0) ✅
+- Les tournois peuvent désormais avoir des critères de joueur·euses associés (3.1.0)
 
 ## Joueur·euses
 
