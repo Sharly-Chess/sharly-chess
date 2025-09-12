@@ -493,6 +493,7 @@ class PlayerAdminController(BaseEventAdminController):
         page: int | None = None,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
+        warning_message: str | None = None,
     ) -> Template | ClientRedirect | Redirect:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request,
@@ -823,6 +824,7 @@ class PlayerAdminController(BaseEventAdminController):
                         if action == 'create' and old_player_id
                         else None
                     ),
+                    'warning_message': warning_message,
                     'add_other_active': (
                         SessionHandler.get_session_admin_player_add_other_active(
                             request
@@ -1206,6 +1208,15 @@ class PlayerAdminController(BaseEventAdminController):
                     )
                 player_id = event.add_player(stored_player, [tournament])
                 self.set_players_search_results(request, event_uniq_id)
+                player = tournament.players_by_id[player_id]
+                warning_message: str | None = None
+                if not tournament.player_matches_criteria(player):
+                    warning_message = _(
+                        'Player [{player}] has been created, but does not match tournament criteria: {names}'
+                    ).format(
+                        player=player.full_name,
+                        names=player.tournament.failing_criteria_message(player),
+                    )
                 if add_other:
                     return self._admin_event_players_render(
                         request,
@@ -1213,7 +1224,20 @@ class PlayerAdminController(BaseEventAdminController):
                         modal='player',
                         action='create',
                         old_player_id=player_id,
+                        warning_message=warning_message,
                         tournament_id=tournament.id,
+                    )
+                if warning_message:
+                    Message.warning(
+                        request,
+                        warning_message,
+                    )
+                else:
+                    Message.success(
+                        request,
+                        _('Player [{player}] has been created.').format(
+                            player=player.full_name
+                        ),
                     )
                 return self._admin_event_players_render(
                     request, event_uniq_id=event_uniq_id

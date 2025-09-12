@@ -9,6 +9,10 @@ English version below
 - Vue imprimable des statistiques des joueur·euses (3.1.0)
 – Il est désormais possible de sélectionner plusieurs tournois pour différents aperçus d’impression : liste des joueur·euses, liste de pointage, liste et attribution des prix, ainsi que les statistiques (3.1.0)
 
+## Tournois
+
+- Les tournois peuvent désormais avoir des critères de joueur·euse·s associés (3.1.0) ✅
+
 ## Joueur·euses
 
 - Amélioration de la recherche de joueur·euses (3.1.0)
@@ -32,6 +36,10 @@ English version below
 - Improved the server console (3.1.0)
 - Statistics print view (3.1.0)
 - Multiple tournaments can now be selected for several print views: Players List, Check-in List, Prize List and Assignment, and Statistics (3.1.0)
+
+## Tournaments
+
+- Tournaments may now have player criteria associated with them (3.1.0)
 
 ## Players
 

@@ -2,8 +2,8 @@ import weakref
 from _weakref import ReferenceType
 from typing import TYPE_CHECKING
 
-from data.prize.managers import PlayerFilterManager
-from data.prize.player_filters import PlayerFilter
+from data.criteria.managers import PlayerFilterManager
+from data.criteria.player_filters import PlayerFilter
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPrizeCriterion
 

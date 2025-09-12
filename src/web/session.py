@@ -157,6 +157,24 @@ class SessionHandler:
     def get_session_admin_tournaments_show_details(cls, request: HTMXRequest) -> bool:
         return request.session.get(cls.ADMIN_TOURNAMENTS_SHOW_DETAILS_KEY, False)
 
+    ADMIN_TOURNAMENT_CRITERION_ADD_OTHER_ACTIVE_KEY: str = (
+        'admin_tournament_criterion_add_other_active'
+    )
+
+    @classmethod
+    def set_session_admin_tournament_criterion_add_other_active(
+        cls, request: HTMXRequest, b: bool
+    ):
+        request.session[cls.ADMIN_TOURNAMENT_CRITERION_ADD_OTHER_ACTIVE_KEY] = b
+
+    @classmethod
+    def get_session_admin_tournament_criterion_add_other_active(
+        cls, request: HTMXRequest
+    ) -> bool:
+        return request.session.get(
+            cls.ADMIN_TOURNAMENT_CRITERION_ADD_OTHER_ACTIVE_KEY, False
+        )
+
     ADMIN_EVENTS_SHOW_DETAILS_KEY: str = 'admin_events_show_details'
 
     @classmethod

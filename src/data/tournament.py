@@ -1,5 +1,7 @@
 from datetime import datetime
 import weakref
+from babel.lists import format_list
+from common.i18n import get_locale
 from collections import Counter
 from collections.abc import Collection
 from functools import cached_property
@@ -17,6 +19,7 @@ from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
 
 from data.board import Board
+from data.criteria.managers import PlayerFilter
 from data.family import Family
 from data.player import Player, Federation, Club
 from data.prize.prize_category import PrizeCategory
@@ -28,9 +31,11 @@ from data.tie_breaks import (
     TieBreakManager,
     TieBreakOptionManager,
 )
+from data.tournament_criterion import TournamentCriterion
 from database.sqlite.event.event_store import (
     StoredPlayer,
     StoredBoard,
+    StoredTournamentCriterion,
     StoredTournamentPlayer,
     StoredPairing,
 )
@@ -70,6 +75,7 @@ class Tournament:
         self.boards_by_id = self._get_boards_by_id()
         self.prize_groups_by_id = self._get_prize_groups_by_id()
         self._players_by_rank: dict[int, Player] | None = None
+        self.criteria_by_id = self._get_criteria_by_id()
 
     @property
     def event(self) -> 'Event':
@@ -197,6 +203,74 @@ class Tournament:
             return SharlyChessConfig.default_last_rounds_no_byes
         else:
             return self.stored_tournament.last_rounds_no_byes
+
+    def _get_criteria_by_id(self) -> dict[int, TournamentCriterion]:
+        criteria_by_id = {}
+        for stored_criterion in self.stored_tournament.stored_criteria:
+            assert stored_criterion.id is not None
+            criteria_by_id[stored_criterion.id] = TournamentCriterion(
+                self, stored_criterion
+            )
+        return criteria_by_id
+
+    @property
+    def criteria(self) -> Collection[TournamentCriterion]:
+        return self.criteria_by_id.values()
+
+    def player_matches_criteria(self, player: Player) -> bool:
+        """Check if the player matches all criteria of this tournament."""
+        return all(
+            criterion.player_filter.is_player_included_function(player)
+            for criterion in self.criteria
+        )
+
+    def failing_criteria(self, player: Player) -> list[PlayerFilter]:
+        """Return the list of criteria that the player does not match."""
+        return [
+            criterion.player_filter
+            for criterion in self.criteria
+            if not criterion.player_filter.is_player_included_function(player)
+        ]
+
+    def failing_criteria_message(self, player: Player) -> str:
+        """Return the list of criteria that the player does not match."""
+        locale = get_locale()
+        return format_list(
+            [criteria.name for criteria in self.failing_criteria(player)], locale=locale
+        )
+
+    @cached_property
+    def num_players_not_matching_criteria(self) -> int:
+        """Return the number of players matching all criteria of this tournament."""
+        return sum(
+            1
+            for player in self.players_by_id.values()
+            if not self.player_matches_criteria(player)
+        )
+
+    @property
+    def sorted_criteria(self) -> list[TournamentCriterion]:
+        return sorted(self.criteria, key=lambda criteria: criteria.id)
+
+    @property
+    def criteria_string(self) -> str:
+        return ', '.join(criterion.name for criterion in self.criteria)
+
+    def add_criterion(
+        self, stored_criterion: StoredTournamentCriterion
+    ) -> TournamentCriterion:
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            object_id = database.add_stored_tournament_criterion(stored_criterion)
+        stored_criterion.id = object_id
+        tournament_criterion = TournamentCriterion(self, stored_criterion)
+        self.criteria_by_id[object_id] = tournament_criterion
+        return tournament_criterion
+
+    def delete_criterion(self, criterion_id: int):
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            database.delete_stored_tournament_criterion(criterion_id)
+        if criterion_id in self.criteria_by_id:
+            del self.criteria_by_id[criterion_id]
 
     @cached_property
     def players_by_check_in_status(self) -> dict[bool | None, list[Player]]:

@@ -16,12 +16,9 @@ from data.print_documents.documents import (
     PrizeAssignmentPrintDocument,
     PrizeListPrintDocument,
 )
-from data.prize.managers import (
-    PrizeSharingManager,
-    PlayerFilterManager,
-    PlayerFilterOptionManager,
-)
-from data.prize.player_filters import PlayerFilter
+from data.prize.managers import PrizeSharingManager
+from data.criteria.managers import PlayerFilterManager, PlayerFilterOptionManager
+from data.criteria.player_filters import PlayerFilter
 from data.prize.prize import Prize
 from data.prize.prize_category import PrizeCategory
 from data.prize.prize_criterion import PrizeCriterion
