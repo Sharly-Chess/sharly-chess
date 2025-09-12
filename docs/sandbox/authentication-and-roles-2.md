@@ -74,23 +74,58 @@ Unauthenticated accounts are named "anonymous" (roles can be granted to anonymou
 
 ### Authentication for accounts
 
-> [!WARNING] **AUTHENTICATION PROTOCOL EXPECTED**
->
-> - Pascal: waiting for proposals<br/>
-  @Sammy: if Youri's proposals are not OK please propose alternatives to save time. I do agree, these technical aspects should not be present in this doc, a dedicated functional documentation must be added apart from this documentation.<br/>
-  @Timothy: OK, we do not distinguish public and private networks anymore.<br/>
-  @@Youri: same, but OK, we do not distinguish public and private networks anymore.<br/>
-> - Sammy: awaiting specification
-> - Timothy: NOK<br/>
-  No system that I know of adds any useful security to an unsecure network. What ever mechanism you use should be the same for all networks, and the arbiters should be educated.
-> - Youri: Section only relevant if we identify networks.
->> - Suggestion 1: Longer refresh tokens.
->> - Suggestion 2 (preferred): Always consider connections from untrusted networks as unknown, and block auth.
->> - Suggestion 3: not identifying such networks.
->>
->> I also suggest we switch to `trusted / not trusted` instead of `private / public` in how we talk about it to the users, slightly less confusing.
+> [!NOTE] Not included in the user doc
 
-**To be completed.**
+Accounts are authenticated using refresh / access tokens.
+
+Refresh tokens are stored in the event database (can be revoked at any time by the user).
+To add a layer of security, refresh tokens are linked to the IP / user-agent of the logged-in device.
+Validity: 1 day
+Client storage: HttpOnly cookie
+
+> [!NOTE] In HTTPS, this token would be stored safely on the client-side (ex: [Credentials Management API](https://developer.mozilla.org/en-US/docs/Web/API/Credential_Management_API)), such that it would only be included in refresh requests.
+> In HTTP, there is no way to store it safely, so having it sent as an HttpOnly cookie is the best we can do.
+
+Access tokens are generated from the username / password hash, and are sent encrypted to the client.
+Validity: 15 minutes
+Client storage: any cookie
+
+#### Database structure
+```sql
+CREATE TABLE `refresh_tokens`(
+  `token` TEXT NOT NULL,
+  `user_id` | `account_id` INTEGER NOT NULL,
+  `ip` TEXT NOT NULL,
+  `user_agent` TEXT NOT NULL,
+  `created_at` DATETIME NOT NULL,
+  `expires_at` DATETIME NOT NULL,
+  `revoked_at` DATETIME
+)
+```
+
+#### Protocol
+1. Server startup: generate a new access token encrypting key
+2. User logs in with username / password (sent hashed)
+3. Server generates a refresh token, stores it, generates an access token and sends both
+4. User sends any request with its encrypted access token
+5. Server decrypts the access token, checks it, and sends the data to the user
+6. When an access token expires, regenerate it from the refresh token
+7. When a refresh token expires, the user has to log in again
+
+> [!NOTE]
+> This protocol would be slightly different ith HTTPS, using an intermediary /refresh-access endpoint to generate new access tokens.
+> In our case, we have no other choice but to include the refresh token in the request, therefore this step is useless.
+
+> [!NOTE] Opinions
+>
+> - Pascal: OK/NOK
+> - Sammy: OK/NOK
+> - Timothy: OK/NOK
+> - Youri: OK
+>> If the network is listened, only real protection is the IP / user-agent couple.
+>> However, it is relatively easy to set up, and we'd have the tools in place for a safe protocol if we ever switch to HTTPS.
+>> If HTTPS is ever an option to consider, then I think this is the way to go.
+>> Otherwise, there is no need for a refresh token, and a protocol with a stored access token would give the same security.
 
 ### Roles for accounts
 
@@ -100,12 +135,12 @@ Limited roles can be granted to anonymous users (up to _Check-in_ and _Results e
 
 ### Examples
 
-| :unlock:/:lock: |       User       | Comment                | Roles                    |
-|:---------------:|:----------------:|:-----------------------|:-------------------------|
-|                 |    ``anneth``    | The Chief Arbiter      | CA                       |
-|                 |     ``john``     | A deputy Chief Arbiter | DCA for some tournaments |
-|     :lock:      | ``anonymous``(*) | _Unauthenticated_      | SPE                      |
-(*) can not be modified.
+|       User       | Comment                | Roles                    |
+|:----------------:|:-----------------------|:-------------------------|
+|    ``anneth``    | The Chief Arbiter      | CA                       |
+|     ``john``     | A deputy Chief Arbiter | DCA for some tournaments |
+| ``anonymous``(*) | _Unauthenticated_      | SPE                      |
+(*) can not be removed, only the role can be modified.
 
 > [!WARNING] **NOT CLEAR**
 >
