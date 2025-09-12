@@ -38,6 +38,7 @@ from database.sqlite.event.event_store import (
     StoredPlayer,
     StoredDevice,
     StoredAccount,
+    StoredRotator,
 )
 
 logger: Logger = get_logger()
@@ -534,6 +535,13 @@ class Event:
     def families_by_uniq_id(self) -> dict[str, Family]:
         return {family.uniq_id: family for family in self.families_by_id.values()}
 
+    @property
+    def families_by_screen_type(self) -> dict[ScreenType, list[Family]]:
+        families_by_screen_type: dict[ScreenType, list[Family]] = defaultdict(list)
+        for family in self.families_sorted_by_name:
+            families_by_screen_type[family.type].append(family)
+        return families_by_screen_type
+
     def get_unused_family_uniq_id(
         self,
         family_type: ScreenType | None = None,
@@ -600,6 +608,32 @@ class Event:
         return StaticUtils.get_unused_item_name(
             base_name or _('New rotator'), self.rotators_by_uniq_id
         )
+
+    def create_rotator(self, stored_rotator: StoredRotator) -> Rotator:
+        with EventDatabase(self.uniq_id, True) as database:
+            rotator_id = database.add_stored_rotator(stored_rotator)
+            stored_rotator.id = rotator_id
+            for rotating_screen in stored_rotator.stored_rotating_screens:
+                rotating_screen.rotator_id = rotator_id
+                rotating_screen.id = database.add_stored_rotating_screen(
+                    rotating_screen
+                )
+        self.stored_event.stored_rotators.append(stored_rotator)
+        rotator = Rotator(self, stored_rotator)
+        self.rotators_by_id[rotator.id] = rotator
+        return rotator
+
+    def update_rotator(self, stored_rotator: StoredRotator):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.update_stored_rotator(stored_rotator)
+
+    def delete_rotator(self, rotator: Rotator):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.delete_stored_rotator(rotator.id)
+        with suppress(ValueError):
+            self.stored_event.stored_rotators.remove(rotator.stored_rotator)
+        if rotator.id in self.rotators_by_id:
+            del self.rotators_by_id[rotator.id]
 
     @cached_property
     def display_controllers_by_id(self) -> dict[int, DisplayController]:
@@ -780,7 +814,6 @@ class Event:
     def create_account(self, stored_account: StoredAccount) -> Account:
         with EventDatabase(self.uniq_id, True) as database:
             stored_account = database.add_stored_account(stored_account)
-            database.commit()
         self.stored_event.stored_accounts.append(stored_account)
         account = Account(stored_account)
         self.accounts_by_id[account.id] = account
@@ -789,7 +822,6 @@ class Event:
     def update_account(self, stored_account: StoredAccount):
         with EventDatabase(self.uniq_id, True) as database:
             database.update_stored_account(stored_account)
-            database.commit()
 
     def delete_account(self, account: Account):
         with EventDatabase(self.uniq_id, True) as database:
