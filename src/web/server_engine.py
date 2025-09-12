@@ -91,9 +91,6 @@ class ServerEngine(Engine):
 
         self.loop = self._ensure_loop(loop)
 
-        for data_source in DataSourceManager.objects():
-            data_source.on_app_init()
-
     def _ensure_loop(
         self, loop: asyncio.AbstractEventLoop | None
     ) -> asyncio.AbstractEventLoop:
@@ -128,6 +125,9 @@ class ServerEngine(Engine):
                 console_log_level=sharly_chess_config.console_log_level_str
             )
         )
+
+        for data_source in DataSourceManager.objects():
+            data_source.on_app_init()
 
         if self.port:
             if self.__port_in_use(self.port):
