@@ -25,7 +25,7 @@ The other devices connected to the network can:
 Roles offer a powerful way to customize the authorizations granted to accounts and devices.
 
 A role:
-- is a **fixed** set of permissions;
+- is a **predefined** and **fixed** set of permissions;
 - inherit the permissions of sub-roles.
 
 > [!WARNING] **BETTER NAMING EXPECTED**
@@ -35,6 +35,7 @@ A role:
   Roles != permissions
 > - Timothy: OK-ish As previously discussed, changing the name would be better. I'd like to reserve the term role for the staff tab, and call this something else (access level, privilege group, etc.)
 > - Youri: OK
+> - ChapGPT: OK
 
 The roles in _Shary Chess_ are:
 
@@ -49,7 +50,7 @@ The roles in _Shary Chess_ are:
 | SEC: Sector arbitration               | Tournament  |
 | CHE: Check-in via public screens      | Tournament  |
 | RES: Results Entry via public screens | Tournament  |
-| SPE: Spectator                        |    Event    |
+| SPE: View public screens (Spectator)  |    Event    |
 
 The diagram below shows the sub-roles each role inherits from.
 
@@ -63,12 +64,20 @@ The diagram below shows the sub-roles each role inherits from.
 >> RES is not a role, it's a set of permissions, same for CHE.
 > - Timothy: OK if name changed
 > - Youri: OK
+> - ChapGPT: OK
 
 ## Accounts
 
 Accounts are declared on the _Sharly Chess_ server by authorized people (ADM, ORG and CA, see below):
-- a username (letters, numbers, ``_`` and ``-`` accepted);
+- an optional FIDE ID (unique at event-level);
+- a first name;
+- a last name;
+- a user ID (letters, numbers, ``_`` and ``-`` accepted, unique at event-level);
 - a mandatory password.
+
+> [!NOTE]
+> - It should be possible to search for FFE player IDs or FIDE IDs to create new accounts
+> - If the FIDE ID is set then this information is added to the TRF export for ORG, CA and DCA
 
 Unauthenticated accounts are named "anonymous" (roles can be granted to anonymous, e.g. _Spectator_).
 
@@ -113,19 +122,22 @@ CREATE TABLE `refresh_tokens`(
 7. When a refresh token expires, the user has to log in again
 
 > [!NOTE]
-> This protocol would be slightly different ith HTTPS, using an intermediary /refresh-access endpoint to generate new access tokens.
+> This protocol would be slightly different with HTTPS, using an intermediary /refresh-access endpoint to generate new access tokens.
 > In our case, we have no other choice but to include the refresh token in the request, therefore this step is useless.
 
 > [!NOTE] Opinions
 >
-> - Pascal: OK/NOK
+> - Pascal: <br/>
+  I have no problem that we implement the refresh tokens you propose, except if step 7 (_When a refresh token expires, the user has to log in again_)
+  forces the user to res-authenticate more than once a day.<br/>
+  No real opinion in fact as long as we use HTTP and do not distinguish private/public networks, so I see no interest in doing more at the moment than relying on session cookies.
 > - Sammy: OK/NOK
 > - Timothy: OK/NOK
-> - Youri: OK
->> If the network is listened, only real protection is the IP / user-agent couple.
->> However, it is relatively easy to set up, and we'd have the tools in place for a safe protocol if we ever switch to HTTPS.
->> If HTTPS is ever an option to consider, then I think this is the way to go.
->> Otherwise, there is no need for a refresh token, and a protocol with a stored access token would give the same security.
+> - Youri: OK<br/>
+  If the network is listened, only real protection is the IP / user-agent couple.<br/>
+  However, it is relatively easy to set up, and we'd have the tools in place for a safe protocol if we ever switch to HTTPS.<br/>
+  If HTTPS is ever an option to consider, then I think this is the way to go.<br/>
+  Otherwise, there is no need for a refresh token, and a protocol with a stored access token would give the same security.
 
 ### Roles for accounts
 
