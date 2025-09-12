@@ -74,6 +74,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d player does not match criteria."
+msgid_plural "%(num)d players do not match criteria."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(num)d prize"
 msgid_plural "%(num)d prizes"
 msgstr[0] ""
@@ -673,7 +679,7 @@ msgstr ""
 msgid "Average rating of opponents"
 msgstr ""
 
-msgid "Average rating:"
+msgid "Average rating: {rating}"
 msgstr ""
 
 msgid "Avg. Perfect Perf. *** SHORT NAME FOR AVERAGE PERFECT PERFORMANCE"
@@ -1415,6 +1421,9 @@ msgid "Define as public"
 msgstr ""
 
 msgid "Define the criteria for players to belong to this category."
+msgstr ""
+
+msgid "Define the criteria for players to participate in this tournament."
 msgstr ""
 
 msgid "Define the prizes of the category."
@@ -3759,10 +3768,19 @@ msgstr ""
 msgid "Player [{player_id}]: {error}"
 msgstr ""
 
+msgid "Player [{player}] has been created, but does not match tournament criteria: {names}"
+msgstr ""
+
+msgid "Player [{player}] has been created."
+msgstr ""
+
 msgid "Player [{player}] has been moved from tournament [{src_tournament}] to tournament [{dst_tournament}]."
 msgstr ""
 
 msgid "Player [{player}] has pairings in tournament [{tournament}]."
+msgstr ""
+
+msgid "Player does not match tournament criteria: {names}"
 msgstr ""
 
 msgid "Player selection (by alphabetical order)"
@@ -3846,9 +3864,6 @@ msgid "Please choose the release to recover: "
 msgstr ""
 
 msgid "Please choose the tournament."
-msgstr ""
-
-msgid "Please choose the tournaments."
 msgstr ""
 
 msgid "Please close the time control editor before saving."
@@ -3995,7 +4010,7 @@ msgstr ""
 msgid "Prize criterion creation"
 msgstr ""
 
-msgid "Prize criterion edition"
+msgid "Prize criterion editing"
 msgstr ""
 
 msgid "Prize currency"
@@ -5420,6 +5435,12 @@ msgstr ""
 msgid "Tournament [{tournament}] successfully imported."
 msgstr ""
 
+msgid "Tournament criterion creation"
+msgstr ""
+
+msgid "Tournament criterion editing"
+msgstr ""
+
 msgid "Tournament exempt from registration fees."
 msgstr ""
 
@@ -6396,4 +6417,7 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "All tournaments"
+#~ msgstr ""
 
