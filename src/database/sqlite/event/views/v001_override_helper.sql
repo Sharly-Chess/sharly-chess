@@ -12,8 +12,8 @@ SELECT
             AND json_extract(p.ratings, '$.' || t.rating || '.type') <> 3
             -- and we override non-FIDE ratings (either ON tournament or using the default event-level option)
             AND coalesce(t.override_unrated_rapid_blitz, i.override_unrated_rapid_blitz) = 1
-            -- but only if the player is not estimated in standard rating (RatingType.ESTIMATED == 1)
-            AND json_extract(p.ratings, '$."1".type') <> 1
+            -- but only if the player has a FIDE standard rating
+            AND json_extract(p.ratings, '$."1".type') = 3
         THEN 1 ELSE 0
     END AS is_overridden,
 
@@ -21,7 +21,7 @@ SELECT
     WHEN t.rating <> 1
         AND json_extract(p.ratings, '$.' || t.rating || '.type') <> 3
         AND coalesce(t.override_unrated_rapid_blitz, i.override_unrated_rapid_blitz) = 1
-        AND json_extract(p.ratings, '$."1".type') <> 1
+        AND json_extract(p.ratings, '$."1".type') = 3
     THEN json_extract(p.ratings, '$."1".value')
     ELSE json_extract(p.ratings, '$.' || t.rating || '.value')
     END AS effective_rating,
@@ -30,7 +30,7 @@ SELECT
     WHEN t.rating <> 1
         AND json_extract(p.ratings, '$.' || t.rating || '.type') <> 3
         AND coalesce(t.override_unrated_rapid_blitz, i.override_unrated_rapid_blitz) = 1
-        AND json_extract(p.ratings, '$."1".type') <> 1
+        AND json_extract(p.ratings, '$."1".type') = 3
     THEN json_extract(p.ratings, '$."1".type')
     ELSE json_extract(p.ratings, '$.' || t.rating || '.type')
     END AS effective_rating_type
