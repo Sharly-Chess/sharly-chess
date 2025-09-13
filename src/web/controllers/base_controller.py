@@ -66,7 +66,7 @@ class WebContext:
 
     @cached_property
     def client(self) -> Client:
-        """Returns the client (account and device) of the request.
+        """Returns the client of the request.
         This method may be overridden with an event parameter passed to Client()."""
         return Client(self.request)
 

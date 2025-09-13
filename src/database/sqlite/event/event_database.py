@@ -18,7 +18,6 @@ from common import (
 )
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.access_levels.entities import Device, Account
 from database.sqlite.event.event_store import (
     StoredDisplayController,
     StoredTournament,
@@ -39,7 +38,6 @@ from database.sqlite.event.event_store import (
     StoredTournamentPlayer,
     StoredPairing,
     StoredBoard,
-    StoredDevice,
     StoredAccount,
     StoredRotatingScreen,
 )
@@ -293,9 +291,6 @@ class EventDatabase(MigrationDatabase):
             message_color=row['message_color'],
             message_background_color=row['message_background_color'],
             prize_currency=row['prize_currency'],
-            custom_exec_mode=self.load_bool_from_database_field(
-                row['custom_exec_mode']
-            ),
             override_unrated_rapid_blitz=self.load_bool_from_database_field(
                 row['override_unrated_rapid_blitz']
             ),
@@ -319,7 +314,6 @@ class EventDatabase(MigrationDatabase):
         stored_event.stored_display_controllers = list(
             self.load_stored_display_controllers()
         )
-        stored_event.stored_devices = list(self.load_stored_devices())
         stored_event.stored_accounts = list(self.load_stored_accounts())
         return stored_event
 
@@ -368,7 +362,6 @@ class EventDatabase(MigrationDatabase):
                     'message_color',
                     'message_background_color',
                     'prize_currency',
-                    'custom_exec_mode',
                     'override_unrated_rapid_blitz',
                 ],
             )
@@ -2327,89 +2320,6 @@ class EventDatabase(MigrationDatabase):
         self.execute('DELETE FROM `prize` WHERE `id` = ?;', (prize_id,))
 
     # ---------------------------------------------------------------------------------
-    # StoredDevice
-    # ---------------------------------------------------------------------------------
-
-    @classmethod
-    def _row_to_stored_device(cls, row: dict[str, Any]) -> StoredDevice:
-        return StoredDevice(
-            id=row['id'],
-            active=cls.load_bool_from_database_field(row['active']),
-            ip=row['ip'],
-            access_levels=cls.load_json_from_database_field(row['access_levels'], []),
-            tournament_ids=cls.load_json_from_database_field(
-                row['tournament_ids'], None
-            ),
-        )
-
-    def get_stored_device(self, device_id: int) -> StoredDevice | None:
-        self.execute(
-            'SELECT * FROM `device` WHERE `id` = ?',
-            (device_id,),
-        )
-        row: dict[str, Any]
-        if row := self.fetchone():
-            return self._row_to_stored_device(row)
-        return None
-
-    def load_stored_devices(self) -> Iterator[StoredDevice]:
-        self.execute(
-            'SELECT * FROM `device` ORDER BY `ip`',
-            (),
-        )
-        yield from map(self._row_to_stored_device, self.fetchall())
-
-    def _write_stored_device(
-        self, stored_device: StoredDevice, insert_id: bool = False
-    ) -> StoredDevice:
-        fields = self._get_fields_dict(stored_device, ['active', 'ip']) | {
-            'access_levels': self.dump_to_json_database_field(
-                stored_device.access_levels
-            ),
-            'tournament_ids': self.dump_to_json_database_field(
-                stored_device.tournament_ids
-            ),
-        }
-        fetched_stored_device: StoredDevice | None
-        if stored_device.id is None or insert_id:
-            if insert_id:
-                fields |= {'id': stored_device.id}
-            fields_str = ', '.join(f'`{field}`' for field in fields)
-            values_str = ', '.join(['?'] * len(fields))
-            self.execute(
-                f'INSERT INTO `device`({fields_str}) VALUES ({values_str})',
-                tuple(fields.values()),
-            )
-            device_id: int | None = self._last_inserted_id()
-            if device_id is None:
-                raise RuntimeError('Device insertion failed')
-            fetched_stored_device = self.get_stored_device(device_id=device_id)
-        else:
-            field_sets = ', '.join(f'`{f}` = ?' for f in fields)
-            self.execute(
-                f'UPDATE `device` SET {field_sets} WHERE `id` = ?',
-                tuple(fields.values()) + (stored_device.id,),
-            )
-            fetched_stored_device = self.get_stored_device(device_id=stored_device.id)
-        if fetched_stored_device is None:
-            raise RuntimeError('Device write failed')
-        return fetched_stored_device
-
-    def add_stored_device(self, stored_device: StoredDevice) -> StoredDevice:
-        assert stored_device.id is None, f'stored_device.id={stored_device.id}'
-        return self._write_stored_device(stored_device)
-
-    def update_stored_device(
-        self,
-        stored_device: StoredDevice,
-    ) -> StoredDevice:
-        assert stored_device.id is not None
-        return self._write_stored_device(stored_device)
-
-    def delete_stored_device(self, device_id: int):
-        self.execute('DELETE FROM `device` WHERE `id` = ?', (device_id,))
-
-    # ---------------------------------------------------------------------------------
     # StoredAccount
     # ---------------------------------------------------------------------------------
 
@@ -2418,7 +2328,8 @@ class EventDatabase(MigrationDatabase):
         return StoredAccount(
             id=row['id'],
             active=cls.load_bool_from_database_field(row['active']),
-            username=row['username'],
+            first_name=row['first_name'],
+            last_name=row['last_name'],
             password_hash=row['password_hash'],
             access_levels=cls.load_json_from_database_field(row['access_levels'], []),
             tournament_ids=cls.load_json_from_database_field(
@@ -2438,7 +2349,7 @@ class EventDatabase(MigrationDatabase):
 
     def load_stored_accounts(self) -> Iterator[StoredAccount]:
         self.execute(
-            'SELECT * FROM `account` ORDER BY `username`',
+            'SELECT * FROM `account` ORDER BY `id`',
             (),
         )
         yield from map(self._row_to_stored_account, self.fetchall())
@@ -2447,7 +2358,7 @@ class EventDatabase(MigrationDatabase):
         self, stored_account: StoredAccount, insert_id: bool = False
     ) -> StoredAccount:
         fields = self._get_fields_dict(
-            stored_account, ['active', 'username', 'password_hash']
+            stored_account, ['active', 'first_name', 'last_name', 'password_hash']
         ) | {
             'access_levels': self.dump_to_json_database_field(
                 stored_account.access_levels
@@ -2493,21 +2404,3 @@ class EventDatabase(MigrationDatabase):
 
     def delete_stored_account(self, account_id: int):
         self.execute('DELETE FROM `account` WHERE `id` = ?;', (account_id,))
-
-    # ---------------------------------------------------------------------------------
-    # StoredDevice and StoredAccount
-    # ---------------------------------------------------------------------------------
-
-    def create_custom_exec_mode_objects(
-        self,
-        predefined_custom_devices: list[Device],
-        predefined_custom_accounts: list[Account],
-    ):
-        """Add the accounts and devices that correspond to the default
-        permissions of the custom mode. These objects are added juste
-        before doing an action on the fake permissions used from the
-        creation of the object."""
-        for device in predefined_custom_devices:
-            self._write_stored_device(device.stored_device, insert_id=True)
-        for account in predefined_custom_accounts:
-            self._write_stored_account(account.stored_account, insert_id=True)

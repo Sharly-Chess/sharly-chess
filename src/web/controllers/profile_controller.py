@@ -39,6 +39,12 @@ class ProfileController(BaseController):
             | {
                 'data': data or {},
                 'errors': errors or {},
+                'account_options': {
+                    account.id: account.full_name
+                    for account in web_context.admin_event.user_accounts_sorted_by_name
+                }
+                if isinstance(web_context, ProfileWebContext)
+                else {},
             },
             re_target='#modal-wrapper',
         )
@@ -102,14 +108,16 @@ class ProfileController(BaseController):
         field: str
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
-        username: str | None = WebContext.form_data_to_str(data, field := 'username')
-        if not username:
-            errors[field] = _('Please enter the username.')
+        account_id: int | None = WebContext.form_data_to_int(
+            data, field := 'account_id'
+        )
+        if not account_id:
+            errors[field] = _('Please select the account.')
         else:
             password: str = WebContext.form_data_to_str(data, field := 'password') or ''
             try:
-                account: Account = web_context.admin_event.accounts_by_username[
-                    username
+                account: Account = web_context.admin_event.user_accounts_by_id[
+                    account_id
                 ]
                 ph = PasswordHasher()
                 try:
@@ -142,10 +150,10 @@ class ProfileController(BaseController):
                                 )
                             )
                 except (VerifyMismatchError, VerificationError):
-                    errors['field'] = _('Invalid username or password.')
+                    errors[field] = _('Invalid password.')
                     data[field] = ''
                 except InvalidHash:
-                    errors['field'] = _(
+                    errors[field] = _(
                         'Something went wrong. Please ask your administrator to recreate your account.'
                     )
                 else:
@@ -162,7 +170,7 @@ class ProfileController(BaseController):
                         data=data,
                     )
             except KeyError:
-                errors['username'] = _('Invalid username or password.')
+                errors['account_id'] = _('Invalid account.')
 
         return self._render_profile_modal(
             web_context,

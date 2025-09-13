@@ -56,13 +56,15 @@ class BaseAccessLevelTest:
         auth_page.goto(f'/admin/event/{PUBLIC_EVENT_ID}')
         auth_page.wait_for_load_state('domcontentloaded')
         auth_page.get_by_test_id('profile-button').click()
-        auth_page.locator('#username').fill(stored_account.username)
+        auth_page.locator('#account_id').fill(str(stored_account.id))
         auth_page.locator('#password').fill('test-password')
 
         auth_page.locator('#modal-form button[type=submit]').click()
 
         expect(
-            auth_page.get_by_text(f'Account: {stored_account.username}')
+            auth_page.get_by_text(
+                f'Account: {stored_account.first_name} {stored_account.last_name}'
+            )
         ).to_be_visible()
 
         cls.auth_context = auth_context
@@ -82,9 +84,11 @@ class BaseAccessLevelTest:
         tournament_ids: list[int] | None = None,
     ):
         """Creates a user with the specified access levels and tournaments"""
-        username = f'test-{self.__class__.__name__.lower()}'
+        first_name = 'test'
+        last_name = self.__class__.__name__.upper()
         data = {
-            'username': username,
+            'first_name': first_name,
+            'last_name': last_name,
             'password': 'test-password',
             'active': True,
             'access_levels': [type_.static_id() for type_ in access_level],
@@ -101,7 +105,11 @@ class BaseAccessLevelTest:
         TestUtils.check_api_response(res)
         with EventDatabase(PUBLIC_EVENT_ID) as event_database:
             accounts = event_database.load_stored_accounts()
-            stored_account = next(a for a in accounts if a.username == username)
+            stored_account = next(
+                a
+                for a in accounts
+                if a.first_name == first_name and a.last_name == last_name
+            )
         return stored_account
 
     def delete_user(self, api_request_context: APIRequestContext, account_id: int):

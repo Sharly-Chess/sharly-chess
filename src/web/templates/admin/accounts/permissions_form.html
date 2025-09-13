@@ -79,11 +79,7 @@
             </script>
         </div>
         <div id="{{ id }}-help" class="form-text">
-            {% if usage == 'device' %}
-                {{ _('The access_levels to attribute to this device.') }}
-            {% else %}
-                {{ _('The access_levels to attribute to this account.') }}
-            {% endif %}
+            {{ _('The access levels to attribute to this account.') }}
         </div>
         {% if name in errors %}
             <div id="{{ id }}-error" class="form-text invalid-feedback">
@@ -97,15 +93,7 @@
         {{ admin_macros.select_input(
             name='tournament_ids',
             label=_('%(string)s:', string=_('Tournaments')),
-            help_text=(
-                _(
-                    'The tournaments on which the device can act '
-                    '(if none, the device can act on all the tournaments).'
-                ) if usage == 'device' else _(
-                    'The tournaments on which the account can act '
-                    '(if none, the account can act on all the tournaments).'
-                )
-            ),
+            help_text=_('The tournaments on which the account can act (if none, the account can act on all the tournaments).'),
             select_options=tournament_options,
             multiple_select=true,
             placeholder=_('Choose one, many or no tournaments.'),

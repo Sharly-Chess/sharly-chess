@@ -227,8 +227,6 @@ class SharlyChessConfig(metaclass=Singleton):
     def locale(self) -> str:
         return self.stored_config.locale or DEFAULT_LOCALE
 
-    default_custom_exec_mode: bool = False
-
     # The port used by the Uvicorn web server.
     web_host: str = '0.0.0.0'
 

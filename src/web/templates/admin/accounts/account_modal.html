@@ -11,7 +11,7 @@
                     {% if admin_account.anonymous %}
                         {{ _('Editing of unauthenticated access') }}
                     {% else %}
-                        {{ _('Editing of account [%(username)s]', username=admin_account.username) }}
+                        {{ _('Editing of account [%(account_name)s]', account_name=admin_account.full_name) }}
                     {% endif %}
                 {% endif %}
             </h2>
@@ -35,10 +35,19 @@
                     </h4>
                     <div class="row mb-3">
                         {{ admin_macros.text_input(
-                            name='username',
-                            label=_('ID (unique):'),
-                            placeholder=_('E.g.: john'),
-                            help_text=_('The Unique ID, used to authenticate.'),
+                            name='last_name',
+                            label=_('Last name:'),
+                            placeholder=_('E.g.: DOE'),
+                            help_text=_('The first name.'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="row mb-3">
+                        {{ admin_macros.text_input(
+                            name='first_name',
+                            label=_('First name:'),
+                            placeholder=_('E.g.: John'),
+                            help_text=_('The last name.'),
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -70,9 +79,7 @@
                 {% endif %}
                 {% if action in ['create', 'clone', ] or (admin_account.edit_permissions and (admin_account.id in client.manageable_account_ids)) %}
                     <div id="permissions-form">
-                        {% with usage = 'account' %}
-                            {% include '../common/access/permissions_form.html' %}
-                        {% endwith %}
+                        {% include 'permissions_form.html' %}
                     </div>
                 {% endif %}
             </form>

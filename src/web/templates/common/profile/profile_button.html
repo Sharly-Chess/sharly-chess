@@ -15,22 +15,18 @@
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
         >
-            {% if admin_event and not client.device.localhost %}
+            {% if admin_event and not client.account.administrator %}
                 <div class="d-block">
                     <i class="bi bi-person-circle"></i>
-                    <span class="pe-2 expanded-only {% if client.account.anonymous %}fst-italic{% else %}fw-bold{% endif %}">
-                        {% if client.account.anonymous %}
-                            {{ _('Anonymous') }}
-                        {% else %}
-                            {{ client.account.username }}
-                        {% endif %}
+                    <span class="pe-2 expanded-only {% if not client.account.user_account %}fst-italic{% else %}fw-bold{% endif %}">
+                        {{ client.account.full_name }}
                     </span>
                 </div>
             {% endif %}
             <div class="d-block">
                 <i class="bi bi-laptop"></i>
-                <span class="pe-2 expanded-only {% if client.device.localhost %}fst-italic{% else %}fw-bold{% endif %}">
-                    {% if client.device.localhost %}
+                <span class="pe-2 expanded-only {% if client.account.administrator %}fst-italic{% else %}fw-bold{% endif %}">
+                    {% if client.account.administrator %}
                         {{ _('Sharly Chess server') }}
                     {% else %}
                         {{ client.host }}
@@ -39,7 +35,7 @@
             </div>
             <div class="d-block">
                 <i class="bi bi-translate"></i>
-                <span class="pe-2 expanded-only {% if client.device.localhost %}fst-italic{% else %}fw-bold{% endif %}">
+                <span class="pe-2 expanded-only {% if client.account.administrator %}fst-italic{% else %}fw-bold{% endif %}">
                     {{ locale_infos[locale].name }}
                 </span>
             </div>

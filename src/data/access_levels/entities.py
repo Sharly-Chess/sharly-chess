@@ -1,15 +1,10 @@
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from functools import cached_property
 
 from common.i18n import _
-from common.network import LOCALHOST_IP, LOCALHOST_NAME
 from data.access_levels.manager import AccessLevelManager
-from database.sqlite.event.event_store import (
-    StoredDevice,
-    StoredAccount,
-    StoredAccess,
-)
+from data.player import Player
+from database.sqlite.event.event_store import StoredAccount
 from data.access_levels.access_levels import AccessLevel, AdministrationAccessLevel
 
 
@@ -19,49 +14,102 @@ class Permission:
     inherited: bool = False
 
 
-class AuthEntity[T: StoredAccess](ABC):
-    """An abstract access entity."""
+class Account:
+    """A data wrapper around a stored account.
+    The class that represents an account."""
 
-    def __init__(self, stored_access: T):
-        self._stored_access = stored_access
+    ADMINISTRATOR_ID: int = 1
+    ANONYMOUS_ID: int = 2
+
+    def __init__(self, stored_account: StoredAccount):
+        self.stored_account = stored_account
 
     @property
     def id(self) -> int:
-        assert self._stored_access.id is not None
-        return self._stored_access.id
+        assert self.stored_account.id is not None
+        return self.stored_account.id
 
     @property
-    @abstractmethod
-    def edit_properties(self) -> bool:
-        """Returns False if the device is locked (can not be updated or deleted)."""
+    def administrator(self) -> bool:
+        """Returns True for the administrator account, False otherwise."""
+        return self.id == self.ADMINISTRATOR_ID
 
     @property
-    @abstractmethod
-    def edit_permissions(self) -> bool:
-        """Returns True if the permissions of the device can be updated."""
+    def anonymous(self) -> bool:
+        """Returns True for the anonymous account, False otherwise."""
+        return self.id == self.ANONYMOUS_ID
+
+    @property
+    def user_account(self) -> bool:
+        """Returns True if a 'real' user account (not administrator or anonymous), False otherwise."""
+        return self.id not in (
+            self.ADMINISTRATOR_ID,
+            self.ANONYMOUS_ID,
+        )
+
+    @property
+    def first_name(self) -> str | None:
+        """Returns the first name of the account."""
+        if self.administrator:
+            return None
+        if self.anonymous:
+            return None
+        return self.stored_account.first_name
+
+    @property
+    def last_name(self) -> str:
+        """Returns the last name of the account."""
+        if self.administrator:
+            return _('Administrator')
+        if self.anonymous:
+            return _('Anonymous')
+        assert self.stored_account.last_name is not None
+        return self.stored_account.last_name
+
+    @property
+    def full_name(self) -> str:
+        return Player.player_full_name(self.first_name, self.last_name)
+
+    @property
+    def password_hash(self) -> str | None:
+        """Returns the password hash of the account."""
+        return self.stored_account.password_hash
+
+    def update_password(self, new_hash: str):
+        self.stored_account.password_hash = new_hash
 
     @property
     def active(self) -> bool:
-        return self._stored_access.active
+        return self.stored_account.active
 
     @property
     def access_levels(self) -> list[AccessLevel]:
         return [
             AccessLevelManager.get_object(access_level_id)
-            for access_level_id in self._stored_access.access_levels
+            for access_level_id in self.stored_account.access_levels
         ]
 
     @property
     def tournament_ids(self) -> set[int] | None:
-        if self._stored_access.tournament_ids is None:
+        if self.stored_account.tournament_ids is None:
             return None
-        return set(self._stored_access.tournament_ids)
+        return set(self.stored_account.tournament_ids)
+
+    @property
+    def edit_properties(self) -> bool:
+        """Returns False if the account is locked (can not be updated or deleted)."""
+        return not self.administrator and not self.anonymous
+
+    @property
+    def edit_permissions(self) -> bool:
+        """Returns True if the permissions of the account can be updated."""
+        return not self.administrator
 
     @cached_property
     def permissions_by_access_level(
         self,
     ) -> dict[AccessLevel, Permission]:
-        """Returns all the permissions by access level, granted or inherited for a device or an account."""
+        """Returns all the permissions by access level, granted or inherited for an account."""
         permissions_by_access_level: dict[AccessLevel, Permission] = {}
         tournament_ids = self.tournament_ids
         for access_level in self.access_levels:
@@ -95,133 +143,27 @@ class AuthEntity[T: StoredAccess](ABC):
             inherited=permission1.inherited or permission2.inherited,
         )
 
-
-class Device(AuthEntity[StoredDevice]):
-    """A data wrapper around a stored device, made of an IP specification."""
-
-    LOCALHOST_ID: int = 1
-    ANY_DEVICE_ID: int = 2
-    UNKNOWN_IP: str = '0.0.0.0'
-
-    def __init__(self, stored_device: StoredDevice):
-        super().__init__(stored_device)
-        self.stored_device = stored_device
-
-    @property
-    def edit_properties(self) -> bool:
-        return not self.localhost and not self.unknown
-
-    @property
-    def edit_permissions(self) -> bool:
-        return not self.localhost
-
-    @classmethod
-    def host_is_localhost(cls, host: str) -> bool:
-        """Returns True the host is the server itself."""
-        return host in [
-            LOCALHOST_IP,
-            LOCALHOST_NAME,
-        ]
-
-    @property
-    def localhost(self) -> bool:
-        """Returns True if the device is the server itself."""
-        return self.id == self.LOCALHOST_ID
-
-    @property
-    def unknown(self) -> bool:
-        """Returns True if the device represents any client."""
-        return self.id == self.ANY_DEVICE_ID
-
-    @property
-    def ip(self) -> str:
-        """Returns the host address of the device."""
-        if self.localhost:
-            return '{ip} ({name})'.format(
-                ip=LOCALHOST_IP,
-                name=_('server'),
-            )
-        if self.unknown:
-            return '{ip} ({name})'.format(
-                ip=self.UNKNOWN_IP,
-                name=_('unknown'),
-            )
-        assert self.stored_device.ip is not None
-        return self.stored_device.ip
-
     def __repr__(self) -> str:
-        return f'Device(id={self.id}, ip={self.ip})'
+        return f'Account(id={self.id}, administrator={self.administrator}, anonymous={self.anonymous}, first_name={self.first_name}, last_name={self.last_name})'
 
-    # devices are stored at event-level, methods localhost_device()
-    # and unknown_device() provide event-free instances that can
-    # be used when no events are available (welcome page, ...)
+    # Accounts are stored at event-level, the methods below provide event-free
+    # instances that can be used when no events are available (welcome page, ...)
 
     @classmethod
-    def localhost_device(cls) -> 'Device':
+    def administrator_account(cls) -> 'Account':
         return cls(
-            StoredDevice(
-                id=cls.LOCALHOST_ID,
+            StoredAccount(
+                id=cls.ADMINISTRATOR_ID,
                 active=True,
-                access_levels=[AdministrationAccessLevel.static_id()],
+                access_levels=[
+                    AdministrationAccessLevel.static_id(),
+                ],
                 tournament_ids=None,
-                ip=None,
+                first_name=None,
+                last_name=None,
+                password_hash=None,
             )
         )
-
-    @classmethod
-    def unknown_device(cls) -> 'Device':
-        return cls(
-            StoredDevice(
-                id=cls.ANY_DEVICE_ID,
-                active=True,
-                access_levels=[],
-                tournament_ids=None,
-                ip=None,
-            )
-        )
-
-
-class Account(AuthEntity[StoredAccount]):
-    """A data wrapper around a stored account.
-    The class that represents an account, made of credentials (username and password)."""
-
-    ANONYMOUS_ID: int = 1
-
-    def __init__(self, stored_account: StoredAccount):
-        super().__init__(stored_account)
-        self.stored_account = stored_account
-
-    @property
-    def edit_properties(self) -> bool:
-        return not self.anonymous
-
-    @property
-    def edit_permissions(self) -> bool:
-        return True
-
-    @property
-    def anonymous(self) -> bool:
-        """Returns True the client represent any account."""
-        return self.id == self.ANONYMOUS_ID
-
-    @property
-    def username(self) -> str | None:
-        """Returns the username of the account."""
-        return self.stored_account.username
-
-    @property
-    def password_hash(self) -> str | None:
-        """Returns the password hash of the account."""
-        return self.stored_account.password_hash
-
-    def update_password(self, new_hash: str):
-        self.stored_account.password_hash = new_hash
-
-    def __repr__(self) -> str:
-        return f'Account(id={self.id}, username={self.username})'
-
-    # Accounts are stored at event-level, this provides an event-free
-    # instance that can be used when no events are available (welcome page, ...)
 
     @classmethod
     def anonymous_account(cls) -> 'Account':
@@ -231,7 +173,8 @@ class Account(AuthEntity[StoredAccount]):
                 active=True,
                 access_levels=[],
                 tournament_ids=None,
-                username=None,
+                first_name=None,
+                last_name=None,
                 password_hash=None,
             )
         )
