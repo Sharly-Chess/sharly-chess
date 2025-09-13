@@ -135,7 +135,7 @@ English version below
 
 - Fixed a data difference on rankings in the Papi export (3.0.4)
 - Fixed the import of the Papi homologation number (3.0.5)
-- Fix a bug preventing results upload (3.0.6)
+- Fixed a bug preventing results upload (3.0.6)
 
 ## ChessEvent
 
