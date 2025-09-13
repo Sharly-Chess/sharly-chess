@@ -21,7 +21,7 @@ FFE_EPOCH = datetime(2000, 1, 1)
 
 class FFEUtils:
     @staticmethod
-    def resolve_auto_upload(tournament: Tournament) -> str | None:
+    def resolve_auto_upload(tournament: Tournament) -> bool:
         if (
             ffe_auto_upload := get_data(tournament.plugin_data, 'ffe_auto_upload')
         ) is not None:
