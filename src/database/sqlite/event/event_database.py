@@ -1,5 +1,4 @@
 import shutil
-from sqlite3 import OperationalError
 import time
 from collections.abc import Iterator
 from contextlib import suppress
@@ -84,22 +83,28 @@ class EventDatabase(MigrationDatabase):
             super().__init__(self.event_database_path(self.uniq_id), write)
 
     def __exit__(self, exc_type, exc_value, tb):
-        dirty_tournaments: list[int] = []
-        if self.write and exc_type is None:
-            try:
-                self.execute('SELECT `id` FROM tournament WHERE dirty = 1;')
-                dirty_tournaments = [row['id'] for row in self.fetchall()]
+        dirty_tournaments: list[StoredTournament] = []
+        stored_event: StoredEvent | None = None
+        if self.write and exc_type is None and is_server_engine():
+            self.execute('SELECT * FROM tournament WHERE dirty = 1;')
+            dirty_tournaments = [
+                self._row_to_stored_tournament(row) for row in self.fetchall()
+            ]
+            if dirty_tournaments:
+                self.execute('SELECT * FROM `info`')
+                stored_event = self._row_to_base_stored_event(
+                    self.fetchone(), StoredEvent
+                )
                 self.execute('UPDATE tournament SET dirty = 0 WHERE dirty = 1;')
-            except OperationalError:
-                pass
+
         super().__exit__(exc_type, exc_value, tb)
 
         # We need call the hook on all dirty tournaments after committing the changes above
-        if self.write and exc_type is None and is_server_engine():
-            for tournament_id in dirty_tournaments:
-                plugin_manager.hook.on_tournament_data_updated(
-                    event_uniq_id=self.uniq_id, tournament_id=tournament_id
-                )
+        for stored_tournament in dirty_tournaments:
+            plugin_manager.hook.on_tournament_data_updated(
+                stored_event=stored_event,
+                stored_tournament=stored_tournament,
+            )
 
     @classmethod
     def create_instance(cls, file: Path, write: bool = False) -> Self:

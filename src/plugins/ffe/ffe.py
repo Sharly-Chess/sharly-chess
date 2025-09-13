@@ -668,12 +668,19 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def on_tournament_data_updated(self, event_uniq_id: str, tournament_id: int):
-        event = EventLoader().events_by_id.get(event_uniq_id, None)
-        if event and tournament_id in event.tournaments_by_id:
-            tournament = event.tournaments_by_id[tournament_id]
-            if FFEUtils.resolve_auto_upload(tournament):
-                FfeBackgroundUploader.schedule_upload(tournament)
+    def on_tournament_data_updated(
+        self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
+    ):
+        # This hook being called in most database writes, it needs to be optimized
+        if not FfeBackgroundUploader.should_schedule_tournament_upload(
+            stored_event, stored_tournament
+        ):
+            return
+        event = EventLoader().load_event(stored_event.uniq_id)
+        tournament_id = stored_tournament.id
+        assert tournament_id is not None
+        tournament = event.tournaments_by_id[tournament_id]
+        FfeBackgroundUploader.schedule_upload(tournament)
 
     @hookimpl
     def augment_tournament_after_db_fetch(
