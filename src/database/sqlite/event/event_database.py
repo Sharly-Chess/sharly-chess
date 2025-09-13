@@ -84,7 +84,7 @@ class EventDatabase(MigrationDatabase):
             self.write
             and exc_type is None
             and is_server_engine()
-            and EVENTS_DIR.resolve() in self.file.resolve().parents
+            and EVENTS_DIR.resolve() == self.file.resolve().parent
         ):
             self.execute('SELECT * FROM tournament WHERE dirty = 1;')
             dirty_tournaments = [
