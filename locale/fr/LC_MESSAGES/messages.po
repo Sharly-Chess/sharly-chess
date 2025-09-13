@@ -74,6 +74,12 @@ msgstr[0] "%(num)d joueur·euse n’a pas confirmé sa présence"
 msgstr[1] "%(num)d joueur·euses n’ont pas confirmé leur présence"
 
 #, python-format
+msgid "%(num)d player does not match criteria."
+msgid_plural "%(num)d players do not match criteria."
+msgstr[0] "%(num)d joueur·euse ne correspond pas aux critères."
+msgstr[1] "%(num)d joueur·euses ne correspondent pas aux critères."
+
+#, python-format
 msgid "%(num)d prize"
 msgid_plural "%(num)d prizes"
 msgstr[0] "%(num)d prix"
@@ -673,8 +679,8 @@ msgstr "ELO moyen"
 msgid "Average rating of opponents"
 msgstr "Classement ELO moyen des adversaires"
 
-msgid "Average rating:"
-msgstr "Moyenne Elo"
+msgid "Average rating: {rating}"
+msgstr "Classement moyen : {rating}"
 
 msgid "Avg. Perfect Perf. *** SHORT NAME FOR AVERAGE PERFECT PERFORMANCE"
 msgstr "Perf. parfaite moyenne"
@@ -1416,6 +1422,9 @@ msgstr "Définir comme public"
 
 msgid "Define the criteria for players to belong to this category."
 msgstr "Définir les critères selon lesquels les joueur·euses appartiennent à cette catégorie."
+
+msgid "Define the criteria for players to participate in this tournament."
+msgstr "Définissez les critères permettant aux joueur·euses de participer à ce tournoi."
 
 msgid "Define the prizes of the category."
 msgstr "Définir les prix de la catégorie."
@@ -3759,11 +3768,20 @@ msgstr "Joueur·euse [{player_id}] - ronde {round} : "
 msgid "Player [{player_id}]: {error}"
 msgstr "Joueur·euse [{player_id}] : {error}"
 
+msgid "Player [{player}] has been created, but does not match tournament criteria: {names}"
+msgstr "Le·la joueur·euse [{player}] a été créé·e. Cependant, il·elle ne correspond pas aux critères du tournoi : {names}"
+
+msgid "Player [{player}] has been created."
+msgstr "Le·la joueur·euse [{player}] a été créé·e."
+
 msgid "Player [{player}] has been moved from tournament [{src_tournament}] to tournament [{dst_tournament}]."
 msgstr "Le·la joueur·euse [{player}] a été déplacé·e du tournoi [{src_tournament}] au tournoi [{dst_tournament}]."
 
 msgid "Player [{player}] has pairings in tournament [{tournament}]."
 msgstr "Le·la joueur·euse [{player}] a déjà été apparié·e dans le tournoi [{tournament}]."
+
+msgid "Player does not match tournament criteria: {names}"
+msgstr "Le·la joueur·euse ne correspond pas aux critères du tournoi : {names}"
 
 msgid "Player selection (by alphabetical order)"
 msgstr "Sélection des joueur·euses (par ordre alphabétique)"
@@ -3847,9 +3865,6 @@ msgstr "Veuillez choisir la version à restaurer : "
 
 msgid "Please choose the tournament."
 msgstr "Veuillez choisir le tournoi."
-
-msgid "Please choose the tournaments."
-msgstr "Veuillez choisir les tournois."
 
 msgid "Please close the time control editor before saving."
 msgstr "Veuillez fermer l'éditeur de cadence avant d'enregistrer."
@@ -3995,7 +4010,7 @@ msgstr "La catégorie de prix [{prize_category}] a été mise à jour avec succ�
 msgid "Prize criterion creation"
 msgstr "Création d'un critère"
 
-msgid "Prize criterion edition"
+msgid "Prize criterion editing"
 msgstr "Édition d'un critère"
 
 msgid "Prize currency"
@@ -5419,6 +5434,12 @@ msgstr "Le tournoi [{tournament}] est terminé, on ne peut plus y ajouter de jou
 
 msgid "Tournament [{tournament}] successfully imported."
 msgstr "Le tournoi [{tournament}] a été importé avec succès."
+
+msgid "Tournament criterion creation"
+msgstr "Création de critères de tournoi"
+
+msgid "Tournament criterion editing"
+msgstr "Édition des critères de tournoi."
 
 msgid "Tournament exempt from registration fees."
 msgstr "Tournoi exempt de droits d'homologation."

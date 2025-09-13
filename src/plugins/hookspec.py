@@ -24,8 +24,8 @@ if TYPE_CHECKING:
     from data.pairings.variations import SwissVariation
     from data.player import Player, PlayerRating
     from data.print_documents import PrintDocument, PlayerSplitter
-    from data.prize.player_filter_options import PlayerFilterOption
-    from data.prize.player_filters import PlayerFilter
+    from data.criteria.player_filter_options import PlayerFilterOption
+    from data.criteria.player_filters import PlayerFilter
     from data.tie_breaks import TieBreak
     from data.tournament import Tournament
     from data.event import Event
@@ -374,13 +374,13 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def insert_prize_player_filter_types(
+    def insert_player_filter_types(
         self, player_filter_types: list[type['PlayerFilter']]
     ):
         """Provide extra player filters for prizes."""
 
     @hookspec
-    def insert_prize_player_filter_option_types(
+    def insert_player_filter_option_types(
         self, player_filter_option_types: list[type['PlayerFilterOption']]
     ):
         """Provide the options of the added prize player filters."""
