@@ -8,7 +8,10 @@ from sqlite3 import Connection, Cursor, connect, OperationalError
 from threading import RLock
 from typing import Self, Any
 
+from common.logger import get_logger
 
+
+logger = get_logger()
 locks: defaultdict[Path, RLock] = defaultdict(RLock)
 
 
@@ -71,21 +74,26 @@ class SQLiteDatabase:
         return self
 
     def __exit__(self, exc_type, exc_value, tb):
-        try:
-            which = str(self.file)
-            if self.database and self.write:
-                if exc_type is None:
-                    self.database.commit()
-                else:
-                    print(f'Rolling back {which} due to exception')
-                    self.database.rollback()
-        finally:
-            if self.cursor is not None:
-                self.cursor = None
-            if self.database is not None:
-                self.database.close()
-                self.database = None
-            self.release_lock()
+        if self.database and self.write:
+            if exc_type is None:
+                self.database.commit()
+            else:
+                logger.debug(
+                    'Rolling back [%s] due to exception [%s]: %s',
+                    self.file,
+                    exc_type,
+                    exc_value,
+                )
+                self.database.rollback()
+        if self.cursor is not None:
+            self.cursor.close()
+            del self.cursor
+            self.cursor = None
+        if self.database is not None:
+            self.database.close()
+            del self.database
+            self.database = None
+        self.release_lock()
 
     def execute(self, query: str, params: tuple | dict[str, Any] = ()):
         assert self.cursor is not None
