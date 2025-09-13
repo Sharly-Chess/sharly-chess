@@ -55,7 +55,7 @@
                                 name='public',
                                 label=_('Visibility:'),
                                 placeholder=_('Public family'),
-                                help_text=_('Only arbiters can see private screen families.'),
+                                help_text=_('Only allowed users can see private screen families.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -72,7 +72,7 @@
                             {{ admin_macros.select_input(
                                 name='tournament_id',
                                 label=_('Tournament:'),
-                                help_text=_('The tournament of the screens of the family, mandatory (unlike basic screens, only one tournament can be displayed on family screens).'),
+                                help_text=_('The tournament of the screens of the family.'),
                                 select_options=tournament_options,
                                 data=data, errors=errors
                             ) }}
@@ -183,15 +183,17 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.select_input(
-                                name='timer_id',
-                                label=_('Timer:'),
-                                help_text=_('The timer displayed on the screens of the family.'),
-                                select_options=timer_options,
-                                data=data, errors=errors
-                            ) }}
-                        </div>
+                        {% if admin_event.timers_by_id %}
+                            <div class="col-12 col-md-6 mb-3">
+                                {{ admin_macros.select_input(
+                                    name='timer_id',
+                                    label=_('Timer:'),
+                                    help_text=_('The timer displayed on the screens of the family.'),
+                                    select_options=timer_options,
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        {% endif %}
                         <div class="col-12 col-md-6 mb-3">
                             {{ admin_macros.number_input(
                                 name='columns',

@@ -3,7 +3,6 @@ import time
 from datetime import datetime
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
-import urllib.parse
 
 from litestar import post, get, patch, delete
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
@@ -28,15 +27,12 @@ from data.input_output.tournament_importers import TournamentImporter
 from data.pairings import PairingSystem, PairingSystemManager
 from data.pairings.systems import SwissPairingSystem
 from data.player import Player
-from data.print_documents import PrintDocumentManager
-from data.print_documents.options import PrintOption
 from data.tie_breaks import TieBreak, TieBreakManager
 from data.tournament import Tournament
 from utils import StaticUtils
 from utils.enum import TournamentRating
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredScreen
-from plugins.hookspec import ExtraColumn
 from plugins.manager import plugin_manager
 from utils.time_control import parse_time_control_trf25
 from web.controllers.admin.base_event_admin_controller import (
@@ -986,69 +982,6 @@ class TournamentAdminController(BaseEventAdminController):
             ),
         )
         return self._admin_event_tournaments_render(request, event_uniq_id)
-
-    @get(
-        path='/admin/tournament-print-view/{event_uniq_id:str}/{tournament_id:int}/{document: str}',
-        name='admin-tournament-print-view',
-    )
-    async def htmx_tournament_print_view(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        tournament_id: int,
-        document: str,
-        options: str | None = None,
-    ) -> Template | ClientRedirect | Redirect:
-        web_context: TournamentAdminWebContext = TournamentAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-            data=None,
-        )
-        if web_context.error:
-            return web_context.error
-        if web_context.admin_tournament is None:
-            raise RuntimeError('admin_tournament not defined')
-        admin_tournament: Tournament = web_context.admin_tournament
-        document_type = PrintDocumentManager.get_type(document)
-        option_data: dict[str, str] = {}
-        if options:
-            for option in urllib.parse.unquote(options).split('|'):
-                key, raw_value = option.split('=')
-                option_data[key] = raw_value
-        print_options: list[PrintOption] = []
-        for print_option in document_type.default_options():
-            value = WebContext.form_data_to_value(
-                option_data, print_option.id, print_option.type
-            )
-            print_options.append(type(print_option)(value))
-        print_document = document_type(print_options, admin_tournament)
-
-        per_plugin_columns = plugin_manager.hook.get_extra_print_view_columns(
-            document=print_document
-        )
-        extra_columns: dict[str, list[ExtraColumn]] = {}
-        for plugin_columns in per_plugin_columns:
-            for extra_column in plugin_columns:
-                c = extra_columns.setdefault(extra_column.at, [])
-                c.append(extra_column)
-        per_plugin_css: list[str] = plugin_manager.hook.get_extra_print_view_css(
-            document=print_document
-        )
-        extra_css: str = '\n'.join(per_plugin_css)
-
-        template_context = (
-            web_context.template_context
-            | {
-                'document': print_document,
-                'extra_columns': extra_columns,
-                'extra_css': extra_css,
-            }
-            | print_document.template_context
-        )
-        return HTMXTemplate(
-            template_name=print_document.template_name, context=template_context
-        )
 
     @get(
         path=[

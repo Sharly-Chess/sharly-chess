@@ -70,20 +70,21 @@ class BaseEventAdminWebContext(AdminWebContext):
 
     def default_tournament_for_print_modal(
         self, tournament_id: int | None
-    ) -> int | None:
+    ) -> list[int] | None:
+        tournament_ids: list[int] | None = None
         if (
             tournament_id is None
             and (
-                last_tournament
-                := SessionHandler.get_session_admin_print_last_tournament(self.request)
+                last_tournaments
+                := SessionHandler.get_session_admin_print_last_tournaments(self.request)
             )
             is not None
         ):
-            event_uniq_id, tid = last_tournament
+            event_uniq_id, tids = last_tournaments
             if event_uniq_id == self.get_admin_event().uniq_id:
-                tournament_id = tid
+                tournament_ids = tids
 
-        return tournament_id
+        return tournament_ids
 
     @property
     def template_context(self) -> dict[str, Any]:

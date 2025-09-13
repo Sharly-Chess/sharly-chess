@@ -317,7 +317,7 @@ class AppHookSpecs:
 
     @hookspec
     def get_extra_statistics_sections(
-        self, document: 'PrintDocument', tournament: 'Tournament'
+        self, document: 'PrintDocument', tournaments: list['Tournament']
     ) -> Iterable[ExtraStatisticsSection]:
         """Provide extra sections for the statistics print view"""
 

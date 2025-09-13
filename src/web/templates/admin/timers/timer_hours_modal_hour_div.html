@@ -82,8 +82,8 @@
             </div>
         </form>
     {% else %}
-        <div class="admin-timer-hour-div border {% if timer_hour.error %}border-danger{% else %}border-secondary{% endif %}">
-            <div class="p-2 d-flex align-items-start gap-3 align-items-center">
+        <div class="admin-timer-hour-div border bg-body-tertiary {% if timer_hour.error %}border-danger{% else %}border-secondary{% endif %}">
+            <div class="p-2 d-flex align-items-center gap-3">
                 {% if not admin_timer_hour and admin_timer.timer_hours_sorted_by_order|length > 1 %}
                     <i class="bi-grip-horizontal"></i>
                 {% endif %}

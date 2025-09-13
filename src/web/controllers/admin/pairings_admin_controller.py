@@ -101,13 +101,16 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                 return
             self.admin_tournament = event.tournaments_by_id[tournament_id]
         elif event.tournaments:
-            self.admin_tournament = event.tournaments_by_id.get(
+            session_tournament_id = (
                 SessionHandler.get_session_admin_pairings_selected_tournament(
                     self.request,
                     event.uniq_id,
-                ),
-                event.tournaments_sorted_by_uniq_id[0],
+                )
             )
+            if session_tournament_id in event.tournaments_by_id:
+                self.admin_tournament = event.tournaments_by_id[session_tournament_id]
+            else:
+                self.admin_tournament = event.tournaments_sorted_by_uniq_id[0]
 
         self.display_rankings = self.admin_tournament and (
             self.admin_tournament.finished

@@ -2,12 +2,21 @@ import logging
 from logging import Logger, getLogger
 from logging.config import dictConfig
 from pathlib import Path
+import sys
 from typing import Any
 
 from colorama import Fore, Style
 
-from common import APP_NAME
+from common import APP_NAME, DEVEL_ENV
 from gui.gui_logger import GUILogHandler
+
+
+class ConsoleOrNullHandler(logging.Handler):
+    def __new__(cls, *args, **kwargs):
+        if DEVEL_ENV:
+            return logging.StreamHandler(sys.stdout)
+        else:
+            return logging.NullHandler()
 
 
 class LoggingConfigValues:
@@ -67,7 +76,7 @@ def get_logging_config() -> dict[str, Any]:
     global _LOGGING_CONFIG_VALUES
     console_format: str = f'{
         "%(log_color)s" if _LOGGING_CONFIG_VALUES.console_color else ""
-    }{"%(asctime)s " if _LOGGING_CONFIG_VALUES.console_show_date else ""}{
+    }{"[%(asctime)s] " if _LOGGING_CONFIG_VALUES.console_show_date else ""}{
         "%(levelname)-10s" if _LOGGING_CONFIG_VALUES.console_show_level else ""
     }%(message)s{"%(reset)s" if _LOGGING_CONFIG_VALUES.console_color else ""}'
 
@@ -78,7 +87,7 @@ def get_logging_config() -> dict[str, Any]:
             'console_formatter': {
                 '()': 'colorlog.ColoredFormatter',
                 'fmt': console_format,
-                'datefmt': '%Y-%m-%d %H:%M:%S',
+                'datefmt': '%H:%M:%S',
                 'reset': True,
                 'log_colors': {
                     'DEBUG': 'white',
@@ -98,13 +107,14 @@ def get_logging_config() -> dict[str, Any]:
         },
         'handlers': {
             'console': {
-                'class': 'logging.StreamHandler',
+                'class': ConsoleOrNullHandler,
                 'level': _LOGGING_CONFIG_VALUES.console_log_level,
                 'formatter': 'console_formatter',
                 'stream': 'ext://sys.stdout',
             },
             'gui': {
                 '()': 'gui.gui_logger.build_gui_handler',
+                'formatter': 'console_formatter',
                 'level': _LOGGING_CONFIG_VALUES.console_log_level,
             },
         },
