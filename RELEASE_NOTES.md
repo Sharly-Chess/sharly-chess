@@ -8,6 +8,7 @@ English version below
 - Amélioration des temps de réponses de l'interface utilisateur (3.0.0)
 - Signature des exécutables Windows (3.0.0)
 - Correction de la récupération des versions précédentes (3.0.1)
+- Optimisation des requêtes d'écriture dans la base de données (3.0.5)
 
 ## Évènements
 
@@ -78,6 +79,7 @@ English version below
 - Improved UI response times (3.0.0)
 - Use signed programs on Windows (3.0.0)
 - Fixed previous versions recovering (3.0.1)
+- Optimized the write queries in the database (3.0.5)
 
 ## Events
 
