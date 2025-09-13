@@ -25,7 +25,7 @@
                 style="display:none"
                 data-placeholder="{{ _('Leave empty to grant no permissions at all.') }}"
             >
-                {% for access level in manageable_access_levels %}
+                {% for access_level in manageable_access_levels %}
                     <option
                         value="{{ access_level.id }}"
                         {% if access_level in selected_access_levels %}
