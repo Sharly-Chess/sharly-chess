@@ -159,6 +159,15 @@
 | `ffe_last_upload`                         | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   | ffe        | The date the tournament was last uploaded to the FFE federal website                                                                                       |
 | `ffe_last_rules_upload`                   | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   | ffe        | The date of the last sending of the tournament rules to the FFE federal website                                                                            |
 
+### `tournament_criterion` (tournament criteria)
+
+| Field               | Type      | Constraint                                                | Ext | Description                        |
+|---------------------|-----------|-----------------------------------------------------------|-----|------------------------------------|
+| `id`                | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT<br/>UNIQUE     |     | The tournament criterion ID        |
+| `tournament_id`     | `INTEGER` | NOT NULL<br/>REFERENCES `tournament`(`id`)                |     | The tournament ID                  |
+| `type`              | `TEXT`    | NOT NULL                                                  |     | The criterion type                 |
+| `options`           | `TEXT`    |                                                           |     | Criterion options in JSON format   |
+
 ### `player` (players)
 
 | Field           | Type      | Constraint                                 | Ext | Description                                                                                             |
@@ -284,7 +293,7 @@
 | `message_text`          | `TEXT`    |                                            |     | The text of the screen's alert message (by default, no alert message is displayed)                                                                                                                                               |
 | `last_update`           | `FLOAT`   | NOT NULL                                   |     | The last date the screen was modified                                                                                                                                                                                            |
 
-### `rotator` (rotating screens)
+### `rotator` (rotators)
 
 | Field             | Type      | Constraint                                 | Ext | Description                                                                                                                                                                                                  |
 |-------------------|-----------|--------------------------------------------|-----|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -296,6 +305,16 @@
 | `delay`           | `INTEGER` |                                            |     | The screen rotation delay in seconds, optional (default 15)                                                                                                                                                  |
 | `message_default` | `INTEGER` | NOT NULL<br/>DEFAULT 1                     |     | Boolean:<br/>- `1`: The event alert message is used (unless a message is defined for the screens);<br/>- `0`: The alert message for the rotating screen's screens is used instead of the event alert message |
 | `message_text`    | `TEXT`    |                                            |     | The screen's alert message text (by default, no alert message is displayed)                                                                                                                                  |
+
+### `rotating_screen` (rotating screens)
+
+| Field             | Type      | Constraint                                 | Ext | Description                                                           |
+|-------------------|-----------|--------------------------------------------|-----|-----------------------------------------------------------------------|
+| `id`              | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT |     | The rotating screen's identifier                                      |
+| `rotator_id`      | `INTEGER` | NOT NULL                                   |     | The ID of the rotator                                                 |
+| `screen_id`       | `INTEGER` |                                            |     | The ID of the screen, `NULL` if a family                              |
+| `family_id`       | `INTEGER` |                                            |     | The ID of the family, `NULL` if a basic screen                        |
+| `index`           | `INTEGER` | NOT NULL                                   |     | The order of the screen/family in the screens/families of the rotator |
 
 ### `display_controller` (display controllers)
 

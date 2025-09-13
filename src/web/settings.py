@@ -9,7 +9,7 @@ from litestar import Router
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import CacheControlHeader
 from litestar.events import listener
-from litestar.middleware.session.client_side import CookieBackendConfig
+from litestar.middleware.session.server_side import ServerSideSessionConfig
 from litestar.static_files import create_static_files_router
 from litestar.status_codes import (
     HTTP_404_NOT_FOUND,
@@ -200,8 +200,18 @@ template_config: TemplateConfig = TemplateConfig(
 sessions_dir: Path = TMP_DIR / 'sessions'
 sessions_dir.mkdir(parents=True, exist_ok=True)
 
-stores: dict[str, Store] = {'sessions': FileStore(path=sessions_dir)}
+stores: dict[str, Store] = {
+    'sessions': FileStore(
+        path=sessions_dir,
+        create_directories=True,
+    )
+}
 
 middlewares: Sequence[Middleware] = [
-    CookieBackendConfig(secret=os.urandom(16)).middleware,
+    ServerSideSessionConfig(
+        exclude=[
+            r'^/static/*',
+            r'.*\.(png|jpg|jpeg|gif|css|js|svg)$',
+        ]
+    ).middleware,
 ]

@@ -15,6 +15,10 @@
     {% include 'tournaments/tournament_delete_modal.html' %}
 {% elif modal == 'tournament-import' %}
     {% include 'tournaments/tournament_import_modal.html' %}
+{% elif modal == 'tournament_criteria' %}
+    {% include 'tournaments/tournament_criteria_modal.html' %}
+{% elif modal == 'tournament_criterion_form' %}
+    {% include 'tournaments/tournament_criterion_form_modal.html' %}
 {% elif modal == 'player' %}
     {% include 'players/player_modal.html' %}
 {% elif modal == 'record' %}
@@ -43,6 +47,10 @@
     {% include 'families/family_modal.html' %}
 {% elif modal == 'rotator' %}
     {% include 'rotators/rotator_modal.html' %}
+{% elif modal == 'rotator_delete' %}
+    {% include 'rotators/rotator_delete_modal.html' %}
+{% elif modal == 'rotator_screens' %}
+    {% include 'rotators/rotator_screens_modal.html' %}
 {% elif modal == 'default-timers' %}
     {% include 'timers/default_timers_modal.html' %}
 {% elif modal == 'timer' %}

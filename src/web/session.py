@@ -157,6 +157,24 @@ class SessionHandler:
     def get_session_admin_tournaments_show_details(cls, request: HTMXRequest) -> bool:
         return request.session.get(cls.ADMIN_TOURNAMENTS_SHOW_DETAILS_KEY, False)
 
+    ADMIN_TOURNAMENT_CRITERION_ADD_OTHER_ACTIVE_KEY: str = (
+        'admin_tournament_criterion_add_other_active'
+    )
+
+    @classmethod
+    def set_session_admin_tournament_criterion_add_other_active(
+        cls, request: HTMXRequest, b: bool
+    ):
+        request.session[cls.ADMIN_TOURNAMENT_CRITERION_ADD_OTHER_ACTIVE_KEY] = b
+
+    @classmethod
+    def get_session_admin_tournament_criterion_add_other_active(
+        cls, request: HTMXRequest
+    ) -> bool:
+        return request.session.get(
+            cls.ADMIN_TOURNAMENT_CRITERION_ADD_OTHER_ACTIVE_KEY, False
+        )
+
     ADMIN_EVENTS_SHOW_DETAILS_KEY: str = 'admin_events_show_details'
 
     @classmethod
@@ -532,15 +550,15 @@ class SessionHandler:
     PRINT_TOURNAMENT_KEY: str = 'admin_print_last_tournament'
 
     @classmethod
-    def set_session_admin_print_last_tournament(
-        cls, request: HTMXRequest, event_uniq_id: str, tournament_id: int
+    def set_session_admin_print_last_tournaments(
+        cls, request: HTMXRequest, event_uniq_id: str, tournament_ids: list[int]
     ):
-        request.session[cls.PRINT_TOURNAMENT_KEY] = (event_uniq_id, tournament_id)
+        request.session[cls.PRINT_TOURNAMENT_KEY] = (event_uniq_id, tournament_ids)
 
     @classmethod
-    def get_session_admin_print_last_tournament(
+    def get_session_admin_print_last_tournaments(
         cls, request: HTMXRequest
-    ) -> tuple[str, int] | None:
+    ) -> tuple[str, list[int]] | None:
         return request.session.get(cls.PRINT_TOURNAMENT_KEY, None)
 
     PAIRINGS_SELECTED_TOURNAMENT_KEY: str = 'admin_pairings_selected_tournament'

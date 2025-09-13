@@ -22,8 +22,8 @@ from data.pairings.variations import SwissVariation
 from data.print_documents import PlayerSplitter, PrintDocument
 from data.print_documents.documents import PlayerPrintDocument, StatisticsPrintDocument
 from data.print_documents.player_splitters import ClubPlayerSplitter
-from data.prize.player_filter_options import PlayerFilterOption, ClubsFilterOption
-from data.prize.player_filters import PlayerFilter, ClubPlayerFilter
+from data.criteria.player_filter_options import PlayerFilterOption, ClubsFilterOption
+from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
 from data.tie_breaks import TieBreak
 from data.tie_breaks.managers import TieBreakManager, TieBreakOptionManager
 from data.tie_breaks.options import TieBreakOption
@@ -873,11 +873,12 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def get_extra_statistics_sections(
-        self, document: PrintDocument, tournament: 'Tournament'
+        self, document: PrintDocument, tournaments: list['Tournament']
     ) -> Iterable[ExtraStatisticsSection]:
         if isinstance(document, StatisticsPrintDocument):
             counter = Counter[str](
                 league
+                for tournament in tournaments
                 for p in tournament.players
                 if (league := FFEUtils.get_player_plugin_data(p).league) is not None
             )
@@ -980,7 +981,7 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def insert_prize_player_filter_types(
+    def insert_player_filter_types(
         self, player_filter_types: list[type['PlayerFilter']]
     ):
         league: type[PlayerFilter] = FfeLeaguePlayerFilter
@@ -988,7 +989,7 @@ class FfePlugin(Plugin):
         PluginUtils.insert_on_equals(player_filter_types, league, club)
 
     @hookimpl
-    def insert_prize_player_filter_option_types(
+    def insert_player_filter_option_types(
         self, player_filter_option_types: list[type['PlayerFilterOption']]
     ):
         league: type[PlayerFilterOption] = FfeLeaguesFilterOption

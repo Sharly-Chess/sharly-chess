@@ -5,7 +5,7 @@ from functools import cached_property
 from common.exception import OptionError
 from common.i18n import _
 from data.player import Player, Club, Federation
-from data.prize.player_filter_options import (
+from data.criteria.player_filter_options import (
     PlayerFilterOption,
     GenderOption,
     MinRatingOption,

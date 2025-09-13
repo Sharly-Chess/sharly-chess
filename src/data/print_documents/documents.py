@@ -11,6 +11,7 @@ from data.board import Board
 from data.pairings.engines import RoundRobinPairingEngine
 from data.pairings.systems import RoundRobinPairingSystem
 from data.player import Player, PlayerTitle, dataclass, plugin_manager
+from data.event import Event
 from data.print_documents.options import (
     PairingStylePrintOption,
     PlayerSplitPrintOption,
@@ -19,6 +20,8 @@ from data.print_documents.options import (
     PlayerSortPrintOption,
     ShowWarningsPrintOption,
     ClubThresholdPrintOption,
+    TournamentPrintOption,
+    TournamentsPrintOption,
 )
 from data.tournament import Tournament
 from utils import StaticUtils
@@ -29,11 +32,42 @@ from utils.option import OptionHandler
 class PrintDocument(OptionHandler[PrintOption], ABC):
     def __init__(
         self,
+        event: Event | None = None,
         options: list[PrintOption] | None = None,
-        tournament: Tournament | None = None,
     ):
-        self.tournament = tournament
         super().__init__(options)
+        self.event = event
+
+    @property
+    def tournament(self) -> Tournament:
+        """The tournament for which the document is printed."""
+        assert self.event is not None
+        tournament_id = self._get_option(TournamentPrintOption).value
+        if tournament_id:
+            return self.event.tournaments_by_id[tournament_id]
+        return self.tournaments[0]
+
+    @property
+    def tournaments(self) -> list[Tournament]:
+        """The tournaments for which the document is printed."""
+        assert self.event is not None
+        tournament_ids = self._get_option(TournamentsPrintOption).value
+        if not tournament_ids:
+            return list(self.event.tournaments)
+        return [
+            self.event.tournaments_by_id[int(tournament_id)]
+            for tournament_id in tournament_ids.split(',')
+        ]
+
+    @property
+    def subtitle(self) -> str:
+        """Subtitle of the print document."""
+        assert self.event is not None
+        return (
+            self.event.name
+            if len(self.tournaments) == len(list(self.event.tournaments))
+            else ', '.join(tournament.name for tournament in self.tournaments)
+        )
 
     @property
     @abstractmethod
@@ -75,13 +109,17 @@ class PlayerPrintDocument(PrintDocument, ABC):
         """List of players in the order they should appear in the document."""
 
     @property
-    def ordered_splitted_players(self) -> dict[str, list[Player]]:
+    def ordered_split_players(self) -> dict[str, list[Player]]:
         splitter = self._get_option(PlayerSplitPrintOption).player_splitter
         return splitter.split_players(self.ordered_players)
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [PlayerSplitPrintOption]
+        return [TournamentsPrintOption, PlayerSplitPrintOption]
+
+    @property
+    def multiple_tournaments(self) -> bool:
+        return True
 
     @property
     def is_crosstable(self) -> bool:
@@ -111,6 +149,14 @@ class PlayerPrintDocument(PrintDocument, ABC):
     def ranking_round(self) -> int | None:
         return None
 
+    @override
+    @property
+    def subtitle(self) -> str:
+        """Subtitle of the print document."""
+        return (
+            self.tournament.name if not self.multiple_tournaments else super().subtitle
+        )
+
     @property
     def template_context(self) -> dict[str, Any]:
         # As 'players.html' template is shared with player screens,
@@ -120,7 +166,11 @@ class PlayerPrintDocument(PrintDocument, ABC):
         # ex: show_{var} instead of is_{document}
         return {
             'tournament': self.tournament,
-            'players': self.ordered_splitted_players,
+            'tournaments': self.tournaments,
+            'multiple_tournaments': self.multiple_tournaments
+            and len(self.tournaments) > 1,
+            'subtitle': self.subtitle,
+            'players': self.ordered_split_players,
             'crosstable': self.is_crosstable,
             'ranking': self.is_ranking,
             'player_list': self.is_player_list,
@@ -146,8 +196,13 @@ class PlayerListPrintDocument(PlayerPrintDocument):
 
     @property
     def ordered_players(self) -> list[Player]:
-        assert self.tournament is not None
-        return self.tournament.players_by_name_with_unpaired
+        assert self.event is not None
+        tournament_ids = [tournament.id for tournament in self.tournaments]
+        return [
+            player
+            for player in self.event.players_sorted_by_name
+            if player.tournament.id in tournament_ids
+        ]
 
     @override
     @property
@@ -170,8 +225,13 @@ class PlayerCheckinListPrintDocument(PlayerPrintDocument):
 
     @property
     def ordered_players(self) -> list[Player]:
-        assert self.tournament is not None
-        return self.tournament.players_by_name_with_unpaired
+        assert self.event is not None
+        tournament_ids = [tournament.id for tournament in self.tournaments]
+        return [
+            player
+            for player in self.event.players_sorted_by_name
+            if player.tournament.id in tournament_ids
+        ]
 
     @override
     @property
@@ -183,7 +243,6 @@ class AbstractPlayerRankingPrintDocument(PlayerPrintDocument, ABC):
     @override
     @property
     def ranking_round(self) -> int:
-        assert self.tournament is not None
         return (
             self._get_option(RoundPrintOption).value
             or self.tournament.max_ranking_round
@@ -191,7 +250,6 @@ class AbstractPlayerRankingPrintDocument(PlayerPrintDocument, ABC):
 
     @property
     def ordered_players(self) -> list[Player]:
-        assert self.tournament is not None
         return list(
             self.tournament.compute_player_ranks(
                 after_round=self.ranking_round
@@ -200,7 +258,12 @@ class AbstractPlayerRankingPrintDocument(PlayerPrintDocument, ABC):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [PlayerSplitPrintOption, RoundPrintOption]
+        return [TournamentPrintOption, PlayerSplitPrintOption, RoundPrintOption]
+
+    @override
+    @property
+    def multiple_tournaments(self) -> bool:
+        return False
 
     @override
     def validate_options(self):
@@ -208,7 +271,6 @@ class AbstractPlayerRankingPrintDocument(PlayerPrintDocument, ABC):
         ranking_round = self._get_option(RoundPrintOption)
         if ranking_round.value is None:
             return
-        assert self.tournament is not None
         if ranking_round.value > self.tournament.rounds:
             raise OptionError(
                 _(
@@ -225,7 +287,7 @@ class AbstractPlayerRankingPrintDocument(PlayerPrintDocument, ABC):
             )
 
 
-class PlayerRankingPrintDocument(AbstractPlayerRankingPrintDocument, ABC):
+class PlayerRankingPrintDocument(AbstractPlayerRankingPrintDocument):
     @staticmethod
     def static_name() -> str:
         return _('Ranking')
@@ -246,7 +308,7 @@ class PlayerRankingPrintDocument(AbstractPlayerRankingPrintDocument, ABC):
         return True
 
 
-class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument, ABC):
+class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument):
     @staticmethod
     def static_name() -> str:
         return _('Crosstable')
@@ -276,6 +338,10 @@ class PlayerRoundPerformanceIndicatorPrintDocument(PrintDocument):
     def static_id() -> str:
         return 'round-performance-indicators'
 
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [TournamentPrintOption, RoundPrintOption]
+
     @property
     def title(self) -> str:
         return _('Performance indicators for round #{round}').format(
@@ -284,7 +350,6 @@ class PlayerRoundPerformanceIndicatorPrintDocument(PrintDocument):
 
     @property
     def ranking_round(self) -> int:
-        assert self.tournament is not None
         return (
             self._get_option(RoundPrintOption).value
             or self.tournament.max_ranking_round
@@ -296,7 +361,6 @@ class PlayerRoundPerformanceIndicatorPrintDocument(PrintDocument):
 
     @property
     def ordered_players(self) -> list[tuple[Player, Player, Result, float]]:
-        assert self.tournament is not None
         ranking_round = self.ranking_round
         if not ranking_round:
             return []
@@ -312,15 +376,10 @@ class PlayerRoundPerformanceIndicatorPrintDocument(PrintDocument):
                 results.append((player, opponent, pairing.result, rating_change))
         return sorted(results, key=lambda p: -p[3])
 
-    @staticmethod
-    def available_options() -> list[type[PrintOption]]:
-        return [RoundPrintOption]
-
     @override
     def validate_options(self):
         super().validate_options()
         ranking_round = self._get_option(RoundPrintOption)
-        assert self.tournament is not None
         if ranking_round.value is None:
             if self.tournament.max_ranking_round < 1:
                 raise OptionError(
@@ -347,6 +406,7 @@ class PlayerRoundPerformanceIndicatorPrintDocument(PrintDocument):
     def template_context(self) -> dict[str, Any]:
         return {
             'tournament': self.tournament,
+            'subtitle': self.tournament.name,
             'scores': self.ordered_players,
         }
 
@@ -356,19 +416,25 @@ class BoardPrintDocument(PrintDocument, ABC):
     def template_name(self) -> str:
         return '/admin/print/boards.html'
 
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [TournamentPrintOption, RoundPrintOption]
+
     @property
     def show_results(self) -> bool:
         return False
 
     @property
     def boards(self) -> list[Board]:
-        assert self.tournament is not None
+        assert self.event is not None
         self.tournament.set_for_round(self.at_round)
         return self.tournament.get_round_boards(self.at_round)
 
     @property
     def template_context(self) -> dict[str, Any]:
         return {
+            'tournament': self.tournament,
+            'subtitle': self.tournament.name,
             'show_result': self.show_results,
             'boards': self.boards,
             'selected_round': self.at_round,
@@ -376,17 +442,11 @@ class BoardPrintDocument(PrintDocument, ABC):
 
     @property
     def at_round(self) -> int:
-        assert self.tournament is not None
         return self._get_option(RoundPrintOption).value or self.tournament.current_round
-
-    @staticmethod
-    def available_options() -> list[type[PrintOption]]:
-        return [RoundPrintOption]
 
     @override
     def validate_options(self):
         super().validate_options()
-        assert self.tournament is not None
         at_round = self._get_option(RoundPrintOption)
         if at_round.value is None:
             return
@@ -417,15 +477,13 @@ class PairingPrintDocument(PrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [PairingStylePrintOption, RoundPrintOption]
+        return [TournamentPrintOption, PairingStylePrintOption, RoundPrintOption]
 
     @cached_property
     def sub_document(self) -> PrintDocument:
         return self._get_option(
             PairingStylePrintOption
-        ).pairing_style.print_document_type(
-            options=self.options, tournament=self.tournament
-        )
+        ).pairing_style.print_document_type(event=self.event, options=self.options)
 
     @property
     def title(self) -> str:
@@ -469,13 +527,16 @@ class PlayerPairingPrintDocument(PlayerPrintDocument):
 
     @property
     def at_round(self) -> int:
-        assert self.tournament is not None
         return self._get_option(RoundPrintOption).value or self.tournament.current_round
 
     @override
     @property
+    def multiple_tournaments(self) -> bool:
+        return False
+
+    @override
+    @property
     def ordered_players(self) -> list[Player]:
-        assert self.tournament is not None
         self.tournament.set_for_round(self.at_round)
         return self.tournament.players_by_name_without_unpaired
 
@@ -493,6 +554,10 @@ class ResultPrintDocument(BoardPrintDocument):
     @staticmethod
     def static_name() -> str:
         return _('Results')
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [TournamentPrintOption]
 
     @staticmethod
     def static_id() -> str:
@@ -513,6 +578,10 @@ class BergerGridPrintDocument(PrintDocument):
     def static_name() -> str:
         return _('Berger grid')
 
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [TournamentPrintOption, PlayerSortPrintOption]
+
     @property
     def title(self) -> str:
         return self.name
@@ -520,10 +589,6 @@ class BergerGridPrintDocument(PrintDocument):
     @property
     def template_name(self) -> str:
         return '/admin/print/berger_grid.html'
-
-    @staticmethod
-    def available_options() -> list[type[PrintOption]]:
-        return [PlayerSortPrintOption]
 
     @staticmethod
     def validate_for_tournament(tournament: Tournament) -> str | None:
@@ -535,7 +600,6 @@ class BergerGridPrintDocument(PrintDocument):
 
     @cached_property
     def grid_id_by_player_id(self) -> dict[int, int]:
-        assert self.tournament is not None
         player_sorter = self._get_option(PlayerSortPrintOption).player_sorter
         return {
             player.id: index + 1
@@ -545,7 +609,6 @@ class BergerGridPrintDocument(PrintDocument):
         }
 
     def grid_results_points(self, results: list[list[Result | None]]) -> str:
-        assert self.tournament is not None
         return StaticUtils.points_str(
             sum(
                 result.points(self.tournament.point_values)
@@ -557,8 +620,6 @@ class BergerGridPrintDocument(PrintDocument):
     def build_result_grid(self) -> dict[int, list[list[Result | None]]]:
         """Build the player results in a grid format ordered by berger numbers.
         Such a grid is returned per player encounter."""
-
-        assert self.tournament is not None
         pairing_engine = self.tournament.pairing_variation.engine
         assert isinstance(pairing_engine, RoundRobinPairingEngine)
         result_grid: dict[int, list[list[Result | None]]] = {
@@ -606,7 +667,6 @@ class BergerGridPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
-        assert self.tournament is not None
         self.tournament.compute_player_ranks()
         return {
             'result_grid': self.build_result_grid(),
@@ -623,6 +683,10 @@ class PrizeListPrintDocument(PrintDocument):
     def static_name() -> str:
         return _('Prize list')
 
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [TournamentsPrintOption]
+
     @property
     def title(self) -> str:
         return self.name
@@ -633,10 +697,10 @@ class PrizeListPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
-        assert self.tournament is not None
-
-        prize_currency = self.tournament.event.prize_currency
+        assert self.event is not None
+        prize_currency = self.event.prize_currency
         return {
+            'tournaments': self.tournaments,
             'ordinal_integer': StaticUtils.ordinal_integer,
             'prize_currency': prize_currency,
             'format_prize_value': partial(
@@ -655,15 +719,13 @@ class PrizeAssignmentPrintDocument(PrintDocument):
     def static_name() -> str:
         return _('Prize assignment')
 
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [TournamentsPrintOption, ShowWarningsPrintOption]
+
     @property
     def title(self) -> str:
-        assert self.tournament is not None
-        after_round = self.tournament.max_ranking_round
-        if after_round == self.tournament.rounds:
-            return self.name
-        if after_round == 0:
-            return _('Prize assignment before the first round')
-        return _('Prize assignment after round #{round}').format(round=after_round)
+        return _('Prize assignment')
 
     @property
     def template_name(self) -> str:
@@ -671,10 +733,10 @@ class PrizeAssignmentPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
-        assert self.tournament is not None
-
-        prize_currency = self.tournament.event.prize_currency
+        assert self.event is not None
+        prize_currency = self.event.prize_currency
         return {
+            'tournaments': self.tournaments,
             'show_warnings': self.get_option_values()[0],
             'ordinal_integer': StaticUtils.ordinal_integer,
             'prize_currency': prize_currency,
@@ -683,10 +745,6 @@ class PrizeAssignmentPrintDocument(PrintDocument):
                 currency=prize_currency,
             ),
         }
-
-    @staticmethod
-    def available_options() -> list[type[PrintOption]]:
-        return [ShowWarningsPrintOption]
 
 
 @dataclass
@@ -705,13 +763,13 @@ class StatisticsPrintDocument(PrintDocument):
     def static_name() -> str:
         return _('Statistics')
 
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [TournamentsPrintOption, ClubThresholdPrintOption]
+
     @property
     def title(self) -> str:
         return _('Participation Statistics')
-
-    @staticmethod
-    def available_options() -> list[type[PrintOption]]:
-        return [ClubThresholdPrintOption]
 
     @property
     def template_name(self) -> str:
@@ -730,11 +788,10 @@ class StatisticsPrintDocument(PrintDocument):
         filter_func: Callable[[Any], bool] | None = None,
         subtitle_fn: Callable[[int], str] | None = None,
     ) -> StatisticsSection | None:
-        assert self.tournament is not None
-
         values = [
             value
-            for p in self.tournament.players
+            for tournament in self.tournaments
+            for p in tournament.players
             if (value := getattr(p, attr_name)) is not None
             and (filter_func(value) if filter_func else True)
         ]
@@ -760,11 +817,10 @@ class StatisticsPrintDocument(PrintDocument):
         )
 
     def rating_range_section(self) -> StatisticsSection | None:
-        assert self.tournament is not None
-        players = self.tournament.players
+        all_players = [p for t in self.tournaments for p in t.players]
 
-        ratings = [p.rating for p in players if not p.estimated]
-        estimated_count = sum(1 for p in players if p.estimated)
+        ratings = [p.rating for p in all_players if not p.estimated]
+        estimated_count = sum(1 for p in all_players if p.estimated)
 
         if not ratings and not estimated_count:
             return None
@@ -778,7 +834,7 @@ class StatisticsPrintDocument(PrintDocument):
 
         # Count players per bucket
         counter: Counter[tuple[int, int]] = Counter()
-        for p in players:
+        for p in all_players:
             if p.estimated:
                 continue
             for start, end in buckets:
@@ -795,21 +851,46 @@ class StatisticsPrintDocument(PrintDocument):
         if estimated_count:
             rows[_('Unrated')] = estimated_count
 
-        return StatisticsSection(title=_('Rating ranges'), rows=rows)
+        non_estimated_players = [
+            player
+            for tournament in self.tournaments
+            for player in tournament.players
+            if not player.estimated
+        ]
+        average_rating = (
+            round(
+                sum(player.rating for player in non_estimated_players)
+                / len(non_estimated_players)
+            )
+            if non_estimated_players
+            else None
+        )
+
+        return StatisticsSection(
+            title=_('Rating ranges'),
+            rows=rows,
+            subtitle=_('Average rating: {rating}').format(rating=average_rating),
+        )
 
     @property
     def template_context(self) -> dict[str, Any]:
-        assert self.tournament is not None
-
         club_threshold = self._get_option(ClubThresholdPrintOption).value or 0
 
         statistics: list[StatisticsSection] = []
 
         per_plugin_sections = plugin_manager.hook.get_extra_statistics_sections(
-            document=self, tournament=self.tournament
+            document=self, tournaments=self.tournaments
         )
 
         for attr_name, title, sort_key, min_count, filter_func, subtitle_fn in [
+            (
+                'tournament',
+                _('Tournaments'),
+                lambda item: item[0].name,
+                None,
+                lambda x: x is not None,
+                None,
+            ),
             (
                 'title',
                 _('Titled players'),
@@ -863,6 +944,9 @@ class StatisticsPrintDocument(PrintDocument):
                 ).format(count=count),
             ),
         ]:
+            if attr_name == 'tournament' and len(self.tournaments) <= 1:
+                continue  # Skip if there's only one tournament
+
             for sections in per_plugin_sections:
                 for section in sections:
                     if section.at == attr_name:
@@ -885,16 +969,8 @@ class StatisticsPrintDocument(PrintDocument):
                 if section:
                     statistics.append(section)
 
-        non_estimated_players = [
-            player for player in self.tournament.players if not player.estimated
-        ]
-        average_rating = (
-            round(
-                sum(player.rating for player in non_estimated_players)
-                / len(non_estimated_players)
-            )
-            if non_estimated_players
-            else None
-        )
-
-        return {'average_rating': average_rating, 'statistics': statistics}
+        return {
+            'tournaments': self.tournaments,
+            'subtitle': self.subtitle,
+            'statistics': statistics,
+        }

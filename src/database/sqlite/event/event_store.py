@@ -78,6 +78,14 @@ class StoredPrizeGroup:
 
 
 @dataclass
+class StoredTournamentCriterion:
+    id: int | None
+    tournament_id: int
+    type: str
+    options: dict[str, Any]
+
+
+@dataclass
 class StoredPairing:
     tournament_id: int
     player_id: int
@@ -163,6 +171,9 @@ class StoredTournament:
     last_pairing_update: float = 0.0
     three_points_for_a_win: bool = False
     override_unrated_rapid_blitz: bool | None = None
+    stored_criteria: list[StoredTournamentCriterion] = field(
+        default_factory=list[StoredTournamentCriterion]
+    )
     stored_prize_groups: list[StoredPrizeGroup] = field(
         default_factory=list[StoredPrizeGroup]
     )
@@ -260,16 +271,25 @@ class StoredFamily:
 
 
 @dataclass
+class StoredRotatingScreen:
+    id: int | None
+    rotator_id: int
+    screen_id: int | None = None
+    family_id: int | None = None
+    index: int = 0
+
+
+@dataclass
 class StoredRotator:
     id: int | None
     name: str
-    family_ids: list[int] | None
-    screen_ids: list[int] | None
-    delay: int | None
+    delay: int | None = None
     public: bool = True
     message_default: bool = True
     message_text: str | None = None
-    errors: dict[str, str] = field(default_factory=dict[str, str])
+    stored_rotating_screens: list[StoredRotatingScreen] = field(
+        default_factory=list[StoredRotatingScreen]
+    )
 
 
 @dataclass

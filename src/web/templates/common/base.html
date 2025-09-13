@@ -149,16 +149,15 @@
                     const form = document.createElement('form');
                     form.method = 'get';
                     form.action = window.location.origin +
-                        '/admin/tournament-print-view/' +
+                        '/admin/print-view/' +
                         event.detail.event_uniq_id + '/' +
-                        event.detail.tournament_id + '/' +
                         event.detail.document;
                     const input = document.createElement('input');
                     input.type = 'hidden';
                     input.name = 'options';
                     input.value = Object.keys(event.detail.options).map(k => k + '=' + event.detail.options[k]).join('|');
                     form.appendChild(input);
-                    form.target = 'PrintWindow';
+                    form.target = '_blank';
                     document.body.appendChild(form);
                     form.submit();
                     document.body.removeChild(form);
@@ -521,7 +520,7 @@
                             class="copyright fst-italic text-center d-flex justify-content-center align-items-center"
                             style="height: 60px;"
                         >
-                            Sharly Chess {{ sharly_chess_config.version }} - {{ sharly_chess_config.copyright }} - {{ sharly_chess_config.url }}
+                            Sharly Chess {{ sharly_chess_config.version }} - {{ sharly_chess_config.copyright }} - {{ sharly_chess_config.web_url }}
                         </div>
                     </div>
                 </main>

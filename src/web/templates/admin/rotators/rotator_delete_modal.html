@@ -1,0 +1,17 @@
+{% extends '/admin/common/modal/delete_modal.html' %}
+
+{% block modal_title %}
+    {{ _('Delete rotator') }}
+{% endblock %}
+
+{% block object_name %}
+    {{ _('%(string)s: %(value)s', string=_('Rotator'), value=admin_rotator.name) }}
+{% endblock %}
+
+{% block delete_url %}
+    {{ url_for(
+        'admin-rotator-delete',
+        event_uniq_id=admin_event.uniq_id,
+        rotator_id=admin_rotator.id,
+    ) }}
+{% endblock %}

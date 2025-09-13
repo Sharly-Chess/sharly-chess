@@ -1,5 +1,5 @@
 msgid " [{default_choice}: {default_value}]: "
-msgstr " [{default_choice} : {default_value}] : "
+msgstr " [{default_choice} : {default_value}] : "
 
 msgid " [{yes_answer}/{no_answer}]?"
 msgstr " [{yes_answer}/{no_answer}] ?"
@@ -72,6 +72,12 @@ msgid "%(num)d player did not check-in"
 msgid_plural "%(num)d players did not check-in"
 msgstr[0] "%(num)d joueur·euse n’a pas confirmé sa présence"
 msgstr[1] "%(num)d joueur·euses n’ont pas confirmé leur présence"
+
+#, python-format
+msgid "%(num)d player does not match criteria."
+msgid_plural "%(num)d players do not match criteria."
+msgstr[0] "%(num)d joueur·euse ne correspond pas aux critères."
+msgstr[1] "%(num)d joueur·euses ne correspondent pas aux critères."
 
 #, python-format
 msgid "%(num)d prize"
@@ -163,6 +169,9 @@ msgstr[1] "(%(num)d écrans)"
 msgid "(by default)"
 msgstr "(par défaut)"
 
+msgid "(family)"
+msgstr "(famille)"
+
 msgid "(inherited)"
 msgstr "(hérité)"
 
@@ -244,6 +253,9 @@ msgstr "<smart_count> jour |||| <smart_count> jours"
 
 msgid "<smart_count> hour |||| <smart_count> hours"
 msgstr "<smart_count> heure |||| <smart_count> heures"
+
+msgid "<smart_count> item selected |||| <smart_count> items selected"
+msgstr "<smart_count> élément sélectionné |||| <smart_count> éléments sélectionnés"
 
 msgid "<smart_count> minute |||| <smart_count> minutes"
 msgstr "<smart_count> minute |||| <smart_count> minutes"
@@ -396,6 +408,9 @@ msgstr "Ajouter un prix à la liste."
 msgid "Add a rotator to the event."
 msgstr "Ajouter un écran rotatif à l'évènement."
 
+msgid "Add a screen to check-in players or enter results."
+msgstr "Ajouter un écran de pointage des joueur·euses ou de saisie des résultats."
+
 msgid "Add a screen to display an image."
 msgstr "Ajouter un écran d'affichage d'une image."
 
@@ -410,9 +425,6 @@ msgstr "Ajouter un écran d'affichage des appariements par échiquier."
 
 msgid "Add a screen to display the ranking."
 msgstr "Ajouter un écran d'affichage du classement."
-
-msgid "Add a screen to enter results."
-msgstr ""
 
 msgid "Add a set"
 msgstr "Ajouter un ensemble"
@@ -432,6 +444,9 @@ msgstr "Ajouter un compte à l'évènement."
 msgid "Add events"
 msgstr "Ajouter des évènements"
 
+msgid "Add families"
+msgstr "Ajouter des familles"
+
 msgid "Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!"
 msgstr "Ajouter ici toutes les informations que vous pensez nécessaires, et si vous n'êtes pas connu·e des développeur·euses, présentez-vous !"
 
@@ -443,6 +458,9 @@ msgstr "Ajouter"
 
 msgid "Add players"
 msgstr "Ajouter des joueur·euses"
+
+msgid "Add screens"
+msgstr "Ajouter des écrans"
 
 msgid "Add tournaments"
 msgstr "Ajouter des tournois"
@@ -661,8 +679,8 @@ msgstr "ELO moyen"
 msgid "Average rating of opponents"
 msgstr "Classement ELO moyen des adversaires"
 
-msgid "Average rating:"
-msgstr "Moyenne Elo"
+msgid "Average rating: {rating}"
+msgstr "Classement moyen : {rating}"
 
 msgid "Avg. Perfect Perf. *** SHORT NAME FOR AVERAGE PERFECT PERFORMANCE"
 msgstr "Perf. parfaite moyenne"
@@ -954,11 +972,17 @@ msgstr "Choisir au moins une ligue."
 msgid "Choose at least one rating type."
 msgstr "Choisissez au moins un type de classement."
 
+msgid "Choose families to add"
+msgstr "Choisir des familles à ajouter"
+
 msgid "Choose from images in the 'custom' folder"
 msgstr "Choisir parmi les images du dossier 'custom'"
 
 msgid "Choose one, many or no tournaments."
 msgstr "Choisissez aucun, un ou plusieurs tournois."
+
+msgid "Choose screens to add"
+msgstr "Choisir des écrans à ajouter"
 
 msgid "Choose the columns displayed."
 msgstr "Choisir les colonnes affichées."
@@ -1399,8 +1423,14 @@ msgstr "Définir comme public"
 msgid "Define the criteria for players to belong to this category."
 msgstr "Définir les critères selon lesquels les joueur·euses appartiennent à cette catégorie."
 
+msgid "Define the criteria for players to participate in this tournament."
+msgstr "Définissez les critères permettant aux joueur·euses de participer à ce tournoi."
+
 msgid "Define the prizes of the category."
 msgstr "Définir les prix de la catégorie."
+
+msgid "Define the screens and screen families to display."
+msgstr "Définir les écrans et familles d'écrans à afficher."
 
 #, python-format
 msgid "Delay #%(num)d:"
@@ -2647,6 +2677,9 @@ msgstr "Rôles hérités"
 msgid "Input Screens may be used to allow players to enter their own results on a device that you make available at the venue."
 msgstr "Les écrans de saisie peuvent être utilisés pour permettre aux joueur·euses d’entrer eux-mêmes leurs résultats sur un portable ou une tablette mis à disposition sur le lieu du tournoi."
 
+msgid "Input screens can't be part of rotators."
+msgstr "Les écrans de pointage et de saisie des résultats ne peuvent faire partie des écrans rotatifs."
+
 msgid "Input screens show pairings by board number and allow people to enter results."
 msgstr "Les écrans de saisie des résultats présentent les appariements des joueur·euses par ordre croissant des échiquiers et permet l'entrée des résultats par les joueur·euses ou les arbitres."
 
@@ -2854,6 +2887,9 @@ msgstr "Liens vers cet écran :"
 
 msgid "List of players"
 msgstr "Liste des participant·es"
+
+msgid "Loading more results…"
+msgstr "Plus de résultats en cours de chargement…"
 
 msgid "Local URL: {local_url}"
 msgstr "URL locale : {local_url}"
@@ -3198,6 +3234,9 @@ msgstr "Aucun évènement trouvé."
 msgid "No events."
 msgstr "Aucun évènement."
 
+msgid "No families to add."
+msgstr "Pas de famille à ajouter."
+
 msgid "No hours."
 msgstr "Aucun horaire."
 
@@ -3267,20 +3306,20 @@ msgstr "Règlement non défini"
 msgid "No screen families"
 msgstr "Aucune famille d'écrans"
 
-msgid "No screen neither family to rotate."
-msgstr "Aucun écran ni famille à afficher."
-
 msgid "No screens"
 msgstr "Aucun écran"
+
+msgid "No screens to add."
+msgstr "Pas d'écran à ajouter."
+
+msgid "No screens."
+msgstr "Aucun écran."
 
 msgid "No such screens."
 msgstr "Aucun écran de ce type."
 
 msgid "No tie-break defined"
 msgstr "Départages non définis"
-
-msgid "No timer defined"
-msgstr "Aucun chronomètre défini"
 
 msgid "No timers"
 msgstr "Aucun chronomètre"
@@ -3362,6 +3401,12 @@ msgstr "Nombre de joueur·euses : %(num)d"
 msgid "Number of prizes"
 msgstr "Nombre de prix"
 
+msgid "Number of screen families"
+msgstr "Nombre de famille d'écrans"
+
+msgid "Number of screens"
+msgstr "Nombre d'écrans"
+
 msgid "Number of wins"
 msgstr "Nombre de victoires"
 
@@ -3404,20 +3449,20 @@ msgstr "En cours"
 msgid "Online sources"
 msgstr "Sources en ligne"
 
-msgid "Only arbiters can see private events."
-msgstr "Seul·es les arbitres peuvent voir les évènements privés."
+msgid "Only allowed users can see private events."
+msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les évènements privés."
 
-msgid "Only arbiters can see private screen families."
-msgstr "Seul·es les arbitres peuvent voir les écrans des familles privées."
+msgid "Only allowed users can see private screen families."
+msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les écrans des familles privées."
 
-msgid "Only arbiters can see private screens."
-msgstr "Seul·es les arbitres peuvent voir les écrans privés."
+msgid "Only allowed users can see private screens."
+msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les écrans privés."
 
-msgid "Only arbiters can view private display controllers."
-msgstr "Seul·es les arbitres peuvent voir les pilotes d'afficheurs privés."
+msgid "Only allowed users can view private display controllers."
+msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les pilotes d'afficheurs privés."
 
-msgid "Only arbiters can view private rotators."
-msgstr "Seul·es les arbitres peuvent voir les écrans rotatifs privés."
+msgid "Only allowed users can view private rotators."
+msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les écrans rotatifs privés."
 
 msgid "Only estimated ratings are optional."
 msgstr "Seuls les classements estimés sont optionnels."
@@ -3437,8 +3482,8 @@ msgstr "N'inclure que les joueur·euses de ce genre."
 msgid "Only one age category is expected with options including other categories."
 msgstr "Une seule catégorie d'age est attendue avec les options incluant d'autres catégories."
 
-msgid "Open Browser"
-msgstr "Ouvrir le navigateur"
+msgid "Open Admin Interface"
+msgstr "Ouvrir l'interface d'administration"
 
 #, python-format
 msgid "Open check-in for tournament [%(tournament)s]."
@@ -3723,11 +3768,20 @@ msgstr "Joueur·euse [{player_id}] - ronde {round} : "
 msgid "Player [{player_id}]: {error}"
 msgstr "Joueur·euse [{player_id}] : {error}"
 
+msgid "Player [{player}] has been created, but does not match tournament criteria: {names}"
+msgstr "Le·la joueur·euse [{player}] a été créé·e. Cependant, il·elle ne correspond pas aux critères du tournoi : {names}"
+
+msgid "Player [{player}] has been created."
+msgstr "Le·la joueur·euse [{player}] a été créé·e."
+
 msgid "Player [{player}] has been moved from tournament [{src_tournament}] to tournament [{dst_tournament}]."
 msgstr "Le·la joueur·euse [{player}] a été déplacé·e du tournoi [{src_tournament}] au tournoi [{dst_tournament}]."
 
 msgid "Player [{player}] has pairings in tournament [{tournament}]."
 msgstr "Le·la joueur·euse [{player}] a déjà été apparié·e dans le tournoi [{tournament}]."
+
+msgid "Player does not match tournament criteria: {names}"
+msgstr "Le·la joueur·euse ne correspond pas aux critères du tournoi : {names}"
 
 msgid "Player selection (by alphabetical order)"
 msgstr "Sélection des joueur·euses (par ordre alphabétique)"
@@ -3941,12 +3995,6 @@ msgstr "Prix"
 msgid "Prize assignment"
 msgstr "Attribution des prix"
 
-msgid "Prize assignment after round #{round}"
-msgstr "Attribution des prix après la ronde n°{round}"
-
-msgid "Prize assignment before the first round"
-msgstr "Attribution des prix avant la première ronde"
-
 msgid "Prize category [{prize_category}] has been duplicated."
 msgstr "La catégorie de prix [{prize_category}] a été dupliquée."
 
@@ -3962,7 +4010,7 @@ msgstr "La catégorie de prix [{prize_category}] a été mise à jour avec succ�
 msgid "Prize criterion creation"
 msgstr "Création d'un critère"
 
-msgid "Prize criterion edition"
+msgid "Prize criterion editing"
 msgstr "Édition d'un critère"
 
 msgid "Prize currency"
@@ -4018,9 +4066,6 @@ msgstr "Évènement public"
 
 msgid "Public family"
 msgstr "Famille publique"
-
-msgid "Public rotator"
-msgstr "Écran rotatif public"
 
 msgid "Public screen"
 msgstr "Écran public"
@@ -4439,6 +4484,9 @@ msgstr "Familles d'écrans :"
 msgid "Screen families: %(num)d"
 msgstr "Familles d'écrans : %(num)d"
 
+msgid "Screen list"
+msgstr "Liste d'écrans"
+
 msgid "Screen type"
 msgstr "Type d'écran"
 
@@ -4482,6 +4530,9 @@ msgstr "La couleur initiale ne peut être modifiée une fois que le tournoi a co
 
 msgid "Seeding of unrated rapid/blitz"
 msgstr "Classement des joueur·euses sans classement FIDE rapide/blitz"
+
+msgid "Select All"
+msgstr "Tout sélectionner"
 
 msgid "Select the players and the data to update:"
 msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"
@@ -4807,8 +4858,8 @@ msgstr "La fédération qui organise l’évènement. Sharly Chess peut proposer
 msgid "The file to import."
 msgstr "Le fichier à importer."
 
-msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
-msgstr "Le premier tournoi de l'écran, obligatoire (il est possible d'ajouter ultérieurement des tournois sur l'écran)."
+msgid "The first tournament of the screen."
+msgstr "Le premier tournoi de l'écran."
 
 msgid "The following categories will also be deleted:"
 msgstr "Les catégories suivantes vont aussi être supprimées :"
@@ -4883,9 +4934,6 @@ msgstr "Le nom de l'évènement sur la plateforme ChessEvent (par défaut, peut 
 
 msgid "The name of the event, used for display and reports."
 msgstr "Le nom de l'évènement, utilisé pour l'affichage et dans les rapports."
-
-msgid "The name of the rotator."
-msgstr "Le nom de l'écran rotatif."
 
 #, python-format
 msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
@@ -5074,14 +5122,8 @@ msgstr "Le nombre de rondes est incompatible avec le nombre de joueur·euses (at
 msgid "The round for which the document is printed (Defaults to the last possible round)."
 msgstr "La ronde pour laquelle le document est imprimé (par défaut la dernière ronde possible)."
 
-msgid "The screen families to rotate (the input screen families are emphasised because they should not appear on rotators)."
-msgstr "Les familles à afficher en rotation (les familles d'écrans de saisie apparaissent en italique car elles ne devraient normalement pas être incluses dans les écrans rotatifs)."
-
 msgid "The screens displayed by the display controller are controlled by the screen managers."
 msgstr "Les écrans utilisés par le pilote d'afficheurs sont désignés par l'administrateur·ice."
-
-msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
-msgstr "Les écrans à afficher en rotation (les écrans de saisie apparaissent en italique car ils ne devraient normalement pas être inclus dans les écrans rotatifs)."
 
 msgid "The start date and time of the event."
 msgstr "La date et l'heure de début de l'évènement."
@@ -5114,8 +5156,8 @@ msgstr "Le tournoi n'est pas encore commencé."
 msgid "The tournament is finished."
 msgstr "Le tournoi est terminé."
 
-msgid "The tournament of the screens of the family, mandatory (unlike basic screens, only one tournament can be displayed on family screens)."
-msgstr "Le tournoi des écrans de la famille, obligatoire (contrairement aux écrans basiques, un seul tournoi peut être affiché sur les écrans de famille)."
+msgid "The tournament of the screens of the family."
+msgstr "Le tournoi des écrans de la famille."
 
 msgid "The tournament of which you want to show the pairings."
 msgstr "Le tournoi dont on souhaite afficher les appariements"
@@ -5128,6 +5170,9 @@ msgstr "Les tournois sur lesquels le compte pourra agir (si aucun, le compte peu
 
 msgid "The tournaments on which the device can act (if none, the device can act on all the tournaments)."
 msgstr "Les tournois sur lesquels l'appareil pourra agir (si aucun, l'appareil peut agir sur tous les tournois)."
+
+msgid "The tournaments to print."
+msgstr "Les tournois à imprimer."
 
 msgid "The type of criterion used to filter the players."
 msgstr "Le type de critère utilisé pour filtrer les joueur·euses."
@@ -5295,9 +5340,6 @@ msgstr "Le chronomètre [{timer}] a été modifié."
 msgid "Timer hours"
 msgstr "Horaires du chronomètre"
 
-msgid "Timer {timer_uniq_id}"
-msgstr "Chronomètre : {timer_uniq_id}"
-
 msgid "Timer:"
 msgstr "Chronomètre :"
 
@@ -5393,6 +5435,12 @@ msgstr "Le tournoi [{tournament}] est terminé, on ne peut plus y ajouter de jou
 msgid "Tournament [{tournament}] successfully imported."
 msgstr "Le tournoi [{tournament}] a été importé avec succès."
 
+msgid "Tournament criterion creation"
+msgstr "Création de critères de tournoi"
+
+msgid "Tournament criterion editing"
+msgstr "Édition des critères de tournoi."
+
 msgid "Tournament exempt from registration fees."
 msgstr "Tournoi exempt de droits d'homologation."
 
@@ -5451,6 +5499,9 @@ msgstr "Tournois affichés :"
 
 msgid "Tournaments management"
 msgstr "Gestion des tournois"
+
+msgid "Tournaments:"
+msgstr "Tournois :"
 
 #, python-format
 msgid "Tournaments: %(num)d"
@@ -5747,9 +5798,6 @@ msgstr "Utiliser un Elo estimé pour les joueur·euses non classé·es"
 msgid "Use log-level specific colors"
 msgstr "Utiliser des couleurs spécifiques au niveau de log"
 
-msgid "Use no timer"
-msgstr "Ne pas utiliser de chronomètre"
-
 msgid "Use pairing engines"
 msgstr "Utiliser les moteurs d'appariement"
 
@@ -5877,12 +5925,6 @@ msgstr "Attention : les %(player_count)d joueur·euses du tournoi seront suppri
 
 msgid "Warning: the deletion is permanent!"
 msgstr "Attention : la suppression est définitive !"
-
-msgid "Warning: the deletion of a device is permanent!"
-msgstr "Attention : la suppression d'un appareil est définitive !"
-
-msgid "Warning: the deletion of an account is permanent!"
-msgstr "Attention : la suppression d'un compte est définitive !"
 
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
 msgstr "Attention : vous essayez d'exécuter une opération interdite par le règlement FIDE."

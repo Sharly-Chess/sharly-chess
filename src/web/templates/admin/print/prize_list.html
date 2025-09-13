@@ -1,36 +1,41 @@
 {% extends '/admin/print/base.html' %}
 
 {% block content %}
-
-    {% for prize_group in document.tournament.sorted_prize_groups %}
+    {% for tournament in tournaments %}
         {% if not loop.first %}
-            <hr/>
+            <div class="separator"></div>
         {% endif %}
-        {% for prize_category in prize_group.sorted_categories %}
-            <div class="section-title">
-                {{ prize_category.name }}
-            </div>
-            <div class="section-sub-title">
-                {{ prize_category.format_shared_prizes(prize_currency) }}
-            </div>
-            <table>
-                <tbody>
-                    {% for prize in prize_category.sorted_prizes %}
-                        <tr>
-                            <td class="important-cell">
-                                {{ ordinal_integer(loop.index)|safe }}
-                            </td>
-                            <td>
-                                {% if prize.is_monetary %}
-                                    {{ format_prize_value(value=prize.value) }}
-                                {% else %}
-                                    {{ prize.description }}
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="tournament-title">{{ tournament.name }}</div>
+        {% for prize_group in tournament.sorted_prize_groups %}
+            {% if not loop.first %}
+                <div class="short-separator"></div>
+            {% endif %}
+            {% for prize_category in prize_group.sorted_categories %}
+                <div class="section-title">
+                    {{ prize_category.name }}
+                </div>
+                <div class="section-sub-title">
+                    {{ prize_category.format_shared_prizes(prize_currency) }}
+                </div>
+                <table>
+                    <tbody>
+                        {% for prize in prize_category.sorted_prizes %}
+                            <tr>
+                                <td class="important-cell">
+                                    {{ ordinal_integer(loop.index)|safe }}
+                                </td>
+                                <td>
+                                    {% if prize.is_monetary %}
+                                        {{ format_prize_value(value=prize.value) }}
+                                    {% else %}
+                                        {{ prize.description }}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endfor %}
         {% endfor %}
     {% endfor %}
 {% endblock %}

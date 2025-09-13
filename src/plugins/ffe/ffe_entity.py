@@ -20,11 +20,11 @@ from data.pairings.settings import PairingSetting
 from data.pairings.variations import SwissVariation
 from data.player import Player
 from data.print_documents import PlayerSplitter
-from data.prize.player_filter_options import (
+from data.criteria.player_filter_options import (
     PlayerFilterOption,
     SelectPlayerFilterOption,
 )
-from data.prize.player_filters import PlayerFilter
+from data.criteria.player_filters import PlayerFilter
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourceDatabase
@@ -270,10 +270,12 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
             )
 
     async def search_player(
-        self, string: str, limit: int | None = None
+        self, string: str, federation: str, page: int = 0, limit: int | None = None
     ) -> list[StoredPlayer]:
         async with FFESqlServer() as ffe_sql_server:
-            return await ffe_sql_server.search_player(unicode_normalize(string), limit)
+            return await ffe_sql_server.search_player(
+                unicode_normalize(string), federation, page, limit
+            )
 
 
 class LeaguePlayerSplitter(PlayerSplitter):

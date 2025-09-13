@@ -36,11 +36,13 @@ from database.sqlite.event.event_store import (
     StoredPrizeCriterion,
     StoredPrize,
     StoredPlayer,
+    StoredTournamentCriterion,
     StoredTournamentPlayer,
     StoredPairing,
     StoredBoard,
     StoredDevice,
     StoredAccount,
+    StoredRotatingScreen,
 )
 from database.sqlite.event import migrations
 from database.sqlite.migration_database import MigrationDatabase
@@ -308,7 +310,7 @@ class EventDatabase(MigrationDatabase):
         stored_event.stored_timers = list(self.load_stored_timers())
         stored_event.stored_families = list(self.load_stored_families())
         stored_event.stored_screens = list(self.load_stored_screens())
-        stored_event.stored_rotators = list(self.load_stored_rotators())
+        stored_event.stored_rotators = self.load_stored_rotators()
         stored_event.stored_display_controllers = list(
             self.load_stored_display_controllers()
         )
@@ -727,6 +729,9 @@ class EventDatabase(MigrationDatabase):
             stored_tournament = self._row_to_stored_tournament(row)
             id_ = stored_tournament.id
             assert id_ is not None
+            stored_tournament.stored_criteria = self.load_stored_tournament_criteria(
+                id_
+            )
             stored_tournament.stored_prize_groups = (
                 self.load_tournament_stored_prize_groups(id_)
             )
@@ -858,6 +863,76 @@ class EventDatabase(MigrationDatabase):
                 time.time(),
                 tournament_id,
             ),
+        )
+
+    # ---------------------------------------------------------------------------------
+    # StoredTournamentCriterion
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_tournament_criterion(
+        cls, row: dict[str, Any]
+    ) -> StoredTournamentCriterion:
+        return StoredTournamentCriterion(
+            id=row['id'],
+            tournament_id=row['tournament_id'],
+            type=row['type'],
+            options=cls.load_json_from_database_field(row['options']),
+        )
+
+    def load_stored_tournament_criteria(
+        self, tournament_id: int
+    ) -> list[StoredTournamentCriterion]:
+        self.execute(
+            'SELECT * FROM `tournament_criterion` WHERE `tournament_id` = ?',
+            (tournament_id,),
+        )
+        return [
+            self._row_to_stored_tournament_criterion(row) for row in self.fetchall()
+        ]
+
+    def add_stored_tournament_criterion(
+        self,
+        stored_tournament_criterion: StoredTournamentCriterion,
+    ) -> int:
+        fields = self._get_fields_dict(
+            stored_tournament_criterion, ['tournament_id', 'type']
+        ) | {
+            'options': self.dump_to_json_database_field(
+                stored_tournament_criterion.options
+            )
+        }
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `tournament_criterion`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        if not (tournament_criterion_id := self._last_inserted_id()):
+            raise RuntimeError('Tournament criterion insertion failed')
+        return tournament_criterion_id
+
+    def update_stored_tournament_criterion(
+        self,
+        stored_tournament_criterion: StoredTournamentCriterion,
+    ):
+        fields = self._get_fields_dict(
+            stored_tournament_criterion, ['tournament_id', 'type']
+        ) | {
+            'options': self.dump_to_json_database_field(
+                stored_tournament_criterion.options
+            )
+        }
+        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        self.execute(
+            f'UPDATE `tournament_criterion` SET {field_sets} WHERE `id` = ?',
+            tuple(fields.values()) + (stored_tournament_criterion.id,),
+        )
+
+    def delete_stored_tournament_criterion(self, tournament_criterion_id: int):
+        self.execute(
+            'DELETE FROM `tournament_criterion` WHERE `id` = ?;',
+            (tournament_criterion_id,),
         )
 
     # ---------------------------------------------------------------------------------
@@ -1771,31 +1846,20 @@ class EventDatabase(MigrationDatabase):
             delay=row['delay'],
             message_default=cls.load_bool_from_database_field(row['message_default']),
             message_text=row['message_text'],
-            screen_ids=cls.load_json_from_database_field(row['screen_ids']),
-            family_ids=cls.load_json_from_database_field(row['family_ids']),
         )
 
-    def get_stored_rotator(self, rotator_id: int) -> StoredRotator | None:
-        self.execute(
-            'SELECT * FROM `rotator` WHERE `id` = ?',
-            (rotator_id,),
-        )
-        row: dict[str, Any]
-        if row := self.fetchone():
-            return self._row_to_stored_rotator(row)
-        return None
+    def load_stored_rotators(self) -> list[StoredRotator]:
+        self.execute('SELECT * FROM `rotator` ORDER BY `name`')
+        stored_rotators: list[StoredRotator] = []
+        for row in self.fetchall():
+            stored_rotator = self._row_to_stored_rotator(row)
+            stored_rotator.stored_rotating_screens = (
+                self.load_rotator_stored_rotating_screens(row['id'])
+            )
+            stored_rotators.append(stored_rotator)
+        return stored_rotators
 
-    def load_stored_rotators(self) -> Iterator[StoredRotator]:
-        self.execute(
-            'SELECT * FROM `rotator` ORDER BY `name`',
-            (),
-        )
-        yield from map(self._row_to_stored_rotator, self.fetchall())
-
-    def _write_stored_rotator(
-        self,
-        stored_rotator: StoredRotator,
-    ) -> StoredRotator:
+    def add_stored_rotator(self, stored_rotator: StoredRotator) -> int:
         fields: dict[str, Any] = self._get_fields_dict(
             stored_rotator,
             [
@@ -1805,51 +1869,98 @@ class EventDatabase(MigrationDatabase):
                 'message_default',
                 'message_text',
             ],
-        ) | {
-            'screen_ids': self.dump_to_json_database_field(
-                stored_rotator.screen_ids, []
-            ),
-            'family_ids': self.dump_to_json_database_field(
-                stored_rotator.family_ids, []
-            ),
-        }
-        if stored_rotator.id is None:
-            protected_fields = [f'`{f}`' for f in fields]
-            self.execute(
-                f'INSERT INTO `rotator`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
-                tuple(fields.values()),
-            )
-            rotator_id: int | None = self._last_inserted_id()
-            if rotator_id is None:
-                raise RuntimeError('Rotator insertion failed')
-            fetched_stored_rotator = self.get_stored_rotator(rotator_id=rotator_id)
-        else:
-            field_sets = [f'`{f}` = ?' for f in fields]
-            self.execute(
-                f'UPDATE `rotator` SET {", ".join(field_sets)} WHERE `id` = ?',
-                tuple(fields.values()) + (stored_rotator.id,),
-            )
-            fetched_stored_rotator = self.get_stored_rotator(stored_rotator.id)
-        if fetched_stored_rotator is None:
-            raise RuntimeError('Rotator write failed')
-        return fetched_stored_rotator
+        )
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `rotator`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        if not (rotator_id := self._last_inserted_id()):
+            raise RuntimeError('Insertion failed')
+        return rotator_id
 
-    def add_stored_rotator(
-        self,
-        stored_rotator: StoredRotator,
-    ) -> StoredRotator:
-        assert stored_rotator.id is None
-        return self._write_stored_rotator(stored_rotator)
-
-    def update_stored_rotator(
-        self,
-        stored_rotator: StoredRotator,
-    ) -> StoredRotator:
-        assert stored_rotator.id is not None
-        return self._write_stored_rotator(stored_rotator)
+    def update_stored_rotator(self, stored_rotator: StoredRotator):
+        fields: dict[str, Any] = self._get_fields_dict(
+            stored_rotator,
+            [
+                'name',
+                'public',
+                'delay',
+                'message_default',
+                'message_text',
+            ],
+        )
+        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        self.execute(
+            f'UPDATE `rotator` SET {field_sets} WHERE `id` = ?',
+            tuple(fields.values()) + (stored_rotator.id,),
+        )
 
     def delete_stored_rotator(self, rotator_id: int):
         self.execute('DELETE FROM `rotator` WHERE `id` = ?;', (rotator_id,))
+
+    # ---------------------------------------------------------------------------------
+    # StoredRotatingScreen
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_rotating_screen(
+        cls, row: dict[str, Any]
+    ) -> StoredRotatingScreen:
+        return StoredRotatingScreen(
+            id=row['id'],
+            rotator_id=row['rotator_id'],
+            screen_id=row['screen_id'],
+            family_id=row['family_id'],
+            index=row['index'],
+        )
+
+    def load_rotator_stored_rotating_screens(
+        self, rotator_id: int
+    ) -> list[StoredRotatingScreen]:
+        self.execute(
+            'SELECT * FROM `rotating_screen` WHERE `rotator_id` = ? ORDER BY `index`',
+            (rotator_id,),
+        )
+        return [self._row_to_stored_rotating_screen(row) for row in self.fetchall()]
+
+    def add_stored_rotating_screen(
+        self,
+        stored_rotating_screen: StoredRotatingScreen,
+    ):
+        fields = self._get_fields_dict(
+            stored_rotating_screen,
+            [
+                'rotator_id',
+                'screen_id',
+                'family_id',
+                'index',
+            ],
+        )
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `rotating_screen`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        if not (rotating_screen_id := self._last_inserted_id()):
+            raise RuntimeError('Insertion failed')
+        return rotating_screen_id
+
+    def update_stored_rotating_screen(
+        self, stored_rotating_screen: StoredRotatingScreen
+    ):
+        self.execute(
+            'UPDATE `rotating_screen` SET `index` = ? WHERE `id` = ?',
+            (stored_rotating_screen.index, stored_rotating_screen.id),
+        )
+
+    def delete_stored_rotating_screen(self, rotating_screen_id: int):
+        self.execute(
+            'DELETE FROM `rotating_screen` WHERE `id` = ?',
+            (rotating_screen_id,),
+        )
 
     # ---------------------------------------------------------------------------------
     # StoredDisplayController

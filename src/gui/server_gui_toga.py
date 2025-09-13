@@ -155,7 +155,7 @@ APPEND_LOG_JS = """
         if (!cont) return;
         var div = document.createElement('div');
         div.className = 'line ' + (level || 'info');
-        div.innerHTML = '<span class="ts">[' + ts + ']</span> ' + html;
+        div.innerHTML = html;
         cont.appendChild(div);
         window.scrollTo(0, document.body.scrollHeight);
     }};
@@ -175,13 +175,13 @@ LOG_HTML = f"""<!doctype html>
         <meta charset="utf-8">
         <title>Sharly Chess Logs</title>
         <style>
-            html, body {{ background: #000; color: #e0e0e0; font-family: Menlo, Monaco, monospace; margin: 0; padding: 0; }}
+            html, body {{ background: #000; color: #d0d0d0; font-family: Menlo, Monaco, monospace; margin: 0; padding: 0; }}
             .wrap {{ padding: 8px 10px; }}
             .line {{ white-space: pre-wrap; word-break: break-word; }}
             .ts {{ color: #888; }}
 
             /* Level tags */
-            .info {{ color: #cfe8ff; }}
+            .info {{ color: #d0d0d0; }}
             .warning {{ color: #ffd166; }}
             .error {{ color: #ff6666; }}
             .debug {{ color: #a0a0a0; }}
@@ -190,13 +190,13 @@ LOG_HTML = f"""<!doctype html>
             /* ANSI-ish classes */
             .bold {{ font-weight: bold; }}
             .dim {{ color: #888; }}
-            .red {{ color: #ff6666; }}SHARLY_CHESS_VERSION
+            .red {{ color: #ff6666; }}
             .green {{ color: #66ff66; }}
             .yellow {{ color: #ffff66; }}
             .blue {{ color: #66aaff; }}
             .magenta {{ color: #ff66ff; }}
             .cyan {{ color: #66ffff; }}
-            .white {{ color: #e0e0e0; }}
+            .white {{ color: #d0d0d0; }}
             .bright_red {{ color: #ff7777; }}
             .bright_green {{ color: #77ff77; }}
             .bright_yellow {{ color: #ffff77; }}
@@ -286,7 +286,7 @@ class SharlyChessServerToga(toga.App):
         # Toolbar (buttons row)
         btn_row = toga.Box(style=Pack(direction=ROW, margin=(0, 0, 8, 0)))
         self.browser_btn = toga.Button(
-            text=_('Open Browser'), on_press=self._open_browser
+            text=_('Open Admin Interface'), on_press=self._open_browser
         )
         self.website_btn = toga.Button(
             text=_('Open documentation'), on_press=self._open_website
@@ -342,7 +342,7 @@ class SharlyChessServerToga(toga.App):
         self.main_box.add(self.info_view)
 
         self.main_window = toga.MainWindow(
-            title=_('Sharly Chess Server'),
+            title=_('Sharly Chess server'),
             size=self.compact_size,
             content=self.main_box,
             on_gain_focus=self._noop,
@@ -386,7 +386,7 @@ class SharlyChessServerToga(toga.App):
         # Use json.dumps to make safe JS string literals
         ts_js = json.dumps(ts)
         html_js = json.dumps(html)
-        level_js = json.dumps((level or 'info'))
+        level_js = json.dumps((level or ''))
 
         js = f"""
         (function() {{

@@ -74,6 +74,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d player does not match criteria."
+msgid_plural "%(num)d players do not match criteria."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(num)d prize"
 msgid_plural "%(num)d prizes"
 msgstr[0] ""
@@ -163,6 +169,9 @@ msgstr[1] ""
 msgid "(by default)"
 msgstr ""
 
+msgid "(family)"
+msgstr ""
+
 msgid "(inherited)"
 msgstr ""
 
@@ -243,6 +252,9 @@ msgid "<smart_count> day |||| <smart_count> days"
 msgstr ""
 
 msgid "<smart_count> hour |||| <smart_count> hours"
+msgstr ""
+
+msgid "<smart_count> item selected |||| <smart_count> items selected"
 msgstr ""
 
 msgid "<smart_count> minute |||| <smart_count> minutes"
@@ -396,6 +408,9 @@ msgstr ""
 msgid "Add a rotator to the event."
 msgstr ""
 
+msgid "Add a screen to check-in players or enter results."
+msgstr ""
+
 msgid "Add a screen to display an image."
 msgstr ""
 
@@ -409,9 +424,6 @@ msgid "Add a screen to display the pairings by board number."
 msgstr ""
 
 msgid "Add a screen to display the ranking."
-msgstr ""
-
-msgid "Add a screen to enter results."
 msgstr ""
 
 msgid "Add a set"
@@ -432,6 +444,9 @@ msgstr ""
 msgid "Add events"
 msgstr ""
 
+msgid "Add families"
+msgstr ""
+
 msgid "Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!"
 msgstr ""
 
@@ -442,6 +457,9 @@ msgid "Add player"
 msgstr ""
 
 msgid "Add players"
+msgstr ""
+
+msgid "Add screens"
 msgstr ""
 
 msgid "Add tournaments"
@@ -661,7 +679,7 @@ msgstr ""
 msgid "Average rating of opponents"
 msgstr ""
 
-msgid "Average rating:"
+msgid "Average rating: {rating}"
 msgstr ""
 
 msgid "Avg. Perfect Perf. *** SHORT NAME FOR AVERAGE PERFECT PERFORMANCE"
@@ -954,10 +972,16 @@ msgstr ""
 msgid "Choose at least one rating type."
 msgstr ""
 
+msgid "Choose families to add"
+msgstr ""
+
 msgid "Choose from images in the 'custom' folder"
 msgstr ""
 
 msgid "Choose one, many or no tournaments."
+msgstr ""
+
+msgid "Choose screens to add"
 msgstr ""
 
 msgid "Choose the columns displayed."
@@ -1399,7 +1423,13 @@ msgstr ""
 msgid "Define the criteria for players to belong to this category."
 msgstr ""
 
+msgid "Define the criteria for players to participate in this tournament."
+msgstr ""
+
 msgid "Define the prizes of the category."
+msgstr ""
+
+msgid "Define the screens and screen families to display."
 msgstr ""
 
 #, python-format
@@ -2647,6 +2677,9 @@ msgstr ""
 msgid "Input Screens may be used to allow players to enter their own results on a device that you make available at the venue."
 msgstr ""
 
+msgid "Input screens can't be part of rotators."
+msgstr ""
+
 msgid "Input screens show pairings by board number and allow people to enter results."
 msgstr ""
 
@@ -2853,6 +2886,9 @@ msgid "Links to this screen:"
 msgstr ""
 
 msgid "List of players"
+msgstr ""
+
+msgid "Loading more results…"
 msgstr ""
 
 msgid "Local URL: {local_url}"
@@ -3198,6 +3234,9 @@ msgstr ""
 msgid "No events."
 msgstr ""
 
+msgid "No families to add."
+msgstr ""
+
 msgid "No hours."
 msgstr ""
 
@@ -3267,19 +3306,19 @@ msgstr ""
 msgid "No screen families"
 msgstr ""
 
-msgid "No screen neither family to rotate."
+msgid "No screens"
 msgstr ""
 
-msgid "No screens"
+msgid "No screens to add."
+msgstr ""
+
+msgid "No screens."
 msgstr ""
 
 msgid "No such screens."
 msgstr ""
 
 msgid "No tie-break defined"
-msgstr ""
-
-msgid "No timer defined"
 msgstr ""
 
 msgid "No timers"
@@ -3362,6 +3401,12 @@ msgstr ""
 msgid "Number of prizes"
 msgstr ""
 
+msgid "Number of screen families"
+msgstr ""
+
+msgid "Number of screens"
+msgstr ""
+
 msgid "Number of wins"
 msgstr ""
 
@@ -3404,19 +3449,19 @@ msgstr ""
 msgid "Online sources"
 msgstr ""
 
-msgid "Only arbiters can see private events."
+msgid "Only allowed users can see private events."
 msgstr ""
 
-msgid "Only arbiters can see private screen families."
+msgid "Only allowed users can see private screen families."
 msgstr ""
 
-msgid "Only arbiters can see private screens."
+msgid "Only allowed users can see private screens."
 msgstr ""
 
-msgid "Only arbiters can view private display controllers."
+msgid "Only allowed users can view private display controllers."
 msgstr ""
 
-msgid "Only arbiters can view private rotators."
+msgid "Only allowed users can view private rotators."
 msgstr ""
 
 msgid "Only estimated ratings are optional."
@@ -3437,7 +3482,7 @@ msgstr ""
 msgid "Only one age category is expected with options including other categories."
 msgstr ""
 
-msgid "Open Browser"
+msgid "Open Admin Interface"
 msgstr ""
 
 #, python-format
@@ -3723,10 +3768,19 @@ msgstr ""
 msgid "Player [{player_id}]: {error}"
 msgstr ""
 
+msgid "Player [{player}] has been created, but does not match tournament criteria: {names}"
+msgstr ""
+
+msgid "Player [{player}] has been created."
+msgstr ""
+
 msgid "Player [{player}] has been moved from tournament [{src_tournament}] to tournament [{dst_tournament}]."
 msgstr ""
 
 msgid "Player [{player}] has pairings in tournament [{tournament}]."
+msgstr ""
+
+msgid "Player does not match tournament criteria: {names}"
 msgstr ""
 
 msgid "Player selection (by alphabetical order)"
@@ -3941,12 +3995,6 @@ msgstr "Prize"
 msgid "Prize assignment"
 msgstr ""
 
-msgid "Prize assignment after round #{round}"
-msgstr ""
-
-msgid "Prize assignment before the first round"
-msgstr ""
-
 msgid "Prize category [{prize_category}] has been duplicated."
 msgstr ""
 
@@ -3962,7 +4010,7 @@ msgstr ""
 msgid "Prize criterion creation"
 msgstr ""
 
-msgid "Prize criterion edition"
+msgid "Prize criterion editing"
 msgstr ""
 
 msgid "Prize currency"
@@ -4017,9 +4065,6 @@ msgid "Public event"
 msgstr ""
 
 msgid "Public family"
-msgstr ""
-
-msgid "Public rotator"
 msgstr ""
 
 msgid "Public screen"
@@ -4439,6 +4484,9 @@ msgstr ""
 msgid "Screen families: %(num)d"
 msgstr ""
 
+msgid "Screen list"
+msgstr ""
+
 msgid "Screen type"
 msgstr ""
 
@@ -4481,6 +4529,9 @@ msgid "Seed color can't be modified once the tournament has started."
 msgstr ""
 
 msgid "Seeding of unrated rapid/blitz"
+msgstr ""
+
+msgid "Select All"
 msgstr ""
 
 msgid "Select the players and the data to update:"
@@ -4807,7 +4858,7 @@ msgstr ""
 msgid "The file to import."
 msgstr ""
 
-msgid "The first tournament of the screen, mandatory (it is possible to add other tournaments later)."
+msgid "The first tournament of the screen."
 msgstr ""
 
 msgid "The following categories will also be deleted:"
@@ -4882,9 +4933,6 @@ msgid "The name of the event on the ChessEvent platform (by default, can be over
 msgstr ""
 
 msgid "The name of the event, used for display and reports."
-msgstr ""
-
-msgid "The name of the rotator."
 msgstr ""
 
 #, python-format
@@ -5074,13 +5122,7 @@ msgstr ""
 msgid "The round for which the document is printed (Defaults to the last possible round)."
 msgstr ""
 
-msgid "The screen families to rotate (the input screen families are emphasised because they should not appear on rotators)."
-msgstr ""
-
 msgid "The screens displayed by the display controller are controlled by the screen managers."
-msgstr ""
-
-msgid "The screens to rotate (the input screens are emphasised because they should not appear on rotators)."
 msgstr ""
 
 msgid "The start date and time of the event."
@@ -5114,7 +5156,7 @@ msgstr ""
 msgid "The tournament is finished."
 msgstr ""
 
-msgid "The tournament of the screens of the family, mandatory (unlike basic screens, only one tournament can be displayed on family screens)."
+msgid "The tournament of the screens of the family."
 msgstr ""
 
 msgid "The tournament of which you want to show the pairings."
@@ -5127,6 +5169,9 @@ msgid "The tournaments on which the account can act (if none, the account can ac
 msgstr ""
 
 msgid "The tournaments on which the device can act (if none, the device can act on all the tournaments)."
+msgstr ""
+
+msgid "The tournaments to print."
 msgstr ""
 
 msgid "The type of criterion used to filter the players."
@@ -5295,9 +5340,6 @@ msgstr ""
 msgid "Timer hours"
 msgstr ""
 
-msgid "Timer {timer_uniq_id}"
-msgstr ""
-
 msgid "Timer:"
 msgstr ""
 
@@ -5393,6 +5435,12 @@ msgstr ""
 msgid "Tournament [{tournament}] successfully imported."
 msgstr ""
 
+msgid "Tournament criterion creation"
+msgstr ""
+
+msgid "Tournament criterion editing"
+msgstr ""
+
 msgid "Tournament exempt from registration fees."
 msgstr ""
 
@@ -5450,6 +5498,9 @@ msgid "Tournaments displayed:"
 msgstr ""
 
 msgid "Tournaments management"
+msgstr ""
+
+msgid "Tournaments:"
 msgstr ""
 
 #, python-format
@@ -5747,9 +5798,6 @@ msgstr ""
 msgid "Use log-level specific colors"
 msgstr ""
 
-msgid "Use no timer"
-msgstr ""
-
 msgid "Use pairing engines"
 msgstr ""
 
@@ -5876,12 +5924,6 @@ msgid "Warning: the %(player_count)d players in the tournament will be deleted."
 msgstr ""
 
 msgid "Warning: the deletion is permanent!"
-msgstr ""
-
-msgid "Warning: the deletion of a device is permanent!"
-msgstr ""
-
-msgid "Warning: the deletion of an account is permanent!"
 msgstr ""
 
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."

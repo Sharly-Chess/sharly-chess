@@ -93,13 +93,16 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
                 self._redirect_error(f'Tournament [{tournament_id}] not found.')
                 return
 
-        print_tournament_id = self.default_tournament_for_print_modal(
+        print_tournament_ids = self.default_tournament_for_print_modal(
             tournament_id=None
         )
-        if print_tournament_id is None:
+        if print_tournament_ids is None:
             tournaments = list(self.admin_event.tournaments_by_id.values())
         else:
-            tournaments = [self.admin_event.tournaments_by_id[print_tournament_id]]
+            tournaments = [
+                self.admin_event.tournaments_by_id[tournament_id]
+                for tournament_id in print_tournament_ids
+            ]
         check_in_open = all(tournament.check_in_open for tournament in tournaments)
         self.default_print_document = (
             PlayerCheckinListPrintDocument.static_id()
@@ -490,6 +493,7 @@ class PlayerAdminController(BaseEventAdminController):
         page: int | None = None,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
+        warning_message: str | None = None,
     ) -> Template | ClientRedirect | Redirect:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request,
@@ -820,6 +824,7 @@ class PlayerAdminController(BaseEventAdminController):
                         if action == 'create' and old_player_id
                         else None
                     ),
+                    'warning_message': warning_message,
                     'add_other_active': (
                         SessionHandler.get_session_admin_player_add_other_active(
                             request
@@ -1203,6 +1208,15 @@ class PlayerAdminController(BaseEventAdminController):
                     )
                 player_id = event.add_player(stored_player, [tournament])
                 self.set_players_search_results(request, event_uniq_id)
+                player = tournament.players_by_id[player_id]
+                warning_message: str | None = None
+                if not tournament.player_matches_criteria(player):
+                    warning_message = _(
+                        'Player [{player}] has been created, but does not match tournament criteria: {names}'
+                    ).format(
+                        player=player.full_name,
+                        names=player.tournament.failing_criteria_message(player),
+                    )
                 if add_other:
                     return self._admin_event_players_render(
                         request,
@@ -1210,7 +1224,20 @@ class PlayerAdminController(BaseEventAdminController):
                         modal='player',
                         action='create',
                         old_player_id=player_id,
+                        warning_message=warning_message,
                         tournament_id=tournament.id,
+                    )
+                if warning_message:
+                    Message.warning(
+                        request,
+                        warning_message,
+                    )
+                else:
+                    Message.success(
+                        request,
+                        _('Player [{player}] has been created.').format(
+                            player=player.full_name
+                        ),
                     )
                 return self._admin_event_players_render(
                     request, event_uniq_id=event_uniq_id
@@ -1864,7 +1891,10 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/search-player/{event_uniq_id:str}/{data_source_id:str}',
+        path=[
+            '/admin/search-player/{event_uniq_id:str}/{data_source_id:str}',
+            '/admin/search-player/{event_uniq_id:str}/{data_source_id:str}/{page:int}',
+        ],
         name='admin-search-player',
     )
     async def htmx_admin_search_player(
@@ -1872,6 +1902,7 @@ class PlayerAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         data_source_id: str,
+        page: int = 0,
     ) -> Template | ClientRedirect | Redirect:
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
@@ -1887,7 +1918,7 @@ class PlayerAdminController(BaseEventAdminController):
                 request, f'Unknown data source [{data_source_id}].'
             )
         search = request.query_params.get(data_source.search_element_name)
-        players: list[Player] | None = None
+        players: list[Player] = []
         connection_error: str | None = None
         if search:
             # TODO (Molrn - multi tournament) Remove the tournament and use the Player wrapper
@@ -1896,7 +1927,10 @@ class PlayerAdminController(BaseEventAdminController):
             )
             try:
                 stored_players = await data_source.search_player(
-                    search, DataSource.SEARCH_LIMIT
+                    search,
+                    web_context.get_admin_event().federation,
+                    page,
+                    DataSource.SEARCH_LIMIT,
                 )
                 players = []
                 for stored_player in stored_players:
@@ -1911,7 +1945,10 @@ class PlayerAdminController(BaseEventAdminController):
             template_name='admin/players/search_results.html',
             context=web_context.template_context
             | {
+                'search': search,
                 'search_results': players,
+                'has_more_results': len(players) == DataSource.SEARCH_LIMIT,
+                'page': page,
                 'data_source': data_source,
                 'connection_error': connection_error,
             },

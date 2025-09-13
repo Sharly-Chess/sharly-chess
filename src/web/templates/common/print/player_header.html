@@ -5,7 +5,7 @@
         <th class="checkin text-center"></th>
     {% elif not pairings_list %}
         {{ macros.extra_column_header("rank", extra_columns)}}
-        <th class="rank text-end">
+        <th class="rank">
             {% if ranking or crosstable %}
                 {{ _('Rk. *** RANK FOR TABLE HEADER') }}
             {% else %}
@@ -14,26 +14,26 @@
         </th>
     {% endif %}
     {{ macros.extra_column_header("title", extra_columns)}}
-    <th class="title text-end">&nbsp;</th>
+    <th class="title">&nbsp;</th>
     {{ macros.extra_column_header("name", extra_columns)}}
-    <th class="name text-start">{{ _('Name *** NAME FOR TABLE HEADER') }}</th>
+    <th class="name">{{ _('Name *** NAME FOR TABLE HEADER') }}</th>
     {{ macros.extra_column_header("elo", extra_columns)}}
-    <th class="rating text-end">
+    <th class="rating">
         {{ tournament.rating.print_view_header }}
     </th>
     {% if pairings_list %}
         {{ macros.extra_column_header("points", extra_columns) }}
         <th class="points text-center">&nbsp;</th>
         {{ macros.extra_column_header("board", extra_columns)}}
-        <th class="plays text-end">&nbsp;</th>
+        <th class="plays">&nbsp;</th>
         {{ macros.extra_column_header("color", extra_columns)}}
-        <th class="plays text-end">&nbsp;</th>
+        <th class="color">&nbsp;</th>
         {{ macros.extra_column_header("title", extra_columns)}}
-        <th class="title text-end">&nbsp;</th>
+        <th class="title">&nbsp;</th>
         {{ macros.extra_column_header("name", extra_columns)}}
-        <th class="name text-start">{{ _('Name *** NAME FOR TABLE HEADER') }}</th>
+        <th class="name">{{ _('Name *** NAME FOR TABLE HEADER') }}</th>
         {{ macros.extra_column_header("elo", extra_columns)}}
-        <th class="rating text-end">
+        <th class="rating">
             {{ tournament.rating.print_view_header }}
         </th>
         {{ macros.extra_column_header("points", extra_columns) }}
@@ -52,15 +52,19 @@
             {% endfor %}
         {% else %}
             {{ macros.extra_column_header("club", extra_columns)}}
-            <th class="club text-start">{{ _('Club *** CLUB FOR TABLE HEADER') }}</th>
+            <th class="club">{{ _('Club *** CLUB FOR TABLE HEADER') }}</th>
+        {% endif %}
+        {{ macros.extra_column_header("tournament", extra_columns)}}
+        {% if multiple_tournaments %}
+            <th class="tournament">{{ _('Tournament *** TOURNAMENT FOR PLAYERS COLUMNS') }}</th>
         {% endif %}
         {% if checkin_list %}
             {{ macros.extra_column_header("paid", extra_columns)}}
-            <th class="category text-center">{{ _('Paid *** PAID COLUMN HEADER FOR PLAYERS') }}</th>
+            <th class="payment text-center">{{ _('Paid *** PAID COLUMN HEADER FOR PLAYERS') }}</th>
             {{ macros.extra_column_header("owes", extra_columns)}}
-            <th class="category text-center">{{ _('Owed *** OWED COLUMN HEADER FOR PLAYERS') }}</th>
+            <th class="payment text-center">{{ _('Owed *** OWED COLUMN HEADER FOR PLAYERS') }}</th>
             {{ macros.extra_column_header("comments", extra_columns)}}
-            <th class="category text-center">{{ _('Comments *** COMMENTS FOR TABLE HEADER') }}</th>
+            <th class="comments text-center">{{ _('Comments *** COMMENTS FOR TABLE HEADER') }}</th>
         {% endif %}
         {% if ranking or crosstable %}
             <th class="points text-center">

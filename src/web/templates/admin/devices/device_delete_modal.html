@@ -8,10 +8,6 @@
     {{ _('%(string)s: %(value)s', string=_('Device'), value=admin_device.ip) }}
 {% endblock %}
 
-{% block delete_warning %}
-    {{ _('Warning: the deletion of a device is permanent!') }}
-{% endblock %}
-
 {% block delete_url %}
     {{ url_for(
         'admin-device-delete',

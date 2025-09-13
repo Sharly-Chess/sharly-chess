@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html;" charset="iso-8859-1">
-        <title>{{ document.name }} - {{ document.tournament.name }}</title>
+        <title>{{ document.name }}{% if tournament %} - {{ tournament.name }}{% endif %}</title>
         <style type="text/css">
             {% block css %}{% endblock %}
             {% include 'print.css' %}
@@ -11,8 +11,10 @@
     </head>
     <body class="{{ document.id }}">
         <div align="center">
-            <div class="page-title">{{ document.tournament.name }}</div>
-            <div class="page-subtitle">{{ document.title }}</div>
+            <div class="page-title">{{ document.title }}</div>
+            {% if subtitle %}
+                <div class="page-subtitle">{{ subtitle }}</div>
+            {% endif %}
             {% block content %}{% endblock %}
         </div>
     </body>

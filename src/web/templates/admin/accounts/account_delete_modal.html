@@ -8,10 +8,6 @@
     {{ _('%(string)s: %(value)s', string=_('Account'), value=admin_account.username) }}
 {% endblock %}
 
-{% block delete_warning %}
-    {{ _('Warning: the deletion of an account is permanent!') }}
-{% endblock %}
-
 {% block delete_url %}
     {{ url_for(
         'admin-account-delete',

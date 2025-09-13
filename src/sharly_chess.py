@@ -1,24 +1,49 @@
-import asyncio
+import platform
+import sys
 
-from common import TEST_ENV
+if platform.system() == 'Windows':
+    # Windows marks the downloaded files as unsure and blocks their usage.
+    # On the first run, all the files of the distribution are unmarked.
+    from pathlib import Path
 
-gui_success = False
+    base_dir: Path = Path(sys.argv[0]).resolve().parent
+    tracer: Path = base_dir / '_internal' / '.unblock_files'
+    if tracer.exists():
+        import os
+
+        print(f'Unblocking files in : {base_dir}')
+        for root_, __, files in os.walk(base_dir):
+            for name in files:
+                path = os.path.join(root_, name)
+                # Remove Zone.Identifier ADS if it exists
+                ads_path = path + ':Zone.Identifier'
+                try:
+                    os.remove(ads_path)
+                    print(f'Unblocked: {path}')
+                except FileNotFoundError:
+                    pass  # not blocked or already unblocked
+                except Exception as e:
+                    print(f'Failed to unblock {path}: {e}')
+        # Remove not to run twice
+        tracer.unlink()
 
 try:
     import argparse
-    import traceback
+    import asyncio
     from typing import TYPE_CHECKING
+    import sys
 
     from utils.scripts import init_script
 
     arguments = init_script()
 
-    from common import DEVEL_ENV
+    from common import DEVEL_ENV, TEST_ENV
     from common.i18n import _
     from common.logger import (
         get_logger,
         print_interactive_warning,
     )
+    from gui.server_gui_toga import SharlyChessServerToga
     from plugins.manager import plugin_manager
     from web.server_engine import ServerEngine
 
@@ -29,11 +54,7 @@ try:
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--server', action='store_true')
-    parser.add_argument(
-        '--cli',
-        action='store_true',
-        help='Force console/CLI mode (default is GUI for bundled apps)',
-    )
+
     parser.add_argument(
         '-p',
         '--port',
@@ -59,6 +80,12 @@ try:
             help='on the webserver, if there is an uncaught exception, drop to PDB',
             action='store_true',
         )
+    if DEVEL_ENV or TEST_ENV:
+        parser.add_argument(
+            '--cli',
+            action='store_true',
+            help='Force console/CLI mode (default is GUI for bundled apps)',
+        )
     args = parser.parse_args(arguments)
 
     if args.server:
@@ -71,29 +98,11 @@ try:
     )
 
     # Check if GUI mode should be used
-    if not args.cli and not has_plugin_engine_arg and not TEST_ENV:
-        try:
-            from gui.server_gui_toga import SharlyChessServerToga
-
-            # Create and run the Toga app - this should block until the app exits
-            app = SharlyChessServerToga()
-
-            try:
-                app.main_loop()
-            except Exception as e:
-                error_msg = f'main_loop() failed with exception: {e}'
-                print(error_msg)
-
-            gui_success = True
-            exit(0)
-        except Exception as e:
-            error_msg = f'GUI initialization failed: {e}'
-            print(error_msg)
-            import traceback
-
-            traceback.print_exc()
-
-            raise e
+    if not TEST_ENV and not (DEVEL_ENV and args.cli) and not has_plugin_engine_arg:
+        # Create and run the Toga app - this should block until the app exits
+        app = SharlyChessServerToga()
+        app.main_loop()
+        sys.exit(0)
 
     # Original console mode
     try:
@@ -112,6 +121,11 @@ try:
         pass
 
 except Exception:
+    import os
+    import platform
+    import sys
+    import traceback
+
     message = traceback.format_exc()
     try:
         from common.logger import get_logger
@@ -119,5 +133,30 @@ except Exception:
         logger = get_logger()
         logger.error(message)
     except Exception:
-        print(message)
-    print('An error occurred.')
+        pass
+
+    test_env = os.getenv('TEST_ENV') == 'true'
+    if test_env:
+        sys.exit(1)
+
+    title = 'Sharly Chess startup error'
+
+    match platform.system():
+        case 'Windows':
+            import tkinter
+            from tkinter import messagebox
+
+            root = tkinter.Tk()
+            root.withdraw()
+            messagebox.showerror('Sharly Chess startup error', message)
+            root.destroy()
+
+        case 'Darwin':
+            import subprocess
+
+            message = message.replace('"', '\\"')
+            script = (
+                f'display alert "{title}" message "{message}" '
+                'as critical buttons {"OK"}'
+            )
+            subprocess.run(['osascript', '-e', script], check=True)
