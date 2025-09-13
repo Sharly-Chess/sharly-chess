@@ -132,7 +132,7 @@ class AccessAdminController(BaseEventAdminController):
             }
         )
         return HTMXTemplate(
-            template_name='admin/common/access/permissions_form.html',
+            template_name='admin/accounts/permissions_form.html',
             context=web_context.template_context
             | self._permission_form_context(web_context, data),
         )
