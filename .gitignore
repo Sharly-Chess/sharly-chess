@@ -77,4 +77,4 @@ __pycache__/
 /src/common/i18n/.auto-update*
 /tests/screenshots/*.png
 /*.diff
-/scripts/acces_levels/*.md
+/scripts/access_levels/*.md
