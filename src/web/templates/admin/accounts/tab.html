@@ -41,7 +41,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for account in admin_event.user_accounts_sorted_by_name %}
+            {% for account in admin_event.accounts_sorted_by_name %}
                 {% set access_levels=account.access_levels %}
                 <tr class="">
                     <th scope="row" class="text-nowrap {% if not account.active %}text-secondary{% endif %}" rowspan="{{ [1, access_levels | length, ] | max }}">
