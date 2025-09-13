@@ -158,32 +158,32 @@
             >
                 <thead>
                     <th class="text-start">
-                        {{ _('Role') }}
+                        {{ _('Access level') }}
                     </th>
                     <th class="text-start">
                         {{ _('Scope') }}
                     </th>
                 </thead>
                 <tbody>
-                    {% if client.permissions_by_role %}
-                        {% for role, permission in client.permissions_by_role.items() %}
-                            {% if admin_event or role.scope == 1 %}
+                    {% if client.permissions_by_access_level %}
+                        {% for access_level, permission in client.permissions_by_access_level.items() %}
+                            {% if admin_event or access_level.scope == 1 %}
                                 <tr>
                                     <td class="{% if permission.inherited %}text-secondary fst-italic{% endif %}">
-                                        {{ role.name }}
+                                        {{ access_level.name }}
                                         {% if permission.inherited %}
                                             {{ _('(inherited)') }}
                                         {% endif %}
                                     </td>
                                     <td class="{% if permission.inherited %}text-secondary fst-italic{% endif %}">
-                                        {% if role.has_tournament_scope %}
+                                        {% if access_level.has_tournament_scope %}
                                             {% if permission.tournament_ids %}
                                                 {{ client.permission_tournament_names(permission) }}
                                             {% else %}
                                                 {{ _('All the tournaments') }}
                                             {% endif %}
                                         {% else %}
-                                            {{ role.scope.name }}
+                                            {{ access_level.scope.name }}
                                         {% endif %}
                                     </td>
                                 </tr>

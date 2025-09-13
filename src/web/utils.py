@@ -5,7 +5,7 @@ from litestar.exceptions import (
 from litestar_htmx import HTMXRequest
 
 from common.exception import SharlyChessException
-from data.auth.client import Client
+from data.access_levels.client import Client
 from data.board import Board
 from data.display_controller import DisplayController
 from data.event import Event

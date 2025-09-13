@@ -306,7 +306,7 @@ class StoredDisplayController:
 class StoredAccess(ABC):
     id: int | None
     active: bool
-    roles: list[str]
+    access_levels: list[str]
     tournament_ids: list[int] | None
 
 

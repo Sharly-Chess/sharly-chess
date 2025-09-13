@@ -13,7 +13,7 @@ An access level:
 
 The access levels in _Shary Chess_ are:
 
-| Role                                  |    Scope    |
+| Access level                          |    Scope    |
 |---------------------------------------|:-----------:|
 | ADM: Administration                   | Application |
 | ORG: Organization                     |    Event    |
@@ -78,11 +78,11 @@ Limited access levels can be granted to the Anonymous account (up to _Check-in_ 
 
 ### Example
 
-| FIDE ID     | First name    | Last name    | Comment                  | Roles                    |
-|:------------|:--------------|--------------|--------------------------|:-------------------------|
-| ``1234567`` | ``Charlotte`` | ``RAMPLING`` | The Chief Arbiter        | CA                       |
-| ``9876543`` | ``John``      | ``WAYNE``    | A deputy Chief Arbiter         | DCA for some tournaments |
-| ``-``       | ``-``         | ``-``        | _Anonymous_                    | SPE                      |
+| FIDE ID     | First name    | Last name    | Comment                | Access levels            |
+|:------------|:--------------|--------------|------------------------|:-------------------------|
+| ``1234567`` | ``Charlotte`` | ``RAMPLING`` | The Chief Arbiter      | CA                       |
+| ``9876543`` | ``John``      | ``WAYNE``    | A deputy Chief Arbiter | DCA for some tournaments |
+| ``-``       | ``-``         | ``-``        | _Anonymous_            | SPE                      |
 
 ## Access levels management
 
@@ -128,16 +128,16 @@ The table below shows what each access level can do in the application.
 | ACCESS CONTROL                    |        ADM         |        ORG         |        SCR         |         CA         |        DCA         |        PAI         |        SEC         |        CHE         |        RES         |        SPE         |        _none_         |
 | Manage accounts                   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |
 | Manage devices                    | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |
-| Give/take away role ADM           |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |
-| Give/take away role ORG           | :white_check_mark: |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |
-| Give/take away role SCR           | :white_check_mark: | :white_check_mark: |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |
-| Give/take away role CA            | :white_check_mark: | :white_check_mark: |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |
-| Give/take away role DCA           | :white_check_mark: |        :x:         |        :x:         | :white_check_mark: |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |
-| Give/take away role PAI           | :white_check_mark: |        :x:         |        :x:         | :white_check_mark: |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |
-| Give/take away role SEC           | :white_check_mark: |        :x:         |        :x:         | :white_check_mark: |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |
-| Give/take away role CHE           | :white_check_mark: |        :x:         |        :x:         | :white_check_mark: |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |
-| Give/take away role RES           | :white_check_mark: |        :x:         |        :x:         | :white_check_mark: |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |
-| Give/take away role SPE           | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |
+| Give/take away access level ADM   |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |
+| Give/take away access level ORG   | :white_check_mark: |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |
+| Give/take away access level SCR   | :white_check_mark: | :white_check_mark: |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |
+| Give/take away access level CA    | :white_check_mark: | :white_check_mark: |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |
+| Give/take away access level DCA   | :white_check_mark: |        :x:         |        :x:         | :white_check_mark: |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |
+| Give/take away access level PAI   | :white_check_mark: |        :x:         |        :x:         | :white_check_mark: |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |
+| Give/take away access level SEC   | :white_check_mark: |        :x:         |        :x:         | :white_check_mark: |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |
+| Give/take away access level CHE   | :white_check_mark: |        :x:         |        :x:         | :white_check_mark: |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |
+| Give/take away access level RES   | :white_check_mark: |        :x:         |        :x:         | :white_check_mark: |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |
+| Give/take away access level SPE   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |
 | TOURNAMENTS MANAGEMENT            |        ADM         |        ORG         |        SCR         |         CA         |        DCA         |        PAI         |        SEC         |        CHE         |        RES         |        SPE         |        _none_         |
 | View the Tournaments tab          | :white_check_mark: |        :x:         |        :x:         | :white_check_mark: | :white_check_mark: |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |
 | Add tournaments                   | :white_check_mark: |        :x:         |        :x:         | :white_check_mark: |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |        :x:         |          :x:          |

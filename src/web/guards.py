@@ -6,7 +6,7 @@ from litestar.exceptions import PermissionDeniedException
 from litestar.handlers import BaseRouteHandler
 from litestar_htmx import HTMXRequest
 
-from data.auth.client import Client
+from data.access_levels.client import Client
 from data.event import Event
 from data.screen import Screen
 from data.tournament import Tournament

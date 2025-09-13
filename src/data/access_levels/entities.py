@@ -4,13 +4,13 @@ from functools import cached_property
 
 from common.i18n import _
 from common.network import LOCALHOST_IP, LOCALHOST_NAME
-from data.auth.managers import RoleManager
+from data.access_levels.manager import AccessLevelManager
 from database.sqlite.event.event_store import (
     StoredDevice,
     StoredAccount,
     StoredAccess,
 )
-from data.auth.roles import Role, AdministrationRole
+from data.access_levels.access_levels import AccessLevel, AdministrationAccessLevel
 
 
 @dataclass
@@ -45,9 +45,10 @@ class AuthEntity[T: StoredAccess](ABC):
         return self._stored_access.active
 
     @property
-    def roles(self) -> list[Role]:
+    def access_levels(self) -> list[AccessLevel]:
         return [
-            RoleManager.get_object(role_id) for role_id in self._stored_access.roles
+            AccessLevelManager.get_object(access_level_id)
+            for access_level_id in self._stored_access.access_levels
         ]
 
     @property
@@ -57,26 +58,26 @@ class AuthEntity[T: StoredAccess](ABC):
         return set(self._stored_access.tournament_ids)
 
     @cached_property
-    def permissions_by_role(
+    def permissions_by_access_level(
         self,
-    ) -> dict[Role, Permission]:
-        """Returns all the permissions by role, granted or inherited for a device or an account."""
-        permissions_by_role: dict[Role, Permission] = {}
+    ) -> dict[AccessLevel, Permission]:
+        """Returns all the permissions by access level, granted or inherited for a device or an account."""
+        permissions_by_access_level: dict[AccessLevel, Permission] = {}
         tournament_ids = self.tournament_ids
-        for role in self.roles:
-            permissions_by_role[role] = self.merge(
+        for access_level in self.access_levels:
+            permissions_by_access_level[access_level] = self.merge(
                 Permission(tournament_ids),
-                permissions_by_role.get(role, None),
+                permissions_by_access_level.get(access_level, None),
             )
-            for sub_role in role.sub_roles():
-                permissions_by_role[sub_role] = self.merge(
+            for sub_access_level in access_level.sub_access_levels():
+                permissions_by_access_level[sub_access_level] = self.merge(
                     Permission(tournament_ids),
-                    permissions_by_role.get(sub_role, None),
+                    permissions_by_access_level.get(sub_access_level, None),
                 )
         return {
-            role: permissions_by_role[role]
-            for role in RoleManager.objects()
-            if role in permissions_by_role
+            access_level: permissions_by_access_level[access_level]
+            for access_level in AccessLevelManager.objects()
+            if access_level in permissions_by_access_level
         }
 
     @staticmethod
@@ -161,7 +162,7 @@ class Device(AuthEntity[StoredDevice]):
             StoredDevice(
                 id=cls.LOCALHOST_ID,
                 active=True,
-                roles=[AdministrationRole.static_id()],
+                access_levels=[AdministrationAccessLevel.static_id()],
                 tournament_ids=None,
                 ip=None,
             )
@@ -173,7 +174,7 @@ class Device(AuthEntity[StoredDevice]):
             StoredDevice(
                 id=cls.ANY_DEVICE_ID,
                 active=True,
-                roles=[],
+                access_levels=[],
                 tournament_ids=None,
                 ip=None,
             )
@@ -228,7 +229,7 @@ class Account(AuthEntity[StoredAccount]):
             StoredAccount(
                 id=cls.ANONYMOUS_ID,
                 active=True,
-                roles=[],
+                access_levels=[],
                 tournament_ids=None,
                 username=None,
                 password_hash=None,

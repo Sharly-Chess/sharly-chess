@@ -50,14 +50,14 @@
         </thead>
         <tbody>
             {% for device in admin_event.devices_sorted_by_ip %}
-                {% set roles=device.roles %}
+                {% set access_levels=device.access_levels %}
                 <tr class="">
-                    <th scope="row" class="text-nowrap {% if not device.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
+                    <th scope="row" class="text-nowrap {% if not device.active %}text-secondary{% endif %}" rowspan="{{ [1, access_levels | length, ] | max }}">
                         <span class="{% if device.localhost or device.unknown %}fst-italic{% endif %}">
                             {{ device.ip }}
                         </span>
                     </th>
-                    <td class="text-nowrap {% if not device.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
+                    <td class="text-nowrap {% if not device.active %}text-secondary{% endif %}" rowspan="{{ [1, access_levels | length, ] | max }}">
                         <span class="{% if device.unknown or device.server %}fst-italic{% endif %}">
                             {% if device.active %}
                                 {{ _('Enabled') }}
@@ -66,9 +66,9 @@
                             {% endif %}
                         </span>
                     </td>
-                    {% if roles %}
-                        {% with role=roles[0], entity=device %}
-                            {% include '../common/access/tab_role_permission_cells.html' %}
+                    {% if access_levels %}
+                        {% with access_level=access_levels[0], entity=device %}
+                            {% include '../common/access_level/tab_access_level_permission_cells.html' %}
                         {% endwith %}
                     {% else %}
                         <td class="{% if not device.active %}text-secondary{% endif %}">
@@ -78,7 +78,7 @@
                             <span class="fst-italic">-</span>
                         </td>
                     {% endif %}
-                    <td class="text-nowrap {% if not device.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
+                    <td class="text-nowrap {% if not device.active %}text-secondary{% endif %}" rowspan="{{ [1, access_levels | length, ] | max }}">
                         {% set client_can_manage_device=device.id in client.manageable_device_ids %}
                         {% set device_can_be_updated=device.edit_properties or device.edit_permissions %}
                         <span
@@ -166,11 +166,11 @@
                         </span>
                     </td>
                 </tr>
-                {% if roles | length > 1 %}
-                    {% for role in roles[1:] %}
+                {% if access_levels | length > 1 %}
+                    {% for access_level in access_levels[1:] %}
                         <tr class="">
                             {% with entity=device %}
-                                {% include '../common/access/tab_role_permission_cells.html' %}
+                                {% include '../common/access_level/tab_access_level_permission_cells.html' %}
                             {% endwith %}
                         </tr>
                     {% endfor %}
@@ -187,7 +187,7 @@
             <br/>
             {{ _('Adding devices allows you to grant permissions to people on other clients,') }}
             <br/>
-            {{ _('BE CAREFUL TO GIVE SENSITIVE ROLES ONLY TO TRUSTED DEVICES!') }}
+            {{ _('BE CAREFUL TO GIVE SENSITIVE ACCESS LEVELS ONLY TO TRUSTED DEVICES!') }}
         {% else %}
             <i class="bi-exclamation-triangle-fill text-warning fs-4"></i>
             <br/>

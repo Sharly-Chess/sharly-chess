@@ -3,9 +3,9 @@ from pathlib import Path
 
 from common.i18n import _, locales
 from common.logger import print_interactive_info, print_interactive_success
-from data.auth.actions import AuthActionCategory, AuthAction
-from data.auth.managers import RoleManager
-from data.auth.roles import Role
+from data.access_levels.actions import AuthActionCategory, AuthAction
+from data.access_levels.manager import AccessLevelManager
+from data.access_levels.access_levels import AccessLevel
 
 
 def main():
@@ -31,17 +31,17 @@ def main():
                 file=output,
             )
             print('|-|:-:|:-:|:-:|:-:|', file=output)
-            access_levels: list[Role] = RoleManager.objects()
+            access_levels: list[AccessLevel] = AccessLevelManager.objects()
             for access_level in access_levels:
                 ordered_direct_sub_access_levels = [
                     r
                     for r in access_levels
-                    if r.__class__ in access_level.direct_sub_roles()
+                    if r.__class__ in access_level.direct_sub_access_levels()
                 ]
                 ordered_indirect_sub_access_levels = [
                     r
                     for r in access_levels
-                    if r in access_level.sub_roles()
+                    if r in access_level.sub_access_levels()
                     and r not in ordered_direct_sub_access_levels
                 ]
                 direct_sub_access_levels_str: str = f'_{_("none")}_'
@@ -61,10 +61,10 @@ def main():
                         r.short_name() for r in ordered_indirect_sub_access_levels
                     )
                 manageable_access_levels_str: str = f'_{_("none")}_'
-                ordered_manageable_access_levels: list[Role] = [
+                ordered_manageable_access_levels: list[AccessLevel] = [
                     r
-                    for r in RoleManager.objects()
-                    if r in access_level.manageable_roles()
+                    for r in AccessLevelManager.objects()
+                    if r in access_level.manageable_access_levels()
                 ]
                 if len(ordered_manageable_access_levels) == len(access_levels) - 1:
                     manageable_access_levels_str = f'_{_("all")}_'
@@ -185,7 +185,8 @@ def main():
                             [
                                 (
                                     mark_ok
-                                    if access_level in access_level2.manageable_roles()
+                                    if access_level
+                                    in access_level2.manageable_access_levels()
                                     else mark_ko
                                 )
                                 for access_level2 in access_levels
