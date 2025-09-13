@@ -2723,7 +2723,7 @@ msgid "Last check"
 msgstr "Dernière vérification"
 
 msgid "Last name:"
-msgstr "Prénom :"
+msgstr "Nom de famille :"
 
 msgid "Last player:"
 msgstr "Dernier·e joueur·euse :"
@@ -5090,7 +5090,7 @@ msgid "This account can not be duplicated."
 msgstr "Ce compte ne peut pas être dupliqué."
 
 msgid "This account can not be updated."
-msgstr "Ce compte ne peut pas être supprimé."
+msgstr "Ce compte ne peut pas être modifié."
 
 msgid "This data source in unavailable (for more details: Menu > Data sources)."
 msgstr "Cette source de données n'est pas disponible (pour plus de détails : Menu > Sources de données)."
