@@ -63,6 +63,7 @@ English version below
 
 - Correction des données de classement utilisées lors de l'export Papi (3.0.4)
 - Correction de l'import du numéro d'homologation depuis Papi (3.0.5)
+- Correction du téléversement FFE (3.0.6)
 
 ## ChessEvent
 
@@ -134,6 +135,7 @@ English version below
 
 - Fixed a data difference on rankings in the Papi export (3.0.4)
 - Fixed the import of the Papi homologation number (3.0.5)
+- Fix a bug preventing upload (3.0.6)
 
 ## ChessEvent
 

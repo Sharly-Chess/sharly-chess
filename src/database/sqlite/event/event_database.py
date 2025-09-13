@@ -80,7 +80,12 @@ class EventDatabase(MigrationDatabase):
     def __exit__(self, exc_type, exc_value, tb):
         dirty_tournaments: list[StoredTournament] = []
         stored_event: StoredEvent | None = None
-        if self.write and exc_type is None and is_server_engine():
+        if (
+            self.write
+            and exc_type is None
+            and is_server_engine()
+            and EVENTS_DIR.resolve() in self.file.resolve().parents
+        ):
             self.execute('SELECT * FROM tournament WHERE dirty = 1;')
             dirty_tournaments = [
                 self._row_to_stored_tournament(row) for row in self.fetchall()
