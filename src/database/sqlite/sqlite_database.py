@@ -79,7 +79,7 @@ class SQLiteDatabase:
                 self.database.commit()
             else:
                 logger.debug(
-                    'Rolling back %s due to exception [%s]: %s',
+                    'Rolling back [%s] due to exception [%s]: %s',
                     self.file,
                     exc_type,
                     exc_value,
