@@ -19,7 +19,7 @@ class PlayerFilterOption(Option, ABC):
 
     @property
     def template_name(self) -> str:
-        return f'player_filter_options/{self.template_file_name}.html'
+        return f'/admin/common/criteria/player_filter_options/{self.template_file_name}.html'
 
     @property
     def template_file_name(self) -> str:

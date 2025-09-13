@@ -78,6 +78,14 @@ class StoredPrizeGroup:
 
 
 @dataclass
+class StoredTournamentCriterion:
+    id: int | None
+    tournament_id: int
+    type: str
+    options: dict[str, Any]
+
+
+@dataclass
 class StoredPairing:
     tournament_id: int
     player_id: int
@@ -163,6 +171,9 @@ class StoredTournament:
     last_pairing_update: float = 0.0
     three_points_for_a_win: bool = False
     override_unrated_rapid_blitz: bool | None = None
+    stored_criteria: list[StoredTournamentCriterion] = field(
+        default_factory=list[StoredTournamentCriterion]
+    )
     stored_prize_groups: list[StoredPrizeGroup] = field(
         default_factory=list[StoredPrizeGroup]
     )

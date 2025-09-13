@@ -36,12 +36,18 @@
 
                 {% if action == 'create' %}
                     {% if previous_player %}
-                        {% with type='success', auto_remove=true, message=_(
-                            'Player [%(player)s] has been created.',
-                            player=previous_player.full_name
-                        )  %}
-                            {% include '/common/alert.html' %}
-                        {% endwith %}
+                        {% if warning_message %}
+                            {% with type='warning', auto_remove=true, message=warning_message %}
+                                {% include '/common/alert.html' %}
+                            {% endwith %}
+                        {% else %}
+                            {% with type='success', auto_remove=true, message=_(
+                                'Player [%(player)s] has been created.',
+                                player=previous_player.full_name
+                            )  %}
+                                {% include '/common/alert.html' %}
+                            {% endwith %}
+                        {% endif %}
                     {% endif %}
                     <h4>
                         {{ _('Search') }}

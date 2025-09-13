@@ -223,6 +223,7 @@ class FfeAdminEventController(BaseEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             tournament_id=tournament_id,
+            criterion_id=None,
             data=None,
         )
         if web_context.error:
