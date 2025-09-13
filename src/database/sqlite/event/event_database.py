@@ -84,7 +84,10 @@ class EventDatabase(MigrationDatabase):
             self.write
             and exc_type is None
             and is_server_engine()
-            and EVENTS_DIR.resolve() == self.file.resolve().parent
+            # NOTE(Amaras): when auto-uploading to the FFE website, the database is copied to
+            # tmpdir/event.sce. Not taking the database path into account will make the hook below
+            # try to load the wrong event (which will error out or load an unrelated event).
+            and self.event_database_path(self.uniq_id).resolve() == self.file.resolve()
         ):
             self.execute('SELECT * FROM tournament WHERE dirty = 1;')
             dirty_tournaments = [
