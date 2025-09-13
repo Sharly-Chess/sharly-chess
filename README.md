@@ -20,7 +20,7 @@ _Sharly Chess - © Sharly Chess project 2013-2025_
 ### Sandbox
 
 - [Communication to players](docs/sandbox/communication-to-players.md)
-- [Delegation event management](docs/sandbox/delegation.md)
+- [Delegating event management](docs/sandbox/delegation.md)
 - [Pairing actions](docs/sandbox/pairing-actions.md)
 
 ### Contributing
