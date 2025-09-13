@@ -22,8 +22,8 @@ from data.pairings.variations import SwissVariation
 from data.print_documents import PlayerSplitter, PrintDocument
 from data.print_documents.documents import PlayerPrintDocument, StatisticsPrintDocument
 from data.print_documents.player_splitters import ClubPlayerSplitter
-from data.prize.player_filter_options import PlayerFilterOption, ClubsFilterOption
-from data.prize.player_filters import PlayerFilter, ClubPlayerFilter
+from data.criteria.player_filter_options import PlayerFilterOption, ClubsFilterOption
+from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
 from data.tie_breaks import TieBreak
 from data.tie_breaks.managers import TieBreakManager, TieBreakOptionManager
 from data.tie_breaks.options import TieBreakOption
@@ -668,12 +668,19 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def on_tournament_data_updated(self, event_uniq_id: str, tournament_id: int):
-        event = EventLoader().events_by_id.get(event_uniq_id, None)
-        if event and tournament_id in event.tournaments_by_id:
-            tournament = event.tournaments_by_id[tournament_id]
-            if FFEUtils.resolve_auto_upload(tournament):
-                FfeBackgroundUploader.schedule_upload(tournament)
+    def on_tournament_data_updated(
+        self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
+    ):
+        # This hook being called in most database writes, it needs to be optimized
+        if not FfeBackgroundUploader.should_schedule_tournament_upload(
+            stored_event, stored_tournament
+        ):
+            return
+        event = EventLoader().load_event(stored_event.uniq_id)
+        tournament_id = stored_tournament.id
+        assert tournament_id is not None
+        tournament = event.tournaments_by_id[tournament_id]
+        FfeBackgroundUploader.schedule_upload(tournament)
 
     @hookimpl
     def augment_tournament_after_db_fetch(
@@ -981,7 +988,7 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def insert_prize_player_filter_types(
+    def insert_player_filter_types(
         self, player_filter_types: list[type['PlayerFilter']]
     ):
         league: type[PlayerFilter] = FfeLeaguePlayerFilter
@@ -989,7 +996,7 @@ class FfePlugin(Plugin):
         PluginUtils.insert_on_equals(player_filter_types, league, club)
 
     @hookimpl
-    def insert_prize_player_filter_option_types(
+    def insert_player_filter_option_types(
         self, player_filter_option_types: list[type['PlayerFilterOption']]
     ):
         league: type[PlayerFilterOption] = FfeLeaguesFilterOption

@@ -6,17 +6,13 @@
         <div class="modal-header">
             <h2 class="modal-title">
                 {% if action == 'update' %}
-                    {{ _('Prize criterion editing') }}
+                    {{ _('Tournament criterion editing') }}
                 {% else %}
-                     {{ _('Prize criterion creation') }}
+                     {{ _('Tournament criterion creation') }}
                 {% endif %}
             </h2>
         </div>
         <div class="modal-body">
-            <h4 class="mb-3">
-                {{ _('%(string)s:', string=_('Category')) }}
-                {{ admin_prize_category.name }}
-            </h4>
             {% if previous_criterion %}
                 {% with type='success', message=_(
                     'Criterion [%(criterion)s] successfully created!',
@@ -32,20 +28,16 @@
                 hx-indicator="#please-wait"
                 {% if action == 'update' %}
                     hx-patch="{{ url_for(
-                        'admin-prize-criterion-update',
+                        'admin-tournament-criterion-update',
                         event_uniq_id=admin_event.uniq_id,
                         tournament_id=admin_tournament.id,
-                        prize_group_id=admin_prize_group.id,
-                        prize_category_id=admin_prize_category.id,
-                        prize_criterion_id=admin_prize_criterion.id,
+                        tournament_criterion_id=admin_tournament_criterion.id,
                     ) }}"
                 {% else %}
                     hx-post="{{ url_for(
-                        'admin-prize-criterion-create',
+                        'admin-tournament-criterion-create',
                         event_uniq_id=admin_event.uniq_id,
                         tournament_id=admin_tournament.id,
-                        prize_group_id=admin_prize_group.id,
-                        prize_category_id=admin_prize_category.id,
                     ) }}"
                 {% endif %}
             >
@@ -89,11 +81,9 @@
                 type="button"
                 class="btn btn-secondary text-nowrap"
                 hx-get="{{ url_for(
-                    'admin-prize-criteria-modal',
+                    'admin-tournament-criteria-modal',
                     event_uniq_id=admin_event.uniq_id,
                     tournament_id=admin_tournament.id,
-                    prize_group_id=admin_prize_group.id,
-                    prize_category_id=admin_prize_category.id,
                 ) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
@@ -118,7 +108,7 @@
     </div>
 </div>
 
-{% if not admin_prize_category.criteria %}
+{% if not admin_tournament.criteria %}
     <script>
         // We need to reload the page when the modal is hidden, because the criteria might have changed.
         $(document).one('hide.bs.modal', function(e) {

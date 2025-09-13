@@ -1,5 +1,4 @@
 import shutil
-from sqlite3 import OperationalError
 import time
 from collections.abc import Iterator
 from contextlib import suppress
@@ -36,6 +35,7 @@ from database.sqlite.event.event_store import (
     StoredPrizeCriterion,
     StoredPrize,
     StoredPlayer,
+    StoredTournamentCriterion,
     StoredTournamentPlayer,
     StoredPairing,
     StoredBoard,
@@ -103,22 +103,36 @@ class EventDatabase(MigrationDatabase):
         return self
 
     def __exit__(self, exc_type, exc_value, tb):
-        dirty_tournaments: list[int] = []
-        if self.write and exc_type is None:
-            try:
-                self.execute('SELECT `id` FROM tournament WHERE dirty = 1;')
-                dirty_tournaments = [row['id'] for row in self.fetchall()]
+        dirty_tournaments: list[StoredTournament] = []
+        stored_event: StoredEvent | None = None
+        if (
+            self.write
+            and exc_type is None
+            and is_server_engine()
+            # NOTE(Amaras): when auto-uploading to the FFE website, the database is copied to
+            # tmpdir/event.sce. Not taking the database path into account will make the hook below
+            # try to load the wrong event (which will error out or load an unrelated event).
+            and self.event_database_path(self.uniq_id).resolve() == self.file.resolve()
+        ):
+            self.execute('SELECT * FROM tournament WHERE dirty = 1;')
+            dirty_tournaments = [
+                self._row_to_stored_tournament(row) for row in self.fetchall()
+            ]
+            if dirty_tournaments:
+                self.execute('SELECT * FROM `info`')
+                stored_event = self._row_to_base_stored_event(
+                    self.fetchone(), StoredEvent
+                )
                 self.execute('UPDATE tournament SET dirty = 0 WHERE dirty = 1;')
-            except OperationalError:
-                pass
+
         super().__exit__(exc_type, exc_value, tb)
 
         # We need call the hook on all dirty tournaments after committing the changes above
-        if self.write and exc_type is None and is_server_engine():
-            for tournament_id in dirty_tournaments:
-                plugin_manager.hook.on_tournament_data_updated(
-                    event_uniq_id=self.uniq_id, tournament_id=tournament_id
-                )
+        for stored_tournament in dirty_tournaments:
+            plugin_manager.hook.on_tournament_data_updated(
+                stored_event=stored_event,
+                stored_tournament=stored_tournament,
+            )
 
     def create_views(self) -> None:
         for script in (Path(__file__).parent / 'views').glob('v*.sql'):
@@ -752,6 +766,9 @@ class EventDatabase(MigrationDatabase):
             stored_tournament = self._row_to_stored_tournament(row)
             id_ = stored_tournament.id
             assert id_ is not None
+            stored_tournament.stored_criteria = self.load_stored_tournament_criteria(
+                id_
+            )
             stored_tournament.stored_prize_groups = (
                 self.load_tournament_stored_prize_groups(id_)
             )
@@ -883,6 +900,76 @@ class EventDatabase(MigrationDatabase):
                 time.time(),
                 tournament_id,
             ),
+        )
+
+    # ---------------------------------------------------------------------------------
+    # StoredTournamentCriterion
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_tournament_criterion(
+        cls, row: dict[str, Any]
+    ) -> StoredTournamentCriterion:
+        return StoredTournamentCriterion(
+            id=row['id'],
+            tournament_id=row['tournament_id'],
+            type=row['type'],
+            options=cls.load_json_from_database_field(row['options']),
+        )
+
+    def load_stored_tournament_criteria(
+        self, tournament_id: int
+    ) -> list[StoredTournamentCriterion]:
+        self.execute(
+            'SELECT * FROM `tournament_criterion` WHERE `tournament_id` = ?',
+            (tournament_id,),
+        )
+        return [
+            self._row_to_stored_tournament_criterion(row) for row in self.fetchall()
+        ]
+
+    def add_stored_tournament_criterion(
+        self,
+        stored_tournament_criterion: StoredTournamentCriterion,
+    ) -> int:
+        fields = self._get_fields_dict(
+            stored_tournament_criterion, ['tournament_id', 'type']
+        ) | {
+            'options': self.dump_to_json_database_field(
+                stored_tournament_criterion.options
+            )
+        }
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `tournament_criterion`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        if not (tournament_criterion_id := self._last_inserted_id()):
+            raise RuntimeError('Tournament criterion insertion failed')
+        return tournament_criterion_id
+
+    def update_stored_tournament_criterion(
+        self,
+        stored_tournament_criterion: StoredTournamentCriterion,
+    ):
+        fields = self._get_fields_dict(
+            stored_tournament_criterion, ['tournament_id', 'type']
+        ) | {
+            'options': self.dump_to_json_database_field(
+                stored_tournament_criterion.options
+            )
+        }
+        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        self.execute(
+            f'UPDATE `tournament_criterion` SET {field_sets} WHERE `id` = ?',
+            tuple(fields.values()) + (stored_tournament_criterion.id,),
+        )
+
+    def delete_stored_tournament_criterion(self, tournament_criterion_id: int):
+        self.execute(
+            'DELETE FROM `tournament_criterion` WHERE `id` = ?;',
+            (tournament_criterion_id,),
         )
 
     # ---------------------------------------------------------------------------------
