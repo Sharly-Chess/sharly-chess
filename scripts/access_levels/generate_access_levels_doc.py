@@ -13,63 +13,73 @@ def main():
         script_name=Path(__file__).name,
         date=datetime.now().strftime('%Y-%m-%d %H:%M'),
     )
-    print_interactive_info('Generating roles inheritance documentation...')
+    print_interactive_info('Generating access levels inheritance documentation...')
     for locale in locales:
         with open(
-            output_file := Path(__file__).with_name(f'roles-inheritance-{locale}.md'),
+            output_file := Path(__file__).with_name(
+                f'access-levels-inheritance-{locale}.md'
+            ),
             'wt',
         ) as output:
             print(
                 '|'
-                f' {_("Role").replace(" ", "<br/>")} |'
+                f' {_("Access level").replace(" ", "<br/>")} |'
                 f' {_("Scope").replace(" ", "<br/>")} |'
-                f' {_("Sub roles").replace(" ", "<br/>")} |'
-                f' {_("Inherited roles").replace(" ", "<br/>")} |'
-                f' {_("Manageable roles").replace(" ", "<br/>")} |',
+                f' {_("Sub access levels").replace(" ", "<br/>")} |'
+                f' {_("Inherited access levels").replace(" ", "<br/>")} |'
+                f' {_("Manageable access levels").replace(" ", "<br/>")} |',
                 file=output,
             )
             print('|-|:-:|:-:|:-:|:-:|', file=output)
-            roles: list[Role] = RoleManager.objects()
-            for role in roles:
-                ordered_direct_sub_roles = [
-                    r for r in roles if r.__class__ in role.direct_sub_roles()
-                ]
-                ordered_indirect_sub_roles = [
+            access_levels: list[Role] = RoleManager.objects()
+            for access_level in access_levels:
+                ordered_direct_sub_access_levels = [
                     r
-                    for r in roles
-                    if r in role.sub_roles() and r not in ordered_direct_sub_roles
+                    for r in access_levels
+                    if r.__class__ in access_level.direct_sub_roles()
                 ]
-                direct_sub_roles_str: str = f'_{_("none")}_'
-                if ordered_direct_sub_roles:
-                    direct_sub_roles_str = '<br/>'.join(
-                        r.short_name() for r in ordered_direct_sub_roles
+                ordered_indirect_sub_access_levels = [
+                    r
+                    for r in access_levels
+                    if r in access_level.sub_roles()
+                    and r not in ordered_direct_sub_access_levels
+                ]
+                direct_sub_access_levels_str: str = f'_{_("none")}_'
+                if ordered_direct_sub_access_levels:
+                    direct_sub_access_levels_str = '<br/>'.join(
+                        r.short_name() for r in ordered_direct_sub_access_levels
                     )
-                indirect_sub_roles_str: str = f'_{_("none")}_'
+                indirect_sub_access_levels_str: str = f'_{_("none")}_'
                 if (
-                    len(ordered_direct_sub_roles) + len(ordered_indirect_sub_roles)
-                    == len(roles) - 1
+                    len(ordered_direct_sub_access_levels)
+                    + len(ordered_indirect_sub_access_levels)
+                    == len(access_levels) - 1
                 ):
-                    indirect_sub_roles_str = f'_{_("all")}_'
-                elif ordered_indirect_sub_roles:
-                    indirect_sub_roles_str = '<br/>'.join(
-                        r.short_name() for r in ordered_indirect_sub_roles
+                    indirect_sub_access_levels_str = f'_{_("all")}_'
+                elif ordered_indirect_sub_access_levels:
+                    indirect_sub_access_levels_str = '<br/>'.join(
+                        r.short_name() for r in ordered_indirect_sub_access_levels
                     )
-                manageable_roles_str: str = f'_{_("none")}_'
-                ordered_manageable_roles: list[Role] = [
-                    r for r in RoleManager.objects() if r in role.manageable_roles()
+                manageable_access_levels_str: str = f'_{_("none")}_'
+                ordered_manageable_access_levels: list[Role] = [
+                    r
+                    for r in RoleManager.objects()
+                    if r in access_level.manageable_roles()
                 ]
-                if len(ordered_manageable_roles) == len(roles) - 1:
-                    manageable_roles_str = f'_{_("all")}_'
-                elif ordered_manageable_roles:
-                    manageable_roles_str = '<br/>'.join(
-                        r.short_name() for r in ordered_manageable_roles
+                if len(ordered_manageable_access_levels) == len(access_levels) - 1:
+                    manageable_access_levels_str = f'_{_("all")}_'
+                elif ordered_manageable_access_levels:
+                    manageable_access_levels_str = '<br/>'.join(
+                        r.short_name() for r in ordered_manageable_access_levels
                     )
                 print(
-                    f'|{role.short_name()}: {role.name}|{role.scope.name}|{direct_sub_roles_str}|{indirect_sub_roles_str}|{manageable_roles_str}|',
+                    f'|{access_level.short_name()}: {access_level.name}|{access_level.scope.name}|{direct_sub_access_levels_str}|{indirect_sub_access_levels_str}|{manageable_access_levels_str}|',
                     file=output,
                 )
             print(f'\n_{generated_by}_', file=output)
-        print_interactive_success(f'Roles inheritance written to {output_file}.')
+        print_interactive_success(
+            f'Access levels inheritance written to {output_file}.'
+        )
 
     actions_by_category: dict[AuthActionCategory, list[AuthAction]] = {}
     for category in AuthActionCategory.categories():
@@ -77,10 +87,12 @@ def main():
     for action in AuthAction.actions():
         actions_by_category[action.category].append(action)
 
-    print_interactive_info('Generating permissions by role documentation...')
+    print_interactive_info('Generating permissions by access level documentation...')
     for locale in locales:
         with open(
-            output_file := Path(__file__).with_name(f'roles-permissions-{locale}.md'),
+            output_file := Path(__file__).with_name(
+                f'access-levels-permissions-{locale}.md'
+            ),
             'wt',
         ) as output:
             mark_ok = ':white_check_mark:'
@@ -88,7 +100,7 @@ def main():
             mark_na = ':white_circle:'
             col1_size = max(len(action.name) for action in AuthAction.actions())
             col_size = max(
-                max(len(role.short_name()) for role in roles),
+                max(len(access_level.short_name()) for access_level in access_levels),
                 max(len(mark) for mark in (mark_ok, mark_ko, mark_na)) + 3,
             )  # 3 = len('(*)')
 
@@ -102,19 +114,21 @@ def main():
 
             def print_header(col1: str, last_col: str):
                 print_line(
-                    col1, [r.short_name().ljust(col_size) for r in roles], last_col
+                    col1,
+                    [r.short_name().ljust(col_size) for r in access_levels],
+                    last_col,
                 )
 
             print_line(
-                _('Permissions / Roles'),
+                _('Permissions / Access levels'),
                 [
                     '',
                 ]
-                * len(roles),
+                * len(access_levels),
                 '',
             )
             print(
-                f'|-{"-" * col1_size}-|{f":{'-' * col_size}:|" * (len(roles) + 1)}',
+                f'|-{"-" * col1_size}-|{f":{'-' * col_size}:|" * (len(access_levels) + 1)}',
                 file=output,
             )
             for category, actions in actions_by_category.items():
@@ -128,7 +142,7 @@ def main():
                         + [
                             mark_na,
                         ]
-                        * (len(roles) - 1),
+                        * (len(access_levels) - 1),
                         f'{mark_ok}(*)',
                     )
                 for action in actions_by_category[category]:
@@ -140,13 +154,13 @@ def main():
                             action.name,
                             [
                                 mark_ok
-                                if action in roles[0].allowed_actions()
+                                if action in access_levels[0].allowed_actions()
                                 else mark_ko,
                             ]
                             + [
                                 mark_na,
                             ]
-                            * (len(roles) - 1),
+                            * (len(access_levels) - 1),
                             mark_ko,
                         )
                     else:
@@ -155,31 +169,33 @@ def main():
                             [
                                 (
                                     mark_ok
-                                    if action in role.allowed_actions()
+                                    if action in access_level.allowed_actions()
                                     else mark_ko
                                 )
-                                for role in roles
+                                for access_level in access_levels
                             ],
                             mark_ko,
                         )
                 if category == AuthActionCategory.ACCESS:
-                    for role in roles:
+                    for access_level in access_levels:
                         print_line(
-                            _('Give/take away role {role_short_name}').format(
-                                role_short_name=role.short_name()
-                            ),
+                            _(
+                                'Give/take away access level {access_level_short_name}'
+                            ).format(access_level_short_name=access_level.short_name()),
                             [
                                 (
                                     mark_ok
-                                    if role in role2.manageable_roles()
+                                    if access_level in access_level2.manageable_roles()
                                     else mark_ko
                                 )
-                                for role2 in roles
+                                for access_level2 in access_levels
                             ],
                             mark_ko,
                         )
             print(f'\n_{generated_by}_', file=output)
-        print_interactive_success(f'Roles permissions written to {output_file}.')
+        print_interactive_success(
+            f'Access levels permissions written to {output_file}.'
+        )
     print_interactive_info('Done.')
 
 
