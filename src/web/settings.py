@@ -209,9 +209,10 @@ stores: dict[str, Store] = {
 
 middlewares: Sequence[Middleware] = [
     ServerSideSessionConfig(
+        key='sharly-chess-session',
         exclude=[
             r'^/static/*',
             r'.*\.(png|jpg|jpeg|gif|css|js|svg)$',
-        ]
+        ],
     ).middleware,
 ]
