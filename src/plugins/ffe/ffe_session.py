@@ -420,13 +420,14 @@ class FFESession(Session):
             EVENT_VALIDATION_INPUT_ID: self.ffe_state[EVENT_VALIDATION_INPUT_ID],
         }
 
+        event_uniq_id = self.tournament.event.uniq_id
         with tempfile.TemporaryDirectory() as tmpdir:
             tmp_path: Path = Path(tmpdir)
             tmp_papi_file: Path = tmp_path / 'export.papi'
             tmp_sce_file: Path = tmp_path / 'event.sce'
 
             # Copy the event database to the tmp file
-            with EventDatabase(self.tournament.event.uniq_id) as event_database:
+            with EventDatabase(event_uniq_id) as event_database:
                 try:
                     logger.debug(
                         'Copying [%s] to [%s]...', event_database.file, tmp_sce_file
@@ -486,7 +487,7 @@ class FFESession(Session):
                 self.report_error(_('Upload failed'))
                 return
 
-        with EventDatabase(self.tournament.event.uniq_id, write=True) as event_database:
+        with EventDatabase(event_uniq_id, write=True) as event_database:
             now = time.time()
             event_database.execute(
                 'UPDATE `tournament` SET `ffe_last_upload` = ?, '

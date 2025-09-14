@@ -83,7 +83,15 @@ class EventDatabase(MigrationDatabase):
     def __exit__(self, exc_type, exc_value, tb):
         dirty_tournaments: list[StoredTournament] = []
         stored_event: StoredEvent | None = None
-        if self.write and exc_type is None and is_server_engine():
+        if (
+            self.write
+            and exc_type is None
+            and is_server_engine()
+            # NOTE(Amaras): when auto-uploading to the FFE website, the database is copied to
+            # tmpdir/event.sce. Not taking the database path into account will make the hook below
+            # try to load the wrong event (which will error out or load an unrelated event).
+            and self.event_database_path(self.uniq_id).resolve() == self.file.resolve()
+        ):
             self.execute('SELECT * FROM tournament WHERE dirty = 1;')
             dirty_tournaments = [
                 self._row_to_stored_tournament(row) for row in self.fetchall()
