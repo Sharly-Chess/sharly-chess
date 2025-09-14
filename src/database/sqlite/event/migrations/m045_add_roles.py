@@ -1,5 +1,4 @@
 from database.sqlite.migration import BaseMigration
-from database.sqlite.sqlite_database import SQLiteDatabase
 
 
 class Migration(BaseMigration):
@@ -17,19 +16,6 @@ class Migration(BaseMigration):
             ')'
         )
         self.database.execute('ALTER TABLE `info` DROP COLUMN `update_password`')
-        for account_id, access_levels in {
-            1: [
-                'ADMINISTRATION',
-            ],
-            2: [
-                'CHECK_IN',
-                'RESULTS_ENTRY',
-            ],
-        }.items():
-            self.database.execute(
-                'INSERT INTO `account`(`id`, `access_levels`) VALUES (?, ?)',
-                (account_id, SQLiteDatabase.dump_to_json_database_field(access_levels)),
-            )
 
     def backward(self):
         self.database.execute(

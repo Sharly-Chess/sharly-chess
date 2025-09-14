@@ -5,7 +5,12 @@ from common.i18n import _
 from data.access_levels.manager import AccessLevelManager
 from data.player import Player
 from database.sqlite.event.event_store import StoredAccount
-from data.access_levels.access_levels import AccessLevel, AdministrationAccessLevel
+from data.access_levels.access_levels import (
+    AccessLevel,
+    AdministrationAccessLevel,
+    CheckInAccessLevel,
+    ResultsEntryAccessLevel,
+)
 
 
 @dataclass
@@ -150,7 +155,7 @@ class Account:
     # instances that can be used when no events are available (welcome page, ...)
 
     @classmethod
-    def administrator_account(cls) -> 'Account':
+    def predefined_administrator_account(cls) -> 'Account':
         return cls(
             StoredAccount(
                 id=cls.ADMINISTRATOR_ID,
@@ -166,12 +171,15 @@ class Account:
         )
 
     @classmethod
-    def anonymous_account(cls) -> 'Account':
+    def predefined_anonymous_account(cls) -> 'Account':
         return cls(
             StoredAccount(
                 id=cls.ANONYMOUS_ID,
                 active=True,
-                access_levels=[],
+                access_levels=[
+                    CheckInAccessLevel.static_id(),
+                    ResultsEntryAccessLevel.static_id(),
+                ],
                 tournament_ids=None,
                 first_name=None,
                 last_name=None,

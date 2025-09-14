@@ -42,12 +42,12 @@ class Client:
             if self.event is not None:
                 self.account = self.event.administrator_account
             else:
-                self.account = Account.administrator_account()
+                self.account = Account.predefined_administrator_account()
         else:
             if self.event is not None:
                 self.account = SessionHandler.get_user_account(self.request, self.event)
             else:
-                self.account = Account.anonymous_account()
+                self.account = Account.predefined_anonymous_account()
 
     def __repr__(self) -> str:
         return f'{self.__class__}(account={self.account}, host={self.host}, permissions={self.permissions_by_access_level})'

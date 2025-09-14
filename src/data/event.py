@@ -677,13 +677,45 @@ class Event:
     # Accounts
     # -------------------------------------------------------------------------
 
+    def predefined_accounts(self) -> bool:
+        """Returns True if predefined accounts, False otherwise."""
+        return not self.stored_event.stored_accounts
+
     @cached_property
     def accounts_by_id(self) -> dict[int, Account]:
-        return {
-            stored_account.id: Account(stored_account)
-            for stored_account in self.stored_event.stored_accounts
-            if stored_account.id is not None
-        }
+        if self.predefined_accounts:
+            return {
+                account.id: account
+                for account in [
+                    Account.predefined_administrator_account(),
+                    Account.predefined_anonymous_account(),
+                ]
+            }
+        else:
+            return {
+                stored_account.id: Account(stored_account)
+                for stored_account in self.stored_event.stored_accounts
+                if stored_account.id is not None
+            }
+
+    def use_own_accounts(self):
+        """Sets own accounts if not already done,
+        returns True if own accounts were created and False otherwise."""
+        if not self.predefined_accounts:
+            return
+        with EventDatabase(self.uniq_id, True) as database:
+            for account in self.accounts_by_id.values():
+                database.add_stored_account(
+                    StoredAccount(
+                        id=None,
+                        active=account.stored_account.active,
+                        access_levels=account.stored_account.access_levels,
+                        tournament_ids=account.stored_account.tournament_ids,
+                        first_name=account.stored_account.first_name,
+                        last_name=account.stored_account.last_name,
+                        password_hash=account.password_hash,
+                    )
+                )
 
     def create_account(self, stored_account: StoredAccount) -> Account:
         with EventDatabase(self.uniq_id, True) as database:

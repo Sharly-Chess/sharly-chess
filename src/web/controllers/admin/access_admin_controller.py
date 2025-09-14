@@ -342,6 +342,8 @@ class AccessAdminController(BaseEventAdminController):
         event = web_context.get_admin_event()
         password = WebContext.form_data_to_str(flat_data, 'password')
         password_hash = PasswordHasher().hash(password) if password else None
+        # ensure that the event uses its own accounts and not predefined accounts
+        event.use_own_accounts()
         account = event.create_account(
             StoredAccount(
                 id=None,
@@ -413,6 +415,8 @@ class AccessAdminController(BaseEventAdminController):
         stored_account.tournament_ids = (
             WebContext.form_data_to_list_int(flat_data, 'tournament_ids') or None
         )
+        # ensure that the event uses its own accounts and not predefined accounts
+        event.use_own_accounts()
         event.update_account(stored_account)
         Message.success(
             request,
@@ -440,6 +444,8 @@ class AccessAdminController(BaseEventAdminController):
             return web_context.error
         event = web_context.get_admin_event()
         account = web_context.get_admin_account()
+        # no need here to ensure that the event uses its own accounts
+        # since the anonymous and administrator accounts are not deletable
         event.delete_account(account)
         Message.success(
             request,
