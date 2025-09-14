@@ -97,7 +97,7 @@
                             </div>
                         </div>
                     </form>
-                {% else %}
+                {% elif not client.account.anonymous %}
                     <h4>
                         {{ _('Logged in as [%(account_name)s]', account_name=client.account.full_name) }}
                     </h4>
