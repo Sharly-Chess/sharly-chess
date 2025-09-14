@@ -302,9 +302,8 @@ class AccessAdminController(BaseEventAdminController):
                     )
                 else:
                     check_full_name_not_used = True
-                if (
-                    check_full_name_not_used
-                    and full_name in event.user_accounts_sorted_by_name
+                if check_full_name_not_used and full_name in (
+                    account.full_name for account in event.accounts_by_id.values()
                 ):
                     errors[field] = _(
                         'Account [{account_name}] already exists.'
