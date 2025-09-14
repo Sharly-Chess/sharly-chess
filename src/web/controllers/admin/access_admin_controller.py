@@ -276,12 +276,16 @@ class AccessAdminController(BaseEventAdminController):
         event = web_context.get_admin_event()
         account = web_context.admin_account
         if not account or account.user_account:
-            first_name = WebContext.form_data_to_str(data, field := 'first_name')
+            first_name: str = (
+                WebContext.form_data_to_str(data, field := 'first_name') or ''
+            )
             if first_name and not re.match(r"^[a-zA-Z0-9'\-]*$", first_name):
                 errors[field] = _(
                     "Accepted characters are letters, numbers, single quote (') and minus (-)."
                 )
-            last_name = WebContext.form_data_to_str(data, field := 'last_name')
+            last_name: str = (
+                WebContext.form_data_to_str(data, field := 'last_name') or ''
+            )
             if not last_name:
                 errors[field] = _('Please enter the last name.')
             elif not re.match(r"^[a-zA-Z0-9'\-]*$", last_name):
@@ -291,7 +295,7 @@ class AccessAdminController(BaseEventAdminController):
             if 'first_name' not in errors and 'last_name' not in errors:
                 full_name: str = Player.player_full_name(first_name, last_name)
                 check_full_name_not_used: bool
-                if action == FormAction.UPDATE:
+                if account and action == FormAction.UPDATE:
                     check_full_name_not_used = (
                         account.full_name
                         != Player.player_full_name(first_name, last_name)

@@ -323,6 +323,9 @@ msgstr ""
 msgid "Access level"
 msgstr ""
 
+msgid "Access levels"
+msgstr ""
+
 msgid "Access unrated and penalty results."
 msgstr ""
 
@@ -966,7 +969,13 @@ msgstr ""
 msgid "Choose from images in the 'custom' folder"
 msgstr ""
 
+msgid "Choose one, many or no tournaments."
+msgstr ""
+
 msgid "Choose screens to add"
+msgstr ""
+
+msgid "Choose the account."
 msgstr ""
 
 msgid "Choose the columns displayed."
@@ -2768,6 +2777,9 @@ msgid "League:"
 msgstr ""
 
 msgid "Leagues"
+msgstr ""
+
+msgid "Leave empty to grant no permissions at all."
 msgstr ""
 
 msgid "Libraries"
@@ -4700,6 +4712,9 @@ msgstr ""
 msgid "The URL or the path of the image (relative to the 'custom' folder) to display."
 msgstr ""
 
+msgid "The access levels to attribute to this account."
+msgstr ""
+
 msgid "The background colour is used when the image does not fill the whole screen."
 msgstr ""
 
@@ -5051,6 +5066,9 @@ msgid "The tournament of which you want to show the pairings."
 msgstr ""
 
 msgid "The tournament to print."
+msgstr ""
+
+msgid "The tournaments on which the account can act (if none, the account can act on all the tournaments)."
 msgstr ""
 
 msgid "The tournaments to print."
@@ -6242,118 +6260,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "(inherited)"
-#~ msgstr ""
-
-#~ msgid "Access"
-#~ msgstr ""
-
-#~ msgid "Account: %(account_name)s"
-#~ msgstr ""
-
-#~ msgid "Accounts ({num})"
-#~ msgstr ""
-
-#~ msgid "Choose one, many or no tournaments."
-#~ msgstr ""
-
-#~ msgid "Client: %(host)s"
-#~ msgstr ""
-
-#~ msgid "Connect"
-#~ msgstr ""
-
-#~ msgid "Disconnect"
-#~ msgstr ""
-
-#~ msgid "E.g.: 192.168.1.43"
-#~ msgstr ""
-
-#~ msgid "E.g.: john"
-#~ msgstr ""
-
-#~ msgid "Enter the password associated of the account."
-#~ msgstr ""
-
-#~ msgid "Execution"
-#~ msgstr ""
-
-#~ msgid "Execution mode:"
-#~ msgstr ""
-
-#~ msgid "ID (unique):"
-#~ msgstr ""
-
-#~ msgid "IP address"
-#~ msgstr ""
-
-#~ msgid "IP address [{ip}] is not valid."
-#~ msgstr ""
-
-#~ msgid "IP address:"
-#~ msgstr ""
-
-#~ msgid "Identification"
-#~ msgstr ""
-
-#~ msgid "Invalid account."
-#~ msgstr ""
-
-#~ msgid "Leave empty to grant no permissions at all."
-#~ msgstr ""
-
-#~ msgid "No permissions"
-#~ msgstr ""
-
-#~ msgid "Not authenticated"
-#~ msgstr ""
-
-#~ msgid "Other devices connected to your network can see your public screens. If you have created screens for player check-in and results entry then those features will be enabled."
-#~ msgstr ""
-
-#~ msgid "Please enter the IP address."
-#~ msgstr ""
-
-#~ msgid "Access levels"
-#~ msgstr ""
-
-#~ msgid "The Unique ID, used to authenticate."
-#~ msgstr ""
-
-#~ msgid "The access levels to attribute to this account."
-#~ msgstr ""
-
-#~ msgid "The tournaments on which the account can act (if none, the account can act on all the tournaments)."
-#~ msgstr ""
-
-#~ msgid "Use connected devices to check-in players and enter results on public screens"
-#~ msgstr ""
-
-#~ msgid "Username"
-#~ msgstr ""
-
-#~ msgid "Username:"
-#~ msgstr ""
-
-#~ msgid "You are connected on client (%(host)s)."
-#~ msgstr ""
-
-#~ msgid "You are connected on the Sharly Chess server and have full administration privileges."
-#~ msgstr ""
-
-#~ msgid "You decide which accounts are allowed to display screens, check-in players, enter results, pair rounds… Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers…"
-#~ msgstr ""
-
-#~ msgid "server"
-#~ msgstr ""
-
-#~ msgid "unknown"
-#~ msgstr ""
-
-#~ msgid "Invalid account ID."
-#~ msgstr ""
-
-#~ msgid "Enter the password associated with the account."
-#~ msgstr ""
 

@@ -19,12 +19,21 @@ from web.session import SessionHandler
 
 
 class ProfileWebContext(BaseEventAdminWebContext):
-    pass
+    @classmethod
+    def get_user_account_options(
+        cls,
+        user_accounts: list[Account],
+    ) -> dict[str, str]:
+        return {
+            cls.value_to_form_data(account.id): account.full_name
+            for account in user_accounts
+        }
 
 
 class ProfileController(BaseController):
-    @staticmethod
+    @classmethod
     def _render_profile_modal(
+        cls,
         web_context: AdminWebContext,
         data: Annotated[
             dict[str, str],
@@ -39,10 +48,9 @@ class ProfileController(BaseController):
             | {
                 'data': data or {},
                 'errors': errors or {},
-                'account_options': {
-                    account.id: account.full_name
-                    for account in web_context.admin_event.user_accounts_sorted_by_name
-                }
+                'user_account_options': ProfileWebContext.get_user_account_options(
+                    web_context.get_admin_event().user_accounts_sorted_by_name
+                )
                 if isinstance(web_context, ProfileWebContext)
                 else {},
             },

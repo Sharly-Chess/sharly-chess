@@ -63,7 +63,8 @@
                                 {{ admin_macros.select_input(
                                     name='account_id',
                                     label=_('Account:'),
-                                    select_options=account_options,
+                                    help_text=_('Choose the account.'),
+                                    select_options=user_account_options,
                                     data=data, errors=errors
                                 ) }}
                             </div>
