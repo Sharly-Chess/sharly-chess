@@ -56,7 +56,7 @@ class BaseAccessLevelTest:
         auth_page.goto(f'/admin/event/{PUBLIC_EVENT_ID}')
         auth_page.wait_for_load_state('domcontentloaded')
         auth_page.get_by_test_id('profile-button').click()
-        auth_page.locator('#account_id').fill(str(stored_account.id))
+        auth_page.locator('#account-id').fill(str(stored_account.id))
         auth_page.locator('#password').fill('test-password')
 
         auth_page.locator('#modal-form button[type=submit]').click()
