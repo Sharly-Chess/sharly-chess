@@ -265,7 +265,14 @@ with_indicator: display a loading indicator, optional
                 "
             >
                 {% if input_type == 'select' %}
-                    {% set selected=data[name].split(';') if multiple_select else [data[name]] %}
+                    {%
+                        set selected=data[name].split(';')
+                        if multiple_select else [
+                            select_options.keys()|first
+                            if select_options|length == 1
+                            else data[name]
+                        ]
+                    %}
                     <select
                         name="{{ name }}"
                         id="{{ id }}"
