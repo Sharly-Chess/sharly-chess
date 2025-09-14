@@ -1,8 +1,3 @@
-from data.access_levels.access_levels import (
-    AdministrationAccessLevel,
-    CheckInAccessLevel,
-    ResultsEntryAccessLevel,
-)
 from database.sqlite.migration import BaseMigration
 from database.sqlite.sqlite_database import SQLiteDatabase
 
@@ -24,11 +19,11 @@ class Migration(BaseMigration):
         self.database.execute('ALTER TABLE `info` DROP COLUMN `update_password`')
         for account_id, access_levels in {
             1: [
-                AdministrationAccessLevel.static_id(),
+                'ADMINISTRATION',
             ],
             2: [
-                CheckInAccessLevel.static_id(),
-                ResultsEntryAccessLevel.static_id(),
+                'CHECK_IN',
+                'RESULTS_ENTRY',
             ],
         }.items():
             self.database.execute(
