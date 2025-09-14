@@ -24,16 +24,6 @@
                 </div>
             {% endif %}
             <div class="d-block">
-                <i class="bi bi-laptop"></i>
-                <span class="pe-2 expanded-only {% if client.account.administrator %}fst-italic{% else %}fw-bold{% endif %}">
-                    {% if client.account.administrator %}
-                        {{ _('Sharly Chess server') }}
-                    {% else %}
-                        {{ client.host }}
-                    {% endif %}
-                </span>
-            </div>
-            <div class="d-block">
                 <i class="bi bi-translate"></i>
                 <span class="pe-2 expanded-only {% if client.account.administrator %}fst-italic{% else %}fw-bold{% endif %}">
                     {{ locale_infos[locale].name }}
