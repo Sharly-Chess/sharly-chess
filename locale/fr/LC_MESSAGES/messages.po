@@ -674,7 +674,7 @@ msgid "Average rating of opponents"
 msgstr "Classement ELO moyen des adversaires"
 
 msgid "Average rating: {rating}"
-msgstr "Classement moyen : {rating}"
+msgstr "Classement moyen : {rating}"
 
 msgid "Avg. Perfect Perf. *** SHORT NAME FOR AVERAGE PERFECT PERFORMANCE"
 msgstr "Perf. parfaite moyenne"
@@ -3689,7 +3689,7 @@ msgid "Player [{player}] has pairings in tournament [{tournament}]."
 msgstr "Le·la joueur·euse [{player}] a déjà été apparié·e dans le tournoi [{tournament}]."
 
 msgid "Player does not match tournament criteria: {names}"
-msgstr "Le·la joueur·euse ne correspond pas aux critères du tournoi : {names}"
+msgstr "Le·la joueur·euse ne correspond pas aux critères du tournoi : {names}"
 
 msgid "Player selection (by alphabetical order)"
 msgstr "Sélection des joueur·euses (par ordre alphabétique)"
