@@ -12,6 +12,7 @@ import json
 import logging
 import queue
 import re
+import sys
 import threading
 import webbrowser
 from datetime import datetime
@@ -237,10 +238,13 @@ class SharlyChessServerToga(toga.App):
     """Main Toga GUI app for Sharly Chess server."""
 
     def __init__(self):
+        icon_file_name = (
+            'sharly-chess.icns' if sys.platform == 'darwin' else 'sharly-chess.ico'
+        )
         super().__init__(
             formal_name='Sharly Chess',
             app_id='com.sharlychess.app',
-            icon=BASE_DIR / 'src' / 'gui' / 'icon.png',
+            icon=BASE_DIR / 'src' / 'web' / 'static' / 'images' / icon_file_name,
             home_page='https://sharly-chess.com',
             version=str(SHARLY_CHESS_VERSION),
         )

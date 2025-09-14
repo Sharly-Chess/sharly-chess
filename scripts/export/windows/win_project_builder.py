@@ -61,6 +61,7 @@ class WinProjectBuilder(ProjectBuilder):
         return [
             # TODO Used for MacOS and Windows, move this to a normal option if also needed on Linux.
             '--windowed',
+            f'--icon=src/web/static/images/{self.project_name}.ico',
         ]
 
     def hook_post_build_project(self) -> bool:

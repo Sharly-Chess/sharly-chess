@@ -7,6 +7,7 @@ from argparse import ArgumentParser, Namespace
 from logging import Logger
 from pathlib import Path
 from pkgutil import iter_modules
+import sys
 from types import ModuleType
 from zipfile import ZipFile, ZIP_DEFLATED
 
@@ -549,7 +550,6 @@ class ProjectBuilder(ABC):
             '--hiddenimport=colorlog',
             '--hiddenimport=toga',
             '--paths=.',
-            f'--icon=src/web/static/images/{self.project_name}.ico',
             '--optimize',
             '1',
             'src/sharly_chess.py',
@@ -643,7 +643,11 @@ class ProjectBuilder(ABC):
                 pyinstaller_params.append(f'--add-data={file}{data_separator}.')
                 logger.info(f'Adding external file to root: {file}')
         venv_path: Path = Path(os.environ['VIRTUAL_ENV'])
-        venv_lib_path: Path = venv_path / 'Lib' / 'site-packages'
+        venv_lib_path: Path = (
+            venv_path / 'Lib' / 'site-packages'
+            if sys.platform == 'win32'
+            else venv_path / 'lib' / 'python3.13' / 'site-packages'
+        )
         toga_path: Path = venv_lib_path / 'toga'
         iso4217parse_path: Path = venv_lib_path / 'iso4217parse'
         for file in [

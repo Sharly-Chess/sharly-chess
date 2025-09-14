@@ -17,6 +17,7 @@ class MacProjectBuilder(ProjectBuilder):
         return [
             '--windowed',  # Create macOS app bundle
             f'--osx-bundle-identifier=com.{self.project_name}.app',
+            f'--icon=src/web/static/images/{self.project_name}.icns',
         ]
 
     def hook_post_build_project(self) -> bool:
