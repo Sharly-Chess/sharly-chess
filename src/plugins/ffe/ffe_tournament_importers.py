@@ -3,6 +3,7 @@ from json import JSONDecodeError
 
 from common.exception import SharlyChessException, DictReaderException, ImporterError
 from common.i18n import _
+from data.event import Event
 from data.input_output.tournament_importers import FileTournamentImporter
 from database.sqlite.event.event_store import StoredTournament, StoredPlayer
 from plugins.ffe.papi_converter import PapiConverter
@@ -22,15 +23,11 @@ class PapiTournamentImporter(FileTournamentImporter):
         return _('Import Papi file')
 
     @property
-    def reorder_boards(self) -> bool:
-        return True
-
-    @property
     def accepted_file_suffixes(self) -> list[str]:
         return ['.papi']
 
     def load_stored_tournament(
-        self, stored_tournament: StoredTournament | None = None
+        self, event: Event, stored_tournament: StoredTournament | None = None
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
         (file_path,) = self.get_option_values()
         try:
@@ -56,12 +53,8 @@ class PapiJsonTournamentImporter(FileTournamentImporter):
     def accepted_file_suffixes(self) -> list[str]:
         return ['.json']
 
-    @property
-    def reorder_boards(self) -> bool:
-        return True
-
     def load_stored_tournament(
-        self, stored_tournament: StoredTournament | None = None
+        self, event: Event, stored_tournament: StoredTournament | None = None
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
         (file_path,) = self.get_option_values()
         try:

@@ -14,7 +14,6 @@ from common import (
     format_timestamp_time,
     DEVEL_ENV,
     EVENTS_DIR,
-    is_server_engine,
 )
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
@@ -86,7 +85,6 @@ class EventDatabase(MigrationDatabase):
         if (
             self.write
             and exc_type is None
-            and is_server_engine()
             # NOTE(Amaras): when auto-uploading to the FFE website, the database is copied to
             # tmpdir/event.sce. Not taking the database path into account will make the hook below
             # try to load the wrong event (which will error out or load an unrelated event).
@@ -968,7 +966,7 @@ class EventDatabase(MigrationDatabase):
             club=row['club'],
             fixed=row['fixed'],
             check_in=row['check_in'],
-            plugin_data=cls.load_json_from_database_field(row['plugin_data']),
+            plugin_data=cls.load_json_from_database_field(row['plugin_data'], {}),
         )
 
     def load_tournament_stored_players(self, tournament_id: int) -> list[StoredPlayer]:

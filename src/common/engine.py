@@ -7,7 +7,6 @@ import webbrowser
 import zipfile
 import platform
 import subprocess
-from abc import ABC, abstractmethod
 from datetime import datetime
 from json import JSONDecodeError
 from pathlib import Path
@@ -32,7 +31,6 @@ from common.logger import (
     get_logger,
     input_interactive_choices,
     input_interactive_yn,
-    set_logging_config,
 )
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
@@ -44,14 +42,11 @@ from database.sqlite.local_source_database import LocalSourceDatabaseManager
 logger = get_logger()
 
 
-class Engine(ABC):
-    """Base class for both ChessEvent and web server engines."""
-
+class Engine:
     def __init__(self):
         # before all the rest, initialize a SharlyChessConfig instance to set the language.
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         sharly_chess_config.load_and_set_env()
-        set_logging_config(file_path=self.log_file_path)
         logger.info(
             'Sharly Chess %s - %s - %s',
             sharly_chess_config.version,
@@ -229,12 +224,6 @@ class Engine(ABC):
                         f'*.{SharlyChessConfig.event_database_ext}'
                     ):
                         shutil.copy(file, EVENTS_DIR / file.name)
-
-    @property
-    @abstractmethod
-    def log_file_path(self) -> Path:
-        """Path of the file to write the logs to.
-        2 engines should not have the same one to avoid contention issues."""
 
     @classmethod
     def _recover_previous_version(
