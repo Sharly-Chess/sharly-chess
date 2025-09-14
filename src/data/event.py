@@ -728,7 +728,7 @@ class Event:
     @property
     def user_accounts_by_name(self) -> dict[str, Account]:
         return {
-            account.name: account
+            account.full_name: account
             for account in self.accounts_by_id.values()
             if account.user_account
         }
