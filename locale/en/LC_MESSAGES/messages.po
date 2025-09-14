@@ -350,10 +350,6 @@ msgstr ""
 msgid "Account:"
 msgstr ""
 
-#, python-format
-msgid "Account: %(account_name)s"
-msgstr ""
-
 msgid "Accounts"
 msgstr ""
 
@@ -614,6 +610,10 @@ msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] ""
 msgstr[1] ""
+
+#, python-format
+msgid "Authenticated as [%(account_name)s]"
+msgstr ""
 
 msgid "Authentication"
 msgstr ""
@@ -994,10 +994,6 @@ msgid "Click to check-in the player."
 msgstr ""
 
 msgid "Click to check-out the player."
-msgstr ""
-
-#, python-format
-msgid "Client: %(host)s"
 msgstr ""
 
 msgid "Close"
@@ -5883,10 +5879,6 @@ msgstr ""
 msgid "Yesterday"
 msgstr ""
 
-#, python-format
-msgid "You are connected on client (%(host)s)."
-msgstr ""
-
 msgid "You are connected on the Sharly Chess server and have full administration privileges."
 msgstr ""
 
@@ -6260,4 +6252,13 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "Account: %(account_name)s"
+#~ msgstr ""
+
+#~ msgid "Client: %(host)s"
+#~ msgstr ""
+
+#~ msgid "You are connected on client (%(host)s)."
+#~ msgstr ""
 

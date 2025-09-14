@@ -741,6 +741,21 @@ class Event:
         )
 
     @property
+    def active_user_accounts_by_name(self) -> dict[str, Account]:
+        return {
+            account.full_name: account
+            for account in self.accounts_by_id.values()
+            if account.user_account and account.active
+        }
+
+    @property
+    def active_user_accounts_sorted_by_name(self) -> list[Account]:
+        return sorted(
+            self.active_user_accounts_by_name.values(),
+            key=lambda account: (account.full_name,),
+        )
+
+    @property
     def administrator_account(self) -> Account:
         return self.accounts_by_id[Account.ADMINISTRATOR_ID]
 

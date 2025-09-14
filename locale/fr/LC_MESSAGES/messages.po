@@ -350,10 +350,6 @@ msgstr "Création d'un compte"
 msgid "Account:"
 msgstr "Compte :"
 
-#, python-format
-msgid "Account: %(account_name)s"
-msgstr "Compte : %(account_name)s"
-
 msgid "Accounts"
 msgstr "Comptes"
 
@@ -614,6 +610,10 @@ msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] "Au plus %(num)d coup illegal est enregistré."
 msgstr[1] "Au plus %(num)d coups illégaux sont enregistrés."
+
+#, python-format
+msgid "Authenticated as [%(account_name)s]"
+msgstr "Authenfié en tant que [%(account_name)s]"
 
 msgid "Authentication"
 msgstr "Authentification"
@@ -995,10 +995,6 @@ msgstr "Cliquer ici pour pointer le·la joueur·euse."
 
 msgid "Click to check-out the player."
 msgstr "Cliquer ici pour supprimer la pointage du·de la joueur·euse."
-
-#, python-format
-msgid "Client: %(host)s"
-msgstr "Client : %(host)s"
 
 msgid "Close"
 msgstr "Fermer"
@@ -5882,10 +5878,6 @@ msgstr "Oui"
 
 msgid "Yesterday"
 msgstr "Hier"
-
-#, python-format
-msgid "You are connected on client (%(host)s)."
-msgstr "Vous êtes connecté·e sur le client « %(host)s »."
 
 msgid "You are connected on the Sharly Chess server and have full administration privileges."
 msgstr "Vous êtes connecté·e sur le serveur Sharly Chess et avez les privilèges complets d'administration."

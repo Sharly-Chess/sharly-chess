@@ -20,13 +20,14 @@ from web.session import SessionHandler
 
 class ProfileWebContext(BaseEventAdminWebContext):
     @classmethod
-    def get_user_account_options(
+    def get_active_user_account_options(
         cls,
-        user_accounts: list[Account],
+        active_user_accounts: list[Account],
     ) -> dict[str, str]:
         return {
             cls.value_to_form_data(account.id): account.full_name
-            for account in user_accounts
+            for account in active_user_accounts
+            if account.active
         }
 
 
@@ -42,17 +43,20 @@ class ProfileController(BaseController):
         | None = None,
         errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect | Redirect:
+        active_user_account_options: dict[str, str] = {}
+        if isinstance(web_context, ProfileWebContext):
+            active_user_account_options = (
+                ProfileWebContext.get_active_user_account_options(
+                    web_context.get_admin_event().active_user_accounts_sorted_by_name
+                )
+            )
         return HTMXTemplate(
             template_name='common/profile/profile_modal.html',
             context=web_context.template_context
             | {
                 'data': data or {},
                 'errors': errors or {},
-                'user_account_options': ProfileWebContext.get_user_account_options(
-                    web_context.get_admin_event().user_accounts_sorted_by_name
-                )
-                if isinstance(web_context, ProfileWebContext)
-                else {},
+                'active_user_account_options': active_user_account_options,
             },
             re_target='#modal-wrapper',
         )
@@ -114,11 +118,14 @@ class ProfileController(BaseController):
         if data is None:
             data = {}
         field: str
-        if web_context.admin_event is None:
-            raise RuntimeError('admin_event not defined')
         account_id: int | None = WebContext.form_data_to_int(
             data, field := 'account_id'
         )
+        accounts: list[Account] = (
+            web_context.get_admin_event().active_user_accounts_sorted_by_name
+        )
+        if not account_id and len(accounts) == 1:
+            account_id = accounts[0].id
         if not account_id:
             errors[field] = _('Please select the account.')
         else:
