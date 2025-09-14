@@ -168,6 +168,8 @@ if [ -f "$APP_BUNDLE/Contents/Info.plist" ]; then
     # Update the display name and bundle name
     plutil -replace CFBundleDisplayName -string "Sharly Chess" "$APP_BUNDLE/Contents/Info.plist"
     plutil -replace CFBundleName -string "SharlyChess" "$APP_BUNDLE/Contents/Info.plist"
+    # Disable App Nap
+    plutil -replace NSAppSleepDisabled -bool YES "$APP_BUNDLE/Contents/Info.plist"
     echo "Updated Info.plist with custom icon and names"
 else
     echo "Warning: Info.plist not found in app bundle"
