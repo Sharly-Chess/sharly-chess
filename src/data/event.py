@@ -677,6 +677,7 @@ class Event:
     # Accounts
     # -------------------------------------------------------------------------
 
+    @property
     def predefined_accounts(self) -> bool:
         """Returns True if predefined accounts, False otherwise."""
         return not self.stored_event.stored_accounts
