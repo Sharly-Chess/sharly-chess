@@ -57,51 +57,49 @@
                     </div>
                 </div>
             {% elif admin_event %}
-                {% if client.account.anonymous %}
+                {% if client.account.anonymous and active_user_account_options %}
                     <h4>
-                        {{ _('Not authenticated') }}
+                        {{ _('Not logged in') }}
                     </h4>
-                    {% if active_user_account_options %}
-                        <form
-                            id="modal-form"
-                            hx-post="{{ url_for('profile-login', event_uniq_id=admin_event.uniq_id) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                        >
-                            <div class="row">
-                                <div class="col-12 col-md-6 mb-3">
-                                    {{ admin_macros.select_input(
-                                        name='account_id',
-                                        label=_('Account:'),
-                                        help_text='',
-                                        select_options=active_user_account_options,
-                                        data=data, errors=errors
-                                    ) }}
-                                </div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    {{ admin_macros.password_input(
-                                        name='password',
-                                        label=_('Password:'),
-                                        help_text='',
-                                        data=data, errors=errors
-                                    ) }}
-                                </div>
-                                <div class="col-12 col-md-6 mb-3">
-                                    <button
-                                        type="submit"
-                                        form="modal-form"
-                                        class="text-nowrap white btn btn-primary"
-                                    >
-                                        <i class="bi-person-check-fill pe-1"></i>
-                                        {{ _('Connect') }}
-                                    </button>
-                                </div>
+                    <form
+                        id="modal-form"
+                        hx-post="{{ url_for('profile-login', event_uniq_id=admin_event.uniq_id) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    >
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-3">
+                                {{ admin_macros.select_input(
+                                    name='account_id',
+                                    label=_('Account:'),
+                                    help_text='',
+                                    select_options=active_user_account_options,
+                                    data=data, errors=errors
+                                ) }}
                             </div>
-                        </form>
-                    {% endif %}
+                            <div class="col-12 col-md-6 mb-3">
+                                {{ admin_macros.password_input(
+                                    name='password',
+                                    label=_('Password:'),
+                                    help_text='',
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                            <div class="col-12 col-md-6 mb-3">
+                                <button
+                                    type="submit"
+                                    form="modal-form"
+                                    class="text-nowrap white btn btn-primary"
+                                >
+                                    <i class="bi-person-check-fill pe-1"></i>
+                                    {{ _('Log in') }}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 {% else %}
                     <h4>
-                        {{ _('Authenticated as [%(account_name)s]', account_name=client.account.full_name) }}
+                        {{ _('Logged in as [%(account_name)s]', account_name=client.account.full_name) }}
                     </h4>
                     <form
                         id="modal-form"
@@ -117,7 +115,7 @@
                                     class="text-nowrap white btn btn-primary"
                                 >
                                     <i class="bi-person-fill-x pe-1"></i>
-                                    {{ _('Disconnect') }}
+                                    {{ _('Log out') }}
                                 </button>
                             </div>
                         </div>

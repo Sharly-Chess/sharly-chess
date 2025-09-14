@@ -608,10 +608,6 @@ msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] "Au plus %(num)d coup illegal est enregistré."
 msgstr[1] "Au plus %(num)d coups illégaux sont enregistrés."
 
-#, python-format
-msgid "Authenticated as [%(account_name)s]"
-msgstr "Authenfié en tant que [%(account_name)s]"
-
 msgid "Authentication"
 msgstr "Authentification"
 
@@ -1086,9 +1082,6 @@ msgstr "Appariements complémentaires générés avec succès !"
 msgid "Configuration"
 msgstr "Configuration"
 
-msgid "Connect"
-msgstr "Connexion"
-
 msgid "Connect other devices!"
 msgstr "Connectez d'autres appareils !"
 
@@ -1512,9 +1505,6 @@ msgstr "Confrontation directe"
 
 msgid "Disabled"
 msgstr "Désactivé"
-
-msgid "Disconnect"
-msgstr "Déconnexion"
 
 msgid "Display"
 msgstr "Affichage"
@@ -2813,6 +2803,16 @@ msgstr "les paramètres des bases de données locales ont été mis à jour."
 msgid "Location"
 msgstr "Lieu"
 
+msgid "Log in"
+msgstr "Connexion"
+
+msgid "Log out"
+msgstr "Déconnexion"
+
+#, python-format
+msgid "Logged in as [%(account_name)s]"
+msgstr "Connecté en tant que [%(account_name)s]"
+
 msgid "Logging level"
 msgstr "Niveau de log"
 
@@ -3264,9 +3264,6 @@ msgstr "Aucun"
 msgid "Not assigned"
 msgstr "Non-attribué"
 
-msgid "Not authenticated"
-msgstr "Non authentifié"
-
 msgid "Not checked-in yet"
 msgstr "Pas encore point·ée"
 
@@ -3275,6 +3272,9 @@ msgstr "Aucune connection à internet"
 
 msgid "Not connected, impossible to update."
 msgstr "Échec de la connexion, mise à jour impossible."
+
+msgid "Not logged in"
+msgstr "Non connecté"
 
 msgid "Not paired"
 msgstr "Non-apparié·e"

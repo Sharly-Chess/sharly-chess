@@ -608,10 +608,6 @@ msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] ""
 msgstr[1] ""
 
-#, python-format
-msgid "Authenticated as [%(account_name)s]"
-msgstr ""
-
 msgid "Authentication"
 msgstr ""
 
@@ -1086,9 +1082,6 @@ msgstr ""
 msgid "Configuration"
 msgstr ""
 
-msgid "Connect"
-msgstr ""
-
 msgid "Connect other devices!"
 msgstr ""
 
@@ -1511,9 +1504,6 @@ msgid "Direct encounter"
 msgstr ""
 
 msgid "Disabled"
-msgstr ""
-
-msgid "Disconnect"
 msgstr ""
 
 msgid "Display"
@@ -2813,6 +2803,16 @@ msgstr ""
 msgid "Location"
 msgstr ""
 
+msgid "Log in"
+msgstr ""
+
+msgid "Log out"
+msgstr ""
+
+#, python-format
+msgid "Logged in as [%(account_name)s]"
+msgstr ""
+
 msgid "Logging level"
 msgstr ""
 
@@ -3264,9 +3264,6 @@ msgstr ""
 msgid "Not assigned"
 msgstr ""
 
-msgid "Not authenticated"
-msgstr ""
-
 msgid "Not checked-in yet"
 msgstr ""
 
@@ -3274,6 +3271,9 @@ msgid "Not connected to internet"
 msgstr ""
 
 msgid "Not connected, impossible to update."
+msgstr ""
+
+msgid "Not logged in"
 msgstr ""
 
 msgid "Not paired"
