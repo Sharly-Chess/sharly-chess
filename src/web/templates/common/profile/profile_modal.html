@@ -56,71 +56,69 @@
                         {{ _('You are connected on the Sharly Chess server and have full administration privileges.') }}
                     </div>
                 </div>
-            {% elif admin_event %}
-                {% if client.account.anonymous and active_user_account_options %}
-                    <h4>
-                        {{ _('Not logged in') }}
-                    </h4>
-                    <form
-                        id="modal-form"
-                        hx-post="{{ url_for('profile-login', event_uniq_id=admin_event.uniq_id) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                    >
-                        <div class="row">
-                            <div class="col-12 col-md-6 mb-3">
-                                {{ admin_macros.select_input(
-                                    name='account_id',
-                                    label=_('Account:'),
-                                    help_text='',
-                                    select_options=active_user_account_options,
-                                    data=data, errors=errors
-                                ) }}
-                            </div>
-                            <div class="col-12 col-md-6 mb-3">
-                                {{ admin_macros.password_input(
-                                    name='password',
-                                    label=_('Password:'),
-                                    help_text='',
-                                    data=data, errors=errors
-                                ) }}
-                            </div>
-                            <div class="col-12 col-md-6 mb-3">
-                                <button
-                                    type="submit"
-                                    form="modal-form"
-                                    class="text-nowrap white btn btn-primary"
-                                >
-                                    <i class="bi-person-check-fill pe-1"></i>
-                                    {{ _('Log in') }}
-                                </button>
-                            </div>
+            {% elif client.account.anonymous and active_user_account_options %}
+                <h4>
+                    {{ _('Not logged in') }}
+                </h4>
+                <form
+                    id="modal-form"
+                    hx-post="{{ url_for('profile-login', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                >
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-3">
+                            {{ admin_macros.select_input(
+                                name='account_id',
+                                label=_('Account:'),
+                                help_text='',
+                                select_options=active_user_account_options,
+                                data=data, errors=errors
+                            ) }}
                         </div>
-                    </form>
-                {% elif not client.account.anonymous %}
-                    <h4>
-                        {{ _('Logged in as [%(account_name)s]', account_name=client.account.full_name) }}
-                    </h4>
-                    <form
-                        id="modal-form"
-                        hx-post="{{ url_for('profile-logout', event_uniq_id=admin_event.uniq_id) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                    >
-                        <div class="row">
-                            <div class="col-12 col-md-6 mb-3">
-                                <button
-                                    type="submit"
-                                    form="modal-form"
-                                    class="text-nowrap white btn btn-primary"
-                                >
-                                    <i class="bi-person-fill-x pe-1"></i>
-                                    {{ _('Log out') }}
-                                </button>
-                            </div>
+                        <div class="col-12 col-md-6 mb-3">
+                            {{ admin_macros.password_input(
+                                name='password',
+                                label=_('Password:'),
+                                help_text='',
+                                data=data, errors=errors
+                            ) }}
                         </div>
-                    </form>
-                {% endif %}
+                        <div class="col-12 col-md-6 mb-3">
+                            <button
+                                type="submit"
+                                form="modal-form"
+                                class="text-nowrap white btn btn-primary"
+                            >
+                                <i class="bi-person-check-fill pe-1"></i>
+                                {{ _('Log in') }}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            {% elif not client.account.anonymous %}
+                <h4>
+                    {{ _('Logged in as [%(account_name)s]', account_name=client.account.full_name) }}
+                </h4>
+                <form
+                    id="modal-form"
+                    hx-post="{{ url_for('profile-logout', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                >
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-3">
+                            <button
+                                type="submit"
+                                form="modal-form"
+                                class="text-nowrap white btn btn-primary"
+                            >
+                                <i class="bi-person-fill-x pe-1"></i>
+                                {{ _('Log out') }}
+                            </button>
+                        </div>
+                    </div>
+                </form>
             {% endif %}
             <h4>
                 {{ _('Permissions') }}
@@ -139,27 +137,25 @@
                 <tbody>
                     {% if client.permissions_by_access_level %}
                         {% for access_level, permission in client.permissions_by_access_level.items() %}
-                            {% if admin_event or access_level.scope == 1 %}
-                                <tr>
-                                    <td class="{% if permission.inherited %}text-secondary fst-italic{% endif %}">
-                                        {{ access_level.name }}
-                                        {% if permission.inherited %}
-                                            {{ _('(inherited)') }}
-                                        {% endif %}
-                                    </td>
-                                    <td class="{% if permission.inherited %}text-secondary fst-italic{% endif %}">
-                                        {% if access_level.has_tournament_scope %}
-                                            {% if permission.tournament_ids %}
-                                                {{ client.permission_tournament_names(permission) }}
-                                            {% else %}
-                                                {{ _('All the tournaments') }}
-                                            {% endif %}
+                            <tr>
+                                <td class="{% if permission.inherited %}text-secondary fst-italic{% endif %}">
+                                    {{ access_level.name }}
+                                    {% if permission.inherited %}
+                                        {{ _('(inherited)') }}
+                                    {% endif %}
+                                </td>
+                                <td class="{% if permission.inherited %}text-secondary fst-italic{% endif %}">
+                                    {% if access_level.has_tournament_scope %}
+                                        {% if permission.tournament_ids %}
+                                            {{ client.permission_tournament_names(permission) }}
                                         {% else %}
-                                            {{ access_level.scope.name }}
+                                            {{ _('All the tournaments') }}
                                         {% endif %}
-                                    </td>
-                                </tr>
-                            {% endif %}
+                                    {% else %}
+                                        {{ access_level.scope.name }}
+                                    {% endif %}
+                                </td>
+                            </tr>
                         {% endfor %}
                     {% else %}
                         <tr>
