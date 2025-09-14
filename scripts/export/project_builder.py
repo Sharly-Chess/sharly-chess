@@ -129,6 +129,7 @@ class ProjectBuilder(ABC):
         venv_path: Path,
     ) -> Path:
         """Returns the path to the libraries of the virtual environment."""
+        raise NotImplementedError(f'Class {self.__class__} not implemented yet.')
 
     def clean_on_exit(self):
         self._delete_folder(self.build_dir)
