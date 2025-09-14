@@ -726,6 +726,14 @@ class Event:
         }
 
     @property
+    def active_user_accounts_by_id(self) -> dict[int, Account]:
+        return {
+            account.id: account
+            for account in self.accounts_by_id.values()
+            if account.user_account and account.active
+        }
+
+    @property
     def user_accounts_by_name(self) -> dict[str, Account]:
         return {
             account.full_name: account

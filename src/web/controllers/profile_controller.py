@@ -11,6 +11,7 @@ from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
 from data.access_levels.entities import Account
+from data.event import Event
 from database.sqlite.event.event_database import EventDatabase
 from web.controllers.admin.base_admin_controller import AdminWebContext
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminWebContext
@@ -121,9 +122,8 @@ class ProfileController(BaseController):
         account_id: int | None = WebContext.form_data_to_int(
             data, field := 'account_id'
         )
-        accounts: list[Account] = (
-            web_context.get_admin_event().active_user_accounts_sorted_by_name
-        )
+        admin_event: Event = web_context.get_admin_event()
+        accounts: list[Account] = admin_event.active_user_accounts_sorted_by_name
         if not account_id and len(accounts) == 1:
             account_id = accounts[0].id
         if not account_id:
@@ -131,9 +131,7 @@ class ProfileController(BaseController):
         else:
             password: str = WebContext.form_data_to_str(data, field := 'password') or ''
             try:
-                account: Account = web_context.admin_event.user_accounts_by_id[
-                    account_id
-                ]
+                account: Account = admin_event.active_user_accounts_by_id[account_id]
                 ph = PasswordHasher()
                 try:
                     pw_hash = account.password_hash
@@ -172,9 +170,9 @@ class ProfileController(BaseController):
                         'Something went wrong. Please ask your administrator to recreate your account.'
                     )
                 else:
-                    SessionHandler.store_account(
+                    SessionHandler.store_user_account(
                         request,
-                        web_context.admin_event,
+                        admin_event,
                         account,
                     )
 
@@ -214,7 +212,7 @@ class ProfileController(BaseController):
         if web_context.error:
             return web_context.error
         assert web_context.admin_event is not None
-        SessionHandler.store_account(
+        SessionHandler.store_user_account(
             request,
             web_context.admin_event,
             None,

@@ -35,7 +35,6 @@ class Client:
         )
         self.event: Optional['Event'] = event
         self.account: Account
-        self.active_account: Account
         if self.host in [
             LOCALHOST_IP,
             LOCALHOST_NAME,
@@ -44,19 +43,11 @@ class Client:
                 self.account = self.event.administrator_account
             else:
                 self.account = Account.administrator_account()
-            self.active_account = self.account
         else:
             if self.event is not None:
-                self.account = SessionHandler.get_account(self.request, self.event)
+                self.account = SessionHandler.get_user_account(self.request, self.event)
             else:
                 self.account = Account.anonymous_account()
-            self.active_account = self.account
-        if self.account.active:
-            self.active_account = self.account
-        elif self.event is not None:
-            self.active_account = self.event.anonymous_account
-        else:
-            self.active_account = Account.anonymous_account()
 
     def __repr__(self) -> str:
         return f'{self.__class__}(account={self.account}, host={self.host}, permissions={self.permissions_by_access_level})'
@@ -87,8 +78,8 @@ class Client:
     def permissions_by_access_level(self) -> dict[AccessLevel, Permission]:
         """Returns all the permissions by access level, granted or inherited."""
         permissions_by_access_level: dict[AccessLevel, Permission] = {}
-        tournament_ids = self.active_account.tournament_ids
-        for access_level in self.active_account.access_levels:
+        tournament_ids = self.account.tournament_ids
+        for access_level in self.account.access_levels:
             permissions_by_access_level[access_level] = Account.merge(
                 Permission(tournament_ids),
                 permissions_by_access_level.get(access_level, None),
@@ -118,7 +109,7 @@ class Client:
     @cached_property
     def allowed_actions(self) -> set[AuthAction]:
         actions: set[AuthAction] = set()
-        for access_level in self.active_account.access_levels:
+        for access_level in self.account.access_levels:
             actions |= access_level.allowed_actions()
         return actions
 
@@ -213,7 +204,7 @@ class Client:
     def manageable_access_levels(self) -> list[AccessLevel]:
         """Returns the access levels the client can manage."""
         manageable_access_levels: set[AccessLevel] = set()
-        for access_level in self.active_account.access_levels:
+        for access_level in self.account.access_levels:
             manageable_access_levels |= access_level.manageable_access_levels()
         return [
             access_level
