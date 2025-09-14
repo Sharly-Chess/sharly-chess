@@ -27,6 +27,16 @@ if platform.system() == 'Windows':
         # Remove not to run twice
         tracer.unlink()
 
+if platform.system() == 'Darwin':
+    # Prevent MacOS from sleeping the windowed app when it's in the background
+    from rubicon.objc import ObjCClass
+
+    NSProcessInfo = ObjCClass('NSProcessInfo')
+    NSProcessInfo.processInfo.beginActivityWithOptions_reason_(
+        0x00FFFFFF,  # NSActivityUserInitiated | NSActivityLatencyCritical
+        'Prevent App Nap',
+    )
+
 try:
     import argparse
     import asyncio
