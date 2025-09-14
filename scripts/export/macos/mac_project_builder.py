@@ -1,4 +1,5 @@
 from logging import Logger
+from pathlib import Path
 
 from common.logger import get_logger
 from scripts.export.project_builder import ProjectBuilder
@@ -19,6 +20,12 @@ class MacProjectBuilder(ProjectBuilder):
             f'--osx-bundle-identifier=com.{self.project_name}.app',
             f'--icon=src/web/static/images/{self.project_name}.icns',
         ]
+
+    def hook_get_venv_lib_path(
+        self,
+        venv_path: Path,
+    ) -> Path:
+        return venv_path / 'lib' / 'python3.13' / 'site-packages'
 
     def hook_post_build_project(self) -> bool:
         # The SharlyChess.app bundle is now created by the build_and_notarize.sh script
