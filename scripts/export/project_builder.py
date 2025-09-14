@@ -124,6 +124,13 @@ class ProjectBuilder(ABC):
     def hook_post_clean_on_startup(self):
         """Runs at the end of `clean_on_startup`"""
 
+    def hook_get_venv_lib_path(
+        self,
+        venv_path: Path,
+    ) -> Path:
+        """Returns the path to the libraries of the virtual environment."""
+        raise NotImplementedError(f'Class {self.__class__} not implemented yet.')
+
     def clean_on_exit(self):
         self._delete_folder(self.build_dir)
         self._delete_file(self.spec_file)

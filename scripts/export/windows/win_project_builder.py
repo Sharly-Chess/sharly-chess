@@ -57,6 +57,12 @@ class WinProjectBuilder(ProjectBuilder):
         # Will be used later to delete the MSI
         pass
 
+    def hook_get_venv_lib_path(
+        self,
+        venv_path: Path,
+    ) -> Path:
+        return venv_path / 'Lib' / 'site-packages'
+
     def hook_pyinstaller_additional_params(self) -> list[str]:
         return [
             # TODO Used for MacOS and Windows, move this to a normal option if also needed on Linux.
