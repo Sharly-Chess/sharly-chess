@@ -7,7 +7,7 @@ from litestar.plugins.htmx import HTMXRequest
 
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.access_levels.entities import Account
+from data.account import Account
 from data.input_output import DataSourceManager
 from data.player import Federation, Club
 from data.safety_mode import SafetyMode

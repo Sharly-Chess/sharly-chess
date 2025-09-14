@@ -5,7 +5,7 @@ from litestar_htmx import HTMXRequest
 
 from common.network import LOCALHOST_IP, LOCALHOST_NAME
 from data.access_levels.actions import AuthAction
-from data.access_levels.entities import (
+from data.account import (
     Account,
     Permission,
 )

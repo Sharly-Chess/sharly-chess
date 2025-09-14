@@ -17,7 +17,7 @@ from common.background import inline_image_url
 from common.i18n import _
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.access_levels.entities import Account
+from data.account import Account
 from data.display_controller import DisplayController
 from data.family import Family
 from data.player import Player, Club, Federation

@@ -11,7 +11,7 @@ from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
-from data.access_levels.entities import Account
+from data.account import Account
 from data.access_levels.manager import AccessLevelManager
 from data.access_levels.access_levels import AccessLevel, AccessLevelScope
 from data.player import Player
