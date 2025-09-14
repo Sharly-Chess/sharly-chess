@@ -1,15 +1,18 @@
 from database.sqlite.event.event_store import StoredScreen
 import pytest
 from playwright.sync_api import Page, APIRequestContext
-from data.auth.roles import DeputyChiefArbitrationRole
-from tests.e2e.roles.base_role_test import BaseRoleTest, DisplayMode
-from tests.e2e.roles.conftest import PUBLIC_EVENT_ID
+from data.access_levels.access_levels import DeputyChiefArbitrationAccessLevel
+from tests.e2e.access_levels.base_access_level_test import (
+    BaseAccessLevelTest,
+    DisplayMode,
+)
+from tests.e2e.access_levels.conftest import PUBLIC_EVENT_ID
 
 
 @pytest.mark.e2e
-class TestDeputyChiefArbitrationRole(BaseRoleTest):
-    def get_roles(self):
-        return [DeputyChiefArbitrationRole]
+class TestDeputyChiefArbitrationAccessLevel(BaseAccessLevelTest):
+    def get_access_levels(self):
+        return [DeputyChiefArbitrationAccessLevel]
 
     def test_access(
         self,

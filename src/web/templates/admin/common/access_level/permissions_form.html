@@ -5,15 +5,15 @@
     {{ _('Permissions') }}
 </h4>
 <div class="row mb-3">
-    {% set id = 'roles' %}
-    {% set name = 'roles' %}
+    {% set id = 'access-levels' %}
+    {% set name = 'access_levels' %}
 
     <div class="input-block">
         <label
             for="{{ id }}"
             class="form-check-label flex-grow-1 mb-1"
         >
-            {{ _('%(string)s:', string=_('Roles')) }}
+            {{ _('%(string)s:', string=_('Access levels')) }}
         </label>
         <div class="pw-input-group">
             <select
@@ -25,19 +25,19 @@
                 style="display:none"
                 data-placeholder="{{ _('Leave empty to grant no permissions at all.') }}"
             >
-                {% for role in manageable_roles %}
+                {% for access level in manageable_access_levels %}
                     <option
-                        value="{{ role.id }}"
-                        {% if role in selected_roles %}
+                        value="{{ access_level.id }}"
+                        {% if access_level in selected_access_levels %}
                             selected
                         {% endif %}
-                        {% if role in inherited_roles %}
+                        {% if access_level in inherited_access_levels %}
                             disabled
                         {% endif %}
-                        title="{{ role.help_text }}"
+                        title="{{ access_level.help_text }}"
                     >
-                        {{ role.name }}
-                        {% if role in inherited_roles %}
+                        {{ access_level.name }}
+                        {% if access_level in inherited_access_levels %}
                             {{ _('(inherited)') }}
                         {% endif %}
                     </option>
@@ -54,7 +54,7 @@
                         }
                         return $(
                             '<div ' +
-                            '    class="role-option w-100" ' +
+                            '    class="access-level-option w-100" ' +
                             '    data-bs-title="' + $(option.element).attr('data-bs-title') + '" ' +
                             '>' + option.text +
                             '</div>'
@@ -80,9 +80,9 @@
         </div>
         <div id="{{ id }}-help" class="form-text">
             {% if usage == 'device' %}
-                {{ _('The roles to attribute to this device.') }}
+                {{ _('The access_levels to attribute to this device.') }}
             {% else %}
-                {{ _('The roles to attribute to this account.') }}
+                {{ _('The access_levels to attribute to this account.') }}
             {% endif %}
         </div>
         {% if name in errors %}
@@ -92,7 +92,7 @@
         {% endif %}
     </div>
 </div>
-{% if tournament_role_selected %}
+{% if tournament_access_level_selected %}
     <div class="row mb-3">
         {{ admin_macros.select_input(
             name='tournament_ids',
@@ -126,12 +126,12 @@
     hx-swap="innerHTML"
     hx-vals="js:{
         tournament_ids: $('#tournament-ids').val(),
-        roles: $('#roles').val(),
+        access_levels: $('#access-levels').val(),
     }"
     style="display:none"
 ></button>
 <script>
-    $('#roles').change(() => setTimeout(() => {
+    $('#access-levels').change(() => setTimeout(() => {
         $('#reload-permissions-form-button').click();
     }, 300));
 </script>

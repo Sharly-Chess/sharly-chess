@@ -28,8 +28,8 @@ from common.i18n.utils import (
 )
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.auth.client import Client
-from data.auth.client_tracker import ClientTracker
+from data.access_levels.client import Client
+from data.access_levels.client_tracker import ClientTracker
 from data.player import Federation, Club
 from web.messages import Message
 from web.session import SessionHandler

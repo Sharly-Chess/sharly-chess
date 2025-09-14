@@ -18,7 +18,7 @@ from common import (
 )
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.auth.entities import Device, Account
+from data.access_levels.entities import Device, Account
 from database.sqlite.event.event_store import (
     StoredDisplayController,
     StoredTournament,
@@ -2344,7 +2344,7 @@ class EventDatabase(MigrationDatabase):
             id=row['id'],
             active=cls.load_bool_from_database_field(row['active']),
             ip=row['ip'],
-            roles=cls.load_json_from_database_field(row['roles'], []),
+            access_levels=cls.load_json_from_database_field(row['access_levels'], []),
             tournament_ids=cls.load_json_from_database_field(
                 row['tournament_ids'], None
             ),
@@ -2371,7 +2371,9 @@ class EventDatabase(MigrationDatabase):
         self, stored_device: StoredDevice, insert_id: bool = False
     ) -> StoredDevice:
         fields = self._get_fields_dict(stored_device, ['active', 'ip']) | {
-            'roles': self.dump_to_json_database_field(stored_device.roles),
+            'access_levels': self.dump_to_json_database_field(
+                stored_device.access_levels
+            ),
             'tournament_ids': self.dump_to_json_database_field(
                 stored_device.tournament_ids
             ),
@@ -2426,7 +2428,7 @@ class EventDatabase(MigrationDatabase):
             active=cls.load_bool_from_database_field(row['active']),
             username=row['username'],
             password_hash=row['password_hash'],
-            roles=cls.load_json_from_database_field(row['roles'], []),
+            access_levels=cls.load_json_from_database_field(row['access_levels'], []),
             tournament_ids=cls.load_json_from_database_field(
                 row['tournament_ids'], None
             ),
@@ -2455,7 +2457,9 @@ class EventDatabase(MigrationDatabase):
         fields = self._get_fields_dict(
             stored_account, ['active', 'username', 'password_hash']
         ) | {
-            'roles': self.dump_to_json_database_field(stored_account.roles),
+            'access_levels': self.dump_to_json_database_field(
+                stored_account.access_levels
+            ),
             'tournament_ids': self.dump_to_json_database_field(
                 stored_account.tournament_ids
             ),

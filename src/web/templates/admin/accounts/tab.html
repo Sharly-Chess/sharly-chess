@@ -50,9 +50,9 @@
         </thead>
         <tbody>
             {% for account in admin_event.accounts_sorted_by_username %}
-                {% set roles=account.roles %}
+                {% set access_levels=account.access_levels %}
                 <tr class="">
-                    <th scope="row" class="text-nowrap {% if not account.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
+                    <th scope="row" class="text-nowrap {% if not account.active %}text-secondary{% endif %}" rowspan="{{ [1, access_levels | length, ] | max }}">
                         {% if account.anonymous %}
                             <span class="fst-italic">
                                 {{ _('Not authenticated') }}
@@ -61,7 +61,7 @@
                             {{ account.username }}
                         {% endif %}
                     </th>
-                    <td class="text-nowrap {% if not account.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
+                    <td class="text-nowrap {% if not account.active %}text-secondary{% endif %}" rowspan="{{ [1, access_levels | length, ] | max }}">
                         <span class="{% if account.anonymous %}fst-italic{% endif %}">
                             {% if account.active %}
                                 {{ _('Enabled') }}
@@ -70,9 +70,9 @@
                             {% endif %}
                         </span>
                     </td>
-                    {% if roles %}
-                        {% with role=roles[0], entity=account %}
-                            {% include '../common/access/tab_role_permission_cells.html' %}
+                    {% if access_levels %}
+                        {% with access_level=access_levels[0], entity=account %}
+                            {% include '../common/access_level/tab_access_level_permission_cells.html' %}
                         {% endwith %}
                     {% else %}
                         <td class="{% if not account.active %}text-secondary{% endif %}">
@@ -82,7 +82,7 @@
                             <span class="fst-italic">-</span>
                         </td>
                     {% endif %}
-                    <td class="text-nowrap {% if not account.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
+                    <td class="text-nowrap {% if not account.active %}text-secondary{% endif %}" rowspan="{{ [1, access_levels | length, ] | max }}">
                         {% set client_can_manage_account=account.id in client.manageable_account_ids %}
                         {% set account_can_be_updated=account.edit_properties or account.edit_permissions %}
                         <span
@@ -170,11 +170,11 @@
                         </span>
                     </td>
                 </tr>
-                {% if roles | length > 1 %}
+                {% if access_levels | length > 1 %}
                     <tr class="">
-                        {% for role in roles[1:] %}
+                        {% for access_level in access_levels[1:] %}
                             {% with entity=account %}
-                                {% include '../common/access/tab_role_permission_cells.html' %}
+                                {% include '../common/access_level/tab_access_level_permission_cells.html' %}
                             {% endwith %}
                         {% endfor %}
                     </tr>
@@ -191,7 +191,7 @@
             <br/>
             {{ _('Creating accounts allows you to grant permissions to people on other clients,') }}
             <br/>
-            {{ _('BE CAREFUL TO GIVE SENSITIVE ROLES ONLY TO TRUSTED PEOPLE!') }}
+            {{ _('BE CAREFUL TO GIVE SENSITIVE ACCESS LEVELS ONLY TO TRUSTED PEOPLE!') }}
         {% else %}
             <i class="bi-exclamation-triangle-fill text-warning fs-4"></i>
             <br/>

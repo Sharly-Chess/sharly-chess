@@ -12,9 +12,9 @@ from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
 from common.network import IP_V4_ADDR_REGEX
-from data.auth.entities import Account, Device
-from data.auth.managers import RoleManager
-from data.auth.roles import Role, RoleScope
+from data.access_levels.entities import Account, Device
+from data.access_levels.manager import AccessLevelManager
+from data.access_levels.access_levels import AccessLevel, AccessLevelScope
 from database.sqlite.event.event_store import StoredAccount, StoredDevice
 from utils.enum import FormAction
 from web.controllers.admin.base_event_admin_controller import (
@@ -68,7 +68,7 @@ class AccountAdminWebContext(AccessAdminWebContext):
         return super().template_context | {
             'admin_event_tab': 'admin-event-accounts-tab',
             'admin_account': self.admin_account,
-            'roles': RoleManager.objects(),
+            'access_levels': AccessLevelManager.objects(),
         }
 
 
@@ -109,7 +109,7 @@ class DeviceAdminWebContext(AccessAdminWebContext):
         return super().template_context | {
             'admin_event_tab': 'admin-event-devices-tab',
             'admin_device': self.admin_device,
-            'roles': RoleManager.objects(),
+            'access_levels': AccessLevelManager.objects(),
         }
 
 
@@ -131,20 +131,27 @@ class AccessAdminController(BaseEventAdminController):
         web_context: AccessAdminWebContext,
         data: dict[str, str],
     ) -> dict[str, Any]:
-        roles = [
-            RoleManager.get_object(role_id)
-            for role_id in WebContext.form_data_to_list_str(data, 'roles')
+        access_levels = [
+            AccessLevelManager.get_object(access_level_id)
+            for access_level_id in WebContext.form_data_to_list_str(
+                data, 'access_levels'
+            )
         ]
-        inherited_roles: set[Role] = set()
-        for role in roles:
-            inherited_roles |= role.sub_roles()
-        selected_roles = [role for role in roles if role not in inherited_roles]
+        inherited_access_levels: set[AccessLevel] = set()
+        for access_level in access_levels:
+            inherited_access_levels |= access_level.sub_access_levels()
+        selected_access_levels = [
+            access_level
+            for access_level in access_levels
+            if access_level not in inherited_access_levels
+        ]
         return {
-            'manageable_roles': web_context.client.manageable_roles,
-            'selected_roles': selected_roles,
-            'inherited_roles': inherited_roles,
-            'tournament_role_selected': any(
-                role.scope == RoleScope.TOURNAMENT for role in selected_roles
+            'manageable_access_levels': web_context.client.manageable_access_levels,
+            'selected_access_levels': selected_access_levels,
+            'inherited_access_levels': inherited_access_levels,
+            'tournament_access_level_selected': any(
+                access_level.scope == AccessLevelScope.TOURNAMENT
+                for access_level in selected_access_levels
             ),
             'tournament_options': web_context.get_tournament_options(),
             'data': data,
@@ -159,7 +166,7 @@ class AccessAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        roles: list[str] | None,
+        access_levels: list[str] | None,
         tournament_ids: list[str] | None,
     ) -> Template | ClientRedirect | Redirect:
         web_context = DeviceAdminWebContext(request, event_uniq_id)
@@ -167,7 +174,7 @@ class AccessAdminController(BaseEventAdminController):
             return web_context.error
         data = WebContext.flatten_list_data(
             {
-                'roles': roles or '',
+                'access_levels': access_levels or '',
                 'tournament_ids': tournament_ids or '',
             }
         )
@@ -194,7 +201,7 @@ class AccessAdminController(BaseEventAdminController):
                 'username': '',
                 'password': '',
                 'active': True,
-                'roles': [],
+                'access_levels': [],
                 'tournament_ids': [],
             }
         )
@@ -213,7 +220,7 @@ class AccessAdminController(BaseEventAdminController):
             {
                 'username': stored_account.username,
                 'active': stored_account.active,
-                'roles': stored_account.roles,
+                'access_levels': stored_account.access_levels,
                 'tournament_ids': stored_account.tournament_ids,
             }
         )
@@ -331,7 +338,7 @@ class AccessAdminController(BaseEventAdminController):
             password = WebContext.form_data_to_str(data, field := 'password')
             if not password:
                 errors[field] = _('Please enter the password.')
-        # no validation on the roles, an empty list is accepted.
+        # no validation on the access levels, an empty list is accepted.
         return errors
 
     @post(path='/admin/account-create/{event_uniq_id:str}', name='admin-account-create')
@@ -366,7 +373,9 @@ class AccessAdminController(BaseEventAdminController):
             StoredAccount(
                 id=None,
                 active=WebContext.form_data_to_bool(flat_data, 'active'),
-                roles=WebContext.form_data_to_list_str(flat_data, 'roles'),
+                access_levels=WebContext.form_data_to_list_str(
+                    flat_data, 'access_levels'
+                ),
                 tournament_ids=WebContext.form_data_to_list_int(
                     flat_data, 'tournament_ids'
                 )
@@ -424,7 +433,9 @@ class AccessAdminController(BaseEventAdminController):
             password = WebContext.form_data_to_str(flat_data, 'password')
             if password:
                 stored_account.password_hash = PasswordHasher().hash(password)
-        stored_account.roles = WebContext.form_data_to_list_str(flat_data, 'roles')
+        stored_account.access_levels = WebContext.form_data_to_list_str(
+            flat_data, 'access_levels'
+        )
         stored_account.tournament_ids = (
             WebContext.form_data_to_list_int(flat_data, 'tournament_ids') or None
         )
@@ -480,7 +491,7 @@ class AccessAdminController(BaseEventAdminController):
             {
                 'ip': '',
                 'active': True,
-                'roles': [],
+                'access_levels': [],
                 'tournament_ids': [],
             }
         )
@@ -500,7 +511,7 @@ class AccessAdminController(BaseEventAdminController):
             {
                 'ip': stored_device.ip,
                 'active': stored_device.active,
-                'roles': stored_device.roles,
+                'access_levels': stored_device.access_levels,
                 'tournament_ids': stored_device.tournament_ids,
             }
         )
@@ -613,7 +624,7 @@ class AccessAdminController(BaseEventAdminController):
                     errors[field] = _('Device [{ip}] already set.').format(ip=ip)
             else:
                 errors[field] = _('IP address [{ip}] is not valid.').format(ip=ip)
-        # no validation on the roles, an empty list is accepted.
+        # no validation on the access levels, an empty list is accepted.
         return errors
 
     @post(path='/admin/device-create/{event_uniq_id:str}', name='admin-device-create')
@@ -646,7 +657,9 @@ class AccessAdminController(BaseEventAdminController):
             StoredDevice(
                 id=None,
                 active=WebContext.form_data_to_bool(flat_data, 'active'),
-                roles=WebContext.form_data_to_list_str(flat_data, 'roles'),
+                access_levels=WebContext.form_data_to_list_str(
+                    flat_data, 'access_levels'
+                ),
                 tournament_ids=WebContext.form_data_to_list_int(
                     flat_data, 'tournament_ids'
                 )
@@ -696,7 +709,9 @@ class AccessAdminController(BaseEventAdminController):
         if not device.unknown:
             stored_device.active = WebContext.form_data_to_bool(flat_data, 'active')
             stored_device.ip = WebContext.form_data_to_str(flat_data, 'ip')
-        stored_device.roles = WebContext.form_data_to_list_str(flat_data, 'roles')
+        stored_device.access_levels = WebContext.form_data_to_list_str(
+            flat_data, 'access_levels'
+        )
         stored_device.tournament_ids = (
             WebContext.form_data_to_list_int(flat_data, 'tournament_ids') or None
         )

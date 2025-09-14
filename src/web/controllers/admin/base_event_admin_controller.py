@@ -8,8 +8,8 @@ from litestar.params import Body
 
 from common.exception import SharlyChessException
 from common.i18n import _
-from data.auth.client import Client
-from data.auth.client_tracker import ClientTracker
+from data.access_levels.client import Client
+from data.access_levels.client_tracker import ClientTracker
 from data.display_controller import DisplayController
 from data.event import Event
 from data.loader import EventLoader

@@ -3,12 +3,12 @@ from enum import IntEnum
 from functools import cache
 
 from common.i18n import _
-from data.auth.actions import AuthAction
+from data.access_levels.actions import AuthAction
 from utils.entity import IdentifiableEntity
 
 
-class RoleScope(IntEnum):
-    """An enum representing the scope of the roles."""
+class AccessLevelScope(IntEnum):
+    """An enum representing the scope of the access levels."""
 
     APPLICATION = 1
     EVENT = 2
@@ -22,17 +22,17 @@ class RoleScope(IntEnum):
     def name(self) -> str:
         """Returns the name of the scope."""
         match self:
-            case RoleScope.APPLICATION:
+            case AccessLevelScope.APPLICATION:
                 return _('Application')
-            case RoleScope.EVENT:
+            case AccessLevelScope.EVENT:
                 return _('Event')
-            case RoleScope.TOURNAMENT:
+            case AccessLevelScope.TOURNAMENT:
                 return _('Tournament')
             case _:
-                raise ValueError(f'role={self}')
+                raise ValueError(f'access_level_scope={self}')
 
 
-class Role(IdentifiableEntity, ABC):
+class AccessLevel(IdentifiableEntity, ABC):
     @staticmethod
     @abstractmethod
     def short_name() -> str:
@@ -40,77 +40,81 @@ class Role(IdentifiableEntity, ABC):
 
     @property
     @abstractmethod
-    def scope(self) -> RoleScope:
-        """The scope of effect of the role."""
+    def scope(self) -> AccessLevelScope:
+        """The scope of effect of the access level."""
 
     @property
     def has_application_scope(self) -> bool:
-        """Returns True if the role has an application scope."""
-        return self.scope == RoleScope.APPLICATION
+        """Returns True if the access level has an application scope."""
+        return self.scope == AccessLevelScope.APPLICATION
 
     @property
     def has_event_scope(self) -> bool:
-        """Returns True if the role has an event scope."""
-        return self.scope == RoleScope.EVENT
+        """Returns True if the access level has an event scope."""
+        return self.scope == AccessLevelScope.EVENT
 
     @property
     def has_tournament_scope(self) -> bool:
-        """Returns True if the role has a tournament scope."""
-        return self.scope == RoleScope.TOURNAMENT
+        """Returns True if the access level has a tournament scope."""
+        return self.scope == AccessLevelScope.TOURNAMENT
 
     @staticmethod
     @abstractmethod
-    def direct_sub_roles() -> set[type['Role']]:
-        """Roles to inherit the permissions of."""
+    def direct_sub_access_levels() -> set[type['AccessLevel']]:
+        """Access levels to inherit the permissions of."""
 
     @property
     @abstractmethod
     def help_text(self) -> str:
-        """Explanation of the role's actions"""
+        """Explanation of the access level's actions"""
 
     @staticmethod
     @abstractmethod
-    def role_actions() -> list[AuthAction]:
-        """Actions specifically allowed to this role.
-        The role also is allowed to execute all the actions of its sub-roles."""
+    def access_level_actions() -> list[AuthAction]:
+        """Actions specifically allowed to this access level.
+        The access level also is allowed to execute all the actions of its sub-access levels."""
 
     @classmethod
     @cache
     def allowed_actions(cls) -> set[AuthAction]:
-        """Set of all the actions allowed to this role."""
-        actions: set[AuthAction] = set(cls.role_actions())
-        for sub_role in cls.sub_roles():
-            actions |= set(sub_role.role_actions())
+        """Set of all the actions allowed to this access level."""
+        actions: set[AuthAction] = set(cls.access_level_actions())
+        for sub_access_level in cls.sub_access_levels():
+            actions |= set(sub_access_level.access_level_actions())
         return actions
 
     @classmethod
     @cache
-    def _sub_role_types(cls) -> set[type['Role']]:
-        sub_role_types: set[type['Role']] = cls.direct_sub_roles()
-        for direct_sub_role_type in cls.direct_sub_roles():
-            sub_role_types |= direct_sub_role_type._sub_role_types()
-        return sub_role_types
+    def _sub_access_level_types(cls) -> set[type['AccessLevel']]:
+        sub_access_level_types: set[type['AccessLevel']] = (
+            cls.direct_sub_access_levels()
+        )
+        for direct_sub_access_level_type in cls.direct_sub_access_levels():
+            sub_access_level_types |= (
+                direct_sub_access_level_type._sub_access_level_types()
+            )
+        return sub_access_level_types
 
     @classmethod
     @cache
-    def sub_roles(cls) -> set['Role']:
-        """Set of all the roles inherited by this role."""
-        return set(type_() for type_ in cls._sub_role_types())
+    def sub_access_levels(cls) -> set['AccessLevel']:
+        """Set of all the access levels inherited by this access level."""
+        return set(type_() for type_ in cls._sub_access_level_types())
 
     @classmethod
-    def can_manage_roles(cls) -> bool:
+    def can_manage_access_levels(cls) -> bool:
         return (
             AuthAction.MANAGE_DEVICES in cls.allowed_actions()
             or AuthAction.MANAGE_ACCOUNTS in cls.allowed_actions()
         )
 
     @classmethod
-    def manageable_roles(cls) -> set['Role']:
-        """Set of all the roles which can be managed by this role."""
-        return cls.sub_roles() if cls.can_manage_roles() else set()
+    def manageable_access_levels(cls) -> set['AccessLevel']:
+        """Set of all the access levels which can be managed by this access level."""
+        return cls.sub_access_levels() if cls.can_manage_access_levels() else set()
 
 
-class SpectatorRole(Role):
+class SpectatorAccessLevel(AccessLevel):
     @staticmethod
     def static_id() -> str:
         return 'SPECTATOR'
@@ -124,15 +128,15 @@ class SpectatorRole(Role):
         return _('SPE')
 
     @property
-    def scope(self) -> RoleScope:
-        return RoleScope.EVENT
+    def scope(self) -> AccessLevelScope:
+        return AccessLevelScope.EVENT
 
     @staticmethod
-    def direct_sub_roles() -> set[type[Role]]:
+    def direct_sub_access_levels() -> set[type[AccessLevel]]:
         return set()
 
     @staticmethod
-    def role_actions() -> list[AuthAction]:
+    def access_level_actions() -> list[AuthAction]:
         return [AuthAction.VIEW_PUBLIC_SCREENS]
 
     @property
@@ -140,7 +144,7 @@ class SpectatorRole(Role):
         return _('Allows access to Screens marked as public.')
 
 
-class ResultsEntryRole(Role):
+class ResultsEntryAccessLevel(AccessLevel):
     @staticmethod
     def static_id() -> str:
         return 'RESULTS_ENTRY'
@@ -154,17 +158,17 @@ class ResultsEntryRole(Role):
         return _('RES')
 
     @property
-    def scope(self) -> RoleScope:
-        return RoleScope.TOURNAMENT
+    def scope(self) -> AccessLevelScope:
+        return AccessLevelScope.TOURNAMENT
 
     @staticmethod
-    def direct_sub_roles() -> set[type[Role]]:
+    def direct_sub_access_levels() -> set[type[AccessLevel]]:
         return {
-            SpectatorRole,
+            SpectatorAccessLevel,
         }
 
     @staticmethod
-    def role_actions() -> list[AuthAction]:
+    def access_level_actions() -> list[AuthAction]:
         return [AuthAction.ENTER_RESULTS]
 
     @property
@@ -174,7 +178,7 @@ class ResultsEntryRole(Role):
         )
 
 
-class CheckInRole(Role):
+class CheckInAccessLevel(AccessLevel):
     @staticmethod
     def static_id() -> str:
         return 'CHECK_IN'
@@ -188,17 +192,17 @@ class CheckInRole(Role):
         return _('CHE')
 
     @property
-    def scope(self) -> RoleScope:
-        return RoleScope.TOURNAMENT
+    def scope(self) -> AccessLevelScope:
+        return AccessLevelScope.TOURNAMENT
 
     @staticmethod
-    def direct_sub_roles() -> set[type[Role]]:
+    def direct_sub_access_levels() -> set[type[AccessLevel]]:
         return {
-            SpectatorRole,
+            SpectatorAccessLevel,
         }
 
     @staticmethod
-    def role_actions() -> list[AuthAction]:
+    def access_level_actions() -> list[AuthAction]:
         return [
             AuthAction.UPDATE_PLAYERS_HISTORY,
             AuthAction.CHECK_IN_PLAYERS,
@@ -211,7 +215,7 @@ class CheckInRole(Role):
         )
 
 
-class SectorArbitrationRole(Role):
+class SectorArbitrationAccessLevel(AccessLevel):
     @staticmethod
     def static_id() -> str:
         return 'SECTOR_ARBITRATION'
@@ -225,18 +229,18 @@ class SectorArbitrationRole(Role):
         return _('SEC')
 
     @property
-    def scope(self) -> RoleScope:
-        return RoleScope.TOURNAMENT
+    def scope(self) -> AccessLevelScope:
+        return AccessLevelScope.TOURNAMENT
 
     @staticmethod
-    def direct_sub_roles() -> set[type[Role]]:
+    def direct_sub_access_levels() -> set[type[AccessLevel]]:
         return {
-            CheckInRole,
-            ResultsEntryRole,
+            CheckInAccessLevel,
+            ResultsEntryAccessLevel,
         }
 
     @staticmethod
-    def role_actions() -> list[AuthAction]:
+    def access_level_actions() -> list[AuthAction]:
         return [
             AuthAction.VIEW_EVENT_BASIC_CONFIG,
             AuthAction.VIEW_PLAYERS_TAB,
@@ -252,7 +256,7 @@ class SectorArbitrationRole(Role):
         )
 
 
-class PairingRole(Role):
+class PairingAccessLevel(AccessLevel):
     @staticmethod
     def static_id() -> str:
         return 'PAIRING'
@@ -266,17 +270,17 @@ class PairingRole(Role):
         return _('PAI')
 
     @property
-    def scope(self) -> RoleScope:
-        return RoleScope.TOURNAMENT
+    def scope(self) -> AccessLevelScope:
+        return AccessLevelScope.TOURNAMENT
 
     @staticmethod
-    def direct_sub_roles() -> set[type[Role]]:
+    def direct_sub_access_levels() -> set[type[AccessLevel]]:
         return {
-            SectorArbitrationRole,
+            SectorArbitrationAccessLevel,
         }
 
     @staticmethod
-    def role_actions() -> list[AuthAction]:
+    def access_level_actions() -> list[AuthAction]:
         return [
             AuthAction.UPDATE_PLAYERS_HISTORY,
             AuthAction.VIEW_PLAYERS_TAB,
@@ -303,7 +307,7 @@ class PairingRole(Role):
         )
 
 
-class DeputyChiefArbitrationRole(Role):
+class DeputyChiefArbitrationAccessLevel(AccessLevel):
     @staticmethod
     def static_id() -> str:
         return 'DEPUTY_CHIEF_ARBITRATION'
@@ -317,17 +321,17 @@ class DeputyChiefArbitrationRole(Role):
         return _('DCA')
 
     @property
-    def scope(self) -> RoleScope:
-        return RoleScope.TOURNAMENT
+    def scope(self) -> AccessLevelScope:
+        return AccessLevelScope.TOURNAMENT
 
     @staticmethod
-    def direct_sub_roles() -> set[type[Role]]:
+    def direct_sub_access_levels() -> set[type[AccessLevel]]:
         return {
-            PairingRole,
+            PairingAccessLevel,
         }
 
     @staticmethod
-    def role_actions() -> list[AuthAction]:
+    def access_level_actions() -> list[AuthAction]:
         return [
             AuthAction.VIEW_EVENT_COMPLETE_CONFIG,
             AuthAction.VIEW_TOURNAMENTS_TAB,
@@ -354,7 +358,7 @@ class DeputyChiefArbitrationRole(Role):
         )
 
 
-class ChiefArbitrationRole(Role):
+class ChiefArbitrationAccessLevel(AccessLevel):
     @staticmethod
     def static_id() -> str:
         return 'CHIEF_ARBITRATION'
@@ -368,17 +372,17 @@ class ChiefArbitrationRole(Role):
         return _('CA')
 
     @property
-    def scope(self) -> RoleScope:
-        return RoleScope.EVENT
+    def scope(self) -> AccessLevelScope:
+        return AccessLevelScope.EVENT
 
     @staticmethod
-    def direct_sub_roles() -> set[type[Role]]:
+    def direct_sub_access_levels() -> set[type[AccessLevel]]:
         return {
-            DeputyChiefArbitrationRole,
+            DeputyChiefArbitrationAccessLevel,
         }
 
     @staticmethod
-    def role_actions() -> list[AuthAction]:
+    def access_level_actions() -> list[AuthAction]:
         return [
             AuthAction.UPDATE_EVENTS,
             AuthAction.MANAGE_ACCOUNTS,
@@ -390,11 +394,11 @@ class ChiefArbitrationRole(Role):
     @property
     def help_text(self) -> str:
         return _(
-            'Allows granting or revoking the Deputy Chief Arbitration role, editing the event, and managing tournaments; Also includes the permissions of the Deputy Chief Arbitration role.'
+            'Allows granting or revoking the Deputy Chief Arbitration access level, editing the event, and managing tournaments; Also includes the permissions of the Deputy Chief Arbitration access level.'
         )
 
 
-class ScreenManagementRole(Role):
+class ScreenManagementAccessLevel(AccessLevel):
     @staticmethod
     def static_id() -> str:
         return 'SCREEN_MANAGEMENT'
@@ -408,17 +412,17 @@ class ScreenManagementRole(Role):
         return _('SCR')
 
     @property
-    def scope(self) -> RoleScope:
-        return RoleScope.EVENT
+    def scope(self) -> AccessLevelScope:
+        return AccessLevelScope.EVENT
 
     @staticmethod
-    def direct_sub_roles() -> set[type[Role]]:
+    def direct_sub_access_levels() -> set[type[AccessLevel]]:
         return {
-            SpectatorRole,
+            SpectatorAccessLevel,
         }
 
     @staticmethod
-    def role_actions() -> list[AuthAction]:
+    def access_level_actions() -> list[AuthAction]:
         return [
             AuthAction.MANAGE_ACCOUNTS,
             AuthAction.MANAGE_DEVICES,
@@ -433,7 +437,7 @@ class ScreenManagementRole(Role):
         )
 
 
-class OrganizationRole(Role):
+class OrganizationAccessLevel(AccessLevel):
     @staticmethod
     def static_id() -> str:
         return 'ORGANIZATION'
@@ -447,17 +451,17 @@ class OrganizationRole(Role):
         return _('ORG')
 
     @property
-    def scope(self) -> RoleScope:
-        return RoleScope.EVENT
+    def scope(self) -> AccessLevelScope:
+        return AccessLevelScope.EVENT
 
     @staticmethod
-    def direct_sub_roles() -> set[type[Role]]:
+    def direct_sub_access_levels() -> set[type[AccessLevel]]:
         return {
-            ScreenManagementRole,
+            ScreenManagementAccessLevel,
         }
 
     @staticmethod
-    def role_actions() -> list[AuthAction]:
+    def access_level_actions() -> list[AuthAction]:
         return [
             AuthAction.UPDATE_EVENTS,
             AuthAction.VIEW_EVENT_COMPLETE_CONFIG,
@@ -468,17 +472,17 @@ class OrganizationRole(Role):
     @property
     def help_text(self) -> str:
         return _(
-            'Allows granting or revoking the Chief Arbitration role and editing the event. Also includes the permissions of the Screen Management role.'
+            'Allows granting or revoking the Chief Arbitration access level and editing the event. Also includes the permissions of the Screen Management access level.'
         )
 
     @classmethod
-    def manageable_roles(cls) -> set[Role]:
-        return super().manageable_roles() | {
-            ChiefArbitrationRole(),
+    def manageable_access_levels(cls) -> set[AccessLevel]:
+        return super().manageable_access_levels() | {
+            ChiefArbitrationAccessLevel(),
         }
 
 
-class AdministrationRole(Role):
+class AdministrationAccessLevel(AccessLevel):
     @staticmethod
     def static_id() -> str:
         return 'ADMINISTRATION'
@@ -492,18 +496,18 @@ class AdministrationRole(Role):
         return _('ADM')
 
     @property
-    def scope(self) -> RoleScope:
-        return RoleScope.APPLICATION
+    def scope(self) -> AccessLevelScope:
+        return AccessLevelScope.APPLICATION
 
     @staticmethod
-    def direct_sub_roles() -> set[type[Role]]:
+    def direct_sub_access_levels() -> set[type[AccessLevel]]:
         return {
-            OrganizationRole,
-            ChiefArbitrationRole,
+            OrganizationAccessLevel,
+            ChiefArbitrationAccessLevel,
         }
 
     @staticmethod
-    def role_actions() -> list[AuthAction]:
+    def access_level_actions() -> list[AuthAction]:
         return [
             AuthAction.VIEW_APPLICATION_SETTINGS,
             AuthAction.UPDATE_APPLICATION_SETTINGS,
@@ -519,5 +523,5 @@ class AdministrationRole(Role):
     @property
     def help_text(self) -> str:
         return _(
-            'Includes all other roles and grants full access to the application. This role is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network).'
+            'Includes all other access levels and grants full access to the application. This access level is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network).'
         )

@@ -17,8 +17,8 @@ from common.background import inline_image_url
 from common.i18n import _
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.auth.entities import Device, Account
-from data.auth.roles import CheckInRole, ResultsEntryRole
+from data.access_levels.entities import Device, Account
+from data.access_levels.access_levels import CheckInAccessLevel, ResultsEntryAccessLevel
 from data.display_controller import DisplayController
 from data.family import Family
 from data.player import Player, Club, Federation
@@ -700,9 +700,9 @@ class Event:
         """Returns the list of the devices that correspond to the standard execution mode."""
         localhost_device: Device = Device.localhost_device()
         unknown_device: Device = Device.unknown_device()
-        unknown_device.stored_device.roles += [
-            CheckInRole.static_id(),
-            ResultsEntryRole.static_id(),
+        unknown_device.stored_device.access_levels += [
+            CheckInAccessLevel.static_id(),
+            ResultsEntryAccessLevel.static_id(),
         ]
         return [
             localhost_device,

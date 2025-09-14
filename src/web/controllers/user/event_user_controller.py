@@ -4,8 +4,8 @@ from typing import Any
 from litestar.plugins.htmx import HTMXRequest
 
 from common.sharly_chess_config import SharlyChessConfig
-from data.auth.client import Client
-from data.auth.client_tracker import ClientTracker
+from data.access_levels.client import Client
+from data.access_levels.client_tracker import ClientTracker
 from data.event import Event
 from web.controllers.user.base_user_controller import UserWebContext, BaseUserController
 from web.guards import Guard

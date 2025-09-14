@@ -10,7 +10,7 @@ from litestar.response import Template
 from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
-from data.auth.entities import Account
+from data.access_levels.entities import Account
 from database.sqlite.event.event_database import EventDatabase
 from web.controllers.admin.base_admin_controller import AdminWebContext
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminWebContext
