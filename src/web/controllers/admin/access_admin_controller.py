@@ -287,7 +287,7 @@ class AccessAdminController(BaseEventAdminController):
                 WebContext.form_data_to_str(data, field := 'last_name') or ''
             )
             if not last_name:
-                errors[field] = _('Please enter the last name.')
+                errors[field] = _('This field is required.')
             elif not re.match(r"^[a-zA-Z0-9'\-]*$", last_name):
                 errors[field] = _(
                     "Accepted characters are letters, numbers, single quote (') and minus (-)."
@@ -312,7 +312,7 @@ class AccessAdminController(BaseEventAdminController):
             if action == FormAction.CREATE:
                 password = WebContext.form_data_to_str(data, field := 'password')
                 if not password:
-                    errors[field] = _('Please enter the password.')
+                    errors[field] = _('This field is required.')
         # no validation on the access levels, an empty list is accepted.
         return errors
 

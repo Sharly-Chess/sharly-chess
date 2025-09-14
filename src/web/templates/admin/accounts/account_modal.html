@@ -6,12 +6,12 @@
         <div class="modal-header">
             <h2 class="modal-title">
                 {% if action in ['create', 'clone', ] %}
-                    {{ _('Account creation') }}
+                    {{ _('Create account') }}
                 {% elif action == 'update' %}
                     {% if admin_account.anonymous %}
-                        {{ _('Editing of unauthenticated access') }}
+                        {{ _('Edit unauthenticated access') }}
                     {% else %}
-                        {{ _('Editing of account [%(account_name)s]', account_name=admin_account.full_name) }}
+                        {{ _('Edit account') }}
                     {% endif %}
                 {% endif %}
             </h2>
@@ -38,7 +38,7 @@
                             name='last_name',
                             label=_('Last name:'),
                             placeholder=_('E.g.: DOE'),
-                            help_text=_('The first name.'),
+                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -47,7 +47,7 @@
                             name='first_name',
                             label=_('First name:'),
                             placeholder=_('E.g.: John'),
-                            help_text=_('The last name.'),
+                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>

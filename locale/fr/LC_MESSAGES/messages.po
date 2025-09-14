@@ -344,9 +344,6 @@ msgstr "Le compte [{account_name}] a été supprimé."
 msgid "Account [{account_name}] has been updated."
 msgstr "Le compte [{account_name}] a été mis à jour."
 
-msgid "Account creation"
-msgstr "Création d'un compte"
-
 msgid "Account:"
 msgstr "Compte :"
 
@@ -975,9 +972,6 @@ msgstr "Choisissez aucun, un ou plusieurs tournois."
 msgid "Choose screens to add"
 msgstr "Choisir des écrans à ajouter"
 
-msgid "Choose the account."
-msgstr "Choisissez le compte."
-
 msgid "Choose the columns displayed."
 msgstr "Choisir les colonnes affichées."
 
@@ -1217,6 +1211,9 @@ msgstr "Créer un chronomètre pour commencer. "
 
 msgid "Create a tournament"
 msgstr "Créer un tournoi"
+
+msgid "Create account"
+msgstr "Créer un compte"
 
 msgid "Create an account"
 msgstr "Créer un compte"
@@ -1801,6 +1798,9 @@ msgstr "Chaque groupe doit contenir une ou plusieurs catégories (par exemple :
 msgid "Edit"
 msgstr "Modifier"
 
+msgid "Edit account"
+msgstr "Modifier le compte"
+
 msgid "Edit default timers"
 msgstr "Modifier les chronomètres par défaut"
 
@@ -1879,12 +1879,8 @@ msgstr "Modifier le chronomètre"
 msgid "Edit tournament"
 msgstr "Modifier le tournoi"
 
-#, python-format
-msgid "Editing of account [%(account_name)s]"
-msgstr "Édition du compte [%(account_name)s]"
-
-msgid "Editing of unauthenticated access"
-msgstr "Édition de l'accès non-authentifié"
+msgid "Edit unauthenticated access"
+msgstr "Modifier l'accès non-authentifié"
 
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
 msgstr "Elo"
@@ -1937,9 +1933,6 @@ msgstr "Fin :"
 
 msgid "Enter results"
 msgstr "Entrer des résultats"
-
-msgid "Enter the password of the account."
-msgstr "Entrez le mot de passe du compte."
 
 msgid "Enter the result"
 msgstr "Saisir le résultat"
@@ -3801,14 +3794,8 @@ msgstr "Veuillez entrer la date de fin de l'évènement."
 msgid "Please enter the image URL."
 msgstr "Veuillez entrer l'URL de l'image."
 
-msgid "Please enter the last name."
-msgstr "Veuillez entrer le nom de famille."
-
 msgid "Please enter the name of the event."
 msgstr "Veuillez entrer le nom de l'évènement."
-
-msgid "Please enter the password."
-msgstr "Veuillez entrer le mot de passe."
 
 msgid "Please enter the round number or the hour ID."
 msgstr "Veuillez entrer le numéro de ronde ou l'identifiant de l'horaire."
@@ -4757,9 +4744,6 @@ msgstr "La fédération qui organise l’évènement. Sharly Chess peut proposer
 msgid "The file to import."
 msgstr "Le fichier à importer."
 
-msgid "The first name."
-msgstr "Le prénom."
-
 msgid "The first tournament of the screen."
 msgstr "Le premier tournoi de l'écran."
 
@@ -4771,9 +4755,6 @@ msgstr "Le plus grand nombre de victoires"
 
 msgid "The greater number of wins with Black (unplayed games are counted as played with White)"
 msgstr "Le plus grand nombre de victoires avec les Noirs"
-
-msgid "The last name."
-msgstr "Le nom de famille."
 
 msgid "The last set of a screen can not be deleted."
 msgstr "Le dernier écran ne peut être supprimé."

@@ -344,9 +344,6 @@ msgstr ""
 msgid "Account [{account_name}] has been updated."
 msgstr ""
 
-msgid "Account creation"
-msgstr ""
-
 msgid "Account:"
 msgstr ""
 
@@ -975,9 +972,6 @@ msgstr ""
 msgid "Choose screens to add"
 msgstr ""
 
-msgid "Choose the account."
-msgstr ""
-
 msgid "Choose the columns displayed."
 msgstr ""
 
@@ -1216,6 +1210,9 @@ msgid "Create a timer now to get started."
 msgstr ""
 
 msgid "Create a tournament"
+msgstr ""
+
+msgid "Create account"
 msgstr ""
 
 msgid "Create an account"
@@ -1801,6 +1798,9 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
+msgid "Edit account"
+msgstr ""
+
 msgid "Edit default timers"
 msgstr ""
 
@@ -1879,11 +1879,7 @@ msgstr ""
 msgid "Edit tournament"
 msgstr ""
 
-#, python-format
-msgid "Editing of account [%(account_name)s]"
-msgstr ""
-
-msgid "Editing of unauthenticated access"
+msgid "Edit unauthenticated access"
 msgstr ""
 
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
@@ -1936,9 +1932,6 @@ msgid "End:"
 msgstr ""
 
 msgid "Enter results"
-msgstr ""
-
-msgid "Enter the password of the account."
 msgstr ""
 
 msgid "Enter the result"
@@ -3801,13 +3794,7 @@ msgstr ""
 msgid "Please enter the image URL."
 msgstr ""
 
-msgid "Please enter the last name."
-msgstr ""
-
 msgid "Please enter the name of the event."
-msgstr ""
-
-msgid "Please enter the password."
 msgstr ""
 
 msgid "Please enter the round number or the hour ID."
@@ -4757,9 +4744,6 @@ msgstr ""
 msgid "The file to import."
 msgstr ""
 
-msgid "The first name."
-msgstr ""
-
 msgid "The first tournament of the screen."
 msgstr ""
 
@@ -4770,9 +4754,6 @@ msgid "The greater number of wins"
 msgstr ""
 
 msgid "The greater number of wins with Black (unplayed games are counted as played with White)"
-msgstr ""
-
-msgid "The last name."
 msgstr ""
 
 msgid "The last set of a screen can not be deleted."
@@ -6252,13 +6233,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "Account: %(account_name)s"
-#~ msgstr ""
-
-#~ msgid "Client: %(host)s"
-#~ msgstr ""
-
-#~ msgid "You are connected on client (%(host)s)."
-#~ msgstr ""
 
