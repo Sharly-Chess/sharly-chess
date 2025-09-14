@@ -70,7 +70,7 @@ class SqlServerCredentials:
 class SqlServer:
     """Base class for SQL-server databases using python-tds."""
 
-    DEFAULT_TIMEOUT: int = 3
+    DEFAULT_TIMEOUT: int = 10
 
     def __init__(self, credentials_file: Path, timeout: int | None = None):
         """Initializes the database object, raises SharlyChessException on error."""
