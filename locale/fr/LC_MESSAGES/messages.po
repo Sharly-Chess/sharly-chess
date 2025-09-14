@@ -173,7 +173,7 @@ msgid "(family)"
 msgstr "(famille)"
 
 msgid "(inherited)"
-msgstr "hérité"
+msgstr "(hérité)"
 
 msgid "(no screens)"
 msgstr "(aucun écran)"
