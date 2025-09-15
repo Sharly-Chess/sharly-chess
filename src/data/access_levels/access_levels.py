@@ -103,10 +103,7 @@ class AccessLevel(IdentifiableEntity, ABC):
 
     @classmethod
     def can_manage_access_levels(cls) -> bool:
-        return (
-            AuthAction.MANAGE_DEVICES in cls.allowed_actions()
-            or AuthAction.MANAGE_ACCOUNTS in cls.allowed_actions()
-        )
+        return AuthAction.MANAGE_ACCOUNTS in cls.allowed_actions()
 
     @classmethod
     def manageable_access_levels(cls) -> set['AccessLevel']:
@@ -386,7 +383,6 @@ class ChiefArbitrationAccessLevel(AccessLevel):
         return [
             AuthAction.UPDATE_EVENTS,
             AuthAction.MANAGE_ACCOUNTS,
-            AuthAction.MANAGE_DEVICES,
             AuthAction.ADD_TOURNAMENTS,
             AuthAction.DELETE_TOURNAMENTS,
         ]
@@ -425,16 +421,13 @@ class ScreenManagementAccessLevel(AccessLevel):
     def access_level_actions() -> list[AuthAction]:
         return [
             AuthAction.MANAGE_ACCOUNTS,
-            AuthAction.MANAGE_DEVICES,
             AuthAction.MANAGE_SCREENS,
             AuthAction.VIEW_PRIVATE_SCREENS,
         ]
 
     @property
     def help_text(self) -> str:
-        return _(
-            'Allows management of Screens and the account and devices that can access them.'
-        )
+        return _('Allows management of Screens and the accounts that can access them.')
 
 
 class OrganizationAccessLevel(AccessLevel):

@@ -27,12 +27,12 @@ class EventUserWebContext(UserWebContext):
         ClientTracker().track_client(
             self.client.host,
             self.client.event.uniq_id if self.client.event else None,
-            self.client.account.username if self.client.account else None,
+            self.client.account.id,
         )
 
     @cached_property
     def client(self) -> Client:
-        """Returns the client (account and device) of the request."""
+        """Returns the client of the request."""
         return Client(self.request, self.user_event)
 
     def check_user_tab(self):

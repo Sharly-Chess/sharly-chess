@@ -1,9 +1,9 @@
-<td class="{% if not entity.active %}text-secondary{% endif %}">
+<td class="{% if not account.active %}text-secondary{% endif %}">
     {{ access_level.name }}
 </td>
-<td class="{% if not entity.active %}text-secondary{% endif %}">
+<td class="{% if not account.active %}text-secondary{% endif %}">
     {% if access_level.has_tournament_scope %}
-        {% set permission=entity.permissions_by_access_level[access_level] %}
+        {% set permission=account.permissions_by_access_level[access_level] %}
         {% if permission.tournament_ids %}
             {{ client.permission_tournament_names(permission) }}
         {% else %}

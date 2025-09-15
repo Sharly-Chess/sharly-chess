@@ -161,7 +161,7 @@ class PlayerAdminController(BaseEventAdminController):
 
         last_name: str | None = WebContext.form_data_to_str(data, field := 'last_name')
         if not last_name:
-            errors[field] = _('Please enter the last name.')
+            errors[field] = _('This field is required.')
         try:
             if value := WebContext.form_data_to_int(data, field := 'gender'):
                 PlayerGender(value)

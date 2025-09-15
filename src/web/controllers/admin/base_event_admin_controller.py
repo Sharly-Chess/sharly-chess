@@ -53,12 +53,12 @@ class BaseEventAdminWebContext(AdminWebContext):
         ClientTracker().track_client(
             self.client.host,
             self.client.event.uniq_id if self.client.event else None,
-            self.client.account.username if self.client.account else None,
+            self.client.account.id,
         )
 
     @cached_property
     def client(self) -> Client:
-        """Returns the client (account and device) of the request."""
+        """Returns the client of the request."""
         return Client(self.request, self.admin_event)
 
     def get_admin_event(self) -> Event:
@@ -295,29 +295,14 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'icon_class': 'bi-box-arrow-in-right',
                 },
             }
-        if self.get_admin_event().custom_exec_mode and (
-            self.client.can_manage_accounts or self.client.can_manage_devices
-        ):
-            nav_tab: dict[str, Any] = {
-                'title': _('Access'),
-                'icon_class': 'bi-key',
-                'submenu': {},
-            }
-            if self.client.can_manage_accounts:
-                nav_tab['submenu']['admin-event-accounts-tab'] = {
-                    'title': _('Accounts ({num})').format(
-                        num=len(event.accounts_by_id) or '-'
-                    ),
+        if self.client.can_manage_accounts:
+            nav_tabs |= {
+                'admin-event-accounts-tab': {
+                    'title': _('Staff').format(num=len(event.accounts_by_id) or '-'),
                     'template': 'accounts/tab.html',
-                }
-            if self.client.can_manage_accounts:
-                nav_tab['submenu']['admin-event-devices-tab'] = {
-                    'title': _('Devices ({num})').format(
-                        num=len(event.devices_by_id) or '-'
-                    ),
-                    'template': 'devices/tab.html',
-                }
-            nav_tabs['admin-event-access'] = nav_tab
+                    'icon_class': 'bi-key',
+                },
+            }
 
         return super().template_context | {
             'admin_event': self.admin_event,

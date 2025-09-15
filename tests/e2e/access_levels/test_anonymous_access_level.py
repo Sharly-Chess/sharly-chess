@@ -28,7 +28,7 @@ class TestAnonymousAccessLevel(BaseAccessLevelTest):
 
         super().assert_access_to_visible_events(PUBLIC_EVENT_ID, lan_page)
         super().assert_access_to_input_screen(
-            False,
+            True,
             DisplayMode.SCREENS_NOT_IN_MENU,
             lan_page,
             public_input_screen,
