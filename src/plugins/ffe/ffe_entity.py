@@ -157,9 +157,9 @@ class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
     def static_id() -> str:
         return f'{PLUGIN_NAME}-local'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('FFE database (local)', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('FFE database (local)')
 
     @property
     def local_database_type(self) -> type[LocalSourceDatabase]:
@@ -213,9 +213,9 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
     def static_id() -> str:
         return f'{PLUGIN_NAME}-online'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('FFE database (online)', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('FFE database (online)')
 
     @classmethod
     async def check_connection(cls) -> bool:
@@ -283,9 +283,9 @@ class LeaguePlayerSplitter(PlayerSplitter):
     def static_id() -> str:
         return f'{PLUGIN_NAME}-ffe_league'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('League', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('League')
 
     @staticmethod
     def get_split_key(player: Player) -> str:
@@ -306,9 +306,9 @@ class NicoisSwissVariation(SwissVariation):
     def variation_id() -> str:
         return 'NICOIS'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('"Niçois" accelerated system', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('"Niçois" accelerated system')
 
     @property
     def settings(self) -> list[PairingSetting]:
@@ -375,9 +375,9 @@ class FfeLeaguePlayerFilter(PlayerFilter):
     def static_id() -> str:
         return f'{PLUGIN_NAME}-LEAGUE'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('League', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('League')
 
     @staticmethod
     def available_options() -> list[type[PlayerFilterOption]]:

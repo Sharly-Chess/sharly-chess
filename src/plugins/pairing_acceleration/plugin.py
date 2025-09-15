@@ -17,9 +17,9 @@ class PairingAccelerationPlugin(Plugin):
     def static_id() -> str:
         return PLUGIN_NAME
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Accelerated pairings', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Accelerated pairings')
 
     @property
     def description(self) -> str:

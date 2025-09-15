@@ -49,12 +49,10 @@ class FfeTieBreak(TieBreak, ABC):
         pass
 
     @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
+    def static_name(cls) -> str:
         if not experimental_features_enabled():
             return cls.sub_name()
-        return _('{tie_break} (Papi compatible)', locale).format(
-            tie_break=cls.sub_name()
-        )
+        return _('{tie_break} (Papi compatible)').format(tie_break=cls.sub_name())
 
     @staticmethod
     @abstractmethod

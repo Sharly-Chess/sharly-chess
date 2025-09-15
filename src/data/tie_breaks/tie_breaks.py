@@ -139,9 +139,9 @@ class WinsTieBreak(TieBreak):
     def static_id() -> str:
         return 'WINS'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Number of wins', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Number of wins')
 
     @property
     def acronym(self) -> str:
@@ -169,9 +169,9 @@ class GamesWonTieBreak(TieBreak):
     def static_id() -> str:
         return 'GAMES_WON'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Number of games won', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Number of games won')
 
     @property
     def acronym(self) -> str:
@@ -197,9 +197,9 @@ class GamesPlayedWithBlackTieBreak(TieBreak):
     def static_id() -> str:
         return 'GAMES_PLAYED_WITH_BLACK'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Games played with black', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Games played with black')
 
     @property
     def acronym(self) -> str:
@@ -225,9 +225,9 @@ class GamesWonWithBlackTieBreak(TieBreak):
     def static_id() -> str:
         return 'GAMES_WON_WITH_BLACK'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Games won with Black', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Games won with Black')
 
     @property
     def acronym(self) -> str:
@@ -257,9 +257,9 @@ class ProgressiveScoresTieBreak(TieBreak):
     def static_id() -> str:
         return 'PROGRESSIVE_SCORES'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Progressive scores', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Progressive scores')
 
     @property
     def acronym(self) -> str:
@@ -288,9 +288,9 @@ class RoundsElectedToPlayTieBreak(TieBreak):
     def static_id() -> str:
         return 'ROUNDS_ELECTED_TO_PLAY'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Rounds one Elected to Play', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Rounds one Elected to Play')
 
     @property
     def acronym(self) -> str:
@@ -361,9 +361,9 @@ class StandardBuchholzTieBreak(BuchholzTieBreak):
     def static_id() -> str:
         return 'BUCHHOLZ'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Buchholz', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Buchholz')
 
     @property
     def acronym(self) -> str:
@@ -470,9 +470,9 @@ class ForeBuchholzTieBreak(BuchholzTieBreak):
     def static_id() -> str:
         return 'FORE_BUCHHOLZ'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Fore Buchholz', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Fore Buchholz')
 
     @property
     def acronym(self) -> str:
@@ -559,9 +559,9 @@ class SumOfBuchholzTieBreak(BuchholzTieBreak):
     def static_id() -> str:
         return 'SUM_OF_BUCHHOLZ'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Sum of Buchholz', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Sum of Buchholz')
 
     @property
     def acronym(self) -> str:
@@ -605,9 +605,9 @@ class AverageOfBuchholzTieBreak(BuchholzTieBreak):
     def static_id() -> str:
         return 'AVERAGE_OF_BUCHHOLZ'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Average of opponents Buchholz', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Average of opponents Buchholz')
 
     @property
     def acronym(self) -> str:
@@ -655,9 +655,9 @@ class SonnebornBergerTieBreak(TieBreak):
     def static_id() -> str:
         return 'SONNEBORN_BERGER'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Sonneborn-Berger', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Sonneborn-Berger')
 
     @property
     def acronym(self) -> str:
@@ -782,9 +782,9 @@ class KoyaTieBreak(TieBreak):
     def static_id() -> str:
         return 'KOYA'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Koya system', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Koya system')
 
     @property
     def forbidden_pairing_systems(self) -> list[PairingSystem]:
@@ -833,9 +833,9 @@ class KashdanTieBreak(TieBreak):
     def static_id() -> str:
         return 'KASHDAN'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Kashdan', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Kashdan')
 
     @property
     def acronym(self) -> str:
@@ -890,9 +890,9 @@ class AverageRatingOpponentsTieBreak(TieBreak):
     def static_id() -> str:
         return 'AVERAGE_RATING_OPPONENTS'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Average rating of opponents', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Average rating of opponents')
 
     @property
     def acronym(self) -> str:
@@ -968,9 +968,9 @@ class TournamentPerformanceRatingTieBreak(PerformanceTieBreak):
     def static_id() -> str:
         return 'TOURNAMENT_PERFORMANCE_RATING'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Tournament performance rating', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Tournament performance rating')
 
     @property
     def acronym(self) -> str:
@@ -1014,9 +1014,9 @@ class AveragePerformanceRatingOpponentsTieBreak(PerformanceTieBreak):
     def static_id() -> str:
         return 'AVERAGE_PERFORMANCE_RATING_OPPONENTS'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Average performance rating of opponents', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Average performance rating of opponents')
 
     @property
     def acronym(self) -> str:
@@ -1059,9 +1059,9 @@ class PerfectTournamentPerformanceTieBreak(PerformanceTieBreak):
     def static_id() -> str:
         return 'PERFECT_TOURNAMENT_PERFORMANCE'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Perfect tournament performance', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Perfect tournament performance')
 
     @property
     def acronym(self) -> str:
@@ -1237,9 +1237,9 @@ class AveragePerfectPerformanceTieBreak(PerformanceTieBreak):
     def static_id() -> str:
         return 'AVERAGE_PERFECT_PERFORMANCE'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Average perfect performance of opponents', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Average perfect performance of opponents')
 
     @property
     def acronym(self) -> str:

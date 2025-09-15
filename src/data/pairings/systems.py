@@ -109,9 +109,9 @@ class SwissPairingSystem(PairingSystem):
     def static_id() -> str:
         return 'SWISS'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Swiss', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Swiss')
 
     @property
     def variation_manager(self) -> EntityManager['PairingVariation']:
@@ -231,9 +231,9 @@ class RoundRobinPairingSystem(PairingSystem):
     def static_id() -> str:
         return 'ROUND_ROBIN'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Round-Robin', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Round-Robin')
 
     @property
     def round_per_round_pairing_generation(self) -> bool:

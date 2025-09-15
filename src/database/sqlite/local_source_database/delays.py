@@ -18,9 +18,9 @@ class DisabledOutdatedDelay(OutdatedDelay):
     def static_id() -> str:
         return 'disabled'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Disabled', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Disabled')
 
     def is_expired(self, start_time: datetime) -> bool:
         return False
@@ -43,9 +43,9 @@ class DailyOutdatedDelay(DayCountOutdatedDelay):
     def static_id() -> str:
         return 'daily'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Daily', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Daily')
 
     @property
     def days_expired(self) -> int:
@@ -57,9 +57,9 @@ class Days2OutdatedDelay(DayCountOutdatedDelay):
     def static_id() -> str:
         return '2days'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('{days} days', locale).format(days=2)
+    @staticmethod
+    def static_name() -> str:
+        return _('{days} days').format(days=2)
 
     @property
     def days_expired(self) -> int:
@@ -71,9 +71,9 @@ class Days3OutdatedDelay(DayCountOutdatedDelay):
     def static_id() -> str:
         return '3days'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('{days} days', locale).format(days=3)
+    @staticmethod
+    def static_name() -> str:
+        return _('{days} days').format(days=3)
 
     @property
     def days_expired(self) -> int:
@@ -85,9 +85,9 @@ class WeeklyOutdatedDelay(DayCountOutdatedDelay):
     def static_id() -> str:
         return 'weekly'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Weekly', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Weekly')
 
     @property
     def days_expired(self) -> int:
@@ -99,9 +99,9 @@ class MonthFirstDayOutdatedDelay(OutdatedDelay):
     def static_id() -> str:
         return 'month_1st'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('1st day of the month', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('1st day of the month')
 
     def is_expired(self, start_time: datetime) -> bool:
         now = datetime.now()

@@ -99,9 +99,9 @@ class ColorSeedSetting(PairingSetting[BoardColor]):
     def static_id() -> str:
         return 'COLOR_SEED'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Seed color', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Seed color')
 
     @property
     def template_path(self) -> str:
@@ -173,8 +173,8 @@ class BergerNumbersSetting(PairingSetting[dict[int, int]]):
     def static_id() -> str:
         return 'BERGER_NUMBERS'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
+    @staticmethod
+    def static_name() -> str:
         return ''
 
     @property

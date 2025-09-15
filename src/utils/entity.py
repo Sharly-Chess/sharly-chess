@@ -18,9 +18,9 @@ class IdentifiableEntity(ABC):
         Should be unique amongst entities from the same parent class."""
         pass
 
-    @classmethod
+    @staticmethod
     @abstractmethod
-    def static_name(cls, locale: str | None = None) -> str:
+    def static_name() -> str:
         """Represents the entity in the UI."""
         pass
 

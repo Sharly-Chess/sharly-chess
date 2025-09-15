@@ -35,8 +35,8 @@ class NoSplitPlayerSplitter(PlayerSplitter):
     def static_id() -> str:
         return 'no-split'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
+    @staticmethod
+    def static_name() -> str:
         return '-'
 
     @staticmethod
@@ -49,9 +49,9 @@ class CategoryPlayerSplitter(PlayerSplitter):
     def static_id() -> str:
         return 'category'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Category', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Category')
 
     @staticmethod
     def get_split_key(player: Player) -> str:
@@ -68,9 +68,9 @@ class ClubPlayerSplitter(PlayerSplitter):
     def static_id() -> str:
         return 'club'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Club', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Club')
 
     @staticmethod
     def get_split_key(player: Player) -> str:
@@ -82,9 +82,9 @@ class FederationPlayerSplitter(PlayerSplitter):
     def static_id() -> str:
         return 'federation'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Federation', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Federation')
 
     @staticmethod
     def get_split_key(player: Player) -> str:

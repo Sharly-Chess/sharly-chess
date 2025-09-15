@@ -26,9 +26,9 @@ class ChessEventPlugin(Plugin):
     def static_id() -> str:
         return PLUGIN_NAME
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('ChessEvent', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('ChessEvent')
 
     @property
     def description(self) -> str:

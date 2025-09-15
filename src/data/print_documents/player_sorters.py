@@ -18,9 +18,9 @@ class NamePlayerSorter(PlayerSorter):
     def static_id() -> str:
         return 'name'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Name', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Name')
 
     def sorted_players(self, tournament: Tournament) -> list[Player]:
         return tournament.players_by_name_with_unpaired
@@ -31,9 +31,9 @@ class RankPlayerSorter(PlayerSorter):
     def static_id() -> str:
         return 'rank'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Rank', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Rank')
 
     def sorted_players(self, tournament: Tournament) -> list[Player]:
         return [
@@ -49,9 +49,9 @@ class StartingRankPlayerSorter(PlayerSorter):
     def static_id() -> str:
         return 'starting-rank'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Starting rank', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Starting rank')
 
     def sorted_players(self, tournament: Tournament) -> list[Player]:
         return [player for player in tournament.players_by_starting_rank.values()]
@@ -62,9 +62,9 @@ class PairingNumberPlayerSorter(PlayerSorter):
     def static_id() -> str:
         return 'pairing-number'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Pairing number', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Pairing number')
 
     def sorted_players(self, tournament: Tournament) -> list[Player]:
         berger_nb_by_player_id = BergerNumbersSetting.get_value(tournament)

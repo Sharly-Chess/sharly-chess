@@ -28,9 +28,9 @@ class NoPrizeSharing(PrizeSharing):
     def static_id() -> str:
         return 'NONE'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('None', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('None')
 
     @override
     def calculate_prizes(
@@ -59,9 +59,9 @@ class AveragePrizeSharing(PrizeSharing):
     def static_id() -> str:
         return 'AVERAGE'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Average', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Average')
 
     @override
     def calculate_prizes(
@@ -115,9 +115,9 @@ class HortSystemPrizeSharing(PrizeSharing):
     def static_id() -> str:
         return 'HORT_SYSTEM'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Hort system', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Hort system')
 
     @override
     def calculate_prizes(

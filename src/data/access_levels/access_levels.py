@@ -33,6 +33,15 @@ class AccessLevelScope(IntEnum):
 
 
 class AccessLevel(IdentifiableEntity, ABC):
+    @classmethod
+    def static_name(cls) -> str:
+        return cls.localized_name()
+
+    @classmethod
+    @abstractmethod
+    def localized_name(cls, locale: str | None = None) -> str:
+        """Returns a localized name for the class (used to generate the documentation)"""
+
     @staticmethod
     @abstractmethod
     def short_name(locale: str | None = None) -> str:
@@ -117,7 +126,7 @@ class SpectatorAccessLevel(AccessLevel):
         return 'SPECTATOR'
 
     @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
+    def localized_name(cls, locale: str | None = None) -> str:
         return _('Spectator', locale)
 
     @staticmethod
@@ -147,7 +156,7 @@ class ResultsEntryAccessLevel(AccessLevel):
         return 'RESULTS_ENTRY'
 
     @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
+    def localized_name(cls, locale: str | None = None) -> str:
         return _('Results Entry via public screens', locale)
 
     @staticmethod
@@ -181,7 +190,7 @@ class CheckInAccessLevel(AccessLevel):
         return 'CHECK_IN'
 
     @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
+    def localized_name(cls, locale: str | None = None) -> str:
         return _('Check-in via public screens', locale)
 
     @staticmethod
@@ -218,7 +227,7 @@ class SectorArbitrationAccessLevel(AccessLevel):
         return 'SECTOR_ARBITRATION'
 
     @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
+    def localized_name(cls, locale: str | None = None) -> str:
         return _('Sector arbitration', locale)
 
     @staticmethod
@@ -259,7 +268,7 @@ class PairingAccessLevel(AccessLevel):
         return 'PAIRING'
 
     @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
+    def localized_name(cls, locale: str | None = None) -> str:
         return _('Pairing', locale)
 
     @staticmethod
@@ -310,7 +319,7 @@ class DeputyChiefArbitrationAccessLevel(AccessLevel):
         return 'DEPUTY_CHIEF_ARBITRATION'
 
     @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
+    def localized_name(cls, locale: str | None = None) -> str:
         return _('Deputy Chief Arbitration', locale)
 
     @staticmethod
@@ -361,7 +370,7 @@ class ChiefArbitrationAccessLevel(AccessLevel):
         return 'CHIEF_ARBITRATION'
 
     @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
+    def localized_name(cls, locale: str | None = None) -> str:
         return _('Chief Arbitration', locale)
 
     @staticmethod
@@ -400,7 +409,7 @@ class ScreenManagementAccessLevel(AccessLevel):
         return 'SCREEN_MANAGEMENT'
 
     @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
+    def localized_name(cls, locale: str | None = None) -> str:
         return _('Screen Management', locale)
 
     @staticmethod
@@ -436,7 +445,7 @@ class OrganizationAccessLevel(AccessLevel):
         return 'ORGANIZATION'
 
     @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
+    def localized_name(cls, locale: str | None = None) -> str:
         return _('Organization', locale)
 
     @staticmethod
@@ -481,7 +490,7 @@ class AdministrationAccessLevel(AccessLevel):
         return 'ADMINISTRATION'
 
     @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
+    def localized_name(cls, locale: str | None = None) -> str:
         return _('Administration')
 
     @staticmethod

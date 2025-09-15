@@ -13,9 +13,9 @@ class PapiTournamentImporter(FileTournamentImporter):
     def static_id() -> str:
         return 'PAPI'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Papi file', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Papi file')
 
     @property
     def modal_title(self) -> str:
@@ -44,9 +44,9 @@ class PapiJsonTournamentImporter(FileTournamentImporter):
     def static_id() -> str:
         return 'PAPI_JSON'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('JSON file (papi-converter format)', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('JSON file (papi-converter format)')
 
     @property
     def modal_title(self) -> str:

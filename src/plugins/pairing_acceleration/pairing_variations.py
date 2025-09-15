@@ -26,9 +26,9 @@ class HaleySwissVariation(AccelerationSwissVariation):
     def variation_id() -> str:
         return 'HALEY'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Haley system', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Haley system')
 
     @property
     def settings(self) -> list[PairingSetting]:
@@ -59,9 +59,9 @@ class HaleySoftSwissVariation(AccelerationSwissVariation):
     def variation_id() -> str:
         return 'HALEY_SOFT'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Soft Haley system', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Soft Haley system')
 
     @property
     def settings(self) -> list[PairingSetting]:
@@ -97,9 +97,9 @@ class ProgressiveSwissVariation(AccelerationSwissVariation):
     def variation_id() -> str:
         return 'PROGRESSIVE'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Progressive accelerated system', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Progressive accelerated system')
 
     @property
     def settings(self) -> list[PairingSetting]:

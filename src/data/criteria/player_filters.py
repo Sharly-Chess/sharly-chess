@@ -39,9 +39,9 @@ class GenderPlayerFilter(PlayerFilter):
     def static_id() -> str:
         return 'GENDER'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Gender', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Gender')
 
     @staticmethod
     def available_options() -> list[type[PlayerFilterOption]]:
@@ -64,9 +64,9 @@ class RatingPlayerFilter(PlayerFilter):
     def static_id() -> str:
         return 'RATING'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Rating', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Rating')
 
     @staticmethod
     def available_options() -> list[type[PlayerFilterOption]]:
@@ -109,9 +109,9 @@ class AgePlayerFilter(PlayerFilter):
     def static_id() -> str:
         return 'AGE'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Age', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Age')
 
     @staticmethod
     def available_options() -> list[type[PlayerFilterOption]]:
@@ -164,9 +164,9 @@ class RatingTypePlayerFilter(PlayerFilter):
     def static_id() -> str:
         return 'RATING_TYPE'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Rating type', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Rating type')
 
     @staticmethod
     def available_options() -> list[type[PlayerFilterOption]]:
@@ -194,9 +194,9 @@ class ClubPlayerFilter(PlayerFilter):
     def static_id() -> str:
         return 'CLUB'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Club', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Club')
 
     @staticmethod
     def available_options() -> list[type[PlayerFilterOption]]:
@@ -223,9 +223,9 @@ class FederationPlayerFilter(PlayerFilter):
     def static_id() -> str:
         return 'FEDERATION'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('Federation', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('Federation')
 
     @staticmethod
     def available_options() -> list[type[PlayerFilterOption]]:

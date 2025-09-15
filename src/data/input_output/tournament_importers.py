@@ -349,9 +349,9 @@ class TrfTournamentImporter(FileTournamentImporter):
     def static_id() -> str:
         return 'TRF'
 
-    @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
-        return _('TRF file', locale)
+    @staticmethod
+    def static_name() -> str:
+        return _('TRF file')
 
     @property
     def modal_title(self) -> str:
