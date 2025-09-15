@@ -93,7 +93,7 @@ if DEVEL_ENV:
         # i18n_update.py --generate-doc must be used for that
         babel_updater.update(generate_doc=False)
     else:
-        BabelUpdater(locale_infos, DEFAULT_LOCALE).create_absent_mo_files()
+        BabelUpdater(locale_infos, DEFAULT_LOCALE).update_mo_files()
 elif TEST_ENV:
     # When testing, make sure that the MO files will be available (including on GitHub)
     BabelUpdater(locale_infos, DEFAULT_LOCALE).create_absent_mo_files()

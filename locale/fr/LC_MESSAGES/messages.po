@@ -965,6 +965,9 @@ msgstr "Choisir des familles à ajouter"
 msgid "Choose from images in the 'custom' folder"
 msgstr "Choisir parmi les images du dossier 'custom'"
 
+msgid "Choose one, many or no tournaments."
+msgstr "Choisissez un, plusieurs ou aucun tournoi."
+
 msgid "Choose screens to add"
 msgstr "Choisir des écrans à ajouter"
 
@@ -2763,6 +2766,9 @@ msgstr "Ligue :"
 
 msgid "Leagues"
 msgstr "Ligues"
+
+msgid "Leave empty to grant no permissions at all."
+msgstr "Laissez vide pour n'accorder aucune permission."
 
 msgid "Libraries"
 msgstr "Bibliothèques"
@@ -6224,3 +6230,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
