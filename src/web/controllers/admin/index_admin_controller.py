@@ -1,6 +1,7 @@
 from logging import Logger
 from typing import Annotated, Any
 
+from common import format_timestamp_date, format_timestamp_time
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.input_output import OnlineDataSourceManager
@@ -251,6 +252,8 @@ class IndexAdminController(BaseAdminController):
 
         context = web_context.template_context | {
             'messages': Message.messages(web_context.request),
+            'format_timestamp_date': format_timestamp_date,
+            'format_timestamp_time': format_timestamp_time,
             'nav_tabs': nav_tabs,
             'admin_events_show_details': (
                 SessionHandler.get_session_admin_events_show_details(
