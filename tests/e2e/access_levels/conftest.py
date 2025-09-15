@@ -16,10 +16,12 @@ def access_level_test_events(api_request_context: APIRequestContext):
     TestUtils.create_event(
         PUBLIC_EVENT_ID,
         api_request_context,
+        {'public': True},
     )
     TestUtils.create_event(
         PRIVATE_EVENT_ID,
         api_request_context,
+        {'public': False},
     )
 
     yield
