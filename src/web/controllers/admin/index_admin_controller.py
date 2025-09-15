@@ -172,7 +172,7 @@ class IndexAdminController(BaseAdminController):
             'home': {
                 'title': _('Home'),
                 'template': 'index/home_tab.html',
-                'icon_class': 'bi-qr-code',
+                'icon_class': 'bi-house-fill',
                 'disabled': False,
                 'experimental_features_warning': True,
             },
@@ -237,18 +237,6 @@ class IndexAdminController(BaseAdminController):
                     'divider': True,
                 },
             }
-        if web_context.client.can_view_application_settings:
-            nav_tabs |= {
-                'config': {
-                    'divider': True,
-                    'title': _('Settings'),
-                    'template': 'index/config_tab.html',
-                    'icon_class': 'bi-gear',
-                    'disabled': False,
-                },
-            }
-            if sharly_chess_config.force_edit:
-                web_context.admin_tab = 'config'
         if not modal and (
             not web_context.admin_tab or nav_tabs[web_context.admin_tab]['disabled']
         ):
@@ -538,7 +526,7 @@ class IndexAdminController(BaseAdminController):
             sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
             return self._admin_render(
                 request=request,
-                admin_tab='config',
+                admin_tab=None,
                 modal='config',
                 data=data,
                 errors=errors,
@@ -557,7 +545,12 @@ class IndexAdminController(BaseAdminController):
         if previous_enabled_plugins != enabled_plugins:
             plugin_manager.reload_register()
         Message.success(request, _('Sharly Chess settings have been updated.'))
-        return self._admin_render(request=request, data=None, admin_tab='config')
+        return HTMXTemplate(
+            template_name='common/empty_modal.html',
+            re_target='#modal-wrapper',
+            trigger_event='close_modal',
+            after='receive',
+        )
 
     @post(
         path='/admin/restore-archive/{archive_name:str}',
@@ -596,7 +589,7 @@ class IndexAdminController(BaseAdminController):
             with ConfigDatabase(write=True) as config_database:
                 config_database.update_stored_config(sharly_chess_config.stored_config)
             sharly_chess_config.load_and_set_env()
-        return self._admin_render(request=request, data=None, admin_tab='config')
+        return self._admin_render(request=request, data=None, admin_tab=None)
 
     @get(
         path='/admin/config-modal',
@@ -609,7 +602,7 @@ class IndexAdminController(BaseAdminController):
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         return self._admin_render(
             request,
-            admin_tab='config',
+            admin_tab=None,
             modal='config',
             keep_modal_open=sharly_chess_config.force_edit,
         )

@@ -4,6 +4,10 @@
             hx_get=url_for('admin-tab', admin_tab=admin_tab),
         ) }}
         <div class="flex-grow-1"></div>
+
+        {% if client.can_add_event %}
+            {% include 'create_event_button.html' %}
+        {% endif %}
     </div>
 </div>
 
@@ -70,7 +74,9 @@
                             {{ macros.tooltip_attributes('info', _('Connect your devices (laptops, tablets, smartphones) to the Sharly Chess server by scanning this QR code (click below to get a printable version).'), 'right') }}
                         />
                         <br/>
-                        {{ sharly_chess_config.app_url(ip) }}
+                        <a href="{{ sharly_chess_config.app_url(ip) }}">
+                            {{ sharly_chess_config.app_url(ip) }}
+                        </a>
                         <div class="text-muted small">
                             {{ item.label }}{% if item.type and item.type != item.label %} ({{ item.type }}){% endif %}
                         </div>

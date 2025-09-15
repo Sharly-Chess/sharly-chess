@@ -44,6 +44,28 @@
             </div>
         {% endwith %}
     {% endfor %}
+    {% if client.can_manage_application_settings %}
+        <div class="sidebar-divider my-3"></div>
+        <span class="sidebar-tooltip" {{ macros.tooltip_attributes('info', _('Settings'), 'right') }}>
+            <button
+                data-testid="profile-button"
+                class="nav-link text-start me-1 position-relative align-items-center"
+                hx-get="{{ url_for('admin-config-modal') }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                preload
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            >
+                <div class="d-block">
+                    <i class="bi bi-gear"></i>
+                    <span class="pe-2 expanded-only">
+                        {{ _('Settings') }}
+                    </span>
+                </div>
+            </button>
+        </span>
+    {% endif %}
     {% include '/admin/common/database/database_button.html' %}
 {% endblock admin_nav %}
 
