@@ -28,8 +28,9 @@ class IdentifiableEntity(ABC):
     def id(self) -> str:
         return self.static_id()
 
-    def name(self, locale: str | None = None) -> str:
-        return self.static_name(locale)
+    @property
+    def name(self) -> str:
+        return self.static_name()
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, IdentifiableEntity):
