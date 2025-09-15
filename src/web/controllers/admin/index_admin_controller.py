@@ -1,10 +1,7 @@
-import logging
-from datetime import datetime
 from logging import Logger
 from typing import Annotated, Any
 
-from common import format_timestamp_date, format_timestamp_time
-from common.logger import get_logging_config, get_logger
+from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.input_output import OnlineDataSourceManager
 from data.loader import ArchiveLoader, EventLoader
@@ -252,29 +249,7 @@ class IndexAdminController(BaseAdminController):
 
         event_card_blocks = plugin_manager.hook.get_event_card_block_template()
 
-        console_level_infos: dict[int, dict[str, int | str]] = {
-            logging.DEBUG: {
-                'text': _('Debug message'),
-                'color': '#808080',
-            },
-            logging.INFO: {
-                'text': _('Information message'),
-                'color': '#ffffff',
-            },
-            logging.WARNING: {
-                'text': _('Warning message'),
-                'color': '#a68a0d',
-            },
-            logging.ERROR: {
-                'text': _('Error message'),
-                'color': '#f0524f',
-            },
-        }
-        for value, name in SharlyChessConfig.console_log_levels.items():
-            console_level_infos[value]['name'] = name
-
         context = web_context.template_context | {
-            'plugins': plugin_manager.all_plugins,
             'messages': Message.messages(web_context.request),
             'nav_tabs': nav_tabs,
             'admin_events_show_details': (
@@ -283,13 +258,6 @@ class IndexAdminController(BaseAdminController):
                 )
             ),
             'event_card_blocks': event_card_blocks,
-            'row_cycler': cls.get_cycler(['odd', 'even']),
-            'format_timestamp_date': format_timestamp_date,
-            'format_timestamp_time': format_timestamp_time,
-            'console_level_infos': console_level_infos,
-            'console_formatted_current_date': datetime.today().strftime(
-                get_logging_config()['formatters']['console_formatter']['datefmt']
-            ),
         }
 
         match modal:

@@ -32,10 +32,6 @@ msgid "%(count)d players unpaired"
 msgstr "%(count)d joueur·euses non-apparié·es"
 
 #, python-format
-msgid "%(lib)s version"
-msgstr "Version de %(lib)s"
-
-#, python-format
 msgid "%(minutes)d minutes after"
 msgstr "%(minutes)d minutes après"
 
@@ -314,11 +310,8 @@ msgstr "Les caractères acceptés sont les lettres, chiffres, souligné (« tire
 msgid "Access control"
 msgstr "Contrôle d'accès"
 
-msgid "Access from the Sharly Chess server"
-msgstr "Accès depuis le serveur Sharly Chess"
-
-msgid "Access from the local network (LAN/WAN)"
-msgstr "Accès depuis le réseau local (LAN/WAN)"
+msgid "Access level"
+msgstr "Niveau d'accès"
 
 msgid "Access level"
 msgstr "Niveau d'accès"
@@ -1109,6 +1102,9 @@ msgstr "La connexion au serveur a échoué."
 msgid "Connection to the server failed: {error}."
 msgstr "La connexion au serveur a échoué : {error}."
 
+msgid "Connections ChessEvent"
+msgstr "Connexions à ChessEvent"
+
 msgid "Console formatting"
 msgstr "Format des logs sur la console"
 
@@ -1365,9 +1361,6 @@ msgstr "Fédération par défaut"
 
 msgid "Default handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. If checked, this rating will also be used for seeding and pairings. If unchecked, they will be treated as unrated and require an estimated rating."
 msgstr "Gestion par défaut des joueur·euses sans classement rapide/blitz. Pour le calcul des classements FIDE, ces joueur·euses sont considérées comme classé·es avec leur classement FIDE standard. Lorsque cette case est cochée (par défaut), ce classement sera également utilisé pour le classement initial et les appariements. Lorsque non cochée, les joueur·euses seront traité·es comme non classé·es et nécessiteront une estimation."
-
-msgid "Default language"
-msgstr "Langue par défaut"
 
 msgid "Default timer configuration"
 msgstr "Configuration par défaut des chronomètres"
@@ -1812,9 +1805,6 @@ msgstr "Modifier l'écran"
 msgid "Edit screen family"
 msgstr "Modifier la famille d'écrans"
 
-msgid "Edit the Sharly Chess settings."
-msgstr "Modifier la configuration de Sharly Chess."
-
 msgid "Edit the hours of the timer"
 msgstr "Modifier les horaires du chronomètre."
 
@@ -1921,9 +1911,6 @@ msgstr "Entrer des résultats"
 msgid "Enter the result"
 msgstr "Saisir le résultat"
 
-msgid "Error message"
-msgstr "Message d'erreur"
-
 msgid "Error uploading tournament"
 msgstr "Erreur lors de la mise en ligne du tournoi"
 
@@ -1980,9 +1967,6 @@ msgstr "Bouton de sortie :"
 
 msgid "Experimental features"
 msgstr "Fonctionnalités expérimentales"
-
-msgid "Experimental features (enabled)"
-msgstr "Fonctionnalités expérimentales (activées)"
 
 #, python-format
 msgid "Experimental features in version %(version)s are:"
@@ -2541,9 +2525,6 @@ msgstr "Incrément (sec)"
 msgid "Info"
 msgstr "Info"
 
-msgid "Information message"
-msgstr "Message d'information"
-
 msgid "Inherited access levels"
 msgstr "Niveaux d'accès hérités"
 
@@ -2716,9 +2697,6 @@ msgstr "Dernière mise en ligne"
 msgid "Launch a browser on startup"
 msgstr "Lancer un navigateur web au démarrage"
 
-msgid "Launching the browser on server startup"
-msgstr "lancement automatique du navigateur web"
-
 msgid "Layout"
 msgstr "Présentation"
 
@@ -2736,12 +2714,6 @@ msgstr "Ligue :"
 
 msgid "Leagues"
 msgstr "Ligues"
-
-msgid "Leave empty to grant no permissions at all."
-msgstr "Laissez vide pour n'accorder aucune permission."
-
-msgid "Libraries"
-msgstr "Bibliothèques"
 
 msgid "Library [{lib}] is missing."
 msgstr "La bibliothèque [{lib}] n'est pas installée."
@@ -2828,6 +2800,9 @@ msgstr "Man."
 
 msgid "Manage accounts"
 msgstr "Gestion des comptes"
+
+msgid "Manage application settings"
+msgstr "Gestion des paramètres de l'application"
 
 msgid "Manage prizes"
 msgstr "Gestion des prix"
@@ -3059,9 +3034,6 @@ msgstr "Ronde suivante"
 
 msgid "Next tournament"
 msgstr "Tournoi suivant"
-
-msgid "No"
-msgstr "Non"
 
 msgid "No ChessEvent event defined"
 msgstr "Évènement ChessEvent non défini"
@@ -3298,12 +3270,6 @@ msgstr "OK"
 
 msgid "ORG"
 msgstr "ORG"
-
-msgid "Off"
-msgstr "Désactivé"
-
-msgid "On"
-msgstr "Activé"
 
 msgid "On a given number of screens:"
 msgstr "Sur un nombre fixe d'écrans"
@@ -3811,9 +3777,6 @@ msgstr "Points : %(min)s à %(max)s"
 #, python-format
 msgid "Points: up to %(max)s"
 msgstr "Points: %(max)s ou moins"
-
-msgid "Port"
-msgstr "Port"
 
 msgid "Port [{port}] already in use, can not start Sharly Chess server."
 msgstr "Le port [{port}] est déjà utilisé, impossible de démarrer le serveur Sharly Chess."
@@ -5522,9 +5485,6 @@ msgstr "Évènements à venir"
 msgid "Update"
 msgstr "Mettre à jour"
 
-msgid "Update application settings"
-msgstr "Modifier les paramètres de l'application"
-
 msgid "Update events"
 msgstr "Modifier les évènements"
 
@@ -5627,9 +5587,6 @@ msgstr "Voir l'onglet Joueur·euses"
 msgid "View Prizes tab"
 msgstr "Voir l'onglet Prix"
 
-msgid "View application settings"
-msgstr "Voir les configuration de l'application"
-
 msgid "View basic event configuration"
 msgstr "Voir la configuration basique des évènements"
 
@@ -5692,6 +5649,9 @@ msgstr "MIF"
 
 msgid "Warning message"
 msgstr "Message d'avertissement"
+
+msgid "Warning: by default, only people on your Sharly Chess server can access the application."
+msgstr "Attention : par défaut, seules les personnes connectées sur le serveur Sharly Chess peuvent accéder à l'application."
 
 msgid "Warning: closing this window will stop Sharly Chess."
 msgstr "Avertissement : la fermeture de cette fenêtre arrête Sharly Chess."
@@ -5784,9 +5744,6 @@ msgstr "An."
 
 msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
 msgstr "Année de naissance"
-
-msgid "Yes"
-msgstr "Oui"
 
 msgid "Yesterday"
 msgstr "Hier"
@@ -6161,4 +6118,16 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "Debug message"
+#~ msgstr "Message de déboggage"
+
+#~ msgid "Error message"
+#~ msgstr "Message d'erreur"
+
+#~ msgid "Information message"
+#~ msgstr "Message d'information"
+
+#~ msgid "Warning message"
+#~ msgstr "Message d'avertissement"
 

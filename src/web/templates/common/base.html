@@ -456,7 +456,11 @@
     >
         {% set redirect_url = '' %}
         {% if sharly_chess_config.force_edit %}
-            {% if not client.can_manage_application_settings %}
+            {% if client.can_manage_application_settings %}
+                {% if request.url.path != '/admin/home' %}
+                    {% set redirect_url = '/admin/home' %}
+                {% endif %}
+            {% else %}
                 {% if request.url.path != '/wait' %}
                     {% set redirect_url = '/wait' %}
                 {% endif %}
