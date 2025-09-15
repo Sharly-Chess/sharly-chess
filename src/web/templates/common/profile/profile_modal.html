@@ -139,7 +139,7 @@
                         {% for access_level, permission in client.permissions_by_access_level.items() %}
                             <tr>
                                 <td class="{% if permission.inherited %}text-secondary fst-italic{% endif %}">
-                                    {{ access_level.name() }}
+                                    {{ access_level.name }}
                                     {% if permission.inherited %}
                                         {{ _('(inherited)') }}
                                     {% endif %}
