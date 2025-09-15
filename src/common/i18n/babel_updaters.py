@@ -381,3 +381,35 @@ class BabelUpdater(BabelWrapper):
                 self.update_mo_file(locale)
                 logger.info('Wrote MO file.')
                 self.store_po_for_mo_fingerprint(locale)
+
+    def update_mo_files(
+        self,
+    ):
+        """Only update the MO files if the PO files have changed."""
+        for locale, locale_info in self.locale_infos.items():
+            po_file: Path = self.locale_po_file(locale)
+            mo_file: Path = self.locale_mo_file(locale)
+            old_po_for_mo_fingerprint: bytes = self.get_po_fingerprint_for_mo(locale)
+            po_fingerprint: bytes = text_file_fingerprint(po_file)
+            build_mo: bool = False
+            if not mo_file.exists():
+                build_mo = True
+                logger.info(
+                    'MO file not found for locale [%s], generating from PO file...',
+                    locale,
+                )
+            elif po_fingerprint != old_po_for_mo_fingerprint:
+                build_mo = True
+                logger.info(
+                    'PO file has changed since last MO file generation for locale [%s], updating MO file...',
+                    locale,
+                )
+            else:
+                logger.debug(
+                    'PO file unchanged for locale [%s], no need to update the MO file...',
+                    locale,
+                )
+            if build_mo:
+                self.store_po_for_mo_fingerprint(locale)
+                self.update_mo_file(locale)
+                logger.info('Wrote MO file.')
