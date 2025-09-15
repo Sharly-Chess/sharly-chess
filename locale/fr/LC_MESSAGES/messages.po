@@ -4593,7 +4593,7 @@ msgid "Split by:"
 msgstr "Séparateur :"
 
 msgid "Staff"
-msgstr "Équipe"
+msgstr "Staff"
 
 msgid "Standard"
 msgstr "Standard"
