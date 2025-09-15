@@ -1125,6 +1125,7 @@ class TournamentAdminController(BaseEventAdminController):
                 'random_player': random_player,
                 'opponent_name': opponent.full_name if opponent else None,
                 'tournament': admin_tournament,
+                'admin_event': admin_event,
                 'board': board,
             },
             re_target='#modal-wrapper',
