@@ -104,6 +104,12 @@ msgstr[0] "%(num)d écran"
 msgstr[1] "%(num)d écrans"
 
 #, python-format
+msgid "%(num)d tournament"
+msgid_plural "%(num)d tournaments"
+msgstr[0] "%(num)d tournoi"
+msgstr[1] "%(num)d tournois"
+
+#, python-format
 msgid "%(player)s - Round %(num)s"
 msgstr "%(player)s - Ronde %(num)s"
 
@@ -497,6 +503,9 @@ msgstr "Tou·tes les joueur·euses supposé·es jouer la ronde ont pointé."
 msgid "All the tournaments"
 msgstr "Tous les tournois"
 
+msgid "All tournaments"
+msgstr "Tous les tournois"
+
 msgid "Allow"
 msgstr "Autoriser"
 
@@ -674,9 +683,6 @@ msgstr "Perf. parfaite moyenne"
 
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
 msgstr "N"
-
-msgid "BE CAREFUL TO GIVE SENSITIVE ACCESS LEVELS ONLY TO TRUSTED PEOPLE!"
-msgstr "NE DONNEZ LES NIVEAUX D'ACCÈS SENSIBLES QU'À DES PERSONNES DE CONFIANCE !"
 
 msgid "BLACK WINS"
 msgstr "VICTOIRE NOIRS"
@@ -1258,9 +1264,6 @@ msgstr "Créer un tournoi"
 
 msgid "Create with default screens"
 msgstr "Créer avec les écrans par défaut"
-
-msgid "Creating accounts allows you to grant permissions to people on other clients,"
-msgstr "La création de comptes vous permet de donner des permissions à des personnes sur d'autres clients,"
 
 msgid "Criteria"
 msgstr "Critères"
@@ -3117,6 +3120,9 @@ msgstr "Aucune catégorie de prix"
 msgid "No Prize Group"
 msgstr "Aucun groupe de prix"
 
+msgid "No access level defined."
+msgstr "Aucun niveau d'accès défini."
+
 msgid "No alert message"
 msgstr "Pas de message d'alerte"
 
@@ -4181,7 +4187,10 @@ msgstr "Le résultat [{result}] n’est pas compatible avec le format PAPI."
 msgid "Results"
 msgstr "Résultats"
 
-msgid "Results Entry via public screens"
+msgid "Results entry"
+msgstr "Saisie des résultats"
+
+msgid "Results entry via public screens"
 msgstr "Saisie des résultats sur écrans publics"
 
 msgid "Results for round #{round}"
@@ -4701,6 +4710,15 @@ msgstr "L'URL ou le chemin de l'image (relatif au dossier 'custom') à afficher.
 msgid "The access levels to attribute to this account."
 msgstr "Les niveaux d'accès à attribuer à ce compte."
 
+msgid "The account matching all the users not logged in to any account."
+msgstr "Le compte correspondant aux utilisateur·ices non-connecté·es."
+
+msgid "The account of the user accessing Sharly Chess directly from the server."
+msgstr "Le compte de l'utilisateur·ice accédant à Sharly Chess directement depuis le serveur."
+
+msgid "The administrator has all the access levels."
+msgstr "L'administrateur·ice a tous les niveaux d'accès."
+
 msgid "The background colour is used when the image does not fill the whole screen."
 msgstr "La couleur de fond est utilisée lorsque l'image ne remplit pas complètement l'écran."
 
@@ -5089,6 +5107,12 @@ msgstr "Ce compte ne peut pas être dupliqué."
 
 msgid "This account can not be updated."
 msgstr "Ce compte ne peut pas être modifié."
+
+msgid "This account is active, anonymous users can log in to it."
+msgstr "Ce compte est actif, les utilisateur·ices anonymes peuvent s'y connecter."
+
+msgid "This account is not active, anonymous users can not log in to it."
+msgstr "Ce compte est inactif, les utilisateur·ices anonymes ne peuvent s'y connecter."
 
 msgid "This data source in unavailable (for more details: Menu > Data sources)."
 msgstr "Cette source de données n'est pas disponible (pour plus de détails : Menu > Sources de données)."
@@ -5756,9 +5780,6 @@ msgstr "MIF"
 msgid "Warning message"
 msgstr "Message d'avertissement"
 
-msgid "Warning: by default, only people on your Sharly Chess server can access the application."
-msgstr "Attention : par défaut, seules les personnes connectées sur le serveur Sharly Chess peuvent accéder à l'application."
-
 msgid "Warning: closing this window will stop Sharly Chess."
 msgstr "Avertissement : la fermeture de cette fenêtre arrête Sharly Chess."
 
@@ -6230,4 +6251,16 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "BE CAREFUL TO GIVE SENSITIVE ACCESS LEVELS ONLY TO TRUSTED PEOPLE!"
+#~ msgstr "NE DONNEZ LES NIVEAUX D'ACCÈS SENSIBLES QU'À DES PERSONNES DE CONFIANCE !"
+
+#~ msgid "Creating accounts allows you to grant permissions to people on other clients,"
+#~ msgstr "La création de comptes vous permet de donner des permissions à des personnes sur d'autres clients,"
+
+#~ msgid "Results Entry via public screens"
+#~ msgstr "Saisie des résultats sur écrans publics"
+
+#~ msgid "Warning: by default, only people on your Sharly Chess server can access the application."
+#~ msgstr "Attention : par défaut, seules les personnes connectées sur le serveur Sharly Chess peuvent accéder à l'application."
 

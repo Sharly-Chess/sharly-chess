@@ -104,6 +104,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d tournament"
+msgid_plural "%(num)d tournaments"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(player)s - Round %(num)s"
 msgstr ""
 
@@ -497,6 +503,9 @@ msgstr ""
 msgid "All the tournaments"
 msgstr ""
 
+msgid "All tournaments"
+msgstr ""
+
 msgid "Allow"
 msgstr ""
 
@@ -674,9 +683,6 @@ msgstr "Avg. Perfect Perf."
 
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
 msgstr "B"
-
-msgid "BE CAREFUL TO GIVE SENSITIVE ACCESS LEVELS ONLY TO TRUSTED PEOPLE!"
-msgstr ""
 
 msgid "BLACK WINS"
 msgstr ""
@@ -1257,9 +1263,6 @@ msgid "Create tournament"
 msgstr ""
 
 msgid "Create with default screens"
-msgstr ""
-
-msgid "Creating accounts allows you to grant permissions to people on other clients,"
 msgstr ""
 
 msgid "Criteria"
@@ -3117,6 +3120,9 @@ msgstr ""
 msgid "No Prize Group"
 msgstr ""
 
+msgid "No access level defined."
+msgstr ""
+
 msgid "No alert message"
 msgstr ""
 
@@ -4181,7 +4187,10 @@ msgstr ""
 msgid "Results"
 msgstr ""
 
-msgid "Results Entry via public screens"
+msgid "Results entry"
+msgstr ""
+
+msgid "Results entry via public screens"
 msgstr ""
 
 msgid "Results for round #{round}"
@@ -4701,6 +4710,15 @@ msgstr ""
 msgid "The access levels to attribute to this account."
 msgstr ""
 
+msgid "The account matching all the users not logged in to any account."
+msgstr ""
+
+msgid "The account of the user accessing Sharly Chess directly from the server."
+msgstr ""
+
+msgid "The administrator has all the access levels."
+msgstr ""
+
 msgid "The background colour is used when the image does not fill the whole screen."
 msgstr ""
 
@@ -5088,6 +5106,12 @@ msgid "This account can not be duplicated."
 msgstr ""
 
 msgid "This account can not be updated."
+msgstr ""
+
+msgid "This account is active, anonymous users can log in to it."
+msgstr ""
+
+msgid "This account is not active, anonymous users can not log in to it."
 msgstr ""
 
 msgid "This data source in unavailable (for more details: Menu > Data sources)."
@@ -5756,9 +5780,6 @@ msgstr "WIM"
 msgid "Warning message"
 msgstr ""
 
-msgid "Warning: by default, only people on your Sharly Chess server can access the application."
-msgstr ""
-
 msgid "Warning: closing this window will stop Sharly Chess."
 msgstr ""
 
@@ -6230,4 +6251,16 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "BE CAREFUL TO GIVE SENSITIVE ACCESS LEVELS ONLY TO TRUSTED PEOPLE!"
+#~ msgstr ""
+
+#~ msgid "Creating accounts allows you to grant permissions to people on other clients,"
+#~ msgstr ""
+
+#~ msgid "Results Entry via public screens"
+#~ msgstr ""
+
+#~ msgid "Warning: by default, only people on your Sharly Chess server can access the application."
+#~ msgstr ""
 

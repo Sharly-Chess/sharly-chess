@@ -1,0 +1,164 @@
+{% extends '../common/card.html' %}
+
+{% block card_header %}
+    {% if account.administrator %}
+        <i
+            class="bi-person-gear pe-1"
+            {{ macros.tooltip_attributes(
+                'info', _('The account of the user accessing Sharly Chess directly from the server.'), 'right'
+            ) }}
+        ></i>
+        <b>{{ _('Administrator') }}</b>
+    {% elif account.anonymous %}
+        <i
+            class="bi-incognito pe-1"
+            {{ macros.tooltip_attributes(
+                'info', _('The account matching all the users not logged in to any account.'), 'right'
+            ) }}
+        ></i>
+        <i>{{ _('Anonymous') }}</i>
+    {% else %}
+        {{ macros.visibility_icon(
+            'account',
+            account.active,
+            _('This account is active, anonymous users can log in to it.'),
+            _('This account is not active, anonymous users can not log in to it.'),
+        ) }}
+        {{ account.full_name }}
+    {% endif %}
+{% endblock %}
+
+{% block card_title %}
+{% endblock %}
+
+{% block card_text %}
+    <div class="d-flex flex-column gap-1">
+        {% if account.administrator %}
+            {{ _('The administrator has all the access levels.') }}
+        {% elif not account.access_levels %}
+            <div class="text-warning">
+                {{ _('No access level defined.') }}
+            </div>
+        {% else %}
+            {{ _('%(string)s:', string=_('Access levels')) }}
+            <ul class="mb-0">
+                {% for access_level in account.access_levels %}
+                    <li>
+                        <span {{ macros.tooltip_attributes('info', access_level.help_text, 'left') }}>
+                            {{ access_level.card_name }}
+                        </span>
+                        {% if access_level.has_tournament_scope %}
+                            {% set permission=account.permissions_by_access_level[access_level] %}
+                            {% if permission.tournament_ids %}
+                                <i class="text-secondary">
+                                    ({{ ngettext(
+                                        '%(num)d tournament',
+                                        '%(num)d tournaments',
+                                        permission.tournament_ids|length
+                                    ) }})
+                                </i>
+                                <i
+                                    class="bi-info-circle-fill ps-1"
+                                   {{ macros.tooltip_attributes(
+                                        '', permission.tournaments_tooltip_message(admin_event), 'right'
+                                    ) }}
+                                ></i>
+                            {% else %}
+                                <i class="text-secondary">
+                                    ({{ _('All tournaments') }})
+                                </i>
+                            {% endif %}
+                        {% endif %}
+                    </li>
+                {% endfor %}
+             </ul>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block card_buttons_left %}
+{% endblock %}
+
+{% block card_buttons_right %}
+    {% set client_can_manage_account=account.id in client.manageable_account_ids %}
+    {% set account_can_be_updated=account.edit_properties or account.edit_permissions %}
+    <span
+        {% if not account_can_be_updated %}
+            {{ macros.tooltip_attributes('info', _('This account can not be updated.'), 'top') }}
+        {% elif not client_can_manage_account %}
+            {{ macros.tooltip_attributes('info', _('You are not allowed to update this account.'), 'top') }}
+        {% else %}
+            {{ macros.tooltip_attributes('info', _('Edit the properties and the permissions of the account.'), 'top') }}
+        {% endif %}
+    >
+        <button
+            class="btn btn-sm btn-outline-primary"
+            {% if account_can_be_updated and client_can_manage_account %}
+                hx-get="{{ url_for('admin-account-update-modal', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                preload
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            {% else %}
+                disabled
+            {% endif %}
+        >
+            <i class="bi-pencil-fill"></i>
+        </button>
+    </span>
+    {% set account_can_be_cloned=account.edit_properties %}
+    <span
+        {% if not account_can_be_cloned %}
+            {{ macros.tooltip_attributes('info', _('This account can not be duplicated.'), 'top') }}
+        {% elif not client_can_manage_account %}
+            {{ macros.tooltip_attributes('info', _('You are not allowed to duplicate this account.'), 'top') }}
+        {% else %}
+            {{ macros.tooltip_attributes('info', _('Duplicate the account.'), 'top') }}
+        {% endif %}
+    >
+        <button
+            class="btn btn-sm btn-outline-primary"
+
+            {% if account_can_be_cloned and client_can_manage_account %}
+                hx-get="{{ url_for('admin-account-clone-modal', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                preload
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            {% else %}
+                disabled
+            {% endif %}
+        >
+            <i class="bi-copy"></i>
+        </button>
+    </span>
+    {% set account_can_be_deleted=account.edit_properties %}
+    <span
+        {% if not account_can_be_deleted %}
+            {{ macros.tooltip_attributes('info', _('This account can not be deleted.'), 'top') }}
+        {% elif not client_can_manage_account %}
+            {{ macros.tooltip_attributes('info', _('You are not allowed to delete this account.'), 'top') }}
+        {% else %}
+            {{ macros.tooltip_attributes('info', _('Delete the account.'), 'top') }}
+        {% endif %}
+    >
+        <button
+            class="btn btn-sm btn-outline-danger"
+
+            {% if account_can_be_cloned and client_can_manage_account %}
+                hx-get="{{ url_for('admin-account-delete-modal', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                preload
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            {% else %}
+                disabled
+            {% endif %}
+        >
+            <i class="bi-trash-fill"></i>
+        </button>
+    </span>
+{% endblock %}
