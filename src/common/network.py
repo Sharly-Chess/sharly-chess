@@ -37,18 +37,33 @@ _EXCLUDE_IFACE_NAME_SUBSTR = (
     'veth',
     'vmnet',
     'vbox',
-    'utun',
-    'tun',
-    'tap',  # tunnels/VPNs
     'ham',
     'hamachi',
 )
 
 
 def _is_private_ipv4(s: str) -> bool:
+    """
+    Return True if the IPv4 address is considered "usable for local networking":
+      - RFC1918 private ranges (10/8, 172.16/12, 192.168/16)
+      - Carrier-Grade NAT / Tailscale range (100.64/10)
+    Excludes:
+      - Loopback (127/8)
+      - Link-local (169.254/16)
+    """
     try:
         ip = ipaddress.IPv4Address(s)
-        return ip.is_private and not ip.is_loopback and not ip.is_link_local
+
+        if ip.is_loopback or ip.is_link_local:
+            return False
+
+        if ip.is_private:  # RFC1918
+            return True
+
+        if ip in ipaddress.IPv4Network('100.64.0.0/10'):  # CGNAT/Tailscale
+            return True
+
+        return False
     except Exception:
         return False
 
@@ -256,14 +271,37 @@ def find_lan_interfaces() -> list[dict[str, str]]:
                 ):
                     ip = a.address
                     if _is_private_ipv4(ip):
-                        results.append(
-                            {
-                                'ip': ip,
-                                'iface': iface,
-                                'type': (label or 'Unknown'),
-                                'label': (label or iface),
-                            }
-                        )
+                        # Special-case VPNs
+                        if iface.startswith('utun'):
+                            if ipaddress.ip_address(ip) in ipaddress.ip_network(
+                                '100.64.0.0/10'
+                            ):
+                                results.append(
+                                    {
+                                        'ip': ip,
+                                        'iface': iface,
+                                        'type': 'Tailscale',
+                                        'label': 'Tailscale',
+                                    }
+                                )
+                            else:
+                                results.append(
+                                    {
+                                        'ip': ip,
+                                        'iface': iface,
+                                        'type': 'VPN/Tunnel',
+                                        'label': iface,
+                                    }
+                                )
+                        else:
+                            results.append(
+                                {
+                                    'ip': ip,
+                                    'iface': iface,
+                                    'type': (label or 'Unknown'),
+                                    'label': (label or iface),
+                                }
+                            )
 
     elif sys.platform == 'linux':
         for iface, infos in addrs.items():
