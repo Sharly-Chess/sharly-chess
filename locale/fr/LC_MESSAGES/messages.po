@@ -6119,15 +6119,3 @@ msgstr "½ - 0 (NC)"
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
 
-#~ msgid "Debug message"
-#~ msgstr "Message de déboggage"
-
-#~ msgid "Error message"
-#~ msgstr "Message d'erreur"
-
-#~ msgid "Information message"
-#~ msgstr "Message d'information"
-
-#~ msgid "Warning message"
-#~ msgstr "Message d'avertissement"
-

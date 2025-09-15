@@ -6113,15 +6113,3 @@ msgstr ""
 msgid "½ - ½ (U)"
 msgstr ""
 
-#~ msgid "Debug message"
-#~ msgstr ""
-
-#~ msgid "Error message"
-#~ msgstr ""
-
-#~ msgid "Information message"
-#~ msgstr ""
-
-#~ msgid "Warning message"
-#~ msgstr ""
-
