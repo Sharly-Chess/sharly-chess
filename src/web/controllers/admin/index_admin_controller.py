@@ -517,7 +517,7 @@ class IndexAdminController(BaseAdminController):
             plugin_manager.reload_register()
         Message.success(request, _('Sharly Chess settings have been updated.'))
         return HTMXTemplate(
-            template_name='common/empty_modal.html',
+            template_name='common/empty_modal_and_messages.html',
             context={'messages': Message.messages(request)},
             re_target='#modal-wrapper',
             trigger_event='close_modal',
