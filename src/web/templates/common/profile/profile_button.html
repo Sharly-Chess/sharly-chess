@@ -11,19 +11,17 @@
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
         >
-            {% if admin_event and not client.account.administrator %}
-                <div class="d-block">
-                    <i class="bi bi-person-circle"></i>
-                    <span class="pe-2 expanded-only {% if not client.account.user_account %}fst-italic{% else %}fw-bold{% endif %}">
+            <div class="d-block">
+                <i class="bi bi-person-circle"></i>
+                {% if client.account.anonymous %}
+                    <span class="pe-2 expanded-only">
+                        {{ _('Profile') }} (<i>{{ _('Anonymous') }}</i>)
+                    </span>
+                {% else %}
+                    <span class="pe-2 expanded-only fw-bold">
                         {{ client.account.full_name }}
                     </span>
-                </div>
-            {% endif %}
-            <div class="d-block">
-                <i class="bi bi-translate"></i>
-                <span class="pe-2 expanded-only {% if client.account.administrator %}fst-italic{% else %}fw-bold{% endif %}">
-                    {{ locale_infos[locale].name }}
-                </span>
+                {% endif %}
             </div>
         </button>
     </span>
