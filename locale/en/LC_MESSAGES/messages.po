@@ -320,6 +320,9 @@ msgstr ""
 msgid "Access from the local network (LAN/WAN)"
 msgstr ""
 
+msgid "Access level"
+msgstr ""
+
 msgid "Access unrated and penalty results."
 msgstr ""
 
@@ -700,6 +703,9 @@ msgstr ""
 msgid "BY FORFEIT"
 msgstr ""
 
+msgid "Back"
+msgstr ""
+
 msgid "Background colour:"
 msgstr ""
 
@@ -978,9 +984,6 @@ msgstr ""
 msgid "Choose from images in the 'custom' folder"
 msgstr ""
 
-msgid "Choose one, many or no tournaments."
-msgstr ""
-
 msgid "Choose screens to add"
 msgstr ""
 
@@ -1238,6 +1241,9 @@ msgid "Create and add another"
 msgstr ""
 
 msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator."
+msgstr ""
+
+msgid "Create criterion"
 msgstr ""
 
 msgid "Create display controller"
@@ -1854,6 +1860,9 @@ msgid "Each group should contain one or more categories (e.g. U12, Best Female) 
 msgstr ""
 
 msgid "Edit"
+msgstr ""
+
+msgid "Edit criterion"
 msgstr ""
 
 msgid "Edit default timers"
@@ -2856,9 +2865,6 @@ msgid "League:"
 msgstr ""
 
 msgid "Leagues"
-msgstr ""
-
-msgid "Leave empty to grant no permissions at all."
 msgstr ""
 
 msgid "Libraries"
@@ -4007,12 +4013,6 @@ msgstr ""
 msgid "Prize category [{prize_category}] successfully updated."
 msgstr ""
 
-msgid "Prize criterion creation"
-msgstr ""
-
-msgid "Prize criterion editing"
-msgstr ""
-
 msgid "Prize currency"
 msgstr ""
 
@@ -4314,12 +4314,6 @@ msgid "Rk. O. *** RANK OVERALL FOR TABLE HEADER"
 msgstr "Rk. O."
 
 msgid "Rnd.Boa"
-msgstr ""
-
-msgid "Access level"
-msgstr ""
-
-msgid "Access levels"
 msgstr ""
 
 #, python-format
@@ -5104,12 +5098,6 @@ msgstr ""
 msgid "The representation of the event for URLs and file exports."
 msgstr ""
 
-msgid "The access levels to attribute to this account."
-msgstr ""
-
-msgid "The access levels to attribute to this device."
-msgstr ""
-
 msgid "The rotating delay between two screens."
 msgstr ""
 
@@ -5163,12 +5151,6 @@ msgid "The tournament of which you want to show the pairings."
 msgstr ""
 
 msgid "The tournament to print."
-msgstr ""
-
-msgid "The tournaments on which the account can act (if none, the account can act on all the tournaments)."
-msgstr ""
-
-msgid "The tournaments on which the device can act (if none, the device can act on all the tournaments)."
 msgstr ""
 
 msgid "The tournaments to print."
@@ -5433,12 +5415,6 @@ msgid "Tournament [{tournament}] is finished, you can not add players any longer
 msgstr ""
 
 msgid "Tournament [{tournament}] successfully imported."
-msgstr ""
-
-msgid "Tournament criterion creation"
-msgstr ""
-
-msgid "Tournament criterion editing"
 msgstr ""
 
 msgid "Tournament exempt from registration fees."
@@ -6417,4 +6393,3 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-

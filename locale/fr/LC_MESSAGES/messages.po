@@ -320,6 +320,9 @@ msgstr "Accès depuis le serveur Sharly Chess"
 msgid "Access from the local network (LAN/WAN)"
 msgstr "Accès depuis le réseau local (LAN/WAN)"
 
+msgid "Access level"
+msgstr "Niveau d'accès"
+
 msgid "Access unrated and penalty results."
 msgstr "Accéder aux résultats non homologués et pénalisés"
 
@@ -700,6 +703,9 @@ msgstr "VICTOIRE NOIRS"
 msgid "BY FORFEIT"
 msgstr "PAR FORFAIT"
 
+msgid "Back"
+msgstr "Retour"
+
 msgid "Background colour:"
 msgstr "Couleur de fond :"
 
@@ -978,9 +984,6 @@ msgstr "Choisir des familles à ajouter"
 msgid "Choose from images in the 'custom' folder"
 msgstr "Choisir parmi les images du dossier 'custom'"
 
-msgid "Choose one, many or no tournaments."
-msgstr "Choisissez aucun, un ou plusieurs tournois."
-
 msgid "Choose screens to add"
 msgstr "Choisir des écrans à ajouter"
 
@@ -1239,6 +1242,9 @@ msgstr "Créer et ajouter à nouveau"
 
 msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator."
 msgstr "Créez autant de pilotes d’afficheurs que nécessaire, puis, sur vos afficheurs, choisissez un pilote d’afficheurs plutôt qu’un écran simple ou un écran rotatif spécifique."
+
+msgid "Create criterion"
+msgstr "Créer un critère"
 
 msgid "Create display controller"
 msgstr "Créer un pilote d'afficheurs"
@@ -1855,6 +1861,9 @@ msgstr "Chaque groupe doit contenir une ou plusieurs catégories (par exemple :
 
 msgid "Edit"
 msgstr "Modifier"
+
+msgid "Edit criterion"
+msgstr "Modifier le critère"
 
 msgid "Edit default timers"
 msgstr "Modifier les chronomètres par défaut"
@@ -2857,9 +2866,6 @@ msgstr "Ligue :"
 
 msgid "Leagues"
 msgstr "Ligues"
-
-msgid "Leave empty to grant no permissions at all."
-msgstr "Laissez vide pour n'accorder aucune permission."
 
 msgid "Libraries"
 msgstr "Bibliothèques"
@@ -4007,12 +4013,6 @@ msgstr "La catégorie de prix [{prize_category}] a été supprimée avec succès
 msgid "Prize category [{prize_category}] successfully updated."
 msgstr "La catégorie de prix [{prize_category}] a été mise à jour avec succès."
 
-msgid "Prize criterion creation"
-msgstr "Création d'un critère"
-
-msgid "Prize criterion editing"
-msgstr "Édition d'un critère"
-
 msgid "Prize currency"
 msgstr "Monnaie des prix"
 
@@ -4315,12 +4315,6 @@ msgstr "Pl. Gén."
 
 msgid "Rnd.Boa"
 msgstr "Rde.Ech"
-
-msgid "Access level"
-msgstr "Niveau d'accès"
-
-msgid "Access levels"
-msgstr "Niveaux d'accès"
 
 #, python-format
 msgid "Rotation delay: %(seconds)d sec."
@@ -5104,12 +5098,6 @@ msgstr "Les objets liés vont également être supprimés :"
 msgid "The representation of the event for URLs and file exports."
 msgstr "La représentation de l'évènement pour les URLs et les exports de fichier."
 
-msgid "The access levels to attribute to this account."
-msgstr "Les niveaux d'accès à attribuer à ce compte."
-
-msgid "The access levels to attribute to this device."
-msgstr "Les niveaux d'accès à attribuer à cet appareil."
-
 msgid "The rotating delay between two screens."
 msgstr "Le délai de rotation entre deux écrans."
 
@@ -5164,12 +5152,6 @@ msgstr "Le tournoi dont on souhaite afficher les appariements"
 
 msgid "The tournament to print."
 msgstr "Le tournoi à imprimer."
-
-msgid "The tournaments on which the account can act (if none, the account can act on all the tournaments)."
-msgstr "Les tournois sur lesquels le compte pourra agir (si aucun, le compte peut agir sur tous les tournois)."
-
-msgid "The tournaments on which the device can act (if none, the device can act on all the tournaments)."
-msgstr "Les tournois sur lesquels l'appareil pourra agir (si aucun, l'appareil peut agir sur tous les tournois)."
 
 msgid "The tournaments to print."
 msgstr "Les tournois à imprimer."
@@ -5434,12 +5416,6 @@ msgstr "Le tournoi [{tournament}] est terminé, on ne peut plus y ajouter de jou
 
 msgid "Tournament [{tournament}] successfully imported."
 msgstr "Le tournoi [{tournament}] a été importé avec succès."
-
-msgid "Tournament criterion creation"
-msgstr "Création de critères de tournoi"
-
-msgid "Tournament criterion editing"
-msgstr "Édition des critères de tournoi."
 
 msgid "Tournament exempt from registration fees."
 msgstr "Tournoi exempt de droits d'homologation."
@@ -6417,4 +6393,3 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
