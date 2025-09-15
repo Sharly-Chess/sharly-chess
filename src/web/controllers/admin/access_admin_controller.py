@@ -275,23 +275,23 @@ class AccessAdminController(BaseEventAdminController):
         errors: dict[str, str] = {}
         event = web_context.get_admin_event()
         account = web_context.admin_account
+        name_regex: str = r'^[A-Za-zÀ-ÖØ-öø-ÿ0-9$€\'"\-!?(),:\.\[\] ]*$'
+        name_error: str = _(
+            'Accepted characters are letters, numbers, spaces and a few special characters ($€\'"-!?()[],:.).'
+        )
         if not account or account.user_account:
             first_name: str = (
                 WebContext.form_data_to_str(data, field := 'first_name') or ''
             )
-            if first_name and not re.match(r"^[a-zA-Z0-9'\-]*$", first_name):
-                errors[field] = _(
-                    "Accepted characters are letters, numbers, single quote (') and minus (-)."
-                )
+            if first_name and not re.match(name_regex, first_name):
+                errors[field] = name_error
             last_name: str = (
                 WebContext.form_data_to_str(data, field := 'last_name') or ''
             )
             if not last_name:
                 errors[field] = _('This field is required.')
-            elif not re.match(r"^[a-zA-Z0-9'\-]*$", last_name):
-                errors[field] = _(
-                    "Accepted characters are letters, numbers, single quote (') and minus (-)."
-                )
+            elif not re.match(name_regex, last_name):
+                errors[field] = name_error
             if 'first_name' not in errors and 'last_name' not in errors:
                 full_name: str = Player.player_full_name(first_name, last_name)
                 check_full_name_not_used: bool
