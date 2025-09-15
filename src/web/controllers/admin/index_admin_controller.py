@@ -518,6 +518,7 @@ class IndexAdminController(BaseAdminController):
         Message.success(request, _('Sharly Chess settings have been updated.'))
         return HTMXTemplate(
             template_name='common/empty_modal.html',
+            context={'messages': Message.messages(request)},
             re_target='#modal-wrapper',
             trigger_event='close_modal',
             after='receive',
