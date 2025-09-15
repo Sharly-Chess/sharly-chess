@@ -115,7 +115,7 @@ def print_inheritance_doc(
             direct_sub_access_levels_str: str = f'_{_("none", locale)}_'
             if ordered_direct_sub_access_levels:
                 direct_sub_access_levels_str = ' '.join(
-                    al.short_name() for al in ordered_direct_sub_access_levels
+                    al.short_name(locale) for al in ordered_direct_sub_access_levels
                 )
             indirect_sub_access_levels_str: str = f'_{_("none", locale)}_'
             if (
@@ -141,8 +141,8 @@ def print_inheritance_doc(
                     r.short_name(locale) for r in ordered_manageable_access_levels
                 )
             common_cells: dict[str, str] = {
-                'access_level': f'{access_level.short_name(locale)} {access_level.name(locale)}',
-                'scope': access_level.scope.name,
+                'access_level': f'{access_level.short_name(locale)} {access_level.localized_name(locale)}',
+                'scope': access_level.scope.localized_name(locale),
             }
             specific_cells: dict[str, str] = {
                 'sub_access_levels': direct_sub_access_levels_str,
@@ -210,7 +210,7 @@ def print_permissions_doc(
         for category, actions in actions_by_category.items():
             web_lines.append(
                 {
-                    'title': category.name.upper(),
+                    'title': category.localized_name(locale).upper(),
                 }
                 | {
                     access_level.static_id(): access_level.short_name(locale)
@@ -279,7 +279,9 @@ def print_permissions_doc(
                             'title': _(
                                 'Give/take away access level {access_level_short_name}'
                             ).format(
-                                access_level_short_name=give_access_level.short_name()
+                                access_level_short_name=give_access_level.short_name(
+                                    locale
+                                )
                             ),
                         }
                         | {

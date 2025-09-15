@@ -25,33 +25,36 @@ class AuthActionCategory(StrEnum):
 
     @property
     def name(self) -> str:
+        return self.localized_name()
+
+    def localized_name(self, locale: str | None = None) -> str:
         match self:
             case AuthActionCategory.APPLICATION:
-                return _('Application management')
+                return _('Application management', locale)
             case AuthActionCategory.EVENTS_ACCESS:
-                return _('Events access')
+                return _('Events access', locale)
             case AuthActionCategory.EVENTS_MANAGEMENT:
-                return _('Events management')
+                return _('Events management', locale)
             case AuthActionCategory.ACCESS:
-                return _('Access control')
+                return _('Access control', locale)
             case AuthActionCategory.TOURNAMENTS:
-                return _('Tournaments management')
+                return _('Tournaments management', locale)
             case AuthActionCategory.PLAYERS:
-                return _('Players')
+                return _('Players', locale)
             case AuthActionCategory.CHECK_IN:
-                return _('Check-in')
+                return _('Check-in', locale)
             case AuthActionCategory.PAIRINGS:
-                return _('Pairings')
+                return _('Pairings', locale)
             case AuthActionCategory.RANKINGS:
-                return _('Rankings')
+                return _('Rankings', locale)
             case AuthActionCategory.RESULTS:
-                return _('Results')
+                return _('Results', locale)
             case AuthActionCategory.SCREENS:
-                return _('Screens')
+                return _('Screens', locale)
             case AuthActionCategory.PRIZES:
-                return _('Prizes')
+                return _('Prizes', locale)
             case AuthActionCategory.PRINT:
-                return _('Print')
+                return _('Print', locale)
             case _:
                 raise ValueError(f'auth={self}')
 

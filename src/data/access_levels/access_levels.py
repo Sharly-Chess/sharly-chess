@@ -21,13 +21,17 @@ class AccessLevelScope(IntEnum):
     @property
     def name(self) -> str:
         """Returns the name of the scope."""
+        return self.localized_name()
+
+    def localized_name(self, locale: str | None = None) -> str:
+        """Returns the localized name of the scope."""
         match self:
             case AccessLevelScope.APPLICATION:
-                return _('Application')
+                return _('Application', locale)
             case AccessLevelScope.EVENT:
-                return _('Event')
+                return _('Event', locale)
             case AccessLevelScope.TOURNAMENT:
-                return _('Tournament')
+                return _('Tournament', locale)
             case _:
                 raise ValueError(f'access_level_scope={self}')
 
