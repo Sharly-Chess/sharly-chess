@@ -717,6 +717,9 @@ class IndexAdminController(BaseAdminController):
         # Clear the modal contents, and send an event
         return HTMXTemplate(
             template_name='common/empty_modal.html',
+            context={
+                'messages': Message.messages(request),
+            },
             re_target='#modal-wrapper',
             trigger_event='close_modal',
             after='receive',
