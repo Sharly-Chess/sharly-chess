@@ -414,9 +414,9 @@ class FideDataSource(LocalDataSource):
     def static_id() -> str:
         return 'fide'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('FIDE database')
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('FIDE database', locale)
 
     @property
     def local_database_type(self) -> type[LocalSourceDatabase]:

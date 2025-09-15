@@ -119,9 +119,9 @@ class StandardSwissVariation(SwissVariation):
     def variation_id() -> str:
         return 'STANDARD'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Standard swiss system')
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Standard swiss system', locale)
 
 
 class BergerRoundRobinVariation(RoundRobinVariation):
@@ -129,9 +129,9 @@ class BergerRoundRobinVariation(RoundRobinVariation):
     def variation_id() -> str:
         return 'BERGER'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Berger')
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Berger', locale)
 
     @property
     def settings(self) -> list[PairingSetting]:
@@ -147,9 +147,9 @@ class DoubleBergerRoundRobinVariation(RoundRobinVariation):
     def variation_id() -> str:
         return 'DOUBLE_BERGER'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Double-round Berger')
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Double-round Berger', locale)
 
     @property
     def settings(self) -> list[PairingSetting]:

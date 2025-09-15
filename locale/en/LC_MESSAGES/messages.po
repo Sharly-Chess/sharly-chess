@@ -751,6 +751,9 @@ msgstr ""
 msgid "Board (%(remaining)d)"
 msgstr ""
 
+msgid "Board Pairings"
+msgstr ""
+
 msgid "Board is not the same as the opponent's."
 msgstr ""
 
@@ -3465,10 +3468,16 @@ msgstr ""
 msgid "PAI"
 msgstr ""
 
+msgid "PAPI"
+msgstr ""
+
 msgid "PENALTY"
 msgstr ""
 
 msgid "PERMUTE WHITE/BLACK"
+msgstr ""
+
+msgid "PGN"
 msgstr ""
 
 msgid "PS *** ACRONYM FOR PAPI PROGRESSIVE SCORE"
@@ -3682,6 +3691,9 @@ msgid "Player [{player}] has pairings in tournament [{tournament}]."
 msgstr ""
 
 msgid "Player does not match tournament criteria: {names}"
+msgstr ""
+
+msgid "Player pairings"
 msgstr ""
 
 msgid "Player selection (by alphabetical order)"
@@ -4648,6 +4660,12 @@ msgid "Swiss"
 msgstr ""
 
 msgid "TRF file"
+msgstr ""
+
+msgid "TRF(bx)"
+msgstr ""
+
+msgid "TRF16"
 msgstr ""
 
 msgid "Text after the hour:"

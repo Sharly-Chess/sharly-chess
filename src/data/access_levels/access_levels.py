@@ -35,7 +35,7 @@ class AccessLevelScope(IntEnum):
 class AccessLevel(IdentifiableEntity, ABC):
     @staticmethod
     @abstractmethod
-    def short_name() -> str:
+    def short_name(locale: str | None = None) -> str:
         """Short name to use in docs."""
 
     @property
@@ -116,13 +116,13 @@ class SpectatorAccessLevel(AccessLevel):
     def static_id() -> str:
         return 'SPECTATOR'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Spectator')
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Spectator', locale)
 
     @staticmethod
-    def short_name() -> str:
-        return _('SPE')
+    def short_name(locale: str | None = None) -> str:
+        return _('SPE', locale)
 
     @property
     def scope(self) -> AccessLevelScope:
@@ -146,13 +146,13 @@ class ResultsEntryAccessLevel(AccessLevel):
     def static_id() -> str:
         return 'RESULTS_ENTRY'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Results Entry via public screens')
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Results Entry via public screens', locale)
 
     @staticmethod
-    def short_name() -> str:
-        return _('RES')
+    def short_name(locale: str | None = None) -> str:
+        return _('RES', locale)
 
     @property
     def scope(self) -> AccessLevelScope:
@@ -180,13 +180,13 @@ class CheckInAccessLevel(AccessLevel):
     def static_id() -> str:
         return 'CHECK_IN'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Check-in via public screens')
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Check-in via public screens', locale)
 
     @staticmethod
-    def short_name() -> str:
-        return _('CHE')
+    def short_name(locale: str | None = None) -> str:
+        return _('CHE', locale)
 
     @property
     def scope(self) -> AccessLevelScope:
@@ -217,13 +217,13 @@ class SectorArbitrationAccessLevel(AccessLevel):
     def static_id() -> str:
         return 'SECTOR_ARBITRATION'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Sector arbitration')
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Sector arbitration', locale)
 
     @staticmethod
-    def short_name() -> str:
-        return _('SEC')
+    def short_name(locale: str | None = None) -> str:
+        return _('SEC', locale)
 
     @property
     def scope(self) -> AccessLevelScope:
@@ -258,13 +258,13 @@ class PairingAccessLevel(AccessLevel):
     def static_id() -> str:
         return 'PAIRING'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Pairing')
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Pairing', locale)
 
     @staticmethod
-    def short_name() -> str:
-        return _('PAI')
+    def short_name(locale: str | None = None) -> str:
+        return _('PAI', locale)
 
     @property
     def scope(self) -> AccessLevelScope:
@@ -309,13 +309,13 @@ class DeputyChiefArbitrationAccessLevel(AccessLevel):
     def static_id() -> str:
         return 'DEPUTY_CHIEF_ARBITRATION'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Deputy Chief Arbitration')
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Deputy Chief Arbitration', locale)
 
     @staticmethod
-    def short_name() -> str:
-        return _('DCA')
+    def short_name(locale: str | None = None) -> str:
+        return _('DCA', locale)
 
     @property
     def scope(self) -> AccessLevelScope:
@@ -360,13 +360,13 @@ class ChiefArbitrationAccessLevel(AccessLevel):
     def static_id() -> str:
         return 'CHIEF_ARBITRATION'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Chief Arbitration')
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Chief Arbitration', locale)
 
     @staticmethod
-    def short_name() -> str:
-        return _('CA')
+    def short_name(locale: str | None = None) -> str:
+        return _('CA', locale)
 
     @property
     def scope(self) -> AccessLevelScope:
@@ -399,13 +399,13 @@ class ScreenManagementAccessLevel(AccessLevel):
     def static_id() -> str:
         return 'SCREEN_MANAGEMENT'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Screen Management')
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Screen Management', locale)
 
     @staticmethod
-    def short_name() -> str:
-        return _('SCR')
+    def short_name(locale: str | None = None) -> str:
+        return _('SCR', locale)
 
     @property
     def scope(self) -> AccessLevelScope:
@@ -435,13 +435,13 @@ class OrganizationAccessLevel(AccessLevel):
     def static_id() -> str:
         return 'ORGANIZATION'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Organization')
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Organization', locale)
 
     @staticmethod
-    def short_name() -> str:
-        return _('ORG')
+    def short_name(locale: str | None = None) -> str:
+        return _('ORG', locale)
 
     @property
     def scope(self) -> AccessLevelScope:
@@ -480,13 +480,13 @@ class AdministrationAccessLevel(AccessLevel):
     def static_id() -> str:
         return 'ADMINISTRATION'
 
-    @staticmethod
-    def static_name() -> str:
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
         return _('Administration')
 
     @staticmethod
-    def short_name() -> str:
-        return _('ADM')
+    def short_name(locale: str | None = None) -> str:
+        return _('ADM', locale)
 
     @property
     def scope(self) -> AccessLevelScope:

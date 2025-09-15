@@ -12,9 +12,9 @@ class PapiTournamentExporter(TournamentExporter):
     def static_id() -> str:
         return f'{PLUGIN_NAME}-papi'
 
-    @staticmethod
-    def static_name() -> str:
-        return 'PAPI'
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('PAPI', locale)
 
     @property
     def tooltip(self) -> str:

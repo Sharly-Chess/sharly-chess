@@ -20,9 +20,9 @@ class BoardsPairingStyle(PairingStyle):
     def static_id() -> str:
         return 'boards'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Boards')
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Boards', locale)
 
     @property
     def print_document_type(self) -> type['PrintDocument']:
@@ -36,9 +36,9 @@ class PlayersPairingStyleSorter(PairingStyle):
     def static_id() -> str:
         return 'players'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Players')
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Players', locale)
 
     @property
     def print_document_type(self) -> type['PrintDocument']:
