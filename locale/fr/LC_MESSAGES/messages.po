@@ -615,7 +615,7 @@ msgid "Authentication failed."
 msgstr "L'authentification a échoué."
 
 msgid "Authentication failed. Please check your credentials and try again."
-msgstr "Ahthentification échouée. Merci de vérifier vos identifiants puis de réessayer."
+msgstr "Authentification échouée. Merci de vérifier vos identifiants et réessayer."
 
 msgid "Auto-update"
 msgstr "Mise à jour"
@@ -4632,10 +4632,8 @@ msgstr "Le règlement FIDE indique que seuls les appariements de la ronde <b>pr�
 msgid "The IP address, used to identify the device."
 msgstr "L'adresse IP, utilisée pour identifier l'appareil."
 
-# Error: tokens differ between [The PAPI format does not support {rounds}
-# rounds (maximum: {max}).] and []
 msgid "The PAPI format does not support {rounds} rounds (maximum: {max})."
-msgstr "Le format PAPI ne supporte pas {rounds} rounds (maximum: {max})."
+msgstr "Le format PAPI ne supporte pas {rounds} rounds (maximum : {max})."
 
 msgid "The URL of the image to display."
 msgstr "L'URL de l'image à afficher."

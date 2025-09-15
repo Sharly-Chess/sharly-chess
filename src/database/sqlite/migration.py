@@ -176,7 +176,7 @@ class MigrationManager[T: MigrationDatabase](ABC):
     def _check_timeline(self):
         indexes = []
         for migration in self.migrations:
-            assert re.match(r'm\d{3}_[a-z0-9_]+$', migration), (
+            assert re.match(r'^m\d{3}_[a-z0-9_]+$', migration), (
                 f'Migration [{migration}] does not match expected pattern'
             )
             index = self._migration_index(migration)

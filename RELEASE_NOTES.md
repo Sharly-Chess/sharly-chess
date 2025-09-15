@@ -12,6 +12,7 @@ English version below
 ## Tournois
 
 - Les tournois peuvent désormais avoir des critères de joueur·euses associés (3.1.0)
+- Import de tournois au format TRF (3.1.0)
 
 ## Joueur·euses
 
@@ -24,6 +25,10 @@ English version below
 ## Appariements
 
 - Amélioration de la navigation de l'onglet Appariements (3.1.0)
+
+## ChessEvent
+
+- Import de tournois ChessEvent depuis l'interface web (remplace le script `tools/chessevent.bat`) (3.1.0)
 
 ---
 
@@ -52,3 +57,7 @@ English version below
 ## Pairings
 
 - Improved navigation on the Pairings tab (3.1.0)
+
+## ChessEvent
+
+- Import ChessEvent tournament from the web interface ()

@@ -645,12 +645,14 @@ class PapiConverter:
             ).format(result=result)
         return None
 
-    @staticmethod
-    def check_rounds(rounds: int) -> str | None:
-        if rounds > 25:
+    MAX_PAPI_ROUNDS = 24
+
+    @classmethod
+    def check_rounds(cls, rounds: int) -> str | None:
+        if rounds > cls.MAX_PAPI_ROUNDS:
             return _(
                 'The PAPI format does not support {rounds} rounds (maximum: {max}).'
-            ).format(rounds=rounds, max=25)
+            ).format(rounds=rounds, max=cls.MAX_PAPI_ROUNDS)
         return None
 
     @classmethod

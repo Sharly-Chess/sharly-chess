@@ -36,7 +36,7 @@ class ChessEventSession(Session):
         }
         logger.debug(
             'Reading data from the ChessEvent platform (%s)...',
-            f'{self.user_id}:{"*" * 8}@{self.event_id}/{self.tournament_name}',
+            f'{self.user_id}:{"*" * 8}@{self.event_id}/[{self.tournament_name}]',
         )
         try:
             # Redirections are handled manually to pass the data at each redirection
