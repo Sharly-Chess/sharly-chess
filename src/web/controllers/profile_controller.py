@@ -62,32 +62,17 @@ class ProfileController(BaseController):
             re_target='#modal-wrapper',
         )
 
-    @get(
-        path=[
-            '/profile-modal/{event_uniq_id:str}',
-            '/profile-modal',
-        ],
-        name='profile-modal',
-    )
+    @get(path='/profile-modal', name='profile-modal')
     async def htmx_profile_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str | None,
         locale: str | None = None,
     ) -> Template | ClientRedirect | Redirect:
-        web_context: AdminWebContext
-        if event_uniq_id:
-            web_context = ProfileWebContext(
-                request,
-                event_uniq_id=event_uniq_id,
-                data=None,
-            )
-        else:
-            web_context = AdminWebContext(
-                request,
-                data=None,
-                admin_tab=None,
-            )
+        web_context = AdminWebContext(
+            request,
+            data=None,
+            admin_tab=None,
+        )
         if web_context.error:
             return web_context.error
 
