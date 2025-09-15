@@ -684,6 +684,9 @@ msgstr "VICTOIRE NOIRS"
 msgid "BY FORFEIT"
 msgstr "PAR FORFAIT"
 
+msgid "Back"
+msgstr "Retour"
+
 msgid "Background colour:"
 msgstr "Couleur de fond :"
 
@@ -1222,6 +1225,9 @@ msgstr "Créer et ajouter à nouveau"
 
 msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator."
 msgstr "Créez autant de pilotes d’afficheurs que nécessaire, puis, sur vos afficheurs, choisissez un pilote d’afficheurs plutôt qu’un écran simple ou un écran rotatif spécifique."
+
+msgid "Create criterion"
+msgstr "Créer un critère"
 
 msgid "Create display controller"
 msgstr "Créer un pilote d'afficheurs"
@@ -1793,6 +1799,9 @@ msgstr "Modifier"
 
 msgid "Edit account"
 msgstr "Modifier le compte"
+
+msgid "Edit criterion"
+msgstr "Modifier le critère"
 
 msgid "Edit default timers"
 msgstr "Modifier les chronomètres par défaut"
@@ -3911,12 +3920,6 @@ msgstr "La catégorie de prix [{prize_category}] a été supprimée avec succès
 msgid "Prize category [{prize_category}] successfully updated."
 msgstr "La catégorie de prix [{prize_category}] a été mise à jour avec succès."
 
-msgid "Prize criterion creation"
-msgstr "Création d'un critère"
-
-msgid "Prize criterion editing"
-msgstr "Édition d'un critère"
-
 msgid "Prize currency"
 msgstr "Monnaie des prix"
 
@@ -5320,12 +5323,6 @@ msgstr "Le tournoi [{tournament}] est terminé, on ne peut plus y ajouter de jou
 
 msgid "Tournament [{tournament}] successfully imported."
 msgstr "Le tournoi [{tournament}] a été importé avec succès."
-
-msgid "Tournament criterion creation"
-msgstr "Création de critères de tournoi"
-
-msgid "Tournament criterion editing"
-msgstr "Édition des critères de tournoi."
 
 msgid "Tournament exempt from registration fees."
 msgstr "Tournoi exempt de droits d'homologation."

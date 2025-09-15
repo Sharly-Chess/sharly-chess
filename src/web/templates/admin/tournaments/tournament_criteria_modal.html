@@ -10,6 +10,9 @@
         </div>
         <div class="modal-body">
             <div class="d-flex flex-column gap-2">
+                {% if not admin_tournament.criteria %}
+                    <div class="text-danger">{{ _('No criteria.') }}</div>
+                {% endif %}
                 {% for criterion in admin_tournament.sorted_criteria %}
                     <div class="border border-secondary">
                         <div class="p-2 d-flex align-items-start gap-4">

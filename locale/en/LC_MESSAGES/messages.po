@@ -684,6 +684,9 @@ msgstr ""
 msgid "BY FORFEIT"
 msgstr ""
 
+msgid "Back"
+msgstr ""
+
 msgid "Background colour:"
 msgstr ""
 
@@ -1221,6 +1224,9 @@ msgid "Create and add another"
 msgstr ""
 
 msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator."
+msgstr ""
+
+msgid "Create criterion"
 msgstr ""
 
 msgid "Create display controller"
@@ -1792,6 +1798,9 @@ msgid "Edit"
 msgstr ""
 
 msgid "Edit account"
+msgstr ""
+
+msgid "Edit criterion"
 msgstr ""
 
 msgid "Edit default timers"
@@ -3911,12 +3920,6 @@ msgstr ""
 msgid "Prize category [{prize_category}] successfully updated."
 msgstr ""
 
-msgid "Prize criterion creation"
-msgstr ""
-
-msgid "Prize criterion editing"
-msgstr ""
-
 msgid "Prize currency"
 msgstr ""
 
@@ -5319,12 +5322,6 @@ msgid "Tournament [{tournament}] is finished, you can not add players any longer
 msgstr ""
 
 msgid "Tournament [{tournament}] successfully imported."
-msgstr ""
-
-msgid "Tournament criterion creation"
-msgstr ""
-
-msgid "Tournament criterion editing"
 msgstr ""
 
 msgid "Tournament exempt from registration fees."
