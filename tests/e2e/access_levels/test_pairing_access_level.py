@@ -1,15 +1,18 @@
 from database.sqlite.event.event_store import StoredScreen
 import pytest
 from playwright.sync_api import Page, APIRequestContext
-from data.auth.roles import ChiefArbitrationRole
-from tests.e2e.roles.base_role_test import BaseRoleTest, DisplayMode
-from tests.e2e.roles.conftest import PUBLIC_EVENT_ID
+from data.access_levels.access_levels import PairingAccessLevel
+from tests.e2e.access_levels.base_access_level_test import (
+    BaseAccessLevelTest,
+    DisplayMode,
+)
+from tests.e2e.access_levels.conftest import PUBLIC_EVENT_ID
 
 
 @pytest.mark.e2e
-class TestChiefArbitrationRole(BaseRoleTest):
-    def get_roles(self):
-        return [ChiefArbitrationRole]
+class TestPairingAccessLevel(BaseAccessLevelTest):
+    def get_access_levels(self):
+        return [PairingAccessLevel]
 
     def test_access(
         self,
@@ -39,16 +42,16 @@ class TestChiefArbitrationRole(BaseRoleTest):
         super().assert_access_to_visible_events(PUBLIC_EVENT_ID, auth_page)
         super().assert_access_to_input_screen(
             True,
-            DisplayMode.SCREENS_IN_SUBMENU,
+            DisplayMode.SCREENS_IN_MENU,
             auth_page,
             public_input_screen,
         )
         super().assert_access_to_input_screen(
-            True,
-            DisplayMode.SCREENS_IN_SUBMENU,
+            False,
+            DisplayMode.SCREENS_IN_MENU,
             auth_page,
             private_input_screen,
         )
         super().assert_can_checkin_via_screen(True, api_request_context)
-        super().assert_can_enter_results_via_screen(True, True, True)
+        super().assert_can_enter_results_via_screen(True, True, False)
         super().assert_can_set_illegal_moves_via_screen(True, api_request_context)

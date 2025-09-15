@@ -256,7 +256,6 @@ class BaseAdminController(BaseController):
         message_color: str | None = None
         message_background_color: str | None = None
 
-        custom_exec_mode = WebContext.form_data_to_bool(data, 'custom_exec_mode')
         name = WebContext.form_data_to_str(data, field := 'name') or ''
         if not name:
             errors[field] = _('Please enter the name of the event.')
@@ -396,7 +395,6 @@ class BaseAdminController(BaseController):
             message_color=message_color,
             message_background_color=message_background_color,
             prize_currency=prize_currency,
-            custom_exec_mode=bool(custom_exec_mode),
             override_unrated_rapid_blitz=override_unrated_rapid_blitz,
             errors=errors,
             # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
@@ -532,7 +530,6 @@ class BaseAdminController(BaseController):
         message_color: str | None = None
         message_background_color: str | None = None
         prize_currency: str | None = None
-        custom_exec_mode: bool
         match action:
             case 'update' | 'clone':
                 if admin_event is None:
@@ -550,7 +547,6 @@ class BaseAdminController(BaseController):
                 message_color = admin_event.message_color
                 message_background_color = admin_event.message_background_color
                 prize_currency = stored_event.prize_currency
-                custom_exec_mode = stored_event.custom_exec_mode
                 override_unrated_rapid_blitz = stored_event.override_unrated_rapid_blitz
             case 'create':
                 sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
@@ -563,7 +559,6 @@ class BaseAdminController(BaseController):
                 hide_background_image = (
                     sharly_chess_config.default_hide_background_image
                 )
-                custom_exec_mode = sharly_chess_config.default_custom_exec_mode
                 override_unrated_rapid_blitz = True
             case _:
                 raise ValueError(f'action=[{action}]')
@@ -596,7 +591,6 @@ class BaseAdminController(BaseController):
                 message_background_color
             ),
             'prize_currency': WebContext.value_to_form_data(prize_currency),
-            'custom_exec_mode': WebContext.value_to_form_data(custom_exec_mode),
             'override_unrated_rapid_blitz': WebContext.value_to_form_data(
                 override_unrated_rapid_blitz
             ),

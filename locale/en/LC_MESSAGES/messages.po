@@ -302,10 +302,10 @@ msgstr ""
 msgid "Accelerated variations of the swiss pairing system."
 msgstr ""
 
-msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
+msgid "Accepted characters are letters, numbers, single quote (') and minus (-)."
 msgstr ""
 
-msgid "Access"
+msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
 msgstr ""
 
 msgid "Access control"
@@ -320,35 +320,37 @@ msgstr ""
 msgid "Access from the local network (LAN/WAN)"
 msgstr ""
 
+msgid "Access level"
+msgstr ""
+
+msgid "Access unrated and penalty results."
+msgstr ""
+
+msgid "Access levels"
+msgstr ""
+
 msgid "Access unrated and penalty results."
 msgstr ""
 
 msgid "Account"
 msgstr ""
 
-msgid "Account [{username}] already exists."
+msgid "Account [{account_name}] already exists."
 msgstr ""
 
-msgid "Account [{username}] has been created."
+msgid "Account [{account_name}] has been created."
 msgstr ""
 
-msgid "Account [{username}] has been deleted."
+msgid "Account [{account_name}] has been deleted."
 msgstr ""
 
-msgid "Account [{username}] has been updated."
+msgid "Account [{account_name}] has been updated."
 msgstr ""
 
-msgid "Account creation"
-msgstr ""
-
-#, python-format
-msgid "Account: %(username)s"
+msgid "Account:"
 msgstr ""
 
 msgid "Accounts"
-msgstr ""
-
-msgid "Accounts ({num})"
 msgstr ""
 
 msgid "Action"
@@ -367,12 +369,6 @@ msgid "Add"
 msgstr ""
 
 msgid "Add a criterion to the list."
-msgstr ""
-
-msgid "Add a device"
-msgstr ""
-
-msgid "Add a device to the event."
 msgstr ""
 
 msgid "Add a display controller to the event."
@@ -465,10 +461,10 @@ msgstr ""
 msgid "Add tournaments"
 msgstr ""
 
-msgid "Adding devices allows you to grant permissions to people on other clients,"
+msgid "Administration"
 msgstr ""
 
-msgid "Administration"
+msgid "Administrator"
 msgstr ""
 
 msgid "Age"
@@ -519,22 +515,19 @@ msgstr ""
 msgid "Allows entry of results via any input Screens that have been marked as public."
 msgstr ""
 
-msgid "Allows granting or revoking the Chief Arbitration role and editing the event. Also includes the permissions of the Screen Management role."
+msgid "Allows granting or revoking the Chief Arbitration access level and editing the event. Also includes the permissions of the Screen Management access level."
 msgstr ""
 
-msgid "Allows granting or revoking the Deputy Chief Arbitration role, editing the event, and managing tournaments; Also includes the permissions of the Deputy Chief Arbitration role."
+msgid "Allows granting or revoking the Deputy Chief Arbitration access level, editing the event, and managing tournaments; Also includes the permissions of the Deputy Chief Arbitration access level."
 msgstr ""
 
-msgid "Allows management of Screens and the account and devices that can access them."
+msgid "Allows management of Screens and the accounts that can access them."
 msgstr ""
 
 msgid "Allows managing players, entering results (including special results and their modification), handling check-ins, pairings, and displays."
 msgstr ""
 
 msgid "Allows pairing of the players, either using a pairing engine or manually."
-msgstr ""
-
-msgid "Allows to create accounts, declare devices and grant them permissions."
 msgstr ""
 
 msgid "An error occurred. Consult the logs for more details."
@@ -577,9 +570,6 @@ msgid "Archived events"
 msgstr ""
 
 msgid "Argument --server is deprecated, ignored."
-msgstr ""
-
-msgid "Ask your administrator for the username to use."
 msgstr ""
 
 msgid "Assign a screen to the controller."
@@ -688,16 +678,16 @@ msgstr "Avg. Perfect Perf."
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
 msgstr "B"
 
-msgid "BE CAREFUL TO GIVE SENSITIVE ROLES ONLY TO TRUSTED DEVICES!"
-msgstr ""
-
-msgid "BE CAREFUL TO GIVE SENSITIVE ROLES ONLY TO TRUSTED PEOPLE!"
+msgid "BE CAREFUL TO GIVE SENSITIVE ACCESS LEVELS ONLY TO TRUSTED PEOPLE!"
 msgstr ""
 
 msgid "BLACK WINS"
 msgstr ""
 
 msgid "BY FORFEIT"
+msgstr ""
+
+msgid "Back"
 msgstr ""
 
 msgid "Background colour:"
@@ -978,9 +968,6 @@ msgstr ""
 msgid "Choose from images in the 'custom' folder"
 msgstr ""
 
-msgid "Choose one, many or no tournaments."
-msgstr ""
-
 msgid "Choose screens to add"
 msgstr ""
 
@@ -1000,10 +987,6 @@ msgid "Click to check-in the player."
 msgstr ""
 
 msgid "Click to check-out the player."
-msgstr ""
-
-#, python-format
-msgid "Client: %(host)s"
 msgstr ""
 
 msgid "Close"
@@ -1100,9 +1083,6 @@ msgid "Complementary pairings successfully generated!"
 msgstr ""
 
 msgid "Configuration"
-msgstr ""
-
-msgid "Connect"
 msgstr ""
 
 msgid "Connect other devices!"
@@ -1228,6 +1208,9 @@ msgstr ""
 msgid "Create a tournament"
 msgstr ""
 
+msgid "Create account"
+msgstr ""
+
 msgid "Create an account"
 msgstr ""
 
@@ -1238,6 +1221,9 @@ msgid "Create and add another"
 msgstr ""
 
 msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator."
+msgstr ""
+
+msgid "Create criterion"
 msgstr ""
 
 msgid "Create display controller"
@@ -1325,13 +1311,7 @@ msgstr ""
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr ""
 
-msgid "Custom"
-msgstr ""
-
 msgid "Customization"
-msgstr ""
-
-msgid "Customize the permissions"
 msgstr ""
 
 msgid "DCA"
@@ -1445,9 +1425,6 @@ msgstr ""
 msgid "Delete account"
 msgstr ""
 
-msgid "Delete device"
-msgstr ""
-
 msgid "Delete display controller"
 msgstr ""
 
@@ -1479,9 +1456,6 @@ msgid "Delete the account."
 msgstr ""
 
 msgid "Delete the category."
-msgstr ""
-
-msgid "Delete the device."
 msgstr ""
 
 msgid "Delete the display controller."
@@ -1529,30 +1503,6 @@ msgstr ""
 msgid "Details"
 msgstr ""
 
-msgid "Device"
-msgstr ""
-
-msgid "Device [{ip}] already set."
-msgstr ""
-
-msgid "Device [{ip}] has been created."
-msgstr ""
-
-msgid "Device [{ip}] has been deleted."
-msgstr ""
-
-msgid "Device [{ip}] has been updated."
-msgstr ""
-
-msgid "Device creation"
-msgstr ""
-
-msgid "Devices"
-msgstr ""
-
-msgid "Devices ({num})"
-msgstr ""
-
 msgid "Different for White / Black"
 msgstr ""
 
@@ -1560,9 +1510,6 @@ msgid "Direct encounter"
 msgstr ""
 
 msgid "Disabled"
-msgstr ""
-
-msgid "Disconnect"
 msgstr ""
 
 msgid "Display"
@@ -1592,7 +1539,7 @@ msgstr ""
 msgid "Display controllers ({num})"
 msgstr ""
 
-msgid "Display controllers allow you to control screens at your event from your server (or any allowed device in custom mode)."
+msgid "Display controllers allow you to control screens at your event from your server (or any allowed device)."
 msgstr ""
 
 msgid "Display format for pairings."
@@ -1692,9 +1639,6 @@ msgstr ""
 msgid "Duplicate the category and its criteria and prizes."
 msgstr ""
 
-msgid "Duplicate the device."
-msgstr ""
-
 msgid "Duplicate the rotator."
 msgstr ""
 
@@ -1736,9 +1680,6 @@ msgstr ""
 
 #, python-format
 msgid "E.g.: %(string)s"
-msgstr ""
-
-msgid "E.g.: 192.168.1.43"
 msgstr ""
 
 msgid "E.g.: 20 (place 20 boards on each screen)"
@@ -1831,9 +1772,6 @@ msgstr ""
 msgid "E.g.: https://my.club.us/tournament.jpg"
 msgstr ""
 
-msgid "E.g.: john"
-msgstr ""
-
 msgid "E.g.: john doe"
 msgstr ""
 
@@ -1854,6 +1792,12 @@ msgid "Each group should contain one or more categories (e.g. U12, Best Female) 
 msgstr ""
 
 msgid "Edit"
+msgstr ""
+
+msgid "Edit account"
+msgstr ""
+
+msgid "Edit criterion"
 msgstr ""
 
 msgid "Edit default timers"
@@ -1898,9 +1842,6 @@ msgstr ""
 msgid "Edit the properties and the permissions of the account."
 msgstr ""
 
-msgid "Edit the properties and the permissions of the device."
-msgstr ""
-
 msgid "Edit the properties of the category."
 msgstr ""
 
@@ -1937,18 +1878,7 @@ msgstr ""
 msgid "Edit tournament"
 msgstr ""
 
-#, python-format
-msgid "Editing of account [%(username)s]"
-msgstr ""
-
-#, python-format
-msgid "Editing of device [%(ip)s]"
-msgstr ""
-
-msgid "Editing of unauthenticated access"
-msgstr ""
-
-msgid "Editing of unknown devices' access"
+msgid "Edit unauthenticated access"
 msgstr ""
 
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
@@ -1964,9 +1894,6 @@ msgid "Email:"
 msgstr ""
 
 msgid "Enable this account"
-msgstr ""
-
-msgid "Enable this device"
 msgstr ""
 
 msgid "Enable/disable the details of events on the cards below."
@@ -2004,9 +1931,6 @@ msgid "End:"
 msgstr ""
 
 msgid "Enter results"
-msgstr ""
-
-msgid "Enter the password associated with the username."
 msgstr ""
 
 msgid "Enter the result"
@@ -2061,12 +1985,6 @@ msgid "Events access"
 msgstr ""
 
 msgid "Events management"
-msgstr ""
-
-msgid "Execution"
-msgstr ""
-
-msgid "Execution mode:"
 msgstr ""
 
 msgid "Exempt *** FEMALE"
@@ -2460,7 +2378,7 @@ msgstr ""
 msgid "Generated by script {script_name} on {date}"
 msgstr ""
 
-msgid "Give/take away role {role_short_name}"
+msgid "Give/take away access level {access_level_short_name}"
 msgstr ""
 
 msgid "Go to the display controller."
@@ -2558,26 +2476,11 @@ msgstr ""
 msgid "I would like the following custom files to be added to a future release of Sharly Chess:"
 msgstr ""
 
-msgid "ID (unique):"
-msgstr ""
-
 msgid "ID [{user_id}] not found (code: [{code}]): [{error}]."
 msgstr ""
 
 msgid "IM *** SHORT NAME FOR International Master"
 msgstr "IM"
-
-msgid "IP address"
-msgstr ""
-
-msgid "IP address [{ip}] is not valid."
-msgstr ""
-
-msgid "IP address:"
-msgstr ""
-
-msgid "Identification"
-msgstr ""
 
 msgid "Identity"
 msgstr ""
@@ -2653,7 +2556,7 @@ msgstr ""
 msgid "Include players of these rating types."
 msgstr ""
 
-msgid "Includes all other roles and grants full access to the application. This role is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network)."
+msgid "Includes all other access levels and grants full access to the application. This access level is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network)."
 msgstr ""
 
 msgid "Incorrect installation, exiting."
@@ -2671,7 +2574,7 @@ msgstr ""
 msgid "Information message"
 msgstr ""
 
-msgid "Inherited roles"
+msgid "Inherited access levels"
 msgstr ""
 
 msgid "Input Screens may be used to allow players to enter their own results on a device that you make available at the venue."
@@ -2711,6 +2614,9 @@ msgid "Invalid TRF25 string: unexpected characters."
 msgstr ""
 
 msgid "Invalid URL [{background_image}]."
+msgstr ""
+
+msgid "Invalid account."
 msgstr ""
 
 msgid "Invalid amount [{amount}]."
@@ -2758,6 +2664,9 @@ msgstr ""
 msgid "Invalid mail [{mail}]."
 msgstr ""
 
+msgid "Invalid password."
+msgstr ""
+
 msgid "Invalid period:"
 msgstr ""
 
@@ -2768,9 +2677,6 @@ msgid "Invalid time [{time_str}]."
 msgstr ""
 
 msgid "Invalid type [{type}] for field [{field}] (expected: {expected})."
-msgstr ""
-
-msgid "Invalid username or password."
 msgstr ""
 
 msgid "Invalid value [{value}] for field [{field}] (expected one of [{expected_values}])."
@@ -2811,6 +2717,9 @@ msgid "Last board:"
 msgstr ""
 
 msgid "Last check"
+msgstr ""
+
+msgid "Last name:"
 msgstr ""
 
 msgid "Last player:"
@@ -2858,9 +2767,6 @@ msgstr ""
 msgid "Leagues"
 msgstr ""
 
-msgid "Leave empty to grant no permissions at all."
-msgstr ""
-
 msgid "Libraries"
 msgstr ""
 
@@ -2903,6 +2809,16 @@ msgstr ""
 msgid "Location"
 msgstr ""
 
+msgid "Log in"
+msgstr ""
+
+msgid "Log out"
+msgstr ""
+
+#, python-format
+msgid "Logged in as [%(account_name)s]"
+msgstr ""
+
 msgid "Logging level"
 msgstr ""
 
@@ -2940,9 +2856,6 @@ msgstr "Man."
 msgid "Manage accounts"
 msgstr ""
 
-msgid "Manage devices"
-msgstr ""
-
 msgid "Manage prizes"
 msgstr ""
 
@@ -2958,7 +2871,7 @@ msgstr ""
 msgid "Manage the prize groups of the tournament."
 msgstr ""
 
-msgid "Manageable roles"
+msgid "Manageable access levels"
 msgstr ""
 
 msgid "Mandatory for the first hour, optional for next hours."
@@ -3357,9 +3270,6 @@ msgstr ""
 msgid "Not assigned"
 msgstr ""
 
-msgid "Not authenticated"
-msgstr ""
-
 msgid "Not checked-in yet"
 msgstr ""
 
@@ -3367,6 +3277,9 @@ msgid "Not connected to internet"
 msgstr ""
 
 msgid "Not connected, impossible to update."
+msgstr ""
+
+msgid "Not logged in"
 msgstr ""
 
 msgid "Not paired"
@@ -3517,9 +3430,6 @@ msgid "Organization"
 msgstr ""
 
 msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
-msgstr ""
-
-msgid "Other devices connected to your network can see your public screens. If you have created screens for player check-in and results entry then those features will be enabled."
 msgstr ""
 
 msgid "Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold."
@@ -3720,10 +3630,7 @@ msgstr ""
 msgid "Permissions"
 msgstr ""
 
-msgid "Permissions / Roles"
-msgstr ""
-
-msgid "Permissions can not be customized in the current execution mode."
+msgid "Permissions / Access levels"
 msgstr ""
 
 msgid "Permute boards"
@@ -3884,9 +3791,6 @@ msgstr ""
 msgid "Please enter a valid time."
 msgstr ""
 
-msgid "Please enter the IP address."
-msgstr ""
-
 msgid "Please enter the date of the first hour."
 msgstr ""
 
@@ -3896,13 +3800,7 @@ msgstr ""
 msgid "Please enter the image URL."
 msgstr ""
 
-msgid "Please enter the last name."
-msgstr ""
-
 msgid "Please enter the name of the event."
-msgstr ""
-
-msgid "Please enter the password."
 msgstr ""
 
 msgid "Please enter the round number or the hour ID."
@@ -3920,13 +3818,13 @@ msgstr ""
 msgid "Please enter the time."
 msgstr ""
 
-msgid "Please enter the username."
-msgstr ""
-
 msgid "Please enter valid date and time."
 msgstr ""
 
 msgid "Please select a type of criterion."
+msgstr ""
+
+msgid "Please select the account."
 msgstr ""
 
 msgid "Please validate the global configuration of the application."
@@ -4005,12 +3903,6 @@ msgid "Prize category [{prize_category}] successfully deleted."
 msgstr ""
 
 msgid "Prize category [{prize_category}] successfully updated."
-msgstr ""
-
-msgid "Prize criterion creation"
-msgstr ""
-
-msgid "Prize criterion editing"
 msgstr ""
 
 msgid "Prize currency"
@@ -4314,12 +4206,6 @@ msgid "Rk. O. *** RANK OVERALL FOR TABLE HEADER"
 msgstr "Rk. O."
 
 msgid "Rnd.Boa"
-msgstr ""
-
-msgid "Role"
-msgstr ""
-
-msgid "Roles"
 msgstr ""
 
 #, python-format
@@ -4703,6 +4589,9 @@ msgstr ""
 msgid "Split by:"
 msgstr ""
 
+msgid "Staff"
+msgstr ""
+
 msgid "Standard"
 msgstr ""
 
@@ -4743,7 +4632,7 @@ msgstr ""
 msgid "Strong"
 msgstr ""
 
-msgid "Sub roles"
+msgid "Sub access levels"
 msgstr ""
 
 msgid "Sum of Buchholz"
@@ -4800,16 +4689,13 @@ msgstr ""
 msgid "The ID used to connect to the ChessEvent platform (by default, can be overridden by the tournaments)."
 msgstr ""
 
-msgid "The IP address, used to identify the device."
-msgstr ""
-
 msgid "The URL of the image to display."
 msgstr ""
 
 msgid "The URL or the path of the image (relative to the 'custom' folder) to display."
 msgstr ""
 
-msgid "The Unique ID, used to authenticate."
+msgid "The access levels to attribute to this account."
 msgstr ""
 
 msgid "The background colour is used when the image does not fill the whole screen."
@@ -5104,12 +4990,6 @@ msgstr ""
 msgid "The representation of the event for URLs and file exports."
 msgstr ""
 
-msgid "The roles to attribute to this account."
-msgstr ""
-
-msgid "The roles to attribute to this device."
-msgstr ""
-
 msgid "The rotating delay between two screens."
 msgstr ""
 
@@ -5168,9 +5048,6 @@ msgstr ""
 msgid "The tournaments on which the account can act (if none, the account can act on all the tournaments)."
 msgstr ""
 
-msgid "The tournaments on which the device can act (if none, the device can act on all the tournaments)."
-msgstr ""
-
 msgid "The tournaments to print."
 msgstr ""
 
@@ -5211,15 +5088,6 @@ msgid "This account can not be updated."
 msgstr ""
 
 msgid "This data source in unavailable (for more details: Menu > Data sources)."
-msgstr ""
-
-msgid "This device can not be deleted."
-msgstr ""
-
-msgid "This device can not be duplicated."
-msgstr ""
-
-msgid "This device can not be updated."
 msgstr ""
 
 msgid "This display controller is private (not visible by the spectators)."
@@ -5435,12 +5303,6 @@ msgstr ""
 msgid "Tournament [{tournament}] successfully imported."
 msgstr ""
 
-msgid "Tournament criterion creation"
-msgstr ""
-
-msgid "Tournament criterion editing"
-msgstr ""
-
 msgid "Tournament exempt from registration fees."
 msgstr ""
 
@@ -5632,9 +5494,6 @@ msgstr ""
 msgid "Unknown color [{color}]."
 msgstr ""
 
-msgid "Unknown devices' access has been updated."
-msgstr ""
-
 msgid "Unknown federation [{federation}]."
 msgstr ""
 
@@ -5786,12 +5645,6 @@ msgstr ""
 msgid "Use Event's default - {option}"
 msgstr ""
 
-msgid "Use connected devices to check-in players and enter results on public screens"
-msgstr ""
-
-msgid "Use customized permissions"
-msgstr ""
-
 msgid "Use estimated rating for unrated players"
 msgstr ""
 
@@ -5805,12 +5658,6 @@ msgid "Use standard ratings"
 msgstr ""
 
 msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system."
-msgstr ""
-
-msgid "Username"
-msgstr ""
-
-msgid "Username:"
 msgstr ""
 
 msgid "Using colors helps in finding quickly important information on the console."
@@ -6007,22 +5854,6 @@ msgstr ""
 msgid "Yesterday"
 msgstr ""
 
-#, python-format
-msgid "You are authenticated as \"%(username)s\" but the account is disabled (you get the same permissions as an anonymous user)."
-msgstr ""
-
-#, python-format
-msgid "You are connected on an unknown client (%(host)s)."
-msgstr ""
-
-#, python-format
-msgid "You are connected on client (%(host)s) but the access from this client is disabled (you get the same permissions as an unknown device)."
-msgstr ""
-
-#, python-format
-msgid "You are connected on client (%(host)s)."
-msgstr ""
-
 msgid "You are connected on the Sharly Chess server and have full administration privileges."
 msgstr ""
 
@@ -6050,16 +5881,10 @@ msgstr ""
 msgid "You are not allowed to delete this account."
 msgstr ""
 
-msgid "You are not allowed to delete this device."
-msgstr ""
-
 msgid "You are not allowed to download fees."
 msgstr ""
 
 msgid "You are not allowed to duplicate this account."
-msgstr ""
-
-msgid "You are not allowed to duplicate this device."
 msgstr ""
 
 msgid "You are not allowed to enter results."
@@ -6110,9 +5935,6 @@ msgstr ""
 msgid "You are not allowed to update this account."
 msgstr ""
 
-msgid "You are not allowed to update this device."
-msgstr ""
-
 msgid "You are on the Sharly Chess server."
 msgstr ""
 
@@ -6125,16 +5947,10 @@ msgstr ""
 msgid "You can temporarily invalidate accounts by turning this switch off."
 msgstr ""
 
-msgid "You can temporarily invalidate devices by turning this switch off."
-msgstr ""
-
-msgid "You decide which devices and which accounts are allowed to display screens, check-in players, enter results, pair rounds… Sharly Chess offers you a powerful authorization system to easily delegate the management of your event to Organizers, Chief arbiters, Deputy Chief Arbiters, Sector Arbiters, pairings Officers, Check-in Officers, Results Officers, Screen Managers…"
-msgstr ""
-
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr ""
 
-msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on yor local network."
+msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on your local network."
 msgstr ""
 
 msgid "You must create a prize group before creating a prize category."
@@ -6311,9 +6127,6 @@ msgstr ""
 msgid "screens of {number} players from start to #{last}"
 msgstr ""
 
-msgid "server"
-msgstr ""
-
 msgid "some already played each other"
 msgstr ""
 
@@ -6333,9 +6146,6 @@ msgid "then"
 msgstr ""
 
 msgid "time control"
-msgstr ""
-
-msgid "unknown"
 msgstr ""
 
 msgid "value: {value}"
@@ -6417,4 +6227,3 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-

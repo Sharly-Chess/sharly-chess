@@ -17,8 +17,7 @@ from common.background import inline_image_url
 from common.i18n import _
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.auth.entities import Device, Account
-from data.auth.roles import CheckInRole, ResultsEntryRole
+from data.account import Account
 from data.display_controller import DisplayController
 from data.family import Family
 from data.player import Player, Club, Federation
@@ -36,7 +35,6 @@ from utils.enum import (
 from database.sqlite.event.event_store import (
     StoredEvent,
     StoredPlayer,
-    StoredDevice,
     StoredAccount,
     StoredRotator,
 )
@@ -50,8 +48,6 @@ class Event:
 
     def __init__(self, stored_event: StoredEvent):
         self.stored_event: StoredEvent = stored_event
-        self.devices_by_id = self._get_devices_by_id()
-        self.accounts_by_id = self._get_accounts_by_id()
 
     @property
     def uniq_id(self) -> str:
@@ -92,10 +88,6 @@ class Event:
         if plugin := plugin_manager.hook.get_default_prize_currency():
             return plugin
         return SharlyChessConfig.default_prize_currency
-
-    @property
-    def custom_exec_mode(self) -> bool:
-        return self.stored_event.custom_exec_mode
 
     @property
     def override_unrated_rapid_blitz(self) -> bool:
@@ -682,134 +674,49 @@ class Event:
         )
 
     # -------------------------------------------------------------------------
-    # Devices
-    # -------------------------------------------------------------------------
-
-    @staticmethod
-    def predefined_custom_devices() -> list[Device]:
-        """Returns the list of the devices that correspond to the custom execution mode."""
-        localhost_device: Device = Device.localhost_device()
-        unknown_device: Device = Device.unknown_device()
-        return [
-            localhost_device,
-            unknown_device,
-        ]
-
-    @staticmethod
-    def predefined_standard_devices() -> list[Device]:
-        """Returns the list of the devices that correspond to the standard execution mode."""
-        localhost_device: Device = Device.localhost_device()
-        unknown_device: Device = Device.unknown_device()
-        unknown_device.stored_device.roles += [
-            CheckInRole.static_id(),
-            ResultsEntryRole.static_id(),
-        ]
-        return [
-            localhost_device,
-            unknown_device,
-        ]
-
-    @property
-    def predefined_devices(self) -> list[Device]:
-        """Returns the list of the devices that correspond to execution mode of the event."""
-        if self.custom_exec_mode:
-            return self.predefined_custom_devices()
-        else:
-            return self.predefined_standard_devices()
-
-    def _get_devices_by_id(self) -> dict[int, Device]:
-        if self.custom_exec_mode and self.stored_event.stored_devices:
-            # we used the stored devices only for custom exec mode and if found in the database
-            return {
-                stored_device.id: Device(stored_device)
-                for stored_device in self.stored_event.stored_devices
-                if stored_device.id is not None
-            }
-        else:
-            # otherwise we use the predefined devices of the mode
-            return {device.id: device for device in self.predefined_devices}
-
-    def create_device(self, stored_device: StoredDevice) -> Device:
-        with EventDatabase(self.uniq_id, True) as database:
-            stored_device = database.add_stored_device(stored_device)
-            database.commit()
-        self.stored_event.stored_devices.append(stored_device)
-        device = Device(stored_device)
-        self.devices_by_id[device.id] = device
-        return device
-
-    def update_device(self, stored_device: StoredDevice):
-        with EventDatabase(self.uniq_id, True) as database:
-            database.update_stored_device(stored_device)
-            database.commit()
-
-    def delete_device(self, device: Device):
-        with EventDatabase(self.uniq_id, True) as database:
-            database.delete_stored_device(device.id)
-            database.commit()
-        with suppress(ValueError):
-            self.stored_event.stored_devices.remove(device.stored_device)
-        if device.id in self.devices_by_id:
-            del self.devices_by_id[device.id]
-
-    @property
-    def devices_by_ip(self) -> dict[str, Device]:
-        return {device.ip: device for device in self.devices_by_id.values()}
-
-    @property
-    def devices_sorted_by_ip(self) -> list[Device]:
-        return sorted(
-            self.devices_by_ip.values(),
-            key=lambda device: (
-                not device.localhost,
-                device.unknown,
-                device.ip,
-            ),
-        )
-
-    @property
-    def unknown_device(self) -> Device:
-        return self.devices_by_id[Device.ANY_DEVICE_ID]
-
-    # -------------------------------------------------------------------------
     # Accounts
     # -------------------------------------------------------------------------
 
-    @staticmethod
-    def predefined_custom_accounts() -> list[Account]:
-        """Returns the list of the accounts that correspond to the custom execution mode."""
-        anonymous_account: Account = Account.anonymous_account()
-        return [
-            anonymous_account,
-        ]
-
-    @staticmethod
-    def predefined_standard_accounts() -> list[Account]:
-        """Returns the list of the accounts that correspond to the standard execution mode."""
-        anonymous_account: Account = Account.anonymous_account()
-        return [
-            anonymous_account,
-        ]
-
     @property
-    def predefined_accounts(self) -> list[Account]:
-        """Returns the list of the accounts that correspond to execution mode of the event."""
-        if self.custom_exec_mode:
-            return self.predefined_custom_accounts()
-        else:
-            return self.predefined_standard_accounts()
+    def predefined_accounts(self) -> bool:
+        """Returns True if predefined accounts, False otherwise."""
+        return not self.stored_event.stored_accounts
 
-    def _get_accounts_by_id(self) -> dict[int, Account]:
-        if self.custom_exec_mode and self.stored_event.stored_accounts:
-            # we used the stored accounts only for custom exec mode and if found in the database
+    @cached_property
+    def accounts_by_id(self) -> dict[int, Account]:
+        if self.predefined_accounts:
+            return {
+                account.id: account
+                for account in [
+                    Account.predefined_administrator_account(),
+                    Account.predefined_anonymous_account(),
+                ]
+            }
+        else:
             return {
                 stored_account.id: Account(stored_account)
                 for stored_account in self.stored_event.stored_accounts
                 if stored_account.id is not None
             }
-        else:
-            # otherwise we use the predefined accounts of the mode
-            return {account.id: account for account in self.predefined_accounts}
+
+    def use_own_accounts(self):
+        """Sets own accounts if not already done,
+        returns True if own accounts were created and False otherwise."""
+        if not self.predefined_accounts:
+            return
+        with EventDatabase(self.uniq_id, True) as database:
+            for account in self.accounts_by_id.values():
+                database.add_stored_account(
+                    StoredAccount(
+                        id=None,
+                        active=account.stored_account.active,
+                        access_levels=account.stored_account.access_levels,
+                        tournament_ids=account.stored_account.tournament_ids,
+                        first_name=account.stored_account.first_name,
+                        last_name=account.stored_account.last_name,
+                        password_hash=account.password_hash,
+                    )
+                )
 
     def create_account(self, stored_account: StoredAccount) -> Account:
         with EventDatabase(self.uniq_id, True) as database:
@@ -833,56 +740,69 @@ class Event:
             del self.accounts_by_id[account.id]
 
     @property
-    def accounts_by_username(self) -> dict[str | None, Account]:
-        return {account.username: account for account in self.accounts_by_id.values()}
-
-    @property
-    def accounts_sorted_by_username(self) -> list[Account]:
+    def accounts_sorted_by_name(self) -> list[Account]:
         return sorted(
-            self.accounts_by_username.values(),
+            self.accounts_by_id.values(),
             key=lambda account: (
+                not account.administrator,
                 account.anonymous,
-                account.username,
+                account.full_name,
             ),
         )
 
     @property
-    def anonymous_account(self) -> Account:
-        return self.accounts_by_id[Account.ANONYMOUS_ID]
-
-    # -------------------------------------------------------------------------
-    # Devices and Accounts
-    # -------------------------------------------------------------------------
+    def user_accounts_by_id(self) -> dict[int, Account]:
+        return {
+            account.id: account
+            for account in self.accounts_by_id.values()
+            if account.user_account
+        }
 
     @property
-    def default_custom_mode_objects(self) -> bool:
-        """Returns True if the object has no stored accounts and devices."""
-        return (
-            not self.stored_event.stored_accounts
-            or not self.stored_event.stored_devices
+    def active_user_accounts_by_id(self) -> dict[int, Account]:
+        return {
+            account.id: account
+            for account in self.accounts_by_id.values()
+            if account.user_account and account.active
+        }
+
+    @property
+    def user_accounts_by_name(self) -> dict[str, Account]:
+        return {
+            account.full_name: account
+            for account in self.accounts_by_id.values()
+            if account.user_account
+        }
+
+    @property
+    def user_accounts_sorted_by_name(self) -> list[Account]:
+        return sorted(
+            self.user_accounts_by_name.values(),
+            key=lambda account: (account.full_name,),
         )
 
-    def create_custom_exec_mode_objects(self) -> bool:
-        """Add the accounts and devices that correspond to the default
-        permissions of the custom mode. These objects are added juste
-        before doing an action on the fake permissions used from the
-        creation of the object.
-        Returns True if the objects were created, False if they already existed."""
-        if not self.default_custom_mode_objects:
-            return False
-        with EventDatabase(self.uniq_id, True) as database:
-            database.create_custom_exec_mode_objects(
-                self.predefined_custom_devices(),
-                self.predefined_custom_accounts(),
-            )
-            database.commit()
-        for device in self.predefined_custom_devices():
-            self.stored_event.stored_devices.append(device.stored_device)
-            self.devices_by_id[device.id] = device
-        for account in self.predefined_custom_accounts():
-            self.stored_event.stored_accounts.append(account.stored_account)
-            self.accounts_by_id[account.id] = account
-        return True
+    @property
+    def active_user_accounts_by_name(self) -> dict[str, Account]:
+        return {
+            account.full_name: account
+            for account in self.accounts_by_id.values()
+            if account.user_account and account.active
+        }
+
+    @property
+    def active_user_accounts_sorted_by_name(self) -> list[Account]:
+        return sorted(
+            self.active_user_accounts_by_name.values(),
+            key=lambda account: (account.full_name,),
+        )
+
+    @property
+    def administrator_account(self) -> Account:
+        return self.accounts_by_id[Account.ADMINISTRATOR_ID]
+
+    @property
+    def anonymous_account(self) -> Account:
+        return self.accounts_by_id[Account.ANONYMOUS_ID]
 
     # -------------------------------------------------------------------------
     # Plugins

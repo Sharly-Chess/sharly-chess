@@ -74,7 +74,7 @@ __pycache__/
 /src/web/static/lib/select2/themes/bootstrap-5-*
 
 
-/src/common/i18n/.auto-update
+/src/common/i18n/.auto-update*
 /tests/screenshots/*.png
 /*.diff
-/scripts/roles/*.md
+/scripts/access_levels/*.md

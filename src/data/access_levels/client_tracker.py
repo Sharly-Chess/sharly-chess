@@ -8,7 +8,7 @@ from common.singleton import Singleton
 class ClientRecord:
     host: str
     event_uniq_id: str | None
-    username: str | None
+    account_id: int | None
     time: float
 
 
@@ -21,11 +21,11 @@ class ClientTracker(metaclass=Singleton):
         self,
         host: str,
         event_uniq_id: str | None = None,
-        username: str | None = None,
+        account_id: int | None = None,
     ):
         """Adds a record if the host was not known or just updates the connection time."""
         self.client_records_by_host[host] = ClientRecord(
-            host, event_uniq_id, username, time.time()
+            host, event_uniq_id, account_id, time.time()
         )
 
     @property

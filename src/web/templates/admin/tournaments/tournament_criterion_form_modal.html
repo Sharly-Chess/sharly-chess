@@ -6,9 +6,9 @@
         <div class="modal-header">
             <h2 class="modal-title">
                 {% if action == 'update' %}
-                    {{ _('Tournament criterion editing') }}
+                    {{ _('Edit criterion') }}
                 {% else %}
-                     {{ _('Tournament criterion creation') }}
+                     {{ _('Create criterion') }}
                 {% endif %}
             </h2>
         </div>
@@ -89,8 +89,8 @@
                 hx-indicator="#please-wait"
                 preload
             >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Close') }}
+                <i class="bi-arrow-left-circle-fill pe-1"></i>
+                {{ _('Back') }}
             </button>
             {% if action == 'update' %}
                 <button

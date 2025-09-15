@@ -77,7 +77,6 @@ class AuthAction(StrEnum):
 
     # Access
     MANAGE_ACCOUNTS = auto()
-    MANAGE_DEVICES = auto()
 
     # Tournament
     VIEW_TOURNAMENTS_TAB = auto()
@@ -163,7 +162,7 @@ class AuthAction(StrEnum):
                 | AuthAction.VIEW_EVENT_BASIC_CONFIG
             ):
                 return AuthActionCategory.EVENTS_MANAGEMENT
-            case AuthAction.MANAGE_ACCOUNTS | AuthAction.MANAGE_DEVICES:
+            case AuthAction.MANAGE_ACCOUNTS:
                 return AuthActionCategory.ACCESS
             case (
                 AuthAction.VIEW_TOURNAMENTS_TAB
@@ -251,8 +250,6 @@ class AuthAction(StrEnum):
                 return _('View basic event configuration')
             case AuthAction.MANAGE_ACCOUNTS:
                 return _('Manage accounts')
-            case AuthAction.MANAGE_DEVICES:
-                return _('Manage devices')
             case AuthAction.VIEW_TOURNAMENTS_TAB:
                 return _('View the Tournaments tab')
             case AuthAction.ADD_TOURNAMENTS:

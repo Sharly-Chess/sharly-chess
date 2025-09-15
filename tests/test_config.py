@@ -3,7 +3,6 @@
 import time
 from urllib import parse
 from common import BASE_DIR
-from common.sharly_chess_config import SharlyChessConfig
 from data.input_output.tournament_importer_options import FileOption
 from data.loader import EventLoader
 from data.pairings.variations import StandardSwissVariation
@@ -45,7 +44,6 @@ class TestUtils:
     """Utility functions for tests."""
 
     event_defaults = {
-        'custom_exec_mode': SharlyChessConfig.default_custom_exec_mode,
         'federation': 'FRA',
         'public': True,
         'location': 'Paris',

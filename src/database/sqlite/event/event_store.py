@@ -2,7 +2,6 @@
 All the classes of this module are basic data classes stored in the event databases.
 """
 
-from abc import ABC
 from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
@@ -303,21 +302,13 @@ class StoredDisplayController:
 
 
 @dataclass
-class StoredAccess(ABC):
+class StoredAccount:
     id: int | None
     active: bool
-    roles: list[str]
+    access_levels: list[str]
     tournament_ids: list[int] | None
-
-
-@dataclass
-class StoredDevice(StoredAccess):
-    ip: str | None
-
-
-@dataclass
-class StoredAccount(StoredAccess):
-    username: str | None
+    first_name: str | None
+    last_name: str | None
     password_hash: str | None
 
 
@@ -329,7 +320,6 @@ class BaseStoredEvent:
     start: float
     stop: float
     hide_background_image: bool
-    custom_exec_mode: bool
     public: bool = False
     location: str | None = None
     background_image: str | None = None
@@ -360,7 +350,6 @@ class StoredEvent(BaseStoredEvent):
     stored_display_controllers: list[StoredDisplayController] = field(
         default_factory=list[StoredDisplayController]
     )
-    stored_devices: list[StoredDevice] = field(default_factory=list[StoredDevice])
     stored_accounts: list[StoredAccount] = field(default_factory=list[StoredAccount])
     errors: dict[str, str] = field(default_factory=dict[str, str])
 

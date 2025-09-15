@@ -6,9 +6,9 @@ from database.sqlite.event.event_store import StoredScreen
 import pytest
 from playwright.sync_api import Browser, Page, expect, APIRequestContext
 from database.sqlite.event.event_database import EventDatabase
-from data.auth.roles import Role
+from data.access_levels.access_levels import AccessLevel
 from common.sharly_chess_config import SharlyChessConfig
-from tests.e2e.roles.conftest import (
+from tests.e2e.access_levels.conftest import (
     PUBLIC_EVENT_ID,
     TOURNAMENT_ID,
     TOURNAMENT_UNPAIRED_ID,
@@ -23,7 +23,7 @@ class DisplayMode(IntEnum):
     SCREENS_NOT_IN_MENU = 2
 
 
-class BaseRoleTest:
+class BaseAccessLevelTest:
     @pytest.fixture(scope='class', autouse=True)
     def auth_page(
         self,
@@ -34,13 +34,13 @@ class BaseRoleTest:
         """A fixture that logs in the user and returns the authenticated page"""
         cls = request.cls  # the actual test class instance
 
-        if not cls.get_roles(cls) and not cls.get_tournament_ids(cls):
+        if not cls.get_access_levels(cls) and not cls.get_tournament_ids(cls):
             # Don't logon for anonymous tests
             yield None
             return
 
         stored_account = self.create_user(
-            api_request_context, self.get_roles(), self.get_tournament_ids()
+            api_request_context, self.get_access_levels(), self.get_tournament_ids()
         )
 
         config = SharlyChessConfig()
@@ -56,13 +56,14 @@ class BaseRoleTest:
         auth_page.goto(f'/admin/event/{PUBLIC_EVENT_ID}')
         auth_page.wait_for_load_state('domcontentloaded')
         auth_page.get_by_test_id('profile-button').click()
-        auth_page.locator('#username').fill(stored_account.username)
         auth_page.locator('#password').fill('test-password')
 
         auth_page.locator('#modal-form button[type=submit]').click()
 
         expect(
-            auth_page.get_by_text(f'Account: {stored_account.username}')
+            auth_page.get_by_text(
+                f'Account: {stored_account.first_name} {stored_account.last_name}'
+            )
         ).to_be_visible()
 
         cls.auth_context = auth_context
@@ -78,16 +79,18 @@ class BaseRoleTest:
     def create_user(
         self,
         api_request_context: APIRequestContext,
-        role_types: list[type[Role]],
+        access_level: list[type[AccessLevel]],
         tournament_ids: list[int] | None = None,
     ):
-        """Creates a user with the specified roles and tournaments"""
-        username = f'test-{self.__class__.__name__.lower()}'
+        """Creates a user with the specified access levels and tournaments"""
+        first_name = 'test'
+        last_name = self.__class__.__name__.upper()
         data = {
-            'username': username,
+            'first_name': first_name,
+            'last_name': last_name,
             'password': 'test-password',
             'active': True,
-            'roles': [type_.static_id() for type_ in role_types],
+            'access_levels': [type_.static_id() for type_ in access_level],
             'tournament_ids': tournament_ids,
         }
 
@@ -101,7 +104,11 @@ class BaseRoleTest:
         TestUtils.check_api_response(res)
         with EventDatabase(PUBLIC_EVENT_ID) as event_database:
             accounts = event_database.load_stored_accounts()
-            stored_account = next(a for a in accounts if a.username == username)
+            stored_account = next(
+                a
+                for a in accounts
+                if a.first_name == first_name and a.last_name == last_name
+            )
         return stored_account
 
     def delete_user(self, api_request_context: APIRequestContext, account_id: int):
@@ -111,8 +118,8 @@ class BaseRoleTest:
         )
         TestUtils.check_api_response(res)
 
-    def get_roles(self) -> list[type[Role]]:
-        """Override this in subclasses to specify the roles to test."""
+    def get_access_levels(self) -> list[type[AccessLevel]]:
+        """Override this in subclasses to specify the access levels to test."""
         raise NotImplementedError
 
     def get_tournament_ids(self) -> list[int] | None:
@@ -120,8 +127,8 @@ class BaseRoleTest:
         return None
 
     @pytest.fixture(autouse=True)
-    def role_test_tournament(
-        self, api_request_context: APIRequestContext, role_test_events
+    def access_level_test_tournament(
+        self, api_request_context: APIRequestContext, access_level_test_events
     ):
         """A fixture to create a paired tournament"""
         tournament = TestUtils.create_tournament(
@@ -137,8 +144,8 @@ class BaseRoleTest:
         TestUtils.delete_tournament(api_request_context, PUBLIC_EVENT_ID, tournament)
 
     @pytest.fixture(autouse=True)
-    def role_test_unpaired_tournament(
-        self, api_request_context: APIRequestContext, role_test_events
+    def access_level_test_unpaired_tournament(
+        self, api_request_context: APIRequestContext, access_level_test_events
     ):
         """A fixture to create an unpaired tournament"""
         tournament = TestUtils.create_tournament(
@@ -154,7 +161,7 @@ class BaseRoleTest:
 
     @pytest.fixture(autouse=True)
     def public_input_screen(
-        self, api_request_context: APIRequestContext, role_test_tournament
+        self, api_request_context: APIRequestContext, access_level_test_tournament
     ):
         """A fixture to create a public input screen for the paired tournament"""
         stored_screen = TestUtils.create_screen(
@@ -163,7 +170,7 @@ class BaseRoleTest:
             'Input Screen with pairings',
             ScreenType.INPUT,
             {
-                'init_set_tournament_id': role_test_tournament.id,
+                'init_set_tournament_id': access_level_test_tournament.id,
                 'public': True,
             },
         )
@@ -174,7 +181,9 @@ class BaseRoleTest:
 
     @pytest.fixture(autouse=True)
     def public_input_unpaired_screen(
-        self, api_request_context: APIRequestContext, role_test_unpaired_tournament
+        self,
+        api_request_context: APIRequestContext,
+        access_level_test_unpaired_tournament,
     ):
         """A fixture to create a public input screen for the unpaired tournament"""
         stored_screen = TestUtils.create_screen(
@@ -183,7 +192,7 @@ class BaseRoleTest:
             'Input Screen without pairings',
             ScreenType.INPUT,
             {
-                'init_set_tournament_id': role_test_unpaired_tournament.id,
+                'init_set_tournament_id': access_level_test_unpaired_tournament.id,
                 'public': True,
             },
         )
@@ -195,7 +204,7 @@ class BaseRoleTest:
 
     @pytest.fixture(autouse=True)
     def private_input_screen(
-        self, api_request_context: APIRequestContext, role_test_tournament
+        self, api_request_context: APIRequestContext, access_level_test_tournament
     ):
         """A fixture to create a private input screen for the paired tournament"""
         stored_screen = TestUtils.create_screen(
@@ -203,7 +212,10 @@ class BaseRoleTest:
             PUBLIC_EVENT_ID,
             'private-input',
             ScreenType.INPUT,
-            {'init_set_tournament_id': role_test_tournament.id, 'public': False},
+            {
+                'init_set_tournament_id': access_level_test_tournament.id,
+                'public': False,
+            },
         )
         self.private_input_screen = stored_screen
         yield stored_screen

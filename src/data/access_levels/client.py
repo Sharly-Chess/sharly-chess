@@ -1,18 +1,16 @@
-from contextlib import suppress
 from functools import cached_property, cache
 from typing import TYPE_CHECKING, Optional
 
 from litestar_htmx import HTMXRequest
 
-from data.auth.actions import AuthAction
-from data.auth.entities import (
-    Device,
+from common.network import LOCALHOST_IP, LOCALHOST_NAME
+from data.access_levels.actions import AuthAction
+from data.account import (
     Account,
-    AuthEntity,
     Permission,
 )
-from data.auth.managers import RoleManager
-from data.auth.roles import Role
+from data.access_levels.manager import AccessLevelManager
+from data.access_levels.access_levels import AccessLevel
 from data.tournament import Tournament
 from utils.enum import Result
 from web.session import SessionHandler
@@ -33,40 +31,26 @@ class Client:
         self.host: str = (
             self.request.client.host
             if self.request.client and self.request.client.host
-            else '?'
+            else ''
         )
         self.event: Optional['Event'] = event
-        self.device: Device = self._find_device()
-        self.active_device: Device = (
-            self.device if self.device.active else Device.unknown_device()
-        )
-        self.account: Account = self._find_account()
-        self.active_account: Account = (
-            self.account if self.account.active else Account.anonymous_account()
-        )
-
-    def _find_device(
-        self,
-    ) -> Device:
-        """Returns a Device object that corresponds to the host of the request."""
-        if Device.host_is_localhost(self.host):
-            return Device.localhost_device()
-        if self.event is None:
-            return Device.unknown_device()
-        with suppress(KeyError):
-            return self.event.devices_by_ip[self.host]
-        return self.event.devices_by_id[Device.ANY_DEVICE_ID]
-
-    def _find_account(
-        self,
-    ) -> Account:
-        """Returns an Account object that corresponds to the session."""
-        if self.event is None:
-            return Account.anonymous_account()
-        return SessionHandler.get_account(self.request, self.event)
+        self.account: Account
+        if self.host in [
+            LOCALHOST_IP,
+            LOCALHOST_NAME,
+        ]:
+            if self.event is not None:
+                self.account = self.event.administrator_account
+            else:
+                self.account = Account.predefined_administrator_account()
+        else:
+            if self.event is not None:
+                self.account = SessionHandler.get_user_account(self.request, self.event)
+            else:
+                self.account = Account.predefined_anonymous_account()
 
     def __repr__(self) -> str:
-        return f'{self.__class__}(account={self.account}, device={self.device}, host={self.host}, permissions={self.permissions_by_role})'
+        return f'{self.__class__}(account={self.account}, host={self.host}, permissions={self.permissions_by_access_level})'
 
     # ---------------------------------------------------------------------------------
     # Permissions / actions
@@ -91,44 +75,42 @@ class Client:
         return ', '.join(tournament.name for tournament in tournaments)
 
     @cached_property
-    def permissions_by_role(self) -> dict[Role, Permission]:
-        """Returns all the permissions by role, granted or inherited as a device or an account."""
-        permissions_by_role: dict[Role, Permission] = {}
-        for access_entity in (self.active_account, self.active_device):
-            tournament_ids = access_entity.tournament_ids
-            for role in access_entity.roles:
-                permissions_by_role[role] = AuthEntity.merge(
+    def permissions_by_access_level(self) -> dict[AccessLevel, Permission]:
+        """Returns all the permissions by access level, granted or inherited."""
+        permissions_by_access_level: dict[AccessLevel, Permission] = {}
+        tournament_ids = self.account.tournament_ids
+        for access_level in self.account.access_levels:
+            permissions_by_access_level[access_level] = Account.merge(
+                Permission(tournament_ids),
+                permissions_by_access_level.get(access_level, None),
+            )
+            for sub_access_level in access_level.sub_access_levels():
+                permissions_by_access_level[sub_access_level] = Account.merge(
                     Permission(tournament_ids),
-                    permissions_by_role.get(role, None),
+                    permissions_by_access_level.get(sub_access_level, None),
                 )
-                for sub_role in role.sub_roles():
-                    permissions_by_role[sub_role] = AuthEntity.merge(
-                        Permission(tournament_ids),
-                        permissions_by_role.get(sub_role, None),
-                    )
         return {
-            role: permissions_by_role[role]
-            for role in RoleManager.objects()
-            if role in permissions_by_role
+            access_level: permissions_by_access_level[access_level]
+            for access_level in AccessLevelManager.objects()
+            if access_level in permissions_by_access_level
         }
 
     @staticmethod
     @cache
-    def roles_by_action() -> dict[AuthAction, list[Role]]:
-        roles_by_action: dict[AuthAction, list[Role]] = {
+    def access_levels_by_action() -> dict[AuthAction, list[AccessLevel]]:
+        access_levels_by_action: dict[AuthAction, list[AccessLevel]] = {
             action: [] for action in AuthAction
         }
-        for role in RoleManager.objects():
-            for action in role.allowed_actions():
-                roles_by_action[action].append(role)
-        return roles_by_action
+        for access_level in AccessLevelManager.objects():
+            for action in access_level.allowed_actions():
+                access_levels_by_action[action].append(access_level)
+        return access_levels_by_action
 
     @cached_property
     def allowed_actions(self) -> set[AuthAction]:
         actions: set[AuthAction] = set()
-        for auth_entity in (self.active_device, self.active_account):
-            for role in auth_entity.roles:
-                actions |= role.allowed_actions()
+        for access_level in self.account.access_levels:
+            actions |= access_level.allowed_actions()
         return actions
 
     def _action_allowed_for_tournament(
@@ -137,8 +119,8 @@ class Client:
         """Returns True if the action is allowed for a tournament, False otherwise."""
         if action not in self.allowed_actions:
             return False
-        for role in self.roles_by_action()[action]:
-            permission = self.permissions_by_role.get(role, None)
+        for access_level in self.access_levels_by_action()[action]:
+            permission = self.permissions_by_access_level.get(access_level, None)
             if permission and (
                 permission.tournament_ids is None
                 or tournament_id in permission.tournament_ids
@@ -215,21 +197,24 @@ class Client:
         return AuthAction.VIEW_EVENT_BASIC_CONFIG in self.allowed_actions
 
     # ---------------------------------------------------------------------------------
-    # Accounts and devices
+    # Accounts
     # ---------------------------------------------------------------------------------
 
     @cached_property
-    def manageable_roles(self) -> list[Role]:
-        """Returns the roles the client can manage."""
-        manageable_roles: set[Role] = set()
-        for auth_entity in (self.active_account, self.active_device):
-            for role in auth_entity.roles:
-                manageable_roles |= role.manageable_roles()
-        return [role for role in RoleManager.objects() if role in manageable_roles]
+    def manageable_access_levels(self) -> list[AccessLevel]:
+        """Returns the access levels the client can manage."""
+        manageable_access_levels: set[AccessLevel] = set()
+        for access_level in self.account.access_levels:
+            manageable_access_levels |= access_level.manageable_access_levels()
+        return [
+            access_level
+            for access_level in AccessLevelManager.objects()
+            if access_level in manageable_access_levels
+        ]
 
-    def can_manage_role(self, role: Role) -> bool:
-        """Returns True if the client can manage the role."""
-        return role in self.manageable_roles
+    def can_manage_access_level(self, access_level: AccessLevel) -> bool:
+        """Returns True if the client can manage the access level."""
+        return access_level in self.manageable_access_levels
 
     @property
     def can_manage_accounts(self) -> bool:
@@ -241,43 +226,25 @@ class Client:
     @property
     def manageable_account_ids(self) -> list[int]:
         """Returns the IDs of the accounts that the client can manage
-        (the client must manage all the roles of the accounts)."""
+        (the client must manage all the access levels of the accounts)."""
         assert self.event is not None
         return [
             account.id
             for account in self.event.accounts_by_id.values()
-            if all(role in self.manageable_roles for role in account.roles)
+            if all(
+                access_level in self.manageable_access_levels
+                for access_level in account.access_levels
+            )
         ]
 
     def can_manage_account(self, account_id: int) -> bool:
-        """Returns True if the client can mange the account."""
+        """Returns True if the client can manage the account."""
         return account_id in self.manageable_account_ids
 
     @property
-    def can_manage_devices(self) -> bool:
-        """Returns true if the client can manage (add/update/delete) accounts."""
-        return AuthAction.MANAGE_DEVICES in self.allowed_actions
-
-    @property
-    def manageable_device_ids(self) -> list[int]:
-        """Returns the IDs of the devices that the client can manage
-        (the client must manage all the roles of the devices)."""
-        assert self.event is not None
-        return [
-            device.id
-            for device in self.event.devices_by_id.values()
-            if all(role in self.manageable_roles for role in device.roles)
-        ]
-
-    def can_manage_device(self, device_id: int) -> bool:
-        """Returns true if the client can manage the device (the client must
-        be able to manage all the roles of the device)."""
-        return device_id in self.manageable_device_ids
-
-    @property
-    def can_manage_roles(self) -> bool:
-        """Returns true if the client can manage at least one role."""
-        return bool(self.manageable_roles)
+    def can_manage_access_levels(self) -> bool:
+        """Returns true if the client can manage at least one access level."""
+        return bool(self.manageable_access_levels)
 
     # ---------------------------------------------------------------------------------
     # Tournaments
@@ -525,7 +492,7 @@ class Client:
     # Print
     # ---------------------------------------------------------------------------------
 
-    # TODO Printing privileges should be granted to other roles
+    # TODO Printing permission should be granted to other access levels
     #  on a per-tournament basis but this needs an important
     #  work on the print modal.
     @property

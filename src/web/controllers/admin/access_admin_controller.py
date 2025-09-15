@@ -11,11 +11,11 @@ from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
-from common.network import IP_V4_ADDR_REGEX
-from data.auth.entities import Account, Device
-from data.auth.managers import RoleManager
-from data.auth.roles import Role, RoleScope
-from database.sqlite.event.event_store import StoredAccount, StoredDevice
+from data.account import Account
+from data.access_levels.manager import AccessLevelManager
+from data.access_levels.access_levels import AccessLevel, AccessLevelScope
+from data.player import Player
+from database.sqlite.event.event_store import StoredAccount
 from utils.enum import FormAction
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
@@ -25,13 +25,7 @@ from web.controllers.base_controller import Redirect, WebContext
 from web.messages import Message
 
 
-class AccessAdminWebContext(BaseEventAdminWebContext):
-    pass
-    # TODO (Molrn) merge AccountAdminWebContext and DeviceAdminWebContext into a single WebContext
-    # The two tabs have to be merged together first
-
-
-class AccountAdminWebContext(AccessAdminWebContext):
+class AccountAdminWebContext(BaseEventAdminWebContext):
     def __init__(
         self,
         request: HTMXRequest,
@@ -68,48 +62,7 @@ class AccountAdminWebContext(AccessAdminWebContext):
         return super().template_context | {
             'admin_event_tab': 'admin-event-accounts-tab',
             'admin_account': self.admin_account,
-            'roles': RoleManager.objects(),
-        }
-
-
-class DeviceAdminWebContext(AccessAdminWebContext):
-    def __init__(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        device_id: int | None = None,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ]
-        | None = None,
-    ):
-        super().__init__(
-            request,
-            data=data,
-            event_uniq_id=event_uniq_id,
-        )
-        assert self.admin_event is not None
-        self.admin_device: Device | None = None
-        if self.error:
-            return
-        if device_id:
-            try:
-                self.admin_device = self.admin_event.devices_by_id[device_id]
-            except KeyError:
-                self._redirect_error(f'Device [{device_id}] not found.')
-                return
-
-    def get_admin_device(self) -> Device:
-        assert self.admin_device is not None
-        return self.admin_device
-
-    @property
-    def template_context(self) -> dict[str, Any]:
-        return super().template_context | {
-            'admin_event_tab': 'admin-event-devices-tab',
-            'admin_device': self.admin_device,
-            'roles': RoleManager.objects(),
+            'access_levels': AccessLevelManager.objects(),
         }
 
 
@@ -117,7 +70,7 @@ class AccessAdminController(BaseEventAdminController):
     @classmethod
     def _admin_event_access_render(
         cls,
-        web_context: AccessAdminWebContext,
+        web_context: AccountAdminWebContext,
         template_context: dict[str, Any] | None = None,
     ) -> Template | ClientRedirect | Redirect:
         if web_context.error:
@@ -128,23 +81,30 @@ class AccessAdminController(BaseEventAdminController):
 
     @staticmethod
     def _permission_form_context(
-        web_context: AccessAdminWebContext,
+        web_context: AccountAdminWebContext,
         data: dict[str, str],
     ) -> dict[str, Any]:
-        roles = [
-            RoleManager.get_object(role_id)
-            for role_id in WebContext.form_data_to_list_str(data, 'roles')
+        access_levels = [
+            AccessLevelManager.get_object(access_level_id)
+            for access_level_id in WebContext.form_data_to_list_str(
+                data, 'access_levels'
+            )
         ]
-        inherited_roles: set[Role] = set()
-        for role in roles:
-            inherited_roles |= role.sub_roles()
-        selected_roles = [role for role in roles if role not in inherited_roles]
+        inherited_access_levels: set[AccessLevel] = set()
+        for access_level in access_levels:
+            inherited_access_levels |= access_level.sub_access_levels()
+        selected_access_levels = [
+            access_level
+            for access_level in access_levels
+            if access_level not in inherited_access_levels
+        ]
         return {
-            'manageable_roles': web_context.client.manageable_roles,
-            'selected_roles': selected_roles,
-            'inherited_roles': inherited_roles,
-            'tournament_role_selected': any(
-                role.scope == RoleScope.TOURNAMENT for role in selected_roles
+            'manageable_access_levels': web_context.client.manageable_access_levels,
+            'selected_access_levels': selected_access_levels,
+            'inherited_access_levels': inherited_access_levels,
+            'tournament_access_level_selected': any(
+                access_level.scope == AccessLevelScope.TOURNAMENT
+                for access_level in selected_access_levels
             ),
             'tournament_options': web_context.get_tournament_options(),
             'data': data,
@@ -159,20 +119,20 @@ class AccessAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        roles: list[str] | None,
+        access_levels: list[str] | None,
         tournament_ids: list[str] | None,
     ) -> Template | ClientRedirect | Redirect:
-        web_context = DeviceAdminWebContext(request, event_uniq_id)
+        web_context = AccountAdminWebContext(request, event_uniq_id)
         if web_context.error:
             return web_context.error
         data = WebContext.flatten_list_data(
             {
-                'roles': roles or '',
+                'access_levels': access_levels or '',
                 'tournament_ids': tournament_ids or '',
             }
         )
         return HTMXTemplate(
-            template_name='admin/common/access/permissions_form.html',
+            template_name='admin/accounts/permissions_form.html',
             context=web_context.template_context
             | self._permission_form_context(web_context, data),
         )
@@ -191,10 +151,11 @@ class AccessAdminController(BaseEventAdminController):
     ) -> dict[str, Any]:
         default_data = WebContext.values_dict_to_form_data(
             {
-                'username': '',
+                'first_name': '',
+                'last_name': '',
                 'password': '',
                 'active': True,
-                'roles': [],
+                'access_levels': [],
                 'tournament_ids': [],
             }
         )
@@ -211,9 +172,10 @@ class AccessAdminController(BaseEventAdminController):
         stored_account = account.stored_account
         return WebContext.values_dict_to_form_data(
             {
-                'username': stored_account.username,
+                'first_name': stored_account.first_name,
+                'last_name': stored_account.last_name,
                 'active': stored_account.active,
-                'roles': stored_account.roles,
+                'access_levels': stored_account.access_levels,
                 'tournament_ids': stored_account.tournament_ids,
             }
         )
@@ -313,25 +275,44 @@ class AccessAdminController(BaseEventAdminController):
         errors: dict[str, str] = {}
         event = web_context.get_admin_event()
         account = web_context.admin_account
-        if not (account and account.anonymous):
-            username = WebContext.form_data_to_str(data, field := 'username')
-            if not username:
-                errors[field] = _('Please enter the username.')
-            elif not re.match(r'^[a-zA-Z0-9_\-]+$', username):
+        if not account or account.user_account:
+            first_name: str = (
+                WebContext.form_data_to_str(data, field := 'first_name') or ''
+            )
+            if first_name and not re.match(r"^[a-zA-Z0-9'\-]*$", first_name):
                 errors[field] = _(
-                    'Accepted characters are letters, numbers, underscore (_) and minus (-).'
+                    "Accepted characters are letters, numbers, single quote (') and minus (-)."
                 )
-            elif username in event.accounts_by_username and (
-                action != FormAction.UPDATE
-                or (account and account.username != username)
-            ):
-                errors[field] = _('Account [{username}] already exists.').format(
-                    username=username
+            last_name: str = (
+                WebContext.form_data_to_str(data, field := 'last_name') or ''
+            )
+            if not last_name:
+                errors[field] = _('This field is required.')
+            elif not re.match(r"^[a-zA-Z0-9'\-]*$", last_name):
+                errors[field] = _(
+                    "Accepted characters are letters, numbers, single quote (') and minus (-)."
                 )
-            password = WebContext.form_data_to_str(data, field := 'password')
-            if not password:
-                errors[field] = _('Please enter the password.')
-        # no validation on the roles, an empty list is accepted.
+            if 'first_name' not in errors and 'last_name' not in errors:
+                full_name: str = Player.player_full_name(first_name, last_name)
+                check_full_name_not_used: bool
+                if account and action == FormAction.UPDATE:
+                    check_full_name_not_used = (
+                        account.full_name
+                        != Player.player_full_name(first_name, last_name)
+                    )
+                else:
+                    check_full_name_not_used = True
+                if check_full_name_not_used and full_name in (
+                    account.full_name for account in event.accounts_by_id.values()
+                ):
+                    errors[field] = _(
+                        'Account [{account_name}] already exists.'
+                    ).format(account_name=full_name)
+            if action == FormAction.CREATE:
+                password = WebContext.form_data_to_str(data, field := 'password')
+                if not password:
+                    errors[field] = _('This field is required.')
+        # no validation on the access levels, an empty list is accepted.
         return errors
 
     @post(path='/admin/account-create/{event_uniq_id:str}', name='admin-account-create')
@@ -358,27 +339,30 @@ class AccessAdminController(BaseEventAdminController):
                 ),
             )
         event = web_context.get_admin_event()
-        # TODO (Molrn) Add a specific endpoint for creating the default Accounts / Devices
-        event.create_custom_exec_mode_objects()
         password = WebContext.form_data_to_str(flat_data, 'password')
         password_hash = PasswordHasher().hash(password) if password else None
+        # ensure that the event uses its own accounts and not predefined accounts
+        event.use_own_accounts()
         account = event.create_account(
             StoredAccount(
                 id=None,
                 active=WebContext.form_data_to_bool(flat_data, 'active'),
-                roles=WebContext.form_data_to_list_str(flat_data, 'roles'),
+                access_levels=WebContext.form_data_to_list_str(
+                    flat_data, 'access_levels'
+                ),
                 tournament_ids=WebContext.form_data_to_list_int(
                     flat_data, 'tournament_ids'
                 )
                 or None,
-                username=WebContext.form_data_to_str(flat_data, 'username'),
+                first_name=WebContext.form_data_to_str(flat_data, 'first_name'),
+                last_name=WebContext.form_data_to_str(flat_data, 'last_name'),
                 password_hash=password_hash,
             )
         )
         Message.success(
             request,
-            _('Account [{username}] has been created.').format(
-                username=account.username
+            _('Account [{account_name}] has been created.').format(
+                account_name=account.full_name
             ),
         )
         return self._admin_event_access_render(web_context)
@@ -411,30 +395,34 @@ class AccessAdminController(BaseEventAdminController):
                 ),
             )
         event = web_context.get_admin_event()
-        # TODO (Molrn) Add a specific endpoint for creating the default Accounts / Devices
-        if event.create_custom_exec_mode_objects():
-            # reload the context because the accounts have changed
-            web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
-        event.create_custom_exec_mode_objects()
         account = web_context.get_admin_account()
         stored_account = account.stored_account
         if not account.anonymous:
             stored_account.active = WebContext.form_data_to_bool(flat_data, 'active')
-            stored_account.username = WebContext.form_data_to_str(flat_data, 'username')
+            stored_account.first_name = WebContext.form_data_to_str(
+                flat_data, 'first_name'
+            )
+            stored_account.last_name = WebContext.form_data_to_str(
+                flat_data, 'last_name'
+            )
             password = WebContext.form_data_to_str(flat_data, 'password')
             if password:
                 stored_account.password_hash = PasswordHasher().hash(password)
-        stored_account.roles = WebContext.form_data_to_list_str(flat_data, 'roles')
+        stored_account.access_levels = WebContext.form_data_to_list_str(
+            flat_data, 'access_levels'
+        )
         stored_account.tournament_ids = (
             WebContext.form_data_to_list_int(flat_data, 'tournament_ids') or None
         )
+        # ensure that the event uses its own accounts and not predefined accounts
+        event.use_own_accounts()
         event.update_account(stored_account)
         Message.success(
             request,
             _('Unauthenticated access has been updated.')
             if account.anonymous
-            else _('Account [{username}] has been updated.').format(
-                username=account.username
+            else _('Account [{account_name}] has been updated.').format(
+                account_name=account.full_name
             ),
         )
         return self._admin_event_access_render(web_context)
@@ -455,278 +443,13 @@ class AccessAdminController(BaseEventAdminController):
             return web_context.error
         event = web_context.get_admin_event()
         account = web_context.get_admin_account()
+        # no need here to ensure that the event uses its own accounts
+        # since the anonymous and administrator accounts are not deletable
         event.delete_account(account)
         Message.success(
             request,
-            _('Account [{username}] has been deleted.').format(
-                username=account.username
+            _('Account [{account_name}] has been deleted.').format(
+                account_name=account.full_name
             ),
-        )
-        return self._admin_event_access_render(web_context)
-
-    # --------------------------------------------------------------------------
-    # Devices
-    # --------------------------------------------------------------------------
-
-    @classmethod
-    def _device_form_modal_context(
-        cls,
-        web_context: DeviceAdminWebContext,
-        action: FormAction,
-        data: dict[str, str],
-        errors: dict[str, str] | None = None,
-    ) -> dict[str, Any]:
-        default_data = WebContext.values_dict_to_form_data(
-            {
-                'ip': '',
-                'active': True,
-                'roles': [],
-                'tournament_ids': [],
-            }
-        )
-        data = default_data | data
-        return cls._permission_form_context(web_context, data) | {
-            'modal': 'device',
-            'action': action,
-            'tournament_options': web_context.get_tournament_options(),
-            'data': data,
-            'errors': errors or {},
-        }
-
-    @staticmethod
-    def _device_form_data_from_device(device: Device) -> dict[str, str]:
-        stored_device = device.stored_device
-        return WebContext.values_dict_to_form_data(
-            {
-                'ip': stored_device.ip,
-                'active': stored_device.active,
-                'roles': stored_device.roles,
-                'tournament_ids': stored_device.tournament_ids,
-            }
-        )
-
-    @get(
-        path='/admin/event/{event_uniq_id:str}/devices',
-        name='admin-event-devices-tab',
-    )
-    async def htmx_admin_event_devices_tab(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-    ) -> Template | ClientRedirect | Redirect:
-        return self._admin_event_access_render(
-            DeviceAdminWebContext(request, event_uniq_id)
-        )
-
-    @get(
-        path='/admin/device-modal/create/{event_uniq_id:str}',
-        name='admin-device-create-modal',
-    )
-    async def htmx_admin_device_create_modal(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-    ) -> Template | ClientRedirect | Redirect:
-        web_context = DeviceAdminWebContext(request, event_uniq_id)
-        if web_context.error:
-            return web_context.error
-        template_context = self._device_form_modal_context(
-            web_context, FormAction.CREATE, {}
-        )
-        return self._admin_event_access_render(web_context, template_context)
-
-    @get(
-        path='/admin/device-modal/update/{event_uniq_id:str}/{device_id:int}',
-        name='admin-device-update-modal',
-    )
-    async def htmx_admin_device_update_modal(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        device_id: int,
-    ) -> Template | ClientRedirect | Redirect:
-        web_context = DeviceAdminWebContext(request, event_uniq_id, device_id)
-        if web_context.error:
-            return web_context.error
-        template_context = self._device_form_modal_context(
-            web_context,
-            FormAction.UPDATE,
-            self._device_form_data_from_device(web_context.get_admin_device()),
-        )
-        return self._admin_event_access_render(web_context, template_context)
-
-    @get(
-        path='/admin/device-modal/clone/{event_uniq_id:str}/{device_id:int}',
-        name='admin-device-clone-modal',
-    )
-    async def htmx_admin_device_clone_modal(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        device_id: int,
-    ) -> Template | ClientRedirect | Redirect:
-        web_context = DeviceAdminWebContext(request, event_uniq_id, device_id)
-        if web_context.error:
-            return web_context.error
-        device = web_context.get_admin_device()
-        template_context = self._device_form_modal_context(
-            web_context,
-            FormAction.CLONE,
-            self._device_form_data_from_device(device),
-        )
-        return self._admin_event_access_render(web_context, template_context)
-
-    @get(
-        path='/admin/device-modal/delete/{event_uniq_id:str}/{device_id:int}',
-        name='admin-device-delete-modal',
-    )
-    async def htmx_admin_device_delete_modal(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        device_id: int,
-    ) -> Template | ClientRedirect | Redirect:
-        return self._admin_event_access_render(
-            DeviceAdminWebContext(request, event_uniq_id, device_id),
-            {'modal': 'device_delete'},
-        )
-
-    @staticmethod
-    def _validate_device_form_data(
-        data: dict[str, str],
-        web_context: DeviceAdminWebContext,
-        action: FormAction,
-    ) -> dict[str, str]:
-        errors: dict[str, str] = {}
-        event = web_context.get_admin_event()
-        device = web_context.admin_device
-        if not device or not (device.unknown or device.localhost):
-            ip = WebContext.form_data_to_str(data, field := 'ip')
-            if not ip:
-                errors[field] = _('Please enter the IP address.')
-            elif matches := re.match(IP_V4_ADDR_REGEX, ip):
-                ip = f'{int(matches.group(1))}.{int(matches.group(2))}.{int(matches.group(3))}.{int(matches.group(4))}'
-                data[field] = ip
-                if ip in event.devices_by_ip and (
-                    action != FormAction.UPDATE or (device and device.ip != ip)
-                ):
-                    errors[field] = _('Device [{ip}] already set.').format(ip=ip)
-            else:
-                errors[field] = _('IP address [{ip}] is not valid.').format(ip=ip)
-        # no validation on the roles, an empty list is accepted.
-        return errors
-
-    @post(path='/admin/device-create/{event_uniq_id:str}', name='admin-device-create')
-    async def htmx_admin_device_create(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        data: Annotated[
-            dict[str, str | list[str]],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-    ) -> Template | ClientRedirect | Redirect:
-        web_context = DeviceAdminWebContext(request, event_uniq_id)
-        if web_context.error:
-            return web_context.error
-        flat_data = WebContext.flatten_list_data(data)
-        if errors := self._validate_device_form_data(
-            flat_data, web_context, FormAction.CREATE
-        ):
-            return self._admin_event_access_render(
-                web_context,
-                self._device_form_modal_context(
-                    web_context, FormAction.CREATE, flat_data, errors
-                ),
-            )
-        event = web_context.get_admin_event()
-        # TODO (Molrn) Add a specific endpoint for creating the default Accounts / Devices
-        event.create_custom_exec_mode_objects()
-        device = event.create_device(
-            StoredDevice(
-                id=None,
-                active=WebContext.form_data_to_bool(flat_data, 'active'),
-                roles=WebContext.form_data_to_list_str(flat_data, 'roles'),
-                tournament_ids=WebContext.form_data_to_list_int(
-                    flat_data, 'tournament_ids'
-                )
-                or None,
-                ip=WebContext.form_data_to_str(flat_data, 'ip'),
-            )
-        )
-        Message.success(
-            request, _('Device [{ip}] has been created.').format(ip=device.ip)
-        )
-        return self._admin_event_access_render(web_context)
-
-    @patch(
-        path='/admin/device-update/{event_uniq_id:str}/{device_id:int}',
-        name='admin-device-update',
-    )
-    async def htmx_admin_device_update(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        device_id: int,
-        data: Annotated[
-            dict[str, str | list[str]],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-    ) -> Template | ClientRedirect | Redirect:
-        web_context = DeviceAdminWebContext(request, event_uniq_id, device_id)
-        if web_context.error:
-            return web_context.error
-        flat_data = WebContext.flatten_list_data(data)
-        if errors := self._validate_device_form_data(
-            flat_data, web_context, FormAction.UPDATE
-        ):
-            return self._admin_event_access_render(
-                web_context,
-                self._device_form_modal_context(
-                    web_context, FormAction.UPDATE, flat_data, errors
-                ),
-            )
-        event = web_context.get_admin_event()
-        # TODO (Molrn) Add a specific endpoint for creating the default Accounts / Devices
-        if event.create_custom_exec_mode_objects():
-            # reload the context because the devices have changed
-            web_context = DeviceAdminWebContext(request, event_uniq_id, device_id)
-        device = web_context.get_admin_device()
-        stored_device = device.stored_device
-        if not device.unknown:
-            stored_device.active = WebContext.form_data_to_bool(flat_data, 'active')
-            stored_device.ip = WebContext.form_data_to_str(flat_data, 'ip')
-        stored_device.roles = WebContext.form_data_to_list_str(flat_data, 'roles')
-        stored_device.tournament_ids = (
-            WebContext.form_data_to_list_int(flat_data, 'tournament_ids') or None
-        )
-        event.update_device(stored_device)
-        Message.success(
-            request,
-            _("Unknown devices' access has been updated.")
-            if device.unknown
-            else _('Device [{ip}] has been updated.').format(ip=stored_device.ip),
-        )
-        return self._admin_event_access_render(web_context)
-
-    @delete(
-        path='/admin/device-delete/{event_uniq_id:str}/{device_id:int}',
-        name='admin-device-delete',
-        status_code=HTTP_200_OK,
-    )
-    async def htmx_admin_device_delete(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        device_id: int,
-    ) -> Template | ClientRedirect | Redirect:
-        web_context = DeviceAdminWebContext(request, event_uniq_id, device_id)
-        if web_context.error:
-            return web_context.error
-        event = web_context.get_admin_event()
-        device = web_context.get_admin_device()
-        event.delete_device(device)
-        Message.success(
-            request, _('Device [{ip}] has been deleted.').format(ip=device.ip)
         )
         return self._admin_event_access_render(web_context)
