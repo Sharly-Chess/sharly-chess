@@ -94,9 +94,9 @@ class FfePlugin(Plugin):
     def static_id() -> str:
         return PLUGIN_NAME
 
-    @staticmethod
-    def static_name() -> str:
-        return 'FFE'
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('FFE', locale)
 
     @property
     def description(self) -> str:

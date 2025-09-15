@@ -51,9 +51,9 @@ class FfeDatabase(LocalSourceDatabase):
     def static_id() -> str:
         return 'ffe'
 
-    @staticmethod
-    def static_name() -> str:
-        return 'FFE'
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('FFE', locale)
 
     @property
     def min_recovery_version(self) -> Version:

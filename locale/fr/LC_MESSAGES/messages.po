@@ -754,6 +754,9 @@ msgstr "Échiquier & couleur"
 msgid "Board (%(remaining)d)"
 msgstr "Éch. (%(remaining)d)"
 
+msgid "Board Pairings"
+msgstr "Appariements par échiquier"
+
 msgid "Board is not the same as the opponent's."
 msgstr "L'échiquier n'est pas le même que celui de l'adversaire."
 
@@ -818,7 +821,7 @@ msgid "C *** THE LETTER TO ANSWER CONTINUOUSLY"
 msgstr "C"
 
 msgid "CA"
-msgstr "AC"
+msgstr "ARB"
 
 msgid "CHE"
 msgstr "POI"
@@ -3468,11 +3471,17 @@ msgstr "il y a déjà un·e joueur·euse exempt·e"
 msgid "PAI"
 msgstr "APP"
 
+msgid "PAPI"
+msgstr "PAPI"
+
 msgid "PENALTY"
 msgstr "PÉNALITÉ"
 
 msgid "PERMUTE WHITE/BLACK"
 msgstr "PERMUTER BLANCS/NOIRS"
+
+msgid "PGN"
+msgstr "PGN"
 
 msgid "PS *** ACRONYM FOR PAPI PROGRESSIVE SCORE"
 msgstr "Cu."
@@ -3686,6 +3695,9 @@ msgstr "Le·la joueur·euse [{player}] a déjà été apparié·e dans le tourno
 
 msgid "Player does not match tournament criteria: {names}"
 msgstr "Le·la joueur·euse ne correspond pas aux critères du tournoi : {names}"
+
+msgid "Player pairings"
+msgstr "Appariements par joueur·euse"
 
 msgid "Player selection (by alphabetical order)"
 msgstr "Sélection des joueur·euses (par ordre alphabétique)"
@@ -4646,6 +4658,12 @@ msgstr "Suisse"
 
 msgid "TRF file"
 msgstr "Fichier TRF"
+
+msgid "TRF(bx)"
+msgstr "TRF(bx)"
+
+msgid "TRF16"
+msgstr "TRF16"
 
 msgid "Text after the hour:"
 msgstr "Texte après l'horaire :"
@@ -6224,3 +6242,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+

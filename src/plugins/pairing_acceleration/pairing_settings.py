@@ -22,9 +22,9 @@ class RatingLimitSetting(PairingSetting[int]):
     def static_id() -> str:
         return f'{PLUGIN_NAME}-rating_limit'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Rating limit')
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Rating limit', locale)
 
     @property
     def template_path(self) -> str:
@@ -103,9 +103,9 @@ class DualRatingLimitsSetting(PairingSetting[tuple[int, int]]):
     def static_id() -> str:
         return f'{PLUGIN_NAME}-dual_rating_limits'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Rating limits')
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Rating limits', locale)
 
     @property
     def template_path(self) -> str:

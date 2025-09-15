@@ -183,12 +183,12 @@ class PlayerPrintDocument(PrintDocument, ABC):
 
 class PlayerListPrintDocument(PlayerPrintDocument):
     @staticmethod
-    def static_name() -> str:
-        return _('List of players')
-
-    @staticmethod
     def static_id() -> str:
         return 'player-list'
+
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('List of players', locale)
 
     @property
     def title(self) -> str:
@@ -212,12 +212,12 @@ class PlayerListPrintDocument(PlayerPrintDocument):
 
 class PlayerCheckinListPrintDocument(PlayerPrintDocument):
     @staticmethod
-    def static_name() -> str:
-        return _('Players check-in list')
-
-    @staticmethod
     def static_id() -> str:
         return 'player-checkin-list'
+
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Players check-in list', locale)
 
     @property
     def title(self) -> str:
@@ -289,12 +289,12 @@ class AbstractPlayerRankingPrintDocument(PlayerPrintDocument, ABC):
 
 class PlayerRankingPrintDocument(AbstractPlayerRankingPrintDocument):
     @staticmethod
-    def static_name() -> str:
-        return _('Ranking')
-
-    @staticmethod
     def static_id() -> str:
         return 'ranking'
+
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Ranking', locale)
 
     @property
     def title(self) -> str:
@@ -310,12 +310,12 @@ class PlayerRankingPrintDocument(AbstractPlayerRankingPrintDocument):
 
 class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument):
     @staticmethod
-    def static_name() -> str:
-        return _('Crosstable')
-
-    @staticmethod
     def static_id() -> str:
         return 'crosstable'
+
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Crosstable', locale)
 
     @property
     def title(self) -> str:
@@ -331,12 +331,12 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument):
 
 class PlayerRoundPerformanceIndicatorPrintDocument(PrintDocument):
     @staticmethod
-    def static_name() -> str:
-        return _('Round performance indicators')
-
-    @staticmethod
     def static_id() -> str:
         return 'round-performance-indicators'
+
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Round performance indicators', locale)
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
@@ -467,13 +467,13 @@ class BoardPrintDocument(PrintDocument, ABC):
 
 
 class PairingPrintDocument(PrintDocument):
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Pairings', locale)
+
     @staticmethod
     def static_id() -> str:
         return 'pairings'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('Pairings')
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
@@ -503,9 +503,9 @@ class BoardPairingPrintDocument(BoardPrintDocument):
     def static_id() -> str:
         return 'board-pairings'
 
-    @staticmethod
-    def static_name() -> str:
-        return 'Board Pairings'
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Board Pairings', locale)
 
     @property
     def title(self) -> str:
@@ -517,9 +517,9 @@ class PlayerPairingPrintDocument(PlayerPrintDocument):
     def static_id() -> str:
         return 'player-pairings'
 
-    @staticmethod
-    def static_name() -> str:
-        return 'Player pairings'
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Player pairings', locale)
 
     @property
     def title(self) -> str:
@@ -547,21 +547,21 @@ class PlayerPairingPrintDocument(PlayerPrintDocument):
 
 
 class ResultPrintDocument(BoardPrintDocument):
+    @staticmethod
+    def static_id() -> str:
+        return 'results'
+
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Results', locale)
+
     @property
     def title(self) -> str:
         return _('Results for round #{round}').format(round=self.at_round)
 
     @staticmethod
-    def static_name() -> str:
-        return _('Results')
-
-    @staticmethod
     def available_options() -> list[type[PrintOption]]:
         return [TournamentPrintOption]
-
-    @staticmethod
-    def static_id() -> str:
-        return 'results'
 
     @override
     @property
@@ -574,9 +574,9 @@ class BergerGridPrintDocument(PrintDocument):
     def static_id() -> str:
         return 'berger-grid'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Berger grid')
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Berger grid', locale)
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
@@ -584,7 +584,7 @@ class BergerGridPrintDocument(PrintDocument):
 
     @property
     def title(self) -> str:
-        return self.name
+        return self.name()
 
     @property
     def template_name(self) -> str:
@@ -679,9 +679,9 @@ class PrizeListPrintDocument(PrintDocument):
     def static_id() -> str:
         return 'prize-list'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Prize list')
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Prize list', locale)
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
@@ -689,7 +689,7 @@ class PrizeListPrintDocument(PrintDocument):
 
     @property
     def title(self) -> str:
-        return self.name
+        return self.name()
 
     @property
     def template_name(self) -> str:
@@ -715,9 +715,9 @@ class PrizeAssignmentPrintDocument(PrintDocument):
     def static_id() -> str:
         return 'prize-assignment'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Prize assignment')
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Prize assignment', locale)
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
@@ -759,9 +759,9 @@ class StatisticsPrintDocument(PrintDocument):
     def static_id() -> str:
         return 'statistics'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Statistics')
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Statistics', locale)
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:

@@ -36,7 +36,7 @@
                         {% endif %}
                         title="{{ access_level.help_text }}"
                     >
-                        {{ access_level.name }}
+                        {{ access_level.name() }}
                         {% if access_level in inherited_access_levels %}
                             {{ _('(inherited)') }}
                         {% endif %}

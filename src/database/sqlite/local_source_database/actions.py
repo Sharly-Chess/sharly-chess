@@ -22,9 +22,9 @@ class NotifOutdatedAction(OutdatedAction):
     def static_id() -> str:
         return 'notif'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Notification')
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Notification', locale)
 
     def on_outdated(self, database: 'LocalSourceDatabase'):
         database.outdated_warning = True
@@ -35,9 +35,9 @@ class AutoUpdateOutdatedAction(OutdatedAction):
     def static_id() -> str:
         return 'auto_update'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Auto-update')
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('Auto-update', locale)
 
     def on_outdated(self, database: 'LocalSourceDatabase'):
         if not database.is_updating:

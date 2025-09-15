@@ -51,9 +51,9 @@ class Trf16TournamentExporter(TournamentExporter):
     def static_id() -> str:
         return 'trf-16'
 
-    @staticmethod
-    def static_name() -> str:
-        return 'TRF16'
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('TRF16', locale)
 
     @property
     def tooltip(self) -> str:
@@ -77,9 +77,9 @@ class TrfBxTournamentExporter(TournamentExporter):
     def static_id() -> str:
         return 'trf-bx'
 
-    @staticmethod
-    def static_name() -> str:
-        return 'TRF(bx)'
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('TRF(bx)', locale)
 
     @property
     def tooltip(self) -> str:
@@ -105,9 +105,9 @@ class PgnTournamentExporter(TournamentExporter):
     def static_id() -> str:
         return 'pgn'
 
-    @staticmethod
-    def static_name() -> str:
-        return 'PGN'
+    @classmethod
+    def static_name(cls, locale: str | None = None) -> str:
+        return _('PGN', locale)
 
     @property
     def tooltip(self) -> str:

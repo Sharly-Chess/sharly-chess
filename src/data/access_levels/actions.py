@@ -221,110 +221,109 @@ class AuthAction(StrEnum):
             case _:
                 raise ValueError(f'auth={self}')
 
-    @property
-    def name(self) -> str:
+    def name(self, locale: str | None = None) -> str:
         match self:
             case AuthAction.VIEW_APPLICATION_SETTINGS:
-                return _('View application settings')
+                return _('View application settings', locale)
             case AuthAction.UPDATE_APPLICATION_SETTINGS:
-                return _('Update application settings')
+                return _('Update application settings', locale)
             case AuthAction.MANAGE_SOURCE_DATABASES:
-                return _('Manage source databases')
+                return _('Manage source databases', locale)
             case AuthAction.VIEW_PRIVATE_EVENTS:
-                return _('View private events')
+                return _('View private events', locale)
             case AuthAction.VIEW_PASSED_COMING_EVENTS:
-                return _('View passed and upcoming events')
+                return _('View passed and upcoming events', locale)
             case AuthAction.ADD_EVENTS:
-                return _('Add events')
+                return _('Add events', locale)
             case AuthAction.VIEW_DETAILED_EVENT_CARDS:
-                return _('View event cards details')
+                return _('View event cards details', locale)
             case AuthAction.DELETE_EVENTS:
-                return _('Delete events')
+                return _('Delete events', locale)
             case AuthAction.RENAME_EVENTS:
-                return _('Rename events')
+                return _('Rename events', locale)
             case AuthAction.UPDATE_EVENTS:
-                return _('Update events')
+                return _('Update events', locale)
             case AuthAction.VIEW_EVENT_COMPLETE_CONFIG:
-                return _('View complete event configuration')
+                return _('View complete event configuration', locale)
             case AuthAction.VIEW_EVENT_BASIC_CONFIG:
-                return _('View basic event configuration')
+                return _('View basic event configuration', locale)
             case AuthAction.MANAGE_ACCOUNTS:
-                return _('Manage accounts')
+                return _('Manage accounts', locale)
             case AuthAction.VIEW_TOURNAMENTS_TAB:
-                return _('View the Tournaments tab')
+                return _('View the Tournaments tab', locale)
             case AuthAction.ADD_TOURNAMENTS:
-                return _('Add tournaments')
+                return _('Add tournaments', locale)
             case AuthAction.UPDATE_TOURNAMENTS:
-                return _('Update tournaments')
+                return _('Update tournaments', locale)
             case AuthAction.DELETE_TOURNAMENTS:
-                return _('Delete tournaments')
+                return _('Delete tournaments', locale)
             case AuthAction.PUBLISH_RESULTS:
-                return _('Publish tournament results')
+                return _('Publish tournament results', locale)
             case AuthAction.PUBLISH_RULES:
-                return _('Publish tournament rules')
+                return _('Publish tournament rules', locale)
             case AuthAction.DOWNLOAD_FEES:
-                return _('Download tournament fees')
+                return _('Download tournament fees', locale)
             case AuthAction.VIEW_PLAYERS_TAB:
-                return _('View Players tab')
+                return _('View Players tab', locale)
             case AuthAction.ADD_PLAYERS:
-                return _('Add players')
+                return _('Add players', locale)
             case AuthAction.UPDATE_PLAYERS:
-                return _('Update players')
+                return _('Update players', locale)
             case AuthAction.UPDATE_PLAYERS_HISTORY:
-                return _("Update players' history")
+                return _("Update players' history", locale)
             case AuthAction.DELETE_PLAYERS:
-                return _('Delete players')
+                return _('Delete players', locale)
             case AuthAction.OPEN_CLOSE_CHECK_IN:
-                return _('Open/close check-in')
+                return _('Open/close check-in', locale)
             case AuthAction.CHECK_IN_PLAYERS:
-                return _('Check-in players')
+                return _('Check-in players', locale)
             case AuthAction.VIEW_PAIRINGS_TAB:
-                return _('View Pairings tab')
+                return _('View Pairings tab', locale)
             case AuthAction.USE_PAIRING_ENGINE:
-                return _('Use pairing engines')
+                return _('Use pairing engines', locale)
             case AuthAction.MANUALLY_PAIR_PLAYERS:
-                return _('Manually pair players')
+                return _('Manually pair players', locale)
             case AuthAction.UNPAIR_ROUND:
-                return _('Unpair all the boards of a round')
+                return _('Unpair all the boards of a round', locale)
             case AuthAction.UNPAIR_BOARD:
-                return _('Unpair one board')
+                return _('Unpair one board', locale)
             case AuthAction.PERMUTE_BOARD:
-                return _('Permute boards')
+                return _('Permute boards', locale)
             case AuthAction.SET_CURRENT_ROUND:
-                return _('Set the current round')
+                return _('Set the current round', locale)
             case AuthAction.SET_ZPB:
-                return _('Set Zero-Points Byes')
+                return _('Set Zero-Points Byes', locale)
             case AuthAction.SET_HPB:
-                return _('Set Half-Points Byes')
+                return _('Set Half-Points Byes', locale)
             case AuthAction.SET_FPB:
-                return _('Set Full-Points Byes')
+                return _('Set Full-Points Byes', locale)
             case AuthAction.VIEW_DRAFT_PAIRINGS:
-                return _('View draft pairings')
+                return _('View draft pairings', locale)
             case AuthAction.PUBLISH_PAIRINGS:
-                return _('Publish pairings')
+                return _('Publish pairings', locale)
             case AuthAction.VIEW_DRAFT_RANKINGS:
-                return _('View draft rankings')
+                return _('View draft rankings', locale)
             case AuthAction.PUBLISH_RANKINGS:
-                return _('Publish rankings')
+                return _('Publish rankings', locale)
             case AuthAction.ENTER_RESULTS:
-                return _('Enter results')
+                return _('Enter results', locale)
             case AuthAction.UPDATE_RESULTS:
-                return _('Update results')
+                return _('Update results', locale)
             case AuthAction.SET_ILLEGAL_MOVES:
-                return _('Set illegal moves')
+                return _('Set illegal moves', locale)
             case AuthAction.SET_SPECIAL_RESULTS:
-                return _('Set special results')
+                return _('Set special results', locale)
             case AuthAction.MANAGE_SCREENS:
-                return _('Manage screens')
+                return _('Manage screens', locale)
             case AuthAction.VIEW_PRIVATE_SCREENS:
-                return _('View private screens')
+                return _('View private screens', locale)
             case AuthAction.VIEW_PUBLIC_SCREENS:
-                return _('View public screens')
+                return _('View public screens', locale)
             case AuthAction.VIEW_PRIZES_TAB:
-                return _('View Prizes tab')
+                return _('View Prizes tab', locale)
             case AuthAction.MANAGE_PRIZES:
-                return _('Manage prizes')
+                return _('Manage prizes', locale)
             case AuthAction.PRINT:
-                return _('Print')
+                return _('Print', locale)
             case _:
                 raise ValueError(f'auth={self}')

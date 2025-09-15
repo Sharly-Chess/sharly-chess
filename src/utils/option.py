@@ -13,8 +13,8 @@ class Option(IdentifiableEntity, ABC):
     def __init__(self, value: Any | None = None):
         self.value = value if value is not None else self.default_value
 
-    @staticmethod
-    def static_name() -> str:
+    @classmethod
+    def static_name(cls, _: str | None = None) -> str:
         """UI representation is handled by the template."""
         return ''
 
