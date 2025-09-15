@@ -323,10 +323,10 @@ msgstr ""
 msgid "Access level"
 msgstr ""
 
-msgid "Access unrated and penalty results."
+msgid "Access levels"
 msgstr ""
 
-msgid "Access levels"
+msgid "Access unrated and penalty results."
 msgstr ""
 
 msgid "Account"
@@ -966,6 +966,9 @@ msgid "Choose families to add"
 msgstr ""
 
 msgid "Choose from images in the 'custom' folder"
+msgstr ""
+
+msgid "Choose one, many or no tournaments."
 msgstr ""
 
 msgid "Choose screens to add"
@@ -2765,6 +2768,9 @@ msgid "League:"
 msgstr ""
 
 msgid "Leagues"
+msgstr ""
+
+msgid "Leave empty to grant no permissions at all."
 msgstr ""
 
 msgid "Libraries"
