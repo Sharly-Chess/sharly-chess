@@ -175,7 +175,7 @@ class TestUtils:
     ):
         if via_api_request_context:
             res = via_api_request_context.delete(
-                f'/admin/event-delete/{uniq_id}',
+                f'/admin/current_events/event-delete/{uniq_id}',
                 headers={'Content-Type': 'application/x-www-form-urlencoded'},
             )
             TestUtils.check_api_response(res)

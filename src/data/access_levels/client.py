@@ -191,14 +191,9 @@ class Client:
         return AuthAction.UPDATE_EVENTS in self.allowed_actions
 
     @property
-    def can_view_event_complete_config(self) -> bool:
-        """Returns true if the client can the event complete config."""
-        return AuthAction.VIEW_EVENT_COMPLETE_CONFIG in self.allowed_actions
-
-    @property
-    def can_view_event_basic_config(self) -> bool:
-        """Returns true if the client can the basic event config."""
-        return AuthAction.VIEW_EVENT_BASIC_CONFIG in self.allowed_actions
+    def can_view_event_config(self) -> bool:
+        """Returns true if the client can the event config."""
+        return AuthAction.VIEW_EVENT_CONFIG in self.allowed_actions
 
     # ---------------------------------------------------------------------------------
     # Accounts

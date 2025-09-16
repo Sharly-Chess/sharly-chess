@@ -6,19 +6,17 @@ from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 
-from common.exception import SharlyChessException
 from common.i18n import _
 from data.access_levels.client import Client
 from data.access_levels.client_tracker import ClientTracker
 from data.display_controller import DisplayController
 from data.event import Event
-from data.loader import EventLoader
 from data.rotator import Rotator
 from data.screen import Screen
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from plugins.utils import PluginNavBarItem
-from utils.enum import ScreenType
+from utils.enum import FormAction, ScreenType
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
@@ -37,18 +35,10 @@ class BaseEventAdminWebContext(AdminWebContext):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ] = None,
     ):
-        super().__init__(request, data=data, admin_tab=None)
-        self.admin_event: Event | None = None
-        if self.error:
-            return
-        if event_uniq_id:
-            try:
-                self.admin_event = EventLoader.get(request=self.request).load_event(
-                    event_uniq_id
-                )
-            except SharlyChessException as pwe:
-                self._redirect_error(f'Event [{event_uniq_id}] not found: {pwe}')
-                return
+        super().__init__(
+            request, event_uniq_id=event_uniq_id, data=data, admin_tab=None
+        )
+
         # tracks the visit of the client
         ClientTracker().track_client(
             self.client.host,
@@ -119,11 +109,12 @@ class BaseEventAdminWebContext(AdminWebContext):
         nav_tabs: dict[
             str, dict[str, str | bool | dict[str, dict[str, str | bool]]]
         ] = {}
-        if self.client.can_view_event_basic_config:
+        if self.client.can_view_event_config:
             nav_tabs |= {
                 'admin-event-config-tab': {
                     'title': _('Configuration'),
-                    'template': 'event/tab.html',
+                    'modal': 'admin-event-modal',
+                    'action': FormAction.UPDATE,
                     'icon_class': 'bi-gear-fill',
                 },
             }
@@ -305,7 +296,6 @@ class BaseEventAdminWebContext(AdminWebContext):
             }
 
         return super().template_context | {
-            'admin_event': self.admin_event,
             'messages': Message.messages(self.request),
             'logging_levels': logging_levels,
             'nav_tabs': nav_tabs,
@@ -324,7 +314,7 @@ class BaseEventAdminWebContext(AdminWebContext):
 
 class BaseEventAdminController(BaseAdminController):
     @classmethod
-    def _admin_event_render(
+    def _admin_base_event_render(
         cls,
         template_context: dict[str, Any],
     ) -> HTMXTemplate:

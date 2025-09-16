@@ -194,10 +194,6 @@ class AppHookSpecs:
         """Provide addition column data for events when writing to the database"""
 
     @hookspec
-    def get_event_info_rows_template(self) -> str:
-        """Provide a path to the template containing extra event info rows"""
-
-    @hookspec
     def get_event_card_block_template(self) -> str:
         """Provide a path to the template to be added to event cards"""
 

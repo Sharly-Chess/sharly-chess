@@ -10,6 +10,7 @@
         label=_('ChessEvent event:'),
         placeholder=_('E.g.: %(string)s', string='BRE_35_domloupfide36'),
         help_text='',
+        disabled=not client.can_update_event,
         data=data, errors=errors
     ) }}
 </div>
@@ -20,6 +21,7 @@
             label=_('ChessEvent user name:'),
             placeholder=_('E.g.: %(string)s', string='Z00000'),
             help_text='',
+            disabled=not client.can_update_event,
             data=data, errors=errors
         ) }}
     </div>
@@ -29,6 +31,7 @@
             label=_('ChessEvent password:'),
             placeholder=_('E.g.: my_password'),
             help_text='',
+            disabled=not client.can_update_event,
             data=data, errors=errors
         ) }}
     </div>

@@ -780,3 +780,8 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
   text-align: center;
   font-family: inherit;
 }
+
+input[type="color"].form-control {
+    height: calc(1.5em + 0.75rem + 2px); /* line-height * font-size + padding-y + border */
+    padding: 0;
+}

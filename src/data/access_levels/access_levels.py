@@ -265,7 +265,7 @@ class SectorArbitrationAccessLevel(AccessLevel):
     @staticmethod
     def access_level_actions() -> list[AuthAction]:
         return [
-            AuthAction.VIEW_EVENT_BASIC_CONFIG,
+            AuthAction.VIEW_EVENT_CONFIG,
             AuthAction.VIEW_PLAYERS_TAB,
             AuthAction.VIEW_PAIRINGS_TAB,
             AuthAction.UPDATE_RESULTS,
@@ -356,7 +356,7 @@ class DeputyChiefArbitrationAccessLevel(AccessLevel):
     @staticmethod
     def access_level_actions() -> list[AuthAction]:
         return [
-            AuthAction.VIEW_EVENT_COMPLETE_CONFIG,
+            AuthAction.VIEW_EVENT_CONFIG,
             AuthAction.VIEW_TOURNAMENTS_TAB,
             AuthAction.UPDATE_TOURNAMENTS,
             AuthAction.PUBLISH_RESULTS,
@@ -483,8 +483,8 @@ class OrganizationAccessLevel(AccessLevel):
     def access_level_actions() -> list[AuthAction]:
         return [
             AuthAction.UPDATE_EVENTS,
-            AuthAction.VIEW_EVENT_COMPLETE_CONFIG,
-            AuthAction.VIEW_EVENT_BASIC_CONFIG,
+            AuthAction.VIEW_EVENT_CONFIG,
+            AuthAction.VIEW_EVENT_CONFIG,
             AuthAction.DOWNLOAD_FEES,
         ]
 

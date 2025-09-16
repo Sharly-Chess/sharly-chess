@@ -1,5 +1,4 @@
-{% if client.can_manage_source_databases %}
-    <span class="sidebar-tooltip" {{ macros.tooltip_attributes('info', _('Data sources'), 'right') }}>
+ <span class="sidebar-tooltip" {{ macros.tooltip_attributes('info', _('Data sources'), 'right') }}>
         <button
             class="nav-link text-start me-1 position-relative d-inline-flex align-items-center"
             hx-get="{{ url_for('admin-database-modal') }}"
@@ -19,4 +18,3 @@
             ></span>
         </button>
     </span>
-{% endif %}
