@@ -550,6 +550,11 @@ class BaseAdminController(BaseController):
             case 'create':
                 sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
                 public = False
+                background_color = sharly_chess_config.default_background_color
+                message_background_color = (
+                    sharly_chess_config.default_message_background_color
+                )
+                message_color = sharly_chess_config.default_message_color
                 federation = (
                     sharly_chess_config.federation.name
                     if sharly_chess_config.federation

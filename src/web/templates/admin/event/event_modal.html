@@ -235,7 +235,6 @@
                             name='background_color',
                             label=_('Background colour:'),
                             help_text=_('The background colour is used when the image does not fill the whole screen.'),
-                            default_color=sharly_chess_config.default_background_color,
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -280,7 +279,6 @@
                             name='message_background_color',
                             label=_('Background colour:'),
                             help_text=_('The background colour of the alert messages.'),
-                            default_color=sharly_chess_config.default_message_background_color,
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -290,7 +288,6 @@
                             name='message_color',
                             label=_('Text colour:'),
                             help_text=_('The text colour of the alert messages.'),
-                            default_color=sharly_chess_config.default_message_color,
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
