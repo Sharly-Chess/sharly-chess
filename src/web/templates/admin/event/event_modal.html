@@ -22,7 +22,7 @@
                 {% elif action == 'clone' %}
                     hx-post="{{ url_for('admin-event-clone', event_uniq_id=admin_event.uniq_id or '') }}"
                 {% elif action == 'update' %}
-                    hx-patch="{{ url_for('admin-event-update', event_uniq_id=admin_event.uniq_id or '') }}"
+                    hx-patch="{{ url_for('admin-event-update', admin_tab=admin_tab or '', event_uniq_id=admin_event.uniq_id or '') }}"
                 {% endif %}
                 hx-target="body"
                 hx-indicator="#please-wait"
@@ -341,10 +341,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    $(document).one('hide.bs.modal', function(e) {
-        e.preventDefault();
-        document.body.dispatchEvent(new CustomEvent('request_refresh'));
-    });
-</script>

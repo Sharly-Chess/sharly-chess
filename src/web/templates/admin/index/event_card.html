@@ -110,6 +110,7 @@
                 hx-push-url="false"
                 hx-get="{{ url_for(
                     'admin-event-modal',
+                    admin_tab=admin_tab,
                     event_uniq_id=event.uniq_id,
                     action='update',
                 ) }}"
@@ -133,6 +134,7 @@
                 hx-push-url="false"
                 hx-get="{{ url_for(
                     'admin-event-modal',
+                    admin_tab=admin_tab,
                     event_uniq_id=event.uniq_id,
                     action='clone',
                 ) }}"
@@ -156,6 +158,7 @@
                 hx-push-url="false"
                 hx-get="{{ url_for(
                     'admin-event-delete-modal',
+                    admin_tab=admin_tab,
                     event_uniq_id=event.uniq_id,
                 ) }}"
                 hx-target="body"

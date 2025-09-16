@@ -45,10 +45,10 @@ from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
 )
-from web.controllers.base_controller import WebContext
+from web.controllers.base_controller import BaseController, WebContext
 from web.messages import Message
 from web.session import SessionHandler
-from web.urls import admin_event_url
+from web.urls import admin_event_tournaments_url, admin_event_url
 
 logger: Logger = get_logger()
 
@@ -274,7 +274,9 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
         admin_events_show_details: bool | None,
     ) -> Template | ClientRedirect | Redirect:
-        web_context = AdminWebContext(request, data=None, admin_tab=None)
+        web_context = AdminWebContext(
+            request, data=None, event_uniq_id=None, admin_tab=None
+        )
         if web_context.error:
             return web_context.error
 
@@ -297,7 +299,9 @@ class IndexAdminController(BaseAdminController):
         admin_tab: str,
         admin_events_show_details: bool | None,
     ) -> Template | ClientRedirect | Redirect:
-        web_context = AdminWebContext(request, data=None, admin_tab=admin_tab)
+        web_context = AdminWebContext(
+            request, data=None, event_uniq_id=None, admin_tab=admin_tab
+        )
         if web_context.error:
             return web_context.error
 
@@ -309,20 +313,28 @@ class IndexAdminController(BaseAdminController):
         return self._admin_render(web_context=web_context)
 
     @get(
-        path='/admin/{admin_tab:str}/event-modal/create',
-        name='admin-tab-event-create-modal',
+        path=[
+            '/admin/{admin_tab:str}/event-modal/{action:str}',
+            '/admin/{admin_tab:str}/event-modal/{action:str}/{event_uniq_id:str}',
+            '/admin/event-modal/{action:str}/{event_uniq_id:str}',
+        ],
+        name='admin-event-modal',
     )
     async def htmx_admin_tab_event_create_modal(
         self,
         request: HTMXRequest,
-        admin_tab: str,
+        action: FormAction,
+        admin_tab: str | None = None,
+        event_uniq_id: str | None = None,
     ) -> Template | ClientRedirect | Redirect:
-        web_context = AdminWebContext(request, data=None, admin_tab=admin_tab)
-        data = self._prepare_event_modal_data(
-            FormAction.CREATE, web_context.request, None
+        web_context = AdminWebContext(
+            request, data=None, event_uniq_id=event_uniq_id, admin_tab=admin_tab
         )
-
-        template_context = self._event_modal_context(FormAction.CREATE, data)
+        data = self._prepare_event_modal_data(action, request, web_context.admin_event)
+        template_context = self._event_modal_context(
+            action,
+            data,
+        )
 
         return self._admin_render(
             web_context=web_context,
@@ -340,7 +352,7 @@ class IndexAdminController(BaseAdminController):
         admin_tab: str,
     ) -> Template | ClientRedirect | Redirect:
         web_context: AdminWebContext = AdminWebContext(
-            request, data=data, admin_tab=admin_tab
+            request, data=data, event_uniq_id=None, admin_tab=admin_tab
         )
         if web_context.error:
             return web_context.error
@@ -365,6 +377,205 @@ class IndexAdminController(BaseAdminController):
         )
         return Redirect(admin_event_url(request, event_uniq_id=uniq_id))
 
+    @get(
+        path='/admin/{admin_tab:str}/event-modal/delete/{event_uniq_id:str}',
+        name='admin-event-delete-modal',
+    )
+    async def htmx_admin_event_delete_modal(
+        self,
+        request: HTMXRequest,
+        admin_tab: str,
+        event_uniq_id: str,
+    ) -> Template | ClientRedirect | Redirect:
+        web_context = AdminWebContext(
+            request, data=None, admin_tab=admin_tab, event_uniq_id=event_uniq_id
+        )
+        return self._admin_render(web_context, {'modal': 'event-delete'})
+
+    @delete(
+        path='/admin/{admin_tab:str}/event-delete/{event_uniq_id:str}',
+        name='admin-event-delete',
+        status_code=HTTP_200_OK,
+    )
+    async def htmx_admin_event_delete(
+        self,
+        request: HTMXRequest,
+        admin_tab: str,
+        event_uniq_id: str,
+    ) -> Template | ClientRedirect | Redirect:
+        web_context = AdminWebContext(
+            request, data=None, admin_tab=admin_tab, event_uniq_id=event_uniq_id
+        )
+        if web_context.error:
+            return web_context.error
+        event = web_context.get_admin_event()
+        try:
+            arch = EventDatabase(event.uniq_id).delete()
+        except PermissionError as ex:
+            return BaseController.redirect_error(
+                request, f'Archiving the database failed: {ex}'
+            )
+        Message.success(
+            request,
+            _(
+                'Event [{uniq_id}] has been deleted, the database has been archived ({arch}).'
+            ).format(uniq_id=event.uniq_id, arch=arch),
+        )
+
+        return self._admin_render(web_context)
+
+    @post(
+        path='/admin/event-clone/{event_uniq_id:str}',
+        name='admin-event-clone',
+    )
+    async def htmx_admin_event_clone(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        event_uniq_id: str,
+    ) -> Template | ClientRedirect | Redirect:
+        web_context: AdminWebContext = AdminWebContext(
+            request,
+            admin_tab=None,
+            event_uniq_id=event_uniq_id,
+            data=data,
+        )
+        if web_context.error:
+            return web_context.error
+        stored_event: StoredEvent = self._admin_validate_event_update_data(
+            FormAction.CLONE, web_context, web_context.admin_event, data
+        )
+        if stored_event.errors:
+            template_context = self._event_modal_context(
+                FormAction.CLONE, data, errors=stored_event.errors
+            )
+            return self._admin_render(
+                web_context=web_context,
+                template_context=template_context,
+            )
+
+        uniq_id: str = stored_event.uniq_id
+        event = web_context.get_admin_event()
+        EventDatabase(event.uniq_id).clone(new_uniq_id=uniq_id)
+        with EventDatabase(uniq_id, write=True) as event_database:
+            event_database.update_stored_event(stored_event)
+            if 'with_players' not in data:
+                event_database.delete_all_stored_players()
+        Message.success(
+            request,
+            _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id),
+        )
+        return ClientRedirect(redirect_to=admin_event_tournaments_url(request, uniq_id))
+
+    @patch(
+        path=[
+            '/admin/event-update/{event_uniq_id:str}',
+            '/admin/{admin_tab:str}/event-update/{event_uniq_id:str}',
+        ],
+        name='admin-event-update',
+    )
+    async def htmx_admin_event_update(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        admin_tab: str | None,
+        event_uniq_id: str,
+    ) -> Template | ClientRedirect | Redirect:
+        web_context: AdminWebContext = AdminWebContext(
+            request,
+            admin_tab=admin_tab,
+            event_uniq_id=event_uniq_id,
+            data=data,
+        )
+        if web_context.error:
+            return web_context.error
+        stored_event: StoredEvent = self._admin_validate_event_update_data(
+            'update', web_context, web_context.admin_event, data
+        )
+        if stored_event.errors:
+            template_context = self._event_modal_context(
+                FormAction.UPDATE, data, errors=stored_event.errors
+            )
+            return self._admin_render(
+                web_context=web_context,
+                template_context=template_context,
+            )
+
+        uniq_id = stored_event.uniq_id
+        with EventDatabase(uniq_id, write=True) as event_database:
+            event_database.update_stored_event(stored_event)
+        Message.success(
+            request,
+            _('Event [{uniq_id}] has been updated.').format(uniq_id=uniq_id),
+        )
+
+        if admin_tab:
+            return self._admin_render(web_context)
+
+        return HTMXTemplate(
+            template_name='common/empty_modal_and_messages.html',
+            context={'messages': Message.messages(request)},
+            re_target='#modal-wrapper',
+            trigger_event='close_modal',
+            after='receive',
+        )
+
+    @patch(
+        path='/admin/event-uniq-id-update/{event_uniq_id:str}',
+        name='admin-event-uniq-id-update',
+    )
+    async def htmx_admin_event_uniq_id_update(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        event_uniq_id: str,
+    ) -> Template | ClientRedirect | Redirect:
+        web_context = AdminWebContext(
+            request, admin_tab=None, event_uniq_id=event_uniq_id, data=data
+        )
+        event = web_context.get_admin_event()
+        new_uniq_id = WebContext.form_data_to_str(data, 'uniq_id')
+        if (
+            not new_uniq_id
+            or not SharlyChessConfig.uniq_id_regex.match(new_uniq_id)
+            or (
+                new_uniq_id != event.uniq_id
+                and new_uniq_id in EventLoader.all_event_ids()
+            )
+        ):
+            # No precise error (validated in JS)
+            return self.redirect_error(
+                request, f'Invalid event uniq ID [{new_uniq_id}].'
+            )
+        if new_uniq_id != event_uniq_id:
+            try:
+                EventDatabase(event.uniq_id).rename(new_uniq_id)
+            except PermissionError as ex:
+                return self.redirect_error(
+                    request,
+                    _('Renaming the database failed: {ex}.').format(ex=ex),
+                )
+            Message.success(
+                request,
+                _(
+                    'Event unique ID has been renamed from '
+                    '[{old_uniq_id}] to [{new_uniq_id}].'
+                ).format(
+                    old_uniq_id=event.uniq_id,
+                    new_uniq_id=new_uniq_id,
+                ),
+            )
+        return ClientRedirect(redirect_to=admin_event_url(request, new_uniq_id))
+
     @post(
         path='/admin/restore-archive/{archive_name:str}',
         name='admin-restore-archive',
@@ -374,7 +585,9 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
         archive_name: str,
     ) -> Template | ClientRedirect | Redirect:
-        web_context = AdminWebContext(request, data=None, admin_tab='archives')
+        web_context = AdminWebContext(
+            request, data=None, event_uniq_id=None, admin_tab='archives'
+        )
         archive = ArchiveLoader.get_archive(archive_name)
         if not archive:
             return self.redirect_error(request, f'Unknown archive [{archive_name}]')
@@ -396,7 +609,9 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
         locale: str,
     ) -> Template | ClientRedirect | Redirect:
-        web_context = AdminWebContext(request, data=None, admin_tab=None)
+        web_context = AdminWebContext(
+            request, data=None, event_uniq_id=None, admin_tab=None
+        )
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         if locale in locales:
             stored_config: StoredConfig = sharly_chess_config.stored_config
@@ -466,7 +681,9 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
     ) -> Template | ClientRedirect | Redirect:
         config = SharlyChessConfig()
-        web_context = AdminWebContext(request, data=None, admin_tab=None)
+        web_context = AdminWebContext(
+            request, data=None, event_uniq_id=None, admin_tab=None
+        )
         template_context = self._config_modal_context()
         return self._admin_render(
             web_context=web_context,
@@ -486,7 +703,9 @@ class IndexAdminController(BaseAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template | ClientRedirect | Redirect:
-        web_context = AdminWebContext(request, data=data, admin_tab=None)
+        web_context = AdminWebContext(
+            request, data=data, event_uniq_id=None, admin_tab=None
+        )
         stored_config: StoredConfig = self._admin_validate_config_update_data(data)
         stored_plugins: list[StoredPlugin] = self._admin_validate_plugins_update_data(
             data
@@ -601,7 +820,9 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
     ) -> Template | ClientRedirect | Redirect:
-        web_context = AdminWebContext(request, data=None, admin_tab=None)
+        web_context = AdminWebContext(
+            request, data=None, event_uniq_id=None, admin_tab=None
+        )
         template_context = self._database_modal_context()
         return self._admin_render(
             web_context=web_context,
@@ -718,7 +939,9 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
         data_source_id: str,
     ) -> Template | ClientRedirect | Redirect:
-        web_context = AdminWebContext(request, data=None, admin_tab=None)
+        web_context = AdminWebContext(
+            request, data=None, event_uniq_id=None, admin_tab=None
+        )
         try:
             data_source = OnlineDataSourceManager.get_object(data_source_id)
             await data_source.reload_connection_status()

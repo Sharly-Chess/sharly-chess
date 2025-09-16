@@ -9,7 +9,7 @@ from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 
-from common import REQUEST_TIMEOUT, format_timestamp_date
+from common import REQUEST_TIMEOUT, SharlyChessException, format_timestamp_date
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
@@ -29,6 +29,7 @@ class AdminWebContext(WebContext):
     def __init__(
         self,
         request: HTMXRequest,
+        event_uniq_id: str | None,
         data: Annotated[
             dict[str, str] | None,
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -37,9 +38,25 @@ class AdminWebContext(WebContext):
     ):
         super().__init__(request, data=data)
         self.admin_tab: str | None = admin_tab
+        self.admin_event: Event | None = None
+        if self.error:
+            return
+        if event_uniq_id:
+            try:
+                self.admin_event = EventLoader.get(request=self.request).load_event(
+                    event_uniq_id
+                )
+            except SharlyChessException as pwe:
+                self._redirect_error(f'Event [{event_uniq_id}] not found: {pwe}')
+                return
+
         if self.error:
             return
         self.check_admin_tab()
+
+    def get_admin_event(self) -> Event:
+        assert self.admin_event is not None
+        return self.admin_event
 
     def check_admin_tab(self):
         if self.admin_tab not in [
@@ -79,6 +96,7 @@ class AdminWebContext(WebContext):
             super().template_context
             | {
                 'admin_tab': self.admin_tab,
+                'admin_event': self.admin_event,
             }
             | plugin_context
         )
