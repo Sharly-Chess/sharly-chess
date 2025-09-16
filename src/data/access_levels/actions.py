@@ -71,8 +71,7 @@ class AuthAction(StrEnum):
     DELETE_EVENTS = auto()
     RENAME_EVENTS = auto()
     UPDATE_EVENTS = auto()
-    VIEW_EVENT_COMPLETE_CONFIG = auto()
-    VIEW_EVENT_BASIC_CONFIG = auto()
+    VIEW_EVENT_CONFIG = auto()
 
     # Access
     MANAGE_ACCOUNTS = auto()
@@ -156,8 +155,7 @@ class AuthAction(StrEnum):
                 | AuthAction.DELETE_EVENTS
                 | AuthAction.RENAME_EVENTS
                 | AuthAction.UPDATE_EVENTS
-                | AuthAction.VIEW_EVENT_COMPLETE_CONFIG
-                | AuthAction.VIEW_EVENT_BASIC_CONFIG
+                | AuthAction.VIEW_EVENT_CONFIG
             ):
                 return AuthActionCategory.EVENTS_MANAGEMENT
             case AuthAction.MANAGE_ACCOUNTS:
@@ -240,10 +238,8 @@ class AuthAction(StrEnum):
                 return _('Rename events')
             case AuthAction.UPDATE_EVENTS:
                 return _('Update events')
-            case AuthAction.VIEW_EVENT_COMPLETE_CONFIG:
-                return _('View complete event configuration')
-            case AuthAction.VIEW_EVENT_BASIC_CONFIG:
-                return _('View basic event configuration')
+            case AuthAction.VIEW_EVENT_CONFIG:
+                return _('View event configuration')
             case AuthAction.MANAGE_ACCOUNTS:
                 return _('Manage accounts')
             case AuthAction.VIEW_TOURNAMENTS_TAB:

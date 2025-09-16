@@ -898,7 +898,7 @@ class PlayerAdminController(BaseEventAdminController):
                 context=template_context,
             )
 
-        return cls._admin_event_render(template_context)
+        return cls._admin_base_event_render(template_context)
 
     players_tab_guards = EventUserController.event_guards + [
         Guard.client_can_view_players_tab,
@@ -1851,7 +1851,7 @@ class PlayerAdminController(BaseEventAdminController):
             ),
             'admin_players_update_extra_columns': extra_columns,
         }
-        return self._admin_event_render(template_context)
+        return self._admin_base_event_render(template_context)
 
     @classmethod
     def publish_new_checkin(
