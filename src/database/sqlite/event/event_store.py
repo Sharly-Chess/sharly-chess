@@ -186,7 +186,9 @@ class StoredTournament:
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
     # Plugins can add their own tournament data
-    plugin_data: dict[str, dict[str, Any]] | None = None
+    plugin_data: dict[str, dict[str, Any]] = field(
+        default_factory=dict[str, dict[str, Any]]
+    )
 
 
 @dataclass
@@ -335,7 +337,9 @@ class BaseStoredEvent:
     override_unrated_rapid_blitz: bool | None = None
 
     # Plugins can add their own tournament data
-    plugin_data: dict[str, dict[str, Any]] | None = None
+    plugin_data: dict[str, dict[str, Any]] = field(
+        default_factory=dict[str, dict[str, Any]]
+    )
 
 
 @dataclass

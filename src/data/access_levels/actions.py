@@ -61,8 +61,7 @@ class AuthActionCategory(StrEnum):
 
 class AuthAction(StrEnum):
     # Application
-    VIEW_APPLICATION_SETTINGS = auto()
-    UPDATE_APPLICATION_SETTINGS = auto()
+    MANAGE_APPLICATION_SETTINGS = auto()
     MANAGE_SOURCE_DATABASES = auto()
 
     # Events access
@@ -145,8 +144,7 @@ class AuthAction(StrEnum):
     def category(self) -> AuthActionCategory:
         match self:
             case (
-                AuthAction.VIEW_APPLICATION_SETTINGS
-                | AuthAction.UPDATE_APPLICATION_SETTINGS
+                AuthAction.MANAGE_APPLICATION_SETTINGS
                 | AuthAction.MANAGE_SOURCE_DATABASES
             ):
                 return AuthActionCategory.APPLICATION
@@ -226,10 +224,8 @@ class AuthAction(StrEnum):
 
     def name(self, locale: str | None = None) -> str:
         match self:
-            case AuthAction.VIEW_APPLICATION_SETTINGS:
-                return _('View application settings', locale)
-            case AuthAction.UPDATE_APPLICATION_SETTINGS:
-                return _('Update application settings', locale)
+            case AuthAction.MANAGE_APPLICATION_SETTINGS:
+                return _('Manage application settings')
             case AuthAction.MANAGE_SOURCE_DATABASES:
                 return _('Manage source databases', locale)
             case AuthAction.VIEW_PRIVATE_EVENTS:

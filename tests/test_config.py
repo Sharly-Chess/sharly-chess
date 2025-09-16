@@ -156,7 +156,7 @@ class TestUtils:
 
         if via_api_request_context:
             res = via_api_request_context.post(
-                '/admin/config/create-event',
+                '/admin/home/create-event',
                 headers={'Content-Type': 'application/x-www-form-urlencoded'},
                 data=form_data,
             )

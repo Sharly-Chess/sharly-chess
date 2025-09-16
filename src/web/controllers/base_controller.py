@@ -115,8 +115,8 @@ class WebContext:
             for key, value in data.items()
         }
 
-    @staticmethod
-    async def normalize_file_data(data: dict[str, str | UploadFile]) -> dict[str, str]:
+    @classmethod
+    async def normalize_multipart_data(cls, data: dict[str, Any]) -> dict[str, str]:
         normalized_data: dict[str, str] = {}
         for key, value in data.items():
             if isinstance(value, UploadFile):
@@ -125,7 +125,7 @@ class WebContext:
                 Path(tmp_name).write_bytes(await value.read())
                 normalized_data[key] = tmp_name
             else:
-                normalized_data[key] = value
+                normalized_data[key] = cls.value_to_form_data(value)
         return normalized_data
 
     @classmethod

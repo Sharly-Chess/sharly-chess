@@ -52,6 +52,11 @@ class AccessLevel(IdentifiableEntity, ABC):
         """Short name to use in docs."""
 
     @property
+    def card_name(self) -> str:
+        """Name to use on the card to avoid overflowing the layout."""
+        return self.name
+
+    @property
     @abstractmethod
     def scope(self) -> AccessLevelScope:
         """The scope of effect of the access level."""
@@ -161,11 +166,15 @@ class ResultsEntryAccessLevel(AccessLevel):
 
     @classmethod
     def localized_name(cls, locale: str | None = None) -> str:
-        return _('Results Entry via public screens', locale)
+        return _('Results entry via public screens', locale)
 
     @staticmethod
     def short_name(locale: str | None = None) -> str:
         return _('RES', locale)
+
+    @property
+    def card_name(self) -> str:
+        return _('Results entry')
 
     @property
     def scope(self) -> AccessLevelScope:
@@ -200,6 +209,10 @@ class CheckInAccessLevel(AccessLevel):
     @staticmethod
     def short_name(locale: str | None = None) -> str:
         return _('CHE', locale)
+
+    @property
+    def card_name(self) -> str:
+        return _('Check-in')
 
     @property
     def scope(self) -> AccessLevelScope:
@@ -515,8 +528,7 @@ class AdministrationAccessLevel(AccessLevel):
     @staticmethod
     def access_level_actions() -> list[AuthAction]:
         return [
-            AuthAction.VIEW_APPLICATION_SETTINGS,
-            AuthAction.UPDATE_APPLICATION_SETTINGS,
+            AuthAction.MANAGE_APPLICATION_SETTINGS,
             AuthAction.MANAGE_SOURCE_DATABASES,
             AuthAction.VIEW_PRIVATE_EVENTS,
             AuthAction.VIEW_PASSED_COMING_EVENTS,
