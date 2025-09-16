@@ -78,7 +78,16 @@ class Client:
     def permissions_by_access_level(self) -> dict[AccessLevel, Permission]:
         """Returns all the permissions by access level, granted or inherited."""
         permissions_by_access_level: dict[AccessLevel, Permission] = {}
-        tournament_ids = self.account.tournament_ids
+        assert self.event is not None
+        tournament_ids = (
+            set(
+                tournament_id
+                for tournament_id in self.account.tournament_ids
+                if tournament_id in self.event.tournaments_by_id
+            )
+            if self.account.tournament_ids
+            else None
+        )
         for access_level in self.account.access_levels:
             permissions_by_access_level[access_level] = Account.merge(
                 Permission(tournament_ids),
