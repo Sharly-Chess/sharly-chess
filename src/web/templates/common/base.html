@@ -144,6 +144,16 @@
                     closeModal()
                 });
 
+                let ignoreNextModalClose = false;
+                // Intercept Bootstrap modal hide
+                $(document).on('hide.bs.modal', function (e) {
+                if (ignoreNextModalClose) {
+                    e.stopImmediatePropagation();
+                    e.preventDefault();
+                    ignoreNextModalClose = false;
+                }
+                });
+
                 window.addEventListener("do_print", function(event) {
                     closeModal();
                     const form = document.createElement('form');
