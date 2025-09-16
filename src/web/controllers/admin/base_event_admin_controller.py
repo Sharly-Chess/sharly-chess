@@ -18,7 +18,7 @@ from data.screen import Screen
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from plugins.utils import PluginNavBarItem
-from utils.enum import ScreenType
+from utils.enum import FormAction, ScreenType
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
@@ -123,7 +123,8 @@ class BaseEventAdminWebContext(AdminWebContext):
             nav_tabs |= {
                 'admin-event-config-tab': {
                     'title': _('Configuration'),
-                    'template': 'event/tab.html',
+                    'modal': 'admin-event-modal',
+                    'action': FormAction.UPDATE,
                     'icon_class': 'bi-gear-fill',
                 },
             }

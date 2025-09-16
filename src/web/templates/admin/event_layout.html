@@ -123,6 +123,21 @@
                     {% endfor %}
                 </div>
             {% endwith %}
+        {% elif 'modal' in nav_tab %}
+            <button
+                class="nav-link text-start me-1 position-relative align-items-center"
+                hx-get="{{ url_for(nav_tab.modal, action=nav_tab.action, event_uniq_id=admin_event.uniq_id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                preload
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            >
+                {% if nav_tab.icon_class %}
+                    <i class="{{ nav_tab.icon_class }}"></i>
+                {% endif %}
+                <span id="nav-{{ nav_id }}-tab-title" class=" expanded-only">{{ nav_tab.title }}</span>
+            </button>
         {% else %}
             {% with active=(admin_event_tab == nav_id) %}
                 <span class="sidebar-tooltip" {{ macros.tooltip_attributes('info', nav_tab.title, 'right') }}>

@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Any
 
 from litestar import get, patch, post, delete
 from litestar.enums import RequestEncodingType
@@ -6,7 +6,7 @@ from litestar.params import Body
 from litestar.plugins.htmx import HTMXRequest
 from litestar.response import Template, Redirect
 from litestar.status_codes import HTTP_200_OK
-from litestar_htmx import ClientRedirect
+from litestar_htmx import ClientRedirect, HTMXTemplate
 
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
@@ -17,9 +17,8 @@ from data.screen import Screen
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
-from plugins.ffe.utils import FFEUtils
 from plugins.manager import plugin_manager
-from utils.enum import ScreenType
+from utils.enum import FormAction, ScreenType
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
@@ -32,7 +31,6 @@ from web.urls import (
     admin_event_players_url,
     admin_event_tournaments_url,
     admin_event_config_url,
-    admin_url,
 )
 
 
@@ -40,70 +38,14 @@ class EventAdminController(BaseEventAdminController):
     @classmethod
     def _admin_event_config_render(
         cls,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        tournament_id: int | None = None,
-        modal: str | None = None,
-        action: str | None = None,
-        data: dict[str, str] | None = None,
-        errors: dict[str, str] | None = None,
+        web_context: BaseEventAdminWebContext,
+        template_context: dict[str, Any] | None = None,
     ) -> Template | ClientRedirect | Redirect:
-        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            data=data,
-        )
         if web_context.error:
             return web_context.error
-        if web_context.admin_event is None:
-            raise RuntimeError('admin_event not defined')
-
-        plugin_event_info_rows = plugin_manager.hook.get_event_info_rows_template()
-        template_context = web_context.template_context | {
-            'admin_event_tab': 'admin-event-config-tab',
-            'ffe_utils': FFEUtils,
-            'plugin_event_info_rows': plugin_event_info_rows,
-            'event_uniq_ids': EventLoader.all_event_ids(),
-        }
-
-        match modal:
-            case None:
-                pass
-            case 'event':
-                if action is None:
-                    raise RuntimeError('action not defined')
-                if data is None:
-                    data = cls._prepare_event_modal_data(
-                        action, request, web_context.admin_event
-                    )
-
-                plugin_form_fields_templates = (
-                    plugin_manager.hook.get_event_form_fields_template() or []
-                )
-                template_context |= {
-                    'federation_options': cls._get_federation_options(),
-                    'timer_color_texts': cls._get_timer_color_texts(
-                        SharlyChessConfig.default_timer_delays
-                    ),
-                    'background_images_jstree_data': cls.background_images_jstree_data(
-                        data['background_image']
-                    )
-                    if action
-                    in [
-                        'update',
-                        'clone',
-                    ]
-                    and 'background_image' in data
-                    else {},
-                    'modal': 'event',
-                    'plugin_form_fields_templates': plugin_form_fields_templates,
-                    'action': action,
-                    'data': data,
-                    'errors': errors or {},
-                }
-            case _:
-                raise ValueError(f'modal=[{modal}]')
-        return cls._admin_event_render(template_context)
+        return cls._admin_event_render(
+            web_context.template_context | (template_context or {}),
+        )
 
     @get(
         path='/admin/event/{event_uniq_id:str}',
@@ -206,6 +148,38 @@ class EventAdminController(BaseEventAdminController):
         # default display with no tab selected
         return self._admin_event_render(web_context.template_context)
 
+    def _event_modal_context(
+        self,
+        action: FormAction,
+        data: dict[str, str],
+        errors: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        plugin_form_fields_templates = (
+            plugin_manager.hook.get_event_form_fields_template() or []
+        )
+        template_context = {
+            'federation_options': self._get_federation_options(),
+            'timer_color_texts': self._get_timer_color_texts(
+                SharlyChessConfig.default_timer_delays
+            ),
+            'background_images_jstree_data': self.background_images_jstree_data(
+                data['background_image']
+            )
+            if action
+            in [
+                FormAction.UPDATE,
+                FormAction.CLONE,
+            ]
+            and 'background_image' in data
+            else {},
+            'modal': 'event',
+            'plugin_form_fields_templates': plugin_form_fields_templates,
+            'action': action,
+            'data': data,
+            'errors': errors or {},
+        }
+        return template_context
+
     @get(
         path='/admin/event/{event_uniq_id:str}/config',
         name='admin-event-config-tab',
@@ -215,9 +189,11 @@ class EventAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
     ) -> Template | ClientRedirect | Redirect:
+        web_context = BaseEventAdminWebContext(request, event_uniq_id)
+        if web_context.error:
+            return web_context.error
         return self._admin_event_config_render(
-            request,
-            event_uniq_id=event_uniq_id,
+            web_context=web_context,
         )
 
     @get(
@@ -227,14 +203,23 @@ class EventAdminController(BaseEventAdminController):
     async def htmx_admin_event_modal(
         self,
         request: HTMXRequest,
-        action: str,
+        action: FormAction,
         event_uniq_id: str,
     ) -> Template | ClientRedirect | Redirect:
-        return self._admin_event_config_render(
+        web_context = BaseEventAdminWebContext(
             request,
-            modal='event',
-            action=action,
             event_uniq_id=event_uniq_id,
+        )
+
+        data = self._prepare_event_modal_data(action, request, web_context.admin_event)
+        template_context = self._event_modal_context(
+            action,
+            data,
+        )
+
+        return self._admin_event_config_render(
+            web_context=web_context,
+            template_context=template_context,
         )
 
     @get(
@@ -272,18 +257,17 @@ class EventAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         stored_event: StoredEvent = self._admin_validate_event_update_data(
-            'clone', web_context, web_context.admin_event, data
+            FormAction.CLONE, web_context, web_context.admin_event, data
         )
         if stored_event.errors:
-            assert event_uniq_id is not None
-            return self._admin_event_config_render(
-                request,
-                event_uniq_id=event_uniq_id,
-                modal='event',
-                action='clone',
-                data=data,
-                errors=stored_event.errors,
+            template_context = self._event_modal_context(
+                FormAction.CLONE, data, errors=stored_event.errors
             )
+            return self._admin_event_config_render(
+                web_context=web_context,
+                template_context=template_context,
+            )
+
         uniq_id: str = stored_event.uniq_id
         event = web_context.get_admin_event()
         EventDatabase(event.uniq_id).clone(new_uniq_id=uniq_id)
@@ -295,7 +279,7 @@ class EventAdminController(BaseEventAdminController):
             request,
             _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id),
         )
-        return self._admin_event_config_render(request, event_uniq_id=uniq_id)
+        return ClientRedirect(redirect_to=admin_event_tournaments_url(request, uniq_id))
 
     @delete(
         path='/admin/event-delete/{event_uniq_id:str}',
@@ -323,9 +307,19 @@ class EventAdminController(BaseEventAdminController):
                 'Event [{uniq_id}] has been deleted, the database has been archived ({arch}).'
             ).format(uniq_id=event.uniq_id, arch=arch),
         )
-        return ClientRedirect(redirect_to=admin_url(request))
 
-    @patch(path='/admin/event-update/{event_uniq_id:str}', name='admin-event-update')
+        return HTMXTemplate(
+            template_name='common/empty_modal_and_messages.html',
+            context={'messages': Message.messages(request)},
+            re_target='#modal-wrapper',
+            trigger_event='close_modal',
+            after='receive',
+        )
+
+    @patch(
+        path='/admin/event-update/{event_uniq_id:str}',
+        name='admin-event-update',
+    )
     async def htmx_admin_event_update(
         self,
         request: HTMXRequest,
@@ -346,15 +340,14 @@ class EventAdminController(BaseEventAdminController):
             'update', web_context, web_context.admin_event, data
         )
         if stored_event.errors:
-            assert event_uniq_id is not None
-            return self._admin_event_config_render(
-                request,
-                event_uniq_id=event_uniq_id,
-                modal='event',
-                action='update',
-                data=data,
-                errors=stored_event.errors,
+            template_context = self._event_modal_context(
+                FormAction.UPDATE, data, errors=stored_event.errors
             )
+            return self._admin_event_config_render(
+                web_context=web_context,
+                template_context=template_context,
+            )
+
         uniq_id = stored_event.uniq_id
         with EventDatabase(uniq_id, write=True) as event_database:
             event_database.update_stored_event(stored_event)
@@ -362,7 +355,14 @@ class EventAdminController(BaseEventAdminController):
             request,
             _('Event [{uniq_id}] has been updated.').format(uniq_id=uniq_id),
         )
-        return self._admin_event_config_render(request, event_uniq_id=uniq_id)
+
+        return HTMXTemplate(
+            template_name='common/empty_modal_and_messages.html',
+            context={'messages': Message.messages(request)},
+            re_target='#modal-wrapper',
+            trigger_event='close_modal',
+            after='receive',
+        )
 
     @patch(
         path='/admin/event-uniq-id-update/{event_uniq_id:str}',
@@ -410,4 +410,4 @@ class EventAdminController(BaseEventAdminController):
                     new_uniq_id=new_uniq_id,
                 ),
             )
-        return self._admin_event_config_render(request, new_uniq_id)
+        return self._admin_event_config_render(web_context=web_context)
