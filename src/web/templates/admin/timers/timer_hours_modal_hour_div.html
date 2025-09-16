@@ -42,7 +42,7 @@
                                 {{ admin_macros.text_input(
                                     name='text_before',
                                     label=_('Text before the hour:'),
-                                    placeholder=_('E.g.: Check-in started for %%s'),
+                                    placeholder=_('E.g.: Start of check-in in %%s'),
                                     help_text=_('%%s is replaced by the time left before the hour.'),
                                     data=data, errors=errors
                                 ) }}
@@ -51,7 +51,7 @@
                                 {{ admin_macros.text_input(
                                     name='text_after',
                                     label=_('Text after the hour:'),
-                                    placeholder=_('E.g.: Start of check-in in %%s'),
+                                    placeholder=_('E.g.: Check-in started for %%s'),
                                     help_text=_('%%s is replaced by the time elapsed since the hour.'),
                                     data=data, errors=errors
                                 ) }}

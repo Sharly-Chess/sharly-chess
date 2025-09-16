@@ -875,7 +875,7 @@ msgid "Check-in / Results entry"
 msgstr "Pointage / Saisie des résultats"
 
 msgid "Check-in / Results entry ({num})"
-msgstr "Pointage / Saisie des résultats ({num})"
+msgstr "Pointage / Saisie ({num})"
 
 msgid "Check-in / Results entry ({tournament_name})"
 msgstr "Pointage / Saisie des résultats ({tournament_name})"
@@ -3461,7 +3461,7 @@ msgid "Pairings by board"
 msgstr "Appariements par échiquier"
 
 msgid "Pairings by board ({num})"
-msgstr "App. par échiquier ({num})"
+msgstr "Échiquiers ({num})"
 
 msgid "Pairings by board ({tournament_name})"
 msgstr "Appariements par échiquier ({tournament_name})"
@@ -3470,7 +3470,7 @@ msgid "Pairings by player"
 msgstr "Appariements par ordre alphabétique"
 
 msgid "Pairings by player ({num})"
-msgstr "App. par ordre alpha. ({num})"
+msgstr "Ordre alpha. ({num})"
 
 msgid "Pairings by player ({tournament_name})"
 msgstr "Appariements par ordre alphabétique ({tournament_name})"
