@@ -40,6 +40,7 @@ from database.sqlite.local_source_database import (
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
 from database.sqlite.local_source_database.delays import DisabledOutdatedDelay
 from plugins.manager import plugin_manager
+from utils.enum import FormAction
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
@@ -136,25 +137,10 @@ class IndexAdminController(BaseAdminController):
     @classmethod
     def _admin_render(
         cls,
-        request: HTMXRequest,
-        admin_tab: str | None,
-        modal: str | None = None,
+        web_context: AdminWebContext,
+        template_context: dict[str, Any] | None = None,
         keep_modal_open: bool | None = None,
-        admin_events_show_details: bool | None = None,
-        data: dict[str, str] | None = None,
-        errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect | Redirect:
-        web_context: AdminWebContext = AdminWebContext(
-            request, data=None, admin_tab=admin_tab
-        )
-        if web_context.error:
-            return web_context.error
-        if admin_events_show_details is not None:
-            SessionHandler.set_session_admin_events_show_details(
-                request, admin_events_show_details
-            )
-
-        sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         sorted_archives = ArchiveLoader.get_sorted_archives()
         public_only: bool = not web_context.client.can_view_private_events
         passed_events = EventLoader.get_events_metadata(
@@ -235,7 +221,7 @@ class IndexAdminController(BaseAdminController):
                     'divider': True,
                 },
             }
-        if not modal and (
+        if (not template_context or 'modal' not in template_context) and (
             not web_context.admin_tab or nav_tabs[web_context.admin_tab]['disabled']
         ):
             web_context.admin_tab = list(nav_tabs.keys())[0]
@@ -250,122 +236,23 @@ class IndexAdminController(BaseAdminController):
 
         event_card_blocks = plugin_manager.hook.get_event_card_block_template()
 
-        context = web_context.template_context | {
-            'messages': Message.messages(web_context.request),
-            'format_timestamp_date': format_timestamp_date,
-            'format_timestamp_time': format_timestamp_time,
-            'nav_tabs': nav_tabs,
-            'admin_events_show_details': (
-                SessionHandler.get_session_admin_events_show_details(
-                    web_context.request
-                )
-            ),
-            'event_card_blocks': event_card_blocks,
-        }
-
-        match modal:
-            case None:
-                pass
-            case 'config':
-                if data is None:
-                    config = SharlyChessConfig()
-                    data = WebContext.values_dict_to_form_data(
-                        {
-                            'console_log_level': config.console_log_level,
-                            'console_color': config.console_color,
-                            'console_show_date': config.console_show_date,
-                            'console_show_level': config.console_show_level,
-                            'experimental': config.experimental,
-                            'launch_browser': config.launch_browser,
-                            'federation': config.stored_config.federation,
-                            'locale': config.locale,
-                        }
+        context = (
+            web_context.template_context
+            | {
+                'messages': Message.messages(web_context.request),
+                'format_timestamp_date': format_timestamp_date,
+                'format_timestamp_time': format_timestamp_time,
+                'nav_tabs': nav_tabs,
+                'admin_events_show_details': (
+                    SessionHandler.get_session_admin_events_show_details(
+                        web_context.request
                     )
+                ),
+                'event_card_blocks': event_card_blocks,
+            }
+            | (template_context or {})
+        )
 
-                for plugin in plugin_manager.all_plugins:
-                    if plugin.form_key not in data:
-                        data[plugin.form_key] = WebContext.value_to_form_data(
-                            plugin.is_enabled
-                        )
-
-                if errors is None:
-                    errors = {}
-                console_log_level_options: dict[str, str] = {
-                    str(console_log_level): console_log_level_str
-                    for console_log_level, console_log_level_str in sharly_chess_config.console_log_levels.items()
-                }
-                locale_options: dict[str, str] = {
-                    locale: locale_localized_name(locale) for locale in locales
-                }
-                plugin_form_fields_templates = (
-                    plugin_manager.hook.get_event_form_fields_template() or []
-                )
-                context |= {
-                    'console_log_level_options': console_log_level_options,
-                    'locale_options': locale_options,
-                    'plugin_form_fields_templates': plugin_form_fields_templates,
-                    'federation_options': (
-                        {}
-                        if data['federation']
-                        else {'': _('Please choose a federation')}
-                    )
-                    | cls._get_federation_options(),
-                    'modal': modal,
-                    'data': data,
-                    'errors': errors,
-                }
-            case 'event':
-                action: str = 'create'
-                if data is None:
-                    data = cls._prepare_event_modal_data(
-                        action, web_context.request, None
-                    )
-
-                plugin_form_fields_templates = (
-                    plugin_manager.hook.get_event_form_fields_template() or []
-                )
-
-                context |= {
-                    'timer_color_texts': cls._get_timer_color_texts(
-                        SharlyChessConfig.default_timer_delays
-                    ),
-                    'background_images_jstree_data': cls.background_images_jstree_data(
-                        data['background_image']
-                    )
-                    if 'background_image' in data
-                    else {},
-                    'plugin_form_fields_templates': plugin_form_fields_templates,
-                    'federation_options': cls._get_federation_options(),
-                    'modal': modal,
-                    'action': action,
-                    'data': data,
-                    'errors': errors or {},
-                }
-            case 'database':
-                databases: list[LocalSourceDatabase] = (
-                    LocalSourceDatabaseManager.objects()
-                )
-                if data is None:
-                    data = {}
-                    for database in databases:
-                        data |= {
-                            f'{database.id}_outdate_delay': database.outdate_delay.id,
-                            f'{database.id}_outdate_action': (
-                                database.outdate_action.id
-                            ),
-                        }
-                context |= {
-                    'databases': databases,
-                    'online_data_sources': OnlineDataSourceManager.objects(),
-                    'network_connected': NetworkMonitor.connected(),
-                    'outdate_delay_options': OutdatedDelayManager.options(),
-                    'outdate_action_options': OutdatedActionManager.options(),
-                    'modal': modal,
-                    'data': data,
-                    'errors': {},
-                }
-            case _:
-                raise ValueError(f'modal=[{modal}]')
         if 'modal' in context:
             return HTMXTemplate(
                 template_name='admin/modals.html',
@@ -387,10 +274,17 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
         admin_events_show_details: bool | None,
     ) -> Template | ClientRedirect | Redirect:
+        web_context = AdminWebContext(request, data=None, admin_tab=None)
+        if web_context.error:
+            return web_context.error
+
+        if admin_events_show_details is not None:
+            SessionHandler.set_session_admin_events_show_details(
+                request, admin_events_show_details
+            )
+
         return self._admin_render(
-            request,
-            admin_tab=None,
-            admin_events_show_details=admin_events_show_details,
+            web_context=web_context,
         )
 
     @get(
@@ -403,11 +297,16 @@ class IndexAdminController(BaseAdminController):
         admin_tab: str,
         admin_events_show_details: bool | None,
     ) -> Template | ClientRedirect | Redirect:
-        return self._admin_render(
-            request,
-            admin_tab=admin_tab,
-            admin_events_show_details=admin_events_show_details,
-        )
+        web_context = AdminWebContext(request, data=None, admin_tab=admin_tab)
+        if web_context.error:
+            return web_context.error
+
+        if admin_events_show_details is not None:
+            SessionHandler.set_session_admin_events_show_details(
+                request, admin_events_show_details
+            )
+
+        return self._admin_render(web_context=web_context)
 
     @get(
         path='/admin/{admin_tab:str}/event-modal/create',
@@ -418,45 +317,17 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
         admin_tab: str,
     ) -> Template | ClientRedirect | Redirect:
-        return self._admin_render(
-            request,
-            admin_tab=admin_tab,
-            modal='event',
+        web_context = AdminWebContext(request, data=None, admin_tab=admin_tab)
+        data = self._prepare_event_modal_data(
+            FormAction.CREATE, web_context.request, None
         )
 
-    def _admin_event_create(
-        self,
-        request: HTMXRequest,
-        admin_tab: str,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-    ) -> Template | ClientRedirect | Redirect:
-        web_context: AdminWebContext = AdminWebContext(
-            request, data=data, admin_tab=admin_tab
+        template_context = self._event_modal_context(FormAction.CREATE, data)
+
+        return self._admin_render(
+            web_context=web_context,
+            template_context=template_context,
         )
-        if web_context.error:
-            return web_context.error
-        stored_event: StoredEvent = self._admin_validate_event_update_data(
-            'create', web_context, None, data
-        )
-        if stored_event.errors:
-            return self._admin_render(
-                request,
-                admin_tab=admin_tab,
-                modal='event',
-                data=data,
-                errors=stored_event.errors,
-            )
-        uniq_id: str = stored_event.uniq_id
-        EventDatabase(uniq_id).create()
-        with EventDatabase(uniq_id, write=True) as event_database:
-            event_database.update_stored_event(stored_event)
-        Message.success(
-            request, _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id)
-        )
-        return Redirect(admin_event_url(request, event_uniq_id=uniq_id))
 
     @post(path='/admin/{admin_tab:str}/create-event', name='admin-tab-create-event')
     async def htmx_admin_tab_event_create(
@@ -468,10 +339,139 @@ class IndexAdminController(BaseAdminController):
         ],
         admin_tab: str,
     ) -> Template | ClientRedirect | Redirect:
-        return self._admin_event_create(
+        web_context: AdminWebContext = AdminWebContext(
+            request, data=data, admin_tab=admin_tab
+        )
+        if web_context.error:
+            return web_context.error
+        stored_event: StoredEvent = self._admin_validate_event_update_data(
+            'create', web_context, None, data
+        )
+        if stored_event.errors:
+            template_context = self._event_modal_context(
+                FormAction.CREATE, data, errors=stored_event.errors
+            )
+            return self._admin_render(
+                web_context=web_context,
+                template_context=template_context,
+            )
+
+        uniq_id: str = stored_event.uniq_id
+        EventDatabase(uniq_id).create()
+        with EventDatabase(uniq_id, write=True) as event_database:
+            event_database.update_stored_event(stored_event)
+        Message.success(
+            request, _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id)
+        )
+        return Redirect(admin_event_url(request, event_uniq_id=uniq_id))
+
+    @post(
+        path='/admin/restore-archive/{archive_name:str}',
+        name='admin-restore-archive',
+    )
+    async def htmx_admin_restore_archive(
+        self,
+        request: HTMXRequest,
+        archive_name: str,
+    ) -> Template | ClientRedirect | Redirect:
+        web_context = AdminWebContext(request, data=None, admin_tab='archives')
+        archive = ArchiveLoader.get_archive(archive_name)
+        if not archive:
+            return self.redirect_error(request, f'Unknown archive [{archive_name}]')
+        uniq_id = archive.restore()
+        Message.success(
             request,
-            admin_tab=admin_tab,
-            data=data,
+            _(
+                'Archive [{archive}] successfully restored (see event [{event}]).'
+            ).format(archive=archive.name, event=uniq_id),
+        )
+        return self._admin_render(web_context=web_context)
+
+    @patch(
+        path='/admin/locale-update/{locale:str}',
+        name='admin-locale-update',
+    )
+    async def htmx_admin_locale_update(
+        self,
+        request: HTMXRequest,
+        locale: str,
+    ) -> Template | ClientRedirect | Redirect:
+        web_context = AdminWebContext(request, data=None, admin_tab=None)
+        sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
+        if locale in locales:
+            stored_config: StoredConfig = sharly_chess_config.stored_config
+            stored_config.locale = locale
+            with ConfigDatabase(write=True) as config_database:
+                config_database.update_stored_config(sharly_chess_config.stored_config)
+            sharly_chess_config.load_and_set_env()
+        return self._admin_render(web_context=web_context)
+
+    def _config_modal_context(
+        self,
+        data: dict[str, str] | None = None,
+        errors: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        config = SharlyChessConfig()
+        if data is None:
+            data = WebContext.values_dict_to_form_data(
+                {
+                    'console_log_level': config.console_log_level,
+                    'console_color': config.console_color,
+                    'console_show_date': config.console_show_date,
+                    'console_show_level': config.console_show_level,
+                    'experimental': config.experimental,
+                    'launch_browser': config.launch_browser,
+                    'federation': config.stored_config.federation,
+                    'locale': config.locale,
+                }
+            )
+
+        for plugin in plugin_manager.all_plugins:
+            if plugin.form_key not in data:
+                data[plugin.form_key] = WebContext.value_to_form_data(plugin.is_enabled)
+
+        if errors is None:
+            errors = {}
+        console_log_level_options: dict[str, str] = {
+            str(console_log_level): console_log_level_str
+            for console_log_level, console_log_level_str in config.console_log_levels.items()
+        }
+        locale_options: dict[str, str] = {
+            locale: locale_localized_name(locale) for locale in locales
+        }
+        plugin_form_fields_templates = (
+            plugin_manager.hook.get_event_form_fields_template() or []
+        )
+        template_context = {
+            'console_log_level_options': console_log_level_options,
+            'locale_options': locale_options,
+            'plugin_form_fields_templates': plugin_form_fields_templates,
+            'federation_options': (
+                {} if data['federation'] else {'': _('Please choose a federation')}
+            )
+            | self._get_federation_options(),
+            'modal': 'config',
+            'data': data,
+            'errors': errors,
+        }
+
+        return template_context
+
+    @get(
+        path='/admin/config-modal',
+        name='admin-config-modal',
+    )
+    async def htmx_admin_config_modal(
+        self,
+        request: HTMXRequest,
+    ) -> Template | ClientRedirect | Redirect:
+        config = SharlyChessConfig()
+        web_context = AdminWebContext(request, data=None, admin_tab=None)
+        template_context = self._config_modal_context()
+        return self._admin_render(
+            web_context=web_context,
+            template_context=template_context,
+            keep_modal_open=config.force_edit,
         )
 
     @patch(
@@ -486,6 +486,7 @@ class IndexAdminController(BaseAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template | ClientRedirect | Redirect:
+        web_context = AdminWebContext(request, data=data, admin_tab=None)
         stored_config: StoredConfig = self._admin_validate_config_update_data(data)
         stored_plugins: list[StoredPlugin] = self._admin_validate_plugins_update_data(
             data
@@ -494,15 +495,14 @@ class IndexAdminController(BaseAdminController):
         for plugin in stored_plugins:
             errors |= plugin.errors
         if errors:
+            template_context = self._config_modal_context(data, errors)
             sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
             return self._admin_render(
-                request=request,
-                admin_tab=None,
-                modal='config',
-                data=data,
-                errors=errors,
+                web_context=web_context,
+                template_context=template_context,
                 keep_modal_open=sharly_chess_config.force_edit,
             )
+
         with ConfigDatabase(write=True) as config_database:
             stored_config.force_edit = False
             config_database.update_stored_config(stored_config)
@@ -522,61 +522,6 @@ class IndexAdminController(BaseAdminController):
             re_target='#modal-wrapper',
             trigger_event='close_modal',
             after='receive',
-        )
-
-    @post(
-        path='/admin/restore-archive/{archive_name:str}',
-        name='admin-restore-archive',
-    )
-    async def htmx_admin_restore_archive(
-        self,
-        request: HTMXRequest,
-        archive_name: str,
-    ) -> Template | ClientRedirect | Redirect:
-        archive = ArchiveLoader.get_archive(archive_name)
-        if not archive:
-            return self.redirect_error(request, f'Unknown archive [{archive_name}]')
-        uniq_id = archive.restore()
-        Message.success(
-            request,
-            _(
-                'Archive [{archive}] successfully restored (see event [{event}]).'
-            ).format(archive=archive.name, event=uniq_id),
-        )
-        return self._admin_render(request, admin_tab='archives')
-
-    @patch(
-        path='/admin/locale-update/{locale:str}',
-        name='admin-locale-update',
-    )
-    async def htmx_admin_locale_update(
-        self,
-        request: HTMXRequest,
-        locale: str,
-    ) -> Template | ClientRedirect | Redirect:
-        sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
-        if locale in locales:
-            stored_config: StoredConfig = sharly_chess_config.stored_config
-            stored_config.locale = locale
-            with ConfigDatabase(write=True) as config_database:
-                config_database.update_stored_config(sharly_chess_config.stored_config)
-            sharly_chess_config.load_and_set_env()
-        return self._admin_render(request=request, data=None, admin_tab=None)
-
-    @get(
-        path='/admin/config-modal',
-        name='admin-config-modal',
-    )
-    async def htmx_admin_config_modal(
-        self,
-        request: HTMXRequest,
-    ) -> Template | ClientRedirect | Redirect:
-        sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
-        return self._admin_render(
-            request,
-            admin_tab=None,
-            modal='config',
-            keep_modal_open=sharly_chess_config.force_edit,
         )
 
     @get(
@@ -623,6 +568,31 @@ class IndexAdminController(BaseAdminController):
             },
         )
 
+    def _database_modal_context(
+        self,
+        data: dict[str, str] | None = None,
+        errors: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        data = data or {}
+        databases: list[LocalSourceDatabase] = LocalSourceDatabaseManager.objects()
+        for database in databases:
+            data |= {
+                f'{database.id}_outdate_delay': database.outdate_delay.id,
+                f'{database.id}_outdate_action': (database.outdate_action.id),
+            }
+        template_context = {
+            'databases': databases,
+            'online_data_sources': OnlineDataSourceManager.objects(),
+            'network_connected': NetworkMonitor.connected(),
+            'outdate_delay_options': OutdatedDelayManager.options(),
+            'outdate_action_options': OutdatedActionManager.options(),
+            'modal': 'database',
+            'data': data,
+            'errors': errors or {},
+        }
+
+        return template_context
+
     @get(
         path='/admin/database-modal',
         name='admin-database-modal',
@@ -631,10 +601,11 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
     ) -> Template | ClientRedirect | Redirect:
+        web_context = AdminWebContext(request, data=None, admin_tab=None)
+        template_context = self._database_modal_context()
         return self._admin_render(
-            request,
-            admin_tab=None,
-            modal='database',
+            web_context=web_context,
+            template_context=template_context,
         )
 
     @patch(
@@ -747,6 +718,7 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
         data_source_id: str,
     ) -> Template | ClientRedirect | Redirect:
+        web_context = AdminWebContext(request, data=None, admin_tab=None)
         try:
             data_source = OnlineDataSourceManager.get_object(data_source_id)
             await data_source.reload_connection_status()
@@ -754,8 +726,8 @@ class IndexAdminController(BaseAdminController):
             return self.redirect_error(
                 request, f'Unknown data source [{data_source_id}].'
             )
+        template_context = self._database_modal_context()
         return self._admin_render(
-            request,
-            admin_tab=None,
-            modal='database',
+            web_context=web_context,
+            template_context=template_context,
         )

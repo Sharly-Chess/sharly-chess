@@ -100,20 +100,14 @@
 {% endblock %}
 
 {% block card_buttons_right %}
-    <span
-        {% if not client.can_update_event %}
-            {{ macros.tooltip_attributes('warning', _('You are not allowed to manage events.'), 'bottom') }}
-        {% else %}
-            {{ macros.tooltip_attributes('info', _('Edit the properties of the event.'), 'top') }}
-        {% endif %}
-    >
-        <button
-            class="btn btn-sm btn-outline-primary"
-            onclick="event.stopPropagation();"
-            hx-push-url="false"
-            {% if not client.can_update_event %}
-                disabled
-            {% else %}
+    {% if client.can_update_event %}
+        <span
+        {{ macros.tooltip_attributes('info', _('Edit the properties of the event.'), 'top') }}
+        >
+            <button
+                class="btn btn-sm btn-outline-primary"
+                onclick="event.stopPropagation();"
+                hx-push-url="false"
                 hx-get="{{ url_for(
                     'admin-event-modal',
                     event_uniq_id=event.uniq_id,
@@ -124,25 +118,19 @@
                 data-bs-toggle="modal"
                 data-bs-target="#modal-wrapper"
                 preload
-            {% endif %}
+            >
+                <i class="bi-pencil-fill"></i>
+            </button>
+        </span>
+    {% endif %}
+    {% if client.can_add_event %}
+        <span
+           {{ macros.tooltip_attributes('info', _('Duplicate the event.'), 'top') }}
         >
-            <i class="bi-pencil-fill"></i>
-        </button>
-    </span>
-    <span
-        {% if not client.can_add_event %}
-            {{ macros.tooltip_attributes('warning', _('You are not allowed to add events.'), 'bottom') }}
-        {% else %}
-            {{ macros.tooltip_attributes('info', _('Duplicate the event.'), 'top') }}
-        {% endif %}
-    >
-        <button
-            class="btn btn-sm btn-outline-primary"
-            onclick="event.stopPropagation();"
-            hx-push-url="false"
-            {% if not client.can_add_event %}
-                disabled
-            {% else %}
+            <button
+                class="btn btn-sm btn-outline-primary"
+                onclick="event.stopPropagation();"
+                hx-push-url="false"
                 hx-get="{{ url_for(
                     'admin-event-modal',
                     event_uniq_id=event.uniq_id,
@@ -153,25 +141,19 @@
                 data-bs-toggle="modal"
                 data-bs-target="#modal-wrapper"
                 preload
-            {% endif %}
-        >
-            <i class="bi-copy"></i>
-        </button>
-    </span>
-    <span
-        {% if not client.can_delete_event %}
-            {{ macros.tooltip_attributes('warning', _('You are not allowed to archive events.'), 'bottom') }}
-        {% else %}
+            >
+                <i class="bi-copy"></i>
+            </button>
+        </span>
+    {% endif %}
+    {% if client.can_delete_event %}
+        <span
             {{ macros.tooltip_attributes('info', _('Archive the event.'), 'top') }}
-        {% endif %}
-    >
-        <button
-            class="btn btn-sm btn-outline-danger"
-            onclick="event.stopPropagation();"
-            hx-push-url="false"
-            {% if not client.can_delete_event %}
-                disabled
-            {% else %}
+        >
+            <button
+                class="btn btn-sm btn-outline-danger"
+                onclick="event.stopPropagation();"
+                hx-push-url="false"
                 hx-get="{{ url_for(
                     'admin-event-delete-modal',
                     event_uniq_id=event.uniq_id,
@@ -181,9 +163,9 @@
                 preload
                 data-bs-toggle="modal"
                 data-bs-target="#modal-wrapper"
-            {% endif %}
-        >
-            <i class="bi bi-archive-fill"></i>
-        </button>
-    </span>
+            >
+                <i class="bi bi-archive-fill"></i>
+            </button>
+        </span>
+    {% endif %}
 {% endblock %}

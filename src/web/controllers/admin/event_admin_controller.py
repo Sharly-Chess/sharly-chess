@@ -17,7 +17,6 @@ from data.screen import Screen
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
-from plugins.manager import plugin_manager
 from utils.enum import FormAction, ScreenType
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
@@ -30,7 +29,7 @@ from web.urls import (
     admin_event_pairings_url,
     admin_event_players_url,
     admin_event_tournaments_url,
-    admin_event_config_url,
+    admin_event_url,
 )
 
 
@@ -83,10 +82,7 @@ class EventAdminController(BaseEventAdminController):
             return Redirect(
                 admin_event_players_url(request, web_context.admin_event.uniq_id)
             )
-        if (
-            web_context.admin_event.tournaments_by_uniq_id
-            and web_context.client.can_view_tournaments_tab
-        ):
+        if web_context.client.can_view_tournaments_tab:
             return Redirect(
                 admin_event_tournaments_url(request, web_context.admin_event.uniq_id)
             )
@@ -140,61 +136,8 @@ class EventAdminController(BaseEventAdminController):
                     )
                 )
 
-        if web_context.client.can_view_event_basic_config:
-            return Redirect(
-                admin_event_config_url(request, web_context.admin_event.uniq_id)
-            )
-
         # default display with no tab selected
         return self._admin_event_render(web_context.template_context)
-
-    def _event_modal_context(
-        self,
-        action: FormAction,
-        data: dict[str, str],
-        errors: dict[str, str] | None = None,
-    ) -> dict[str, Any]:
-        plugin_form_fields_templates = (
-            plugin_manager.hook.get_event_form_fields_template() or []
-        )
-        template_context = {
-            'federation_options': self._get_federation_options(),
-            'timer_color_texts': self._get_timer_color_texts(
-                SharlyChessConfig.default_timer_delays
-            ),
-            'background_images_jstree_data': self.background_images_jstree_data(
-                data['background_image']
-            )
-            if action
-            in [
-                FormAction.UPDATE,
-                FormAction.CLONE,
-            ]
-            and 'background_image' in data
-            else {},
-            'modal': 'event',
-            'plugin_form_fields_templates': plugin_form_fields_templates,
-            'action': action,
-            'data': data,
-            'errors': errors or {},
-        }
-        return template_context
-
-    @get(
-        path='/admin/event/{event_uniq_id:str}/config',
-        name='admin-event-config-tab',
-    )
-    async def htmx_admin_event_config_tab(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-    ) -> Template | ClientRedirect | Redirect:
-        web_context = BaseEventAdminWebContext(request, event_uniq_id)
-        if web_context.error:
-            return web_context.error
-        return self._admin_event_config_render(
-            web_context=web_context,
-        )
 
     @get(
         path='/admin/event-modal/{action:str}/{event_uniq_id:str}',
@@ -410,4 +353,4 @@ class EventAdminController(BaseEventAdminController):
                     new_uniq_id=new_uniq_id,
                 ),
             )
-        return self._admin_event_config_render(web_context=web_context)
+        return ClientRedirect(redirect_to=admin_event_url(request, new_uniq_id))

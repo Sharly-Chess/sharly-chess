@@ -15,7 +15,7 @@ from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
 from data.loader import EventLoader
 from utils import StaticUtils
-from utils.enum import TournamentRating
+from utils.enum import FormAction, TournamentRating
 from database.sqlite.event.event_store import StoredEvent
 from plugins.manager import plugin_manager
 from web.controllers.base_controller import BaseController, WebContext
@@ -594,3 +594,36 @@ class BaseAdminController(BaseController):
                 override_unrated_rapid_blitz
             ),
         } | plugin_form_data
+
+    def _event_modal_context(
+        self,
+        action: FormAction,
+        data: dict[str, str],
+        errors: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        plugin_form_fields_templates = (
+            plugin_manager.hook.get_event_form_fields_template() or []
+        )
+        template_context = {
+            'federation_options': self._get_federation_options(),
+            'timer_color_texts': self._get_timer_color_texts(
+                SharlyChessConfig.default_timer_delays
+            ),
+            'background_images_jstree_data': self.background_images_jstree_data(
+                data['background_image']
+            )
+            if action
+            in [
+                FormAction.UPDATE,
+                FormAction.CLONE,
+            ]
+            and 'background_image' in data
+            else {},
+            'modal': 'event',
+            'event_uniq_ids': list(EventLoader().event_uniq_ids),
+            'plugin_form_fields_templates': plugin_form_fields_templates,
+            'action': action,
+            'data': data,
+            'errors': errors or {},
+        }
+        return template_context

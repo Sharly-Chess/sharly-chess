@@ -125,6 +125,8 @@
             {% endwith %}
         {% elif 'modal' in nav_tab %}
             <button
+                id="nav-{{ nav_id }}-tab"
+                data-testid="nav-{{ nav_id }}-tab"
                 class="nav-link text-start me-1 position-relative align-items-center"
                 hx-get="{{ url_for(nav_tab.modal, action=nav_tab.action, event_uniq_id=admin_event.uniq_id) }}"
                 hx-target="body"
@@ -204,7 +206,7 @@
                     role="tabpanel"
                     aria-labelledby="nav-{{ nav_id }}-tab"
                 >
-                    {% if active %}
+                    {% if active and nav_tab.template %}
                         {% include nav_tab.template %}
                     {% endif %}
                 </div>

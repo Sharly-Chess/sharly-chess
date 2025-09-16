@@ -119,7 +119,7 @@ class BaseEventAdminWebContext(AdminWebContext):
         nav_tabs: dict[
             str, dict[str, str | bool | dict[str, dict[str, str | bool]]]
         ] = {}
-        if self.client.can_view_event_basic_config:
+        if self.client.can_view_event_config:
             nav_tabs |= {
                 'admin-event-config-tab': {
                     'title': _('Configuration'),
