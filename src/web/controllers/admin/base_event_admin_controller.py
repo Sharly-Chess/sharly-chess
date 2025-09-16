@@ -314,7 +314,7 @@ class BaseEventAdminWebContext(AdminWebContext):
 
 class BaseEventAdminController(BaseAdminController):
     @classmethod
-    def _admin_event_render(
+    def _admin_base_event_render(
         cls,
         template_context: dict[str, Any],
     ) -> HTMXTemplate:

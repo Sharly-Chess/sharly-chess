@@ -386,7 +386,7 @@ class TimerAdminController(BaseEventAdminController):
                     'data': data,
                     'errors': errors,
                 }
-        return cls._admin_event_render(template_context)
+        return cls._admin_base_event_render(template_context)
 
     @get(
         path='/admin/event/{event_uniq_id:str}/timers',

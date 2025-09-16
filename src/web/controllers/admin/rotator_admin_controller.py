@@ -78,7 +78,7 @@ class RotatorAdminController(BaseEventAdminController):
     ) -> Template | ClientRedirect | Redirect:
         if web_context.error:
             return web_context.error
-        return cls._admin_event_render(
+        return cls._admin_base_event_render(
             web_context.template_context | (template_context or {})
         )
 

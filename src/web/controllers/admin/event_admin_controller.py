@@ -23,14 +23,14 @@ from web.urls import (
 
 class EventAdminController(BaseEventAdminController):
     @classmethod
-    def _admin_event_config_render(
+    def _admin_event_render(
         cls,
         web_context: BaseEventAdminWebContext,
         template_context: dict[str, Any] | None = None,
     ) -> Template | ClientRedirect | Redirect:
         if web_context.error:
             return web_context.error
-        return cls._admin_event_render(
+        return cls._admin_base_event_render(
             web_context.template_context | (template_context or {}),
         )
 
@@ -125,4 +125,4 @@ class EventAdminController(BaseEventAdminController):
                 )
 
         # default display with no tab selected
-        return self._admin_event_render(web_context.template_context)
+        return self._admin_base_event_render(web_context.template_context)
