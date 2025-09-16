@@ -138,6 +138,7 @@
                                     aria-expanded="{{ 'true' if expanded else 'false' }}"
                                     hx-get="{{ url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id) }}"
                                     hx-vals='js:{ {{name}}: !$(event.target).closest("button").hasClass("collapsed")}'
+                                    hx-headers='{"HX-Swap-Mode":"none"}'
                                     hx-swap="none"
                                 >
                                     <span

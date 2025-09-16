@@ -477,9 +477,16 @@
             </script>
         {% else %}
             <div id="main-wrapper" class="" {% block sse %}{% endblock sse %}>
-                <div id="messages" class="w-50 position-fixed bottom-0 end-0 me-3" style="z-index: 100" hx-preserve>
-                    <div id="refresh-message"></div>
-                </div>
+
+                {% if not request.headers.get('HX-Swap-Mode') == 'none' %}
+                    {# hx-preserve shouldn't be included in responses with an hx-swap of 'none', or they'll be removed.
+                       To prevent this the client should also set the HX-Swap-Mode header to 'none' so that the server
+                       knows not to include this in the response.
+                     #}
+                    <div id="messages" class="w-50 position-fixed bottom-0 end-0 me-3" style="z-index: 100" hx-preserve>
+                        <div id="refresh-message"></div>
+                    </div>
+                {% endif %}
                 {% block header %}
                 {% endblock header %}
                 <div class="sidebar">
