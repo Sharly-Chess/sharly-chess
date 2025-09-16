@@ -6252,15 +6252,3 @@ msgstr "½ - 0 (NC)"
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
 
-#~ msgid "BE CAREFUL TO GIVE SENSITIVE ACCESS LEVELS ONLY TO TRUSTED PEOPLE!"
-#~ msgstr "NE DONNEZ LES NIVEAUX D'ACCÈS SENSIBLES QU'À DES PERSONNES DE CONFIANCE !"
-
-#~ msgid "Creating accounts allows you to grant permissions to people on other clients,"
-#~ msgstr "La création de comptes vous permet de donner des permissions à des personnes sur d'autres clients,"
-
-#~ msgid "Results Entry via public screens"
-#~ msgstr "Saisie des résultats sur écrans publics"
-
-#~ msgid "Warning: by default, only people on your Sharly Chess server can access the application."
-#~ msgstr "Attention : par défaut, seules les personnes connectées sur le serveur Sharly Chess peuvent accéder à l'application."
-

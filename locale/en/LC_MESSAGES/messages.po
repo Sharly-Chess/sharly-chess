@@ -6252,15 +6252,3 @@ msgstr ""
 msgid "½ - ½ (U)"
 msgstr ""
 
-#~ msgid "BE CAREFUL TO GIVE SENSITIVE ACCESS LEVELS ONLY TO TRUSTED PEOPLE!"
-#~ msgstr ""
-
-#~ msgid "Creating accounts allows you to grant permissions to people on other clients,"
-#~ msgstr ""
-
-#~ msgid "Results Entry via public screens"
-#~ msgstr ""
-
-#~ msgid "Warning: by default, only people on your Sharly Chess server can access the application."
-#~ msgstr ""
-
