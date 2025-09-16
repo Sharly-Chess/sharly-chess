@@ -6,6 +6,7 @@ from typing import Any
 
 from common.exception import OptionError
 from common.i18n import _
+from data.tournament import Tournament
 from utils.option import Option
 
 
@@ -17,9 +18,17 @@ class TournamentImporterOption(Option, ABC):
         return f'/admin/tournaments/import_options/{self.template_file_name}.html'
 
     @property
-    @abstractmethod
     def template_file_name(self) -> str:
         """Name of the file of the template."""
+        return self.id
+
+    @property
+    def default_value(self) -> Any:
+        return self.get_default_value()
+
+    @abstractmethod
+    def get_default_value(self, tournament: Tournament | None = None) -> Any:
+        """Set the default form value from the event or tournament on the modal."""
 
 
 class FileOption(TournamentImporterOption):
@@ -28,15 +37,10 @@ class FileOption(TournamentImporterOption):
         return 'file'
 
     @property
-    def template_file_name(self) -> str:
-        return 'file'
-
-    @property
     def type(self) -> type | UnionType:
         return Path | None
 
-    @property
-    def default_value(self) -> Any:
+    def get_default_value(self, tournament: Tournament | None = None) -> Any:
         return None
 
     def validate(self):

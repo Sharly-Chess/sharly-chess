@@ -34,19 +34,6 @@ def experimental_features_enabled() -> bool:
     return _EXPERIMENTAL_FEATURES_ENABLED
 
 
-_IS_SERVER_ENGINE: bool = False
-
-
-def set_is_server_engine(is_server_engine_: bool):
-    global _IS_SERVER_ENGINE
-    _IS_SERVER_ENGINE = is_server_engine_
-
-
-def is_server_engine() -> bool:
-    global _IS_SERVER_ENGINE
-    return _IS_SERVER_ENGINE
-
-
 REQUEST_TIMEOUT: int = 10
 
 RGB = namedtuple('RGB', ['red', 'green', 'blue'])

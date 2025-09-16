@@ -5,19 +5,13 @@ from unittest import TestCase
 import pytest
 from packaging.version import Version, InvalidVersion
 
-from common import LOG_FILE, EVENTS_FOLDER
+from common import EVENTS_FOLDER
 from common.logger import get_logger
 from common.engine import Engine
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
 from data.loader import EventLoader
 from database.sqlite.event.event_database import EventDatabase
-
-
-class _TestEngine(Engine):
-    @property
-    def log_file_path(self) -> Path:
-        return LOG_FILE
 
 
 logger: Logger = get_logger()
@@ -32,7 +26,7 @@ class RecoverTestCase(TestCase):
         # with method _recover_previous_version() by looking
         # for previous instances in folder ..
         logger.info('Loading test engine...')
-        test_engine = _TestEngine()
+        test_engine = Engine()
         for version_dir in Path(__file__).parent.glob('*'):
             if version_dir.is_dir():
                 try:

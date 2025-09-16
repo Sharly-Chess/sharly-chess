@@ -282,7 +282,7 @@
     {{ admin_macros.extra_admin_column_cell("comment", player, admin_players_extra_columns)}}
     {% if 'comment' in admin_players_filter_columns %}
         <td class="text-nowrap">
-            {{ player.comment }}
+            {{ player.comment or '' }}
         </td>
     {% endif %}
     {{ admin_macros.extra_admin_column_cell("record", player, admin_players_extra_columns)}}

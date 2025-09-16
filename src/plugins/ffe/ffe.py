@@ -587,8 +587,6 @@ class FfePlugin(Plugin):
     def augment_event_after_db_fetch(
         self, stored_event: 'StoredEvent', row: dict[str, Any]
     ):
-        if not stored_event.plugin_data:
-            stored_event.plugin_data = {}
         stored_event.plugin_data[self.id] = {
             'ffe_auto_upload': row.get('ffe_auto_upload', False),
             'ffe_auto_upload_delay': row.get('ffe_auto_upload_delay', None),
@@ -645,8 +643,8 @@ class FfePlugin(Plugin):
         )
         if ffe_auto_upload_delay and ffe_auto_upload_delay < FFE_MIN_UPLOAD_DELAY:
             errors[field] = _(
-                f'The delay must be at least {FFE_MIN_UPLOAD_DELAY} minutes to avoid overloading the FFE server.'
-            )
+                'The delay must be at least {min_delay} minutes to avoid overloading the FFE server.'
+            ).format(min_delay=FFE_MIN_UPLOAD_DELAY)
 
         # Keep data other than these two fields
         previous_data = event.plugin_data.get(self.id, {}) if event else {}
@@ -686,8 +684,6 @@ class FfePlugin(Plugin):
     def augment_tournament_after_db_fetch(
         self, stored_tournament: 'StoredTournament', row: dict[str, Any]
     ):
-        if not stored_tournament.plugin_data:
-            stored_tournament.plugin_data = {}
         stored_tournament.plugin_data[self.id] = {
             'ffe_id': row.get('ffe_id', ''),
             'ffe_password': row.get('ffe_password', ''),
@@ -814,26 +810,25 @@ class FfePlugin(Plugin):
         )
         if blocker := PapiConverter.check_pairing_variation(pairing_variation):
             return blocker
+        if blocker := PapiConverter.check_rounds(stored_tournament.rounds):
+            return blocker
 
-        if not blocker:
-            tie_break_type_by_id: dict[str, type[TieBreak]] = (
-                TieBreakManager.type_by_id()
-            )
-            option_type_by_id: dict[str, type[TieBreakOption]] = (
-                TieBreakOptionManager.type_by_id()
-            )
-            for tie_break_dict in stored_tournament.tie_breaks:
-                assert isinstance(tie_break_dict['type'], str)
-                assert isinstance(tie_break_dict['options'], dict)
-                tie_break_id = tie_break_dict['type']
-                options: list[TieBreakOption] = []
-                for option_id, value in tie_break_dict['options'].items():
-                    if option_type := option_type_by_id.get(option_id, None):
-                        options.append(option_type(value))
-                if tie_break_type := tie_break_type_by_id.get(tie_break_id, None):
-                    tie_break = tie_break_type(options)
-                    if blocker := PapiConverter.check_tiebreak(tie_break):
-                        return blocker
+        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager.type_by_id()
+        option_type_by_id: dict[str, type[TieBreakOption]] = (
+            TieBreakOptionManager.type_by_id()
+        )
+        for tie_break_dict in stored_tournament.tie_breaks:
+            assert isinstance(tie_break_dict['type'], str)
+            assert isinstance(tie_break_dict['options'], dict)
+            tie_break_id = tie_break_dict['type']
+            options: list[TieBreakOption] = []
+            for option_id, value in tie_break_dict['options'].items():
+                if option_type := option_type_by_id.get(option_id, None):
+                    options.append(option_type(value))
+            if tie_break_type := tie_break_type_by_id.get(tie_break_id, None):
+                tie_break = tie_break_type(options)
+                if blocker := PapiConverter.check_tiebreak(tie_break):
+                    return blocker
 
         return None
 
