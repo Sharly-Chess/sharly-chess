@@ -65,7 +65,6 @@
                 $('#{{ id }}').on('select2:unselecting', function(e) {
                     $(this).data('select2').$dropdown.hide();
                 });
-                $('.select2-search__field').css('width', '100%');
                 $('body').tooltip({
                     selector: '[data-bs-toggle="tooltip"],.select2-results__option',
                     title: function() {
