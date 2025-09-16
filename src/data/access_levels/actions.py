@@ -156,7 +156,6 @@ class AuthAction(StrEnum):
                 | AuthAction.RENAME_EVENTS
                 | AuthAction.UPDATE_EVENTS
                 | AuthAction.VIEW_EVENT_CONFIG
-                | AuthAction.VIEW_EVENT_CONFIG
             ):
                 return AuthActionCategory.EVENTS_MANAGEMENT
             case AuthAction.MANAGE_ACCOUNTS:
@@ -240,9 +239,7 @@ class AuthAction(StrEnum):
             case AuthAction.UPDATE_EVENTS:
                 return _('Update events')
             case AuthAction.VIEW_EVENT_CONFIG:
-                return _('View complete event configuration')
-            case AuthAction.VIEW_EVENT_CONFIG:
-                return _('View basic event configuration')
+                return _('View event configuration')
             case AuthAction.MANAGE_ACCOUNTS:
                 return _('Manage accounts')
             case AuthAction.VIEW_TOURNAMENTS_TAB:

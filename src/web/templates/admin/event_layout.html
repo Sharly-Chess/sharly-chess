@@ -177,9 +177,15 @@
         {% include '/admin/common/print_button.html' %}
     {% endif %}
     {{ admin_macros.extra_admin_nav_item("database", extra_admin_nav_items)}}
-    <div class="sidebar-divider my-3"></div>
-    {% include '/admin/common/database/database_button.html' %}
-    {% include '/admin/common/settings_button.html' %}
+    {% if client.can_manage_source_databases or client.can_manage_application_settings %}
+        <div class="sidebar-divider my-3"></div>
+    {% endif %}
+    {% if client.can_manage_source_databases %}
+        {% include '/admin/common/database/database_button.html' %}
+    {% endif %}
+    {% if client.can_manage_application_settings %}
+        {% include '/admin/common/settings_button.html' %}
+    {% endif %}
     <div class="sidebar-divider my-3"></div>
     {% include '/common/profile/profile_button.html' %}
 {% endblock admin_nav %}
