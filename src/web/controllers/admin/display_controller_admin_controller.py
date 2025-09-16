@@ -201,7 +201,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
                 }
             case _:
                 raise ValueError(f'modal=[{modal}]')
-        return cls._admin_event_render(template_context)
+        return cls._admin_base_event_render(template_context)
 
     @get(
         path='/admin/event/{event_uniq_id:str}/display_controllers',

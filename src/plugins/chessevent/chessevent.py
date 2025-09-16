@@ -93,10 +93,6 @@ class ChessEventPlugin(Plugin):
         }
 
     @hookimpl
-    def get_event_info_rows_template(self) -> str:
-        return '/chessevent_event_info_rows.html'
-
-    @hookimpl
     def get_event_card_block_template(self) -> str:
         return '/chessevent_event_card_block.html'
 

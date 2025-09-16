@@ -100,4 +100,75 @@
 {% endblock %}
 
 {% block card_buttons_right %}
+    {% if client.can_update_event %}
+        <span
+        {{ macros.tooltip_attributes('info', _('Edit the properties of the event.'), 'top') }}
+        >
+            <button
+                class="btn btn-sm btn-outline-primary"
+                onclick="event.stopPropagation();"
+                hx-push-url="false"
+                hx-get="{{ url_for(
+                    'admin-event-modal',
+                    admin_tab=admin_tab,
+                    event_uniq_id=event.uniq_id,
+                    action='update',
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+                preload
+            >
+                <i class="bi-pencil-fill"></i>
+            </button>
+        </span>
+    {% endif %}
+    {% if client.can_add_event %}
+        <span
+           {{ macros.tooltip_attributes('info', _('Duplicate the event.'), 'top') }}
+        >
+            <button
+                class="btn btn-sm btn-outline-primary"
+                onclick="event.stopPropagation();"
+                hx-push-url="false"
+                hx-get="{{ url_for(
+                    'admin-event-modal',
+                    admin_tab=admin_tab,
+                    event_uniq_id=event.uniq_id,
+                    action='clone',
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+                preload
+            >
+                <i class="bi-copy"></i>
+            </button>
+        </span>
+    {% endif %}
+    {% if client.can_delete_event %}
+        <span
+            {{ macros.tooltip_attributes('info', _('Archive the event.'), 'top') }}
+        >
+            <button
+                class="btn btn-sm btn-outline-danger"
+                onclick="event.stopPropagation();"
+                hx-push-url="false"
+                hx-get="{{ url_for(
+                    'admin-event-delete-modal',
+                    admin_tab=admin_tab,
+                    event_uniq_id=event.uniq_id,
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                preload
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            >
+                <i class="bi bi-archive-fill"></i>
+            </button>
+        </span>
+    {% endif %}
 {% endblock %}

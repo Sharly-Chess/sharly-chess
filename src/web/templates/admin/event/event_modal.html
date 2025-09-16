@@ -1,14 +1,17 @@
 <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-event-edit-modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 class="modal-title">
-                {% if action == 'update' %}
-                    {{ _('Edit event') }}
-                    <span style="font-size: 90%">{{ macros.doc_icon('events-create', 'ms-2') }}</span>
-                {% else %}
-                    {{ _('Create event') }}<span style="font-size: 70%">{{ macros.doc_icon('events-create', 'ms-2') }}</span>
-                {% endif %}
-            </h2>
+            {% if action == 'update' and client.can_update_event %}
+                {% include 'event_update_modal_header.html' %}
+            {% else %}
+                <h2 class="modal-title">
+                    {% if not client.can_update_event %}
+                        {{ admin_event.name }}
+                    {% else %}
+                        {{ _('Create event') }}<span style="font-size: 70%">{{ macros.doc_icon('events-create', 'ms-2') }}</span>
+                    {% endif %}
+                </h2>
+            {% endif %}
         </div>
         <div class="modal-body">
             <form
@@ -17,9 +20,9 @@
                     hx-post="{{ url_for('admin-tab-create-event', admin_tab=admin_tab) }}"
                     hx-push-url="true"
                 {% elif action == 'clone' %}
-                    hx-post="{{ url_for('admin-event-clone', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-post="{{ url_for('admin-event-clone', event_uniq_id=admin_event.uniq_id or '') }}"
                 {% elif action == 'update' %}
-                    hx-patch="{{ url_for('admin-event-update', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-patch="{{ url_for('admin-event-update', admin_tab=admin_tab or '', event_uniq_id=admin_event.uniq_id or '') }}"
                 {% endif %}
                 hx-target="body"
                 hx-indicator="#please-wait"
@@ -34,6 +37,7 @@
                             label=_('Visibility:'),
                             placeholder=_('Public event'),
                             help_text=_('Only allowed users can see private events.'),
+                            disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -45,6 +49,7 @@
                             label=_('Federation:'),
                             help_text=_('The federation that organizes the event. Sharly Chess may provide functionality specific to the federation chosen for each event.'),
                             select_options=federation_options,
+                            disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -54,6 +59,7 @@
                             label=_('Name:'),
                             placeholder=_('E.g.: World championship'),
                             help_text=_('The name of the event, used for display and reports.'),
+                            disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -64,6 +70,7 @@
                             name='start',
                             label=_('Start:'),
                             help_text=_('The start date and time of the event.'),
+                            disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -72,6 +79,7 @@
                             name='stop',
                             label=_('End:'),
                             help_text=_('The end date and time of the event.'),
+                            disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -83,6 +91,7 @@
                             label=_('%(string)s:', string=_('Location')),
                             placeholder=_('E.g.: Paris'),
                             help_text=_('The location of the event.'),
+                            disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -92,6 +101,7 @@
                             label=_('%(string)s:', string=_('Prize currency')),
                             placeholder=_('E.g.: %(string)s', string=_("'EUR' or '€'")),
                             help_text=_('The currency used to represent monetary prizes (defaults to the currency of the event federation).'),
+                            disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -110,6 +120,7 @@
                         placeholder=_('In rapid/blitz tournaments, use the standard rating for unrated players'),
                         doc_icon='standard-rating',
                         help_text=_('Default handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. If checked, this rating will also be used for seeding and pairings. If unchecked, they will be treated as unrated and require an estimated rating.'),
+                        disabled=not client.can_update_event,
                         data=data, errors=errors
                     ) }}
                 </div>
@@ -124,6 +135,7 @@
                             label=_('Rules file location:'),
                             placeholder=_('E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf'),
                             help_text=_('A URL, or the path to the rules file on the server, in PDF format.'),
+                            disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -138,6 +150,7 @@
                                 'The maximum number of illegal moves that '
                                 'can be recorded per round for a player.',
                             ),
+                            disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -154,6 +167,7 @@
                                 help_text=_("The URL or the path of the image (relative to the 'custom' folder) to display."),
                                 default_checkbox=true,
                                 default_checkbox_text=_('no background image'),
+                                disabled=not client.can_update_event,
                                 data=data, errors=errors
                             ) }}
                             <script>
@@ -180,6 +194,7 @@
                                         class="collapse-button collapsed text-body"
                                         data-bs-toggle="collapse"
                                         data-bs-target="#custom-tree"
+                                        disabled=not client.can_update_event,
                                     >
                                         <span
                                             class="d-inline-flex align-items-center gap-2"
@@ -220,7 +235,7 @@
                             name='background_color',
                             label=_('Background colour:'),
                             help_text=_('The background colour is used when the image does not fill the whole screen.'),
-                            default_color=sharly_chess_config.default_background_color,
+                            disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
                         <script>
@@ -264,7 +279,7 @@
                             name='message_background_color',
                             label=_('Background colour:'),
                             help_text=_('The background colour of the alert messages.'),
-                            default_color=sharly_chess_config.default_message_background_color,
+                            disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -273,7 +288,7 @@
                             name='message_color',
                             label=_('Text colour:'),
                             help_text=_('The text colour of the alert messages.'),
-                            default_color=sharly_chess_config.default_message_color,
+                            disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -286,6 +301,7 @@
                                 'When defined, the alert message is displayed in a '
                                 'scrolling banner at the bottom of the screens.'
                             ),
+                            disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -300,26 +316,35 @@
                 data-bs-dismiss="modal"
             >
                 <i class="bi-x-circle-fill"></i>
-                {{ _('Cancel') }}
+                {{ _('Cancel') if client.can_update_event else _('Close') }}
             </button>
-            {% if action == 'clone' %}
-                {{ admin_macros.split_submit_buttons(
-                    options={
-                        'duplicate': _('Duplicate without players'),
-                        'with_players': _('Duplicate with players'),
-                    },
-                    active_option='duplicate'
-                ) }}
-            {% else %}
-                <button
-                    type="submit"
-                    form="modal-form"
-                    class="text-nowrap white btn btn-primary"
-                >
-                    <i class="bi-floppy-fill pe-1"></i>
-                    {{ _('Save') if action == 'update' else _('Create') }}
-                </button>
+            {% if client.can_update_event %}
+                {% if action == 'clone' %}
+                    {{ admin_macros.split_submit_buttons(
+                        options={
+                            'duplicate': _('Duplicate without players'),
+                            'with_players': _('Duplicate with players'),
+                        },
+                        active_option='duplicate'
+                    ) }}
+                {% else %}
+                    <button
+                        type="submit"
+                        form="modal-form"
+                        class="text-nowrap white btn btn-primary"
+                    >
+                        <i class="bi-floppy-fill pe-1"></i>
+                        {{ _('Save') if action == 'update' else _('Create') }}
+                    </button>
+                {% endif %}
             {% endif %}
         </div>
     </div>
 </div>
+
+<script>
+    $(document).one('hide.bs.modal', function(e) {
+        e.preventDefault();
+        document.body.dispatchEvent(new CustomEvent('request_refresh'));
+    });
+</script>

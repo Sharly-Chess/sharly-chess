@@ -601,10 +601,6 @@ class FfePlugin(Plugin):
         }
 
     @hookimpl
-    def get_event_info_rows_template(self) -> str:
-        return '/ffe_event_info_rows.html'
-
-    @hookimpl
     def get_event_card_block_template(self) -> str:
         return '/ffe_event_card_block.html'
 

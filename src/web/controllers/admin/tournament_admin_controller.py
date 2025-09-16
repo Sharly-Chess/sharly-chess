@@ -592,7 +592,7 @@ class TournamentAdminController(BaseEventAdminController):
                 } | form_fields_templates_data
             case _:
                 raise ValueError(f'modal=[{modal}]')
-        return cls._admin_event_render(template_context)
+        return cls._admin_base_event_render(template_context)
 
     @get(
         path='/admin/event/{event_uniq_id:str}/tournaments',
@@ -643,7 +643,7 @@ class TournamentAdminController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(
             request, event_uniq_id, tournament_id, None
         )
-        return self._admin_event_render(
+        return self._admin_base_event_render(
             web_context.template_context | {'modal': 'tournament-delete'}
         )
 
@@ -740,7 +740,9 @@ class TournamentAdminController(BaseEventAdminController):
         template_context = self._tournament_import_modal_context(
             importer_id, web_context.admin_tournament
         )
-        return self._admin_event_render(web_context.template_context | template_context)
+        return self._admin_base_event_render(
+            web_context.template_context | template_context
+        )
 
     @post(
         path=[
@@ -804,7 +806,9 @@ class TournamentAdminController(BaseEventAdminController):
             data=normalized_data,
             errors=errors,
         )
-        return self._admin_event_render(web_context.template_context | template_context)
+        return self._admin_base_event_render(
+            web_context.template_context | template_context
+        )
 
     def _admin_tournament_update(
         self,
@@ -1192,7 +1196,7 @@ class TournamentAdminController(BaseEventAdminController):
         )
         flat_data = WebContext.flatten_list_data(data)
         if errors := self._validate_tournament_criterion_form_data(flat_data):
-            return self._admin_event_render(
+            return self._admin_base_event_render(
                 web_context.template_context
                 | self._tournament_criterion_form_modal_context(
                     request, flat_data, FormAction.CREATE, errors
@@ -1214,7 +1218,9 @@ class TournamentAdminController(BaseEventAdminController):
             ) | {'previous_criterion': criterion}
         else:
             template_context = {'modal': 'tournament_criteria'}
-        return self._admin_event_render(web_context.template_context | template_context)
+        return self._admin_base_event_render(
+            web_context.template_context | template_context
+        )
 
     @patch(
         path=(
@@ -1244,7 +1250,7 @@ class TournamentAdminController(BaseEventAdminController):
             return web_context.error
         flat_data = WebContext.flatten_list_data(data)
         if errors := self._validate_tournament_criterion_form_data(flat_data):
-            self._admin_event_render(
+            self._admin_base_event_render(
                 web_context.template_context
                 | self._tournament_criterion_form_modal_context(
                     request, flat_data, FormAction.UPDATE, errors
@@ -1258,7 +1264,7 @@ class TournamentAdminController(BaseEventAdminController):
             option.id: option.value for option in player_filter.options
         }
         tournament_criterion.update()
-        return self._admin_event_render(
+        return self._admin_base_event_render(
             web_context.template_context | {'modal': 'tournament_criteria'}
         )
 
@@ -1286,7 +1292,7 @@ class TournamentAdminController(BaseEventAdminController):
         if web_context.error:
             return web_context.error
         web_context.get_admin_tournament().delete_criterion(tournament_criterion_id)
-        return self._admin_event_render(
+        return self._admin_base_event_render(
             web_context.template_context | {'modal': 'tournament_criteria'}
         )
 
@@ -1308,7 +1314,7 @@ class TournamentAdminController(BaseEventAdminController):
             tournament_id,
             criterion_id=None,
         )
-        return self._admin_event_render(
+        return self._admin_base_event_render(
             web_context.template_context | {'modal': 'tournament_criteria'}
         )
 
@@ -1327,7 +1333,7 @@ class TournamentAdminController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(
             request, event_uniq_id, tournament_id, criterion_id=None
         )
-        return self._admin_event_render(
+        return self._admin_base_event_render(
             web_context.template_context
             | self._tournament_criterion_form_modal_context(
                 request, {}, FormAction.CREATE
@@ -1361,7 +1367,7 @@ class TournamentAdminController(BaseEventAdminController):
             option.id: WebContext.value_to_form_data(option.value)
             for option in tournament_criterion.player_filter.options
         }
-        return self._admin_event_render(
+        return self._admin_base_event_render(
             web_context.template_context
             | self._tournament_criterion_form_modal_context(
                 request, data, FormAction.UPDATE
