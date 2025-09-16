@@ -32,10 +32,6 @@ msgid "%(count)d players unpaired"
 msgstr ""
 
 #, python-format
-msgid "%(lib)s version"
-msgstr ""
-
-#, python-format
 msgid "%(minutes)d minutes after"
 msgstr ""
 
@@ -314,10 +310,7 @@ msgstr ""
 msgid "Access control"
 msgstr ""
 
-msgid "Access from the Sharly Chess server"
-msgstr ""
-
-msgid "Access from the local network (LAN/WAN)"
+msgid "Access level"
 msgstr ""
 
 msgid "Access level"
@@ -962,9 +955,6 @@ msgstr ""
 msgid "Choose from images in the 'custom' folder"
 msgstr ""
 
-msgid "Choose one, many or no tournaments."
-msgstr ""
-
 msgid "Choose screens to add"
 msgstr ""
 
@@ -1113,6 +1103,9 @@ msgid "Console formatting"
 msgstr ""
 
 msgid "Console logging level"
+msgstr ""
+
+msgid "Connections ChessEvent"
 msgstr ""
 
 msgid "Console logging level: {console_log_level}"
@@ -1364,9 +1357,6 @@ msgid "Default federation"
 msgstr ""
 
 msgid "Default handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. If checked, this rating will also be used for seeding and pairings. If unchecked, they will be treated as unrated and require an estimated rating."
-msgstr ""
-
-msgid "Default language"
 msgstr ""
 
 msgid "Default timer configuration"
@@ -1812,9 +1802,6 @@ msgstr ""
 msgid "Edit screen family"
 msgstr ""
 
-msgid "Edit the Sharly Chess settings."
-msgstr ""
-
 msgid "Edit the hours of the timer"
 msgstr ""
 
@@ -1921,9 +1908,6 @@ msgstr ""
 msgid "Enter the result"
 msgstr ""
 
-msgid "Error message"
-msgstr ""
-
 msgid "Error uploading tournament"
 msgstr ""
 
@@ -1979,9 +1963,6 @@ msgid "Exit button:"
 msgstr ""
 
 msgid "Experimental features"
-msgstr ""
-
-msgid "Experimental features (enabled)"
 msgstr ""
 
 #, python-format
@@ -2538,9 +2519,6 @@ msgstr ""
 msgid "Info"
 msgstr ""
 
-msgid "Information message"
-msgstr ""
-
 msgid "Inherited access levels"
 msgstr ""
 
@@ -2713,9 +2691,6 @@ msgstr ""
 msgid "Launch a browser on startup"
 msgstr ""
 
-msgid "Launching the browser on server startup"
-msgstr ""
-
 msgid "Layout"
 msgstr ""
 
@@ -2732,12 +2707,6 @@ msgid "League:"
 msgstr ""
 
 msgid "Leagues"
-msgstr ""
-
-msgid "Leave empty to grant no permissions at all."
-msgstr ""
-
-msgid "Libraries"
 msgstr ""
 
 msgid "Library [{lib}] is missing."
@@ -2824,6 +2793,9 @@ msgid "Man. *** ACRONYM FOR MANUAL TIEBREAK"
 msgstr "Man."
 
 msgid "Manage accounts"
+msgstr ""
+
+msgid "Manage application settings"
 msgstr ""
 
 msgid "Manage prizes"
@@ -3055,9 +3027,6 @@ msgid "Next round"
 msgstr ""
 
 msgid "Next tournament"
-msgstr ""
-
-msgid "No"
 msgstr ""
 
 msgid "No ChessEvent event defined"
@@ -3294,12 +3263,6 @@ msgid "OK"
 msgstr ""
 
 msgid "ORG"
-msgstr ""
-
-msgid "Off"
-msgstr ""
-
-msgid "On"
 msgstr ""
 
 msgid "On a given number of screens:"
@@ -3807,9 +3770,6 @@ msgstr ""
 
 #, python-format
 msgid "Points: up to %(max)s"
-msgstr ""
-
-msgid "Port"
 msgstr ""
 
 msgid "Port [{port}] already in use, can not start Sharly Chess server."
@@ -5519,9 +5479,6 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
-msgid "Update application settings"
-msgstr ""
-
 msgid "Update events"
 msgstr ""
 
@@ -5624,9 +5581,6 @@ msgstr ""
 msgid "View Prizes tab"
 msgstr ""
 
-msgid "View application settings"
-msgstr ""
-
 msgid "View basic event configuration"
 msgstr ""
 
@@ -5688,6 +5642,9 @@ msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr "WIM"
 
 msgid "Warning message"
+msgstr ""
+
+msgid "Warning: by default, only people on your Sharly Chess server can access the application."
 msgstr ""
 
 msgid "Warning: closing this window will stop Sharly Chess."
@@ -5781,9 +5738,6 @@ msgstr "YOB"
 
 msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
 msgstr "YOB"
-
-msgid "Yes"
-msgstr ""
 
 msgid "Yesterday"
 msgstr ""

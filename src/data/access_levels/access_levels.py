@@ -515,8 +515,7 @@ class AdministrationAccessLevel(AccessLevel):
     @staticmethod
     def access_level_actions() -> list[AuthAction]:
         return [
-            AuthAction.VIEW_APPLICATION_SETTINGS,
-            AuthAction.UPDATE_APPLICATION_SETTINGS,
+            AuthAction.MANAGE_APPLICATION_SETTINGS,
             AuthAction.MANAGE_SOURCE_DATABASES,
             AuthAction.VIEW_PRIVATE_EVENTS,
             AuthAction.VIEW_PASSED_COMING_EVENTS,

@@ -142,14 +142,9 @@ class Client:
     # ---------------------------------------------------------------------------------
 
     @property
-    def can_view_application_settings(self) -> bool:
-        """Returns true if the client can view the applications settings."""
-        return AuthAction.VIEW_APPLICATION_SETTINGS in self.allowed_actions
-
-    @property
-    def can_update_application_settings(self) -> bool:
-        """Returns true if the client can update the application settings."""
-        return AuthAction.UPDATE_APPLICATION_SETTINGS in self.allowed_actions
+    def can_manage_application_settings(self) -> bool:
+        """Returns true if the client can manage the application settings."""
+        return AuthAction.MANAGE_APPLICATION_SETTINGS in self.allowed_actions
 
     @property
     def can_manage_source_databases(self) -> bool:
