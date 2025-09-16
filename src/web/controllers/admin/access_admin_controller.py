@@ -1,4 +1,3 @@
-import re
 from typing import Annotated, Any
 
 from argon2 import PasswordHasher
@@ -11,9 +10,9 @@ from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
-from data.account import Account
-from data.access_levels.manager import AccessLevelManager
 from data.access_levels.access_levels import AccessLevel, AccessLevelScope
+from data.access_levels.manager import AccessLevelManager
+from data.account import Account
 from data.player import Player
 from database.sqlite.event.event_store import StoredAccount
 from utils.enum import FormAction
@@ -275,23 +274,15 @@ class AccessAdminController(BaseEventAdminController):
         errors: dict[str, str] = {}
         event = web_context.get_admin_event()
         account = web_context.admin_account
-        name_regex: str = r'^[A-Za-zÀ-ÖØ-öø-ÿ0-9$€\'"\-!?(),:\.\[\] ]*$'
-        name_error: str = _(
-            'Accepted characters are letters, numbers, spaces and a few special characters ($€\'"-!?()[],:.).'
-        )
         if not account or account.user_account:
             first_name: str = (
                 WebContext.form_data_to_str(data, field := 'first_name') or ''
             )
-            if first_name and not re.match(name_regex, first_name):
-                errors[field] = name_error
             last_name: str = (
                 WebContext.form_data_to_str(data, field := 'last_name') or ''
             )
             if not last_name:
                 errors[field] = _('This field is required.')
-            elif not re.match(name_regex, last_name):
-                errors[field] = name_error
             if 'first_name' not in errors and 'last_name' not in errors:
                 full_name: str = Player.player_full_name(first_name, last_name)
                 check_full_name_not_used: bool
