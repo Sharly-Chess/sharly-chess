@@ -645,9 +645,22 @@ class PapiConverter:
             ).format(result=result)
         return None
 
+    MAX_PAPI_ROUNDS = 24
+
+    @classmethod
+    def check_rounds(cls, rounds: int) -> str | None:
+        if rounds > cls.MAX_PAPI_ROUNDS:
+            return _(
+                'The PAPI format does not support {rounds} rounds (maximum: {max}).'
+            ).format(rounds=rounds, max=cls.MAX_PAPI_ROUNDS)
+        return None
+
     @classmethod
     def papi_export_unavailable_message(cls, tournament: Tournament) -> str | None:
         """Return a message if the export to Papi is unavailable, None otherwise."""
+        if rounds_blocker := cls.check_rounds(tournament.rounds):
+            return rounds_blocker
+
         if pairing_blocker := cls.check_pairing_variation(tournament.pairing_variation):
             return pairing_blocker
 

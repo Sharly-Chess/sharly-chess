@@ -45,7 +45,6 @@ class AdminWebContext(WebContext):
         if self.admin_tab not in [
             None,
             'home',
-            'config',
             'passed_events',
             'current_events',
             'coming_events',

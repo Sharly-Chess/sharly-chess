@@ -12,9 +12,8 @@ from common import APP_NAME
 from plugins.utils import (
     ExtraAdminColumn,
     ExtraColumn,
-    ExtraStatisticsSection,
-    PluginEngineArgument,
     PluginNavBarItem,
+    ExtraStatisticsSection,
     PluginData,
 )
 from utils.enum import Result, ScreenType, TournamentRating
@@ -68,11 +67,6 @@ class AppHookSpecs:
     @hookspec
     def get_base_admin_template_context(self) -> dict[str, Any]:
         """Provide additional template context for AdminWebContext"""
-
-    # TODO remove this hook after having integrated ChessEvent into the web UI
-    @hookspec
-    def get_engine_argument(self) -> PluginEngineArgument:
-        """Provide an engine argument"""
 
     # ---------------------------------------------------------------------------------
     # Input-Output

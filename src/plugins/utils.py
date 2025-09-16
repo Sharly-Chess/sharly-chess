@@ -12,7 +12,6 @@ from utils.entity import IdentifiableEntity
 from plugins import PLUGINS_DIR
 
 if TYPE_CHECKING:
-    from common.engine import Engine
     from database.sqlite.event.event_database import EventDatabase
     from plugins.migration import PluginMigrationManager
 
@@ -202,17 +201,6 @@ class Plugin(IdentifiableEntity, ABC):
         default: Any = None,
     ) -> Any:
         return PluginUtils.get_plugin_data(self.id, plugin_data, field, default)
-
-
-@dataclass
-class PluginEngineArgument:
-    flag: str
-    name: str
-    help: str
-    engine_type: type['Engine']
-
-    def init_engine(self) -> 'Engine':
-        return self.engine_type()
 
 
 @dataclass

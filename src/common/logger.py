@@ -1,13 +1,12 @@
 import logging
 from logging import Logger, getLogger
 from logging.config import dictConfig
-from pathlib import Path
 import sys
 from typing import Any
 
 from colorama import Fore, Style
 
-from common import APP_NAME, DEVEL_ENV
+from common import APP_NAME, LOG_FILE, DEVEL_ENV
 from gui.gui_logger import GUILogHandler
 
 
@@ -26,7 +25,6 @@ class LoggingConfigValues:
     console_color: bool = True
     console_show_date: bool = False
     console_show_level: bool = False
-    file_path: Path | None = None
 
 
 def default_logging_config_values() -> LoggingConfigValues:
@@ -50,7 +48,6 @@ def set_logging_config(
     console_color: bool | None = None,
     console_show_date: bool | None = None,
     console_show_level: bool | None = None,
-    file_path: Path | None = None,
 ) -> dict[str, Any]:
     """Set logging parameters, returns the logging config as a dict that can be used by logging libraries."""
     global _LOGGING_CONFIG_VALUES, _LOGGER
@@ -62,10 +59,6 @@ def set_logging_config(
         _LOGGING_CONFIG_VALUES.console_show_date = console_show_date
     if console_show_level is not None:
         _LOGGING_CONFIG_VALUES.console_show_level = console_show_level
-    if file_path is not None:
-        _LOGGING_CONFIG_VALUES.file_path = file_path
-    if _LOGGING_CONFIG_VALUES.file_path is not None:
-        _LOGGING_CONFIG_VALUES.file_path.parent.mkdir(parents=True, exist_ok=True)
     dictConfig(logging_config := get_logging_config())
     _LOGGER = getLogger(APP_NAME)
     return logging_config
@@ -150,18 +143,17 @@ def get_logging_config() -> dict[str, Any]:
             },
         },
     }
-    if _LOGGING_CONFIG_VALUES.file_path:
-        logging_config['handlers']['file'] = {  # type: ignore
-            'class': 'logging.handlers.RotatingFileHandler',
-            'level': logging.DEBUG,
-            'formatter': 'file_formatter',
-            'filename': str(_LOGGING_CONFIG_VALUES.file_path),
-            'maxBytes': 500 * 1024,
-            'backupCount': 5,
-            'encoding': 'UTF-8',
-        }
-        for logger_name in logging_config['loggers']:
-            logging_config['loggers'][logger_name]['handlers'].append('file')  # type: ignore
+    logging_config['handlers']['file'] = {  # type: ignore
+        'class': 'logging.handlers.RotatingFileHandler',
+        'level': logging.DEBUG,
+        'formatter': 'file_formatter',
+        'filename': str(LOG_FILE),
+        'maxBytes': 500 * 1024,
+        'backupCount': 5,
+        'encoding': 'UTF-8',
+    }
+    for logger_name in logging_config['loggers']:
+        logging_config['loggers'][logger_name]['handlers'].append('file')  # type: ignore
     return logging_config
 
 

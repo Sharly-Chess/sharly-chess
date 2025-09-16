@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from functools import cached_property
+from typing import TYPE_CHECKING
 
 from common.i18n import _
 from data.access_levels.manager import AccessLevelManager
@@ -12,11 +13,26 @@ from data.access_levels.access_levels import (
     ResultsEntryAccessLevel,
 )
 
+if TYPE_CHECKING:
+    from data.event import Event
+
 
 @dataclass
 class Permission:
     tournament_ids: set[int] | None = None
     inherited: bool = False
+
+    def tournaments_tooltip_message(self, event: 'Event') -> str:
+        if not self.tournament_ids:
+            return ''
+        tournament_names = sorted(
+            event.tournaments_by_id[tournament_id].name
+            for tournament_id in self.tournament_ids
+        )
+        return ''.join(
+            f'<div class="text-center text-nowrap">{name}</div>'
+            for name in tournament_names
+        )
 
 
 class Account:

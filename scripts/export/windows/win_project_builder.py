@@ -3,9 +3,7 @@ from argparse import ArgumentParser, Namespace
 from logging import Logger
 from pathlib import Path
 
-from common import SHARLY_CHESS_VERSION
 from common.logger import get_logger
-from common.sharly_chess_config import SharlyChessConfig
 from common.tool_installer import BbpPairingsInstaller, PapiConverterInstaller
 from scripts.export.project_builder import ProjectBuilder
 
@@ -72,8 +70,6 @@ class WinProjectBuilder(ProjectBuilder):
 
     def hook_post_build_project(self) -> bool:
         if self.signtool_cert_fingerprint and not self._sign_files():
-            return False
-        if not self._build_chessevent_batch():
             return False
         Path(self.project_dir / '_internal' / '.unblock_files').touch()
         return True
@@ -207,17 +203,3 @@ class WinProjectBuilder(ProjectBuilder):
             + BbpPairingsInstaller().files_to_sign
             + PapiConverterInstaller().files_to_sign
         )
-
-    def _build_chessevent_batch(self) -> bool:
-        target_file = self.tools_dir / 'chessevent.bat'
-        logger.info('Creating batch file [%s]]...', target_file)
-        with open(target_file, 'wt', encoding='utf-8') as f:
-            f.write(
-                f'@echo off\n'
-                f'echo Starting Sharly Chess ChessEvent client, please wait...\n'
-                f'@rem Sharly Chess {SHARLY_CHESS_VERSION} - {SharlyChessConfig.en_copyright} - {SharlyChessConfig.web_url}\n'
-                f'cd ..\n'
-                f'{self.exe_filename} --chessevent\n'
-                f'pause\n'
-            )
-        return True

@@ -698,12 +698,19 @@ class TournamentAdminController(BaseEventAdminController):
     @staticmethod
     def _tournament_import_modal_context(
         importer_id: str,
+        tournament: Tournament | None = None,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         importer = TournamentImporterManager.get_object(importer_id)
+        default_data = WebContext.values_dict_to_form_data(
+            {
+                option.id: option.get_default_value(tournament)
+                for option in importer.default_options()
+            }
+        )
         return {
-            'data': data or {},
+            'data': default_data | (data or {}),
             'importer': importer,
             'modal': 'tournament-import',
             'errors': errors or {},
@@ -730,11 +737,10 @@ class TournamentAdminController(BaseEventAdminController):
             criterion_id=None,
             data={},
         )
-        template_context = (
-            web_context.template_context
-            | self._tournament_import_modal_context(importer_id=importer_id)
+        template_context = self._tournament_import_modal_context(
+            importer_id, web_context.admin_tournament
         )
-        return self._admin_event_render(template_context)
+        return self._admin_event_render(web_context.template_context | template_context)
 
     @post(
         path=[
@@ -762,7 +768,7 @@ class TournamentAdminController(BaseEventAdminController):
             )
         errors: dict[str, str] = {}
         event = web_context.get_admin_event()
-        normalized_data = await WebContext.normalize_file_data(data)
+        normalized_data = await WebContext.normalize_multipart_data(data)
         importer_type = TournamentImporterManager.get_type(importer_id)
         importer_options: list[TournamentImporterOption] = []
         for importer_option in importer_type.default_options():
@@ -772,7 +778,7 @@ class TournamentAdminController(BaseEventAdminController):
             importer_options.append(type(importer_option)(value))
         importer = importer_type(importer_options)
         try:
-            importer.validate_options()
+            importer.validate_options(event)
             tournament = importer.load_tournament(event, web_context.admin_tournament)
             Message.success(
                 request,
@@ -789,16 +795,16 @@ class TournamentAdminController(BaseEventAdminController):
             errors['alert'] = str(error)
         except SharlyChessException as error:
             logger.error(f'Tournament importer [{importer.id}] error: {error}')
-            Message.error(
-                request, _('An error occurred. Consult the logs for more details.')
-            )
+            errors['alert'] = _('An error occurred. Consult the logs for more details.')
         finally:
             importer.on_import_finished()
-        template_context = (
-            web_context.template_context
-            | self._tournament_import_modal_context(importer_id, errors=errors)
+        template_context = self._tournament_import_modal_context(
+            importer_id,
+            web_context.admin_tournament,
+            data=normalized_data,
+            errors=errors,
         )
-        return self._admin_event_render(template_context)
+        return self._admin_event_render(web_context.template_context | template_context)
 
     def _admin_tournament_update(
         self,
