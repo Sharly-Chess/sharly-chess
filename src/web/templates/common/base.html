@@ -477,9 +477,8 @@
             </script>
         {% else %}
             <div id="main-wrapper" class="" {% block sse %}{% endblock sse %}>
-                <div id="messages" class="w-50 position-fixed bottom-0 end-0 me-3" style="z-index: 100">
+                <div id="messages" class="w-50 position-fixed bottom-0 end-0 me-3" style="z-index: 100" hx-preserve>
                     <div id="refresh-message"></div>
-                    {% include 'messages.html' %}
                 </div>
                 {% block header %}
                 {% endblock header %}
@@ -581,5 +580,10 @@
                 $(window).off(evt);
             })
         </script>
+    {% endif %}
+    {% if messages %}
+        <div id="messages" hx-swap-oob="beforeend">
+            {% include '/common/messages.html' %}
+        </div>
     {% endif %}
 </html>
