@@ -45,6 +45,7 @@ English version below
 ## Tournaments
 
 - Tournaments may now have player criteria associated with them (3.1.0)
+- Import tournaments from TRF (3.1.0)
 
 ## Players
 
@@ -60,4 +61,4 @@ English version below
 
 ## ChessEvent
 
-- Import ChessEvent tournament from the web interface ()
+- Import ChessEvent tournament from the web interface (3.1.0)
