@@ -50,16 +50,20 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
         """The title to display in the import modal."""
 
     @property
-    @abstractmethod
     def reorder_boards(self) -> bool:
         """Determines if the boards need reordering after they've been loaded."""
+        return True
 
     def on_import_finished(self):
         """Function to execute when the import process ends, whether it fails or succeeds."""
 
+    def validate_options(self, event: Event | None = None):
+        super().validate_options()
+
     @abstractmethod
     def load_stored_tournament(
         self,
+        event: Event,
         stored_tournament: StoredTournament | None = None,
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
         """Load the tournament file into stored objects.
@@ -80,7 +84,7 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
         If tournament is provided, update this tournament, otherwise create a new one.
         Raises if the tournament already has players."""
         stored_tournament, stored_players = self.load_stored_tournament(
-            tournament.stored_tournament if tournament else None
+            event, tournament.stored_tournament if tournament else None
         )
         self.check_pairing_inconsistencies(stored_tournament)
         with EventDatabase(event.uniq_id, True) as database:
@@ -123,6 +127,7 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
             database.set_tournament_pairing_settings(
                 tournament_id, stored_tournament.pairing_settings
             )
+        database.set_tournament_check_in(tournament_id, stored_tournament.check_in_open)
 
         # Players
         player_id_by_external_id: dict[int, int] = {}
@@ -220,7 +225,7 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
                 )
                 result = Result(pairing.result)
                 if pairing.board_id is None:
-                    if not result.is_no_board_bye or not result == Result.NO_RESULT:
+                    if not result.is_no_board_bye and result != Result.NO_RESULT:
                         raise ImporterError(
                             error_prefix
                             + _(
@@ -322,7 +327,7 @@ class FileTournamentImporter(TournamentImporter, ABC):
     def accepted_file_suffixes(self) -> list[str]:
         """List of suffixes accepted by the file input."""
 
-    def validate_options(self):
+    def validate_options(self, event: Event | None = None):
         super().validate_options()
         file_option = self._get_option(FileOption)
         suffix = file_option.value.suffix
@@ -358,15 +363,11 @@ class TrfTournamentImporter(FileTournamentImporter):
         return _('Import TRF file')
 
     @property
-    def reorder_boards(self) -> bool:
-        return True
-
-    @property
     def accepted_file_suffixes(self) -> list[str]:
         return ['.trf', '.trfx']
 
     def load_stored_tournament(
-        self, stored_tournament: StoredTournament | None = None
+        self, event: Event, stored_tournament: StoredTournament | None = None
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
         (file_path,) = self.get_option_values()
         try:

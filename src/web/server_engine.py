@@ -3,7 +3,6 @@ import platform
 import signal
 import socket
 import sys
-from pathlib import Path
 from threading import Thread
 from time import sleep
 from types import FrameType
@@ -18,7 +17,7 @@ from litestar.logging import LoggingConfig
 from litestar.plugins.htmx import HTMXRequest
 from litestar.types import Scope, HTTPScope
 
-from common import REQUEST_TIMEOUT, LOG_FILE, set_is_server_engine
+from common import REQUEST_TIMEOUT
 from common.engine import Engine
 from common.i18n import _
 from common.logger import (
@@ -111,7 +110,6 @@ class ServerEngine(Engine):
             return loop
 
     async def serve(self):
-        set_is_server_engine(True)
         logger.debug('System information:')
         logger.debug(
             ' - Machine/processor: %s/%s', platform.machine(), platform.processor()
@@ -233,10 +231,6 @@ class ServerEngine(Engine):
                     signal.signal(sig, handle_exit)
 
         await server._serve()
-
-    @property
-    def log_file_path(self) -> Path:
-        return LOG_FILE
 
     @staticmethod
     def __port_in_use(port: int) -> bool:

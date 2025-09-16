@@ -242,13 +242,14 @@ class PlayerAdminController(BaseEventAdminController):
             first_name=(WebContext.form_data_to_str(data, 'first_name') or '').title(),
             last_name=(WebContext.form_data_to_str(data, 'last_name') or '').upper(),
             date_of_birth=WebContext.form_data_to_date(data, 'date_of_birth'),
-            gender=WebContext.form_data_to_int(data, 'gender') or PlayerGender.NONE,
+            gender=WebContext.form_data_to_int(data, 'gender')
+            or PlayerGender.NONE.value,
             mail=WebContext.form_data_to_str(data, 'mail'),
             phone=WebContext.form_data_to_str(data, 'phone'),
             comment=data.get('comment'),
             owed=WebContext.form_data_to_float(data, 'owed') or 0.0,
             paid=WebContext.form_data_to_float(data, 'paid') or 0.0,
-            title=WebContext.form_data_to_int(data, 'title') or PlayerTitle.NONE,
+            title=WebContext.form_data_to_int(data, 'title') or PlayerTitle.NONE.value,
             ratings={
                 tr.value: PlayerRating(
                     WebContext.form_data_to_int(data, f'{tr.form_key}_rating') or 0,
