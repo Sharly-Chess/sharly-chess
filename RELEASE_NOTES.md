@@ -65,6 +65,7 @@ English version below
 - Correction des données de classement utilisées lors de l'export Papi (3.0.4)
 - Correction de l'import du numéro d'homologation depuis Papi (3.0.5)
 - Correction du téléversement des résultats sur le site fédéral (3.0.6)
+- Augmentation du temps d'attente des recherches en ligne (3.0.7)
 
 ## ChessEvent
 
@@ -138,6 +139,7 @@ English version below
 - Fixed a data difference on rankings in the Papi export (3.0.4)
 - Fixed the import of the Papi homologation number (3.0.5)
 - Fixed a bug preventing results upload (3.0.6)
+- Increased the timeout of online searches (3.0.7)
 
 ## ChessEvent
 
