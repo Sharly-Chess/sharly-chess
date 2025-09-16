@@ -173,3 +173,11 @@
 	height: 0;
 	overflow: hidden;
 }
+
+.select2-search__field {
+    width: 100%;
+}
+
+.select2-selection__rendered {
+    width: 100%;
+}
