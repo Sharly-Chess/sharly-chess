@@ -40,6 +40,7 @@ from data.loader import EventLoader
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.local_source_database import LocalSourceDatabaseManager
+from plugins.manager import plugin_manager
 
 logger = get_logger()
 
@@ -281,6 +282,7 @@ class Engine(ABC):
             shutil.copy(config_database_file, ConfigDatabase().file)
             ConfigDatabase.setup()
             SharlyChessConfig.reload()
+            plugin_manager.reload_register()
         else:
             logger.debug(
                 'Can not recover configuration from version [%s] (file [%s] not found).',

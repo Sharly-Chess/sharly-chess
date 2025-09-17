@@ -70,6 +70,7 @@ English version below
 ## ChessEvent
 
 - Correction du téléversement FFE après mise à jour ChessEvent (3.0.1)
+- Correction de la récupération de l'état du plugin depuis une version précédente (3.0.8)
 
 ---
 
@@ -144,3 +145,4 @@ English version below
 ## ChessEvent
 
 - Fixed FFE upload after ChessEvent update (3.0.1)
+- Fixed recovery of the plugin state from a previous version (3.0.8)
