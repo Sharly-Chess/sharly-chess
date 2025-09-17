@@ -3273,7 +3273,7 @@ msgstr ""
 msgid "Only allowed users can view private rotators."
 msgstr ""
 
-msgid "Only current and future events that have been declared as <b>public</b> by the arbiter are visible via the network."
+msgid "Only current and future events that have been declared as <b>public</b> by the administrator are visible via the network."
 msgstr ""
 
 msgid "Only estimated ratings are optional."
