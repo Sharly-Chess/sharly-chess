@@ -336,6 +336,11 @@ with_indicator: display a loading indicator, optional
                                     $('#{{ id }}').val(allValues).trigger('change');
                                 }
                             });
+                            $('#{{ id }}').on('select2:closing', function (e) {
+                                if ($('.modal.show').length > 0) {
+                                    ignoreNextModalClose = true;
+                                }
+                            });
                         </script>
                     {% elif select_options|length == 1 and not disabled %}
                         <input type="hidden" name="{{ name }}" value="{{ selected[0] }}" />

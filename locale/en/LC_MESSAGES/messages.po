@@ -304,7 +304,7 @@ msgstr ""
 msgid "Accelerated variations of the swiss pairing system."
 msgstr ""
 
-msgid "Accepted characters are letters, numbers, single quote (') and minus (-)."
+msgid "Accepted characters are letters, numbers, spaces and a few special characters ($€'\"-!?()[],:.)."
 msgstr ""
 
 msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
