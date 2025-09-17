@@ -864,7 +864,7 @@ msgstr "Check-in"
 msgid "Check-in / Results entry"
 msgstr ""
 
-msgid "Check-in / Results entry ({num})"
+msgid "Check-in / Results ({num})"
 msgstr ""
 
 msgid "Check-in / Results entry ({tournament_name})"

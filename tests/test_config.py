@@ -56,7 +56,6 @@ class TestUtils:
         'message_color': '#000000',
         'message_background_color': '#ffffff',
         'prize_currency': 'EUR',
-        'errors': [],
         'timer_colors': {i: None for i in range(1, 4)},
         'timer_delays': {i: None for i in range(1, 4)},
         'plugin_data': {},
@@ -217,7 +216,6 @@ class TestUtils:
             'rounds': 7,
             'rating': 1,
             'stored_prize_groups': [],
-            'errors': {},
             'plugin_data': None,
         }
 

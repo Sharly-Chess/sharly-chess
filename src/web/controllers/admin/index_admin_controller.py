@@ -446,13 +446,13 @@ class IndexAdminController(BaseAdminController):
         } | plugin_form_data
 
     @classmethod
-    def _admin_validate_event_update_data(
+    def _admin_get_validate_event_data(
         cls,
-        action: str,
+        action: FormAction,
         web_context: WebContext,
         admin_event: Event | None,
         data: dict[str, str] | None = None,
-    ) -> StoredEvent:
+    ) -> tuple[StoredEvent, dict[str, str]]:
         if data is None:
             data = {}
         uniq_id: str | None
@@ -585,7 +585,7 @@ class IndexAdminController(BaseAdminController):
         assert start is not None
         assert stop is not None
 
-        return StoredEvent(
+        stored_event = StoredEvent(
             uniq_id=uniq_id,
             name=name,
             federation=federation,
@@ -603,7 +603,6 @@ class IndexAdminController(BaseAdminController):
             message_background_color=message_background_color,
             prize_currency=prize_currency,
             override_unrated_rapid_blitz=override_unrated_rapid_blitz,
-            errors=errors,
             # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
             timer_colors={
                 i: admin_event.timer_colors[i] if admin_event else None
@@ -619,6 +618,7 @@ class IndexAdminController(BaseAdminController):
             else None,
             plugin_data=plugin_data,
         )
+        return (stored_event, errors)
 
     def _event_modal_context(
         self,
@@ -697,12 +697,12 @@ class IndexAdminController(BaseAdminController):
         )
         if web_context.error:
             return web_context.error
-        stored_event: StoredEvent = self._admin_validate_event_update_data(
-            'create', web_context, None, data
+        stored_event, errors = self._admin_get_validate_event_data(
+            FormAction.CREATE, web_context, None, data
         )
-        if stored_event.errors:
+        if errors:
             template_context = self._event_modal_context(
-                FormAction.CREATE, data, errors=stored_event.errors
+                FormAction.CREATE, data, errors=errors
             )
             return self._admin_render(
                 web_context=web_context,
@@ -786,12 +786,12 @@ class IndexAdminController(BaseAdminController):
         )
         if web_context.error:
             return web_context.error
-        stored_event: StoredEvent = self._admin_validate_event_update_data(
+        stored_event, errors = self._admin_get_validate_event_data(
             FormAction.CLONE, web_context, web_context.admin_event, data
         )
-        if stored_event.errors:
+        if errors:
             template_context = self._event_modal_context(
-                FormAction.CLONE, data, errors=stored_event.errors
+                FormAction.CLONE, data, errors=errors
             )
             return self._admin_render(
                 web_context=web_context,
@@ -836,12 +836,12 @@ class IndexAdminController(BaseAdminController):
         )
         if web_context.error:
             return web_context.error
-        stored_event: StoredEvent = self._admin_validate_event_update_data(
-            'update', web_context, web_context.admin_event, data
+        stored_event, errors = self._admin_get_validate_event_data(
+            FormAction.UPDATE, web_context, web_context.admin_event, data
         )
-        if stored_event.errors:
+        if errors:
             template_context = self._event_modal_context(
-                FormAction.UPDATE, data, errors=stored_event.errors
+                FormAction.UPDATE, data, errors=errors
             )
             return self._admin_render(
                 web_context=web_context,
@@ -995,13 +995,10 @@ class IndexAdminController(BaseAdminController):
         locale_options: dict[str, str] = {
             locale: locale_localized_name(locale) for locale in locales
         }
-        plugin_form_fields_templates = (
-            plugin_manager.hook.get_event_form_fields_template() or []
-        )
         template_context = {
             'console_log_level_options': console_log_level_options,
             'locale_options': locale_options,
-            'plugin_form_fields_templates': plugin_form_fields_templates,
+            'plugins': plugin_manager.all_plugins,
             'federation_options': (
                 {} if data['federation'] else {'': _('Please choose a federation')}
             )
@@ -1069,12 +1066,6 @@ class IndexAdminController(BaseAdminController):
             for stored_plugin in stored_plugins:
                 config_database.update_stored_plugin(stored_plugin)
         SharlyChessConfig().load_and_set_env()
-        previous_enabled_plugins = set(
-            plugin.id for plugin in plugin_manager.enabled_plugins
-        )
-        enabled_plugins = set(stored_plugin.name for stored_plugin in stored_plugins)
-        if previous_enabled_plugins != enabled_plugins:
-            plugin_manager.reload_register()
         Message.success(request, _('Sharly Chess settings have been updated.'))
         return HTMXTemplate(
             template_name='common/empty_modal_and_messages.html',

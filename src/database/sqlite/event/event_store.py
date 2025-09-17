@@ -183,7 +183,6 @@ class StoredTournament:
     stored_boards_by_round: dict[int, list[StoredBoard]] = field(
         default_factory=dict[int, list[StoredBoard]]
     )
-    errors: dict[str, str] = field(default_factory=dict[str, str])
 
     # Plugins can add their own tournament data
     plugin_data: dict[str, dict[str, Any]] = field(
@@ -355,7 +354,6 @@ class StoredEvent(BaseStoredEvent):
         default_factory=list[StoredDisplayController]
     )
     stored_accounts: list[StoredAccount] = field(default_factory=list[StoredAccount])
-    errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
 @dataclass
