@@ -26,7 +26,7 @@ class Guard:
                 )
         if event.passed() and not client.can_view_passed_events:
             raise PermissionDeniedException(
-                'You are not allowed to view coming events.'
+                'You are not allowed to view passed events.'
             )
 
     @classmethod
