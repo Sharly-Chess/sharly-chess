@@ -301,17 +301,11 @@ msgstr "Appariements accélérés"
 msgid "Accelerated variations of the swiss pairing system."
 msgstr "Variantes accélérées du système d'appariements suisse."
 
-msgid "Accepted characters are letters, numbers, spaces and a few special characters ($€'\"-!?()[],:.)."
-msgstr "Les caractères acceptés sont les lettres, chiffres, espaces et quelques caractères spéciaux ($€\"'-!?()[],:.)."
-
 msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
 msgstr "Les caractères acceptés sont les lettres, chiffres, souligné (« tiret du 8 ») et moins (« tiret du 6 »)."
 
 msgid "Access control"
 msgstr "Contrôle d'accès"
-
-msgid "Access level"
-msgstr "Niveau d'accès"
 
 msgid "Access level"
 msgstr "Niveau d'accès"
@@ -550,6 +544,9 @@ msgstr "'archive [{archive}] restaurée avec succès (voir l'évènement [{event
 msgid "Archive event"
 msgstr "Archiver un évènement"
 
+msgid "Archive the event."
+msgstr "Archiver l'évènement"
+
 msgid "Archived ({num})"
 msgstr "Archivés ({num})"
 
@@ -622,10 +619,6 @@ msgstr "Mise en ligne automatique des résultats vers le site de la FFE. Vous de
 msgid "Auto-upload to FFE enabled"
 msgstr "Envoi automatique vers la FFE activé"
 
-#, python-format
-msgid "Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)d minutes)"
-msgstr "Envoi automatique vers la FFE activé (au minimum toutes les %(ffe_auto_upload_delay)d minutes)"
-
 msgid "Auto-upload to FFE site disabled"
 msgstr "Envoi automatique vers la FFE désactivé"
 
@@ -683,9 +676,6 @@ msgstr "Couleur de fond :"
 #, python-format
 msgid "Background colour: %(color)s"
 msgstr "Couleur de fond : %(color)s"
-
-msgid "Background image and colour"
-msgstr "Image et couleur de fond"
 
 msgid "Background image:"
 msgstr "Image de fond :"
@@ -822,6 +812,9 @@ msgstr "EFFACER LE RÉSULTAT"
 msgid "CM *** SHORT NAME FOR Candidate Master"
 msgstr "CM"
 
+msgid "Can't see your event?"
+msgstr "Vous ne voyez pas votre événement ?"
+
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -852,9 +845,6 @@ msgstr "La catégorie [%(category)s] créée avec succès !"
 
 msgid "Change the player's tournament."
 msgstr "Changer le joueur de tournoi."
-
-msgid "Changing the unique ID will cause an error on any opened screen of the event."
-msgstr "Modifier l'identifiant unique provoquera une erreur sur tous les écrans ouverts de l'évènement."
 
 msgid "Check connection"
 msgstr "Vérifier la connexion"
@@ -1102,15 +1092,6 @@ msgstr "La connexion au serveur a échoué."
 msgid "Connection to the server failed: {error}."
 msgstr "La connexion au serveur a échoué : {error}."
 
-msgid "Connections ChessEvent"
-msgstr "Connexions à ChessEvent"
-
-msgid "Console formatting"
-msgstr "Format des logs sur la console"
-
-msgid "Console logging level"
-msgstr "Niveau de log sur la console"
-
 msgid "Console logging level: {console_log_level}"
 msgstr "Niveau de log sur la console : {console_log_level}"
 
@@ -1295,9 +1276,6 @@ msgstr "Affiche actuellement l'écran rotatif [{uniq_id}]"
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr "Affiche actuellement l'écran [{uniq_id}]"
 
-msgid "Customization"
-msgstr "Personnalisation"
-
 msgid "DCA"
 msgstr "ADJ"
 
@@ -1338,9 +1316,6 @@ msgstr "Base de données [{database}] non trouvée au chemin attendu [{path}]."
 msgid "Database successfully updated."
 msgstr "Base de données mise à jour avec succès."
 
-msgid "Date"
-msgstr "Date"
-
 msgid "Date of birth"
 msgstr "Date de naissance"
 
@@ -1350,14 +1325,8 @@ msgstr "Date naiss. :"
 msgid "Date:"
 msgstr "Date :"
 
-msgid "Debug message"
-msgstr "Message de déboggage"
-
 msgid "Default credentials used to import tournaments from the ChessEvent platform."
 msgstr "Identifiants par défaut utilisés pour importer des tournois depuis la plateforme ChessEvent."
-
-msgid "Default federation"
-msgstr "Fédération par défaut"
 
 msgid "Default handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. If checked, this rating will also be used for seeding and pairings. If unchecked, they will be treated as unrated and require an estimated rating."
 msgstr "Gestion par défaut des joueur·euses sans classement rapide/blitz. Pour le calcul des classements FIDE, ces joueur·euses sont considérées comme classé·es avec leur classement FIDE standard. Lorsque cette case est cochée (par défaut), ce classement sera également utilisé pour le classement initial et les appariements. Lorsque non cochée, les joueur·euses seront traité·es comme non classé·es et nécessiteront une estimation."
@@ -1608,14 +1577,14 @@ msgstr "Faites glisser les ensembles pour les ordonner."
 msgid "Draw"
 msgstr "Nulle"
 
-msgid "Duplicate"
-msgstr "Dupliquer"
-
 msgid "Duplicate the account."
 msgstr "Dupliquer le compte."
 
 msgid "Duplicate the category and its criteria and prizes."
 msgstr "Dupliquer la catégorie ainsi que ses prix et ses critères."
+
+msgid "Duplicate the event."
+msgstr "Dupliquer l’événement"
 
 msgid "Duplicate the rotator."
 msgstr "Dupliquer l'écran rotatif."
@@ -1822,6 +1791,9 @@ msgstr "Modifier les propriétés de la catégorie."
 
 msgid "Edit the properties of the display controller."
 msgstr "Modifier les propriétés du pilote d'afficheurs."
+
+msgid "Edit the properties of the event."
+msgstr "Modifier les propriétés de l’événement."
 
 msgid "Edit the properties of the rotator."
 msgstr "Modifier les propriétés de l'écran rotatif."
@@ -2427,9 +2399,6 @@ msgstr "Je confirme vouloir écraser les données des joueur·euses de ce tourno
 msgid "I would like the following custom files to be added to a future release of Sharly Chess:"
 msgstr "J'aimerais que les fichiers de personnalisation suivants soient ajoutés dans une future version de Sharly Chess :"
 
-msgid "ID (unique):"
-msgstr "Identifiant (unique) :"
-
 msgid "IM *** SHORT NAME FOR International Master"
 msgstr "MI"
 
@@ -2715,6 +2684,9 @@ msgstr "Ligue :"
 msgid "Leagues"
 msgstr "Ligues"
 
+msgid "Leave empty to grant no permissions at all."
+msgstr "Laissez vide pour ne donner aucune permission."
+
 msgid "Library [{lib}] is missing."
 msgstr "La bibliothèque [{lib}] n'est pas installée."
 
@@ -2859,9 +2831,6 @@ msgstr "Âge maximum des résultats :"
 #, python-format
 msgid "Maximum number of byes: %(max_byes)d"
 msgstr "Nombre maximum de jokers (byes) : %(max_byes)d"
-
-msgid "Maximum number of illegal moves"
-msgstr "Nombre maximum de coups illégaux"
 
 msgid "Maximum number of points (included):"
 msgstr "Nombre maximum de points (inclus) :"
@@ -3143,8 +3112,8 @@ msgstr "Aucun prix défini."
 msgid "No prizes."
 msgstr "Aucun prix."
 
-msgid "No recording"
-msgstr "Pas d'enregistrement"
+msgid "No public events."
+msgstr "Aucun événement public."
 
 msgid "No result"
 msgstr "Pas de résultat"
@@ -3303,6 +3272,9 @@ msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les pilotes d'
 
 msgid "Only allowed users can view private rotators."
 msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les écrans rotatifs privés."
+
+msgid "Only current and future events that have been declared as <b>public</b> by the arbiter are visible via the network."
+msgstr "Seuls les événements actuels et à venir déclarés comme <b>publics</b> par l’arbitre sont visibles via le réseau."
 
 msgid "Only estimated ratings are optional."
 msgstr "Seuls les classements estimés sont optionnels."
@@ -3805,9 +3777,6 @@ msgstr "Imprimer"
 msgid "Print players, results, etc."
 msgstr "Imprimer les participant·es, les résultats, les classements…"
 
-msgid "Private event"
-msgstr "Évènement privé"
-
 msgid "Prize *** PRIZE FOR TABLE HEADER"
 msgstr "Prix"
 
@@ -3979,9 +3948,6 @@ msgstr "Limites Elo"
 
 msgid "Rating ranges"
 msgstr "Tranches de classement"
-
-msgid "Rating seed for unrated rapid/blitz"
-msgstr "Classement des joueur·euses sans classement FIDE rapide/blitz"
 
 #, python-format
 msgid "Rating splitting groups A and B (recommended: %(recommended)d)."
@@ -4592,9 +4558,6 @@ msgstr "L'identifiant FFE est un entier positif."
 msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b> to the current one may be modified. Changes to pairings previous to this should be made at the <b>end</b> of the tournament, <b>after</b> the rankings have been published, and solely for the computation of the FIDE ratings."
 msgstr "Le règlement FIDE indique que seuls les appariements de la ronde <b>précédant</b> la ronde courante peuvent être modifiés. Les modifications des appariements antérieurs doivent être effectuées à la <b>fin</b> du tournoi, <b>après</b> la publication du classement, et uniquement pour le calcul des classements ELO FIDE."
 
-msgid "The IP address, used to identify the device."
-msgstr "L'adresse IP, utilisée pour identifier l'appareil."
-
 msgid "The PAPI format does not support {rounds} rounds (maximum: {max})."
 msgstr "Le format PAPI ne supporte pas {rounds} rounds (maximum : {max})."
 
@@ -4895,9 +4858,6 @@ msgstr "Le classement utilisé lorsque la cadence est supérieure à 10 minutes 
 
 msgid "The related objects will also be deleted:"
 msgstr "Les objets liés vont également être supprimés :"
-
-msgid "The representation of the event for URLs and file exports."
-msgstr "La représentation de l'évènement pour les URLs et les exports de fichier."
 
 msgid "The rotating delay between two screens."
 msgstr "Le délai de rotation entre deux écrans."
@@ -5355,9 +5315,6 @@ msgstr "Impossible de téléverser le règlement du tournoi."
 msgid "Unauthenticated access has been updated."
 msgstr "L'accès non authentifié a été mis à jour."
 
-msgid "Undefined"
-msgstr "Non défini"
-
 msgid "Undefined **** PLURAL"
 msgstr "Non définis"
 
@@ -5381,9 +5338,6 @@ msgstr "Moins de 20"
 
 msgid "Under 8"
 msgstr "Moins de 8"
-
-msgid "Unique ID"
-msgstr "Identifiant unique"
 
 #, python-format
 msgid "Unique ID: %(uniq_id)s"
@@ -5587,12 +5541,6 @@ msgstr "Voir l'onglet Joueur·euses"
 msgid "View Prizes tab"
 msgstr "Voir l'onglet Prix"
 
-msgid "View basic event configuration"
-msgstr "Voir la configuration basique des évènements"
-
-msgid "View complete event configuration"
-msgstr "Voir la configuration complète des évènements"
-
 msgid "View draft pairings"
 msgstr "Voir les appariement avant publication"
 
@@ -5601,6 +5549,9 @@ msgstr "Voir les classement avant publication"
 
 msgid "View event cards details"
 msgstr "Voir les détails des cartes d'évènement"
+
+msgid "View event configuration"
+msgstr "Voir la configuration de l’événement"
 
 msgid "View passed and upcoming events"
 msgstr "Voir les évènement passés et à venir"
@@ -5623,9 +5574,6 @@ msgstr "Voir l'onglet Tournois"
 msgid "View the files on filebin.net"
 msgstr "Voir les fichiers sur filebin.net"
 
-msgid "Visibility"
-msgstr "Visibilité"
-
 msgid "Visibility:"
 msgstr "Visibilité :"
 
@@ -5646,12 +5594,6 @@ msgstr "VICTOIRE BLANCS"
 
 msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr "MIF"
-
-msgid "Warning message"
-msgstr "Message d'avertissement"
-
-msgid "Warning: by default, only people on your Sharly Chess server can access the application."
-msgstr "Attention : par défaut, seules les personnes connectées sur le serveur Sharly Chess peuvent accéder à l'application."
 
 msgid "Warning: closing this window will stop Sharly Chess."
 msgstr "Avertissement : la fermeture de cette fenêtre arrête Sharly Chess."

@@ -1,4 +1,3 @@
-import time
 from typing import cast
 
 from litestar.connection.base import ASGIConnection
@@ -25,16 +24,10 @@ class Guard:
                 raise PermissionDeniedException(
                     'You are not allowed to view private events.'
                 )
-        if not event.current(now := time.time()):
-            if not client.can_view_passed_coming_events:
-                if event.passed(now):
-                    raise PermissionDeniedException(
-                        'You are not allowed to view passed events.'
-                    )
-                else:
-                    raise PermissionDeniedException(
-                        'You are not allowed to view coming events.'
-                    )
+        if event.passed() and not client.can_view_passed_events:
+            raise PermissionDeniedException(
+                'You are not allowed to view coming events.'
+            )
 
     @classmethod
     def screen_is_visible(cls, connection: ASGIConnection, _: BaseRouteHandler) -> None:

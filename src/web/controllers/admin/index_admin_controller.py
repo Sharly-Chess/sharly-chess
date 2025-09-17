@@ -160,6 +160,7 @@ class IndexAdminController(BaseAdminController):
         coming_events = EventLoader.get_events_metadata(
             'coming', public_only=public_only
         )
+        lan_events = current_events + coming_events
         nav_tabs: dict[str, dict[str, Any]] = {
             'home': {
                 'title': _('Home'),
@@ -169,7 +170,7 @@ class IndexAdminController(BaseAdminController):
                 'experimental_features_warning': True,
             },
         }
-        if web_context.client.can_view_passed_coming_events:
+        if web_context.client.can_view_passed_events:
             nav_tabs |= {
                 'current_events': {
                     'section_title': _('Events'),
@@ -217,14 +218,16 @@ class IndexAdminController(BaseAdminController):
                 },
             }
         else:
+            events = current_events + coming_events
+
             nav_tabs |= {
-                'current_events': {
-                    'title': _('Events ({num})').format(num=len(current_events) or '-'),
-                    'template': 'index/events_tab.html',
-                    'events': current_events,
-                    'disabled': not current_events,
+                'home': {
+                    'title': _('Events ({num})').format(num=len(events) or '-'),
+                    'template': 'index/home_tab.html',
+                    'events': lan_events,
+                    'disabled': False,
                     'empty_str': _('No events.'),
-                    'icon_class': 'bi-calendar indented',
+                    'icon_class': 'bi-qr-code',
                     'page_title': _('Events'),
                     'divider': True,
                 },
