@@ -326,7 +326,6 @@ class SharlyChessServerToga(toga.App):
         self.log_view = toga.WebView(
             style=Pack(flex=1), on_webview_load=self._on_logview_load
         )
-        self.log_view.set_content('about:blank', LOG_HTML)
 
         self.info_view = toga.Box(
             style=Pack(direction=COLUMN, margin=10, align_items='center')
@@ -362,6 +361,13 @@ class SharlyChessServerToga(toga.App):
 
         assert isinstance(self.main_window, toga.MainWindow)
         self.main_window.show()
+
+    def on_running(self):
+        self.log_view.set_content('about:blank', LOG_HTML)
+        # Start message processing and kick the server immediately
+        asyncio.create_task(self._process_message_queue())
+        if not self.server_running:
+            self._on_start_server(None)
 
     def _noop(self, widget: toga.Widget):
         pass
@@ -613,9 +619,3 @@ class SharlyChessServerToga(toga.App):
                 pass
         else:
             self._pending_js.append(js)
-
-    def on_running(self):
-        # Start message processing and kick the server immediately
-        asyncio.create_task(self._process_message_queue())
-        if not self.server_running:
-            self._on_start_server(None)
