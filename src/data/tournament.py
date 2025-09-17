@@ -11,6 +11,7 @@ from operator import attrgetter
 from typing import TYPE_CHECKING, Any, Iterable
 from _weakref import ReferenceType
 
+from common.i18n.utils import by
 from trf import Tournament as TrfTournament
 
 from common import format_timestamp
@@ -492,7 +493,7 @@ class Tournament:
     def players_by_name_with_unpaired(self) -> list[Player]:
         return sorted(
             self.players,
-            key=lambda player: (player.last_name, player.first_name or ''),
+            key=by('last_name', 'first_name'),
         )
 
     @cached_property
@@ -505,7 +506,7 @@ class Tournament:
                 or player.board_id is not None
                 and player not in self.unpaired_players
             ],
-            key=lambda p: (p.last_name, p.first_name or ''),
+            key=by('last_name', 'first_name'),
         )
 
     @property

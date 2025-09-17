@@ -5,6 +5,7 @@ from logging import Logger
 import math
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any, Iterable
+from common.i18n.utils import normalized_key
 from pyexcel_ods3 import save_data
 import xlsxwriter
 
@@ -17,7 +18,6 @@ from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 from litestar.channels import ChannelsPlugin
 
-from common import unicode_normalize
 from common.exception import SharlyChessException
 from common.i18n import _, ngettext
 from common.logger import get_logger
@@ -390,7 +390,7 @@ class PlayerAdminController(BaseEventAdminController):
     @staticmethod
     def _matches_string_search(search: str, match: str):
         search_parts = set(search.split(' '))
-        match_str = unicode_normalize(match.lower())
+        match_str = normalized_key(match)
         return all(search_part in match_str for search_part in search_parts)
 
     @staticmethod
@@ -996,11 +996,11 @@ class PlayerAdminController(BaseEventAdminController):
             )
         elif admin_players_filter_name is not None:
             SessionHandler.set_session_admin_players_filter_name(
-                request, unicode_normalize(admin_players_filter_name).lower()
+                request, normalized_key(admin_players_filter_name)
             )
         elif admin_players_filter_clubs_search is not None:
             SessionHandler.set_session_admin_players_filter_clubs_search(
-                request, unicode_normalize(admin_players_filter_clubs_search).lower()
+                request, normalized_key(admin_players_filter_clubs_search)
             )
         elif admin_players_clear_filters:
             SessionHandler.set_session_admin_players_filter_federations(request, [])

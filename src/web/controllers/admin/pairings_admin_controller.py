@@ -5,6 +5,7 @@ import json
 from dataclasses import dataclass
 from typing import Annotated, Any
 
+from common.i18n.utils import by
 from data.pairings.engines import BbpPairings
 from data.pairings.bbp_history import TournamentHistoryPlayer
 from litestar import delete, get, patch, put, post
@@ -166,7 +167,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             self.admin_tournament
             and self.admin_tournament.pairing_system.split_unpaired_and_bye_players
         ):
-            for player in sorted(unpaired, key=lambda p: p.last_name):
+            for player in sorted(unpaired, key=by('last_name')):
                 if player.pairings[self.admin_round] and player.pairings[
                     self.admin_round
                 ].result in (
@@ -178,7 +179,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                 else:
                     self.admin_unpaired.append(player)
         else:
-            self.admin_unpaired = sorted(unpaired, key=lambda p: p.last_name)
+            self.admin_unpaired = sorted(unpaired, key=by('last_name'))
 
         self.admin_board: Board | None = None
         if board_id is not None:

@@ -7,8 +7,6 @@ from collections import namedtuple
 from datetime import datetime
 from functools import wraps
 from pathlib import Path
-
-import unicodedata
 from packaging.version import Version
 
 from common.exception import SharlyChessException
@@ -206,13 +204,3 @@ def show_duration(func):
         return result
 
     return show_duration_wrapper
-
-
-def unicode_normalize(string: str) -> str:
-    """Removes the accents of the string, cf https://www.unicode.org/reports/tr15/#Norm_Forms"""
-    return ''.join(
-        filter(
-            lambda c: not unicodedata.combining(c),
-            unicodedata.normalize('NFKD', string),
-        )
-    )
