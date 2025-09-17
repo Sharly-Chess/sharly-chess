@@ -1,8 +1,10 @@
-/*
-###########################################################
-# EVENT
-###########################################################
-*/
+#main-wrapper.home.non-admin {
+    --side-bar-width: 0px;
+}
+
+#main-wrapper.home.non-admin .sidebar {
+    display: none;
+}
 
 .dropdown-menu.players-set-tournament-check-ins,
 .dropdown-menu.players-set-player-tournament,

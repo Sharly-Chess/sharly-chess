@@ -301,16 +301,10 @@ msgstr ""
 msgid "Accelerated variations of the swiss pairing system."
 msgstr ""
 
-msgid "Accepted characters are letters, numbers, spaces and a few special characters ($€'\"-!?()[],:.)."
-msgstr ""
-
 msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
 msgstr ""
 
 msgid "Access control"
-msgstr ""
-
-msgid "Access level"
 msgstr ""
 
 msgid "Access level"
@@ -550,6 +544,9 @@ msgstr ""
 msgid "Archive event"
 msgstr ""
 
+msgid "Archive the event."
+msgstr ""
+
 msgid "Archived ({num})"
 msgstr ""
 
@@ -622,10 +619,6 @@ msgstr ""
 msgid "Auto-upload to FFE enabled"
 msgstr ""
 
-#, python-format
-msgid "Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)d minutes)"
-msgstr ""
-
 msgid "Auto-upload to FFE site disabled"
 msgstr ""
 
@@ -682,9 +675,6 @@ msgstr ""
 
 #, python-format
 msgid "Background colour: %(color)s"
-msgstr ""
-
-msgid "Background image and colour"
 msgstr ""
 
 msgid "Background image:"
@@ -822,6 +812,9 @@ msgstr ""
 msgid "CM *** SHORT NAME FOR Candidate Master"
 msgstr "CM"
 
+msgid "Can't see your event?"
+msgstr ""
+
 msgid "Cancel"
 msgstr ""
 
@@ -851,9 +844,6 @@ msgid "Category [%(category)s] successfully created!"
 msgstr ""
 
 msgid "Change the player's tournament."
-msgstr ""
-
-msgid "Changing the unique ID will cause an error on any opened screen of the event."
 msgstr ""
 
 msgid "Check connection"
@@ -953,6 +943,9 @@ msgid "Choose families to add"
 msgstr ""
 
 msgid "Choose from images in the 'custom' folder"
+msgstr ""
+
+msgid "Choose one, many or no tournaments."
 msgstr ""
 
 msgid "Choose screens to add"
@@ -1097,15 +1090,6 @@ msgid "Connection to the server failed."
 msgstr ""
 
 msgid "Connection to the server failed: {error}."
-msgstr ""
-
-msgid "Console formatting"
-msgstr ""
-
-msgid "Console logging level"
-msgstr ""
-
-msgid "Connections ChessEvent"
 msgstr ""
 
 msgid "Console logging level: {console_log_level}"
@@ -1292,9 +1276,6 @@ msgstr ""
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr ""
 
-msgid "Customization"
-msgstr ""
-
 msgid "DCA"
 msgstr ""
 
@@ -1335,9 +1316,6 @@ msgstr ""
 msgid "Database successfully updated."
 msgstr ""
 
-msgid "Date"
-msgstr ""
-
 msgid "Date of birth"
 msgstr ""
 
@@ -1347,13 +1325,7 @@ msgstr ""
 msgid "Date:"
 msgstr ""
 
-msgid "Debug message"
-msgstr ""
-
 msgid "Default credentials used to import tournaments from the ChessEvent platform."
-msgstr ""
-
-msgid "Default federation"
 msgstr ""
 
 msgid "Default handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. If checked, this rating will also be used for seeding and pairings. If unchecked, they will be treated as unrated and require an estimated rating."
@@ -1605,13 +1577,13 @@ msgstr ""
 msgid "Draw"
 msgstr ""
 
-msgid "Duplicate"
-msgstr ""
-
 msgid "Duplicate the account."
 msgstr ""
 
 msgid "Duplicate the category and its criteria and prizes."
+msgstr ""
+
+msgid "Duplicate the event."
 msgstr ""
 
 msgid "Duplicate the rotator."
@@ -1818,6 +1790,9 @@ msgid "Edit the properties of the category."
 msgstr ""
 
 msgid "Edit the properties of the display controller."
+msgstr ""
+
+msgid "Edit the properties of the event."
 msgstr ""
 
 msgid "Edit the properties of the rotator."
@@ -2709,6 +2684,9 @@ msgstr ""
 msgid "Leagues"
 msgstr ""
 
+msgid "Leave empty to grant no permissions at all."
+msgstr ""
+
 msgid "Library [{lib}] is missing."
 msgstr ""
 
@@ -2852,9 +2830,6 @@ msgstr ""
 
 #, python-format
 msgid "Maximum number of byes: %(max_byes)d"
-msgstr ""
-
-msgid "Maximum number of illegal moves"
 msgstr ""
 
 msgid "Maximum number of points (included):"
@@ -3137,7 +3112,7 @@ msgstr ""
 msgid "No prizes."
 msgstr ""
 
-msgid "No recording"
+msgid "No public events."
 msgstr ""
 
 msgid "No result"
@@ -3296,6 +3271,9 @@ msgid "Only allowed users can view private display controllers."
 msgstr ""
 
 msgid "Only allowed users can view private rotators."
+msgstr ""
+
+msgid "Only current and future events that have been declared as <b>public</b> by the administrator are visible via the network."
 msgstr ""
 
 msgid "Only estimated ratings are optional."
@@ -3799,9 +3777,6 @@ msgstr ""
 msgid "Print players, results, etc."
 msgstr ""
 
-msgid "Private event"
-msgstr ""
-
 msgid "Prize *** PRIZE FOR TABLE HEADER"
 msgstr "Prize"
 
@@ -3972,9 +3947,6 @@ msgid "Rating limits"
 msgstr ""
 
 msgid "Rating ranges"
-msgstr ""
-
-msgid "Rating seed for unrated rapid/blitz"
 msgstr ""
 
 #, python-format
@@ -4586,9 +4558,6 @@ msgstr ""
 msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b> to the current one may be modified. Changes to pairings previous to this should be made at the <b>end</b> of the tournament, <b>after</b> the rankings have been published, and solely for the computation of the FIDE ratings."
 msgstr ""
 
-msgid "The IP address, used to identify the device."
-msgstr ""
-
 msgid "The PAPI format does not support {rounds} rounds (maximum: {max})."
 msgstr ""
 
@@ -4888,9 +4857,6 @@ msgid "The rating used when the time control is more than 10 minutes and less th
 msgstr ""
 
 msgid "The related objects will also be deleted:"
-msgstr ""
-
-msgid "The representation of the event for URLs and file exports."
 msgstr ""
 
 msgid "The rotating delay between two screens."
@@ -5349,9 +5315,6 @@ msgstr ""
 msgid "Unauthenticated access has been updated."
 msgstr ""
 
-msgid "Undefined"
-msgstr ""
-
 msgid "Undefined **** PLURAL"
 msgstr "Undefined"
 
@@ -5374,9 +5337,6 @@ msgid "Under 20"
 msgstr ""
 
 msgid "Under 8"
-msgstr ""
-
-msgid "Unique ID"
 msgstr ""
 
 #, python-format
@@ -5581,12 +5541,6 @@ msgstr ""
 msgid "View Prizes tab"
 msgstr ""
 
-msgid "View basic event configuration"
-msgstr ""
-
-msgid "View complete event configuration"
-msgstr ""
-
 msgid "View draft pairings"
 msgstr ""
 
@@ -5594,6 +5548,9 @@ msgid "View draft rankings"
 msgstr ""
 
 msgid "View event cards details"
+msgstr ""
+
+msgid "View event configuration"
 msgstr ""
 
 msgid "View passed and upcoming events"
@@ -5617,9 +5574,6 @@ msgstr ""
 msgid "View the files on filebin.net"
 msgstr ""
 
-msgid "Visibility"
-msgstr ""
-
 msgid "Visibility:"
 msgstr ""
 
@@ -5640,12 +5594,6 @@ msgstr ""
 
 msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr "WIM"
-
-msgid "Warning message"
-msgstr ""
-
-msgid "Warning: by default, only people on your Sharly Chess server can access the application."
-msgstr ""
 
 msgid "Warning: closing this window will stop Sharly Chess."
 msgstr ""
