@@ -61,11 +61,9 @@ class TestSingleScreensFunctionality:
         page.get_by_test_id('accordion-screen-type-input').click()
         card = page.locator(f"div.card:has-text('{name}')")
         expect(card).to_be_visible()
-
         button = card.locator('button[hx-get*="delete"]')
         button.click()
         TestUtils.button_by_text(modal, 'Delete').click()
-
         expect(
             page.get_by_text(f'Screen [{expected_uniq_id}] has been deleted.')
         ).to_be_visible()
