@@ -1067,12 +1067,6 @@ class IndexAdminController(BaseAdminController):
             for stored_plugin in stored_plugins:
                 config_database.update_stored_plugin(stored_plugin)
         SharlyChessConfig().load_and_set_env()
-        previous_enabled_plugins = set(
-            plugin.id for plugin in plugin_manager.enabled_plugins
-        )
-        enabled_plugins = set(stored_plugin.name for stored_plugin in stored_plugins)
-        if previous_enabled_plugins != enabled_plugins:
-            plugin_manager.reload_register()
         Message.success(request, _('Sharly Chess settings have been updated.'))
         return HTMXTemplate(
             template_name='common/empty_modal_and_messages.html',
