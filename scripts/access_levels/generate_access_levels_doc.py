@@ -121,7 +121,7 @@ def print_permissions_doc(
     dev_locale_strings: dict[str, dict[str, str]],
     web_locale_strings: dict[str, dict[str, str]],
 ):
-    web_mark_ok: str = '✔'
+    web_mark_ok: str = '✅'
     web_mark_ko: str = '-'
     dev_mark_ok: str = '✔'
     dev_mark_ko: str = '-'
