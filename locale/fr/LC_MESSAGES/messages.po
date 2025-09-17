@@ -168,6 +168,9 @@ msgid_plural "(%(num)d screens)"
 msgstr[0] "(%(num)d écran)"
 msgstr[1] "(%(num)d écrans)"
 
+msgid "(*) Knowing the list of the currents events is needed to select the events before authenticating."
+msgstr "(*) Connaître la liste des évènements en cours est nécessaire pour sélection les évènements avant de s'authentifier."
+
 msgid "(by default)"
 msgstr "(par défaut)"
 
@@ -547,6 +550,9 @@ msgstr "'archive [{archive}] restaurée avec succès (voir l'évènement [{event
 msgid "Archive event"
 msgstr "Archiver un évènement"
 
+msgid "Archive the event."
+msgstr "Archiver l'évènement."
+
 msgid "Archived ({num})"
 msgstr "Archivés ({num})"
 
@@ -619,10 +625,6 @@ msgstr "Mise en ligne automatique des résultats vers le site de la FFE. Vous de
 msgid "Auto-upload to FFE enabled"
 msgstr "Envoi automatique vers la FFE activé"
 
-#, python-format
-msgid "Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)d minutes)"
-msgstr "Envoi automatique vers la FFE activé (au minimum toutes les %(ffe_auto_upload_delay)d minutes)"
-
 msgid "Auto-upload to FFE site disabled"
 msgstr "Envoi automatique vers la FFE désactivé"
 
@@ -680,9 +682,6 @@ msgstr "Couleur de fond :"
 #, python-format
 msgid "Background colour: %(color)s"
 msgstr "Couleur de fond : %(color)s"
-
-msgid "Background image and colour"
-msgstr "Image et couleur de fond"
 
 msgid "Background image:"
 msgstr "Image de fond :"
@@ -852,9 +851,6 @@ msgstr "La catégorie [%(category)s] créée avec succès !"
 
 msgid "Change the player's tournament."
 msgstr "Changer le joueur de tournoi."
-
-msgid "Changing the unique ID will cause an error on any opened screen of the event."
-msgstr "Modifier l'identifiant unique provoquera une erreur sur tous les écrans ouverts de l'évènement."
 
 msgid "Check connection"
 msgstr "Vérifier la connexion"
@@ -1286,9 +1282,6 @@ msgstr "Affiche actuellement l'écran rotatif [{uniq_id}]"
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr "Affiche actuellement l'écran [{uniq_id}]"
 
-msgid "Customization"
-msgstr "Personnalisation"
-
 msgid "DCA"
 msgstr "ADJ"
 
@@ -1328,9 +1321,6 @@ msgstr "Base de données [{database}] non trouvée au chemin attendu [{path}]."
 
 msgid "Database successfully updated."
 msgstr "Base de données mise à jour avec succès."
-
-msgid "Date"
-msgstr "Date"
 
 msgid "Date of birth"
 msgstr "Date de naissance"
@@ -1533,6 +1523,9 @@ msgstr "Ronde affichée : %(round)d"
 msgid "Do not assign zero-point bye (players will be eligible for pairing)"
 msgstr "Ne pas marquer forfait (les joueur·euses seront apparié·es) "
 
+msgid "Do not edit this table manually, use script {script_name} instead."
+msgstr "Ne pas éditer ce tableau manuellement, utiliser plutôt le script {script_name}."
+
 msgid "Do not recover"
 msgstr "Ne pas restaurer"
 
@@ -1593,14 +1586,14 @@ msgstr "Faites glisser les ensembles pour les ordonner."
 msgid "Draw"
 msgstr "Nulle"
 
-msgid "Duplicate"
-msgstr "Dupliquer"
-
 msgid "Duplicate the account."
 msgstr "Dupliquer le compte."
 
 msgid "Duplicate the category and its criteria and prizes."
 msgstr "Dupliquer la catégorie ainsi que ses prix et ses critères."
+
+msgid "Duplicate the event."
+msgstr "Dupliquer l'évènement."
 
 msgid "Duplicate the rotator."
 msgstr "Dupliquer l'écran rotatif."
@@ -1807,6 +1800,9 @@ msgstr "Modifier les propriétés de la catégorie."
 
 msgid "Edit the properties of the display controller."
 msgstr "Modifier les propriétés du pilote d'afficheurs."
+
+msgid "Edit the properties of the event."
+msgstr "Modifier les propriétés de l'évènement."
 
 msgid "Edit the properties of the rotator."
 msgstr "Modifier les propriétés de l'écran rotatif."
@@ -2507,9 +2503,6 @@ msgstr "Incrément (sec)"
 msgid "Info"
 msgstr "Info"
 
-msgid "Inherited access levels"
-msgstr "Niveaux d'accès hérités"
-
 msgid "Input Screens may be used to allow players to enter their own results on a device that you make available at the venue."
 msgstr "Les écrans de saisie peuvent être utilisés pour permettre aux joueur·euses d’entrer eux-mêmes leurs résultats sur un portable ou une tablette mis à disposition sur le lieu du tournoi."
 
@@ -2804,9 +2797,6 @@ msgstr "Gérer les groupes de prix"
 msgid "Manage the prize groups of the tournament."
 msgstr "Gérer les groupes de prix du tournoi."
 
-msgid "Manageable access levels"
-msgstr "Niveaux d'accès gérés"
-
 msgid "Mandatory for the first hour, optional for next hours."
 msgstr "Obligatoire pour le premier horaire, facultative pour les horaires suivants."
 
@@ -2844,9 +2834,6 @@ msgstr "Âge maximum des résultats :"
 #, python-format
 msgid "Maximum number of byes: %(max_byes)d"
 msgstr "Nombre maximum de jokers (byes) : %(max_byes)d"
-
-msgid "Maximum number of illegal moves"
-msgstr "Nombre maximum de coups illégaux"
 
 msgid "Maximum number of points (included):"
 msgstr "Nombre maximum de points (inclus) :"
@@ -3127,9 +3114,6 @@ msgstr "Aucun prix défini."
 
 msgid "No prizes."
 msgstr "Aucun prix."
-
-msgid "No recording"
-msgstr "Pas d'enregistrement"
 
 msgid "No result"
 msgstr "Pas de résultat"
@@ -3799,8 +3783,8 @@ msgstr "Imprimer"
 msgid "Print players, results, etc."
 msgstr "Imprimer les participant·es, les résultats, les classements…"
 
-msgid "Private event"
-msgstr "Évènement privé"
+msgid "Printing"
+msgstr "Impression"
 
 msgid "Prize *** PRIZE FOR TABLE HEADER"
 msgstr "Prix"
@@ -3973,9 +3957,6 @@ msgstr "Limites Elo"
 
 msgid "Rating ranges"
 msgstr "Tranches de classement"
-
-msgid "Rating seed for unrated rapid/blitz"
-msgstr "Classement des joueur·euses sans classement FIDE rapide/blitz"
 
 #, python-format
 msgid "Rating splitting groups A and B (recommended: %(recommended)d)."
@@ -4541,9 +4522,6 @@ msgstr "Stockage des données…"
 msgid "Strong"
 msgstr "Préférence forte"
 
-msgid "Sub access levels"
-msgstr "Sous-niveaux d'accès"
-
 msgid "Sum of Buchholz"
 msgstr "Somme des Buchholz"
 
@@ -4892,9 +4870,6 @@ msgstr "Le classement utilisé lorsque la cadence est supérieure à 10 minutes 
 
 msgid "The related objects will also be deleted:"
 msgstr "Les objets liés vont également être supprimés :"
-
-msgid "The representation of the event for URLs and file exports."
-msgstr "La représentation de l'évènement pour les URLs et les exports de fichier."
 
 msgid "The rotating delay between two screens."
 msgstr "Le délai de rotation entre deux écrans."
@@ -5352,9 +5327,6 @@ msgstr "Impossible de téléverser le règlement du tournoi."
 msgid "Unauthenticated access has been updated."
 msgstr "L'accès non authentifié a été mis à jour."
 
-msgid "Undefined"
-msgstr "Non défini"
-
 msgid "Undefined **** PLURAL"
 msgstr "Non définis"
 
@@ -5378,9 +5350,6 @@ msgstr "Moins de 20"
 
 msgid "Under 8"
 msgstr "Moins de 8"
-
-msgid "Unique ID"
-msgstr "Identifiant unique"
 
 #, python-format
 msgid "Unique ID: %(uniq_id)s"
@@ -5584,12 +5553,6 @@ msgstr "Voir l'onglet Joueur·euses"
 msgid "View Prizes tab"
 msgstr "Voir l'onglet Prix"
 
-msgid "View basic event configuration"
-msgstr "Voir la configuration basique des évènements"
-
-msgid "View complete event configuration"
-msgstr "Voir la configuration complète des évènements"
-
 msgid "View draft pairings"
 msgstr "Voir les appariement avant publication"
 
@@ -5598,6 +5561,9 @@ msgstr "Voir les classement avant publication"
 
 msgid "View event cards details"
 msgstr "Voir les détails des cartes d'évènement"
+
+msgid "View event configuration"
+msgstr "Voir la configuration de l'évènement"
 
 msgid "View passed and upcoming events"
 msgstr "Voir les évènement passés et à venir"
@@ -5619,9 +5585,6 @@ msgstr "Voir l'onglet Tournois"
 
 msgid "View the files on filebin.net"
 msgstr "Voir les fichiers sur filebin.net"
-
-msgid "Visibility"
-msgstr "Visibilité"
 
 msgid "Visibility:"
 msgstr "Visibilité :"
@@ -5868,11 +5831,11 @@ msgstr "[{value}] n'est pas une valeur positive."
 msgid "[{value}] is not a valid value format."
 msgstr "[{value}] n'est pas un format de valeur valide."
 
-msgid "all"
-msgstr "tous"
-
 msgid "all the boards"
 msgstr "tous les échiquiers"
+
+msgid "all the permissions"
+msgstr "toutes les permissions"
 
 msgid "all the players"
 msgstr "tou·tes les joueur·euses"
@@ -5939,9 +5902,6 @@ msgstr "non"
 
 msgid "no background image"
 msgstr "pas d'image de fond"
-
-msgid "none"
-msgstr "aucun"
 
 msgid "player already received a PAB in a previous round"
 msgstr "le·la joueur·euse a déjà été exempt·e lors d'une ronde précédente"
@@ -6109,4 +6069,70 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)d minutes)"
+#~ msgstr "Envoi automatique vers la FFE activé (au minimum toutes les %(ffe_auto_upload_delay)d minutes)"
+
+#~ msgid "Background image and colour"
+#~ msgstr "Image et couleur de fond"
+
+#~ msgid "Changing the unique ID will cause an error on any opened screen of the event."
+#~ msgstr "Modifier l'identifiant unique provoquera une erreur sur tous les écrans ouverts de l'évènement."
+
+#~ msgid "Customization"
+#~ msgstr "Personnalisation"
+
+#~ msgid "Date"
+#~ msgstr "Date"
+
+#~ msgid "Duplicate"
+#~ msgstr "Dupliquer"
+
+#~ msgid "Maximum number of illegal moves"
+#~ msgstr "Nombre maximum de coups illégaux"
+
+#~ msgid "No recording"
+#~ msgstr "Pas d'enregistrement"
+
+#~ msgid "Private event"
+#~ msgstr "Évènement privé"
+
+#~ msgid "Rating seed for unrated rapid/blitz"
+#~ msgstr "Classement des joueur·euses sans classement FIDE rapide/blitz"
+
+#~ msgid "The representation of the event for URLs and file exports."
+#~ msgstr "La représentation de l'évènement pour les URLs et les exports de fichier."
+
+#~ msgid "Undefined"
+#~ msgstr "Non défini"
+
+#~ msgid "Unique ID"
+#~ msgstr "Identifiant unique"
+
+#~ msgid "View basic event configuration"
+#~ msgstr "Voir la configuration basique des évènements"
+
+#~ msgid "View complete event configuration"
+#~ msgstr "Voir la configuration complète des évènements"
+
+#~ msgid "Visibility"
+#~ msgstr "Visibilité"
+
+#~ msgid "Inherited access levels"
+#~ msgstr "Niveaux d'accès hérités"
+
+#~ msgid "Manageable access levels"
+#~ msgstr "Niveaux d'accès gérés"
+
+#~ msgid "Sub access levels"
+#~ msgstr "Sous-niveaux d'accès"
+
+#~ msgid "all"
+#~ msgstr "tous"
+
+#~ msgid "none"
+#~ msgstr "aucun"
+
+#~ msgid "All the permissions"
+#~ msgstr ""
 

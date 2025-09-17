@@ -6,8 +6,7 @@ from common.i18n import _
 
 class AuthActionCategory(StrEnum):
     APPLICATION = auto()
-    EVENTS_ACCESS = auto()
-    EVENTS_MANAGEMENT = auto()
+    EVENTS = auto()
     ACCESS = auto()
     TOURNAMENTS = auto()
     PLAYERS = auto()
@@ -30,15 +29,13 @@ class AuthActionCategory(StrEnum):
     def localized_name(self, locale: str | None = None) -> str:
         match self:
             case AuthActionCategory.APPLICATION:
-                return _('Application management', locale)
-            case AuthActionCategory.EVENTS_ACCESS:
-                return _('Events access', locale)
-            case AuthActionCategory.EVENTS_MANAGEMENT:
-                return _('Events management', locale)
+                return _('Application', locale)
+            case AuthActionCategory.EVENTS:
+                return _('Events', locale)
             case AuthActionCategory.ACCESS:
                 return _('Access control', locale)
             case AuthActionCategory.TOURNAMENTS:
-                return _('Tournaments management', locale)
+                return _('Tournaments', locale)
             case AuthActionCategory.PLAYERS:
                 return _('Players', locale)
             case AuthActionCategory.CHECK_IN:
@@ -54,7 +51,7 @@ class AuthActionCategory(StrEnum):
             case AuthActionCategory.PRIZES:
                 return _('Prizes', locale)
             case AuthActionCategory.PRINT:
-                return _('Print', locale)
+                return _('Printing', locale)
             case _:
                 raise ValueError(f'auth={self}')
 
@@ -151,16 +148,13 @@ class AuthAction(StrEnum):
                 AuthAction.VIEW_PRIVATE_EVENTS
                 | AuthAction.VIEW_PASSED_COMING_EVENTS
                 | AuthAction.VIEW_DETAILED_EVENT_CARDS
-            ):
-                return AuthActionCategory.EVENTS_ACCESS
-            case (
-                AuthAction.ADD_EVENTS
+                | AuthAction.ADD_EVENTS
                 | AuthAction.DELETE_EVENTS
                 | AuthAction.RENAME_EVENTS
                 | AuthAction.UPDATE_EVENTS
                 | AuthAction.VIEW_EVENT_CONFIG
             ):
-                return AuthActionCategory.EVENTS_MANAGEMENT
+                return AuthActionCategory.EVENTS
             case AuthAction.MANAGE_ACCOUNTS:
                 return AuthActionCategory.ACCESS
             case (
@@ -220,10 +214,13 @@ class AuthAction(StrEnum):
             case _:
                 raise ValueError(f'auth={self}')
 
-    def name(self, locale: str | None = None) -> str:
+    def name(self) -> str:
+        return self.localized_name()
+
+    def localized_name(self, locale: str | None = None) -> str:
         match self:
             case AuthAction.MANAGE_APPLICATION_SETTINGS:
-                return _('Manage application settings')
+                return _('Manage application settings', locale)
             case AuthAction.MANAGE_SOURCE_DATABASES:
                 return _('Manage source databases', locale)
             case AuthAction.VIEW_PRIVATE_EVENTS:

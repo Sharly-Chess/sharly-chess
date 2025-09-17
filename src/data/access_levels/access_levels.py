@@ -57,6 +57,16 @@ class AccessLevel(IdentifiableEntity, ABC):
         return self.name
 
     @property
+    def administrator(self) -> bool:
+        """Returns True if the access level is Administrator."""
+        return False
+
+    @property
+    def needs_account(self) -> bool:
+        """Returns True if an account is needed to get the access level, false otherwise."""
+        return True
+
+    @property
     @abstractmethod
     def scope(self) -> AccessLevelScope:
         """The scope of effect of the access level."""
@@ -82,9 +92,13 @@ class AccessLevel(IdentifiableEntity, ABC):
         """Access levels to inherit the permissions of."""
 
     @property
-    @abstractmethod
     def help_text(self) -> str:
         """Explanation of the access level's actions"""
+        return self.localized_help_text()
+
+    @abstractmethod
+    def localized_help_text(self, locale: str | None = None) -> str:
+        """Localized explanation of the access level's actions"""
 
     @staticmethod
     @abstractmethod
@@ -143,6 +157,10 @@ class SpectatorAccessLevel(AccessLevel):
         return _('SPE', locale)
 
     @property
+    def needs_account(self) -> bool:
+        return False
+
+    @property
     def scope(self) -> AccessLevelScope:
         return AccessLevelScope.EVENT
 
@@ -154,9 +172,8 @@ class SpectatorAccessLevel(AccessLevel):
     def access_level_actions() -> list[AuthAction]:
         return [AuthAction.VIEW_PUBLIC_SCREENS]
 
-    @property
-    def help_text(self) -> str:
-        return _('Allows access to Screens marked as public.')
+    def localized_help_text(self, locale: str | None = None) -> str:
+        return _('Allows access to Screens marked as public.', locale)
 
 
 class ResultsEntryAccessLevel(AccessLevel):
@@ -177,6 +194,10 @@ class ResultsEntryAccessLevel(AccessLevel):
         return _('Results entry')
 
     @property
+    def needs_account(self) -> bool:
+        return False
+
+    @property
     def scope(self) -> AccessLevelScope:
         return AccessLevelScope.TOURNAMENT
 
@@ -190,10 +211,10 @@ class ResultsEntryAccessLevel(AccessLevel):
     def access_level_actions() -> list[AuthAction]:
         return [AuthAction.ENTER_RESULTS]
 
-    @property
-    def help_text(self) -> str:
+    def localized_help_text(self, locale: str | None = None) -> str:
         return _(
-            'Allows entry of results via any input Screens that have been marked as public.'
+            'Allows entry of results via any input Screens that have been marked as public.',
+            locale,
         )
 
 
@@ -215,6 +236,10 @@ class CheckInAccessLevel(AccessLevel):
         return _('Check-in')
 
     @property
+    def needs_account(self) -> bool:
+        return False
+
+    @property
     def scope(self) -> AccessLevelScope:
         return AccessLevelScope.TOURNAMENT
 
@@ -231,10 +256,10 @@ class CheckInAccessLevel(AccessLevel):
             AuthAction.CHECK_IN_PLAYERS,
         ]
 
-    @property
-    def help_text(self) -> str:
+    def localized_help_text(self, locale: str | None = None) -> str:
         return _(
-            'Allows check-in via any input Screens that have been marked as public.'
+            'Allows check-in via any input Screens that have been marked as public.',
+            locale,
         )
 
 
@@ -272,10 +297,10 @@ class SectorArbitrationAccessLevel(AccessLevel):
             AuthAction.SET_ILLEGAL_MOVES,
         ]
 
-    @property
-    def help_text(self) -> str:
+    def localized_help_text(self, locale: str | None = None) -> str:
         return _(
-            'Allows access to the Players and Pairings tabs, results and illegal moves update.'
+            'Allows access to the Players and Pairings tabs, results and illegal moves update.',
+            locale,
         )
 
 
@@ -323,10 +348,10 @@ class PairingAccessLevel(AccessLevel):
             AuthAction.OPEN_CLOSE_CHECK_IN,
         ]
 
-    @property
-    def help_text(self) -> str:
+    def localized_help_text(self, locale: str | None = None) -> str:
         return _(
-            'Allows pairing of the players, either using a pairing engine or manually.'
+            'Allows pairing of the players, either using a pairing engine or manually.',
+            locale,
         )
 
 
@@ -374,10 +399,10 @@ class DeputyChiefArbitrationAccessLevel(AccessLevel):
             AuthAction.PRINT,
         ]
 
-    @property
-    def help_text(self) -> str:
+    def localized_help_text(self, locale: str | None = None) -> str:
         return _(
-            'Allows managing players, entering results (including special results and their modification), handling check-ins, pairings, and displays.'
+            'Allows managing players, entering results (including special results and their modification), handling check-ins, pairings, and displays.',
+            locale,
         )
 
 
@@ -413,10 +438,10 @@ class ChiefArbitrationAccessLevel(AccessLevel):
             AuthAction.DELETE_TOURNAMENTS,
         ]
 
-    @property
-    def help_text(self) -> str:
+    def localized_help_text(self, locale: str | None = None) -> str:
         return _(
-            'Allows granting or revoking the Deputy Chief Arbitration access level, editing the event, and managing tournaments; Also includes the permissions of the Deputy Chief Arbitration access level.'
+            'Allows granting or revoking the Deputy Chief Arbitration access level, editing the event, and managing tournaments; Also includes the permissions of the Deputy Chief Arbitration access level.',
+            locale,
         )
 
 
@@ -451,9 +476,11 @@ class ScreenManagementAccessLevel(AccessLevel):
             AuthAction.VIEW_PRIVATE_SCREENS,
         ]
 
-    @property
-    def help_text(self) -> str:
-        return _('Allows management of Screens and the accounts that can access them.')
+    def localized_help_text(self, locale: str | None = None) -> str:
+        return _(
+            'Allows management of Screens and the accounts that can access them.',
+            locale,
+        )
 
 
 class OrganizationAccessLevel(AccessLevel):
@@ -488,10 +515,10 @@ class OrganizationAccessLevel(AccessLevel):
             AuthAction.DOWNLOAD_FEES,
         ]
 
-    @property
-    def help_text(self) -> str:
+    def localized_help_text(self, locale: str | None = None) -> str:
         return _(
-            'Allows granting or revoking the Chief Arbitration access level and editing the event. Also includes the permissions of the Screen Management access level.'
+            'Allows granting or revoking the Chief Arbitration access level and editing the event. Also includes the permissions of the Screen Management access level.',
+            locale,
         )
 
     @classmethod
@@ -513,6 +540,10 @@ class AdministrationAccessLevel(AccessLevel):
     @staticmethod
     def short_name(locale: str | None = None) -> str:
         return _('ADM', locale)
+
+    @property
+    def administrator(self) -> bool:
+        return True
 
     @property
     def scope(self) -> AccessLevelScope:
@@ -538,8 +569,8 @@ class AdministrationAccessLevel(AccessLevel):
             AuthAction.RENAME_EVENTS,
         ]
 
-    @property
-    def help_text(self) -> str:
+    def localized_help_text(self, locale: str | None = None) -> str:
         return _(
-            'Includes all other access levels and grants full access to the application. This access level is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network).'
+            'Includes all other access levels and grants full access to the application. This access level is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network).',
+            locale,
         )
