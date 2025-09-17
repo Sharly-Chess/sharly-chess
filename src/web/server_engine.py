@@ -100,14 +100,10 @@ class ServerEngine(Engine):
             return asyncio.get_running_loop()
         except RuntimeError:
             pass
-        # Try a current loop
-        try:
-            return asyncio.get_event_loop()
-        except RuntimeError:
-            # No loop at all in this thread -> create & set one
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            return loop
+        # No current running loop -> create & set one
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        return loop
 
     async def serve(self):
         logger.debug('System information:')

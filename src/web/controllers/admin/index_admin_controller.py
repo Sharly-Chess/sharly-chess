@@ -996,13 +996,10 @@ class IndexAdminController(BaseAdminController):
         locale_options: dict[str, str] = {
             locale: locale_localized_name(locale) for locale in locales
         }
-        plugin_form_fields_templates = (
-            plugin_manager.hook.get_event_form_fields_template() or []
-        )
         template_context = {
             'console_log_level_options': console_log_level_options,
             'locale_options': locale_options,
-            'plugin_form_fields_templates': plugin_form_fields_templates,
+            'plugins': plugin_manager.all_plugins,
             'federation_options': (
                 {} if data['federation'] else {'': _('Please choose a federation')}
             )
@@ -1070,12 +1067,6 @@ class IndexAdminController(BaseAdminController):
             for stored_plugin in stored_plugins:
                 config_database.update_stored_plugin(stored_plugin)
         SharlyChessConfig().load_and_set_env()
-        previous_enabled_plugins = set(
-            plugin.id for plugin in plugin_manager.enabled_plugins
-        )
-        enabled_plugins = set(stored_plugin.name for stored_plugin in stored_plugins)
-        if previous_enabled_plugins != enabled_plugins:
-            plugin_manager.reload_register()
         Message.success(request, _('Sharly Chess settings have been updated.'))
         return HTMXTemplate(
             template_name='common/empty_modal_and_messages.html',
