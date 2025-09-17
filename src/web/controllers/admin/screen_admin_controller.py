@@ -438,7 +438,7 @@ class ScreenAdminController(BaseEventAdminController):
         event = web_context.get_admin_event()
         admin_screen_types_data: dict[ScreenType, dict[str, Any]] = {
             ScreenType.INPUT: {
-                'title': _('Check-in / Results entry ({num})'),
+                'title': _('Check-in / Results ({num})'),
                 'create_title': _('Check-in / Results entry'),
                 'create_tooltip': _(
                     'Add a screen to check-in players or enter results.'
