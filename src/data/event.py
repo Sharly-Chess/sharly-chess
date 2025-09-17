@@ -15,6 +15,7 @@ from common import (
 )
 from common.background import inline_image_url
 from common.i18n import _
+from common.i18n.utils import by
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.account import Account
@@ -195,7 +196,7 @@ class Event:
 
     @property
     def screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return sorted(self.screens_by_uniq_id.values(), key=lambda screen: screen.name)
+        return sorted(self.screens_by_uniq_id.values(), key=by('name'))
 
     @property
     def screens_by_screen_type_sorted_by_uniq_id(
@@ -369,7 +370,7 @@ class Event:
     def players_sorted_by_name(self) -> list[Player]:
         return sorted(
             self.players_by_id.values(),
-            key=lambda player: (player.last_name, player.first_name or ''),
+            key=by('last_name', 'first_name'),
         )
 
     @cached_property
@@ -445,7 +446,7 @@ class Event:
 
     @cached_property
     def basic_screens_sorted_by_name(self) -> list[Screen]:
-        return sorted(self.basic_screens_by_id.values(), key=lambda screen: screen.name)
+        return sorted(self.basic_screens_by_id.values(), key=by('name'))
 
     def get_unused_screen_uniq_id(
         self,
@@ -521,7 +522,7 @@ class Event:
 
     @cached_property
     def families_sorted_by_name(self) -> list[Family]:
-        return sorted(self.families_by_id.values(), key=lambda family: family.name)
+        return sorted(self.families_by_id.values(), key=by('name'))
 
     @cached_property
     def families_by_uniq_id(self) -> dict[str, Family]:
@@ -778,7 +779,7 @@ class Event:
     def user_accounts_sorted_by_name(self) -> list[Account]:
         return sorted(
             self.user_accounts_by_name.values(),
-            key=lambda account: (account.full_name,),
+            key=by('full_name'),
         )
 
     @property
@@ -793,7 +794,7 @@ class Event:
     def active_user_accounts_sorted_by_name(self) -> list[Account]:
         return sorted(
             self.active_user_accounts_by_name.values(),
-            key=lambda account: (account.full_name,),
+            key=by('full_name'),
         )
 
     @property

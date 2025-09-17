@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import IO, override
 
+from common.i18n.utils import unicode_normalize
 import trf
 
-from common import unicode_normalize
 from common.i18n import _
 from data.tournament import Tournament
 from utils.entity import IdentifiableEntity

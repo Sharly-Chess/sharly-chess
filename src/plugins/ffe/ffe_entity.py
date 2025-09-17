@@ -5,9 +5,9 @@ from functools import partial, cached_property, cache
 from types import UnionType
 from typing import override, Any
 
-from common import unicode_normalize
 from common.exception import SharlyChessException, OptionError
 from common.i18n import _
+from common.i18n.utils import unicode_normalize
 from data.input_output.data_source import (
     FidePlayerComparator,
     PlayerComparator,

@@ -3,6 +3,11 @@
 {% block admin_header_back_button %}
 {% endblock admin_header_back_button %}
 
+
+{% block wrapper_class %}
+    {{ admin_tab }} {% if client.account.administrator %}admin{% else %}non-admin{% endif %}
+{% endblock wrapper_class %}
+
 {% block admin_nav %}
     {% for nav_id, nav_tab in nav_tabs.items() %}
         {% if nav_tab.divider %}

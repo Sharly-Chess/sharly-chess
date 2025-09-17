@@ -4,9 +4,9 @@ import itertools
 from typing import Any, Callable, override
 from collections import Counter
 
-from common import unicode_normalize
 from common.exception import SharlyChessException, OptionError
 from common.i18n import _, ngettext
+from common.i18n.utils import unicode_normalize
 from data.board import Board
 from data.pairings.engines import RoundRobinPairingEngine
 from data.pairings.systems import RoundRobinPairingSystem

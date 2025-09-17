@@ -161,9 +161,9 @@ class Client:
         return AuthAction.VIEW_PRIVATE_EVENTS in self.allowed_actions
 
     @property
-    def can_view_passed_coming_events(self) -> bool:
-        """Returns true if the client can view passed and coming events."""
-        return AuthAction.VIEW_PASSED_COMING_EVENTS in self.allowed_actions
+    def can_view_passed_events(self) -> bool:
+        """Returns true if the client can view passed events."""
+        return AuthAction.VIEW_PASSED_EVENTS in self.allowed_actions
 
     @property
     def can_add_event(self) -> bool:

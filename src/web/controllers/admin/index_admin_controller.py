@@ -26,9 +26,7 @@ from common.i18n import (
     _,
     locales,
 )
-from common.i18n.utils import (
-    locale_localized_name,
-)
+from common.i18n.utils import locale_localized_name, by
 from common.sharly_chess_config import SharlyChessConfig
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import (
@@ -160,6 +158,7 @@ class IndexAdminController(BaseAdminController):
         coming_events = EventLoader.get_events_metadata(
             'coming', public_only=public_only
         )
+        lan_events = sorted(current_events + coming_events, key=by('name'))
         nav_tabs: dict[str, dict[str, Any]] = {
             'home': {
                 'title': _('Home'),
@@ -169,7 +168,7 @@ class IndexAdminController(BaseAdminController):
                 'experimental_features_warning': True,
             },
         }
-        if web_context.client.can_view_passed_coming_events:
+        if web_context.client.can_view_passed_events:
             nav_tabs |= {
                 'current_events': {
                     'section_title': _('Events'),
@@ -218,13 +217,13 @@ class IndexAdminController(BaseAdminController):
             }
         else:
             nav_tabs |= {
-                'current_events': {
-                    'title': _('Events ({num})').format(num=len(current_events) or '-'),
-                    'template': 'index/events_tab.html',
-                    'events': current_events,
-                    'disabled': not current_events,
+                'home': {
+                    'title': _('Events ({num})').format(num=len(lan_events) or '-'),
+                    'template': 'index/home_tab.html',
+                    'events': lan_events,
+                    'disabled': False,
                     'empty_str': _('No events.'),
-                    'icon_class': 'bi-calendar indented',
+                    'icon_class': 'bi-qr-code',
                     'page_title': _('Events'),
                     'divider': True,
                 },
@@ -447,13 +446,13 @@ class IndexAdminController(BaseAdminController):
         } | plugin_form_data
 
     @classmethod
-    def _admin_validate_event_update_data(
+    def _admin_get_validate_event_data(
         cls,
-        action: str,
+        action: FormAction,
         web_context: WebContext,
         admin_event: Event | None,
         data: dict[str, str] | None = None,
-    ) -> StoredEvent:
+    ) -> tuple[StoredEvent, dict[str, str]]:
         if data is None:
             data = {}
         uniq_id: str | None
@@ -586,7 +585,7 @@ class IndexAdminController(BaseAdminController):
         assert start is not None
         assert stop is not None
 
-        return StoredEvent(
+        stored_event = StoredEvent(
             uniq_id=uniq_id,
             name=name,
             federation=federation,
@@ -604,7 +603,6 @@ class IndexAdminController(BaseAdminController):
             message_background_color=message_background_color,
             prize_currency=prize_currency,
             override_unrated_rapid_blitz=override_unrated_rapid_blitz,
-            errors=errors,
             # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
             timer_colors={
                 i: admin_event.timer_colors[i] if admin_event else None
@@ -620,6 +618,7 @@ class IndexAdminController(BaseAdminController):
             else None,
             plugin_data=plugin_data,
         )
+        return (stored_event, errors)
 
     def _event_modal_context(
         self,
@@ -698,12 +697,12 @@ class IndexAdminController(BaseAdminController):
         )
         if web_context.error:
             return web_context.error
-        stored_event: StoredEvent = self._admin_validate_event_update_data(
-            'create', web_context, None, data
+        stored_event, errors = self._admin_get_validate_event_data(
+            FormAction.CREATE, web_context, None, data
         )
-        if stored_event.errors:
+        if errors:
             template_context = self._event_modal_context(
-                FormAction.CREATE, data, errors=stored_event.errors
+                FormAction.CREATE, data, errors=errors
             )
             return self._admin_render(
                 web_context=web_context,
@@ -787,12 +786,12 @@ class IndexAdminController(BaseAdminController):
         )
         if web_context.error:
             return web_context.error
-        stored_event: StoredEvent = self._admin_validate_event_update_data(
+        stored_event, errors = self._admin_get_validate_event_data(
             FormAction.CLONE, web_context, web_context.admin_event, data
         )
-        if stored_event.errors:
+        if errors:
             template_context = self._event_modal_context(
-                FormAction.CLONE, data, errors=stored_event.errors
+                FormAction.CLONE, data, errors=errors
             )
             return self._admin_render(
                 web_context=web_context,
@@ -837,12 +836,12 @@ class IndexAdminController(BaseAdminController):
         )
         if web_context.error:
             return web_context.error
-        stored_event: StoredEvent = self._admin_validate_event_update_data(
-            'update', web_context, web_context.admin_event, data
+        stored_event, errors = self._admin_get_validate_event_data(
+            FormAction.UPDATE, web_context, web_context.admin_event, data
         )
-        if stored_event.errors:
+        if errors:
             template_context = self._event_modal_context(
-                FormAction.UPDATE, data, errors=stored_event.errors
+                FormAction.UPDATE, data, errors=errors
             )
             return self._admin_render(
                 web_context=web_context,

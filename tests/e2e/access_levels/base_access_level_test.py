@@ -224,7 +224,7 @@ class BaseAccessLevelTest:
 
     def assert_access_to_visible_events(self, event_id: str, auth_page: Page):
         """Asserts that the user can access the public event only"""
-        auth_page.goto('/admin/current_events')
+        auth_page.goto('/admin/home')
         expect(auth_page.locator('.card')).to_have_count(1)
         expect(auth_page.locator(f"div.card:has-text('{event_id}')")).to_be_visible()
 

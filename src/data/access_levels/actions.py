@@ -63,7 +63,7 @@ class AuthAction(StrEnum):
 
     # Events access
     VIEW_PRIVATE_EVENTS = auto()
-    VIEW_PASSED_COMING_EVENTS = auto()
+    VIEW_PASSED_EVENTS = auto()
     VIEW_DETAILED_EVENT_CARDS = auto()
 
     # Events management
@@ -146,7 +146,7 @@ class AuthAction(StrEnum):
                 return AuthActionCategory.APPLICATION
             case (
                 AuthAction.VIEW_PRIVATE_EVENTS
-                | AuthAction.VIEW_PASSED_COMING_EVENTS
+                | AuthAction.VIEW_PASSED_EVENTS
                 | AuthAction.VIEW_DETAILED_EVENT_CARDS
                 | AuthAction.ADD_EVENTS
                 | AuthAction.DELETE_EVENTS
@@ -225,8 +225,8 @@ class AuthAction(StrEnum):
                 return _('Manage source databases', locale)
             case AuthAction.VIEW_PRIVATE_EVENTS:
                 return _('View private events', locale)
-            case AuthAction.VIEW_PASSED_COMING_EVENTS:
-                return _('View passed and upcoming events', locale)
+            case AuthAction.VIEW_PASSED_EVENTS:
+                return _('View passed events', locale)
             case AuthAction.ADD_EVENTS:
                 return _('Add events', locale)
             case AuthAction.VIEW_DETAILED_EVENT_CARDS:

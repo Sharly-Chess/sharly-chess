@@ -304,9 +304,6 @@ msgstr ""
 msgid "Accelerated variations of the swiss pairing system."
 msgstr ""
 
-msgid "Accepted characters are letters, numbers, spaces and a few special characters ($€'\"-!?()[],:.)."
-msgstr ""
-
 msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
 msgstr ""
 
@@ -536,9 +533,6 @@ msgid "Any number of devices can be controlled by the same display controller."
 msgstr ""
 
 msgid "Application"
-msgstr ""
-
-msgid "Application management"
 msgstr ""
 
 msgid "Archive"
@@ -821,6 +815,9 @@ msgstr ""
 msgid "CM *** SHORT NAME FOR Candidate Master"
 msgstr "CM"
 
+msgid "Can't see your event?"
+msgstr ""
+
 msgid "Cancel"
 msgstr ""
 
@@ -867,10 +864,10 @@ msgstr ""
 msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
 msgstr "Check-in"
 
-msgid "Check-in / Results entry"
+msgid "Check-in / Results ({num})"
 msgstr ""
 
-msgid "Check-in / Results entry ({num})"
+msgid "Check-in / Results entry"
 msgstr ""
 
 msgid "Check-in / Results entry ({tournament_name})"
@@ -1929,12 +1926,6 @@ msgid "Events"
 msgstr ""
 
 msgid "Events ({num})"
-msgstr ""
-
-msgid "Events access"
-msgstr ""
-
-msgid "Events management"
 msgstr ""
 
 msgid "Exempt *** FEMALE"
@@ -3115,6 +3106,9 @@ msgstr ""
 msgid "No prizes."
 msgstr ""
 
+msgid "No public events."
+msgstr ""
+
 msgid "No result"
 msgstr ""
 
@@ -3271,6 +3265,9 @@ msgid "Only allowed users can view private display controllers."
 msgstr ""
 
 msgid "Only allowed users can view private rotators."
+msgstr ""
+
+msgid "Only current and future events that have been declared as <b>public</b> by the administrator are visible via the network."
 msgstr ""
 
 msgid "Only estimated ratings are optional."
@@ -5240,9 +5237,6 @@ msgstr ""
 msgid "Tournaments displayed:"
 msgstr ""
 
-msgid "Tournaments management"
-msgstr ""
-
 msgid "Tournaments:"
 msgstr ""
 
@@ -5565,7 +5559,7 @@ msgstr ""
 msgid "View event configuration"
 msgstr ""
 
-msgid "View passed and upcoming events"
+msgid "View passed events"
 msgstr ""
 
 msgid "View private events"
@@ -5574,7 +5568,7 @@ msgstr ""
 msgid "View private screens"
 msgstr ""
 
-msgid "View public current events"
+msgid "View public current and upcoming events"
 msgstr ""
 
 msgid "View public screens"
@@ -5834,9 +5828,6 @@ msgstr ""
 msgid "all the boards"
 msgstr ""
 
-msgid "all the permissions"
-msgstr ""
-
 msgid "all the players"
 msgstr ""
 
@@ -6069,70 +6060,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)d minutes)"
-#~ msgstr ""
-
-#~ msgid "Background image and colour"
-#~ msgstr ""
-
-#~ msgid "Changing the unique ID will cause an error on any opened screen of the event."
-#~ msgstr ""
-
-#~ msgid "Customization"
-#~ msgstr ""
-
-#~ msgid "Date"
-#~ msgstr ""
-
-#~ msgid "Duplicate"
-#~ msgstr ""
-
-#~ msgid "Maximum number of illegal moves"
-#~ msgstr ""
-
-#~ msgid "No recording"
-#~ msgstr ""
-
-#~ msgid "Private event"
-#~ msgstr ""
-
-#~ msgid "Rating seed for unrated rapid/blitz"
-#~ msgstr ""
-
-#~ msgid "The representation of the event for URLs and file exports."
-#~ msgstr ""
-
-#~ msgid "Undefined"
-#~ msgstr ""
-
-#~ msgid "Unique ID"
-#~ msgstr ""
-
-#~ msgid "View basic event configuration"
-#~ msgstr ""
-
-#~ msgid "View complete event configuration"
-#~ msgstr ""
-
-#~ msgid "Visibility"
-#~ msgstr ""
-
-#~ msgid "Inherited access levels"
-#~ msgstr ""
-
-#~ msgid "Manageable access levels"
-#~ msgstr ""
-
-#~ msgid "Sub access levels"
-#~ msgstr ""
-
-#~ msgid "all"
-#~ msgstr ""
-
-#~ msgid "none"
-#~ msgstr ""
-
-#~ msgid "All the permissions"
-#~ msgstr ""
 

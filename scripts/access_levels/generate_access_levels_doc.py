@@ -121,7 +121,7 @@ def print_permissions_doc(
     dev_locale_strings: dict[str, dict[str, str]],
     web_locale_strings: dict[str, dict[str, str]],
 ):
-    web_mark_ok: str = '✅'
+    web_mark_ok: str = '✔'
     web_mark_ko: str = '-'
     dev_mark_ok: str = '✔'
     dev_mark_ko: str = '-'
@@ -175,7 +175,7 @@ def print_permissions_doc(
             if category == AuthActionCategory.EVENTS:
                 web_lines.append(
                     {
-                        'title': f'{_("View public current events")}(*)',
+                        'title': f'{_("View public current and upcoming events", locale)}(*)',
                     }
                     | {
                         access_level.static_id(): web_mark_ok
@@ -187,7 +187,7 @@ def print_permissions_doc(
                 )
                 dev_lines.append(
                     {
-                        'title': f'{_("View public current events")}(*)',
+                        'title': f'{_("View public current and upcoming events", locale)}(*)',
                     }
                     | {
                         access_level.static_id(): dev_mark_ok

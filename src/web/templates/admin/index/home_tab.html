@@ -53,40 +53,72 @@
                     {% endfor %}
                 </ul>
             </div>
-            <h4 class="text-center text-primary my-3">
-                {% if client.account.administrator %}
+            {% if client.account.administrator %}
+                <h4 class="text-center text-primary my-3">
                     {{ _('You are on the Sharly Chess server.') }}
-                {% else %}
-                    {{ _('You are connected to the Sharly Chess server.') }}
-                {% endif %}
-            </h4>
-            {% if sharly_chess_config.lan_ifaces %}
-                <h4 class="text-center mt-3">{{ _('Connect other devices!') }}</h4>
-                <div class="row">
-                    {% for item in sharly_chess_config.lan_ifaces %}
-                    {% set ip = item.ip %}
-                    <div class="col text-center">
-                        <img
-                            src="{{ url_for('qrcode-lan-url', ip=ip) }}?time={{ now }}"
-                            alt="{{ _('Sharly Chess server URL') }}"
-                            class="py-2"
-                            style="width: 150px"
-                            {{ macros.tooltip_attributes('info', _('Connect your devices (laptops, tablets, smartphones) to the Sharly Chess server by scanning this QR code (click below to get a printable version).'), 'right') }}
-                        />
-                        <br/>
-                        <a href="{{ sharly_chess_config.app_url(ip) }}" target="_blank">
-                            {{ sharly_chess_config.app_url(ip) }}
-                        </a>
-                        <div class="text-muted small">
-                            {{ item.label }}{% if item.type and item.type != item.label %} ({{ item.type }}){% endif %}
+                </h4>
+                {% if sharly_chess_config.lan_ifaces %}
+                    <h4 class="text-center mt-3">{{ _('Connect other devices!') }}</h4>
+                    <div class="row">
+                        {% for item in sharly_chess_config.lan_ifaces %}
+                        {% set ip = item.ip %}
+                        <div class="col text-center">
+                            <img
+                                src="{{ url_for('qrcode-lan-url', ip=ip) }}?time={{ now }}"
+                                alt="{{ _('Sharly Chess server URL') }}"
+                                class="py-2"
+                                style="width: 150px"
+                                {{ macros.tooltip_attributes('info', _('Connect your devices (laptops, tablets, smartphones) to the Sharly Chess server by scanning this QR code (click below to get a printable version).'), 'right') }}
+                            />
+                            <br/>
+                            <a href="{{ sharly_chess_config.app_url(ip) }}" target="_blank">
+                                {{ sharly_chess_config.app_url(ip) }}
+                            </a>
+                            <div class="text-muted small">
+                                {{ item.label }}{% if item.type and item.type != item.label %} ({{ item.type }}){% endif %}
+                            </div>
+                            <a href="{{ url_for('qrcode-lan-url', ip=ip) }}?logo=&time={{ now }}" target="_blank">
+                                ({{ _('printable version') }})
+                            </a>
                         </div>
-                        <a href="{{ url_for('qrcode-lan-url', ip=ip) }}?logo=&time={{ now }}" target="_blank">
-                            ({{ _('printable version') }})
-                        </a>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
-                </div>
+                {% endif %}
+            {% else %}
+                <h4 class="text-center text-primary my-3">
+                    {{ _('You are connected to the Sharly Chess server.') }}
+                </h4>
             {% endif %}
         </div>
     </div>
 </div>
+
+{% if not client.account.administrator %}
+    {% if nav_tab.events|length > 0 %}
+        <section class="p-4 my-4">
+            <div class="container-fluid" style="--bs-gutter-x: 0;">
+                <div class="row justify-content-center">
+                    {% if nav_tab.events %}
+                        {% for event in nav_tab.events %}
+                            {% with
+                                card_url=url_for('admin-event', event_uniq_id=event.uniq_id),
+                                card_class='border-danger' if not event.public else ''
+                            %}
+                                {% include 'event_card.html' %}
+                            {% endwith %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    {% endif %}
+
+    <div class="mx-auto text-center" style="max-width: 500px;">
+        <h5 class="mt-2 mt-5 mb-3">
+            {% if nav_tab.events|length == 0 %} {{ _('No public events.') }} {% else %} {{ _("Can't see your event?") }} {% endif %}
+        </h5>
+        <p>
+            {{ _('Only current and future events that have been declared as <b>public</b> by the administrator are visible via the network.') }}
+        </p>
+    </div>
+{% endif %}

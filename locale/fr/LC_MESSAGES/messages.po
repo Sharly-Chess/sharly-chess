@@ -304,9 +304,6 @@ msgstr "Appariements accélérés"
 msgid "Accelerated variations of the swiss pairing system."
 msgstr "Variantes accélérées du système d'appariements suisse."
 
-msgid "Accepted characters are letters, numbers, spaces and a few special characters ($€'\"-!?()[],:.)."
-msgstr "Les caractères acceptés sont les lettres, chiffres, espaces et quelques caractères spéciaux ($€\"'-!?()[],:.)."
-
 msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
 msgstr "Les caractères acceptés sont les lettres, chiffres, souligné (« tiret du 8 ») et moins (« tiret du 6 »)."
 
@@ -537,9 +534,6 @@ msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs affi
 
 msgid "Application"
 msgstr "Application"
-
-msgid "Application management"
-msgstr "Gestion de l'application"
 
 msgid "Archive"
 msgstr "Archiver"
@@ -821,6 +815,9 @@ msgstr "EFFACER LE RÉSULTAT"
 msgid "CM *** SHORT NAME FOR Candidate Master"
 msgstr "CM"
 
+msgid "Can't see your event?"
+msgstr "Vous ne voyez pas votre événement ?"
+
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -867,11 +864,11 @@ msgstr "Pointage"
 msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
 msgstr "Pointage"
 
+msgid "Check-in / Results ({num})"
+msgstr "Pointage / Saisie ({num})"
+
 msgid "Check-in / Results entry"
 msgstr "Pointage / Saisie des résultats"
-
-msgid "Check-in / Results entry ({num})"
-msgstr "Pointage / Saisie ({num})"
 
 msgid "Check-in / Results entry ({tournament_name})"
 msgstr "Pointage / Saisie des résultats ({tournament_name})"
@@ -1930,12 +1927,6 @@ msgstr "Évènements"
 
 msgid "Events ({num})"
 msgstr "Évènements ({num})"
-
-msgid "Events access"
-msgstr "Accès aux évènements"
-
-msgid "Events management"
-msgstr "Gestion des évènements"
 
 msgid "Exempt *** FEMALE"
 msgstr "Exempte"
@@ -3115,6 +3106,9 @@ msgstr "Aucun prix défini."
 msgid "No prizes."
 msgstr "Aucun prix."
 
+msgid "No public events."
+msgstr "Aucun événement public."
+
 msgid "No result"
 msgstr "Pas de résultat"
 
@@ -3272,6 +3266,9 @@ msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les pilotes d'
 
 msgid "Only allowed users can view private rotators."
 msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les écrans rotatifs privés."
+
+msgid "Only current and future events that have been declared as <b>public</b> by the administrator are visible via the network."
+msgstr "Seuls les événements actuels et à venir déclarés comme <b>publics</b> par l’administrateur·ice sont visibles via le réseau."
 
 msgid "Only estimated ratings are optional."
 msgstr "Seuls les classements estimés sont optionnels."
@@ -5240,9 +5237,6 @@ msgstr "Les tournois sont terminés, on ne peut plus ajouter de joueur·euses."
 msgid "Tournaments displayed:"
 msgstr "Tournois affichés :"
 
-msgid "Tournaments management"
-msgstr "Gestion des tournois"
-
 msgid "Tournaments:"
 msgstr "Tournois :"
 
@@ -5565,8 +5559,8 @@ msgstr "Voir les détails des cartes d'évènement"
 msgid "View event configuration"
 msgstr "Voir la configuration de l'évènement"
 
-msgid "View passed and upcoming events"
-msgstr "Voir les évènement passés et à venir"
+msgid "View passed events"
+msgstr "Voir les évènement passés"
 
 msgid "View private events"
 msgstr "Voir les évènement privés"
@@ -5574,8 +5568,8 @@ msgstr "Voir les évènement privés"
 msgid "View private screens"
 msgstr "Voir les écrans privés"
 
-msgid "View public current events"
-msgstr "Voir les évènements publics en cours"
+msgid "View public current and upcoming events"
+msgstr "Voir les évènements publics en cours et à venir"
 
 msgid "View public screens"
 msgstr "Voir les écrans publics"
@@ -5834,9 +5828,6 @@ msgstr "[{value}] n'est pas un format de valeur valide."
 msgid "all the boards"
 msgstr "tous les échiquiers"
 
-msgid "all the permissions"
-msgstr "toutes les permissions"
-
 msgid "all the players"
 msgstr "tou·tes les joueur·euses"
 
@@ -6069,70 +6060,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
-#~ msgid "Auto-upload to FFE enabled (minimum every %(ffe_auto_upload_delay)d minutes)"
-#~ msgstr "Envoi automatique vers la FFE activé (au minimum toutes les %(ffe_auto_upload_delay)d minutes)"
-
-#~ msgid "Background image and colour"
-#~ msgstr "Image et couleur de fond"
-
-#~ msgid "Changing the unique ID will cause an error on any opened screen of the event."
-#~ msgstr "Modifier l'identifiant unique provoquera une erreur sur tous les écrans ouverts de l'évènement."
-
-#~ msgid "Customization"
-#~ msgstr "Personnalisation"
-
-#~ msgid "Date"
-#~ msgstr "Date"
-
-#~ msgid "Duplicate"
-#~ msgstr "Dupliquer"
-
-#~ msgid "Maximum number of illegal moves"
-#~ msgstr "Nombre maximum de coups illégaux"
-
-#~ msgid "No recording"
-#~ msgstr "Pas d'enregistrement"
-
-#~ msgid "Private event"
-#~ msgstr "Évènement privé"
-
-#~ msgid "Rating seed for unrated rapid/blitz"
-#~ msgstr "Classement des joueur·euses sans classement FIDE rapide/blitz"
-
-#~ msgid "The representation of the event for URLs and file exports."
-#~ msgstr "La représentation de l'évènement pour les URLs et les exports de fichier."
-
-#~ msgid "Undefined"
-#~ msgstr "Non défini"
-
-#~ msgid "Unique ID"
-#~ msgstr "Identifiant unique"
-
-#~ msgid "View basic event configuration"
-#~ msgstr "Voir la configuration basique des évènements"
-
-#~ msgid "View complete event configuration"
-#~ msgstr "Voir la configuration complète des évènements"
-
-#~ msgid "Visibility"
-#~ msgstr "Visibilité"
-
-#~ msgid "Inherited access levels"
-#~ msgstr "Niveaux d'accès hérités"
-
-#~ msgid "Manageable access levels"
-#~ msgstr "Niveaux d'accès gérés"
-
-#~ msgid "Sub access levels"
-#~ msgstr "Sous-niveaux d'accès"
-
-#~ msgid "all"
-#~ msgstr "tous"
-
-#~ msgid "none"
-#~ msgstr "aucun"
-
-#~ msgid "All the permissions"
-#~ msgstr ""
 
