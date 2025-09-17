@@ -301,8 +301,8 @@ msgstr "Appariements accélérés"
 msgid "Accelerated variations of the swiss pairing system."
 msgstr "Variantes accélérées du système d'appariements suisse."
 
-msgid "Accepted characters are letters, numbers, single quote (') and minus (-)."
-msgstr "Les caractères acceptés sont les lettres, chiffres, apostrophe et tiret (« du 6 »)."
+msgid "Accepted characters are letters, numbers, spaces and a few special characters ($€'\"-!?()[],:.)."
+msgstr "Les caractères acceptés sont les lettres, chiffres, espaces et quelques caractères spéciaux ($€\"'-!?()[],:.)."
 
 msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
 msgstr "Les caractères acceptés sont les lettres, chiffres, souligné (« tiret du 8 ») et moins (« tiret du 6 »)."
