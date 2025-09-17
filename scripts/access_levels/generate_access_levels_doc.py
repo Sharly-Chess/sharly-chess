@@ -84,20 +84,17 @@ def print_file(
 def access_level_md_icon(
     access_level: AccessLevel,
 ) -> str:
-    suffix: str
     if access_level.administrator:
-        suffix = 'admin'
+        return '🔴'
     elif access_level.needs_account:
-        suffix = 'account'
+        return '🟡'
     else:
-        suffix = 'no-account'
-    return f'![{suffix}](../../assets/images/access-levels/lock-{suffix}-small.png)'
+        return '🟢'
 
 
 def print_details_doc(
     output_dir: Path,
     access_levels: list[AccessLevel],
-    actions_by_category: dict[AuthActionCategory, list[AuthAction]],
     locale_strings: dict[str, dict[str, str]],
 ):
     print_interactive_info('Generating access levels details documentation...')
@@ -105,27 +102,9 @@ def print_details_doc(
         lines: list[str] = []
         for access_level in access_levels:
             lines.append(
-                f'\n{{% details {access_level_md_icon(access_level)} {access_level.short_name(locale)} {access_level.localized_name(locale)} %}}'
+                f'\n### {access_level_md_icon(access_level)} {access_level.short_name(locale)} {access_level.localized_name(locale)}'
             )
-            lines.append(f'**{access_level.localized_help_text(locale)}**')
-            if not access_level.administrator:
-                for category, actions in actions_by_category.items():
-                    category_allowed_actions: list[AuthAction] = [
-                        action
-                        for action in actions
-                        if action in access_level.allowed_actions()
-                    ]
-                    if category_allowed_actions:
-                        if len(category_allowed_actions) == len(actions):
-                            lines.append(
-                                f'- {category.localized_name(locale).upper()} _({_("all the permissions", locale)})_'
-                            )
-                        else:
-                            lines.append(f'- {category.localized_name(locale).upper()}')
-                            for action in actions:
-                                if action in category_allowed_actions:
-                                    lines.append(f'  - {action.name(locale)}')
-            lines.append('{% enddetails %}')
+            lines.append(f'{access_level.localized_help_text(locale)}')
         filename: str = f'access-levels-details-{locale}.md'
         with open(output_dir / filename, 'wt', encoding='utf-8') as output:
             print(f'{locale_strings[locale]["edit_warning"]}', file=output)
@@ -142,16 +121,16 @@ def print_permissions_doc(
     dev_locale_strings: dict[str, dict[str, str]],
     web_locale_strings: dict[str, dict[str, str]],
 ):
-    web_mark_ok: str = ':heavy_check_mark:'
+    web_mark_ok: str = '✔'
     web_mark_ko: str = '-'
-    dev_mark_ok: str = 'OK'
+    dev_mark_ok: str = '✔'
     dev_mark_ko: str = '-'
 
     print_interactive_info('Generating permissions by access level documentation...')
     for locale in locales:
         web_header: dict[str, str] = (
             {
-                'title': _('Permissions / Access levels', locale).upper(),
+                'title': _('Permissions / Access levels', locale),
             }
             | {
                 access_level.static_id(): f'{access_level_md_icon(access_level)}<br/>{access_level.short_name(locale)}'
@@ -161,7 +140,7 @@ def print_permissions_doc(
         )
         dev_header: dict[str, str] = (
             {
-                'title': _('Permissions / Access levels', locale).upper(),
+                'title': _('Permissions / Access levels', locale),
             }
             | {access_level.static_id(): '' for access_level in access_levels}
             | {'': ''}
@@ -174,7 +153,7 @@ def print_permissions_doc(
         for category, actions in actions_by_category.items():
             web_lines.append(
                 {
-                    'title': f'**{category.localized_name(locale).upper()}**',
+                    'title': f'**{category.localized_name(locale)}**',
                 }
                 | {access_level.static_id(): '' for access_level in access_levels}
                 | {
@@ -183,7 +162,7 @@ def print_permissions_doc(
             )
             dev_lines.append(
                 {
-                    'title': f'{category.localized_name(locale).upper()}',
+                    'title': f'{category.localized_name(locale)}',
                 }
                 | {
                     access_level.static_id(): access_level.short_name(locale)
@@ -221,7 +200,7 @@ def print_permissions_doc(
             for action in actions_by_category[category]:
                 web_lines.append(
                     {
-                        'title': action.name(locale),
+                        'title': action.localized_name(locale),
                     }
                     | {
                         access_level.static_id(): web_mark_ok
@@ -235,7 +214,7 @@ def print_permissions_doc(
                 )
                 dev_lines.append(
                     {
-                        'title': action.name(locale),
+                        'title': action.localized_name(locale),
                     }
                     | {
                         access_level.static_id(): dev_mark_ok
@@ -363,9 +342,7 @@ def generate_doc(
     for action in AuthAction.actions():
         actions_by_category[action.category].append(action)
 
-    print_details_doc(
-        web_output_dir, access_levels, actions_by_category, web_locale_strings
-    )
+    print_details_doc(web_output_dir, access_levels, web_locale_strings)
     print_permissions_doc(
         dev_output_dir,
         web_output_dir,
