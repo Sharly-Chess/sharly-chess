@@ -3273,8 +3273,8 @@ msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les pilotes d'
 msgid "Only allowed users can view private rotators."
 msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les écrans rotatifs privés."
 
-msgid "Only current and future events that have been declared as <b>public</b> by the arbiter are visible via the network."
-msgstr "Seuls les événements actuels et à venir déclarés comme <b>publics</b> par l’arbitre sont visibles via le réseau."
+msgid "Only current and future events that have been declared as <b>public</b> by the administrator are visible via the network."
+msgstr "Seuls les événements actuels et à venir déclarés comme <b>publics</b> par l’administrateur·ice sont visibles via le réseau."
 
 msgid "Only estimated ratings are optional."
 msgstr "Seuls les classements estimés sont optionnels."
