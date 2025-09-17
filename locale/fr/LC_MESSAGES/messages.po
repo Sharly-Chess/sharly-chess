@@ -874,7 +874,7 @@ msgstr "Pointage"
 msgid "Check-in / Results entry"
 msgstr "Pointage / Saisie des résultats"
 
-msgid "Check-in / Results entry ({num})"
+msgid "Check-in / Results ({num})"
 msgstr "Pointage / Saisie ({num})"
 
 msgid "Check-in / Results entry ({tournament_name})"
