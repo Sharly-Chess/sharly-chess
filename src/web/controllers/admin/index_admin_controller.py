@@ -996,13 +996,10 @@ class IndexAdminController(BaseAdminController):
         locale_options: dict[str, str] = {
             locale: locale_localized_name(locale) for locale in locales
         }
-        plugin_form_fields_templates = (
-            plugin_manager.hook.get_event_form_fields_template() or []
-        )
         template_context = {
             'console_log_level_options': console_log_level_options,
             'locale_options': locale_options,
-            'plugin_form_fields_templates': plugin_form_fields_templates,
+            'plugins': plugin_manager.all_plugins,
             'federation_options': (
                 {} if data['federation'] else {'': _('Please choose a federation')}
             )
