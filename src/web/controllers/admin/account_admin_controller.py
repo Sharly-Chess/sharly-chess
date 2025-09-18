@@ -1,0 +1,701 @@
+from typing import Annotated, Any
+
+from argon2 import PasswordHasher
+from litestar import post, get, delete, patch
+from litestar.enums import RequestEncodingType
+from litestar.params import Body
+from litestar.plugins.htmx import HTMXRequest, ClientRedirect
+from litestar.response import Template
+from litestar.status_codes import HTTP_200_OK
+
+from common.i18n import _
+from data.access_levels.access_levels import AccessLevel, AccessLevelScope
+from data.access_levels.manager import AccessLevelManager
+from data.account import Account, Permission
+from data.player import Player
+from database.sqlite.event.event_store import StoredAccount, StoredPermission
+from utils.enum import FormAction
+from web.controllers.admin.base_event_admin_controller import (
+    BaseEventAdminWebContext,
+    BaseEventAdminController,
+)
+from web.controllers.base_controller import Redirect, WebContext
+from web.messages import Message
+
+
+class AccountAdminWebContext(BaseEventAdminWebContext):
+    def __init__(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        account_id: int | None = None,
+        access_level: str | None = None,
+    ):
+        super().__init__(
+            request,
+            data=None,
+            event_uniq_id=event_uniq_id,
+        )
+        assert self.admin_event is not None
+        self.admin_account: Account | None = None
+        self.admin_permission: Permission | None = None
+        if self.error:
+            return
+        if account_id:
+            try:
+                self.admin_account = self.admin_event.accounts_by_id[account_id]
+            except KeyError:
+                self._redirect_error(f'Account [{account_id}] not found.')
+                return
+        if access_level:
+            assert self.admin_account is not None
+            self.admin_permission = next(
+                (
+                    permission
+                    for permission in self.admin_account.permissions
+                    if permission.access_level.id == access_level
+                ),
+                None,
+            )
+            if not self.admin_permission:
+                self._redirect_error(
+                    f'Unknown access level [{access_level}] for '
+                    f'account [{self.admin_account.full_name}].'
+                )
+                return
+
+    def get_admin_account(self) -> Account:
+        assert self.admin_account is not None
+        return self.admin_account
+
+    def get_admin_permission(self) -> Permission:
+        assert self.admin_permission is not None
+        return self.admin_permission
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return super().template_context | {
+            'admin_event_tab': 'admin-event-accounts-tab',
+            'admin_account': self.admin_account,
+            'admin_permission': self.admin_permission,
+        }
+
+
+class AccountAdminController(BaseEventAdminController):
+    @classmethod
+    def admin_event_account_render(
+        cls,
+        web_context: AccountAdminWebContext,
+        template_context: dict[str, Any] | None = None,
+    ) -> Template | ClientRedirect | Redirect:
+        if web_context.error:
+            return web_context.error
+        return cls._admin_base_event_render(
+            web_context.template_context | (template_context or {})
+        )
+
+    @get(
+        path='/admin/event/{event_uniq_id:str}/accounts',
+        name='admin-event-accounts-tab',
+    )
+    async def htmx_admin_event_accounts_tab(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+    ) -> Template | ClientRedirect | Redirect:
+        return self.admin_event_account_render(
+            AccountAdminWebContext(request, event_uniq_id)
+        )
+
+    # --------------------------------------------------------------------------
+    # Accounts
+    # --------------------------------------------------------------------------
+
+    @classmethod
+    def _account_form_modal_context(
+        cls,
+        action: FormAction,
+        data: dict[str, str],
+        errors: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        default_data = WebContext.values_dict_to_form_data(
+            {
+                'first_name': '',
+                'last_name': '',
+                'password': '',
+                'active': True,
+                'access_levels': [],
+                'tournament_ids': [],
+            }
+        )
+        data = default_data | data
+        return {
+            'modal': 'account',
+            'action': action,
+            'data': data,
+            'errors': errors or {},
+        }
+
+    @staticmethod
+    def _account_form_data_from_account(account: Account) -> dict[str, str]:
+        stored_account = account.stored_account
+        return WebContext.values_dict_to_form_data(
+            {
+                'first_name': stored_account.first_name,
+                'last_name': stored_account.last_name,
+                'active': stored_account.active,
+            }
+        )
+
+    @get(
+        path='/admin/account-modal/create/{event_uniq_id:str}',
+        name='admin-account-create-modal',
+    )
+    async def htmx_admin_account_create_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+    ) -> Template | ClientRedirect | Redirect:
+        web_context = AccountAdminWebContext(request, event_uniq_id)
+        if web_context.error:
+            return web_context.error
+        template_context = self._account_form_modal_context(FormAction.CREATE, {})
+        return self.admin_event_account_render(web_context, template_context)
+
+    @get(
+        path='/admin/account-modal/update/{event_uniq_id:str}/{account_id:int}',
+        name='admin-account-update-modal',
+    )
+    async def htmx_admin_account_update_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        account_id: int,
+    ) -> Template | ClientRedirect | Redirect:
+        web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
+        if web_context.error:
+            return web_context.error
+        template_context = self._account_form_modal_context(
+            FormAction.UPDATE,
+            self._account_form_data_from_account(web_context.get_admin_account()),
+        )
+        return self.admin_event_account_render(web_context, template_context)
+
+    @get(
+        path='/admin/account-modal/clone/{event_uniq_id:str}/{account_id:int}',
+        name='admin-account-clone-modal',
+    )
+    async def htmx_admin_account_clone_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        account_id: int,
+    ) -> Template | ClientRedirect | Redirect:
+        web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
+        if web_context.error:
+            return web_context.error
+        account = web_context.get_admin_account()
+        template_context = self._account_form_modal_context(
+            FormAction.CLONE,
+            self._account_form_data_from_account(account),
+        )
+        return self.admin_event_account_render(web_context, template_context)
+
+    @get(
+        path='/admin/account-modal/delete/{event_uniq_id:str}/{account_id:int}',
+        name='admin-account-delete-modal',
+    )
+    async def htmx_admin_account_delete_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        account_id: int,
+    ) -> Template | ClientRedirect | Redirect:
+        return self.admin_event_account_render(
+            AccountAdminWebContext(request, event_uniq_id, account_id),
+            {'modal': 'account_delete'},
+        )
+
+    @post(
+        path='/admin/account-create-defaults/{event_uniq_id:str}',
+        name='admin-account-create-defaults',
+    )
+    async def htmx_admin_account_create_defaults(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+    ) -> Template | ClientRedirect | Redirect:
+        web_context = AccountAdminWebContext(request, event_uniq_id)
+        if web_context.error:
+            return web_context.error
+        web_context.get_admin_event().create_predefined_accounts()
+        Message.success(request, _('Default accounts have been created.'))
+        return self.admin_event_account_render(web_context)
+
+    @staticmethod
+    def _validate_account_form_data(
+        data: dict[str, str],
+        web_context: AccountAdminWebContext,
+        action: FormAction,
+    ) -> dict[str, str]:
+        errors: dict[str, str] = {}
+        event = web_context.get_admin_event()
+        account = web_context.admin_account
+        if not account or account.user_account:
+            first_name: str = WebContext.form_data_to_str(data, 'first_name') or ''
+            last_name: str = (
+                WebContext.form_data_to_str(data, field := 'last_name') or ''
+            )
+            if not last_name:
+                errors[field] = _('This field is required.')
+            if 'first_name' not in errors and 'last_name' not in errors:
+                full_name: str = Player.player_full_name(first_name, last_name)
+                check_full_name_not_used: bool
+                if account and action == FormAction.UPDATE:
+                    check_full_name_not_used = (
+                        account.full_name
+                        != Player.player_full_name(first_name, last_name)
+                    )
+                else:
+                    check_full_name_not_used = True
+                if check_full_name_not_used and full_name in (
+                    account.full_name for account in event.accounts_by_id.values()
+                ):
+                    errors[field] = _(
+                        'Account [{account_name}] already exists.'
+                    ).format(account_name=full_name)
+            if action == FormAction.CREATE:
+                password = WebContext.form_data_to_str(data, field := 'password')
+                if not password:
+                    errors[field] = _('This field is required.')
+        return errors
+
+    @post(path='/admin/account-create/{event_uniq_id:str}', name='admin-account-create')
+    async def htmx_admin_account_create(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template | ClientRedirect | Redirect:
+        web_context = AccountAdminWebContext(request, event_uniq_id)
+        if web_context.error:
+            return web_context.error
+        if errors := self._validate_account_form_data(
+            data, web_context, FormAction.CREATE
+        ):
+            return self.admin_event_account_render(
+                web_context,
+                self._account_form_modal_context(FormAction.CREATE, data, errors),
+            )
+        event = web_context.get_admin_event()
+        password = WebContext.form_data_to_str(data, 'password')
+        password_hash = PasswordHasher().hash(password) if password else None
+        account = event.create_account(
+            StoredAccount(
+                id=None,
+                active=WebContext.form_data_to_bool(data, 'active'),
+                first_name=WebContext.form_data_to_str(data, 'first_name'),
+                last_name=WebContext.form_data_to_str(data, 'last_name'),
+                password_hash=password_hash,
+            )
+        )
+        Message.success(
+            request,
+            _('Account [{account_name}] has been created.').format(
+                account_name=account.full_name
+            ),
+        )
+        return self.admin_event_account_render(web_context)
+
+    @patch(
+        path='/admin/account-update/{event_uniq_id:str}/{account_id:int}',
+        name='admin-account-update',
+    )
+    async def htmx_admin_account_update(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        account_id: int,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template | ClientRedirect | Redirect:
+        web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
+        if web_context.error:
+            return web_context.error
+        if errors := self._validate_account_form_data(
+            data, web_context, FormAction.UPDATE
+        ):
+            return self.admin_event_account_render(
+                web_context,
+                self._account_form_modal_context(FormAction.UPDATE, data, errors),
+            )
+        event = web_context.get_admin_event()
+        account = web_context.get_admin_account()
+        stored_account = account.stored_account
+        if not account.anonymous:
+            stored_account.active = WebContext.form_data_to_bool(data, 'active')
+            stored_account.first_name = WebContext.form_data_to_str(data, 'first_name')
+            stored_account.last_name = WebContext.form_data_to_str(data, 'last_name')
+            password = WebContext.form_data_to_str(data, 'password')
+            if password:
+                stored_account.password_hash = PasswordHasher().hash(password)
+        event.update_account(stored_account)
+        Message.success(
+            request,
+            _('Unauthenticated access has been updated.')
+            if account.anonymous
+            else _('Account [{account_name}] has been updated.').format(
+                account_name=account.full_name
+            ),
+        )
+        return self.admin_event_account_render(web_context)
+
+    @delete(
+        path='/admin/account-delete/{event_uniq_id:str}/{account_id:int}',
+        name='admin-account-delete',
+        status_code=HTTP_200_OK,
+    )
+    async def htmx_admin_account_delete(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        account_id: int,
+    ) -> Template | ClientRedirect | Redirect:
+        web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
+        if web_context.error:
+            return web_context.error
+        event = web_context.get_admin_event()
+        account = web_context.get_admin_account()
+        event.delete_account(account)
+        Message.success(
+            request,
+            _('Account [{account_name}] has been deleted.').format(
+                account_name=account.full_name
+            ),
+        )
+        return self.admin_event_account_render(web_context)
+
+    # --------------------------------------------------------------------------
+    # Account permissions
+    # --------------------------------------------------------------------------
+
+    @classmethod
+    def _permissions_modal_context(
+        cls,
+        web_context: AccountAdminWebContext,
+    ) -> dict[str, Any]:
+        return {
+            'modal': 'account_permissions',
+            'can_add_permission': bool(cls._selectable_access_levels(web_context)),
+        }
+
+    @classmethod
+    def _selectable_access_levels(
+        cls,
+        web_context: AccountAdminWebContext,
+    ) -> list[AccessLevel]:
+        return cls._permission_form_modal_context(web_context, FormAction.CREATE)[
+            'selectable_access_levels'
+        ]
+
+    @staticmethod
+    def _permission_form_modal_context(
+        web_context: AccountAdminWebContext,
+        action: FormAction,
+        data: dict[str, str] | None = None,
+        errors: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        account = web_context.get_admin_account()
+        permission = web_context.admin_permission
+        manageable_access_levels = web_context.client.manageable_access_levels
+        if account.anonymous:
+            manageable_access_levels = [
+                access_level
+                for access_level in manageable_access_levels
+                if not access_level.needs_account
+            ]
+        permissions_by_access_level = account.get_permissions_by_access_level(
+            avoid_access_level=permission.access_level if permission else None
+        )
+        current_access_levels = account.access_levels
+        if permission:
+            current_access_levels.remove(permission.access_level)
+        inherited_permissions_by_access_level = {
+            access_level: permission_
+            for access_level, permission_ in permissions_by_access_level.items()
+            if permission_.inherited and permission_.tournament_ids is None
+        }
+        not_selectable = current_access_levels + list(
+            inherited_permissions_by_access_level
+        )
+        selectable_access_levels = [
+            access_level
+            for access_level in manageable_access_levels
+            if access_level not in not_selectable
+        ]
+        tournament_access_level_ids = [
+            access_level.id
+            for access_level in manageable_access_levels
+            if access_level.scope == AccessLevelScope.TOURNAMENT
+        ]
+        default_data = WebContext.values_dict_to_form_data(
+            {
+                'access_level': (
+                    selectable_access_levels[0].id if selectable_access_levels else None
+                ),
+                'tournament_ids': None,
+            }
+        )
+        return {
+            'modal': 'account_permission_form',
+            'action': action,
+            'manageable_access_levels': manageable_access_levels,
+            'current_access_levels': current_access_levels,
+            'selectable_access_levels': selectable_access_levels,
+            'inherited_permissions_by_access_level': inherited_permissions_by_access_level,
+            'tournament_access_level_ids': tournament_access_level_ids,
+            'tournament_options': web_context.get_tournament_options(),
+            'data': default_data | (data or {}),
+            'errors': errors or {},
+        }
+
+    @get(
+        path='/admin/account-permissions-modal/{event_uniq_id:str}/{account_id:int}',
+        name='admin-account-permissions-modal',
+    )
+    async def htmx_admin_account_permissions_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        account_id: int,
+    ) -> Template | ClientRedirect | Redirect:
+        web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
+        if web_context.error:
+            return web_context.error
+        return self.admin_event_account_render(
+            web_context, self._permissions_modal_context(web_context)
+        )
+
+    @get(
+        path=(
+            '/admin/account-permission-create-modal/'
+            '{event_uniq_id:str}/{account_id:int}'
+        ),
+        name='admin-account-permission-create-modal',
+    )
+    async def htmx_admin_account_permission_create_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        account_id: int,
+    ) -> Template | ClientRedirect | Redirect:
+        web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
+        if web_context.error:
+            return web_context.error
+        template_context = self._permission_form_modal_context(
+            web_context, FormAction.CREATE
+        )
+        return self.admin_event_account_render(web_context, template_context)
+
+    @get(
+        path=(
+            '/admin/account-permission-update-modal/'
+            '{event_uniq_id:str}/{account_id:int}/{access_level:str}'
+        ),
+        name='admin-account-permission-update-modal',
+    )
+    async def htmx_admin_account_permission_update_modal(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        account_id: int,
+        access_level: str,
+    ) -> Template | ClientRedirect | Redirect:
+        web_context = AccountAdminWebContext(
+            request, event_uniq_id, account_id, access_level
+        )
+        if web_context.error:
+            return web_context.error
+        permission = web_context.get_admin_permission()
+        data = WebContext.values_dict_to_form_data(
+            {
+                'access_level': permission.access_level.id,
+                'tournament_ids': list(permission.tournament_ids or []),
+            }
+        )
+        template_context = self._permission_form_modal_context(
+            web_context, FormAction.UPDATE, data
+        )
+        return self.admin_event_account_render(web_context, template_context)
+
+    @classmethod
+    def _validate_permission_form_data(
+        cls, web_context: AccountAdminWebContext, data: dict[str, str]
+    ) -> dict[str, str]:
+        account = web_context.get_admin_account()
+        errors: dict[str, str] = {}
+        access_level_id = (
+            WebContext.form_data_to_str(data, field := 'access_level') or ''
+        )
+        try:
+            access_level = AccessLevelManager.get_object(access_level_id)
+        except KeyError:
+            errors[field] = f'Unknown access level [{access_level_id}].'
+            return errors
+
+        if access_level not in cls._selectable_access_levels(web_context):
+            errors[field] = (
+                f'You are not allowed to set access level [{access_level.id}].'
+            )
+        if access_level.scope == AccessLevelScope.TOURNAMENT:
+            tournament_ids = WebContext.form_data_to_list_int(
+                data, field := 'tournament_ids'
+            )
+            if not tournament_ids:
+                return errors
+            event = web_context.get_admin_event()
+            for tournament_id in tournament_ids:
+                if tournament_id not in event.tournaments_by_id:
+                    errors[field] = (
+                        f'Invalid tournament ID [{tournament_id}] '
+                        f'for event in [{event.uniq_id}].'
+                    )
+            permissions_by_access_level = account.get_permissions_by_access_level(
+                avoid_access_level=getattr(
+                    web_context.admin_permission, 'access_level', None
+                )
+            )
+            if access_level in permissions_by_access_level:
+                permission = permissions_by_access_level[access_level]
+                if permission.tournament_ids and set(tournament_ids).issubset(
+                    permission.tournament_ids
+                ):
+                    errors[field] = _(
+                        'These tournaments are already included for '
+                        'this access by a higher permission.'
+                    )
+
+        return errors
+
+    @post(
+        path='/admin/account-permission-create/{event_uniq_id:str}/{account_id:int}',
+        name='admin-account-permission-create',
+    )
+    async def htmx_admin_account_permission_create(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        account_id: int,
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template | ClientRedirect | Redirect:
+        web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
+        if web_context.error:
+            return web_context.error
+        event = web_context.get_admin_event()
+        account = web_context.get_admin_account()
+        flat_data = WebContext.flatten_list_data(data)
+        if errors := self._validate_permission_form_data(web_context, flat_data):
+            template_context = self._permission_form_modal_context(
+                web_context, FormAction.CREATE, flat_data, errors
+            )
+            return self.admin_event_account_render(web_context, template_context)
+        access_level = AccessLevelManager.get_object(
+            WebContext.form_data_to_str(flat_data, 'access_level') or ''
+        )
+        stored_permission = StoredPermission(
+            account_id=account_id, access_level=access_level.id
+        )
+        if access_level.scope == AccessLevelScope.TOURNAMENT:
+            stored_permission.tournament_ids = WebContext.form_data_to_list_int(
+                flat_data, 'tournament_ids'
+            )
+        event.add_account_permission(account, stored_permission)
+        web_context.admin_permission = None
+        return self.admin_event_account_render(
+            web_context, self._permissions_modal_context(web_context)
+        )
+
+    @patch(
+        path=(
+            '/admin/account-permission-update/'
+            '{event_uniq_id:str}/{account_id:int}/{access_level:str}'
+        ),
+        name='admin-account-permission-update',
+    )
+    async def htmx_admin_account_permission_update(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        account_id: int,
+        access_level: str,
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template | ClientRedirect | Redirect:
+        web_context = AccountAdminWebContext(
+            request, event_uniq_id, account_id, access_level
+        )
+        if web_context.error:
+            return web_context.error
+        event = web_context.get_admin_event()
+        account = web_context.get_admin_account()
+        permission = web_context.get_admin_permission()
+        flat_data = WebContext.flatten_list_data(data)
+        if errors := self._validate_permission_form_data(web_context, flat_data):
+            template_context = self._permission_form_modal_context(
+                web_context, FormAction.UPDATE, flat_data, errors
+            )
+            return self.admin_event_account_render(web_context, template_context)
+        access_level_ = AccessLevelManager.get_object(
+            WebContext.form_data_to_str(flat_data, 'access_level') or ''
+        )
+        stored_permission = StoredPermission(
+            account_id=account_id, access_level=access_level_.id
+        )
+        if access_level_.scope == AccessLevelScope.TOURNAMENT:
+            stored_permission.tournament_ids = WebContext.form_data_to_list_int(
+                flat_data, 'tournament_ids'
+            )
+        event.update_account_permission(account, permission, stored_permission)
+        web_context.admin_permission = None
+        return self.admin_event_account_render(
+            web_context, self._permissions_modal_context(web_context)
+        )
+
+    @delete(
+        path=(
+            '/admin/account-permission-delete/'
+            '{event_uniq_id:str}/{account_id:int}/{access_level:str}'
+        ),
+        name='admin-account-permission-delete',
+        status_code=HTTP_200_OK,
+    )
+    async def htmx_admin_account_permission_delete(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        account_id: int,
+        access_level: str,
+    ) -> Template | ClientRedirect | Redirect:
+        web_context = AccountAdminWebContext(
+            request, event_uniq_id, account_id, access_level
+        )
+        if web_context.error:
+            return web_context.error
+        event = web_context.get_admin_event()
+        account = web_context.get_admin_account()
+        permission = web_context.get_admin_permission()
+        event.delete_account_permission(account, permission)
+        web_context.admin_permission = None
+        return self.admin_event_account_render(
+            web_context, self._permissions_modal_context(web_context)
+        )

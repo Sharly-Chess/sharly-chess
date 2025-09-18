@@ -1,11 +1,11 @@
+from copy import copy
 from dataclasses import dataclass
-from functools import cached_property
 from typing import TYPE_CHECKING
 
 from common.i18n import _
 from data.access_levels.manager import AccessLevelManager
 from data.player import Player
-from database.sqlite.event.event_store import StoredAccount
+from database.sqlite.event.event_store import StoredAccount, StoredPermission
 from data.access_levels.access_levels import (
     AccessLevel,
     AdministrationAccessLevel,
@@ -19,8 +19,21 @@ if TYPE_CHECKING:
 
 @dataclass
 class Permission:
-    tournament_ids: set[int] | None = None
-    inherited: bool = False
+    stored_permission: StoredPermission
+    inherited_by: AccessLevel | None = None
+
+    @property
+    def access_level(self) -> AccessLevel:
+        return AccessLevelManager.get_object(self.stored_permission.access_level)
+
+    @property
+    def inherited(self) -> bool:
+        return bool(self.inherited_by)
+
+    @property
+    def tournament_ids(self) -> set[int] | None:
+        stored_tournament_ids = self.stored_permission.tournament_ids
+        return set(stored_tournament_ids) if stored_tournament_ids else None
 
     def tournaments_tooltip_message(self, event: 'Event') -> str:
         if not self.tournament_ids:
@@ -105,16 +118,22 @@ class Account:
 
     @property
     def access_levels(self) -> list[AccessLevel]:
+        return [permission.access_level for permission in self.permissions]
+
+    @property
+    def permissions(self) -> list[Permission]:
         return [
-            AccessLevelManager.get_object(access_level_id)
-            for access_level_id in self.stored_account.access_levels
+            Permission(stored_permission)
+            for stored_permission in self.stored_account.stored_permissions
         ]
 
     @property
-    def tournament_ids(self) -> set[int] | None:
-        if self.stored_account.tournament_ids is None:
-            return None
-        return set(self.stored_account.tournament_ids)
+    def sorted_permissions(self) -> list[Permission]:
+        access_level_ids = AccessLevelManager.ids()
+        return sorted(
+            self.permissions,
+            key=lambda p: access_level_ids.index(p.stored_permission.access_level),
+        )
 
     @property
     def edit_properties(self) -> bool:
@@ -126,21 +145,28 @@ class Account:
         """Returns True if the permissions of the account can be updated."""
         return not self.administrator
 
-    @cached_property
-    def permissions_by_access_level(
+    def get_permissions_by_access_level(
         self,
+        with_inheritance: bool = True,
+        avoid_access_level: AccessLevel | None = None,
     ) -> dict[AccessLevel, Permission]:
-        """Returns all the permissions by access level, granted or inherited for an account."""
+        """Returns all the permissions by access level, granted or inherited for the account."""
         permissions_by_access_level: dict[AccessLevel, Permission] = {}
-        tournament_ids = self.tournament_ids
-        for access_level in self.access_levels:
-            permissions_by_access_level[access_level] = self.merge(
-                Permission(tournament_ids),
+        for permission in self.sorted_permissions:
+            access_level = permission.access_level
+            if avoid_access_level == access_level:
+                continue
+            permissions_by_access_level[access_level] = self._merge_permissions(
+                permission,
                 permissions_by_access_level.get(access_level, None),
             )
+            if not with_inheritance:
+                continue
             for sub_access_level in access_level.sub_access_levels():
-                permissions_by_access_level[sub_access_level] = self.merge(
-                    Permission(tournament_ids),
+                sub_stored_permission = copy(permission.stored_permission)
+                sub_stored_permission.access_level = sub_access_level.id
+                permissions_by_access_level[sub_access_level] = self._merge_permissions(
+                    Permission(sub_stored_permission, inherited_by=access_level),
                     permissions_by_access_level.get(sub_access_level, None),
                 )
         return {
@@ -150,22 +176,42 @@ class Account:
         }
 
     @staticmethod
-    def merge(permission1: Permission, permission2: Permission | None) -> Permission:
+    def _merge_permissions(
+        permission1: Permission, permission2: Permission | None
+    ) -> Permission:
         if not permission2:
             return permission1
-        tournament_ids: set[int] | None = None
+        stored_permission = copy(permission1.stored_permission)
+        stored_permission.tournament_ids = None
         if (
             permission1.tournament_ids is not None
             and permission2.tournament_ids is not None
         ):
-            tournament_ids = permission1.tournament_ids | permission2.tournament_ids
+            stored_permission.tournament_ids = list(
+                permission1.tournament_ids | permission2.tournament_ids
+            )
         return Permission(
-            tournament_ids=tournament_ids,
-            inherited=permission1.inherited or permission2.inherited,
+            stored_permission,
+            inherited_by=permission1.inherited_by or permission2.inherited_by,
+        )
+
+    def is_permission_redundant(self, permission: Permission) -> bool:
+        """Checks if a permission is redundant,
+        i.e. if the permissions would be the same if it wasn't there."""
+        other_permission = self.get_permissions_by_access_level(
+            avoid_access_level=permission.access_level
+        ).get(permission.access_level, None)
+        if not other_permission:
+            return False
+        if not permission.tournament_ids and other_permission.tournament_ids:
+            return False
+        return (
+            not other_permission.tournament_ids
+            or permission.tournament_ids.issubset(other_permission.tournament_ids)
         )
 
     def __repr__(self) -> str:
-        return f'Account(id={self.id}, administrator={self.administrator}, anonymous={self.anonymous}, first_name={self.first_name}, last_name={self.last_name})'
+        return f'Account(id={self.id}, full_name={self.full_name})'
 
     # Accounts are stored at event-level, the methods below provide event-free
     # instances that can be used when no events are available (welcome page, ...)
@@ -176,13 +222,14 @@ class Account:
             StoredAccount(
                 id=cls.ADMINISTRATOR_ID,
                 active=True,
-                access_levels=[
-                    AdministrationAccessLevel.static_id(),
-                ],
-                tournament_ids=None,
                 first_name=None,
                 last_name=None,
                 password_hash=None,
+                stored_permissions=[
+                    StoredPermission(
+                        cls.ADMINISTRATOR_ID, AdministrationAccessLevel.static_id()
+                    ),
+                ],
             )
         )
 
@@ -192,13 +239,14 @@ class Account:
             StoredAccount(
                 id=cls.ANONYMOUS_ID,
                 active=True,
-                access_levels=[
-                    CheckInAccessLevel.static_id(),
-                    ResultsEntryAccessLevel.static_id(),
-                ],
-                tournament_ids=None,
                 first_name=None,
                 last_name=None,
                 password_hash=None,
+                stored_permissions=[
+                    StoredPermission(cls.ANONYMOUS_ID, CheckInAccessLevel.static_id()),
+                    StoredPermission(
+                        cls.ANONYMOUS_ID, ResultsEntryAccessLevel.static_id()
+                    ),
+                ],
             )
         )

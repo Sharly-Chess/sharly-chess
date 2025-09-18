@@ -1,87 +1,75 @@
 <div
     class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-account-edit-modal"
-    style="--bs-modal-width: min(90vw, 500px);"
+    style="--bs-modal-width: min(90vw, 450px);"
 >
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                {% if action in ['create', 'clone', ] %}
+                {% if action == 'update' %}
+                    {{ _('Edit account') }}
+                {% else %}
                     {{ _('Create account') }}
-                {% elif action == 'update' %}
-                    {% if admin_account.anonymous %}
-                        {{ _('Edit unauthenticated access') }}
-                    {% else %}
-                        {{ _('Edit account') }}
-                    {% endif %}
                 {% endif %}
             </h2>
         </div>
         <div class="modal-body">
+            {% if action == 'update' %}
+                <h4 class="mb-3">
+                    {{ _('%(string)s:', string=_('Account')) }}
+                    {{ admin_account.full_name }}
+                </h4>
+            {% endif %}
             <form
                 id="modal-form"
-                {% if action in ['create', 'clone', ] %}
-                    hx-post="{{ url_for('admin-account-create', event_uniq_id=admin_event.uniq_id) }}"
-                {% elif action == 'update' %}
+                {% if action == 'update' %}
                     hx-patch="{{ url_for('admin-account-update', event_uniq_id=admin_event.uniq_id, account_id=admin_account.id) }}"
                 {% else %}
-                    hx-get="{{ url_for('unknown-action-' ~ action) }}"
+                    hx-post="{{ url_for('admin-account-create', event_uniq_id=admin_event.uniq_id) }}"
                 {% endif %}
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                {% if action in ['create', 'clone', ] or (admin_account.edit_properties and (admin_account.id in client.manageable_account_ids)) %}
-                    <h4>
-                        {{ _('Authentication') }}
-                    </h4>
-                    <div class="row mb-3">
-                        {{ admin_macros.text_input(
-                            name='last_name',
-                            label=_('Last name:'),
-                            placeholder=_('E.g.: DOE'),
-                            help_text='',
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="row mb-3">
-                        {{ admin_macros.text_input(
-                            name='first_name',
-                            label=_('First name:'),
-                            placeholder=_('E.g.: John'),
-                            help_text='',
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="row mb-3">
-                        {% if action in ['create', 'clone'] %}
-                            {% set password_message = _('The password, used to authenticate. It is impossible to see the password once set, but it can be overwritten if necessary.') %}
-                            {% elif action == 'update' %}
-                            {% set password_message = _('New password. Leave blank for no change.')%}
-                            {% endif %}
-                                {{ admin_macros.password_input(
-                            name='password',
-                            label=_('Password:'),
-                            help_text=password_message,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="row mb-3">
-                        {{ admin_macros.switch_input(
-                            name='active',
-                            label='',
-                            help_text='',
-                            placeholder=_('Enable this account'),
-                            info=_(
-                                'You can temporarily invalidate accounts by turning this switch off.'
-                            ),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                {% endif %}
-                {% if action in ['create', 'clone', ] or (admin_account.edit_permissions and (admin_account.id in client.manageable_account_ids)) %}
-                    <div id="permissions-form">
-                        {% include 'permissions_form.html' %}
-                    </div>
-                {% endif %}
+                <div class="row mb-3">
+                    {{ admin_macros.switch_input(
+                        name='active',
+                        label='',
+                        help_text='',
+                        placeholder=_('Enable this account'),
+                        info=_(
+                            'You can temporarily invalidate accounts by turning this switch off.'
+                        ),
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <div class="row mb-3">
+                    {{ admin_macros.text_input(
+                        name='last_name',
+                        label=_('Last name:'),
+                        placeholder=_('E.g.: DOE'),
+                        help_text='',
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <div class="row mb-3">
+                    {{ admin_macros.text_input(
+                        name='first_name',
+                        label=_('First name:'),
+                        placeholder=_('E.g.: John'),
+                        help_text='',
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <div class="row">
+                    {{ admin_macros.password_input(
+                        name='password',
+                        label=_('Password:'),
+                        help_text=(
+                            _('New password. Leave blank for no change.')
+                            if action == 'update' else ''
+                        ),
+                        data=data, errors=errors
+                    ) }}
+                </div>
             </form>
         </div>
         <div class="modal-footer">
@@ -99,7 +87,6 @@
                 class="text-nowrap white btn btn-primary"
             >
                 <i class="bi-floppy-fill pe-1"></i>
-
                 {% if action == 'update' %}
                     {{ _('Save') }}
                 {% else %}

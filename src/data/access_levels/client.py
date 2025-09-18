@@ -50,7 +50,7 @@ class Client:
                 self.account = Account.predefined_anonymous_account()
 
     def __repr__(self) -> str:
-        return f'{self.__class__}(account={self.account}, host={self.host}, permissions={self.permissions_by_access_level})'
+        return f'{self.__class__}(account={self.account}, host={self.host})'
 
     # ---------------------------------------------------------------------------------
     # Permissions / actions
@@ -76,33 +76,7 @@ class Client:
 
     @cached_property
     def permissions_by_access_level(self) -> dict[AccessLevel, Permission]:
-        """Returns all the permissions by access level, granted or inherited."""
-        permissions_by_access_level: dict[AccessLevel, Permission] = {}
-        assert self.event is not None
-        tournament_ids = (
-            set(
-                tournament_id
-                for tournament_id in self.account.tournament_ids
-                if tournament_id in self.event.tournaments_by_id
-            )
-            if self.account.tournament_ids
-            else None
-        )
-        for access_level in self.account.access_levels:
-            permissions_by_access_level[access_level] = Account.merge(
-                Permission(tournament_ids),
-                permissions_by_access_level.get(access_level, None),
-            )
-            for sub_access_level in access_level.sub_access_levels():
-                permissions_by_access_level[sub_access_level] = Account.merge(
-                    Permission(tournament_ids),
-                    permissions_by_access_level.get(sub_access_level, None),
-                )
-        return {
-            access_level: permissions_by_access_level[access_level]
-            for access_level in AccessLevelManager.objects()
-            if access_level in permissions_by_access_level
-        }
+        return self.account.get_permissions_by_access_level()
 
     @staticmethod
     @cache

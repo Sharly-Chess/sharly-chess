@@ -18,7 +18,7 @@ from common.i18n import _
 from common.i18n.utils import by
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.account import Account
+from data.account import Account, Permission
 from data.display_controller import DisplayController
 from data.family import Family
 from data.player import Player, Club, Federation
@@ -38,6 +38,7 @@ from database.sqlite.event.event_store import (
     StoredPlayer,
     StoredAccount,
     StoredRotator,
+    StoredPermission,
 )
 
 logger: Logger = get_logger()
@@ -700,26 +701,21 @@ class Event:
                 if stored_account.id is not None
             }
 
-    def use_own_accounts(self):
-        """Sets own accounts if not already done,
-        returns True if own accounts were created and False otherwise."""
+    def create_predefined_accounts(self):
+        """Sets own accounts if not already done"""
         if not self.predefined_accounts:
-            return
+            raise ValueError('Default accounts already exist.')
         with EventDatabase(self.uniq_id, True) as database:
             for account in self.accounts_by_id.values():
-                database.add_stored_account(
-                    StoredAccount(
-                        id=None,
-                        active=account.stored_account.active,
-                        access_levels=account.stored_account.access_levels,
-                        tournament_ids=account.stored_account.tournament_ids,
-                        first_name=account.stored_account.first_name,
-                        last_name=account.stored_account.last_name,
-                        password_hash=account.password_hash,
-                    )
-                )
+                stored_account = account.stored_account
+                database.add_stored_account(stored_account)
+                for stored_permission in stored_account.stored_permissions:
+                    database.add_stored_permission(stored_permission)
+                self.stored_event.stored_accounts.append(stored_account)
 
     def create_account(self, stored_account: StoredAccount) -> Account:
+        if self.predefined_accounts:
+            raise ValueError('Default accounts not created.')
         with EventDatabase(self.uniq_id, True) as database:
             stored_account = database.add_stored_account(stored_account)
         self.stored_event.stored_accounts.append(stored_account)
@@ -739,6 +735,47 @@ class Event:
             self.stored_event.stored_accounts.remove(account.stored_account)
         if account.id in self.accounts_by_id:
             del self.accounts_by_id[account.id]
+
+    @staticmethod
+    def _delete_redundant_account_permissions(
+        account: Account, database: EventDatabase
+    ):
+        redundant_stored_permissions = [
+            permission.stored_permission
+            for permission in account.permissions
+            if account.is_permission_redundant(permission)
+        ]
+        for stored_permission in redundant_stored_permissions:
+            database.delete_stored_permission(stored_permission)
+            account.stored_account.stored_permissions.remove(stored_permission)
+
+    def add_account_permission(
+        self, account: Account, stored_permission: StoredPermission
+    ):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.add_stored_permission(stored_permission)
+            account.stored_account.stored_permissions.append(stored_permission)
+            self._delete_redundant_account_permissions(account, database)
+
+    def update_account_permission(
+        self,
+        account: Account,
+        permission: Permission,
+        stored_permission: StoredPermission,
+    ):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.delete_stored_permission(permission.stored_permission)
+            database.add_stored_permission(stored_permission)
+            stored_permissions = account.stored_account.stored_permissions
+            stored_permissions.remove(permission.stored_permission)
+            stored_permissions.append(stored_permission)
+            self._delete_redundant_account_permissions(account, database)
+
+    def delete_account_permission(self, account: Account, permission: Permission):
+        stored_permission = permission.stored_permission
+        with EventDatabase(self.uniq_id, True) as database:
+            database.delete_stored_permission(stored_permission)
+        account.stored_account.stored_permissions.remove(stored_permission)
 
     @property
     def accounts_sorted_by_name(self) -> list[Account]:

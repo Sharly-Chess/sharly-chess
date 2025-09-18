@@ -5,7 +5,7 @@
             hx-patch="{{ url_for('admin-timer-hour-update', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
             hx-indicator="#please-wait"
         >
-            <div class="admin-timer-hour-div edit border {% if timer_hour.error %}border-danger{% else %}border-secondary{% endif %}">
+            <div class="admin-timer-hour-div edit border bg-body-tertiary {% if timer_hour.error %}border-danger{% else %}border-secondary{% endif %}">
                 <div class="d-flex p-2 gap-4 flex-column">
                     <div>
                         <div class="row">

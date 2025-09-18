@@ -2,36 +2,65 @@
 
 {% block top_left_nav %}
     {{ admin_macros.admin_title(_('Accounts'), 'accounts') }}
+    {{ macros.refresh_listener(
+        hx_get=url_for('admin-event-accounts-tab', event_uniq_id=admin_event.uniq_id)
+    ) }}
     <script>preparePrintModal()</script>
 {% endblock %}
 
 {% block top_right_nav %}
     {% if client.can_manage_accounts %}
-        <span
-            {{ macros.tooltip_attributes('info', _('Add an account to the event.'), 'top') }}
-        >
-            <button
-                class="btn btn-primary text-nowrap ms-1"
-                hx-get="{{ url_for('admin-account-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                preload
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
+        {% if admin_event.predefined_accounts %}
+            <span
+                {{ macros.tooltip_attributes('info', _('Add an account to the event.'), 'top') }}
             >
-                <i class="bi-plus-square-fill pe-1"></i>
-                {{ _('Create an account') }}
-            </button>
-        </span>
+                <button
+                    class="btn btn-primary text-nowrap ms-1"
+                    hx-post="{{ url_for(
+                        'admin-account-create-defaults',
+                        event_uniq_id=admin_event.uniq_id
+                    ) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    preload
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                >
+                    <i class="bi-plus-square-fill pe-1"></i>
+                    {{ _('Get started') }}
+                </button>
+            </span>
+        {% else %}
+            <span
+                {{ macros.tooltip_attributes('info', _('Add an account to the event.'), 'top') }}
+            >
+                <button
+                    class="btn btn-primary text-nowrap ms-1"
+                    hx-get="{{ url_for('admin-account-create-modal', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    preload
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                >
+                    <i class="bi-plus-square-fill pe-1"></i>
+                    {{ _('Create an account') }}
+                </button>
+            </span>
+        {% endif %}
     {% endif %}
 {% endblock %}
 
 {% block cards_container_cards %}
     {% if client.can_manage_accounts %}
-        <div class="row">
-            {% for account in admin_event.accounts_sorted_by_name %}
-                {% include 'account_card.html' %}
-            {% endfor %}
-        </div>
+        {% if admin_event.predefined_accounts %}
+            #TODO documentation
+        {% else %}
+            <div class="row">
+                {% for account in admin_event.accounts_sorted_by_name %}
+                    {% include 'account_card.html' %}
+                {% endfor %}
+            </div>
+        {% endif %}
     {% endif %}
 {% endblock %}
