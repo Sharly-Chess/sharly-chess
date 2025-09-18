@@ -50,7 +50,7 @@ class FideDatabase(LocalSourceDatabase):
 
     @staticmethod
     def static_name() -> str:
-        return 'FIDE'
+        return _('FIDE')
 
     @property
     def min_recovery_version(self) -> Version:

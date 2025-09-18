@@ -168,6 +168,9 @@ msgid_plural "(%(num)d screens)"
 msgstr[0] "(%(num)d écran)"
 msgstr[1] "(%(num)d écrans)"
 
+msgid "(*) Knowing the list of the currents events is needed to select the events before authenticating."
+msgstr "(*) Connaître la liste des évènements en cours est nécessaire pour sélection les évènements avant de s'authentifier."
+
 msgid "(by default)"
 msgstr "(par défaut)"
 
@@ -532,9 +535,6 @@ msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs affi
 msgid "Application"
 msgstr "Application"
 
-msgid "Application management"
-msgstr "Gestion de l'application"
-
 msgid "Archive"
 msgstr "Archiver"
 
@@ -545,7 +545,7 @@ msgid "Archive event"
 msgstr "Archiver un évènement"
 
 msgid "Archive the event."
-msgstr "Archiver l'évènement"
+msgstr "Archiver l'évènement."
 
 msgid "Archived ({num})"
 msgstr "Archivés ({num})"
@@ -734,6 +734,9 @@ msgstr "Échiquier & couleur"
 msgid "Board (%(remaining)d)"
 msgstr "Éch. (%(remaining)d)"
 
+msgid "Board Pairings"
+msgstr "Appariements par échiquier"
+
 msgid "Board is not the same as the opponent's."
 msgstr "L'échiquier n'est pas le même que celui de l'adversaire."
 
@@ -795,7 +798,7 @@ msgid "Byes (%(byes)d) *** PLAYERS WITH BYES"
 msgstr "Forfaits et absences (%(byes)d)"
 
 msgid "CA"
-msgstr "AC"
+msgstr "ARB"
 
 msgid "CHE"
 msgstr "POI"
@@ -861,11 +864,11 @@ msgstr "Pointage"
 msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
 msgstr "Pointage"
 
-msgid "Check-in / Results entry"
-msgstr "Pointage / Saisie des résultats"
-
 msgid "Check-in / Results ({num})"
 msgstr "Pointage / Saisie ({num})"
+
+msgid "Check-in / Results entry"
+msgstr "Pointage / Saisie des résultats"
 
 msgid "Check-in / Results entry ({tournament_name})"
 msgstr "Pointage / Saisie des résultats ({tournament_name})"
@@ -946,7 +949,7 @@ msgid "Choose from images in the 'custom' folder"
 msgstr "Choisir parmi les images du dossier 'custom'"
 
 msgid "Choose one, many or no tournaments."
-msgstr "Choisissez un, plusieurs ou aucun tournoi."
+msgstr "Choisissez aucun, un ou plusieurs tournois."
 
 msgid "Choose screens to add"
 msgstr "Choisir des écrans à ajouter"
@@ -1517,6 +1520,9 @@ msgstr "Ronde affichée : %(round)d"
 msgid "Do not assign zero-point bye (players will be eligible for pairing)"
 msgstr "Ne pas marquer forfait (les joueur·euses seront apparié·es) "
 
+msgid "Do not edit this table manually, use script {script_name} instead."
+msgstr "Ne pas éditer ce tableau manuellement, utiliser plutôt le script {script_name}."
+
 msgid "Do not recover"
 msgstr "Ne pas restaurer"
 
@@ -1584,7 +1590,7 @@ msgid "Duplicate the category and its criteria and prizes."
 msgstr "Dupliquer la catégorie ainsi que ses prix et ses critères."
 
 msgid "Duplicate the event."
-msgstr "Dupliquer l’événement"
+msgstr "Dupliquer l'évènement."
 
 msgid "Duplicate the rotator."
 msgstr "Dupliquer l'écran rotatif."
@@ -1793,7 +1799,7 @@ msgid "Edit the properties of the display controller."
 msgstr "Modifier les propriétés du pilote d'afficheurs."
 
 msgid "Edit the properties of the event."
-msgstr "Modifier les propriétés de l’événement."
+msgstr "Modifier les propriétés de l'évènement."
 
 msgid "Edit the properties of the rotator."
 msgstr "Modifier les propriétés de l'écran rotatif."
@@ -1921,12 +1927,6 @@ msgstr "Évènements"
 
 msgid "Events ({num})"
 msgstr "Évènements ({num})"
-
-msgid "Events access"
-msgstr "Accès aux évènements"
-
-msgid "Events management"
-msgstr "Gestion des évènements"
 
 msgid "Exempt *** FEMALE"
 msgstr "Exempte"
@@ -2494,9 +2494,6 @@ msgstr "Incrément (sec)"
 msgid "Info"
 msgstr "Info"
 
-msgid "Inherited access levels"
-msgstr "Niveaux d'accès hérités"
-
 msgid "Input Screens may be used to allow players to enter their own results on a device that you make available at the venue."
 msgstr "Les écrans de saisie peuvent être utilisés pour permettre aux joueur·euses d’entrer eux-mêmes leurs résultats sur un portable ou une tablette mis à disposition sur le lieu du tournoi."
 
@@ -2685,7 +2682,7 @@ msgid "Leagues"
 msgstr "Ligues"
 
 msgid "Leave empty to grant no permissions at all."
-msgstr "Laissez vide pour ne donner aucune permission."
+msgstr "Laisser vide pour n'accorder aucune permission."
 
 msgid "Library [{lib}] is missing."
 msgstr "La bibliothèque [{lib}] n'est pas installée."
@@ -2790,9 +2787,6 @@ msgstr "Gérer les groupes de prix"
 
 msgid "Manage the prize groups of the tournament."
 msgstr "Gérer les groupes de prix du tournoi."
-
-msgid "Manageable access levels"
-msgstr "Niveaux d'accès gérés"
 
 msgid "Mandatory for the first hour, optional for next hours."
 msgstr "Obligatoire pour le premier horaire, facultative pour les horaires suivants."
@@ -3370,11 +3364,17 @@ msgstr "il y a déjà un·e joueur·euse exempt·e"
 msgid "PAI"
 msgstr "APP"
 
+msgid "PAPI"
+msgstr "PAPI"
+
 msgid "PENALTY"
 msgstr "PÉNALITÉ"
 
 msgid "PERMUTE WHITE/BLACK"
 msgstr "PERMUTER BLANCS/NOIRS"
+
+msgid "PGN"
+msgstr "PGN"
 
 msgid "PS *** ACRONYM FOR PAPI PROGRESSIVE SCORE"
 msgstr "Cu."
@@ -3589,6 +3589,9 @@ msgstr "Le·la joueur·euse [{player}] a déjà été apparié·e dans le tourno
 msgid "Player does not match tournament criteria: {names}"
 msgstr "Le·la joueur·euse ne correspond pas aux critères du tournoi : {names}"
 
+msgid "Player pairings"
+msgstr "Appariements par joueur·euse"
+
 msgid "Player selection (by alphabetical order)"
 msgstr "Sélection des joueur·euses (par ordre alphabétique)"
 
@@ -3776,6 +3779,9 @@ msgstr "Imprimer"
 
 msgid "Print players, results, etc."
 msgstr "Imprimer les participant·es, les résultats, les classements…"
+
+msgid "Printing"
+msgstr "Impression"
 
 msgid "Prize *** PRIZE FOR TABLE HEADER"
 msgstr "Prix"
@@ -4513,9 +4519,6 @@ msgstr "Stockage des données…"
 msgid "Strong"
 msgstr "Préférence forte"
 
-msgid "Sub access levels"
-msgstr "Sous-niveaux d'accès"
-
 msgid "Sum of Buchholz"
 msgstr "Somme des Buchholz"
 
@@ -4530,6 +4533,12 @@ msgstr "Suisse"
 
 msgid "TRF file"
 msgstr "Fichier TRF"
+
+msgid "TRF(bx)"
+msgstr "TRF(bx)"
+
+msgid "TRF16"
+msgstr "TRF16"
 
 msgid "Text after the hour:"
 msgstr "Texte après l'horaire :"
@@ -5228,9 +5237,6 @@ msgstr "Les tournois sont terminés, on ne peut plus ajouter de joueur·euses."
 msgid "Tournaments displayed:"
 msgstr "Tournois affichés :"
 
-msgid "Tournaments management"
-msgstr "Gestion des tournois"
-
 msgid "Tournaments:"
 msgstr "Tournois :"
 
@@ -5551,10 +5557,10 @@ msgid "View event cards details"
 msgstr "Voir les détails des cartes d'évènement"
 
 msgid "View event configuration"
-msgstr "Voir la configuration de l’événement"
+msgstr "Voir la configuration de l'évènement"
 
-msgid "View passed and upcoming events"
-msgstr "Voir les évènement passés et à venir"
+msgid "View passed events"
+msgstr "Voir les évènement passés"
 
 msgid "View private events"
 msgstr "Voir les évènement privés"
@@ -5562,8 +5568,8 @@ msgstr "Voir les évènement privés"
 msgid "View private screens"
 msgstr "Voir les écrans privés"
 
-msgid "View public current events"
-msgstr "Voir les évènements publics en cours"
+msgid "View public current and upcoming events"
+msgstr "Voir les évènements publics en cours et à venir"
 
 msgid "View public screens"
 msgstr "Voir les écrans publics"
@@ -5819,9 +5825,6 @@ msgstr "[{value}] n'est pas une valeur positive."
 msgid "[{value}] is not a valid value format."
 msgstr "[{value}] n'est pas un format de valeur valide."
 
-msgid "all"
-msgstr "tous"
-
 msgid "all the boards"
 msgstr "tous les échiquiers"
 
@@ -5890,9 +5893,6 @@ msgstr "non"
 
 msgid "no background image"
 msgstr "pas d'image de fond"
-
-msgid "none"
-msgstr "aucun"
 
 msgid "player already received a PAB in a previous round"
 msgstr "le·la joueur·euse a déjà été exempt·e lors d'une ronde précédente"

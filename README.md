@@ -16,11 +16,11 @@ _Sharly Chess - © Sharly Chess project 2013-2025_
 - [Setting up a development environment](docs/technical-appendices/dev-setup.md)
 - [Description of the databases](docs/technical-appendices/databases.md)
 - [Internationalization](docs/technical-appendices/i18n.md)
+- [Delegating event management](docs/technical-appendices/delegation.md)
 
 ### Sandbox
 
 - [Communication to players](docs/sandbox/communication-to-players.md)
-- [Delegating event management](docs/sandbox/delegation.md)
 - [Pairing actions](docs/sandbox/pairing-actions.md)
 
 ### Contributing

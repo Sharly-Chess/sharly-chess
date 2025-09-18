@@ -28,7 +28,7 @@ class ChessEventPlugin(Plugin):
 
     @staticmethod
     def static_name() -> str:
-        return 'ChessEvent'
+        return _('ChessEvent')
 
     @property
     def description(self) -> str:

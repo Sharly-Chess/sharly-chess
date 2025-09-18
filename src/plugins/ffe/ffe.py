@@ -96,7 +96,7 @@ class FfePlugin(Plugin):
 
     @staticmethod
     def static_name() -> str:
-        return 'FFE'
+        return _('FFE')
 
     @property
     def description(self) -> str:

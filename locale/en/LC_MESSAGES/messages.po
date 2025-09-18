@@ -168,6 +168,9 @@ msgid_plural "(%(num)d screens)"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "(*) Knowing the list of the currents events is needed to select the events before authenticating."
+msgstr ""
+
 msgid "(by default)"
 msgstr ""
 
@@ -532,9 +535,6 @@ msgstr ""
 msgid "Application"
 msgstr ""
 
-msgid "Application management"
-msgstr ""
-
 msgid "Archive"
 msgstr ""
 
@@ -734,6 +734,9 @@ msgstr ""
 msgid "Board (%(remaining)d)"
 msgstr ""
 
+msgid "Board Pairings"
+msgstr ""
+
 msgid "Board is not the same as the opponent's."
 msgstr ""
 
@@ -861,10 +864,10 @@ msgstr ""
 msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
 msgstr "Check-in"
 
-msgid "Check-in / Results entry"
+msgid "Check-in / Results ({num})"
 msgstr ""
 
-msgid "Check-in / Results ({num})"
+msgid "Check-in / Results entry"
 msgstr ""
 
 msgid "Check-in / Results entry ({tournament_name})"
@@ -1517,6 +1520,9 @@ msgstr ""
 msgid "Do not assign zero-point bye (players will be eligible for pairing)"
 msgstr ""
 
+msgid "Do not edit this table manually, use script {script_name} instead."
+msgstr ""
+
 msgid "Do not recover"
 msgstr ""
 
@@ -1920,12 +1926,6 @@ msgid "Events"
 msgstr ""
 
 msgid "Events ({num})"
-msgstr ""
-
-msgid "Events access"
-msgstr ""
-
-msgid "Events management"
 msgstr ""
 
 msgid "Exempt *** FEMALE"
@@ -2494,9 +2494,6 @@ msgstr ""
 msgid "Info"
 msgstr ""
 
-msgid "Inherited access levels"
-msgstr ""
-
 msgid "Input Screens may be used to allow players to enter their own results on a device that you make available at the venue."
 msgstr ""
 
@@ -2789,9 +2786,6 @@ msgid "Manage the prize groups"
 msgstr ""
 
 msgid "Manage the prize groups of the tournament."
-msgstr ""
-
-msgid "Manageable access levels"
 msgstr ""
 
 msgid "Mandatory for the first hour, optional for next hours."
@@ -3370,10 +3364,16 @@ msgstr ""
 msgid "PAI"
 msgstr ""
 
+msgid "PAPI"
+msgstr ""
+
 msgid "PENALTY"
 msgstr ""
 
 msgid "PERMUTE WHITE/BLACK"
+msgstr ""
+
+msgid "PGN"
 msgstr ""
 
 msgid "PS *** ACRONYM FOR PAPI PROGRESSIVE SCORE"
@@ -3589,6 +3589,9 @@ msgstr ""
 msgid "Player does not match tournament criteria: {names}"
 msgstr ""
 
+msgid "Player pairings"
+msgstr ""
+
 msgid "Player selection (by alphabetical order)"
 msgstr ""
 
@@ -3775,6 +3778,9 @@ msgid "Print"
 msgstr ""
 
 msgid "Print players, results, etc."
+msgstr ""
+
+msgid "Printing"
 msgstr ""
 
 msgid "Prize *** PRIZE FOR TABLE HEADER"
@@ -4513,9 +4519,6 @@ msgstr ""
 msgid "Strong"
 msgstr ""
 
-msgid "Sub access levels"
-msgstr ""
-
 msgid "Sum of Buchholz"
 msgstr ""
 
@@ -4529,6 +4532,12 @@ msgid "Swiss"
 msgstr ""
 
 msgid "TRF file"
+msgstr ""
+
+msgid "TRF(bx)"
+msgstr ""
+
+msgid "TRF16"
 msgstr ""
 
 msgid "Text after the hour:"
@@ -5228,9 +5237,6 @@ msgstr ""
 msgid "Tournaments displayed:"
 msgstr ""
 
-msgid "Tournaments management"
-msgstr ""
-
 msgid "Tournaments:"
 msgstr ""
 
@@ -5553,7 +5559,7 @@ msgstr ""
 msgid "View event configuration"
 msgstr ""
 
-msgid "View passed and upcoming events"
+msgid "View passed events"
 msgstr ""
 
 msgid "View private events"
@@ -5562,7 +5568,7 @@ msgstr ""
 msgid "View private screens"
 msgstr ""
 
-msgid "View public current events"
+msgid "View public current and upcoming events"
 msgstr ""
 
 msgid "View public screens"
@@ -5819,9 +5825,6 @@ msgstr ""
 msgid "[{value}] is not a valid value format."
 msgstr ""
 
-msgid "all"
-msgstr ""
-
 msgid "all the boards"
 msgstr ""
 
@@ -5889,9 +5892,6 @@ msgid "no"
 msgstr ""
 
 msgid "no background image"
-msgstr ""
-
-msgid "none"
 msgstr ""
 
 msgid "player already received a PAB in a previous round"

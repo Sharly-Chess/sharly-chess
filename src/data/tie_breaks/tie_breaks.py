@@ -136,12 +136,12 @@ class WinsTieBreak(TieBreak):
     See FIDE Handbook C.07.7.1"""
 
     @staticmethod
-    def static_name() -> str:
-        return _('Number of wins')
-
-    @staticmethod
     def static_id() -> str:
         return 'WINS'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Number of wins')
 
     @property
     def acronym(self) -> str:
@@ -166,12 +166,12 @@ class GamesWonTieBreak(TieBreak):
     See FIDE Handbook C.07.7.2"""
 
     @staticmethod
-    def static_name() -> str:
-        return _('Number of games won')
-
-    @staticmethod
     def static_id() -> str:
         return 'GAMES_WON'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Number of games won')
 
     @property
     def acronym(self) -> str:
@@ -194,12 +194,12 @@ class GamesPlayedWithBlackTieBreak(TieBreak):
     See FIDE Handbook C.07.7.3"""
 
     @staticmethod
-    def static_name() -> str:
-        return _('Games played with black')
-
-    @staticmethod
     def static_id() -> str:
         return 'GAMES_PLAYED_WITH_BLACK'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Games played with black')
 
     @property
     def acronym(self) -> str:
@@ -222,12 +222,12 @@ class GamesWonWithBlackTieBreak(TieBreak):
     See FIDE Handbook C.07.7.4"""
 
     @staticmethod
-    def static_name() -> str:
-        return _('Games won with Black')
-
-    @staticmethod
     def static_id() -> str:
         return 'GAMES_WON_WITH_BLACK'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Games won with Black')
 
     @property
     def acronym(self) -> str:
@@ -254,12 +254,12 @@ class ProgressiveScoresTieBreak(TieBreak):
     See FIDE Handbook C.07.7.5 and C.07.14.1"""
 
     @staticmethod
-    def static_name() -> str:
-        return _('Progressive scores')
-
-    @staticmethod
     def static_id() -> str:
         return 'PROGRESSIVE_SCORES'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Progressive scores')
 
     @property
     def acronym(self) -> str:
@@ -285,12 +285,12 @@ class RoundsElectedToPlayTieBreak(TieBreak):
     See FIDE Handbook C.07.7.6"""
 
     @staticmethod
-    def static_name() -> str:
-        return _('Rounds one Elected to Play')
-
-    @staticmethod
     def static_id() -> str:
         return 'ROUNDS_ELECTED_TO_PLAY'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Rounds one Elected to Play')
 
     @property
     def acronym(self) -> str:
@@ -358,12 +358,12 @@ class StandardBuchholzTieBreak(BuchholzTieBreak):
     See FIDE Handbook C.07.8.1"""
 
     @staticmethod
-    def static_name() -> str:
-        return _('Buchholz')
-
-    @staticmethod
     def static_id() -> str:
         return 'BUCHHOLZ'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Buchholz')
 
     @property
     def acronym(self) -> str:
@@ -467,12 +467,12 @@ class ForeBuchholzTieBreak(BuchholzTieBreak):
     See FIDE Handbook C.07.8.3"""
 
     @staticmethod
-    def static_name() -> str:
-        return _('Fore Buchholz')
-
-    @staticmethod
     def static_id() -> str:
         return 'FORE_BUCHHOLZ'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Fore Buchholz')
 
     @property
     def acronym(self) -> str:
@@ -556,12 +556,12 @@ class SumOfBuchholzTieBreak(BuchholzTieBreak):
     """
 
     @staticmethod
-    def static_name() -> str:
-        return _('Sum of Buchholz')
-
-    @staticmethod
     def static_id() -> str:
         return 'SUM_OF_BUCHHOLZ'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Sum of Buchholz')
 
     @property
     def acronym(self) -> str:
@@ -602,12 +602,12 @@ class AverageOfBuchholzTieBreak(BuchholzTieBreak):
     See FIDE Handbook C.07.8.2."""
 
     @staticmethod
-    def static_name() -> str:
-        return _('Average of opponents Buchholz')
-
-    @staticmethod
     def static_id() -> str:
         return 'AVERAGE_OF_BUCHHOLZ'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Average of opponents Buchholz')
 
     @property
     def acronym(self) -> str:
@@ -652,12 +652,12 @@ class SonnebornBergerTieBreak(TieBreak):
     See FIDE Handbook C.07.9.1."""
 
     @staticmethod
-    def static_name() -> str:
-        return _('Sonneborn-Berger')
-
-    @staticmethod
     def static_id() -> str:
         return 'SONNEBORN_BERGER'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Sonneborn-Berger')
 
     @property
     def acronym(self) -> str:
@@ -779,12 +779,12 @@ class KoyaTieBreak(TieBreak):
     See FIDE Handbook C.07.9.2."""
 
     @staticmethod
-    def static_name() -> str:
-        return _('Koya system')
-
-    @staticmethod
     def static_id() -> str:
         return 'KOYA'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Koya system')
 
     @property
     def forbidden_pairing_systems(self) -> list[PairingSystem]:
@@ -830,12 +830,12 @@ class KashdanTieBreak(TieBreak):
     See USCF Handbook section 34E7."""
 
     @staticmethod
-    def static_name() -> str:
-        return _('Kashdan')
-
-    @staticmethod
     def static_id() -> str:
         return 'KASHDAN'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Kashdan')
 
     @property
     def acronym(self) -> str:
@@ -887,12 +887,12 @@ class AverageRatingOpponentsTieBreak(TieBreak):
     See FIDE Handbook C.07.10.1"""
 
     @staticmethod
-    def static_name() -> str:
-        return _('Average rating of opponents')
-
-    @staticmethod
     def static_id() -> str:
         return 'AVERAGE_RATING_OPPONENTS'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Average rating of opponents')
 
     @property
     def acronym(self) -> str:
@@ -965,12 +965,12 @@ class TournamentPerformanceRatingTieBreak(PerformanceTieBreak):
     See FIDE Handbook C.07.10.2."""
 
     @staticmethod
-    def static_name() -> str:
-        return _('Tournament performance rating')
-
-    @staticmethod
     def static_id() -> str:
         return 'TOURNAMENT_PERFORMANCE_RATING'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Tournament performance rating')
 
     @property
     def acronym(self) -> str:
@@ -1011,12 +1011,12 @@ class AveragePerformanceRatingOpponentsTieBreak(PerformanceTieBreak):
     See FIDE Handbook C.07.10.4."""
 
     @staticmethod
-    def static_name() -> str:
-        return _('Average performance rating of opponents')
-
-    @staticmethod
     def static_id() -> str:
         return 'AVERAGE_PERFORMANCE_RATING_OPPONENTS'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Average performance rating of opponents')
 
     @property
     def acronym(self) -> str:
@@ -1056,12 +1056,12 @@ class PerfectTournamentPerformanceTieBreak(PerformanceTieBreak):
     See FIDE Handbook C.07.10.3."""
 
     @staticmethod
-    def static_name() -> str:
-        return _('Perfect tournament performance')
-
-    @staticmethod
     def static_id() -> str:
         return 'PERFECT_TOURNAMENT_PERFORMANCE'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Perfect tournament performance')
 
     @property
     def acronym(self) -> str:
@@ -1234,12 +1234,12 @@ class AveragePerfectPerformanceTieBreak(PerformanceTieBreak):
     See FIDE Hand book C.07.10.5."""
 
     @staticmethod
-    def static_name() -> str:
-        return _('Average perfect performance of opponents')
-
-    @staticmethod
     def static_id() -> str:
         return 'AVERAGE_PERFECT_PERFORMANCE'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Average perfect performance of opponents')
 
     @property
     def acronym(self) -> str:
@@ -1289,12 +1289,12 @@ class DirectEncounterTieBreak(TieBreak):
     See FIDE Handbook C.07.6."""
 
     @staticmethod
-    def static_name() -> str:
-        return _('Direct encounter')
-
-    @staticmethod
     def static_id() -> str:
         return 'DIRECT_ENCOUNTER'
+
+    @classmethod
+    def static_name(cls) -> str:
+        return _('Direct encounter')
 
     @property
     def acronym(self) -> str:
@@ -1452,12 +1452,12 @@ class ManualTieBreak(TieBreak):
     """Used for play-off's, etc"""
 
     @staticmethod
-    def static_name() -> str:
-        return _('Manual')
-
-    @staticmethod
     def static_id() -> str:
         return 'MANUAL'
+
+    @classmethod
+    def static_name(cls) -> str:
+        return _('Manual')
 
     @property
     def acronym(self) -> str:

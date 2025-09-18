@@ -21,27 +21,50 @@ class AccessLevelScope(IntEnum):
     @property
     def name(self) -> str:
         """Returns the name of the scope."""
+        return self.localized_name()
+
+    def localized_name(self, locale: str | None = None) -> str:
+        """Returns the localized name of the scope."""
         match self:
             case AccessLevelScope.APPLICATION:
-                return _('Application')
+                return _('Application', locale)
             case AccessLevelScope.EVENT:
-                return _('Event')
+                return _('Event', locale)
             case AccessLevelScope.TOURNAMENT:
-                return _('Tournament')
+                return _('Tournament', locale)
             case _:
                 raise ValueError(f'access_level_scope={self}')
 
 
 class AccessLevel(IdentifiableEntity, ABC):
+    @classmethod
+    def static_name(cls) -> str:
+        return cls.localized_name()
+
+    @classmethod
+    @abstractmethod
+    def localized_name(cls, locale: str | None = None) -> str:
+        """Returns a localized name for the class (used to generate the documentation)"""
+
     @staticmethod
     @abstractmethod
-    def short_name() -> str:
+    def short_name(locale: str | None = None) -> str:
         """Short name to use in docs."""
 
     @property
     def card_name(self) -> str:
         """Name to use on the card to avoid overflowing the layout."""
         return self.name
+
+    @property
+    def administrator(self) -> bool:
+        """Returns True if the access level is Administrator."""
+        return False
+
+    @property
+    def needs_account(self) -> bool:
+        """Returns True if an account is needed to get the access level, false otherwise."""
+        return True
 
     @property
     @abstractmethod
@@ -69,9 +92,13 @@ class AccessLevel(IdentifiableEntity, ABC):
         """Access levels to inherit the permissions of."""
 
     @property
-    @abstractmethod
     def help_text(self) -> str:
         """Explanation of the access level's actions"""
+        return self.localized_help_text()
+
+    @abstractmethod
+    def localized_help_text(self, locale: str | None = None) -> str:
+        """Localized explanation of the access level's actions"""
 
     @staticmethod
     @abstractmethod
@@ -121,13 +148,17 @@ class SpectatorAccessLevel(AccessLevel):
     def static_id() -> str:
         return 'SPECTATOR'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Spectator')
+    @classmethod
+    def localized_name(cls, locale: str | None = None) -> str:
+        return _('Spectator', locale)
 
     @staticmethod
-    def short_name() -> str:
-        return _('SPE')
+    def short_name(locale: str | None = None) -> str:
+        return _('SPE', locale)
+
+    @property
+    def needs_account(self) -> bool:
+        return False
 
     @property
     def scope(self) -> AccessLevelScope:
@@ -141,9 +172,8 @@ class SpectatorAccessLevel(AccessLevel):
     def access_level_actions() -> list[AuthAction]:
         return [AuthAction.VIEW_PUBLIC_SCREENS]
 
-    @property
-    def help_text(self) -> str:
-        return _('Allows access to Screens marked as public.')
+    def localized_help_text(self, locale: str | None = None) -> str:
+        return _('Allows access to Screens marked as public.', locale)
 
 
 class ResultsEntryAccessLevel(AccessLevel):
@@ -151,17 +181,21 @@ class ResultsEntryAccessLevel(AccessLevel):
     def static_id() -> str:
         return 'RESULTS_ENTRY'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Results entry via public screens')
+    @classmethod
+    def localized_name(cls, locale: str | None = None) -> str:
+        return _('Results entry via public screens', locale)
 
     @staticmethod
-    def short_name() -> str:
-        return _('RES')
+    def short_name(locale: str | None = None) -> str:
+        return _('RES', locale)
 
     @property
     def card_name(self) -> str:
         return _('Results entry')
+
+    @property
+    def needs_account(self) -> bool:
+        return False
 
     @property
     def scope(self) -> AccessLevelScope:
@@ -177,10 +211,10 @@ class ResultsEntryAccessLevel(AccessLevel):
     def access_level_actions() -> list[AuthAction]:
         return [AuthAction.ENTER_RESULTS]
 
-    @property
-    def help_text(self) -> str:
+    def localized_help_text(self, locale: str | None = None) -> str:
         return _(
-            'Allows entry of results via any input Screens that have been marked as public.'
+            'Allows entry of results via any input Screens that have been marked as public.',
+            locale,
         )
 
 
@@ -189,17 +223,21 @@ class CheckInAccessLevel(AccessLevel):
     def static_id() -> str:
         return 'CHECK_IN'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Check-in via public screens')
+    @classmethod
+    def localized_name(cls, locale: str | None = None) -> str:
+        return _('Check-in via public screens', locale)
 
     @staticmethod
-    def short_name() -> str:
-        return _('CHE')
+    def short_name(locale: str | None = None) -> str:
+        return _('CHE', locale)
 
     @property
     def card_name(self) -> str:
         return _('Check-in')
+
+    @property
+    def needs_account(self) -> bool:
+        return False
 
     @property
     def scope(self) -> AccessLevelScope:
@@ -218,10 +256,10 @@ class CheckInAccessLevel(AccessLevel):
             AuthAction.CHECK_IN_PLAYERS,
         ]
 
-    @property
-    def help_text(self) -> str:
+    def localized_help_text(self, locale: str | None = None) -> str:
         return _(
-            'Allows check-in via any input Screens that have been marked as public.'
+            'Allows check-in via any input Screens that have been marked as public.',
+            locale,
         )
 
 
@@ -230,13 +268,13 @@ class SectorArbitrationAccessLevel(AccessLevel):
     def static_id() -> str:
         return 'SECTOR_ARBITRATION'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Sector arbitration')
+    @classmethod
+    def localized_name(cls, locale: str | None = None) -> str:
+        return _('Sector arbitration', locale)
 
     @staticmethod
-    def short_name() -> str:
-        return _('SEC')
+    def short_name(locale: str | None = None) -> str:
+        return _('SEC', locale)
 
     @property
     def scope(self) -> AccessLevelScope:
@@ -259,10 +297,10 @@ class SectorArbitrationAccessLevel(AccessLevel):
             AuthAction.SET_ILLEGAL_MOVES,
         ]
 
-    @property
-    def help_text(self) -> str:
+    def localized_help_text(self, locale: str | None = None) -> str:
         return _(
-            'Allows access to the Players and Pairings tabs, results and illegal moves update.'
+            'Allows access to the Players and Pairings tabs, results and illegal moves update.',
+            locale,
         )
 
 
@@ -271,13 +309,13 @@ class PairingAccessLevel(AccessLevel):
     def static_id() -> str:
         return 'PAIRING'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Pairing')
+    @classmethod
+    def localized_name(cls, locale: str | None = None) -> str:
+        return _('Pairing', locale)
 
     @staticmethod
-    def short_name() -> str:
-        return _('PAI')
+    def short_name(locale: str | None = None) -> str:
+        return _('PAI', locale)
 
     @property
     def scope(self) -> AccessLevelScope:
@@ -310,10 +348,10 @@ class PairingAccessLevel(AccessLevel):
             AuthAction.OPEN_CLOSE_CHECK_IN,
         ]
 
-    @property
-    def help_text(self) -> str:
+    def localized_help_text(self, locale: str | None = None) -> str:
         return _(
-            'Allows pairing of the players, either using a pairing engine or manually.'
+            'Allows pairing of the players, either using a pairing engine or manually.',
+            locale,
         )
 
 
@@ -322,13 +360,13 @@ class DeputyChiefArbitrationAccessLevel(AccessLevel):
     def static_id() -> str:
         return 'DEPUTY_CHIEF_ARBITRATION'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Deputy Chief Arbitration')
+    @classmethod
+    def localized_name(cls, locale: str | None = None) -> str:
+        return _('Deputy Chief Arbitration', locale)
 
     @staticmethod
-    def short_name() -> str:
-        return _('DCA')
+    def short_name(locale: str | None = None) -> str:
+        return _('DCA', locale)
 
     @property
     def scope(self) -> AccessLevelScope:
@@ -361,10 +399,10 @@ class DeputyChiefArbitrationAccessLevel(AccessLevel):
             AuthAction.PRINT,
         ]
 
-    @property
-    def help_text(self) -> str:
+    def localized_help_text(self, locale: str | None = None) -> str:
         return _(
-            'Allows managing players, entering results (including special results and their modification), handling check-ins, pairings, and displays.'
+            'Allows managing players, entering results (including special results and their modification), handling check-ins, pairings, and displays.',
+            locale,
         )
 
 
@@ -373,13 +411,13 @@ class ChiefArbitrationAccessLevel(AccessLevel):
     def static_id() -> str:
         return 'CHIEF_ARBITRATION'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Chief Arbitration')
+    @classmethod
+    def localized_name(cls, locale: str | None = None) -> str:
+        return _('Chief Arbitration', locale)
 
     @staticmethod
-    def short_name() -> str:
-        return _('CA')
+    def short_name(locale: str | None = None) -> str:
+        return _('CA', locale)
 
     @property
     def scope(self) -> AccessLevelScope:
@@ -400,10 +438,10 @@ class ChiefArbitrationAccessLevel(AccessLevel):
             AuthAction.DELETE_TOURNAMENTS,
         ]
 
-    @property
-    def help_text(self) -> str:
+    def localized_help_text(self, locale: str | None = None) -> str:
         return _(
-            'Allows granting or revoking the Deputy Chief Arbitration access level, editing the event, and managing tournaments; Also includes the permissions of the Deputy Chief Arbitration access level.'
+            'Allows granting or revoking the Deputy Chief Arbitration access level, editing the event, and managing tournaments; Also includes the permissions of the Deputy Chief Arbitration access level.',
+            locale,
         )
 
 
@@ -412,13 +450,13 @@ class ScreenManagementAccessLevel(AccessLevel):
     def static_id() -> str:
         return 'SCREEN_MANAGEMENT'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Screen Management')
+    @classmethod
+    def localized_name(cls, locale: str | None = None) -> str:
+        return _('Screen Management', locale)
 
     @staticmethod
-    def short_name() -> str:
-        return _('SCR')
+    def short_name(locale: str | None = None) -> str:
+        return _('SCR', locale)
 
     @property
     def scope(self) -> AccessLevelScope:
@@ -438,9 +476,11 @@ class ScreenManagementAccessLevel(AccessLevel):
             AuthAction.VIEW_PRIVATE_SCREENS,
         ]
 
-    @property
-    def help_text(self) -> str:
-        return _('Allows management of Screens and the accounts that can access them.')
+    def localized_help_text(self, locale: str | None = None) -> str:
+        return _(
+            'Allows management of Screens and the accounts that can access them.',
+            locale,
+        )
 
 
 class OrganizationAccessLevel(AccessLevel):
@@ -448,13 +488,13 @@ class OrganizationAccessLevel(AccessLevel):
     def static_id() -> str:
         return 'ORGANIZATION'
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Organization')
+    @classmethod
+    def localized_name(cls, locale: str | None = None) -> str:
+        return _('Organization', locale)
 
     @staticmethod
-    def short_name() -> str:
-        return _('ORG')
+    def short_name(locale: str | None = None) -> str:
+        return _('ORG', locale)
 
     @property
     def scope(self) -> AccessLevelScope:
@@ -475,10 +515,10 @@ class OrganizationAccessLevel(AccessLevel):
             AuthAction.DOWNLOAD_FEES,
         ]
 
-    @property
-    def help_text(self) -> str:
+    def localized_help_text(self, locale: str | None = None) -> str:
         return _(
-            'Allows granting or revoking the Chief Arbitration access level and editing the event. Also includes the permissions of the Screen Management access level.'
+            'Allows granting or revoking the Chief Arbitration access level and editing the event. Also includes the permissions of the Screen Management access level.',
+            locale,
         )
 
     @classmethod
@@ -493,13 +533,17 @@ class AdministrationAccessLevel(AccessLevel):
     def static_id() -> str:
         return 'ADMINISTRATION'
 
-    @staticmethod
-    def static_name() -> str:
+    @classmethod
+    def localized_name(cls, locale: str | None = None) -> str:
         return _('Administration')
 
     @staticmethod
-    def short_name() -> str:
-        return _('ADM')
+    def short_name(locale: str | None = None) -> str:
+        return _('ADM', locale)
+
+    @property
+    def administrator(self) -> bool:
+        return True
 
     @property
     def scope(self) -> AccessLevelScope:
@@ -518,15 +562,15 @@ class AdministrationAccessLevel(AccessLevel):
             AuthAction.MANAGE_APPLICATION_SETTINGS,
             AuthAction.MANAGE_SOURCE_DATABASES,
             AuthAction.VIEW_PRIVATE_EVENTS,
-            AuthAction.VIEW_PASSED_COMING_EVENTS,
+            AuthAction.VIEW_PASSED_EVENTS,
             AuthAction.ADD_EVENTS,
             AuthAction.VIEW_DETAILED_EVENT_CARDS,
             AuthAction.DELETE_EVENTS,
             AuthAction.RENAME_EVENTS,
         ]
 
-    @property
-    def help_text(self) -> str:
+    def localized_help_text(self, locale: str | None = None) -> str:
         return _(
-            'Includes all other access levels and grants full access to the application. This access level is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network).'
+            'Includes all other access levels and grants full access to the application. This access level is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network).',
+            locale,
         )
