@@ -1293,7 +1293,7 @@ class DirectEncounterTieBreak(TieBreak):
         return 'DIRECT_ENCOUNTER'
 
     @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
+    def static_name(cls) -> str:
         return _('Direct encounter')
 
     @property
@@ -1456,7 +1456,7 @@ class ManualTieBreak(TieBreak):
         return 'MANUAL'
 
     @classmethod
-    def static_name(cls, locale: str | None = None) -> str:
+    def static_name(cls) -> str:
         return _('Manual')
 
     @property
