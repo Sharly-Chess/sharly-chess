@@ -681,7 +681,7 @@ class PrizeListPrintDocument(PrintDocument):
 
     @staticmethod
     def static_name() -> str:
-        return _('Prizes list')
+        return _('Prize list')
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:

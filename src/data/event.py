@@ -715,7 +715,7 @@ class Event:
 
     def create_account(self, stored_account: StoredAccount) -> Account:
         if self.predefined_accounts:
-            raise ValueError('Default accounts not created.')
+            self.create_predefined_accounts()
         with EventDatabase(self.uniq_id, True) as database:
             stored_account = database.add_stored_account(stored_account)
         self.stored_event.stored_accounts.append(stored_account)

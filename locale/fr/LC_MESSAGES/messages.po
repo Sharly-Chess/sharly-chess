@@ -3549,7 +3549,7 @@ msgid "Permissions / Access levels"
 msgstr "Permissions / Niveaux d'accès"
 
 msgid "Permissions list"
-msgstr "List des permissions"
+msgstr "Liste des permissions"
 
 msgid "Permute boards"
 msgstr "Permuter les échiquiers"
@@ -3829,6 +3829,9 @@ msgstr "Le groupe de prix [{prize_group}] a été créé avec succès."
 msgid "Prize groups"
 msgstr "Groupes de prix"
 
+msgid "Prize list"
+msgstr "Liste des prix"
+
 msgid "Prize sharing"
 msgstr "Partage des prix"
 
@@ -3837,9 +3840,6 @@ msgstr "Prix"
 
 msgid "Prizes can only be shared for the main category."
 msgstr "Les prix ne peuvent être partagés que pour la catégorie générale."
-
-msgid "Prizes list"
-msgstr "Liste des prix"
 
 msgid "Prizes of categories with prize sharing can only be monetary."
 msgstr "Les prix des catégories partageant les prix ne peuvent être que monétaires."
@@ -4975,8 +4975,8 @@ msgstr "Il ne peut y avoir qu'une seule catégorie générale."
 msgid "There is no pairings for this round (last round with pairings: #{round})."
 msgstr "Il n'y a pas d'appariement pour cette ronde (dernière ronde appariée : n°{round})."
 
-msgid "These tournaments are already included for this access by a higher permission."
-msgstr "Ces tournois sont déjà inclus pour cet accès par une permission plus élevée."
+msgid "These tournaments are already included for this account by a higher access level."
+msgstr "Ces tournois sont déjà inclus pour ce compte par un niveau d'accès plus élevé."
 
 msgid "This account can not be deleted."
 msgstr "Ce compte ne peut pas être supprimé."

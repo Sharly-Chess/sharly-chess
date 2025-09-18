@@ -577,7 +577,7 @@ class AccountAdminController(BaseEventAdminController):
                 ):
                     errors[field] = _(
                         'These tournaments are already included for '
-                        'this access by a higher permission.'
+                        'this account by a higher access level.'
                     )
 
         return errors

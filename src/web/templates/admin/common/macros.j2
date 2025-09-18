@@ -426,6 +426,9 @@ with_indicator: display a loading indicator, optional
                         name="{{ name }}"
                         data-testid="{{ id }}"
                         type="{{ input_type if not password_visible else 'text' }}"
+                        {% if input_type == 'password' %}
+                            autocomplete="off"
+                        {% endif %}
                         {% if number_min != '' %}
                             min="{{ number_min }}"
                         {% endif %}
@@ -435,6 +438,7 @@ with_indicator: display a loading indicator, optional
                         {% if number_step != '' %}
                             step="{{ number_step }}"
                         {% endif %}
+
                         {% if file_accept %}
                             accept="{{ file_accept }}"
                         {% endif %}

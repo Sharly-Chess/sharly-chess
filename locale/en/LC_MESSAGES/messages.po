@@ -3829,6 +3829,9 @@ msgstr ""
 msgid "Prize groups"
 msgstr ""
 
+msgid "Prize list"
+msgstr ""
+
 msgid "Prize sharing"
 msgstr ""
 
@@ -3836,9 +3839,6 @@ msgid "Prizes"
 msgstr ""
 
 msgid "Prizes can only be shared for the main category."
-msgstr ""
-
-msgid "Prizes list"
 msgstr ""
 
 msgid "Prizes of categories with prize sharing can only be monetary."
@@ -4975,7 +4975,7 @@ msgstr ""
 msgid "There is no pairings for this round (last round with pairings: #{round})."
 msgstr ""
 
-msgid "These tournaments are already included for this access by a higher permission."
+msgid "These tournaments are already included for this account by a higher access level."
 msgstr ""
 
 msgid "This account can not be deleted."
@@ -6091,7 +6091,3 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "Prize list"
-#~ msgstr ""
-

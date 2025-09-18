@@ -3,7 +3,7 @@
 {% block card_header %}
     {% if account.administrator %}
         <i
-            class="bi-person-gear pe-1"
+            class="bi-person-fill-gear pe-1"
             {{ macros.tooltip_attributes(
                 'info', _('The account of the user accessing Sharly Chess directly from the server.'), 'top'
             ) }}
@@ -20,14 +20,14 @@
     {% else %}
         {% if account.active %}
             <i
-                class="bi-person-check text-success pe-1"
+                class="bi-person-fill-check text-success pe-1"
                 {{ macros.tooltip_attributes(
                     'info', _('This account is active, anonymous users can log in to it.'), 'right'
                 ) }}
             ></i>
         {% else %}
             <i
-                class="bi-person-x text-danger pe-1"
+                class="bi-person-fill-x text-danger pe-1"
                 {{ macros.tooltip_attributes(
                     'info', _('This account is not active, anonymous users can not log in to it.'), 'right'
                 ) }}
