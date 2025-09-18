@@ -3,11 +3,6 @@
         {{ macros.refresh_listener(
             hx_get=url_for('admin-tab', admin_tab=admin_tab),
         ) }}
-        <div class="flex-grow-1"></div>
-
-        {% if client.can_add_event %}
-            {% include 'create_event_button.html' %}
-        {% endif %}
     </div>
 </div>
 
@@ -57,6 +52,15 @@
                 <h4 class="text-center text-primary my-3">
                     {{ _('You are on the Sharly Chess server.') }}
                 </h4>
+
+                {% if client.can_add_event %}
+                    <div class="text-center my-3">
+                        {% with button_class='btn-lg' %}
+                            {% include 'create_event_button.html' %}
+                        {% endwith %}
+                    </div>
+                {% endif %}
+
                 {% if sharly_chess_config.lan_ifaces %}
                     <h4 class="text-center mt-3">{{ _('Connect other devices!') }}</h4>
                     <div class="row">
