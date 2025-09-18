@@ -14,7 +14,7 @@ class PapiTournamentExporter(TournamentExporter):
 
     @staticmethod
     def static_name() -> str:
-        return 'PAPI'
+        return _('PAPI')
 
     @property
     def tooltip(self) -> str:

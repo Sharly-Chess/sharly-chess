@@ -6,8 +6,6 @@ English version below
 - Permissions des clients connectés au serveur (3.1.0)
 - Prise en charge des serveurs avec plusieurs adresses IP (3.1.0)
 - Amélioration de la console du serveur (3.1.0)
-- Vue imprimable des statistiques des joueur·euses (3.1.0)
-– Il est désormais possible de sélectionner plusieurs tournois pour différents aperçus d’impression : liste des joueur·euses, liste de pointage, liste et attribution des prix, ainsi que les statistiques (3.1.0)
 – Amélioration de l’ergonomie pour la modification, la duplication et l’archivage des événements (3.1.0)
 
 ## Tournois
@@ -27,6 +25,11 @@ English version below
 
 - Amélioration de la navigation de l'onglet Appariements (3.1.0)
 
+## Impressions
+
+- Vue imprimable des statistiques des joueur·euses (3.1.0)
+- Il est désormais possible de sélectionner plusieurs tournois pour différents aperçus d’impression : liste des joueur·euses, liste de pointage, liste et attribution des prix, ainsi que les statistiques (3.1.0)
+
 ## ChessEvent
 
 - Import de tournois ChessEvent depuis l'interface web (remplace le script `tools/chessevent.bat`) (3.1.0)
@@ -37,11 +40,9 @@ English version below
 
 ## Usage
 
-- Support for servers with multiple IP addresses (3.1.0)
 - Permissions for clients connected to the server (3.1.0)
+- Support for servers with multiple IP addresses (3.1.0)
 - Improved the server console (3.1.0)
-- Statistics print view (3.1.0)
-- Multiple tournaments can now be selected for several print views: Players List, Check-in List, Prize List and Assignment, and Statistics (3.1.0)
 - Improved the ergonomy for modifying, duplicating and archiving events (3.1.0)
 
 ## Tournaments
@@ -60,6 +61,11 @@ English version below
 ## Pairings
 
 - Improved navigation on the Pairings tab (3.1.0)
+
+## Print views
+
+- Statistics print view (3.1.0)
+- Multiple tournaments can now be selected for several print views: Players List, Check-in List, Prize List and Assignment, and Statistics (3.1.0)
 
 ## ChessEvent
 
