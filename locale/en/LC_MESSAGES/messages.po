@@ -316,6 +316,9 @@ msgstr ""
 msgid "Access level"
 msgstr ""
 
+msgid "Access level already defined for the account."
+msgstr ""
+
 msgid "Access unrated and penalty results."
 msgstr ""
 
@@ -337,9 +340,6 @@ msgstr ""
 msgid "Account:"
 msgstr ""
 
-msgid "Acesss level already defined for the account."
-msgstr ""
-
 msgid "Action"
 msgstr ""
 
@@ -347,6 +347,9 @@ msgid "Action delay"
 msgstr ""
 
 msgid "Actions"
+msgstr ""
+
+msgid "Actions / Access levels"
 msgstr ""
 
 msgid "Add"
@@ -1847,24 +1850,6 @@ msgid "Email:"
 msgstr ""
 
 msgid "Enable this account"
-msgstr ""
-
-msgid "Enable/disable the details of events on the cards below."
-msgstr ""
-
-msgid "Enable/disable the details of prizes on the cards below."
-msgstr ""
-
-msgid "Enable/disable the details of the rotators on the cards below."
-msgstr ""
-
-msgid "Enable/disable the details of the screen families on the cards below."
-msgstr ""
-
-msgid "Enable/disable the details of the screens on the cards below."
-msgstr ""
-
-msgid "Enable/disable the details of tournaments on the cards below."
 msgstr ""
 
 msgid "Enable/disable the details on the cards below."
@@ -3540,9 +3525,6 @@ msgid "Period"
 msgstr ""
 
 msgid "Permissions"
-msgstr ""
-
-msgid "Permissions / Access levels"
 msgstr ""
 
 msgid "Permissions list"

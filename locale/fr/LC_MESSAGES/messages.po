@@ -316,6 +316,9 @@ msgstr "Contrôle d'accès"
 msgid "Access level"
 msgstr "Niveau d'accès"
 
+msgid "Access level already defined for the account."
+msgstr "Niveau d'accès déjà défini pour ce compte."
+
 msgid "Access unrated and penalty results."
 msgstr "Accéder aux résultats non homologués et pénalisés"
 
@@ -337,9 +340,6 @@ msgstr "Le compte [{account_name}] a été mis à jour."
 msgid "Account:"
 msgstr "Compte :"
 
-msgid "Acesss level already defined for the account."
-msgstr "Niveau d'accès déjà défini pour ce compte."
-
 msgid "Action"
 msgstr "Action"
 
@@ -348,6 +348,9 @@ msgstr "Délai d'action"
 
 msgid "Actions"
 msgstr "Actions"
+
+msgid "Actions / Access levels"
+msgstr "Actions / Niveaux d'accès"
 
 msgid "Add"
 msgstr "Ajouter"
@@ -1849,26 +1852,8 @@ msgstr "Mél :"
 msgid "Enable this account"
 msgstr "Activer ce compte"
 
-msgid "Enable/disable the details of events on the cards below."
-msgstr "Activer/désactiver l'affichage des détails des évènements sur les cartes ci-dessous."
-
-msgid "Enable/disable the details of prizes on the cards below."
-msgstr "Activer/désactiver l'affichage des détails des prix sur les cartes ci-dessous"
-
-msgid "Enable/disable the details of the rotators on the cards below."
-msgstr "Activer/désactiver l'affichage des détails des écrans rotatifs sur les cartes ci-dessous."
-
-msgid "Enable/disable the details of the screen families on the cards below."
-msgstr "Activer/désactiver l'affichage des détails des familles d'écrans sur les cartes ci-dessous."
-
-msgid "Enable/disable the details of the screens on the cards below."
-msgstr "Activer/désactiver l'affichage des détails des écrans sur les cartes ci-dessous."
-
-msgid "Enable/disable the details of tournaments on the cards below."
-msgstr "Activer/désactiver l'affichage des détails des tournois sur les cartes ci-dessous."
-
 msgid "Enable/disable the details on the cards below."
-msgstr "Activer/désactiver les détails sur les cartes ci-dessous."
+msgstr "Activer/désactiver l'affichage des détails sur les cartes ci-dessous."
 
 msgid "Enabled"
 msgstr "Activé"
@@ -3541,9 +3526,6 @@ msgstr "Période"
 
 msgid "Permissions"
 msgstr "Permissions"
-
-msgid "Permissions / Access levels"
-msgstr "Permissions / Niveaux d'accès"
 
 msgid "Permissions list"
 msgstr "Liste des permissions"
