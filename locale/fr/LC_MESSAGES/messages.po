@@ -337,9 +337,6 @@ msgstr "Le compte [{account_name}] a été mis à jour."
 msgid "Account:"
 msgstr "Compte :"
 
-msgid "Accounts"
-msgstr "Comptes"
-
 msgid "Acesss level already defined for the account."
 msgstr "Niveau d'accès déjà défini pour ce compte."
 
@@ -1870,6 +1867,9 @@ msgstr "Activer/désactiver l'affichage des détails des écrans sur les cartes 
 msgid "Enable/disable the details of tournaments on the cards below."
 msgstr "Activer/désactiver l'affichage des détails des tournois sur les cartes ci-dessous."
 
+msgid "Enable/disable the details on the cards below."
+msgstr ""
+
 msgid "Enabled"
 msgstr "Activé"
 
@@ -2362,6 +2362,9 @@ msgstr "Cacher"
 
 msgid "Hide Log"
 msgstr "Cacher les logs"
+
+msgid "Hide Networks"
+msgstr ""
 
 msgid "Hide the exit button"
 msgstr "Ne pas afficher de bouton de sortie d'écran"
@@ -4305,6 +4308,9 @@ msgstr "Recherche en cours…"
 msgid "Sector arbitration"
 msgstr "Arbitrage de secteur"
 
+msgid "See Networks"
+msgstr ""
+
 msgid "See the pairings information for the start of this round."
 msgstr "Voir les informations d’appariement pour le début de cette ronde."
 
@@ -4488,6 +4494,9 @@ msgstr "Séparateur :"
 
 msgid "Staff"
 msgstr "Staff"
+
+msgid "Staff ({num})"
+msgstr ""
 
 msgid "Standard"
 msgstr "Standard"
@@ -5712,9 +5721,6 @@ msgstr "Hier"
 msgid "You are connected on the Sharly Chess server and have full administration privileges."
 msgstr "Vous êtes connecté·e sur le serveur Sharly Chess et avez les privilèges complets d'administration."
 
-msgid "You are connected to the Sharly Chess server."
-msgstr "Vous êtes connecté·e au serveur Sharly Chess."
-
 msgid "You are in an unsafe editing mode. Change the round to exit this mode."
 msgstr "Un mode d'édition non-sécurisé est activé. Changez de ronde pour le désactiver."
 
@@ -5792,9 +5798,6 @@ msgstr "Vous n'êtes pas autorisé·e à modifier le tournoi."
 
 msgid "You are not allowed to update this account."
 msgstr "Vous n'êtes pas autorisé·e à modifier ce compte."
-
-msgid "You are on the Sharly Chess server."
-msgstr "Vous êtes sur le serveur Sharly Chess."
 
 msgid "You are trying to manually edit the pairings of the current round. Pairings should only be altered to handle unusual situations."
 msgstr "Vous essayez de modifier manuellement les appariements de la ronde en cours. Les appariements ne devraient être altérés uniquement pour répondre à des situations inhabituelles."

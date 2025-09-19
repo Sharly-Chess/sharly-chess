@@ -8,7 +8,7 @@
 
 <div id="home-content" class="content home-content mt-5">
     <div class="d-grid gap-2 col-auto mx-auto">
-        <div style="width: 450px; max-width: 60vw; margin: 0 auto 50px;" class="text-primary">
+        <div style="width: 300px; max-width: 60vw; margin: 0 auto 50px;" class="text-primary">
             {{ svg_logo | safe }}
         </div>
         <div class="dropdown text-center my-3">
@@ -70,7 +70,8 @@
                         {% for event in nav_tab.events %}
                             {% with
                                 card_url=url_for('admin-event', event_uniq_id=event.uniq_id),
-                                card_class='border-danger' if not event.public else ''
+                                card_class='border-danger' if not event.public else '',
+                                hide_public_status=True
                             %}
                                 {% include 'event_card.html' %}
                             {% endwith %}

@@ -337,9 +337,6 @@ msgstr ""
 msgid "Account:"
 msgstr ""
 
-msgid "Accounts"
-msgstr ""
-
 msgid "Acesss level already defined for the account."
 msgstr ""
 
@@ -1870,6 +1867,9 @@ msgstr ""
 msgid "Enable/disable the details of tournaments on the cards below."
 msgstr ""
 
+msgid "Enable/disable the details on the cards below."
+msgstr ""
+
 msgid "Enabled"
 msgstr ""
 
@@ -2361,6 +2361,9 @@ msgid "Hide"
 msgstr ""
 
 msgid "Hide Log"
+msgstr ""
+
+msgid "Hide Networks"
 msgstr ""
 
 msgid "Hide the exit button"
@@ -4305,6 +4308,9 @@ msgstr ""
 msgid "Sector arbitration"
 msgstr ""
 
+msgid "See Networks"
+msgstr ""
+
 msgid "See the pairings information for the start of this round."
 msgstr ""
 
@@ -4487,6 +4493,9 @@ msgid "Split by:"
 msgstr ""
 
 msgid "Staff"
+msgstr ""
+
+msgid "Staff ({num})"
 msgstr ""
 
 msgid "Standard"
@@ -5712,9 +5721,6 @@ msgstr ""
 msgid "You are connected on the Sharly Chess server and have full administration privileges."
 msgstr ""
 
-msgid "You are connected to the Sharly Chess server."
-msgstr ""
-
 msgid "You are in an unsafe editing mode. Change the round to exit this mode."
 msgstr ""
 
@@ -5791,9 +5797,6 @@ msgid "You are not allowed to update the tournament."
 msgstr ""
 
 msgid "You are not allowed to update this account."
-msgstr ""
-
-msgid "You are on the Sharly Chess server."
 msgstr ""
 
 msgid "You are trying to manually edit the pairings of the current round. Pairings should only be altered to handle unusual situations."
