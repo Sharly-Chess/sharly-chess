@@ -52,40 +52,11 @@
                 <h4 class="text-center text-primary my-3">
                     {{ _('You are on the Sharly Chess server.') }}
                 </h4>
-
                 {% if client.can_add_event %}
-                    <div class="text-center my-3">
                         {% with button_class='btn-lg' %}
+                    <div class="text-center my-3">
                             {% include 'create_event_button.html' %}
                         {% endwith %}
-                    </div>
-                {% endif %}
-
-                {% if sharly_chess_config.lan_ifaces %}
-                    <h4 class="text-center mt-3">{{ _('Connect other devices!') }}</h4>
-                    <div class="row">
-                        {% for item in sharly_chess_config.lan_ifaces %}
-                        {% set ip = item.ip %}
-                        <div class="col text-center">
-                            <img
-                                src="{{ url_for('qrcode-lan-url', ip=ip) }}?time={{ now }}"
-                                alt="{{ _('Sharly Chess server URL') }}"
-                                class="py-2"
-                                style="width: 150px"
-                                {{ macros.tooltip_attributes('info', _('Connect your devices (laptops, tablets, smartphones) to the Sharly Chess server by scanning this QR code (click below to get a printable version).'), 'right') }}
-                            />
-                            <br/>
-                            <a href="{{ sharly_chess_config.app_url(ip) }}" target="_blank">
-                                {{ sharly_chess_config.app_url(ip) }}
-                            </a>
-                            <div class="text-muted small">
-                                {{ item.label }}{% if item.type and item.type != item.label %} ({{ item.type }}){% endif %}
-                            </div>
-                            <a href="{{ url_for('qrcode-lan-url', ip=ip) }}?logo=&time={{ now }}" target="_blank">
-                                ({{ _('printable version') }})
-                            </a>
-                        </div>
-                        {% endfor %}
                     </div>
                 {% endif %}
             {% else %}
