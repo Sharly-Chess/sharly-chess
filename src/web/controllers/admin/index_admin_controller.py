@@ -163,7 +163,7 @@ class IndexAdminController(BaseAdminController):
             'home': {
                 'title': _('Home'),
                 'template': 'index/home_tab.html',
-                'icon_class': 'bi-qr-code',
+                'icon_class': 'bi-house-fill',
                 'disabled': False,
                 'events': lan_events,
                 'experimental_features_warning': True,
@@ -224,7 +224,7 @@ class IndexAdminController(BaseAdminController):
                     'events': lan_events,
                     'disabled': False,
                     'empty_str': _('No events.'),
-                    'icon_class': 'bi-qr-code',
+                    'icon_class': 'bi-house-fill',
                     'page_title': _('Events'),
                     'divider': True,
                 },
