@@ -340,9 +340,6 @@ msgstr "Le compte [{account_name}] a été mis à jour."
 msgid "Account:"
 msgstr "Compte :"
 
-msgid "Acesss level already defined for the account."
-msgstr "Niveau d'accès déjà défini pour ce compte."
-
 msgid "Action"
 msgstr "Action"
 
@@ -974,9 +971,6 @@ msgstr "Effacer le journal"
 
 msgid "Clear all the filters."
 msgstr "Effacer tous les filtres."
-
-msgid "Click the [Get Started] button to configure accounts."
-msgstr "Cliquer sur le bouton [Commencer] pour configurer des comptes."
 
 msgid "Click to check-in the player."
 msgstr "Cliquer ici pour pointer le·la joueur·euse."
@@ -1863,9 +1857,6 @@ msgstr "Mél :"
 
 msgid "Enable this account"
 msgstr "Activer ce compte"
-
-msgid "Enable/disable the details on the cards below."
-msgstr "Activer/désactiver l'affichage des détails sur les cartes ci-dessous."
 
 msgid "Enable/disable the details on the cards below."
 msgstr "Activer/désactiver l'affichage des détails sur les cartes ci-dessous."

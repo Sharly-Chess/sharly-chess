@@ -67,7 +67,7 @@
 {% block cards_container_cards %}
     {% if client.can_manage_accounts %}
         {% if admin_event.predefined_accounts %}
-            <div class="mx-auto" style="max-width: 500px;">
+            <div class="mx-auto" style="max-width: 550px;">
                 <h5 class="mt-2 my-5 text-center">
                     {{ _('Staff default configuration') }}
                 </h5>
@@ -86,7 +86,7 @@
                 <p>
                     {{ _(
                         'You can create password-protected accounts to delegate tasks '
-                        'to other members of the staff (arbiters and organizer).'
+                        'to other members of the staff (arbiters and organizers).'
                     ) }}
                 </p>
                 <p>
@@ -101,18 +101,17 @@
                             'This means anyone connected to the same network could easily gain '
                             'access to an account without needing to type in the password.'
                         ) }}</li>
-                        <li class="mb-1">{{ _(
+                        <li>{{ _(
                             'If you can\'t control who has access to the network you '
                             'are connected to, it is highly recommended to not create any account.'
                         ) }}</li>
-                        <li>{{ _(
-                            'To learn how to control your network, consult '
-                            '<a href="%(link)s" target="_blank">our documentation</a>.',
-                            link=macros.doc_url('security')
-                        ) }}</li>
                     </ul>
                 </p>
-                <p>{{ _('Click the [Get Started] button to configure accounts.') }}</p>
+                <p>{{ _(
+                    'To learn how to control your network, consult '
+                    '<a href="%(link)s" target="_blank">our documentation</a>.',
+                    link=macros.doc_url('security')
+                ) }}</p>
             </div>
         {% else %}
             <div class="row">

@@ -340,9 +340,6 @@ msgstr ""
 msgid "Account:"
 msgstr ""
 
-msgid "Acesss level already defined for the account."
-msgstr ""
-
 msgid "Action"
 msgstr ""
 
@@ -973,9 +970,6 @@ msgid "Clear Log"
 msgstr ""
 
 msgid "Clear all the filters."
-msgstr ""
-
-msgid "Click the [Get Started] button to configure accounts."
 msgstr ""
 
 msgid "Click to check-in the player."
@@ -1862,9 +1856,6 @@ msgid "Email:"
 msgstr ""
 
 msgid "Enable this account"
-msgstr ""
-
-msgid "Enable/disable the details on the cards below."
 msgstr ""
 
 msgid "Enable/disable the details on the cards below."
@@ -4502,9 +4493,6 @@ msgid "Split by:"
 msgstr ""
 
 msgid "Staff"
-msgstr ""
-
-msgid "Staff ({num})"
 msgstr ""
 
 msgid "Staff ({num})"
