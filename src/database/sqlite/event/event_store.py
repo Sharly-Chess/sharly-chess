@@ -303,14 +303,22 @@ class StoredDisplayController:
 
 
 @dataclass
+class StoredPermission:
+    account_id: int
+    access_level: str
+    tournament_ids: list[int] | None = None
+
+
+@dataclass
 class StoredAccount:
     id: int | None
     active: bool
-    access_levels: list[str]
-    tournament_ids: list[int] | None
     first_name: str | None
     last_name: str | None
     password_hash: str | None
+    stored_permissions: list[StoredPermission] = field(
+        default_factory=list[StoredPermission]
+    )
 
 
 @dataclass

@@ -35,7 +35,7 @@
         {% with id='admin-screens-show-details', name='admin_screens_show_details', show=admin_screens_show_details %}
             <div
                 class="form-check form-switch d-inline-block pe-2"
-                {{ macros.tooltip_attributes('info', _('Enable/disable the details of the screens on the cards below.'), 'top') }}
+                {{ macros.tooltip_attributes('info', _('Enable/disable the details on the cards below.'), 'top') }}
             >
                 <input
                     hx-get="{{ url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id) }}"

@@ -97,8 +97,23 @@ class AccessLevel(IdentifiableEntity, ABC):
         return self.localized_help_text()
 
     @abstractmethod
+    def _help_text_content(self, locale: str | None = None) -> str:
+        """Localized explanation of the access level's actions.
+        Should not include inheritance explanations or end with a '.'."""
+
     def localized_help_text(self, locale: str | None = None) -> str:
-        """Localized explanation of the access level's actions"""
+        """Explanation of the actions, including the direct inheritance."""
+        inheritance_message = ''
+        if self.direct_sub_access_levels():
+            inheritance_message = ' ' + _(
+                '(inheritance: {inheritance})', locale
+            ).format(
+                inheritance=', '.join(
+                    access_level.localized_name(locale)
+                    for access_level in self.direct_sub_access_levels()
+                )
+            )
+        return self._help_text_content(locale) + inheritance_message + '.'
 
     @staticmethod
     @abstractmethod
@@ -172,8 +187,8 @@ class SpectatorAccessLevel(AccessLevel):
     def access_level_actions() -> list[AuthAction]:
         return [AuthAction.VIEW_PUBLIC_SCREENS]
 
-    def localized_help_text(self, locale: str | None = None) -> str:
-        return _('Allows access to Screens marked as public.', locale)
+    def _help_text_content(self, locale: str | None = None) -> str:
+        return _('Allows access to Screens marked as public', locale)
 
 
 class ResultsEntryAccessLevel(AccessLevel):
@@ -211,9 +226,9 @@ class ResultsEntryAccessLevel(AccessLevel):
     def access_level_actions() -> list[AuthAction]:
         return [AuthAction.ENTER_RESULTS]
 
-    def localized_help_text(self, locale: str | None = None) -> str:
+    def _help_text_content(self, locale: str | None = None) -> str:
         return _(
-            'Allows entry of results via any input Screens that have been marked as public.',
+            'Allows entry of results via any input Screens marked as public',
             locale,
         )
 
@@ -256,11 +271,8 @@ class CheckInAccessLevel(AccessLevel):
             AuthAction.CHECK_IN_PLAYERS,
         ]
 
-    def localized_help_text(self, locale: str | None = None) -> str:
-        return _(
-            'Allows check-in via any input Screens that have been marked as public.',
-            locale,
-        )
+    def _help_text_content(self, locale: str | None = None) -> str:
+        return _('Allows check-in via any input Screens marked as public', locale)
 
 
 class SectorArbitrationAccessLevel(AccessLevel):
@@ -297,9 +309,10 @@ class SectorArbitrationAccessLevel(AccessLevel):
             AuthAction.SET_ILLEGAL_MOVES,
         ]
 
-    def localized_help_text(self, locale: str | None = None) -> str:
+    def _help_text_content(self, locale: str | None = None) -> str:
         return _(
-            'Allows access to the Players and Pairings tabs, results and illegal moves update.',
+            'Allows access to the Players and Pairings tabs, '
+            'results and illegal moves update',
             locale,
         )
 
@@ -348,9 +361,9 @@ class PairingAccessLevel(AccessLevel):
             AuthAction.OPEN_CLOSE_CHECK_IN,
         ]
 
-    def localized_help_text(self, locale: str | None = None) -> str:
+    def _help_text_content(self, locale: str | None = None) -> str:
         return _(
-            'Allows pairing of the players, either using a pairing engine or manually.',
+            'Allows pairing of the players, either using a pairing engine or manually',
             locale,
         )
 
@@ -399,9 +412,10 @@ class DeputyChiefArbitrationAccessLevel(AccessLevel):
             AuthAction.PRINT,
         ]
 
-    def localized_help_text(self, locale: str | None = None) -> str:
+    def _help_text_content(self, locale: str | None = None) -> str:
         return _(
-            'Allows managing players, entering results (including special results and their modification), handling check-ins, pairings, and displays.',
+            'Allows managing players, entering special results, '
+            'modifying results, handling check-ins, pairings, and displays',
             locale,
         )
 
@@ -438,9 +452,10 @@ class ChiefArbitrationAccessLevel(AccessLevel):
             AuthAction.DELETE_TOURNAMENTS,
         ]
 
-    def localized_help_text(self, locale: str | None = None) -> str:
+    def _help_text_content(self, locale: str | None = None) -> str:
         return _(
-            'Allows granting or revoking the Deputy Chief Arbitration access level, editing the event, and managing tournaments; Also includes the Deputy Chief Arbitration access level.',
+            'Allows granting or revoking the Deputy Chief Arbitration '
+            'access level, editing the event, and managing tournaments',
             locale,
         )
 
@@ -476,9 +491,9 @@ class ScreenManagementAccessLevel(AccessLevel):
             AuthAction.VIEW_PRIVATE_SCREENS,
         ]
 
-    def localized_help_text(self, locale: str | None = None) -> str:
+    def _help_text_content(self, locale: str | None = None) -> str:
         return _(
-            'Allows management of Screens and the accounts that can access them.',
+            'Allows management of Screens and the accounts that can access them',
             locale,
         )
 
@@ -515,9 +530,10 @@ class OrganizationAccessLevel(AccessLevel):
             AuthAction.DOWNLOAD_FEES,
         ]
 
-    def localized_help_text(self, locale: str | None = None) -> str:
+    def _help_text_content(self, locale: str | None = None) -> str:
         return _(
-            'Allows granting or revoking the Chief Arbitration access level and editing the event. Also includes Screen Management access level.',
+            'Allows granting or revoking the Chief Arbitration '
+            'access level and editing the event',
             locale,
         )
 
@@ -569,8 +585,14 @@ class AdministrationAccessLevel(AccessLevel):
             AuthAction.RENAME_EVENTS,
         ]
 
-    def localized_help_text(self, locale: str | None = None) -> str:
+    def _help_text_content(self, locale: str | None = None) -> str:
         return _(
-            'Includes all other access levels and grants full access to the application. This access level is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network).',
+            'Includes all other access levels and grants full access '
+            'to the application. This access level is granted only when '
+            'accessing Sharly Chess from the device it is running on '
+            '(not from another device on the network).',
             locale,
         )
+
+    def localized_help_text(self, locale: str | None = None) -> str:
+        return self._help_text_content(locale)

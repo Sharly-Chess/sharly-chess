@@ -81,6 +81,10 @@
     {% include 'accounts/account_modal.html' %}
 {% elif modal == 'account_delete' %}
     {% include 'accounts/account_delete_modal.html' %}
+{% elif modal == 'account_permissions' %}
+    {% include 'accounts/account_permissions_modal.html' %}
+{% elif modal == 'account_permission_form' %}
+    {% include 'accounts/account_permission_form_modal.html' %}
 {% elif modal %}
     {% include modal ~ '_modal_not_found.html' %}
 {% endif %}

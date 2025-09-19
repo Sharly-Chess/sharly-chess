@@ -156,6 +156,100 @@
     <!-- end gender_icon() -->
 {% endmacro %}
 
+{% macro _select_content(
+    id,
+    name,
+    options,
+    selected=[],
+    multiple=false,
+    multiple_placeholder='NO PLACEHOLDER',
+    multiple_select_all=false,
+    error=false,
+    onchange=''
+) %}
+    <select
+        name="{{ name }}"
+        id="{{ id }}"
+        data-testid="{{ id }}"
+        class="form-select
+            {% if error %}
+                is-invalid
+            {% endif %}
+            {% if multiple %}
+                sharly-chess-select2
+            {% endif %}"
+        aria-describedby="{{ id }}-help {{ id }}-error"
+        {% if disabled or (options|length <= 1 and not multiple) %}
+            disabled
+        {% endif %}
+        {% if multiple %}
+            multiple
+            style="display:none"
+            {% if multiple_placeholder %}
+                data-placeholder='{{ multiple_placeholder }}'
+            {% endif %}
+        {% endif %}
+        {% if onchange %}
+            onchange="{{ onchange }}"
+        {% endif %}
+    >
+        {% if multiple_select_all %}
+            <option value="__all__">
+                {{ _('Select All') }}
+            </option>
+            <option value="__divider__" disabled></option>
+        {% endif %}
+        {% for key, text_or_options in options.items() %}
+            {% if text_or_options is string %}
+                <option value="{{ key }}" {% if key in selected %}selected{% endif %}>{{ text_or_options }}</option>
+            {% else %}
+                <optgroup label="{{ key }}">
+                    {% for value, text in text_or_options.items() %}
+                        <option value="{{ value }}" {% if value in selected %}selected{% endif %}>{{ text }}</option>
+                    {% endfor %}
+                </optgroup>
+            {% endif %}
+        {% endfor %}
+    </select>
+    {% if multiple %}
+        <script>
+            $('#{{ id }}').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: $(this).data('placeholder'),
+                closeOnSelect: false,
+                templateResult: function (data) {
+                    if (data.id === '__divider__') {
+                        const $div = $('<span style="pointer-events: none; border-bottom: 1px solid #ccc; display: block; margin: 4px 0;"></span>');
+                        return $div;
+                    }
+                    return data.text;
+                }
+            });
+            // Width changes dynamically on load, needs to be reset to display the placeholder nicely
+            $('.select2-search__field').css('width', '100%');
+            $('#{{ id }}').on('select2:select', function (e) {
+                if (e.params.data.id === '__all__') {
+                    const allValues = $('#{{ id }}').find('option')
+                        .map(function () {
+                            const val = $(this).val();
+                            return val !== '__all__' && val !== '__divider__' ? val : null;
+                        })
+                        .get();
+                    $('#{{ id }}').val(allValues).trigger('change');
+                }
+            });
+            $('#{{ id }}').on('select2:closing', function (e) {
+                if ($('.modal.show').length > 0) {
+                    ignoreNextModalClose = true;
+                }
+            });
+        </script>
+    {% elif options|length == 1 and not disabled %}
+        <input type="hidden" name="{{ name }}" value="{{ selected[0] }}" />
+    {% endif %}
+{% endmacro %}
+
 {#
 name: used by the query parameter
 input_type: see *_input() below
@@ -265,86 +359,17 @@ with_indicator: display a loading indicator, optional
                 "
             >
                 {% if input_type == 'select' %}
-                    {% set selected=data[name].split(';') if multiple_select else [data[name]] %}
-                    <select
-                        name="{{ name }}"
-                        id="{{ id }}"
-                        data-testid="{{ id }}"
-                        class="form-select
-                            {% if error or (name in errors) %}
-                                is-invalid
-                            {% endif %}
-                            {% if multiple_select %}
-                                sharly-chess-select2
-                            {% endif %}"
-                        aria-describedby="{{ id }}-help {{ id }}-error"
-                        {% if disabled or (select_options|length <= 1 and not multiple_select) %}
-                            disabled
-                        {% endif %}
-                        {% if multiple_select %}
-                            multiple
-                            style="display:none"
-                            {% if placeholder %}
-                                data-placeholder='{{ placeholder }}'
-                            {% endif %}
-                        {% endif %}
-                        {% if onchange %}
-                            onchange="{{ onchange }}"
-                        {% endif %}
-                    >
-                        {% if select_all %}
-                            <option value="__all__">
-                                {{ _('Select All') }}
-                            </option>
-                            <option value="__divider__" disabled></option>
-                        {% endif %}
-                        {% for key, text_or_options in select_options.items() %}
-                            {% if text_or_options is string %}
-                                <option value="{{ key }}" {% if key in selected %}selected{% endif %}>{{ text_or_options }}</option>
-                            {% else -%}
-                                <optgroup label="{{ key }}">
-                                    {% for value, text in text_or_options.items() %}
-                                        <option value="{{ value }}" {% if value in selected %}selected{% endif %}>{{ text }}</option>
-                                    {% endfor %}
-                                </optgroup>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
-                    {% if multiple_select %}
-                        <script>
-                            $('#{{ id }}').select2({
-                                theme: 'bootstrap-5',
-                                width: '100%',
-                                placeholder: $(this).data('placeholder'),
-                                closeOnSelect: false,
-                                templateResult: function (data) {
-                                    if (data.id === '__divider__') {
-                                        const $div = $('<span style="pointer-events: none; border-bottom: 1px solid #ccc; display: block; margin: 4px 0;"></span>');
-                                        return $div;
-                                    }
-                                    return data.text;
-                                }
-                            });
-                            $('#{{ id }}').on('select2:select', function (e) {
-                                if (e.params.data.id === '__all__') {
-                                const allValues = $('#{{ id }}').find('option')
-                                        .map(function () {
-                                        const val = $(this).val();
-                                        return val !== '__all__' && val !== '__divider__' ? val : null;
-                                        })
-                                        .get();
-                                    $('#{{ id }}').val(allValues).trigger('change');
-                                }
-                            });
-                            $('#{{ id }}').on('select2:closing', function (e) {
-                                if ($('.modal.show').length > 0) {
-                                    ignoreNextModalClose = true;
-                                }
-                            });
-                        </script>
-                    {% elif select_options|length == 1 and not disabled %}
-                        <input type="hidden" name="{{ name }}" value="{{ selected[0] }}" />
-                    {% endif %}
+                    {{ _select_content(
+                        id=id,
+                        name=name,
+                        options=select_options,
+                        selected=data[name].split(';') if multiple_select else [data[name]],
+                        multiple=multiple_select,
+                        multiple_placeholder=placeholder,
+                        multiple_select_all=select_all,
+                        error=error or (name in errors),
+                        onchange=onchange,
+                    ) }}
                 {% elif input_type == 'switch' or input_type == 'checkbox' %}
                     <input
                         id="{{ id }}"
@@ -401,6 +426,9 @@ with_indicator: display a loading indicator, optional
                         name="{{ name }}"
                         data-testid="{{ id }}"
                         type="{{ input_type if not password_visible else 'text' }}"
+                        {% if input_type == 'password' %}
+                            autocomplete="off"
+                        {% endif %}
                         {% if number_min != '' %}
                             min="{{ number_min }}"
                         {% endif %}
@@ -410,6 +438,7 @@ with_indicator: display a loading indicator, optional
                         {% if number_step != '' %}
                             step="{{ number_step }}"
                         {% endif %}
+
                         {% if file_accept %}
                             accept="{{ file_accept }}"
                         {% endif %}
@@ -1046,40 +1075,15 @@ with_indicator: display a loading indicator, optional
         hx-indicator="#please-wait"
         style="flex-wrap: nowrap !important;"
     >
-        <select
-            name="{{ name }}"
-            id="{{ id }}-select"
-            data-testid="{{ id }}-select"
-            class="form-select sharly-chess-select2"
-            multiple
-            style="display:none"
-            {% if placeholder %}
-                data-placeholder='{{ placeholder }}'
-            {% endif %}
-        >
-            {% for key, text_or_options in options.items() %}
-                {% if text_or_options is string %}
-                    <option value="{{ key }}" {% if key in selected %}selected{% endif %}>
-                        {{ text_or_options }}
-                    </option>
-                {% elif text_or_options %}
-                    <optgroup label="{{ key }}">
-                        {% for value, text in text_or_options.items() %}
-                            <option value="{{ value }}" {% if value in selected %}selected{% endif %}>
-                                {{ text }}
-                            </option>
-                        {% endfor %}
-                    </optgroup>
-                {% endif %}
-            {% endfor %}
-        </select>
+        {{ _select_content(
+            id=id ~ '-select',
+            name=name,
+            options=options,
+            selected=selected,
+            multiple=true,
+            multiple_placeholder=placeholder,
+        ) }}
         <script>
-            $('#{{ id }}-select').select2({
-                theme: 'bootstrap-5',
-                width: '100%',
-                placeholder: $(this).data('placeholder'),
-                closeOnSelect: false,
-            });
             var polyglot = new Polyglot({
                 locale: '{{ locale }}',
                 phrases: {'items': "{{ _('<smart_count> item selected |||| <smart_count> items selected') }}"},

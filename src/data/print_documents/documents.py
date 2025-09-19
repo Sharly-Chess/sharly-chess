@@ -689,7 +689,7 @@ class PrizeListPrintDocument(PrintDocument):
 
     @property
     def title(self) -> str:
-        return self.name()
+        return self.name
 
     @property
     def template_name(self) -> str:

@@ -1,5 +1,6 @@
 import shutil
 import time
+from collections import defaultdict
 from collections.abc import Iterator
 from contextlib import suppress
 from functools import cached_property
@@ -39,6 +40,7 @@ from database.sqlite.event.event_store import (
     StoredBoard,
     StoredAccount,
     StoredRotatingScreen,
+    StoredPermission,
 )
 from database.sqlite.event import migrations
 from database.sqlite.migration_database import MigrationDatabase
@@ -320,7 +322,7 @@ class EventDatabase(MigrationDatabase):
         stored_event.stored_display_controllers = list(
             self.load_stored_display_controllers()
         )
-        stored_event.stored_accounts = list(self.load_stored_accounts())
+        stored_event.stored_accounts = self.load_stored_accounts()
         return stored_event
 
     def load_stored_event_metadata(self) -> EventMetadata:
@@ -2337,10 +2339,6 @@ class EventDatabase(MigrationDatabase):
             first_name=row['first_name'],
             last_name=row['last_name'],
             password_hash=row['password_hash'],
-            access_levels=cls.load_json_from_database_field(row['access_levels'], []),
-            tournament_ids=cls.load_json_from_database_field(
-                row['tournament_ids'], None
-            ),
         )
 
     def get_stored_account(self, account_id: int) -> StoredAccount | None:
@@ -2353,60 +2351,98 @@ class EventDatabase(MigrationDatabase):
             return self._row_to_stored_account(row)
         return None
 
-    def load_stored_accounts(self) -> Iterator[StoredAccount]:
-        self.execute(
-            'SELECT * FROM `account` ORDER BY `id`',
-            (),
-        )
-        yield from map(self._row_to_stored_account, self.fetchall())
+    def load_stored_accounts(self) -> list[StoredAccount]:
+        stored_accounts: list[StoredAccount] = []
+        self.execute('SELECT * FROM `account`')
+        for row in self.fetchall():
+            stored_account = self._row_to_stored_account(row)
+            assert stored_account.id is not None
+            stored_account.stored_permissions = self.load_account_stored_permissions(
+                stored_account.id
+            )
+            stored_accounts.append(stored_account)
+        return stored_accounts
 
-    def _write_stored_account(
-        self, stored_account: StoredAccount, insert_id: bool = False
-    ) -> StoredAccount:
+    def add_stored_account(self, stored_account: StoredAccount) -> StoredAccount:
         fields = self._get_fields_dict(
             stored_account, ['active', 'first_name', 'last_name', 'password_hash']
-        ) | {
-            'access_levels': self.dump_to_json_database_field(
-                stored_account.access_levels
-            ),
-            'tournament_ids': self.dump_to_json_database_field(
-                stored_account.tournament_ids
-            ),
-        }
-        fetched_stored_account: StoredAccount | None
-        if stored_account.id is None or insert_id:
-            if insert_id:
-                fields |= {'id': stored_account.id}
-            fields_str = ', '.join(f'`{field}`' for field in fields)
-            values_str = ', '.join(['?'] * len(fields))
-            self.execute(
-                f'INSERT INTO `account`({fields_str}) VALUES ({values_str})',
-                tuple(fields.values()),
-            )
-            account_id: int | None = self._last_inserted_id()
-            if account_id is None:
-                raise RuntimeError('Account insertion failed')
-            fetched_stored_account = self.get_stored_account(account_id=account_id)
-        else:
-            field_sets = ', '.join(f'`{f}` = ?' for f in fields)
-            self.execute(
-                f'UPDATE `account` SET {field_sets} WHERE `id` = ?',
-                tuple(fields.values()) + (stored_account.id,),
-            )
-            fetched_stored_account = self.get_stored_account(
-                account_id=stored_account.id
-            )
+        )
+        if stored_account.id:
+            fields |= {'id': stored_account.id}
+        fields_str = ', '.join(f'`{field}`' for field in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `account`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        account_id: int | None = self._last_inserted_id()
+        if account_id is None:
+            raise RuntimeError('Account insertion failed')
+        return self.get_stored_account(account_id=account_id)
+
+    def update_stored_account(self, stored_account: StoredAccount) -> StoredAccount:
+        fields = self._get_fields_dict(
+            stored_account, ['active', 'first_name', 'last_name', 'password_hash']
+        )
+        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        assert stored_account.id is not None
+        self.execute(
+            f'UPDATE `account` SET {field_sets} WHERE `id` = ?',
+            tuple(fields.values()) + (stored_account.id,),
+        )
+        fetched_stored_account = self.get_stored_account(account_id=stored_account.id)
         if fetched_stored_account is None:
             raise RuntimeError('Account write failed')
         return fetched_stored_account
 
-    def add_stored_account(self, stored_account: StoredAccount) -> StoredAccount:
-        assert stored_account.id is None, f'{stored_account.id=}'
-        return self._write_stored_account(stored_account)
-
-    def update_stored_account(self, stored_account: StoredAccount) -> StoredAccount:
-        assert stored_account.id is not None
-        return self._write_stored_account(stored_account)
-
     def delete_stored_account(self, account_id: int):
         self.execute('DELETE FROM `account` WHERE `id` = ?;', (account_id,))
+
+    # ---------------------------------------------------------------------------------
+    # StoredPermission
+    # ---------------------------------------------------------------------------------
+
+    def load_account_stored_permissions(
+        self, account_id: int
+    ) -> list[StoredPermission]:
+        self.execute(
+            'SELECT * from `account_permission` WHERE `account_id` = ?',
+            (account_id,),
+        )
+        tournament_ids_by_access_level: dict[str, list[int]] = defaultdict(list)
+        for row in self.fetchall():
+            access_level = row['access_level']
+            tournament_id = row['tournament_id']
+            if not tournament_id:
+                tournament_ids_by_access_level[access_level] = []
+                continue
+            tournament_ids_by_access_level[access_level].append(tournament_id)
+        return [
+            StoredPermission(account_id, access_level, tournament_ids or None)
+            for access_level, tournament_ids in tournament_ids_by_access_level.items()
+        ]
+
+    def delete_stored_permission(self, stored_permission: StoredPermission):
+        self.execute(
+            'DELETE FROM `account_permission` '
+            'WHERE `account_id` = ? AND `access_level` = ?',
+            (stored_permission.account_id, stored_permission.access_level),
+        )
+
+    def add_stored_permission(self, stored_permission: StoredPermission):
+        if stored_permission.tournament_ids:
+            inserted_values = stored_permission.tournament_ids
+        else:
+            inserted_values = [None]
+        for tournament_id in inserted_values:
+            fields = {
+                'account_id': stored_permission.account_id,
+                'access_level': stored_permission.access_level,
+                'tournament_id': tournament_id,
+            }
+            fields_str = ', '.join(f'`{f}`' for f in fields)
+            values_str = ', '.join(['?'] * len(fields))
+            self.execute(
+                f'INSERT INTO `account_permission`({fields_str}) VALUES ({values_str})',
+                tuple(fields.values()),
+            )

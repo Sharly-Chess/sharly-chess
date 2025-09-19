@@ -79,7 +79,7 @@ class BaseAccessLevelTest:
     def create_user(
         self,
         api_request_context: APIRequestContext,
-        access_level: list[type[AccessLevel]],
+        access_levels: list[type[AccessLevel]],
         tournament_ids: list[int] | None = None,
     ):
         """Creates a user with the specified access levels and tournaments"""
@@ -90,8 +90,6 @@ class BaseAccessLevelTest:
             'last_name': last_name,
             'password': 'test-password',
             'active': True,
-            'access_levels': [type_.static_id() for type_ in access_level],
-            'tournament_ids': tournament_ids,
         }
 
         form_data = TestUtils.prepare_form_data(data)
@@ -109,6 +107,19 @@ class BaseAccessLevelTest:
                 for a in accounts
                 if a.first_name == first_name and a.last_name == last_name
             )
+        for access_level in access_levels:
+            form_data = TestUtils.prepare_form_data(
+                {
+                    'access_level': access_level.static_id(),
+                    'tournament_ids': tournament_ids,
+                }
+            )
+            res = api_request_context.post(
+                f'/admin/account-permission-create/{PUBLIC_EVENT_ID}/{stored_account.id}',
+                headers={'Content-Type': 'application/x-www-form-urlencoded'},
+                data=form_data,
+            )
+            TestUtils.check_api_response(res)
         return stored_account
 
     def delete_user(self, api_request_context: APIRequestContext, account_id: int):
