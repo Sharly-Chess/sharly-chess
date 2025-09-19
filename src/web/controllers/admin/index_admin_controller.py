@@ -7,7 +7,12 @@ from typing import Annotated, Any
 import requests
 import validators
 
-from common import REQUEST_TIMEOUT, format_timestamp_date, format_timestamp_time
+from common import (
+    BASE_DIR,
+    REQUEST_TIMEOUT,
+    format_timestamp_date,
+    format_timestamp_time,
+)
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.event import Event
@@ -244,7 +249,7 @@ class IndexAdminController(BaseAdminController):
 
         event_card_blocks = plugin_manager.hook.get_event_card_block_template()
 
-        svg_logo = Path('src/web/static/images/sharly-chess-logo.svg').read_text(
+        svg_logo = (BASE_DIR / 'src/web/static/images/sharly-chess-logo.svg').read_text(
             encoding='utf-8'
         )
 

@@ -64,7 +64,7 @@
                                                 permission=inherited_permissions_by_access_level[access_level].inherited_by.name
                                             ) }}"
                                         {% elif access_level in current_access_levels %}
-                                            title="{{ _('Acesss level already defined for the account.') }}"
+                                            title="{{ _('Access level already defined for the account.') }}"
                                         {% else %}
                                             title="{{ access_level.help_text }}"
                                         {% endif %}
