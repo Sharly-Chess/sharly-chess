@@ -59,7 +59,7 @@ class WinProjectBuilder(ProjectBuilder):
     def hook_get_venv_lib_path(
         self,
     ) -> Path:
-        return self._get_python_dir() / 'Lib' / 'site-packages'
+        return self._python_dir / 'Lib' / 'site-packages'
 
     def hook_pyinstaller_additional_params(self) -> list[str]:
         return [
