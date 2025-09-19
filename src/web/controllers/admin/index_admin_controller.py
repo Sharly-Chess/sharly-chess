@@ -165,6 +165,7 @@ class IndexAdminController(BaseAdminController):
                 'template': 'index/home_tab.html',
                 'icon_class': 'bi-qr-code',
                 'disabled': False,
+                'events': lan_events,
                 'experimental_features_warning': True,
             },
         }
