@@ -16,7 +16,7 @@ _Sharly Chess - © Sharly Chess project 2013-2025_
 - [Setting up a development environment](docs/technical-appendices/dev-setup.md)
 - [Description of the databases](docs/technical-appendices/databases.md)
 - [Internationalization](docs/technical-appendices/i18n.md)
-- [Delegating event management](docs/technical-appendices/delegation.md)
+- [Network](docs/technical-appendices/network.md)
 
 ### Sandbox
 

@@ -8,6 +8,7 @@ the server without duplicating server logic.
 from __future__ import annotations
 
 import asyncio
+import io
 import json
 import logging
 import platform
@@ -17,10 +18,12 @@ import threading
 import webbrowser
 from datetime import datetime
 from typing import Optional, Any
+from PIL import Image as PILImage
 
 import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
+import qrcode
 
 from common import BASE_DIR, SHARLY_CHESS_VERSION
 from common.i18n import _
@@ -234,6 +237,23 @@ if not hasattr(toga.Window, '_on_lose_focus'):
     toga.Window._on_lose_focus = _noop_lose
 
 
+def make_qr_pil(data: str) -> PILImage.Image:
+    qr = qrcode.QRCode(
+        box_size=10,
+        border=2,
+        error_correction=qrcode.constants.ERROR_CORRECT_H,
+    )
+    qr.add_data(data)
+    qr.make()
+    return qr.make_image(fill_color='black', back_color='white')
+
+
+def pil_to_toga_image(pil_img: PILImage.Image) -> toga.Image:
+    buf = io.BytesIO()
+    pil_img.save(buf, format='PNG')
+    return toga.Image(src=buf.getvalue())
+
+
 class SharlyChessServerToga(toga.App):
     """Main Toga GUI app for Sharly Chess server."""
 
@@ -266,19 +286,23 @@ class SharlyChessServerToga(toga.App):
 
         # Thread-safe communication
         self.message_queue: queue.Queue[tuple[str, str, Optional[str]]] = queue.Queue()
+        self.networks_visible = False
         self.log_cleared = False
         self.log_visible = False
-        self.compact_size = (500, 100)
+        self.compact_size = (400, 100)
         self.expanded_size = (1200, 700)
 
         # GUI elements (initialized in startup)
         self.main_box: toga.Box
         self.browser_btn: toga.Button
+        self.network_btn: toga.Button
         self.website_btn: toga.Button
         self.clear_btn: toga.Button
         self.toggle_log_btn: toga.Button
         self.log_view: toga.WebView
         self.info_view: toga.Box
+        self.main_buttons_section: toga.Box
+        self.networks_section: toga.Box
 
         # Logging handler
         self.gui_handler = GUILogHandler(self)
@@ -299,6 +323,9 @@ class SharlyChessServerToga(toga.App):
         self.browser_btn = toga.Button(
             text=_('Open Admin Interface'), on_press=self._open_browser
         )
+        self.network_btn = toga.Button(
+            text=_('See Networks'), on_press=self._toggle_networks_view
+        )
         self.website_btn = toga.Button(
             text=_('Open documentation'), on_press=self._open_website
         )
@@ -317,7 +344,6 @@ class SharlyChessServerToga(toga.App):
         ):
             b.style.margin_right = 4
 
-        btn_row.add(self.browser_btn)
         btn_row.add(self.website_btn)
         btn_row.add(self.toggle_log_btn)
         btn_row.add(self.clear_btn)
@@ -346,6 +372,23 @@ class SharlyChessServerToga(toga.App):
             )
         )
 
+        main_buttons_wrapper = toga.Box(style=Pack(direction=ROW, align_items='center'))
+        self.main_buttons_section = toga.Box(
+            style=Pack(direction=COLUMN, margin_top=10, align_items='center')
+        )
+        section_buttons = toga.Box(
+            style=Pack(direction=COLUMN, margin_top=10, gap=5, align_items='center')
+        )
+        section_buttons.add(self.browser_btn)
+        section_buttons.add(self.network_btn)
+        self.main_buttons_section.add(section_buttons)
+        main_buttons_wrapper.add(self.main_buttons_section)
+        self.info_view.add(main_buttons_wrapper)
+
+        self.networks_section = toga.Box(
+            style=Pack(direction=COLUMN, margin_top=10, align_items='center')
+        )
+
         # Layout container
         self.main_box = toga.Box(style=Pack(direction=COLUMN, margin=10))
         self.main_box.add(btn_row)
@@ -361,6 +404,7 @@ class SharlyChessServerToga(toga.App):
 
         assert isinstance(self.main_window, toga.MainWindow)
         self.main_window.show()
+        self.compact_size = self.main_window.size
 
     def on_running(self):
         self.log_view.set_content('about:blank', LOG_HTML)
@@ -368,6 +412,57 @@ class SharlyChessServerToga(toga.App):
         asyncio.create_task(self._process_message_queue())
         if not self.server_running:
             self._on_start_server(None)
+
+    def make_link_button(self, url: str) -> toga.Label:
+        button = toga.Button(url, style=Pack(align_items='center', margin_top=5))
+        button.on_press = lambda widget, **kwargs: webbrowser.open(url)
+        return button
+
+    def on_server_ready(self):
+        config = SharlyChessConfig()
+        network_interfaces = config.lan_ifaces
+        if network_interfaces := network_interfaces:
+            self.networks_section.add(
+                toga.Label(
+                    text=_(
+                        'You may also connect to this server from other devices using'
+                    ),
+                    margin_top=20,
+                    align_items='center',
+                    text_align='center',
+                )
+            )
+            self.networks_section.add(
+                toga.Label(
+                    text=_('the address of this server on your available networks:'),
+                    align_items='center',
+                    text_align='center',
+                )
+            )
+
+            self.networks_view = toga.Box(
+                style=Pack(direction=ROW, margin_top=15, gap=10)
+            )
+            self.networks_section.add(self.networks_view)
+            for item in config.lan_ifaces:
+                url = config.app_url(item['ip'])
+                network_item = toga.Box(
+                    style=Pack(direction=COLUMN, gap=5, align_items='center')
+                )
+                pil_img = make_qr_pil(url)
+                toga_img = pil_to_toga_image(pil_img)
+                label = item['label']
+                type = item['type'] if 'type' in item else None
+                if type and type != label:
+                    label = f'{label} ({type})'
+
+                qr_widget = toga.ImageView(
+                    image=toga_img, style=Pack(width=120, height=120)
+                )
+                network_item.add(qr_widget)
+                network_item.add(self.make_link_button(url))
+                network_item.add(toga.Label(text=label, align_items='center'))
+                self.networks_view.add(network_item)
 
     def _noop(self, widget: toga.Widget):
         pass
@@ -424,6 +519,7 @@ class SharlyChessServerToga(toga.App):
         self.server_running = True
 
         # Start server in background thread
+        self.gui_loop = asyncio.get_event_loop()
         self.server_thread = threading.Thread(target=self._run_server, daemon=True)
         self.server_thread.start()
 
@@ -433,7 +529,12 @@ class SharlyChessServerToga(toga.App):
         loop = self.server_loop
         asyncio.set_event_loop(loop)
 
-        engine = ServerEngine(loop=loop, handle_signals=False)
+        def schedule_ready():
+            self.gui_loop.call_soon_threadsafe(self.on_server_ready)
+
+        engine = ServerEngine(
+            loop=loop, handle_signals=False, on_port_chosen=schedule_ready
+        )
         loop.create_task(engine.serve())
 
         try:
@@ -459,6 +560,25 @@ class SharlyChessServerToga(toga.App):
 
     def _open_website(self, widget: Any = None, **kwargs) -> None:
         webbrowser.open(_('*** Doc Link'))
+
+    def _toggle_networks_view(self, widget: Any = None, **kwargs):
+        self.networks_visible = not self.networks_visible
+
+        # Show/hide networks view
+        if self.networks_visible:
+            if self.networks_section not in self.info_view.children:
+                self.info_view.add(self.networks_section)
+        else:
+            if self.networks_section in self.info_view.children:
+                self.info_view.remove(self.networks_section)
+
+        assert isinstance(self.main_window, toga.MainWindow)
+        self.main_window.size = self.compact_size
+
+        # Update button label
+        self.network_btn.text = (
+            _('Hide Networks') if self.networks_visible else _('See Networks')
+        )
 
     def _toggle_log_view(self, widget: Any = None, **kwargs):
         self.log_visible = not self.log_visible
