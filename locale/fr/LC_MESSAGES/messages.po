@@ -4433,7 +4433,7 @@ msgid "Soft Haley system"
 msgstr "Système de Haley dégressif"
 
 msgid "Some accounts can have very high access levels, making them dangerous in the hands of an unaware or malicious users."
-msgstr "Certains comptes peuvent avoir des niveaux d'accès très élevés, les rendant dangereux dans les mains d'utilisateurs non-informés ou malveillants."
+msgstr "Certains comptes peuvent avoir des niveaux d'accès très élevés, les rendant dangereux dans les mains de personnes non-informées ou malveillantes."
 
 msgid "Something went wrong. Please ask your administrator to recreate your account."
 msgstr "Une erreur est survenue. Veuillez demander à votre administrateur⋅ice de recréer votre compte."
@@ -5821,8 +5821,8 @@ msgstr "Vous essayez de modifier manuellement les appariements de la ronde en co
 msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
 msgstr "Vous essayez de modifier les appariements de la ronde précédente. Cela aura un impact sur les appariements et le classement de toutes les rondes à venir."
 
-msgid "You can create password-protected accounts to delegate tasks to other members of the staff (ex: other arbiters, organizer)."
-msgstr "Vous pouvez créer des comptes protégés par mots de passes pour déléguer des tâches aux autres membres du staff (ex : autres arbitres, organisateur)."
+msgid "You can create password-protected accounts to delegate tasks to other members of the staff (arbiters and organizers)."
+msgstr "Vous pouvez créer des comptes protégés par mots de passe pour déléguer des tâches aux autres membres du staff (arbitres et organisateur·ices)."
 
 msgid "You can temporarily invalidate accounts by turning this switch off."
 msgstr "Vous pouvez désactiver temporairement les comptes en décochant cette case."
