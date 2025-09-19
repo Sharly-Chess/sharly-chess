@@ -286,19 +286,22 @@ class SharlyChessServerToga(toga.App):
 
         # Thread-safe communication
         self.message_queue: queue.Queue[tuple[str, str, Optional[str]]] = queue.Queue()
+        self.networks_visible = False
         self.log_cleared = False
         self.log_visible = False
-        self.compact_size = (500, 100)
+        self.compact_size = (400, 100)
         self.expanded_size = (1200, 700)
 
         # GUI elements (initialized in startup)
         self.main_box: toga.Box
         self.browser_btn: toga.Button
+        self.network_btn: toga.Button
         self.website_btn: toga.Button
         self.clear_btn: toga.Button
         self.toggle_log_btn: toga.Button
         self.log_view: toga.WebView
         self.info_view: toga.Box
+        self.main_buttons_section: toga.Box
         self.networks_section: toga.Box
 
         # Logging handler
@@ -319,6 +322,9 @@ class SharlyChessServerToga(toga.App):
         btn_row = toga.Box(style=Pack(direction=ROW, margin=(0, 0, 8, 0)))
         self.browser_btn = toga.Button(
             text=_('Open Admin Interface'), on_press=self._open_browser
+        )
+        self.network_btn = toga.Button(
+            text=_('See Networks'), on_press=self._toggle_networks_view
         )
         self.website_btn = toga.Button(
             text=_('Open documentation'), on_press=self._open_website
@@ -365,11 +371,23 @@ class SharlyChessServerToga(toga.App):
                 style=Pack(margin_bottom=7),
             )
         )
+
+        main_buttons_wrapper = toga.Box(style=Pack(direction=ROW, align_items='center'))
+        self.main_buttons_section = toga.Box(
+            style=Pack(direction=COLUMN, margin_top=10, align_items='center')
+        )
+        section_buttons = toga.Box(
+            style=Pack(direction=COLUMN, margin_top=10, gap=5, align_items='center')
+        )
+        section_buttons.add(self.browser_btn)
+        section_buttons.add(self.network_btn)
+        self.main_buttons_section.add(section_buttons)
+        main_buttons_wrapper.add(self.main_buttons_section)
+        self.info_view.add(main_buttons_wrapper)
+
         self.networks_section = toga.Box(
             style=Pack(direction=COLUMN, margin_top=10, align_items='center')
         )
-        self.networks_section.add(self.browser_btn)
-        self.info_view.add(self.networks_section)
 
         # Layout container
         self.main_box = toga.Box(style=Pack(direction=COLUMN, margin=10))
@@ -386,6 +404,7 @@ class SharlyChessServerToga(toga.App):
 
         assert isinstance(self.main_window, toga.MainWindow)
         self.main_window.show()
+        self.compact_size = self.main_window.size
 
     def on_running(self):
         self.log_view.set_content('about:blank', LOG_HTML)
@@ -541,6 +560,25 @@ class SharlyChessServerToga(toga.App):
 
     def _open_website(self, widget: Any = None, **kwargs) -> None:
         webbrowser.open(_('*** Doc Link'))
+
+    def _toggle_networks_view(self, widget: Any = None, **kwargs):
+        self.networks_visible = not self.networks_visible
+
+        # Show/hide networks view
+        if self.networks_visible:
+            if self.networks_section not in self.info_view.children:
+                self.info_view.add(self.networks_section)
+        else:
+            if self.networks_section in self.info_view.children:
+                self.info_view.remove(self.networks_section)
+
+        assert isinstance(self.main_window, toga.MainWindow)
+        self.main_window.size = self.compact_size
+
+        # Update button label
+        self.network_btn.text = (
+            _('Hide Networks') if self.networks_visible else _('See Networks')
+        )
 
     def _toggle_log_view(self, widget: Any = None, **kwargs):
         self.log_visible = not self.log_visible
