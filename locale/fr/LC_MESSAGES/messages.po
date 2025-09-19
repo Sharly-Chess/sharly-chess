@@ -683,6 +683,9 @@ msgstr "Image de fond :"
 msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
 msgstr "Ech."
 
+msgid "Before configuring accounts, you have to be aware of a few security warnings:"
+msgstr "Avant de configurer des comptes, vous devez avoir en tête quelques avertissements de sécurité :"
+
 msgid "Benefit from the very last (experimental) features (USE AT YOUR OWN RISKS!)."
 msgstr "Bénéficiez des toutes dernières fonctionnalités (expérimentales) de l'application (UTILISEZ À VOS PROPRES RISQUES !)."
 
@@ -775,6 +778,9 @@ msgstr "Buchholz tronqué"
 
 msgid "By board"
 msgstr "Par échiquier"
+
+msgid "By default, other devices can only interact with public screens. This tab allows you to configure this behavior."
+msgstr "Par défaut, les autres appareils ne peuvent qu'interagir avec les écrans publics. Cet onglet vous permet de configurer ce comportement."
 
 msgid "By default, tournaments are not visible on the FFE site."
 msgstr "Par défaut, les tournois ne sont pas visibles sur le site de la FFE."
@@ -2398,6 +2404,9 @@ msgstr "MI"
 
 msgid "Identity"
 msgstr "Identité"
+
+msgid "If you can't control who has access to the network you are connected to, it is highly recommended to not create any account."
+msgstr "Si vous ne pouvez pas contrôler qui a accès au réseau auquel vous êtes connecté, il est fortement recommandé de ne pas créer de compte."
 
 msgid "Illegal moves are not recorded."
 msgstr "Les coups illégaux ne sont pas enregistrés."
@@ -4369,6 +4378,9 @@ msgstr "Sharly Chess propose un système de gestion des prix puissant et flexibl
 msgid "Sharly Chess project"
 msgstr "Projet Sharly Chess"
 
+msgid "Sharly Chess reaches its full potential when used as a server, with other devices connected to the same network."
+msgstr "Sharly Chess atteint son plein potentiel lorsqu'utilisé comme un serveur, avec d'autres appareils connectés au même réseau."
+
 msgid "Sharly Chess server"
 msgstr "Serveur Sharly Chess"
 
@@ -4377,6 +4389,9 @@ msgstr "Configuration de Sharly Chess"
 
 msgid "Sharly Chess settings have been updated."
 msgstr "La configuration de Sharly Chess a été mise à jour."
+
+msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
+msgstr "Sharly Chess utilisant le réseau local, tout le trafic est public. Cela implique que quiconque connecté au même réseau peut facilement récupérer l'accès à un compte sans saisir de mot de passe."
 
 msgid "Show Log"
 msgstr "Montrer les logs"
@@ -4407,6 +4422,9 @@ msgstr "Écrans simples ({num})"
 
 msgid "Soft Haley system"
 msgstr "Système de Haley dégressif"
+
+msgid "Some accounts can have very high access levels, making them dangerous in the hands of an unaware or malicious users."
+msgstr "Certains comptes peuvent avoir des niveaux d'accès très élevés, les rendant dangereux dans les mains de personnes non-informées ou malveillantes."
 
 msgid "Something went wrong. Please ask your administrator to recreate your account."
 msgstr "Une erreur est survenue. Veuillez demander à votre administrateur⋅ice de recréer votre compte."
@@ -4479,6 +4497,9 @@ msgstr "Staff"
 
 msgid "Staff ({num})"
 msgstr "Staff ({num})"
+
+msgid "Staff default configuration"
+msgstr "Staff configuré par défaut"
 
 msgid "Standard"
 msgstr "Standard"
@@ -5121,6 +5142,10 @@ msgstr "Chronomètres : %(num)d"
 
 msgid "Titled players"
 msgstr "Joueur·euses titré·es"
+
+#, python-format
+msgid "To learn how to control your network, consult <a href=\"%(link)s\" target=\"_blank\">our documentation</a>."
+msgstr "Pour apprendre à contrôler votre réseau, consultez <a href=\"%(link)s\" target=\"_blank\">notre documentation</a>."
 
 msgid "Today"
 msgstr "Aujourd'hui"
@@ -5787,6 +5812,9 @@ msgstr "Vous essayez de modifier manuellement les appariements de la ronde en co
 msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
 msgstr "Vous essayez de modifier les appariements de la ronde précédente. Cela aura un impact sur les appariements et le classement de toutes les rondes à venir."
 
+msgid "You can create password-protected accounts to delegate tasks to other members of the staff (arbiters and organizers)."
+msgstr "Vous pouvez créer des comptes protégés par mots de passe pour déléguer des tâches aux autres membres du staff (arbitres et organisateur·ices)."
+
 msgid "You can temporarily invalidate accounts by turning this switch off."
 msgstr "Vous pouvez désactiver temporairement les comptes en décochant cette case."
 
@@ -6070,4 +6098,3 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
