@@ -25,7 +25,7 @@ class MacProjectBuilder(ProjectBuilder):
         self,
         venv_path: Path,
     ) -> Path:
-        return venv_path / 'lib' / 'python3.13' / 'site-packages'
+        return venv_path / 'lib' / 'python3.12' / 'site-packages'
 
     def hook_post_build_project(self) -> bool:
         # The SharlyChess.app bundle is now created by the build_and_notarize.sh script

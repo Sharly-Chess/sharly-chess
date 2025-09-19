@@ -1868,7 +1868,7 @@ msgid "Enable/disable the details of tournaments on the cards below."
 msgstr "Activer/désactiver l'affichage des détails des tournois sur les cartes ci-dessous."
 
 msgid "Enable/disable the details on the cards below."
-msgstr ""
+msgstr "Activer/désactiver les détails sur les cartes ci-dessous."
 
 msgid "Enabled"
 msgstr "Activé"
@@ -4496,7 +4496,7 @@ msgid "Staff"
 msgstr "Staff"
 
 msgid "Staff ({num})"
-msgstr ""
+msgstr "Staff ({num})"
 
 msgid "Standard"
 msgstr "Standard"
