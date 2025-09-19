@@ -88,7 +88,7 @@
         {% elif not client_can_manage_account %}
             {{ macros.tooltip_attributes('info', _('You are not allowed to update this account.'), 'top') }}
         {% else %}
-            {{ macros.tooltip_attributes('info', _('Edit the properties and the permissions of the account.'), 'top') }}
+            {{ macros.tooltip_attributes('info', _('Edit the properties and the access levels of the account.'), 'top') }}
         {% endif %}
     >
         <button

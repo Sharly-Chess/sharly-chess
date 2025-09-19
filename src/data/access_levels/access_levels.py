@@ -440,7 +440,7 @@ class ChiefArbitrationAccessLevel(AccessLevel):
 
     def localized_help_text(self, locale: str | None = None) -> str:
         return _(
-            'Allows granting or revoking the Deputy Chief Arbitration access level, editing the event, and managing tournaments; Also includes the permissions of the Deputy Chief Arbitration access level.',
+            'Allows granting or revoking the Deputy Chief Arbitration access level, editing the event, and managing tournaments; Also includes the Deputy Chief Arbitration access level.',
             locale,
         )
 
@@ -517,7 +517,7 @@ class OrganizationAccessLevel(AccessLevel):
 
     def localized_help_text(self, locale: str | None = None) -> str:
         return _(
-            'Allows granting or revoking the Chief Arbitration access level and editing the event. Also includes the permissions of the Screen Management access level.',
+            'Allows granting or revoking the Chief Arbitration access level and editing the event. Also includes Screen Management access level.',
             locale,
         )
 

@@ -349,6 +349,9 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
+msgid "Actions / Access levels"
+msgstr ""
+
 msgid "Add"
 msgstr ""
 
@@ -502,10 +505,10 @@ msgstr ""
 msgid "Allows entry of results via any input Screens that have been marked as public."
 msgstr ""
 
-msgid "Allows granting or revoking the Chief Arbitration access level and editing the event. Also includes the permissions of the Screen Management access level."
+msgid "Allows granting or revoking the Chief Arbitration access level and editing the event. Also includes Screen Management access level."
 msgstr ""
 
-msgid "Allows granting or revoking the Deputy Chief Arbitration access level, editing the event, and managing tournaments; Also includes the permissions of the Deputy Chief Arbitration access level."
+msgid "Allows granting or revoking the Deputy Chief Arbitration access level, editing the event, and managing tournaments; Also includes the Deputy Chief Arbitration access level."
 msgstr ""
 
 msgid "Allows management of Screens and the accounts that can access them."
@@ -1789,7 +1792,7 @@ msgstr ""
 msgid "Edit the player's tournament record."
 msgstr ""
 
-msgid "Edit the properties and the permissions of the account."
+msgid "Edit the properties and the access levels of the account."
 msgstr ""
 
 msgid "Edit the properties of the category."
@@ -3527,9 +3530,6 @@ msgid "Period"
 msgstr ""
 
 msgid "Permissions"
-msgstr ""
-
-msgid "Permissions / Access levels"
 msgstr ""
 
 msgid "Permute boards"
@@ -6060,4 +6060,13 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "Allows granting or revoking the Chief Arbitration access level and editing the event. Also includes the permissions of the Screen Management access level."
+#~ msgstr ""
+
+#~ msgid "Allows granting or revoking the Deputy Chief Arbitration access level, editing the event, and managing tournaments; Also includes the permissions of the Deputy Chief Arbitration access level."
+#~ msgstr ""
+
+#~ msgid "Leave empty to grant no access level at all."
+#~ msgstr ""
 

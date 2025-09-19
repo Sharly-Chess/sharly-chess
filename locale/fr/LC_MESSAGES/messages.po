@@ -349,6 +349,9 @@ msgstr "Délai d'action"
 msgid "Actions"
 msgstr "Actions"
 
+msgid "Actions / Access levels"
+msgstr "Actions / Niveaux d'accès"
+
 msgid "Add"
 msgstr "Ajouter"
 
@@ -502,11 +505,11 @@ msgstr "Autorise le pointage des joueur·euses sur des écrans publics."
 msgid "Allows entry of results via any input Screens that have been marked as public."
 msgstr "Autorise la saisie des résultats sur des écrans publics."
 
-msgid "Allows granting or revoking the Chief Arbitration access level and editing the event. Also includes the permissions of the Screen Management access level."
-msgstr "Autorise l'attribution et la révocation du niveau d'accès « Arbitrage en chef·fe » et l'édition des évènements ; inclut les persmissions du niveau d'accès « Gestion de l'affichage »."
+msgid "Allows granting or revoking the Chief Arbitration access level and editing the event. Also includes Screen Management access level."
+msgstr ""
 
-msgid "Allows granting or revoking the Deputy Chief Arbitration access level, editing the event, and managing tournaments; Also includes the permissions of the Deputy Chief Arbitration access level."
-msgstr "Autorise l'attribution et la révocation du niveau d'accès « Arbitrage adjoint », l'édition des évènements et la gestion des tournois ; inclut les persmissions du niveau d'accès « Gestion de l'affichage »."
+msgid "Allows granting or revoking the Deputy Chief Arbitration access level, editing the event, and managing tournaments; Also includes the Deputy Chief Arbitration access level."
+msgstr ""
 
 msgid "Allows management of Screens and the accounts that can access them."
 msgstr "Autorise la gestion des écrans et la gestion des comptes et appareils qui peuvent s'y connecter."
@@ -1789,8 +1792,8 @@ msgstr "Modifier les propriétés du·de la joueur·euse."
 msgid "Edit the player's tournament record."
 msgstr "Modifier l'historique du·de la joueur·euse."
 
-msgid "Edit the properties and the permissions of the account."
-msgstr "Éditer les propriétés et les permissions du compte."
+msgid "Edit the properties and the access levels of the account."
+msgstr "Éditer les propriétés et les niveaux d'accès du compte."
 
 msgid "Edit the properties of the category."
 msgstr "Modifier les propriétés de la catégorie."
@@ -2682,7 +2685,7 @@ msgid "Leagues"
 msgstr "Ligues"
 
 msgid "Leave empty to grant no permissions at all."
-msgstr "Laisser vide pour n'accorder aucune permission."
+msgstr ""
 
 msgid "Library [{lib}] is missing."
 msgstr "La bibliothèque [{lib}] n'est pas installée."
@@ -3528,9 +3531,6 @@ msgstr "Période"
 
 msgid "Permissions"
 msgstr "Permissions"
-
-msgid "Permissions / Access levels"
-msgstr "Permissions / Niveaux d'accès"
 
 msgid "Permute boards"
 msgstr "Permuter les échiquiers"
@@ -6060,4 +6060,13 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "Allows granting or revoking the Chief Arbitration access level and editing the event. Also includes the permissions of the Screen Management access level."
+#~ msgstr "Autorise l'attribution et la révocation du niveau d'accès « Arbitrage en chef·fe » et l'édition des évènements ; inclut les persmissions du niveau d'accès « Gestion de l'affichage »."
+
+#~ msgid "Allows granting or revoking the Deputy Chief Arbitration access level, editing the event, and managing tournaments; Also includes the permissions of the Deputy Chief Arbitration access level."
+#~ msgstr "Autorise l'attribution et la révocation du niveau d'accès « Arbitrage adjoint », l'édition des évènements et la gestion des tournois ; inclut les persmissions du niveau d'accès « Gestion de l'affichage »."
+
+#~ msgid "Leave empty to grant no access level at all."
+#~ msgstr "Laisser vide pour n'accorder aucune niveau d'accès."
 

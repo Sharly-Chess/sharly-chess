@@ -113,7 +113,7 @@ def print_details_doc(
             print(f'\n{locale_strings[locale]["generated_by"]}', file=output)
 
 
-def print_permissions_doc(
+def print_actions_doc(
     dev_output_dir: Path,
     web_output_dir: Path,
     access_levels: list[AccessLevel],
@@ -126,11 +126,13 @@ def print_permissions_doc(
     dev_mark_ok: str = '✔'
     dev_mark_ko: str = '-'
 
-    print_interactive_info('Generating permissions by access level documentation...')
+    print_interactive_info(
+        'Generating authorized actions by access level documentation...'
+    )
     for locale in locales:
         web_header: dict[str, str] = (
             {
-                'title': _('Permissions / Access levels', locale),
+                'title': _('Actions / Access levels', locale),
             }
             | {
                 access_level.static_id(): f'{access_level_md_icon(access_level)}<br/>{access_level.short_name(locale)}'
@@ -140,7 +142,7 @@ def print_permissions_doc(
         )
         dev_header: dict[str, str] = (
             {
-                'title': _('Permissions / Access levels', locale),
+                'title': _('Actions / Access levels', locale),
             }
             | {access_level.static_id(): '' for access_level in access_levels}
             | {'': ''}
@@ -277,7 +279,7 @@ def print_permissions_doc(
                         }
                     )
         print_file(
-            web_output_dir / f'access-levels-permissions-{locale}.md',
+            web_output_dir / f'access-levels-actions-{locale}.md',
             web_header,
             web_lines,
             column_centers,
@@ -285,7 +287,7 @@ def print_permissions_doc(
         )
         if locale == 'en':
             print_file(
-                dev_output_dir / 'access-levels-permissions.md',
+                dev_output_dir / 'access-levels-actions.md',
                 dev_header,
                 dev_lines,
                 column_centers,
@@ -343,7 +345,7 @@ def generate_doc(
         actions_by_category[action.category].append(action)
 
     print_details_doc(web_output_dir, access_levels, web_locale_strings)
-    print_permissions_doc(
+    print_actions_doc(
         dev_output_dir,
         web_output_dir,
         access_levels,
