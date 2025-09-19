@@ -177,6 +177,9 @@ msgstr "(par défaut)"
 msgid "(family)"
 msgstr "(famille)"
 
+msgid "(inheritance: {inheritance})"
+msgstr "(héritage : {inheritance})"
+
 msgid "(inherited)"
 msgstr "(hérité)"
 
@@ -313,9 +316,6 @@ msgstr "Contrôle d'accès"
 msgid "Access level"
 msgstr "Niveau d'accès"
 
-msgid "Access levels"
-msgstr "Niveaux d'accès"
-
 msgid "Access unrated and penalty results."
 msgstr "Accéder aux résultats non homologués et pénalisés"
 
@@ -339,6 +339,9 @@ msgstr "Compte :"
 
 msgid "Accounts"
 msgstr "Comptes"
+
+msgid "Acesss level already defined for the account."
+msgstr "Niveau d'accès déjà défini pour ce compte."
 
 msgid "Action"
 msgstr "Action"
@@ -375,6 +378,9 @@ msgstr "Ajouter un groupe à la liste"
 
 msgid "Add a hour"
 msgstr "Ajouter un horaire"
+
+msgid "Add a permission to the account."
+msgstr "Ajouter une permission au compte."
 
 msgid "Add a player to the event."
 msgstr "Ajouter un·e joueur·euse à l'évènement."
@@ -484,38 +490,35 @@ msgstr "Tou·tes les joueur·euses supposé·es jouer la ronde ont pointé."
 msgid "All the tournaments"
 msgstr "Tous les tournois"
 
-msgid "All tournaments"
-msgstr "Tous les tournois"
-
 msgid "Allow"
 msgstr "Autoriser"
 
-msgid "Allows access to Screens marked as public."
-msgstr "Permet l'accès aux écrans publics."
+msgid "Allows access to Screens marked as public"
+msgstr "Autorise l'accès aux écrans publics"
 
-msgid "Allows access to the Players and Pairings tabs, results and illegal moves update."
-msgstr "Autorise l'accès à l'interface des joueur·euses et des appariements, la modification des coups illégaux et des résultats."
+msgid "Allows access to the Players and Pairings tabs, results and illegal moves update"
+msgstr "Autorise l'accès à l'interface des joueur·euses et des appariements, la modification des coups illégaux et des résultats"
 
-msgid "Allows check-in via any input Screens that have been marked as public."
-msgstr "Autorise le pointage des joueur·euses sur des écrans publics."
+msgid "Allows check-in via any input Screens marked as public"
+msgstr "Autorise le pointage des joueur·euses sur des écrans de saisie publics"
 
-msgid "Allows entry of results via any input Screens that have been marked as public."
-msgstr "Autorise la saisie des résultats sur des écrans publics."
+msgid "Allows entry of results via any input Screens marked as public"
+msgstr "Autorise la saisie des résultats sur des écrans de saisie publics"
 
-msgid "Allows granting or revoking the Chief Arbitration access level and editing the event. Also includes the permissions of the Screen Management access level."
-msgstr "Autorise l'attribution et la révocation du niveau d'accès « Arbitrage en chef·fe » et l'édition des évènements ; inclut les persmissions du niveau d'accès « Gestion de l'affichage »."
+msgid "Allows granting or revoking the Chief Arbitration access level and editing the event"
+msgstr "Autorise l'attribution et la révocation du niveau d'accès « Arbitrage en chef·fe » et l'édition de l'évènement"
 
-msgid "Allows granting or revoking the Deputy Chief Arbitration access level, editing the event, and managing tournaments; Also includes the permissions of the Deputy Chief Arbitration access level."
-msgstr "Autorise l'attribution et la révocation du niveau d'accès « Arbitrage adjoint », l'édition des évènements et la gestion des tournois ; inclut les persmissions du niveau d'accès « Gestion de l'affichage »."
+msgid "Allows granting or revoking the Deputy Chief Arbitration access level, editing the event, and managing tournaments"
+msgstr "Autorise l'attribution et la révocation du niveau d'accès « Arbitrage adjoint », l'édition de l'évènement et la gestion des tournois"
 
-msgid "Allows management of Screens and the accounts that can access them."
-msgstr "Autorise la gestion des écrans et la gestion des comptes et appareils qui peuvent s'y connecter."
+msgid "Allows management of Screens and the accounts that can access them"
+msgstr "Autorise la gestion des écrans et des comptes qui peuvent s'y connecter"
 
-msgid "Allows managing players, entering results (including special results and their modification), handling check-ins, pairings, and displays."
-msgstr "Ce rôle permet de gérer les joueur·euses, les résultats (y compris les résultats spéciaux et la modification des résultats), le pointage, les appariements et les affichages ; il hérite des rôles « Arbitrage de secteur », « Appariement des tournois », « Pointage des joueur·euses » et « Saisie des résultats » pour certains tournois (ou tous les tournois) de l'évènement."
+msgid "Allows managing players, entering special results, modifying results, handling check-ins, pairings, and displays"
+msgstr "Autorise la gestion des joueur·euses, la saisie de résultats spéciaux, la modification des résultats et la gestion du pointage, des appariements et des affichages"
 
-msgid "Allows pairing of the players, either using a pairing engine or manually."
-msgstr "Autorise l'appariement des joueur·euses, en utilisant un moteur d'appariement ou manuellement."
+msgid "Allows pairing of the players, either using a pairing engine or manually"
+msgstr "Autorise l'appariement des joueur·euses, en utilisant un moteur d'appariement ou manuellement"
 
 msgid "An error occurred. Consult the logs for more details."
 msgstr "Une erreur s'est produite. Consultez les logs pour plus de détails."
@@ -597,9 +600,6 @@ msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] "Au plus %(num)d coup illegal est enregistré."
 msgstr[1] "Au plus %(num)d coups illégaux sont enregistrés."
-
-msgid "Authentication"
-msgstr "Authentification"
 
 msgid "Authentication failed."
 msgstr "L'authentification a échoué."
@@ -1203,6 +1203,9 @@ msgstr "Créer un pilote d'afficheurs"
 msgid "Create event"
 msgstr "Créer un évènement"
 
+msgid "Create permission"
+msgstr "Créer une permission"
+
 msgid "Create player"
 msgstr "Créer un·e joueur·euse"
 
@@ -1327,6 +1330,9 @@ msgstr "Date naiss. :"
 
 msgid "Date:"
 msgstr "Date :"
+
+msgid "Default accounts have been created."
+msgstr "Les comptes par défault ont été créés."
 
 msgid "Default credentials used to import tournaments from the ChessEvent platform."
 msgstr "Identifiants par défaut utilisés pour importer des tournois depuis la plateforme ChessEvent."
@@ -1762,6 +1768,9 @@ msgstr "Modifier le pilote d'afficheurs"
 msgid "Edit event"
 msgstr "Modifier l'évènement"
 
+msgid "Edit permission"
+msgstr "Modifier la permission"
+
 msgid "Edit player"
 msgstr "Modifier le·la joueur·euse"
 
@@ -1783,14 +1792,17 @@ msgstr "Modifier la famille d'écrans"
 msgid "Edit the hours of the timer"
 msgstr "Modifier les horaires du chronomètre."
 
+msgid "Edit the permissions of the account."
+msgstr "Modifier les permissions du compte."
+
 msgid "Edit the player's properties."
 msgstr "Modifier les propriétés du·de la joueur·euse."
 
 msgid "Edit the player's tournament record."
 msgstr "Modifier l'historique du·de la joueur·euse."
 
-msgid "Edit the properties and the permissions of the account."
-msgstr "Éditer les propriétés et les permissions du compte."
+msgid "Edit the properties of the account."
+msgstr "Modifier les propriétés du compte."
 
 msgid "Edit the properties of the category."
 msgstr "Modifier les propriétés de la catégorie."
@@ -1830,9 +1842,6 @@ msgstr "Modifier le chronomètre"
 
 msgid "Edit tournament"
 msgstr "Modifier le tournoi"
-
-msgid "Edit unauthenticated access"
-msgstr "Modifier l'accès non-authentifié"
 
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
 msgstr "Elo"
@@ -2301,6 +2310,9 @@ msgstr "Générer les appariements pour cette ronde."
 msgid "Generated by script {script_name} on {date}"
 msgstr "Généré par le script {script_name} ({date})"
 
+msgid "Get started"
+msgstr "Commencer"
+
 msgid "Give/take away access level {access_level_short_name}"
 msgstr "Donner/retirer le niveau d'accès {access_level_short_name}"
 
@@ -2494,6 +2506,10 @@ msgstr "Incrément (sec)"
 msgid "Info"
 msgstr "Info"
 
+#, python-format
+msgid "Inherited by permission [%(permission)s]."
+msgstr "Hérité de la permission [%(permission)s]."
+
 msgid "Input Screens may be used to allow players to enter their own results on a device that you make available at the venue."
 msgstr "Les écrans de saisie peuvent être utilisés pour permettre aux joueur·euses d’entrer eux-mêmes leurs résultats sur un portable ou une tablette mis à disposition sur le lieu du tournoi."
 
@@ -2680,9 +2696,6 @@ msgstr "Ligue :"
 
 msgid "Leagues"
 msgstr "Ligues"
-
-msgid "Leave empty to grant no permissions at all."
-msgstr "Laisser vide pour n'accorder aucune permission."
 
 msgid "Library [{lib}] is missing."
 msgstr "La bibliothèque [{lib}] n'est pas installée."
@@ -3019,9 +3032,6 @@ msgstr "Aucune catégorie de prix"
 msgid "No Prize Group"
 msgstr "Aucun groupe de prix"
 
-msgid "No access level defined."
-msgstr "Aucun niveau d'accès défini."
-
 msgid "No alert message"
 msgstr "Pas de message d'alerte"
 
@@ -3075,6 +3085,12 @@ msgstr "Aucun évènement passé."
 
 msgid "No permissions"
 msgstr "Aucune permission"
+
+msgid "No permissions defined."
+msgstr "Aucune permission définie."
+
+msgid "No permissions."
+msgstr "Aucune permission."
 
 msgid "No phone defined."
 msgstr "Téléphone non défini."
@@ -3531,6 +3547,9 @@ msgstr "Permissions"
 
 msgid "Permissions / Access levels"
 msgstr "Permissions / Niveaux d'accès"
+
+msgid "Permissions list"
+msgstr "Liste des permissions"
 
 msgid "Permute boards"
 msgstr "Permuter les échiquiers"
@@ -4257,14 +4276,14 @@ msgstr "Familles d'écrans :"
 msgid "Screen families: %(num)d"
 msgstr "Familles d'écrans : %(num)d"
 
-msgid "Screen list"
-msgstr "Liste d'écrans"
-
 msgid "Screen type"
 msgstr "Type d'écran"
 
 msgid "Screens"
 msgstr "Écrans"
+
+msgid "Screens list"
+msgstr "Liste d'écrans"
 
 msgid "Screens may display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments."
 msgstr "Les écrans peuvent afficher des informations sur votre événement, telles que la liste des joueur·euses, les appariements et les résultats. Un écran peut contenir des informations concernant un seul tournoi ou plusieurs tournois."
@@ -4576,8 +4595,8 @@ msgstr "L'URL de l'image à afficher."
 msgid "The URL or the path of the image (relative to the 'custom' folder) to display."
 msgstr "L'URL ou le chemin de l'image (relatif au dossier 'custom') à afficher."
 
-msgid "The access levels to attribute to this account."
-msgstr "Les niveaux d'accès à attribuer à ce compte."
+msgid "The access level of the permission."
+msgstr "Le niveau d'accès de la permission."
 
 msgid "The account matching all the users not logged in to any account."
 msgstr "Le compte correspondant aux utilisateur·ices non-connecté·es."
@@ -4585,8 +4604,8 @@ msgstr "Le compte correspondant aux utilisateur·ices non-connecté·es."
 msgid "The account of the user accessing Sharly Chess directly from the server."
 msgstr "Le compte de l'utilisateur·ice accédant à Sharly Chess directement depuis le serveur."
 
-msgid "The administrator has all the access levels."
-msgstr "L'administrateur·ice a tous les niveaux d'accès."
+msgid "The administrator has all the permissions."
+msgstr "L'administrateur·ice a toutes les permissions."
 
 msgid "The background colour is used when the image does not fill the whole screen."
 msgstr "La couleur de fond est utilisée lorsque l'image ne remplit pas complètement l'écran."
@@ -4778,8 +4797,8 @@ msgstr "La mot de passe est composé de 10 caractères majuscules, il est utilis
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "Le mot de passe du tournoi sur le site FFE doit être composé de 10 lettres majuscules."
 
-msgid "The password, used to authenticate. It is impossible to see the password once set, but it can be overwritten if necessary."
-msgstr "Le mot de passe, utilisé pour s'authentifier. Il est impossible de revoir le mot de passe, mais il et possible de le redéfinir si besoin"
+msgid "The permissions of this account can not be updated."
+msgstr "Les permissions de ce compte ne peuvent être modifiées."
 
 msgid "The phone numbers."
 msgstr "Les numéros de téléphone."
@@ -4923,8 +4942,8 @@ msgstr "Le tournoi dont on souhaite afficher les appariements"
 msgid "The tournament to print."
 msgstr "Le tournoi à imprimer."
 
-msgid "The tournaments on which the account can act (if none, the account can act on all the tournaments)."
-msgstr "Les tournois sur lesquels le compte pourra agir (si aucun, le compte peut agir sur tous les tournois)."
+msgid "The tournaments on which the permission is applied (by default, the permission is applied to all the tournaments)."
+msgstr "Les tournois sur lesquels la permission s'applique (par défaut, la permission s'applique à tous les tournois)."
 
 msgid "The tournaments to print."
 msgstr "Les tournois à imprimer."
@@ -4955,6 +4974,9 @@ msgstr "Il ne peut y avoir qu'une seule catégorie générale."
 
 msgid "There is no pairings for this round (last round with pairings: #{round})."
 msgstr "Il n'y a pas d'appariement pour cette ronde (dernière ronde appariée : n°{round})."
+
+msgid "These tournaments are already included for this account by a higher access level."
+msgstr "Ces tournois sont déjà inclus pour ce compte par un niveau d'accès plus élevé."
 
 msgid "This account can not be deleted."
 msgstr "Ce compte ne peut pas être supprimé."
@@ -5768,6 +5790,9 @@ msgstr "Vous n'êtes pas autorisé·e à désapparier les rondes."
 msgid "You are not allowed to update results."
 msgstr "Vous n'êtes pas autorisé·e à modifier les résultats."
 
+msgid "You are not allowed to update the permissions of this account."
+msgstr "Vous n'êtes pas autorisé à modifier les permissions de ce compte."
+
 msgid "You are not allowed to update the players' information from an external data source."
 msgstr "Vous n'êtes pas autorisé·e à modifier les informations de joueur·euses à partir d'une sources de données externe."
 
@@ -5788,6 +5813,9 @@ msgstr "Vous essayez de modifier les appariements de la ronde précédente. Cela
 
 msgid "You can temporarily invalidate accounts by turning this switch off."
 msgstr "Vous pouvez désactiver temporairement les comptes en décochant cette case."
+
+msgid "You can't add any more permission to this account."
+msgstr "Vous ne pouvez pas pas ajouter davantage de permissions à ce compte."
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement…) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans simples seront générés automatiquement."
@@ -5830,6 +5858,9 @@ msgstr "tous les échiquiers"
 
 msgid "all the players"
 msgstr "tou·tes les joueur·euses"
+
+msgid "all the tournaments"
+msgstr "tous les tournois"
 
 msgid "boards from #{first} to #{last}"
 msgstr "échiquiers du n°{first} au n°{last}"

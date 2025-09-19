@@ -23,8 +23,8 @@
                     </b>
                 {% endif %}
                 {% for prize in admin_prize_category.sorted_prizes %}
-                    <div class="border border-secondary">
-                        <div class="p-2 d-flex align-items-start gap-4">
+                    <div class="border border-secondary bg-body-tertiary">
+                        <div class="p-2 d-flex align-items-center gap-4">
                             <b>
                                 {{ ordinal_integer(loop.index)|safe }}
                             </b>

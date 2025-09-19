@@ -289,9 +289,11 @@ class BaseEventAdminWebContext(AdminWebContext):
         if self.client.can_manage_accounts:
             nav_tabs |= {
                 'admin-event-accounts-tab': {
-                    'title': _('Staff').format(num=len(event.accounts_by_id) or '-'),
+                    'title': _('Staff ({num})').format(
+                        num=len(event.accounts_by_id) or '-'
+                    ),
                     'template': 'accounts/tab.html',
-                    'icon_class': 'bi-key',
+                    'icon_class': 'bi-person-fill-lock',
                 },
             }
 

@@ -1,0 +1,196 @@
+<div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered"
+    style="--bs-modal-width: min(90vw, 500px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {% if action == 'update' %}
+                    {{ _('Edit permission') }}
+                {% else %}
+                     {{ _('Create permission') }}
+                {% endif %}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <h4 class="mb-3">
+                {{ _('%(string)s:', string=_('Account')) }}
+                {{ admin_account.full_name }}
+            </h4>
+            <form
+                id="modal-form"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                {% if action == 'update' %}
+                    hx-patch="{{ url_for(
+                        'admin-account-permission-update',
+                        event_uniq_id=admin_event.uniq_id,
+                        account_id=admin_account.id,
+                        access_level=admin_permission.access_level.id
+                    ) }}"
+                {% else %}
+                    hx-post="{{ url_for(
+                        'admin-account-permission-create',
+                        event_uniq_id=admin_event.uniq_id,
+                        account_id=admin_account.id
+                    ) }}"
+                {% endif %}
+            >
+                <div class="row mb-3">
+                    {% set id = 'access-level' %}
+                    {% set name = 'access_level' %}
+
+                    <div class="input-block">
+                        <label
+                            for="{{ id }}"
+                            class="form-check-label flex-grow-1 mb-1"
+                        >
+                            {{ _('%(string)s:', string=_('Access level')) }}
+                        </label>
+                        <div class="pw-input-group">
+                            <select
+                                name="{{ name }}"
+                                id="{{ id }}"
+                                class="form-select sharly-chess-select2"
+                                aria-describedby="{{ id }}-help"
+                                style="display:none"
+                            >
+                                {% for access_level in manageable_access_levels %}
+                                    <option
+                                        value="{{ access_level.id }}"
+                                        {% if access_level in inherited_permissions_by_access_level %}
+                                            title="{{ _(
+                                                'Inherited by permission [%(permission)s].',
+                                                permission=inherited_permissions_by_access_level[access_level].inherited_by.name
+                                            ) }}"
+                                        {% elif access_level in current_access_levels %}
+                                            title="{{ _('Acesss level already defined for the account.') }}"
+                                        {% else %}
+                                            title="{{ access_level.help_text }}"
+                                        {% endif %}
+                                        {% if access_level.id == data[name] %}
+                                            selected
+                                        {% endif %}
+                                        {% if access_level in inherited_permissions_by_access_level or access_level in current_access_levels %}
+                                            disabled
+                                        {% endif %}
+                                    >
+                                        {{ access_level.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <script>
+                                $('#{{ id }}').select2({
+                                    theme: 'bootstrap-5',
+                                    width: '100%',
+                                    placeholder: $(this).data('placeholder'),
+                                    minimumResultsForSearch: Infinity,
+                                    templateResult: (option) => {
+                                        if (!option.id) {
+                                            return option.text;
+                                        }
+                                        return $(
+                                            '<div ' +
+                                            '    class="access-level-option w-100" ' +
+                                            '    data-bs-title="' + $(option.element).attr('data-bs-title') + '" ' +
+                                            '>' + option.text +
+                                            '</div>'
+                                        );
+                                    },
+                                    templateSelection: (option) => option.text,
+                                });
+                                $('#{{ id }}').on('select2:close', function(e) {
+                                    $('[role="tooltip"]').remove();
+                                });
+
+                                $('body').tooltip({
+                                    selector: '[data-bs-toggle="tooltip"],.select2-results__option',
+                                    title: function() {
+                                        return $(this).prev().attr("data-bs-title");
+                                    },
+                                    placement: "right",
+                                    container: "body",
+                                    html: true,
+                                    zIndex: 10010,
+                                });
+                            </script>
+                        </div>
+                        <div id="{{ id }}-help" class="form-text">
+                            {{ _('The access level of the permission.') }}
+                        </div>
+                    </div>
+                </div>
+                <div
+                    id="tournament-select-container"
+                    class="row"
+                    {% if data['access_level'] not in tournament_access_level_ids %}
+                        style="display:none"
+                    {% endif %}
+                >
+                    {{ admin_macros.select_input(
+                        name='tournament_ids',
+                        label=_('%(string)s:', string=_('Tournaments')),
+                        help_text=_('The tournaments on which the permission is applied (by default, the permission is applied to all the tournaments).'),
+                        select_all=true,
+                        select_options=tournament_options,
+                        multiple_select=true,
+                        placeholder=_('Choose one, many or no tournaments.'),
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <script>
+                    $('#access-level').change(function () {
+                        const tournamentLevels = {{ tournament_access_level_ids|tojson }};
+                        $('#tournament-select-container').css(
+                            'display',
+                            tournamentLevels.includes($(this).val()) ? 'block': 'none',
+                        );
+                    });
+                </script>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                {% if admin_account.permissions %}
+                    hx-get="{{ url_for(
+                        'admin-account-permissions-modal',
+                        event_uniq_id=admin_event.uniq_id,
+                        account_id=admin_account.id
+                    ) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    preload
+                    data-bs-target="#modal-wrapper"
+                {% else %}
+                    data-bs-dismiss="modal"
+                {% endif %}
+            >
+                <i class="bi-arrow-left-circle-fill pe-1"></i>
+                {{ _('Back') }}
+            </button>
+
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn btn-primary"
+            >
+                <i class="bi bi-floppy-fill pe-1"></i>
+                {% if action == 'update' %}
+                    {{ _('Save') }}
+                {% else %}
+                    {{ _('Create') }}
+                {% endif %}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // We need to reload the page when the modal is hidden, because the permissions might have changed.
+    $(document).one('hide.bs.modal', function(e) {
+        e.preventDefault();
+        document.body.dispatchEvent(new CustomEvent('request_refresh'));
+    });
+</script>
