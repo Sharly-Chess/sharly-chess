@@ -251,7 +251,7 @@ def make_qr_pil(data: str) -> PILImage.Image:
 def pil_to_toga_image(pil_img: PILImage.Image) -> toga.Image:
     buf = io.BytesIO()
     pil_img.save(buf, format='PNG')
-    return toga.Image(data=buf.getvalue())
+    return toga.Image(src=buf.getvalue())
 
 
 class SharlyChessServerToga(toga.App):
@@ -366,7 +366,7 @@ class SharlyChessServerToga(toga.App):
             )
         )
         self.networks_section = toga.Box(
-            style=Pack(direction=COLUMN, margin_top=10, alignment='center')
+            style=Pack(direction=COLUMN, margin_top=10, align_items='center')
         )
         self.networks_section.add(self.browser_btn)
         self.info_view.add(self.networks_section)
@@ -395,7 +395,7 @@ class SharlyChessServerToga(toga.App):
             self._on_start_server(None)
 
     def make_link_button(self, url: str) -> toga.Label:
-        button = toga.Button(url, style=Pack(alignment='center', padding_top=5))
+        button = toga.Button(url, style=Pack(align_items='center', margin_top=5))
         button.on_press = lambda widget, **kwargs: webbrowser.open(url)
         return button
 
@@ -409,7 +409,7 @@ class SharlyChessServerToga(toga.App):
                         'You may also connect to this server from other devices using\nthe address of this server on your available networks:'
                     ),
                     margin_top=20,
-                    alignment='center',
+                    align_items='center',
                     text_align='center',
                 )
             )
@@ -421,7 +421,7 @@ class SharlyChessServerToga(toga.App):
             for item in config.lan_ifaces:
                 url = config.app_url(item['ip'])
                 network_item = toga.Box(
-                    style=Pack(direction=COLUMN, gap=5, alignment='center')
+                    style=Pack(direction=COLUMN, gap=5, align_items='center')
                 )
                 pil_img = make_qr_pil(url)
                 toga_img = pil_to_toga_image(pil_img)
@@ -435,7 +435,7 @@ class SharlyChessServerToga(toga.App):
                 )
                 network_item.add(qr_widget)
                 network_item.add(self.make_link_button(url))
-                network_item.add(toga.Label(text=label, alignment='center'))
+                network_item.add(toga.Label(text=label, align_items='center'))
                 self.networks_view.add(network_item)
 
     def _noop(self, widget: toga.Widget):
