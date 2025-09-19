@@ -199,6 +199,9 @@
   "files.associations": {
     "*.html": "jinja"
   },
+  "workbench.editorAssociations": {
+    "*.svg": "default"
+  },
   "editor.formatOnSave": false,
   "editor.formatOnPaste": false,
   "[jinja]": {

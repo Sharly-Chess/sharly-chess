@@ -244,6 +244,10 @@ class IndexAdminController(BaseAdminController):
 
         event_card_blocks = plugin_manager.hook.get_event_card_block_template()
 
+        svg_logo = Path('src/web/static/images/sharly-chess-logo.svg').read_text(
+            encoding='utf-8'
+        )
+
         context = (
             web_context.template_context
             | {
@@ -251,6 +255,7 @@ class IndexAdminController(BaseAdminController):
                 'format_timestamp_date': format_timestamp_date,
                 'format_timestamp_time': format_timestamp_time,
                 'nav_tabs': nav_tabs,
+                'svg_logo': svg_logo,
                 'admin_events_show_details': (
                     SessionHandler.get_session_admin_events_show_details(
                         web_context.request

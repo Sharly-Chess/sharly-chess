@@ -7,64 +7,57 @@
 </div>
 
 <div id="home-content" class="content home-content mt-5">
-    <div style="max-width: 600px; margin: auto;">
-        <div class="d-grid gap-2 col-auto mx-auto">
-            <h1 class="text-center">{{ _('Welcome to Sharly Chess!') }}</h1>
-            <div class="dropdown text-center my-3">
-                <i class="bi-translate pe-1"></i>
-                <button class="btn btn-secondary dropdown-toggle mx-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img
-                        src="{{locale_infos[locale].flag_url}}"
-                        alt="{{locale_infos[locale].name}}"
-                        class="locale-flag"
-                    />
-                    {{ locale_infos[locale].name }}
-                </button>
-                <ul class="dropdown-menu locale">
-                    {% for l, l_info in locale_infos.items() %}
-                        {% if l != locale %}
-                            <li
-                                class="
-                                    dropdown-item
-                                    text-start
-                                    {% if l == locale %}fw-bold{% else %}cursor-pointer{% endif %}
-                                    "
-                                hx-get="{{ url_for('index') }}"
-                                hx-vals='{"locale": "{{ l }}"}'
-                                preload
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                hx-trigger="click, keyup[key=='Enter']"
-                                tabindex="0"
-                            >
-                                <img
-                                    src="{{l_info.flag_url}}"
-                                    alt="{{l_info.name}}"
-                                    class="locale-flag"
-                                />
-                                {{ l_info.name }}
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-                </ul>
-            </div>
-            {% if client.account.administrator %}
-                <h4 class="text-center text-primary my-3">
-                    {{ _('You are on the Sharly Chess server.') }}
-                </h4>
-                {% if client.can_add_event %}
-                        {% with button_class='btn-lg' %}
-                    <div class="text-center my-3">
-                            {% include 'create_event_button.html' %}
-                        {% endwith %}
-                    </div>
-                {% endif %}
-            {% else %}
-                <h4 class="text-center text-primary my-3">
-                    {{ _('You are connected to the Sharly Chess server.') }}
-                </h4>
-            {% endif %}
+    <div class="d-grid gap-2 col-auto mx-auto">
+        <div style="width: 450px; max-width: 60vw; margin: 0 auto 50px;" class="text-primary">
+            {{ svg_logo | safe }}
         </div>
+        <div class="dropdown text-center my-3">
+            <i class="bi-translate pe-1"></i>
+            <button class="btn btn-secondary dropdown-toggle mx-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <img
+                    src="{{locale_infos[locale].flag_url}}"
+                    alt="{{locale_infos[locale].name}}"
+                    class="locale-flag"
+                />
+                {{ locale_infos[locale].name }}
+            </button>
+            <ul class="dropdown-menu locale">
+                {% for l, l_info in locale_infos.items() %}
+                    {% if l != locale %}
+                        <li
+                            class="
+                                dropdown-item
+                                text-start
+                                {% if l == locale %}fw-bold{% else %}cursor-pointer{% endif %}
+                                "
+                            hx-get="{{ url_for('index') }}"
+                            hx-vals='{"locale": "{{ l }}"}'
+                            preload
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            hx-trigger="click, keyup[key=='Enter']"
+                            tabindex="0"
+                        >
+                            <img
+                                src="{{l_info.flag_url}}"
+                                alt="{{l_info.name}}"
+                                class="locale-flag"
+                            />
+                            {{ l_info.name }}
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% if client.account.administrator %}
+            {% if client.can_add_event %}
+                    {% with button_class='btn-lg' %}
+                <div class="text-center my-3">
+                        {% include 'create_event_button.html' %}
+                    {% endwith %}
+                </div>
+            {% endif %}
+        {% endif %}
     </div>
 </div>
 
