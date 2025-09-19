@@ -337,9 +337,6 @@ msgstr ""
 msgid "Account:"
 msgstr ""
 
-msgid "Accounts"
-msgstr ""
-
 msgid "Acesss level already defined for the account."
 msgstr ""
 
@@ -1066,12 +1063,6 @@ msgid "Complementary pairings successfully generated!"
 msgstr ""
 
 msgid "Configuration"
-msgstr ""
-
-msgid "Connect other devices!"
-msgstr ""
-
-msgid "Connect your devices (laptops, tablets, smartphones) to the Sharly Chess server by scanning this QR code (click below to get a printable version)."
 msgstr ""
 
 msgid "Connection French Chess Federation"
@@ -1876,6 +1867,9 @@ msgstr ""
 msgid "Enable/disable the details of tournaments on the cards below."
 msgstr ""
 
+msgid "Enable/disable the details on the cards below."
+msgstr ""
+
 msgid "Enabled"
 msgstr ""
 
@@ -2367,6 +2361,9 @@ msgid "Hide"
 msgstr ""
 
 msgid "Hide Log"
+msgstr ""
+
+msgid "Hide Networks"
 msgstr ""
 
 msgid "Hide the exit button"
@@ -4311,6 +4308,9 @@ msgstr ""
 msgid "Sector arbitration"
 msgstr ""
 
+msgid "See Networks"
+msgstr ""
+
 msgid "See the pairings information for the start of this round."
 msgstr ""
 
@@ -4388,9 +4388,6 @@ msgid "Sharly Chess project"
 msgstr ""
 
 msgid "Sharly Chess server"
-msgstr ""
-
-msgid "Sharly Chess server URL"
 msgstr ""
 
 msgid "Sharly Chess settings"
@@ -4496,6 +4493,9 @@ msgid "Split by:"
 msgstr ""
 
 msgid "Staff"
+msgstr ""
+
+msgid "Staff ({num})"
 msgstr ""
 
 msgid "Standard"
@@ -5721,9 +5721,6 @@ msgstr ""
 msgid "You are connected on the Sharly Chess server and have full administration privileges."
 msgstr ""
 
-msgid "You are connected to the Sharly Chess server."
-msgstr ""
-
 msgid "You are in an unsafe editing mode. Change the round to exit this mode."
 msgstr ""
 
@@ -5802,9 +5799,6 @@ msgstr ""
 msgid "You are not allowed to update this account."
 msgstr ""
 
-msgid "You are on the Sharly Chess server."
-msgstr ""
-
 msgid "You are trying to manually edit the pairings of the current round. Pairings should only be altered to handle unusual situations."
 msgstr ""
 
@@ -5818,6 +5812,9 @@ msgid "You can't add any more permission to this account."
 msgstr ""
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
+msgstr ""
+
+msgid "You may also connect to this server from other devices using"
 msgstr ""
 
 msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on your local network."
@@ -5949,9 +5946,6 @@ msgstr ""
 msgid "players on {parts} screens"
 msgstr ""
 
-msgid "printable version"
-msgstr ""
-
 msgid "ranking from #{first} to #{last}"
 msgstr ""
 
@@ -5992,6 +5986,9 @@ msgid "screens of {number} players from start to #{last}"
 msgstr ""
 
 msgid "some already played each other"
+msgstr ""
+
+msgid "the address of this server on your available networks:"
 msgstr ""
 
 msgid "the number of moves is required for a non-final period."
@@ -6091,3 +6088,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+

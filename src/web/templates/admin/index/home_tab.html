@@ -7,93 +7,57 @@
 </div>
 
 <div id="home-content" class="content home-content mt-5">
-    <div style="max-width: 600px; margin: auto;">
-        <div class="d-grid gap-2 col-auto mx-auto">
-            <h1 class="text-center">{{ _('Welcome to Sharly Chess!') }}</h1>
-            <div class="dropdown text-center my-3">
-                <i class="bi-translate pe-1"></i>
-                <button class="btn btn-secondary dropdown-toggle mx-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img
-                        src="{{locale_infos[locale].flag_url}}"
-                        alt="{{locale_infos[locale].name}}"
-                        class="locale-flag"
-                    />
-                    {{ locale_infos[locale].name }}
-                </button>
-                <ul class="dropdown-menu locale">
-                    {% for l, l_info in locale_infos.items() %}
-                        {% if l != locale %}
-                            <li
-                                class="
-                                    dropdown-item
-                                    text-start
-                                    {% if l == locale %}fw-bold{% else %}cursor-pointer{% endif %}
-                                    "
-                                hx-get="{{ url_for('index') }}"
-                                hx-vals='{"locale": "{{ l }}"}'
-                                preload
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                                hx-trigger="click, keyup[key=='Enter']"
-                                tabindex="0"
-                            >
-                                <img
-                                    src="{{l_info.flag_url}}"
-                                    alt="{{l_info.name}}"
-                                    class="locale-flag"
-                                />
-                                {{ l_info.name }}
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-                </ul>
-            </div>
-            {% if client.account.administrator %}
-                <h4 class="text-center text-primary my-3">
-                    {{ _('You are on the Sharly Chess server.') }}
-                </h4>
-
-                {% if client.can_add_event %}
-                    <div class="text-center my-3">
-                        {% with button_class='btn-lg' %}
-                            {% include 'create_event_button.html' %}
-                        {% endwith %}
-                    </div>
-                {% endif %}
-
-                {% if sharly_chess_config.lan_ifaces %}
-                    <h4 class="text-center mt-3">{{ _('Connect other devices!') }}</h4>
-                    <div class="row">
-                        {% for item in sharly_chess_config.lan_ifaces %}
-                        {% set ip = item.ip %}
-                        <div class="col text-center">
+    <div class="d-grid gap-2 col-auto mx-auto">
+        <div class="dropdown text-center mb-3">
+            <i class="bi-translate pe-1"></i>
+            <button class="btn btn-secondary dropdown-toggle mx-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <img
+                    src="{{locale_infos[locale].flag_url}}"
+                    alt="{{locale_infos[locale].name}}"
+                    class="locale-flag"
+                />
+                {{ locale_infos[locale].name }}
+            </button>
+            <ul class="dropdown-menu locale">
+                {% for l, l_info in locale_infos.items() %}
+                    {% if l != locale %}
+                        <li
+                            class="
+                                dropdown-item
+                                text-start
+                                {% if l == locale %}fw-bold{% else %}cursor-pointer{% endif %}
+                                "
+                            hx-get="{{ url_for('index') }}"
+                            hx-vals='{"locale": "{{ l }}"}'
+                            preload
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            hx-trigger="click, keyup[key=='Enter']"
+                            tabindex="0"
+                        >
                             <img
-                                src="{{ url_for('qrcode-lan-url', ip=ip) }}?time={{ now }}"
-                                alt="{{ _('Sharly Chess server URL') }}"
-                                class="py-2"
-                                style="width: 150px"
-                                {{ macros.tooltip_attributes('info', _('Connect your devices (laptops, tablets, smartphones) to the Sharly Chess server by scanning this QR code (click below to get a printable version).'), 'right') }}
+                                src="{{l_info.flag_url}}"
+                                alt="{{l_info.name}}"
+                                class="locale-flag"
                             />
-                            <br/>
-                            <a href="{{ sharly_chess_config.app_url(ip) }}" target="_blank">
-                                {{ sharly_chess_config.app_url(ip) }}
-                            </a>
-                            <div class="text-muted small">
-                                {{ item.label }}{% if item.type and item.type != item.label %} ({{ item.type }}){% endif %}
-                            </div>
-                            <a href="{{ url_for('qrcode-lan-url', ip=ip) }}?logo=&time={{ now }}" target="_blank">
-                                ({{ _('printable version') }})
-                            </a>
-                        </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            {% else %}
-                <h4 class="text-center text-primary my-3">
-                    {{ _('You are connected to the Sharly Chess server.') }}
-                </h4>
-            {% endif %}
+                            {{ l_info.name }}
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
         </div>
+        <div style="width: 300px; max-width: 60vw; margin: 40px auto 20px;" class="text-primary">
+            {{ svg_logo | safe }}
+        </div>
+        {% if client.account.administrator %}
+            {% if client.can_add_event %}
+                    {% with button_class='btn-lg' %}
+                <div class="text-center my-3">
+                        {% include 'create_event_button.html' %}
+                    {% endwith %}
+                </div>
+            {% endif %}
+        {% endif %}
     </div>
 </div>
 
@@ -106,7 +70,8 @@
                         {% for event in nav_tab.events %}
                             {% with
                                 card_url=url_for('admin-event', event_uniq_id=event.uniq_id),
-                                card_class='border-danger' if not event.public else ''
+                                card_class='border-danger' if not event.public else '',
+                                hide_public_status=True
                             %}
                                 {% include 'event_card.html' %}
                             {% endwith %}

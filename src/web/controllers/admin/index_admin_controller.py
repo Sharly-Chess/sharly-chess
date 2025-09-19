@@ -163,8 +163,9 @@ class IndexAdminController(BaseAdminController):
             'home': {
                 'title': _('Home'),
                 'template': 'index/home_tab.html',
-                'icon_class': 'bi-qr-code',
+                'icon_class': 'bi-house-fill',
                 'disabled': False,
+                'events': lan_events,
                 'experimental_features_warning': True,
             },
         }
@@ -223,7 +224,7 @@ class IndexAdminController(BaseAdminController):
                     'events': lan_events,
                     'disabled': False,
                     'empty_str': _('No events.'),
-                    'icon_class': 'bi-qr-code',
+                    'icon_class': 'bi-house-fill',
                     'page_title': _('Events'),
                     'divider': True,
                 },
@@ -243,6 +244,10 @@ class IndexAdminController(BaseAdminController):
 
         event_card_blocks = plugin_manager.hook.get_event_card_block_template()
 
+        svg_logo = Path('src/web/static/images/sharly-chess-logo.svg').read_text(
+            encoding='utf-8'
+        )
+
         context = (
             web_context.template_context
             | {
@@ -250,6 +255,7 @@ class IndexAdminController(BaseAdminController):
                 'format_timestamp_date': format_timestamp_date,
                 'format_timestamp_time': format_timestamp_time,
                 'nav_tabs': nav_tabs,
+                'svg_logo': svg_logo,
                 'admin_events_show_details': (
                     SessionHandler.get_session_admin_events_show_details(
                         web_context.request

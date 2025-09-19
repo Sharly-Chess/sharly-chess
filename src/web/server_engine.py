@@ -6,7 +6,7 @@ import sys
 from threading import Thread
 from time import sleep
 from types import FrameType
-from typing import ClassVar, cast
+from typing import Callable, ClassVar, cast
 from webbrowser import open
 
 import requests
@@ -80,11 +80,13 @@ class ServerEngine(Engine):
         port: int | None = None,
         loop: asyncio.AbstractEventLoop | None = None,
         handle_signals: bool = True,
+        on_port_chosen: Callable[[], None] | None = None,
     ):
         super().__init__()
         self.debug = debug
         self.handle_signals = handle_signals
         self.port = port
+        self.on_port_chosen = on_port_chosen
         if self.error:
             return
 
@@ -152,6 +154,9 @@ class ServerEngine(Engine):
                     )
                 )
                 return
+
+        if self.on_port_chosen:
+            self.on_port_chosen()
 
         print_interactive_info(
             _('Port: {port}').format(port=sharly_chess_config.web_port)
