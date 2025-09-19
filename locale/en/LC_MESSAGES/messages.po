@@ -340,6 +340,9 @@ msgstr ""
 msgid "Account:"
 msgstr ""
 
+msgid "Acesss level already defined for the account."
+msgstr ""
+
 msgid "Action"
 msgstr ""
 
@@ -683,6 +686,9 @@ msgstr ""
 msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
 msgstr "Bd."
 
+msgid "Before configuring accounts, you have to be aware of a few security warnings:"
+msgstr ""
+
 msgid "Benefit from the very last (experimental) features (USE AT YOUR OWN RISKS!)."
 msgstr ""
 
@@ -774,6 +780,9 @@ msgid "Buchholz cut bottom"
 msgstr ""
 
 msgid "By board"
+msgstr ""
+
+msgid "By default, other devices can only interact with public screens. This tab allows you to configure this behavior."
 msgstr ""
 
 msgid "By default, tournaments are not visible on the FFE site."
@@ -964,6 +973,9 @@ msgid "Clear Log"
 msgstr ""
 
 msgid "Clear all the filters."
+msgstr ""
+
+msgid "Click the [Get Started] button to configure accounts."
 msgstr ""
 
 msgid "Click to check-in the player."
@@ -1855,6 +1867,9 @@ msgstr ""
 msgid "Enable/disable the details on the cards below."
 msgstr ""
 
+msgid "Enable/disable the details on the cards below."
+msgstr ""
+
 msgid "Enabled"
 msgstr ""
 
@@ -2397,6 +2412,9 @@ msgid "IM *** SHORT NAME FOR International Master"
 msgstr "IM"
 
 msgid "Identity"
+msgstr ""
+
+msgid "If you can't control who has access to the network you are connected to, it is highly recommended to not create any account."
 msgstr ""
 
 msgid "Illegal moves are not recorded."
@@ -4369,6 +4387,9 @@ msgstr ""
 msgid "Sharly Chess project"
 msgstr ""
 
+msgid "Sharly Chess reaches its full potential when used as a server, with other devices connected to the same network."
+msgstr ""
+
 msgid "Sharly Chess server"
 msgstr ""
 
@@ -4376,6 +4397,9 @@ msgid "Sharly Chess settings"
 msgstr ""
 
 msgid "Sharly Chess settings have been updated."
+msgstr ""
+
+msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
 msgstr ""
 
 msgid "Show Log"
@@ -4406,6 +4430,9 @@ msgid "Single Screens ({num})"
 msgstr ""
 
 msgid "Soft Haley system"
+msgstr ""
+
+msgid "Some accounts can have very high access levels, making them dangerous in the hands of an unaware or malicious users."
 msgstr ""
 
 msgid "Something went wrong. Please ask your administrator to recreate your account."
@@ -4478,6 +4505,12 @@ msgid "Staff"
 msgstr ""
 
 msgid "Staff ({num})"
+msgstr ""
+
+msgid "Staff ({num})"
+msgstr ""
+
+msgid "Staff default configuration"
 msgstr ""
 
 msgid "Standard"
@@ -5120,6 +5153,10 @@ msgid "Timers: %(num)d"
 msgstr ""
 
 msgid "Titled players"
+msgstr ""
+
+#, python-format
+msgid "To learn how to control your network, consult <a href=\"%(link)s\" target=\"_blank\">our documentation</a>."
 msgstr ""
 
 msgid "Today"
@@ -5785,6 +5822,9 @@ msgid "You are trying to manually edit the pairings of the current round. Pairin
 msgstr ""
 
 msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
+msgstr ""
+
+msgid "You can create password-protected accounts to delegate tasks to other members of the staff (ex: other arbiters, organizer)."
 msgstr ""
 
 msgid "You can temporarily invalidate accounts by turning this switch off."

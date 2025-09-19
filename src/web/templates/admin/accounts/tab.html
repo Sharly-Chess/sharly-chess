@@ -11,25 +11,21 @@
 {% block top_right_nav %}
     {% if client.can_manage_accounts %}
         {% if admin_event.predefined_accounts %}
-            <span
-                {{ macros.tooltip_attributes('info', _('Add an account to the event.'), 'top') }}
+            <button
+                class="btn btn-primary text-nowrap ms-1"
+                hx-post="{{ url_for(
+                    'admin-account-create-defaults',
+                    event_uniq_id=admin_event.uniq_id
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                preload
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
             >
-                <button
-                    class="btn btn-primary text-nowrap ms-1"
-                    hx-post="{{ url_for(
-                        'admin-account-create-defaults',
-                        event_uniq_id=admin_event.uniq_id
-                    ) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    preload
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                >
-                    <i class="bi-plus-square-fill pe-1"></i>
-                    {{ _('Get started') }}
-                </button>
-            </span>
+                <i class="bi-play-fill"></i>
+                {{ _('Get started') }}
+            </button>
         {% else %}
             {% set show=admin_accounts_show_details %}
             <div
@@ -71,7 +67,53 @@
 {% block cards_container_cards %}
     {% if client.can_manage_accounts %}
         {% if admin_event.predefined_accounts %}
-            #TODO documentation
+            <div class="mx-auto" style="max-width: 500px;">
+                <h5 class="mt-2 my-5 text-center">
+                    {{ _('Staff default configuration') }}
+                </h5>
+                <p>
+                    {{ _(
+                        'Sharly Chess reaches its full potential when used as a '
+                        'server, with other devices connected to the same network.'
+                    ) }}
+                </p>
+                <p>
+                    {{ _(
+                        'By default, other devices can only interact with public screens. '
+                        'This tab allows you to configure this behavior.'
+                    ) }}
+                </p>
+                <p>
+                    {{ _(
+                        'You can create password-protected accounts to delegate tasks '
+                        'to other members of the staff (ex: other arbiters, organizer).'
+                    ) }}
+                </p>
+                <p>
+                    {{ _('Before configuring accounts, you have to be aware of a few security warnings:') }}
+                    <ul>
+                        <li class="mb-1">{{ _(
+                            'Some accounts can have very high access levels, making '
+                            'them dangerous in the hands of an unaware or malicious users.'
+                        ) }}</li>
+                        <li class="mb-1">{{ _(
+                            'Sharly Chess using the local network, all the traffic is public. '
+                            'This means anyone connected to the same network could easily gain '
+                            'access to an account without needing to type in the password.'
+                        ) }}</li>
+                        <li class="mb-1">{{ _(
+                            'If you can\'t control who has access to the network you '
+                            'are connected to, it is highly recommended to not create any account.'
+                        ) }}</li>
+                        <li>{{ _(
+                            'To learn how to control your network, consult '
+                            '<a href="%(link)s" target="_blank">our documentation</a>.',
+                            link=macros.doc_url('security')
+                        ) }}</li>
+                    </ul>
+                </p>
+                <p>{{ _('Click the [Get Started] button to configure accounts.') }}</p>
+            </div>
         {% else %}
             <div class="row">
                 {% for account in admin_event.accounts_sorted_by_name %}
