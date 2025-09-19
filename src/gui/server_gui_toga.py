@@ -406,9 +406,16 @@ class SharlyChessServerToga(toga.App):
             self.networks_section.add(
                 toga.Label(
                     text=_(
-                        'You may also connect to this server from other devices using\nthe address of this server on your available networks:'
+                        'You may also connect to this server from other devices using'
                     ),
                     margin_top=20,
+                    align_items='center',
+                    text_align='center',
+                )
+            )
+            self.networks_section.add(
+                toga.Label(
+                    text=_('the address of this server on your available networks:'),
                     align_items='center',
                     text_align='center',
                 )
