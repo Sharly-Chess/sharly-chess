@@ -68,26 +68,26 @@
     </div>
 </div>
 
-{% if nav_tab.events|length > 0 %}
-    <section class="p-4 my-4">
-        <div class="container-fluid" style="--bs-gutter-x: 0;">
-            <div class="row justify-content-center">
-                {% if nav_tab.events %}
-                    {% for event in nav_tab.events %}
-                        {% with
-                            card_url=url_for('admin-event', event_uniq_id=event.uniq_id),
-                            card_class='border-danger' if not event.public else ''
-                        %}
-                            {% include 'event_card.html' %}
-                        {% endwith %}
-                    {% endfor %}
-                {% endif %}
-            </div>
-        </div>
-    </section>
-{% endif %}
-
 {% if not client.account.administrator %}
+    {% if nav_tab.events|length > 0 %}
+        <section class="p-4 my-4">
+            <div class="container-fluid" style="--bs-gutter-x: 0;">
+                <div class="row justify-content-center">
+                    {% if nav_tab.events %}
+                        {% for event in nav_tab.events %}
+                            {% with
+                                card_url=url_for('admin-event', event_uniq_id=event.uniq_id),
+                                card_class='border-danger' if not event.public else ''
+                            %}
+                                {% include 'event_card.html' %}
+                            {% endwith %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    {% endif %}
+
     <div class="mx-auto text-center" style="max-width: 500px;">
         <h5 class="mt-2 mt-5 mb-3">
             {% if nav_tab.events|length == 0 %} {{ _('No public events.') }} {% else %} {{ _("Can't see your event?") }} {% endif %}
