@@ -2,6 +2,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 from abc import ABC
 from argparse import ArgumentParser, Namespace
 from logging import Logger
@@ -51,8 +52,6 @@ class ProjectBuilder(ABC):
         self.zip_file: Path = self.export_dir / f'{self.basename}.zip'
         self.test_dir: Path = BASE_DIR / 'export-test' / self.basename
         self.clean_project_on_exit: bool = clean_project_on_exit
-
-    def run(self) -> bool:
         parser = ArgumentParser(description='Export Sharly Chess.')
         # option --github is used when generating the EXE file from a GITHUB action
         # to verify that the name of the tag matches the Sharly Chess version.
@@ -69,7 +68,10 @@ class ProjectBuilder(ABC):
                 logger.info('Version [%s] is valid.', args.github)
         else:
             logger.info('The version is not verified (not running on GitHub).')
+        self.runs_on_github: bool = bool(args.github)
         self.hook_check_params(args)
+
+    def run(self) -> bool:
         self.clean_on_startup()
         if not self.build_project():
             return False
@@ -123,9 +125,19 @@ class ProjectBuilder(ABC):
     def hook_post_clean_on_startup(self):
         """Runs at the end of `clean_on_startup`"""
 
+    @property
+    def _python_dir(self) -> Path:
+        """Returns the base dir for Python."""
+        try:
+            # devel
+            return Path(os.environ['VIRTUAL_ENV'])
+        except KeyError:
+            # GitHub
+            return Path(sys.executable).parent
+
+    @property
     def hook_get_venv_lib_path(
         self,
-        venv_path: Path,
     ) -> Path:
         """Returns the path to the libraries of the virtual environment."""
         raise NotImplementedError(f'Class {self.__class__} not implemented yet.')
@@ -648,8 +660,7 @@ class ProjectBuilder(ABC):
                 # File is outside BASE_DIR, add to root
                 pyinstaller_params.append(f'--add-data={file}{data_separator}.')
                 logger.info(f'Adding external file to root: {file}')
-        venv_path: Path = Path(os.environ['VIRTUAL_ENV'])
-        venv_lib_path = self.hook_get_venv_lib_path(venv_path)
+        venv_lib_path = self.hook_get_venv_lib_path
         toga_path: Path = venv_lib_path / 'toga'
         iso4217parse_path: Path = venv_lib_path / 'iso4217parse'
         for file in [
