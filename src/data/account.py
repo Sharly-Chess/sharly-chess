@@ -36,15 +36,17 @@ class Permission:
         return set(stored_tournament_ids) if stored_tournament_ids else None
 
     def tournaments_tooltip_message(self, event: 'Event') -> str:
-        if not self.tournament_ids:
-            return ''
-        tournament_names = sorted(
-            event.tournaments_by_id[tournament_id].name
-            for tournament_id in self.tournament_ids
-        )
         return ''.join(
             f'<div class="text-center text-nowrap">{name}</div>'
-            for name in tournament_names
+            for name in self.tournament_names(event)
+        )
+
+    def tournament_names(self, event: 'Event') -> list[str]:
+        if not self.tournament_ids:
+            return []
+        return sorted(
+            event.tournaments_by_id[tournament_id].name
+            for tournament_id in self.tournament_ids
         )
 
 

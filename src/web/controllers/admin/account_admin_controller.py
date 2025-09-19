@@ -21,6 +21,7 @@ from web.controllers.admin.base_event_admin_controller import (
 )
 from web.controllers.base_controller import Redirect, WebContext
 from web.messages import Message
+from web.session import SessionHandler
 
 
 class AccountAdminWebContext(BaseEventAdminWebContext):
@@ -76,6 +77,9 @@ class AccountAdminWebContext(BaseEventAdminWebContext):
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
             'admin_event_tab': 'admin-event-accounts-tab',
+            'admin_accounts_show_details': (
+                SessionHandler.get_session_admin_accounts_show_details(self.request)
+            ),
             'admin_account': self.admin_account,
             'admin_permission': self.admin_permission,
         }
@@ -102,7 +106,12 @@ class AccountAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
+        admin_accounts_show_details: bool | None,
     ) -> Template | ClientRedirect | Redirect:
+        if admin_accounts_show_details is not None:
+            SessionHandler.set_session_admin_accounts_show_details(
+                request, admin_accounts_show_details
+            )
         return self.admin_event_account_render(
             AccountAdminWebContext(request, event_uniq_id)
         )

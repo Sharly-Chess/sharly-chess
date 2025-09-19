@@ -59,19 +59,27 @@
                         </span>
                         {% if access_level.has_tournament_scope %}
                             {% if permission.tournament_ids %}
-                                <i class="text-secondary">
-                                    ({{ ngettext(
-                                        '%(num)d tournament',
-                                        '%(num)d tournaments',
-                                        permission.tournament_ids|length
-                                    ) }})
-                                </i>
-                                <i
-                                    class="bi-info-circle-fill ps-1"
-                                   {{ macros.tooltip_attributes(
-                                        '', permission.tournaments_tooltip_message(admin_event), 'right'
-                                    ) }}
-                                ></i>
+                                {% if admin_accounts_show_details %}
+                                    <ul>
+                                        {% for tournament_name in permission.tournament_names(admin_event) %}
+                                            <li>{{ tournament_name }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <i class="text-secondary">
+                                        ({{ ngettext(
+                                            '%(num)d tournament',
+                                            '%(num)d tournaments',
+                                            permission.tournament_ids|length
+                                        ) }})
+                                    </i>
+                                    <i
+                                        class="bi-info-circle-fill ps-1"
+                                       {{ macros.tooltip_attributes(
+                                            '', permission.tournaments_tooltip_message(admin_event), 'right'
+                                        ) }}
+                                    ></i>
+                                {% endif %}
                             {% else %}
                                 <i class="text-secondary">
                                     ({{ _('all the tournaments') }})

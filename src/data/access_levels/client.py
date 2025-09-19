@@ -11,7 +11,6 @@ from data.account import (
 )
 from data.access_levels.manager import AccessLevelManager
 from data.access_levels.access_levels import AccessLevel
-from data.tournament import Tournament
 from utils.enum import Result
 from web.session import SessionHandler
 
@@ -55,24 +54,6 @@ class Client:
     # ---------------------------------------------------------------------------------
     # Permissions / actions
     # ---------------------------------------------------------------------------------
-
-    def permission_tournament_names(
-        self,
-        permission: Permission,
-    ) -> str | None:
-        """Returns"""
-        tournaments: list[Tournament]
-        if permission.tournament_ids is None or self.event is None:
-            tournaments = []
-        else:
-            tournaments = [
-                self.event.tournaments_by_id[tournament_id]
-                for tournament_id in permission.tournament_ids
-                if tournament_id in self.event.tournaments_by_id
-            ]
-        if not tournaments:
-            return None
-        return ', '.join(tournament.name for tournament in tournaments)
 
     @cached_property
     def permissions_by_access_level(self) -> dict[AccessLevel, Permission]:
