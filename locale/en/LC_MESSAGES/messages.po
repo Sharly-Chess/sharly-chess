@@ -316,6 +316,9 @@ msgstr ""
 msgid "Access level"
 msgstr ""
 
+msgid "Access level already defined for the account."
+msgstr ""
+
 msgid "Access unrated and penalty results."
 msgstr ""
 
@@ -335,9 +338,6 @@ msgid "Account [{account_name}] has been updated."
 msgstr ""
 
 msgid "Account:"
-msgstr ""
-
-msgid "Access level already defined for the account."
 msgstr ""
 
 msgid "Action"
@@ -1850,9 +1850,6 @@ msgid "Email:"
 msgstr ""
 
 msgid "Enable this account"
-msgstr ""
-
-msgid "Enable/disable the details on the cards below."
 msgstr ""
 
 msgid "Enable/disable the details on the cards below."

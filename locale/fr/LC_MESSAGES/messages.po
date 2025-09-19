@@ -316,6 +316,9 @@ msgstr "Contrôle d'accès"
 msgid "Access level"
 msgstr "Niveau d'accès"
 
+msgid "Access level already defined for the account."
+msgstr "Niveau d'accès déjà défini pour ce compte."
+
 msgid "Access unrated and penalty results."
 msgstr "Accéder aux résultats non homologués et pénalisés"
 
@@ -336,9 +339,6 @@ msgstr "Le compte [{account_name}] a été mis à jour."
 
 msgid "Account:"
 msgstr "Compte :"
-
-msgid "Access level already defined for the account."
-msgstr "Niveau d'accès déjà défini pour ce compte."
 
 msgid "Action"
 msgstr "Action"
@@ -1854,9 +1854,6 @@ msgstr "Activer ce compte"
 
 msgid "Enable/disable the details on the cards below."
 msgstr "Activer/désactiver l'affichage des détails sur les cartes ci-dessous."
-
-msgid "Enable/disable the details on the cards below."
-msgstr ""
 
 msgid "Enabled"
 msgstr "Activé"
