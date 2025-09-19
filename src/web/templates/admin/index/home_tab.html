@@ -8,9 +8,6 @@
 
 <div id="home-content" class="content home-content mt-5">
     <div class="d-grid gap-2 col-auto mx-auto">
-        <div style="width: 300px; max-width: 60vw; margin: 0 auto 50px;" class="text-primary">
-            {{ svg_logo | safe }}
-        </div>
         <div class="dropdown text-center my-3">
             <i class="bi-translate pe-1"></i>
             <button class="btn btn-secondary dropdown-toggle mx-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -48,6 +45,9 @@
                     {% endif %}
                 {% endfor %}
             </ul>
+        </div>
+        <div style="width: 300px; max-width: 60vw; margin: 20px auto;" class="text-primary">
+            {{ svg_logo | safe }}
         </div>
         {% if client.account.administrator %}
             {% if client.can_add_event %}

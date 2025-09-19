@@ -2364,7 +2364,7 @@ msgid "Hide Log"
 msgstr "Cacher les logs"
 
 msgid "Hide Networks"
-msgstr ""
+msgstr "Masquer les réseaux"
 
 msgid "Hide the exit button"
 msgstr "Ne pas afficher de bouton de sortie d'écran"
@@ -4309,7 +4309,7 @@ msgid "Sector arbitration"
 msgstr "Arbitrage de secteur"
 
 msgid "See Networks"
-msgstr ""
+msgstr "Afficher les réseaux"
 
 msgid "See the pairings information for the start of this round."
 msgstr "Voir les informations d’appariement pour le début de cette ronde."
@@ -6088,3 +6088,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
