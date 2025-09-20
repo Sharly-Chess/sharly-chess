@@ -1,5 +1,7 @@
 from logging import Logger
+import os
 from pathlib import Path
+import sys
 
 from common.logger import get_logger
 from scripts.export.project_builder import ProjectBuilder
@@ -20,6 +22,16 @@ class MacProjectBuilder(ProjectBuilder):
             f'--osx-bundle-identifier=com.{self.project_name}.app',
             f'--icon=src/web/static/images/{self.project_name}.icns',
         ]
+
+    @property
+    def _python_dir(self) -> Path:
+        """Returns the base dir for Python."""
+        try:
+            # devel
+            return Path(os.environ['VIRTUAL_ENV']) / 'bin'
+        except KeyError:
+            # GitHub
+            return Path(sys.executable).parent
 
     @property
     def hook_get_venv_lib_path(
