@@ -299,7 +299,7 @@ class AppHookSpecs:
 
     @hookspec
     def get_extra_print_view_columns(
-        self, document: 'PrintDocument', tournament: 'Tournament'
+        self, document: 'PrintDocument'
     ) -> Iterable[ExtraColumn]:
         """Provide extra columns for the print view"""
 
