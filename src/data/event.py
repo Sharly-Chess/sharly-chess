@@ -6,7 +6,7 @@ from functools import total_ordering, cached_property
 from logging import Logger
 from operator import attrgetter
 from types import NotImplementedType
-from typing import Any, Iterable
+from typing import Any, Collection
 
 from common import (
     format_timestamp_date_time,
@@ -265,7 +265,7 @@ class Event:
         )
 
     @property
-    def tournaments(self) -> Iterable[Tournament]:
+    def tournaments(self) -> Collection[Tournament]:
         return self.tournaments_by_id.values()
 
     @cached_property
