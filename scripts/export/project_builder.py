@@ -2,7 +2,6 @@ import json
 import os
 import shutil
 import subprocess
-import sys
 from abc import ABC
 from argparse import ArgumentParser, Namespace
 from logging import Logger
@@ -124,16 +123,6 @@ class ProjectBuilder(ABC):
 
     def hook_post_clean_on_startup(self):
         """Runs at the end of `clean_on_startup`"""
-
-    @property
-    def _python_dir(self) -> Path:
-        """Returns the base dir for Python."""
-        try:
-            # devel
-            return Path(os.environ['VIRTUAL_ENV'])
-        except KeyError:
-            # GitHub
-            return Path(sys.executable).parent
 
     @property
     def hook_get_venv_lib_path(
