@@ -4,6 +4,7 @@
     {{ admin_macros.text_input(
         name=option.id,
         label=_('ChessEvent user name:'),
+        autocomplete='off',
         placeholder=(
             _('Default: %(string)s', string=chessevent_user_id)
             if chessevent_user_id else
