@@ -267,6 +267,26 @@ body[data-bs-theme="dark"] #top-nav-wrapper {
     z-index: 3;
     padding: 3px;
 }
+.with-input-group-indicator .htmx-indicator {
+    height: 1.5em;
+    width: 1.5em;
+    padding: 3px;
+    display: none;
+}
+.with-input-group-indicator > .bi {
+    height: 1.5em;
+    width: 1.5em;
+}
+.with-input-group-indicator.htmx-request > .bi {
+    display: none;
+}
+.with-input-group-indicator.htmx-request .htmx-indicator {
+    display: flex;
+}
+.input-group-text .htmx-indicator
+.input-group-text .htmx-indicator.htmx-request {
+    display: block;
+}
 body[data-bs-theme="dark"] .htmx-indicator {
     background-color: rgba(0, 0, 0, 0.3);
 }

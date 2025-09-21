@@ -30,7 +30,7 @@ class ChessEventImporterOption(TournamentImporterOption, ABC):
 class ChessEventUserOption(ChessEventImporterOption):
     @staticmethod
     def sub_id() -> str:
-        return 'user_id'
+        return 'user'
 
     @property
     def type(self) -> type | UnionType:
@@ -60,7 +60,7 @@ class ChessEventPasswordOption(ChessEventImporterOption):
 class ChessEventEventOption(ChessEventImporterOption):
     @staticmethod
     def sub_id() -> str:
-        return 'event_id'
+        return 'event'
 
     @property
     def type(self) -> type | UnionType:

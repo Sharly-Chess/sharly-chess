@@ -24,6 +24,10 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
+                {# These inputs are a trick to avoid autocomplete #}
+                <input type="text" style="display:none">
+                <input type="password" style="display:none">
+
                 {% if previous_tournament %}
                     {% with type='success', auto_remove=true, message=_(
                         'Tournament [%(tournament)s] has been created.',

@@ -59,10 +59,12 @@
                         data=data, errors=errors
                     ) }}
                 </div>
+                <input type="password" name="fake_password" style="display:none" autocomplete="current-password">
                 <div class="row">
                     {{ admin_macros.password_input(
                         name='password',
                         label=_('Password:'),
+                        autocomplete='new-password',
                         help_text=(
                             _('New password. Leave blank for no change.')
                             if action == 'update' else ''
