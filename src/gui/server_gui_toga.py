@@ -304,10 +304,6 @@ class SharlyChessServerToga(toga.App):
         self.main_buttons_section: toga.Box
         self.networks_section: toga.Box
 
-        # Logging handler
-        self.gui_handler = GUILogHandler(self)
-        self.gui_handler.setLevel(logging.DEBUG)
-
     # --- Toga lifecycle ---
     def startup(self):
         SharlyChessConfig().load_and_set_env()
@@ -331,6 +327,7 @@ class SharlyChessServerToga(toga.App):
         )
         self.clear_btn = toga.Button(text=_('Clear Log'), on_press=self._clear_log)
         self.clear_btn.style.visibility = 'hidden'
+
         self.toggle_log_btn = toga.Button(
             text=_('Show Log'),
             on_press=self._toggle_log_view,
@@ -407,7 +404,11 @@ class SharlyChessServerToga(toga.App):
         self.compact_size = self.main_window.size
 
     def on_running(self):
+        # Logging handler
         self.log_view.set_content('about:blank', LOG_HTML)
+        self.gui_handler = GUILogHandler(self)
+        self.gui_handler.setLevel(logging.DEBUG)
+
         # Start message processing and kick the server immediately
         asyncio.create_task(self._process_message_queue())
         if not self.server_running:
