@@ -9,6 +9,7 @@ English version below
 - Signature des exécutables Windows (3.0.0)
 - Correction de la récupération des versions précédentes (3.0.1)
 - Optimisation des requêtes d'écriture dans la base de données (3.0.5)
+- Éviter de télécharger continuellement les bases locales plus valides lorsqu'il n'y a pas de connexion (3.0.8)
 
 ## Évènements
 
@@ -84,6 +85,7 @@ English version below
 - Use signed programs on Windows (3.0.0)
 - Fixed previous versions recovering (3.0.1)
 - Optimized the write queries in the database (3.0.5)
+- Prevent downloading outdated local databases when there is no connexion (3.0.8)
 
 ## Events
 
