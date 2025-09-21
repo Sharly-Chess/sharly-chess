@@ -212,7 +212,10 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
     def stop_update(cls, status: bool) -> None:
         cls.is_updating = False
         cls.update_status = status
-        cls.publish_database_status_updated()
+        # Only push the SSE event if the server is connected, otherwise we enter a loop where the client gets the SSE event,
+        # re-requests the updated badge, fails dues to the lack of internet, and so on.
+        if NetworkMonitor.connected():
+            cls.publish_database_status_updated()
 
     @override
     def delete(self):
@@ -260,10 +263,10 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         set_locale(SharlyChessConfig().locale)
 
         self.__class__.is_updating = True
-        self.publish_database_status_updated()
         if not NetworkMonitor.connected():
             logger.warning(self.log_prefix + _('Not connected, impossible to update.'))
             return self.stop_update(False)
+        self.publish_database_status_updated()
         logger.info(self.log_prefix + _('Downloading source file…'))
         if not self._download_source_file():
             return self.stop_update(False)
