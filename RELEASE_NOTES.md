@@ -85,7 +85,7 @@ English version below
 - Use signed programs on Windows (3.0.0)
 - Fixed previous versions recovering (3.0.1)
 - Optimized the write queries in the database (3.0.5)
-- Prevent downloading outdated local databases when there is no connexion (3.0.8)
+- Prevent downloading outdated local databases continuously when there is no connexion (3.0.8)
 
 ## Events
 
