@@ -39,6 +39,7 @@ English version below
 - Saisie des résultats non comptabilisés et des pénalités (3.0.0)
 - Ajout de la recherche de joueur·euse sur l'onglet Appariements (3.0.0)
 - Correction de la recherche des joueur·euses sur l'onglet Appariements (3.0.2)
+- Correction du bouton "Tous" / "En jeu" (3.0.8)
 
 ## Écrans
 
@@ -114,6 +115,7 @@ English version below
 - Entry of unrated and penalty results (3.0.0)
 - Added player search on the Pairings tab (3.0.0)
 - Fixed player search on the Pairings tab (3.0.2)
+- fixed the "All" / "In play" button (3.0.8)
 
 ## Screens
 
