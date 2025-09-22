@@ -138,13 +138,15 @@ class BackendServer:
                 pass
             time.sleep(0.5)
 
+        error_message = f'Server did not start within {timeout} seconds'
+
         # If server didn't start, capture the output for debugging
         if self.process and self.process.poll() is not None:
             stdout, stderr = self.process.communicate()
-            print(f'Server stdout: {stdout}')
-            print(f'Server stderr: {stderr}')
+            error_message += f'\n\nServer stdout: {stdout}'
+            error_message += f'\n\nServer stderr: {stderr}'
 
-        raise RuntimeError(f'Server did not start within {timeout} seconds')
+        raise RuntimeError(error_message)
 
 
 @pytest.fixture(autouse=True, scope='session')
