@@ -25,6 +25,8 @@ from data.criteria.player_filter_options import (
     SelectPlayerFilterOption,
 )
 from data.criteria.player_filters import PlayerFilter
+from data.print_documents.documents import QRCodePrintDocument, TournamentPrintOption
+from data.print_documents.qrcode_types import QRCodeType
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourceDatabase
@@ -290,6 +292,44 @@ class LeaguePlayerSplitter(PlayerSplitter):
     @staticmethod
     def get_split_key(player: Player) -> str:
         return FFEUtils.get_player_plugin_data(player).league or ''
+
+
+class FFESiteQRCodeType(QRCodeType):
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-ffe_site'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Tournament on the FFE site')
+
+    @staticmethod
+    def get_valid_options() -> list[str]:
+        return [TournamentPrintOption.static_id()]
+
+    @staticmethod
+    def title(doc: QRCodePrintDocument) -> str:
+        tournament = doc.tournament
+        return tournament.name
+
+    @staticmethod
+    def info(doc: QRCodePrintDocument) -> str:
+        return _('Scan to access the tournament on the FFE site.')
+
+    @staticmethod
+    def url(doc: QRCodePrintDocument) -> tuple[bool, str]:
+        tournament = doc.tournament
+        ffe_id = tournament.plugin_data[PLUGIN_NAME].get('ffe_id', None)
+        if not ffe_id:
+            return False, _('No FFE ID defined for tournament [{tournament}].').format(
+                tournament=tournament.uniq_id
+            )
+        url = f'https://echecs.asso.fr/FicheTournoi.aspx?Ref={ffe_id}'
+        return True, url
+
+    @staticmethod
+    def get_qr_code(url) -> str:
+        return QRCodeType.generate_qr_code(url=url, logo=False)
 
 
 class NicoisSwissVariation(SwissVariation):

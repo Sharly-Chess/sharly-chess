@@ -16,6 +16,8 @@ from data.print_documents.options import (
     PairingStylePrintOption,
     PlayerSplitPrintOption,
     PrintOption,
+    QRCodeNetworkPrintOption,
+    QRCodePrintOption,
     RoundPrintOption,
     PlayerSortPrintOption,
     ShowWarningsPrintOption,
@@ -973,4 +975,43 @@ class StatisticsPrintDocument(PrintDocument):
             'tournaments': self.tournaments,
             'subtitle': self.subtitle,
             'statistics': statistics,
+        }
+
+
+class QRCodePrintDocument(PrintDocument):
+    @staticmethod
+    def static_id() -> str:
+        return 'qrcode'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('QR Code')
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [QRCodePrintOption, TournamentPrintOption, QRCodeNetworkPrintOption]
+
+    @property
+    def title(self) -> str:
+        qrcode_type = self._get_option(QRCodePrintOption).qrcode_type
+        return qrcode_type.title(self)
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/qrcode.html'
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        qrcode_type = self._get_option(QRCodePrintOption).qrcode_type
+
+        success, result = qrcode_type.url(self)
+        qrcode_base64 = qrcode_type.get_qr_code(result) if success else None
+
+        return {
+            'qrcode_type': qrcode_type,
+            'subtitle': qrcode_type.subtitle(self),
+            'info': qrcode_type.info(self),
+            'error_message': result if not success else None,
+            'qrcode_url': result if success else None,
+            'qrcode_base64': qrcode_base64,
         }

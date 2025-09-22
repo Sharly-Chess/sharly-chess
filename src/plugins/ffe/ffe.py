@@ -24,6 +24,7 @@ from data.print_documents.documents import PlayerPrintDocument, StatisticsPrintD
 from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.criteria.player_filter_options import PlayerFilterOption, ClubsFilterOption
 from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
+from data.print_documents.qrcode_types import QRCodeType
 from data.tie_breaks import TieBreak
 from data.tie_breaks.managers import TieBreakManager, TieBreakOptionManager
 from data.tie_breaks.options import TieBreakOption
@@ -57,6 +58,7 @@ from database.sqlite.event.event_database import EventDatabase
 from plugins.ffe import migrations, PLUGIN_NAME, ffe_tie_breaks
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_entity import (
+    FFESiteQRCodeType,
     FfeLocalDataSource,
     LeaguePlayerSplitter,
     NicoisSwissVariation,
@@ -845,6 +847,10 @@ class FfePlugin(Plugin):
         lps: type[PlayerSplitter] = LeaguePlayerSplitter
         cps: type[PlayerSplitter] = ClubPlayerSplitter
         PluginUtils.insert_on_equals(player_splitter_types, lps, cps)
+
+    @hookimpl
+    def insert_print_qrcode_types(self, qrcode_types: list[type[QRCodeType]]):
+        qrcode_types.append(FFESiteQRCodeType)
 
     @hookimpl
     def get_extra_print_view_columns(

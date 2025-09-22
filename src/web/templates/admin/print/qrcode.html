@@ -1,0 +1,22 @@
+{% extends '/admin/print/base.html' %}
+
+{% block content %}
+    <div class="separator"></div>
+    {% if qrcode_url %}
+        <div class="qr-code">
+            <img style="width: 100%" src="{{ qrcode_base64 }}" alt="QR Code" />
+        </div>
+        <div class="section-title">
+            {{ qrcode_url }}
+        </div>
+    {% else %}
+        <div class="error">
+            {{ error_message }}
+        </div>
+    {% endif %}
+
+    {% if info %}
+        <div class="separator"></div>
+        <div class="section-title">{{ info }}</div>
+    {% endif %}
+{% endblock %}
