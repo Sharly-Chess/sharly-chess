@@ -3,7 +3,8 @@ from operator import attrgetter
 from typing import Annotated, Any
 
 from litestar import post, get, delete, patch
-from litestar.plugins.htmx import HTMXRequest, ClientRedirect
+from litestar.exceptions import NotFoundException, ClientException
+from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
@@ -19,7 +20,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
-from web.controllers.base_controller import Redirect, WebContext
+from web.controllers.base_controller import WebContext
 from web.messages import Message
 from web.session import SessionHandler
 
@@ -31,21 +32,14 @@ class RotatorAdminWebContext(BaseEventAdminWebContext):
         event_uniq_id: str,
         rotator_id: int | None = None,
     ):
-        super().__init__(
-            request,
-            data=None,
-            event_uniq_id=event_uniq_id,
-        )
-        assert self.admin_event is not None
+        super().__init__(request, event_uniq_id)
+        event = self.get_admin_event()
         self.admin_rotator: Rotator | None = None
-        if self.error:
-            return
         if rotator_id:
             try:
-                self.admin_rotator = self.admin_event.rotators_by_id[rotator_id]
+                self.admin_rotator = event.rotators_by_id[rotator_id]
             except KeyError:
-                self._redirect_error(f'Rotator [{rotator_id}] not found.')
-                return
+                raise NotFoundException(f'Rotator [{rotator_id}] not found.')
 
     def get_admin_rotator(self) -> Rotator:
         assert self.admin_rotator is not None
@@ -75,9 +69,7 @@ class RotatorAdminController(BaseEventAdminController):
         cls,
         web_context: RotatorAdminWebContext,
         template_context: dict[str, Any] | None = None,
-    ) -> Template | ClientRedirect | Redirect:
-        if web_context.error:
-            return web_context.error
+    ) -> Template:
         return cls._admin_base_event_render(
             web_context.template_context | (template_context or {})
         )
@@ -104,7 +96,7 @@ class RotatorAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         admin_rotators_show_details: bool | None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         if admin_rotators_show_details is not None:
             SessionHandler.set_session_admin_rotators_show_details(
                 request, admin_rotators_show_details
@@ -187,10 +179,8 @@ class RotatorAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = RotatorAdminWebContext(request, event_uniq_id)
-        if web_context.error:
-            return web_context.error
         name = web_context.get_admin_event().get_unused_rotator_name()
         template_context = self._rotator_form_modal_context(
             FormAction.CREATE, {'name': name}
@@ -206,10 +196,8 @@ class RotatorAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         rotator_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = RotatorAdminWebContext(request, event_uniq_id, rotator_id)
-        if web_context.error:
-            return web_context.error
         rotator = web_context.get_admin_rotator()
         data = self._rotator_form_data_from_rotator(rotator)
         template_context = self._rotator_form_modal_context(FormAction.UPDATE, data)
@@ -224,10 +212,8 @@ class RotatorAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         rotator_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = RotatorAdminWebContext(request, event_uniq_id, rotator_id)
-        if web_context.error:
-            return web_context.error
         event = web_context.get_admin_event()
         rotator = web_context.get_admin_rotator()
         data = self._rotator_form_data_from_rotator(rotator)
@@ -244,7 +230,7 @@ class RotatorAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         rotator_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_event_rotator_render(
             RotatorAdminWebContext(request, event_uniq_id, rotator_id),
             {'modal': 'rotator_delete'},
@@ -259,7 +245,7 @@ class RotatorAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         rotator_id: int | None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = RotatorAdminWebContext(request, event_uniq_id, rotator_id)
         return self._admin_event_rotator_render(
             web_context, self._rotator_screens_modal_context(web_context)
@@ -311,10 +297,8 @@ class RotatorAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = RotatorAdminWebContext(request, event_uniq_id)
-        if web_context.error:
-            return web_context.error
         stored_rotator, errors = self._read_rotator_form_data(
             data, web_context, FormAction.CREATE
         )
@@ -346,10 +330,8 @@ class RotatorAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = RotatorAdminWebContext(request, event_uniq_id, rotator_id)
-        if web_context.error:
-            return web_context.error
         stored_rotator, errors = self._read_rotator_form_data(
             data, web_context, FormAction.CLONE
         )
@@ -385,10 +367,8 @@ class RotatorAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = RotatorAdminWebContext(request, event_uniq_id, rotator_id)
-        if web_context.error:
-            return web_context.error
         new_stored_rotator, errors = self._read_rotator_form_data(
             data, web_context, FormAction.UPDATE
         )
@@ -422,10 +402,8 @@ class RotatorAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         rotator_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = RotatorAdminWebContext(request, event_uniq_id, rotator_id)
-        if web_context.error:
-            return web_context.error
         event = web_context.get_admin_event()
         rotator = web_context.get_admin_rotator()
         event.delete_rotator(rotator)
@@ -449,15 +427,13 @@ class RotatorAdminController(BaseEventAdminController):
         event_uniq_id: str,
         rotator_id: int,
         rotating_screen_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = RotatorAdminWebContext(request, event_uniq_id, rotator_id)
-        if web_context.error:
-            return web_context.error
         rotator = web_context.get_admin_rotator()
         try:
             rotator.delete_rotating_screen(rotating_screen_id)
         except ValueError as error:
-            return self.redirect_error(request, str(error))
+            raise ClientException(error)
         return self._admin_event_rotator_render(
             web_context, self._rotator_screens_modal_context(web_context)
         )
@@ -475,10 +451,8 @@ class RotatorAdminController(BaseEventAdminController):
             dict[str, list[int]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = RotatorAdminWebContext(request, event_uniq_id, rotator_id)
-        if web_context.error:
-            return web_context.error
         rotator = web_context.get_admin_rotator()
         rotator.reorder_rotating_screens(data.get('rotating_screen_ids', []))
         return self._admin_event_rotator_render(
@@ -498,10 +472,8 @@ class RotatorAdminController(BaseEventAdminController):
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = RotatorAdminWebContext(request, event_uniq_id, rotator_id)
-        if web_context.error:
-            return web_context.error
         rotator = web_context.get_admin_rotator()
         flat_data = WebContext.flatten_list_data(data)
         screen_ids = WebContext.form_data_to_list_int(flat_data, 'screen_ids', [])
@@ -509,7 +481,7 @@ class RotatorAdminController(BaseEventAdminController):
         try:
             rotator.add_rotating_screens(screen_ids, family_ids)
         except ValueError as error:
-            return self.redirect_error(request, str(error))
+            raise ClientException(error)
         return self._admin_event_rotator_render(
             web_context, self._rotator_screens_modal_context(web_context)
         )

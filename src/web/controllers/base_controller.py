@@ -11,11 +11,11 @@ from typing import Annotated, Any
 
 from httpdate.httpdate import httpdate_to_unixtime, unixtime_to_httpdate
 from litestar.datastructures import UploadFile
-from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
+from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.controller import Controller
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.response import Redirect, Template
+from litestar.response import Template
 
 from common import check_rgb_str, DEVEL_ENV
 from common.i18n import (
@@ -33,7 +33,6 @@ from data.access_levels.client_tracker import ClientTracker
 from data.player import Federation, Club
 from web.messages import Message
 from web.session import SessionHandler
-from web.urls import index_url
 
 logger: Logger = get_logger()
 
@@ -55,7 +54,6 @@ class WebContext:
     ):
         self.request: HTMXRequest = request
         self.data: dict[str, str] | None = data
-        self.error: ClientRedirect | Redirect | None = None
         # sets the session locale to the thread
         set_locale(SessionHandler.get_session_locale(request))
         if request.client:
@@ -350,9 +348,6 @@ class WebContext:
             return ''
         return f'{value.year}-{value.month:02d}-{value.day:02d}'
 
-    def _redirect_error(self, errors: str | list[str]):
-        self.error = BaseController.redirect_error(self.request, errors)
-
     @property
     def template_context(self) -> dict[str, Any]:
         """
@@ -390,16 +385,6 @@ class BaseController(Controller):
     The basic controller, inherited by all the controllers of the application.
     Controllers are used to handle web requests and respond to clients.
     """
-
-    @staticmethod
-    def redirect_error(
-        request: HTMXRequest, errors: str | list[str] | Exception
-    ) -> ClientRedirect | Redirect:
-        if request.headers.get('hx-request') == 'true':
-            Message.error(request, errors)
-            return ClientRedirect(redirect_to=index_url(request))
-        else:
-            return Redirect(index_url(request))
 
     @staticmethod
     def render_messages(

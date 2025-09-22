@@ -3,7 +3,7 @@ from logging import Logger
 from typing import Any, Iterable
 
 from litestar.exceptions import NotFoundException
-from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
+from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
@@ -14,7 +14,6 @@ from data.screen import Screen
 from utils.enum import ScreenType
 from plugins.manager import plugin_manager
 from plugins.utils import ExtraColumn
-from web.controllers.base_controller import Redirect
 from web.controllers.user.base_user_controller import BaseUserController
 from web.controllers.user.event_user_controller import (
     EventUserWebContext,
@@ -80,11 +79,7 @@ class ScreenUserWebContext(ScreenOrRotatorOrDisplayControllerUserWebContext):
         self,
         request: HTMXRequest,
     ):
-        super().__init__(
-            request,
-        )
-        if self.error:
-            return
+        super().__init__(request)
         self._screen: Screen = RequestUtils.get_screen(request)
         self.user_event_tab = self.screen.type.value
 
@@ -102,8 +97,6 @@ class RotatorUserWebContext(ScreenOrRotatorOrDisplayControllerUserWebContext):
             request,
             user_event_tab='rotators',
         )
-        if self.error:
-            return
         self.rotator, self.rotator_screen_index, self._screen = (
             RequestUtils.get_rotator(request)
         )
@@ -123,8 +116,6 @@ class DisplayControllerUserWebContext(ScreenOrRotatorOrDisplayControllerUserWebC
             request,
             user_event_tab='display_controllers',
         )
-        if self.error:
-            return
         self.display_controller, self.rotator_screen_index, self._screen = (
             RequestUtils.get_display_controller(request)
         )
@@ -145,8 +136,6 @@ class BasicScreenOrFamilyUserWebContext(ScreenUserWebContext):
             request,
         )
         self.family: Family | None = None
-        if self.error:
-            return
         if ':' in self.screen.uniq_id:
             family_uniq_id: str = self.screen.uniq_id.split(':')[0]
             try:
@@ -166,7 +155,7 @@ class BaseScreenUserController(BaseUserController):
     def _user_screen_render(
         cls,
         web_context: ScreenOrRotatorOrDisplayControllerUserWebContext,
-    ) -> HTMXTemplate | ClientRedirect | Redirect:
+    ) -> HTMXTemplate:
         # Allow plugin to provide extra columns
         per_plugin_columns: Iterable[Iterable[ExtraColumn]] = []
         if web_context.screen is not None:

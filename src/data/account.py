@@ -205,12 +205,9 @@ class Account:
         ).get(permission.access_level, None)
         if not other_permission:
             return False
-        if not permission.tournament_ids and other_permission.tournament_ids:
-            return False
-        return (
-            not other_permission.tournament_ids
-            or permission.tournament_ids.issubset(other_permission.tournament_ids)
-        )
+        if permission.tournament_ids and other_permission.tournament_ids:
+            return permission.tournament_ids.issubset(other_permission.tournament_ids)
+        return bool(permission.tournament_ids)
 
     def __repr__(self) -> str:
         return f'Account(id={self.id}, full_name={self.full_name})'

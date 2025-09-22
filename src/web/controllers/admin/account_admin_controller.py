@@ -3,8 +3,9 @@ from typing import Annotated, Any
 from argon2 import PasswordHasher
 from litestar import post, get, delete, patch
 from litestar.enums import RequestEncodingType
+from litestar.exceptions import NotFoundException
 from litestar.params import Body
-from litestar.plugins.htmx import HTMXRequest, ClientRedirect
+from litestar.plugins.htmx import HTMXRequest
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 
@@ -19,7 +20,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
-from web.controllers.base_controller import Redirect, WebContext
+from web.controllers.base_controller import WebContext
 from web.messages import Message
 from web.session import SessionHandler
 
@@ -40,14 +41,11 @@ class AccountAdminWebContext(BaseEventAdminWebContext):
         assert self.admin_event is not None
         self.admin_account: Account | None = None
         self.admin_permission: Permission | None = None
-        if self.error:
-            return
         if account_id:
             try:
                 self.admin_account = self.admin_event.accounts_by_id[account_id]
             except KeyError:
-                self._redirect_error(f'Account [{account_id}] not found.')
-                return
+                raise NotFoundException(f'Account [{account_id}] not found.')
         if access_level:
             assert self.admin_account is not None
             self.admin_permission = next(
@@ -59,11 +57,10 @@ class AccountAdminWebContext(BaseEventAdminWebContext):
                 None,
             )
             if not self.admin_permission:
-                self._redirect_error(
+                raise NotFoundException(
                     f'Unknown access level [{access_level}] for '
                     f'account [{self.admin_account.full_name}].'
                 )
-                return
 
     def get_admin_account(self) -> Account:
         assert self.admin_account is not None
@@ -91,9 +88,7 @@ class AccountAdminController(BaseEventAdminController):
         cls,
         web_context: AccountAdminWebContext,
         template_context: dict[str, Any] | None = None,
-    ) -> Template | ClientRedirect | Redirect:
-        if web_context.error:
-            return web_context.error
+    ) -> Template:
         return cls._admin_base_event_render(
             web_context.template_context | (template_context or {})
         )
@@ -107,7 +102,7 @@ class AccountAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         admin_accounts_show_details: bool | None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         if admin_accounts_show_details is not None:
             SessionHandler.set_session_admin_accounts_show_details(
                 request, admin_accounts_show_details
@@ -164,10 +159,8 @@ class AccountAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = AccountAdminWebContext(request, event_uniq_id)
-        if web_context.error:
-            return web_context.error
         template_context = self._account_form_modal_context(FormAction.CREATE, {})
         return self.admin_event_account_render(web_context, template_context)
 
@@ -180,10 +173,8 @@ class AccountAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         account_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
-        if web_context.error:
-            return web_context.error
         template_context = self._account_form_modal_context(
             FormAction.UPDATE,
             self._account_form_data_from_account(web_context.get_admin_account()),
@@ -199,10 +190,8 @@ class AccountAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         account_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
-        if web_context.error:
-            return web_context.error
         account = web_context.get_admin_account()
         template_context = self._account_form_modal_context(
             FormAction.CLONE,
@@ -219,7 +208,7 @@ class AccountAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         account_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self.admin_event_account_render(
             AccountAdminWebContext(request, event_uniq_id, account_id),
             {'modal': 'account_delete'},
@@ -233,10 +222,8 @@ class AccountAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = AccountAdminWebContext(request, event_uniq_id)
-        if web_context.error:
-            return web_context.error
         web_context.get_admin_event().create_predefined_accounts()
         Message.success(request, _('Default accounts have been created.'))
         return self.admin_event_account_render(web_context)
@@ -288,10 +275,8 @@ class AccountAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = AccountAdminWebContext(request, event_uniq_id)
-        if web_context.error:
-            return web_context.error
         if errors := self._validate_account_form_data(
             data, web_context, FormAction.CREATE
         ):
@@ -332,10 +317,8 @@ class AccountAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
-        if web_context.error:
-            return web_context.error
         if errors := self._validate_account_form_data(
             data, web_context, FormAction.UPDATE
         ):
@@ -374,10 +357,8 @@ class AccountAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         account_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
-        if web_context.error:
-            return web_context.error
         event = web_context.get_admin_event()
         account = web_context.get_admin_account()
         event.delete_account(account)
@@ -482,10 +463,8 @@ class AccountAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         account_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
-        if web_context.error:
-            return web_context.error
         return self.admin_event_account_render(
             web_context, self._permissions_modal_context(web_context)
         )
@@ -502,10 +481,8 @@ class AccountAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         account_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
-        if web_context.error:
-            return web_context.error
         template_context = self._permission_form_modal_context(
             web_context, FormAction.CREATE
         )
@@ -524,12 +501,10 @@ class AccountAdminController(BaseEventAdminController):
         event_uniq_id: str,
         account_id: int,
         access_level: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = AccountAdminWebContext(
             request, event_uniq_id, account_id, access_level
         )
-        if web_context.error:
-            return web_context.error
         permission = web_context.get_admin_permission()
         data = WebContext.values_dict_to_form_data(
             {
@@ -604,10 +579,8 @@ class AccountAdminController(BaseEventAdminController):
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
-        if web_context.error:
-            return web_context.error
         event = web_context.get_admin_event()
         account = web_context.get_admin_account()
         flat_data = WebContext.flatten_list_data(data)
@@ -649,12 +622,10 @@ class AccountAdminController(BaseEventAdminController):
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = AccountAdminWebContext(
             request, event_uniq_id, account_id, access_level
         )
-        if web_context.error:
-            return web_context.error
         event = web_context.get_admin_event()
         account = web_context.get_admin_account()
         permission = web_context.get_admin_permission()
@@ -694,12 +665,10 @@ class AccountAdminController(BaseEventAdminController):
         event_uniq_id: str,
         account_id: int,
         access_level: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = AccountAdminWebContext(
             request, event_uniq_id, account_id, access_level
         )
-        if web_context.error:
-            return web_context.error
         event = web_context.get_admin_event()
         account = web_context.get_admin_account()
         permission = web_context.get_admin_permission()

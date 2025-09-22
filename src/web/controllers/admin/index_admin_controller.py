@@ -6,6 +6,7 @@ from typing import Annotated, Any
 
 import requests
 import validators
+from litestar.exceptions import ClientException, NotFoundException
 
 from common import (
     BASE_DIR,
@@ -56,7 +57,7 @@ from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
 )
-from web.controllers.base_controller import BaseController, WebContext
+from web.controllers.base_controller import WebContext
 from web.messages import Message
 from web.session import SessionHandler
 from web.urls import admin_event_tournaments_url, admin_event_url
@@ -151,7 +152,7 @@ class IndexAdminController(BaseAdminController):
         web_context: AdminWebContext,
         template_context: dict[str, Any] | None = None,
         keep_modal_open: bool | None = None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         sorted_archives = ArchiveLoader.get_sorted_archives()
         public_only: bool = not web_context.client.can_view_private_events
         passed_events = EventLoader.get_events_metadata(
@@ -291,12 +292,10 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
         admin_events_show_details: bool | None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = AdminWebContext(
             request, data=None, event_uniq_id=None, admin_tab=None
         )
-        if web_context.error:
-            return web_context.error
 
         if admin_events_show_details is not None:
             SessionHandler.set_session_admin_events_show_details(
@@ -316,12 +315,10 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
         admin_tab: str,
         admin_events_show_details: bool | None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = AdminWebContext(
             request, data=None, event_uniq_id=None, admin_tab=admin_tab
         )
-        if web_context.error:
-            return web_context.error
 
         if admin_events_show_details is not None:
             SessionHandler.set_session_admin_events_show_details(
@@ -678,7 +675,7 @@ class IndexAdminController(BaseAdminController):
         action: FormAction,
         admin_tab: str | None = None,
         event_uniq_id: str | None = None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = AdminWebContext(
             request, data=None, event_uniq_id=event_uniq_id, admin_tab=admin_tab
         )
@@ -702,12 +699,10 @@ class IndexAdminController(BaseAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         admin_tab: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template | Redirect:
         web_context: AdminWebContext = AdminWebContext(
             request, data=data, event_uniq_id=None, admin_tab=admin_tab
         )
-        if web_context.error:
-            return web_context.error
         stored_event, errors = self._admin_get_validate_event_data(
             FormAction.CREATE, web_context, None, data
         )
@@ -738,7 +733,7 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
         admin_tab: str,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = AdminWebContext(
             request, data=None, admin_tab=admin_tab, event_uniq_id=event_uniq_id
         )
@@ -754,19 +749,16 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
         admin_tab: str,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = AdminWebContext(
             request, data=None, admin_tab=admin_tab, event_uniq_id=event_uniq_id
         )
-        if web_context.error:
-            return web_context.error
         event = web_context.get_admin_event()
         try:
             arch = EventDatabase(event.uniq_id).delete()
         except PermissionError as ex:
-            return BaseController.redirect_error(
-                request, f'Archiving the database failed: {ex}'
-            )
+            raise ClientException(f'Archiving the database failed: {ex}')
+
         Message.success(
             request,
             _(
@@ -788,15 +780,13 @@ class IndexAdminController(BaseAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         event_uniq_id: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template | ClientRedirect:
         web_context: AdminWebContext = AdminWebContext(
             request,
             admin_tab=None,
             event_uniq_id=event_uniq_id,
             data=data,
         )
-        if web_context.error:
-            return web_context.error
         stored_event, errors = self._admin_get_validate_event_data(
             FormAction.CLONE, web_context, web_context.admin_event, data
         )
@@ -838,15 +828,13 @@ class IndexAdminController(BaseAdminController):
         ],
         admin_tab: str | None,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context: AdminWebContext = AdminWebContext(
             request,
             admin_tab=admin_tab,
             event_uniq_id=event_uniq_id,
             data=data,
         )
-        if web_context.error:
-            return web_context.error
         stored_event, errors = self._admin_get_validate_event_data(
             FormAction.UPDATE, web_context, web_context.admin_event, data
         )
@@ -890,7 +878,7 @@ class IndexAdminController(BaseAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         event_uniq_id: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> ClientRedirect:
         web_context = AdminWebContext(
             request, admin_tab=None, event_uniq_id=event_uniq_id, data=data
         )
@@ -905,17 +893,12 @@ class IndexAdminController(BaseAdminController):
             )
         ):
             # No precise error (validated in JS)
-            return self.redirect_error(
-                request, f'Invalid event uniq ID [{new_uniq_id}].'
-            )
+            raise ClientException(f'Invalid event uniq ID [{new_uniq_id}].')
         if new_uniq_id != event_uniq_id:
             try:
                 EventDatabase(event.uniq_id).rename(new_uniq_id)
             except PermissionError as ex:
-                return self.redirect_error(
-                    request,
-                    _('Renaming the database failed: {ex}.').format(ex=ex),
-                )
+                raise ClientException(f'Renaming the database failed: {ex}.')
             Message.success(
                 request,
                 _(
@@ -936,13 +919,13 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
         archive_name: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = AdminWebContext(
             request, data=None, event_uniq_id=None, admin_tab='archives'
         )
         archive = ArchiveLoader.get_archive(archive_name)
         if not archive:
-            return self.redirect_error(request, f'Unknown archive [{archive_name}]')
+            raise NotFoundException(f'Unknown archive [{archive_name}]')
         uniq_id = archive.restore()
         Message.success(
             request,
@@ -960,7 +943,7 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
         locale: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = AdminWebContext(
             request, data=None, event_uniq_id=None, admin_tab=None
         )
@@ -1028,7 +1011,7 @@ class IndexAdminController(BaseAdminController):
     async def htmx_admin_config_modal(
         self,
         request: HTMXRequest,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         config = SharlyChessConfig()
         web_context = AdminWebContext(
             request, data=None, event_uniq_id=None, admin_tab=None
@@ -1051,7 +1034,7 @@ class IndexAdminController(BaseAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = AdminWebContext(
             request, data=data, event_uniq_id=None, admin_tab=None
         )
@@ -1093,7 +1076,7 @@ class IndexAdminController(BaseAdminController):
     async def htmx_admin_status_badge(
         self,
         request: HTMXRequest,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         source_databases: list[LocalSourceDatabase] = (
             LocalSourceDatabaseManager.objects()
         )
@@ -1162,7 +1145,7 @@ class IndexAdminController(BaseAdminController):
     async def htmx_admin_database_modal(
         self,
         request: HTMXRequest,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = AdminWebContext(
             request, data=None, event_uniq_id=None, admin_tab=None
         )
@@ -1183,7 +1166,7 @@ class IndexAdminController(BaseAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         source_databases: list[LocalSourceDatabase] = (
             LocalSourceDatabaseManager.objects()
         )
@@ -1233,7 +1216,7 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
         database_id: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         database = LocalSourceDatabaseManager.get_object(database_id)
         return HTMXTemplate(
             template_name='/admin/common/database/database_update_buttons.html',
@@ -1262,12 +1245,12 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
         database_id: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         try:
             database = LocalSourceDatabaseManager.get_object(database_id)
             database.delete()
         except KeyError:
-            return self.redirect_error(request, f'Unknown database [{database_id}].')
+            raise NotFoundException(f'Unknown database [{database_id}].')
         return HTMXTemplate(
             template_name='/admin/common/database/database_update_buttons.html',
             context={'database': database},
@@ -1281,7 +1264,7 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
         data_source_id: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = AdminWebContext(
             request, data=None, event_uniq_id=None, admin_tab=None
         )
@@ -1289,9 +1272,7 @@ class IndexAdminController(BaseAdminController):
             data_source = OnlineDataSourceManager.get_object(data_source_id)
             await data_source.reload_connection_status()
         except KeyError:
-            return self.redirect_error(
-                request, f'Unknown data source [{data_source_id}].'
-            )
+            raise NotFoundException(f'Unknown data source [{data_source_id}].')
         template_context = self._database_modal_context()
         return self._admin_render(
             web_context=web_context,

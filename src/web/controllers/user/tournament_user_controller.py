@@ -2,7 +2,7 @@ from contextlib import suppress
 from typing import Any
 
 from litestar import patch, delete, put, get
-from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
+from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 from litestar.channels import ChannelsPlugin
@@ -13,7 +13,6 @@ from data.tournament import Tournament
 from utils.enum import Result
 from web.controllers.admin.pairings_admin_controller import PairingsAdminController
 from web.controllers.admin.player_admin_controller import PlayerAdminController
-from web.controllers.base_controller import Redirect
 from web.controllers.user.base_screen_user_controller import (
     ScreenUserWebContext,
     BaseScreenUserController,
@@ -34,8 +33,6 @@ class TournamentUserWebContext(ScreenUserWebContext):
         super().__init__(
             request,
         )
-        if self.error:
-            return
         self.tournament: Tournament = RequestUtils.get_tournament(request)
 
     @property
@@ -46,15 +43,8 @@ class TournamentUserWebContext(ScreenUserWebContext):
 
 
 class BoardUserWebContext(TournamentUserWebContext):
-    def __init__(
-        self,
-        request: HTMXRequest,
-    ):
-        super().__init__(
-            request,
-        )
-        if self.error:
-            return
+    def __init__(self, request: HTMXRequest):
+        super().__init__(request)
         self.board: Board = RequestUtils.get_board(request)
 
     @property
@@ -69,11 +59,7 @@ class ResultUserWebContext(BoardUserWebContext):
         self,
         request: HTMXRequest,
     ):
-        super().__init__(
-            request,
-        )
-        if self.error:
-            return
+        super().__init__(request)
         self.round, self.board, self.result = RequestUtils.get_round_board_result(
             request
         )
@@ -84,11 +70,7 @@ class PlayerUserWebContext(TournamentUserWebContext):
         self,
         request: HTMXRequest,
     ):
-        super().__init__(
-            request,
-        )
-        if self.error:
-            return
+        super().__init__(request)
         self.player: Player = RequestUtils.get_player(request)
         self.board: Board | None = (
             self.tournament.boards[self.player.board_id - 1]
@@ -126,12 +108,10 @@ class CheckInUserController(BaseInputUserController):
         screen_uniq_id: str,
         tournament_id: int,
         player_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context: PlayerUserWebContext = PlayerUserWebContext(
             request,
         )
-        if web_context.error:
-            return web_context.error
         return HTMXTemplate(
             template_name='user/modals.html',
             context=web_context.template_context | {},
@@ -153,12 +133,10 @@ class CheckInUserController(BaseInputUserController):
         screen_uniq_id: str,
         tournament_id: int,
         player_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         player_web_context: PlayerUserWebContext = PlayerUserWebContext(
             request,
         )
-        if player_web_context.error:
-            return player_web_context.error
         assert player_web_context.player.id is not None
         player_web_context.tournament.check_in_player(
             player_web_context.player, not player_web_context.player.check_in
@@ -174,8 +152,6 @@ class CheckInUserController(BaseInputUserController):
                 request,
             )
         )
-        if web_context.error:
-            return web_context.error
         return self._user_screen_render(web_context)
 
 
@@ -190,12 +166,10 @@ class IllegalMoveUserController(BaseInputUserController):
         self,
         request: HTMXRequest,
         add: bool,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         player_web_context: PlayerUserWebContext = PlayerUserWebContext(
             request,
         )
-        if player_web_context.error:
-            return player_web_context.error
         assert player_web_context.player.id is not None
 
         if add:
@@ -222,8 +196,6 @@ class IllegalMoveUserController(BaseInputUserController):
                 request,
             )
         )
-        if web_context.error:
-            return web_context.error
         return self._user_screen_render(web_context)
 
     @put(
@@ -239,7 +211,7 @@ class IllegalMoveUserController(BaseInputUserController):
         screen_uniq_id: str,
         tournament_id: int,
         player_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._delete_or_add_illegal_move(
             request,
             add=True,
@@ -258,7 +230,7 @@ class IllegalMoveUserController(BaseInputUserController):
         screen_uniq_id: str,
         tournament_id: int,
         player_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._delete_or_add_illegal_move(
             request,
             add=False,
@@ -283,12 +255,10 @@ class ResultUserController(BaseInputUserController):
         screen_uniq_id: str,
         tournament_id: int,
         board_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context: BoardUserWebContext = BoardUserWebContext(
             request,
         )
-        if web_context.error:
-            return web_context.error
         return HTMXTemplate(
             template_name='user/modals.html',
             context=web_context.template_context | {},
@@ -301,12 +271,10 @@ class ResultUserController(BaseInputUserController):
         self,
         request: HTMXRequest,
         channels: ChannelsPlugin,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         result_web_context: ResultUserWebContext = ResultUserWebContext(
             request,
         )
-        if result_web_context.error:
-            return result_web_context.error
         assert result_web_context.board.id is not None
         if result_web_context.result == Result.NO_RESULT:
             with suppress(ValueError):
@@ -332,8 +300,6 @@ class ResultUserController(BaseInputUserController):
                 request,
             )
         )
-        if web_context.error:
-            return web_context.error
         return self._user_screen_render(web_context)
 
     @put(
@@ -355,7 +321,7 @@ class ResultUserController(BaseInputUserController):
         round: int,
         board_id: int,
         result: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._user_update_result(
             request,
             channels=channels,
@@ -380,7 +346,7 @@ class ResultUserController(BaseInputUserController):
         tournament_id: int,
         round: int,
         board_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._user_update_result(
             request,
             channels=channels,

@@ -223,6 +223,9 @@ msgstr "1er jour du mois"
 msgid "20+"
 msgstr "20+"
 
+msgid "400 - Bad request"
+msgstr "400 - Mauvaise requête"
+
 msgid "401 - Authentication failed"
 msgstr "401 - Authentification non valide"
 
@@ -1100,6 +1103,9 @@ msgstr "Niveau de log sur la console : {console_log_level}"
 
 msgid "Console logs"
 msgstr "Logs de la console"
+
+msgid "Consult the logs for more details."
+msgstr "Consultez les logs pour plus d'informations."
 
 msgid "Consult the players and the prize assignment of this category."
 msgstr "Consulter les joueur·euses et l'attribution des prix de la catégorie."
@@ -4018,9 +4024,6 @@ msgstr "Supprimer la redirection du pilote d'afficheurs vers cet écran."
 msgid "Rename events"
 msgstr "Renommer les évènements"
 
-msgid "Renaming the database failed: {ex}."
-msgstr "Le renommage de la base de données a échoué : {ex}"
-
 #, python-format
 msgid "Replace [%(old)s] by [%(new)s]"
 msgstr "Remplacer [%(old)s] par [%(new)s]"
@@ -4670,9 +4673,6 @@ msgstr "Le plus grand nombre de victoires"
 
 msgid "The greater number of wins with Black (unplayed games are counted as played with White)"
 msgstr "Le plus grand nombre de victoires avec les Noirs"
-
-msgid "The last set of a screen can not be deleted."
-msgstr "Le dernier écran ne peut être supprimé."
 
 msgid "The location of the event."
 msgstr "Le lieu de l'évènement."
@@ -6101,4 +6101,10 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "Renaming the database failed: {ex}."
+#~ msgstr "Le renommage de la base de données a échoué : {ex}"
+
+#~ msgid "The last set of a screen can not be deleted."
+#~ msgstr "Le dernier écran ne peut être supprimé."
 
