@@ -301,6 +301,11 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             and self.admin_tournament.pairings_generation_disabled_message(
                 self.admin_round
             ),
+            'admin_pairings_show_without_results': (
+                SessionHandler.get_session_admin_pairings_show_without_results(
+                    self.request
+                )
+            ),
             'board': self.admin_board,
             'wp': self.admin_board.white_player if self.admin_board else None,
             'bp': self.admin_board.black_player if self.admin_board else None,
