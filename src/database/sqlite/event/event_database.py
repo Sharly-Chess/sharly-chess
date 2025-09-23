@@ -2378,7 +2378,9 @@ class EventDatabase(MigrationDatabase):
         account_id: int | None = self._last_inserted_id()
         if account_id is None:
             raise RuntimeError('Account insertion failed')
-        return self.get_stored_account(account_id=account_id)
+        new_stored_account = self.get_stored_account(account_id=account_id)
+        assert new_stored_account is not None
+        return new_stored_account
 
     def update_stored_account(self, stored_account: StoredAccount) -> StoredAccount:
         fields = self._get_fields_dict(
@@ -2430,6 +2432,7 @@ class EventDatabase(MigrationDatabase):
         )
 
     def add_stored_permission(self, stored_permission: StoredPermission):
+        inserted_values: list[int] | list[None]
         if stored_permission.tournament_ids:
             inserted_values = stored_permission.tournament_ids
         else:

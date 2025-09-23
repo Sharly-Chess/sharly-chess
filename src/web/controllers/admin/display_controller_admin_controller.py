@@ -1,7 +1,8 @@
 from typing import Annotated, Any
 
 from litestar import post, get, patch, delete
-from litestar.plugins.htmx import HTMXRequest, ClientRedirect
+from litestar.exceptions import NotFoundException
+from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
@@ -18,7 +19,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
-from web.controllers.base_controller import Redirect, WebContext
+from web.controllers.base_controller import WebContext
 from web.messages import Message
 
 
@@ -42,18 +43,15 @@ class DisplayControllerAdminWebContext(BaseEventAdminWebContext):
         if self.admin_event is None:
             raise RuntimeError('admin_event not defined')
         self.admin_display_controller: DisplayController | None = None
-        if self.error:
-            return
         if display_controller_id:
             try:
                 self.admin_display_controller = (
                     self.admin_event.display_controllers_by_id[display_controller_id]
                 )
             except KeyError:
-                self._redirect_error(
+                raise NotFoundException(
                     f'Display controller [{display_controller_id}] not found.'
                 )
-                return
 
     def get_admin_display_controller(self) -> DisplayController:
         assert self.admin_display_controller is not None
@@ -118,15 +116,13 @@ class DisplayControllerAdminController(BaseEventAdminController):
         display_controller_id: int | None = None,
         data: dict[str, str] | None = None,  # type: ignore
         errors: dict[str, str] | None = None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = DisplayControllerAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
             display_controller_id=display_controller_id,
             data=data,
         )
-        if web_context.error:
-            return web_context.error
         event = web_context.get_admin_event()
         sorted_screens: list[Screen] = sorted(
             event.basic_screens_by_id.values(),
@@ -211,7 +207,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_event_display_controllers_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -225,7 +221,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_event_display_controllers_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -244,7 +240,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
         event_uniq_id: str,
         action: str,
         display_controller_id: int | None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_event_display_controllers_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -263,7 +259,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         match action:
             case 'update' | 'delete' | 'create':
                 web_context: DisplayControllerAdminWebContext = (
@@ -276,8 +272,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
                 )
             case _:
                 raise ValueError(f'action=[{action}]')
-        if web_context.error:
-            return web_context.error
         event = web_context.get_admin_event()
         stored_display_controller = self._admin_validate_display_controller_update_data(
             action, web_context, data
@@ -348,7 +342,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_display_controller_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -370,7 +364,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_display_controller_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -393,7 +387,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_display_controller_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -413,7 +407,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
         display_controller_id: int | None,
         type: str,
         object_uniq_id: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context: DisplayControllerAdminWebContext = (
             DisplayControllerAdminWebContext(
                 request,
@@ -422,8 +416,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
                 data=None,
             )
         )
-        if web_context.error:
-            return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
         if web_context.admin_display_controller is None:
@@ -482,7 +474,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         display_controller_id: int | None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context: DisplayControllerAdminWebContext = (
             DisplayControllerAdminWebContext(
                 request,
@@ -491,8 +483,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
                 data=None,
             )
         )
-        if web_context.error:
-            return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
         if web_context.admin_display_controller is None:

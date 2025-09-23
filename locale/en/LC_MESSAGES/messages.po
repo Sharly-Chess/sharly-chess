@@ -223,6 +223,9 @@ msgstr ""
 msgid "20+"
 msgstr ""
 
+msgid "400 - Bad request"
+msgstr ""
+
 msgid "401 - Authentication failed"
 msgstr ""
 
@@ -1099,6 +1102,9 @@ msgid "Console logging level: {console_log_level}"
 msgstr ""
 
 msgid "Console logs"
+msgstr ""
+
+msgid "Consult the logs for more details."
 msgstr ""
 
 msgid "Consult the players and the prize assignment of this category."
@@ -4018,9 +4024,6 @@ msgstr ""
 msgid "Rename events"
 msgstr ""
 
-msgid "Renaming the database failed: {ex}."
-msgstr ""
-
 #, python-format
 msgid "Replace [%(old)s] by [%(new)s]"
 msgstr ""
@@ -4669,9 +4672,6 @@ msgid "The greater number of wins"
 msgstr ""
 
 msgid "The greater number of wins with Black (unplayed games are counted as played with White)"
-msgstr ""
-
-msgid "The last set of a screen can not be deleted."
 msgstr ""
 
 msgid "The location of the event."
@@ -6101,4 +6101,10 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "Renaming the database failed: {ex}."
+#~ msgstr ""
+
+#~ msgid "The last set of a screen can not be deleted."
+#~ msgstr ""
 

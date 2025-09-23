@@ -12,7 +12,11 @@ from webbrowser import open
 import requests
 import uvicorn
 from litestar import Litestar
-from litestar.exceptions import PermissionDeniedException
+from litestar.exceptions import (
+    PermissionDeniedException,
+    NotFoundException,
+    ClientException,
+)
 from litestar.logging import LoggingConfig
 from litestar.plugins.htmx import HTMXRequest
 from litestar.types import Scope, HTTPScope
@@ -39,7 +43,6 @@ from web.settings import (
     exception_handlers,
     listeners,
 )
-from web.utils import NotFoundException
 
 logger = get_logger()
 
@@ -174,11 +177,27 @@ class ServerEngine(Engine):
             console_log_level=sharly_chess_config.console_log_level,
         )
 
-        def log_permission_denied(exc: Exception, scope: Scope) -> None:
-            if isinstance(exc, PermissionDeniedException) and scope['type'] == 'http':
+        def log_http_exception(exc: Exception, scope: Scope):
+            if not scope['type'] == 'http':
+                return
+            if isinstance(exc, PermissionDeniedException):
                 http = cast(HTTPScope, scope)
                 logger.warning(
                     '403 permission denied: %s %s',
+                    http.get('method', '?'),
+                    http.get('path', '?'),
+                )
+            elif isinstance(exc, NotFoundException):
+                http = cast(HTTPScope, scope)
+                logger.error(
+                    '404 not found: %s %s',
+                    http.get('method', '?'),
+                    http.get('path', '?'),
+                )
+            elif isinstance(exc, ClientException):
+                http = cast(HTTPScope, scope)
+                logger.error(
+                    '400 not found: %s %s',
                     http.get('method', '?'),
                     http.get('path', '?'),
                 )
@@ -191,9 +210,16 @@ class ServerEngine(Engine):
             template_config=template_config,
             logging_config=LoggingConfig(
                 **logging_config,
-                disable_stack_trace={403, PermissionDeniedException, NotFoundException},
+                disable_stack_trace={
+                    400,
+                    403,
+                    404,
+                    ClientException,
+                    PermissionDeniedException,
+                    NotFoundException,
+                },
             ),  # type: ignore
-            after_exception=[log_permission_denied],
+            after_exception=[log_http_exception],
             middleware=middlewares,
             stores=stores,
             pdb_on_exception=self.debug,

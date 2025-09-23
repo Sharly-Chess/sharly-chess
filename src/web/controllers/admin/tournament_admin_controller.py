@@ -5,7 +5,8 @@ from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
 
 from litestar import post, get, patch, delete
-from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
+from litestar.exceptions import NotFoundException, ClientException
+from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template, File
@@ -49,7 +50,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
-from web.controllers.base_controller import Redirect, WebContext
+from web.controllers.base_controller import WebContext
 from web.messages import Message
 from web.session import SessionHandler
 
@@ -77,25 +78,21 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
         assert self.admin_event is not None
 
         self.admin_tournament: Tournament | None = None
-        self.admin_tournament_criterion: TournamentCriterion | None = None
-        if self.error:
-            return
         if tournament_id:
             try:
                 self.admin_tournament = self.admin_event.tournaments_by_id[
                     tournament_id
                 ]
             except KeyError:
-                self._redirect_error(f'Tournament [{tournament_id}] not found.')
-                return
+                raise NotFoundException(f'Tournament [{tournament_id}] not found.')
 
+        self.admin_tournament_criterion: TournamentCriterion | None = None
         if criterion_id:
             assert self.admin_tournament is not None
             if criterion_id not in self.admin_tournament.criteria_by_id:
-                self._redirect_error(
+                raise NotFoundException(
                     f'Unknown criterion ID [{criterion_id}] for tournament [{self.admin_tournament.name}].'
                 )
-                return
             self.admin_tournament_criterion = self.admin_tournament.criteria_by_id[
                 criterion_id
             ]
@@ -122,10 +119,7 @@ class TournamentAdminController(BaseEventAdminController):
         cls,
         web_context: TournamentAdminWebContext,
         template_context: dict[str, Any] | None = None,
-    ) -> Template | ClientRedirect | Redirect:
-        if web_context.error:
-            return web_context.error
-
+    ) -> Template:
         tournament_form_fields_templates_and_data = (
             plugin_manager.hook.get_tournament_card_block_template_and_data()
         )
@@ -177,7 +171,7 @@ class TournamentAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         admin_tournaments_show_details: bool | None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = TournamentAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -595,7 +589,7 @@ class TournamentAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = TournamentAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -621,7 +615,7 @@ class TournamentAdminController(BaseEventAdminController):
         action: FormAction,
         event_uniq_id: str,
         tournament_id: int | None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = TournamentAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -645,7 +639,7 @@ class TournamentAdminController(BaseEventAdminController):
         action: FormAction,
         event_uniq_id: str,
         tournament_id: int | None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = TournamentAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -653,8 +647,6 @@ class TournamentAdminController(BaseEventAdminController):
             criterion_id=None,
             data=data,
         )
-        if web_context.error:
-            return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
         add_other = 'add_other' in data
@@ -805,7 +797,7 @@ class TournamentAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         event_uniq_id: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_tournament_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -827,7 +819,7 @@ class TournamentAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_tournament_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -845,7 +837,7 @@ class TournamentAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int | None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = TournamentAdminWebContext(
             request, event_uniq_id, tournament_id, None
         )
@@ -863,12 +855,10 @@ class TournamentAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = TournamentAdminWebContext(
             request, event_uniq_id, tournament_id, None
         )
-        if web_context.error:
-            return web_context.error
         with EventDatabase(event_uniq_id, True) as database:
             database.delete_stored_tournament(tournament_id)
         Message.success(
@@ -948,7 +938,7 @@ class TournamentAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int | None,
         importer_id: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context: TournamentAdminWebContext = TournamentAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -979,14 +969,12 @@ class TournamentAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int | None,
         importer_id: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = TournamentAdminWebContext(
             request, event_uniq_id, tournament_id, None
         )
         if web_context.admin_tournament and web_context.admin_tournament.started:
-            return self.redirect_error(
-                request, 'Import only possible before the tournament starts.'
-            )
+            raise ClientException('Import only possible before the tournament starts.')
         errors: dict[str, str] = {}
         event = web_context.get_admin_event()
         normalized_data = await WebContext.normalize_multipart_data(data)
@@ -1111,12 +1099,10 @@ class TournamentAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = TournamentAdminWebContext(
             request, event_uniq_id, tournament_id, criterion_id=None
         )
-        if web_context.error:
-            return web_context.error
         add_other = 'add_other' in data
         SessionHandler.set_session_admin_tournament_criterion_add_other_active(
             request, add_other
@@ -1166,15 +1152,14 @@ class TournamentAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         tournament_criterion_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = TournamentAdminWebContext(
             request,
             event_uniq_id,
             tournament_id,
             criterion_id=tournament_criterion_id,
         )
-        if web_context.error:
-            return web_context.error
+
         flat_data = WebContext.flatten_list_data(data)
         if errors := self._validate_tournament_criterion_form_data(flat_data):
             self._admin_base_event_render(
@@ -1209,15 +1194,14 @@ class TournamentAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         tournament_criterion_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = TournamentAdminWebContext(
             request,
             event_uniq_id,
             tournament_id,
             criterion_id=tournament_criterion_id,
         )
-        if web_context.error:
-            return web_context.error
+
         web_context.get_admin_tournament().delete_criterion(tournament_criterion_id)
         return self._admin_base_event_render(
             web_context.template_context | {'modal': 'tournament_criteria'}
@@ -1234,7 +1218,7 @@ class TournamentAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = TournamentAdminWebContext(
             request,
             event_uniq_id,
@@ -1256,7 +1240,7 @@ class TournamentAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = TournamentAdminWebContext(
             request, event_uniq_id, tournament_id, criterion_id=None
         )
@@ -1280,15 +1264,14 @@ class TournamentAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         tournament_criterion_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = TournamentAdminWebContext(
             request,
             event_uniq_id,
             tournament_id,
             criterion_id=tournament_criterion_id,
         )
-        if web_context.error:
-            return web_context.error
+
         tournament_criterion = web_context.get_admin_tournament_criterion()
         data = {'type': tournament_criterion.player_filter.id} | {
             option.id: WebContext.value_to_form_data(option.value)
@@ -1317,7 +1300,7 @@ class TournamentAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context: TournamentAdminWebContext = TournamentAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -1325,8 +1308,7 @@ class TournamentAdminController(BaseEventAdminController):
             criterion_id=None,
             data=None,
         )
-        if web_context.error:
-            return web_context.error
+
         assert web_context.admin_event is not None
         admin_event: Event = web_context.admin_event
         admin_tournament: Tournament | None = web_context.admin_tournament

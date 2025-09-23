@@ -214,6 +214,7 @@ class AuthAction(StrEnum):
             case _:
                 raise ValueError(f'auth={self}')
 
+    @property
     def name(self) -> str:
         return self.localized_name()
 

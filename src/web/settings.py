@@ -15,6 +15,7 @@ from litestar.status_codes import (
     HTTP_404_NOT_FOUND,
     HTTP_500_INTERNAL_SERVER_ERROR,
     HTTP_403_FORBIDDEN,
+    HTTP_400_BAD_REQUEST,
 )
 from litestar.stores.file import FileStore
 from litestar.stores.base import Store
@@ -99,6 +100,7 @@ route_handlers: Sequence[ControllerRouterHandler] = [
 ]
 
 exception_handlers = {
+    HTTP_400_BAD_REQUEST: IndexController.handle_exception,
     HTTP_403_FORBIDDEN: IndexController.handle_exception,
     HTTP_404_NOT_FOUND: IndexController.handle_exception,
     HTTP_500_INTERNAL_SERVER_ERROR: IndexController.handle_exception,

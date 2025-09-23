@@ -3,7 +3,7 @@ from typing import Annotated
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError, VerificationError, InvalidHash
 from litestar import post, get
-from litestar.plugins.htmx import HTMXRequest, ClientRedirect
+from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
@@ -15,7 +15,7 @@ from data.event import Event
 from database.sqlite.event.event_database import EventDatabase
 from web.controllers.admin.base_admin_controller import AdminWebContext
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminWebContext
-from web.controllers.base_controller import Redirect, WebContext, BaseController
+from web.controllers.base_controller import WebContext, BaseController
 from web.session import SessionHandler
 
 
@@ -43,7 +43,7 @@ class ProfileController(BaseController):
         ]
         | None = None,
         errors: dict[str, str] | None = None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         active_user_account_options: dict[str, str] = {}
         if isinstance(web_context, ProfileWebContext):
             active_user_account_options = (
@@ -74,14 +74,12 @@ class ProfileController(BaseController):
         request: HTMXRequest,
         event_uniq_id: str | None,
         locale: str | None = None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = ProfileWebContext(
             request,
             event_uniq_id=event_uniq_id,
             data=None,
         )
-        if web_context.error:
-            return web_context.error
 
         self.set_locale(request, locale)
 
@@ -99,14 +97,13 @@ class ProfileController(BaseController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context: ProfileWebContext = ProfileWebContext(
             request,
             event_uniq_id=event_uniq_id,
             data=data,
         )
-        if web_context.error:
-            return web_context.error
+
         errors: dict[str, str] = {}
         if data is None:
             data = {}
@@ -195,14 +192,13 @@ class ProfileController(BaseController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context: ProfileWebContext = ProfileWebContext(
             request,
             event_uniq_id=event_uniq_id,
             data=data,
         )
-        if web_context.error:
-            return web_context.error
+
         assert web_context.admin_event is not None
         SessionHandler.store_user_account(
             request,

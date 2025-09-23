@@ -98,6 +98,9 @@ class IndexController(BaseController):
         if request.htmx:
             reload_message = _('Reload the page')
         match status_code:
+            case status_codes.HTTP_400_BAD_REQUEST:
+                title = _('400 - Bad request')
+                error_message = _('Consult the logs for more details.')
             case status_codes.HTTP_401_UNAUTHORIZED:
                 title = _('401 - Authentication failed')
                 error_message = _('Sorry, authorization failed.')

@@ -3,7 +3,6 @@ from typing import Any
 from litestar import get
 from litestar.plugins.htmx import HTMXRequest
 from litestar.response import Template, Redirect
-from litestar_htmx import ClientRedirect
 
 from data.display_controller import DisplayController
 from data.rotator import Rotator
@@ -27,9 +26,7 @@ class EventAdminController(BaseEventAdminController):
         cls,
         web_context: BaseEventAdminWebContext,
         template_context: dict[str, Any] | None = None,
-    ) -> Template | ClientRedirect | Redirect:
-        if web_context.error:
-            return web_context.error
+    ) -> Template:
         return cls._admin_base_event_render(
             web_context.template_context | (template_context or {}),
         )
@@ -42,14 +39,12 @@ class EventAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | Redirect | ClientRedirect:
+    ) -> Template | Redirect:
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
             data=None,
         )
-        if web_context.error:
-            return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
         started_tournaments: list[Tournament] = [
