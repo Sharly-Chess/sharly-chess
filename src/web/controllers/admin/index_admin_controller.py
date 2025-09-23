@@ -454,13 +454,13 @@ class IndexAdminController(BaseAdminController):
         } | plugin_form_data
 
     @classmethod
-    def _admin_get_validate_event_data(
+    def _read_event_form_data(
         cls,
         action: FormAction,
         web_context: WebContext,
         admin_event: Event | None,
         data: dict[str, str] | None = None,
-    ) -> tuple[StoredEvent, dict[str, str]]:
+    ) -> tuple[StoredEvent | None, dict[str, str]]:
         if data is None:
             data = {}
         uniq_id: str | None
@@ -593,6 +593,9 @@ class IndexAdminController(BaseAdminController):
         assert start is not None
         assert stop is not None
 
+        if errors:
+            return None, errors
+
         stored_event = StoredEvent(
             uniq_id=uniq_id,
             name=name,
@@ -626,7 +629,7 @@ class IndexAdminController(BaseAdminController):
             else None,
             plugin_data=plugin_data,
         )
-        return (stored_event, errors)
+        return stored_event, errors
 
     def _event_modal_context(
         self,
@@ -703,10 +706,10 @@ class IndexAdminController(BaseAdminController):
         web_context: AdminWebContext = AdminWebContext(
             request, data=data, event_uniq_id=None, admin_tab=admin_tab
         )
-        stored_event, errors = self._admin_get_validate_event_data(
+        stored_event, errors = self._read_event_form_data(
             FormAction.CREATE, web_context, None, data
         )
-        if errors:
+        if not stored_event:
             template_context = self._event_modal_context(
                 FormAction.CREATE, data, errors=errors
             )
@@ -787,10 +790,10 @@ class IndexAdminController(BaseAdminController):
             event_uniq_id=event_uniq_id,
             data=data,
         )
-        stored_event, errors = self._admin_get_validate_event_data(
+        stored_event, errors = self._read_event_form_data(
             FormAction.CLONE, web_context, web_context.admin_event, data
         )
-        if errors:
+        if not stored_event:
             template_context = self._event_modal_context(
                 FormAction.CLONE, data, errors=errors
             )
@@ -835,10 +838,10 @@ class IndexAdminController(BaseAdminController):
             event_uniq_id=event_uniq_id,
             data=data,
         )
-        stored_event, errors = self._admin_get_validate_event_data(
+        stored_event, errors = self._read_event_form_data(
             FormAction.UPDATE, web_context, web_context.admin_event, data
         )
-        if errors:
+        if not stored_event:
             template_context = self._event_modal_context(
                 FormAction.UPDATE, data, errors=errors
             )
