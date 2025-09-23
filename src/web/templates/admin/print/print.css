@@ -7,7 +7,11 @@
 }
 {# ========== COLORS ========== #}
 tr.even td { background-color: #FFFFFF; }
-tr.odd td { background-color: #E0E0E0; }
+tr.odd td {
+    background-color: #E0E0E0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
 {# ========== WIDTH, MARGINS, PADDING ==========#}
 body { margin: 4px; }
 tr td, tr th {

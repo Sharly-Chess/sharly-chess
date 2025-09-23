@@ -7,8 +7,6 @@ from collections import namedtuple
 from datetime import datetime
 from functools import wraps
 from pathlib import Path
-
-import unicodedata
 from packaging.version import Version
 
 from common.exception import SharlyChessException
@@ -32,19 +30,6 @@ def enable_experimental_features(enabled: bool):
 def experimental_features_enabled() -> bool:
     global _EXPERIMENTAL_FEATURES_ENABLED
     return _EXPERIMENTAL_FEATURES_ENABLED
-
-
-_IS_SERVER_ENGINE: bool = False
-
-
-def set_is_server_engine(is_server_engine_: bool):
-    global _IS_SERVER_ENGINE
-    _IS_SERVER_ENGINE = is_server_engine_
-
-
-def is_server_engine() -> bool:
-    global _IS_SERVER_ENGINE
-    return _IS_SERVER_ENGINE
 
 
 REQUEST_TIMEOUT: int = 10
@@ -219,13 +204,3 @@ def show_duration(func):
         return result
 
     return show_duration_wrapper
-
-
-def unicode_normalize(string: str) -> str:
-    """Removes the accents of the string, cf https://www.unicode.org/reports/tr15/#Norm_Forms"""
-    return ''.join(
-        filter(
-            lambda c: not unicodedata.combining(c),
-            unicodedata.normalize('NFKD', string),
-        )
-    )

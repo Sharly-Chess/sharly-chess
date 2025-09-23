@@ -28,8 +28,8 @@ from common.i18n.utils import (
 )
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.auth.client import Client
-from data.auth.client_tracker import ClientTracker
+from data.access_levels.client import Client
+from data.access_levels.client_tracker import ClientTracker
 from data.player import Federation, Club
 from web.messages import Message
 from web.session import SessionHandler
@@ -66,7 +66,7 @@ class WebContext:
 
     @cached_property
     def client(self) -> Client:
-        """Returns the client (account and device) of the request.
+        """Returns the client of the request.
         This method may be overridden with an event parameter passed to Client()."""
         return Client(self.request)
 
@@ -115,8 +115,8 @@ class WebContext:
             for key, value in data.items()
         }
 
-    @staticmethod
-    async def normalize_file_data(data: dict[str, str | UploadFile]) -> dict[str, str]:
+    @classmethod
+    async def normalize_multipart_data(cls, data: dict[str, Any]) -> dict[str, str]:
         normalized_data: dict[str, str] = {}
         for key, value in data.items():
             if isinstance(value, UploadFile):
@@ -125,7 +125,7 @@ class WebContext:
                 Path(tmp_name).write_bytes(await value.read())
                 normalized_data[key] = tmp_name
             else:
-                normalized_data[key] = value
+                normalized_data[key] = cls.value_to_form_data(value)
         return normalized_data
 
     @classmethod

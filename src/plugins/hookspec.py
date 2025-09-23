@@ -12,9 +12,8 @@ from common import APP_NAME
 from plugins.utils import (
     ExtraAdminColumn,
     ExtraColumn,
-    ExtraStatisticsSection,
-    PluginEngineArgument,
     PluginNavBarItem,
+    ExtraStatisticsSection,
     PluginData,
 )
 from utils.enum import Result, ScreenType, TournamentRating
@@ -68,11 +67,6 @@ class AppHookSpecs:
     @hookspec
     def get_base_admin_template_context(self) -> dict[str, Any]:
         """Provide additional template context for AdminWebContext"""
-
-    # TODO remove this hook after having integrated ChessEvent into the web UI
-    @hookspec
-    def get_engine_argument(self) -> PluginEngineArgument:
-        """Provide an engine argument"""
 
     # ---------------------------------------------------------------------------------
     # Input-Output
@@ -200,10 +194,6 @@ class AppHookSpecs:
         """Provide addition column data for events when writing to the database"""
 
     @hookspec
-    def get_event_info_rows_template(self) -> str:
-        """Provide a path to the template containing extra event info rows"""
-
-    @hookspec
     def get_event_card_block_template(self) -> str:
         """Provide a path to the template to be added to event cards"""
 
@@ -309,7 +299,7 @@ class AppHookSpecs:
 
     @hookspec
     def get_extra_print_view_columns(
-        self, document: 'PrintDocument', tournament: 'Tournament'
+        self, document: 'PrintDocument'
     ) -> Iterable[ExtraColumn]:
         """Provide extra columns for the print view"""
 

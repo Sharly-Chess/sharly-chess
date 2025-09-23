@@ -92,6 +92,7 @@
                                         name=data_source.search_element_name,
                                         label=_('%(string)s:', string=data_source.name),
                                         help_text=_('Search by: %(fields)s', fields=', '.join(data_source.search_fields)),
+                                        input_type="search",
                                         placeholder=_('E.g.: john doe'),
                                         disabled=not data_source.is_available,
                                         hx_get=url_for(

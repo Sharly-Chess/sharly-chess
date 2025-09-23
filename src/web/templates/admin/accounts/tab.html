@@ -1,201 +1,124 @@
-<div id="top-nav-wrapper">
-    <div id="top-nav-content">
-        <div>
-            {{ admin_macros.admin_title(_('Accounts'), 'accounts') }}
-        </div>
-        <div class="flex-grow-1"></div>
-        <div class="d-flex gap-2 ms-auto align-items-center">
-            {% if client.can_manage_accounts %}
-                <span
-                    {% if not admin_event.custom_exec_mode %}
-                        {{ macros.tooltip_attributes('warning', _('Permissions can not be customized in the current execution mode.'), 'top') }}
-                    {% else %}
-                        {{ macros.tooltip_attributes('info', _('Add an account to the event.'), 'top') }}
-                    {% endif %}
-                >
-                    <button
-                        class="btn btn-primary text-nowrap ms-1"
-                        {% if admin_event.custom_exec_mode %}
-                            hx-get="{{ url_for('admin-account-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            preload
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
-                        {% else %}
-                            disabled
-                        {% endif %}
-                    >
-                        <i class="bi-plus-square-fill pe-1"></i>
-                        {{ _('Create an account') }}
-                    </button>
-                </span>
-            {% endif %}
-        </div>
-    </div>
-</div>
+{% extends '../../common/admin_cards_container.html' %}
 
-{% if client.can_manage_accounts %}
-    <table class="table table-hover w-auto mx-auto justify-content-center mb-4">
-        <thead
-            class="table-dark"
-        >
-            <tr>
-                <th scope="col" class="text-nowrap">{{ _('Username') }}</th>
-                <th scope="col" class="text-nowrap">{{ _('Status') }}</th>
-                <th scope="col" class="">{{ _('Permissions') }}</th>
-                <th scope="col" class="">{{ _('Scope') }}</th>
-                <th scope="col" class="text-nowrap"></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for account in admin_event.accounts_sorted_by_username %}
-                {% set roles=account.roles %}
-                <tr class="">
-                    <th scope="row" class="text-nowrap {% if not account.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
-                        {% if account.anonymous %}
-                            <span class="fst-italic">
-                                {{ _('Not authenticated') }}
-                            </span>
-                        {% else %}
-                            {{ account.username }}
-                        {% endif %}
-                    </th>
-                    <td class="text-nowrap {% if not account.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
-                        <span class="{% if account.anonymous %}fst-italic{% endif %}">
-                            {% if account.active %}
-                                {{ _('Enabled') }}
-                            {% else %}
-                                {{ _('Disabled') }}
-                            {% endif %}
-                        </span>
-                    </td>
-                    {% if roles %}
-                        {% with role=roles[0], entity=account %}
-                            {% include '../common/access/tab_role_permission_cells.html' %}
-                        {% endwith %}
-                    {% else %}
-                        <td class="{% if not account.active %}text-secondary{% endif %}">
-                            <span class="fst-italic">-</span>
-                        </td>
-                        <td class="{% if not account.active %}text-secondary{% endif %}">
-                            <span class="fst-italic">-</span>
-                        </td>
-                    {% endif %}
-                    <td class="text-nowrap {% if not account.active %}text-secondary{% endif %}" rowspan="{{ [1, roles | length, ] | max }}">
-                        {% set client_can_manage_account=account.id in client.manageable_account_ids %}
-                        {% set account_can_be_updated=account.edit_properties or account.edit_permissions %}
-                        <span
-                            {% if not admin_event.custom_exec_mode %}
-                                {{ macros.tooltip_attributes('warning', _('Permissions can not be customized in the current execution mode.'), 'top') }}
-                            {% elif not account_can_be_updated %}
-                                {{ macros.tooltip_attributes('warning', _('This account can not be updated.'), 'top') }}
-                            {% elif not client_can_manage_account %}
-                                {{ macros.tooltip_attributes('warning', _('You are not allowed to update this account.'), 'top') }}
-                            {% else %}
-                                {{ macros.tooltip_attributes('info', _('Edit the properties and the permissions of the account.'), 'top') }}
-                            {% endif %}
-                        >
-                            <button
-                                {% if admin_event.custom_exec_mode and account_can_be_updated and client_can_manage_account %}
-                                    class="btn btn-sm btn-outline-primary"
-                                    hx-get="{{ url_for('admin-account-update-modal', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                    preload
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-wrapper"
-                                {% else %}
-                                    disabled
-                                {% endif %}
-                            >
-                                <i class="bi-pencil-fill"></i>
-                            </button>
-                        </span>
-                        {% set account_can_be_cloned=account.edit_properties %}
-                        <span
-                            {% if not admin_event.custom_exec_mode %}
-                                {{ macros.tooltip_attributes('warning', _('Permissions can not be customized in the current execution mode.'), 'top') }}
-                            {% elif not account_can_be_cloned %}
-                                {{ macros.tooltip_attributes('warning', _('This account can not be duplicated.'), 'top') }}
-                            {% elif not client_can_manage_account %}
-                                {{ macros.tooltip_attributes('warning', _('You are not allowed to duplicate this account.'), 'top') }}
-                            {% else %}
-                                {{ macros.tooltip_attributes('info', _('Duplicate the account.'), 'top') }}
-                            {% endif %}
-                        >
-                            <button
-                                {% if admin_event.custom_exec_mode and account_can_be_cloned and client_can_manage_account %}
-                                    class="btn btn-sm btn-outline-primary"
-                                    hx-get="{{ url_for('admin-account-clone-modal', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                    preload
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-wrapper"
-                                {% else %}
-                                    disabled
-                                {% endif %}
-                            >
-                                <i class="bi-copy"></i>
-                            </button>
-                        </span>
-                        {% set account_can_be_deleted=account.edit_properties %}
-                        <span
-                            {% if not admin_event.custom_exec_mode %}
-                                {{ macros.tooltip_attributes('warning', _('Permissions can not be customized in the current execution mode.'), 'top') }}
-                            {% elif not account_can_be_deleted %}
-                                {{ macros.tooltip_attributes('warning', _('This account can not be deleted.'), 'top') }}
-                            {% elif not client_can_manage_account %}
-                                {{ macros.tooltip_attributes('warning', _('You are not allowed to delete this account.'), 'top') }}
-                            {% else %}
-                                {{ macros.tooltip_attributes('info', _('Delete the account.'), 'top') }}
-                            {% endif %}
-                        >
-                            <button
-                                {% if admin_event.custom_exec_mode and account_can_be_cloned and client_can_manage_account %}
-                                    class="btn btn-sm btn-outline-danger"
-                                    hx-get="{{ url_for('admin-account-delete-modal', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                    preload
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-wrapper"
-                                {% else %}
-                                    disabled
-                                {% endif %}
-                            >
-                                <i class="bi-trash-fill"></i>
-                            </button>
-                        </span>
-                    </td>
-                </tr>
-                {% if roles | length > 1 %}
-                    <tr class="">
-                        {% for role in roles[1:] %}
-                            {% with entity=account %}
-                                {% include '../common/access/tab_role_permission_cells.html' %}
-                            {% endwith %}
-                        {% endfor %}
-                    </tr>
-                {% endif %}
-            {% endfor %}
-        </tbody>
-    </table>
+{% block top_left_nav %}
+    {{ admin_macros.admin_title(_('Staff'), 'staff') }}
+    {{ macros.refresh_listener(
+        hx_get=url_for('admin-event-accounts-tab', event_uniq_id=admin_event.uniq_id)
+    ) }}
+    <script>preparePrintModal()</script>
+{% endblock %}
 
-    <div class="text-center mt-4">
-        {% if admin_event.custom_exec_mode %}
-            <i class="bi-exclamation-triangle-fill text-danger fs-4"></i>
-            <br/>
-            {{ _('Warning: by default, only people on your Sharly Chess server can access the application.') }}
-            <br/>
-            {{ _('Creating accounts allows you to grant permissions to people on other clients,') }}
-            <br/>
-            {{ _('BE CAREFUL TO GIVE SENSITIVE ROLES ONLY TO TRUSTED PEOPLE!') }}
+{% block top_right_nav %}
+    {% if client.can_manage_accounts %}
+        {% if admin_event.predefined_accounts %}
+            <button
+                class="btn btn-primary text-nowrap ms-1"
+                hx-post="{{ url_for(
+                    'admin-account-create-defaults',
+                    event_uniq_id=admin_event.uniq_id
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                preload
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            >
+                <i class="bi-play-fill"></i>
+                {{ _('Get started') }}
+            </button>
         {% else %}
-            <i class="bi-exclamation-triangle-fill text-warning fs-4"></i>
-            <br/>
-            {{ _('Permissions can not be customized in the current execution mode.') }}
+            {% set show=admin_accounts_show_details %}
+            <div
+                class="form-check form-switch d-inline-block pe-2"
+                {{ macros.tooltip_attributes('info', _('Enable/disable the details on the cards below.'), 'top') }}
+            >
+                <input
+                    hx-get="{{ url_for('admin-event-accounts-tab', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-vals='{"admin_accounts_show_details": "{% if show %}false{% else %}true{% endif %}"}'
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    class="form-check-input"
+                    type="checkbox"
+                    id="show-details-on-account-list"
+                    {% if show %}checked{% endif %}
+                />
+                <label for="show-details-on-account-list" class="form-check-label"> {{ _('Details') }}</label>
+            </div>
+            <span
+                {{ macros.tooltip_attributes('info', _('Add an account to the event.'), 'top') }}
+            >
+                <button
+                    class="btn btn-primary text-nowrap ms-1"
+                    hx-get="{{ url_for('admin-account-create-modal', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    preload
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                >
+                    <i class="bi-plus-square-fill pe-1"></i>
+                    {{ _('Create an account') }}
+                </button>
+            </span>
         {% endif %}
-    </div>
-{% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block cards_container_cards %}
+    {% if client.can_manage_accounts %}
+        {% if admin_event.predefined_accounts %}
+            <div class="mx-auto" style="max-width: 550px;">
+                <h5 class="mt-2 my-5 text-center">
+                    {{ _('Staff default configuration') }}
+                </h5>
+                <p>
+                    {{ _(
+                        'Sharly Chess reaches its full potential when used as a '
+                        'server, with other devices connected to the same network.'
+                    ) }}
+                </p>
+                <p>
+                    {{ _(
+                        'By default, other devices can only interact with public screens. '
+                        'This tab allows you to configure this behavior.'
+                    ) }}
+                </p>
+                <p>
+                    {{ _(
+                        'You can create password-protected accounts to delegate tasks '
+                        'to other members of the staff (arbiters and organizers).'
+                    ) }}
+                </p>
+                <p>
+                    {{ _('Before configuring accounts, you have to be aware of a few security warnings:') }}
+                    <ul>
+                        <li class="mb-1">{{ _(
+                            'Some accounts can have very high access levels, making '
+                            'them dangerous in the hands of an unaware or malicious users.'
+                        ) }}</li>
+                        <li class="mb-1">{{ _(
+                            'Sharly Chess using the local network, all the traffic is public. '
+                            'This means anyone connected to the same network could easily gain '
+                            'access to an account without needing to type in the password.'
+                        ) }}</li>
+                        <li>{{ _(
+                            'If you can\'t control who has access to the network you '
+                            'are connected to, it is highly recommended to not create any account.'
+                        ) }}</li>
+                    </ul>
+                </p>
+                <p>{{ _(
+                    'To learn how to control your network, consult '
+                    '<a href="%(link)s" target="_blank">our documentation</a>.',
+                    link=macros.doc_url('security')
+                ) }}</p>
+            </div>
+        {% else %}
+            <div class="row">
+                {% for account in admin_event.accounts_sorted_by_name %}
+                    {% include 'account_card.html' %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endif %}
+{% endblock %}

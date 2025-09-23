@@ -1,6 +1,6 @@
 <button
-    class="btn btn-primary text-nowrap"
-    hx-get="{{ url_for('admin-tab-event-create-modal', admin_tab=admin_tab) }}"
+    class="btn btn-primary text-nowrap {{ button_class }}"
+    hx-get="{{ url_for('admin-event-modal', admin_tab=admin_tab, action='create') }}"
     hx-target="body"
     hx-indicator="#please-wait"
     preload

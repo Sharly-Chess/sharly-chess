@@ -7,11 +7,11 @@ from logging import Logger
 from pathlib import Path
 from typing import Any, override
 
+from common.i18n.utils import unicode_normalize
 from packaging.version import Version
 from requests import Response, get
 from requests.exceptions import ConnectionError
 
-from common import unicode_normalize
 from common.i18n import _
 from common.logger import get_logger
 from data.player import PlayerRating
@@ -53,7 +53,7 @@ class FfeDatabase(LocalSourceDatabase):
 
     @staticmethod
     def static_name() -> str:
-        return 'FFE'
+        return _('FFE')
 
     @property
     def min_recovery_version(self) -> Version:

@@ -3,11 +3,10 @@ import platform
 import signal
 import socket
 import sys
-from pathlib import Path
 from threading import Thread
 from time import sleep
 from types import FrameType
-from typing import ClassVar, cast
+from typing import Callable, ClassVar, cast
 from webbrowser import open
 
 import requests
@@ -18,7 +17,7 @@ from litestar.logging import LoggingConfig
 from litestar.plugins.htmx import HTMXRequest
 from litestar.types import Scope, HTTPScope
 
-from common import REQUEST_TIMEOUT, LOG_FILE, set_is_server_engine
+from common import REQUEST_TIMEOUT
 from common.engine import Engine
 from common.i18n import _
 from common.logger import (
@@ -81,11 +80,13 @@ class ServerEngine(Engine):
         port: int | None = None,
         loop: asyncio.AbstractEventLoop | None = None,
         handle_signals: bool = True,
+        on_port_chosen: Callable[[], None] | None = None,
     ):
         super().__init__()
         self.debug = debug
         self.handle_signals = handle_signals
         self.port = port
+        self.on_port_chosen = on_port_chosen
         if self.error:
             return
 
@@ -101,17 +102,12 @@ class ServerEngine(Engine):
             return asyncio.get_running_loop()
         except RuntimeError:
             pass
-        # Try a current loop
-        try:
-            return asyncio.get_event_loop()
-        except RuntimeError:
-            # No loop at all in this thread -> create & set one
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            return loop
+        # No current running loop -> create & set one
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        return loop
 
     async def serve(self):
-        set_is_server_engine(True)
         logger.debug('System information:')
         logger.debug(
             ' - Machine/processor: %s/%s', platform.machine(), platform.processor()
@@ -158,6 +154,9 @@ class ServerEngine(Engine):
                     )
                 )
                 return
+
+        if self.on_port_chosen:
+            self.on_port_chosen()
 
         print_interactive_info(
             _('Port: {port}').format(port=sharly_chess_config.web_port)
@@ -233,10 +232,6 @@ class ServerEngine(Engine):
                     signal.signal(sig, handle_exit)
 
         await server._serve()
-
-    @property
-    def log_file_path(self) -> Path:
-        return LOG_FILE
 
     @staticmethod
     def __port_in_use(port: int) -> bool:

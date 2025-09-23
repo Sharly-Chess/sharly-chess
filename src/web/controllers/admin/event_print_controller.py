@@ -11,7 +11,6 @@ import urllib
 from common.exception import OptionError
 from common.i18n import _
 from data.player import plugin_manager
-from data.tournament import Tournament
 from data.print_documents import (
     PrintDocument,
     PrintDocumentManager,
@@ -41,7 +40,7 @@ class EventPrintController(BaseEventAdminController):
     ) -> Template | ClientRedirect | Redirect:
         if web_context.error:
             return web_context.error
-        return cls._admin_event_render(
+        return cls._admin_base_event_render(
             web_context.template_context | (template_context or {}),
         )
 
@@ -55,26 +54,20 @@ class EventPrintController(BaseEventAdminController):
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         print_options = PrintDocumentOptionManager.objects()
-        if data is None:
-            event = web_context.get_admin_event()
-            if len(event.tournaments_sorted_by_uniq_id) == 1:
-                tournament_ids = [event.tournaments_sorted_by_uniq_id[0].id]
-            data = (
-                {
-                    'document': document_id or PlayerListPrintDocument.static_id(),
-                    'round': WebContext.value_to_form_data(_round),
-                }
-                | {
-                    option.id: WebContext.value_to_form_data(option.default_value)
-                    for option in print_options
-                }
-                | {
-                    'tournament': WebContext.value_to_form_data(tournament_ids[0])
-                    if tournament_ids
-                    else '',
-                    'tournaments': WebContext.value_to_form_data(tournament_ids),
-                }
-            )
+        event = web_context.get_admin_event()
+        if len(event.tournaments) == 1:
+            tournament_ids = list(event.tournaments_by_id)
+
+        default_data = WebContext.values_dict_to_form_data(
+            {option.id: option.default_value for option in print_options}
+            | {
+                'document': document_id or PlayerListPrintDocument.static_id(),
+                'round': _round,
+                'tournament': tournament_ids[0] if tournament_ids else None,
+                'tournaments': tournament_ids,
+            }
+        )
+        data = default_data | (data or {})
         containers_by_document: dict[str, list[str]] = {'': []} | {
             document.id: [option.container_id for option in document.default_options()]
             for document in PrintDocumentManager.objects()
@@ -160,7 +153,6 @@ class EventPrintController(BaseEventAdminController):
         except KeyError:
             errors[field] = _('Please choose the document.')
 
-        tournament: Tournament | None = None
         tournament_ids: list[int] | None = None
         if document_type:
             options = []
@@ -213,7 +205,7 @@ class EventPrintController(BaseEventAdminController):
             )
 
         template_context = self._print_modal_context(
-            web_context, tournament_ids=tournament_ids, data=flat_data, errors=errors
+            web_context, data=flat_data, errors=errors
         )
         return self._admin_print_render(
             web_context=web_context,

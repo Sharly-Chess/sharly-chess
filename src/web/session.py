@@ -7,7 +7,7 @@ from litestar.plugins.htmx import HTMXRequest
 
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.auth.entities import Account
+from data.account import Account
 from data.input_output import DataSourceManager
 from data.player import Federation, Club
 from data.safety_mode import SafetyMode
@@ -21,28 +21,62 @@ logger: Logger = get_logger()
 
 
 class SessionHandler:
-    ACCOUNT_SESSION_KEY: str = 'account'
+    USER_ACCOUNT_SESSION_KEY: str = 'user_account'
+    USER_ACCOUNT_PASSWORD_HASH_SESSION_KEY: str = 'user_account_password_hash'
 
     @classmethod
-    def store_account(
-        cls, request: HTMXRequest, event: 'Event', account: Account | None
+    def store_user_account(
+        cls,
+        request: HTMXRequest,
+        event: 'Event',
+        user_account: Account | None,
     ):
-        if cls.ACCOUNT_SESSION_KEY not in request.session:
-            request.session[cls.ACCOUNT_SESSION_KEY] = {}
-        if account:
-            request.session[cls.ACCOUNT_SESSION_KEY][event.uniq_id] = account.id
+        if cls.USER_ACCOUNT_SESSION_KEY not in request.session:
+            request.session[cls.USER_ACCOUNT_SESSION_KEY] = {}
+        if cls.USER_ACCOUNT_PASSWORD_HASH_SESSION_KEY not in request.session:
+            request.session[cls.USER_ACCOUNT_PASSWORD_HASH_SESSION_KEY] = {}
+        if user_account:
+            request.session[cls.USER_ACCOUNT_SESSION_KEY][event.uniq_id] = (
+                user_account.id
+            )
+            # store the password hash at the time the authentication is successful
+            # to be able to invalidate the session if the password is changed
+            request.session[cls.USER_ACCOUNT_PASSWORD_HASH_SESSION_KEY][
+                event.uniq_id
+            ] = user_account.password_hash
         else:
             with suppress(KeyError):
-                del request.session[cls.ACCOUNT_SESSION_KEY][event.uniq_id]
+                del request.session[cls.USER_ACCOUNT_SESSION_KEY][event.uniq_id]
+                del request.session[cls.USER_ACCOUNT_PASSWORD_HASH_SESSION_KEY][
+                    event.uniq_id
+                ]
 
     @classmethod
-    def get_account(cls, request: HTMXRequest, event: 'Event') -> Account:
+    def get_user_account(
+        cls,
+        request: HTMXRequest,
+        event: 'Event',
+    ) -> Account:
         try:
-            return event.accounts_by_id[
-                request.session[cls.ACCOUNT_SESSION_KEY][event.uniq_id]
+            account: Account = event.active_user_accounts_by_id[
+                request.session[cls.USER_ACCOUNT_SESSION_KEY][event.uniq_id]
             ]
         except KeyError:
             return event.anonymous_account
+        # if the password has been changed, disconnect the client to force the re-authentication
+        if (
+            account.password_hash
+            != request.session[cls.USER_ACCOUNT_PASSWORD_HASH_SESSION_KEY][
+                event.uniq_id
+            ]
+        ):
+            logger.info(
+                'Password has changed for account [%s], force the re-authentication.',
+                account.full_name,
+            )
+            cls.store_user_account(request, event, None)
+            return event.anonymous_account
+        return account
 
     LAST_RESULT_UPDATED_SESSION_KEY: str = 'last_result_updated'
 
@@ -156,6 +190,16 @@ class SessionHandler:
     @classmethod
     def get_session_admin_tournaments_show_details(cls, request: HTMXRequest) -> bool:
         return request.session.get(cls.ADMIN_TOURNAMENTS_SHOW_DETAILS_KEY, False)
+
+    ADMIN_ACCOUNTS_SHOW_DETAILS_KEY: str = 'admin_accounts_show_details'
+
+    @classmethod
+    def set_session_admin_accounts_show_details(cls, request: HTMXRequest, b: bool):
+        request.session[cls.ADMIN_ACCOUNTS_SHOW_DETAILS_KEY] = b
+
+    @classmethod
+    def get_session_admin_accounts_show_details(cls, request: HTMXRequest) -> bool:
+        return request.session.get(cls.ADMIN_ACCOUNTS_SHOW_DETAILS_KEY, False)
 
     ADMIN_TOURNAMENT_CRITERION_ADD_OTHER_ACTIVE_KEY: str = (
         'admin_tournament_criterion_add_other_active'

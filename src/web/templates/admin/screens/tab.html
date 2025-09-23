@@ -35,7 +35,7 @@
         {% with id='admin-screens-show-details', name='admin_screens_show_details', show=admin_screens_show_details %}
             <div
                 class="form-check form-switch d-inline-block pe-2"
-                {{ macros.tooltip_attributes('info', _('Enable/disable the details of the screens on the cards below.'), 'top') }}
+                {{ macros.tooltip_attributes('info', _('Enable/disable the details on the cards below.'), 'top') }}
             >
                 <input
                     hx-get="{{ url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id) }}"
@@ -110,7 +110,7 @@
                     </h5>
                     {% if client.can_manage_screens %}
                         <p>
-                            {{ _('You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on yor local network.') }}
+                            {{ _('You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on your local network.') }}
                         </p>
                         <p>
                             {{ _('Screens may display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments.') }}
@@ -138,6 +138,7 @@
                                     aria-expanded="{{ 'true' if expanded else 'false' }}"
                                     hx-get="{{ url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id) }}"
                                     hx-vals='js:{ {{name}}: !$(event.target).closest("button").hasClass("collapsed")}'
+                                    hx-headers='{"HX-Swap-Mode":"none"}'
                                     hx-swap="none"
                                 >
                                     <span

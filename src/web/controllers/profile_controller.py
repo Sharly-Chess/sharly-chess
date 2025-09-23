@@ -10,7 +10,8 @@ from litestar.response import Template
 from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
-from data.auth.entities import Account
+from data.account import Account
+from data.event import Event
 from database.sqlite.event.event_database import EventDatabase
 from web.controllers.admin.base_admin_controller import AdminWebContext
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminWebContext
@@ -19,12 +20,22 @@ from web.session import SessionHandler
 
 
 class ProfileWebContext(BaseEventAdminWebContext):
-    pass
+    @classmethod
+    def get_active_user_account_options(
+        cls,
+        active_user_accounts: list[Account],
+    ) -> dict[str, str]:
+        return {
+            cls.value_to_form_data(account.id): account.full_name
+            for account in active_user_accounts
+            if account.active
+        }
 
 
 class ProfileController(BaseController):
-    @staticmethod
+    @classmethod
     def _render_profile_modal(
+        cls,
         web_context: AdminWebContext,
         data: Annotated[
             dict[str, str],
@@ -33,12 +44,20 @@ class ProfileController(BaseController):
         | None = None,
         errors: dict[str, str] | None = None,
     ) -> Template | ClientRedirect | Redirect:
+        active_user_account_options: dict[str, str] = {}
+        if isinstance(web_context, ProfileWebContext):
+            active_user_account_options = (
+                ProfileWebContext.get_active_user_account_options(
+                    web_context.get_admin_event().active_user_accounts_sorted_by_name
+                )
+            )
         return HTMXTemplate(
             template_name='common/profile/profile_modal.html',
             context=web_context.template_context
             | {
                 'data': data or {},
                 'errors': errors or {},
+                'active_user_account_options': active_user_account_options,
             },
             re_target='#modal-wrapper',
         )
@@ -56,19 +75,11 @@ class ProfileController(BaseController):
         event_uniq_id: str | None,
         locale: str | None = None,
     ) -> Template | ClientRedirect | Redirect:
-        web_context: AdminWebContext
-        if event_uniq_id:
-            web_context = ProfileWebContext(
-                request,
-                event_uniq_id=event_uniq_id,
-                data=None,
-            )
-        else:
-            web_context = AdminWebContext(
-                request,
-                data=None,
-                admin_tab=None,
-            )
+        web_context = ProfileWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            data=None,
+        )
         if web_context.error:
             return web_context.error
 
@@ -100,17 +111,19 @@ class ProfileController(BaseController):
         if data is None:
             data = {}
         field: str
-        if web_context.admin_event is None:
-            raise RuntimeError('admin_event not defined')
-        username: str | None = WebContext.form_data_to_str(data, field := 'username')
-        if not username:
-            errors[field] = _('Please enter the username.')
+        account_id: int | None = WebContext.form_data_to_int(
+            data, field := 'account_id'
+        )
+        admin_event: Event = web_context.get_admin_event()
+        accounts: list[Account] = admin_event.active_user_accounts_sorted_by_name
+        if not account_id and len(accounts) == 1:
+            account_id = accounts[0].id
+        if not account_id:
+            errors[field] = _('Please select the account.')
         else:
             password: str = WebContext.form_data_to_str(data, field := 'password') or ''
             try:
-                account: Account = web_context.admin_event.accounts_by_username[
-                    username
-                ]
+                account: Account = admin_event.active_user_accounts_by_id[account_id]
                 ph = PasswordHasher()
                 try:
                     pw_hash = account.password_hash
@@ -142,16 +155,16 @@ class ProfileController(BaseController):
                                 )
                             )
                 except (VerifyMismatchError, VerificationError):
-                    errors['field'] = _('Invalid username or password.')
+                    errors[field] = _('Invalid password.')
                     data[field] = ''
                 except InvalidHash:
-                    errors['field'] = _(
+                    errors[field] = _(
                         'Something went wrong. Please ask your administrator to recreate your account.'
                     )
                 else:
-                    SessionHandler.store_account(
+                    SessionHandler.store_user_account(
                         request,
-                        web_context.admin_event,
+                        admin_event,
                         account,
                     )
 
@@ -162,7 +175,7 @@ class ProfileController(BaseController):
                         data=data,
                     )
             except KeyError:
-                errors['username'] = _('Invalid username or password.')
+                errors['account_id'] = _('Invalid account.')
 
         return self._render_profile_modal(
             web_context,
@@ -191,7 +204,7 @@ class ProfileController(BaseController):
         if web_context.error:
             return web_context.error
         assert web_context.admin_event is not None
-        SessionHandler.store_account(
+        SessionHandler.store_user_account(
             request,
             web_context.admin_event,
             None,

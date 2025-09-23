@@ -1,0 +1,131 @@
+<div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered"
+    style="--bs-modal-width: min(90vw, 500px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Permissions list') }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <h4 class="mb-3">
+                {{ _('%(string)s:', string=_('Account')) }}
+                {{ admin_account.full_name }}
+            </h4>
+            <div class="d-flex flex-column gap-2">
+                {% if not admin_account.permissions %}
+                    <div class="text-danger">{{ _('No permissions.') }}</div>
+                {% endif %}
+                {% for permission in admin_account.sorted_permissions %}
+                    {% set access_level = permission.access_level %}
+                    <div class="border border-secondary bg-body-tertiary">
+                        <div class="p-2 d-flex align-items-center gap-4">
+                            <div class="text-start flex-grow-1">
+                                <span {{ macros.tooltip_attributes('info', access_level.help_text, 'top') }}>
+                                    {{ access_level.card_name }}
+                                </span>
+                                {% if access_level.has_tournament_scope %}
+                                    {% if permission.tournament_ids %}
+                                        <i class="text-secondary">
+                                            ({{ ngettext(
+                                                '%(num)d tournament',
+                                                '%(num)d tournaments',
+                                                permission.tournament_ids|length
+                                            ) }})
+                                        </i>
+                                        <i
+                                            class="bi-info-circle-fill ps-1"
+                                           {{ macros.tooltip_attributes(
+                                                '', permission.tournaments_tooltip_message(admin_event), 'right'
+                                            ) }}
+                                        ></i>
+                                    {% else %}
+                                        <i class="text-secondary">
+                                            ({{ _('all the tournaments') }})
+                                        </i>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                            <div class="flex-shrink-0 d-flex gap-2 align-items-center">
+                                <button
+                                    class="btn btn-sm btn-outline-primary text-nowrap"
+                                    hx-get="{{ url_for(
+                                        'admin-account-permission-update-modal',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        account_id=admin_account.id,
+                                        access_level=access_level.id
+                                    ) }}"
+                                    preload
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                    data-bs-target="#modal-wrapper"
+                                >
+                                    <i class="bi-pencil-fill"></i>
+                                </button>
+                                <button
+                                    class="btn btn-sm btn-outline-danger text-nowrap"
+                                    hx-delete="{{ url_for(
+                                        'admin-account-permission-delete',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        account_id=admin_account.id,
+                                        access_level=access_level.id
+                                    ) }}"
+                                    preload
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                    data-bs-target="#modal-wrapper"
+                                >
+                                    <i class="bi-trash-fill"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="flex-grow-1"></div>
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Close') }}
+            </button>
+            <span {{ macros.tooltip_attributes(
+                'info',
+                _('Add a permission to the account.')
+                if can_add_permission else
+                _('You can\'t add any more permission to this account.'),
+                'top'
+            ) }}>
+                <button
+                    class="btn btn-primary text-nowrap"
+                    {% if can_add_permission %}
+                        hx-get="{{ url_for(
+                            'admin-account-permission-create-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            account_id=admin_account.id
+                        ) }}"
+                        hx-indicator="#please-wait"
+                    {% else %}
+                        disabled
+                    {% endif %}
+                >
+                    <i class="bi-plus-square-fill pe-1"></i>
+                    {{ _('Add') }}
+                </button>
+            </span>
+        </div>
+    </div>
+</div>
+
+<script>
+    // We need to reload the page when the modal is hidden, because the permissions might have changed.
+    $(document).one('hide.bs.modal', function(e) {
+        e.preventDefault();
+        document.body.dispatchEvent(new CustomEvent('request_refresh'));
+    });
+</script>

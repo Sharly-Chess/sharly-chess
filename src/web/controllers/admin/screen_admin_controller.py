@@ -438,7 +438,7 @@ class ScreenAdminController(BaseEventAdminController):
         event = web_context.get_admin_event()
         admin_screen_types_data: dict[ScreenType, dict[str, Any]] = {
             ScreenType.INPUT: {
-                'title': _('Check-in / Results entry ({num})'),
+                'title': _('Check-in / Results ({num})'),
                 'create_title': _('Check-in / Results entry'),
                 'create_tooltip': _(
                     'Add a screen to check-in players or enter results.'
@@ -828,7 +828,7 @@ class ScreenAdminController(BaseEventAdminController):
                 }
             case _:
                 raise ValueError(f'modal=[{modal}]')
-        return cls._admin_event_render(template_context)
+        return cls._admin_base_event_render(template_context)
 
     @get(
         path='/admin/event/{event_uniq_id:str}/screens',

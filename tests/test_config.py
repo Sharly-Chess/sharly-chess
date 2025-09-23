@@ -3,7 +3,6 @@
 import time
 from urllib import parse
 from common import BASE_DIR
-from common.sharly_chess_config import SharlyChessConfig
 from data.input_output.tournament_importer_options import FileOption
 from data.loader import EventLoader
 from data.pairings.variations import StandardSwissVariation
@@ -45,7 +44,6 @@ class TestUtils:
     """Utility functions for tests."""
 
     event_defaults = {
-        'custom_exec_mode': SharlyChessConfig.default_custom_exec_mode,
         'federation': 'FRA',
         'public': True,
         'location': 'Paris',
@@ -58,7 +56,6 @@ class TestUtils:
         'message_color': '#000000',
         'message_background_color': '#ffffff',
         'prize_currency': 'EUR',
-        'errors': [],
         'timer_colors': {i: None for i in range(1, 4)},
         'timer_delays': {i: None for i in range(1, 4)},
         'plugin_data': {},
@@ -158,7 +155,7 @@ class TestUtils:
 
         if via_api_request_context:
             res = via_api_request_context.post(
-                '/admin/config/create-event',
+                '/admin/home/create-event',
                 headers={'Content-Type': 'application/x-www-form-urlencoded'},
                 data=form_data,
             )
@@ -177,7 +174,7 @@ class TestUtils:
     ):
         if via_api_request_context:
             res = via_api_request_context.delete(
-                f'/admin/event-delete/{uniq_id}',
+                f'/admin/current_events/event-delete/{uniq_id}',
                 headers={'Content-Type': 'application/x-www-form-urlencoded'},
             )
             TestUtils.check_api_response(res)
@@ -219,7 +216,6 @@ class TestUtils:
             'rounds': 7,
             'rating': 1,
             'stored_prize_groups': [],
-            'errors': {},
             'plugin_data': None,
         }
 

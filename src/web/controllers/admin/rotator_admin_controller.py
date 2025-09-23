@@ -78,7 +78,7 @@ class RotatorAdminController(BaseEventAdminController):
     ) -> Template | ClientRedirect | Redirect:
         if web_context.error:
             return web_context.error
-        return cls._admin_event_render(
+        return cls._admin_base_event_render(
             web_context.template_context | (template_context or {})
         )
 
@@ -270,11 +270,11 @@ class RotatorAdminController(BaseEventAdminController):
     # -------------------------------------------------------------------------
 
     @staticmethod
-    def _validate_rotator_form_data(
+    def _read_rotator_form_data(
         data: dict[str, str],
         web_context: RotatorAdminWebContext,
         action: FormAction,
-    ) -> dict[str, str]:
+    ) -> tuple[StoredRotator | None, dict[str, str]]:
         event = web_context.get_admin_event()
         errors: dict[str, str] = {}
         name = WebContext.form_data_to_str(data, field := 'name') or ''
@@ -286,11 +286,21 @@ class RotatorAdminController(BaseEventAdminController):
                 used_names.remove(web_context.get_admin_rotator().name)
             if name in used_names:
                 errors[field] = _('This name is already used.')
+        delay: int | None = None
         try:
-            WebContext.form_data_to_int(data, field := 'delay', minimum=1)
+            delay = WebContext.form_data_to_int(data, field := 'delay', minimum=1)
         except ValueError:
             errors[field] = _('A positive integer is expected.')
-        return errors
+        if errors:
+            return None, errors
+        stored_rotator = StoredRotator(
+            id=None,
+            name=name,
+            delay=delay,
+            message_default=WebContext.form_data_to_bool(data, 'message_text_checkbox'),
+            message_text=WebContext.form_data_to_str(data, 'message_text'),
+        )
+        return stored_rotator, errors
 
     @post(path='/admin/rotator-create/{event_uniq_id:str}', name='admin-rotator-create')
     async def htmx_admin_rotator_create(
@@ -305,21 +315,15 @@ class RotatorAdminController(BaseEventAdminController):
         web_context = RotatorAdminWebContext(request, event_uniq_id)
         if web_context.error:
             return web_context.error
-        if errors := self._validate_rotator_form_data(
+        stored_rotator, errors = self._read_rotator_form_data(
             data, web_context, FormAction.CREATE
-        ):
+        )
+        if not stored_rotator:
             return self._admin_event_rotator_render(
                 web_context,
                 self._rotator_form_modal_context(FormAction.CREATE, data, errors),
             )
         event = web_context.get_admin_event()
-        stored_rotator = StoredRotator(
-            id=None,
-            name=WebContext.form_data_to_str(data, 'name') or '',
-            delay=WebContext.form_data_to_int(data, 'delay'),
-            message_default=WebContext.form_data_to_bool(data, 'message_text_checkbox'),
-            message_text=WebContext.form_data_to_str(data, 'message_text'),
-        )
         event.create_rotator(stored_rotator)
         Message.success(
             request,
@@ -346,22 +350,16 @@ class RotatorAdminController(BaseEventAdminController):
         web_context = RotatorAdminWebContext(request, event_uniq_id, rotator_id)
         if web_context.error:
             return web_context.error
-        if errors := self._validate_rotator_form_data(
+        stored_rotator, errors = self._read_rotator_form_data(
             data, web_context, FormAction.CLONE
-        ):
+        )
+        if not stored_rotator:
             return self._admin_event_rotator_render(
                 web_context,
                 self._rotator_form_modal_context(FormAction.CLONE, data, errors),
             )
         event = web_context.get_admin_event()
         cloned_rotator = web_context.get_admin_rotator()
-        stored_rotator = StoredRotator(
-            id=None,
-            name=WebContext.form_data_to_str(data, 'name') or '',
-            delay=WebContext.form_data_to_int(data, 'delay'),
-            message_default=WebContext.form_data_to_bool(data, 'message_text_checkbox'),
-            message_text=WebContext.form_data_to_str(data, 'message_text'),
-        )
         stored_rotator.stored_rotating_screens = copy(
             cloned_rotator.stored_rotating_screens
         )
@@ -391,23 +389,20 @@ class RotatorAdminController(BaseEventAdminController):
         web_context = RotatorAdminWebContext(request, event_uniq_id, rotator_id)
         if web_context.error:
             return web_context.error
-        if errors := self._validate_rotator_form_data(
+        new_stored_rotator, errors = self._read_rotator_form_data(
             data, web_context, FormAction.UPDATE
-        ):
+        )
+        if not new_stored_rotator:
             return self._admin_event_rotator_render(
                 web_context,
                 self._rotator_form_modal_context(FormAction.UPDATE, data, errors),
             )
         event = web_context.get_admin_event()
         stored_rotator = web_context.get_admin_rotator().stored_rotator
-        stored_rotator.name = WebContext.form_data_to_str(data, 'name') or ''
-        stored_rotator.delay = WebContext.form_data_to_int(data, 'delay')
-        message_default = WebContext.form_data_to_bool(data, 'message_text_checkbox')
-        stored_rotator.message_default = message_default
-        if message_default:
-            stored_rotator.message_text = WebContext.form_data_to_str(
-                data, 'message_text'
-            )
+        stored_rotator.name = new_stored_rotator.name
+        stored_rotator.delay = new_stored_rotator.delay
+        stored_rotator.message_default = new_stored_rotator.message_default
+        stored_rotator.message_text = new_stored_rotator.message_text
         event.update_rotator(stored_rotator)
         Message.success(
             request,

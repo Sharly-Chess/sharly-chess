@@ -8,6 +8,7 @@ from logging import Logger
 from pathlib import Path
 from typing import Literal
 
+from common.i18n.utils import by, normalized_key
 from litestar.plugins.htmx import HTMXRequest
 from packaging.version import Version
 
@@ -139,7 +140,7 @@ class EventLoader:
                 events_by_id[uniq_id] = self.load_event(uniq_id)
             except SharlyChessException as pwe:
                 logger.error(pwe)
-        return sorted(events_by_id.values(), key=lambda event: event.name)
+        return sorted(events_by_id.values(), key=by('name'))
 
     @classmethod
     def load_event_metadata(cls, uniq_id: str) -> EventMetadata:
@@ -166,7 +167,7 @@ class EventLoader:
                 conditions.append(lambda event: now < event.start)
         return sorted(
             cls._filter_events_metadata(conditions),
-            key=lambda event: (-event.stop, -event.start, event.name),
+            key=lambda event: (-event.stop, -event.start, normalized_key('name')),
         )
 
     @classmethod

@@ -175,13 +175,20 @@ class Player:
     def first_name(self) -> str | None:
         return self.stored_player.first_name
 
+    @staticmethod
+    def player_full_name(
+        first_name: str | None,
+        last_name: str,
+    ) -> str:
+        if first_name:
+            return _('{first_name} {last_name}').format(
+                first_name=first_name, last_name=last_name
+            )
+        return last_name
+
     @property
     def full_name(self) -> str:
-        if self.first_name:
-            return _('{first_name} {last_name}').format(
-                first_name=self.first_name, last_name=self.last_name
-            )
-        return self.last_name
+        return self.player_full_name(self.first_name, self.last_name)
 
     @property
     def date_of_birth(self) -> date | None:

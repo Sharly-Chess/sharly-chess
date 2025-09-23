@@ -28,7 +28,7 @@
     </svg>
 {% endmacro %}
 
-{% macro visibility_icon(object_type, public, tooltip_public_text, tooltip_private_text, class) %}
+{% macro visibility_icon(object_type, public, tooltip_public_text, tooltip_private_text, class='') %}
     <!-- visibility_icon() -->
     {% if public %}
         {% if object_type == 'event' %}
@@ -70,8 +70,12 @@
     <!-- end visibility_icon() -->
 {% endmacro %}
 
+{% macro doc_url(url) %}
+    https://sharly-chess.com/{% if locale != 'en' %}{{ locale }}/{% endif %}h/{{ url }}
+{% endmacro %}
+
 {% macro doc_icon(url, class) %}
-    <a href="https://sharly-chess.com/{% if locale != 'en' %}{{ locale }}/{% endif %}h/{{ url }}" target="_blank" class="{{ class }}">
+    <a href="{{ doc_url(url) }}" target="_blank" class="{{ class }}">
         <i class="bi-info-circle"></i>
     </a>
 {% endmacro %}

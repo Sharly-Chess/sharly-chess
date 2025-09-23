@@ -8,6 +8,7 @@
             label=_('Upload:'),
             placeholder=_('Auto-upload results to FFE site'),
             help_text=_("You must enter the tournament certification number and password in each tournament's settings."),
+            disabled=not client.can_update_event,
             data=data, errors=errors
         ) }}
     </div>
@@ -17,6 +18,7 @@
             label=_('Minimum delay between uploads (minutes):'),
             placeholder=_('Default: %(string)s', string=FFE_DEFAULT_UPLOAD_DELAY),
             help_text=_("The minimum delay between auto-uploads to the FFE server."),
+            disabled=not client.can_update_event,
             data=data, errors=errors,
             min=1
         ) }}

@@ -5,6 +5,7 @@
         {{ admin_macros.number_input(
             name='ffe_id',
             label=_('FFE certification number (optional):'),
+            autocomplete='off',
             placeholder=_('E.g.: %(num)d', num=68991),
             help_text=_('The qualification number given by the French Federation is an integer, it is used to connect to the FFE website.'),
             hx_post=url_for('ffe-test-auth'),
@@ -18,9 +19,11 @@
         ) }}
     </div>
     <div class="col-12 col-md-6 mb-3">
+        <input type="password" name="fake_ffe_password" style="display:none" autocomplete="current-password">
         {{ admin_macros.password_input(
             name='ffe_password',
             label=_('FFE password:'),
+            autocomplete='new-password',
             placeholder=_('E.g.: %(string)s', string='KYNPRTZMHX'),
             help_text=_('The password is made of 10 uppercase letters, it is used to connect to the FFE website.'),
             valid=ffe_auth_valid,

@@ -41,7 +41,7 @@ from web.controllers.admin.screen_admin_controller import ScreenAdminController
 from web.controllers.admin.pairings_admin_controller import PairingsAdminController
 from web.controllers.admin.timer_admin_controller import TimerAdminController
 from web.controllers.admin.tournament_admin_controller import TournamentAdminController
-from web.controllers.admin.access_admin_controller import AccessAdminController
+from web.controllers.admin.account_admin_controller import AccountAdminController
 from web.controllers.background_controller import BackgroundController
 from web.controllers.index_controller import IndexController
 from web.controllers.qrcode_controller import QRCodeController
@@ -87,7 +87,7 @@ route_handlers: Sequence[ControllerRouterHandler] = [
     PlayerAdminController,
     DisplayControllerAdminController,
     QRCodeController,
-    AccessAdminController,
+    AccountAdminController,
     ProfileController,
     static_files_router,
     # Plugin controllers
@@ -209,9 +209,10 @@ stores: dict[str, Store] = {
 
 middlewares: Sequence[Middleware] = [
     ServerSideSessionConfig(
+        key='sharly-chess-session',
         exclude=[
             r'^/static/*',
             r'.*\.(png|jpg|jpeg|gif|css|js|svg)$',
-        ]
+        ],
     ).middleware,
 ]

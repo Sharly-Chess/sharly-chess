@@ -27,10 +27,19 @@ if platform.system() == 'Windows':
         # Remove not to run twice
         tracer.unlink()
 
+if platform.system() == 'Darwin':
+    # Prevent MacOS from sleeping the windowed app when it's in the background
+    from rubicon.objc import ObjCClass
+
+    NSProcessInfo = ObjCClass('NSProcessInfo')
+    NSProcessInfo.processInfo.beginActivityWithOptions_reason_(
+        0x00FFFFFF,  # NSActivityUserInitiated | NSActivityLatencyCritical
+        'Prevent App Nap',
+    )
+
 try:
     import argparse
     import asyncio
-    from typing import TYPE_CHECKING
     import sys
 
     from utils.scripts import init_script
@@ -44,11 +53,7 @@ try:
         print_interactive_warning,
     )
     from gui.server_gui_toga import SharlyChessServerToga
-    from plugins.manager import plugin_manager
     from web.server_engine import ServerEngine
-
-    if TYPE_CHECKING:
-        from plugins.utils import PluginEngineArgument
 
     logger = get_logger()
 
@@ -61,18 +66,6 @@ try:
         type=int,
         help='force the web port tu use',
     )
-    engine_argument_names: list[str] = []
-    plugin_engine_arguments: list['PluginEngineArgument'] = (
-        plugin_manager.hook.get_engine_argument()
-    )
-    for argument in plugin_engine_arguments:
-        parser.add_argument(
-            f'-{argument.flag}',
-            f'--{argument.name}',
-            help=argument.help,
-            action='store_true',
-        )
-        engine_argument_names.append(argument.name)
     if DEVEL_ENV:
         parser.add_argument(
             '-d',
@@ -91,14 +84,8 @@ try:
     if args.server:
         print_interactive_warning(_('Argument --server is deprecated, ignored.'))
 
-    # Check if any plugin engine argument was passed
-    has_plugin_engine_arg = any(
-        getattr(args, arg.name)  # each was added as store_true
-        for arg in plugin_engine_arguments
-    )
-
     # Check if GUI mode should be used
-    if not TEST_ENV and not (DEVEL_ENV and args.cli) and not has_plugin_engine_arg:
+    if not TEST_ENV and not (DEVEL_ENV and args.cli):
         # Create and run the Toga app - this should block until the app exits
         app = SharlyChessServerToga()
         app.main_loop()
@@ -106,17 +93,8 @@ try:
 
     # Original console mode
     try:
-        plugin_engine_argument: 'PluginEngineArgument | None' = None
-        for engine_argument in plugin_engine_arguments:
-            if getattr(args, engine_argument.name, False):
-                plugin_engine_argument = engine_argument
-                engine_argument.init_engine()
-                break
-        if plugin_engine_argument is None:
-            se: ServerEngine = ServerEngine(
-                debug=(DEVEL_ENV and args.debug), port=args.port or None
-            )
-            asyncio.run(se.serve())
+        se: ServerEngine = ServerEngine(debug=args.debug, port=args.port or None)
+        asyncio.run(se.serve())
     except KeyboardInterrupt:
         pass
 

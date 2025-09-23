@@ -131,34 +131,14 @@ else
     mv "$PYINSTALLER_APP_BUNDLE" "$APP_BUNDLE"
 fi
 
-# Convert and copy the icon
+# Copy the icon
 echo "Adding application icon..."
-if [ -f "src/gui/icon.png" ]; then
-    # Convert PNG to ICNS format for macOS app bundles
-    ICONSET_DIR="$APP_BUNDLE/Contents/Resources/icon.iconset"
-    mkdir -p "$ICONSET_DIR"
-
-    # Create different icon sizes (using sips command)
-    sips -z 16 16     "src/gui/icon.png" --out "$ICONSET_DIR/icon_16x16.png"
-    sips -z 32 32     "src/gui/icon.png" --out "$ICONSET_DIR/icon_16x16@2x.png"
-    sips -z 32 32     "src/gui/icon.png" --out "$ICONSET_DIR/icon_32x32.png"
-    sips -z 64 64     "src/gui/icon.png" --out "$ICONSET_DIR/icon_32x32@2x.png"
-    sips -z 128 128   "src/gui/icon.png" --out "$ICONSET_DIR/icon_128x128.png"
-    sips -z 256 256   "src/gui/icon.png" --out "$ICONSET_DIR/icon_128x128@2x.png"
-    sips -z 256 256   "src/gui/icon.png" --out "$ICONSET_DIR/icon_256x256.png"
-    sips -z 512 512   "src/gui/icon.png" --out "$ICONSET_DIR/icon_256x256@2x.png"
-    sips -z 512 512   "src/gui/icon.png" --out "$ICONSET_DIR/icon_512x512.png"
-    sips -z 1024 1024 "src/gui/icon.png" --out "$ICONSET_DIR/icon_512x512@2x.png"
-
-    # Convert iconset to icns
-    iconutil -c icns "$ICONSET_DIR" -o "$APP_BUNDLE/Contents/Resources/icon.icns"
-
-    # Clean up iconset directory
-    rm -rf "$ICONSET_DIR"
-
+if [ -f "src/web/static/images/sharly-chess.icns" ]; then
+    # Copy the existing ICNS file directly
+    cp "src/web/static/images/sharly-chess.icns" "$APP_BUNDLE/Contents/Resources/icon.icns"
     echo "Icon added successfully."
 else
-    echo "Warning: Icon file not found at src/gui/icon.png"
+    echo "Warning: Icon file not found at src/web/static/images/sharly-chess.icns"
 fi
 
 # Update Info.plist to reference our custom icon
@@ -168,6 +148,8 @@ if [ -f "$APP_BUNDLE/Contents/Info.plist" ]; then
     # Update the display name and bundle name
     plutil -replace CFBundleDisplayName -string "Sharly Chess" "$APP_BUNDLE/Contents/Info.plist"
     plutil -replace CFBundleName -string "SharlyChess" "$APP_BUNDLE/Contents/Info.plist"
+    # Disable App Nap
+    plutil -replace NSAppSleepDisabled -bool YES "$APP_BUNDLE/Contents/Info.plist"
     echo "Updated Info.plist with custom icon and names"
 else
     echo "Warning: Info.plist not found in app bundle"
@@ -217,19 +199,33 @@ echo "Using signing identity: $APP_SIGNING_IDENTITY"
 
 ENTITLEMENTS_FILE="scripts/export/macos/entitlements.plist"
 
-# Step 4: Sign regular files
-while IFS= read -r file; do
-    if file "$file" | grep -q "Mach-O" || [[ "$file" == *.app* ]]; then
-        echo "Signing: $(basename "$file")"
-        # Sign the main executable and the launcher app with entitlements
-        if [[ "$(basename "$file")" == "sharly-chess-"* ]] || [[ "$file" == *.app* ]]; then
+# Step 4: Sign files in proper order (inside-out)
+echo "Signing all Mach-O files and dylibs inside the app bundle..."
+
+# First, sign all dylibs and .so files (deepest dependencies first)
+find "$APP_BUNDLE" -type f \( -name "*.dylib" -o -name "*.so" \) | while read -r file; do
+    echo "Signing: $(basename "$file")"
+    codesign --force --timestamp --options=runtime --sign "$APP_SIGNING_IDENTITY" --keychain "$KEYCHAIN_PATH" "$file" --verbose=2
+done
+
+# Then sign executables (but not the main app bundle yet)
+find "$APP_BUNDLE" -type f -perm +111 ! -name "*.app" | while read -r file; do
+    # Skip the main executable for now, and only sign if it's a Mach-O binary
+    if file "$file" | grep -q "Mach-O"; then
+        echo "Signing executable: $(basename "$file")"
+        if [[ "$(basename "$file")" == "sharly-chess-"* ]]; then
+            # Sign main executable with entitlements
             codesign --force --timestamp --options=runtime --entitlements "$ENTITLEMENTS_FILE" --sign "$APP_SIGNING_IDENTITY" --keychain "$KEYCHAIN_PATH" "$file" --verbose=2
         else
-            # Sign other files without entitlements
+            # Sign other executables without entitlements
             codesign --force --timestamp --options=runtime --sign "$APP_SIGNING_IDENTITY" --keychain "$KEYCHAIN_PATH" "$file" --verbose=2
         fi
     fi
-done <<<"$(find "$PROJECT_DIR" -type f \( -name "*.dylib" -o -name "*.so" -o -perm +111 \) -o -name "*.app")"
+done
+
+# Finally, sign the app bundle itself
+echo "Signing the main app bundle: $APP_BUNDLE"
+codesign --force --timestamp --options=runtime --entitlements "$ENTITLEMENTS_FILE" --sign "$APP_SIGNING_IDENTITY" --keychain "$KEYCHAIN_PATH" "$APP_BUNDLE" --verbose=2
 
 echo "Application file signing complete."
 
@@ -249,10 +245,10 @@ echo "Staging application content..."
 mkdir -p "$STAGING_DIR/sharly-chess-${VERSION}"
 rsync -a "$APP_BUNDLE" "$STAGING_DIR/sharly-chess-${VERSION}/"
 
-# Copy other files and folders except _internal, executable, and Launch Sharly Chess.app
+# Copy other files and folders except _internal, and the executable
 for item in "$PROJECT_DIR"/*; do
     item_name=$(basename "$item")
-    if [[ "$item_name" != "_internal" && "$item_name" != "$EXECUTABLE_NAME" && "$item_name" != "SharlyChess.app" && "$item_name" != "Launch Sharly Chess.app" ]]; then
+    if [[ "$item_name" != "_internal" && "$item_name" != "$EXECUTABLE_NAME" && "$item_name" != "SharlyChess.app" ]]; then
         rsync -a "$item" "$STAGING_DIR/sharly-chess-${VERSION}/"
     fi
 done
@@ -288,15 +284,31 @@ else
     codesign --force --timestamp --options=runtime --sign "$APP_SIGNING_IDENTITY" --keychain "$KEYCHAIN_PATH" "$DMG_PATH" --verbose=2
 
     echo "Notarizing the DMG... (this may take a while)"
-    xcrun notarytool submit "$DMG_PATH" \
+    NOTARY_RESULT=$(xcrun notarytool submit "$DMG_PATH" \
         --apple-id "$APPLE_ID" \
         --password "$APPLE_APP_SPECIFIC_PASSWORD" \
         --team-id "$APPLE_TEAM_ID" \
-        --wait
+        --wait 2>&1)
 
-    echo "Notarization successful. Stapling ticket..."
-    xcrun stapler staple "$DMG_PATH"
-    echo "Stapling complete."
+    echo "$NOTARY_RESULT"
+
+    if echo "$NOTARY_RESULT" | grep -q "status: Accepted"; then
+        echo "Notarization successful. Stapling ticket..."
+        xcrun stapler staple "$DMG_PATH"
+        echo "Stapling complete."
+    else
+        echo "Error: Notarization failed!"
+        # Extract submission ID to get detailed logs
+        SUBMISSION_ID=$(echo "$NOTARY_RESULT" | grep "id:" | head -1 | awk '{print $2}')
+        if [ -n "$SUBMISSION_ID" ]; then
+            echo "Getting detailed notarization logs..."
+            xcrun notarytool log "$SUBMISSION_ID" \
+                --apple-id "$APPLE_ID" \
+                --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+                --team-id "$APPLE_TEAM_ID"
+        fi
+        exit 1
+    fi
 fi
 echo
 

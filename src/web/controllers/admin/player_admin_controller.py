@@ -5,6 +5,7 @@ from logging import Logger
 import math
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any, Iterable
+from common.i18n.utils import normalized_key
 from pyexcel_ods3 import save_data
 import xlsxwriter
 
@@ -17,7 +18,6 @@ from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 from litestar.channels import ChannelsPlugin
 
-from common import unicode_normalize
 from common.exception import SharlyChessException
 from common.i18n import _, ngettext
 from common.logger import get_logger
@@ -161,7 +161,7 @@ class PlayerAdminController(BaseEventAdminController):
 
         last_name: str | None = WebContext.form_data_to_str(data, field := 'last_name')
         if not last_name:
-            errors[field] = _('Please enter the last name.')
+            errors[field] = _('This field is required.')
         try:
             if value := WebContext.form_data_to_int(data, field := 'gender'):
                 PlayerGender(value)
@@ -242,13 +242,14 @@ class PlayerAdminController(BaseEventAdminController):
             first_name=(WebContext.form_data_to_str(data, 'first_name') or '').title(),
             last_name=(WebContext.form_data_to_str(data, 'last_name') or '').upper(),
             date_of_birth=WebContext.form_data_to_date(data, 'date_of_birth'),
-            gender=WebContext.form_data_to_int(data, 'gender') or PlayerGender.NONE,
+            gender=WebContext.form_data_to_int(data, 'gender')
+            or PlayerGender.NONE.value,
             mail=WebContext.form_data_to_str(data, 'mail'),
             phone=WebContext.form_data_to_str(data, 'phone'),
             comment=data.get('comment'),
             owed=WebContext.form_data_to_float(data, 'owed') or 0.0,
             paid=WebContext.form_data_to_float(data, 'paid') or 0.0,
-            title=WebContext.form_data_to_int(data, 'title') or PlayerTitle.NONE,
+            title=WebContext.form_data_to_int(data, 'title') or PlayerTitle.NONE.value,
             ratings={
                 tr.value: PlayerRating(
                     WebContext.form_data_to_int(data, f'{tr.form_key}_rating') or 0,
@@ -389,7 +390,7 @@ class PlayerAdminController(BaseEventAdminController):
     @staticmethod
     def _matches_string_search(search: str, match: str):
         search_parts = set(search.split(' '))
-        match_str = unicode_normalize(match.lower())
+        match_str = normalized_key(match)
         return all(search_part in match_str for search_part in search_parts)
 
     @staticmethod
@@ -897,7 +898,7 @@ class PlayerAdminController(BaseEventAdminController):
                 context=template_context,
             )
 
-        return cls._admin_event_render(template_context)
+        return cls._admin_base_event_render(template_context)
 
     players_tab_guards = EventUserController.event_guards + [
         Guard.client_can_view_players_tab,
@@ -995,11 +996,11 @@ class PlayerAdminController(BaseEventAdminController):
             )
         elif admin_players_filter_name is not None:
             SessionHandler.set_session_admin_players_filter_name(
-                request, unicode_normalize(admin_players_filter_name).lower()
+                request, normalized_key(admin_players_filter_name)
             )
         elif admin_players_filter_clubs_search is not None:
             SessionHandler.set_session_admin_players_filter_clubs_search(
-                request, unicode_normalize(admin_players_filter_clubs_search).lower()
+                request, normalized_key(admin_players_filter_clubs_search)
             )
         elif admin_players_clear_filters:
             SessionHandler.set_session_admin_players_filter_federations(request, [])
@@ -1850,7 +1851,7 @@ class PlayerAdminController(BaseEventAdminController):
             ),
             'admin_players_update_extra_columns': extra_columns,
         }
-        return self._admin_event_render(template_context)
+        return self._admin_base_event_render(template_context)
 
     @classmethod
     def publish_new_checkin(
