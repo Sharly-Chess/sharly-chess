@@ -246,7 +246,7 @@
             });
         </script>
     {% elif options|length == 1 and not disabled %}
-        <input type="hidden" name="{{ name }}" value="{{ selected[0] }}" />
+        <input type="hidden" name="{{ name }}" value="{{ options|list|first }}" />
     {% endif %}
 {% endmacro %}
 
