@@ -1,6 +1,6 @@
 """A file grouping all the "utility" classes/enum"""
 
-from collections.abc import Iterator
+from collections.abc import Iterator, Iterable
 from datetime import date, datetime, timedelta
 from enum import Enum, StrEnum, IntEnum, auto
 from functools import cache
