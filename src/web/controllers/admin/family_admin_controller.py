@@ -1,7 +1,8 @@
 from typing import Annotated, Any
 
 from litestar import post, get, patch, delete
-from litestar.plugins.htmx import HTMXRequest, ClientRedirect
+from litestar.exceptions import ClientException, NotFoundException
+from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
@@ -19,7 +20,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
-from web.controllers.base_controller import Redirect, WebContext
+from web.controllers.base_controller import WebContext
 from web.messages import Message
 from web.session import SessionHandler
 
@@ -45,14 +46,12 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
         if self.admin_event is None:
             raise RuntimeError('admin_event not defined')
         self.admin_family: Family | None = None
-        if self.error:
-            return
         if family_id:
             try:
                 self.admin_family = self.admin_event.families_by_id[family_id]
             except KeyError:
-                self._redirect_error(f'Family [{family_id}] not found.')
-                return
+                raise NotFoundException(f'Family [{family_id}] not found.')
+
         self.family_type: ScreenType | None = None
         if self.admin_family:
             self.family_type = self.admin_family.type
@@ -60,8 +59,7 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
             try:
                 self.family_type = ScreenType(family_type)
             except ValueError:
-                self._redirect_error(f'Unknown screen type [{family_type}].')
-                return
+                raise NotFoundException(f'Unknown screen type [{family_type}].')
 
     def get_admin_family(self) -> Family:
         assert self.admin_family is not None
@@ -302,7 +300,7 @@ class FamilyAdminController(BaseEventAdminController):
         family_type: str | None = None,
         data: dict[str, str] | None = None,  # type: ignore
         errors: dict[str, str] | None = None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context: FamilyAdminWebContext = FamilyAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -310,8 +308,6 @@ class FamilyAdminController(BaseEventAdminController):
             family_type=family_type,
             data=data,
         )
-        if web_context.error:
-            return web_context.error
         event = web_context.get_admin_event()
         template_context = web_context.template_context | {
             'admin_event_tab': 'admin-event-families-tab',
@@ -503,7 +499,7 @@ class FamilyAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         admin_families_show_details: bool | None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         if admin_families_show_details is not None:
             SessionHandler.set_session_admin_families_show_details(
                 request, admin_families_show_details
@@ -522,7 +518,7 @@ class FamilyAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         family_type: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_event_families_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -542,7 +538,7 @@ class FamilyAdminController(BaseEventAdminController):
         event_uniq_id: str,
         action: str,
         family_id: int | None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_event_families_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -562,7 +558,7 @@ class FamilyAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         match action:
             case 'update' | 'delete' | 'clone' | 'create':
                 web_context: FamilyAdminWebContext = FamilyAdminWebContext(
@@ -574,8 +570,6 @@ class FamilyAdminController(BaseEventAdminController):
                 )
             case _:
                 raise ValueError(f'action=[{action}]')
-        if web_context.error:
-            return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
         stored_family: StoredFamily = self._admin_validate_family_update_data(
@@ -639,7 +633,7 @@ class FamilyAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_family_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -662,7 +656,7 @@ class FamilyAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_family_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -685,7 +679,7 @@ class FamilyAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_family_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -708,7 +702,7 @@ class FamilyAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         family_id: int,
-    ) -> HTMXTemplate | ClientRedirect | Redirect:
+    ) -> HTMXTemplate:
         web_context = FamilyAdminWebContext(request, event_uniq_id, family_id)
         event = web_context.get_admin_event()
         family = web_context.get_admin_family()
@@ -722,7 +716,7 @@ class FamilyAdminController(BaseEventAdminController):
             )
         ):
             # No precise error (validated in JS)
-            return self.redirect_error(request, f'Invalid uniq ID [{new_uniq_id}].')
+            raise ClientException(f'Invalid uniq ID [{new_uniq_id}].')
         stored_family = family.stored_family
         assert stored_family is not None
         stored_family.uniq_id = new_uniq_id
@@ -753,7 +747,7 @@ class FamilyAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_family_update(
             request,
             event_uniq_id=event_uniq_id,

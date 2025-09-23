@@ -5,6 +5,9 @@ from logging import Logger
 import math
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any, Iterable
+
+from litestar.exceptions import NotFoundException, ClientException
+
 from common.i18n.utils import normalized_key
 from pyexcel_ods3 import save_data
 import xlsxwriter
@@ -13,7 +16,7 @@ from litestar import get, patch, delete, post, Response
 from litestar.plugins.htmx import HTMXRequest, ClientRedirect
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.response import Template, Redirect, File
+from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 from litestar.channels import ChannelsPlugin
@@ -64,6 +67,7 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
         event_uniq_id: str,
         player_id: int | None = None,
         tournament_id: int | None = None,
+        data_source_id: str | None = None,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -73,25 +77,29 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
         super().__init__(request, event_uniq_id=event_uniq_id, data=data)
         if self.admin_event is None:
             raise RuntimeError('admin_event not defined')
+
         self.admin_player: Player | None = None
-        self.admin_tournament: Tournament | None = None
-        if self.error:
-            return
         if player_id:
             try:
                 self.admin_player = self.admin_event.players_by_id[player_id]
             except KeyError:
-                self._redirect_error(f'Player [{player_id}] not found.')
-                return
+                raise NotFoundException(f'Player [{player_id}] not found.')
 
+        self.admin_tournament: Tournament | None = None
         if tournament_id:
             try:
                 self.admin_tournament = self.admin_event.tournaments_by_id[
                     tournament_id
                 ]
             except KeyError:
-                self._redirect_error(f'Tournament [{tournament_id}] not found.')
-                return
+                raise NotFoundException(f'Tournament [{tournament_id}] not found.')
+
+        self.admin_data_source: DataSource | None = None
+        if data_source_id:
+            try:
+                self.admin_data_source = DataSourceManager.get_object(data_source_id)
+            except KeyError:
+                raise NotFoundException(f'Unknown data source [{data_source_id}].')
 
         print_tournament_ids = self.default_tournament_for_print_modal(
             tournament_id=None
@@ -117,6 +125,10 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
     def get_admin_player(self) -> Player:
         assert self.admin_player is not None
         return self.admin_player
+
+    def get_admin_data_source(self) -> DataSource:
+        assert self.admin_data_source is not None
+        return self.admin_data_source
 
     @property
     def template_context(self) -> dict[str, Any]:
@@ -495,7 +507,7 @@ class PlayerAdminController(BaseEventAdminController):
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
         warning_message: str | None = None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -503,8 +515,6 @@ class PlayerAdminController(BaseEventAdminController):
             tournament_id=tournament_id,
             data=data,
         )
-        if web_context.error:
-            return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
         admin_event: Event = web_context.admin_event
@@ -924,7 +934,7 @@ class PlayerAdminController(BaseEventAdminController):
         admin_players_filter_categories: list[int] | None = None,
         admin_players_filter_name: str | None = None,
         admin_players_clear_filters: int | None = None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         if admin_players_sort is not None:
             SessionHandler.set_session_admin_players_sort(request, admin_players_sort)
         elif admin_players_filter_columns is not None:
@@ -1027,7 +1037,7 @@ class PlayerAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         page: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_event_players_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -1042,7 +1052,7 @@ class PlayerAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_event_players_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -1066,28 +1076,21 @@ class PlayerAdminController(BaseEventAdminController):
         data_source_id: str,
         player_source_id: str,
         tournament_id: str | None,
-    ) -> Template | ClientRedirect | Redirect:
-        try:
-            data_source = DataSourceManager.get_object(data_source_id)
-        except KeyError:
-            return self.redirect_error(
-                request, f'Unknown data source [{data_source_id}].'
-            )
+    ) -> Template:
+        web_context = PlayerAdminWebContext(
+            request, event_uniq_id, data_source_id=data_source_id
+        )
+        data_source = web_context.get_admin_data_source()
         errors: dict[str, str] = {}
         stored_player: StoredPlayer | None = None
         if not data_source.is_available:
-            return self.redirect_error(
-                request, f'Data source [{data_source_id}] is not available.'
-            )
+            raise ClientException(f'Data source [{data_source_id}] is not available.')
         try:
             stored_player = await data_source.fetch_player(player_source_id)
             if not stored_player:
-                return self.redirect_error(
-                    request,
-                    (
-                        f'Player [{player_source_id}] unexpectedly '
-                        f'not found in data source [{data_source_id}]'
-                    ),
+                raise NotFoundException(
+                    f'Player [{player_source_id}] unexpectedly '
+                    f'not found in data source [{data_source_id}]'
                 )
         except SharlyChessException:
             errors[data_source.search_element_name] = _(
@@ -1114,7 +1117,7 @@ class PlayerAdminController(BaseEventAdminController):
         action: str,
         event_uniq_id: str,
         player_id: int | None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_event_players_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -1132,7 +1135,7 @@ class PlayerAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         player_id: int | None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_event_players_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -1150,7 +1153,7 @@ class PlayerAdminController(BaseEventAdminController):
         action: str,
         event_uniq_id: str,
         player_id: int | None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         match action:
             case 'update' | 'create':
                 web_context: PlayerAdminWebContext = PlayerAdminWebContext(
@@ -1161,8 +1164,6 @@ class PlayerAdminController(BaseEventAdminController):
                 )
             case _:
                 raise ValueError(f'action=[{action}]')
-        if web_context.error:
-            return web_context.error
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
         add_other = 'add_other' in data
@@ -1266,7 +1267,7 @@ class PlayerAdminController(BaseEventAdminController):
         event_uniq_id: str,
         player_id: int,
         tournament_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -1274,8 +1275,6 @@ class PlayerAdminController(BaseEventAdminController):
             tournament_id=tournament_id,
             data=data,
         )
-        if web_context.error:
-            return web_context.error
         admin_player = web_context.get_admin_player()
         dst_tournament = web_context.get_admin_tournament()
         src_tournament = admin_player.tournament
@@ -1355,7 +1354,7 @@ class PlayerAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         event_uniq_id: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_player_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -1377,7 +1376,7 @@ class PlayerAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         player_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_player_update(
             request,
             event_uniq_id=event_uniq_id,
@@ -1468,7 +1467,7 @@ class PlayerAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         player_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -1476,8 +1475,6 @@ class PlayerAdminController(BaseEventAdminController):
             tournament_id=None,
             data=data,
         )
-        if web_context.error:
-            return web_context.error
         if web_context.admin_player is None:
             raise RuntimeError('admin_player not defined')
         if web_context.admin_player.tournament is None:
@@ -1502,7 +1499,7 @@ class PlayerAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         player_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = PlayerAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -1546,15 +1543,14 @@ class PlayerAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
             tournament_id=tournament_id,
             data=data,
         )
-        if web_context.error:
-            return web_context.error
+
         if web_context.admin_tournament is None:
             raise RuntimeError('admin_tournament not defined')
         admin_tournament: Tournament = web_context.admin_tournament
@@ -1576,7 +1572,7 @@ class PlayerAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_event_players_render(
             request,
             event_uniq_id=event_uniq_id,
@@ -1595,15 +1591,14 @@ class PlayerAdminController(BaseEventAdminController):
         tournament_id: int,
         zpbs_next_round: bool = False,
         zpbs_all_rounds: bool = False,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
             tournament_id=tournament_id,
             data=data,
         )
-        if web_context.error:
-            return web_context.error
+
         if web_context.admin_tournament is None:
             raise RuntimeError('admin_tournament not defined')
         admin_tournament: Tournament = web_context.admin_tournament
@@ -1634,7 +1629,7 @@ class PlayerAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         action = WebContext.form_data_to_str(data, 'action') or ''
 
         return self._admin_tournament_close_check_in(
@@ -1656,15 +1651,14 @@ class PlayerAdminController(BaseEventAdminController):
         event_uniq_id: str,
         player_id: int,
         check_in: bool,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
             player_id=player_id,
             data=data,
         )
-        if web_context.error:
-            return web_context.error
+
         if web_context.admin_player is None:
             raise RuntimeError('admin_player not defined')
         admin_player: Player = web_context.admin_player
@@ -1690,7 +1684,7 @@ class PlayerAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         player_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_player_check_in_out(
             request=request,
             data=data,
@@ -1712,7 +1706,7 @@ class PlayerAdminController(BaseEventAdminController):
         ],
         event_uniq_id: str,
         player_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_player_check_in_out(
             request=request,
             data=data,
@@ -1735,19 +1729,15 @@ class PlayerAdminController(BaseEventAdminController):
         event_uniq_id: str,
         data_source_id: str,
         tournament_id: int | None = None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
-            request, event_uniq_id=event_uniq_id, tournament_id=tournament_id
+            request,
+            event_uniq_id,
+            tournament_id=tournament_id,
+            data_source_id=data_source_id,
         )
-        if web_context.error:
-            return web_context.error
         event = web_context.get_admin_event()
-        try:
-            data_source = DataSourceManager.get_object(data_source_id)
-        except KeyError:
-            return self.redirect_error(
-                request, f'Unknown data source [{data_source_id}].'
-            )
+        data_source = web_context.get_admin_data_source()
         player_updater_field_ids: list[str] = [
             field.id for field in data_source.player_updater_fields
         ]
@@ -1797,26 +1787,20 @@ class PlayerAdminController(BaseEventAdminController):
         event_uniq_id: str,
         data_source_id: str,
         tournament_id: int | None = None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
-            request, event_uniq_id=event_uniq_id, tournament_id=tournament_id
+            request,
+            event_uniq_id,
+            tournament_id=tournament_id,
+            data_source_id=data_source_id,
         )
-        if web_context.error:
-            return web_context.error
-        if web_context.admin_event is None:
-            raise RuntimeError('admin_event not defined')
-        try:
-            data_source: DataSource = DataSourceManager.get_object(data_source_id)
-        except KeyError:
-            # should never happen, not translated
-            return self.redirect_error(
-                request, f'Unknown data source [{data_source_id}].'
-            )
+        event = web_context.get_admin_event()
+        data_source = web_context.get_admin_data_source()
         field_ids: list[str] = [field.id for field in data_source.player_updater_fields]
         players = (
             web_context.admin_tournament.players_by_name_with_unpaired
             if web_context.admin_tournament
-            else web_context.admin_event.players_sorted_by_name
+            else event.players_sorted_by_name
         )
         player_matches: (
             list[PlayerComparator] | None
@@ -1904,20 +1888,11 @@ class PlayerAdminController(BaseEventAdminController):
         event_uniq_id: str,
         data_source_id: str,
         page: int = 0,
-    ) -> Template | ClientRedirect | Redirect:
-        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            data=None,
+    ) -> Template:
+        web_context = PlayerAdminWebContext(
+            request, event_uniq_id, data_source_id=data_source_id
         )
-        if web_context.error:
-            return web_context.error
-        try:
-            data_source = DataSourceManager.get_object(data_source_id)
-        except KeyError:
-            return self.redirect_error(
-                request, f'Unknown data source [{data_source_id}].'
-            )
+        data_source = web_context.get_admin_data_source()
         search = request.query_params.get(data_source.search_element_name)
         players: list[Player] = []
         connection_error: str | None = None
@@ -2158,8 +2133,7 @@ class PlayerAdminController(BaseEventAdminController):
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request, event_uniq_id=event_uniq_id, data=None
         )
-        if web_context.error:
-            return web_context.error
+
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
         players: list[Player] = [

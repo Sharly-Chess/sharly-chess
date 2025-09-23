@@ -4,8 +4,7 @@ from litestar import get, post
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.response import Template, Redirect
-from litestar_htmx import ClientRedirect
+from litestar.response import Template
 import urllib
 
 from common.exception import OptionError
@@ -37,9 +36,7 @@ class EventPrintController(BaseEventAdminController):
         cls,
         web_context: BaseEventAdminWebContext,
         template_context: dict[str, Any] | None = None,
-    ) -> Template | ClientRedirect | Redirect:
-        if web_context.error:
-            return web_context.error
+    ) -> Template:
         return cls._admin_base_event_render(
             web_context.template_context | (template_context or {}),
         )
@@ -105,7 +102,7 @@ class EventPrintController(BaseEventAdminController):
         document_id: str | None = None,
         tournament_id: int | None = None,
         round: int | None = None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = BaseEventAdminWebContext(request, event_uniq_id)
         tournament_ids = web_context.default_tournament_for_print_modal(tournament_id)
 
@@ -132,15 +129,13 @@ class EventPrintController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         event_uniq_id: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         flat_data = WebContext.flatten_list_data(data)
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
             data=flat_data,
         )
-        if web_context.error:
-            return web_context.error
 
         errors: dict[str, str] = {}
 
@@ -222,14 +217,12 @@ class EventPrintController(BaseEventAdminController):
         event_uniq_id: str,
         document: str,
         options: str | None = None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
             data=None,
         )
-        if web_context.error:
-            return web_context.error
         document_type = PrintDocumentManager.get_type(document)
         option_data: dict[str, str] = {}
         if options:

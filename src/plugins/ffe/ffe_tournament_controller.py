@@ -21,7 +21,6 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
 )
 from web.controllers.admin.tournament_admin_controller import TournamentAdminWebContext
-from web.controllers.base_controller import Redirect
 from web.messages import Message
 
 logger = get_logger()
@@ -38,7 +37,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context: TournamentAdminWebContext = TournamentAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -46,8 +45,6 @@ class FfeAdminTournamentController(BaseEventAdminController):
             criterion_id=None,
             data=None,
         )
-        if web_context.error:
-            return web_context.error
 
         admin_event = web_context.admin_event
         assert admin_event is not None
@@ -118,7 +115,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context: TournamentAdminWebContext = TournamentAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -126,8 +123,6 @@ class FfeAdminTournamentController(BaseEventAdminController):
             criterion_id=None,
             data=None,
         )
-        if web_context.error:
-            return web_context.error
 
         admin_event = web_context.admin_event
         assert admin_event is not None
@@ -214,7 +209,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template | ClientRedirect:
         web_context: TournamentAdminWebContext = TournamentAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -222,8 +217,6 @@ class FfeAdminTournamentController(BaseEventAdminController):
             criterion_id=None,
             data=None,
         )
-        if web_context.error:
-            return web_context.error
 
         admin_event = web_context.admin_event
         assert admin_event is not None
@@ -310,7 +303,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect | Redirect | File:
+    ) -> Template | File:
         web_context: TournamentAdminWebContext = TournamentAdminWebContext(
             request,
             event_uniq_id=event_uniq_id,
@@ -318,8 +311,6 @@ class FfeAdminTournamentController(BaseEventAdminController):
             criterion_id=None,
             data=None,
         )
-        if web_context.error:
-            return web_context.error
 
         admin_event = web_context.admin_event
         assert admin_event is not None

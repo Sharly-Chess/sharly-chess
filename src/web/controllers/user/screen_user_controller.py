@@ -1,7 +1,7 @@
 from contextlib import suppress
 
 from litestar import head, get
-from litestar.plugins.htmx import HTMXRequest, Reswap, ClientRedirect
+from litestar.plugins.htmx import HTMXRequest, Reswap
 from litestar.response import Template
 from litestar.status_codes import HTTP_304_NOT_MODIFIED
 from litestar_htmx import HTMXTemplate
@@ -9,7 +9,6 @@ from litestar_htmx import HTMXTemplate
 from data.screen_set import ScreenSet
 from data.tournament import Tournament
 from utils.enum import ScreenType
-from web.controllers.base_controller import Redirect
 from web.controllers.user.base_screen_user_controller import (
     BaseScreenUserController,
     BasicScreenOrFamilyUserWebContext,
@@ -121,14 +120,8 @@ class ScreenUserController(BaseScreenUserController):
         request: HTMXRequest,
         event_uniq_id: str,
         screen_uniq_id: str,
-    ) -> HTMXTemplate | Reswap | ClientRedirect | Redirect:
-        web_context: BasicScreenOrFamilyUserWebContext = (
-            BasicScreenOrFamilyUserWebContext(
-                request,
-            )
-        )
-        if web_context.error:
-            return web_context.error
+    ) -> HTMXTemplate | Reswap:
+        web_context = BasicScreenOrFamilyUserWebContext(request)
         date: float | None = self.get_if_modified_since(request)
         if date is None or self._user_screen_refresh_needed(web_context, date):
             return self._user_screen_render(web_context)
@@ -169,12 +162,10 @@ class ScreenUserController(BaseScreenUserController):
         event_uniq_id: str,
         rotator_id: int,
         rotator_screen_index: int = 0,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context: RotatorUserWebContext = RotatorUserWebContext(
             request,
         )
-        if web_context.error:
-            return web_context.error
         return self._user_screen_render(web_context)
 
     @head(
@@ -213,12 +204,10 @@ class ScreenUserController(BaseScreenUserController):
         event_uniq_id: str,
         display_controller_id: int,
         rotator_screen_index: int = 0,
-    ) -> Template | ClientRedirect | Redirect | Reswap:
+    ) -> Template | Reswap:
         web_context: DisplayControllerUserWebContext = DisplayControllerUserWebContext(
             request,
         )
-        if web_context.error:
-            return web_context.error
 
         date: float | None = (
             self.get_if_modified_since(request) if not web_context.is_rotator else None

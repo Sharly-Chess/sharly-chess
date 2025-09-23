@@ -21,8 +21,6 @@ class EventUserWebContext(UserWebContext):
         super().__init__(request, user_tab=None)
         self.user_event: Event = RequestUtils.get_event(request)
         self.user_event_tab: str | None = user_event_tab
-        if self.error:
-            return
         # tracks the visit of the client
         ClientTracker().track_client(
             self.client.host,
