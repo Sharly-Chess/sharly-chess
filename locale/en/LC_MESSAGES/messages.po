@@ -1077,6 +1077,12 @@ msgstr ""
 msgid "Configuration"
 msgstr ""
 
+msgid "Connect to the Sharly Chess network via {type},<br />then scan to access the Sharly Chess server."
+msgstr ""
+
+msgid "Connect to the Sharly Chess network, then scan to access the Sharly Chess server."
+msgstr ""
+
 msgid "Connection French Chess Federation"
 msgstr ""
 
@@ -4251,9 +4257,6 @@ msgstr ""
 msgid "Scan to access the tournament on the FFE site."
 msgstr ""
 
-msgid "Scan to connect your device to the Sharly Chess server."
-msgstr ""
-
 msgid "Scope"
 msgstr ""
 
@@ -6131,3 +6134,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+

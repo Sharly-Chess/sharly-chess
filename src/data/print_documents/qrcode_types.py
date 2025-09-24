@@ -108,7 +108,21 @@ class NetworkQRCodeType(QRCodeType):
 
     @staticmethod
     def info(doc: 'QRCodePrintDocument') -> str:
-        return _('Scan to connect your device to the Sharly Chess server.')
+        from data.print_documents.options import QRCodeNetworkPrintOption
+
+        ip = doc._get_option(QRCodeNetworkPrintOption).value
+        details = next(
+            (iface for iface in SharlyChessConfig().lan_ifaces if iface['ip'] == ip),
+            None,
+        )
+        if not details or 'type' not in details:
+            return _(
+                'Connect to the Sharly Chess network, then scan to access the Sharly Chess server.'
+            )
+
+        return _(
+            'Connect to the Sharly Chess network via {type},<br />then scan to access the Sharly Chess server.'
+        ).format(type=details['type'])
 
     @staticmethod
     def url(doc: 'QRCodePrintDocument') -> tuple[bool, str]:

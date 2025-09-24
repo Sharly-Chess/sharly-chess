@@ -1077,6 +1077,12 @@ msgstr "Appariements complémentaires générés avec succès !"
 msgid "Configuration"
 msgstr "Configuration"
 
+msgid "Connect to the Sharly Chess network via {type},<br />then scan to access the Sharly Chess server."
+msgstr "Connectez-vous au réseau Sharly Chess via {type},<br />puis scannez pour accéder au serveur Sharly Chess."
+
+msgid "Connect to the Sharly Chess network, then scan to access the Sharly Chess server."
+msgstr "Connectez-vous au réseau Sharly Chess, puis scannez pour accéder au serveur Sharly Chess."
+
 msgid "Connection French Chess Federation"
 msgstr "Connexion à la Fédération Française des Échecs"
 
@@ -4251,9 +4257,6 @@ msgstr "Enregistrez l'ensemble ou annulez."
 msgid "Scan to access the tournament on the FFE site."
 msgstr "Scannez pour accéder au tournoi sur le site de la FFE."
 
-msgid "Scan to connect your device to the Sharly Chess server."
-msgstr "Scannez pour connecter votre appareil au serveur Sharly Chess."
-
 msgid "Scope"
 msgstr "Périmètre"
 
@@ -6131,3 +6134,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+

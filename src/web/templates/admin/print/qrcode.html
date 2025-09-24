@@ -17,6 +17,6 @@
 
     {% if info %}
         <div class="separator"></div>
-        <div class="section-title">{{ info }}</div>
+        <div class="section-title">{{ info | safe }}</div>
     {% endif %}
 {% endblock %}
