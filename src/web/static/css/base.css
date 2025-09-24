@@ -356,6 +356,10 @@ body[data-bs-theme="dark"] .htmx-indicator {
 .locale-flag {
     height: 1em;
 }
+.dropdown-menu {
+    max-height: 70vh;
+    overflow-y: auto;
+}
 .dropdown-menu.locale,
 .dropdown-menu.columns-number {
     min-width: 0;
