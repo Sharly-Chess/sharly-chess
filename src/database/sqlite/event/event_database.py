@@ -80,27 +80,39 @@ class EventDatabase(MigrationDatabase):
     def __exit__(self, exc_type, exc_value, tb):
         dirty_tournaments: list[StoredTournament] = []
         stored_event: StoredEvent | None = None
-        if (
-            self.write
-            and exc_type is None
-            and is_server_engine()
-            # NOTE(Amaras): when auto-uploading to the FFE website, the database is copied to
-            # tmpdir/event.sce. Not taking the database path into account will make the hook below
-            # try to load the wrong event (which will error out or load an unrelated event).
-            and self.event_database_path(self.uniq_id).resolve() == self.file.resolve()
-        ):
-            self.execute('SELECT * FROM tournament WHERE dirty = 1;')
-            dirty_tournaments = [
-                self._row_to_stored_tournament(row) for row in self.fetchall()
-            ]
-            if dirty_tournaments:
-                self.execute('SELECT * FROM `info`')
-                stored_event = self._row_to_base_stored_event(
-                    self.fetchone(), StoredEvent
-                )
-                self.execute('UPDATE tournament SET dirty = 0 WHERE dirty = 1;')
 
-        super().__exit__(exc_type, exc_value, tb)
+        try:
+            if (
+                self.write
+                and exc_type is None
+                and is_server_engine()
+                # When auto-uploading to the FFE website, the database is copied to
+                # tmpdir/event.sce. Not taking the database path into account will make the hook below
+                # try to load the wrong event (which will error out or load an unrelated event).
+                and self.event_database_path(self.uniq_id).resolve()
+                == self.file.resolve()
+            ):
+                try:
+                    self.execute('SELECT * FROM tournament WHERE dirty = 1;')
+                    dirty_tournaments = [
+                        self._row_to_stored_tournament(row) for row in self.fetchall()
+                    ]
+                    if dirty_tournaments:
+                        self.execute('SELECT * FROM `info`')
+                        stored_event = self._row_to_base_stored_event(
+                            self.fetchone(), StoredEvent
+                        )
+                        self.execute('UPDATE tournament SET dirty = 0 WHERE dirty = 1;')
+                except Exception as e:
+                    # Log but don’t block cleanup
+                    logger.error(
+                        'Error in EventDatabase.__exit__ pre-cleanup: %s',
+                        e,
+                        exc_info=True,
+                    )
+        finally:
+            # Always release DB / lock
+            super().__exit__(exc_type, exc_value, tb)
 
         # We need call the hook on all dirty tournaments after committing the changes above
         for stored_tournament in dirty_tournaments:

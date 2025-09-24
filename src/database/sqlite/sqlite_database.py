@@ -61,39 +61,56 @@ class SQLiteDatabase:
     def __enter__(self) -> Self:
         db_url: str = f'file:{self.file}?mode={"rw" if self.write else "ro"}'
         self.acquire_lock()
-        self.database = connect(db_url, detect_types=1, uri=True)
-        self.cursor = self.database.cursor()
+        try:
+            self.database = connect(db_url, detect_types=1, uri=True)
+            self.cursor = self.database.cursor()
 
-        self.cursor.execute('PRAGMA foreign_keys=ON')
-        self.cursor.execute('PRAGMA busy_timeout=5000')
+            self.cursor.execute('PRAGMA foreign_keys=ON')
+            self.cursor.execute('PRAGMA busy_timeout=5000')
 
-        if self.write:
-            self.cursor.execute('PRAGMA journal_mode=DELETE')
-            self.cursor.execute('BEGIN IMMEDIATE')
+            if self.write:
+                self.cursor.execute('PRAGMA journal_mode=DELETE')
+                self.cursor.execute('BEGIN IMMEDIATE')
 
-        return self
+            return self
+        except Exception as e:
+            # Log before releasing so you know what DB caused it
+            logger.error(
+                'Failed to open database %s (write=%s): %s',
+                self.file,
+                self.write,
+                e,
+                exc_info=True,
+            )
+            # Release lock so we don’t deadlock future accesses
+            self.release_lock()
+            raise
 
     def __exit__(self, exc_type, exc_value, tb):
-        if self.database and self.write:
-            if exc_type is None:
-                self.database.commit()
-            else:
-                logger.debug(
-                    'Rolling back [%s] due to exception [%s]: %s',
-                    self.file,
-                    exc_type,
-                    exc_value,
-                )
-                self.database.rollback()
-        if self.cursor is not None:
-            self.cursor.close()
-            del self.cursor
-            self.cursor = None
-        if self.database is not None:
-            self.database.close()
-            del self.database
-            self.database = None
-        self.release_lock()
+        try:
+            if self.database and self.write:
+                if exc_type is None:
+                    self.database.commit()
+                else:
+                    logger.debug(
+                        'Rolling back [%s] due to exception [%s]: %s',
+                        self.file,
+                        exc_type,
+                        exc_value,
+                    )
+                    self.database.rollback()
+        finally:
+            try:
+                if self.cursor is not None:
+                    self.cursor.close()
+            finally:
+                del self.cursor
+                self.cursor = None
+                if self.database is not None:
+                    self.database.close()
+                    del self.database
+                    self.database = None
+                self.release_lock()
 
     def execute(self, query: str, params: tuple | dict[str, Any] = ()):
         assert self.cursor is not None
