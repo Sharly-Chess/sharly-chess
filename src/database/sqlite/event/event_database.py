@@ -111,7 +111,7 @@ class EventDatabase(MigrationDatabase):
                         exc_info=True,
                     )
         finally:
-            # Always release DB / lock
+            # Always release DB
             super().__exit__(exc_type, exc_value, tb)
 
         # We need call the hook on all dirty tournaments after committing the changes above
