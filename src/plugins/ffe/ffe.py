@@ -513,7 +513,7 @@ class FfePlugin(Plugin):
     def player_club_sort_key(self, player: Player):
         # We sort by league first
         return (
-            FFEUtils.get_player_plugin_data(player).league,
+            FFEUtils.get_player_plugin_data(player).league or '',
             player.club,
             player.last_name,
             player.first_name,

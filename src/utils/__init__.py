@@ -180,8 +180,8 @@ class StaticUtils:
         base_uniq_id = cls.name_to_uniq_id(base_uniq_id)
         if matches := re.match(r'^(.*)-(\d+)$', base_uniq_id):
             base_uniq_id = matches.group(1)
-            index = int(matches.group(2)) - 1
-            uniq_id = f'{base_uniq_id}-{index + 1}'
+            index = int(matches.group(2))
+            uniq_id = f'{base_uniq_id}-{index}'
         while uniq_id in used_uniq_ids:
             index += 1
             uniq_id = f'{base_uniq_id}-{index}'
@@ -195,8 +195,8 @@ class StaticUtils:
         name = base_name
         if matches := re.match(r'^(.*) \((\d+)\)$', base_name):
             base_name = matches.group(1)
-            index = int(matches.group(2)) - 1
-            name = f'{base_name} ({index + 1})'
+            index = int(matches.group(2))
+            name = f'{base_name} ({index})'
         while name in used_names:
             index += 1
             name = f'{base_name} ({index})'
