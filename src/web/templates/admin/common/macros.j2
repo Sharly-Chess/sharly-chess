@@ -132,7 +132,6 @@
         {% if admin_players_sort != sort %}
             hx-get="{{ url }}"
             hx-vals='{"admin_players_sort": "{{ sort }}"}'
-            preload
             hx-target="body"
             hx-indicator="#please-wait"
         {% endif %}

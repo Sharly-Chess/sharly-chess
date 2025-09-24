@@ -7,7 +7,6 @@
                 hx-get="{{ url_for('admin-event-modal', action='update', event_uniq_id=admin_event.uniq_id) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
-                preload
                 data-bs-toggle="modal"
                 data-bs-target="#modal-wrapper"
             >
@@ -19,7 +18,6 @@
                 hx-get="{{ url_for('admin-event-modal', action='clone', event_uniq_id=admin_event.uniq_id) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
-                preload
                 data-bs-toggle="modal"
                 data-bs-target="#modal-wrapper"
             >
@@ -31,7 +29,6 @@
                 hx-get="{{ url_for('admin-event-delete-modal', event_uniq_id=admin_event.uniq_id) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
-                preload
                 data-bs-toggle="modal"
                 data-bs-target="#modal-wrapper"
             >

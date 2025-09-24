@@ -5,7 +5,6 @@
         <button
             class="btn px-0 py-0 d-flex align-items-center gap-2"
             hx-get="{{ url_for('index') }}"
-            preload
             hx-target="body"
             hx-push-url="true"
             hx-indicator="#please-wait"
@@ -32,7 +31,6 @@
                     class="nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
                     id="nav-{{ nav_id }}-tab"
                     hx-get="{{ url_for('admin-tab', admin_tab=nav_id) }}"
-                    preload
                     hx-target="body"
                     hx-push-url="true"
                     type="button"

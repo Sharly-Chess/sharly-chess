@@ -17,7 +17,6 @@
             {# https://unpkg.com/browse/htmx.org@<htmx_version>/dist/ #}
             <meta name="htmx-config" content='{"includeIndicatorStyles": false}'>
             <script src="{{ url_for('static', file_path='/lib/htmx/htmx-' ~ sharly_chess_config.htmx_version ~ '/htmx.min.js') }}"></script>
-            <script src="{{ url_for('static', file_path='/lib/htmx/preload-' ~ sharly_chess_config.htmx_preload_version ~ '/preload.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/htmx/remove-me-' ~ sharly_chess_config.htmx_remove_me_version ~ '/remove-me.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/htmx/multi-swap-' ~ sharly_chess_config.htmx_multi_swap_version ~ '/multi-swap.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/htmx/sse-' ~ sharly_chess_config.htmx_sse_version ~ '/sse.js') }}"></script>
@@ -451,7 +450,7 @@
         {% endif %}
     </head>
     <body
-        hx-ext="multi-swap,preload,morphdom-swap,remove-me"
+        hx-ext="multi-swap,morphdom-swap,remove-me"
         hx-swap="transition:true"
         class="d-none"
     >

@@ -107,7 +107,6 @@
             hx-get="{{ url_for('admin-rotator-modal', action='update', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id) }}"
             hx-target="body"
             hx-indicator="#please-wait"
-            preload
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
         >
@@ -120,7 +119,6 @@
             hx-get="{{ url_for('admin-rotator-modal', action='clone', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id) }}"
             hx-target="body"
             hx-indicator="#please-wait"
-            preload
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
         >
@@ -133,7 +131,6 @@
             hx-get="{{ url_for('admin-rotator-modal', action='delete', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id) }}"
             hx-target="body"
             hx-indicator="#please-wait"
-            preload
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
         >
