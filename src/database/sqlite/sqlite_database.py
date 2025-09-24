@@ -1,18 +1,15 @@
-from collections import defaultdict
 import json
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from pathlib import Path
 from sqlite3 import Connection, Cursor, connect, OperationalError
-from threading import RLock
 from typing import Self, Any
 
 from common.logger import get_logger
 
 
 logger = get_logger()
-locks: defaultdict[Path, RLock] = defaultdict(RLock)
 
 
 @dataclass
@@ -34,66 +31,69 @@ class SQLiteDatabase:
         """Deletes the database if it exists."""
         self.file.unlink(missing_ok=True)
 
-    def acquire_lock(self):
-        locks[self.file].acquire()
-
-    def release_lock(self):
-        locks[self.file].release()
-
     def _create(self, script: str | None = None):
         database: Connection | None = None
         try:
-            self.acquire_lock()
             Path(self.file).parent.mkdir(parents=True, exist_ok=True)
             database = connect(database=self.file, detect_types=1, uri=True)
             if script:
                 database.executescript(script)
                 database.commit()
             database.close()
-            self.release_lock()
         except OperationalError as e:
             if database:
                 database.close()
             self.file.unlink(missing_ok=True)
-            self.release_lock()
             raise e
 
     def __enter__(self) -> Self:
         db_url: str = f'file:{self.file}?mode={"rw" if self.write else "ro"}'
-        self.acquire_lock()
-        self.database = connect(db_url, detect_types=1, uri=True)
-        self.cursor = self.database.cursor()
+        try:
+            self.database = connect(db_url, detect_types=1, uri=True)
+            self.cursor = self.database.cursor()
 
-        self.cursor.execute('PRAGMA foreign_keys=ON')
-        self.cursor.execute('PRAGMA busy_timeout=5000')
+            self.cursor.execute('PRAGMA foreign_keys=ON')
+            self.cursor.execute('PRAGMA busy_timeout=5000')
 
-        if self.write:
-            self.cursor.execute('PRAGMA journal_mode=DELETE')
-            self.cursor.execute('BEGIN IMMEDIATE')
+            if self.write:
+                self.cursor.execute('PRAGMA journal_mode=DELETE')
+                self.cursor.execute('BEGIN IMMEDIATE')
 
-        return self
+            return self
+        except Exception as e:
+            logger.error(
+                'Failed to open database %s (write=%s): %s',
+                self.file,
+                self.write,
+                e,
+                exc_info=True,
+            )
+            raise
 
     def __exit__(self, exc_type, exc_value, tb):
-        if self.database and self.write:
-            if exc_type is None:
-                self.database.commit()
-            else:
-                logger.debug(
-                    'Rolling back [%s] due to exception [%s]: %s',
-                    self.file,
-                    exc_type,
-                    exc_value,
-                )
-                self.database.rollback()
-        if self.cursor is not None:
-            self.cursor.close()
-            del self.cursor
-            self.cursor = None
-        if self.database is not None:
-            self.database.close()
-            del self.database
-            self.database = None
-        self.release_lock()
+        try:
+            if self.database and self.write:
+                if exc_type is None:
+                    self.database.commit()
+                else:
+                    logger.debug(
+                        'Rolling back [%s] due to exception [%s]: %s',
+                        self.file,
+                        exc_type,
+                        exc_value,
+                    )
+                    self.database.rollback()
+        finally:
+            try:
+                if self.cursor is not None:
+                    self.cursor.close()
+            finally:
+                del self.cursor
+                self.cursor = None
+                if self.database is not None:
+                    self.database.close()
+                    del self.database
+                    self.database = None
 
     def execute(self, query: str, params: tuple | dict[str, Any] = ()):
         assert self.cursor is not None
