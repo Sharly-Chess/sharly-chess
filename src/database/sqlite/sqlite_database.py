@@ -1,18 +1,15 @@
-from collections import defaultdict
 import json
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from pathlib import Path
 from sqlite3 import Connection, Cursor, connect, OperationalError
-from threading import RLock
 from typing import Self, Any
 
 from common.logger import get_logger
 
 
 logger = get_logger()
-locks: defaultdict[Path, RLock] = defaultdict(RLock)
 
 
 @dataclass
@@ -34,33 +31,23 @@ class SQLiteDatabase:
         """Deletes the database if it exists."""
         self.file.unlink(missing_ok=True)
 
-    def acquire_lock(self):
-        locks[self.file].acquire()
-
-    def release_lock(self):
-        locks[self.file].release()
-
     def _create(self, script: str | None = None):
         database: Connection | None = None
         try:
-            self.acquire_lock()
             Path(self.file).parent.mkdir(parents=True, exist_ok=True)
             database = connect(database=self.file, detect_types=1, uri=True)
             if script:
                 database.executescript(script)
                 database.commit()
             database.close()
-            self.release_lock()
         except OperationalError as e:
             if database:
                 database.close()
             self.file.unlink(missing_ok=True)
-            self.release_lock()
             raise e
 
     def __enter__(self) -> Self:
         db_url: str = f'file:{self.file}?mode={"rw" if self.write else "ro"}'
-        self.acquire_lock()
         try:
             self.database = connect(db_url, detect_types=1, uri=True)
             self.cursor = self.database.cursor()
@@ -74,7 +61,6 @@ class SQLiteDatabase:
 
             return self
         except Exception as e:
-            # Log before releasing so you know what DB caused it
             logger.error(
                 'Failed to open database %s (write=%s): %s',
                 self.file,
@@ -82,8 +68,6 @@ class SQLiteDatabase:
                 e,
                 exc_info=True,
             )
-            # Release lock so we don’t deadlock future accesses
-            self.release_lock()
             raise
 
     def __exit__(self, exc_type, exc_value, tb):
@@ -110,7 +94,6 @@ class SQLiteDatabase:
                     self.database.close()
                     del self.database
                     self.database = None
-                self.release_lock()
 
     def execute(self, query: str, params: tuple | dict[str, Any] = ()):
         assert self.cursor is not None
