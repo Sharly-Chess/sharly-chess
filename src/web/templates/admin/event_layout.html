@@ -12,7 +12,6 @@
         <button
             class="btn px-0 py-0 d-flex align-items-center gap-2"
             hx-get="{{ url_for('admin-tab', admin_tab=target_tab) }}"
-            preload
             hx-target="body"
             hx-push-url="true"
             hx-indicator="#please-wait"
@@ -59,7 +58,6 @@
                                     <button
                                         class="dropdown-item {% if sub_nav_id == admin_event_tab %}active{% endif %}"
                                         hx-get="{{ url_for(sub_nav_id, event_uniq_id=admin_event.uniq_id) }}"
-                                        preload
                                         hx-target="body"
                                         hx-push-url="true"
                                         type="button"
@@ -101,7 +99,6 @@
                         <button
                             class="nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
                             hx-get="{{ url_for(sub_nav_id, event_uniq_id=admin_event.uniq_id) }}"
-                            preload
                             hx-target="body"
                             hx-push-url="true"
                             type="button"
@@ -125,7 +122,6 @@
                         class="nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
                         id="nav-{{ nav_id }}-tab"
                         hx-get="{{ url_for(nav_id, event_uniq_id=admin_event.uniq_id) }}"
-                        preload
                         hx-target="body"
                         hx-push-url="true"
                         data-bs-toggle="tab"

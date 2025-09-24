@@ -33,7 +33,6 @@
                                         hx-get="{{ url_for('admin-tournament-close-check-in-modal', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
                                         hx-target="body"
                                         hx-indicator="#please-wait"
-                                        preload
                                         data-bs-toggle="modal"
                                         data-bs-target="#modal-wrapper"
                                     {% else %}

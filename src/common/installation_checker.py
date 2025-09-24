@@ -120,13 +120,6 @@ class InstallationChecker:
             licence_type='Zero-Clause BSD',
         ),
         WebLibFileInstaller(
-            'HTMX Preload extension',
-            SharlyChessConfig.htmx_preload_version,
-            'https://unpkg.com/htmx-ext-preload@{version}',
-            'htmx/preload-{version}/preload.js',
-            licence_type='Zero-Clause BSD',
-        ),
-        WebLibFileInstaller(
             'HTMX Remove me extension',
             SharlyChessConfig.htmx_remove_me_version,
             'https://unpkg.com/htmx-ext-remove-me@{version}',

@@ -194,7 +194,6 @@
                 hx-get="{{ url_for('admin-screen-sets-modal', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
-                preload
                 data-bs-toggle="modal"
                 data-bs-target="#modal-wrapper"
             >
@@ -234,7 +233,6 @@
                 hx-indicator="#please-wait"
                 data-bs-toggle="modal"
                 data-bs-target="#modal-wrapper"
-                preload
             >
                 <i class="bi-pencil-fill"></i>
             </button>
@@ -245,7 +243,6 @@
                 hx-get="{{ url_for('admin-screen-modal', action='clone', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
-                preload
                 data-bs-toggle="modal"
                 data-bs-target="#modal-wrapper"
             >
@@ -258,7 +255,6 @@
                 hx-get="{{ url_for('admin-screen-modal', action='delete', event_uniq_id=admin_event.uniq_id, screen_id=screen.id) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
-                preload
                 data-bs-toggle="modal"
                 data-bs-target="#modal-wrapper"
             >
