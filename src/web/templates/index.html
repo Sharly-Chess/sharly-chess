@@ -24,7 +24,6 @@
                                     {% if l != locale %}
                                         hx-get="{{ url_for('index') }}"
                                         hx-vals='{"locale": "{{ l }}"}'
-                                        preload
                                         hx-target="body"
                                         hx-indicator="#please-wait"
                                         hx-trigger="click, keyup[key=='Enter']"
@@ -83,7 +82,6 @@
                     <button
                         id="index-admin-button"
                         hx-get="{{ url_for('admin') }}"
-                        preload
                         hx-target="body"
                         hx-push-url="true"
                         hx-indicator="#please-wait"
@@ -101,7 +99,6 @@
                 >
                     <button
                         hx-get="{{ url_for('user') }}"
-                        preload
                         hx-target="body"
                         hx-indicator="#please-wait"
                         hx-push-url="true"

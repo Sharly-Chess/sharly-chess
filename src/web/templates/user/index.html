@@ -5,7 +5,6 @@
         <button
             class="btn btn-link link-dark fs-3 fw-bold px-1 py-0"
             hx-get="{{ url_for('index') }}"
-            preload
             hx-target="body"
             hx-push-url="true"
             hx-trigger="click, keyup[key=='Escape'] from:body"
@@ -36,7 +35,6 @@
             class="user-nav-link nav-link {% if nav_tab.disabled %}link-secondary{% endif %} {%if user_tab == nav_id %}active{% endif %} py-0 ms-1"
             id="nav-{{ nav_id }}-tab"
             hx-get="{{ url_for('user-tab', user_tab=nav_id) }}"
-            preload
             hx-target="body"
             hx-push-url="true"
             type="button"

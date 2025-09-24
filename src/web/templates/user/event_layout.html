@@ -11,7 +11,6 @@
     <button
         class="btn btn-link link-dark fs-3 fw-bold px-1 py-0"
         hx-get="{{ url_for('user-tab', user_tab=target_tab) }}"
-        preload
         hx-target="body"
         hx-push-url="true"
         hx-indicator="#please-wait"
@@ -40,7 +39,6 @@
             class="user-event-nav-link nav-link {% if nav_tab.disabled %}link-secondary{% endif %} {%if user_event_tab == nav_id %}active{% endif %} py-0"
             id="nav-{{ nav_id }}-tab"
             hx-get="{{ url_for('user-event-tab', event_uniq_id=user_event.uniq_id, user_event_tab=nav_id) }}"
-            preload
             hx-target="body"
             hx-push-url="true"
             type="button"

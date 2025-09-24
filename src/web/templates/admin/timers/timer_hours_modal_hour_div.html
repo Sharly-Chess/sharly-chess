@@ -69,7 +69,6 @@
                             type="button"
                             class="btn btn-sm btn-secondary text-nowrap mb-1"
                             hx-get="{{ url_for('admin-timer-hours-modal', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id) }}"
-                            preload
                             hx-target="body"
                             hx-trigger="click, keyup[key=='Escape'] from:body"
                             hx-indicator="#please-wait"
@@ -100,7 +99,6 @@
                         <button
                             class="btn btn-sm btn-outline-primary text-nowrap"
                             hx-get="{{ url_for('admin-timer-hours-hour-modal', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
-                            preload
                             hx-target="body"
                             hx-indicator="#please-wait"
                         >
