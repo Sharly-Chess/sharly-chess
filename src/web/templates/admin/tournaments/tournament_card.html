@@ -157,7 +157,6 @@
                         hx-get="{{ url_for('admin-print-modal', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
-                        preload
                         data-bs-toggle="modal"
                         data-bs-target="#modal-wrapper"
                     >
@@ -197,7 +196,6 @@
                                 ) }}"
                                 hx-target="body"
                                 hx-indicator="#please-wait"
-                                preload
                                 data-bs-toggle="modal"
                                 data-bs-target="#modal-wrapper"
                                 {{ macros.tooltip_attributes('info', importer.tooltip, 'right') }}
@@ -283,7 +281,6 @@
             ) }}"
             hx-target="body"
             hx-indicator="#please-wait"
-            preload
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
         >
@@ -314,7 +311,6 @@
             hx-get="{{ url_for('admin-tournament-modal', action='update', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
             hx-target="body"
             hx-indicator="#please-wait"
-            preload
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
             {% if not client.can_update_tournaments %}
@@ -336,7 +332,6 @@
             hx-get="{{ url_for('admin-tournament-modal', action='clone', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
             hx-target="body"
             hx-indicator="#please-wait"
-            preload
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
             {% if not client.can_add_tournament %}
@@ -358,7 +353,6 @@
             hx-get="{{ url_for('admin-tournament-delete-modal', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
             hx-target="body"
             hx-indicator="#please-wait"
-            preload
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
             {% if not client.can_delete_tournaments %}
