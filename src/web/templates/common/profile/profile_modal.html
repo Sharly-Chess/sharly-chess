@@ -27,7 +27,6 @@
                                     class="dropdown-item text-start cursor-pointer"
                                     hx-get="{{ url_for('profile-modal', event_uniq_id=admin_event.uniq_id) }}"
                                     hx-vals='{"locale": "{{ l }}"}'
-                                    preload
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                     hx-trigger="click, keyup[key=='Enter']"

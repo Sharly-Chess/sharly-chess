@@ -71,7 +71,6 @@
                         hx-get="{{ url_for('admin-player-create-modal', event_uniq_id=admin_event.uniq_id) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
-                        preload
                         data-bs-toggle="modal"
                         data-bs-target="#modal-wrapper"
                         {% if not client.can_add_player or not admin_event.not_finished_tournaments_sorted_by_uniq_id %}

@@ -10,7 +10,6 @@
                     'admin-event-screens-tab' if client.can_manage_screens else 'admin-event-' ~ screen.type.value ~ '-screens-tab',
                     event_uniq_id=user_event.uniq_id
                 ) }}"
-                preload
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
@@ -85,7 +84,6 @@
                                 <a
                                     class="screen-menu-item cursor-pointer text-nowrap py-0 px-1 my-0 {% if loop.first %}ms-0{% else %}ms-1{% endif %} {% if loop.last %}me-0{% else %}me-1{% endif %} {% if screen.uniq_id == entry.uniq_id %}selected{% endif %}"
                                     hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=entry.uniq_id) }}"
-                                    preload
                                     hx-target="body"
                                     hx-push-url="true"
                                     hx-indicator="#please-wait"

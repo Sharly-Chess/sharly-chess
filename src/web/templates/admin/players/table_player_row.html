@@ -20,7 +20,6 @@
                             hx-get="{{ url_for('admin-player-modal', action='update', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
                             hx-target="body"
                             hx-indicator="#please-wait"
-                            preload
                             data-bs-toggle="modal"
                             data-bs-target="#modal-wrapper"
                             hx-trigger="click, keyup[key=='Enter']"
@@ -37,7 +36,6 @@
                             hx-get="{{ url_for('admin-record-modal', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
                             hx-target="body"
                             hx-indicator="#please-wait"
-                            preload
                             data-bs-toggle="modal"
                             data-bs-target="#modal-wrapper"
                             hx-trigger="click, keyup[key=='Enter']"
@@ -55,7 +53,6 @@
                             hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
                             hx-target="body"
                             hx-indicator="#please-wait"
-                            preload
                             data-bs-toggle="modal"
                             data-bs-target="#modal-wrapper"
                             hx-trigger="click, keyup[key=='Enter']"
