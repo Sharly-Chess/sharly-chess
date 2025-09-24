@@ -10,6 +10,7 @@ English version below
 - Correction de la récupération des versions précédentes (3.0.1)
 - Optimisation des requêtes d'écriture dans la base de données (3.0.5)
 - Éviter de télécharger continuellement les bases locales plus valides lorsqu'il n'y a pas de connexion (3.0.8)
+- Correction de la renumérotation des objets dupliqués (3.0.9)
 
 ## Évènements
 
@@ -87,6 +88,7 @@ English version below
 - Fixed previous versions recovering (3.0.1)
 - Optimized the write queries in the database (3.0.5)
 - Prevent downloading outdated local databases continuously when there is no connexion (3.0.8)
+- Fixed the renumbering of duplicated objects (3.0.9)
 
 ## Events
 
