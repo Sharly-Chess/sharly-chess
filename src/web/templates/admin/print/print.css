@@ -26,6 +26,7 @@ tr td, tr th {
 .page-title { font-size: 24pt; padding-top: 10pt; }
 .page-subtitle { font-size: 16pt; }
 .tournament-title { font-size: 20pt; margin-top: 30pt; }
+.error { font-size: 20pt; font-weight: bold; margin: 40pt auto;}
 .section-title { font-size: 18px; }
 .section-sub-title { font-size: 15px; }
 {# ========== FONT WEIGHT ========== #}
@@ -39,4 +40,17 @@ tr td, tr th {
     font-size: 18px;
     padding: 0 6px 2px;
     position: relative;
+}
+.qr-code {
+    max-width: 80vh;
+    margin: 40px auto 0;
+    width: 400px;
+    height: auto;
+}
+
+@media print {
+    .qr-code {
+        max-width: 80%;
+        width: 80%;
+    }
 }

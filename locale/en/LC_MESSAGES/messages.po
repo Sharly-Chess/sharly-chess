@@ -1077,6 +1077,12 @@ msgstr ""
 msgid "Configuration"
 msgstr ""
 
+msgid "Connect to the Sharly Chess network via {type},<br />then scan to access the Sharly Chess server."
+msgstr ""
+
+msgid "Connect to the Sharly Chess network, then scan to access the Sharly Chess server."
+msgstr ""
+
 msgid "Connection French Chess Federation"
 msgstr ""
 
@@ -2972,6 +2978,12 @@ msgstr ""
 msgid "Neither screen nor rotator currently assigned"
 msgstr ""
 
+msgid "Network"
+msgstr ""
+
+msgid "Network:"
+msgstr ""
+
 msgid "New category"
 msgstr ""
 
@@ -3015,6 +3027,9 @@ msgid "No ChessEvent identifier defined"
 msgstr ""
 
 msgid "No ChessEvent tournament defined"
+msgstr ""
+
+msgid "No FFE ID defined for tournament [{tournament}]."
 msgstr ""
 
 msgid "No FFE Licence"
@@ -3886,6 +3901,12 @@ msgstr ""
 msgid "Q *** THE LETTER TO ANSWER QUIT"
 msgstr "Q"
 
+msgid "QR Code"
+msgstr ""
+
+msgid "QR Code type:"
+msgstr ""
+
 #, python-format
 msgid "R %(round)d *** ROUND FOR TABLE HEADER"
 msgstr "R %(round)d"
@@ -4231,6 +4252,9 @@ msgid "Save the hour or cancel."
 msgstr ""
 
 msgid "Save the set or cancel."
+msgstr ""
+
+msgid "Scan to access the tournament on the FFE site."
 msgstr ""
 
 msgid "Scope"
@@ -4749,6 +4773,9 @@ msgstr ""
 msgid "The name of the tournament, used for display."
 msgstr ""
 
+msgid "The network on which the devices are connected."
+msgstr ""
+
 msgid "The number of boards per screen, optional (the number of screens adapts to the number of boards)."
 msgstr ""
 
@@ -4949,6 +4976,9 @@ msgid "The tournaments on which the permission is applied (by default, the permi
 msgstr ""
 
 msgid "The tournaments to print."
+msgstr ""
+
+msgid "The type of QR code to print."
 msgstr ""
 
 msgid "The type of criterion used to filter the players."
@@ -5223,6 +5253,9 @@ msgid "Tournament not modified since last upload"
 msgstr ""
 
 msgid "Tournament not yet uploaded."
+msgstr ""
+
+msgid "Tournament on the FFE site"
 msgstr ""
 
 msgid "Tournament performance rating"
@@ -6101,10 +6134,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "Renaming the database failed: {ex}."
-#~ msgstr ""
-
-#~ msgid "The last set of a screen can not be deleted."
-#~ msgstr ""
 

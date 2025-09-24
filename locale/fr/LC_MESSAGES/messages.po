@@ -1077,6 +1077,12 @@ msgstr "Appariements complémentaires générés avec succès !"
 msgid "Configuration"
 msgstr "Configuration"
 
+msgid "Connect to the Sharly Chess network via {type},<br />then scan to access the Sharly Chess server."
+msgstr "Connectez-vous au réseau Sharly Chess via {type},<br />puis scannez pour accéder au serveur Sharly Chess."
+
+msgid "Connect to the Sharly Chess network, then scan to access the Sharly Chess server."
+msgstr "Connectez-vous au réseau Sharly Chess, puis scannez pour accéder au serveur Sharly Chess."
+
 msgid "Connection French Chess Federation"
 msgstr "Connexion à la Fédération Française des Échecs"
 
@@ -2972,6 +2978,12 @@ msgstr "Navigation"
 msgid "Neither screen nor rotator currently assigned"
 msgstr "Pas d'écran ni d'écran rotatif utilisé actuellement"
 
+msgid "Network"
+msgstr "Réseau"
+
+msgid "Network:"
+msgstr "Réseau :"
+
 msgid "New category"
 msgstr "Nouvelle catégorie"
 
@@ -3016,6 +3028,9 @@ msgstr "Connexion à ChessEvent non définie"
 
 msgid "No ChessEvent tournament defined"
 msgstr "Nom du tournoi ChessEvent non défini"
+
+msgid "No FFE ID defined for tournament [{tournament}]."
+msgstr "Aucun identifiant FFE défini pour le tournoi [{tournament}]."
 
 msgid "No FFE Licence"
 msgstr "Aucune licence FFE"
@@ -3886,6 +3901,12 @@ msgstr "Publier les règles"
 msgid "Q *** THE LETTER TO ANSWER QUIT"
 msgstr "Q"
 
+msgid "QR Code"
+msgstr "QR Code"
+
+msgid "QR Code type:"
+msgstr "Type de QR Code :"
+
 #, python-format
 msgid "R %(round)d *** ROUND FOR TABLE HEADER"
 msgstr "R %(round)d"
@@ -4232,6 +4253,9 @@ msgstr "Enregistrez l'horaire ou annulez."
 
 msgid "Save the set or cancel."
 msgstr "Enregistrez l'ensemble ou annulez."
+
+msgid "Scan to access the tournament on the FFE site."
+msgstr "Scannez pour accéder au tournoi sur le site de la FFE."
 
 msgid "Scope"
 msgstr "Périmètre"
@@ -4749,6 +4773,9 @@ msgstr "Le nom du chronomètre."
 msgid "The name of the tournament, used for display."
 msgstr "Le nom du tournoi, utilisé pour l'affichage."
 
+msgid "The network on which the devices are connected."
+msgstr "Le réseau auquel les appareils sont connectés."
+
 msgid "The number of boards per screen, optional (the number of screens adapts to the number of boards)."
 msgstr "Le nombre d'échiquiers par écran, facultatif (le nombre d'écrans s'adapte au nombre d'échiquiers)."
 
@@ -4950,6 +4977,9 @@ msgstr "Les tournois sur lesquels la permission s'applique (par défaut, la perm
 
 msgid "The tournaments to print."
 msgstr "Les tournois à imprimer."
+
+msgid "The type of QR code to print."
+msgstr "Le type de QR Code à imprimer."
 
 msgid "The type of criterion used to filter the players."
 msgstr "Le type de critère utilisé pour filtrer les joueur·euses."
@@ -5224,6 +5254,9 @@ msgstr "Tournoi non modifié depuis le dernier envoi"
 
 msgid "Tournament not yet uploaded."
 msgstr "Tournoi pas encore mis en ligne."
+
+msgid "Tournament on the FFE site"
+msgstr "Tournoi sur le site de la FFE"
 
 msgid "Tournament performance rating"
 msgstr "Performance sur le tournoi"
@@ -6101,10 +6134,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
-#~ msgid "Renaming the database failed: {ex}."
-#~ msgstr "Le renommage de la base de données a échoué : {ex}"
-
-#~ msgid "The last set of a screen can not be deleted."
-#~ msgstr "Le dernier écran ne peut être supprimé."
 
