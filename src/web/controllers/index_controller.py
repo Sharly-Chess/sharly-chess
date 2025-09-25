@@ -169,7 +169,11 @@ class IndexController(BaseController):
         return Response(content='{}', media_type='application/json')
 
     @get(
-        path=['/apple-touch-icon.png', '/apple-touch-icon-precomposed.png'],
+        path=[
+            '/apple-touch-icon.png',
+            '/apple-touch-icon-precomposed.png',
+            '/currentsetting.htm',
+        ],
     )
     async def no_content(self) -> Response:
         return Response(status_code=HTTP_204_NO_CONTENT, content=None)
