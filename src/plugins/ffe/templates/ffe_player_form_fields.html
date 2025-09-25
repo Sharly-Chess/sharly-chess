@@ -7,7 +7,7 @@
             name='ffe_licence_number',
             label=_('Licence number:'),
             placeholder=_('E.g.: %(string)s', string='R08943'),
-            help_text=_('The player\'s licence number.') if action != 'delete' else '',
+            help_text='',
             disabled=action == 'delete',
             error=action == 'delete',
             data=data, errors=errors
@@ -17,7 +17,7 @@
         {{ admin_macros.select_input(
             name='ffe_licence',
             label=_('Licence:'),
-            help_text=_('The player\'s licence.') if action != 'delete' else '',
+            help_text='',
             select_options=licence_options,
             disabled=action == 'delete',
             error=action == 'delete',
@@ -28,7 +28,7 @@
         {{ admin_macros.number_input(
             name='ffe_id',
             label=_('FFE Uniq ID:'),
-            help_text=_('The player\'s Uniq ID for the French federation (do not change).') if action != 'delete' else '',
+            help_text='',
             disabled=true,
             error=action == 'delete',
             min=1,
@@ -41,7 +41,7 @@
         {{ admin_macros.select_input(
             name='ffe_league',
             label=_('League:'),
-            help_text=_('The player\'s league.') if action != 'delete' else '',
+            help_text='',
             select_options=ffe_leagues,
             disabled=action == 'delete',
             error=action == 'delete',
