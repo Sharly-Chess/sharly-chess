@@ -357,12 +357,11 @@ body[data-bs-theme="dark"] .htmx-indicator {
     height: 1em;
 }
 .dropdown-menu {
+    min-width: 0;
+}
+.table-dropdown-menu {
     max-height: 70vh;
     overflow-y: auto;
-}
-.dropdown-menu.locale,
-.dropdown-menu.columns-number {
-    min-width: 0;
 }
 .dropdown-item.no-hover:hover {
     color: var(--bs-dropdown-link-color);

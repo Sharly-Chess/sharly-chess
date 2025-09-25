@@ -13,7 +13,7 @@
                 <button class="btn btn-secondary dropdown-toggle mx-0 px-1 py-0" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" >
                     <i class="bi-three-dots"></i>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-start players-player-actions p-0" >
+                <ul class="dropdown-menu dropdown-menu-start table-dropdown-menu p-0" >
                     {% if can_update %}
                         <li
                             class="dropdown-item btn text-start"
@@ -252,7 +252,7 @@
                         {{ admin_event.tournaments_by_id[player.tournament.id].uniq_id }}
                     </button>
                     <ul
-                        class="dropdown-menu players-set-player-tournament p-0"
+                        class="dropdown-menu table-dropdown-menu p-0"
                         {{ macros.tooltip_attributes('info', _('Change the player\'s tournament.'), 'left') }}
                     >
                         {% for tournament in player_addable_tournaments %}

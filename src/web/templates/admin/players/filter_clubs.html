@@ -6,7 +6,7 @@
             class="bi-funnel {% if admin_players_filter_clubs|length not in [0, (admin_players_clubs|length)] %}text-danger{% endif %}"
             {{ macros.tooltip_attributes('info', _('Filter the clubs.'), 'top') }}
         ></i></button>
-        <ul class="dropdown-menu players-filter-club p-0">
+        <ul class="dropdown-menu table-dropdown-menu p-0">
             {% with name='admin_players_filter_clubs' %}
                 {# this input is always checked with a special value (ignored) to be sure to get a list parameter. #}
                 <input type="hidden" name="{{ name }}" value="*" />
