@@ -10,9 +10,9 @@
     {% endif %}
     {% with start_date=format_timestamp_date(event.start), stop_date=format_timestamp_date(event.stop) %}
         {% if start_date == stop_date %}
-        <span class="fw-bold">
-            {{ start_date }}
-        </span> {{ format_timestamp_time(event.start) }}-{{ format_timestamp_time(event.start) }}
+            <span class="fw-bold">
+                {{ start_date }}
+            </span> {{ format_timestamp_time(event.start) }}-{{ format_timestamp_time(event.stop) }}
         {% else %}
             <span class="fw-bold">{{ start_date }} - {{ stop_date }}</span>
         {% endif %}
