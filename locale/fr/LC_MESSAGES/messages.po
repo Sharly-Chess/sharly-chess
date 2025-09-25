@@ -592,6 +592,9 @@ msgstr "Au moins une fédération est attendue."
 msgid "At least one league is expected."
 msgstr "Au moins une ligue est attendue."
 
+msgid "At least one licence type is expected."
+msgstr "Au moins un type de licence est attendu."
+
 msgid "At least one rating type is expected."
 msgstr "Au moins un type de classement est attendu."
 
@@ -947,6 +950,9 @@ msgstr "Choisir au moins une fédération."
 
 msgid "Choose at least one league."
 msgstr "Choisir au moins une ligue."
+
+msgid "Choose at least one licence type."
+msgstr "Choisissez au moins un type de licence."
 
 msgid "Choose at least one rating type."
 msgstr "Choisissez au moins un type de classement."
@@ -2709,6 +2715,12 @@ msgstr "Lic."
 msgid "Licence number:"
 msgstr "Numéro de licence :"
 
+msgid "Licence type"
+msgstr "Type de licence"
+
+msgid "Licence types"
+msgstr "Types de licence"
+
 msgid "Licence:"
 msgstr "Licence :"
 
@@ -3312,6 +3324,9 @@ msgstr "N'inclure que les joueur·euses de ces ligues."
 
 msgid "Only include players of this gender."
 msgstr "N'inclure que les joueur·euses de ce genre."
+
+msgid "Only include players with one of the selected licence types."
+msgstr "Inclure uniquement les joueur·euses ayant l’un des types de licence sélectionnés."
 
 msgid "Only one age category is expected with options including other categories."
 msgstr "Une seule catégorie d'age est attendue avec les options incluant d'autres catégories."
