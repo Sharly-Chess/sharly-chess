@@ -15,10 +15,7 @@ def _filtered_warn(*args, **kwargs):
 
         # List of warning messages to suppress
         suppressed_messages = [
-            'websockets.legacy is deprecated',
-            'websockets.server.WebSocketServerProtocol is deprecated',
             'server parameter is deprecated, use dsn instead',
-            'remove second argument of ws_handler',
         ]
 
         # Check if this message should be suppressed
