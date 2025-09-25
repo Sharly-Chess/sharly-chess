@@ -136,7 +136,7 @@ class FfeBackgroundUploader:
                     'event': 'ffe-upload-event',
                     'data': '',
                 },
-                ['sse'],
+                ['ws'],
             )
 
     @classmethod

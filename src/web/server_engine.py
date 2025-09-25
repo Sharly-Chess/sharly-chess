@@ -240,11 +240,6 @@ class ServerEngine(Engine):
         def handle_exit(sig_: int, frame: FrameType | None) -> None:
             server.should_exit = True
             server.force_exit = True
-            # Close the SSE connections gracefully
-            if channels_plugin and channels_plugin._pub_queue is not None:
-                channels_plugin.publish(
-                    {'event': 'server_shutdown', 'data': ''}, ['sse']
-                )
 
         # We need to handle signals ourselves in order to gracefully shut down the SSE connections.
         # Calling `serve` doesn't allow us to intercept signals, so we use `_serve` instead.  The only

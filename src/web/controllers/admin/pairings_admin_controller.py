@@ -1326,17 +1326,17 @@ class PairingsAdminController(BaseEventAdminController):
     ):
         channels.publish(
             {
-                'event': f'new-user-results/{event_uniq_id}/{tournament_id}/{round_}',
+                'event': f'new-user-results|{event_uniq_id}|{tournament_id}|{round_}',
                 'data': '',
             },
-            ['sse'],
+            ['ws'],
         )
         channels.publish(
             {
-                'event': f'new-user-results/{event_uniq_id}',
+                'event': f'new-user-results|{event_uniq_id}',
                 'data': '',
             },
-            ['sse'],
+            ['ws'],
         )
 
     @get(

@@ -49,6 +49,7 @@ dependencies = [
   "validators ~= 0.34.0",
   "toga ~= 0.5.2",
   "wheel >= 0.45.1",
+  "wsproto ~= 1.2.0",
 ]
 
 [project.optional-dependencies]

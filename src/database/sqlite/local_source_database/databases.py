@@ -180,14 +180,14 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                     'event': 'database-status-updated',
                     'data': '',
                 },
-                ['sse'],
+                ['ws'],
             )
             channels_plugin.publish(
                 {
-                    'event': f'database-status-updated/{cls.static_id()}',
+                    'event': f'database-status-updated|{cls.static_id()}',
                     'data': '',
                 },
-                ['sse'],
+                ['ws'],
             )
 
     def on_outdated(self):
