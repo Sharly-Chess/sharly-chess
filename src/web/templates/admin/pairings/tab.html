@@ -175,7 +175,7 @@
 
             {% if not display_rankings %}
                 {% if has_unpaired %}
-                    <div class="col-12 col-lg-3 mb-3">
+                    <div class="col-12 col-lg-3">
                         {% if admin_unpaired|length > 0 %}
                             {% with title=_('Unpaired (%(unpaired)d)', unpaired=admin_unpaired|length), unpaired=admin_unpaired, table_id='unpaired-players-table' %}
                                 {% include '/admin/pairings/unpaired_table.html' %}
@@ -190,7 +190,7 @@
                     </div>
                 {% endif %}
 
-                <div class="col-12 {{ 'col-lg-9' if has_unpaired else 'col-lg-12' }} mb-3">
+                <div class="col-12 {{ 'col-lg-9' if has_unpaired else 'col-lg-12' }}">
                     <table
                         id="pairings-table"
                         class="pairings-table table prominent table-striped table-sm table-hover w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %}"

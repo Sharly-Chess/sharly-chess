@@ -6,7 +6,7 @@
                 <h4>
                     {{ _('Properties') }}
                 </h4>
-                <div class="row">
+                <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6 mb-2">
                         {{ admin_macros.select_input(
                             name='tournament_id',
@@ -36,7 +36,7 @@
                             {{ _('Player selection (by rank)') }}
                         {% endif %}
                     </h4>
-                    <div class="row">
+                    <div class="row gy-2 gx-3">
                         <div class="{% if admin_screen.type in ['boards', 'input'] %}col-4{% else %}col-6{% endif %}">
                             {% if admin_screen.type in ['boards', 'input'] %}
                                 {% set help_text=_('The number of the first board to select.') %}

@@ -83,7 +83,7 @@
 
 {% block cards_container_cards %}
     {% if client.can_view_tournaments_tab %}
-        <div class="row">
+        <div class="row gy-2 gx-3">
             {% if admin_event.tournaments_by_uniq_id %}
                 {% for tournament in admin_event.tournaments_by_uniq_id.values() %}
                     {% include 'tournament_card.html' %}
