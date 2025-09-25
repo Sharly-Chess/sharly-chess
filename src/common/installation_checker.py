@@ -134,10 +134,10 @@ class InstallationChecker:
             licence_type='Zero-Clause BSD',
         ),
         WebLibFileInstaller(
-            'HTMX SSE extension',
-            SharlyChessConfig.htmx_sse_version,
-            'https://unpkg.com/htmx-ext-sse@{version}',
-            'htmx/sse-{version}/sse.js',
+            'HTMX WebSocket extension',
+            SharlyChessConfig.htmx_ws_version,
+            'https://unpkg.com/htmx-ext-ws@{version}',
+            'htmx/ws-{version}/ws.js',
         ),
     ]
 

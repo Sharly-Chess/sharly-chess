@@ -1842,16 +1842,16 @@ class PlayerAdminController(BaseEventAdminController):
         cls, channels: ChannelsPlugin, event_uniq_id: str, player: Player
     ):
         channels.publish(
-            {'event': f'new-checkins/{event_uniq_id}', 'data': ''},
-            ['sse'],
+            {'event': f'new-checkins|{event_uniq_id}', 'data': ''},
+            ['ws'],
         )
         if player.tournament is not None:
             channels.publish(
                 {
-                    'event': f'new-checkins/{event_uniq_id}/{player.tournament.id}/{player.tournament.current_round}',
+                    'event': f'new-checkins|{event_uniq_id}|{player.tournament.id}|{player.tournament.current_round}',
                     'data': '',
                 },
-                ['sse'],
+                ['ws'],
             )
 
     @get(
