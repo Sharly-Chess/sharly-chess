@@ -438,17 +438,9 @@
     </div>
 </div>
 
-{% if previous_tournament %}
-    <script>
-        // We need to reload the page when the modal is hidden, because tournaments were added.
-        $(document).one('hide.bs.modal', function(e) {
-            e.preventDefault();
-            document.body.dispatchEvent(new CustomEvent('request_refresh'));
-        });
-    </script>
-{% endif %}
-
 <script>
+    requestRefresh();
+
     function ensureWhite(tc)  {
         return { white: (tc.white && tc.white.length ? tc.white : [{ seconds: 0 }]), black: tc.black };
     }
