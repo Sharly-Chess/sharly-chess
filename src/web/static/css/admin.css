@@ -6,20 +6,6 @@
     display: none;
 }
 
-.dropdown-menu.players-set-tournament-check-ins,
-.dropdown-menu.players-set-player-tournament,
-.dropdown-menu.players-player-actions,
-.dropdown-menu.players-download-players,
-.dropdown-menu.players-filter-columns,
-.dropdown-menu.players-filter-gender,
-.dropdown-menu.players-filter-licence,
-.dropdown-menu.players-filter-check-in,
-.dropdown-menu.players-filter-tournament,
-.dropdown-menu.players-filter-federation,
-.dropdown-menu.players-filter-league,
-.dropdown-menu.players-filter-club {
-    min-width: 0;
-}
 .admin-players-filter-name, .admin-players-filter-origin {
     width: 5em;
 }
