@@ -108,12 +108,4 @@
     </div>
 </div>
 
-{% if not admin_tournament.criteria %}
-    <script>
-        // We need to reload the page when the modal is hidden, because the criteria might have changed.
-        $(document).one('hide.bs.modal', function(e) {
-            e.preventDefault();
-            document.body.dispatchEvent(new CustomEvent('request_refresh'));
-        });
-    </script>
-{% endif %}
+<script>requestRefresh()</script>

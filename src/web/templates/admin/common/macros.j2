@@ -242,6 +242,9 @@
             $('#{{ id }}').on('select2:closing', function (e) {
                 if ($('.modal.show').length > 0) {
                     ignoreNextModalClose = true;
+                    setTimeout(function(){
+                        ignoreNextModalClose = false;
+                    }, 500);
                 }
             });
         </script>

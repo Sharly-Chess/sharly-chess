@@ -203,10 +203,4 @@
     </div>
 </div>
 
-<script>
-    // We need to reload the page when the modal is hidden, because the categories might have changed.
-    $(document).one('hide.bs.modal', function(e) {
-        e.preventDefault();
-        document.body.dispatchEvent(new CustomEvent('request_refresh'));
-    });
-</script>
+<script>requestRefresh()</script>

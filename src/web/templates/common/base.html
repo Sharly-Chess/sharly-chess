@@ -144,13 +144,21 @@
                 });
 
                 let ignoreNextModalClose = false;
+                var refreshRequested = false;
+                function requestRefresh() {
+                    refreshRequested = true;
+                }
                 // Intercept Bootstrap modal hide
                 $(document).on('hide.bs.modal', function (e) {
-                if (ignoreNextModalClose) {
-                    e.stopImmediatePropagation();
-                    e.preventDefault();
-                    ignoreNextModalClose = false;
-                }
+                    if (ignoreNextModalClose) {
+                        e.stopImmediatePropagation();
+                        e.preventDefault();
+                        ignoreNextModalClose = false;
+                    } else if (refreshRequested) {
+                        e.preventDefault();
+                        document.body.dispatchEvent(new CustomEvent('request_refresh'));
+                        refreshRequested = false;
+                    }
                 });
 
                 window.addEventListener("do_print", function(event) {
