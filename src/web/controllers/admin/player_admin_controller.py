@@ -25,6 +25,7 @@ from common.exception import SharlyChessException
 from common.i18n import _, ngettext
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
+from data.access_levels.actions import AuthAction
 from data.event import Event
 from data.input_output.data_source import PlayerComparator, DataSource
 from data.input_output.managers import DataSourceManager
@@ -52,8 +53,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
 )
 from web.controllers.base_controller import WebContext
-from web.controllers.user.event_user_controller import EventUserController
-from web.guards import Guard
+from web.guards import TournamentActionGuard, EventGuard
 from web.messages import Message
 from web.session import SessionHandler
 
@@ -142,6 +142,11 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
 class PlayerAdminController(BaseEventAdminController):
     PAGE_SIZE = 25
     search_results_by_session: dict[int, list[int]] = {}
+
+    guards = [
+        EventGuard(),
+        TournamentActionGuard(AuthAction.VIEW_PLAYERS_TAB),
+    ]
 
     @classmethod
     def _admin_validate_player_update_data(
@@ -915,14 +920,9 @@ class PlayerAdminController(BaseEventAdminController):
 
         return cls._admin_base_event_render(template_context)
 
-    players_tab_guards = EventUserController.event_guards + [
-        Guard.client_can_view_players_tab,
-    ]
-
     @get(
         path='/admin/event/{event_uniq_id:str}/players',
         name='admin-event-players-tab',
-        guards=players_tab_guards,
     )
     async def htmx_admin_event_players_tab(
         self,

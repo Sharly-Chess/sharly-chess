@@ -7,8 +7,7 @@ from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.client import Client
 from data.access_levels.client_tracker import ClientTracker
 from data.event import Event
-from web.controllers.user.base_user_controller import UserWebContext, BaseUserController
-from web.guards import Guard
+from web.controllers.user.base_user_controller import UserWebContext
 from web.utils import RequestUtils
 
 
@@ -50,11 +49,3 @@ class EventUserWebContext(UserWebContext):
             'user_event_tab': self.user_event_tab,
             'user_event': self.user_event,
         }
-
-
-class EventUserController(BaseUserController):
-    """An abstract class inherited by the user controllers depending on an event."""
-
-    event_guards = [
-        Guard.event_is_visible,
-    ]

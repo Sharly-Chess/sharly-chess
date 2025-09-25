@@ -15,11 +15,17 @@ from web.controllers.user.base_screen_user_controller import (
     DisplayControllerUserWebContext,
     RotatorUserWebContext,
 )
-from web.controllers.user.event_user_controller import EventUserController
-from web.guards import Guard
+from web.guards import (
+    EventGuard,
+    ViewScreenGuard,
+    ViewRotatorGuard,
+    ViewDisplayControllerGuard,
+)
 
 
 class ScreenUserController(BaseScreenUserController):
+    guards = [EventGuard()]
+
     @staticmethod
     def _user_screen_set_refresh_needed(
         screen_set: ScreenSet,
@@ -106,20 +112,14 @@ class ScreenUserController(BaseScreenUserController):
                 return True
         return False
 
-    screen_guards = EventUserController.event_guards + [
-        Guard.screen_is_visible,
-    ]
-
     @get(
         path='/user/screen/{event_uniq_id:str}/{screen_uniq_id:str}',
         name='user-screen',
-        guards=screen_guards,
+        guards=[ViewScreenGuard()],
     )
     async def htmx_user_screen(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        screen_uniq_id: str,
     ) -> HTMXTemplate | Reswap:
         web_context = BasicScreenOrFamilyUserWebContext(request)
         date: float | None = self.get_if_modified_since(request)
@@ -133,7 +133,7 @@ class ScreenUserController(BaseScreenUserController):
     @head(
         path='/user/screen/{event_uniq_id:str}/{screen_uniq_id:str}',
         name='user-screen-head',
-        guards=screen_guards,
+        guards=[ViewScreenGuard()],
         status_code=HTTP_304_NOT_MODIFIED,
     )
     async def htmx_user_screen_head(
@@ -144,28 +144,20 @@ class ScreenUserController(BaseScreenUserController):
     ) -> None:
         pass
 
-    rotator_guards = EventUserController.event_guards + [
-        Guard.rotator_is_visible,
-    ]
-
     @get(
         path=[
             '/user/rotator/{event_uniq_id:str}/{rotator_id:int}/{rotator_screen_index:int}',
             '/user/rotator/{event_uniq_id:str}/{rotator_id:int}',
         ],
         name='user-rotator',
-        guards=rotator_guards,
+        guards=[ViewRotatorGuard()],
     )
     async def htmx_user_rotator(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        rotator_id: int,
         rotator_screen_index: int = 0,
     ) -> Template:
-        web_context: RotatorUserWebContext = RotatorUserWebContext(
-            request,
-        )
+        web_context = RotatorUserWebContext(request, rotator_screen_index)
         return self._user_screen_render(web_context)
 
     @head(
@@ -174,7 +166,7 @@ class ScreenUserController(BaseScreenUserController):
             '/user/rotator/{event_uniq_id:str}/{rotator_id:int}',
         ],
         name='user-rotator-head',
-        guards=rotator_guards,
+        guards=[ViewRotatorGuard()],
         status_code=HTTP_304_NOT_MODIFIED,
     )
     async def htmx_user_rotator_head(
@@ -186,29 +178,20 @@ class ScreenUserController(BaseScreenUserController):
     ) -> None:
         pass
 
-    display_controller_guards = EventUserController.event_guards + [
-        Guard.display_controller_is_visible,
-    ]
-
     @get(
         path=[
             '/user/display-controller/{event_uniq_id:str}/{display_controller_id:int}/{rotator_screen_index:int}',
             '/user/display-controller/{event_uniq_id:str}/{display_controller_id:int}',
         ],
-        guards=display_controller_guards,
+        guards=[ViewDisplayControllerGuard()],
         name='user-display-controller',
     )
     async def htmx_user_display_controller(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        display_controller_id: int,
         rotator_screen_index: int = 0,
     ) -> Template | Reswap:
-        web_context: DisplayControllerUserWebContext = DisplayControllerUserWebContext(
-            request,
-        )
-
+        web_context = DisplayControllerUserWebContext(request, rotator_screen_index)
         date: float | None = (
             self.get_if_modified_since(request) if not web_context.is_rotator else None
         )
@@ -225,7 +208,7 @@ class ScreenUserController(BaseScreenUserController):
             '/user/display-controller/{event_uniq_id:str}/{display_controller_id:int}',
         ],
         name='user-display-controller-head',
-        guards=display_controller_guards,
+        guards=[ViewDisplayControllerGuard()],
         status_code=HTTP_304_NOT_MODIFIED,
     )
     async def htmx_user_display_controller_head(

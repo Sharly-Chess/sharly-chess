@@ -163,11 +163,6 @@ class WebContext:
             return empty_value
         return data[field]
 
-    def _form_data_to_str(
-        self, field: str, empty_value: str | None = None
-    ) -> str | None:
-        return self.form_data_to_str(self.data, field, empty_value)
-
     @staticmethod
     def form_data_to_int(
         data: dict[str, str] | None,
@@ -193,11 +188,6 @@ class WebContext:
             raise ValueError(f'{int_val} < {minimum}')
         return int_val
 
-    def _form_data_to_int(
-        self, field: str, empty_value: int | None = None, minimum: int | None = None
-    ) -> int | None:
-        return self.form_data_to_int(self.data, field, empty_value, minimum)
-
     @staticmethod
     def form_data_to_float(
         data: dict[str, str] | None,
@@ -216,11 +206,6 @@ class WebContext:
         if minimum is not None and float_val < minimum:
             raise ValueError(f'{float_val} < {minimum}')
         return float_val
-
-    def _form_data_to_float(
-        self, field: str, empty_value: float | None = None, minimum: float | None = None
-    ) -> float | None:
-        return self.form_data_to_float(self.data, field, empty_value, minimum)
 
     @staticmethod
     def form_data_to_bool(data: dict[str, str] | None, field: str) -> bool:
@@ -272,11 +257,6 @@ class WebContext:
         if not data[field]:
             return empty_value
         return check_rgb_str(data[field])
-
-    def _form_data_to_rgb(
-        self, field: str, empty_value: str | None = None
-    ) -> str | None:
-        return self.form_data_to_rgb(self.data, field, empty_value)
 
     @staticmethod
     def form_data_to_date(

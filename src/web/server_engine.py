@@ -16,6 +16,7 @@ from litestar.exceptions import (
     PermissionDeniedException,
     NotFoundException,
     ClientException,
+    ValidationException,
 )
 from litestar.logging import LoggingConfig
 from litestar.plugins.htmx import HTMXRequest
@@ -181,26 +182,21 @@ class ServerEngine(Engine):
             if not scope['type'] == 'http':
                 return
             if isinstance(exc, PermissionDeniedException):
-                http = cast(HTTPScope, scope)
-                logger.warning(
-                    '403 permission denied: %s %s',
-                    http.get('method', '?'),
-                    http.get('path', '?'),
-                )
+                prefix = '403 permission denied'
             elif isinstance(exc, NotFoundException):
-                http = cast(HTTPScope, scope)
-                logger.error(
-                    '404 not found: %s %s',
-                    http.get('method', '?'),
-                    http.get('path', '?'),
-                )
-            elif isinstance(exc, ClientException):
-                http = cast(HTTPScope, scope)
-                logger.error(
-                    '400 not found: %s %s',
-                    http.get('method', '?'),
-                    http.get('path', '?'),
-                )
+                prefix = '404 not found'
+            elif isinstance(exc, ClientException) and exc.status_code == 400:
+                prefix = '400 bad request'
+            else:
+                return
+            http = cast(HTTPScope, scope)
+            logger.error(
+                '%s: %s %s\n%s',
+                prefix,
+                http.get('method', '?'),
+                http.get('path', '?'),
+                exc,
+            )
 
         app: Litestar = Litestar(
             debug=True,
@@ -215,6 +211,7 @@ class ServerEngine(Engine):
                     403,
                     404,
                     ClientException,
+                    ValidationException,
                     PermissionDeniedException,
                     NotFoundException,
                 },

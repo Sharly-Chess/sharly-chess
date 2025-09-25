@@ -21,6 +21,7 @@ from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
 )
+from web.guards import EventGuard
 from web.messages import Message
 from web.session import SessionHandler
 
@@ -29,7 +30,7 @@ class BaseEventAdminWebContext(AdminWebContext):
     def __init__(
         self,
         request: HTMXRequest,
-        event_uniq_id: str | None,
+        event_uniq_id: str | None = None,
         data: Annotated[
             dict[str, str] | None,
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -317,6 +318,8 @@ class BaseEventAdminWebContext(AdminWebContext):
 
 
 class BaseEventAdminController(BaseAdminController):
+    guards = [EventGuard()]
+
     @classmethod
     def _admin_base_event_render(
         cls,

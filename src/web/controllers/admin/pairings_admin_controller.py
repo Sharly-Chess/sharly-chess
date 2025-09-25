@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from typing import Annotated, Any
 
 from common.i18n.utils import by
+from data.access_levels.actions import AuthAction
 from data.pairings.engines import BbpPairings
 from data.pairings.bbp_history import TournamentHistoryPlayer
 from litestar import delete, get, patch, put, post
@@ -39,8 +40,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
 )
 from web.controllers.base_controller import WebContext
-from web.controllers.user.event_user_controller import EventUserController
-from web.guards import Guard
+from web.guards import EventGuard, TournamentActionGuard
 from web.messages import Message
 from web.session import SessionHandler
 
@@ -321,6 +321,11 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
 
 
 class PairingsAdminController(BaseEventAdminController):
+    guards = [
+        EventGuard(),
+        TournamentActionGuard(AuthAction.VIEW_PAIRINGS_TAB),
+    ]
+
     @classmethod
     def _admin_event_pairings_render(
         cls,
@@ -331,10 +336,6 @@ class PairingsAdminController(BaseEventAdminController):
             web_context.template_context | (template_context or {}),
         )
 
-    pairings_tab_guards = EventUserController.event_guards + [
-        Guard.client_can_view_pairings_tab,
-    ]
-
     @get(
         path=[
             '/admin/event/{event_uniq_id:str}/pairings',
@@ -342,7 +343,6 @@ class PairingsAdminController(BaseEventAdminController):
             '/admin/event/{event_uniq_id:str}/pairings/{tournament_id:int}/{round:int}',
         ],
         name='admin-event-pairings-tab',
-        guards=pairings_tab_guards,
     )
     async def htmx_admin_pairings_tab(
         self,
@@ -1229,16 +1229,10 @@ class PairingsAdminController(BaseEventAdminController):
 
         return self._admin_event_pairings_render(web_context)
 
-    illegal_moves_guards = [
-        Guard.tournament_is_playing,
-        Guard.tournament_record_illegal_moves_is_possible,
-        Guard.client_can_set_illegal_moves,
-    ]
-
     @put(
         path='/admin/tournament/add-illegal-move/{event_uniq_id:str}/{tournament_id:int}/{round:int}/{player_id:int}',
         name='admin-tournament-add-illegal-move',
-        guards=illegal_moves_guards,
+        guards=[TournamentActionGuard(AuthAction.SET_ILLEGAL_MOVES)],
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_tournament_add_illegal_move(
@@ -1266,7 +1260,7 @@ class PairingsAdminController(BaseEventAdminController):
     @delete(
         path='/admin/tournament/delete-illegal-move/{event_uniq_id:str}/{tournament_id:int}/{round:int}/{player_id:int}',
         name='admin-tournament-delete-illegal-move',
-        guards=illegal_moves_guards,
+        guards=[TournamentActionGuard(AuthAction.SET_ILLEGAL_MOVES)],
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_tournament_delete_illegal_move(

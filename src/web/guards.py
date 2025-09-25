@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from typing import cast
 
 from litestar.connection.base import ASGIConnection
@@ -5,215 +6,145 @@ from litestar.exceptions import PermissionDeniedException
 from litestar.handlers import BaseRouteHandler
 from litestar_htmx import HTMXRequest
 
+from data.access_levels.actions import AuthAction
 from data.access_levels.client import Client
-from data.event import Event
-from data.screen import Screen
-from data.tournament import Tournament
+from utils.enum import Result
 from web.utils import RequestUtils
 
 
-class Guard:
-    @classmethod
-    def event_is_visible(cls, connection: ASGIConnection, _: BaseRouteHandler) -> None:
-        """Raises an exception if the event of the request is not visible."""
-        request = cast(HTMXRequest, connection)
-        event: Event = RequestUtils.get_event(request)
-        client: Client = RequestUtils.get_client(request)
-        if not event.public:
-            if not client.can_view_private_events:
-                raise PermissionDeniedException(
-                    'You are not allowed to view private events.'
-                )
-        if event.passed() and not client.can_view_passed_events:
-            raise PermissionDeniedException(
-                'You are not allowed to view passed events.'
-            )
+class BaseGuard(ABC):
+    """Base class of all the endpoint or controller guards.
+    Usage:
+        class Controller:
+            guards = [ControllerGuard()]
 
-    @classmethod
-    def screen_is_visible(cls, connection: ASGIConnection, _: BaseRouteHandler) -> None:
-        """Raises an exception if the screen of the request is not visible."""
-        request = cast(HTMXRequest, connection)
-        client: Client = RequestUtils.get_client(request)
-        screen: Screen = RequestUtils.get_screen(request)
-        if screen.public:
-            if not client.can_view_public_screens:
-                raise PermissionDeniedException(
-                    'You are not allowed to view public screens.'
-                )
-        else:
-            if not client.can_view_private_screens:
-                raise PermissionDeniedException(
-                    'You are not allowed to view private screens.'
-                )
-
-    @classmethod
-    def rotator_is_visible(
-        cls, connection: ASGIConnection, _: BaseRouteHandler
-    ) -> None:
-        """Raises an exception if the rotator of the request is not visible."""
-        request = cast(HTMXRequest, connection)
-        client: Client = RequestUtils.get_client(request)
-        rotator, screen_index, screen = RequestUtils.get_rotator(request)
-        if rotator.public:
-            if not client.can_view_public_screens:
-                raise PermissionDeniedException(
-                    'You are not allowed to view public rotators.'
-                )
-        else:
-            if not client.can_view_private_screens:
-                raise PermissionDeniedException(
-                    'You are not allowed to view private rotators.'
-                )
-
-    @classmethod
-    def display_controller_is_visible(
-        cls, connection: ASGIConnection, _: BaseRouteHandler
-    ) -> None:
-        """Raises an exception if the display controller of the request is not visible."""
-        request = cast(HTMXRequest, connection)
-        client: Client = RequestUtils.get_client(request)
-        display_controller, rotator_screen_index, screen = (
-            RequestUtils.get_display_controller(request)
+        @get(
+            path='/endpoint/example',
+            name='endpoint-example',
+            guards=[EndpointGuard()],
         )
-        if display_controller.public:
-            if not client.can_view_public_screens:
-                raise PermissionDeniedException(
-                    'You are not allowed to view public display controllers.'
-                )
+        async def endpoint_example():...
+    """
+
+    def __call__(self, connection: ASGIConnection, _: BaseRouteHandler):
+        request = cast(HTMXRequest, connection)
+        client = Client(request, RequestUtils.get_optional_event(request))
+        self.authorize_client(client, request)
+
+    @abstractmethod
+    def authorize_client(self, client: Client, request: HTMXRequest):
+        """Validate that the client is authorized by the guard.
+        Should fetch the necessary request data using RequestUtils,
+        then raises a PermissionDeniedException if the client is not authorized.
+        """
+
+    @staticmethod
+    def _authorize_action(action: AuthAction, client: Client):
+        if action not in client.allowed_actions:
+            raise PermissionDeniedException(
+                f'Client [{client.account.full_name}] is not allowed '
+                f'to perform the action [{action.localized_name("en")}].'
+            )
+
+    @staticmethod
+    def _authorize_tournament_action(
+        action: AuthAction, client: Client, request: HTMXRequest
+    ):
+        tournament = RequestUtils.get_tournament(request)
+        if not client.action_allowed_for_tournament(action, tournament.id):
+            raise PermissionDeniedException(
+                f'Client [{client.account.full_name}] is not allowed '
+                f'to perform the action [{action.localized_name("en")}] '
+                f'on tournament [{tournament.name}].'
+            )
+
+
+class ActionGuard(BaseGuard):
+    """Guard validating if an action is allowed for the client."""
+
+    def __init__(self, action: AuthAction):
+        self.action = action
+
+    def authorize_client(self, client: Client, request: HTMXRequest):
+        self._authorize_action(self.action, client)
+
+
+class TournamentActionGuard(ActionGuard):
+    """Guard validating if an action is allowed for the client on a tournament.
+    requires: event_uniq_id, tournament_id"""
+
+    def authorize_client(self, client: Client, request: HTMXRequest):
+        self._authorize_tournament_action(self.action, client, request)
+
+
+class EventGuard(BaseGuard):
+    """Guard validating if the client can access an event.
+    requires: event_uniq_id"""
+
+    def authorize_client(self, client: Client, request: HTMXRequest):
+        event = RequestUtils.get_event(request)
+        if not event.public:
+            self._authorize_action(AuthAction.VIEW_PRIVATE_EVENTS, client)
+        if event.passed():
+            self._authorize_action(AuthAction.VIEW_PASSED_EVENTS, client)
+
+
+class SetResultGuard(BaseGuard):
+    """Guard validating if a client can set a result on a board.
+    requires: event_uniq_id, tournament_id, board_id, result."""
+
+    def authorize_client(self, client: Client, request: HTMXRequest):
+        board = RequestUtils.get_board(request)
+        result = RequestUtils.get_result(request)
+        if not board.no_result:
+            self._authorize_tournament_action(
+                AuthAction.UPDATE_RESULTS, client, request
+            )
+        if result in Result.admin_imputable_results():
+            self._authorize_tournament_action(
+                AuthAction.SET_SPECIAL_RESULTS, client, request
+            )
+        elif result in Result.user_imputable_results():
+            self._authorize_tournament_action(AuthAction.ENTER_RESULTS, client, request)
+
+
+class ViewScreenEntityGuard(BaseGuard, ABC):
+    """Base guard for validating viewing a private / public screen entity."""
+
+    @staticmethod
+    @abstractmethod
+    def is_public(request: HTMXRequest) -> bool:
+        """Get the visibility status of the entity."""
+
+    def authorize_client(self, client: Client, request: HTMXRequest):
+        if not self.is_public(request):
+            self._authorize_action(AuthAction.VIEW_PRIVATE_SCREENS, client)
         else:
-            if not client.can_view_private_screens:
-                raise PermissionDeniedException(
-                    'You are not allowed to view private display controllers.'
-                )
+            self._authorize_action(AuthAction.VIEW_PUBLIC_SCREENS, client)
 
-    @classmethod
-    def tournament_check_in_is_open(
-        cls, connection: ASGIConnection, _: BaseRouteHandler
-    ) -> None:
-        """Raises an exception if the check-in of tournament of the request is not open."""
-        request = cast(HTMXRequest, connection)
-        tournament: Tournament = RequestUtils.get_tournament(request)
-        if not tournament.check_in_open:
-            raise PermissionDeniedException(
-                f'Check-in is not open for tournament [{tournament.uniq_id}].'
-            )
 
-    @classmethod
-    def client_can_check_in(
-        cls, connection: ASGIConnection, _: BaseRouteHandler
-    ) -> None:
-        """Raises an exception if the check-in of tournament of the request is not allowed."""
-        request = cast(HTMXRequest, connection)
-        client: Client = RequestUtils.get_client(request)
-        tournament: Tournament = RequestUtils.get_tournament(request)
-        if not client.can_check_in_players(tournament.id):
-            raise PermissionDeniedException(
-                f'You are not allowed to check-in players for tournament [{tournament.uniq_id}].'
-            )
+class ViewScreenGuard(ViewScreenEntityGuard):
+    """Guard validating if a client can view a screen.
+    requires: event_uniq_id, screen_uniq_id."""
 
-    @classmethod
-    def tournament_is_playing(
-        cls, connection: ASGIConnection, _: BaseRouteHandler
-    ) -> None:
-        """Raises an exception if the tournament of the request is not playing."""
-        request = cast(HTMXRequest, connection)
-        tournament: Tournament = RequestUtils.get_tournament(request)
-        if not tournament.playing:
-            raise PermissionDeniedException(
-                f'Tournament [{tournament.uniq_id}] is not playing.'
-            )
+    @staticmethod
+    def is_public(request: HTMXRequest) -> bool:
+        return RequestUtils.get_screen(request).public
 
-    @classmethod
-    def tournament_record_illegal_moves_is_possible(
-        cls, connection: ASGIConnection, _: BaseRouteHandler
-    ) -> None:
-        """Raises an exception if recording illegal moves for the tournament of the request is not possible."""
-        request = cast(HTMXRequest, connection)
-        tournament: Tournament = RequestUtils.get_tournament(request)
-        if not tournament.record_illegal_moves:
-            raise PermissionDeniedException(
-                f'Recording illegal moves for tournament [{tournament.uniq_id}] is not possible.'
-            )
 
-    @classmethod
-    def client_can_set_illegal_moves(
-        cls, connection: ASGIConnection, _: BaseRouteHandler
-    ) -> None:
-        """Raises an exception if adding/deleting illegal moves for the tournament of the request is not allowed."""
-        request = cast(HTMXRequest, connection)
-        client: Client = RequestUtils.get_client(request)
-        tournament: Tournament = RequestUtils.get_tournament(request)
-        if not client.can_set_illegal_moves(tournament.id):
-            raise PermissionDeniedException(
-                f'You are not allowed to set illegal moves for tournament [{tournament.uniq_id}].'
-            )
+class ViewRotatorGuard(ViewScreenEntityGuard):
+    """Guard validating if a client can view a rotator.
+    requires: event_uniq_id, rotator_id."""
 
-    @classmethod
-    def client_can_enter_results(
-        cls, connection: ASGIConnection, _: BaseRouteHandler
-    ) -> None:
-        """Raises an exception if entering results for the tournament of the request is not allowed."""
-        request = cast(HTMXRequest, connection)
-        client: Client = RequestUtils.get_client(request)
-        tournament: Tournament = RequestUtils.get_tournament(request)
-        if not client.can_enter_results(tournament.id):
-            raise PermissionDeniedException(
-                f'You are not allowed to enter results for tournament [{tournament.uniq_id}].'
-            )
+    @staticmethod
+    def is_public(request: HTMXRequest) -> bool:
+        return RequestUtils.get_rotator(request).public
 
-    @classmethod
-    def client_can_delete_result(
-        cls, connection: ASGIConnection, _: BaseRouteHandler
-    ) -> None:
-        """Raises an exception if deleting the result of the request is not allowed."""
-        request = cast(HTMXRequest, connection)
-        client: Client = RequestUtils.get_client(request)
-        tournament: Tournament = RequestUtils.get_tournament(request)
-        if not client.can_update_results(tournament.id):
-            raise PermissionDeniedException(
-                f'You are not allowed to delete results for tournament [{tournament.uniq_id}].'
-            )
 
-    @classmethod
-    def client_can_add_result(
-        cls, connection: ASGIConnection, _: BaseRouteHandler
-    ) -> None:
-        """Raises an exception if updating the result of the request is not allowed."""
-        request = cast(HTMXRequest, connection)
-        client: Client = RequestUtils.get_client(request)
-        tournament: Tournament = RequestUtils.get_tournament(request)
-        round_, board, result = RequestUtils.get_round_board_result(request)
-        if not board.no_result and not client.can_update_results(tournament.id):
-            raise PermissionDeniedException(
-                f'You are not allowed to update already entered results for tournament [{tournament.uniq_id}].'
-            )
-        if result not in client.imputable_results_for_tournament(
-            tournament_id=tournament.id
-        ):
-            raise PermissionDeniedException(
-                f'You are not allowed to set result [{result}] for tournament [{tournament.uniq_id}].'
-            )
+class ViewDisplayControllerGuard(ViewScreenEntityGuard):
+    """Guard validating if a client can view a display controller.
+    requires: event_uniq_id, display_controller_id."""
 
-    @classmethod
-    def client_can_view_players_tab(
-        cls, connection: ASGIConnection, _: BaseRouteHandler
-    ) -> None:
-        """Raises an exception if viewing the players tab is not allowed."""
-        request = cast(HTMXRequest, connection)
-        client: Client = RequestUtils.get_client(request)
-        if not client.can_view_players_tab:
-            raise PermissionDeniedException(
-                'You are not allowed to view the players tab.'
-            )
-
-    @classmethod
-    def client_can_view_pairings_tab(
-        cls, connection: ASGIConnection, _: BaseRouteHandler
-    ) -> None:
-        """Raises an exception if viewing the pairings tab is not allowed."""
-        request = cast(HTMXRequest, connection)
-        client: Client = RequestUtils.get_client(request)
-        if not client.can_view_pairings_tab:
-            raise PermissionDeniedException(
-                'You are not allowed to view the pairings tab.'
-            )
+    @staticmethod
+    def is_public(request: HTMXRequest) -> bool:
+        return RequestUtils.get_display_controller(request).public

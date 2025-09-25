@@ -25,7 +25,7 @@ from web.utils import RequestUtils
 logger: Logger = get_logger()
 
 
-class ScreenOrRotatorOrDisplayControllerUserWebContext(EventUserWebContext, ABC):
+class ScreenEntityUserWebContext(EventUserWebContext, ABC):
     def __init__(
         self,
         request: HTMXRequest,
@@ -74,11 +74,8 @@ class ScreenOrRotatorOrDisplayControllerUserWebContext(EventUserWebContext, ABC)
         }
 
 
-class ScreenUserWebContext(ScreenOrRotatorOrDisplayControllerUserWebContext):
-    def __init__(
-        self,
-        request: HTMXRequest,
-    ):
+class ScreenUserWebContext(ScreenEntityUserWebContext):
+    def __init__(self, request: HTMXRequest):
         super().__init__(request)
         self._screen: Screen = RequestUtils.get_screen(request)
         self.user_event_tab = self.screen.type.value
@@ -88,42 +85,42 @@ class ScreenUserWebContext(ScreenOrRotatorOrDisplayControllerUserWebContext):
         return self._screen
 
 
-class RotatorUserWebContext(ScreenOrRotatorOrDisplayControllerUserWebContext):
-    def __init__(
-        self,
-        request: HTMXRequest,
-    ):
-        super().__init__(
-            request,
-            user_event_tab='rotators',
-        )
-        self.rotator, self.rotator_screen_index, self._screen = (
-            RequestUtils.get_rotator(request)
-        )
+class RotatorUserWebContext(ScreenEntityUserWebContext):
+    def __init__(self, request: HTMXRequest, rotator_screen_index: int):
+        super().__init__(request, user_event_tab='rotators')
+        self.rotator = RequestUtils.get_rotator(request)
+        self._screen: Screen | None = None
+        if self.rotator.rotating_screens:
+            self.rotator_screen_index = rotator_screen_index % len(
+                self.rotator.rotating_screens
+            )
+            self._screen = self.rotator.rotating_screens[self.rotator_screen_index]
         self.is_rotator = True
 
     @property
     def screen(self) -> Screen:
+        assert self._screen is not None
         return self._screen
 
 
-class DisplayControllerUserWebContext(ScreenOrRotatorOrDisplayControllerUserWebContext):
-    def __init__(
-        self,
-        request: HTMXRequest,
-    ):
-        super().__init__(
-            request,
-            user_event_tab='display_controllers',
-        )
-        self.display_controller, self.rotator_screen_index, self._screen = (
-            RequestUtils.get_display_controller(request)
-        )
-        if self.display_controller.rotator:
+class DisplayControllerUserWebContext(ScreenEntityUserWebContext):
+    def __init__(self, request: HTMXRequest, rotator_screen_index: int):
+        super().__init__(request, user_event_tab='display_controllers')
+        self.display_controller = RequestUtils.get_display_controller(request)
+        self._screen: Screen | None = None
+        if rotator := self.display_controller.rotator:
             self.is_rotator = True
+            if rotator.rotating_screens:
+                self.rotator_screen_index = rotator_screen_index % len(
+                    rotator.rotating_screens
+                )
+                self._screen = rotator.rotating_screens[self.rotator_screen_index]
+        else:
+            self._screen = self.display_controller.screen
 
     @property
     def screen(self) -> Screen:
+        assert self._screen is not None
         return self._screen
 
 
@@ -154,7 +151,7 @@ class BaseScreenUserController(BaseUserController):
     @classmethod
     def _user_screen_render(
         cls,
-        web_context: ScreenOrRotatorOrDisplayControllerUserWebContext,
+        web_context: ScreenEntityUserWebContext,
     ) -> HTMXTemplate:
         # Allow plugin to provide extra columns
         per_plugin_columns: Iterable[Iterable[ExtraColumn]] = []
