@@ -40,7 +40,7 @@
                 <input type="text" style="display:none">
                 <input type="password" style="display:none">
 
-                <div class="row mb-3">
+                <div class="row gy-2 gx-3">
                     {% set id = 'access-level' %}
                     {% set name = 'access_level' %}
 
@@ -126,7 +126,7 @@
                 </div>
                 <div
                     id="tournament-select-container"
-                    class="row"
+                    class="row gy-2 gx-3"
                     {% if data['access_level'] not in tournament_access_level_ids %}
                         style="display:none"
                     {% endif %}

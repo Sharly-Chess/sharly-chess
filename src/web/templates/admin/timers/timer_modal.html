@@ -46,8 +46,8 @@
                     <h4>
                         {{ _('Properties') }}
                     </h4>
-                    <div class="row">
-                        <div class="col-12 col-md-6 mb-3">
+                    <div class="row gy-2 gx-3">
+                        <div class="col-12 col-md-6">
                             {{ admin_macros.text_input(
                                 name='name',
                                 label=_('%(string)s:', string=_('Name')),
@@ -60,9 +60,9 @@
                     <h4>
                         {{ _('Colors and delays') }}
                     </h4>
-                    <div class="row">
+                    <div class="row gy-2 gx-3">
                         {% for num in [1, 2, 3] %}
-                            <div class="col-12 col-md-6 mb-3">
+                            <div class="col-12 col-md-6">
                                 {{ admin_macros.color_input(
                                     name='color_'~num,
                                     label=_('Colour #%(num)d:', num=num),
@@ -73,7 +73,7 @@
                                 ) }}
                             </div>
 
-                            <div class="col-12 col-md-6 mb-3">
+                            <div class="col-12 col-md-6">
                                 {% with id='delay-'~num, name='delay_'~num %}
                                     {{ admin_macros.number_input(
                                         name='delay_'~num,

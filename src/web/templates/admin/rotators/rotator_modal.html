@@ -33,7 +33,7 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                <div class="d-flex mb-3">
+                <div class="d-flex">
                     {{ admin_macros.switch_input(
                         name='public',
                         label='',
@@ -47,7 +47,7 @@
                         ) }}
                     ></i>
                 </div>
-                <div class="col-12 mb-3">
+                <div class="col-12">
                     {{ admin_macros.text_input(
                         name='name',
                         label=_('%(string)s:', string=_('Name')),
@@ -57,7 +57,7 @@
                     ) }}
                 </div>
 
-                <div class="col-12 mb-3">
+                <div class="col-12">
                     {{ admin_macros.number_input(
                         name='delay',
                         label=_('Delay (seconds):'),
@@ -67,7 +67,7 @@
                         min=1
                     ) }}
                 </div>
-                <div class="row">
+                <div class="row gy-2 gx-3">
                     <div class="col-12">
                         {% include '../common/modal/alert_message.html' %}
                     </div>

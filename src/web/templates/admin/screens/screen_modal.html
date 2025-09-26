@@ -50,8 +50,8 @@
                 {% else %}
                     <h4>{{ _('Properties') }}</h4>
                     {% set col = 6 if action == 'create' and screen_type.value in ['input', 'boards', 'players', 'ranking', ] else 4 %}
-                    <div class="row">
-                        <div class="col-12 col-xl-{{col}} mb-3">
+                    <div class="row gy-2 gx-3">
+                        <div class="col-12 col-xl-{{col}}">
                             {{ admin_macros.switch_input(
                                 name='public',
                                 label=_('Visibility:'),
@@ -60,7 +60,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6 col-xl-{{col}} mb-3">
+                        <div class="col-12 col-md-6 col-xl-{{col}}">
                             {{ admin_macros.text_input(
                                 name='name',
                                 label=_('Name:'),
@@ -70,7 +70,7 @@
                             ) }}
                         </div>
                         {% if action == 'create' and screen_type.value in ['input', 'boards', 'players', 'ranking', ] %}
-                            <div class="col-12 col-xl-{{col}} mb-3">
+                            <div class="col-12 col-xl-{{col}}">
                                 {{ admin_macros.select_input(
                                     name='init_set_tournament_id',
                                     label=_('Tournament:'),
@@ -81,15 +81,15 @@
                             </div>
                         {% endif %}
                         {% if screen_type.value == 'ranking' %}
-                            <div class="col-12 col-md-6 mb-3">
+                            <div class="col-12 col-md-6">
                                 {% include '../common/modal/ranking_crosstable.html' %}
                             </div>
-                            <div class="col-12 col-md-6 mb-3">
+                            <div class="col-12 col-md-6">
                                 {% include '../common/modal/ranking_round.html' %}
                             </div>
                         {% endif %}
                         {% if screen_type.value == 'image' %}
-                            <div class="col-12 col-md-6 mb-3">
+                            <div class="col-12 col-md-6">
                                 {{ admin_macros.text_input(
                                     name='background_image',
                                     label=_('Background image:'),
@@ -100,7 +100,7 @@
                                     data=data, errors=errors
                                 ) }}
                             </div>
-                            <div class="col-12 col-md-6 mb-3">
+                            <div class="col-12 col-md-6">
                                 {{ admin_macros.color_input(
                                     name='background_color',
                                     label=_('Background colour:'),
@@ -117,25 +117,25 @@
                         <h4>
                             {{ _('Selection') }}
                         </h4>
-                        <div class="row">
+                        <div class="row gy-2 gx-3">
                             {% if screen_type.value == 'players' %}
-                                <div class="col-12 mb-3">
+                                <div class="col-12">
                                     {% include '../common/modal/show_unpaired.html' %}
                                 </div>
-                                <div class="col-12 mb-3">
+                                <div class="col-12">
                                     {% include '../common/modal/show_opponent.html' %}
                                 </div>
                             {% endif %}
                             {% if screen_type.value == 'ranking' %}
-                                <div class="col-12 col-md-6 mb-3">
+                                <div class="col-12 col-md-6">
                                     {% include '../common/modal/ranking_min_points.html' %}
                                 </div>
-                                <div class="col-12 col-md-6 mb-3">
+                                <div class="col-12 col-md-6">
                                     {% include '../common/modal/ranking_max_points.html' %}
                                 </div>
                             {% endif %}
                             {% if screen_type.value == 'results' %}
-                                <div class="col-12 col-md-6 mb-3">
+                                <div class="col-12 col-md-6">
                                     {{ admin_macros.number_input(
                                         name='results_limit',
                                         label=_('Maximum number of results displayed:'),
@@ -144,7 +144,7 @@
                                         data=data, errors=errors
                                     ) }}
                                 </div>
-                                <div class="col-12 col-md-6 mb-3">
+                                <div class="col-12 col-md-6">
                                     {{ admin_macros.number_input(
                                         name='results_max_age',
                                         label=_('Maximum age of the results:'),
@@ -153,7 +153,7 @@
                                         data=data, errors=errors
                                     ) }}
                                 </div>
-                                <div class="col-12 mb-3">
+                                <div class="col-12">
                                     <label class="form-label">{{ _('Tournaments displayed:') }}</label>
                                     <div class="d-flex flex-wrap gap-3">
                                         {% for tournament in admin_event.tournaments_by_uniq_id.values() %}
@@ -183,9 +183,9 @@
                         <h4>
                             {{ _('Layout') }}
                         </h4>
-                        <div class="row">
+                        <div class="row gy-2 gx-3">
                             {% if admin_event.timers_by_id %}
-                                <div class="col-12 col-md-6 mb-3">
+                                <div class="col-12 col-md-6">
                                     {{ admin_macros.select_input(
                                         name='timer_id',
                                         label=_('Timer:'),
@@ -195,7 +195,7 @@
                                     ) }}
                                 </div>
                             {% endif %}
-                            <div class="col-12 col-md-6 mb-3">
+                            <div class="col-12 col-md-6">
                                 {{ admin_macros.number_input(
                                     name='columns',
                                     label=_('Columns:'),
@@ -204,7 +204,7 @@
                                     data=data, errors=errors
                                 ) }}
                             </div>
-                            <div class="col-12 col-md-6 mb-3">
+                            <div class="col-12 col-md-6">
                                 {{ admin_macros.number_input(
                                     name='font_size',
                                     label=_('Font size adjustment (%%):'),
@@ -214,11 +214,11 @@
                                 ) }}
                             </div>
                             {% if screen_type.value == 'input' %}
-                                <div class="col-12 col-md-6 mb-3">
+                                <div class="col-12 col-md-6">
                                     {% include '../common/modal/exit_button.html' %}
                                 </div>
                             {% endif %}
-                            <div class="col-12 mb-3">
+                            <div class="col-12">
                                 {% include '../common/modal/alert_message.html' %}
                             </div>
                         </div>
@@ -226,8 +226,8 @@
                         <h4>
                             {{ _('Menus') }}
                         </h4>
-                        <div class="row">
-                            <div class="col-12 col-xl-5 mb-3">
+                        <div class="row gy-2 gx-3">
+                            <div class="col-12 col-xl-5">
                                 {{ admin_macros.text_input(
                                     name='menu',
                                     label=_('Links displayed on the screen menu:'),
@@ -236,7 +236,7 @@
                                     data=data, errors=errors
                                 ) }}
                             </div>
-                            <div class="col-12 col-md-6 col-xl-3 mb-3">
+                            <div class="col-12 col-md-6 col-xl-3">
                                 {{ admin_macros.switch_input(
                                     name='menu_link',
                                     label=_('Links to this screen:'),
@@ -245,7 +245,7 @@
                                     data=data, errors=errors
                                 ) }}
                             </div>
-                            <div class="col-12 col-md-6 col-xl-4 mb-3">
+                            <div class="col-12 col-md-6 col-xl-4">
                                 {{ admin_macros.text_input(
                                     name='menu_text',
                                     label=_('Menu link label:'),

@@ -25,7 +25,7 @@
                     {{ _('General') }}
 
                 </h4>
-                <div class="d-flex flex-column gap-2">
+                <div class="d-flex flex-column gap-1">
                     {{ admin_macros.switch_input(
                         name='launch_browser',
                         label='',
@@ -57,7 +57,7 @@
                 <h4>
                     {{ _('Console logs') }}
                 </h4>
-                <div class="row">
+                <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
                             name='console_log_level',
@@ -100,7 +100,7 @@
                 <h4>
                     {{ _('Internationalization') }}
                 </h4>
-                <div class="row">
+                <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
                             name='federation',
@@ -123,7 +123,7 @@
                 <h4>
                     {{ _('Plugins') }}
                 </h4>
-                <div class="row d-fex flex-column gap-2">
+                <div class="row gx-3 d-fex flex-column gap-2">
                     {% for plugin in plugins %}
                         {{ admin_macros.switch_input(
                             name=plugin.form_key,

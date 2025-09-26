@@ -532,9 +532,6 @@ msgstr ""
 msgid "Anonymous"
 msgstr ""
 
-msgid "Any comment on the player (comments are visible only by the arbiters)."
-msgstr ""
-
 msgid "Any number of devices can be controlled by the same display controller."
 msgstr ""
 
@@ -4858,57 +4855,6 @@ msgid "The player with FFE licence number [{ffe_licence_number}] already plays t
 msgstr ""
 
 msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
-msgstr ""
-
-msgid "The player's FIDE ID (do not change)."
-msgstr ""
-
-msgid "The player's FIDE title."
-msgstr ""
-
-msgid "The player's Uniq ID for the French federation (do not change)."
-msgstr ""
-
-msgid "The player's birth date."
-msgstr ""
-
-msgid "The player's club."
-msgstr ""
-
-msgid "The player's email."
-msgstr ""
-
-msgid "The player's federation."
-msgstr ""
-
-msgid "The player's first name."
-msgstr ""
-
-msgid "The player's gender."
-msgstr ""
-
-msgid "The player's last name."
-msgstr ""
-
-msgid "The player's league."
-msgstr ""
-
-msgid "The player's licence number."
-msgstr ""
-
-msgid "The player's licence."
-msgstr ""
-
-msgid "The player's phone number."
-msgstr ""
-
-msgid "The player's tournament."
-msgstr ""
-
-msgid "The price the player already paid."
-msgstr ""
-
-msgid "The price the player pays to register."
 msgstr ""
 
 msgid "The qualification number given by the French Federation is an integer, it is used to connect to the FFE website."
