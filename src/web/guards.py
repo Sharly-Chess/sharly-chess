@@ -131,6 +131,27 @@ class SetPairingParticipationGuard(BaseGuard):
         )
 
 
+class SetPairingParticipationGuard(BaseGuard):
+    """Guard validating if a client can set the participation of a player
+    according to the participation action."""
+
+    AUTH_ACTION_BY_ACTION = {
+        'ZPB': AuthAction.SET_ZPB,
+        'LEAVE': AuthAction.SET_ZPB,
+        'RETURN': AuthAction.SET_ZPB,
+        'HPB': AuthAction.SET_HPB,
+        'PAIR': AuthAction.MANUALLY_PAIR_PLAYERS,
+    }
+
+    def authorize_client(self, client: Client, request: HTMXRequest):
+        action = request.path_params['action']
+        if action not in self.AUTH_ACTION_BY_ACTION:
+            raise NotFoundException(f'Unknown action [{action}].')
+        self._authorize_tournament_action(
+            self.AUTH_ACTION_BY_ACTION[action], client, request
+        )
+
+
 class ViewScreenEntityGuard(BaseGuard, ABC):
     """Base guard for validating viewing a private / public screen entity."""
 
