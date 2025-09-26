@@ -32,6 +32,7 @@ English version below
 - Prise en compte des accents dans la recherche dans la base locale FFE (3.0.2)
 - Correction du tri des joueur·euses sans prénom (3.0.3)
 - Correction de la recherche des joueur·euses avec des prénoms multiples (3.0.3)
+- Correction du classement estimé des joueur·euses créé·es manuellement (3.0.10)
 
 ## Appariements
 
@@ -110,6 +111,7 @@ English version below
 - Accents handling for local FFE database search (3.0.2)
 - Fixed players sort with no firstname (3.0.3)
 - Fixed player search on split names (3.0.3)
+- Fixed estimated ratings for manually created players (3.0.10)
 
 ## Pairings
 
