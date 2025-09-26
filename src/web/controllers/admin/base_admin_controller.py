@@ -8,10 +8,11 @@ from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 
-from common import REQUEST_TIMEOUT
+from common import REQUEST_TIMEOUT, SharlyChessException
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
+from data.loader import EventLoader
 from utils.enum import TournamentRating
 from plugins.manager import plugin_manager
 from web.controllers.base_controller import BaseController, WebContext
@@ -35,8 +36,15 @@ class AdminWebContext(WebContext):
     ):
         super().__init__(request, data=data)
         self.admin_tab: str | None = admin_tab
-        self.admin_event = RequestUtils.get_optional_event(request)
-        self.check_admin_tab()
+        self.admin_event: Event | None = None
+        if event_uniq_id:
+            try:
+                self.admin_event = EventLoader.get(request).load_event(event_uniq_id)
+            except SharlyChessException as sce:
+                raise NotFoundException(f'Event [{event_uniq_id}] not found.') from sce
+            else:
+                RequestUtils.get_optional_event(request)
+            self.check_admin_tab()
 
     def get_admin_event(self) -> Event:
         assert self.admin_event is not None

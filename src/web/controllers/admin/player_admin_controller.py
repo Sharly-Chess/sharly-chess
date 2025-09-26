@@ -53,7 +53,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
 )
 from web.controllers.base_controller import WebContext
-from web.guards import TournamentActionGuard, EventGuard
+from web.guards import EventGuard, ActionGuard
 from web.messages import Message
 from web.session import SessionHandler
 
@@ -145,7 +145,7 @@ class PlayerAdminController(BaseEventAdminController):
 
     guards = [
         EventGuard(),
-        TournamentActionGuard(AuthAction.VIEW_PLAYERS_TAB),
+        ActionGuard(AuthAction.VIEW_PLAYERS_TAB),
     ]
 
     @classmethod

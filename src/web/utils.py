@@ -134,6 +134,13 @@ class RequestUtils:
         request.state[cls.REQUEST_TOURNAMENT_ATTR] = tournament
         return tournament
 
+    @classmethod
+    def get_optional_tournament(cls, request: HTMXRequest) -> Tournament | None:
+        try:
+            return cls.get_tournament(request)
+        except ValidationException:
+            return None
+
     REQUEST_BOARD_ATTR: str = 'sharly_chess_board'
     BOARD_INDEX_PARAM: str = 'board_id'
     ROUND_PARAM: str = 'round'

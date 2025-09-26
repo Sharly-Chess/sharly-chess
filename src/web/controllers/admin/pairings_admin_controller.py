@@ -323,7 +323,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
 class PairingsAdminController(BaseEventAdminController):
     guards = [
         EventGuard(),
-        TournamentActionGuard(AuthAction.VIEW_PAIRINGS_TAB),
+        TournamentActionGuard(AuthAction.VIEW_PAIRINGS_TAB, optional=True),
     ]
 
     @classmethod

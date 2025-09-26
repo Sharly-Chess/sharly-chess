@@ -69,12 +69,24 @@ class ActionGuard(BaseGuard):
         self._authorize_action(self.action, client)
 
 
-class TournamentActionGuard(ActionGuard):
+class TournamentActionGuard(BaseGuard):
     """Guard validating if an action is allowed for the client on a tournament.
-    requires: event_uniq_id, tournament_id"""
+    The *optional* param falls back to an ActionGuard if no tournament is provided.
+    Useful to handle tournament based controllers with a default tournament value (ex: pairings, prizes).
+    requires: event_uniq_id, tournament_id (only if *optional* == False)"""
+
+    def __init__(self, action: AuthAction, optional: bool = False):
+        self.action = action
+        self.optional = optional
 
     def authorize_client(self, client: Client, request: HTMXRequest):
-        self._authorize_tournament_action(self.action, client, request)
+        if self.optional:
+            if RequestUtils.get_optional_tournament(request):
+                self._authorize_tournament_action(self.action, client, request)
+            else:
+                self._authorize_action(self.action, client)
+        else:
+            self._authorize_tournament_action(self.action, client, request)
 
 
 class EventGuard(BaseGuard):
