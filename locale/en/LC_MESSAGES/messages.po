@@ -1995,6 +1995,9 @@ msgstr ""
 msgid "FFE Licence"
 msgstr ""
 
+msgid "FFE Licence type"
+msgstr ""
+
 msgid "FFE Uniq ID:"
 msgstr ""
 
@@ -2713,9 +2716,6 @@ msgid "Lic."
 msgstr ""
 
 msgid "Licence number:"
-msgstr ""
-
-msgid "Licence type"
 msgstr ""
 
 msgid "Licence types"

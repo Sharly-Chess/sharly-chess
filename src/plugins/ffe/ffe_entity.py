@@ -484,7 +484,7 @@ class FfeLicencePlayerFilter(PlayerFilter):
 
     @staticmethod
     def static_name() -> str:
-        return _('Licence type')
+        return _('FFE Licence type')
 
     @staticmethod
     def available_options() -> list[type[PlayerFilterOption]]:
