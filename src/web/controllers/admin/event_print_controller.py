@@ -9,6 +9,7 @@ import urllib
 
 from common.exception import OptionError
 from common.i18n import _
+from data.access_levels.actions import AuthAction
 from data.player import plugin_manager
 from data.print_documents import (
     PrintDocument,
@@ -27,10 +28,16 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
 )
+from web.guards import EventGuard, ActionGuard
 from web.session import SessionHandler
 
 
 class EventPrintController(BaseEventAdminController):
+    guards = [
+        EventGuard(),
+        ActionGuard(AuthAction.PRINT),
+    ]
+
     @classmethod
     def _admin_print_render(
         cls,
@@ -103,7 +110,7 @@ class EventPrintController(BaseEventAdminController):
         tournament_id: int | None = None,
         round: int | None = None,
     ) -> Template:
-        web_context = BaseEventAdminWebContext(request, event_uniq_id)
+        web_context = BaseEventAdminWebContext(request)
         tournament_ids = web_context.default_tournament_for_print_modal(tournament_id)
 
         template_context = self._print_modal_context(
@@ -131,11 +138,7 @@ class EventPrintController(BaseEventAdminController):
         event_uniq_id: str,
     ) -> Template:
         flat_data = WebContext.flatten_list_data(data)
-        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            data=flat_data,
-        )
+        web_context = BaseEventAdminWebContext(request)
 
         errors: dict[str, str] = {}
 
@@ -214,15 +217,10 @@ class EventPrintController(BaseEventAdminController):
     async def htmx_tournament_print_view(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         document: str,
         options: str | None = None,
     ) -> Template:
-        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            data=None,
-        )
+        web_context = BaseEventAdminWebContext(request)
         document_type = PrintDocumentManager.get_type(document)
         option_data: dict[str, str] = {}
         if options:

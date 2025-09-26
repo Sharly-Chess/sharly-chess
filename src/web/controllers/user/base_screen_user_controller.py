@@ -125,13 +125,8 @@ class DisplayControllerUserWebContext(ScreenEntityUserWebContext):
 
 
 class BasicScreenOrFamilyUserWebContext(ScreenUserWebContext):
-    def __init__(
-        self,
-        request: HTMXRequest,
-    ):
-        super().__init__(
-            request,
-        )
+    def __init__(self, request: HTMXRequest):
+        super().__init__(request)
         self.family: Family | None = None
         if ':' in self.screen.uniq_id:
             family_uniq_id: str = self.screen.uniq_id.split(':')[0]
@@ -150,8 +145,7 @@ class BasicScreenOrFamilyUserWebContext(ScreenUserWebContext):
 class BaseScreenUserController(BaseUserController):
     @classmethod
     def _user_screen_render(
-        cls,
-        web_context: ScreenEntityUserWebContext,
+        cls, web_context: ScreenEntityUserWebContext
     ) -> HTMXTemplate:
         # Allow plugin to provide extra columns
         per_plugin_columns: Iterable[Iterable[ExtraColumn]] = []

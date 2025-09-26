@@ -7,14 +7,12 @@ import time
 from datetime import datetime, date
 from logging import Logger
 from pathlib import Path
-from typing import Annotated, Any
+from typing import Any
 
 from httpdate.httpdate import httpdate_to_unixtime, unixtime_to_httpdate
 from litestar.datastructures import UploadFile
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.controller import Controller
-from litestar.enums import RequestEncodingType
-from litestar.params import Body
 from litestar.response import Template
 
 from common import check_rgb_str, DEVEL_ENV
@@ -43,17 +41,8 @@ class WebContext:
     Web contexts are used by controllers to get the context of the request based on the payload data received.
     """
 
-    def __init__(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ]
-        | None = None,
-    ):
+    def __init__(self, request: HTMXRequest):
         self.request: HTMXRequest = request
-        self.data: dict[str, str] | None = data
         # sets the session locale to the thread
         set_locale(SessionHandler.get_session_locale(request))
         if request.client:

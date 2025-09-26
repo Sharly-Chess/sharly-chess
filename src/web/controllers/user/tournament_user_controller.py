@@ -31,13 +31,8 @@ from web.utils import RequestUtils
 
 
 class TournamentUserWebContext(ScreenUserWebContext):
-    def __init__(
-        self,
-        request: HTMXRequest,
-    ):
-        super().__init__(
-            request,
-        )
+    def __init__(self, request: HTMXRequest):
+        super().__init__(request)
         self.tournament: Tournament = RequestUtils.get_tournament(request)
 
     @property
@@ -60,10 +55,7 @@ class BoardUserWebContext(TournamentUserWebContext):
 
 
 class ResultUserWebContext(BoardUserWebContext):
-    def __init__(
-        self,
-        request: HTMXRequest,
-    ):
+    def __init__(self, request: HTMXRequest):
         super().__init__(request)
         self.board = RequestUtils.get_board(request)
         self.round = self.board.round
@@ -71,10 +63,7 @@ class ResultUserWebContext(BoardUserWebContext):
 
 
 class PlayerUserWebContext(TournamentUserWebContext):
-    def __init__(
-        self,
-        request: HTMXRequest,
-    ):
+    def __init__(self, request: HTMXRequest):
         super().__init__(request)
         self.player: Player = RequestUtils.get_player(request)
         self.board: Board | None = (
@@ -102,12 +91,8 @@ class CheckInUserController(BaseInputUserController):
     @get(
         path='/user/checkin-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
         name='user-checkin-modal',
-        guards=[TournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
-    async def htmx_user_checkin_modal(
-        self,
-        request: HTMXRequest,
-    ) -> Template:
+    async def htmx_user_checkin_modal(self, request: HTMXRequest) -> Template:
         web_context: PlayerUserWebContext = PlayerUserWebContext(
             request,
         )
@@ -146,11 +131,7 @@ class CheckInUserController(BaseInputUserController):
 
 
 class IllegalMoveUserController(BaseInputUserController):
-    def _delete_or_add_illegal_move(
-        self,
-        request: HTMXRequest,
-        add: bool,
-    ) -> Template:
+    def _delete_or_add_illegal_move(self, request: HTMXRequest, add: bool) -> Template:
         player_web_context = PlayerUserWebContext(request)
 
         if add:
@@ -215,9 +196,7 @@ class ResultUserController(BaseInputUserController):
         request: HTMXRequest,
         channels: ChannelsPlugin,
     ) -> Template:
-        result_web_context: ResultUserWebContext = ResultUserWebContext(
-            request,
-        )
+        result_web_context = ResultUserWebContext(request)
         assert result_web_context.board.id is not None
         if result_web_context.result == Result.NO_RESULT:
             with suppress(ValueError):
@@ -238,11 +217,7 @@ class ResultUserController(BaseInputUserController):
             result_web_context.round,
             result_web_context.board.id,
         )
-        web_context: BasicScreenOrFamilyUserWebContext = (
-            BasicScreenOrFamilyUserWebContext(
-                request,
-            )
-        )
+        web_context = BasicScreenOrFamilyUserWebContext(request)
         return self._user_screen_render(web_context)
 
     @put(
@@ -256,10 +231,7 @@ class ResultUserController(BaseInputUserController):
         request: HTMXRequest,
         channels: ChannelsPlugin,
     ) -> Template:
-        return self._user_update_result(
-            request,
-            channels=channels,
-        )
+        return self._user_update_result(request, channels=channels)
 
     @delete(
         path='/user/delete-result/{event_uniq_id:str}/{screen_uniq_id:str}/'
@@ -273,7 +245,4 @@ class ResultUserController(BaseInputUserController):
         request: HTMXRequest,
         channels: ChannelsPlugin,
     ) -> Template:
-        return self._user_update_result(
-            request,
-            channels=channels,
-        )
+        return self._user_update_result(request, channels=channels)

@@ -22,7 +22,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
 )
 from web.controllers.base_controller import WebContext
-from web.guards import EventGuard, ActionGuard
+from web.guards import EventGuard, ActionGuard, ManageScreenEntityGuard
 from web.messages import Message
 from web.session import SessionHandler
 from web.utils import RequestUtils
@@ -59,9 +59,8 @@ class RotatorAdminController(BaseEventAdminController):
     guards = [
         EventGuard(),
         ActionGuard(AuthAction.VIEW_PUBLIC_SCREENS),
+        ManageScreenEntityGuard(RequestUtils.ROTATOR_ID_PARAM),
     ]
-
-    manage_guards = [ActionGuard(AuthAction.MANAGE_SCREENS)]
 
     @classmethod
     def _admin_event_rotator_render(
@@ -170,7 +169,6 @@ class RotatorAdminController(BaseEventAdminController):
     @get(
         path='/admin/rotator-modal/create/{event_uniq_id:str}',
         name='admin-rotator-create-modal',
-        guards=manage_guards,
     )
     async def htmx_admin_rotator_create_modal(
         self,
@@ -186,7 +184,6 @@ class RotatorAdminController(BaseEventAdminController):
     @get(
         path='/admin/rotator-modal/update/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-update-modal',
-        guards=manage_guards,
     )
     async def htmx_admin_rotator_update_modal(
         self,
@@ -201,7 +198,6 @@ class RotatorAdminController(BaseEventAdminController):
     @get(
         path='/admin/rotator-modal/clone/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-clone-modal',
-        guards=manage_guards,
     )
     async def htmx_admin_rotator_clone_modal(
         self,
@@ -218,7 +214,6 @@ class RotatorAdminController(BaseEventAdminController):
     @get(
         path='/admin/rotator-modal/delete/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-delete-modal',
-        guards=manage_guards,
     )
     async def htmx_admin_rotator_delete_modal(
         self,
@@ -232,7 +227,6 @@ class RotatorAdminController(BaseEventAdminController):
     @get(
         path='/admin/rotator-screens-modal/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-screens-modal',
-        guards=manage_guards,
     )
     async def htmx_admin_rotator_screens_modal(
         self,
@@ -283,7 +277,7 @@ class RotatorAdminController(BaseEventAdminController):
     @post(
         path='/admin/rotator-create/{event_uniq_id:str}',
         name='admin-rotator-create',
-        guards=manage_guards,
+        guards=[ActionGuard(AuthAction.MANAGE_SCREENS)],
     )
     async def htmx_admin_rotator_create(
         self,
@@ -315,7 +309,6 @@ class RotatorAdminController(BaseEventAdminController):
     @post(
         path='/admin/rotator-clone/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-clone',
-        guards=manage_guards,
     )
     async def htmx_admin_rotator_clone(
         self,
@@ -351,7 +344,6 @@ class RotatorAdminController(BaseEventAdminController):
     @patch(
         path='/admin/rotator-update/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-update',
-        guards=manage_guards,
     )
     async def htmx_admin_rotator_update(
         self,
@@ -389,7 +381,6 @@ class RotatorAdminController(BaseEventAdminController):
     @delete(
         path='/admin/rotator-delete/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-delete',
-        guards=manage_guards,
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_rotator_delete(
@@ -412,7 +403,6 @@ class RotatorAdminController(BaseEventAdminController):
             '{rotator_id:int}/{rotating_screen_id:int}'
         ),
         name='admin-rotator-screen-delete',
-        guards=manage_guards,
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_rotator_screen_delete(
@@ -433,7 +423,6 @@ class RotatorAdminController(BaseEventAdminController):
     @patch(
         path='/admin/rotator-reorder-screens/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-reorder-screens',
-        guards=manage_guards,
     )
     async def htmx_admin_rotator_reorder_screens(
         self,
@@ -453,7 +442,6 @@ class RotatorAdminController(BaseEventAdminController):
     @post(
         path='/admin/rotating-screens-create/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotating-screens-create',
-        guards=manage_guards,
     )
     async def htmx_admin_rotating_screens_create(
         self,

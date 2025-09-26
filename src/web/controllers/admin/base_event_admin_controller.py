@@ -1,10 +1,8 @@
 import logging
 from functools import cached_property
-from typing import Annotated, Any
+from typing import Any
 
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
-from litestar.enums import RequestEncodingType
-from litestar.params import Body
 
 from common.i18n import _
 from data.access_levels.client import Client
@@ -27,18 +25,8 @@ from web.session import SessionHandler
 
 
 class BaseEventAdminWebContext(AdminWebContext):
-    def __init__(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str | None = None,
-        data: Annotated[
-            dict[str, str] | None,
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ] = None,
-    ):
-        super().__init__(
-            request, event_uniq_id=event_uniq_id, data=data, admin_tab=None
-        )
+    def __init__(self, request: HTMXRequest, reload_event: bool = False):
+        super().__init__(request, reload_event=reload_event)
 
         # tracks the visit of the client
         ClientTracker().track_client(

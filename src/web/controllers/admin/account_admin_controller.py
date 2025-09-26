@@ -11,6 +11,7 @@ from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _
 from data.access_levels.access_levels import AccessLevel, AccessLevelScope
+from data.access_levels.actions import AuthAction
 from data.access_levels.manager import AccessLevelManager
 from data.account import Account, Permission
 from data.player import Player
@@ -21,38 +22,26 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
 )
 from web.controllers.base_controller import WebContext
+from web.guards import EventGuard, ActionGuard, ManageAccountGuard
 from web.messages import Message
 from web.session import SessionHandler
+from web.utils import RequestUtils
 
 
 class AccountAdminWebContext(BaseEventAdminWebContext):
-    def __init__(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        account_id: int | None = None,
-        access_level: str | None = None,
-    ):
-        super().__init__(
-            request,
-            data=None,
-            event_uniq_id=event_uniq_id,
-        )
+    def __init__(self, request: HTMXRequest):
+        super().__init__(request)
         assert self.admin_event is not None
-        self.admin_account: Account | None = None
+        self.admin_account: Account | None = RequestUtils.get_optional_account(request)
         self.admin_permission: Permission | None = None
-        if account_id:
-            try:
-                self.admin_account = self.admin_event.accounts_by_id[account_id]
-            except KeyError:
-                raise NotFoundException(f'Account [{account_id}] not found.')
+        access_level = RequestUtils.get_optional_access_level(request)
         if access_level:
             assert self.admin_account is not None
             self.admin_permission = next(
                 (
                     permission
                     for permission in self.admin_account.permissions
-                    if permission.access_level.id == access_level
+                    if permission.access_level == access_level
                 ),
                 None,
             )
@@ -83,6 +72,12 @@ class AccountAdminWebContext(BaseEventAdminWebContext):
 
 
 class AccountAdminController(BaseEventAdminController):
+    guards = [
+        EventGuard(),
+        ActionGuard(AuthAction.MANAGE_ACCOUNTS),
+        ManageAccountGuard(),
+    ]
+
     @classmethod
     def admin_event_account_render(
         cls,
@@ -100,16 +95,13 @@ class AccountAdminController(BaseEventAdminController):
     async def htmx_admin_event_accounts_tab(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         admin_accounts_show_details: bool | None,
     ) -> Template:
         if admin_accounts_show_details is not None:
             SessionHandler.set_session_admin_accounts_show_details(
                 request, admin_accounts_show_details
             )
-        return self.admin_event_account_render(
-            AccountAdminWebContext(request, event_uniq_id)
-        )
+        return self.admin_event_account_render(AccountAdminWebContext(request))
 
     # --------------------------------------------------------------------------
     # Accounts
@@ -155,12 +147,8 @@ class AccountAdminController(BaseEventAdminController):
         path='/admin/account-modal/create/{event_uniq_id:str}',
         name='admin-account-create-modal',
     )
-    async def htmx_admin_account_create_modal(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-    ) -> Template:
-        web_context = AccountAdminWebContext(request, event_uniq_id)
+    async def htmx_admin_account_create_modal(self, request: HTMXRequest) -> Template:
+        web_context = AccountAdminWebContext(request)
         template_context = self._account_form_modal_context(FormAction.CREATE, {})
         return self.admin_event_account_render(web_context, template_context)
 
@@ -168,13 +156,8 @@ class AccountAdminController(BaseEventAdminController):
         path='/admin/account-modal/update/{event_uniq_id:str}/{account_id:int}',
         name='admin-account-update-modal',
     )
-    async def htmx_admin_account_update_modal(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        account_id: int,
-    ) -> Template:
-        web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
+    async def htmx_admin_account_update_modal(self, request: HTMXRequest) -> Template:
+        web_context = AccountAdminWebContext(request)
         template_context = self._account_form_modal_context(
             FormAction.UPDATE,
             self._account_form_data_from_account(web_context.get_admin_account()),
@@ -185,13 +168,8 @@ class AccountAdminController(BaseEventAdminController):
         path='/admin/account-modal/clone/{event_uniq_id:str}/{account_id:int}',
         name='admin-account-clone-modal',
     )
-    async def htmx_admin_account_clone_modal(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        account_id: int,
-    ) -> Template:
-        web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
+    async def htmx_admin_account_clone_modal(self, request: HTMXRequest) -> Template:
+        web_context = AccountAdminWebContext(request)
         account = web_context.get_admin_account()
         template_context = self._account_form_modal_context(
             FormAction.CLONE,
@@ -203,14 +181,9 @@ class AccountAdminController(BaseEventAdminController):
         path='/admin/account-modal/delete/{event_uniq_id:str}/{account_id:int}',
         name='admin-account-delete-modal',
     )
-    async def htmx_admin_account_delete_modal(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        account_id: int,
-    ) -> Template:
+    async def htmx_admin_account_delete_modal(self, request: HTMXRequest) -> Template:
         return self.admin_event_account_render(
-            AccountAdminWebContext(request, event_uniq_id, account_id),
+            AccountAdminWebContext(request),
             {'modal': 'account_delete'},
         )
 
@@ -219,11 +192,9 @@ class AccountAdminController(BaseEventAdminController):
         name='admin-account-create-defaults',
     )
     async def htmx_admin_account_create_defaults(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
+        self, request: HTMXRequest
     ) -> Template:
-        web_context = AccountAdminWebContext(request, event_uniq_id)
+        web_context = AccountAdminWebContext(request)
         web_context.get_admin_event().create_predefined_accounts()
         Message.success(request, _('Default accounts have been created.'))
         return self.admin_event_account_render(web_context)
@@ -270,13 +241,12 @@ class AccountAdminController(BaseEventAdminController):
     async def htmx_admin_account_create(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
-        web_context = AccountAdminWebContext(request, event_uniq_id)
+        web_context = AccountAdminWebContext(request)
         if errors := self._validate_account_form_data(
             data, web_context, FormAction.CREATE
         ):
@@ -311,14 +281,12 @@ class AccountAdminController(BaseEventAdminController):
     async def htmx_admin_account_update(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        account_id: int,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
-        web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
+        web_context = AccountAdminWebContext(request)
         if errors := self._validate_account_form_data(
             data, web_context, FormAction.UPDATE
         ):
@@ -352,13 +320,8 @@ class AccountAdminController(BaseEventAdminController):
         name='admin-account-delete',
         status_code=HTTP_200_OK,
     )
-    async def htmx_admin_account_delete(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        account_id: int,
-    ) -> Template:
-        web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
+    async def htmx_admin_account_delete(self, request: HTMXRequest) -> Template:
+        web_context = AccountAdminWebContext(request)
         event = web_context.get_admin_event()
         account = web_context.get_admin_account()
         event.delete_account(account)
@@ -376,8 +339,7 @@ class AccountAdminController(BaseEventAdminController):
 
     @classmethod
     def _permissions_modal_context(
-        cls,
-        web_context: AccountAdminWebContext,
+        cls, web_context: AccountAdminWebContext
     ) -> dict[str, Any]:
         return {
             'modal': 'account_permissions',
@@ -386,8 +348,7 @@ class AccountAdminController(BaseEventAdminController):
 
     @classmethod
     def _selectable_access_levels(
-        cls,
-        web_context: AccountAdminWebContext,
+        cls, web_context: AccountAdminWebContext
     ) -> list[AccessLevel]:
         return cls._permission_form_modal_context(web_context, FormAction.CREATE)[
             'selectable_access_levels'
@@ -459,12 +420,9 @@ class AccountAdminController(BaseEventAdminController):
         name='admin-account-permissions-modal',
     )
     async def htmx_admin_account_permissions_modal(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        account_id: int,
+        self, request: HTMXRequest
     ) -> Template:
-        web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
+        web_context = AccountAdminWebContext(request)
         return self.admin_event_account_render(
             web_context, self._permissions_modal_context(web_context)
         )
@@ -477,12 +435,9 @@ class AccountAdminController(BaseEventAdminController):
         name='admin-account-permission-create-modal',
     )
     async def htmx_admin_account_permission_create_modal(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        account_id: int,
+        self, request: HTMXRequest
     ) -> Template:
-        web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
+        web_context = AccountAdminWebContext(request)
         template_context = self._permission_form_modal_context(
             web_context, FormAction.CREATE
         )
@@ -496,15 +451,9 @@ class AccountAdminController(BaseEventAdminController):
         name='admin-account-permission-update-modal',
     )
     async def htmx_admin_account_permission_update_modal(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        account_id: int,
-        access_level: str,
+        self, request: HTMXRequest
     ) -> Template:
-        web_context = AccountAdminWebContext(
-            request, event_uniq_id, account_id, access_level
-        )
+        web_context = AccountAdminWebContext(request)
         permission = web_context.get_admin_permission()
         data = WebContext.values_dict_to_form_data(
             {
@@ -573,14 +522,12 @@ class AccountAdminController(BaseEventAdminController):
     async def htmx_admin_account_permission_create(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        account_id: int,
         data: Annotated[
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
-        web_context = AccountAdminWebContext(request, event_uniq_id, account_id)
+        web_context = AccountAdminWebContext(request)
         event = web_context.get_admin_event()
         account = web_context.get_admin_account()
         flat_data = WebContext.flatten_list_data(data)
@@ -593,7 +540,7 @@ class AccountAdminController(BaseEventAdminController):
             WebContext.form_data_to_str(flat_data, 'access_level') or ''
         )
         stored_permission = StoredPermission(
-            account_id=account_id, access_level=access_level.id
+            account_id=account.id, access_level=access_level.id
         )
         if access_level.scope == AccessLevelScope.TOURNAMENT:
             stored_permission.tournament_ids = WebContext.form_data_to_list_int(
@@ -615,17 +562,12 @@ class AccountAdminController(BaseEventAdminController):
     async def htmx_admin_account_permission_update(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        account_id: int,
-        access_level: str,
         data: Annotated[
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
-        web_context = AccountAdminWebContext(
-            request, event_uniq_id, account_id, access_level
-        )
+        web_context = AccountAdminWebContext(request)
         event = web_context.get_admin_event()
         account = web_context.get_admin_account()
         permission = web_context.get_admin_permission()
@@ -639,7 +581,7 @@ class AccountAdminController(BaseEventAdminController):
             WebContext.form_data_to_str(flat_data, 'access_level') or ''
         )
         stored_permission = StoredPermission(
-            account_id=account_id, access_level=access_level_.id
+            account_id=account.id, access_level=access_level_.id
         )
         if access_level_.scope == AccessLevelScope.TOURNAMENT:
             stored_permission.tournament_ids = WebContext.form_data_to_list_int(
@@ -660,15 +602,9 @@ class AccountAdminController(BaseEventAdminController):
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_account_permission_delete(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        account_id: int,
-        access_level: str,
+        self, request: HTMXRequest
     ) -> Template:
-        web_context = AccountAdminWebContext(
-            request, event_uniq_id, account_id, access_level
-        )
+        web_context = AccountAdminWebContext(request)
         event = web_context.get_admin_event()
         account = web_context.get_admin_account()
         permission = web_context.get_admin_permission()

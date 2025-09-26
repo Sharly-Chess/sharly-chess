@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import cast
 
 from litestar.connection.base import ASGIConnection
-from litestar.exceptions import PermissionDeniedException
+from litestar.exceptions import PermissionDeniedException, NotFoundException
 from litestar.handlers import BaseRouteHandler
 from litestar_htmx import HTMXRequest
 
@@ -69,24 +69,16 @@ class ActionGuard(BaseGuard):
         self._authorize_action(self.action, client)
 
 
-class TournamentActionGuard(BaseGuard):
+class TournamentActionGuard(ActionGuard):
     """Guard validating if an action is allowed for the client on a tournament.
-    The *optional* param falls back to an ActionGuard if no tournament is provided.
-    Useful to handle tournament based controllers with a default tournament value (ex: pairings, prizes).
-    requires: event_uniq_id, tournament_id (only if *optional* == False)"""
-
-    def __init__(self, action: AuthAction, optional: bool = False):
-        self.action = action
-        self.optional = optional
+    Falls back to an ActionGuard if no tournament is provided.
+    optional: event_uniq_id, tournament_id."""
 
     def authorize_client(self, client: Client, request: HTMXRequest):
-        if self.optional:
-            if RequestUtils.get_optional_tournament(request):
-                self._authorize_tournament_action(self.action, client, request)
-            else:
-                self._authorize_action(self.action, client)
-        else:
+        if RequestUtils.get_optional_tournament(request):
             self._authorize_tournament_action(self.action, client, request)
+        else:
+            self._authorize_action(self.action, client)
 
 
 class EventGuard(BaseGuard):
@@ -118,6 +110,27 @@ class SetResultGuard(BaseGuard):
             )
         elif result in Result.user_imputable_results():
             self._authorize_tournament_action(AuthAction.ENTER_RESULTS, client, request)
+
+
+class SetPairingParticipationGuard(BaseGuard):
+    """Guard validating if a client can set the participation of a player
+    according to the participation action."""
+
+    AUTH_ACTION_BY_ACTION = {
+        'ZPB': AuthAction.SET_ZPB,
+        'LEAVE': AuthAction.SET_ZPB,
+        'RETURN': AuthAction.SET_ZPB,
+        'HPB': AuthAction.SET_HPB,
+        'PAIR': AuthAction.MANUALLY_PAIR_PLAYERS,
+    }
+
+    def authorize_client(self, client: Client, request: HTMXRequest):
+        action = request.path_params['action']
+        if action not in self.AUTH_ACTION_BY_ACTION:
+            raise NotFoundException(f'Unknown action [{action}].')
+        self._authorize_tournament_action(
+            self.AUTH_ACTION_BY_ACTION[action], client, request
+        )
 
 
 class ViewScreenEntityGuard(BaseGuard, ABC):
@@ -160,3 +173,36 @@ class ViewDisplayControllerGuard(ViewScreenEntityGuard):
     @staticmethod
     def is_public(request: HTMXRequest) -> bool:
         return RequestUtils.get_display_controller(request).public
+
+
+class ManageScreenEntityGuard(BaseGuard):
+    """Guard validating the management of a screen entity.
+    optional: {path_param}."""
+
+    def __init__(self, path_param: str):
+        self.path_param = path_param
+
+    def authorize_client(self, client: Client, request: HTMXRequest):
+        if self.path_param in request.path_params:
+            self._authorize_action(AuthAction.MANAGE_SCREENS, client)
+
+
+class ManageAccountGuard(BaseGuard):
+    """Guard validating if an account can be managed by the client.
+    optional: account_id, access_level"""
+
+    def authorize_client(self, client: Client, request: HTMXRequest):
+        account = RequestUtils.get_optional_account(request)
+        if not account:
+            return
+        if not client.can_manage_account(account.id):
+            raise PermissionDeniedException(
+                f'Client [{client.account.full_name}] can not '
+                f'manage account [{account.full_name}].'
+            )
+        access_level = RequestUtils.get_optional_access_level(request)
+        if access_level:
+            raise PermissionDeniedException(
+                f'Client [{client.account.full_name}] can not '
+                f'manage access level [{access_level.id}].'
+            )

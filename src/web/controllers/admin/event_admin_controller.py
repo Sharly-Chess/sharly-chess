@@ -13,6 +13,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
 )
+from web.guards import EventGuard
 from web.urls import (
     admin_event_pairings_url,
     admin_event_players_url,
@@ -21,6 +22,8 @@ from web.urls import (
 
 
 class EventAdminController(BaseEventAdminController):
+    guards = [EventGuard()]
+
     @classmethod
     def _admin_event_render(
         cls,
@@ -40,11 +43,7 @@ class EventAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
     ) -> Template | Redirect:
-        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            data=None,
-        )
+        web_context = BaseEventAdminWebContext(request)
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
         started_tournaments: list[Tournament] = [

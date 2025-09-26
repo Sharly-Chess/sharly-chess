@@ -7,7 +7,10 @@ from litestar.exceptions import (
 from litestar_htmx import HTMXRequest
 
 from common.exception import SharlyChessException
+from data.access_levels.access_levels import AccessLevel
 from data.access_levels.client import Client
+from data.access_levels.manager import AccessLevelManager
+from data.account import Account
 from data.board import Board
 from data.display_controller import DisplayController
 from data.event import Event
@@ -33,8 +36,8 @@ class RequestUtils:
     EVENT_UNIQ_ID_PARAM: str = 'event_uniq_id'
 
     @classmethod
-    def get_event(cls, request: HTMXRequest) -> Event:
-        if cls.REQUEST_EVENT_ATTR in request.state:
+    def get_event(cls, request: HTMXRequest, reload: bool = False) -> Event:
+        if cls.REQUEST_EVENT_ATTR in request.state and not reload:
             return request.state[cls.REQUEST_EVENT_ATTR]
         event_uniq_id = cls._get_path_param(request, cls.EVENT_UNIQ_ID_PARAM)
         try:
@@ -45,9 +48,11 @@ class RequestUtils:
         return event
 
     @classmethod
-    def get_optional_event(cls, request: HTMXRequest) -> Event | None:
+    def get_optional_event(
+        cls, request: HTMXRequest, reload: bool = False
+    ) -> Event | None:
         try:
-            return cls.get_event(request)
+            return cls.get_event(request, reload)
         except ValidationException:
             return None
 
@@ -198,3 +203,47 @@ class RequestUtils:
         except KeyError:
             raise NotFoundException(f'Player [{player_id}] not found.')
         return request.state[cls.REQUEST_PLAYER_ATTR]
+
+    REQUEST_ACCOUNT_ATTR: str = 'sharly_chess_account'
+    ACCOUNT_ID_PARAM: str = 'account_id'
+
+    @classmethod
+    def get_account(cls, request: HTMXRequest) -> Account:
+        if cls.REQUEST_ACCOUNT_ATTR in request.state:
+            return request.state[cls.REQUEST_ACCOUNT_ATTR]
+        account_id = cls._get_path_param(request, cls.ACCOUNT_ID_PARAM)
+        try:
+            account = cls.get_event(request).accounts_by_id[account_id]
+        except KeyError:
+            raise NotFoundException(f'Account [{account_id}] not found.')
+        request.state[cls.REQUEST_ACCOUNT_ATTR] = account
+        return account
+
+    @classmethod
+    def get_optional_account(cls, request: HTMXRequest) -> Account | None:
+        try:
+            return cls.get_account(request)
+        except ValidationException:
+            return None
+
+    REQUEST_ACCESS_LEVEL_ATTR: str = 'sharly_chess_access_level'
+    ACCESS_LEVEL_PARAM: str = 'access_level'
+
+    @classmethod
+    def get_access_level(cls, request: HTMXRequest) -> AccessLevel:
+        if cls.REQUEST_ACCESS_LEVEL_ATTR in request.state:
+            return request.state[cls.REQUEST_ACCESS_LEVEL_ATTR]
+        access_level_id = cls._get_path_param(request, cls.ACCESS_LEVEL_PARAM)
+        try:
+            access_level = AccessLevelManager.get_object(access_level_id)
+        except KeyError:
+            raise NotFoundException(f'Unknown access level [{access_level_id}].')
+        request.state[cls.REQUEST_ACCESS_LEVEL_ATTR] = access_level
+        return access_level
+
+    @classmethod
+    def get_optional_access_level(cls, request: HTMXRequest) -> AccessLevel | None:
+        try:
+            return cls.get_access_level(request)
+        except ValidationException:
+            return None

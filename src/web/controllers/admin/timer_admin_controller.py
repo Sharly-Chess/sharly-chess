@@ -13,6 +13,7 @@ from litestar.status_codes import HTTP_200_OK
 
 from common.sharly_chess_config import SharlyChessConfig
 from common.i18n import _
+from data.access_levels.actions import AuthAction
 from data.timer import Timer, TimerHour
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTimer, StoredTimerHour
@@ -21,6 +22,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
 )
 from web.controllers.base_controller import WebContext
+from web.guards import EventGuard, ActionGuard
 from web.messages import Message
 
 
@@ -28,20 +30,11 @@ class TimerAdminWebContext(BaseEventAdminWebContext):
     def __init__(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         timer_id: int | None = None,
         timer_hour_id: int | None = None,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ]
-        | None = None,
+        reload_event: bool = False,
     ):
-        super().__init__(
-            request,
-            data=data,
-            event_uniq_id=event_uniq_id,
-        )
+        super().__init__(request, reload_event)
         assert self.admin_event is not None
         self.admin_timer: Timer | None = None
         self.admin_timer_hour: TimerHour | None = None
@@ -80,6 +73,11 @@ class TimerAdminWebContext(BaseEventAdminWebContext):
 
 
 class TimerAdminController(BaseEventAdminController):
+    guards = [
+        EventGuard(),
+        ActionGuard(AuthAction.MANAGE_SCREENS),
+    ]
+
     @staticmethod
     def _admin_validate_timer_update_data(
         action: str,
@@ -240,20 +238,19 @@ class TimerAdminController(BaseEventAdminController):
     def _admin_event_timers_render(
         cls,
         request: HTMXRequest,
-        event_uniq_id: str,
         modal: str | None = None,
         action: str | None = None,
         timer_id: int | None = None,
         timer_hour_id: int | None = None,
+        reload_event: bool = False,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
     ) -> Template:
-        web_context: TimerAdminWebContext = TimerAdminWebContext(
+        web_context = TimerAdminWebContext(
             request,
-            event_uniq_id=event_uniq_id,
             timer_id=timer_id,
             timer_hour_id=timer_hour_id,
-            data=data,
+            reload_event=reload_event,
         )
         event = web_context.get_admin_event()
         template_context = web_context.template_context | {
@@ -389,15 +386,8 @@ class TimerAdminController(BaseEventAdminController):
         path='/admin/event/{event_uniq_id:str}/timers',
         name='admin-event-timers-tab',
     )
-    async def htmx_admin_event_timers_tab(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-    ) -> Template:
-        return self._admin_event_timers_render(
-            request,
-            event_uniq_id=event_uniq_id,
-        )
+    async def htmx_admin_event_timers_tab(self, request: HTMXRequest) -> Template:
+        return self._admin_event_timers_render(request)
 
     @get(
         path='/admin/default-timers-modal/{event_uniq_id:str}',
@@ -406,15 +396,8 @@ class TimerAdminController(BaseEventAdminController):
     async def htmx_admin_default_timers_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
     ) -> Template:
-        return self._admin_event_timers_render(
-            request,
-            event_uniq_id=event_uniq_id,
-            modal='default-timers',
-            action=None,
-            timer_id=None,
-        )
+        return self._admin_event_timers_render(request, modal='default-timers')
 
     @patch(
         path='/admin/default-timers-update/{event_uniq_id:str}',
@@ -423,19 +406,12 @@ class TimerAdminController(BaseEventAdminController):
     async def htmx_admin_default_timers_update(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
-        web_context: TimerAdminWebContext = TimerAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            timer_id=None,
-            timer_hour_id=None,
-            data=data,
-        )
+        web_context = TimerAdminWebContext(request)
         event = web_context.get_admin_event()
 
         errors: dict[str, str] = {}
@@ -463,10 +439,7 @@ class TimerAdminController(BaseEventAdminController):
         if errors:
             return self._admin_event_timers_render(
                 request,
-                event_uniq_id=event_uniq_id,
                 modal='default-timers',
-                action=None,
-                timer_id=None,
                 data=data,
                 errors=errors,
             )
@@ -477,7 +450,7 @@ class TimerAdminController(BaseEventAdminController):
         with EventDatabase(event.uniq_id, write=True) as event_database:
             event_database.update_stored_event(stored_event)
 
-        return self._admin_event_timers_render(request, event_uniq_id=event_uniq_id)
+        return self._admin_event_timers_render(request, reload_event=True)
 
     @get(
         path='/admin/timer-modal/create/{event_uniq_id:str}',
@@ -486,14 +459,11 @@ class TimerAdminController(BaseEventAdminController):
     async def htmx_admin_timer_create_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
     ) -> Template:
         return self._admin_event_timers_render(
             request,
-            event_uniq_id=event_uniq_id,
             modal='timer',
             action='create',
-            timer_id=None,
         )
 
     @get(
@@ -503,13 +473,11 @@ class TimerAdminController(BaseEventAdminController):
     async def htmx_admin_timer_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         action: str,
         timer_id: int | None,
     ) -> Template:
         return self._admin_event_timers_render(
             request,
-            event_uniq_id=event_uniq_id,
             modal='timer',
             action=action,
             timer_id=timer_id,
@@ -518,7 +486,6 @@ class TimerAdminController(BaseEventAdminController):
     def _admin_timer_update(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         action: str,
         timer_id: int | None,
         data: Annotated[
@@ -528,13 +495,7 @@ class TimerAdminController(BaseEventAdminController):
     ) -> Template:
         match action:
             case 'update' | 'delete' | 'clone' | 'create':
-                web_context: TimerAdminWebContext = TimerAdminWebContext(
-                    request,
-                    event_uniq_id=event_uniq_id,
-                    timer_id=timer_id,
-                    timer_hour_id=None,
-                    data=data,
-                )
+                web_context = TimerAdminWebContext(request, timer_id=timer_id)
             case _:
                 raise ValueError(f'action=[{action}]')
 
@@ -546,7 +507,6 @@ class TimerAdminController(BaseEventAdminController):
         if stored_timer.errors:
             return self._admin_event_timers_render(
                 request,
-                event_uniq_id=event_uniq_id,
                 modal='timer',
                 action=action,
                 timer_id=timer_id,
@@ -571,10 +531,10 @@ class TimerAdminController(BaseEventAdminController):
                 )
                 return self._admin_event_timers_render(
                     request,
-                    event_uniq_id=event_uniq_id,
                     modal='timer_hours',
                     timer_id=stored_timer.id,
                     timer_hour_id=stored_timer_hour.id,
+                    reload_event=True,
                 )
             case 'update':
                 with EventDatabase(event.uniq_id, write=True) as event_database:
@@ -585,9 +545,7 @@ class TimerAdminController(BaseEventAdminController):
                         timer=stored_timer.name
                     ),
                 )
-                return self._admin_event_timers_render(
-                    request, event_uniq_id=event_uniq_id
-                )
+                return self._admin_event_timers_render(request, reload_event=True)
             case 'delete':
                 timer = web_context.get_admin_timer()
                 with EventDatabase(event.uniq_id, write=True) as event_database:
@@ -596,9 +554,7 @@ class TimerAdminController(BaseEventAdminController):
                     request,
                     _('Timer [{timer}] has been deleted.').format(timer=timer.name),
                 )
-                return self._admin_event_timers_render(
-                    request, event_uniq_id=event_uniq_id
-                )
+                return self._admin_event_timers_render(request, reload_event=True)
             case 'clone':
                 timer = web_context.get_admin_timer()
                 with EventDatabase(event.uniq_id, write=True) as event_database:
@@ -617,9 +573,9 @@ class TimerAdminController(BaseEventAdminController):
 
                 return self._admin_event_timers_render(
                     request,
-                    event_uniq_id=event_uniq_id,
                     modal='timer_hours',
                     timer_id=stored_timer.id,
+                    reload_event=True,
                 )
             case _:
                 raise ValueError(f'action=[{action}]')
@@ -628,7 +584,6 @@ class TimerAdminController(BaseEventAdminController):
     async def htmx_admin_timer_create(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -636,7 +591,6 @@ class TimerAdminController(BaseEventAdminController):
     ) -> Template:
         return self._admin_timer_update(
             request,
-            event_uniq_id=event_uniq_id,
             action='create',
             timer_id=None,
             data=data,
@@ -649,7 +603,6 @@ class TimerAdminController(BaseEventAdminController):
     async def htmx_admin_timer_clone(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         timer_id: int | None,
         data: Annotated[
             dict[str, str],
@@ -658,7 +611,6 @@ class TimerAdminController(BaseEventAdminController):
     ) -> Template:
         return self._admin_timer_update(
             request,
-            event_uniq_id=event_uniq_id,
             action='clone',
             timer_id=timer_id,
             data=data,
@@ -680,7 +632,6 @@ class TimerAdminController(BaseEventAdminController):
     ) -> Template:
         return self._admin_timer_update(
             request,
-            event_uniq_id=event_uniq_id,
             action='update',
             timer_id=timer_id,
             data=data,
@@ -694,7 +645,6 @@ class TimerAdminController(BaseEventAdminController):
     async def htmx_admin_timer_delete(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         timer_id: int | None,
         data: Annotated[
             dict[str, str],
@@ -703,7 +653,6 @@ class TimerAdminController(BaseEventAdminController):
     ) -> Template:
         return self._admin_timer_update(
             request,
-            event_uniq_id=event_uniq_id,
             action='delete',
             timer_id=timer_id,
             data=data,
@@ -716,12 +665,10 @@ class TimerAdminController(BaseEventAdminController):
     async def htmx_admin_timer_hours_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         timer_id: int,
     ) -> Template:
         return self._admin_event_timers_render(
             request,
-            event_uniq_id=event_uniq_id,
             modal='timer_hours',
             timer_id=timer_id,
             timer_hour_id=None,
@@ -734,13 +681,11 @@ class TimerAdminController(BaseEventAdminController):
     async def htmx_admin_timer_hours_hour_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         timer_id: int,
         timer_hour_id: int,
     ) -> Template:
         return self._admin_event_timers_render(
             request,
-            event_uniq_id=event_uniq_id,
             modal='timer_hours',
             timer_id=timer_id,
             timer_hour_id=timer_hour_id,
@@ -749,7 +694,6 @@ class TimerAdminController(BaseEventAdminController):
     def _admin_timer_hours_update(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         timer_id: int,
         timer_hour_id: int | None,
         action: str,
@@ -762,10 +706,8 @@ class TimerAdminController(BaseEventAdminController):
             case 'delete' | 'clone' | 'update' | 'add' | 'reorder':
                 web_context: TimerAdminWebContext = TimerAdminWebContext(
                     request,
-                    event_uniq_id=event_uniq_id,
                     timer_id=timer_id,
                     timer_hour_id=timer_hour_id,
-                    data=data,
                 )
             case _:
                 raise ValueError(f'action=[{action}]')
@@ -801,7 +743,6 @@ class TimerAdminController(BaseEventAdminController):
                     if stored_timer_hour.errors:
                         return self._admin_event_timers_render(
                             request,
-                            event_uniq_id=event_uniq_id,
                             modal='timer_hours',
                             timer_id=timer_id,
                             timer_hour_id=timer_hour_id,
@@ -845,10 +786,10 @@ class TimerAdminController(BaseEventAdminController):
 
         return self._admin_event_timers_render(
             request,
-            event_uniq_id=event_uniq_id,
             modal='timer_hours',
             timer_id=timer_id,
             timer_hour_id=next_timer_hour_id,
+            reload_event=True,
         )
 
     @post(
@@ -858,7 +799,6 @@ class TimerAdminController(BaseEventAdminController):
     async def htmx_admin_timer_hour_add(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         timer_id: int,
         data: Annotated[
             dict[str, str],
@@ -867,7 +807,6 @@ class TimerAdminController(BaseEventAdminController):
     ) -> Template:
         return self._admin_timer_hours_update(
             request,
-            event_uniq_id=event_uniq_id,
             action='add',
             timer_id=timer_id,
             timer_hour_id=None,
@@ -881,7 +820,6 @@ class TimerAdminController(BaseEventAdminController):
     async def htmx_admin_timer_hour_clone(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         timer_id: int,
         timer_hour_id: int,
         data: Annotated[
@@ -891,7 +829,6 @@ class TimerAdminController(BaseEventAdminController):
     ) -> Template:
         return self._admin_timer_hours_update(
             request,
-            event_uniq_id=event_uniq_id,
             action='clone',
             timer_id=timer_id,
             timer_hour_id=timer_hour_id,
@@ -905,7 +842,6 @@ class TimerAdminController(BaseEventAdminController):
     async def htmx_admin_timer_hour_update(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         timer_id: int,
         timer_hour_id: int,
         data: Annotated[
@@ -915,7 +851,6 @@ class TimerAdminController(BaseEventAdminController):
     ) -> Template:
         return self._admin_timer_hours_update(
             request,
-            event_uniq_id=event_uniq_id,
             action='update',
             timer_id=timer_id,
             timer_hour_id=timer_hour_id,
@@ -930,7 +865,6 @@ class TimerAdminController(BaseEventAdminController):
     async def htmx_admin_timer_hour_delete(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         timer_id: int,
         timer_hour_id: int,
         data: Annotated[
@@ -940,7 +874,6 @@ class TimerAdminController(BaseEventAdminController):
     ) -> Template:
         return self._admin_timer_hours_update(
             request,
-            event_uniq_id=event_uniq_id,
             action='delete',
             timer_id=timer_id,
             timer_hour_id=timer_hour_id,
@@ -954,7 +887,6 @@ class TimerAdminController(BaseEventAdminController):
     async def htmx_admin_timer_reorder_hours(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         timer_id: int,
         data: Annotated[
             dict[str, str | list[int]],
@@ -963,7 +895,6 @@ class TimerAdminController(BaseEventAdminController):
     ) -> Template:
         return self._admin_timer_hours_update(
             request,
-            event_uniq_id=event_uniq_id,
             action='reorder',
             timer_id=timer_id,
             timer_hour_id=None,
