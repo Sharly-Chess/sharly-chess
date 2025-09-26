@@ -70,6 +70,7 @@ English version below
 - Correction de l'import du numéro d'homologation depuis Papi (3.0.5)
 - Correction du téléversement des résultats sur le site fédéral (3.0.6)
 - Augmentation du temps d'attente des recherches en ligne (3.0.7)
+- Correction des classements estimés dans l'export Papi et pour le téléversement FFE (3.0.11)
 
 ## ChessEvent
 
@@ -149,6 +150,7 @@ English version below
 - Fixed the import of the Papi homologation number (3.0.5)
 - Fixed a bug preventing results upload (3.0.6)
 - Increased the timeout of online searches (3.0.7)
+- Fix Papi export and FFE upload (3.0.11)
 
 ## ChessEvent
 
