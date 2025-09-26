@@ -22,7 +22,7 @@ from data.pairings.variations import SwissVariation
 from data.print_documents import PlayerSplitter, PrintDocument
 from data.print_documents.documents import PlayerPrintDocument, StatisticsPrintDocument
 from data.print_documents.player_splitters import ClubPlayerSplitter
-from data.criteria.player_filter_options import PlayerFilterOption, ClubsFilterOption
+from data.criteria.player_filter_options import PlayerFilterOption
 from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
 from data.print_documents.qrcode_types import QRCodeType
 from data.tie_breaks import TieBreak
@@ -63,7 +63,8 @@ from plugins.ffe.ffe_entity import (
     LeaguePlayerSplitter,
     NicoisSwissVariation,
     FfeLeaguePlayerFilter,
-    FfeLeaguesFilterOption,
+    FfeLicencePlayerFilter,
+    FfeLicenceFilterOption,
     FfeOnlineDataSource,
 )
 from plugins.ffe.ffe_event_controller import FfeAdminEventController
@@ -991,11 +992,11 @@ class FfePlugin(Plugin):
         league: type[PlayerFilter] = FfeLeaguePlayerFilter
         club: type[PlayerFilter] = ClubPlayerFilter
         PluginUtils.insert_on_equals(player_filter_types, league, club)
+        player_filter_types.append(FfeLicencePlayerFilter)
 
     @hookimpl
     def insert_player_filter_option_types(
         self, player_filter_option_types: list[type['PlayerFilterOption']]
     ):
-        league: type[PlayerFilterOption] = FfeLeaguesFilterOption
-        club: type[PlayerFilterOption] = ClubsFilterOption
-        PluginUtils.insert_on_equals(player_filter_option_types, league, club)
+        licence: type[PlayerFilterOption] = FfeLicenceFilterOption
+        player_filter_option_types.append(licence)

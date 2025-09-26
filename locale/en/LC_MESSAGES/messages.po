@@ -592,6 +592,9 @@ msgstr ""
 msgid "At least one league is expected."
 msgstr ""
 
+msgid "At least one licence type is expected."
+msgstr ""
+
 msgid "At least one rating type is expected."
 msgstr ""
 
@@ -946,6 +949,9 @@ msgid "Choose at least one federation."
 msgstr ""
 
 msgid "Choose at least one league."
+msgstr ""
+
+msgid "Choose at least one licence type."
 msgstr ""
 
 msgid "Choose at least one rating type."
@@ -1989,6 +1995,9 @@ msgstr ""
 msgid "FFE Licence"
 msgstr ""
 
+msgid "FFE Licence type"
+msgstr ""
+
 msgid "FFE Uniq ID:"
 msgstr ""
 
@@ -2709,6 +2718,9 @@ msgstr ""
 msgid "Licence number:"
 msgstr ""
 
+msgid "Licence types"
+msgstr ""
+
 msgid "Licence:"
 msgstr ""
 
@@ -3311,6 +3323,9 @@ msgid "Only include players of these leagues."
 msgstr ""
 
 msgid "Only include players of this gender."
+msgstr ""
+
+msgid "Only include players with one of the selected licence types."
 msgstr ""
 
 msgid "Only one age category is expected with options including other categories."

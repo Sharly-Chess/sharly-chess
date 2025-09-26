@@ -81,6 +81,20 @@ class PlayerFFELicence(IntEnum):
                 raise ValueError(f'Unknown value: {self}')
 
     @property
+    def compact_name(self) -> str:
+        match self:
+            case PlayerFFELicence.NONE:
+                return 'None'
+            case PlayerFFELicence.N:
+                return 'Expired'
+            case PlayerFFELicence.A:
+                return 'A - competition'
+            case PlayerFFELicence.B:
+                return 'B - leisure'
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
     def short_name(self) -> str:
         match self:
             case PlayerFFELicence.NONE:
