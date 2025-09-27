@@ -84,13 +84,13 @@ class PlayerFFELicence(IntEnum):
     def compact_name(self) -> str:
         match self:
             case PlayerFFELicence.NONE:
-                return 'None'
+                return _('None *** FFE licence')
             case PlayerFFELicence.N:
-                return 'Expired'
+                return _('Expired *** FFE licence')
             case PlayerFFELicence.A:
-                return 'A - competition'
+                return _('A - Competition *** FFE licence')
             case PlayerFFELicence.B:
-                return 'B - leisure'
+                return _('B - Leisure *** FFE licence')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
