@@ -8,7 +8,7 @@
 
 <div id="home-content" class="content home-content mt-5">
     <div class="d-grid gap-2 col-auto mx-auto">
-        <div class="dropdown text-center mb-3">
+        <div class="dropdown text-center">
             <i class="bi-translate pe-1"></i>
             <button class="btn btn-secondary dropdown-toggle mx-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <img
@@ -64,7 +64,7 @@
     {% if nav_tab.events|length > 0 %}
         <section class="p-4 my-4">
             <div class="container-fluid" style="--bs-gutter-x: 0;">
-                <div class="row justify-content-center">
+                <div class="row gy-2 gx-3 justify-content-center">
                     {% if nav_tab.events %}
                         {% for event in nav_tab.events %}
                             {% with
@@ -82,7 +82,7 @@
     {% endif %}
 
     <div class="mx-auto text-center" style="max-width: 500px;">
-        <h5 class="mt-2 mt-5 mb-3">
+        <h5 class="mt-2 mt-5">
             {% if nav_tab.events|length == 0 %} {{ _('No public events.') }} {% else %} {{ _("Can't see your event?") }} {% endif %}
         </h5>
         <p>

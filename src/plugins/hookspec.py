@@ -135,7 +135,7 @@ class AppHookSpecs:
     ):
         """Add plugin specific data to a player after a successful player search"""
 
-    @hookspec
+    @hookspec(firstresult=True)
     def get_player_estimated_rating(
         self, federation: str, tournament_rating: TournamentRating, player: 'Player'
     ) -> Optional['PlayerRating']:

@@ -15,7 +15,7 @@
                     <div class="modal-title fs-4 fw-bold">{{ _('Enter the result') }}</div>
                     </div>
                     <div class="modal-body">
-                        <div class="row d-flex align-items-center justify-content-center">
+                        <div class="row gy-2 gx-3 d-flex align-items-center justify-content-center">
                             <button
                                 data-testid="white-wins-button"
                                 class="result-button white text-black bg-white col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
@@ -51,7 +51,7 @@
                             >{{ _('BLACK WINS') }}<br/>0 - 1<br/><br/>{{ bp.last_name }}<br/>{{ bp.first_name }}<br/>{{ bp.rating_str }}</button>
                         </div>
                         {% if client.can_set_special_results(wp.tournament.id) %}
-                            <div class="row d-flex align-items-center justify-content-center mt-3">
+                            <div class="row gy-2 gx-3 d-flex align-items-center justify-content-center mt-3">
                                 <button
                                     data-testid="white-wins-by-forfeit-button"
                                     class="admin-result-button white text-black bg-white col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
@@ -113,7 +113,7 @@
                     <div class="modal-title fs-4 fw-bold">{{ _('Check-in') }}</div>
                 </div>
                 <div class="modal-body">
-                    <div class="row d-flex align-items-center justify-content-center">
+                    <div class="row gy-2 gx-3 d-flex align-items-center justify-content-center">
                         <button
                             class="result-button white text-black bg-white ms-auto me-auto btn fs-4 fw-bold p-3"
                             style="width: fit-content;"

@@ -39,7 +39,7 @@
 {% endblock %}
 
 {% block cards_container_cards %}
-    <div class="row">
+    <div class="row gy-2 gx-3">
         {% if nav_tab.events %}
             {% for event in nav_tab.events %}
                 {% with
@@ -50,7 +50,7 @@
                 {% endwith %}
             {% endfor %}
         {% else %}
-            <div class="col-12 mb-3">
+            <div class="col-12">
                 {{ nav_tab.empty_str }}
             </div>
         {% endif %}

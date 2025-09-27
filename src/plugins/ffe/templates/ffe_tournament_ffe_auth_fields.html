@@ -1,7 +1,7 @@
 {% import '/admin/common/macros.j2' as admin_macros %}
 
 <div class="auth-fields row">
-    <div class="col-12 col-md-6 mb-3">
+    <div class="col-12 col-md-6">
         {{ admin_macros.number_input(
             name='ffe_id',
             label=_('FFE certification number (optional):'),
@@ -18,7 +18,7 @@
             data=data, errors=errors
         ) }}
     </div>
-    <div class="col-12 col-md-6 mb-3">
+    <div class="col-12 col-md-6">
         <input type="password" name="fake_ffe_password" style="display:none" autocomplete="current-password">
         {{ admin_macros.password_input(
             name='ffe_password',
