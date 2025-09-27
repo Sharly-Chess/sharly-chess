@@ -169,6 +169,10 @@ body[data-bs-theme="dark"] #top-nav-wrapper {
     left: var(--side-bar-width);
 }
 
+.timer-wrapper {
+    width: 100%;
+}
+
 #copyright-wrapper {
     display: flex;
     flex-grow: 1;
