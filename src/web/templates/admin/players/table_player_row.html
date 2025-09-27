@@ -79,7 +79,7 @@
         class="text-nowrap position-sticky px-3"
         style="border-right: 2px solid #454748; left: var(--side-bar-width);"
     >
-        {{ player.full_name }}
+        {{ player.last_name }} {{ player.first_name }}
         {% if not player.tournament.player_matches_criteria(player) %}
             <i
                 class="bi-exclamation-triangle-fill text-warning ps-2"
