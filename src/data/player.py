@@ -266,13 +266,17 @@ class Player:
         }
 
     def get_rating(self, tournament_rating: TournamentRating) -> PlayerRating:
-        return (
-            self.ratings.get(tournament_rating, None)
-            or plugin_manager.hook.get_player_estimated_rating(
-                self.event.federation, tournament_rating, self
-            )
-            or PlayerRating(0, PlayerRatingType.ESTIMATED)
+        player_rating: PlayerRating | None = self.ratings.get(tournament_rating, None)
+        if player_rating and player_rating.value:
+            return player_rating
+        player_rating = plugin_manager.hook.get_player_estimated_rating(
+            federation=self.event.federation,
+            tournament_rating=tournament_rating,
+            player=self,
         )
+        if player_rating and player_rating.value:
+            return player_rating
+        return PlayerRating(0, PlayerRatingType.ESTIMATED)
 
     def update_ratings(self, ratings: dict[TournamentRating, PlayerRating]):
         for tournament_rating, player_rating in ratings.items():
