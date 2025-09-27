@@ -1,6 +1,5 @@
 import tempfile
 from collections.abc import Callable
-from functools import cached_property
 from itertools import cycle
 import re
 import time
@@ -26,11 +25,11 @@ from common.i18n.utils import (
 )
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.access_levels.client import Client
 from data.access_levels.client_tracker import ClientTracker
 from data.player import Federation, Club
 from web.messages import Message
 from web.session import SessionHandler
+from web.utils import RequestUtils
 
 logger: Logger = get_logger()
 
@@ -43,6 +42,7 @@ class WebContext:
 
     def __init__(self, request: HTMXRequest):
         self.request: HTMXRequest = request
+        self.client = RequestUtils.get_client(request)
         # sets the session locale to the thread
         set_locale(SessionHandler.get_session_locale(request))
         if request.client:
@@ -50,12 +50,6 @@ class WebContext:
             ClientTracker().track_client(request.client.host)
         else:
             logger.warning('Request with no client!')
-
-    @cached_property
-    def client(self) -> Client:
-        """Returns the client of the request.
-        This method may be overridden with an event parameter passed to Client()."""
-        return Client(self.request)
 
     @property
     def background_image(self) -> str | None:

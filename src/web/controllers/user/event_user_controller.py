@@ -1,10 +1,8 @@
-from functools import cached_property
 from typing import Any
 
 from litestar.plugins.htmx import HTMXRequest
 
 from common.sharly_chess_config import SharlyChessConfig
-from data.access_levels.client import Client
 from data.access_levels.client_tracker import ClientTracker
 from data.event import Event
 from web.controllers.user.base_user_controller import UserWebContext
@@ -26,11 +24,6 @@ class EventUserWebContext(UserWebContext):
             self.client.event.uniq_id if self.client.event else None,
             self.client.account.id,
         )
-
-    @cached_property
-    def client(self) -> Client:
-        """Returns the client of the request."""
-        return Client(self.request, self.user_event)
 
     def check_user_tab(self):
         pass

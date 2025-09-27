@@ -1,11 +1,9 @@
 import logging
-from functools import cached_property
 from typing import Any
 
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 
 from common.i18n import _
-from data.access_levels.client import Client
 from data.access_levels.client_tracker import ClientTracker
 from data.display_controller import DisplayController
 from data.event import Event
@@ -34,11 +32,6 @@ class BaseEventAdminWebContext(AdminWebContext):
             self.client.event.uniq_id if self.client.event else None,
             self.client.account.id,
         )
-
-    @cached_property
-    def client(self) -> Client:
-        """Returns the client of the request."""
-        return Client(self.request, self.admin_event)
 
     def get_admin_event(self) -> Event:
         assert self.admin_event is not None

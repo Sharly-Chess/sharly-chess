@@ -8,7 +8,6 @@ from litestar_htmx import HTMXRequest
 
 from data.access_levels.actions import AuthAction
 from data.access_levels.client import Client
-from utils.enum import Result
 from web.utils import RequestUtils
 
 
@@ -28,7 +27,7 @@ class BaseGuard(ABC):
 
     def __call__(self, connection: ASGIConnection, _: BaseRouteHandler):
         request = cast(HTMXRequest, connection)
-        client = Client(request, RequestUtils.get_optional_event(request))
+        client = RequestUtils.get_client(request)
         self.authorize_client(client, request)
 
     @abstractmethod
@@ -100,16 +99,15 @@ class SetResultGuard(BaseGuard):
     def authorize_client(self, client: Client, request: HTMXRequest):
         board = RequestUtils.get_board(request)
         result = RequestUtils.get_result(request)
+        self._authorize_tournament_action(AuthAction.ENTER_RESULTS, client, request)
         if not board.no_result:
             self._authorize_tournament_action(
                 AuthAction.UPDATE_RESULTS, client, request
             )
-        if result in Result.admin_imputable_results():
+        if result.is_special_result:
             self._authorize_tournament_action(
                 AuthAction.SET_SPECIAL_RESULTS, client, request
             )
-        elif result in Result.user_imputable_results():
-            self._authorize_tournament_action(AuthAction.ENTER_RESULTS, client, request)
 
 
 class SetPairingParticipationGuard(BaseGuard):
