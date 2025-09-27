@@ -125,7 +125,7 @@
             {% else %}
                 {% for screen_type, screen_type_data in admin_screen_types_data.items() %}
                     {% set expanded=screen_type in admin_screens_screen_types %}
-                    <div class="row">
+                    <div class="row gy-2 gx-3">
                         <div class="col-12 fs-5 text-nowrap d-inline-flex align-items-center gap-4 mb-2 {% if not screen_type in admin_screens_screen_types %}text-secondary{% endif %}">
                             {% with id='admin-screens-show-'~screen_type, name='admin_screens_show_'~screen_type %}
                                 <button
@@ -154,7 +154,7 @@
                     </div>
 
                     <div class="collapse {% if expanded %}show{% endif %}" id="admin-screens-show-{{ screen_type.value }}">
-                        <div class="row mb-5">
+                        <div class="row gy-2 gx-3 mb-5">
                             {% if screen_type_data.screens %}
                                 {% for screen in screen_type_data.screens %}
                                     {% with

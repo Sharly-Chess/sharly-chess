@@ -9,7 +9,7 @@
             {% set num_players = admin_tournament.players_by_check_in_status[false]|length %}
             {% set info = ngettext('%(num)d player did not check-in', '%(num)d players did not check-in', num_players) %}
             {% set max_players_before_collapse = 5 %}
-            <div class="row">
+            <div class="row gy-2 gx-3">
                 <div class="col-12">
                     {% if admin_tournament.players_by_check_in_status[false] %}
                         {% if num_players > max_players_before_collapse %}

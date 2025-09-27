@@ -532,9 +532,6 @@ msgstr "Une erreur inattendue s'est produite."
 msgid "Anonymous"
 msgstr "Anonyme"
 
-msgid "Any comment on the player (comments are visible only by the arbiters)."
-msgstr "N'importe quel commentaire sur le·la joueur·euse (les commentaires ne sont visibles que par les arbitres)."
-
 msgid "Any number of devices can be controlled by the same display controller."
 msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs afficheurs."
 
@@ -4859,57 +4856,6 @@ msgstr "Le·la joueur·euse avec la licence FFE [{ffe_licence_number}] joue déj
 
 msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
 msgstr "Le·la joueur·euse avec l'identifiant FIDE [{fide_id}] joue déjà le tournoi [{tournament}]."
-
-msgid "The player's FIDE ID (do not change)."
-msgstr "L'identifiant FIDE du·de la joueur·euse (ne pas modifier)."
-
-msgid "The player's FIDE title."
-msgstr "Le titre FIDE du·de la joueur·euse."
-
-msgid "The player's Uniq ID for the French federation (do not change)."
-msgstr "L'identifiant unique pour la fédération française (ne pas modifier)."
-
-msgid "The player's birth date."
-msgstr "La date de naissance du·de la joueur·euse."
-
-msgid "The player's club."
-msgstr "Le club du·de la joueur·euse."
-
-msgid "The player's email."
-msgstr "Le mél du·de la joueur·euse."
-
-msgid "The player's federation."
-msgstr "La fédération du·de la joueur·euse."
-
-msgid "The player's first name."
-msgstr "Le prénom du·de la joueur·euse."
-
-msgid "The player's gender."
-msgstr "Le genre du·de la joueur·euse."
-
-msgid "The player's last name."
-msgstr "Le nom de famille du·de la joueur·euse."
-
-msgid "The player's league."
-msgstr "La ligue du·de la joueur·euse."
-
-msgid "The player's licence number."
-msgstr "Le numéro de licence du·de la joueur·euse."
-
-msgid "The player's licence."
-msgstr "La licence du·de la joueur·euse."
-
-msgid "The player's phone number."
-msgstr "Le numéro de téléphone du·de la joueur·euse."
-
-msgid "The player's tournament."
-msgstr "Le tournoi du·de la joueur·euse."
-
-msgid "The price the player already paid."
-msgstr "Le montant déjà payé."
-
-msgid "The price the player pays to register."
-msgstr "Le montant de l'inscription du·de la joueur·euse."
 
 msgid "The qualification number given by the French Federation is an integer, it is used to connect to the FFE website."
 msgstr "Le numéro d'homologation donné par la Fédération Française est un entier, il est utilisé pour la connexion au site web de la FFE."

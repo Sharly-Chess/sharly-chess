@@ -1,4 +1,4 @@
-<div class="row mt-3 mb-3">
+<div class="row gy-2 gx-3 mt-3">
     {% with recommended=setting.recommended_value(admin_tournament) %}
         {{ admin_macros.number_input(
             name=setting.id,
@@ -12,7 +12,7 @@
     {% endwith %}
 </div>
 {% with group_counts=setting.group_counts(admin_tournament, data[setting.id]|int) %}
-    <div class="row mb-3">
+    <div class="row gy-2 gx-3">
         <span>
             {{ _('%(string)s:', string=_('Groups')) }}
             <span> A (<b id="group-a">{{ group_counts[0] }}</b>) - </span>

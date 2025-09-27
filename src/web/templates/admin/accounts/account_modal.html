@@ -29,7 +29,7 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                <div class="row mb-3">
+                <div class="row gy-2 gx-3">
                     {{ admin_macros.switch_input(
                         name='active',
                         label='',
@@ -41,7 +41,7 @@
                         data=data, errors=errors
                     ) }}
                 </div>
-                <div class="row mb-3">
+                <div class="row gy-2 gx-3">
                     {{ admin_macros.text_input(
                         name='last_name',
                         label=_('Last name:'),
@@ -50,7 +50,7 @@
                         data=data, errors=errors
                     ) }}
                 </div>
-                <div class="row mb-3">
+                <div class="row gy-2 gx-3">
                     {{ admin_macros.text_input(
                         name='first_name',
                         label=_('First name:'),
@@ -59,8 +59,8 @@
                         data=data, errors=errors
                     ) }}
                 </div>
-                <input type="password" name="fake_password" style="display:none" autocomplete="current-password">
-                <div class="row">
+                <div class="row gy-2 gx-3">
+                    <input type="password" name="fake_password" style="display:none" autocomplete="current-password">
                     {{ admin_macros.password_input(
                         name='password',
                         label=_('Password:'),

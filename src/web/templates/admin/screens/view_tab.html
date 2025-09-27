@@ -20,7 +20,7 @@
             </h5>
         </div>
     {% else %}
-        <div class="row mb-5">
+        <div class="row gy-2 gx-3 mb-5">
             {% for screen in admin_screen_type_data.screens %}
                 {% with
                     card_url=url_for('user-screen', event_uniq_id=admin_event.uniq_id, screen_uniq_id=screen.uniq_id),

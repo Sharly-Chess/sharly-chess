@@ -8,7 +8,7 @@
             </div>
             <div class="modal-body">
                 {% set action = 'RESULT_UPDATE' %}
-                <div class="row d-flex align-items-center justify-content-center">
+                <div class="row gy-2 gx-3 d-flex align-items-center justify-content-center">
                     {% set action_route = url_for(
                         'admin-pairings-set-result',
                         event_uniq_id=admin_event.uniq_id,
@@ -125,7 +125,7 @@
                     </button>
                 </div>
 
-                <div class="row d-flex align-items-center justify-content-center mt-3">
+                <div class="row gy-2 gx-3 d-flex align-items-center justify-content-center mt-3">
                     {% set action_route = url_for(
                         'admin-pairings-set-result',
                         event_uniq_id=admin_event.uniq_id,
@@ -250,7 +250,7 @@
 
                 <hr class="my-3" />
 
-                <div class="row">
+                <div class="row gy-2 gx-3">
                     <div class="col-12 fs-5 text-nowrap d-inline-flex align-items-center gap-4 mb-2 {% if not screen_type in admin_screens_screen_types %}text-secondary{% endif %}">
                         <button
                             type="button"
@@ -289,7 +289,7 @@
                     ] %}
 
                     {% for row in extra_rows %}
-                        <div class="row d-flex align-items-center justify-content-center mt-3">
+                        <div class="row gy-2 gx-3 d-flex align-items-center justify-content-center mt-3">
                             {% for (result_id, class, line1, line2) in row %}
                                 {% set action = 'RESULT_UPDATE' %}
                                 {% set action_route = url_for(
@@ -330,7 +330,7 @@
 
                 <hr class="my-3" />
 
-                <div class="row d-flex align-items-center justify-content-center mt-3">
+                <div class="row gy-2 gx-3 d-flex align-items-center justify-content-center mt-3">
                     {% set action = 'MANUAL_UNPAIRING' %}
                     {% set action_route = url_for(
                         'admin-pairings-unpair-board',
