@@ -392,9 +392,12 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def get_player_estimated_rating(
-        self, federation: str, tournament_rating: TournamentRating, player: 'Player'
+        self,
+        event_federation: str,
+        tournament_rating: TournamentRating,
+        player: 'Player',
     ) -> PlayerRating | None:
-        if federation != 'FRA':
+        if event_federation != 'FRA':
             return None
 
         value = 0
