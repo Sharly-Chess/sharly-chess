@@ -68,7 +68,7 @@
                 </div>
             </div>
         {% endif %}
-        {{ macros.copyright_script(show=screen.type != 'image') }}
+        {{ macros.copyright_script(show=screen.type.value != 'image') }}
     </div>
 {% endblock %}
 
