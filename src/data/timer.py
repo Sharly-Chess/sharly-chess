@@ -92,14 +92,14 @@ class TimerHour:
     def text_before(self) -> str:
         return self._format_stored_text(
             self.stored_timer_hour.text_before,
-            SharlyChessConfig.default_timer_round_text_before,
+            SharlyChessConfig().default_timer_round_text_before,
         )
 
     @cached_property
     def text_after(self) -> str:
         return self._format_stored_text(
             self.stored_timer_hour.text_after,
-            SharlyChessConfig.default_timer_round_text_after,
+            SharlyChessConfig().default_timer_round_text_after,
         )
 
     @property
