@@ -113,7 +113,7 @@ class ScreenUserController(BaseScreenUserController):
         return False
 
     @get(
-        path='/user/screen/{event_uniq_id:str}/{screen_uniq_id:str}',
+        path='/view/screen/{event_uniq_id:str}/{screen_uniq_id:str}',
         name='user-screen',
         guards=[ViewScreenGuard()],
     )
@@ -131,7 +131,7 @@ class ScreenUserController(BaseScreenUserController):
             )
 
     @head(
-        path='/user/screen/{event_uniq_id:str}/{screen_uniq_id:str}',
+        path='/view/screen/{event_uniq_id:str}/{screen_uniq_id:str}',
         name='user-screen-head',
         guards=[ViewScreenGuard()],
         status_code=HTTP_304_NOT_MODIFIED,
@@ -146,8 +146,8 @@ class ScreenUserController(BaseScreenUserController):
 
     @get(
         path=[
-            '/user/rotator/{event_uniq_id:str}/{rotator_id:int}/{rotator_screen_index:int}',
-            '/user/rotator/{event_uniq_id:str}/{rotator_id:int}',
+            '/view/rotator/{event_uniq_id:str}/{rotator_id:int}/{rotator_screen_index:int}',
+            '/view/rotator/{event_uniq_id:str}/{rotator_id:int}',
         ],
         name='user-rotator',
         guards=[ViewRotatorGuard()],
@@ -162,8 +162,8 @@ class ScreenUserController(BaseScreenUserController):
 
     @head(
         path=[
-            '/user/rotator/{event_uniq_id:str}/{rotator_id:int}/{rotator_screen_index:int}',
-            '/user/rotator/{event_uniq_id:str}/{rotator_id:int}',
+            '/view/rotator/{event_uniq_id:str}/{rotator_id:int}/{rotator_screen_index:int}',
+            '/view/rotator/{event_uniq_id:str}/{rotator_id:int}',
         ],
         name='user-rotator-head',
         guards=[ViewRotatorGuard()],
@@ -180,8 +180,8 @@ class ScreenUserController(BaseScreenUserController):
 
     @get(
         path=[
-            '/user/display-controller/{event_uniq_id:str}/{display_controller_id:int}/{rotator_screen_index:int}',
-            '/user/display-controller/{event_uniq_id:str}/{display_controller_id:int}',
+            '/view/display-controller/{event_uniq_id:str}/{display_controller_id:int}/{rotator_screen_index:int}',
+            '/view/display-controller/{event_uniq_id:str}/{display_controller_id:int}',
         ],
         guards=[ViewDisplayControllerGuard()],
         name='user-display-controller',
@@ -204,8 +204,8 @@ class ScreenUserController(BaseScreenUserController):
 
     @head(
         path=[
-            '/user/display-controller/{event_uniq_id:str}/{display_controller_id:int}/{rotator_screen_index:int}',
-            '/user/display-controller/{event_uniq_id:str}/{display_controller_id:int}',
+            '/view/display-controller/{event_uniq_id:str}/{display_controller_id:int}/{rotator_screen_index:int}',
+            '/view/display-controller/{event_uniq_id:str}/{display_controller_id:int}',
         ],
         name='user-display-controller-head',
         guards=[ViewDisplayControllerGuard()],

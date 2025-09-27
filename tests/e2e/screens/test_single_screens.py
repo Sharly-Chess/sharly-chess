@@ -48,7 +48,7 @@ class TestSingleScreensFunctionality:
     def test_create_and_delete_simple_screen(
         self, page: Page, paired_tournament: StoredTournament
     ):
-        page.goto(f'/admin/event/{EVENT_ID}/screens')
+        page.goto(f'/event/{EVENT_ID}/screens')
         TestUtils.button_by_text(page, 'Create a screen').click()
         page.get_by_test_id('create-screen-type-input').click()
         modal = page.locator('.modal-dialog')
@@ -82,7 +82,7 @@ class TestSingleScreensFunctionality:
             ScreenType.INPUT,
             {'init_set_tournament_id': unpaired_tournament.id},
         )
-        lan_page.goto(f'/user/screen/{EVENT_ID}/{SCREEN_ID}')
+        lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
         rows = lan_page.locator('table tbody tr')
         expect(rows).to_have_count(16)
 
@@ -96,11 +96,11 @@ class TestSingleScreensFunctionality:
 
         # Open check-in
         api_request_context.patch(
-            f'/admin/tournament-open-check-in/{EVENT_ID}/{unpaired_tournament.id}'
+            f'/tournament-open-check-in/{EVENT_ID}/{unpaired_tournament.id}'
         )
 
         # Reload the page
-        lan_page.goto(f'/user/screen/{EVENT_ID}/{SCREEN_ID}')
+        lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
 
         # Try to open the modal again
         rows = lan_page.locator('table tbody tr')
@@ -132,14 +132,14 @@ class TestSingleScreensFunctionality:
 
         # Test that the page is updated after a player checks in on another screen
         api_request_context.patch(
-            f'/user/toggle-check-in/{EVENT_ID}/{SCREEN_ID}/{unpaired_tournament.id}/{barbara.id}'
+            f'/view/toggle-check-in/{EVENT_ID}/{SCREEN_ID}/{unpaired_tournament.id}/{barbara.id}'
         )
 
         row = rows.filter(has_text='BARBARA')
         expect(row.locator('i.bi-check-square-fill')).to_be_visible()
 
         # Test that the page is updated after a player is checked in on an admin screen
-        api_request_context.patch(f'/admin/player-check-in/{EVENT_ID}/{marmite.id}')
+        api_request_context.patch(f'/player-check-in/{EVENT_ID}/{marmite.id}')
 
         row = rows.filter(has_text='MARMITE')
         expect(row.locator('i.bi-check-square-fill')).to_be_visible()
@@ -160,12 +160,12 @@ class TestSingleScreensFunctionality:
             ScreenType.INPUT,
             {'init_set_tournament_id': paired_tournament.id},
         )
-        lan_page.goto(f'/user/screen/{EVENT_ID}/{SCREEN_ID}')
+        lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
         rows = lan_page.locator('table tbody tr')
         expect(rows).to_have_count(8)
 
         another_lan_page = lan_context.new_page()
-        another_lan_page.goto(f'/user/screen/{EVENT_ID}/{SCREEN_ID}')
+        another_lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
         other_page_rows = another_lan_page.locator('table tbody tr')
 
         # Test the primary result button
@@ -208,7 +208,7 @@ class TestSingleScreensFunctionality:
             ScreenType.BOARDS,
             {'init_set_tournament_id': paired_tournament.id},
         )
-        lan_page.goto(f'/user/screen/{EVENT_ID}/{SCREEN_ID}')
+        lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
         rows = lan_page.locator('table tbody tr')
         expect(rows).to_have_count(8)
 
@@ -218,7 +218,7 @@ class TestSingleScreensFunctionality:
         # Update the first row for some possible results, and check that the result is updated on the screen
         for r in [Result.LOSS, Result.DRAW, Result.WIN]:
             set_result = api_request_context.put(
-                f'/admin/pairing/set-result/{EVENT_ID}/{paired_tournament.id}/1/1/{r.value}'
+                f'/pairing/set-result/{EVENT_ID}/{paired_tournament.id}/1/1/{r.value}'
             )
             assert set_result.ok
             expect(row.locator('td.score')).to_contain_text(str(r))
@@ -236,7 +236,7 @@ class TestSingleScreensFunctionality:
             ScreenType.PLAYERS,
             {'init_set_tournament_id': paired_tournament.id},
         )
-        lan_page.goto(f'/user/screen/{EVENT_ID}/{SCREEN_ID}')
+        lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
         rows = lan_page.locator('table tbody tr')
         expect(rows).to_have_count(16)
 

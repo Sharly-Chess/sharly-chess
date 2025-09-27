@@ -89,7 +89,7 @@ class AccountAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/accounts',
+        path='/event/{event_uniq_id:str}/accounts',
         name='admin-event-accounts-tab',
     )
     async def htmx_admin_event_accounts_tab(
@@ -144,7 +144,7 @@ class AccountAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/account-modal/create/{event_uniq_id:str}',
+        path='/account-modal/create/{event_uniq_id:str}',
         name='admin-account-create-modal',
     )
     async def htmx_admin_account_create_modal(self, request: HTMXRequest) -> Template:
@@ -153,7 +153,7 @@ class AccountAdminController(BaseEventAdminController):
         return self.admin_event_account_render(web_context, template_context)
 
     @get(
-        path='/admin/account-modal/update/{event_uniq_id:str}/{account_id:int}',
+        path='/account-modal/update/{event_uniq_id:str}/{account_id:int}',
         name='admin-account-update-modal',
     )
     async def htmx_admin_account_update_modal(self, request: HTMXRequest) -> Template:
@@ -165,7 +165,7 @@ class AccountAdminController(BaseEventAdminController):
         return self.admin_event_account_render(web_context, template_context)
 
     @get(
-        path='/admin/account-modal/clone/{event_uniq_id:str}/{account_id:int}',
+        path='/account-modal/clone/{event_uniq_id:str}/{account_id:int}',
         name='admin-account-clone-modal',
     )
     async def htmx_admin_account_clone_modal(self, request: HTMXRequest) -> Template:
@@ -178,7 +178,7 @@ class AccountAdminController(BaseEventAdminController):
         return self.admin_event_account_render(web_context, template_context)
 
     @get(
-        path='/admin/account-modal/delete/{event_uniq_id:str}/{account_id:int}',
+        path='/account-modal/delete/{event_uniq_id:str}/{account_id:int}',
         name='admin-account-delete-modal',
     )
     async def htmx_admin_account_delete_modal(self, request: HTMXRequest) -> Template:
@@ -188,7 +188,7 @@ class AccountAdminController(BaseEventAdminController):
         )
 
     @post(
-        path='/admin/account-create-defaults/{event_uniq_id:str}',
+        path='/account-create-defaults/{event_uniq_id:str}',
         name='admin-account-create-defaults',
     )
     async def htmx_admin_account_create_defaults(
@@ -237,7 +237,7 @@ class AccountAdminController(BaseEventAdminController):
                     errors[field] = _('This field is required.')
         return errors
 
-    @post(path='/admin/account-create/{event_uniq_id:str}', name='admin-account-create')
+    @post(path='/account-create/{event_uniq_id:str}', name='admin-account-create')
     async def htmx_admin_account_create(
         self,
         request: HTMXRequest,
@@ -275,7 +275,7 @@ class AccountAdminController(BaseEventAdminController):
         return self.admin_event_account_render(web_context)
 
     @patch(
-        path='/admin/account-update/{event_uniq_id:str}/{account_id:int}',
+        path='/account-update/{event_uniq_id:str}/{account_id:int}',
         name='admin-account-update',
     )
     async def htmx_admin_account_update(
@@ -316,7 +316,7 @@ class AccountAdminController(BaseEventAdminController):
         return self.admin_event_account_render(web_context)
 
     @delete(
-        path='/admin/account-delete/{event_uniq_id:str}/{account_id:int}',
+        path='/account-delete/{event_uniq_id:str}/{account_id:int}',
         name='admin-account-delete',
         status_code=HTTP_200_OK,
     )
@@ -416,7 +416,7 @@ class AccountAdminController(BaseEventAdminController):
         }
 
     @get(
-        path='/admin/account-permissions-modal/{event_uniq_id:str}/{account_id:int}',
+        path='/account-permissions-modal/{event_uniq_id:str}/{account_id:int}',
         name='admin-account-permissions-modal',
     )
     async def htmx_admin_account_permissions_modal(
@@ -428,10 +428,7 @@ class AccountAdminController(BaseEventAdminController):
         )
 
     @get(
-        path=(
-            '/admin/account-permission-create-modal/'
-            '{event_uniq_id:str}/{account_id:int}'
-        ),
+        path=('/account-permission-create-modal/{event_uniq_id:str}/{account_id:int}'),
         name='admin-account-permission-create-modal',
     )
     async def htmx_admin_account_permission_create_modal(
@@ -445,7 +442,7 @@ class AccountAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/account-permission-update-modal/'
+            '/account-permission-update-modal/'
             '{event_uniq_id:str}/{account_id:int}/{access_level:str}'
         ),
         name='admin-account-permission-update-modal',
@@ -516,7 +513,7 @@ class AccountAdminController(BaseEventAdminController):
         return errors
 
     @post(
-        path='/admin/account-permission-create/{event_uniq_id:str}/{account_id:int}',
+        path='/account-permission-create/{event_uniq_id:str}/{account_id:int}',
         name='admin-account-permission-create',
     )
     async def htmx_admin_account_permission_create(
@@ -554,7 +551,7 @@ class AccountAdminController(BaseEventAdminController):
 
     @patch(
         path=(
-            '/admin/account-permission-update/'
+            '/account-permission-update/'
             '{event_uniq_id:str}/{account_id:int}/{access_level:str}'
         ),
         name='admin-account-permission-update',
@@ -595,7 +592,7 @@ class AccountAdminController(BaseEventAdminController):
 
     @delete(
         path=(
-            '/admin/account-permission-delete/'
+            '/account-permission-delete/'
             '{event_uniq_id:str}/{account_id:int}/{access_level:str}'
         ),
         name='admin-account-permission-delete',

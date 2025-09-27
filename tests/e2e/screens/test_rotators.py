@@ -67,7 +67,7 @@ class TestRotator:
         tournament: StoredTournament,
         screen: StoredScreen,
     ):
-        page.goto(f'/admin/event/{EVENT_ID}/rotators')
+        page.goto(f'/event/{EVENT_ID}/rotators')
         TestUtils.button_by_text(page, 'Create a rotator').click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
@@ -102,7 +102,7 @@ class TestRotator:
             family_ids=[family.id],
         )
 
-        page.goto(f'/admin/event/{EVENT_ID}/rotators')
+        page.goto(f'/event/{EVENT_ID}/rotators')
         card = page.locator(f"div.card:has-text('{ROTATOR_NAME}')")
         expect(card).to_be_visible()
         button = card.locator('button[hx-get*="clone"]')
@@ -135,7 +135,7 @@ class TestRotator:
             ROTATOR_NAME,
         )
 
-        page.goto(f'/admin/event/{EVENT_ID}/rotators')
+        page.goto(f'/event/{EVENT_ID}/rotators')
         card = page.locator(f"div.card:has-text('{ROTATOR_NAME}')")
         expect(card).to_be_visible()
         TestUtils.button_by_text(card, 'Screens').click()
@@ -173,6 +173,6 @@ class TestRotator:
             family_ids=[family.id],
             overrides={'delay': 1},
         )
-        page.goto(f'/user/rotator/{EVENT_ID}/{rotator_id}')
+        page.goto(f'/view/rotator/{EVENT_ID}/{rotator_id}')
         expect(page.get_by_text(SCREEN_ID)).to_be_visible()
         expect(page.get_by_text(f'{FAMILY_ID} (registered players)')).to_be_visible()

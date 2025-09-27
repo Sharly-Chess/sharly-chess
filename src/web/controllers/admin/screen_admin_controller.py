@@ -825,7 +825,7 @@ class ScreenAdminController(BaseEventAdminController):
         return cls._admin_base_event_render(template_context)
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/screens',
+        path='/event/{event_uniq_id:str}/screens',
         name='admin-event-screens-tab',
     )
     async def htmx_admin_event_screens_tab(
@@ -874,7 +874,7 @@ class ScreenAdminController(BaseEventAdminController):
         return self._admin_event_screens_render(request)
 
     @get(
-        path='/admin/screen-modal/create/{event_uniq_id:str}/{screen_type:str}',
+        path='/screen-modal/create/{event_uniq_id:str}/{screen_type:str}',
         name='admin-screen-create-modal',
     )
     async def htmx_admin_screen_create_modal(
@@ -891,7 +891,7 @@ class ScreenAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/screen-modal/{action:str}/{event_uniq_id:str}/{screen_id:int}',
+        path='/screen-modal/{action:str}/{event_uniq_id:str}/{screen_id:int}',
         name='admin-screen-modal',
     )
     async def htmx_admin_screen_modal(
@@ -1019,7 +1019,7 @@ class ScreenAdminController(BaseEventAdminController):
         return self._admin_event_screens_render(request, reload_event=True)
 
     @post(
-        path='/admin/screen-create/{event_uniq_id:str}/{screen_type:str}',
+        path='/screen-create/{event_uniq_id:str}/{screen_type:str}',
         name='admin-screen-create',
         guards=[ActionGuard(AuthAction.MANAGE_SCREENS)],
     )
@@ -1041,7 +1041,7 @@ class ScreenAdminController(BaseEventAdminController):
         )
 
     @post(
-        path='/admin/screen-clone/{event_uniq_id:str}/{screen_id:int}',
+        path='/screen-clone/{event_uniq_id:str}/{screen_id:int}',
         name='admin-screen-clone',
     )
     async def htmx_admin_screen_clone(
@@ -1062,7 +1062,7 @@ class ScreenAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/screen-update/{event_uniq_id:str}/{screen_id:int}',
+        path='/screen-update/{event_uniq_id:str}/{screen_id:int}',
         name='admin-screen-update',
     )
     async def htmx_admin_screen_update(
@@ -1083,7 +1083,7 @@ class ScreenAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/screen-uniq-id-update/{event_uniq_id:str}/{screen_id:int}',
+        path='/screen-uniq-id-update/{event_uniq_id:str}/{screen_id:int}',
         name='admin-screen-uniq-id-update',
     )
     async def htmx_admin_screen_uniq_id_update(
@@ -1117,7 +1117,7 @@ class ScreenAdminController(BaseEventAdminController):
         web_context = ScreenAdminWebContext(request, reload_event=True)
         event = web_context.get_admin_event()
         return HTMXTemplate(
-            template_name='/admin/screens/screen_update_modal_header.html',
+            template_name='/screens/screen_update_modal_header.html',
             context=web_context.template_context
             | {'screen_uniq_ids': list(event.screens_by_uniq_id.keys())},
             re_swap='innerHTML',
@@ -1125,7 +1125,7 @@ class ScreenAdminController(BaseEventAdminController):
         )
 
     @delete(
-        path='/admin/screen-delete/{event_uniq_id:str}/{screen_id:int}',
+        path='/screen-delete/{event_uniq_id:str}/{screen_id:int}',
         name='admin-screen-delete',
         status_code=HTTP_200_OK,
     )
@@ -1147,7 +1147,7 @@ class ScreenAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/screen-sets-modal/{event_uniq_id:str}/{screen_id:int}',
+        path='/screen-sets-modal/{event_uniq_id:str}/{screen_id:int}',
         name='admin-screen-sets-modal',
     )
     async def htmx_admin_screen_sets_modal(
@@ -1163,7 +1163,7 @@ class ScreenAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/screen-sets-set-modal/{event_uniq_id:str}/{screen_id:int}/{screen_set_id:int}',
+        path='/screen-sets-set-modal/{event_uniq_id:str}/{screen_id:int}/{screen_set_id:int}',
         name='admin-screen-sets-set-modal',
     )
     async def htmx_admin_screen_sets_set_modal(
@@ -1258,7 +1258,7 @@ class ScreenAdminController(BaseEventAdminController):
         )
 
     @post(
-        path='/admin/screen-set-add/{event_uniq_id:str}/{screen_id:int}',
+        path='/screen-set-add/{event_uniq_id:str}/{screen_id:int}',
         name='admin-screen-set-add',
     )
     async def htmx_admin_screen_set_add(
@@ -1279,7 +1279,7 @@ class ScreenAdminController(BaseEventAdminController):
         )
 
     @post(
-        path='/admin/screen-set-clone/{event_uniq_id:str}/{screen_id:int}/{screen_set_id:int}',
+        path='/screen-set-clone/{event_uniq_id:str}/{screen_id:int}/{screen_set_id:int}',
         name='admin-screen-set-clone',
     )
     async def htmx_admin_screen_set_clone(
@@ -1301,7 +1301,7 @@ class ScreenAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/screen-set-update/{event_uniq_id:str}/{screen_id:int}/{screen_set_id:int}',
+        path='/screen-set-update/{event_uniq_id:str}/{screen_id:int}/{screen_set_id:int}',
         name='admin-screen-set-update',
     )
     async def htmx_admin_screen_set_update(
@@ -1323,7 +1323,7 @@ class ScreenAdminController(BaseEventAdminController):
         )
 
     @delete(
-        path='/admin/screen-set-delete/{event_uniq_id:str}/{screen_id:int}/{screen_set_id:int}',
+        path='/screen-set-delete/{event_uniq_id:str}/{screen_id:int}/{screen_set_id:int}',
         name='admin-screen-set-delete',
         status_code=HTTP_200_OK,
     )
@@ -1346,7 +1346,7 @@ class ScreenAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/screen-reorder-sets/{event_uniq_id:str}/{screen_id:int}',
+        path='/screen-reorder-sets/{event_uniq_id:str}/{screen_id:int}',
         name='admin-screen-reorder-sets',
     )
     async def htmx_admin_screen_reorder_sets(
@@ -1367,7 +1367,7 @@ class ScreenAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/input-screens',
+        path='/event/{event_uniq_id:str}/input-screens',
         name='admin-event-input-screens-tab',
     )
     async def htmx_admin_event_input_screens_tab(
@@ -1376,7 +1376,7 @@ class ScreenAdminController(BaseEventAdminController):
         return self._admin_event_screens_render(request, screen_type='input')
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/boards-screens',
+        path='/event/{event_uniq_id:str}/boards-screens',
         name='admin-event-boards-screens-tab',
     )
     async def htmx_admin_event_boards_screens_tab(
@@ -1385,7 +1385,7 @@ class ScreenAdminController(BaseEventAdminController):
         return self._admin_event_screens_render(request, screen_type='boards')
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/players-screens',
+        path='/event/{event_uniq_id:str}/players-screens',
         name='admin-event-players-screens-tab',
     )
     async def htmx_admin_event_players_screens_tab(
@@ -1394,7 +1394,7 @@ class ScreenAdminController(BaseEventAdminController):
         return self._admin_event_screens_render(request, screen_type='players')
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/results-screens',
+        path='/event/{event_uniq_id:str}/results-screens',
         name='admin-event-results-screens-tab',
     )
     async def htmx_admin_event_results_screens_tab(
@@ -1403,7 +1403,7 @@ class ScreenAdminController(BaseEventAdminController):
         return self._admin_event_screens_render(request, screen_type='results')
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/ranking-screens',
+        path='/event/{event_uniq_id:str}/ranking-screens',
         name='admin-event-ranking-screens-tab',
     )
     async def htmx_admin_event_ranking_screens_tab(
@@ -1412,7 +1412,7 @@ class ScreenAdminController(BaseEventAdminController):
         return self._admin_event_screens_render(request, screen_type='ranking')
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/image-screens',
+        path='/event/{event_uniq_id:str}/image-screens',
         name='admin-event-image-screens-tab',
     )
     async def htmx_admin_event_image_screens_tab(

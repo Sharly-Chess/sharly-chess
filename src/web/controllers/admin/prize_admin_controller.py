@@ -196,9 +196,9 @@ class PrizeAdminController(BaseEventAdminController):
 
     @get(
         path=[
-            '/admin/event/{event_uniq_id:str}/prizes',
-            '/admin/event/{event_uniq_id:str}/prizes/{tournament_id:int}',
-            '/admin/event/{event_uniq_id:str}/prizes/{tournament_id:int}/{prize_group_id:int}',
+            '/event/{event_uniq_id:str}/prizes',
+            '/event/{event_uniq_id:str}/prizes/{tournament_id:int}',
+            '/event/{event_uniq_id:str}/prizes/{tournament_id:int}/{prize_group_id:int}',
         ],
         name='admin-event-prizes-tab',
     )
@@ -223,7 +223,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/prizes/prize-players-modal/{event_uniq_id:str}/'
+            '/prizes/prize-players-modal/{event_uniq_id:str}/'
             '{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prize-players-modal',
@@ -265,7 +265,7 @@ class PrizeAdminController(BaseEventAdminController):
         }
 
     @post(
-        path='/admin/prizes/prize-group/create/{event_uniq_id:str}/{tournament_id:int}',
+        path='/prizes/prize-group/create/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-prize-group-create',
         guards=manage_guards,
     )
@@ -302,7 +302,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @patch(
         path=(
-            '/admin/prizes/prize-group/update/{event_uniq_id:str}/'
+            '/prizes/prize-group/update/{event_uniq_id:str}/'
             '{tournament_id:int}/{prize_group_id:int}'
         ),
         name='admin-prize-group-update',
@@ -332,7 +332,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @delete(
         path=(
-            '/admin/prizes/prize-group/delete/{event_uniq_id:str}/'
+            '/prizes/prize-group/delete/{event_uniq_id:str}/'
             '{tournament_id:int}/{prize_group_id:int}'
         ),
         name='admin-prize-group-delete',
@@ -354,7 +354,7 @@ class PrizeAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/prizes/prize-groups-modal/{event_uniq_id:str}/{tournament_id:int}',
+        path='/prizes/prize-groups-modal/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-prize-groups-modal',
     )
     async def htmx_admin_prize_groups_modal(
@@ -368,7 +368,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/prizes/prize-group-modal/delete/'
+            '/prizes/prize-group-modal/delete/'
             '{event_uniq_id:str}/{tournament_id:int}/{prize_group_id:int}'
         ),
         name='admin-prize-group-delete-modal',
@@ -475,7 +475,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @post(
         path=(
-            '/admin/prizes/prize-category/create/'
+            '/prizes/prize-category/create/'
             '{event_uniq_id:str}/{tournament_id:int}/{prize_group_id:int}'
         ),
         name='admin-prize-category-create',
@@ -549,7 +549,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @patch(
         path=(
-            '/admin/prizes/prize-category/update/{event_uniq_id:str}/'
+            '/prizes/prize-category/update/{event_uniq_id:str}/'
             '{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prize-category-update',
@@ -616,7 +616,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @delete(
         path=(
-            '/admin/prizes/prize-category/delete/{event_uniq_id:str}/'
+            '/prizes/prize-category/delete/{event_uniq_id:str}/'
             '{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prize-category-delete',
@@ -648,7 +648,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @post(
         path=(
-            '/admin/prizes/prize-category/duplicate/{event_uniq_id:str}/'
+            '/prizes/prize-category/duplicate/{event_uniq_id:str}/'
             '{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prize-category-duplicate',
@@ -691,7 +691,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @patch(
         path=(
-            '/admin/prizes/prize-category/reorder/'
+            '/prizes/prize-category/reorder/'
             '{event_uniq_id:str}/{tournament_id:int}/{prize_group_id:int}'
         ),
         name='admin-prizes-reorder-categories',
@@ -715,7 +715,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/prizes/prize-category-modal/create/'
+            '/prizes/prize-category-modal/create/'
             '{event_uniq_id:str}/{tournament_id:int}/{prize_group_id:int}'
         ),
         name='admin-prize-category-create-modal',
@@ -738,7 +738,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/prizes/prize-category-modal/update/{event_uniq_id:str}/'
+            '/prizes/prize-category-modal/update/{event_uniq_id:str}/'
             '{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prize-category-update-modal',
@@ -773,7 +773,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/prizes/prize-category-modal/delete/{event_uniq_id:str}/'
+            '/prizes/prize-category-modal/delete/{event_uniq_id:str}/'
             '{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prize-category-delete-modal',
@@ -861,7 +861,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @post(
         path=(
-            '/admin/prizes/prize-criterion/create/{event_uniq_id:str}'
+            '/prizes/prize-criterion/create/{event_uniq_id:str}'
             '/{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prize-criterion-create',
@@ -914,7 +914,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @patch(
         path=(
-            '/admin/prizes/prize-criterion/update/{event_uniq_id:str}'
+            '/prizes/prize-criterion/update/{event_uniq_id:str}'
             '/{tournament_id:int}/{prize_group_id:int}'
             '/{prize_category_id:int}/{prize_criterion_id:int}'
         ),
@@ -961,7 +961,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @delete(
         path=(
-            '/admin/prizes/prize-criterion/delete/{event_uniq_id:str}/{tournament_id:int}'
+            '/prizes/prize-criterion/delete/{event_uniq_id:str}/{tournament_id:int}'
             '/{prize_group_id:int}/{prize_category_id:int}/{prize_criterion_id:int}'
         ),
         name='admin-prize-criterion-delete',
@@ -990,7 +990,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/prizes/prize-criteria-modal/{event_uniq_id:str}/'
+            '/prizes/prize-criteria-modal/{event_uniq_id:str}/'
             '{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prize-criteria-modal',
@@ -1011,7 +1011,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/prizes/criterion-modal/create/{event_uniq_id:str}'
+            '/prizes/criterion-modal/create/{event_uniq_id:str}'
             '/{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prize-criterion-create-modal',
@@ -1033,7 +1033,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/prizes/criterion-modal/update/{event_uniq_id:str}'
+            '/prizes/criterion-modal/update/{event_uniq_id:str}'
             '/{tournament_id:int}/{prize_group_id:int}'
             '/{prize_category_id:int}/{prize_criterion_id:int}'
         ),
@@ -1158,7 +1158,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @post(
         path=(
-            '/admin/prizes/prize/create/{event_uniq_id:str}'
+            '/prizes/prize/create/{event_uniq_id:str}'
             '/{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prize-create',
@@ -1218,7 +1218,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @patch(
         path=(
-            '/admin/prizes/prize/update/{event_uniq_id:str}'
+            '/prizes/prize/update/{event_uniq_id:str}'
             '/{tournament_id:int}/{prize_group_id:int}'
             '/{prize_category_id:int}/{prize_id:int}'
         ),
@@ -1268,7 +1268,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @delete(
         path=(
-            '/admin/prizes/prize/delete/{event_uniq_id:str}/{tournament_id:int}'
+            '/prizes/prize/delete/{event_uniq_id:str}/{tournament_id:int}'
             '/{prize_group_id:int}/{prize_category_id:int}/{prize_id:int}'
         ),
         name='admin-prize-delete',
@@ -1297,7 +1297,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/prizes/prizes-modal/{event_uniq_id:str}/{tournament_id:int}'
+            '/prizes/prizes-modal/{event_uniq_id:str}/{tournament_id:int}'
             '/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prizes-modal',
@@ -1321,7 +1321,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/prizes/prize-modal/create/{event_uniq_id:str}'
+            '/prizes/prize-modal/create/{event_uniq_id:str}'
             '/{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prize-create-modal',
@@ -1343,7 +1343,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/prizes/prize-modal/update/{event_uniq_id:str}'
+            '/prizes/prize-modal/update/{event_uniq_id:str}'
             '/{tournament_id:int}/{prize_group_id:int}'
             '/{prize_category_id:int}/{prize_id:int}'
         ),

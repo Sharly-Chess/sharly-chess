@@ -162,7 +162,7 @@ class TournamentAdminController(BaseEventAdminController):
         return cls._admin_base_event_render(template_context)
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/tournaments',
+        path='/event/{event_uniq_id:str}/tournaments',
         name='admin-event-tournaments-tab',
     )
     async def htmx_admin_event_tournaments_tab(
@@ -575,7 +575,7 @@ class TournamentAdminController(BaseEventAdminController):
         return (stored_tournament, errors)
 
     @get(
-        path='/admin/tournament-modal/create/{event_uniq_id:str}',
+        path='/tournament-modal/create/{event_uniq_id:str}',
         name='admin-tournament-create-modal',
     )
     async def htmx_admin_tournament_create_modal(
@@ -592,7 +592,7 @@ class TournamentAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/tournament-modal/{action:str}/{event_uniq_id:str}/{tournament_id:int}',
+        path='/tournament-modal/{action:str}/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tournament-modal',
     )
     async def htmx_admin_tournament_modal(
@@ -757,7 +757,7 @@ class TournamentAdminController(BaseEventAdminController):
         return self._admin_event_tournaments_render(web_context)
 
     @post(
-        path='/admin/tournament-create/{event_uniq_id:str}',
+        path='/tournament-create/{event_uniq_id:str}',
         name='admin-tournament-create',
         guards=[ActionGuard(AuthAction.ADD_TOURNAMENTS)],
     )
@@ -777,7 +777,7 @@ class TournamentAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/tournament-update/{event_uniq_id:str}/{tournament_id:int}',
+        path='/tournament-update/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tournament-update',
         guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
     )
@@ -798,7 +798,7 @@ class TournamentAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/tournament-delete-modal/{event_uniq_id:str}/{tournament_id:int}',
+        path='/tournament-delete-modal/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tournament-delete-modal',
     )
     async def htmx_admin_tournament_delete_modal(
@@ -812,7 +812,7 @@ class TournamentAdminController(BaseEventAdminController):
         )
 
     @delete(
-        path='/admin/tournament-delete/{event_uniq_id:str}/{tournament_id:int}',
+        path='/tournament-delete/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tournament-delete',
         guards=[ActionGuard(AuthAction.DELETE_TOURNAMENTS)],
         status_code=HTTP_200_OK,
@@ -841,7 +841,7 @@ class TournamentAdminController(BaseEventAdminController):
     # -------------------------------------------------------------------------
 
     @get(
-        path='/admin/tournament-export/{event_uniq_id:str}/{tournament_id:int}/{exporter_id:str}',
+        path='/tournament-export/{event_uniq_id:str}/{tournament_id:int}/{exporter_id:str}',
         name='admin-tournament-export',
     )
     async def admin_tournament_export(
@@ -889,8 +889,8 @@ class TournamentAdminController(BaseEventAdminController):
 
     @get(
         path=[
-            '/admin/tournament-import-modal/{event_uniq_id:str}/{importer_id:str}',
-            '/admin/tournament-import-modal/{event_uniq_id:str}/{tournament_id:int}/{importer_id:str}',
+            '/tournament-import-modal/{event_uniq_id:str}/{importer_id:str}',
+            '/tournament-import-modal/{event_uniq_id:str}/{tournament_id:int}/{importer_id:str}',
         ],
         name='admin-tournament-import-modal',
     )
@@ -910,8 +910,8 @@ class TournamentAdminController(BaseEventAdminController):
 
     @post(
         path=[
-            '/admin/tournament-import/{event_uniq_id:str}/{importer_id:str}',
-            '/admin/tournament-import/{event_uniq_id:str}/{tournament_id:int}/{importer_id:str}',
+            '/tournament-import/{event_uniq_id:str}/{importer_id:str}',
+            '/tournament-import/{event_uniq_id:str}/{tournament_id:int}/{importer_id:str}',
         ],
         name='admin-tournament-import',
         guards=[ActionGuard(AuthAction.ADD_TOURNAMENTS)],
@@ -1037,7 +1037,7 @@ class TournamentAdminController(BaseEventAdminController):
 
     @post(
         path=(
-            '/admin/tournaments/tournament-criterion/create/{event_uniq_id:str}/{tournament_id:int}'
+            '/tournaments/tournament-criterion/create/{event_uniq_id:str}/{tournament_id:int}'
         ),
         name='admin-tournament-criterion-create',
         guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
@@ -1086,7 +1086,7 @@ class TournamentAdminController(BaseEventAdminController):
 
     @patch(
         path=(
-            '/admin/tournaments/tournament-criterion/update/{event_uniq_id:str}'
+            '/tournaments/tournament-criterion/update/{event_uniq_id:str}'
             '/{tournament_id:int}/{tournament_criterion_id:int}'
         ),
         name='admin-tournament-criterion-update',
@@ -1130,7 +1130,7 @@ class TournamentAdminController(BaseEventAdminController):
 
     @delete(
         path=(
-            '/admin/tournaments/tournament-criterion/delete/{event_uniq_id:str}/{tournament_id:int}'
+            '/tournaments/tournament-criterion/delete/{event_uniq_id:str}/{tournament_id:int}'
             '/{tournament_criterion_id:int}'
         ),
         name='admin-tournament-criterion-delete',
@@ -1155,7 +1155,7 @@ class TournamentAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/tournaments/tournament-criteria-modal/{event_uniq_id:str}/{tournament_id:int}'
+            '/tournaments/tournament-criteria-modal/{event_uniq_id:str}/{tournament_id:int}'
         ),
         name='admin-tournament-criteria-modal',
     )
@@ -1172,7 +1172,7 @@ class TournamentAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/tournaments/criterion-modal/create/{event_uniq_id:str}/{tournament_id:int}'
+            '/tournaments/criterion-modal/create/{event_uniq_id:str}/{tournament_id:int}'
         ),
         name='admin-tournament-criterion-create-modal',
     )
@@ -1191,7 +1191,7 @@ class TournamentAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/tournaments/criterion-modal/update/{event_uniq_id:str}'
+            '/tournaments/criterion-modal/update/{event_uniq_id:str}'
             '/{tournament_id:int}/{tournament_criterion_id:int}'
         ),
         name='admin-tournament-criterion-update-modal',
@@ -1224,8 +1224,8 @@ class TournamentAdminController(BaseEventAdminController):
 
     @get(
         path=[
-            '/admin/random-player/{event_uniq_id:str}',
-            '/admin/random-player/{event_uniq_id:str}/{tournament_id:int}',
+            '/random-player/{event_uniq_id:str}',
+            '/random-player/{event_uniq_id:str}/{tournament_id:int}',
         ],
         name='admin-random-player',
     )

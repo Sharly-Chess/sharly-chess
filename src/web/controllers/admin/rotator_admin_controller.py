@@ -86,7 +86,7 @@ class RotatorAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/rotators',
+        path='/event/{event_uniq_id:str}/rotators',
         name='admin-event-rotators-tab',
     )
     async def htmx_admin_event_rotators_tab(
@@ -167,7 +167,7 @@ class RotatorAdminController(BaseEventAdminController):
         return options
 
     @get(
-        path='/admin/rotator-modal/create/{event_uniq_id:str}',
+        path='/rotator-modal/create/{event_uniq_id:str}',
         name='admin-rotator-create-modal',
     )
     async def htmx_admin_rotator_create_modal(
@@ -182,7 +182,7 @@ class RotatorAdminController(BaseEventAdminController):
         return self._admin_event_rotator_render(web_context, template_context)
 
     @get(
-        path='/admin/rotator-modal/update/{event_uniq_id:str}/{rotator_id:int}',
+        path='/rotator-modal/update/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-update-modal',
     )
     async def htmx_admin_rotator_update_modal(
@@ -196,7 +196,7 @@ class RotatorAdminController(BaseEventAdminController):
         return self._admin_event_rotator_render(web_context, template_context)
 
     @get(
-        path='/admin/rotator-modal/clone/{event_uniq_id:str}/{rotator_id:int}',
+        path='/rotator-modal/clone/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-clone-modal',
     )
     async def htmx_admin_rotator_clone_modal(
@@ -212,7 +212,7 @@ class RotatorAdminController(BaseEventAdminController):
         return self._admin_event_rotator_render(web_context, template_context)
 
     @get(
-        path='/admin/rotator-modal/delete/{event_uniq_id:str}/{rotator_id:int}',
+        path='/rotator-modal/delete/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-delete-modal',
     )
     async def htmx_admin_rotator_delete_modal(
@@ -225,7 +225,7 @@ class RotatorAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/rotator-screens-modal/{event_uniq_id:str}/{rotator_id:int}',
+        path='/rotator-screens-modal/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-screens-modal',
     )
     async def htmx_admin_rotator_screens_modal(
@@ -275,7 +275,7 @@ class RotatorAdminController(BaseEventAdminController):
         return stored_rotator, errors
 
     @post(
-        path='/admin/rotator-create/{event_uniq_id:str}',
+        path='/rotator-create/{event_uniq_id:str}',
         name='admin-rotator-create',
         guards=[ActionGuard(AuthAction.MANAGE_SCREENS)],
     )
@@ -307,7 +307,7 @@ class RotatorAdminController(BaseEventAdminController):
         return self._admin_event_rotator_render(web_context)
 
     @post(
-        path='/admin/rotator-clone/{event_uniq_id:str}/{rotator_id:int}',
+        path='/rotator-clone/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-clone',
     )
     async def htmx_admin_rotator_clone(
@@ -342,7 +342,7 @@ class RotatorAdminController(BaseEventAdminController):
         return self._admin_event_rotator_render(web_context)
 
     @patch(
-        path='/admin/rotator-update/{event_uniq_id:str}/{rotator_id:int}',
+        path='/rotator-update/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-update',
     )
     async def htmx_admin_rotator_update(
@@ -379,7 +379,7 @@ class RotatorAdminController(BaseEventAdminController):
         return self._admin_event_rotator_render(web_context)
 
     @delete(
-        path='/admin/rotator-delete/{event_uniq_id:str}/{rotator_id:int}',
+        path='/rotator-delete/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-delete',
         status_code=HTTP_200_OK,
     )
@@ -399,7 +399,7 @@ class RotatorAdminController(BaseEventAdminController):
 
     @delete(
         path=(
-            '/admin/rotator-screen-delete/{event_uniq_id:str}/'
+            '/rotator-screen-delete/{event_uniq_id:str}/'
             '{rotator_id:int}/{rotating_screen_id:int}'
         ),
         name='admin-rotator-screen-delete',
@@ -421,7 +421,7 @@ class RotatorAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/rotator-reorder-screens/{event_uniq_id:str}/{rotator_id:int}',
+        path='/rotator-reorder-screens/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-reorder-screens',
     )
     async def htmx_admin_rotator_reorder_screens(
@@ -440,7 +440,7 @@ class RotatorAdminController(BaseEventAdminController):
         )
 
     @post(
-        path='/admin/rotating-screens-create/{event_uniq_id:str}/{rotator_id:int}',
+        path='/rotating-screens-create/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotating-screens-create',
     )
     async def htmx_admin_rotating_screens_create(

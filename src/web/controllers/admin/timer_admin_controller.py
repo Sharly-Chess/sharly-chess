@@ -383,14 +383,14 @@ class TimerAdminController(BaseEventAdminController):
         return cls._admin_base_event_render(template_context)
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/timers',
+        path='/event/{event_uniq_id:str}/timers',
         name='admin-event-timers-tab',
     )
     async def htmx_admin_event_timers_tab(self, request: HTMXRequest) -> Template:
         return self._admin_event_timers_render(request)
 
     @get(
-        path='/admin/default-timers-modal/{event_uniq_id:str}',
+        path='/default-timers-modal/{event_uniq_id:str}',
         name='admin-default-timers-modal',
     )
     async def htmx_admin_default_timers_modal(
@@ -400,7 +400,7 @@ class TimerAdminController(BaseEventAdminController):
         return self._admin_event_timers_render(request, modal='default-timers')
 
     @patch(
-        path='/admin/default-timers-update/{event_uniq_id:str}',
+        path='/default-timers-update/{event_uniq_id:str}',
         name='default-timers-update',
     )
     async def htmx_admin_default_timers_update(
@@ -453,7 +453,7 @@ class TimerAdminController(BaseEventAdminController):
         return self._admin_event_timers_render(request, reload_event=True)
 
     @get(
-        path='/admin/timer-modal/create/{event_uniq_id:str}',
+        path='/timer-modal/create/{event_uniq_id:str}',
         name='admin-timer-create-modal',
     )
     async def htmx_admin_timer_create_modal(
@@ -467,7 +467,7 @@ class TimerAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/timer-modal/{action:str}/{event_uniq_id:str}/{timer_id:int}',
+        path='/timer-modal/{action:str}/{event_uniq_id:str}/{timer_id:int}',
         name='admin-timer-modal',
     )
     async def htmx_admin_timer_modal(
@@ -580,7 +580,7 @@ class TimerAdminController(BaseEventAdminController):
             case _:
                 raise ValueError(f'action=[{action}]')
 
-    @post(path='/admin/timer-create/{event_uniq_id:str}', name='admin-timer-create')
+    @post(path='/timer-create/{event_uniq_id:str}', name='admin-timer-create')
     async def htmx_admin_timer_create(
         self,
         request: HTMXRequest,
@@ -597,7 +597,7 @@ class TimerAdminController(BaseEventAdminController):
         )
 
     @post(
-        path='/admin/timer-clone/{event_uniq_id:str}/{timer_id:int}',
+        path='/timer-clone/{event_uniq_id:str}/{timer_id:int}',
         name='admin-timer-clone',
     )
     async def htmx_admin_timer_clone(
@@ -617,7 +617,7 @@ class TimerAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/timer-update/{event_uniq_id:str}/{timer_id:int}',
+        path='/timer-update/{event_uniq_id:str}/{timer_id:int}',
         name='admin-timer-update',
     )
     async def htmx_admin_timer_update(
@@ -638,7 +638,7 @@ class TimerAdminController(BaseEventAdminController):
         )
 
     @delete(
-        path='/admin/timer-delete/{event_uniq_id:str}/{timer_id:int}',
+        path='/timer-delete/{event_uniq_id:str}/{timer_id:int}',
         name='admin-timer-delete',
         status_code=HTTP_200_OK,
     )
@@ -659,7 +659,7 @@ class TimerAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/timer-hours-modal/{event_uniq_id:str}/{timer_id:int}',
+        path='/timer-hours-modal/{event_uniq_id:str}/{timer_id:int}',
         name='admin-timer-hours-modal',
     )
     async def htmx_admin_timer_hours_modal(
@@ -675,7 +675,7 @@ class TimerAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/timer-hours-hour-modal/{event_uniq_id:str}/{timer_id:int}/{timer_hour_id:int}',
+        path='/timer-hours-hour-modal/{event_uniq_id:str}/{timer_id:int}/{timer_hour_id:int}',
         name='admin-timer-hours-hour-modal',
     )
     async def htmx_admin_timer_hours_hour_modal(
@@ -793,7 +793,7 @@ class TimerAdminController(BaseEventAdminController):
         )
 
     @post(
-        path='/admin/timer-hour-add/{event_uniq_id:str}/{timer_id:int}',
+        path='/timer-hour-add/{event_uniq_id:str}/{timer_id:int}',
         name='admin-timer-hour-add',
     )
     async def htmx_admin_timer_hour_add(
@@ -814,7 +814,7 @@ class TimerAdminController(BaseEventAdminController):
         )
 
     @post(
-        path='/admin/timer-hour-clone/{event_uniq_id:str}/{timer_id:int}/{timer_hour_id:int}',
+        path='/timer-hour-clone/{event_uniq_id:str}/{timer_id:int}/{timer_hour_id:int}',
         name='admin-timer-hour-clone',
     )
     async def htmx_admin_timer_hour_clone(
@@ -836,7 +836,7 @@ class TimerAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/timer-hour-update/{event_uniq_id:str}/{timer_id:int}/{timer_hour_id:int}',
+        path='/timer-hour-update/{event_uniq_id:str}/{timer_id:int}/{timer_hour_id:int}',
         name='admin-timer-hour-update',
     )
     async def htmx_admin_timer_hour_update(
@@ -858,7 +858,7 @@ class TimerAdminController(BaseEventAdminController):
         )
 
     @delete(
-        path='/admin/timer-hour-delete/{event_uniq_id:str}/{timer_id:int}/{timer_hour_id:int}',
+        path='/timer-hour-delete/{event_uniq_id:str}/{timer_id:int}/{timer_hour_id:int}',
         name='admin-timer-hour-delete',
         status_code=HTTP_200_OK,
     )
@@ -881,7 +881,7 @@ class TimerAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/timer-reorder-hours/{event_uniq_id:str}/{timer_id:int}',
+        path='/timer-reorder-hours/{event_uniq_id:str}/{timer_id:int}',
         name='admin-timer-reorder-hours',
     )
     async def htmx_admin_timer_reorder_hours(

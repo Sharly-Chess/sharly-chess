@@ -199,7 +199,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
         return cls._admin_base_event_render(template_context)
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/display_controllers',
+        path='/event/{event_uniq_id:str}/display_controllers',
         name='admin-event-display-controllers-tab',
     )
     async def htmx_admin_event_display_controllers_tab(
@@ -208,7 +208,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
         return self._admin_event_display_controllers_render(request)
 
     @get(
-        path='/admin/display-controller-modal/create/{event_uniq_id:str}',
+        path='/display-controller-modal/create/{event_uniq_id:str}',
         name='admin-display-controller-create-modal',
     )
     async def htmx_admin_display_controller_create_modal(
@@ -222,7 +222,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/display-controller-modal/{action:str}/{event_uniq_id:str}/{display_controller_id:int}',
+        path='/display-controller-modal/{action:str}/{event_uniq_id:str}/{display_controller_id:int}',
         name='admin-display-controller-modal',
     )
     async def htmx_admin_display_controller_modal(
@@ -311,7 +311,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
         return self._admin_event_display_controllers_render(request, reload_event=True)
 
     @post(
-        path='/admin/display-controller-create/{event_uniq_id:str}',
+        path='/display-controller-create/{event_uniq_id:str}',
         name='admin-display-controller-create',
     )
     async def htmx_admin_display_controller_create(
@@ -330,7 +330,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/display-controller-update/{event_uniq_id:str}/{display_controller_id:int}',
+        path='/display-controller-update/{event_uniq_id:str}/{display_controller_id:int}',
         name='admin-display-controller-update',
     )
     async def htmx_admin_display_controller_update(
@@ -350,7 +350,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
         )
 
     @delete(
-        path='/admin/display-controller-delete/{event_uniq_id:str}/{display_controller_id:int}',
+        path='/display-controller-delete/{event_uniq_id:str}/{display_controller_id:int}',
         name='admin-display-controller-delete',
         status_code=HTTP_200_OK,
     )
@@ -371,7 +371,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/display-controller-assign/{event_uniq_id:str}/{display_controller_id:int}/{type:str}/{object_uniq_id:str}',
+        path='/display-controller-assign/{event_uniq_id:str}/{display_controller_id:int}/{type:str}/{object_uniq_id:str}',
         name='admin-display-controller-assign',
     )
     async def htmx_admin_display_controller_assign(
@@ -429,7 +429,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/admin-display-controller-clear/{event_uniq_id:str}/{display_controller_id:int}',
+        path='/display-controller-clear/{event_uniq_id:str}/{display_controller_id:int}',
         name='admin-display-controller-clear',
     )
     async def htmx_admin_display_controller_clear(

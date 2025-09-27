@@ -89,7 +89,7 @@ class BaseInputUserController(BaseScreenUserController):
 
 class CheckInUserController(BaseInputUserController):
     @get(
-        path='/user/checkin-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
+        path='/view/checkin-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
         name='user-checkin-modal',
     )
     async def htmx_user_checkin_modal(self, request: HTMXRequest) -> Template:
@@ -105,7 +105,7 @@ class CheckInUserController(BaseInputUserController):
         )
 
     @patch(
-        path='/user/toggle-check-in/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
+        path='/view/toggle-check-in/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
         name='user-toggle-check-in',
         guards=[TournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
@@ -157,7 +157,7 @@ class IllegalMoveUserController(BaseInputUserController):
         return self._user_screen_render(web_context)
 
     @put(
-        path='/user/add-illegal-move/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
+        path='/view/add-illegal-move/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
         name='user-add-illegal-move',
         guards=[TournamentActionGuard(AuthAction.SET_ILLEGAL_MOVES)],
         status_code=HTTP_200_OK,
@@ -166,7 +166,7 @@ class IllegalMoveUserController(BaseInputUserController):
         return self._delete_or_add_illegal_move(request, add=True)
 
     @delete(
-        path='/user/delete-illegal-move/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
+        path='/view/delete-illegal-move/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
         name='user-delete-illegal-move',
         guards=[TournamentActionGuard(AuthAction.SET_ILLEGAL_MOVES)],
         status_code=HTTP_200_OK,
@@ -177,7 +177,7 @@ class IllegalMoveUserController(BaseInputUserController):
 
 class ResultUserController(BaseInputUserController):
     @get(
-        path='/user/result-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{board_id:int}',
+        path='/view/result-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{board_id:int}',
         name='user-result-modal',
         guards=[TournamentActionGuard(AuthAction.ENTER_RESULTS)],
     )
@@ -221,7 +221,7 @@ class ResultUserController(BaseInputUserController):
         return self._user_screen_render(web_context)
 
     @put(
-        path='/user/add-result/{event_uniq_id:str}/{screen_uniq_id:str}/'
+        path='/view/add-result/{event_uniq_id:str}/{screen_uniq_id:str}/'
         '{tournament_id:int}/{round:int}/{board_id:int}/{result:int}',
         name='user-add-result',
         guards=[SetResultGuard()],
@@ -234,7 +234,7 @@ class ResultUserController(BaseInputUserController):
         return self._user_update_result(request, channels=channels)
 
     @delete(
-        path='/user/delete-result/{event_uniq_id:str}/{screen_uniq_id:str}/'
+        path='/view/delete-result/{event_uniq_id:str}/{screen_uniq_id:str}/'
         '{tournament_id:int}/{round:int}/{board_id:int}',
         name='user-delete-result',
         guards=[TournamentActionGuard(AuthAction.UPDATE_RESULTS)],

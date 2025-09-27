@@ -338,9 +338,9 @@ class PairingsAdminController(BaseEventAdminController):
 
     @get(
         path=[
-            '/admin/event/{event_uniq_id:str}/pairings',
-            '/admin/event/{event_uniq_id:str}/pairings/{tournament_id:int}',
-            '/admin/event/{event_uniq_id:str}/pairings/{tournament_id:int}/{round:int}',
+            '/event/{event_uniq_id:str}/pairings',
+            '/event/{event_uniq_id:str}/pairings/{tournament_id:int}',
+            '/event/{event_uniq_id:str}/pairings/{tournament_id:int}/{round:int}',
         ],
         name='admin-event-pairings-tab',
     )
@@ -377,7 +377,7 @@ class PairingsAdminController(BaseEventAdminController):
 
     @get(
         path=[
-            '/admin/event/{event_uniq_id:str}/pairing/{tournament_id:int}/{round:int}/{board_id:int}',
+            '/event/{event_uniq_id:str}/pairing/{tournament_id:int}/{round:int}/{board_id:int}',
         ],
         name='admin-event-pairing-modal',
     )
@@ -399,7 +399,7 @@ class PairingsAdminController(BaseEventAdminController):
 
     @get(
         path=[
-            '/admin/event/{event_uniq_id:str}/unpaired-modal/{tournament_id:int}/{round:int}/{player_id:int}',
+            '/event/{event_uniq_id:str}/unpaired-modal/{tournament_id:int}/{round:int}/{player_id:int}',
         ],
         name='admin-event-unpaired-player-modal',
     )
@@ -518,7 +518,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
 
     @put(
-        path='/admin/pairing/set-result/'
+        path='/pairing/set-result/'
         '{event_uniq_id:str}/{tournament_id:int}/{round:int}/{board_id:int}/{result:int}',
         name='admin-pairings-set-result',
         guards=[SetResultGuard()],
@@ -541,7 +541,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
 
     @delete(
-        path='/admin/pairing/unpair/'
+        path='/pairing/unpair/'
         '{event_uniq_id:str}/{tournament_id:int}/{round:int}/{board_id:int}',
         name='admin-pairings-unpair-board',
         guards=[TournamentActionGuard(AuthAction.UNPAIR_BOARD)],
@@ -575,7 +575,7 @@ class PairingsAdminController(BaseEventAdminController):
         return self._admin_event_pairings_render(web_context)
 
     @patch(
-        path='/admin/pairing/permute/'
+        path='/pairing/permute/'
         '{event_uniq_id:str}/{tournament_id:int}/{round:int}/{board_id:int}',
         name='admin-pairings-permute',
         guards=[TournamentActionGuard(AuthAction.PERMUTE_BOARD)],
@@ -599,7 +599,7 @@ class PairingsAdminController(BaseEventAdminController):
         return self._admin_event_pairings_render(web_context)
 
     @put(
-        path='/admin/pairing/set-result-hotkey/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        path='/pairing/set-result-hotkey/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
         name='admin-pairings-set-result-hotkey',
         guards=[SetResultGuard()],
         data=Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -642,7 +642,7 @@ class PairingsAdminController(BaseEventAdminController):
 
     @patch(
         path=(
-            '/admin/pairing/set-participation/{event_uniq_id:str}/'
+            '/pairing/set-participation/{event_uniq_id:str}/'
             '{tournament_id:int}/{player_id:int}/{round:int}/{action:str}'
         ),
         name='admin-pairings-set-participation',
@@ -746,7 +746,7 @@ class PairingsAdminController(BaseEventAdminController):
         return self._admin_event_pairings_render(web_context)
 
     @post(
-        path='/admin/pairings/generate/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        path='/pairings/generate/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
         name='admin-generate-round-pairings',
         guards=[TournamentActionGuard(AuthAction.USE_PAIRING_ENGINE)],
     )
@@ -778,7 +778,7 @@ class PairingsAdminController(BaseEventAdminController):
         return self._admin_event_pairings_render(web_context)
 
     @post(
-        path='/admin/pairings/generate-partial/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        path='/pairings/generate-partial/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
         name='admin-generate-round-partial-pairings',
         guards=[TournamentActionGuard(AuthAction.USE_PAIRING_ENGINE)],
     )
@@ -840,7 +840,7 @@ class PairingsAdminController(BaseEventAdminController):
         return self._admin_event_pairings_render(web_context)
 
     @post(
-        path='/admin/pairings/generate/{event_uniq_id:str}/{tournament_id:int}',
+        path='/pairings/generate/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-generate-tournament-pairings',
         guards=[TournamentActionGuard(AuthAction.USE_PAIRING_ENGINE)],
     )
@@ -877,7 +877,7 @@ class PairingsAdminController(BaseEventAdminController):
         return self._admin_event_pairings_render(web_context)
 
     @post(
-        path='/admin/pairings/unpair/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        path='/pairings/unpair/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
         name='admin-pairings-unpair-round',
         guards=[TournamentActionGuard(AuthAction.UNPAIR_ROUND)],
     )
@@ -905,7 +905,7 @@ class PairingsAdminController(BaseEventAdminController):
         return self._admin_event_pairings_render(web_context)
 
     @post(
-        path='/admin/pairings/unpair-tournament/{event_uniq_id:str}/{tournament_id:int}',
+        path='/pairings/unpair-tournament/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-pairings-unpair-tournament',
         guards=[TournamentActionGuard(AuthAction.UNPAIR_ROUND)],
     )
@@ -928,7 +928,7 @@ class PairingsAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/pairings/safety-mode-modal/{event_uniq_id:str}/{tournament_id:int}'
+            '/pairings/safety-mode-modal/{event_uniq_id:str}/{tournament_id:int}'
             '/{round:int}/{action:str}/{redirect_method:str}/{redirect_route:path}'
         ),
         name='admin-pairings-safety-mode-modal',
@@ -965,9 +965,9 @@ class PairingsAdminController(BaseEventAdminController):
 
     @post(
         path=[
-            '/admin/pairings/update-safety-mode/'
+            '/pairings/update-safety-mode/'
             '{event_uniq_id:str}/{tournament_id:int}/{round:int}',
-            '/admin/pairings/update-safety-mode/{event_uniq_id:str}'
+            '/pairings/update-safety-mode/{event_uniq_id:str}'
             '/{tournament_id:int}/{round:int}/{mode:str}',
         ],
         name='admin-pairings-update-safety-mode',
@@ -993,7 +993,7 @@ class PairingsAdminController(BaseEventAdminController):
         return self._admin_event_pairings_render(web_context)
 
     @get(
-        path='/admin/pairings/unfinished-round-modal/'
+        path='/pairings/unfinished-round-modal/'
         '{event_uniq_id:str}/{tournament_id:int}/{round:int}',
         name='admin-pairings-unfinished-round-modal',
     )
@@ -1026,7 +1026,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
 
     @post(
-        path='/admin/pairings-check-in-out/{event_uniq_id:str}/{tournament_id:int}/{round:int}/{player_id:int}/{check_in:int}',
+        path='/pairings-check-in-out/{event_uniq_id:str}/{tournament_id:int}/{round:int}/{player_id:int}/{check_in:int}',
         name='admin-pairings-check-in-out',
         guards=[TournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
@@ -1052,7 +1052,7 @@ class PairingsAdminController(BaseEventAdminController):
         return self._admin_event_pairings_render(web_context)
 
     @get(
-        path='/admin/pairings/settings-modal/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        path='/pairings/settings-modal/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
         name='admin-pairings-settings-modal',
     )
     async def admin_pairings_settings_modal(
@@ -1080,7 +1080,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
 
     @post(
-        path='/admin/pairings/generate-with-settings/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        path='/pairings/generate-with-settings/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
         name='admin-generate-round-pairings-with-settings',
         guards=[TournamentActionGuard(AuthAction.USE_PAIRING_ENGINE)],
     )
@@ -1157,7 +1157,7 @@ class PairingsAdminController(BaseEventAdminController):
         tournament.update_pairing_settings(stored_settings)
 
     @put(
-        path='/admin/tournament/set-current-round/{event_uniq_id:str}/{tournament_id:int}/{current_round:int}',
+        path='/tournament/set-current-round/{event_uniq_id:str}/{tournament_id:int}/{current_round:int}',
         name='admin-tournament-set-current-round',
         guards=[TournamentActionGuard(AuthAction.SET_CURRENT_ROUND)],
     )
@@ -1177,7 +1177,7 @@ class PairingsAdminController(BaseEventAdminController):
         return self._admin_event_pairings_render(web_context)
 
     @put(
-        path='/admin/tournament/add-illegal-move/{event_uniq_id:str}/{tournament_id:int}/{round:int}/{player_id:int}',
+        path='/tournament/add-illegal-move/{event_uniq_id:str}/{tournament_id:int}/{round:int}/{player_id:int}',
         name='admin-tournament-add-illegal-move',
         guards=[TournamentActionGuard(AuthAction.SET_ILLEGAL_MOVES)],
         status_code=HTTP_200_OK,
@@ -1203,7 +1203,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
 
     @delete(
-        path='/admin/tournament/delete-illegal-move/{event_uniq_id:str}/{tournament_id:int}/{round:int}/{player_id:int}',
+        path='/tournament/delete-illegal-move/{event_uniq_id:str}/{tournament_id:int}/{round:int}/{player_id:int}',
         name='admin-tournament-delete-illegal-move',
         guards=[TournamentActionGuard(AuthAction.SET_ILLEGAL_MOVES)],
         status_code=HTTP_200_OK,
@@ -1230,7 +1230,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/pairings/needs-refresh-message/{event_uniq_id:str}/{tournament_id:int}/{round:int}/{reason:str}',
+        path='/pairings/needs-refresh-message/{event_uniq_id:str}/{tournament_id:int}/{round:int}/{reason:str}',
         name='admin-pairings-needs-refresh-message',
     )
     async def htmx_admin_pairings_refresh_message(
@@ -1278,7 +1278,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/pairings/info-modal/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        path='/pairings/info-modal/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
         name='admin-pairings-info-modal',
     )
     async def admin_pairings_info_modal(
@@ -1335,7 +1335,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/manual-tiebreak-update/{event_uniq_id:str}/{tournament_id:int}',
+        path='/manual-tiebreak-update/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-manual-tiebreak-update',
     )
     async def htmx_admin_manual_tiebreak_update(

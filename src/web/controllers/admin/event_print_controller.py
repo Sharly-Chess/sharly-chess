@@ -97,8 +97,8 @@ class EventPrintController(BaseEventAdminController):
 
     @get(
         path=[
-            '/admin/print-modal/{event_uniq_id:str}',
-            '/admin/print-modal/{event_uniq_id:str}/{tournament_id:int}',
+            '/print-modal/{event_uniq_id:str}',
+            '/print-modal/{event_uniq_id:str}/{tournament_id:int}',
         ],
         name='admin-print-modal',
     )
@@ -125,7 +125,7 @@ class EventPrintController(BaseEventAdminController):
         )
 
     @post(
-        path='/admin/event-print/{event_uniq_id:str}',
+        path='/event-print/{event_uniq_id:str}',
         name='admin-event-print',
     )
     async def htmx_admin_event_print(
@@ -211,7 +211,7 @@ class EventPrintController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/print-view/{event_uniq_id:str}/{document: str}',
+        path='/print-view/{event_uniq_id:str}/{document: str}',
         name='admin-print-view',
     )
     async def htmx_tournament_print_view(

@@ -893,7 +893,7 @@ class PlayerAdminController(BaseEventAdminController):
         return cls._admin_base_event_render(template_context)
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/players',
+        path='/event/{event_uniq_id:str}/players',
         name='admin-event-players-tab',
     )
     async def htmx_admin_event_players_tab(
@@ -1003,7 +1003,7 @@ class PlayerAdminController(BaseEventAdminController):
         return self._admin_event_players_render(request)
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/players/{page:int}',
+        path='/event/{event_uniq_id:str}/players/{page:int}',
         name='admin-event-players-page',
     )
     async def htmx_admin_event_players_page(
@@ -1012,7 +1012,7 @@ class PlayerAdminController(BaseEventAdminController):
         return self._admin_event_players_render(request, page=page)
 
     @get(
-        path='/admin/player-modal/create/{event_uniq_id:str}',
+        path='/player-modal/create/{event_uniq_id:str}',
         name='admin-player-create-modal',
     )
     async def htmx_admin_player_create_modal(self, request: HTMXRequest) -> Template:
@@ -1024,9 +1024,9 @@ class PlayerAdminController(BaseEventAdminController):
 
     @get(
         path=[
-            '/admin/player-modal/create-from-search/{event_uniq_id:str}/'
+            '/player-modal/create-from-search/{event_uniq_id:str}/'
             '{data_source_id:str}/{player_source_id:str}',
-            '/admin/player-modal/create-from-search/{event_uniq_id:str}/'
+            '/player-modal/create-from-search/{event_uniq_id:str}/'
             '/{data_source_id:str}/{player_source_id:str}/{tournament_id:str}',
         ],
         name='admin-player-modal-create-from-search',
@@ -1066,7 +1066,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/player-modal/{action:str}/{event_uniq_id:str}/{player_id:int}',
+        path='/player-modal/{action:str}/{event_uniq_id:str}/{player_id:int}',
         name='admin-player-modal',
     )
     async def htmx_admin_player_modal(
@@ -1083,7 +1083,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/record-modal/{event_uniq_id:str}/{player_id:int}',
+        path='/record-modal/{event_uniq_id:str}/{player_id:int}',
         name='admin-record-modal',
     )
     async def htmx_admin_record_modal(
@@ -1197,7 +1197,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/player-move/{event_uniq_id:str}/{player_id:int}/{tournament_id:int}',
+        path='/player-move/{event_uniq_id:str}/{player_id:int}/{tournament_id:int}',
         name='admin-player-move',
         guard=[TournamentActionGuard(AuthAction.UPDATE_PLAYERS)],
     )
@@ -1279,7 +1279,7 @@ class PlayerAdminController(BaseEventAdminController):
             raise ValueError(plugin_error)
 
     @post(
-        path='/admin/player-create/{event_uniq_id:str}',
+        path='/player-create/{event_uniq_id:str}',
         name='admin-player-create',
         guard=[TournamentActionGuard(AuthAction.ADD_PLAYERS)],
     )
@@ -1299,7 +1299,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/player-update/{event_uniq_id:str}/{player_id:int}',
+        path='/player-update/{event_uniq_id:str}/{player_id:int}',
         name='admin-player-update',
         guard=[TournamentActionGuard(AuthAction.UPDATE_PLAYERS)],
     )
@@ -1389,7 +1389,7 @@ class PlayerAdminController(BaseEventAdminController):
         return new_byes
 
     @patch(
-        path='/admin/player-record/{event_uniq_id:str}/{player_id:int}',
+        path='/player-record/{event_uniq_id:str}/{player_id:int}',
         name='admin-player-record',
         guard=[TournamentActionGuard(AuthAction.UPDATE_PLAYERS_HISTORY)],
     )
@@ -1414,7 +1414,7 @@ class PlayerAdminController(BaseEventAdminController):
         return self._admin_event_players_render(request, reload_event=True)
 
     @delete(
-        path='/admin/player-delete/{event_uniq_id:str}/{player_id:int}',
+        path='/player-delete/{event_uniq_id:str}/{player_id:int}',
         name='admin-player-delete',
         guard=[TournamentActionGuard(AuthAction.DELETE_PLAYERS)],
         status_code=HTTP_200_OK,
@@ -1448,7 +1448,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/tournament-open-check-in/{event_uniq_id:str}/{tournament_id:int}',
+        path='/tournament-open-check-in/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tournament-open-check-in',
         guard=[TournamentActionGuard(AuthAction.OPEN_CLOSE_CHECK_IN)],
     )
@@ -1467,7 +1467,7 @@ class PlayerAdminController(BaseEventAdminController):
         return self._admin_event_players_render(request, reload_event=True)
 
     @get(
-        path='/admin/tournament-close-check-in-modal/{event_uniq_id:str}/{tournament_id:int}',
+        path='/tournament-close-check-in-modal/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tournament-close-check-in-modal',
     )
     async def htmx_tournament_close_check_in_modal(
@@ -1482,7 +1482,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/tournament-close-check-in/{event_uniq_id:str}/{tournament_id:int}',
+        path='/tournament-close-check-in/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tournament-close-check-in',
         guard=[ActionGuard(AuthAction.OPEN_CLOSE_CHECK_IN)],
     )
@@ -1535,7 +1535,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/player-check-in/{event_uniq_id:str}/{player_id:int}',
+        path='/player-check-in/{event_uniq_id:str}/{player_id:int}',
         name='admin-player-check-in',
         guard=[ActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
@@ -1549,7 +1549,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/player-check-out/{event_uniq_id:str}/{player_id:int}',
+        path='/player-check-out/{event_uniq_id:str}/{player_id:int}',
         name='admin-player-check-out',
         guard=[ActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
@@ -1561,7 +1561,7 @@ class PlayerAdminController(BaseEventAdminController):
         return self._admin_player_check_in_out(request, player_id, check_in=False)
 
     @patch(
-        path='/admin/players-update/{event_uniq_id:str}/{data_source_id:str}',
+        path='/players-update/{event_uniq_id:str}/{data_source_id:str}',
         name='admin-event-players-update',
     )
     async def htmx_admin_update_event_players(
@@ -1621,7 +1621,7 @@ class PlayerAdminController(BaseEventAdminController):
         return self._admin_event_players_render(request, reload_event=True)
 
     @get(
-        path='/admin/event-players-diff-modal/{event_uniq_id:str}/{data_source_id:str}',
+        path='/event-players-diff-modal/{event_uniq_id:str}/{data_source_id:str}',
         name='admin-event-players-diff-modal',
     )
     async def htmx_admin_event_players_diff_modal(
@@ -1694,7 +1694,7 @@ class PlayerAdminController(BaseEventAdminController):
             )
 
     @get(
-        path='/admin/players/needs-refresh-message/{event_uniq_id:str}/{reason:str}',
+        path='/players/needs-refresh-message/{event_uniq_id:str}/{reason:str}',
         name='admin-players-needs-refresh-message',
     )
     async def htmx_admin_players_refresh_message(
@@ -1716,8 +1716,8 @@ class PlayerAdminController(BaseEventAdminController):
 
     @get(
         path=[
-            '/admin/search-player/{event_uniq_id:str}',
-            '/admin/search-player/{event_uniq_id:str}/{page:int}',
+            '/search-player/{event_uniq_id:str}',
+            '/search-player/{event_uniq_id:str}/{page:int}',
         ],
         name='admin-search-player',
     )
@@ -1956,7 +1956,7 @@ class PlayerAdminController(BaseEventAdminController):
         return File(path=temp_file.name, filename=f'{event_uniq_id}.ods')
 
     @get(
-        path='/admin/download-event-players/{event_uniq_id:str}',
+        path='/download-event-players/{event_uniq_id:str}',
         name='admin-download-event-players',
     )
     async def htmx_admin_event_download_players(

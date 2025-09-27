@@ -488,7 +488,7 @@ class FamilyAdminController(BaseEventAdminController):
         return cls._admin_base_event_render(template_context)
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/families',
+        path='/event/{event_uniq_id:str}/families',
         name='admin-event-families-tab',
     )
     async def htmx_admin_event_families_tab(
@@ -503,7 +503,7 @@ class FamilyAdminController(BaseEventAdminController):
         return self._admin_event_families_render(request)
 
     @get(
-        path='/admin/family-modal/create/{event_uniq_id:str}/{family_type:str}',
+        path='/family-modal/create/{event_uniq_id:str}/{family_type:str}',
         name='admin-family-create-modal',
     )
     async def htmx_admin_family_create_modal(
@@ -520,7 +520,7 @@ class FamilyAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/family-modal/{action:str}/{event_uniq_id:str}/{family_id:int}',
+        path='/family-modal/{action:str}/{event_uniq_id:str}/{family_id:int}',
         name='admin-family-modal',
     )
     async def htmx_admin_family_modal(
@@ -602,7 +602,7 @@ class FamilyAdminController(BaseEventAdminController):
         return self._admin_event_families_render(request, reload_event=True)
 
     @post(
-        path='/admin/family-create/{event_uniq_id:str}/{family_type:str}',
+        path='/family-create/{event_uniq_id:str}/{family_type:str}',
         name='admin-family-create',
         guards=[ActionGuard(AuthAction.MANAGE_SCREENS)],
     )
@@ -624,7 +624,7 @@ class FamilyAdminController(BaseEventAdminController):
         )
 
     @post(
-        path='/admin/family-clone/{event_uniq_id:str}/{family_id:int}',
+        path='/family-clone/{event_uniq_id:str}/{family_id:int}',
         name='admin-family-clone',
     )
     async def htmx_admin_family_clone(
@@ -645,7 +645,7 @@ class FamilyAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/family-update/{event_uniq_id:str}/{family_id:int}',
+        path='/family-update/{event_uniq_id:str}/{family_id:int}',
         name='admin-family-update',
     )
     async def htmx_admin_family_update(
@@ -666,7 +666,7 @@ class FamilyAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/family-uniq-id-update/{event_uniq_id:str}/{family_id:int}',
+        path='/family-uniq-id-update/{event_uniq_id:str}/{family_id:int}',
         name='admin-family-uniq-id-update',
     )
     async def htmx_admin_family_uniq_id_update(
@@ -709,7 +709,7 @@ class FamilyAdminController(BaseEventAdminController):
         )
 
     @delete(
-        path='/admin/family-delete/{event_uniq_id:str}/{family_id:int}',
+        path='/family-delete/{event_uniq_id:str}/{family_id:int}',
         name='admin-family-delete',
         status_code=HTTP_200_OK,
     )
