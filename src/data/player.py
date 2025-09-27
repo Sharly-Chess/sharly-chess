@@ -270,7 +270,7 @@ class Player:
         if player_rating and player_rating.value:
             return player_rating
         player_rating = plugin_manager.hook.get_player_estimated_rating(
-            federation=self.event.federation,
+            event_federation=self.event.federation,
             tournament_rating=tournament_rating,
             player=self,
         )

@@ -137,7 +137,10 @@ class AppHookSpecs:
 
     @hookspec(firstresult=True)
     def get_player_estimated_rating(
-        self, federation: str, tournament_rating: TournamentRating, player: 'Player'
+        self,
+        event_federation: str,
+        tournament_rating: TournamentRating,
+        player: 'Player',
     ) -> Optional['PlayerRating']:
         """Get the estimated rating of a player."""
 
