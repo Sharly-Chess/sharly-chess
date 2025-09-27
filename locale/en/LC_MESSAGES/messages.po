@@ -277,6 +277,9 @@ msgstr ""
 msgid "<smart_count> week |||| <smart_count> weeks"
 msgstr ""
 
+msgid "A - Competition *** FFE licence"
+msgstr "A - Competition"
+
 msgid "A URL, or the path to the rules file on the server, in PDF format."
 msgstr ""
 
@@ -663,6 +666,9 @@ msgstr "Avg. Perfect Perf."
 
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
 msgstr "B"
+
+msgid "B - Leisure *** FFE licence"
+msgstr "B - Leisure"
 
 msgid "BLACK WINS"
 msgstr ""
@@ -1953,6 +1959,9 @@ msgstr ""
 msgid "Experimental features in version %(version)s are:"
 msgstr ""
 
+msgid "Expired *** FFE licence"
+msgstr "Expired"
+
 msgid "Expired FFE licence"
 msgstr ""
 
@@ -3205,6 +3214,9 @@ msgstr ""
 
 msgid "None"
 msgstr ""
+
+msgid "None *** FFE licence"
+msgstr "None"
 
 msgid "Not assigned"
 msgstr ""
