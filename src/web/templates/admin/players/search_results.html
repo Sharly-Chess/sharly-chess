@@ -7,7 +7,7 @@
     </li>
 {% elif search %}
     {% with message, is_warning = data_source.info_or_warning_message %}
-        {% if message %}
+        {% if message and page == 0 %}
             <li class="dropdown-item no-hover text-nowrap">
                 <i class="{% if is_warning %}
                         bi-exclamation-triangle-fill text-warning
