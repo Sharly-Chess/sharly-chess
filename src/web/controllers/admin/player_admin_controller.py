@@ -767,7 +767,7 @@ class PlayerAdminController(BaseEventAdminController):
                             'comment': comment,
                             'owed': owed,
                             'paid': paid,
-                            'fixed': fixed,
+                            'fixed': fixed or None,
                         }
                         | {
                             'date_of_birth': WebContext.value_to_date_form_data(
