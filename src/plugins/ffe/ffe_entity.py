@@ -271,7 +271,7 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
                 int(player_source_id)
             )
 
-    async def search_player(
+    async def _search_player(
         self, string: str, federation: str, page: int = 0, limit: int | None = None
     ) -> list[StoredPlayer]:
         async with FFESqlServer() as ffe_sql_server:

@@ -90,7 +90,9 @@
 
 .search-results-dropdown {
     max-height: 400px;
+    width: fit-content;
     overflow-y: auto;
+    margin-top: 50px;
 }
 
 /* Time control editor – bootstrap-free layout for period rows */

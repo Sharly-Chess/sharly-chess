@@ -1347,7 +1347,7 @@ msgid "Date of birth"
 msgstr "Date de naissance"
 
 msgid "Date of birth:"
-msgstr "Date naiss. :"
+msgstr "Date de naissance :"
 
 msgid "Date:"
 msgstr "Date :"

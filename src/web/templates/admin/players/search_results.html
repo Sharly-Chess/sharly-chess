@@ -1,6 +1,23 @@
 {% import '/common/macros.j2' as macros with context %}
 
-{% if search_results is not none %}
+{% if connection_error %}
+    <li class="dropdown-item no-hover text-nowrap">
+        <i class="{{ data_source.search_error_icon }} text-danger pe-1"></i>
+        <span class="fst-italic">{{ connection_error }}</span>
+    </li>
+{% elif search %}
+    {% with message, is_warning = data_source.info_or_warning_message %}
+        {% if message %}
+            <li class="dropdown-item no-hover text-nowrap">
+                <i class="{% if is_warning %}
+                        bi-exclamation-triangle-fill text-warning
+                    {% else %}
+                        bi-info-circle-fill
+                    {% endif %} pe-1"></i>
+                <span class="fst-italic">{{ message }}</span>
+            </li>
+        {% endif %}
+    {% endwith %}
     {% if search_results %}
         {% for player in search_results %}
             <li class="dropdown-item text-nowrap btn"
@@ -17,19 +34,18 @@
                 {% include data_source.player_search_result_template %}
             </li>
             {% if loop.last and has_more_results %}
-                {% set id=data_source.search_element_name|replace('_', '-') %}
                 <li
                     class="dropdown-item text-nowrap"
                     hx-get="{{ url_for(
                         'admin-search-player',
                         event_uniq_id=admin_event.uniq_id,
-                        data_source_id=data_source.id,
                         page=page + 1,
-                    )}}?{{ data_source.search_element_name }}={{ search }}"
+                    )}}"
+                    hx-vals='{"data_source_id": "{{ data_source.id }}", "search": "{{ search }}"}'
                     hx-target="this"
                     hx-swap="outerHTML"
                     hx-trigger="intersect once"
-                    hx-indicator="#{{ id }}_indicator"
+                    hx-indicator="#data-source-indicator"
                 >
                     <span class="fst-italic">{{ _('Loading more results…') }}</span>
                 </li>
@@ -43,9 +59,4 @@
     <script>
         $('#{{ data_source.id }}-search-results').show();
     </script>
-{% elif connection_error %}
-    <li class="dropdown-item no-hover text-nowrap">
-        <i class="bi-cloud-slash pe-1"></i>
-        <span class="fst-italic">{{ connection_error }}</span>
-    </li>
 {% endif %}

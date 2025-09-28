@@ -53,7 +53,7 @@ English version below
 
 ## Players
 
-- Improved player search results (3.1.0)
+- Improved player search (3.1.0)
 
 ## Screens
 
