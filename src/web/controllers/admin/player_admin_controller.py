@@ -769,14 +769,14 @@ class PlayerAdminController(BaseEventAdminController):
                             'paid': paid,
                             'fixed': fixed,
                         }
+                        | {
+                            'date_of_birth': WebContext.value_to_date_form_data(
+                                date_of_birth
+                            )
+                        }
+                        | rating_data
+                        | plugin_form_data
                     )
-                    data |= {
-                        'date_of_birth': WebContext.value_to_date_form_data(
-                            date_of_birth
-                        )
-                    }
-                    data |= rating_data
-                    data |= plugin_form_data
                 if errors is None:
                     errors = {}
                 tournaments = admin_event.player_addable_tournaments
