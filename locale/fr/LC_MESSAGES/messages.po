@@ -4991,7 +4991,7 @@ msgid "This account can not be duplicated."
 msgstr "Ce compte ne peut pas être dupliqué."
 
 msgid "This account can not be updated."
-msgstr "Ce compte ne peut pas être modifié."
+msgstr ""
 
 msgid "This account is active, anonymous users can log in to it."
 msgstr "Ce compte est actif, les utilisateur·ices anonymes peuvent s'y connecter."
