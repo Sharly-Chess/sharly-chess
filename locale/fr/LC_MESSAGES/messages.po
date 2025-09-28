@@ -4069,9 +4069,18 @@ msgstr "Supprimer la redirection du pilote d'afficheurs vers cet écran."
 msgid "Rename events"
 msgstr "Renommer les évènements"
 
+msgid "Replace"
+msgstr "Remplacer"
+
 #, python-format
 msgid "Replace [%(old)s] by [%(new)s]"
 msgstr "Remplacer [%(old)s] par [%(new)s]"
+
+msgid "Replace player"
+msgstr "Remplacer le·la joueur·euse"
+
+msgid "Replace the player using the search. Should only be used when the wrong player has been added."
+msgstr "Remplacer le·la joueur·euse en utilisant la recherche. Doit uniquement être utilisé lorsque le·la mauvais joueur·euse a été ajouté·e."
 
 #, python-format
 msgid "Replaces category [%(category)s] and deletes all the criteria of this category."
