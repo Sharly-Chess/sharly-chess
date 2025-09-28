@@ -46,6 +46,29 @@
                             {{ _('Record') }}
                         </li>
                     {% endif %}
+                    {% if can_update %}
+                        <li
+                            class="dropdown-item btn text-start text-danger"
+                            hx-get="{{ url_for('admin-player-modal', action='replace', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                            hx-trigger="click, keyup[key=='Enter']"
+                            tabindex="0"
+                            {{ macros.tooltip_attributes(
+                                'info',
+                                _(
+                                    'Replace the player using the search. Should only be used '
+                                    'when the wrong player has been added.'
+                                ),
+                                'left'
+                            ) }}
+                        >
+                            <i class="bi-arrow-left-right pe-1"></i>
+                            {{ _('Replace') }}
+                        </li>
+                    {% endif %}
                     {% if can_delete %}
                         <li
                             class="dropdown-item btn text-start text-danger {% if player.has_real_pairings %}disabled{% endif %}"

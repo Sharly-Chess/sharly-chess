@@ -161,10 +161,8 @@ class PlayerAdminController(BaseEventAdminController):
             tournament = web_context.admin_event.tournaments_by_id[tournament_id]
         except (ValueError, KeyError):
             errors[field] = _('Please choose the tournament.')
-        if action == 'update' and tournament is not None:
-            player = web_context.admin_player
-            assert player is not None
-            assert player.tournament is not None
+        if action in ['update', 'replace'] and tournament is not None:
+            player = web_context.get_admin_player()
             if tournament.id != player.tournament.id:
                 try:
                     cls._validate_player_tournament_move(player, tournament)
@@ -712,23 +710,19 @@ class PlayerAdminController(BaseEventAdminController):
                         paid = stored_player.paid
                         fixed = stored_player.fixed
                         stored_plugin_data = stored_player.plugin_data
-                    match action:
-                        case 'update' | 'delete':
-                            assert admin_player is not None
-                            assert admin_player.tournament is not None
-                            tournament_id = admin_player.tournament.id
-                        case 'create':
-                            if (
-                                len(
-                                    admin_event.not_finished_tournaments_sorted_by_uniq_id
-                                )
-                                == 1
-                            ):
-                                tournament_id = admin_event.not_finished_tournaments_sorted_by_uniq_id[
+                    if action == 'create':
+                        if (
+                            len(admin_event.not_finished_tournaments_sorted_by_uniq_id)
+                            == 1
+                        ):
+                            tournament_id = (
+                                admin_event.not_finished_tournaments_sorted_by_uniq_id[
                                     0
                                 ].id
-                        case _:
-                            raise ValueError(f'action=[{action}]')
+                            )
+                    else:
+                        assert admin_player is not None
+                        tournament_id = admin_player.tournament.id
 
                     rating_data: dict[str, Any] = {}
                     for tournament_rating in TournamentRating:
@@ -784,7 +778,7 @@ class PlayerAdminController(BaseEventAdminController):
                 if action == 'create' and len(tournaments) > 1:
                     # force the choice of the tournament on player creation if several tournaments
                     tournament_options |= {'': '-'}
-                elif action == 'update':
+                elif action in ['update', 'replace']:
                     assert admin_player is not None
                     if admin_player.tournament not in tournaments:
                         tournaments.insert(0, admin_player.tournament)
@@ -1067,12 +1061,12 @@ class PlayerAdminController(BaseEventAdminController):
 
     @get(
         path=[
-            '/admin/player-modal/create-from-search/{event_uniq_id:str}/'
+            '/admin/player-modal/from-search/{event_uniq_id:str}/'
             '{data_source_id:str}/{player_source_id:str}',
             '/admin/player-modal/create-from-search/{event_uniq_id:str}/'
-            '/{data_source_id:str}/{player_source_id:str}/{tournament_id:str}',
+            '/{data_source_id:str}/{player_source_id:str}',
         ],
-        name='admin-player-modal-create-from-search',
+        name='admin-player-modal-from-search',
     )
     async def htmx_admin_player_modal_create_from_search(
         self,
@@ -1080,10 +1074,11 @@ class PlayerAdminController(BaseEventAdminController):
         event_uniq_id: str,
         data_source_id: str,
         player_source_id: str,
+        player_id: int | None,
         tournament_id: str | None,
     ) -> Template:
         web_context = PlayerAdminWebContext(
-            request, event_uniq_id, data_source_id=data_source_id
+            request, event_uniq_id, player_id, data_source_id=data_source_id
         )
         data_source = web_context.get_admin_data_source()
         errors: dict[str, str] = {}
@@ -1105,8 +1100,9 @@ class PlayerAdminController(BaseEventAdminController):
         return self._admin_event_players_render(
             request,
             event_uniq_id=event_uniq_id,
+            player_id=player_id,
             modal='player',
-            action='create',
+            action='replace' if player_id else 'create',
             search_stored_player=stored_player,
             tournament_id=int(tournament_id) if tournament_id else None,
             errors=errors,
@@ -1159,16 +1155,12 @@ class PlayerAdminController(BaseEventAdminController):
         event_uniq_id: str,
         player_id: int | None,
     ) -> Template:
-        match action:
-            case 'update' | 'create':
-                web_context: PlayerAdminWebContext = PlayerAdminWebContext(
-                    request,
-                    event_uniq_id=event_uniq_id,
-                    player_id=player_id,
-                    data=data,
-                )
-            case _:
-                raise ValueError(f'action=[{action}]')
+        web_context: PlayerAdminWebContext = PlayerAdminWebContext(
+            request,
+            event_uniq_id=event_uniq_id,
+            player_id=player_id,
+            data=data,
+        )
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
         add_other = 'add_other' in data
@@ -1191,7 +1183,7 @@ class PlayerAdminController(BaseEventAdminController):
         tournament = event.tournaments_by_id[tournament_id]
         new_player_id: int | None = None
         match action:
-            case 'update':
+            case 'update' | 'replace':
                 player = web_context.get_admin_player()
                 event.update_player(player, stored_player)
                 previous_tournament = player.tournament
@@ -1386,6 +1378,28 @@ class PlayerAdminController(BaseEventAdminController):
             request,
             event_uniq_id=event_uniq_id,
             action='update',
+            player_id=player_id,
+            data=data,
+        )
+
+    @patch(
+        path='/admin/player-replace/{event_uniq_id:str}/{player_id:int}',
+        name='admin-player-replace',
+    )
+    async def htmx_admin_player_replace(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        event_uniq_id: str,
+        player_id: int,
+    ) -> Template:
+        return self._admin_player_update(
+            request,
+            event_uniq_id=event_uniq_id,
+            action='replace',
             player_id=player_id,
             data=data,
         )
@@ -1892,11 +1906,12 @@ class PlayerAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         data_source_id: str,
+        player_id: int | None,
         search: str,
         page: int = 0,
     ) -> Template:
         web_context = PlayerAdminWebContext(
-            request, event_uniq_id, data_source_id=data_source_id
+            request, event_uniq_id, player_id, data_source_id=data_source_id
         )
         data_source = web_context.get_admin_data_source()
         players: list[Player] = []

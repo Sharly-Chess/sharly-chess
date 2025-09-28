@@ -22,12 +22,15 @@
         {% for player in search_results %}
             <li class="dropdown-item text-nowrap btn"
                 hx-get="{{ url_for(
-                    'admin-player-modal-create-from-search',
+                    'admin-player-modal-from-search',
                     event_uniq_id=admin_event.uniq_id,
                     data_source_id=data_source.id,
                     player_source_id=data_source.get_player_source_id(player.stored_player),
                 ) }}"
-                hx-vals='js:{tournament_id: $("#tournament-id").val()}'
+                hx-vals='js:{
+                    tournament_id: $("#tournament-id").val(),
+                    {% if admin_player %}player_id: {{ admin_player.id }}{% endif %}
+                }'
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
