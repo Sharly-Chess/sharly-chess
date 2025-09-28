@@ -55,7 +55,7 @@
                     <div class="row gy-2 gx-3">
                         <div class="input-group">
                             {{ admin_macros.search_indicator('data-source-indicator') }}
-                            <select name="data_source" id="data-source" class="form-select w-auto" style="flex: 0 0 auto">
+                            <select name="data_source" id="data-source-select" class="form-select w-auto">
                                 {% for data_source in data_sources %}
                                     <option
                                         value="{{ data_source.id }}"
@@ -69,12 +69,11 @@
                                 id="search-input"
                                 name="search"
                                 class="dropdown form-control"
-                                style="min-width: 300px"
                                 type="search"
                                 hx-trigger="keyup changed delay:400ms, data_source_change"
                                 hx-target="#search-results"
                                 hx-get="{{ url_for('admin-search-player', event_uniq_id=admin_event.uniq_id) }}"
-                                hx-vals='js:{data_source_id: $("#data-source").val()}'
+                                hx-vals='js:{data_source_id: $("#data-source-select").val()}'
                                 hx-on::before-request="$('#search-results').show();"
                                 hx-on::after-request="$('#search-results').show();"
                                 hx-sync="this:replace"
@@ -87,7 +86,7 @@
                         >
                         </ul>
                         <script>
-                            $('#data-source').change(function () {
+                            $('#data-source-select').change(function () {
                                 document.querySelector('#search-results').innerHTML = `
                                     <li class="dropdown-item no-hover text-nowrap">
                                         <span class="fst-italic">{{ _('Searching…') }}</span>
@@ -106,7 +105,7 @@
                                     new CustomEvent('data_source_change', {bubbles: true, cancelable: true})
                                 );
                             });
-                            $('#data-source').trigger('change');
+                            $('#data-source-select').trigger('change');
                         </script>
                     </div>
                 {% endif %}
