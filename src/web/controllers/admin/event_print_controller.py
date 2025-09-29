@@ -184,23 +184,30 @@ class EventPrintController(BaseEventAdminController):
                 ]
                 if error_message := document_type.validate_for_tournament(tournament):
                     errors[field] = error_message
-
-            # Clear the modal contents, and send an event
-            return HTMXTemplate(
-                template_name='common/empty_modal.html',
-                re_target='#modal-wrapper',
-                trigger_event='do_print',
-                after='receive',
-                params={
-                    'event_uniq_id': event_uniq_id,
-                    'document': data['document'],
-                    'options': {
-                        option.id: data[option.id]
-                        for option in document_type.default_options()
-                        if option.id in data
-                    },
-                },
+        if errors:
+            template_context = self._print_modal_context(
+                web_context, data=flat_data, errors=errors
             )
+            return self._admin_print_render(
+                web_context=web_context,
+                template_context=template_context,
+            )
+        # Clear the modal contents, and send an event
+        return HTMXTemplate(
+            template_name='common/empty_modal.html',
+            re_target='#modal-wrapper',
+            trigger_event='do_print',
+            after='receive',
+            params={
+                'event_uniq_id': event_uniq_id,
+                'document': data['document'],
+                'options': {
+                    option.id: data[option.id]
+                    for option in document_type.default_options()
+                    if option.id in data
+                },
+            },
+        )
 
         template_context = self._print_modal_context(
             web_context, data=flat_data, errors=errors
