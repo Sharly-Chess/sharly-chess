@@ -1140,15 +1140,6 @@ msgstr ""
 msgid "Could not connect to data source [{data_source}]."
 msgstr ""
 
-msgid "Could not download [{url}], error code [{code}]."
-msgstr ""
-
-msgid "Could not download [{url}]: {error}."
-msgstr ""
-
-msgid "Could not unzip data."
-msgstr ""
-
 msgid "Create"
 msgstr ""
 
@@ -1328,16 +1319,7 @@ msgstr ""
 msgid "Database"
 msgstr ""
 
-msgid "Database [{database}] - "
-msgstr ""
-
 msgid "Database [{database}] successfully updated."
-msgstr ""
-
-msgid "Database [{database}] unexpectedly not found at path [{path}]."
-msgstr ""
-
-msgid "Database successfully updated."
 msgstr ""
 
 msgid "Date of birth"
@@ -1593,9 +1575,6 @@ msgid "Download the vCards of the selected players (VCF format). Warning: player
 msgstr ""
 
 msgid "Download tournament fees"
-msgstr ""
-
-msgid "Downloading source file…"
 msgstr ""
 
 msgid "Drag the hours to order them."
@@ -1902,9 +1881,6 @@ msgid "Error uploading tournament"
 msgstr ""
 
 msgid "Error when updating database [{database}]."
-msgstr ""
-
-msgid "Error while creating the database: {error}."
 msgstr ""
 
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
@@ -3083,9 +3059,6 @@ msgstr ""
 msgid "No current events."
 msgstr ""
 
-msgid "No data received from [{url}]."
-msgstr ""
-
 msgid "No display controllers"
 msgstr ""
 
@@ -3225,9 +3198,6 @@ msgid "Not checked-in yet"
 msgstr ""
 
 msgid "Not connected to internet"
-msgstr ""
-
-msgid "Not connected, impossible to update."
 msgstr ""
 
 msgid "Not logged in"
@@ -4593,9 +4563,6 @@ msgid "Statistics"
 msgstr ""
 
 msgid "Status"
-msgstr ""
-
-msgid "Storing data…"
 msgstr ""
 
 msgid "Strong"
@@ -6080,9 +6047,6 @@ msgid "{family_type}-screen"
 msgstr ""
 
 msgid "{first_name} {last_name}"
-msgstr ""
-
-msgid "{number} players written to the database."
 msgstr ""
 
 msgid "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."

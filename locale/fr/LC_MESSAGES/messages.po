@@ -1140,15 +1140,6 @@ msgstr "La copie vers le fichier .sce temporaire a échoué."
 msgid "Could not connect to data source [{data_source}]."
 msgstr "Impossible de se connecter à la source de données [{data_source}]."
 
-msgid "Could not download [{url}], error code [{code}]."
-msgstr "Impossible de télécharger [{url}], code d'erreur [{code}]."
-
-msgid "Could not download [{url}]: {error}."
-msgstr "Échec du téléchargement de [{url}]: {error}."
-
-msgid "Could not unzip data."
-msgstr "Impossible de décompresser les données."
-
 msgid "Create"
 msgstr "Créer"
 
@@ -1328,17 +1319,8 @@ msgstr "Sources de données"
 msgid "Database"
 msgstr "Base de données"
 
-msgid "Database [{database}] - "
-msgstr "Base de données [{database}] - "
-
 msgid "Database [{database}] successfully updated."
 msgstr "Base de données [{database}] mise à jour avec succès."
-
-msgid "Database [{database}] unexpectedly not found at path [{path}]."
-msgstr "Base de données [{database}] non trouvée au chemin attendu [{path}]."
-
-msgid "Database successfully updated."
-msgstr "Base de données mise à jour avec succès."
 
 msgid "Date of birth"
 msgstr "Date de naissance"
@@ -1594,9 +1576,6 @@ msgstr "Télécharger les vCards des joueur·euses (format VCF). Attention: les 
 
 msgid "Download tournament fees"
 msgstr "Télécharger les droits d'homologation"
-
-msgid "Downloading source file…"
-msgstr "Téléchargement du fichier source…"
 
 msgid "Drag the hours to order them."
 msgstr "Faites glisser les horaires pour les ordonner."
@@ -1903,9 +1882,6 @@ msgstr "Erreur lors de la mise en ligne du tournoi"
 
 msgid "Error when updating database [{database}]."
 msgstr "Erreur lors de la mise à jour de la base de données [{database}]."
-
-msgid "Error while creating the database: {error}."
-msgstr "Erreur lors de la création de la base de données: {error}."
 
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr "Estimé"
@@ -3083,9 +3059,6 @@ msgstr "Aucun critère."
 msgid "No current events."
 msgstr "Aucun évènement en cours."
 
-msgid "No data received from [{url}]."
-msgstr "Aucune donnée reçue de [{url}]."
-
 msgid "No display controllers"
 msgstr "Aucun pilote d'afficheurs"
 
@@ -3226,9 +3199,6 @@ msgstr "Pas encore point·ée"
 
 msgid "Not connected to internet"
 msgstr "Aucune connection à internet"
-
-msgid "Not connected, impossible to update."
-msgstr "Échec de la connexion, mise à jour impossible."
 
 msgid "Not logged in"
 msgstr "Non connecté"
@@ -4594,9 +4564,6 @@ msgstr "Statistiques"
 
 msgid "Status"
 msgstr "Statut"
-
-msgid "Storing data…"
-msgstr "Stockage des données…"
 
 msgid "Strong"
 msgstr "Préférence forte"
@@ -6081,9 +6048,6 @@ msgstr "ecran-{family_type}"
 
 msgid "{first_name} {last_name}"
 msgstr "{last_name} {first_name}"
-
-msgid "{number} players written to the database."
-msgstr "{number} joueur·euses écrit·es dans la base de données."
 
 msgid "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."
 msgstr "{player.last_name} {player.first_name} avait remporté {previous_value} dans le groupe principal, mais a ensuite reçu un prix de {next_value} dans la catégorie « {cat_name} ». En quittant le groupe principal, la part du prix à sa place vaut désormais {new_share}."
