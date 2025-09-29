@@ -1,9 +1,5 @@
 {% with url=url_for('admin-event-players-tab', event_uniq_id=admin_event.uniq_id) %}
-    {{ macros.refresh_listener(
-        hx_get=url,
-    ) }}
-
-    <div
+   <div
         hx-get="{{ url_for('admin-players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="result") }}"
         hx-trigger="ws:new-user-results|{{ admin_event.uniq_id }} from:body"
         hx-target="#refresh-message"

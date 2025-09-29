@@ -79,7 +79,7 @@ $(document).on('hide.bs.modal', function (e) {
         ignoreNextModalClose = false;
     } else if (refreshRequested) {
         e.preventDefault();
-        document.body.dispatchEvent(new CustomEvent('request_refresh'));
+        window.dispatchEvent(new CustomEvent('request_refresh'));
         refreshRequested = false;
     }
 });
