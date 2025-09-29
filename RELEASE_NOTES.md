@@ -16,6 +16,7 @@ English version below
 ## Joueur·euses
 
 - Amélioration de la recherche de joueur·euses (3.1.0)
+- Remplacement des joueur·euses ajouté·es par erreur (3.1.0)
 
 ## Écrans
 
@@ -54,6 +55,7 @@ English version below
 ## Players
 
 - Improved player search (3.1.0)
+- Replace players added by mistake (3.1.0)
 
 ## Screens
 
