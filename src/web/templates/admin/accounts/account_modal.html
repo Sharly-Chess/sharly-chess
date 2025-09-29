@@ -29,6 +29,9 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
+                {# These inputs are a trick to avoid autocomplete #}
+                <input type="text" style="display:none">
+                <input type="password" style="display:none">
                 <div class="row gy-2 gx-3">
                     {{ admin_macros.switch_input(
                         name='active',
