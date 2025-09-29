@@ -509,7 +509,11 @@ class Player:
         TitleNorm,
         dict[
             NormFailExplanation | NormCriterion,
-            int | float | PlayerGender | dict[Federation, int] | dict[PlayerTitle, int],
+            int
+            | float
+            | PlayerGender
+            | Counter[Federation]
+            | Counter[PlayerTitle, int],
         ],
     ]:
         """Returns True if the given title norm is achievable, or a list of the reasons why it is not.
@@ -521,11 +525,7 @@ class Player:
             TitleNorm,
             dict[
                 NormCriterion | NormFailExplanation,
-                int
-                | float
-                | PlayerGender
-                | dict[Federation, int]
-                | dict[PlayerTitle, int],
+                int | float | PlayerGender | Counter[Federation] | Counter[PlayerTitle],
             ],
         ] = {title_norm: {} for title_norm in TitleNorm.values()}
         for title_norm in result.keys():
@@ -580,22 +580,22 @@ class Player:
                 # FIXME(Amaras): take care of the exceptions
                 if len(federations) <= 2:
                     result[title_norm][NormFailExplanation.NOT_ENOUGH_FEDERATIONS] = (
-                        dict(federations)
+                        federations
                     )
                 elif own_federation > TitleNorm.maximum_of_own_federation(
                     tournament_rounds
                 ):
                     result[title_norm][NormFailExplanation.TOO_MANY_OWN_FEDERATION] = (
-                        dict(federations)
+                        federations
                     )
                 else:
-                    result[title_norm][NormCriterion.FEDERATIONS] = dict(federations)
+                    result[title_norm][NormCriterion.FEDERATIONS] = federations
             elif len(federations) < 2:
-                result[title_norm][NormFailExplanation.NOT_ENOUGH_FEDERATIONS] = dict(
+                result[title_norm][NormFailExplanation.NOT_ENOUGH_FEDERATIONS] = (
                     federations
                 )
             else:
-                result[title_norm][NormCriterion.FEDERATIONS] = dict(federations)
+                result[title_norm][NormCriterion.FEDERATIONS] = federations
 
             # If the most common doesn't go over the threshold, no other can.
             _, number_in_federation = federations.most_common(1)
@@ -603,7 +603,7 @@ class Player:
                 tournament_rounds
             ):
                 del result[title_norm][NormCriterion.FEDERATIONS]
-                result[title_norm][NormFailExplanation.TOO_MANY_ONE_FEDERATION] = dict(
+                result[title_norm][NormFailExplanation.TOO_MANY_ONE_FEDERATION] = (
                     federations
                 )
 
@@ -611,22 +611,22 @@ class Player:
             if (sum(title_holders.values())) < TitleNorm.minimum_title_holders(
                 tournament_rounds
             ):
-                result[title_norm][NormFailExplanation.NOT_ENOUGH_TITLE_HOLDERS] = dict(
+                result[title_norm][NormFailExplanation.NOT_ENOUGH_TITLE_HOLDERS] = (
                     title_holders
                 )
             else:
-                result[title_norm][NormCriterion.TITLE_HOLDERS] = dict(title_holders)
+                result[title_norm][NormCriterion.TITLE_HOLDERS] = title_holders
 
             if (
                 sum(required_titles[title_norm].values())
             ) < TitleNorm.minimum_required_titles(tournament_rounds):
                 result[title_norm][NormFailExplanation.NOT_ENOUGH_REQUIRED_TITLES] = (
-                    dict(required_titles[title_norm])
-                )
-            else:
-                result[title_norm][NormCriterion.REQUIRED_TITLES] = dict(
                     required_titles[title_norm]
                 )
+            else:
+                result[title_norm][NormCriterion.REQUIRED_TITLES] = required_titles[
+                    title_norm
+                ]
 
         score = sum(count * result.points() for result, count in game_results.items())
         for title_norm in result.keys():
@@ -683,7 +683,7 @@ class Player:
                 new_score = score
                 new_bonus = bonus
                 draw_points = Result.DRAW.points()
-                while True:
+                while new_score > 0:
                     new_score -= draw_points
                     new_bonus = StaticUtils.performance_bonus(new_score / max_score)
                     if average_rating + new_bonus >= title_norm.minimum_performance:
