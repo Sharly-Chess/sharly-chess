@@ -160,10 +160,16 @@ class RequestUtils:
         round_ = request.path_params.get(cls.ROUND_PARAM, tournament.current_round)
         if not 0 <= round_ <= tournament.rounds:
             raise ValidationException(f'Invalid round number [{round_}].')
-        boards = tournament.get_round_boards(round_)
-        if board_index > len(boards):
+        board = next(
+            (
+                board_
+                for board_ in tournament.get_round_boards(round_)
+                if board_.id == board_index
+            ),
+            None,
+        )
+        if not board:
             raise NotFoundException(f'Board [{board_index}] not found.')
-        board = tournament.boards[board_index - 1]
         request.state[cls.REQUEST_BOARD_ATTR] = board
         return board
 
