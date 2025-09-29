@@ -499,13 +499,7 @@ class Tournament:
     @cached_property
     def players_by_name_without_unpaired(self) -> list[Player]:
         return sorted(
-            [
-                player
-                for player in self.players
-                if not self.current_round
-                or player.board_id is not None
-                and player not in self.unpaired_players
-            ],
+            [player for player in self.players if player not in self.unpaired_players],
             key=by('last_name', 'first_name'),
         )
 
