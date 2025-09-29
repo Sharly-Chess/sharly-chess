@@ -601,7 +601,7 @@ class PairingsAdminController(BaseEventAdminController):
     @put(
         path='/pairing/set-result-hotkey/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
         name='admin-pairings-set-result-hotkey',
-        guards=[SetResultGuard()],
+        guards=[TournamentActionGuard(AuthAction.UPDATE_RESULTS)],
         data=Body(media_type=RequestEncodingType.URL_ENCODED),
     )
     async def htmx_admin_set_result_hotkey(
