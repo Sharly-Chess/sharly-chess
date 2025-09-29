@@ -29,6 +29,8 @@ get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
 
 class FfeAdminEventController(BaseEventAdminController):
+    guards = []
+
     @get(
         path='/ffe/event/{event_uniq_id:str}/players',
         name='ffe-admin-event-players-tab',
