@@ -5332,9 +5332,6 @@ msgstr "Impossible de définir la visibilité du tournoi."
 msgid "Unable to upload tournament rules."
 msgstr "Impossible de téléverser le règlement du tournoi."
 
-msgid "Unauthenticated access has been updated."
-msgstr "L'accès non authentifié a été mis à jour."
-
 msgid "Undefined **** PLURAL"
 msgstr "Non définis"
 

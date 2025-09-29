@@ -5332,9 +5332,6 @@ msgstr ""
 msgid "Unable to upload tournament rules."
 msgstr ""
 
-msgid "Unauthenticated access has been updated."
-msgstr ""
-
 msgid "Undefined **** PLURAL"
 msgstr "Undefined"
 
