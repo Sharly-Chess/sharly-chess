@@ -664,9 +664,9 @@ class PlayerAdminController(BaseEventAdminController):
                     paid: float = 0.0
                     fixed: int | None = None
                     stored_plugin_data: dict[str, dict[str, Any]] = {}
-                    stored_player = search_stored_player or getattr(
-                        admin_player, 'stored_player', None
-                    )
+                    stored_player = search_stored_player
+                    if not stored_player and admin_player and action != 'replace':
+                        stored_player = admin_player.stored_player
                     if stored_player:
                         first_name = stored_player.first_name
                         last_name = stored_player.last_name
