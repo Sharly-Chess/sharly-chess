@@ -66,6 +66,7 @@ from plugins.ffe.ffe_entity import (
     FfeLicencePlayerFilter,
     FfeLicenceFilterOption,
     FfeOnlineDataSource,
+    FfeLeaguesFilterOption,
 )
 from plugins.ffe.ffe_event_controller import FfeAdminEventController
 from plugins.ffe.ffe_session_handler import FFESessionHandler
@@ -1002,4 +1003,6 @@ class FfePlugin(Plugin):
         self, player_filter_option_types: list[type['PlayerFilterOption']]
     ):
         licence: type[PlayerFilterOption] = FfeLicenceFilterOption
+        league: type[PlayerFilterOption] = FfeLeaguesFilterOption
         player_filter_option_types.append(licence)
+        player_filter_option_types.append(league)
