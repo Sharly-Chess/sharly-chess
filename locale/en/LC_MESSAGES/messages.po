@@ -4076,9 +4076,6 @@ msgstr ""
 msgid "Replace player"
 msgstr ""
 
-msgid "Replace the player using the search. Should only be used when the wrong player has been added."
-msgstr ""
-
 #, python-format
 msgid "Replaces category [%(category)s] and deletes all the criteria of this category."
 msgstr ""
@@ -4448,6 +4445,9 @@ msgid "Sharly Chess settings have been updated."
 msgstr ""
 
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
+msgstr ""
+
+msgid "Should only be used when the wrong player has been added by mistake."
 msgstr ""
 
 msgid "Show Log"
