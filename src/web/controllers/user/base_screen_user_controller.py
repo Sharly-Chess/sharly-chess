@@ -89,14 +89,13 @@ class RotatorUserWebContext(ScreenEntityUserWebContext):
     def __init__(self, request: HTMXRequest, rotator_screen_index: int):
         super().__init__(request, user_event_tab='rotators')
         self.rotator = RequestUtils.get_rotator(request)
+        self.rotator_screen_index = 0
         self._screen: Screen | None = None
         if self.rotator.rotating_screens:
             self.rotator_screen_index = rotator_screen_index % len(
                 self.rotator.rotating_screens
             )
             self._screen = self.rotator.rotating_screens[self.rotator_screen_index]
-        else:
-            self.rotator_screen_index = 0
         self.is_rotator = True
 
     @property
@@ -110,6 +109,7 @@ class DisplayControllerUserWebContext(ScreenEntityUserWebContext):
         super().__init__(request, user_event_tab='display_controllers')
         self.display_controller = RequestUtils.get_display_controller(request)
         self._screen: Screen | None = None
+        self.rotator_screen_index = 0
         if rotator := self.display_controller.rotator:
             self.is_rotator = True
             if rotator.rotating_screens:
@@ -117,8 +117,6 @@ class DisplayControllerUserWebContext(ScreenEntityUserWebContext):
                     rotator.rotating_screens
                 )
                 self._screen = rotator.rotating_screens[self.rotator_screen_index]
-            else:
-                self.rotator_screen_index = 0
         else:
             self._screen = self.display_controller.screen
 
