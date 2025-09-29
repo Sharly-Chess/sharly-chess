@@ -257,7 +257,7 @@ def pil_to_toga_image(pil_img: PILImage.Image) -> toga.Image:
 class SharlyChessServerToga(toga.App):
     """Main Toga GUI app for Sharly Chess server."""
 
-    def __init__(self, debug: bool = False, port: int | None = None):
+    def __init__(self, *, debug: bool = False, port: int | None = None):
         system = platform.system()
         match system:
             case 'Windows':
