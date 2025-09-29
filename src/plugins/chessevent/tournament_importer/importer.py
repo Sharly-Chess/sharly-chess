@@ -12,7 +12,6 @@ from data.event import Event
 from data.input_output import TournamentImporter
 from data.input_output.dict_reader import dict_to_dataclass
 from data.input_output.tournament_importer_options import TournamentImporterOption
-from data.player import PlayerRating
 from database.sqlite.event.event_store import (
     StoredTournament,
     StoredPlayer,
@@ -38,6 +37,7 @@ from plugins.chessevent.utils import get_data
 from plugins.ffe.ffe import FfePlugin
 from plugins.ffe.utils import FfePlayerPluginData
 from utils.enum import TournamentRating, Result
+from utils.types import PlayerRating
 
 paris_tz = zoneinfo.ZoneInfo('Europe/Paris')
 epoch = datetime(1970, 1, 1, tzinfo=zoneinfo.ZoneInfo('UTC'))

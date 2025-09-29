@@ -1,6 +1,6 @@
 import shutil
 import time
-from collections import defaultdict
+from collections import Counter, defaultdict
 from collections.abc import Iterator
 from contextlib import suppress
 from functools import cached_property
@@ -45,6 +45,8 @@ from database.sqlite.event.event_store import (
 from database.sqlite.event import migrations
 from database.sqlite.migration_database import MigrationDatabase
 from plugins.manager import plugin_manager
+from utils.enum import PlayerRatingType, PlayerTitle, Result
+from utils.types import Federation, PlayerRating
 
 if TYPE_CHECKING:
     from data.loader import EventBackup
@@ -2470,3 +2472,187 @@ class EventDatabase(MigrationDatabase):
                 f'INSERT INTO `account_permission`({fields_str}) VALUES ({values_str})',
                 tuple(fields.values()),
             )
+
+    # ---------------------------------------------------------------------------------
+    # Norm convenience data getters
+    # ---------------------------------------------------------------------------------
+
+    def get_exception_information(
+        self, tournament_id: int
+    ) -> dict[str, Counter[Federation] | Counter[PlayerTitle]]:
+        params = {'tournament_id': tournament_id}
+        result = {}
+        self.execute(
+            """
+            WITH federations AS (
+                SELECT p.federation as federation,
+                p.player_id as player_id, COUNT(json_each.value) as nb_games
+                FROM all_players p, json_each(p.results)
+                JOIN tournament on p.tournament_id = tournament.id
+                WHERE json_each.value IS NOT NULL AND
+                json_each.value NOT IN (4, 5, 7, 8, 10) AND p.rating_type = 3
+                AND tournament.id = :tournament_id
+                GROUP BY p.player_id
+                HAVING nb_games >= tournament.rounds - 1
+            )
+            SELECT federation, COUNT(player_id) as federation_count
+            FROM federations
+            JOIN info ON info.ROWID = 1
+            WHERE federation <> info.federation
+            GROUP BY federation""",
+            params,
+        )
+        result['federations'] = Counter(
+            {
+                Federation(row['federation']): int(row['federation_count'])
+                for row in self.fetchall()
+            }
+        )
+        self.execute(
+            """
+            WITH titles AS (
+                SELECT p.title, p.federation as federation,
+                p.player_id as player_id, COUNT(json_each.value) as nb_games
+                FROM all_players p, json_each(p.results)
+                JOIN tournament on p.tournament_id = tournament.id
+                WHERE json_each.value IS NOT NULL AND
+                json_each.value NOT IN (4, 5, 7, 8, 10) AND p.rating_type = 3
+                AND tournament.id = :tournament_id
+                GROUP BY p.player_id
+                HAVING nb_games >= tournament.rounds - 1
+            )
+            SELECT title, COUNT(player_id) as title_count
+            FROM titles
+            JOIN info ON info.ROWID = 1
+            WHERE titles.federation <> info.federation
+            GROUP BY title""",
+            params,
+        )
+        result['titles'] = Counter(
+            {
+                PlayerTitle(int(row['federation'])): int(row['federation_count'])
+                for row in self.fetchall()
+            }
+        )
+        return result
+
+    def get_forfeit_wins_and_pab(self, tournament_id: int, player_id: int) -> int:
+        self.execute(
+            f"""SELECT COUNT(json_each.value) as forfeit_win_or_pab
+            FROM all_players p, json_each(p.games)
+            WHERE tournament_id = :tournament_id AND player_id = :player_id
+            AND json_each.value in {','.join(Result.FORFEIT_WIN, Result.PAIRING_ALLOCATED_BYE)}""",
+            params={'tournament_id': tournament_id, 'player_id': player_id},
+        )
+        return self.fetchone()['forfeit_win_or_pab']
+
+    def get_played_rounds(
+        self, tournament_id: int, player_id: int, *, exclude_wanted_plays: bool = True
+    ) -> int:
+        to_exclude = (
+            Result.FORFEIT_LOSS,
+            Result.DOUBLE_FORFEIT,
+            Result.FULL_POINT_BYE,
+            Result.HALF_POINT_BYE,
+            Result.ZERO_POINT_BYE,
+            Result.NO_RESULT,
+        )
+        if exclude_wanted_plays:
+            to_exclude += (
+                Result.FORFEIT_WIN,
+                Result.REST_GAME,
+                Result.PAIRING_ALLOCATED_BYE,
+            )
+        self.execute(
+            f"""SELECT COUNT(json_each.value) as played_games
+            FROM all_players p, json_each(p.results)
+            WHERE tournament_id = :tournament_id AND player_id = :player_id
+            AND json_each.value NOT IN ({','.join(map(lambda e: e.value, to_exclude))})""",
+            {'tournament_id': tournament_id, 'player_id': player_id},
+        )
+        return int(self.fetchone['played_games'])
+
+    def get_opponent_federations_and_titles(
+        self, tournament_id: int, player_id: int
+    ) -> tuple[Counter[Federation], Counter[PlayerTitle]]:
+        params = {'tournament_id': tournament_id, 'player_id': player_id}
+        self.execute(
+            """SELECT o.federation, COUNT(o.federation) as federation_count
+            FROM all_players p, json_each(p.opponents)
+            JOIN player o ON o.id = json_each.value
+            WHERE json_each.value IS NOT NULL AND p.tournament_id = :tournament_id
+            AND p.player_id = :player_id
+            GROUP BY o.federation""",
+            params,
+        )
+        federations = Counter(
+            {
+                Federation(row['federation']): int(row['federation_count'])
+                for row in self.fetchall()
+            }
+        )
+        self.execute(
+            """SELECT o.title, COUNT(o.title) as title_count
+            FROM all_players p, json_each(p.opponents)
+            JOIN player o ON o.id = json_each.value
+            WHERE json_each.value IS NOT NULL and p.tournament_id = :tournament_id
+            AND p.player_id = :player_id AND o.title > 2
+            GROUP BY o.title""",
+            params,
+        )
+        titles = Counter(
+            {
+                PlayerTitle(row['title']): int(row['title_count'])
+                for row in self.fetchall()
+            }
+        )
+        return federations, titles
+
+    def get_opponent_ratings(
+        self, tournament_id: int, player_id: int
+    ) -> Iterator[PlayerRating]:
+        self.execute(
+            """SELECT o.rating, o.rating_type
+            FROM all_players p, json_each(p.opponents)
+            JOIN all_players o ON o.player_id = json_each.value
+            WHERE p.tournament_id = :tournament_id AND p.player_id = :player.id""",
+            {'tournament_id': tournament_id, 'player_id': player_id},
+        )
+        for row in self.fetchall():
+            yield PlayerRating(int(row['rating'], PlayerRatingType(row['rating_type'])))
+
+    def get_opponent_information(
+        self, tournament_id: int, player_id: int
+    ) -> Iterator[dict[str, Any]]:
+        self.execute(
+            """SELECT json_each.key as round, o.name, o.fide_id, o.federation, o.rating, o.rating_type, o.title, json_extract(p.results, '$.'|| round)
+            FROM all_players p, json_each(p.opponents)
+            JOIN all_players o ON o.player_id = json_each.value
+            WHERE p.tournament_id = :tournament_id AND p.player_id = :player_id
+            ORDER BY json_each.key""",
+            {'tournament_id': tournament_id, 'player_id': player_id},
+        )
+        for row in self.fetchall():
+            yield {
+                'round': int(row['round']),
+                'name': row['name'],
+                'fide_id': int(row['fide_id']),
+                'federation': Federation(row['federation']),
+                'rating': PlayerRating(
+                    int(row['rating']), PlayerRatingType(row['rating_type'])
+                ),
+                'title': PlayerTitle(int(row['title'])).to_fide_value,
+                'score': Result(int(row['result'])).point_value,
+            }
+
+    def get_game_results(self, tournament_id: int, player_id: int) -> Counter[Result]:
+        self.execute(
+            """SELECT json_each.value AS result, COUNT(json_each.value) AS result_nb
+            FROM all_players p, json_each(p.results)
+            WHERE tournament_id = :tournament_id AND player_id = :player_id
+            GROUP BY result""",
+            params={'tournament_id': tournament_id, 'player_id': player_id},
+        )
+        return Counter(
+            {Result(row['result']): int(row['result_nb']) for row in self.fetchall()}
+        )

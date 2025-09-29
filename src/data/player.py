@@ -4,7 +4,7 @@ import weakref
 from dataclasses import dataclass
 from datetime import date
 from functools import total_ordering, cached_property
-from typing import Self, Callable, SupportsFloat, TYPE_CHECKING
+from typing import Self, SupportsFloat, TYPE_CHECKING
 from trf import Player as TrfPlayer
 from trf.Player import Game as TrfGame
 
@@ -27,36 +27,13 @@ from utils.enum import (
     PlayerRatingType,
     PlayerCategory,
 )
+from utils.types import PlayerRating, Federation
 
 if TYPE_CHECKING:
     from _weakref import ReferenceType
     from data.event import Event
     from data.tournament import Tournament
     from data.tie_breaks.tie_breaks import TieBreak
-
-
-@dataclass(frozen=True)
-@total_ordering
-class Federation:
-    name: str = ''
-
-    @cached_property
-    def to_query_param(self) -> str:
-        return base64.b64encode(self.name.encode('utf-8')).decode('utf-8')
-
-    @classmethod
-    def from_query_param(cls, query_param: str) -> Self:
-        return cls(base64.b64decode(query_param).decode('utf-8'))
-
-    def __le__(self, other: Self):
-        # p1 <= p2 calls p1.__le__(p2)
-        assert isinstance(other, self.__class__), (
-            f'Can not compare [{type(other)}] and [{self.__class__}]'
-        )
-        return self.name <= other.name
-
-    def __str__(self) -> str:
-        return self.name
 
 
 @dataclass(frozen=True)
@@ -81,43 +58,6 @@ class Club:
 
     def __str__(self) -> str:
         return self.name
-
-
-@total_ordering
-@dataclass
-class PlayerRating:
-    """A representation of the player's rating.
-    *value* is the numerical rating"""
-
-    value: int
-    type: PlayerRatingType
-
-    @classmethod
-    def from_stored_value(cls, dict_rating: dict[str, int]):
-        return cls(dict_rating['value'], PlayerRatingType(dict_rating['type']))
-
-    @property
-    def fide_unrated(self) -> bool:
-        return self.type != PlayerRatingType.FIDE
-
-    def __lt__(self, other):
-        if not isinstance(other, self.__class__):
-            return NotImplemented
-        if self.fide_unrated and not other.fide_unrated:
-            return False
-        if not self.fide_unrated and other.fide_unrated:
-            return True
-        return self.value < other.value
-
-    @property
-    def stored_value(self) -> dict[str, int]:
-        return {
-            'value': self.value,
-            'type': self.type.value,
-        }
-
-    def __str__(self) -> str:
-        return f'{self.value} {self.type.short_name}'
 
 
 class TieBreakValue:
@@ -594,34 +534,33 @@ class Player:
                 result[title_norm][NormFailExplanation.WRONG_GENDER] = self.gender
             else:
                 result[title_norm][NormCriterion.GENDER] = self.gender
-
-        played_games: int = 0
-        federations = Counter[Federation]()
-        title_holders = Counter[PlayerTitle]()
-        required_titles: dict[TitleNorm, Counter[PlayerTitle]] = {
-            title_norm: Counter() for title_norm in TitleNorm.values()
+        with EventDatabase(self.event.uniq_id) as event_database:
+            played_games = event_database.get_played_rounds(
+                self.tournament.id,
+                self.id,
+                exclude_wanted_plays=False,
+            )
+            federations, title_holders = (
+                event_database.get_opponent_federations_and_titles(
+                    self.tournament.id, self.id
+                )
+            )
+            ratings = list(
+                event_database.get_opponent_ratings(self.tournament.id, self.id)
+            )
+            forfeit_or_pab = event_database.get_forfeit_wins_and_pab(
+                self.tournament.id, self.id
+            )
+            game_results = event_database.get_game_results(self.tournament.id, self.id)
+        required_titles = {
+            title_norm: Counter(
+                title
+                for title in title_holders
+                if title in title_norm.required_titles()
+            )
+            for title_norm in TitleNorm.values()
         }
-        ratings: list[PlayerRating] = []
-        forfeit_or_pab = 0
-        game_results = Counter[Result]()
-        tournament_rating = self.tournament.rating
-        tournament_players = self.tournament.players_by_id
         tournament_rounds = self.tournament.rounds
-        for pairing in self.pairings_by_round.values():
-            if pairing.played:
-                played_games += 1
-                opponent = tournament_players[pairing.opponent_id]
-                federations[opponent.federation] += 1
-                ratings.append(opponent.ratings[tournament_rating])
-                if (title := opponent.title) in TitleNorm.title_holders():
-                    title_holders[title] += 1
-                for title_norm in result.keys():
-                    if title in title_norm.required_titles:
-                        required_titles[title_norm][title] += 1
-                game_results[pairing.result] += 1
-            if pairing.forfeit_gain or pairing.exempt:
-                forfeit_or_pab += 1
-
         # FIXME(Amaras): this depends on the tournament format, it is wrong for team championships
         for title_norm in result.keys():
             if played_games < TitleNorm.minimum_rounds():

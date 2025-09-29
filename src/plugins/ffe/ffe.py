@@ -52,7 +52,8 @@ from utils.enum import (
     ScreenType,
     TournamentRating,
 )
-from data.player import Player, PlayerRating
+from utils.types import PlayerRating
+from data.player import Player
 from database.sqlite.event.event_database import EventDatabase
 from plugins.ffe import migrations, PLUGIN_NAME, ffe_tie_breaks
 from plugins.ffe.ffe_database import FfeDatabase

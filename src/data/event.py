@@ -21,7 +21,7 @@ from common.sharly_chess_config import SharlyChessConfig
 from data.account import Account, Permission
 from data.display_controller import DisplayController
 from data.family import Family
-from data.player import Player, Club, Federation
+from data.player import Player, Club
 from data.rotator import Rotator
 from data.screen import Screen
 from data.timer import Timer
@@ -33,6 +33,7 @@ from utils.enum import (
     ScreenType,
     PlayerGender,
 )
+from utils.types import Federation
 from database.sqlite.event.event_store import (
     StoredEvent,
     StoredPlayer,

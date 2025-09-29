@@ -18,7 +18,7 @@ from common.network import NetworkMonitor
 from data.event import Event
 from data.input_output import OnlineDataSourceManager
 from data.loader import ArchiveLoader, EventLoader
-from data.player import Federation
+from utils.types import Federation
 
 from litestar import get, post, patch, delete
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect, Reswap

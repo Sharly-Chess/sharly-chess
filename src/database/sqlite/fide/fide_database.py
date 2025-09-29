@@ -15,7 +15,6 @@ from common import TMP_DIR
 from common.i18n import _
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.player import PlayerRating
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourceDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
@@ -26,6 +25,7 @@ from utils.enum import (
     TournamentRating,
     PlayerRatingType,
 )
+from utils.types import PlayerRating
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
 

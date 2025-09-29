@@ -11,13 +11,14 @@ from common import format_timestamp_date_time
 from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
-from data.player import Player, PlayerRating
+from data.player import Player
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
 from plugins.manager import plugin_manager
 from utils.entity import IdentifiableEntity
 from utils.enum import TournamentRating, PlayerRatingType
+from utils.types import PlayerRating
 
 logger: Logger = get_logger()
 

@@ -30,7 +30,8 @@ from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.client import Client
 from data.access_levels.client_tracker import ClientTracker
-from data.player import Federation, Club
+from data.player import Club
+from utils.types import Federation
 from web.messages import Message
 from web.session import SessionHandler
 from web.urls import index_url

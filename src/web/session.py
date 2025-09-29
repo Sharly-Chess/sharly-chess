@@ -9,9 +9,10 @@ from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.account import Account
 from data.input_output import DataSourceManager
-from data.player import Federation, Club
+from data.player import Club
 from data.safety_mode import SafetyMode
 from utils.enum import PlayerGender, PlayerCategory
+from utils.types import Federation
 
 if TYPE_CHECKING:
     from data.event import Event

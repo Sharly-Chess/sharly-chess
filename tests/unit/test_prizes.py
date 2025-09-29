@@ -8,7 +8,7 @@ from unittest import TestCase
 from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
-from data.player import Federation, PlayerRating, Club
+from data.player import Club
 from data.criteria.player_filter_options import (
     GenderOption,
     MaxRatingOption,
@@ -59,6 +59,7 @@ from utils.enum import (
     TournamentRating,
     PlayerCategory,
 )
+from utils.types import Federation, PlayerRating
 
 ROUNDS = 6
 

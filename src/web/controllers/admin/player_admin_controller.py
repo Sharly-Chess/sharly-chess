@@ -26,7 +26,7 @@ from data.event import Event
 from data.input_output.data_source import PlayerComparator, DataSource
 from data.input_output.managers import DataSourceManager
 from data.pairing import Pairing
-from data.player import Player, Federation, Club, PlayerRating
+from data.player import Player, Club
 from data.print_documents.documents import (
     PlayerListPrintDocument,
     PlayerCheckinListPrintDocument,
@@ -41,6 +41,7 @@ from utils.enum import (
     PlayerTitle,
     Result,
 )
+from utils.types import Federation, PlayerRating
 from plugins.ffe.utils import PlayerFFELicence
 from plugins.manager import plugin_manager
 from plugins.utils import ExtraAdminColumn, ExtraColumn

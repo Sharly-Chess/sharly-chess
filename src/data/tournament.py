@@ -22,7 +22,7 @@ from common.logger import get_logger
 from data.board import Board
 from data.criteria.managers import PlayerFilter
 from data.family import Family
-from data.player import Player, Federation, Club
+from data.player import Club, Player
 from data.prize.prize_category import PrizeCategory
 from data.prize.prize_group import PrizeGroup
 from data.screen import Screen
@@ -51,6 +51,7 @@ from utils.enum import (
     PlayerRatingType,
     ScreenType,
 )
+from utils.types import Federation
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredPrizeGroup
 from utils.time_control import parse_time_control_trf25
@@ -507,6 +508,15 @@ class Tournament:
                 and player not in self.unpaired_players
             ],
             key=by('last_name', 'first_name'),
+        )
+
+    @cached_property
+    def is_fide_exception(self) -> bool:
+        with EventDatabase(self.event.uniq_id) as event_database:
+            information = event_database.get_exception_information(self.id)
+        return (
+            sum(information['federations'].values()) >= 20
+            and sum(information['titles'].values()) >= 10
         )
 
     @property

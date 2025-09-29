@@ -24,7 +24,6 @@ from data.input_output.trf_mappers import (
 )
 from data.loader import EventLoader
 from data.pairings.variations import StandardSwissVariation
-from data.player import PlayerRating
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
@@ -35,6 +34,7 @@ from database.sqlite.event.event_store import (
     StoredPairing,
 )
 from utils.enum import TournamentRating, PlayerRatingType, Result, BoardColor
+from utils.types import PlayerRating
 from utils.option import OptionHandler
 
 

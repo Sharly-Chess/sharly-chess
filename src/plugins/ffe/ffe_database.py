@@ -14,7 +14,6 @@ from requests.exceptions import ConnectionError
 
 from common.i18n import _
 from common.logger import get_logger
-from data.player import PlayerRating
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourceDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
@@ -26,6 +25,7 @@ from utils.enum import (
     PlayerGender,
     PlayerTitle,
 )
+from utils.types import PlayerRating
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
 
 from plugins import ffe

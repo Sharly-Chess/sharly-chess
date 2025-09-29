@@ -36,7 +36,7 @@ from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredConfig
 
 if TYPE_CHECKING:
-    from data.player import Federation
+    from utils.types import Federation
 
 logger: logging.Logger = get_logger()
 

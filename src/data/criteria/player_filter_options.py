@@ -6,8 +6,9 @@ from typing import Any, TYPE_CHECKING
 from common.exception import OptionError
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
-from data.player import Club, Federation
+from data.player import Club
 from utils.enum import PlayerGender, PlayerCategory, PlayerRatingType
+from utils.types import Federation
 from utils.option import Option
 
 if TYPE_CHECKING:

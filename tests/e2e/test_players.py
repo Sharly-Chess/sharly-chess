@@ -1,11 +1,11 @@
 from datetime import date
 from data.event import Event
-from data.player import PlayerRating
 from database.sqlite.event.event_database import EventDatabase
 import pytest
 from playwright.sync_api import Page, expect, APIRequestContext
 from tests.test_config import TestUtils
 from utils.enum import PlayerGender, PlayerRatingType, PlayerTitle, TournamentRating
+from utils.types import PlayerRating
 
 EVENT_ID = 'event-test-players'
 TOURNAMENT_ID = 'tournament-test-players'

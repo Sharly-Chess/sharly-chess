@@ -4,7 +4,7 @@ from functools import cached_property
 
 from common.exception import OptionError
 from common.i18n import _
-from data.player import Player, Club, Federation
+from data.player import Player, Club
 from data.criteria.player_filter_options import (
     PlayerFilterOption,
     GenderOption,
@@ -18,6 +18,7 @@ from data.criteria.player_filter_options import (
     RatingTypesFilterOption,
 )
 from utils.enum import PlayerGender, PlayerCategory, PlayerRatingType
+from utils.types import Federation
 from utils.option import OptionHandler
 
 

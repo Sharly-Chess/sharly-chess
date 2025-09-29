@@ -20,7 +20,6 @@ from data.pairings.variations import (
     DoubleBergerRoundRobinVariation,
     PairingVariation,
 )
-from data.player import PlayerRating
 from data.player import Player
 from data.tie_breaks.tie_breaks import ManualTieBreak, TieBreak
 from data.tournament import Tournament
@@ -58,6 +57,7 @@ from utils.enum import (
     PlayerRatingType,
     Result,
 )
+from utils.types import PlayerRating
 
 
 logger = get_logger()
