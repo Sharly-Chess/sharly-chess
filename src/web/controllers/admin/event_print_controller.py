@@ -173,17 +173,19 @@ class EventPrintController(BaseEventAdminController):
             except OptionError as error:
                 errors[error.option.id] = str(error)
 
-        if document_type and not errors:
-            if tournament_ids:
-                SessionHandler.set_session_admin_print_last_tournaments(
-                    request, web_context.get_admin_event().uniq_id, tournament_ids
-                )
+            if not errors:
+                if tournament_ids:
+                    SessionHandler.set_session_admin_print_last_tournaments(
+                        request, web_context.get_admin_event().uniq_id, tournament_ids
+                    )
 
-                tournament = web_context.get_admin_event().tournaments_by_id[
-                    tournament_ids[0]
-                ]
-                if error_message := document_type.validate_for_tournament(tournament):
-                    errors[field] = error_message
+                    tournament = web_context.get_admin_event().tournaments_by_id[
+                        tournament_ids[0]
+                    ]
+                    if error_message := document_type.validate_for_tournament(
+                        tournament
+                    ):
+                        errors[field] = error_message
         if errors:
             template_context = self._print_modal_context(
                 web_context, data=flat_data, errors=errors
@@ -192,6 +194,7 @@ class EventPrintController(BaseEventAdminController):
                 web_context=web_context,
                 template_context=template_context,
             )
+        assert document_type is not None
         # Clear the modal contents, and send an event
         return HTMXTemplate(
             template_name='common/empty_modal.html',
@@ -207,14 +210,6 @@ class EventPrintController(BaseEventAdminController):
                     if option.id in data
                 },
             },
-        )
-
-        template_context = self._print_modal_context(
-            web_context, data=flat_data, errors=errors
-        )
-        return self._admin_print_render(
-            web_context=web_context,
-            template_context=template_context,
         )
 
     @get(
