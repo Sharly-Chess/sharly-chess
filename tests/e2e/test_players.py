@@ -26,7 +26,7 @@ def setup(api_request_context: APIRequestContext):
 @pytest.mark.e2e
 class TestPlayersFunctionality:
     def test_create_update_delete_player(self, page: Page):
-        page.goto(f'/admin/event/{EVENT_ID}/players')
+        page.goto(f'/event/{EVENT_ID}/players')
         page.get_by_test_id('add-player-button').click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()

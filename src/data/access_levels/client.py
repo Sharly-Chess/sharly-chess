@@ -77,7 +77,7 @@ class Client:
             actions |= access_level.allowed_actions()
         return actions
 
-    def _action_allowed_for_tournament(
+    def action_allowed_for_tournament(
         self, action: AuthAction, tournament_id: int
     ) -> bool:
         """Returns True if the action is allowed for a tournament, False otherwise."""
@@ -262,7 +262,7 @@ class Client:
 
     def can_update_players_history(self, tournament_id: int) -> bool:
         """Returns True if the client can update the players's history."""
-        return self._action_allowed_for_tournament(
+        return self.action_allowed_for_tournament(
             AuthAction.UPDATE_PLAYERS_HISTORY, tournament_id
         )
 
@@ -283,7 +283,7 @@ class Client:
 
     def can_check_in_players(self, tournament_id: int) -> bool:
         """Returns True if the client can check-in players for a tournament."""
-        return self._action_allowed_for_tournament(
+        return self.action_allowed_for_tournament(
             AuthAction.CHECK_IN_PLAYERS, tournament_id
         )
 
@@ -298,61 +298,61 @@ class Client:
 
     def can_use_pairing_engine(self, tournament_id: int) -> bool:
         """Returns True if the client can use the pairing engine for a tournament."""
-        return self._action_allowed_for_tournament(
+        return self.action_allowed_for_tournament(
             AuthAction.USE_PAIRING_ENGINE, tournament_id
         )
 
     def can_manually_pair_players(self, tournament_id: int) -> bool:
         """Returns True if the client can manually pair players for a tournament."""
-        return self._action_allowed_for_tournament(
+        return self.action_allowed_for_tournament(
             AuthAction.MANUALLY_PAIR_PLAYERS, tournament_id
         )
 
     def can_unpair_round(self, tournament_id: int) -> bool:
         """Returns True if the client can unpair all the boards of a round."""
-        return self._action_allowed_for_tournament(
+        return self.action_allowed_for_tournament(
             AuthAction.UNPAIR_ROUND, tournament_id
         )
 
     def can_unpair_boards(self, tournament_id: int) -> bool:
         """Returns True if the client can individually unpair the boards of a tournament."""
-        return self._action_allowed_for_tournament(
+        return self.action_allowed_for_tournament(
             AuthAction.UNPAIR_BOARD, tournament_id
         )
 
     def can_permute_boards(self, tournament_id: int) -> bool:
         """Returns True if the client can permute paired players of a tournament."""
-        return self._action_allowed_for_tournament(
+        return self.action_allowed_for_tournament(
             AuthAction.PERMUTE_BOARD, tournament_id
         )
 
     def can_set_current_round(self, tournament_id: int) -> bool:
         """Returns True if the client can set the current round of a tournament."""
-        return self._action_allowed_for_tournament(
+        return self.action_allowed_for_tournament(
             AuthAction.SET_CURRENT_ROUND, tournament_id
         )
 
     def can_set_zero_point_bye(self, tournament_id: int) -> bool:
         """Returns True if the client can set a zero point bye to a player."""
-        return self._action_allowed_for_tournament(AuthAction.SET_ZPB, tournament_id)
+        return self.action_allowed_for_tournament(AuthAction.SET_ZPB, tournament_id)
 
     def can_set_half_point_bye(self, tournament_id: int) -> bool:
         """Returns True if the client can set a half point bye to a player."""
-        return self._action_allowed_for_tournament(AuthAction.SET_HPB, tournament_id)
+        return self.action_allowed_for_tournament(AuthAction.SET_HPB, tournament_id)
 
     def can_set_full_point_bye(self, tournament_id: int) -> bool:
         """Returns True if the client can set a full point bye to a player."""
-        return self._action_allowed_for_tournament(AuthAction.SET_FPB, tournament_id)
+        return self.action_allowed_for_tournament(AuthAction.SET_FPB, tournament_id)
 
     def can_view_draft_pairings(self, tournament_id: int) -> bool:
         """Returns True if the client can view draft pairings (before they are published)."""
-        return self._action_allowed_for_tournament(
+        return self.action_allowed_for_tournament(
             AuthAction.VIEW_DRAFT_PAIRINGS, tournament_id
         )
 
     def can_publish_pairings(self, tournament_id: int) -> bool:
         """Returns True if the client can publish pairings."""
-        return self._action_allowed_for_tournament(
+        return self.action_allowed_for_tournament(
             AuthAction.PUBLISH_PAIRINGS, tournament_id
         )
 
@@ -362,13 +362,13 @@ class Client:
 
     def can_view_draft_rankings(self, tournament_id: int) -> bool:
         """Returns True if the client can view draft rankings (before they are published)."""
-        return self._action_allowed_for_tournament(
+        return self.action_allowed_for_tournament(
             AuthAction.VIEW_DRAFT_RANKINGS, tournament_id
         )
 
     def can_publish_rankings(self, tournament_id: int) -> bool:
         """Returns True if the client can publish rankings."""
-        return self._action_allowed_for_tournament(
+        return self.action_allowed_for_tournament(
             AuthAction.PUBLISH_RANKINGS, tournament_id
         )
 
@@ -378,25 +378,25 @@ class Client:
 
     def can_enter_results(self, tournament_id: int) -> bool:
         """Returns True if the client can enter results for a tournament."""
-        return self._action_allowed_for_tournament(
+        return self.action_allowed_for_tournament(
             AuthAction.ENTER_RESULTS, tournament_id
         )
 
     def can_update_results(self, tournament_id: int) -> bool:
         """Returns True if the client can update previously entered results."""
-        return self._action_allowed_for_tournament(
+        return self.action_allowed_for_tournament(
             AuthAction.UPDATE_RESULTS, tournament_id
         )
 
     def can_set_special_results(self, tournament_id: int) -> bool:
         """Returns True if the client can set special results (such as O.0-F, 0.0-0.5)."""
-        return self._action_allowed_for_tournament(
+        return self.action_allowed_for_tournament(
             AuthAction.SET_SPECIAL_RESULTS, tournament_id
         )
 
     def can_set_illegal_moves(self, tournament_id: int) -> bool:
         """Returns True if the client can set illegal moves."""
-        return self._action_allowed_for_tournament(
+        return self.action_allowed_for_tournament(
             AuthAction.SET_ILLEGAL_MOVES, tournament_id
         )
 

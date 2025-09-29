@@ -10,6 +10,7 @@ from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
+from data.access_levels.actions import AuthAction
 from data.display_controller import DisplayController
 from data.rotator import Rotator
 from data.screen import Screen
@@ -20,26 +21,19 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
 )
 from web.controllers.base_controller import WebContext
+from web.guards import EventGuard, ActionGuard, ManageScreenEntityGuard
 from web.messages import Message
+from web.utils import RequestUtils
 
 
 class DisplayControllerAdminWebContext(BaseEventAdminWebContext):
     def __init__(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         display_controller_id: int | None = None,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ]
-        | None = None,
+        reload_event: bool = False,
     ):
-        super().__init__(
-            request,
-            data=data,
-            event_uniq_id=event_uniq_id,
-        )
+        super().__init__(request, reload_event)
         if self.admin_event is None:
             raise RuntimeError('admin_event not defined')
         self.admin_display_controller: DisplayController | None = None
@@ -65,6 +59,12 @@ class DisplayControllerAdminWebContext(BaseEventAdminWebContext):
 
 
 class DisplayControllerAdminController(BaseEventAdminController):
+    guards = [
+        EventGuard(),
+        ActionGuard(AuthAction.VIEW_PUBLIC_SCREENS),
+        ManageScreenEntityGuard(RequestUtils.DISPLAY_CONTROLLER_ID_PARAM),
+    ]
+
     @staticmethod
     def _admin_validate_display_controller_update_data(
         action: str,
@@ -110,18 +110,17 @@ class DisplayControllerAdminController(BaseEventAdminController):
     def _admin_event_display_controllers_render(
         cls,
         request: HTMXRequest,
-        event_uniq_id: str,
         modal: str | None = None,
         action: str | None = None,
         display_controller_id: int | None = None,
+        reload_event: bool = False,
         data: dict[str, str] | None = None,  # type: ignore
         errors: dict[str, str] | None = None,
     ) -> Template:
         web_context = DisplayControllerAdminWebContext(
             request,
-            event_uniq_id=event_uniq_id,
-            display_controller_id=display_controller_id,
-            data=data,
+            display_controller_id,
+            reload_event=reload_event,
         )
         event = web_context.get_admin_event()
         sorted_screens: list[Screen] = sorted(
@@ -200,50 +199,40 @@ class DisplayControllerAdminController(BaseEventAdminController):
         return cls._admin_base_event_render(template_context)
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/display_controllers',
+        path='/event/{event_uniq_id:str}/display_controllers',
         name='admin-event-display-controllers-tab',
     )
     async def htmx_admin_event_display_controllers_tab(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
+        self, request: HTMXRequest
     ) -> Template:
-        return self._admin_event_display_controllers_render(
-            request,
-            event_uniq_id=event_uniq_id,
-        )
+        return self._admin_event_display_controllers_render(request)
 
     @get(
-        path='/admin/display-controller-modal/create/{event_uniq_id:str}',
+        path='/display-controller-modal/create/{event_uniq_id:str}',
         name='admin-display-controller-create-modal',
     )
     async def htmx_admin_display_controller_create_modal(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
+        self, request: HTMXRequest
     ) -> Template:
         return self._admin_event_display_controllers_render(
             request,
-            event_uniq_id=event_uniq_id,
             modal='display_controller',
             action='create',
             display_controller_id=None,
         )
 
     @get(
-        path='/admin/display-controller-modal/{action:str}/{event_uniq_id:str}/{display_controller_id:int}',
+        path='/display-controller-modal/{action:str}/{event_uniq_id:str}/{display_controller_id:int}',
         name='admin-display-controller-modal',
     )
     async def htmx_admin_display_controller_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         action: str,
         display_controller_id: int | None,
     ) -> Template:
         return self._admin_event_display_controllers_render(
             request,
-            event_uniq_id=event_uniq_id,
             modal='display_controller',
             action=action,
             display_controller_id=display_controller_id,
@@ -252,7 +241,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
     def _admin_display_controller_update(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         action: str,
         display_controller_id: int | None,
         data: Annotated[
@@ -262,13 +250,8 @@ class DisplayControllerAdminController(BaseEventAdminController):
     ) -> Template:
         match action:
             case 'update' | 'delete' | 'create':
-                web_context: DisplayControllerAdminWebContext = (
-                    DisplayControllerAdminWebContext(
-                        request,
-                        event_uniq_id=event_uniq_id,
-                        display_controller_id=display_controller_id,
-                        data=data,
-                    )
+                web_context = DisplayControllerAdminWebContext(
+                    request, display_controller_id
                 )
             case _:
                 raise ValueError(f'action=[{action}]')
@@ -279,7 +262,6 @@ class DisplayControllerAdminController(BaseEventAdminController):
         if stored_display_controller.errors:
             return self._admin_event_display_controllers_render(
                 request,
-                event_uniq_id=event_uniq_id,
                 modal='display_controller',
                 action=action,
                 display_controller_id=display_controller_id,
@@ -326,18 +308,15 @@ class DisplayControllerAdminController(BaseEventAdminController):
                 case _:
                     raise ValueError(f'action=[{action}]')
 
-        return self._admin_event_display_controllers_render(
-            request, event_uniq_id=event_uniq_id
-        )
+        return self._admin_event_display_controllers_render(request, reload_event=True)
 
     @post(
-        path='/admin/display-controller-create/{event_uniq_id:str}',
+        path='/display-controller-create/{event_uniq_id:str}',
         name='admin-display-controller-create',
     )
     async def htmx_admin_display_controller_create(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -345,20 +324,18 @@ class DisplayControllerAdminController(BaseEventAdminController):
     ) -> Template:
         return self._admin_display_controller_update(
             request,
-            event_uniq_id=event_uniq_id,
             action='create',
             display_controller_id=None,
             data=data,
         )
 
     @patch(
-        path='/admin/display-controller-update/{event_uniq_id:str}/{display_controller_id:int}',
+        path='/display-controller-update/{event_uniq_id:str}/{display_controller_id:int}',
         name='admin-display-controller-update',
     )
     async def htmx_admin_display_controller_update(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         display_controller_id: int | None,
         data: Annotated[
             dict[str, str],
@@ -367,21 +344,19 @@ class DisplayControllerAdminController(BaseEventAdminController):
     ) -> Template:
         return self._admin_display_controller_update(
             request,
-            event_uniq_id=event_uniq_id,
             action='update',
             display_controller_id=display_controller_id,
             data=data,
         )
 
     @delete(
-        path='/admin/display-controller-delete/{event_uniq_id:str}/{display_controller_id:int}',
+        path='/display-controller-delete/{event_uniq_id:str}/{display_controller_id:int}',
         name='admin-display-controller-delete',
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_display_controller_delete(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         display_controller_id: int | None,
         data: Annotated[
             dict[str, str],
@@ -390,32 +365,23 @@ class DisplayControllerAdminController(BaseEventAdminController):
     ) -> Template:
         return self._admin_display_controller_update(
             request,
-            event_uniq_id=event_uniq_id,
             action='delete',
             display_controller_id=display_controller_id,
             data=data,
         )
 
     @patch(
-        path='/admin/display-controller-assign/{event_uniq_id:str}/{display_controller_id:int}/{type:str}/{object_uniq_id:str}',
+        path='/display-controller-assign/{event_uniq_id:str}/{display_controller_id:int}/{type:str}/{object_uniq_id:str}',
         name='admin-display-controller-assign',
     )
     async def htmx_admin_display_controller_assign(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         display_controller_id: int | None,
         type: str,
         object_uniq_id: str,
     ) -> Template:
-        web_context: DisplayControllerAdminWebContext = (
-            DisplayControllerAdminWebContext(
-                request,
-                event_uniq_id=event_uniq_id,
-                display_controller_id=display_controller_id,
-                data=None,
-            )
-        )
+        web_context = DisplayControllerAdminWebContext(request, display_controller_id)
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
         if web_context.admin_display_controller is None:
@@ -454,10 +420,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
                 web_context.admin_display_controller.stored_display_controller
             )
 
-        Message.success(
-            request,
-            message,
-        )
+        Message.success(request, message)
         return HTMXTemplate(
             template_name='common/empty.html',
             re_swap='none',
@@ -466,23 +429,15 @@ class DisplayControllerAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/admin-display-controller-clear/{event_uniq_id:str}/{display_controller_id:int}',
+        path='/display-controller-clear/{event_uniq_id:str}/{display_controller_id:int}',
         name='admin-display-controller-clear',
     )
     async def htmx_admin_display_controller_clear(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         display_controller_id: int | None,
     ) -> Template:
-        web_context: DisplayControllerAdminWebContext = (
-            DisplayControllerAdminWebContext(
-                request,
-                event_uniq_id=event_uniq_id,
-                display_controller_id=display_controller_id,
-                data=None,
-            )
-        )
+        web_context = DisplayControllerAdminWebContext(request, display_controller_id)
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
         if web_context.admin_display_controller is None:
@@ -497,6 +452,4 @@ class DisplayControllerAdminController(BaseEventAdminController):
                 web_context.admin_display_controller.stored_display_controller
             )
 
-        return self._admin_event_display_controllers_render(
-            request, event_uniq_id=event_uniq_id
-        )
+        return self._admin_event_display_controllers_render(request, reload_event=True)

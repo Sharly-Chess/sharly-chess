@@ -15,6 +15,7 @@ from litestar.status_codes import HTTP_200_OK
 from common.exception import SharlyChessException, OptionError, ImporterError
 from common.logger import get_logger
 from common.i18n import _
+from data.access_levels.actions import AuthAction
 from data.board import Board
 from data.event import Event
 from data.input_output import (
@@ -51,6 +52,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
 )
 from web.controllers.base_controller import WebContext
+from web.guards import EventGuard, ActionGuard
 from web.messages import Message
 from web.session import SessionHandler
 
@@ -62,19 +64,11 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
     def __init__(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        tournament_id: int | None,
-        criterion_id: int | None,
-        data: Annotated[
-            dict[str, str] | None,
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ] = None,
+        tournament_id: int | None = None,
+        criterion_id: int | None = None,
+        reload_event: bool = False,
     ):
-        super().__init__(
-            request,
-            event_uniq_id=event_uniq_id,
-            data=data,
-        )
+        super().__init__(request, reload_event)
         assert self.admin_event is not None
 
         self.admin_tournament: Tournament | None = None
@@ -114,6 +108,11 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
 
 
 class TournamentAdminController(BaseEventAdminController):
+    guards = [
+        EventGuard(),
+        ActionGuard(AuthAction.VIEW_TOURNAMENTS_TAB),
+    ]
+
     @classmethod
     def _admin_event_tournaments_render(
         cls,
@@ -163,21 +162,15 @@ class TournamentAdminController(BaseEventAdminController):
         return cls._admin_base_event_render(template_context)
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/tournaments',
+        path='/event/{event_uniq_id:str}/tournaments',
         name='admin-event-tournaments-tab',
     )
     async def htmx_admin_event_tournaments_tab(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         admin_tournaments_show_details: bool | None,
     ) -> Template:
-        web_context = TournamentAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            tournament_id=None,
-            criterion_id=None,
-        )
+        web_context = TournamentAdminWebContext(request)
         if admin_tournaments_show_details is not None:
             SessionHandler.set_session_admin_tournaments_show_details(
                 request, admin_tournaments_show_details
@@ -582,20 +575,13 @@ class TournamentAdminController(BaseEventAdminController):
         return (stored_tournament, errors)
 
     @get(
-        path='/admin/tournament-modal/create/{event_uniq_id:str}',
+        path='/tournament-modal/create/{event_uniq_id:str}',
         name='admin-tournament-create-modal',
     )
     async def htmx_admin_tournament_create_modal(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
+        self, request: HTMXRequest
     ) -> Template:
-        web_context = TournamentAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            tournament_id=None,
-            criterion_id=None,
-        )
+        web_context = TournamentAdminWebContext(request)
         template_context = self._prepare_tournament_modal_data(
             FormAction.CREATE, web_context
         )
@@ -606,22 +592,16 @@ class TournamentAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/tournament-modal/{action:str}/{event_uniq_id:str}/{tournament_id:int}',
+        path='/tournament-modal/{action:str}/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tournament-modal',
     )
     async def htmx_admin_tournament_modal(
         self,
         request: HTMXRequest,
         action: FormAction,
-        event_uniq_id: str,
         tournament_id: int | None,
     ) -> Template:
-        web_context = TournamentAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-            criterion_id=None,
-        )
+        web_context = TournamentAdminWebContext(request, tournament_id=tournament_id)
         template_context = self._prepare_tournament_modal_data(action, web_context)
 
         return self._admin_event_tournaments_render(
@@ -637,16 +617,9 @@ class TournamentAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         action: FormAction,
-        event_uniq_id: str,
         tournament_id: int | None,
     ) -> Template:
-        web_context = TournamentAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-            criterion_id=None,
-            data=data,
-        )
+        web_context = TournamentAdminWebContext(request, tournament_id=tournament_id)
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
         add_other = 'add_other' in data
@@ -767,10 +740,10 @@ class TournamentAdminController(BaseEventAdminController):
 
         if add_other:
             web_context = TournamentAdminWebContext(
-                request, event_uniq_id, tournament_id, None
+                request, tournament_id, reload_event=True
             )
             template_context = self._prepare_tournament_modal_data(
-                FormAction.CREATE, web_context, data=None
+                FormAction.CREATE, web_context
             )
             return self._admin_event_tournaments_render(
                 web_context=web_context,
@@ -779,15 +752,14 @@ class TournamentAdminController(BaseEventAdminController):
         Message.success(request, success_message)
 
         web_context = TournamentAdminWebContext(
-            request, event_uniq_id, tournament_id, None
+            request, tournament_id, reload_event=True
         )
-        return self._admin_event_tournaments_render(
-            web_context=web_context,
-        )
+        return self._admin_event_tournaments_render(web_context)
 
     @post(
-        path='/admin/tournament-create/{event_uniq_id:str}',
+        path='/tournament-create/{event_uniq_id:str}',
         name='admin-tournament-create',
+        guards=[ActionGuard(AuthAction.ADD_TOURNAMENTS)],
     )
     async def htmx_admin_tournament_create(
         self,
@@ -796,19 +768,18 @@ class TournamentAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        event_uniq_id: str,
     ) -> Template:
         return self._admin_tournament_update(
             request,
-            event_uniq_id=event_uniq_id,
             action=FormAction.CREATE,
             tournament_id=None,
             data=data,
         )
 
     @patch(
-        path='/admin/tournament-update/{event_uniq_id:str}/{tournament_id:int}',
+        path='/tournament-update/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tournament-update',
+        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
     )
     async def htmx_admin_tournament_update(
         self,
@@ -817,37 +788,33 @@ class TournamentAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        event_uniq_id: str,
         tournament_id: int,
     ) -> Template:
         return self._admin_tournament_update(
             request,
-            event_uniq_id=event_uniq_id,
             action=FormAction.UPDATE,
             tournament_id=tournament_id,
             data=data,
         )
 
     @get(
-        path='/admin/tournament-delete-modal/{event_uniq_id:str}/{tournament_id:int}',
+        path='/tournament-delete-modal/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tournament-delete-modal',
     )
     async def htmx_admin_tournament_delete_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int | None,
     ) -> Template:
-        web_context = TournamentAdminWebContext(
-            request, event_uniq_id, tournament_id, None
-        )
+        web_context = TournamentAdminWebContext(request, tournament_id)
         return self._admin_base_event_render(
             web_context.template_context | {'modal': 'tournament-delete'}
         )
 
     @delete(
-        path='/admin/tournament-delete/{event_uniq_id:str}/{tournament_id:int}',
+        path='/tournament-delete/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tournament-delete',
+        guards=[ActionGuard(AuthAction.DELETE_TOURNAMENTS)],
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_tournament_delete(
@@ -856,9 +823,7 @@ class TournamentAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
     ) -> Template:
-        web_context = TournamentAdminWebContext(
-            request, event_uniq_id, tournament_id, None
-        )
+        web_context = TournamentAdminWebContext(request, tournament_id)
         with EventDatabase(event_uniq_id, True) as database:
             database.delete_stored_tournament(tournament_id)
         Message.success(
@@ -868,7 +833,7 @@ class TournamentAdminController(BaseEventAdminController):
             ),
         )
 
-        web_context = TournamentAdminWebContext(request, event_uniq_id, None, None)
+        web_context = TournamentAdminWebContext(request, reload_event=True)
         return self._admin_event_tournaments_render(web_context)
 
     # -------------------------------------------------------------------------
@@ -876,20 +841,17 @@ class TournamentAdminController(BaseEventAdminController):
     # -------------------------------------------------------------------------
 
     @get(
-        path='/admin/tournament-export/{event_uniq_id:str}/{tournament_id:int}/{exporter_id:str}',
+        path='/tournament-export/{event_uniq_id:str}/{tournament_id:int}/{exporter_id:str}',
         name='admin-tournament-export',
     )
     async def admin_tournament_export(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
         exporter_id: str,
     ) -> File:
-        context = TournamentAdminWebContext(request, event_uniq_id, tournament_id, None)
-        tournament = context.admin_tournament
-        if tournament is None:
-            raise RuntimeError('tournament not defined')
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        tournament = web_context.get_admin_tournament()
         exporter = TournamentExporterManager.get_object(exporter_id)
         temp_file = NamedTemporaryFile(
             delete=False,
@@ -927,25 +889,18 @@ class TournamentAdminController(BaseEventAdminController):
 
     @get(
         path=[
-            '/admin/tournament-import-modal/{event_uniq_id:str}/{importer_id:str}',
-            '/admin/tournament-import-modal/{event_uniq_id:str}/{tournament_id:int}/{importer_id:str}',
+            '/tournament-import-modal/{event_uniq_id:str}/{importer_id:str}',
+            '/tournament-import-modal/{event_uniq_id:str}/{tournament_id:int}/{importer_id:str}',
         ],
         name='admin-tournament-import-modal',
     )
     async def htmx_admin_tournament_import_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int | None,
         importer_id: str,
     ) -> Template:
-        web_context: TournamentAdminWebContext = TournamentAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-            criterion_id=None,
-            data={},
-        )
+        web_context = TournamentAdminWebContext(request, tournament_id)
         template_context = self._tournament_import_modal_context(
             importer_id, web_context.admin_tournament
         )
@@ -955,10 +910,11 @@ class TournamentAdminController(BaseEventAdminController):
 
     @post(
         path=[
-            '/admin/tournament-import/{event_uniq_id:str}//{importer_id:str}',
-            '/admin/tournament-import/{event_uniq_id:str}/{tournament_id:int}/{importer_id:str}',
+            '/tournament-import/{event_uniq_id:str}/{importer_id:str}',
+            '/tournament-import/{event_uniq_id:str}/{tournament_id:int}/{importer_id:str}',
         ],
         name='admin-tournament-import',
+        guards=[ActionGuard(AuthAction.ADD_TOURNAMENTS)],
     )
     async def admin_tournament_import(
         self,
@@ -966,13 +922,10 @@ class TournamentAdminController(BaseEventAdminController):
         data: Annotated[
             dict[str, Any], Body(media_type=RequestEncodingType.MULTI_PART)
         ],
-        event_uniq_id: str,
         tournament_id: int | None,
         importer_id: str,
     ) -> Template:
-        web_context = TournamentAdminWebContext(
-            request, event_uniq_id, tournament_id, None
-        )
+        web_context = TournamentAdminWebContext(request, tournament_id)
         if web_context.admin_tournament and web_context.admin_tournament.started:
             raise ClientException('Import only possible before the tournament starts.')
         errors: dict[str, str] = {}
@@ -996,11 +949,9 @@ class TournamentAdminController(BaseEventAdminController):
                 ),
             )
             web_context = TournamentAdminWebContext(
-                request, event_uniq_id, tournament_id, None
+                request, tournament_id, reload_event=True
             )
-            return self._admin_event_tournaments_render(
-                web_context=web_context,
-            )
+            return self._admin_event_tournaments_render(web_context)
         except OptionError as error:
             errors[error.option.id] = str(error)
         except ImporterError as error:
@@ -1086,9 +1037,10 @@ class TournamentAdminController(BaseEventAdminController):
 
     @post(
         path=(
-            '/admin/tournaments/tournament-criterion/create/{event_uniq_id:str}/{tournament_id:int}'
+            '/tournaments/tournament-criterion/create/{event_uniq_id:str}/{tournament_id:int}'
         ),
         name='admin-tournament-criterion-create',
+        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
     )
     async def htmx_admin_tournament_criterion_create(
         self,
@@ -1097,12 +1049,9 @@ class TournamentAdminController(BaseEventAdminController):
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        event_uniq_id: str,
         tournament_id: int,
     ) -> Template:
-        web_context = TournamentAdminWebContext(
-            request, event_uniq_id, tournament_id, criterion_id=None
-        )
+        web_context = TournamentAdminWebContext(request, tournament_id)
         add_other = 'add_other' in data
         SessionHandler.set_session_admin_tournament_criterion_add_other_active(
             request, add_other
@@ -1137,10 +1086,11 @@ class TournamentAdminController(BaseEventAdminController):
 
     @patch(
         path=(
-            '/admin/tournaments/tournament-criterion/update/{event_uniq_id:str}'
+            '/tournaments/tournament-criterion/update/{event_uniq_id:str}'
             '/{tournament_id:int}/{tournament_criterion_id:int}'
         ),
         name='admin-tournament-criterion-update',
+        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
     )
     async def htmx_admin_tournament_criterion_update(
         self,
@@ -1149,15 +1099,13 @@ class TournamentAdminController(BaseEventAdminController):
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        event_uniq_id: str,
         tournament_id: int,
         tournament_criterion_id: int,
     ) -> Template:
         web_context = TournamentAdminWebContext(
             request,
-            event_uniq_id,
             tournament_id,
-            criterion_id=tournament_criterion_id,
+            tournament_criterion_id,
         )
 
         flat_data = WebContext.flatten_list_data(data)
@@ -1182,26 +1130,24 @@ class TournamentAdminController(BaseEventAdminController):
 
     @delete(
         path=(
-            '/admin/tournaments/tournament-criterion/delete/{event_uniq_id:str}/{tournament_id:int}'
+            '/tournaments/tournament-criterion/delete/{event_uniq_id:str}/{tournament_id:int}'
             '/{tournament_criterion_id:int}'
         ),
         name='admin-tournament-criterion-delete',
+        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_tournament_criterion_delete(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
         tournament_criterion_id: int,
     ) -> Template:
         web_context = TournamentAdminWebContext(
             request,
-            event_uniq_id,
             tournament_id,
-            criterion_id=tournament_criterion_id,
+            tournament_criterion_id,
         )
-
         web_context.get_admin_tournament().delete_criterion(tournament_criterion_id)
         return self._admin_base_event_render(
             web_context.template_context | {'modal': 'tournament_criteria'}
@@ -1209,7 +1155,7 @@ class TournamentAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/tournaments/tournament-criteria-modal/{event_uniq_id:str}/{tournament_id:int}'
+            '/tournaments/tournament-criteria-modal/{event_uniq_id:str}/{tournament_id:int}'
         ),
         name='admin-tournament-criteria-modal',
     )
@@ -1219,31 +1165,23 @@ class TournamentAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
     ) -> Template:
-        web_context = TournamentAdminWebContext(
-            request,
-            event_uniq_id,
-            tournament_id,
-            criterion_id=None,
-        )
+        web_context = TournamentAdminWebContext(request, tournament_id)
         return self._admin_base_event_render(
             web_context.template_context | {'modal': 'tournament_criteria'}
         )
 
     @get(
         path=(
-            '/admin/tournaments/criterion-modal/create/{event_uniq_id:str}/{tournament_id:int}'
+            '/tournaments/criterion-modal/create/{event_uniq_id:str}/{tournament_id:int}'
         ),
         name='admin-tournament-criterion-create-modal',
     )
     async def htmx_admin_tournament_criterion_create_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
     ) -> Template:
-        web_context = TournamentAdminWebContext(
-            request, event_uniq_id, tournament_id, criterion_id=None
-        )
+        web_context = TournamentAdminWebContext(request, tournament_id)
         return self._admin_base_event_render(
             web_context.template_context
             | self._tournament_criterion_form_modal_context(
@@ -1253,7 +1191,7 @@ class TournamentAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/tournaments/criterion-modal/update/{event_uniq_id:str}'
+            '/tournaments/criterion-modal/update/{event_uniq_id:str}'
             '/{tournament_id:int}/{tournament_criterion_id:int}'
         ),
         name='admin-tournament-criterion-update-modal',
@@ -1261,15 +1199,11 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_admin_tournament_criterion_update_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
         tournament_criterion_id: int,
     ) -> Template:
         web_context = TournamentAdminWebContext(
-            request,
-            event_uniq_id,
-            tournament_id,
-            criterion_id=tournament_criterion_id,
+            request, tournament_id, tournament_criterion_id
         )
 
         tournament_criterion = web_context.get_admin_tournament_criterion()
@@ -1290,24 +1224,17 @@ class TournamentAdminController(BaseEventAdminController):
 
     @get(
         path=[
-            '/admin/random-player/{event_uniq_id:str}',
-            '/admin/random-player/{event_uniq_id:str}/{tournament_id:int}',
+            '/random-player/{event_uniq_id:str}',
+            '/random-player/{event_uniq_id:str}/{tournament_id:int}',
         ],
         name='admin-random-player',
     )
     async def htmx_random_player(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
     ) -> Template:
-        web_context: TournamentAdminWebContext = TournamentAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-            criterion_id=None,
-            data=None,
-        )
+        web_context = TournamentAdminWebContext(request, tournament_id)
 
         assert web_context.admin_event is not None
         admin_event: Event = web_context.admin_event

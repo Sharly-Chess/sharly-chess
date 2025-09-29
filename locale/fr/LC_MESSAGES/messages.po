@@ -2804,6 +2804,9 @@ msgstr "Gestion des comptes"
 msgid "Manage application settings"
 msgstr "Gestion des paramètres de l'application"
 
+msgid "Manage archives"
+msgstr "Gestion des archives"
+
 msgid "Manage prizes"
 msgstr "Gestion des prix"
 

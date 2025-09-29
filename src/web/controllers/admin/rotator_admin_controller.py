@@ -3,7 +3,7 @@ from operator import attrgetter
 from typing import Annotated, Any
 
 from litestar import post, get, delete, patch
-from litestar.exceptions import NotFoundException, ClientException
+from litestar.exceptions import ClientException
 from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
@@ -11,6 +11,7 @@ from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _
+from data.access_levels.actions import AuthAction
 from data.family import Family
 from data.rotator import Rotator
 from data.screen import Screen
@@ -21,25 +22,16 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
 )
 from web.controllers.base_controller import WebContext
+from web.guards import EventGuard, ActionGuard, ManageScreenEntityGuard
 from web.messages import Message
 from web.session import SessionHandler
+from web.utils import RequestUtils
 
 
 class RotatorAdminWebContext(BaseEventAdminWebContext):
-    def __init__(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        rotator_id: int | None = None,
-    ):
-        super().__init__(request, event_uniq_id)
-        event = self.get_admin_event()
-        self.admin_rotator: Rotator | None = None
-        if rotator_id:
-            try:
-                self.admin_rotator = event.rotators_by_id[rotator_id]
-            except KeyError:
-                raise NotFoundException(f'Rotator [{rotator_id}] not found.')
+    def __init__(self, request: HTMXRequest):
+        super().__init__(request)
+        self.admin_rotator = RequestUtils.get_optional_rotator(request)
 
     def get_admin_rotator(self) -> Rotator:
         assert self.admin_rotator is not None
@@ -64,6 +56,12 @@ class RotatorAdminWebContext(BaseEventAdminWebContext):
 
 
 class RotatorAdminController(BaseEventAdminController):
+    guards = [
+        EventGuard(),
+        ActionGuard(AuthAction.VIEW_PUBLIC_SCREENS),
+        ManageScreenEntityGuard(RequestUtils.ROTATOR_ID_PARAM),
+    ]
+
     @classmethod
     def _admin_event_rotator_render(
         cls,
@@ -88,22 +86,19 @@ class RotatorAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/rotators',
+        path='/event/{event_uniq_id:str}/rotators',
         name='admin-event-rotators-tab',
     )
     async def htmx_admin_event_rotators_tab(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         admin_rotators_show_details: bool | None,
     ) -> Template:
         if admin_rotators_show_details is not None:
             SessionHandler.set_session_admin_rotators_show_details(
                 request, admin_rotators_show_details
             )
-        return self._admin_event_rotator_render(
-            RotatorAdminWebContext(request, event_uniq_id)
-        )
+        return self._admin_event_rotator_render(RotatorAdminWebContext(request))
 
     # -------------------------------------------------------------------------
     # Modals
@@ -172,15 +167,14 @@ class RotatorAdminController(BaseEventAdminController):
         return options
 
     @get(
-        path='/admin/rotator-modal/create/{event_uniq_id:str}',
+        path='/rotator-modal/create/{event_uniq_id:str}',
         name='admin-rotator-create-modal',
     )
     async def htmx_admin_rotator_create_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
     ) -> Template:
-        web_context = RotatorAdminWebContext(request, event_uniq_id)
+        web_context = RotatorAdminWebContext(request)
         name = web_context.get_admin_event().get_unused_rotator_name()
         template_context = self._rotator_form_modal_context(
             FormAction.CREATE, {'name': name}
@@ -188,32 +182,28 @@ class RotatorAdminController(BaseEventAdminController):
         return self._admin_event_rotator_render(web_context, template_context)
 
     @get(
-        path='/admin/rotator-modal/update/{event_uniq_id:str}/{rotator_id:int}',
+        path='/rotator-modal/update/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-update-modal',
     )
     async def htmx_admin_rotator_update_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        rotator_id: int,
     ) -> Template:
-        web_context = RotatorAdminWebContext(request, event_uniq_id, rotator_id)
+        web_context = RotatorAdminWebContext(request)
         rotator = web_context.get_admin_rotator()
         data = self._rotator_form_data_from_rotator(rotator)
         template_context = self._rotator_form_modal_context(FormAction.UPDATE, data)
         return self._admin_event_rotator_render(web_context, template_context)
 
     @get(
-        path='/admin/rotator-modal/clone/{event_uniq_id:str}/{rotator_id:int}',
+        path='/rotator-modal/clone/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-clone-modal',
     )
     async def htmx_admin_rotator_clone_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        rotator_id: int,
     ) -> Template:
-        web_context = RotatorAdminWebContext(request, event_uniq_id, rotator_id)
+        web_context = RotatorAdminWebContext(request)
         event = web_context.get_admin_event()
         rotator = web_context.get_admin_rotator()
         data = self._rotator_form_data_from_rotator(rotator)
@@ -222,31 +212,27 @@ class RotatorAdminController(BaseEventAdminController):
         return self._admin_event_rotator_render(web_context, template_context)
 
     @get(
-        path='/admin/rotator-modal/delete/{event_uniq_id:str}/{rotator_id:int}',
+        path='/rotator-modal/delete/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-delete-modal',
     )
     async def htmx_admin_rotator_delete_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        rotator_id: int,
     ) -> Template:
         return self._admin_event_rotator_render(
-            RotatorAdminWebContext(request, event_uniq_id, rotator_id),
+            RotatorAdminWebContext(request),
             {'modal': 'rotator_delete'},
         )
 
     @get(
-        path='/admin/rotator-screens-modal/{event_uniq_id:str}/{rotator_id:int}',
+        path='/rotator-screens-modal/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-screens-modal',
     )
     async def htmx_admin_rotator_screens_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        rotator_id: int | None,
     ) -> Template:
-        web_context = RotatorAdminWebContext(request, event_uniq_id, rotator_id)
+        web_context = RotatorAdminWebContext(request)
         return self._admin_event_rotator_render(
             web_context, self._rotator_screens_modal_context(web_context)
         )
@@ -288,17 +274,20 @@ class RotatorAdminController(BaseEventAdminController):
         )
         return stored_rotator, errors
 
-    @post(path='/admin/rotator-create/{event_uniq_id:str}', name='admin-rotator-create')
+    @post(
+        path='/rotator-create/{event_uniq_id:str}',
+        name='admin-rotator-create',
+        guards=[ActionGuard(AuthAction.MANAGE_SCREENS)],
+    )
     async def htmx_admin_rotator_create(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
-        web_context = RotatorAdminWebContext(request, event_uniq_id)
+        web_context = RotatorAdminWebContext(request)
         stored_rotator, errors = self._read_rotator_form_data(
             data, web_context, FormAction.CREATE
         )
@@ -318,20 +307,18 @@ class RotatorAdminController(BaseEventAdminController):
         return self._admin_event_rotator_render(web_context)
 
     @post(
-        path='/admin/rotator-clone/{event_uniq_id:str}/{rotator_id:int}',
+        path='/rotator-clone/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-clone',
     )
     async def htmx_admin_rotator_clone(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        rotator_id: int,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
-        web_context = RotatorAdminWebContext(request, event_uniq_id, rotator_id)
+        web_context = RotatorAdminWebContext(request)
         stored_rotator, errors = self._read_rotator_form_data(
             data, web_context, FormAction.CLONE
         )
@@ -355,20 +342,18 @@ class RotatorAdminController(BaseEventAdminController):
         return self._admin_event_rotator_render(web_context)
 
     @patch(
-        path='/admin/rotator-update/{event_uniq_id:str}/{rotator_id:int}',
+        path='/rotator-update/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-update',
     )
     async def htmx_admin_rotator_update(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        rotator_id: int | None,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
-        web_context = RotatorAdminWebContext(request, event_uniq_id, rotator_id)
+        web_context = RotatorAdminWebContext(request)
         new_stored_rotator, errors = self._read_rotator_form_data(
             data, web_context, FormAction.UPDATE
         )
@@ -379,6 +364,7 @@ class RotatorAdminController(BaseEventAdminController):
             )
         event = web_context.get_admin_event()
         stored_rotator = web_context.get_admin_rotator().stored_rotator
+        stored_rotator.public = new_stored_rotator.public
         stored_rotator.name = new_stored_rotator.name
         stored_rotator.delay = new_stored_rotator.delay
         stored_rotator.message_default = new_stored_rotator.message_default
@@ -393,17 +379,15 @@ class RotatorAdminController(BaseEventAdminController):
         return self._admin_event_rotator_render(web_context)
 
     @delete(
-        path='/admin/rotator-delete/{event_uniq_id:str}/{rotator_id:int}',
+        path='/rotator-delete/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-delete',
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_rotator_delete(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        rotator_id: int,
     ) -> Template:
-        web_context = RotatorAdminWebContext(request, event_uniq_id, rotator_id)
+        web_context = RotatorAdminWebContext(request)
         event = web_context.get_admin_event()
         rotator = web_context.get_admin_rotator()
         event.delete_rotator(rotator)
@@ -415,7 +399,7 @@ class RotatorAdminController(BaseEventAdminController):
 
     @delete(
         path=(
-            '/admin/rotator-screen-delete/{event_uniq_id:str}/'
+            '/rotator-screen-delete/{event_uniq_id:str}/'
             '{rotator_id:int}/{rotating_screen_id:int}'
         ),
         name='admin-rotator-screen-delete',
@@ -424,11 +408,9 @@ class RotatorAdminController(BaseEventAdminController):
     async def htmx_admin_rotator_screen_delete(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        rotator_id: int,
         rotating_screen_id: int,
     ) -> Template:
-        web_context = RotatorAdminWebContext(request, event_uniq_id, rotator_id)
+        web_context = RotatorAdminWebContext(request)
         rotator = web_context.get_admin_rotator()
         try:
             rotator.delete_rotating_screen(rotating_screen_id)
@@ -439,20 +421,18 @@ class RotatorAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/rotator-reorder-screens/{event_uniq_id:str}/{rotator_id:int}',
+        path='/rotator-reorder-screens/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotator-reorder-screens',
     )
     async def htmx_admin_rotator_reorder_screens(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        rotator_id: int,
         data: Annotated[
             dict[str, list[int]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
-        web_context = RotatorAdminWebContext(request, event_uniq_id, rotator_id)
+        web_context = RotatorAdminWebContext(request)
         rotator = web_context.get_admin_rotator()
         rotator.reorder_rotating_screens(data.get('rotating_screen_ids', []))
         return self._admin_event_rotator_render(
@@ -460,20 +440,18 @@ class RotatorAdminController(BaseEventAdminController):
         )
 
     @post(
-        path='/admin/rotating-screens-create/{event_uniq_id:str}/{rotator_id:int}',
+        path='/rotating-screens-create/{event_uniq_id:str}/{rotator_id:int}',
         name='admin-rotating-screens-create',
     )
     async def htmx_admin_rotating_screens_create(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        rotator_id: int,
         data: Annotated[
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
-        web_context = RotatorAdminWebContext(request, event_uniq_id, rotator_id)
+        web_context = RotatorAdminWebContext(request)
         rotator = web_context.get_admin_rotator()
         flat_data = WebContext.flatten_list_data(data)
         screen_ids = WebContext.form_data_to_list_int(flat_data, 'screen_ids', [])

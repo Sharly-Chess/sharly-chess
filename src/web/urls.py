@@ -5,12 +5,6 @@ def index_url(request: HTMXRequest) -> str:
     return request.app.route_reverse('index')
 
 
-def admin_url(
-    request: HTMXRequest,
-) -> str:
-    return request.app.route_reverse('admin')
-
-
 def admin_event_url(
     request: HTMXRequest,
     event_uniq_id: str,

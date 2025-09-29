@@ -94,7 +94,7 @@
 {% endblock %}
 
 {% block card_buttons_left %}
-    {% set client_can_manage_account=account.id in client.manageable_account_ids %}
+    {% set client_can_manage_account=client.can_manage_account(account.id) %}
     <span
         {% if not account.edit_permissions %}
             {{ macros.tooltip_attributes('warning', _('The permissions of this account can not be updated.'), 'top') }}
@@ -106,7 +106,7 @@
     >
         <button
             class="btn btn-sm btn-outline-primary"
-            {% if client_can_manage_account or account.edit_permissions %}
+            {% if account.edit_permissions and client_can_manage_account %}
                 {% if account.permissions %}
                     hx-get="{{ url_for(
                         'admin-account-permissions-modal',
@@ -135,7 +135,7 @@
 {% endblock %}
 
 {% block card_buttons_right %}
-    {% set client_can_manage_account=account.id in client.manageable_account_ids %}
+    {% set client_can_manage_account=client.can_manage_account(account.id) %}
     <span
         {% if not account.edit_properties %}
             {{ macros.tooltip_attributes('warning', _('This account can not be updated.'), 'top') }}

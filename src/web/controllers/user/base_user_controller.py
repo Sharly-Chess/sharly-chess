@@ -17,7 +17,7 @@ class UserWebContext(WebContext):
         request: HTMXRequest,
         user_tab: str | None,
     ):
-        super().__init__(request, data=None)
+        super().__init__(request)
         self.user_tab: str | None = user_tab
         self.check_user_tab()
 

@@ -16,7 +16,7 @@ def setup(api_request_context: APIRequestContext):
 @pytest.mark.e2e
 class TestTimersFunctionality:
     def test_create_and_delete_timer(self, page: Page):
-        page.goto(f'/admin/event/{EVENT_ID}/timers')
+        page.goto(f'/event/{EVENT_ID}/timers')
         TestUtils.button_by_text(page, 'Create a timer').click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()

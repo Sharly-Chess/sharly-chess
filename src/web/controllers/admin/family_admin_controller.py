@@ -11,6 +11,7 @@ from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
+from data.access_levels.actions import AuthAction
 from data.family import Family
 from utils import StaticUtils
 from utils.enum import ScreenType
@@ -21,6 +22,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
 )
 from web.controllers.base_controller import WebContext
+from web.guards import EventGuard, ActionGuard
 from web.messages import Message
 from web.session import SessionHandler
 
@@ -29,20 +31,11 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
     def __init__(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         family_id: int | None = None,
         family_type: str | None = None,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ]
-        | None = None,
+        reload_event: bool = False,
     ):
-        super().__init__(
-            request,
-            data=data,
-            event_uniq_id=event_uniq_id,
-        )
+        super().__init__(request, reload_event)
         if self.admin_event is None:
             raise RuntimeError('admin_event not defined')
         self.admin_family: Family | None = None
@@ -74,6 +67,11 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
 
 
 class FamilyAdminController(BaseEventAdminController):
+    guards = [
+        EventGuard(),
+        ActionGuard(AuthAction.MANAGE_SCREENS),
+    ]
+
     @staticmethod
     def _admin_validate_family_update_data(
         action: str,
@@ -293,7 +291,7 @@ class FamilyAdminController(BaseEventAdminController):
     def _admin_event_families_render(
         cls,
         request: HTMXRequest,
-        event_uniq_id: str,
+        reload_event: bool = False,
         modal: str | None = None,
         action: str | None = None,
         family_id: int | None = None,
@@ -301,12 +299,11 @@ class FamilyAdminController(BaseEventAdminController):
         data: dict[str, str] | None = None,  # type: ignore
         errors: dict[str, str] | None = None,
     ) -> Template:
-        web_context: FamilyAdminWebContext = FamilyAdminWebContext(
+        web_context = FamilyAdminWebContext(
             request,
-            event_uniq_id=event_uniq_id,
             family_id=family_id,
             family_type=family_type,
-            data=data,
+            reload_event=reload_event,
         )
         event = web_context.get_admin_event()
         template_context = web_context.template_context | {
@@ -491,37 +488,31 @@ class FamilyAdminController(BaseEventAdminController):
         return cls._admin_base_event_render(template_context)
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/families',
+        path='/event/{event_uniq_id:str}/families',
         name='admin-event-families-tab',
     )
     async def htmx_admin_event_families_tab(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         admin_families_show_details: bool | None,
     ) -> Template:
         if admin_families_show_details is not None:
             SessionHandler.set_session_admin_families_show_details(
                 request, admin_families_show_details
             )
-        return self._admin_event_families_render(
-            request,
-            event_uniq_id=event_uniq_id,
-        )
+        return self._admin_event_families_render(request)
 
     @get(
-        path='/admin/family-modal/create/{event_uniq_id:str}/{family_type:str}',
+        path='/family-modal/create/{event_uniq_id:str}/{family_type:str}',
         name='admin-family-create-modal',
     )
     async def htmx_admin_family_create_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         family_type: str,
     ) -> Template:
         return self._admin_event_families_render(
             request,
-            event_uniq_id=event_uniq_id,
             modal='family',
             action='create',
             family_id=None,
@@ -529,19 +520,17 @@ class FamilyAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/family-modal/{action:str}/{event_uniq_id:str}/{family_id:int}',
+        path='/family-modal/{action:str}/{event_uniq_id:str}/{family_id:int}',
         name='admin-family-modal',
     )
     async def htmx_admin_family_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         action: str,
         family_id: int | None,
     ) -> Template:
         return self._admin_event_families_render(
             request,
-            event_uniq_id=event_uniq_id,
             modal='family',
             action=action,
             family_id=family_id,
@@ -550,7 +539,6 @@ class FamilyAdminController(BaseEventAdminController):
     def _admin_family_update(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         action: str,
         family_id: int | None,
         family_type: str | None,
@@ -559,17 +547,11 @@ class FamilyAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
-        match action:
-            case 'update' | 'delete' | 'clone' | 'create':
-                web_context: FamilyAdminWebContext = FamilyAdminWebContext(
-                    request,
-                    event_uniq_id=event_uniq_id,
-                    family_id=family_id,
-                    family_type=family_type,
-                    data=data,
-                )
-            case _:
-                raise ValueError(f'action=[{action}]')
+        web_context = FamilyAdminWebContext(
+            request,
+            family_id=family_id,
+            family_type=family_type,
+        )
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
         stored_family: StoredFamily = self._admin_validate_family_update_data(
@@ -578,7 +560,6 @@ class FamilyAdminController(BaseEventAdminController):
         if stored_family.errors:
             return self._admin_event_families_render(
                 request,
-                event_uniq_id=event_uniq_id,
                 modal='family',
                 action=action,
                 family_id=family_id,
@@ -618,16 +599,16 @@ class FamilyAdminController(BaseEventAdminController):
                 case _:
                     raise ValueError(f'action=[{action}]')
 
-        return self._admin_event_families_render(request, event_uniq_id=event_uniq_id)
+        return self._admin_event_families_render(request, reload_event=True)
 
     @post(
-        path='/admin/family-create/{event_uniq_id:str}/{family_type:str}',
+        path='/family-create/{event_uniq_id:str}/{family_type:str}',
         name='admin-family-create',
+        guards=[ActionGuard(AuthAction.MANAGE_SCREENS)],
     )
     async def htmx_admin_family_create(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         family_type: str,
         data: Annotated[
             dict[str, str],
@@ -636,7 +617,6 @@ class FamilyAdminController(BaseEventAdminController):
     ) -> Template:
         return self._admin_family_update(
             request,
-            event_uniq_id=event_uniq_id,
             action='create',
             family_id=None,
             family_type=family_type,
@@ -644,13 +624,12 @@ class FamilyAdminController(BaseEventAdminController):
         )
 
     @post(
-        path='/admin/family-clone/{event_uniq_id:str}/{family_id:int}',
+        path='/family-clone/{event_uniq_id:str}/{family_id:int}',
         name='admin-family-clone',
     )
     async def htmx_admin_family_clone(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         family_id: int | None,
         data: Annotated[
             dict[str, str],
@@ -659,7 +638,6 @@ class FamilyAdminController(BaseEventAdminController):
     ) -> Template:
         return self._admin_family_update(
             request,
-            event_uniq_id=event_uniq_id,
             action='clone',
             family_id=family_id,
             family_type=None,
@@ -667,13 +645,12 @@ class FamilyAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/family-update/{event_uniq_id:str}/{family_id:int}',
+        path='/family-update/{event_uniq_id:str}/{family_id:int}',
         name='admin-family-update',
     )
     async def htmx_admin_family_update(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         family_id: int | None,
         data: Annotated[
             dict[str, str],
@@ -682,7 +659,6 @@ class FamilyAdminController(BaseEventAdminController):
     ) -> Template:
         return self._admin_family_update(
             request,
-            event_uniq_id=event_uniq_id,
             action='update',
             family_id=family_id,
             family_type=None,
@@ -690,7 +666,7 @@ class FamilyAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/family-uniq-id-update/{event_uniq_id:str}/{family_id:int}',
+        path='/family-uniq-id-update/{event_uniq_id:str}/{family_id:int}',
         name='admin-family-uniq-id-update',
     )
     async def htmx_admin_family_uniq_id_update(
@@ -700,10 +676,9 @@ class FamilyAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        event_uniq_id: str,
         family_id: int,
     ) -> HTMXTemplate:
-        web_context = FamilyAdminWebContext(request, event_uniq_id, family_id)
+        web_context = FamilyAdminWebContext(request, family_id)
         event = web_context.get_admin_event()
         family = web_context.get_admin_family()
         new_uniq_id = WebContext.form_data_to_str(data, 'uniq_id')
@@ -723,7 +698,7 @@ class FamilyAdminController(BaseEventAdminController):
         with EventDatabase(event.uniq_id, True) as database:
             database.update_stored_family(stored_family)
 
-        web_context = FamilyAdminWebContext(request, event_uniq_id, family_id)
+        web_context = FamilyAdminWebContext(request, family_id, reload_event=True)
         event = web_context.get_admin_event()
         return HTMXTemplate(
             template_name='/admin/families/family_update_modal_header.html',
@@ -734,14 +709,13 @@ class FamilyAdminController(BaseEventAdminController):
         )
 
     @delete(
-        path='/admin/family-delete/{event_uniq_id:str}/{family_id:int}',
+        path='/family-delete/{event_uniq_id:str}/{family_id:int}',
         name='admin-family-delete',
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_family_delete(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         family_id: int | None,
         data: Annotated[
             dict[str, str],
@@ -750,7 +724,6 @@ class FamilyAdminController(BaseEventAdminController):
     ) -> Template:
         return self._admin_family_update(
             request,
-            event_uniq_id=event_uniq_id,
             action='delete',
             family_id=family_id,
             family_type=None,
