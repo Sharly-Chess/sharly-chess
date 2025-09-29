@@ -2804,6 +2804,9 @@ msgstr ""
 msgid "Manage application settings"
 msgstr ""
 
+msgid "Manage archives"
+msgstr ""
+
 msgid "Manage prizes"
 msgstr ""
 
