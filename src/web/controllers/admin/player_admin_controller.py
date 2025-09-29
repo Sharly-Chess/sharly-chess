@@ -522,7 +522,12 @@ class PlayerAdminController(BaseEventAdminController):
         search_results_id = SessionHandler.get_session_admin_players_search_results_id(
             request
         )
-        if search_results_id is None or session_event_uniq_id != admin_event.uniq_id:
+
+        if (
+            search_results_id is None
+            or session_event_uniq_id != admin_event.uniq_id
+            or search_results_id not in cls.search_results_by_session
+        ):
             search_results = cls.set_players_search_results(request, event_uniq_id)
         else:
             search_results = cls.search_results_by_session[search_results_id]
@@ -674,7 +679,7 @@ class PlayerAdminController(BaseEventAdminController):
                         for tr in TournamentRating
                     }
                     title: int = PlayerTitle.NONE.value
-                    federation: str | None = None
+                    federation = admin_event.federation
                     club: str | None = None
                     fide_id: int | None = None
                     mail: str | None = None
@@ -747,30 +752,27 @@ class PlayerAdminController(BaseEventAdminController):
                             stored_plugin_data.get(plugin_id, {})
                         ).to_form_data()
 
-                    data = (
+                    data = WebContext.values_dict_to_form_data(
                         {
-                            'last_name': WebContext.value_to_form_data(last_name),
-                            'first_name': WebContext.value_to_form_data(first_name),
-                            'gender': WebContext.value_to_form_data(gender),
-                            'tournament_id': WebContext.value_to_form_data(
-                                tournament_id
-                            ),
+                            'last_name': last_name,
+                            'first_name': first_name,
+                            'gender': gender,
+                            'tournament_id': tournament_id,
+                            'title': title,
+                            'federation': federation,
+                            'fide_id': fide_id,
+                            'club': club,
+                            'mail': mail,
+                            'phone': phone,
+                            'comment': comment,
+                            'owed': owed,
+                            'paid': paid,
+                            'fixed': fixed or None,
+                        }
+                        | {
                             'date_of_birth': WebContext.value_to_date_form_data(
                                 date_of_birth
-                            ),
-                            'title': WebContext.value_to_form_data(title),
-                            'federation': WebContext.value_to_form_data(federation),
-                            'fide_id': WebContext.value_to_form_data(fide_id),
-                            'club': WebContext.value_to_form_data(club),
-                            'mail': WebContext.value_to_form_data(mail),
-                            'phone': WebContext.value_to_form_data(phone),
-                            'comment': WebContext.value_to_form_data(comment),
-                            'owed': WebContext.value_to_form_data(owed),
-                            'paid': WebContext.value_to_form_data(paid),
-                            'fixed': WebContext.value_to_form_data(fixed or None),
-                            'data_source': SessionHandler.get_session_admin_players_active_data_source(
-                                request
-                            ),
+                            )
                         }
                         | rating_data
                         | plugin_form_data
@@ -828,6 +830,9 @@ class PlayerAdminController(BaseEventAdminController):
                     },
                     'federation_options': cls._get_federation_options(),
                     'tournament_options': tournament_options,
+                    'selected_data_source': SessionHandler.get_session_admin_players_active_data_source(
+                        request
+                    ),
                     'data_source_options': DataSourceManager.options(),
                     'plugin_form_fields_templates': plugin_form_fields_templates,
                     'previous_player': (
@@ -1877,8 +1882,8 @@ class PlayerAdminController(BaseEventAdminController):
 
     @get(
         path=[
-            '/admin/search-player/{event_uniq_id:str}/{data_source_id:str}',
-            '/admin/search-player/{event_uniq_id:str}/{data_source_id:str}/{page:int}',
+            '/admin/search-player/{event_uniq_id:str}',
+            '/admin/search-player/{event_uniq_id:str}/{page:int}',
         ],
         name='admin-search-player',
     )
@@ -1887,13 +1892,13 @@ class PlayerAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         data_source_id: str,
+        search: str,
         page: int = 0,
     ) -> Template:
         web_context = PlayerAdminWebContext(
             request, event_uniq_id, data_source_id=data_source_id
         )
         data_source = web_context.get_admin_data_source()
-        search = request.query_params.get(data_source.search_element_name)
         players: list[Player] = []
         connection_error: str | None = None
         if search:

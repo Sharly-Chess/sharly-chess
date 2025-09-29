@@ -1318,9 +1318,6 @@ msgstr ""
 msgid "Data is already displayed on the FFE website."
 msgstr ""
 
-msgid "Data source"
-msgstr ""
-
 #, python-format
 msgid "Data source: %(data_source)s"
 msgstr ""
@@ -1750,9 +1747,6 @@ msgid "E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf"
 msgstr ""
 
 msgid "E.g.: https://my.club.us/tournament.jpg"
-msgstr ""
-
-msgid "E.g.: john doe"
 msgstr ""
 
 msgid "E.g.: john.doe@chess.com"
@@ -2535,6 +2529,9 @@ msgid "Input screens can't be part of rotators."
 msgstr ""
 
 msgid "Input screens show pairings by board number and allow people to enter results."
+msgstr ""
+
+msgid "Install"
 msgstr ""
 
 msgid "Installation of [{lib}] failed."
@@ -4682,9 +4679,6 @@ msgstr ""
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
 msgstr ""
 
-msgid "The data source to search players in."
-msgstr ""
-
 msgid "The date of the first hour is not defined (mandatory)."
 msgstr ""
 
@@ -5000,6 +4994,9 @@ msgid "This account is not active, anonymous users can not log in to it."
 msgstr ""
 
 msgid "This data source in unavailable (for more details: Menu > Data sources)."
+msgstr ""
+
+msgid "This database is not installed (to install it: Menu > Data sources)."
 msgstr ""
 
 msgid "This display controller is private (not visible by the spectators)."

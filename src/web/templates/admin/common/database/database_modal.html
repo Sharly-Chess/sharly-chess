@@ -30,13 +30,13 @@
                         {% for data_source in online_data_sources %}
                             <tr>
                                 <th>{{ data_source.name }}</th>
-                                {% if data_source.is_available %}
+                                {% if data_source.connection_status %}
                                     <td class="text-center text-success">
                                         {{ _('Connection established') }}
                                     </td>
                                 {% else %}
                                     <td class="text-center text-danger">
-                                        {% if network_connected %}
+                                        {% if data_source.connection_status is false %}
                                             {{ _('Connection failed') }}
                                         {% else %}
                                             {{ _('No internet connection') }}

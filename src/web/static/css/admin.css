@@ -90,6 +90,7 @@
 
 .search-results-dropdown {
     max-height: 400px;
+    width: fit-content;
     overflow-y: auto;
 }
 
@@ -169,4 +170,16 @@
 
 .select2-selection__rendered {
     width: 100%;
+}
+
+#data-source-select {
+    flex: 0 0 auto;
+    outline: none;
+}
+
+/* Screen size below md */
+@media (max-width: 768px) {
+    #data-source-select {
+        width: 100px !important;
+    }
 }

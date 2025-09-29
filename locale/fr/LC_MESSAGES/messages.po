@@ -1318,9 +1318,6 @@ msgstr "Un jour"
 msgid "Data is already displayed on the FFE website."
 msgstr "Les données sont déjà affichées sur le site web FFE."
 
-msgid "Data source"
-msgstr "Source de données"
-
 #, python-format
 msgid "Data source: %(data_source)s"
 msgstr "Source de données : %(data_source)s"
@@ -1347,7 +1344,7 @@ msgid "Date of birth"
 msgstr "Date de naissance"
 
 msgid "Date of birth:"
-msgstr "Date naiss. :"
+msgstr "Date de naissance :"
 
 msgid "Date:"
 msgstr "Date :"
@@ -1751,9 +1748,6 @@ msgstr "Exemple : c:\\echecs\\tournois\\mon_tournoi\\reglement.pdf"
 
 msgid "E.g.: https://my.club.us/tournament.jpg"
 msgstr "Exemple : https://mon.club.fr/affiche.jpg"
-
-msgid "E.g.: john doe"
-msgstr "Exemple : pierre dupont"
 
 msgid "E.g.: john.doe@chess.com"
 msgstr "Exemple : pierre.dupont@chess.com"
@@ -2536,6 +2530,9 @@ msgstr "Les écrans de pointage et de saisie des résultats ne peuvent faire par
 
 msgid "Input screens show pairings by board number and allow people to enter results."
 msgstr "Les écrans de saisie des résultats présentent les appariements des joueur·euses par ordre croissant des échiquiers et permet l'entrée des résultats par les joueur·euses ou les arbitres."
+
+msgid "Install"
+msgstr "Installer"
 
 msgid "Installation of [{lib}] failed."
 msgstr "L'installation de la bibliothèque [{lib}] a échoué."
@@ -4682,9 +4679,6 @@ msgstr "La grille américaine montre tous les résultats des joueur·euses, tand
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
 msgstr "La monnaie utilisée pour représenter les prix (par défaut la monnaie de la fédération de l'évènement)."
 
-msgid "The data source to search players in."
-msgstr "La source de données dans laquelle rechercher des joueur·euses."
-
 msgid "The date of the first hour is not defined (mandatory)."
 msgstr "La date du premier horaire n'est pas définie (obligatoire)."
 
@@ -5001,6 +4995,9 @@ msgstr "Ce compte est inactif, les utilisateur·ices anonymes ne peuvent s'y con
 
 msgid "This data source in unavailable (for more details: Menu > Data sources)."
 msgstr "Cette source de données n'est pas disponible (pour plus de détails : Menu > Sources de données)."
+
+msgid "This database is not installed (to install it: Menu > Data sources)."
+msgstr "Cette base de données n'est pas installée (pour l'installer : Menu > Sources de données)"
 
 msgid "This display controller is private (not visible by the spectators)."
 msgstr "Ce pilote d'afficheurs est privé (non visible des spectateur·ices)."
