@@ -92,7 +92,7 @@ class TestPlayersFunctionality:
         player_id = player.id
 
         row = page.locator(f'tr#player-{player_id}')
-        expect(row).to_contain_text('John DOE')
+        expect(row).to_contain_text('DOE John')
         menu_button = row.locator('td:nth-child(1)').locator('button')
         menu_button.click()
         edit_link = row.get_by_text('Edit')
@@ -103,7 +103,7 @@ class TestPlayersFunctionality:
         modal.locator('button[type=submit]').click()
 
         row = page.locator(f'tr#player-{player_id}')
-        expect(row).to_contain_text('John HOE')
+        expect(row).to_contain_text('HOE John')
 
         # Delete the player
 
