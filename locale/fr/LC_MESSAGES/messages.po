@@ -137,7 +137,7 @@ msgstr "%(string)s : %(value)s"
 
 #, python-format
 msgid "%f to %l"
-msgstr "%f to %l"
+msgstr "%f à %l"
 
 #, python-format
 msgid "%t (%f to %l)"

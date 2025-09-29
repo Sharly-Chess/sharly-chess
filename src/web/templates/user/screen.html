@@ -93,11 +93,11 @@
                     </div>
                 {% endif %}
             {% endif %}
-            {% if screen.timer and not screen.timer.error %}
-                <!-- timer.html -->
-                {% include 'screen/timer.html' %}
-            {% endif %}
         </div>
+        {% if screen.timer and not screen.timer.error %}
+            <!-- timer.html -->
+            {% include 'screen/timer.html' %}
+        {% endif %}
     </div>
     <div
         id="user-screen-content"
