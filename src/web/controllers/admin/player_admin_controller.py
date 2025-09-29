@@ -1103,11 +1103,7 @@ class PlayerAdminController(BaseEventAdminController):
         action: str,
         player_id: int | None,
     ) -> Template:
-        web_context= PlayerAdminWebContext(
-            request,
-
-            player_id=player_id
-        )
+        web_context = PlayerAdminWebContext(request, player_id=player_id)
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
         add_other = 'add_other' in data
@@ -1318,7 +1314,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/admin/player-replace/{event_uniq_id:str}/{player_id:int}',
+        path='/player-replace/{event_uniq_id:str}/{player_id:int}',
         name='admin-player-replace',
     )
     async def htmx_admin_player_replace(
@@ -1328,12 +1324,10 @@ class PlayerAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        event_uniq_id: str,
         player_id: int,
     ) -> Template:
         return self._admin_player_update(
             request,
-            event_uniq_id=event_uniq_id,
             action='replace',
             player_id=player_id,
             data=data,
