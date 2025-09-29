@@ -95,6 +95,8 @@ class RotatorUserWebContext(ScreenEntityUserWebContext):
                 self.rotator.rotating_screens
             )
             self._screen = self.rotator.rotating_screens[self.rotator_screen_index]
+        else:
+            self.rotator_screen_index = 0
         self.is_rotator = True
 
     @property
@@ -115,6 +117,8 @@ class DisplayControllerUserWebContext(ScreenEntityUserWebContext):
                     rotator.rotating_screens
                 )
                 self._screen = rotator.rotating_screens[self.rotator_screen_index]
+            else:
+                self.rotator_screen_index = 0
         else:
             self._screen = self.display_controller.screen
 
