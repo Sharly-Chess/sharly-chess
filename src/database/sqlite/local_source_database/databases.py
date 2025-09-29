@@ -168,7 +168,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
 
     @property
     def log_prefix(self) -> str:
-        return _('Database [{database}] - ').format(database=self.name)
+        return f'Database [{self.name}] - '
 
     @classmethod
     def publish_database_status_updated(cls):
@@ -234,9 +234,9 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         if not self.exists():
             if self.updated_at:
                 logger.error(
-                    _(
-                        'Database [{database}] unexpectedly not found at path [{path}].'
-                    ).format(database=self.name, path=self.file)
+                    'Database [%s] unexpectedly not found at path [%s].',
+                    self.name,
+                    self.file,
                 )
                 self.delete()
             return False
@@ -266,15 +266,15 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
 
         self.__class__.is_updating = True
         if not NetworkMonitor.connected():
-            logger.warning(self.log_prefix + _('Not connected, impossible to update.'))
+            logger.warning(self.log_prefix + 'Not connected, impossible to update.')
             return self.stop_update(False)
         self.publish_database_status_updated()
-        logger.info(self.log_prefix + _('Downloading source file…'))
+        logger.info(self.log_prefix + 'Downloading source file…')
         if not self._download_source_file():
             return self.stop_update(False)
         if self.stop_event.is_set():
             return self.stop_update(False)
-        logger.info(self.log_prefix + _('Storing data…'))
+        logger.info(self.log_prefix + 'Storing data…')
         tmp_file = self.file.with_suffix('.tmp')
         tmp_file.unlink(missing_ok=True)
 
@@ -292,10 +292,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 tmp_file.unlink(missing_ok=True)
                 return self.stop_update(False)
         except (OperationalError, IntegrityError) as ex:
-            logger.error(
-                self.log_prefix
-                + _('Error while creating the database: {error}.').format(error=ex)
-            )
+            logger.error(self.log_prefix + 'Error while creating the database: %s.', ex)
             tmp_file.unlink(missing_ok=True)
             return self.stop_update(False)
         finally:
@@ -316,7 +313,8 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         except (sqlite3.DatabaseError, sqlite3.OperationalError) as e:
             logger.error(
                 self.log_prefix
-                + f'Generated database file is not a valid SQLite database: {e}.'
+                + 'Generated database file is not a valid SQLite database: %s.',
+                e,
             )
             self.file.unlink(missing_ok=True)
             return self.stop_update(False)
@@ -326,5 +324,5 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         self.stored_source_database.updated_at = time.time()
         with ConfigDatabase(write=True) as database:
             database.update_stored_local_source_database(self.stored_source_database)
-        logger.info(self.log_prefix + _('Database successfully updated.'))
+        logger.info(self.log_prefix + 'Database successfully updated.')
         return self.stop_update(True)
