@@ -2363,7 +2363,7 @@ class EventDatabase(MigrationDatabase):
             stored_accounts.append(stored_account)
         return stored_accounts
 
-    def add_stored_account(self, stored_account: StoredAccount) -> StoredAccount:
+    def add_stored_account(self, stored_account: StoredAccount) -> int:
         fields = self._get_fields_dict(
             stored_account, ['active', 'first_name', 'last_name', 'password_hash']
         )
@@ -2378,9 +2378,7 @@ class EventDatabase(MigrationDatabase):
         account_id: int | None = self._last_inserted_id()
         if account_id is None:
             raise RuntimeError('Account insertion failed')
-        new_stored_account = self.get_stored_account(account_id=account_id)
-        assert new_stored_account is not None
-        return new_stored_account
+        return account_id
 
     def update_stored_account(self, stored_account: StoredAccount) -> StoredAccount:
         fields = self._get_fields_dict(

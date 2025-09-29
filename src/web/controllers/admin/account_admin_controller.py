@@ -1,3 +1,4 @@
+from copy import copy
 from typing import Annotated, Any
 
 from argon2 import PasswordHasher
@@ -200,42 +201,54 @@ class AccountAdminController(BaseEventAdminController):
         return self.admin_event_account_render(web_context)
 
     @staticmethod
-    def _validate_account_form_data(
+    def _read_account_form_data(
         data: dict[str, str],
         web_context: AccountAdminWebContext,
         action: FormAction,
-    ) -> dict[str, str]:
+    ) -> tuple[StoredAccount | None, dict[str, str]]:
         errors: dict[str, str] = {}
         event = web_context.get_admin_event()
         account = web_context.admin_account
-        if not account or account.user_account:
-            first_name: str = WebContext.form_data_to_str(data, 'first_name') or ''
-            last_name: str = (
-                WebContext.form_data_to_str(data, field := 'last_name') or ''
-            )
-            if not last_name:
+        first_name = WebContext.form_data_to_str(data, 'first_name') or ''
+        last_name = WebContext.form_data_to_str(data, field := 'last_name') or ''
+        if not last_name:
+            errors[field] = _('This field is required.')
+        if 'first_name' not in errors and 'last_name' not in errors:
+            full_name = Player.player_full_name(first_name, last_name)
+            check_full_name_not_used: bool
+            if account and action == FormAction.UPDATE:
+                check_full_name_not_used = account.full_name != Player.player_full_name(
+                    first_name, last_name
+                )
+            else:
+                check_full_name_not_used = True
+            if check_full_name_not_used and full_name in (
+                account.full_name for account in event.accounts_by_id.values()
+            ):
+                errors[field] = _('Account [{account_name}] already exists.').format(
+                    account_name=full_name
+                )
+        password = WebContext.form_data_to_str(data, field := 'password')
+        password_hash: str | None = None
+        if not password:
+            if action == FormAction.UPDATE:
+                assert account is not None
+                password_hash = account.password_hash
+            else:
                 errors[field] = _('This field is required.')
-            if 'first_name' not in errors and 'last_name' not in errors:
-                full_name: str = Player.player_full_name(first_name, last_name)
-                check_full_name_not_used: bool
-                if account and action == FormAction.UPDATE:
-                    check_full_name_not_used = (
-                        account.full_name
-                        != Player.player_full_name(first_name, last_name)
-                    )
-                else:
-                    check_full_name_not_used = True
-                if check_full_name_not_used and full_name in (
-                    account.full_name for account in event.accounts_by_id.values()
-                ):
-                    errors[field] = _(
-                        'Account [{account_name}] already exists.'
-                    ).format(account_name=full_name)
-            if action == FormAction.CREATE:
-                password = WebContext.form_data_to_str(data, field := 'password')
-                if not password:
-                    errors[field] = _('This field is required.')
-        return errors
+        else:
+            password_hash = PasswordHasher().hash(password)
+
+        if errors:
+            return None, errors
+        stored_account = StoredAccount(
+            id=None,
+            active=WebContext.form_data_to_bool(data, 'active'),
+            last_name=last_name,
+            first_name=first_name,
+            password_hash=password_hash,
+        )
+        return stored_account, errors
 
     @post(path='/account-create/{event_uniq_id:str}', name='admin-account-create')
     async def htmx_admin_account_create(
@@ -247,25 +260,16 @@ class AccountAdminController(BaseEventAdminController):
         ],
     ) -> Template:
         web_context = AccountAdminWebContext(request)
-        if errors := self._validate_account_form_data(
+        stored_account, errors = self._read_account_form_data(
             data, web_context, FormAction.CREATE
-        ):
+        )
+        if not stored_account:
             return self.admin_event_account_render(
                 web_context,
                 self._account_form_modal_context(FormAction.CREATE, data, errors),
             )
         event = web_context.get_admin_event()
-        password = WebContext.form_data_to_str(data, 'password')
-        password_hash = PasswordHasher().hash(password) if password else None
-        account = event.create_account(
-            StoredAccount(
-                id=None,
-                active=WebContext.form_data_to_bool(data, 'active'),
-                first_name=WebContext.form_data_to_str(data, 'first_name'),
-                last_name=WebContext.form_data_to_str(data, 'last_name'),
-                password_hash=password_hash,
-            )
-        )
+        account = event.create_account(stored_account)
         Message.success(
             request,
             _('Account [{account_name}] has been created.').format(
@@ -287,9 +291,10 @@ class AccountAdminController(BaseEventAdminController):
         ],
     ) -> Template:
         web_context = AccountAdminWebContext(request)
-        if errors := self._validate_account_form_data(
+        new_stored_account, errors = self._read_account_form_data(
             data, web_context, FormAction.UPDATE
-        ):
+        )
+        if not new_stored_account:
             return self.admin_event_account_render(
                 web_context,
                 self._account_form_modal_context(FormAction.UPDATE, data, errors),
@@ -297,19 +302,49 @@ class AccountAdminController(BaseEventAdminController):
         event = web_context.get_admin_event()
         account = web_context.get_admin_account()
         stored_account = account.stored_account
-        if not account.anonymous:
-            stored_account.active = WebContext.form_data_to_bool(data, 'active')
-            stored_account.first_name = WebContext.form_data_to_str(data, 'first_name')
-            stored_account.last_name = WebContext.form_data_to_str(data, 'last_name')
-            password = WebContext.form_data_to_str(data, 'password')
-            if password:
-                stored_account.password_hash = PasswordHasher().hash(password)
+        stored_account.last_name = new_stored_account.last_name
+        stored_account.first_name = new_stored_account.first_name
+        stored_account.active = new_stored_account.active
+        stored_account.password_hash = new_stored_account.password_hash
         event.update_account(stored_account)
         Message.success(
             request,
-            _('Unauthenticated access has been updated.')
-            if account.anonymous
-            else _('Account [{account_name}] has been updated.').format(
+            _('Account [{account_name}] has been updated.').format(
+                account_name=account.full_name
+            ),
+        )
+        return self.admin_event_account_render(web_context)
+
+    @post(
+        path='/account-clone/{event_uniq_id:str}/{account_id:int}',
+        name='admin-account-clone',
+    )
+    async def htmx_admin_account_clone(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        web_context = AccountAdminWebContext(request)
+        stored_account, errors = self._read_account_form_data(
+            data, web_context, FormAction.CLONE
+        )
+        if not stored_account:
+            return self.admin_event_account_render(
+                web_context,
+                self._account_form_modal_context(FormAction.CLONE, data, errors),
+            )
+        event = web_context.get_admin_event()
+        cloned_account = web_context.get_admin_account()
+        stored_account.stored_permissions = copy(
+            cloned_account.stored_account.stored_permissions
+        )
+        account = event.create_account(stored_account)
+        Message.success(
+            request,
+            _('Account [{account_name}] has been created.').format(
                 account_name=account.full_name
             ),
         )

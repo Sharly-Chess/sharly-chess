@@ -23,6 +23,8 @@
                 id="modal-form"
                 {% if action == 'update' %}
                     hx-patch="{{ url_for('admin-account-update', event_uniq_id=admin_event.uniq_id, account_id=admin_account.id) }}"
+                {% elif action == 'clone' %}
+                    hx-post="{{ url_for('admin-account-clone', event_uniq_id=admin_event.uniq_id, account_id=admin_account.id) }}"
                 {% else %}
                     hx-post="{{ url_for('admin-account-create', event_uniq_id=admin_event.uniq_id) }}"
                 {% endif %}
