@@ -5,9 +5,6 @@
         _('Display controllers'),
         'screens-display-controllers' if client.can_manage_screens else ''
     ) }}
-    {{ macros.refresh_listener(
-        hx_get=url_for('admin-event-display-controllers-tab', event_uniq_id=admin_event.uniq_id),
-    ) }}
 
     <script>
         preparePrintModal()

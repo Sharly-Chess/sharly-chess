@@ -97,6 +97,10 @@ window.addEventListener("show.bs.dropdown", function(event) {
     closeTooltips();
 });
 
+window.addEventListener('request_refresh', function(event) {
+    location.reload();
+});
+
 function debounce(callback, delay){
     var timer;
     return function(){

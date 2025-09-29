@@ -3,24 +3,6 @@
 {% block top_left_nav %}
     {% if client.can_view_prizes_tab %}
         {{ admin_macros.admin_title(_('Prizes'), 'prizes') }}
-        {% if admin_prize_group %}
-            {{ macros.refresh_listener(
-                hx_get=url_for(
-                    'admin-event-prizes-tab',
-                    event_uniq_id=admin_event.uniq_id,
-                    tournament_id=admin_tournament.id,
-                    prize_group_id=admin_prize_group.id,
-                ),
-            ) }}
-        {% elif admin_tournament %}
-            {{ macros.refresh_listener(
-                hx_get=url_for(
-                    'admin-event-prizes-tab',
-                    event_uniq_id=admin_event.uniq_id,
-                    tournament_id=admin_tournament.id,
-                )
-            ) }}
-        {% endif %}
     {% endif %}
 
     <script>
