@@ -118,16 +118,17 @@ try:
     if args.server:
         print_interactive_warning(_('Argument --server is deprecated, ignored.'))
 
+    port = args.port or None
     # Check if GUI mode should be used
     if not TEST_ENV and not (DEVEL_ENV and args.cli):
         # Create and run the Toga app - this should block until the app exits
-        app = SharlyChessServerToga()
+        app = SharlyChessServerToga(debug=args.debug, port=port)
         app.main_loop()
         sys.exit(0)
 
     # Original console mode
     try:
-        se: ServerEngine = ServerEngine(debug=args.debug, port=args.port or None)
+        se: ServerEngine = ServerEngine(debug=args.debug, port=port)
         asyncio.run(se.serve())
     except KeyboardInterrupt:
         pass
