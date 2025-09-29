@@ -131,27 +131,6 @@ class SetPairingParticipationGuard(BaseGuard):
         )
 
 
-class SetPairingParticipationGuard(BaseGuard):
-    """Guard validating if a client can set the participation of a player
-    according to the participation action."""
-
-    AUTH_ACTION_BY_ACTION = {
-        'ZPB': AuthAction.SET_ZPB,
-        'LEAVE': AuthAction.SET_ZPB,
-        'RETURN': AuthAction.SET_ZPB,
-        'HPB': AuthAction.SET_HPB,
-        'PAIR': AuthAction.MANUALLY_PAIR_PLAYERS,
-    }
-
-    def authorize_client(self, client: Client, request: HTMXRequest):
-        action = request.path_params['action']
-        if action not in self.AUTH_ACTION_BY_ACTION:
-            raise NotFoundException(f'Unknown action [{action}].')
-        self._authorize_tournament_action(
-            self.AUTH_ACTION_BY_ACTION[action], client, request
-        )
-
-
 class ViewScreenEntityGuard(BaseGuard, ABC):
     """Base guard for validating viewing a private / public screen entity."""
 
@@ -220,7 +199,7 @@ class ManageAccountGuard(BaseGuard):
                 f'manage account [{account.full_name}].'
             )
         access_level = RequestUtils.get_optional_access_level(request)
-        if access_level:
+        if access_level and access_level not in client.manageable_access_levels:
             raise PermissionDeniedException(
                 f'Client [{client.account.full_name}] can not '
                 f'manage access level [{access_level.id}].'
