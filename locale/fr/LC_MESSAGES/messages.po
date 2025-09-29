@@ -4069,9 +4069,15 @@ msgstr "Supprimer la redirection du pilote d'afficheurs vers cet écran."
 msgid "Rename events"
 msgstr "Renommer les évènements"
 
+msgid "Replace"
+msgstr "Remplacer"
+
 #, python-format
 msgid "Replace [%(old)s] by [%(new)s]"
 msgstr "Remplacer [%(old)s] par [%(new)s]"
+
+msgid "Replace player"
+msgstr "Remplacer le·la joueur·euse"
 
 #, python-format
 msgid "Replaces category [%(category)s] and deletes all the criteria of this category."
@@ -4443,6 +4449,9 @@ msgstr "La configuration de Sharly Chess a été mise à jour."
 
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
 msgstr "Sharly Chess utilisant le réseau local, tout le trafic est public. Cela implique que quiconque connecté au même réseau peut facilement récupérer l'accès à un compte sans saisir de mot de passe."
+
+msgid "Should only be used when the wrong player has been added by mistake."
+msgstr "Ne doit être utilisé que lorsque un·e mauvais·e joueur·euse a été ajouté·e par erreur."
 
 msgid "Show Log"
 msgstr "Montrer les logs"

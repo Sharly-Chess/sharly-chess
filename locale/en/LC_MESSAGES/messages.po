@@ -4069,8 +4069,14 @@ msgstr ""
 msgid "Rename events"
 msgstr ""
 
+msgid "Replace"
+msgstr ""
+
 #, python-format
 msgid "Replace [%(old)s] by [%(new)s]"
+msgstr ""
+
+msgid "Replace player"
 msgstr ""
 
 #, python-format
@@ -4442,6 +4448,9 @@ msgid "Sharly Chess settings have been updated."
 msgstr ""
 
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
+msgstr ""
+
+msgid "Should only be used when the wrong player has been added by mistake."
 msgstr ""
 
 msgid "Show Log"
