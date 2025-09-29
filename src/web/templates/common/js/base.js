@@ -98,7 +98,6 @@ window.addEventListener("show.bs.dropdown", function(event) {
 });
 
 window.addEventListener('request_refresh', function(event) {
-    console.log('request_refresh');
     location.reload();
 });
 
