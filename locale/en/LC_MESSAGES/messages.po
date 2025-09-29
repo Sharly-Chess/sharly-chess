@@ -2336,6 +2336,9 @@ msgstr ""
 msgid "Half-Point Bye"
 msgstr ""
 
+msgid "Half-Point Bye attributed to player [{player}]."
+msgstr ""
+
 msgid "Handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. You may also choose to use this rating for seeding and pairings."
 msgstr ""
 
@@ -3457,6 +3460,9 @@ msgstr ""
 msgid "Pairing system [{pairing_system}] is not compatible with the PAPI format."
 msgstr ""
 
+msgid "Pairing-Allocated Bye assigned to player [{player}]."
+msgstr ""
+
 msgid "Pairings"
 msgstr ""
 
@@ -3605,7 +3611,19 @@ msgstr ""
 msgid "Player [{player}] has been moved from tournament [{src_tournament}] to tournament [{dst_tournament}]."
 msgstr ""
 
+msgid "Player [{player}] has been paired against [{opponent}] at board #{board}."
+msgstr ""
+
 msgid "Player [{player}] has pairings in tournament [{tournament}]."
+msgstr ""
+
+msgid "Player [{player}] has returned for all the remaining rounds."
+msgstr ""
+
+msgid "Player [{player}] has returned for this round."
+msgstr ""
+
+msgid "Player [{player}] withdrawn from the tournament."
 msgstr ""
 
 msgid "Player does not match tournament criteria: {names}"
@@ -5834,6 +5852,9 @@ msgid "You must enter the tournament certification number and password in each t
 msgstr ""
 
 msgid "Zero-Point Bye"
+msgstr ""
+
+msgid "Zero-Point Bye attributed to player [{player}]."
 msgstr ""
 
 msgid "[Sharly Chess {version}] Request for the integration of custom files"
