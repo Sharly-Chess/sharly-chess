@@ -49,8 +49,8 @@
         {% set redirect_url = '' %}
         {% if sharly_chess_config.force_edit %}
             {% if client.can_manage_application_settings %}
-                {% if request.url.path != '/admin/home' %}
-                    {% set redirect_url = '/admin/home' %}
+                {% if request.url.path != '/home' %}
+                    {% set redirect_url = '/home' %}
                 {% endif %}
             {% else %}
                 {% if request.url.path != '/wait' %}
@@ -59,7 +59,7 @@
             {% endif %}
         {% else %}
             {% if request.url.path == '/' %}
-                {% set redirect_url = '/admin/home' %}
+                {% set redirect_url = '/home' %}
             {% endif %}
         {% endif %}
         {% if redirect_url %}

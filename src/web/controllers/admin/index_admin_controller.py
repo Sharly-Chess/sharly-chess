@@ -287,27 +287,7 @@ class IndexAdminController(BaseAdminController):
         return HTMXTemplate(template_name='admin/index.html', context=context)
 
     @get(
-        path='/admin',
-        name='admin',
-    )
-    async def htmx_admin(
-        self,
-        request: HTMXRequest,
-        admin_events_show_details: bool | None,
-    ) -> Template:
-        web_context = AdminWebContext(request)
-
-        if admin_events_show_details is not None:
-            SessionHandler.set_session_admin_events_show_details(
-                request, admin_events_show_details
-            )
-
-        return self._admin_render(
-            web_context=web_context,
-        )
-
-    @get(
-        path='/admin/{admin_tab:str}',
+        path='/{admin_tab:str}',
         name='admin-tab',
     )
     async def htmx_admin_tab(
@@ -664,9 +644,9 @@ class IndexAdminController(BaseAdminController):
 
     @get(
         path=[
-            '/admin/{admin_tab:str}/event-modal/{action:str}',
-            '/admin/{admin_tab:str}/event-modal/{action:str}/{event_uniq_id:str}',
-            '/admin/event-modal/{action:str}/{event_uniq_id:str}',
+            '/{admin_tab:str}/event-modal/{action:str}',
+            '/{admin_tab:str}/event-modal/{action:str}/{event_uniq_id:str}',
+            '/event-modal/{action:str}/{event_uniq_id:str}',
         ],
         name='admin-event-modal',
         guards=[ActionGuard(AuthAction.VIEW_EVENT_CONFIG)],
@@ -690,7 +670,7 @@ class IndexAdminController(BaseAdminController):
         )
 
     @post(
-        path='/admin/{admin_tab:str}/create-event',
+        path='/{admin_tab:str}/create-event',
         name='admin-tab-create-event',
         guards=[ActionGuard(AuthAction.ADD_EVENTS)],
     )
@@ -726,7 +706,7 @@ class IndexAdminController(BaseAdminController):
         return Redirect(admin_event_url(request, event_uniq_id=uniq_id))
 
     @get(
-        path='/admin/{admin_tab:str}/event-modal/delete/{event_uniq_id:str}',
+        path='/{admin_tab:str}/event-modal/delete/{event_uniq_id:str}',
         name='admin-event-delete-modal',
         guards=[ActionGuard(AuthAction.DELETE_EVENTS)],
     )
@@ -737,7 +717,7 @@ class IndexAdminController(BaseAdminController):
         return self._admin_render(web_context, {'modal': 'event-delete'})
 
     @delete(
-        path='/admin/{admin_tab:str}/event-delete/{event_uniq_id:str}',
+        path='/{admin_tab:str}/event-delete/{event_uniq_id:str}',
         name='admin-event-delete',
         guards=[ActionGuard(AuthAction.DELETE_EVENTS)],
         status_code=HTTP_200_OK,
@@ -762,7 +742,7 @@ class IndexAdminController(BaseAdminController):
         return self._admin_render(web_context)
 
     @post(
-        path='/admin/event-clone/{event_uniq_id:str}',
+        path='/event-clone/{event_uniq_id:str}',
         name='admin-event-clone',
         guards=[ActionGuard(AuthAction.ADD_EVENTS)],
     )
@@ -802,8 +782,8 @@ class IndexAdminController(BaseAdminController):
 
     @patch(
         path=[
-            '/admin/event-update/{event_uniq_id:str}',
-            '/admin/{admin_tab:str}/event-update/{event_uniq_id:str}',
+            '/event-update/{event_uniq_id:str}',
+            '/{admin_tab:str}/event-update/{event_uniq_id:str}',
         ],
         name='admin-event-update',
         guards=[ActionGuard(AuthAction.UPDATE_EVENTS)],
@@ -850,7 +830,7 @@ class IndexAdminController(BaseAdminController):
         )
 
     @patch(
-        path='/admin/event-uniq-id-update/{event_uniq_id:str}',
+        path='/event-uniq-id-update/{event_uniq_id:str}',
         name='admin-event-uniq-id-update',
         guards=[ActionGuard(AuthAction.RENAME_EVENTS)],
     )
@@ -893,7 +873,7 @@ class IndexAdminController(BaseAdminController):
         return ClientRedirect(redirect_to=admin_event_url(request, new_uniq_id))
 
     @post(
-        path='/admin/restore-archive/{archive_name:str}',
+        path='/restore-archive/{archive_name:str}',
         name='admin-restore-archive',
         guards=[ActionGuard(AuthAction.MANAGE_ARCHIVES)],
     )
@@ -916,7 +896,7 @@ class IndexAdminController(BaseAdminController):
         return self._admin_render(web_context=web_context)
 
     @patch(
-        path='/admin/locale-update/{locale:str}',
+        path='/locale-update/{locale:str}',
         name='admin-locale-update',
     )
     async def htmx_admin_locale_update(
@@ -981,7 +961,7 @@ class IndexAdminController(BaseAdminController):
         return template_context
 
     @get(
-        path='/admin/config-modal',
+        path='/config-modal',
         name='admin-config-modal',
         guards=[ActionGuard(AuthAction.MANAGE_APPLICATION_SETTINGS)],
     )
@@ -996,7 +976,7 @@ class IndexAdminController(BaseAdminController):
         )
 
     @patch(
-        path='/admin/config-update',
+        path='/config-update',
         name='admin-config-update',
         guards=[ActionGuard(AuthAction.MANAGE_APPLICATION_SETTINGS)],
     )
@@ -1041,7 +1021,7 @@ class IndexAdminController(BaseAdminController):
         )
 
     @get(
-        path='/admin/database-status-badge',
+        path='/database-status-badge',
         name='admin-database-status-badge',
         guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
     )
@@ -1111,7 +1091,7 @@ class IndexAdminController(BaseAdminController):
         return template_context
 
     @get(
-        path='/admin/database-modal',
+        path='/database-modal',
         name='admin-database-modal',
         guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
     )
@@ -1124,7 +1104,7 @@ class IndexAdminController(BaseAdminController):
         )
 
     @patch(
-        path='/admin/database-options-update',
+        path='/database-options-update',
         name='admin-database-options-update',
         guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
     )
@@ -1178,7 +1158,7 @@ class IndexAdminController(BaseAdminController):
         )
 
     @get(
-        path='/admin/database-status/{database_id:str}',
+        path='/database-status/{database_id:str}',
         name='admin-database-status',
         guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
     )
@@ -1190,7 +1170,7 @@ class IndexAdminController(BaseAdminController):
         )
 
     @post(
-        path='/admin/database-update/{database_id:str}',
+        path='/database-update/{database_id:str}',
         name='admin-database-update',
         guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
     )
@@ -1200,7 +1180,7 @@ class IndexAdminController(BaseAdminController):
         return Reswap(content=None, method='none', status_code=HTTP_200_OK)
 
     @delete(
-        path='/admin/database-delete/{database_id:str}',
+        path='/database-delete/{database_id:str}',
         name='admin-database-delete',
         guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
         status_code=HTTP_200_OK,
@@ -1217,7 +1197,7 @@ class IndexAdminController(BaseAdminController):
         )
 
     @post(
-        path='/admin/online-data-source/check/{data_source_id:str}',
+        path='/online-data-source/check/{data_source_id:str}',
         name='admin-online-data-source-check',
         guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
     )

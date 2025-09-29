@@ -11,9 +11,11 @@ from litestar.status_codes import HTTP_204_NO_CONTENT
 
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
+from web.controllers.admin.base_admin_controller import AdminWebContext
+from web.controllers.admin.index_admin_controller import IndexAdminController
 from web.controllers.base_controller import BaseController, WebContext
 from web.messages import Message
-from web.urls import admin_url
+from web.session import SessionHandler
 
 
 class IndexController(BaseController):
@@ -34,10 +36,15 @@ class IndexController(BaseController):
         self,
         request: HTMXRequest,
         locale: str | None,
+        admin_events_show_details: bool | None,
     ) -> Template | Redirect:
+        web_context = AdminWebContext(request)
         self.set_locale(request, locale)
-
-        return Redirect(path=admin_url(request))
+        if admin_events_show_details is not None:
+            SessionHandler.set_session_admin_events_show_details(
+                request, admin_events_show_details
+            )
+        return IndexAdminController._admin_render(web_context)
 
     @get(
         path='/wait',

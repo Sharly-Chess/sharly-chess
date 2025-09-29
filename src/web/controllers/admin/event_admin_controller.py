@@ -35,7 +35,7 @@ class EventAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/event/{event_uniq_id:str}',
+        path='/event/{event_uniq_id:str}',
         name='admin-event',
     )
     async def htmx_admin_event(
