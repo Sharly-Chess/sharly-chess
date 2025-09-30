@@ -741,7 +741,7 @@ class PapiConverter:
 
         # Convert tournament variables
         variables = PapiVariables(
-            name=tournament.name,
+            name=tournament.full_name,
             type=PapiPairingSystem.get_outer_value(tournament.pairing_system),
             rounds=str(tournament.rounds),
             pairing=PapiPairingVariation.get_outer_value(tournament.pairing_variation),
