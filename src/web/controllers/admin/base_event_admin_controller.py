@@ -54,7 +54,12 @@ class BaseEventAdminWebContext(AdminWebContext):
         ):
             event_uniq_id, tids = last_tournaments
             if event_uniq_id == self.get_admin_event().uniq_id:
-                tournament_ids = tids
+                # Remove ids that are not in the event anymore
+                tournament_ids = [
+                    tid
+                    for tid in tids
+                    if tid in self.get_admin_event().tournaments_by_id
+                ]
 
         return tournament_ids
 
