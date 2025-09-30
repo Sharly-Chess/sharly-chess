@@ -6,7 +6,7 @@ English version below
 - Permissions des clients connectés au serveur (3.1.0)
 - Prise en charge des serveurs avec plusieurs adresses IP (3.1.0)
 - Amélioration de la console du serveur (3.1.0)
-– Amélioration de l’ergonomie pour la modification, la duplication et l’archivage des événements (3.1.0)
+- Amélioration de l’ergonomie pour la modification, la duplication et l’archivage des événements (3.1.0)
 
 ## Tournois
 
