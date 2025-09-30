@@ -142,7 +142,6 @@
                                             ) }}
                                             <script>
                                                 $('#{{ id }}').change(function () {
-                                                    console.log('test');
                                                     htmx.ajax('PATCH',
                                                         "{{ url_for(
                                                             'admin-player-set-bye',
@@ -218,7 +217,7 @@
                 data-bs-dismiss="modal"
             >
                 <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Cancel') }}
+                {{ _('Close') }}
             </button>
         </div>
     </div>
