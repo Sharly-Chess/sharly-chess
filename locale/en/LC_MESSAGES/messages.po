@@ -812,6 +812,11 @@ msgstr ""
 msgid "Byes (%(byes)d) *** PLAYERS WITH BYES"
 msgstr "Byes (%(byes)d)"
 
+msgid "Byes can't be set for the last round of the tournament."
+msgid_plural "Byes can't be set for the last {rounds} rounds of the tournament."
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "CA"
 msgstr ""
 
@@ -2497,8 +2502,7 @@ msgstr ""
 msgid "Info"
 msgstr ""
 
-#, python-format
-msgid "Inherited by permission [%(permission)s]."
+msgid "Inherited by permission [{permission}]."
 msgstr ""
 
 msgid "Input Screens may be used to allow players to enter their own results on a device that you make available at the venue."
@@ -3203,6 +3207,12 @@ msgstr ""
 msgid "Not connected to internet"
 msgstr ""
 
+msgid "Not enough byes available to set a Full-Point Bye (required: 2)."
+msgstr ""
+
+msgid "Not enough byes available to set a Half-Point Bye (required: 1)."
+msgstr ""
+
 msgid "Not logged in"
 msgstr ""
 
@@ -3219,6 +3229,10 @@ msgid "Notification"
 msgstr ""
 
 msgid "Number"
+msgstr ""
+
+#, python-format
+msgid "Number of byes: %(byes)d (maximum: %(max_byes)d)"
 msgstr ""
 
 #, python-format
@@ -4643,9 +4657,6 @@ msgstr ""
 msgid "The URL or the path of the image (relative to the 'custom' folder) to display."
 msgstr ""
 
-msgid "The access level of the permission."
-msgstr ""
-
 msgid "The account matching all the users not logged in to any account."
 msgstr ""
 
@@ -5767,6 +5778,12 @@ msgstr ""
 msgid "You are not allowed to manage prizes."
 msgstr ""
 
+msgid "You are not allowed to modify Full-Point Byes."
+msgstr ""
+
+msgid "You are not allowed to modify Half-Point Byes."
+msgstr ""
+
 msgid "You are not allowed to open/close check-in."
 msgstr ""
 
@@ -5777,6 +5794,12 @@ msgid "You are not allowed to publish results."
 msgstr ""
 
 msgid "You are not allowed to publish rules."
+msgstr ""
+
+msgid "You are not allowed to set Full-Point Byes."
+msgstr ""
+
+msgid "You are not allowed to set Half-Point Byes."
 msgstr ""
 
 msgid "You are not allowed to set the current round."

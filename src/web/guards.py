@@ -2,12 +2,13 @@ from abc import ABC, abstractmethod
 from typing import cast
 
 from litestar.connection.base import ASGIConnection
-from litestar.exceptions import PermissionDeniedException
+from litestar.exceptions import PermissionDeniedException, ClientException
 from litestar.handlers import BaseRouteHandler
 from litestar_htmx import HTMXRequest
 
 from data.access_levels.actions import AuthAction
 from data.access_levels.client import Client
+from utils.enum import Result
 from web.utils import RequestUtils
 
 
@@ -108,6 +109,23 @@ class SetResultGuard(BaseGuard):
             self._authorize_tournament_action(
                 AuthAction.SET_SPECIAL_RESULTS, client, request
             )
+
+
+class SetByeGuard(BaseGuard):
+    """Guard validating if a client can set a bye for a player.
+    requires: event_uniq_id, result."""
+
+    def authorize_client(self, client: Client, request: HTMXRequest):
+        result = RequestUtils.get_result(request)
+        if result == Result.HALF_POINT_BYE:
+            action = AuthAction.SET_HPB
+        elif result == Result.FULL_POINT_BYE:
+            action = AuthAction.SET_FPB
+        elif result in [Result.NO_RESULT, Result.ZERO_POINT_BYE]:
+            action = AuthAction.SET_ZPB
+        else:
+            raise ClientException(f'Result [{result.value}] is not a bye')
+        self._authorize_action(action, client)
 
 
 class ViewScreenEntityGuard(BaseGuard, ABC):

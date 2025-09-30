@@ -155,6 +155,29 @@
     <!-- end gender_icon() -->
 {% endmacro %}
 
+{% macro _select_option(value, text_or_option, selected) %}
+    {% if text_or_option is string %}
+        <option value="{{ value }}" {% if selected %}selected{% endif %}>
+            {{ text_or_option }}
+        </option>
+    {% else %}
+        {# An option of type SelectOption has been passed #}
+        {% set option = text_or_option %}
+        <option
+            class="{{ option.classes }}"
+            data-class="{{ option.classes }}"
+            value="{{ value }}"
+            {% if option.tooltip %}
+                title="{{ option.tooltip }}"
+            {% endif %}
+            {% if option.disabled %}disabled{% endif %}
+            {% if selected %}selected{% endif %}
+        >
+            {{ option.name }}
+        </option>
+    {% endif %}
+{% endmacro %}
+
 {% macro _select_content(
     id,
     name,
@@ -165,8 +188,10 @@
     multiple_placeholder='NO PLACEHOLDER',
     multiple_select_all=false,
     error=false,
+    tooltip_select=false,
     onchange=''
 ) %}
+    {% set use_select2 = not disabled and (multiple or tooltip_select) %}
     <select
         name="{{ name }}"
         id="{{ id }}"
@@ -184,10 +209,12 @@
         {% endif %}
         {% if multiple %}
             multiple
-            style="display:none"
             {% if multiple_placeholder %}
                 data-placeholder='{{ multiple_placeholder }}'
             {% endif %}
+        {% endif %}
+        {% if use_select2 %}
+            style="display:none"
         {% endif %}
         {% if onchange %}
             onchange="{{ onchange }}"
@@ -199,32 +226,38 @@
             </option>
             <option value="__divider__" disabled></option>
         {% endif %}
-        {% for key, text_or_options in options.items() %}
-            {% if text_or_options is string %}
-                <option value="{{ key }}" {% if key in selected %}selected{% endif %}>{{ text_or_options }}</option>
-            {% else %}
+        {% for key, text_or_option_or_options in options.items() %}
+            {% if text_or_option_or_options is mapping %}
                 <optgroup label="{{ key }}">
-                    {% for value, text in text_or_options.items() %}
-                        <option value="{{ value }}" {% if value in selected %}selected{% endif %}>{{ text }}</option>
+                    {% for value, text_or_option in text_or_option_or_options.items() %}
+                        {{ _select_option(value, text_or_option, value in selected) }}
                     {% endfor %}
                 </optgroup>
+            {% else %}
+                {{ _select_option(key, text_or_option_or_options, key in selected) }}
             {% endif %}
         {% endfor %}
     </select>
-    {% if multiple %}
+    {% if use_select2 %}
         <script>
             $('#{{ id }}').select2({
                 theme: 'bootstrap-5',
                 width: '100%',
                 placeholder: $(this).data('placeholder'),
+                minimumResultsForSearch: Infinity,
                 closeOnSelect: false,
                 templateResult: function (data) {
                     if (data.id === '__divider__') {
                         const $div = $('<span style="pointer-events: none; border-bottom: 1px solid #ccc; display: block; margin: 4px 0;"></span>');
                         return $div;
                     }
-                    return data.text;
-                }
+                    const $result = $('<span>' + data.text + '</span>');
+                    const tooltip = $(data.element).attr('data-bs-title');
+                    if (tooltip) $result.attr('data-bs-title', tooltip);
+                    const optionClass = $(data.element).data('class');
+                    if (optionClass) $result.addClass(optionClass);
+                    return $result;
+                },
             });
             // Width changes dynamically on load, needs to be reset to display the placeholder nicely
             $('.select2-search__field').css('width', '100%');
@@ -247,6 +280,22 @@
                     }, 500);
                 }
             });
+            {% if tooltip_select %}
+                $('#{{ id }}').on('select2:close', function(e) {
+                    $('[role="tooltip"]').remove();
+                });
+
+                $('body').tooltip({
+                    selector: '[data-bs-toggle="tooltip"],.select2-results__option',
+                    title: function() {
+                        return $(this).prev().attr("data-bs-title");
+                    },
+                    placement: "right",
+                    container: "body",
+                    html: true,
+                    zIndex: 10010,
+                });
+            {% endif %}
         </script>
     {% elif options|length == 1 and not disabled %}
         <input type="hidden" name="{{ name }}" value="{{ options|list|first }}" />
@@ -316,6 +365,7 @@ with_indicator: display a loading indicator, optional
     select_options={},
     onchange='',
     multiple_select=false,
+    tooltip_select=false,
     select_all=false,
     file_accept='',
     number_min='',
@@ -395,6 +445,7 @@ with_indicator: display a loading indicator, optional
                         multiple_placeholder=placeholder,
                         multiple_select_all=select_all,
                         error=error or (name in errors),
+                        tooltip_select=tooltip_select,
                         onchange=onchange,
                     ) }}
                 {% elif input_type == 'switch' or input_type == 'checkbox' %}
@@ -820,6 +871,7 @@ with_indicator: display a loading indicator, optional
     select_options={'': 'NO OPTIONS'},
     onchange='',
     multiple_select=false,
+    tooltip_select=false,
     select_all=false,
     placeholder='',
     disabled=false
@@ -837,6 +889,7 @@ with_indicator: display a loading indicator, optional
         select_options=select_options,
         onchange=onchange,
         multiple_select=multiple_select,
+        tooltip_select=tooltip_select,
         select_all=select_all,
         placeholder=placeholder,
         disabled=disabled,

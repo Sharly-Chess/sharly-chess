@@ -812,6 +812,11 @@ msgstr "La limite de points joker (%(limit)d) est déjà atteinte pour ce tourno
 msgid "Byes (%(byes)d) *** PLAYERS WITH BYES"
 msgstr "Forfaits et absences (%(byes)d)"
 
+msgid "Byes can't be set for the last round of the tournament."
+msgid_plural "Byes can't be set for the last {rounds} rounds of the tournament."
+msgstr[0] "Les demi-points joker ne peuvent être attribués lors de la dernière ronde du tournoi."
+msgstr[1] "Les demi-points joker ne peuvent être attribués lors des {rounds} dernières rondes du tournoi."
+
 msgid "CA"
 msgstr "ARB"
 
@@ -2497,9 +2502,8 @@ msgstr "Incrément (sec)"
 msgid "Info"
 msgstr "Info"
 
-#, python-format
-msgid "Inherited by permission [%(permission)s]."
-msgstr "Hérité de la permission [%(permission)s]."
+msgid "Inherited by permission [{permission}]."
+msgstr "Hérité de la permission [{permission}]."
 
 msgid "Input Screens may be used to allow players to enter their own results on a device that you make available at the venue."
 msgstr "Les écrans de saisie peuvent être utilisés pour permettre aux joueur·euses d’entrer eux-mêmes leurs résultats sur un portable ou une tablette mis à disposition sur le lieu du tournoi."
@@ -3203,6 +3207,12 @@ msgstr "Pas encore point·ée"
 msgid "Not connected to internet"
 msgstr "Aucune connection à internet"
 
+msgid "Not enough byes available to set a Full-Point Bye (required: 2)."
+msgstr "Il n'y a pas assez de demi-points joker disponibles pour attribuer un point joker entier (requis : 2)."
+
+msgid "Not enough byes available to set a Half-Point Bye (required: 1)."
+msgstr "Il n'y a pas de demi-point joker disponible pour attribuer un demi-point joker (requis : 1)."
+
 msgid "Not logged in"
 msgstr "Non connecté"
 
@@ -3220,6 +3230,10 @@ msgstr "Notification"
 
 msgid "Number"
 msgstr "Numéro"
+
+#, python-format
+msgid "Number of byes: %(byes)d (maximum: %(max_byes)d)"
+msgstr "Nombre de demi-points joker : %(byes)d (maximum : %(max_byes)d)"
 
 #, python-format
 msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
@@ -4643,9 +4657,6 @@ msgstr "L'URL de l'image à afficher."
 msgid "The URL or the path of the image (relative to the 'custom' folder) to display."
 msgstr "L'URL ou le chemin de l'image (relatif au dossier 'custom') à afficher."
 
-msgid "The access level of the permission."
-msgstr "Le niveau d'accès de la permission."
-
 msgid "The account matching all the users not logged in to any account."
 msgstr "Le compte correspondant aux utilisateur·ices non-connecté·es."
 
@@ -5767,6 +5778,12 @@ msgstr "Vous n'êtes pas autorisé·e à générer les appariements."
 msgid "You are not allowed to manage prizes."
 msgstr "Vous n'êtes pas autorisé·e à gérer les prix."
 
+msgid "You are not allowed to modify Full-Point Byes."
+msgstr "Vous n'êtes pas autorisé·e à modifier des points joker entiers."
+
+msgid "You are not allowed to modify Half-Point Byes."
+msgstr "Vous n'êtes pas autorisé·e à modifier des demi-points joker."
+
 msgid "You are not allowed to open/close check-in."
 msgstr "Vous n'êtes pas autorisé·e à ouvrir/fermer le pointage."
 
@@ -5778,6 +5795,12 @@ msgstr "Vous n'êtes pas autorisé·e à publier les résultats."
 
 msgid "You are not allowed to publish rules."
 msgstr "Vous n'êtes pas autorisé·e à publier le règlement."
+
+msgid "You are not allowed to set Full-Point Byes."
+msgstr "Vous n'êtes pas autorisé·e à attribuer des points joker entiers."
+
+msgid "You are not allowed to set Half-Point Byes."
+msgstr "Vous n'êtes pas autorisé·e à attribuer des demi-points joker."
 
 msgid "You are not allowed to set the current round."
 msgstr "Vous n'êtes pas autorisé·e à positionner la ronde courante."

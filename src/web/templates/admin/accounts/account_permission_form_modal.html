@@ -37,88 +37,14 @@
                 {% endif %}
             >
                 <div class="row gy-2 gx-3">
-                    {% set id = 'access-level' %}
-                    {% set name = 'access_level' %}
-
-                    <div class="input-block">
-                        <label
-                            for="{{ id }}"
-                            class="form-check-label flex-grow-1 mb-1"
-                        >
-                            {{ _('%(string)s:', string=_('Access level')) }}
-                        </label>
-                        <div class="pw-input-group">
-                            <select
-                                name="{{ name }}"
-                                id="{{ id }}"
-                                class="form-select sharly-chess-select2"
-                                aria-describedby="{{ id }}-help"
-                                style="display:none"
-                            >
-                                {% for access_level in manageable_access_levels %}
-                                    <option
-                                        value="{{ access_level.id }}"
-                                        {% if access_level in inherited_permissions_by_access_level %}
-                                            title="{{ _(
-                                                'Inherited by permission [%(permission)s].',
-                                                permission=inherited_permissions_by_access_level[access_level].inherited_by.name
-                                            ) }}"
-                                        {% elif access_level in current_access_levels %}
-                                            title="{{ _('Access level already defined for the account.') }}"
-                                        {% else %}
-                                            title="{{ access_level.help_text }}"
-                                        {% endif %}
-                                        {% if access_level.id == data[name] %}
-                                            selected
-                                        {% endif %}
-                                        {% if access_level in inherited_permissions_by_access_level or access_level in current_access_levels %}
-                                            disabled
-                                        {% endif %}
-                                    >
-                                        {{ access_level.name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                            <script>
-                                $('#{{ id }}').select2({
-                                    theme: 'bootstrap-5',
-                                    width: '100%',
-                                    placeholder: $(this).data('placeholder'),
-                                    minimumResultsForSearch: Infinity,
-                                    templateResult: (option) => {
-                                        if (!option.id) {
-                                            return option.text;
-                                        }
-                                        return $(
-                                            '<div ' +
-                                            '    class="access-level-option w-100" ' +
-                                            '    data-bs-title="' + $(option.element).attr('data-bs-title') + '" ' +
-                                            '>' + option.text +
-                                            '</div>'
-                                        );
-                                    },
-                                    templateSelection: (option) => option.text,
-                                });
-                                $('#{{ id }}').on('select2:close', function(e) {
-                                    $('[role="tooltip"]').remove();
-                                });
-
-                                $('body').tooltip({
-                                    selector: '[data-bs-toggle="tooltip"],.select2-results__option',
-                                    title: function() {
-                                        return $(this).prev().attr("data-bs-title");
-                                    },
-                                    placement: "right",
-                                    container: "body",
-                                    html: true,
-                                    zIndex: 10010,
-                                });
-                            </script>
-                        </div>
-                        <div id="{{ id }}-help" class="form-text">
-                            {{ _('The access level of the permission.') }}
-                        </div>
-                    </div>
+                    {{ admin_macros.select_input(
+                        name='access_level',
+                        label=_('%(string)s:', string=_('Access level')),
+                        help_text='',
+                        select_options=access_level_options,
+                        tooltip_select=true,
+                        data=data, errors=errors
+                    ) }}
                 </div>
                 <div
                     id="tournament-select-container"
