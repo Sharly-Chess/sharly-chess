@@ -814,8 +814,8 @@ msgstr "Forfaits et absences (%(byes)d)"
 
 msgid "Byes can't be set for the last round of the tournament."
 msgid_plural "Byes can't be set for the last {rounds} rounds of the tournament."
-msgstr[0] "Les points jokers ne peuvent être attribués lors de la dernière ronde du tournoi."
-msgstr[1] "Les points jokers ne peuvent être attribués lors des {rounds} dernières rondes du tournoi."
+msgstr[0] "Les demi-points joker ne peuvent être attribués lors de la dernière ronde du tournoi."
+msgstr[1] "Les demi-points joker ne peuvent être attribués lors des {rounds} dernières rondes du tournoi."
 
 msgid "CA"
 msgstr "ARB"
@@ -3208,10 +3208,10 @@ msgid "Not connected to internet"
 msgstr "Aucune connection à internet"
 
 msgid "Not enough byes available to set a Full-Point Bye (required: 2)."
-msgstr "Il n'y a pas assez de byes disponibles pour définir un point joker entier (requis : 2)."
+msgstr "Il n'y a pas assez de demi-points joker disponibles pour attribuer un point joker entier (requis : 2)."
 
 msgid "Not enough byes available to set a Half-Point Bye (required: 1)."
-msgstr "Il n'y a pas assez de byes disponibles pour définir un demi-point joker (requis : 1)."
+msgstr "Il n'y a pas de demi-point joker disponible pour attribuer un demi-point joker (requis : 1)."
 
 msgid "Not logged in"
 msgstr "Non connecté"
@@ -3233,7 +3233,7 @@ msgstr "Numéro"
 
 #, python-format
 msgid "Number of byes: %(byes)d (maximum: %(max_byes)d)"
-msgstr "Nombre de byes: %(byes)d (maximum : %(max_byes)d)"
+msgstr "Nombre de demi-points joker : %(byes)d (maximum : %(max_byes)d)"
 
 #, python-format
 msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
@@ -5779,10 +5779,10 @@ msgid "You are not allowed to manage prizes."
 msgstr "Vous n'êtes pas autorisé·e à gérer les prix."
 
 msgid "You are not allowed to modify Full-Point Byes."
-msgstr "Vous n'êtes pas autorisé·e à modifier des points jokers entiers."
+msgstr "Vous n'êtes pas autorisé·e à modifier des points joker entiers."
 
 msgid "You are not allowed to modify Half-Point Byes."
-msgstr "Vous n'êtes pas autorisé·e à modifier des demis-points jokers."
+msgstr "Vous n'êtes pas autorisé·e à modifier des demi-points joker."
 
 msgid "You are not allowed to open/close check-in."
 msgstr "Vous n'êtes pas autorisé·e à ouvrir/fermer le pointage."
@@ -5797,10 +5797,10 @@ msgid "You are not allowed to publish rules."
 msgstr "Vous n'êtes pas autorisé·e à publier le règlement."
 
 msgid "You are not allowed to set Full-Point Byes."
-msgstr "Vous n'êtes pas autorisé·e à définir des points jokers entiers."
+msgstr "Vous n'êtes pas autorisé·e à attribuer des points joker entiers."
 
 msgid "You are not allowed to set Half-Point Byes."
-msgstr "Vous n'êtes pas autorisé·e à définir des demis-points jokers."
+msgstr "Vous n'êtes pas autorisé·e à attribuer des demi-points joker."
 
 msgid "You are not allowed to set the current round."
 msgstr "Vous n'êtes pas autorisé·e à positionner la ronde courante."

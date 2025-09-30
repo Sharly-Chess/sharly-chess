@@ -6122,9 +6122,3 @@ msgstr ""
 msgid "½ - ½ (U)"
 msgstr ""
 
-#~ msgid "Inherited by permission [%(permission)s]."
-#~ msgstr ""
-
-#~ msgid "The access level of the permission."
-#~ msgstr ""
-
