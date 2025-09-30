@@ -32,7 +32,10 @@ class RequestUtils:
         if param in request.path_params:
             return request.path_params[param]
         if param in request.query_params:
-            return request.query_params[param]
+            value = request.query_params[param]
+            if isinstance(value, str) and value.isdigit():
+                return int(value)
+            return value
 
         raise ValidationException(f'Parameter [{param}] not found.')
 
