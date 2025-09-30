@@ -5855,7 +5855,7 @@ msgid "Zero-Point Bye"
 msgstr "Absent·e"
 
 msgid "Zero-Point Bye attributed to player [{player}]."
-msgstr "Le·la joueur·euse [{player}] a été désigné·e absent·e."
+msgstr "Le·la joueur·euse [{player}] a été marqué·e absent·e."
 
 msgid "[Sharly Chess {version}] Request for the integration of custom files"
 msgstr "[Sharly Chess {version}] Demande d'intégration de fichiers de personnalisation"
