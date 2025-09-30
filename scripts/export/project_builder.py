@@ -47,7 +47,6 @@ class ProjectBuilder(ABC):
         self.spec_file: Path = BASE_DIR / f'{self.basename}.spec'
         self.src_dir: Path = BASE_DIR / 'src'
         self.licences_dir = self.project_dir / 'LICENSES'
-        self.tools_dir: Path = self.project_dir / 'tools'
         self.zip_file: Path = self.export_dir / f'{self.basename}.zip'
         self.test_dir: Path = BASE_DIR / 'export-test' / self.basename
         self.clean_project_on_exit: bool = clean_project_on_exit
@@ -149,8 +148,6 @@ class ProjectBuilder(ABC):
             'Adding data from folder [%s] to [%s]...', self.project_dir, self.data_dir
         )
         shutil.copytree(self.data_dir, self.project_dir, dirs_exist_ok=True)
-        logger.info('Creating tools folder [%s]...', self.tools_dir)
-        self.tools_dir.mkdir(parents=True, exist_ok=True)
         events_dir: Path = self.project_dir / EVENTS_FOLDER
         logger.info('Creating events folder [%s]...', events_dir)
         events_dir.mkdir(exist_ok=True)
