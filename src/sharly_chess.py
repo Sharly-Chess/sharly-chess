@@ -43,8 +43,6 @@ if platform.system() == 'Windows':
     base_dir: Path = Path(sys.argv[0]).resolve().parent
     tracer: Path = base_dir / '_internal' / '.unblock_files'
     if tracer.exists():
-        import os
-
         print(f'Unblocking files in : {base_dir}')
         for root_, __, files in os.walk(base_dir):
             for name in files:
@@ -74,7 +72,6 @@ if platform.system() == 'Darwin':
 try:
     import argparse
     import asyncio
-    import sys
 
     from utils.scripts import init_script
 
@@ -135,9 +132,6 @@ try:
         pass
 
 except Exception:
-    import os
-    import platform
-    import sys
     import traceback
 
     message = traceback.format_exc()
