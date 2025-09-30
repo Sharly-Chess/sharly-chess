@@ -436,9 +436,12 @@ class AccountAdminController(BaseEventAdminController):
                 tooltip = _('Access level already defined for the account.')
             if access_level in inherited_permissions_by_access_level:
                 tooltip = _('Inherited by permission [{permission}].').format(
-                    permission=inherited_permissions_by_access_level[
-                        access_level
-                    ].inherited_by.name
+                    permission=getattr(
+                        inherited_permissions_by_access_level[
+                            access_level
+                        ].inherited_by,
+                        'name',
+                    )
                 )
             access_level_options[access_level.id] = SelectOption(
                 name=access_level.name,
