@@ -23,7 +23,6 @@
                         class="nav-link d-flex text-start justify-content-between {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
                         id="nav-{{ nav_id }}-tab"
                         hx-get="{{ url_for('admin-tab', admin_tab=nav_id) }}"
-                        preload
                         hx-target="body"
                         hx-push-url="true"
                         type="button"
@@ -58,7 +57,6 @@
     {% if client.can_manage_application_settings %}
         {% include '/admin/common/settings_button.html' %}
     {% endif %}
-
 {% endblock admin_nav %}
 
 {% block admin_content %}

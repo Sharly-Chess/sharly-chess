@@ -254,8 +254,11 @@ class Board:
             other_player_2 = other.black_player
         return self_player_1 == other_player_1 and self_player_2 == other_player_2
 
-    def __repr__(self):
+    def __str__(self):
         return f'{self.__class__.__name__}({self.number}. {self.white_player} {self.result_str} {self.black_player})'
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(tournament={self.tournament!r}, round_={self.round!r}, stored_board={self.stored_board!r})'
 
     # --------------------------------------------------------------------------
     # Legacy

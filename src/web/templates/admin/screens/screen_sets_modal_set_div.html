@@ -6,7 +6,7 @@
                 <h4>
                     {{ _('Properties') }}
                 </h4>
-                <div class="row">
+                <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6 mb-2">
                         {{ admin_macros.select_input(
                             name='tournament_id',
@@ -36,7 +36,7 @@
                             {{ _('Player selection (by rank)') }}
                         {% endif %}
                     </h4>
-                    <div class="row">
+                    <div class="row gy-2 gx-3">
                         <div class="{% if admin_screen.type in ['boards', 'input'] %}col-4{% else %}col-6{% endif %}">
                             {% if admin_screen.type in ['boards', 'input'] %}
                                 {% set help_text=_('The number of the first board to select.') %}
@@ -146,7 +146,6 @@
                             hx-get="{{ url_for('admin-screen-sets-set-modal', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
                             hx-target="body"
                             hx-indicator="#please-wait"
-                            preload
                         >
                             <i class="bi-pencil-fill"></i>
                         </button>

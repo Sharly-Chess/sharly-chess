@@ -7,7 +7,7 @@
                     class="bi-funnel {% if admin_players_filter_check_ins|length not in [0,3] %}text-danger{% endif %}"
                     {{ macros.tooltip_attributes('info', _('Filter the check-in status.'), 'top') }}
             ></i></button>
-            <ul class="dropdown-menu players-filter-check-in p-0">
+            <ul class="dropdown-menu table-dropdown-menu p-0">
                 {% with name='admin_players_filter_check_ins' %}
                 {# this input is always checked with value -1 (ignored) to be sure to get a list parameter. #}
                     <input type="hidden" name="{{ name }}" value="-1" checked />

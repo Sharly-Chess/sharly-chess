@@ -3,7 +3,7 @@ from typing import Annotated
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError, VerificationError, InvalidHash
 from litestar import post, get
-from litestar.plugins.htmx import HTMXRequest, ClientRedirect
+from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
@@ -15,15 +15,15 @@ from data.event import Event
 from database.sqlite.event.event_database import EventDatabase
 from web.controllers.admin.base_admin_controller import AdminWebContext
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminWebContext
-from web.controllers.base_controller import Redirect, WebContext, BaseController
+from web.controllers.base_controller import WebContext, BaseController
+from web.guards import EventGuard
 from web.session import SessionHandler
 
 
 class ProfileWebContext(BaseEventAdminWebContext):
     @classmethod
     def get_active_user_account_options(
-        cls,
-        active_user_accounts: list[Account],
+        cls, active_user_accounts: list[Account]
     ) -> dict[str, str]:
         return {
             cls.value_to_form_data(account.id): account.full_name
@@ -33,6 +33,8 @@ class ProfileWebContext(BaseEventAdminWebContext):
 
 
 class ProfileController(BaseController):
+    guards = [EventGuard()]
+
     @classmethod
     def _render_profile_modal(
         cls,
@@ -43,7 +45,7 @@ class ProfileController(BaseController):
         ]
         | None = None,
         errors: dict[str, str] | None = None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         active_user_account_options: dict[str, str] = {}
         if isinstance(web_context, ProfileWebContext):
             active_user_account_options = (
@@ -72,19 +74,10 @@ class ProfileController(BaseController):
     async def htmx_profile_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str | None,
         locale: str | None = None,
-    ) -> Template | ClientRedirect | Redirect:
-        web_context = ProfileWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            data=None,
-        )
-        if web_context.error:
-            return web_context.error
-
+    ) -> Template:
+        web_context = ProfileWebContext(request)
         self.set_locale(request, locale)
-
         return self._render_profile_modal(web_context)
 
     @post(
@@ -99,14 +92,9 @@ class ProfileController(BaseController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
-        web_context: ProfileWebContext = ProfileWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            data=data,
-        )
-        if web_context.error:
-            return web_context.error
+    ) -> Template:
+        web_context = ProfileWebContext(request)
+
         errors: dict[str, str] = {}
         if data is None:
             data = {}
@@ -169,11 +157,7 @@ class ProfileController(BaseController):
                     )
 
                     # Update the web context to reflect the login
-                    web_context: ProfileWebContext = ProfileWebContext(
-                        request,
-                        event_uniq_id=event_uniq_id,
-                        data=data,
-                    )
+                    web_context = ProfileWebContext(request, reload_event=True)
             except KeyError:
                 errors['account_id'] = _('Invalid account.')
 
@@ -195,14 +179,9 @@ class ProfileController(BaseController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect | Redirect:
-        web_context: ProfileWebContext = ProfileWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            data=data,
-        )
-        if web_context.error:
-            return web_context.error
+    ) -> Template:
+        web_context = ProfileWebContext(request)
+
         assert web_context.admin_event is not None
         SessionHandler.store_user_account(
             request,
@@ -211,13 +190,6 @@ class ProfileController(BaseController):
         )
 
         # Update the web context to reflect the logout
-        web_context: ProfileWebContext = ProfileWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            data=data,
-        )
+        web_context = ProfileWebContext(request, reload_event=True)
 
-        return self._render_profile_modal(
-            web_context,
-            data=data,
-        )
+        return self._render_profile_modal(web_context, data=data)

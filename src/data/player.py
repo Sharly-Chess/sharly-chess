@@ -266,13 +266,17 @@ class Player:
         }
 
     def get_rating(self, tournament_rating: TournamentRating) -> PlayerRating:
-        return (
-            self.ratings.get(tournament_rating, None)
-            or plugin_manager.hook.get_player_estimated_rating(
-                self.event.federation, tournament_rating, self
-            )
-            or PlayerRating(0, PlayerRatingType.ESTIMATED)
+        player_rating: PlayerRating | None = self.ratings.get(tournament_rating, None)
+        if player_rating and player_rating.value:
+            return player_rating
+        player_rating = plugin_manager.hook.get_player_estimated_rating(
+            event_federation=self.event.federation,
+            tournament_rating=tournament_rating,
+            player=self,
         )
+        if player_rating and player_rating.value:
+            return player_rating
+        return PlayerRating(0, PlayerRatingType.ESTIMATED)
 
     def update_ratings(self, ratings: dict[TournamentRating, PlayerRating]):
         for tournament_rating, player_rating in ratings.items():
@@ -737,7 +741,7 @@ class Player:
             return NotImplemented
         return self.board_number_sort_key == other.board_number_sort_key
 
-    def __repr__(self):
+    def __str__(self):
         ratings_str: str = '/'.join(
             f'{self.ratings.get(tournament_rating, "  -  ")}'
             for tournament_rating in TournamentRating
@@ -746,6 +750,9 @@ class Player:
             f'(#{self.id} rank={self._rank} ratings={ratings_str} title={self.title.value} gender={self.gender.value} '
             f'name={self.last_name} {self.first_name} points={self.points})'
         )
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(tournament={self.tournament!r}, stored_player={self.stored_player!r})'
 
     # --------------------------------------------------------------------------
     # Legacy

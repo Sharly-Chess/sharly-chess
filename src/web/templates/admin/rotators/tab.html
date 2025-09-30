@@ -5,9 +5,6 @@
         _('Rotators'),
         'screens-rotators' if client.can_manage_screens else ''
     ) }}
-    {{ macros.refresh_listener(
-        hx_get=url_for('admin-event-rotators-tab', event_uniq_id=admin_event.uniq_id),
-    ) }}
     <script>
         preparePrintModal()
     </script>
@@ -47,7 +44,6 @@
                 hx-get="{{ url_for('admin-rotator-create-modal', event_uniq_id=admin_event.uniq_id) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
-                preload
                 data-bs-toggle="modal"
                 data-bs-target="#modal-wrapper"
                 {% if not admin_event.screens_by_uniq_id %}
@@ -62,7 +58,7 @@
 {% endblock %}
 
 {% block cards_container_cards %}
-    <div class="row">
+    <div class="row gy-2 gx-3">
         {% if admin_rotators %}
             {% for rotator in admin_rotators %}
                 {% with

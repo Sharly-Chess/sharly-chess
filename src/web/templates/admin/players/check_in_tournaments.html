@@ -17,7 +17,7 @@
             <i class="bi-check-circle pe-1"></i>
             {{ _('Check-in') }}
         </button>
-        <ul class="dropdown-menu players-set-tournament-check-ins p-0 z-3">
+        <ul class="dropdown-menu table-dropdown-menu p-0 z-3">
             {% with id='admin-players-set-tournament-check-ins' %}
                 {% for tournament in admin_event.tournaments_sorted_by_uniq_id %}
                     <li
@@ -39,7 +39,6 @@
                                         hx-get="{{ url_for('admin-tournament-close-check-in-modal', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
                                         hx-target="body"
                                         hx-indicator="#please-wait"
-                                        preload
                                         data-bs-toggle="modal"
                                         data-bs-target="#modal-wrapper"
                                     {% else %}

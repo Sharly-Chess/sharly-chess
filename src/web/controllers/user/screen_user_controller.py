@@ -1,7 +1,7 @@
 from contextlib import suppress
 
 from litestar import head, get
-from litestar.plugins.htmx import HTMXRequest, Reswap, ClientRedirect
+from litestar.plugins.htmx import HTMXRequest, Reswap
 from litestar.response import Template
 from litestar.status_codes import HTTP_304_NOT_MODIFIED
 from litestar_htmx import HTMXTemplate
@@ -9,18 +9,23 @@ from litestar_htmx import HTMXTemplate
 from data.screen_set import ScreenSet
 from data.tournament import Tournament
 from utils.enum import ScreenType
-from web.controllers.base_controller import Redirect
 from web.controllers.user.base_screen_user_controller import (
     BaseScreenUserController,
     BasicScreenOrFamilyUserWebContext,
     DisplayControllerUserWebContext,
     RotatorUserWebContext,
 )
-from web.controllers.user.event_user_controller import EventUserController
-from web.guards import Guard
+from web.guards import (
+    EventGuard,
+    ViewScreenGuard,
+    ViewRotatorGuard,
+    ViewDisplayControllerGuard,
+)
 
 
 class ScreenUserController(BaseScreenUserController):
+    guards = [EventGuard()]
+
     @staticmethod
     def _user_screen_set_refresh_needed(
         screen_set: ScreenSet,
@@ -107,28 +112,16 @@ class ScreenUserController(BaseScreenUserController):
                 return True
         return False
 
-    screen_guards = EventUserController.event_guards + [
-        Guard.screen_is_visible,
-    ]
-
     @get(
-        path='/user/screen/{event_uniq_id:str}/{screen_uniq_id:str}',
+        path='/view/screen/{event_uniq_id:str}/{screen_uniq_id:str}',
         name='user-screen',
-        guards=screen_guards,
+        guards=[ViewScreenGuard()],
     )
     async def htmx_user_screen(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        screen_uniq_id: str,
-    ) -> HTMXTemplate | Reswap | ClientRedirect | Redirect:
-        web_context: BasicScreenOrFamilyUserWebContext = (
-            BasicScreenOrFamilyUserWebContext(
-                request,
-            )
-        )
-        if web_context.error:
-            return web_context.error
+    ) -> HTMXTemplate | Reswap:
+        web_context = BasicScreenOrFamilyUserWebContext(request)
         date: float | None = self.get_if_modified_since(request)
         if date is None or self._user_screen_refresh_needed(web_context, date):
             return self._user_screen_render(web_context)
@@ -138,9 +131,9 @@ class ScreenUserController(BaseScreenUserController):
             )
 
     @head(
-        path='/user/screen/{event_uniq_id:str}/{screen_uniq_id:str}',
+        path='/view/screen/{event_uniq_id:str}/{screen_uniq_id:str}',
         name='user-screen-head',
-        guards=screen_guards,
+        guards=[ViewScreenGuard()],
         status_code=HTTP_304_NOT_MODIFIED,
     )
     async def htmx_user_screen_head(
@@ -151,39 +144,29 @@ class ScreenUserController(BaseScreenUserController):
     ) -> None:
         pass
 
-    rotator_guards = EventUserController.event_guards + [
-        Guard.rotator_is_visible,
-    ]
-
     @get(
         path=[
-            '/user/rotator/{event_uniq_id:str}/{rotator_id:int}/{rotator_screen_index:int}',
-            '/user/rotator/{event_uniq_id:str}/{rotator_id:int}',
+            '/view/rotator/{event_uniq_id:str}/{rotator_id:int}/{rotator_screen_index:int}',
+            '/view/rotator/{event_uniq_id:str}/{rotator_id:int}',
         ],
         name='user-rotator',
-        guards=rotator_guards,
+        guards=[ViewRotatorGuard()],
     )
     async def htmx_user_rotator(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        rotator_id: int,
         rotator_screen_index: int = 0,
-    ) -> Template | ClientRedirect | Redirect:
-        web_context: RotatorUserWebContext = RotatorUserWebContext(
-            request,
-        )
-        if web_context.error:
-            return web_context.error
+    ) -> Template:
+        web_context = RotatorUserWebContext(request, rotator_screen_index)
         return self._user_screen_render(web_context)
 
     @head(
         path=[
-            '/user/rotator/{event_uniq_id:str}/{rotator_id:int}/{rotator_screen_index:int}',
-            '/user/rotator/{event_uniq_id:str}/{rotator_id:int}',
+            '/view/rotator/{event_uniq_id:str}/{rotator_id:int}/{rotator_screen_index:int}',
+            '/view/rotator/{event_uniq_id:str}/{rotator_id:int}',
         ],
         name='user-rotator-head',
-        guards=rotator_guards,
+        guards=[ViewRotatorGuard()],
         status_code=HTTP_304_NOT_MODIFIED,
     )
     async def htmx_user_rotator_head(
@@ -195,31 +178,20 @@ class ScreenUserController(BaseScreenUserController):
     ) -> None:
         pass
 
-    display_controller_guards = EventUserController.event_guards + [
-        Guard.display_controller_is_visible,
-    ]
-
     @get(
         path=[
-            '/user/display-controller/{event_uniq_id:str}/{display_controller_id:int}/{rotator_screen_index:int}',
-            '/user/display-controller/{event_uniq_id:str}/{display_controller_id:int}',
+            '/view/display-controller/{event_uniq_id:str}/{display_controller_id:int}/{rotator_screen_index:int}',
+            '/view/display-controller/{event_uniq_id:str}/{display_controller_id:int}',
         ],
-        guards=display_controller_guards,
+        guards=[ViewDisplayControllerGuard()],
         name='user-display-controller',
     )
     async def htmx_user_display_controller(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        display_controller_id: int,
         rotator_screen_index: int = 0,
-    ) -> Template | ClientRedirect | Redirect | Reswap:
-        web_context: DisplayControllerUserWebContext = DisplayControllerUserWebContext(
-            request,
-        )
-        if web_context.error:
-            return web_context.error
-
+    ) -> Template | Reswap:
+        web_context = DisplayControllerUserWebContext(request, rotator_screen_index)
         date: float | None = (
             self.get_if_modified_since(request) if not web_context.is_rotator else None
         )
@@ -232,11 +204,11 @@ class ScreenUserController(BaseScreenUserController):
 
     @head(
         path=[
-            '/user/display-controller/{event_uniq_id:str}/{display_controller_id:int}/{rotator_screen_index:int}',
-            '/user/display-controller/{event_uniq_id:str}/{display_controller_id:int}',
+            '/view/display-controller/{event_uniq_id:str}/{display_controller_id:int}/{rotator_screen_index:int}',
+            '/view/display-controller/{event_uniq_id:str}/{display_controller_id:int}',
         ],
         name='user-display-controller-head',
-        guards=display_controller_guards,
+        guards=[ViewDisplayControllerGuard()],
         status_code=HTTP_304_NOT_MODIFIED,
     )
     async def htmx_user_display_controller_head(

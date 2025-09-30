@@ -25,11 +25,13 @@ from data.criteria.player_filter_options import (
     SelectPlayerFilterOption,
 )
 from data.criteria.player_filters import PlayerFilter
+from data.print_documents.documents import QRCodePrintDocument, TournamentPrintOption
+from data.print_documents.qrcode_types import QRCodeType
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourceDatabase
 from plugins.ffe import PLUGIN_NAME
-from plugins.ffe.ffe_database import FfeDatabase
+from plugins.ffe.ffe_database import FfeDatabase, PlayerFFELicence
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.utils import FFEUtils
 from plugins.pairing_acceleration.pairing_settings import (
@@ -269,7 +271,7 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
                 int(player_source_id)
             )
 
-    async def search_player(
+    async def _search_player(
         self, string: str, federation: str, page: int = 0, limit: int | None = None
     ) -> list[StoredPlayer]:
         async with FFESqlServer() as ffe_sql_server:
@@ -290,6 +292,44 @@ class LeaguePlayerSplitter(PlayerSplitter):
     @staticmethod
     def get_split_key(player: Player) -> str:
         return FFEUtils.get_player_plugin_data(player).league or ''
+
+
+class FFESiteQRCodeType(QRCodeType):
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-ffe_site'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Tournament on the FFE site')
+
+    @staticmethod
+    def get_valid_options() -> list[str]:
+        return [TournamentPrintOption.static_id()]
+
+    @staticmethod
+    def title(doc: QRCodePrintDocument) -> str:
+        tournament = doc.tournament
+        return tournament.name
+
+    @staticmethod
+    def info(doc: QRCodePrintDocument) -> str:
+        return _('Scan to access the tournament on the FFE site.')
+
+    @staticmethod
+    def url(doc: QRCodePrintDocument) -> tuple[bool, str]:
+        tournament = doc.tournament
+        ffe_id = tournament.plugin_data[PLUGIN_NAME].get('ffe_id', None)
+        if not ffe_id:
+            return False, _('No FFE ID defined for tournament [{tournament}].').format(
+                tournament=tournament.uniq_id
+            )
+        url = f'https://echecs.asso.fr/FicheTournoi.aspx?Ref={ffe_id}'
+        return True, url
+
+    @staticmethod
+    def get_qr_code(url) -> str:
+        return QRCodeType.generate_qr_code(url=url, logo=False)
 
 
 class NicoisSwissVariation(SwissVariation):
@@ -435,3 +475,77 @@ class FfeLeaguesFilterOption(SelectPlayerFilterOption[str]):
         self._validate_list_type(str)
         if not self.value:
             raise OptionError(_('At least one league is expected.'), self)
+
+
+class FfeLicencePlayerFilter(PlayerFilter):
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-LICENCE'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('FFE Licence type')
+
+    @staticmethod
+    def available_options() -> list[type[PlayerFilterOption]]:
+        return [FfeLicenceFilterOption]
+
+    @cached_property
+    def is_player_included_function(self) -> Callable[[Player], bool]:
+        licences = self.get_option_values()[0]
+        return (
+            lambda player: FFEUtils.get_player_plugin_data(player).ffe_licence
+            in licences
+        )
+
+    def __str__(self) -> str:
+        option_values = self.get_option_values()[0]
+        licence_types = [
+            PlayerFFELicence(value).compact_name for value in option_values
+        ]
+        return f'{self.name} ({", ".join(licence_types)})'
+
+
+class FfeLicenceFilterOption(SelectPlayerFilterOption[int]):
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-LICENCES'
+
+    @property
+    def template_name(self) -> str:
+        return '/ffe_licence_player_filter_option.html'
+
+    @property
+    def type(self) -> type | UnionType:
+        return list[int]
+
+    @property
+    def default_value(self) -> Any:
+        return []
+
+    def get_all_known_values(self, tournament: 'Tournament') -> list[int]:
+        return [
+            PlayerFFELicence.NONE.value,
+            PlayerFFELicence.N.value,
+            PlayerFFELicence.A.value,
+            PlayerFFELicence.B.value,
+        ]
+
+    def get_player_counter(self, tournament: 'Tournament') -> Counter[int]:
+        counter: Counter[int] = Counter[int]()
+        for player in tournament.players:
+            if ffe_licence := FFEUtils.get_player_plugin_data(player).ffe_licence:
+                counter[ffe_licence] += 1
+        return counter
+
+    def get_key(self, object_: int) -> str:
+        return str(object_)
+
+    def get_name(self, object_: int) -> str:
+        licence = PlayerFFELicence(object_)
+        return licence.compact_name
+
+    def validate(self):
+        self._validate_list_type(int)
+        if not self.value:
+            raise OptionError(_('At least one licence type is expected.'), self)

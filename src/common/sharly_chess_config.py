@@ -324,10 +324,9 @@ class SharlyChessConfig(metaclass=Singleton):
     bootstrap_version: Version = Version('5.3.3')
     bootstrap_icons_version: Version = Version('1.11.3')
     htmx_version: Version = Version('2.0.4')
-    htmx_preload_version: Version = Version('2.1.0')
     htmx_remove_me_version: Version = Version('2.0.0')
     htmx_multi_swap_version: Version = Version('2.0.0')
-    htmx_sse_version: Version = Version('2.2.3')
+    htmx_ws_version: Version = Version('2.0.3')
     jquery_version: Version = Version('3.7.1')
     sortable_version: Version = Version('1.15.6')
     jstree_version: Version = Version('3.3.17')
@@ -411,11 +410,15 @@ class SharlyChessConfig(metaclass=Singleton):
     # The default delay between pages on rotators (in seconds).
     default_rotator_delay: int = 1 if TEST_ENV else 15
 
-    # The default text shown on timers before the start of a round.
-    default_timer_round_text_before: str = _('Start of round {} in %s')
+    @property
+    def default_timer_round_text_before(self) -> str:
+        """Returns the default text shown on timers before the start of a round."""
+        return _('Start of round {} in %s')
 
-    # The default text shown on timers after the start of a round.
-    default_timer_round_text_after: str = _('Round {} started for %s')
+    @property
+    def default_timer_round_text_after(self) -> str:
+        """Returns the default text shown on timers after the start of a round."""
+        return _('Round {} started for %s')
 
     # The delay before checking if the user index page has changed.
     user_index_update_delay: int = 1 if TEST_ENV else 10

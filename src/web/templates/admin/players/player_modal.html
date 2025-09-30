@@ -6,8 +6,8 @@
                     {{ _('Create player') }}
                 {% elif action == 'update' %}
                     {{ _('Edit player') }}
-                {% elif action == 'delete' %}
-                    {{ _('Delete player') }}
+                {% elif action == 'replace' %}
+                    {{ _('Replace player') }}
                 {% else %}
                     ?
                 {% endif %}
@@ -20,21 +20,15 @@
                     hx-post="{{ url_for('admin-player-create', event_uniq_id=admin_event.uniq_id) }}"
                 {% elif action == 'update' %}
                     hx-patch="{{ url_for('admin-player-update', event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
-                {% elif action == 'delete' %}
-                    hx-delete="{{ url_for('admin-player-delete', event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
+                {% elif action == 'replace' %}
+                    hx-patch="{{ url_for('admin-player-replace', event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
                 {% else %}
                     hx-get="{{ url_for('unknown-action-' ~ action) }}"
                 {% endif %}
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                {% if action == 'delete' %}
-                    <h4 class="text-danger">
-                        {{ _('Warning: the deletion is permanent!') }}
-                    </h4>
-                {% endif %}
-
-                {% if action == 'create' %}
+                {% if action in ['create', 'replace'] %}
                     {% if previous_player %}
                         {% if warning_message %}
                             {% with type='warning', auto_remove=true, message=warning_message %}
@@ -52,135 +46,124 @@
                     <h4>
                         {{ _('Search') }}
                     </h4>
-                    <div class="row">
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.select_input(
-                                name='data_source',
-                                label=_('%(string)s:', string=_('Data source')),
-                                help_text=_('The data source to search players in.'),
-                                select_options=data_source_options,
-                                data=data, errors=errors
-                            ) }}
-                            <script>
-                                $('#data-source').change(function () {
-                                    $('.search-container').css('display', 'none');
-                                    $('#' + $(this).val() + '-search-container').css('display', 'block')
-                                });
-                            </script>
+                    <div class="row gy-2 gx-3">
+                        <div class="col-12">
+                             <div class="input-group">
+                                {{ admin_macros.search_indicator('data-source-indicator') }}
+                                <select name="data_source" id="data-source-select" class="form-select w-auto">
+                                    {% for data_source in data_sources %}
+                                        <option
+                                            value="{{ data_source.id }}"
+                                            {% if selected_data_source == data_source.id %}selected{% endif %}
+                                        >
+                                            {{ data_source.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <input
+                                    id="search-input"
+                                    name="search"
+                                    class="dropdown form-control"
+                                    type="search"
+                                    hx-trigger="keyup changed delay:400ms, data_source_change"
+                                    hx-target="#search-results"
+                                    hx-get="{{ url_for('admin-search-player', event_uniq_id=admin_event.uniq_id) }}"
+                                    hx-vals='js:{
+                                    data_source_id: $("#data-source-select").val(),
+                                    {% if admin_player %}player_id: {{ admin_player.id }}{% endif %}
+                                }'
+                                    hx-on::before-request="$('#search-results').show();"
+                                    hx-on::after-request="$('#search-results').show();"
+                                    hx-sync="this:replace"
+                                    hx-indicator="#data-source-indicator"
+                                />
+                            </div>
+                            <ul
+                                id="search-results"
+                                class="dropdown-menu position-absolute me-3 end-0 search-results-dropdown"
+                            >
+                            </ul>
                         </div>
-                        <div class="col-12 col-md-6 mb-3">
-                            {% for data_source in data_sources %}
-                                {% set results_id = data_source.id ~ '-search-results' %}
-                                <span
-                                    id="{{ data_source.id }}-search-container"
-                                    class="search-container dropdown"
-                                    {% if not data_source.is_available %}
-                                        {{ macros.tooltip_attributes(
-                                            'info',
-                                            _(
-                                                'This data source in unavailable '
-                                                '(for more details: Menu > Data sources).'
-                                            ),
-                                            'top'
-                                        ) }}
-                                    {% endif %}
-                                    {% if data_source.id != data['data_source'] %}
-                                        style="display: none"
-                                    {% endif %}
-                                >
-                                    {{ admin_macros.text_input(
-                                        name=data_source.search_element_name,
-                                        label=_('%(string)s:', string=data_source.name),
-                                        help_text=_('Search by: %(fields)s', fields=', '.join(data_source.search_fields)),
-                                        input_type="search",
-                                        placeholder=_('E.g.: john doe'),
-                                        disabled=not data_source.is_available,
-                                        hx_get=url_for(
-                                            'admin-search-player',
-                                            event_uniq_id=admin_event.uniq_id,
-                                            data_source_id=data_source.id,
-                                        ),
-                                        hx_trigger='keyup changed delay:400ms',
-                                        hx_target='#' ~ results_id,
-                                        hx_on_before_request='$("#' ~ results_id ~ '").show();',
-                                        hx_on_after_request='$("#' ~ results_id ~ '").show();',
-                                        hx_sync='this:replace',
-                                        with_indicator=true,
-                                        dropdown_id=results_id if data_source.is_available else '',
-                                        dropdown_item=_('Searching…'),
-                                        dropdown_classes='position-absolute end-0 search-results-dropdown',
-                                    ) }}
-                                </span>
-                            {% endfor %}
-                        </div>
+                        <script>
+                            $('#data-source-select').change(function () {
+                                document.querySelector('#search-results').innerHTML = `
+                                    <li class="dropdown-item no-hover text-nowrap">
+                                        <span class="fst-italic">{{ _('Searching…') }}</span>
+                                    </li>
+                                `;
+                                const searchInput = $('#search-input');
+                                {% for data_source in data_sources %}
+                                    if ($(this).val() === '{{ data_source.id }}') {
+                                        searchInput.prop(
+                                            'placeholder',
+                                            "{{ _('Search by: %(fields)s', fields=', '.join(data_source.search_fields)) }}",
+                                        );
+                                    }
+                                {% endfor %}
+                                searchInput[0].dispatchEvent(
+                                    new CustomEvent('data_source_change', {bubbles: true, cancelable: true})
+                                );
+                            });
+                            $('#data-source-select').trigger('change');
+                        </script>
                     </div>
                 {% endif %}
 
                 <h4>
                     {{ _('Identity') }}
                 </h4>
-                <div class="row">
-                    <div class="col-12 col-md-6 col-xl-4 mb-3">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6 col-xl-6">
                         {{ admin_macros.text_input(
                             name='last_name',
                             label=_('Name:'),
                             placeholder=_('E.g.: DOE'),
-                            help_text=_('The player\'s last name.') if action != 'delete' else '',
-                            disabled=action == 'delete',
-                            error=action == 'delete',
+                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6 col-xl-4 mb-3">
+                    <div class="col-12 col-md-6 col-xl-6">
                         {{ admin_macros.text_input(
                             name='first_name',
                             label=_('First name:'),
                             placeholder=_('E.g.: John'),
-                            help_text=_('The player\'s first name.') if action != 'delete' else '',
-                            disabled=action == 'delete',
-                            error=action == 'delete',
+                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6 col-xl-2 mb-3">
+                    <div class="col-12 col-md-6 col-xl-3">
                         {{ admin_macros.date_input(
                             name='date_of_birth',
                             label=_('Date of birth:'),
-                            help_text=_('The player\'s birth date.') if action != 'delete' else '',
-                            disabled=action == 'delete',
-                            error=action == 'delete',
+                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6 col-xl-2 mb-3">
+                    <div class="col-12 col-md-6 col-xl-3">
                         {{ admin_macros.select_input(
                             name='gender',
                             label=_('Gender:'),
-                            help_text=_('The player\'s gender.') if action != 'delete' else '',
+                            help_text='',
                             select_options=gender_options,
-                            disabled=action == 'delete',
-                            error=action == 'delete',
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-xl-6">
                         {{ admin_macros.text_input(
                             name='club',
                             label=_('Club:'),
                             placeholder=_('E.g.: My favourite club!'),
-                            help_text=_('The player\'s club.') if action != 'delete' else '',
-                            disabled=action == 'delete',
-                            error=action == 'delete',
+                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
                 </div>
 
-                <h4 class="mt-3">
+                <h4>
                     {{ _('Tournament') }}
                 </h4>
-                <div class="row">
-                    <div class="col-12 col-sm-8 mb-3">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-sm-8">
                         <span
                             {% if admin_player.has_real_pairings %}
                                 {{ macros.tooltip_attributes(
@@ -195,10 +178,9 @@
                             {{ admin_macros.select_input(
                                 name='tournament_id',
                                 label=_('Tournament:'),
-                                help_text=_('The player\'s tournament.') if action != 'delete' else '',
+                                help_text='',
                                 select_options=tournament_options,
-                                disabled=action == 'delete' or admin_player.has_real_pairings,
-                                error=action == 'delete',
+                                disabled=admin_player.has_real_pairings,
                                 data=data, errors=errors
                             ) }}
                             {% if admin_player.has_real_pairings %}
@@ -207,13 +189,12 @@
                         </span>
                     </div>
 
-                    <div class="col-12 col-sm-4 mb-3">
+                    <div class="col-12 col-sm-4">
                         {{ admin_macros.number_input(
                             name='fixed',
                             label=_('Fixed board:'),
-                            help_text=_('The board number the player will always be assigned to (use it for disabled people).') if action != 'delete' else '',
-                            disabled=action == 'delete',
-                            error=action == 'delete',
+                            help_text='',
+                            tooltip_text=_('The board number the player will always be assigned to (use it for disabled people).'),
                             min=1,
                             data=data, errors=errors
                         ) }}
@@ -223,9 +204,9 @@
                 <h4>
                     {{ _('Ratings') }}
                 </h4>
-                <div class="row">
+                <div class="row gy-2 gx-3">
                     {% for tournament_rating, tournament_rating_strings in tournament_ratings_strings.items() %}
-                        <div class="col-12 col-sm-4 mb-3">
+                        <div class="col-12 col-sm-4">
                             {# can not use *_input() here because of a specific pattern for rating type/value #}
                             {%
                                 with
@@ -243,17 +224,15 @@
                                         type="number"
                                         id="{{ id }}"
                                         data-testid="{{ id }}"
-                                        class="form-control d-inline {% if name in errors or action == 'delete' %}is-invalid{% endif %}"
+                                        class="form-control d-inline {% if name in errors %}is-invalid{% endif %}"
                                         aria-describedby="{{ id }}-help {{ id }}-error"
                                         value="{{ data[name] }}"
-                                        {% if action == 'delete' %}disabled{% endif %}
                                     />
                                     <select
                                         id="{{ type_id }}"
                                         data-testid="{{ type_id }}"
                                         name="{{ name2 }}"
-                                        class="mt-2 form-control d-inline {% if name in errors or action == 'delete' %}is-invalid{% endif %}"
-                                        {% if action == 'delete' %}disabled{% endif %}
+                                        class="mt-2 form-control d-inline {% if name in errors %}is-invalid{% endif %}"
                                     >
                                         {% for value, text in rating_type_options.items() %}
                                             <option value="{{ value }}" {% if value == data[name2] %}selected{%endif %} {% if not value %}class="fst-italic"{% endif %}>
@@ -261,11 +240,6 @@
                                             </option>
                                         {% endfor %}
                                     </select>
-                                    {% if action != 'delete' %}
-                                        <div id="{{ id }}-help" class="form-text">
-                                            {{ tournament_rating_strings['help'] }}
-                                        </div>
-                                    {% endif %}
                                     {% if name in errors %}
                                         <div id="{{ id }}-error" class="form-text invalid-feedback">
                                             {{ errors[name] }}
@@ -280,37 +254,32 @@
                 <h4>
                     {{ _('FIDE') }}
                 </h4>
-                <div class="row">
-                    <div class="col-12 col-sm-4 mb-3">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-sm-4">
                         {{ admin_macros.number_input(
                             name='fide_id',
                             label=_('FIDE ID:'),
-                            help_text=_('The player\'s FIDE ID (do not change).') if action != 'delete' else '',
+                            help_text='',
                             disabled=true,
-                            error=action == 'delete',
                             min=1,
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-sm-4 mb-3">
+                    <div class="col-12 col-sm-4">
                         {{ admin_macros.select_input(
                             name='title',
                             label=_('FIDE Title:'),
-                            help_text=_('The player\'s FIDE title.') if action != 'delete' else '',
+                            help_text='',
                             select_options=title_options,
-                            disabled=action == 'delete',
-                            error=action == 'delete',
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-sm-4 mb-3">
+                    <div class="col-12 col-sm-4">
                         {{ admin_macros.select_input(
                             name='federation',
                             label=_('Federation:'),
-                            help_text=_('The player\'s federation.'),
+                            help_text='',
                             select_options=federation_options,
-                            disabled=action == 'delete',
-                            error=action == 'delete',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -320,61 +289,51 @@
                     {% include form_fields_template %}
                 {% endfor %}
 
-                <h4 class="mt-3">
+                <h4>
                     {{ _('Contact and registration') }}
                 </h4>
-                <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='mail',
                             label=_('Email:'),
                             placeholder=_('E.g.: john.doe@chess.com'),
-                            help_text=_('The player\'s email.') if action != 'delete' else '',
-                            disabled=action == 'delete',
-                            error=action == 'delete',
+                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='phone',
                             label=_('Phone number:'),
-                            help_text=_('The player\'s phone number.') if action != 'delete' else '',
-                            disabled=action == 'delete',
-                            error=action == 'delete',
+                            help_text='',
                             data=data, errors=errors
                         ) }}
                         {# TODO add an example depending on the federation placeholder=_('E.g.: %(phone_number)s', phone_number=admin_event.phone_number_example), #}
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-12 col-sm-6 col-lg-3 mb-3">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-sm-6 col-lg-3">
                         {{ admin_macros.number_input(
                             name='owed',
                             label=_('Owed:'),
-                            help_text=_('The price the player pays to register.') if action != 'delete' else '',
-                            disabled=action == 'delete',
-                            error=action == 'delete',
+                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-sm-6 col-lg-3 mb-3">
+                    <div class="col-12 col-sm-6 col-lg-3">
                         {{ admin_macros.number_input(
                             name='paid',
                             label=_('Paid:'),
-                            help_text=_('The price the player already paid.') if action != 'delete' else '',
-                            disabled=action == 'delete',
-                            error=action == 'delete',
+                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-lg-6 mb-3">
+                    <div class="col-12 col-lg-6">
                         {{ admin_macros.text_input(
                             name='comment',
                             label=_('Comment:'),
-                            help_text=_('Any comment on the player (comments are visible only by the arbiters).') if action != 'delete' else '',
-                            disabled=action == 'delete',
-                            error=action == 'delete',
+                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -397,17 +356,14 @@
                 <button
                     type="submit"
                     form="modal-form"
-                    class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                    class="text-nowrap white btn btn-primary"
                 >
-                    {% if action in ['create', 'clone', ] %}
+                    {% if action == 'create' %}
                         <i class="bi-floppy-fill pe-1"></i>
                         {{ _('Create') }}
-                    {% elif action == 'update' %}
+                    {% elif action in ['update', 'replace'] %}
                         <i class="bi-floppy-fill pe-1"></i>
                         {{ _('Save') }}
-                    {% elif action == 'delete' %}
-                        <i class="bi-trash pe-1"></i>
-                        {{ _('Delete') }}
                     {% else %}
                         ?
                     {% endif %}
@@ -418,11 +374,5 @@
 </div>
 
 {% if previous_player %}
-    <script>
-        // We need to reload the page when the modal is hidden, because players were added.
-        $(document).one('hide.bs.modal', function(e) {
-            e.preventDefault();
-            document.body.dispatchEvent(new CustomEvent('request_refresh'));
-        });
-    </script>
+    <script>requestRefresh()</script>
 {% endif %}

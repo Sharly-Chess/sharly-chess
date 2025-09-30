@@ -19,7 +19,7 @@
             <h4>
                 {{ _('Data source: %(data_source)s', data_source=data_source.name) }}
             </h4>
-            {% with message, is_warning = data_source.players_update_message %}
+            {% with message, is_warning = data_source.info_or_warning_message %}
                 {% if message %}
                     <h6 class="{% if is_warning %}text-danger{% endif %}">
                         {{ message }}
@@ -38,7 +38,7 @@
                 {# these inputs are always checked with an empty value (ignored) to be sure to get list parameters. #}
                 <input type="hidden" name="player_ids" value="" />
                 <input type="hidden" name="field_ids" value="" />
-                <div class="row">
+                <div class="row gy-2 gx-3">
                     <div class="col-6">
                         <p>
                             {% if update_enabled %}

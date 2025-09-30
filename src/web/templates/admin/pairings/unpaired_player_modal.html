@@ -14,12 +14,11 @@
                     {% set action = 'BYE_UPDATE' %}
                     {% if not pairing.zero_point_bye %}
                         {% set action_route = url_for(
-                            'admin-pairings-set-participation',
+                            'admin-pairings-set-player-zpb',
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             round=admin_round,
                             player_id=player.id,
-                            action='ZPB'
                         ) %}
                         <span
                             {% if not client.can_set_zero_point_bye(admin_tournament.id) %}
@@ -52,12 +51,11 @@
                             </button>
                         </span>
                         {% set action_route = url_for(
-                            'admin-pairings-set-participation',
+                            'admin-pairings-withdraw-player',
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             round=admin_round,
                             player_id=player.id,
-                            action='LEAVE'
                         ) %}
                         <span
                             {% if not client.can_set_zero_point_bye(admin_tournament.id) %}
@@ -91,12 +89,11 @@
                         </span>
                     {% else %}
                         {% set action_route = url_for(
-                            'admin-pairings-set-participation',
+                            'admin-pairings-return-player',
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             round=admin_round,
                             player_id=player.id,
-                            action='RETURN'
                         ) %}
                         <span
                             {% if not client.can_set_zero_point_bye(admin_tournament.id) %}
@@ -135,12 +132,11 @@
                     {% endif %}
                     {% if pairing.half_point_bye %}
                         {% set action_route = url_for(
-                            'admin-pairings-set-participation',
+                            'admin-pairings-return-player',
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             round=admin_round,
                             player_id=player.id,
-                            action='RETURN'
                         ) %}
                         <span
                             {% if not client.can_set_half_point_bye(admin_tournament.id) %}
@@ -184,22 +180,19 @@
                             {% endif %}
                         >
                             {% set action_route = url_for(
-                                'admin-pairings-set-participation',
+                                'admin-pairings-set-player-hpb',
                                 event_uniq_id=admin_event.uniq_id,
                                 tournament_id=admin_tournament.id,
                                 round=admin_round,
                                 player_id=player.id,
-                                action='HPB'
                             ) %}
                             <button
                                 class="btn btn-outline-primary w-100"
-                                {% if
+                                {% if (
                                     not client.can_set_half_point_bye(admin_tournament.id)
-                                    or
-                                    no_bye_possible
-                                    or
-                                    not hpb_possible
-                                %}
+                                    or no_bye_possible
+                                    or not hpb_possible
+                                ) %}
                                     disabled
                                 {% else %}
                                     {% if action in allowed_actions %}
@@ -215,6 +208,8 @@
                                             redirect_route=action_route,
                                         ) }}"
                                     {% endif %}
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
                                 {% endif %}
                             >
                                 {{ _('Half-Point Bye') }}
@@ -223,12 +218,11 @@
                     {% endif %}
                     {% set action = 'MANUAL_PAIRING' %}
                     {% set action_route = url_for(
-                        'admin-pairings-set-participation',
+                        'admin-pairings-pair-player',
                         event_uniq_id=admin_event.uniq_id,
                         tournament_id=admin_tournament.id,
                         round=admin_round,
                         player_id=player.id,
-                        action='PAIR'
                     ) %}
                     {% if action in existing_actions %}
                         <span
@@ -243,8 +237,7 @@
                                 class="btn btn-outline-primary w-100 {% if exempt_player %}d-flex flex-column align-items-center gap-1{% endif %}"
                                 {% if
                                     not client.can_manually_pair_players(admin_tournament.id)
-                                    or
-                                    admin_tournament.check_in_open
+                                    or admin_tournament.check_in_open
                                 %}
                                     disabled
                                 {% else %}

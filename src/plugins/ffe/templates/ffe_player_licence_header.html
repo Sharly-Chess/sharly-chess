@@ -16,7 +16,7 @@
                             {{ macros.tooltip_attributes('info', _('Filter the licences.'), 'top') }}
                         ></i>
                     </button>
-                    <ul class="dropdown-menu players-filter-licence p-0">
+                    <ul class="dropdown-menu table-dropdown-menu p-0">
                         {% with name='admin_players_filter_licences' %}
                             {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
                             <input type="hidden" name="{{ name }}" value="-1" checked />

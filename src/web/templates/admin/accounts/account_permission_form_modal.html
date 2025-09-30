@@ -36,11 +36,7 @@
                     ) }}"
                 {% endif %}
             >
-                {# These inputs are a trick to avoid autocomplete #}
-                <input type="text" style="display:none">
-                <input type="password" style="display:none">
-
-                <div class="row mb-3">
+                <div class="row gy-2 gx-3">
                     {% set id = 'access-level' %}
                     {% set name = 'access_level' %}
 
@@ -126,7 +122,7 @@
                 </div>
                 <div
                     id="tournament-select-container"
-                    class="row"
+                    class="row gy-2 gx-3"
                     {% if data['access_level'] not in tournament_access_level_ids %}
                         style="display:none"
                     {% endif %}
@@ -165,7 +161,6 @@
                     ) }}"
                     hx-target="body"
                     hx-indicator="#please-wait"
-                    preload
                     data-bs-target="#modal-wrapper"
                 {% else %}
                     data-bs-dismiss="modal"
@@ -191,10 +186,4 @@
     </div>
 </div>
 
-<script>
-    // We need to reload the page when the modal is hidden, because the permissions might have changed.
-    $(document).one('hide.bs.modal', function(e) {
-        e.preventDefault();
-        document.body.dispatchEvent(new CustomEvent('request_refresh'));
-    });
-</script>
+<script>requestRefresh()</script>

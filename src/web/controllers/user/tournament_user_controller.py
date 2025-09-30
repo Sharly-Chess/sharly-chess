@@ -2,40 +2,37 @@ from contextlib import suppress
 from typing import Any
 
 from litestar import patch, delete, put, get
-from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
+from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 from litestar.channels import ChannelsPlugin
 
+from data.access_levels.actions import AuthAction
 from data.board import Board
 from data.player import Player
 from data.tournament import Tournament
 from utils.enum import Result
 from web.controllers.admin.pairings_admin_controller import PairingsAdminController
 from web.controllers.admin.player_admin_controller import PlayerAdminController
-from web.controllers.base_controller import Redirect
 from web.controllers.user.base_screen_user_controller import (
     ScreenUserWebContext,
     BaseScreenUserController,
     BasicScreenOrFamilyUserWebContext,
 )
-from web.controllers.user.screen_user_controller import ScreenUserController
-from web.guards import Guard
+from web.guards import (
+    EventGuard,
+    ViewScreenGuard,
+    TournamentActionGuard,
+    SetResultGuard,
+)
 from web.messages import Message
 from web.session import SessionHandler
 from web.utils import RequestUtils
 
 
 class TournamentUserWebContext(ScreenUserWebContext):
-    def __init__(
-        self,
-        request: HTMXRequest,
-    ):
-        super().__init__(
-            request,
-        )
-        if self.error:
-            return
+    def __init__(self, request: HTMXRequest):
+        super().__init__(request)
         self.tournament: Tournament = RequestUtils.get_tournament(request)
 
     @property
@@ -46,15 +43,8 @@ class TournamentUserWebContext(ScreenUserWebContext):
 
 
 class BoardUserWebContext(TournamentUserWebContext):
-    def __init__(
-        self,
-        request: HTMXRequest,
-    ):
-        super().__init__(
-            request,
-        )
-        if self.error:
-            return
+    def __init__(self, request: HTMXRequest):
+        super().__init__(request)
         self.board: Board = RequestUtils.get_board(request)
 
     @property
@@ -65,30 +55,16 @@ class BoardUserWebContext(TournamentUserWebContext):
 
 
 class ResultUserWebContext(BoardUserWebContext):
-    def __init__(
-        self,
-        request: HTMXRequest,
-    ):
-        super().__init__(
-            request,
-        )
-        if self.error:
-            return
-        self.round, self.board, self.result = RequestUtils.get_round_board_result(
-            request
-        )
+    def __init__(self, request: HTMXRequest):
+        super().__init__(request)
+        self.board = RequestUtils.get_board(request)
+        self.round = self.board.round
+        self.result = RequestUtils.get_result(request)
 
 
 class PlayerUserWebContext(TournamentUserWebContext):
-    def __init__(
-        self,
-        request: HTMXRequest,
-    ):
-        super().__init__(
-            request,
-        )
-        if self.error:
-            return
+    def __init__(self, request: HTMXRequest):
+        super().__init__(request)
         self.player: Player = RequestUtils.get_player(request)
         self.board: Board | None = (
             self.tournament.boards[self.player.board_id - 1]
@@ -105,33 +81,21 @@ class PlayerUserWebContext(TournamentUserWebContext):
 
 
 class BaseInputUserController(BaseScreenUserController):
-    pass
+    guards = [
+        EventGuard(),
+        ViewScreenGuard(),
+    ]
 
 
 class CheckInUserController(BaseInputUserController):
-    check_in_guards = ScreenUserController.screen_guards + [
-        Guard.tournament_check_in_is_open,
-        Guard.client_can_check_in,
-    ]
-
     @get(
-        path='/user/checkin-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
+        path='/view/checkin-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
         name='user-checkin-modal',
-        guards=check_in_guards,
     )
-    async def htmx_user_checkin_modal(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        screen_uniq_id: str,
-        tournament_id: int,
-        player_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    async def htmx_user_checkin_modal(self, request: HTMXRequest) -> Template:
         web_context: PlayerUserWebContext = PlayerUserWebContext(
             request,
         )
-        if web_context.error:
-            return web_context.error
         return HTMXTemplate(
             template_name='user/modals.html',
             context=web_context.template_context | {},
@@ -141,24 +105,17 @@ class CheckInUserController(BaseInputUserController):
         )
 
     @patch(
-        path='/user/toggle-check-in/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
+        path='/view/toggle-check-in/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
         name='user-toggle-check-in',
-        guards=check_in_guards,
+        guards=[TournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
     async def htmx_user_toggle_check_in(
         self,
         request: HTMXRequest,
         channels: ChannelsPlugin,
         event_uniq_id: str,
-        screen_uniq_id: str,
-        tournament_id: int,
-        player_id: int,
-    ) -> Template | ClientRedirect | Redirect:
-        player_web_context: PlayerUserWebContext = PlayerUserWebContext(
-            request,
-        )
-        if player_web_context.error:
-            return player_web_context.error
+    ) -> Template:
+        player_web_context = PlayerUserWebContext(request)
         assert player_web_context.player.id is not None
         player_web_context.tournament.check_in_player(
             player_web_context.player, not player_web_context.player.check_in
@@ -169,34 +126,13 @@ class CheckInUserController(BaseInputUserController):
         SessionHandler.set_session_user_last_check_in_updated(
             request, player_web_context.tournament.id, player_web_context.player.id
         )
-        web_context: BasicScreenOrFamilyUserWebContext = (
-            BasicScreenOrFamilyUserWebContext(
-                request,
-            )
-        )
-        if web_context.error:
-            return web_context.error
+        web_context = BasicScreenOrFamilyUserWebContext(request)
         return self._user_screen_render(web_context)
 
 
 class IllegalMoveUserController(BaseInputUserController):
-    illegal_moves_guards = ScreenUserController.screen_guards + [
-        Guard.tournament_is_playing,
-        Guard.tournament_record_illegal_moves_is_possible,
-        Guard.client_can_set_illegal_moves,
-    ]
-
-    def _delete_or_add_illegal_move(
-        self,
-        request: HTMXRequest,
-        add: bool,
-    ) -> Template | ClientRedirect | Redirect:
-        player_web_context: PlayerUserWebContext = PlayerUserWebContext(
-            request,
-        )
-        if player_web_context.error:
-            return player_web_context.error
-        assert player_web_context.player.id is not None
+    def _delete_or_add_illegal_move(self, request: HTMXRequest, add: bool) -> Template:
+        player_web_context = PlayerUserWebContext(request)
 
         if add:
             player_web_context.tournament.store_illegal_move(player_web_context.player)
@@ -217,78 +153,36 @@ class IllegalMoveUserController(BaseInputUserController):
                     player_web_context.tournament.id,
                     player_web_context.player.id,
                 )
-        web_context: BasicScreenOrFamilyUserWebContext = (
-            BasicScreenOrFamilyUserWebContext(
-                request,
-            )
-        )
-        if web_context.error:
-            return web_context.error
+        web_context = BasicScreenOrFamilyUserWebContext(request)
         return self._user_screen_render(web_context)
 
     @put(
-        path='/user/add-illegal-move/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
+        path='/view/add-illegal-move/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
         name='user-add-illegal-move',
-        guards=illegal_moves_guards,
+        guards=[TournamentActionGuard(AuthAction.SET_ILLEGAL_MOVES)],
         status_code=HTTP_200_OK,
     )
-    async def htmx_user_add_illegal_move(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        screen_uniq_id: str,
-        tournament_id: int,
-        player_id: int,
-    ) -> Template | ClientRedirect | Redirect:
-        return self._delete_or_add_illegal_move(
-            request,
-            add=True,
-        )
+    async def htmx_user_add_illegal_move(self, request: HTMXRequest) -> Template:
+        return self._delete_or_add_illegal_move(request, add=True)
 
     @delete(
-        path='/user/delete-illegal-move/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
+        path='/view/delete-illegal-move/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
         name='user-delete-illegal-move',
-        guards=illegal_moves_guards,
+        guards=[TournamentActionGuard(AuthAction.SET_ILLEGAL_MOVES)],
         status_code=HTTP_200_OK,
     )
-    async def htmx_user_delete_illegal_move(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        screen_uniq_id: str,
-        tournament_id: int,
-        player_id: int,
-    ) -> Template | ClientRedirect | Redirect:
-        return self._delete_or_add_illegal_move(
-            request,
-            add=False,
-        )
+    async def htmx_user_delete_illegal_move(self, request: HTMXRequest) -> Template:
+        return self._delete_or_add_illegal_move(request, add=False)
 
 
 class ResultUserController(BaseInputUserController):
-    results_guards = ScreenUserController.screen_guards + [
-        Guard.tournament_is_playing,
-        Guard.client_can_enter_results,
-    ]
-
     @get(
-        path='/user/result-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{board_id:int}',
+        path='/view/result-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{board_id:int}',
         name='user-result-modal',
-        guards=results_guards,
+        guards=[TournamentActionGuard(AuthAction.ENTER_RESULTS)],
     )
-    async def htmx_user_result_modal(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        screen_uniq_id: str,
-        tournament_id: int,
-        board_id: int,
-    ) -> Template | ClientRedirect | Redirect:
-        web_context: BoardUserWebContext = BoardUserWebContext(
-            request,
-        )
-        if web_context.error:
-            return web_context.error
+    async def htmx_user_result_modal(self, request: HTMXRequest) -> Template:
+        web_context = BoardUserWebContext(request)
         return HTMXTemplate(
             template_name='user/modals.html',
             context=web_context.template_context | {},
@@ -301,12 +195,8 @@ class ResultUserController(BaseInputUserController):
         self,
         request: HTMXRequest,
         channels: ChannelsPlugin,
-    ) -> Template | ClientRedirect | Redirect:
-        result_web_context: ResultUserWebContext = ResultUserWebContext(
-            request,
-        )
-        if result_web_context.error:
-            return result_web_context.error
+    ) -> Template:
+        result_web_context = ResultUserWebContext(request)
         assert result_web_context.board.id is not None
         if result_web_context.result == Result.NO_RESULT:
             with suppress(ValueError):
@@ -327,61 +217,32 @@ class ResultUserController(BaseInputUserController):
             result_web_context.round,
             result_web_context.board.id,
         )
-        web_context: BasicScreenOrFamilyUserWebContext = (
-            BasicScreenOrFamilyUserWebContext(
-                request,
-            )
-        )
-        if web_context.error:
-            return web_context.error
+        web_context = BasicScreenOrFamilyUserWebContext(request)
         return self._user_screen_render(web_context)
 
     @put(
-        path='/user/add-result/'
-        '{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{round:int}/{board_id:int}/{result:int}',
+        path='/view/add-result/{event_uniq_id:str}/{screen_uniq_id:str}/'
+        '{tournament_id:int}/{round:int}/{board_id:int}/{result:int}',
         name='user-add-result',
-        guards=results_guards
-        + [
-            Guard.client_can_add_result,
-        ],
+        guards=[SetResultGuard()],
     )
     async def htmx_user_add_result(
         self,
         request: HTMXRequest,
         channels: ChannelsPlugin,
-        event_uniq_id: str,
-        screen_uniq_id: str,
-        tournament_id: int,
-        round: int,
-        board_id: int,
-        result: int,
-    ) -> Template | ClientRedirect | Redirect:
-        return self._user_update_result(
-            request,
-            channels=channels,
-        )
+    ) -> Template:
+        return self._user_update_result(request, channels=channels)
 
     @delete(
-        path='/user/delete-result/'
-        '{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{round:int}/{board_id:int}',
+        path='/view/delete-result/{event_uniq_id:str}/{screen_uniq_id:str}/'
+        '{tournament_id:int}/{round:int}/{board_id:int}',
         name='user-delete-result',
-        guards=results_guards
-        + [
-            Guard.client_can_delete_result,
-        ],
+        guards=[TournamentActionGuard(AuthAction.UPDATE_RESULTS)],
         status_code=HTTP_200_OK,
     )
     async def htmx_user_delete_result(
         self,
         request: HTMXRequest,
         channels: ChannelsPlugin,
-        event_uniq_id: str,
-        screen_uniq_id: str,
-        tournament_id: int,
-        round: int,
-        board_id: int,
-    ) -> Template | ClientRedirect | Redirect:
-        return self._user_update_result(
-            request,
-            channels=channels,
-        )
+    ) -> Template:
+        return self._user_update_result(request, channels=channels)

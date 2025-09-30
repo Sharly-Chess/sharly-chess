@@ -6,20 +6,6 @@
     display: none;
 }
 
-.dropdown-menu.players-set-tournament-check-ins,
-.dropdown-menu.players-set-player-tournament,
-.dropdown-menu.players-player-actions,
-.dropdown-menu.players-download-players,
-.dropdown-menu.players-filter-columns,
-.dropdown-menu.players-filter-gender,
-.dropdown-menu.players-filter-licence,
-.dropdown-menu.players-filter-check-in,
-.dropdown-menu.players-filter-tournament,
-.dropdown-menu.players-filter-federation,
-.dropdown-menu.players-filter-league,
-.dropdown-menu.players-filter-club {
-    min-width: 0;
-}
 .admin-players-filter-name, .admin-players-filter-origin {
     width: 5em;
 }
@@ -104,6 +90,7 @@
 
 .search-results-dropdown {
     max-height: 400px;
+    width: fit-content;
     overflow-y: auto;
 }
 
@@ -183,4 +170,16 @@
 
 .select2-selection__rendered {
     width: 100%;
+}
+
+#data-source-select {
+    flex: 0 0 auto;
+    outline: none;
+}
+
+/* Screen size below md */
+@media (max-width: 768px) {
+    #data-source-select {
+        width: 100px !important;
+    }
 }

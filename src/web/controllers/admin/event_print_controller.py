@@ -4,12 +4,12 @@ from litestar import get, post
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.response import Template, Redirect
-from litestar_htmx import ClientRedirect
+from litestar.response import Template
 import urllib
 
 from common.exception import OptionError
 from common.i18n import _
+from data.access_levels.actions import AuthAction
 from data.player import plugin_manager
 from data.print_documents import (
     PrintDocument,
@@ -28,18 +28,22 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
 )
+from web.guards import EventGuard, ActionGuard
 from web.session import SessionHandler
 
 
 class EventPrintController(BaseEventAdminController):
+    guards = [
+        EventGuard(),
+        ActionGuard(AuthAction.PRINT),
+    ]
+
     @classmethod
     def _admin_print_render(
         cls,
         web_context: BaseEventAdminWebContext,
         template_context: dict[str, Any] | None = None,
-    ) -> Template | ClientRedirect | Redirect:
-        if web_context.error:
-            return web_context.error
+    ) -> Template:
         return cls._admin_base_event_render(
             web_context.template_context | (template_context or {}),
         )
@@ -93,8 +97,8 @@ class EventPrintController(BaseEventAdminController):
 
     @get(
         path=[
-            '/admin/print-modal/{event_uniq_id:str}',
-            '/admin/print-modal/{event_uniq_id:str}/{tournament_id:int}',
+            '/print-modal/{event_uniq_id:str}',
+            '/print-modal/{event_uniq_id:str}/{tournament_id:int}',
         ],
         name='admin-print-modal',
     )
@@ -105,8 +109,8 @@ class EventPrintController(BaseEventAdminController):
         document_id: str | None = None,
         tournament_id: int | None = None,
         round: int | None = None,
-    ) -> Template | ClientRedirect | Redirect:
-        web_context = BaseEventAdminWebContext(request, event_uniq_id)
+    ) -> Template:
+        web_context = BaseEventAdminWebContext(request)
         tournament_ids = web_context.default_tournament_for_print_modal(tournament_id)
 
         template_context = self._print_modal_context(
@@ -121,7 +125,7 @@ class EventPrintController(BaseEventAdminController):
         )
 
     @post(
-        path='/admin/event-print/{event_uniq_id:str}',
+        path='/event-print/{event_uniq_id:str}',
         name='admin-event-print',
     )
     async def htmx_admin_event_print(
@@ -132,15 +136,9 @@ class EventPrintController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         event_uniq_id: str,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         flat_data = WebContext.flatten_list_data(data)
-        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            data=flat_data,
-        )
-        if web_context.error:
-            return web_context.error
+        web_context = BaseEventAdminWebContext(request)
 
         errors: dict[str, str] = {}
 
@@ -175,61 +173,56 @@ class EventPrintController(BaseEventAdminController):
             except OptionError as error:
                 errors[error.option.id] = str(error)
 
-        if document_type and not errors:
-            if tournament_ids:
-                SessionHandler.set_session_admin_print_last_tournaments(
-                    request, web_context.get_admin_event().uniq_id, tournament_ids
-                )
+            if not errors:
+                if tournament_ids:
+                    SessionHandler.set_session_admin_print_last_tournaments(
+                        request, web_context.get_admin_event().uniq_id, tournament_ids
+                    )
 
-                tournament = web_context.get_admin_event().tournaments_by_id[
-                    tournament_ids[0]
-                ]
-                if error_message := document_type.validate_for_tournament(tournament):
-                    errors[field] = error_message
-
-            # Clear the modal contents, and send an event
-            return HTMXTemplate(
-                template_name='common/empty_modal.html',
-                re_target='#modal-wrapper',
-                trigger_event='do_print',
-                after='receive',
-                params={
-                    'event_uniq_id': event_uniq_id,
-                    'document': data['document'],
-                    'options': {
-                        option.id: data[option.id]
-                        for option in document_type.default_options()
-                        if option.id in data
-                    },
-                },
+                    tournament = web_context.get_admin_event().tournaments_by_id[
+                        tournament_ids[0]
+                    ]
+                    if error_message := document_type.validate_for_tournament(
+                        tournament
+                    ):
+                        errors[field] = error_message
+        if errors:
+            template_context = self._print_modal_context(
+                web_context, data=flat_data, errors=errors
             )
-
-        template_context = self._print_modal_context(
-            web_context, data=flat_data, errors=errors
-        )
-        return self._admin_print_render(
-            web_context=web_context,
-            template_context=template_context,
+            return self._admin_print_render(
+                web_context=web_context,
+                template_context=template_context,
+            )
+        assert document_type is not None
+        # Clear the modal contents, and send an event
+        return HTMXTemplate(
+            template_name='common/empty_modal.html',
+            re_target='#modal-wrapper',
+            trigger_event='do_print',
+            after='receive',
+            params={
+                'event_uniq_id': event_uniq_id,
+                'document': data['document'],
+                'options': {
+                    option.id: data[option.id]
+                    for option in document_type.default_options()
+                    if option.id in data
+                },
+            },
         )
 
     @get(
-        path='/admin/print-view/{event_uniq_id:str}/{document: str}',
+        path='/print-view/{event_uniq_id:str}/{document: str}',
         name='admin-print-view',
     )
     async def htmx_tournament_print_view(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         document: str,
         options: str | None = None,
-    ) -> Template | ClientRedirect | Redirect:
-        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            data=None,
-        )
-        if web_context.error:
-            return web_context.error
+    ) -> Template:
+        web_context = BaseEventAdminWebContext(request)
         document_type = PrintDocumentManager.get_type(document)
         option_data: dict[str, str] = {}
         if options:

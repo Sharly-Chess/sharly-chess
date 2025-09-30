@@ -53,7 +53,7 @@ class BaseAccessLevelTest:
         auth_page.set_default_timeout(15000)
         auth_page.set_default_navigation_timeout(10000)
 
-        auth_page.goto(f'/admin/event/{PUBLIC_EVENT_ID}')
+        auth_page.goto(f'/event/{PUBLIC_EVENT_ID}')
         auth_page.wait_for_load_state('domcontentloaded')
         auth_page.get_by_test_id('profile-button').click()
         auth_page.locator('#password').fill('test-password')
@@ -95,7 +95,7 @@ class BaseAccessLevelTest:
         form_data = TestUtils.prepare_form_data(data)
 
         res = api_request_context.post(
-            f'/admin/account-create/{PUBLIC_EVENT_ID}',
+            f'/account-create/{PUBLIC_EVENT_ID}',
             headers={'Content-Type': 'application/x-www-form-urlencoded'},
             data=form_data,
         )
@@ -115,7 +115,7 @@ class BaseAccessLevelTest:
                 }
             )
             res = api_request_context.post(
-                f'/admin/account-permission-create/{PUBLIC_EVENT_ID}/{stored_account.id}',
+                f'/account-permission-create/{PUBLIC_EVENT_ID}/{stored_account.id}',
                 headers={'Content-Type': 'application/x-www-form-urlencoded'},
                 data=form_data,
             )
@@ -124,7 +124,7 @@ class BaseAccessLevelTest:
 
     def delete_user(self, api_request_context: APIRequestContext, account_id: int):
         res = api_request_context.delete(
-            f'/admin/account-delete/{PUBLIC_EVENT_ID}/{account_id}',
+            f'/account-delete/{PUBLIC_EVENT_ID}/{account_id}',
             headers={'Content-Type': 'application/x-www-form-urlencoded'},
         )
         TestUtils.check_api_response(res)
@@ -235,7 +235,7 @@ class BaseAccessLevelTest:
 
     def assert_access_to_visible_events(self, event_id: str, auth_page: Page):
         """Asserts that the user can access the public event only"""
-        auth_page.goto('/admin/home')
+        auth_page.goto('/home')
         expect(auth_page.locator('.card')).to_have_count(1)
         expect(auth_page.locator(f"div.card:has-text('{event_id}')")).to_be_visible()
 
@@ -253,10 +253,10 @@ class BaseAccessLevelTest:
         match mode:
             case DisplayMode.SCREENS_NOT_IN_MENU:
                 # There's no button in the menu, but we test direct access
-                page.goto(f'/admin/event/{PUBLIC_EVENT_ID}/input-screens')
+                page.goto(f'/event/{PUBLIC_EVENT_ID}/input-screens')
 
             case DisplayMode.SCREENS_IN_SUBMENU:
-                page.goto(f'/admin/event/{PUBLIC_EVENT_ID}')
+                page.goto(f'/event/{PUBLIC_EVENT_ID}')
                 screens_button = page.get_by_test_id('nav-admin-event-views-tab')
                 expect(screens_button).to_be_visible()
                 screens_button.click()
@@ -272,7 +272,7 @@ class BaseAccessLevelTest:
                 accordion_button.click()
 
             case DisplayMode.SCREENS_IN_MENU:
-                page.goto(f'/admin/event/{PUBLIC_EVENT_ID}')
+                page.goto(f'/event/{PUBLIC_EVENT_ID}')
                 screens_button = page.get_by_test_id('nav-admin-event-views-tab')
                 expect(screens_button).not_to_be_visible()
                 input_screens_button = page.get_by_test_id(
@@ -290,12 +290,12 @@ class BaseAccessLevelTest:
 
         if can_access:
             # Test access to the input screen
-            page.goto(f'/user/screen/{PUBLIC_EVENT_ID}/{screen.uniq_id}')
+            page.goto(f'/view/screen/{PUBLIC_EVENT_ID}/{screen.uniq_id}')
             rows = page.locator('table tbody tr')
             expect(rows).to_have_count(8)
         else:
             # Test no access to the input screen, should redirect to the 403 page
-            page.goto(f'/user/screen/{PUBLIC_EVENT_ID}/{screen.uniq_id}')
+            page.goto(f'/view/screen/{PUBLIC_EVENT_ID}/{screen.uniq_id}')
             page.wait_for_url('/error/403')
 
     def assert_can_checkin_via_screen(
@@ -305,11 +305,11 @@ class BaseAccessLevelTest:
     ):
         # Open check-in
         api_request_context.patch(
-            f'/admin/tournament-open-check-in/{PUBLIC_EVENT_ID}/{self.unpaired_tournament.id}'
+            f'/tournament-open-check-in/{PUBLIC_EVENT_ID}/{self.unpaired_tournament.id}'
         )
 
         self.auth_page.goto(
-            f'/user/screen/{PUBLIC_EVENT_ID}/{self.unpaired_screen.uniq_id}'
+            f'/view/screen/{PUBLIC_EVENT_ID}/{self.unpaired_screen.uniq_id}'
         )
         rows = self.auth_page.locator('table tbody tr')
 
@@ -343,7 +343,7 @@ class BaseAccessLevelTest:
         can_set_special_results: bool,
     ):
         self.auth_page.goto(
-            f'/user/screen/{PUBLIC_EVENT_ID}/{self.paired_screen.uniq_id}'
+            f'/view/screen/{PUBLIC_EVENT_ID}/{self.paired_screen.uniq_id}'
         )
         rows = self.auth_page.locator('table tbody tr')
 
@@ -404,7 +404,7 @@ class BaseAccessLevelTest:
         api_request_context: APIRequestContext,
     ):
         self.auth_page.goto(
-            f'/user/screen/{PUBLIC_EVENT_ID}/{self.paired_screen.uniq_id}'
+            f'/view/screen/{PUBLIC_EVENT_ID}/{self.paired_screen.uniq_id}'
         )
         rows = self.auth_page.locator('table tbody tr')
 
@@ -423,7 +423,7 @@ class BaseAccessLevelTest:
                 )
 
             api_request_context.put(
-                f'/user/add-illegal-move/{PUBLIC_EVENT_ID}/{self.paired_screen.uniq_id}/{self.paired_tournament.id}/{alyx.id}'
+                f'/view/add-illegal-move/{PUBLIC_EVENT_ID}/{self.paired_screen.uniq_id}/{self.paired_tournament.id}/{alyx.id}'
             )
             expect(illegal_move_icon).to_be_visible()
             expect(illegal_move_icon).not_to_have_attribute(
@@ -452,15 +452,15 @@ class BaseAccessLevelTest:
         can_access: bool,
         page: Page,
     ):
-        page.goto(f'/admin/event/{PUBLIC_EVENT_ID}')
+        page.goto(f'/event/{PUBLIC_EVENT_ID}')
         players_button = page.get_by_test_id('nav-admin-event-players-tab-tab')
         if can_access:
             expect(players_button).to_be_visible()
             players_button.click()
-            page.wait_for_url(f'/admin/event/{PUBLIC_EVENT_ID}/players')
+            page.wait_for_url(f'/event/{PUBLIC_EVENT_ID}/players')
         else:
             expect(players_button).not_to_be_visible()
-            page.goto(f'/admin/event/{PUBLIC_EVENT_ID}/players')
+            page.goto(f'/event/{PUBLIC_EVENT_ID}/players')
             page.wait_for_url('/error/403')
 
     def assert_can_checkin_via_players_tab(
@@ -470,10 +470,10 @@ class BaseAccessLevelTest:
     ):
         # Open check-in
         api_request_context.patch(
-            f'/admin/tournament-open-check-in/{PUBLIC_EVENT_ID}/{self.unpaired_tournament.id}'
+            f'/tournament-open-check-in/{PUBLIC_EVENT_ID}/{self.unpaired_tournament.id}'
         )
 
-        self.auth_page.goto(f'/admin/event/{PUBLIC_EVENT_ID}/players')
+        self.auth_page.goto(f'/event/{PUBLIC_EVENT_ID}/players')
         rows = self.auth_page.locator('table#players-table tbody tr')
         row = rows.filter(has_text='AMOS')
         check_in_button = row.get_by_test_id('check-in-cell')
@@ -509,16 +509,16 @@ class BaseAccessLevelTest:
         can_access: bool,
         page: Page,
     ):
-        page.goto(f'/admin/event/{PUBLIC_EVENT_ID}')
+        page.goto(f'/event/{PUBLIC_EVENT_ID}')
         pairings_button = page.get_by_test_id('nav-admin-event-pairings-tab-tab')
 
         if can_access:
             expect(pairings_button).to_be_visible()
             pairings_button.click()
-            page.wait_for_url(f'/admin/event/{PUBLIC_EVENT_ID}/pairings')
+            page.wait_for_url(f'/event/{PUBLIC_EVENT_ID}/pairings')
         else:
             expect(pairings_button).not_to_be_visible()
-            page.goto(f'/admin/event/{PUBLIC_EVENT_ID}/pairings')
+            page.goto(f'/event/{PUBLIC_EVENT_ID}/pairings')
             page.wait_for_url('/error/403')
 
     def assert_can_checkin_via_pairings_tab(
@@ -528,11 +528,11 @@ class BaseAccessLevelTest:
     ):
         # Open check-in
         api_request_context.patch(
-            f'/admin/tournament-open-check-in/{PUBLIC_EVENT_ID}/{self.unpaired_tournament.id}'
+            f'/tournament-open-check-in/{PUBLIC_EVENT_ID}/{self.unpaired_tournament.id}'
         )
 
         self.auth_page.goto(
-            f'/admin/event/{PUBLIC_EVENT_ID}/pairings?tournament_id={self.unpaired_tournament.id}'
+            f'/event/{PUBLIC_EVENT_ID}/pairings?tournament_id={self.unpaired_tournament.id}'
         )
         rows = self.auth_page.locator('table#unpaired-players-table tbody tr')
         row = rows.filter(has_text='AMOS')

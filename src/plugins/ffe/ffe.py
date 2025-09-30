@@ -22,8 +22,9 @@ from data.pairings.variations import SwissVariation
 from data.print_documents import PlayerSplitter, PrintDocument
 from data.print_documents.documents import PlayerPrintDocument, StatisticsPrintDocument
 from data.print_documents.player_splitters import ClubPlayerSplitter
-from data.criteria.player_filter_options import PlayerFilterOption, ClubsFilterOption
+from data.criteria.player_filter_options import PlayerFilterOption
 from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
+from data.print_documents.qrcode_types import QRCodeType
 from data.tie_breaks import TieBreak
 from data.tie_breaks.managers import TieBreakManager, TieBreakOptionManager
 from data.tie_breaks.options import TieBreakOption
@@ -57,12 +58,15 @@ from database.sqlite.event.event_database import EventDatabase
 from plugins.ffe import migrations, PLUGIN_NAME, ffe_tie_breaks
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_entity import (
+    FFESiteQRCodeType,
     FfeLocalDataSource,
     LeaguePlayerSplitter,
     NicoisSwissVariation,
     FfeLeaguePlayerFilter,
-    FfeLeaguesFilterOption,
+    FfeLicencePlayerFilter,
+    FfeLicenceFilterOption,
     FfeOnlineDataSource,
+    FfeLeaguesFilterOption,
 )
 from plugins.ffe.ffe_event_controller import FfeAdminEventController
 from plugins.ffe.ffe_session_handler import FFESessionHandler
@@ -389,9 +393,12 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def get_player_estimated_rating(
-        self, federation: str, tournament_rating: TournamentRating, player: 'Player'
+        self,
+        event_federation: str,
+        tournament_rating: TournamentRating,
+        player: 'Player',
     ) -> PlayerRating | None:
-        if federation != 'FRA':
+        if event_federation != 'FRA':
             return None
 
         value = 0
@@ -513,7 +520,7 @@ class FfePlugin(Plugin):
     def player_club_sort_key(self, player: Player):
         # We sort by league first
         return (
-            FFEUtils.get_player_plugin_data(player).league,
+            FFEUtils.get_player_plugin_data(player).league or '',
             player.club,
             player.last_name,
             player.first_name,
@@ -847,6 +854,10 @@ class FfePlugin(Plugin):
         PluginUtils.insert_on_equals(player_splitter_types, lps, cps)
 
     @hookimpl
+    def insert_print_qrcode_types(self, qrcode_types: list[type[QRCodeType]]):
+        qrcode_types.append(FFESiteQRCodeType)
+
+    @hookimpl
     def get_extra_print_view_columns(
         self, document: PrintDocument
     ) -> Iterable[ExtraColumn]:
@@ -985,11 +996,13 @@ class FfePlugin(Plugin):
         league: type[PlayerFilter] = FfeLeaguePlayerFilter
         club: type[PlayerFilter] = ClubPlayerFilter
         PluginUtils.insert_on_equals(player_filter_types, league, club)
+        player_filter_types.append(FfeLicencePlayerFilter)
 
     @hookimpl
     def insert_player_filter_option_types(
         self, player_filter_option_types: list[type['PlayerFilterOption']]
     ):
+        licence: type[PlayerFilterOption] = FfeLicenceFilterOption
         league: type[PlayerFilterOption] = FfeLeaguesFilterOption
-        club: type[PlayerFilterOption] = ClubsFilterOption
-        PluginUtils.insert_on_equals(player_filter_option_types, league, club)
+        player_filter_option_types.append(licence)
+        player_filter_option_types.append(league)

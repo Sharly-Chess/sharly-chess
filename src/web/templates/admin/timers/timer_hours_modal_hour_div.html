@@ -8,8 +8,8 @@
             <div class="admin-timer-hour-div edit border bg-body-tertiary {% if timer_hour.error %}border-danger{% else %}border-secondary{% endif %}">
                 <div class="d-flex p-2 gap-4 flex-column">
                     <div>
-                        <div class="row">
-                            <div class="col-12 col-md-8 mb-3">
+                        <div class="row gy-2 gx-3">
+                            <div class="col-12 col-md-8">
                                 {{ admin_macros.date_input(
                                     name='date_str',
                                     label=_('Date:'),
@@ -17,7 +17,7 @@
                                     data=data, errors=errors
                                 ) }}
                             </div>
-                            <div class="col-12 col-md-4 mb-3">
+                            <div class="col-12 col-md-4">
                                 {{ admin_macros.time_input(
                                     name='time_str',
                                     label=_('Hour:'),
@@ -27,7 +27,7 @@
                                     data=data, errors=errors
                                 ) }}
                             </div>
-                            <div class="col-12 mb-3">
+                            <div class="col-12">
                                 {{ admin_macros.text_input(
                                     name='uniq_id',
                                     label=_('Round number or text:'),
@@ -37,8 +37,8 @@
                                 ) }}
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-12 col-md-6 mb-3">
+                        <div class="row gy-2 gx-3">
+                            <div class="col-12 col-md-6">
                                 {{ admin_macros.text_input(
                                     name='text_before',
                                     label=_('Text before the hour:'),
@@ -47,7 +47,7 @@
                                     data=data, errors=errors
                                 ) }}
                             </div>
-                            <div class="col-12 col-md-6 mb-3">
+                            <div class="col-12 col-md-6">
                                 {{ admin_macros.text_input(
                                     name='text_after',
                                     label=_('Text after the hour:'),
@@ -69,7 +69,6 @@
                             type="button"
                             class="btn btn-sm btn-secondary text-nowrap mb-1"
                             hx-get="{{ url_for('admin-timer-hours-modal', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id) }}"
-                            preload
                             hx-target="body"
                             hx-trigger="click, keyup[key=='Escape'] from:body"
                             hx-indicator="#please-wait"
@@ -100,7 +99,6 @@
                         <button
                             class="btn btn-sm btn-outline-primary text-nowrap"
                             hx-get="{{ url_for('admin-timer-hours-hour-modal', event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id, timer_hour_id=timer_hour.id) }}"
-                            preload
                             hx-target="body"
                             hx-indicator="#please-wait"
                         >

@@ -26,7 +26,7 @@ def setup(api_request_context: APIRequestContext):
 @pytest.mark.e2e
 class TestPlayersFunctionality:
     def test_create_update_delete_player(self, page: Page):
-        page.goto(f'/admin/event/{EVENT_ID}/players')
+        page.goto(f'/event/{EVENT_ID}/players')
         page.get_by_test_id('add-player-button').click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
@@ -92,7 +92,7 @@ class TestPlayersFunctionality:
         player_id = player.id
 
         row = page.locator(f'tr#player-{player_id}')
-        expect(row).to_contain_text('John DOE')
+        expect(row).to_contain_text('DOE John')
         menu_button = row.locator('td:nth-child(1)').locator('button')
         menu_button.click()
         edit_link = row.get_by_text('Edit')
@@ -103,7 +103,7 @@ class TestPlayersFunctionality:
         modal.locator('button[type=submit]').click()
 
         row = page.locator(f'tr#player-{player_id}')
-        expect(row).to_contain_text('John HOE')
+        expect(row).to_contain_text('HOE John')
 
         # Delete the player
 

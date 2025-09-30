@@ -1,18 +1,14 @@
 {% with url=url_for('admin-event-players-tab', event_uniq_id=admin_event.uniq_id) %}
-    {{ macros.refresh_listener(
-        hx_get=url,
-    ) }}
-
-    <div
+   <div
         hx-get="{{ url_for('admin-players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="result") }}"
-        hx-trigger="sse:new-user-results/{{ admin_event.uniq_id }}"
+        hx-trigger="ws:new-user-results|{{ admin_event.uniq_id }} from:body"
         hx-target="#refresh-message"
         hx-swap="innerHTML"
     >
     </div>
     <div
         hx-get="{{ url_for('admin-players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="checkin") }}"
-        hx-trigger="sse:new-checkins/{{ admin_event.uniq_id }}"
+        hx-trigger="ws:new-checkins|{{ admin_event.uniq_id }} from:body"
         hx-target="#refresh-message"
         hx-swap="innerHTML"
     >
@@ -71,7 +67,6 @@
                         hx-get="{{ url_for('admin-player-create-modal', event_uniq_id=admin_event.uniq_id) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
-                        preload
                         data-bs-toggle="modal"
                         data-bs-target="#modal-wrapper"
                         {% if not client.can_add_player or not admin_event.not_finished_tournaments_sorted_by_uniq_id %}

@@ -4,14 +4,16 @@ from typing import Any, Annotated
 
 from litestar import get, post, patch, delete
 from litestar.enums import RequestEncodingType
+from litestar.exceptions import NotFoundException
 from litestar.params import Body
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
-from litestar_htmx import HTMXRequest, ClientRedirect
+from litestar_htmx import HTMXRequest
 
 from common.exception import OptionError
 from common.i18n import _
 from common.logger import get_logger
+from data.access_levels.actions import AuthAction
 from data.print_documents.documents import (
     PrizeAssignmentPrintDocument,
     PrizeListPrintDocument,
@@ -37,7 +39,8 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
-from web.controllers.base_controller import Redirect, WebContext
+from web.controllers.base_controller import WebContext
+from web.guards import EventGuard, TournamentActionGuard
 from web.messages import Message
 from web.session import SessionHandler
 
@@ -48,15 +51,13 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
     def __init__(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int | None = None,
         prize_group_id: int | None = None,
         prize_category_id: int | None = None,
         prize_criterion_id: int | None = None,
         prize_id: int | None = None,
-        data: dict[str, str] | None = None,
     ):
-        super().__init__(request, event_uniq_id, data)
+        super().__init__(request)
         self.admin_tournament: Tournament | None = None
         self.admin_prize_group: PrizeGroup | None = None
         self.admin_prize_category: PrizeCategory | None = None
@@ -65,17 +66,14 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
         self.show_details = SessionHandler.get_session_admin_prizes_show_details(
             request
         )
-        if not self.admin_event:
-            return
 
         event = self.get_admin_event()
         if tournament_id:
             if tournament_id not in event.tournaments_by_id:
-                self._redirect_error(
+                raise NotFoundException(
                     f'Unknown tournament ID [{tournament_id}] '
-                    f'for event [{event_uniq_id}]'
+                    f'for event [{event.uniq_id}]'
                 )
-                return
             self.admin_tournament = event.tournaments_by_id[tournament_id]
         elif event.tournaments:
             self.admin_tournament = event.tournaments_sorted_by_uniq_id[0]
@@ -83,11 +81,10 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
         if prize_group_id:
             tournament = self.get_admin_tournament()
             if prize_group_id not in tournament.prize_groups_by_id:
-                self._redirect_error(
+                raise NotFoundException(
                     f'Unknown prize group ID [{prize_group_id}] for '
-                    f'tournament [{tournament_id}] of event [{event_uniq_id}]'
+                    f'tournament [{tournament_id}] of event [{event.uniq_id}]'
                 )
-                return
             self.admin_prize_group = tournament.prize_groups_by_id[prize_group_id]
         else:
             self.set_default_prize_group()
@@ -95,21 +92,19 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
         if prize_category_id:
             prize_group = self.get_admin_prize_group()
             if prize_category_id not in prize_group.categories_by_id:
-                self._redirect_error(
+                raise NotFoundException(
                     f'Unknown category ID [{prize_category_id}] for '
                     f'prize group [{prize_group_id}]'
                 )
-                return
             self.admin_prize_category = prize_group.categories_by_id[prize_category_id]
 
         if prize_criterion_id:
             prize_category = self.get_admin_prize_category()
             if prize_criterion_id not in prize_category.criteria_by_id:
-                self._redirect_error(
+                raise NotFoundException(
                     f'Unknown criterion ID [{prize_criterion_id}] for '
                     f'prize category [{prize_category_id}]'
                 )
-                return
             self.admin_prize_criterion = prize_category.criteria_by_id[
                 prize_criterion_id
             ]
@@ -117,11 +112,10 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
         if prize_id:
             prize_category = self.get_admin_prize_category()
             if prize_id not in prize_category.prizes_by_id:
-                self._redirect_error(
+                raise NotFoundException(
                     f'Unknown prize ID [{prize_id}] for '
                     f'prize category [{prize_category_id}]'
                 )
-                return
             self.admin_prize = prize_category.prizes_by_id[prize_id]
 
     def set_default_prize_group(self):
@@ -184,39 +178,41 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
 
 
 class PrizeAdminController(BaseEventAdminController):
+    guards = [
+        EventGuard(),
+        TournamentActionGuard(AuthAction.VIEW_PRIZES_TAB),
+    ]
+    manage_guards = [TournamentActionGuard(AuthAction.MANAGE_PRIZES)]
+
     @classmethod
     def _admin_event_prizes_render(
         cls,
         web_context: PrizeAdminWebContext,
         template_context: dict[str, Any] | None = None,
-    ) -> Template | ClientRedirect | Redirect:
-        if web_context.error:
-            return web_context.error
+    ) -> Template:
         return cls._admin_base_event_render(
             web_context.template_context | (template_context or {}),
         )
 
     @get(
         path=[
-            '/admin/event/{event_uniq_id:str}/prizes',
-            '/admin/event/{event_uniq_id:str}/prizes/{tournament_id:int}',
-            '/admin/event/{event_uniq_id:str}/prizes/{tournament_id:int}/{prize_group_id:int}',
+            '/event/{event_uniq_id:str}/prizes',
+            '/event/{event_uniq_id:str}/prizes/{tournament_id:int}',
+            '/event/{event_uniq_id:str}/prizes/{tournament_id:int}/{prize_group_id:int}',
         ],
         name='admin-event-prizes-tab',
     )
     async def htmx_admin_prizes_tab(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int | None,
         prize_group_id: int | None,
         show_details: bool | None,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         if show_details is not None:
             SessionHandler.set_session_admin_prizes_show_details(request, show_details)
-        web_context = PrizeAdminWebContext(request, event_uniq_id, tournament_id)
-        if web_context.error:
-            return web_context.error
+        web_context = PrizeAdminWebContext(request, tournament_id)
+
         if prize_group_id:
             tournament = web_context.get_admin_tournament()
             if prize_group_id in tournament.prize_groups_by_id:
@@ -227,7 +223,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/prizes/prize-players-modal/{event_uniq_id:str}/'
+            '/prizes/prize-players-modal/{event_uniq_id:str}/'
             '{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prize-players-modal',
@@ -235,16 +231,14 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_players_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = PrizeAdminWebContext(
-            request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
+            request, tournament_id, prize_group_id, prize_category_id
         )
-        if web_context.error:
-            return web_context.error
+
         prize_group = web_context.get_admin_prize_group()
         assigned_prizes_by_player_id = {
             assigned_prize.assigned_to.id: assigned_prize
@@ -271,18 +265,15 @@ class PrizeAdminController(BaseEventAdminController):
         }
 
     @post(
-        path='/admin/prizes/prize-group/create/{event_uniq_id:str}/{tournament_id:int}',
+        path='/prizes/prize-group/create/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-prize-group-create',
+        guards=manage_guards,
     )
     async def htmx_admin_prize_group_create(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        tournament_id: int,
-    ) -> Template | ClientRedirect | Redirect:
-        web_context = PrizeAdminWebContext(request, event_uniq_id, tournament_id)
-        if web_context.error:
-            return web_context.error
+        self, request: HTMXRequest, tournament_id: int
+    ) -> Template:
+        web_context = PrizeAdminWebContext(request, tournament_id)
+
         tournament = web_context.get_admin_tournament()
         first_group = len(tournament.prize_groups) == 0
         if first_group:
@@ -311,10 +302,11 @@ class PrizeAdminController(BaseEventAdminController):
 
     @patch(
         path=(
-            '/admin/prizes/prize-group/update/{event_uniq_id:str}/'
+            '/prizes/prize-group/update/{event_uniq_id:str}/'
             '{tournament_id:int}/{prize_group_id:int}'
         ),
         name='admin-prize-group-update',
+        guards=manage_guards,
     )
     async def htmx_admin_prize_group_update(
         self,
@@ -323,15 +315,11 @@ class PrizeAdminController(BaseEventAdminController):
             dict[str, str] | None,
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
-    ) -> Template | ClientRedirect | Redirect:
-        web_context = PrizeAdminWebContext(
-            request, event_uniq_id, tournament_id, prize_group_id
-        )
-        if web_context.error:
-            return web_context.error
+    ) -> Template:
+        web_context = PrizeAdminWebContext(request, tournament_id, prize_group_id)
+
         tournament = web_context.get_admin_tournament()
         prize_group = web_context.get_admin_prize_group()
         prize_group.stored_prize_group.name = (
@@ -344,24 +332,21 @@ class PrizeAdminController(BaseEventAdminController):
 
     @delete(
         path=(
-            '/admin/prizes/prize-group/delete/{event_uniq_id:str}/'
+            '/prizes/prize-group/delete/{event_uniq_id:str}/'
             '{tournament_id:int}/{prize_group_id:int}'
         ),
         name='admin-prize-group-delete',
+        guards=manage_guards,
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_prize_group_delete(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
-    ) -> Template | ClientRedirect | Redirect:
-        web_context = PrizeAdminWebContext(
-            request, event_uniq_id, tournament_id, prize_group_id
-        )
-        if web_context.error:
-            return web_context.error
+    ) -> Template:
+        web_context = PrizeAdminWebContext(request, tournament_id, prize_group_id)
+
         tournament = web_context.get_admin_tournament()
         tournament.delete_prize_group(prize_group_id)
         return self._admin_event_prizes_render(
@@ -369,16 +354,13 @@ class PrizeAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/admin/prizes/prize-groups-modal/{event_uniq_id:str}/{tournament_id:int}',
+        path='/prizes/prize-groups-modal/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-prize-groups-modal',
     )
     async def htmx_admin_prize_groups_modal(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        tournament_id: int,
-    ) -> Template | ClientRedirect | Redirect:
-        web_context = PrizeAdminWebContext(request, event_uniq_id, tournament_id)
+        self, request: HTMXRequest, tournament_id: int
+    ) -> Template:
+        web_context = PrizeAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
         return self._admin_event_prizes_render(
             web_context, self._prize_groups_modal_context(tournament)
@@ -386,7 +368,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/prizes/prize-group-modal/delete/'
+            '/prizes/prize-group-modal/delete/'
             '{event_uniq_id:str}/{tournament_id:int}/{prize_group_id:int}'
         ),
         name='admin-prize-group-delete-modal',
@@ -394,12 +376,11 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_group_delete_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_event_prizes_render(
-            PrizeAdminWebContext(request, event_uniq_id, tournament_id, prize_group_id),
+            PrizeAdminWebContext(request, tournament_id, prize_group_id),
             {'modal': 'prize_group_delete'},
         )
 
@@ -494,10 +475,11 @@ class PrizeAdminController(BaseEventAdminController):
 
     @post(
         path=(
-            '/admin/prizes/prize-category/create/'
+            '/prizes/prize-category/create/'
             '{event_uniq_id:str}/{tournament_id:int}/{prize_group_id:int}'
         ),
         name='admin-prize-category-create',
+        guards=manage_guards,
     )
     async def htmx_admin_prize_category_create(
         self,
@@ -506,15 +488,11 @@ class PrizeAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
-    ) -> Template | ClientRedirect | Redirect:
-        web_context = PrizeAdminWebContext(
-            request, event_uniq_id, tournament_id, prize_group_id
-        )
-        if web_context.error:
-            return web_context.error
+    ) -> Template:
+        web_context = PrizeAdminWebContext(request, tournament_id, prize_group_id)
+
         add_other = 'add_other' in data
         SessionHandler.set_session_admin_prize_category_add_other_active(
             request, add_other
@@ -571,10 +549,11 @@ class PrizeAdminController(BaseEventAdminController):
 
     @patch(
         path=(
-            '/admin/prizes/prize-category/update/{event_uniq_id:str}/'
+            '/prizes/prize-category/update/{event_uniq_id:str}/'
             '{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prize-category-update',
+        guards=manage_guards,
     )
     async def htmx_admin_prize_category_update(
         self,
@@ -583,16 +562,14 @@ class PrizeAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = PrizeAdminWebContext(
-            request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
+            request, tournament_id, prize_group_id, prize_category_id
         )
-        if web_context.error:
-            return web_context.error
+
         prize_category = web_context.get_admin_prize_category()
         if errors := self._validate_prize_category_form_data(
             data, web_context.get_admin_prize_group(), prize_category
@@ -639,25 +616,24 @@ class PrizeAdminController(BaseEventAdminController):
 
     @delete(
         path=(
-            '/admin/prizes/prize-category/delete/{event_uniq_id:str}/'
+            '/prizes/prize-category/delete/{event_uniq_id:str}/'
             '{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prize-category-delete',
+        guards=manage_guards,
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_prize_category_delete(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = PrizeAdminWebContext(
-            request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
+            request, tournament_id, prize_group_id, prize_category_id
         )
-        if web_context.error:
-            return web_context.error
+
         prize_group = web_context.get_admin_prize_group()
         prize_category = web_context.get_admin_prize_category()
         prize_group.delete_category(prize_category_id)
@@ -672,24 +648,23 @@ class PrizeAdminController(BaseEventAdminController):
 
     @post(
         path=(
-            '/admin/prizes/prize-category/duplicate/{event_uniq_id:str}/'
+            '/prizes/prize-category/duplicate/{event_uniq_id:str}/'
             '{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prize-category-duplicate',
+        guards=manage_guards,
     )
     async def htmx_admin_prize_category_duplicate(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = PrizeAdminWebContext(
-            request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
+            request, tournament_id, prize_group_id, prize_category_id
         )
-        if web_context.error:
-            return web_context.error
+
         prize_group = web_context.get_admin_prize_group()
         copy_category = web_context.get_admin_prize_category()
         stored_category = copy.deepcopy(copy_category.stored_prize_category)
@@ -716,10 +691,11 @@ class PrizeAdminController(BaseEventAdminController):
 
     @patch(
         path=(
-            '/admin/prizes/prize-category/reorder/'
+            '/prizes/prize-category/reorder/'
             '{event_uniq_id:str}/{tournament_id:int}/{prize_group_id:int}'
         ),
         name='admin-prizes-reorder-categories',
+        guards=manage_guards,
     )
     async def htmx_admin_prize_reorder_categories(
         self,
@@ -728,22 +704,18 @@ class PrizeAdminController(BaseEventAdminController):
             dict[str, list[int]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
-    ) -> Template | ClientRedirect | Redirect:
-        web_context = PrizeAdminWebContext(
-            request, event_uniq_id, tournament_id, prize_group_id
-        )
-        if web_context.error:
-            return web_context.error
+    ) -> Template:
+        web_context = PrizeAdminWebContext(request, tournament_id, prize_group_id)
+
         prize_group = web_context.get_admin_prize_group()
         prize_group.reorder_categories(data['item'])
         return self._admin_event_prizes_render(web_context)
 
     @get(
         path=(
-            '/admin/prizes/prize-category-modal/create/'
+            '/prizes/prize-category-modal/create/'
             '{event_uniq_id:str}/{tournament_id:int}/{prize_group_id:int}'
         ),
         name='admin-prize-category-create-modal',
@@ -751,15 +723,11 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_category_create_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
-    ) -> Template | ClientRedirect | Redirect:
-        web_context = PrizeAdminWebContext(
-            request, event_uniq_id, tournament_id, prize_group_id
-        )
-        if web_context.error:
-            return web_context.error
+    ) -> Template:
+        web_context = PrizeAdminWebContext(request, tournament_id, prize_group_id)
+
         data = self._prize_category_default_form_data(
             web_context.get_admin_prize_group()
         )
@@ -770,7 +738,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/prizes/prize-category-modal/update/{event_uniq_id:str}/'
+            '/prizes/prize-category-modal/update/{event_uniq_id:str}/'
             '{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prize-category-update-modal',
@@ -778,16 +746,14 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_category_update_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = PrizeAdminWebContext(
-            request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
+            request, tournament_id, prize_group_id, prize_category_id
         )
-        if web_context.error:
-            return web_context.error
+
         prize_category = web_context.get_admin_prize_category()
         share_prizes = prize_category.are_prizes_shared
         data = {
@@ -807,7 +773,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/prizes/prize-category-modal/delete/{event_uniq_id:str}/'
+            '/prizes/prize-category-modal/delete/{event_uniq_id:str}/'
             '{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prize-category-delete-modal',
@@ -815,14 +781,13 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_category_delete_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_event_prizes_render(
             PrizeAdminWebContext(
-                request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
+                request, tournament_id, prize_group_id, prize_category_id
             ),
             {
                 'modal': 'prize_category',
@@ -896,10 +861,11 @@ class PrizeAdminController(BaseEventAdminController):
 
     @post(
         path=(
-            '/admin/prizes/prize-criterion/create/{event_uniq_id:str}'
+            '/prizes/prize-criterion/create/{event_uniq_id:str}'
             '/{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prize-criterion-create',
+        guards=manage_guards,
     )
     async def htmx_admin_prize_criterion_create(
         self,
@@ -908,16 +874,14 @@ class PrizeAdminController(BaseEventAdminController):
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = PrizeAdminWebContext(
-            request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
+            request, tournament_id, prize_group_id, prize_category_id
         )
-        if web_context.error:
-            return web_context.error
+
         add_other = 'add_other' in data
         SessionHandler.set_session_admin_prize_criterion_add_other_active(
             request, add_other
@@ -950,11 +914,12 @@ class PrizeAdminController(BaseEventAdminController):
 
     @patch(
         path=(
-            '/admin/prizes/prize-criterion/update/{event_uniq_id:str}'
+            '/prizes/prize-criterion/update/{event_uniq_id:str}'
             '/{tournament_id:int}/{prize_group_id:int}'
             '/{prize_category_id:int}/{prize_criterion_id:int}'
         ),
         name='admin-prize-criterion-update',
+        guards=manage_guards,
     )
     async def htmx_admin_prize_criterion_update(
         self,
@@ -963,22 +928,19 @@ class PrizeAdminController(BaseEventAdminController):
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
         prize_criterion_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = PrizeAdminWebContext(
             request,
-            event_uniq_id,
             tournament_id,
             prize_group_id,
             prize_category_id,
             prize_criterion_id=prize_criterion_id,
         )
-        if web_context.error:
-            return web_context.error
+
         flat_data = WebContext.flatten_list_data(data)
         if errors := self._validate_prize_criterion_form_data(flat_data):
             return self._admin_event_prizes_render(
@@ -999,38 +961,36 @@ class PrizeAdminController(BaseEventAdminController):
 
     @delete(
         path=(
-            '/admin/prizes/prize-criterion/delete/{event_uniq_id:str}/{tournament_id:int}'
+            '/prizes/prize-criterion/delete/{event_uniq_id:str}/{tournament_id:int}'
             '/{prize_group_id:int}/{prize_category_id:int}/{prize_criterion_id:int}'
         ),
         name='admin-prize-criterion-delete',
+        guards=manage_guards,
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_prize_criterion_delete(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
         prize_criterion_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = PrizeAdminWebContext(
             request,
-            event_uniq_id,
             tournament_id,
             prize_group_id,
             prize_category_id,
             prize_criterion_id=prize_criterion_id,
         )
-        if web_context.error:
-            return web_context.error
+
         prize_category = web_context.get_admin_prize_category()
         prize_category.delete_criterion(prize_criterion_id)
         return self._admin_event_prizes_render(web_context, {'modal': 'prize_criteria'})
 
     @get(
         path=(
-            '/admin/prizes/prize-criteria-modal/{event_uniq_id:str}/'
+            '/prizes/prize-criteria-modal/{event_uniq_id:str}/'
             '{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prize-criteria-modal',
@@ -1038,21 +998,20 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_criteria_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_event_prizes_render(
             PrizeAdminWebContext(
-                request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
+                request, tournament_id, prize_group_id, prize_category_id
             ),
             {'modal': 'prize_criteria'},
         )
 
     @get(
         path=(
-            '/admin/prizes/criterion-modal/create/{event_uniq_id:str}'
+            '/prizes/criterion-modal/create/{event_uniq_id:str}'
             '/{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prize-criterion-create-modal',
@@ -1060,13 +1019,12 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_criterion_create_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = PrizeAdminWebContext(
-            request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
+            request, tournament_id, prize_group_id, prize_category_id
         )
         return self._admin_event_prizes_render(
             web_context,
@@ -1075,7 +1033,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/prizes/criterion-modal/update/{event_uniq_id:str}'
+            '/prizes/criterion-modal/update/{event_uniq_id:str}'
             '/{tournament_id:int}/{prize_group_id:int}'
             '/{prize_category_id:int}/{prize_criterion_id:int}'
         ),
@@ -1084,22 +1042,19 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_criterion_update_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
         prize_criterion_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = PrizeAdminWebContext(
             request,
-            event_uniq_id,
             tournament_id,
             prize_group_id,
             prize_category_id,
             prize_criterion_id=prize_criterion_id,
         )
-        if web_context.error:
-            return web_context.error
+
         prize_criterion = web_context.get_admin_prize_criterion()
         data = {'type': prize_criterion.player_filter.id} | {
             option.id: WebContext.value_to_form_data(option.value)
@@ -1203,10 +1158,11 @@ class PrizeAdminController(BaseEventAdminController):
 
     @post(
         path=(
-            '/admin/prizes/prize/create/{event_uniq_id:str}'
+            '/prizes/prize/create/{event_uniq_id:str}'
             '/{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prize-create',
+        guards=manage_guards,
     )
     async def htmx_admin_prize_create(
         self,
@@ -1215,16 +1171,14 @@ class PrizeAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = PrizeAdminWebContext(
-            request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
+            request, tournament_id, prize_group_id, prize_category_id
         )
-        if web_context.error:
-            return web_context.error
+
         add_other = 'add_other' in data
         SessionHandler.set_session_admin_prize_add_other_active(request, add_other)
         prize_category = web_context.get_admin_prize_category()
@@ -1264,11 +1218,12 @@ class PrizeAdminController(BaseEventAdminController):
 
     @patch(
         path=(
-            '/admin/prizes/prize/update/{event_uniq_id:str}'
+            '/prizes/prize/update/{event_uniq_id:str}'
             '/{tournament_id:int}/{prize_group_id:int}'
             '/{prize_category_id:int}/{prize_id:int}'
         ),
         name='admin-prize-update',
+        guards=manage_guards,
     )
     async def htmx_admin_prize_update(
         self,
@@ -1277,22 +1232,19 @@ class PrizeAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
         prize_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = PrizeAdminWebContext(
             request,
-            event_uniq_id,
             tournament_id,
             prize_group_id,
             prize_category_id,
             prize_id=prize_id,
         )
-        if web_context.error:
-            return web_context.error
+
         prize_category = web_context.get_admin_prize_category()
         if errors := self._validate_prize_form_data(
             data, prize_category, FormAction.UPDATE
@@ -1316,38 +1268,36 @@ class PrizeAdminController(BaseEventAdminController):
 
     @delete(
         path=(
-            '/admin/prizes/prize/delete/{event_uniq_id:str}/{tournament_id:int}'
+            '/prizes/prize/delete/{event_uniq_id:str}/{tournament_id:int}'
             '/{prize_group_id:int}/{prize_category_id:int}/{prize_id:int}'
         ),
         name='admin-prize-delete',
+        guards=manage_guards,
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_prize_delete(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
         prize_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = PrizeAdminWebContext(
             request,
-            event_uniq_id,
             tournament_id,
             prize_group_id,
             prize_category_id,
             prize_id=prize_id,
         )
-        if web_context.error:
-            return web_context.error
+
         prize_category = web_context.get_admin_prize_category()
         prize_category.delete_prize(prize_id)
         return self._admin_event_prizes_render(web_context, {'modal': 'prizes'})
 
     @get(
         path=(
-            '/admin/prizes/prizes-modal/{event_uniq_id:str}/{tournament_id:int}'
+            '/prizes/prizes-modal/{event_uniq_id:str}/{tournament_id:int}'
             '/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prizes-modal',
@@ -1355,15 +1305,13 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prizes_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         return self._admin_event_prizes_render(
             PrizeAdminWebContext(
                 request,
-                event_uniq_id,
                 tournament_id,
                 prize_group_id,
                 prize_category_id,
@@ -1373,7 +1321,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/prizes/prize-modal/create/{event_uniq_id:str}'
+            '/prizes/prize-modal/create/{event_uniq_id:str}'
             '/{tournament_id:int}/{prize_group_id:int}/{prize_category_id:int}'
         ),
         name='admin-prize-create-modal',
@@ -1381,13 +1329,12 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_create_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = PrizeAdminWebContext(
-            request, event_uniq_id, tournament_id, prize_group_id, prize_category_id
+            request, tournament_id, prize_group_id, prize_category_id
         )
         return self._admin_event_prizes_render(
             web_context,
@@ -1396,7 +1343,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @get(
         path=(
-            '/admin/prizes/prize-modal/update/{event_uniq_id:str}'
+            '/prizes/prize-modal/update/{event_uniq_id:str}'
             '/{tournament_id:int}/{prize_group_id:int}'
             '/{prize_category_id:int}/{prize_id:int}'
         ),
@@ -1405,22 +1352,19 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_update_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
         prize_group_id: int,
         prize_category_id: int,
         prize_id: int,
-    ) -> Template | ClientRedirect | Redirect:
+    ) -> Template:
         web_context = PrizeAdminWebContext(
             request,
-            event_uniq_id,
             tournament_id,
             prize_group_id,
             prize_category_id,
             prize_id=prize_id,
         )
-        if web_context.error:
-            return web_context.error
+
         prize = web_context.get_admin_prize()
         data = {
             'value': WebContext.value_to_form_data(prize.value),

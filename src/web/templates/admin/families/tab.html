@@ -61,7 +61,6 @@
                         hx-get="{{ url_for('admin-family-create-modal', event_uniq_id=admin_event.uniq_id, family_type=family_type) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
-                        preload
                         data-bs-toggle="modal"
                         data-bs-target="#modal-wrapper"
                         {{ macros.tooltip_attributes('info', family_data.tooltip_text, 'left') }}
@@ -76,7 +75,7 @@
 {% endblock %}
 
 {% block cards_container_cards %}
-    <div class="row">
+    <div class="row gy-2 gx-3">
         {% if admin_event.families_by_id %}
             {% for family in admin_event.families_sorted_by_name %}
                 {% include 'family_card.html' %}

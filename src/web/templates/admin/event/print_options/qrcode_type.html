@@ -1,0 +1,36 @@
+<div class="col-12">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('QR Code type:'),
+        help_text=_('The type of QR code to print.'),
+        select_options=option.qrcode_type_options,
+        data=data, errors=errors
+    ) }}
+</div>
+<script>
+    function hideInvalidOptions() {
+        const selected = $('.modal #{{option.id}}').val();
+        const validOptions = {{ option.valid_options_per_type | tojson }};
+        const allowed = validOptions[selected] || [];
+        {% for o in print_options %}
+            {% if o.id != option.id %}
+                if (allowed.includes("{{ o.id }}")) {
+                    $("#{{ o.container_id }}").show();
+                } else {
+                    $("#{{ o.container_id }}").hide();
+                }
+            {% endif %}
+        {% endfor %}
+    }
+
+    function handleOptionsChange() {
+        doc = $('.modal #document').val();
+        if (doc == '{{ option.qrcode_print_document_id }}') {
+            {# The timeout is needed so that we do this after the default hide/show script runs #}
+            setTimeout(hideInvalidOptions, 0)
+        }
+    }
+
+    $('.modal #{{option.id}}').on('change', handleOptionsChange);
+    $('.modal #document').on('change', handleOptionsChange);
+</script>

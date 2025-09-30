@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from data.input_output import DataSource, TournamentExporter, TournamentImporter
     from data.pairings.variations import SwissVariation
     from data.player import Player, PlayerRating
-    from data.print_documents import PrintDocument, PlayerSplitter
+    from data.print_documents import PrintDocument, PlayerSplitter, QRCodeType
     from data.criteria.player_filter_options import PlayerFilterOption
     from data.criteria.player_filters import PlayerFilter
     from data.tie_breaks import TieBreak
@@ -135,9 +135,12 @@ class AppHookSpecs:
     ):
         """Add plugin specific data to a player after a successful player search"""
 
-    @hookspec
+    @hookspec(firstresult=True)
     def get_player_estimated_rating(
-        self, federation: str, tournament_rating: TournamentRating, player: 'Player'
+        self,
+        event_federation: str,
+        tournament_rating: TournamentRating,
+        player: 'Player',
     ) -> Optional['PlayerRating']:
         """Get the estimated rating of a player."""
 
@@ -296,6 +299,10 @@ class AppHookSpecs:
         self, player_splitter_types: list[type['PlayerSplitter']]
     ):
         """Provide print player splitting options"""
+
+    @hookspec
+    def insert_print_qrcode_types(self, qrcode_types: list[type['QRCodeType']]):
+        """Provide QR Code options"""
 
     @hookspec
     def get_extra_print_view_columns(

@@ -257,7 +257,7 @@ def pil_to_toga_image(pil_img: PILImage.Image) -> toga.Image:
 class SharlyChessServerToga(toga.App):
     """Main Toga GUI app for Sharly Chess server."""
 
-    def __init__(self):
+    def __init__(self, *, debug: bool = False, port: int | None = None):
         system = platform.system()
         match system:
             case 'Windows':
@@ -275,6 +275,8 @@ class SharlyChessServerToga(toga.App):
             home_page='https://sharly-chess.com',
             version=str(SHARLY_CHESS_VERSION),
         )
+        self.debug = debug
+        self.port = port
 
         self._logview_ready = False
         self._pending_js: list[str] = []
@@ -534,7 +536,11 @@ class SharlyChessServerToga(toga.App):
             self.gui_loop.call_soon_threadsafe(self.on_server_ready)
 
         engine = ServerEngine(
-            loop=loop, handle_signals=False, on_port_chosen=schedule_ready
+            debug=self.debug,
+            port=self.port,
+            loop=loop,
+            handle_signals=False,
+            on_port_chosen=schedule_ready,
         )
         loop.create_task(engine.serve())
 
