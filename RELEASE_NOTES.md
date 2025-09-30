@@ -31,7 +31,8 @@ English version below
 
 - Vue imprimable des statistiques des joueur·euses (3.1.0)
 - Vue imprimable des QR Codes (3.1.0)
-- Il est désormais possible de sélectionner plusieurs tournois pour différents aperçus d’impression : liste des joueur·euses, liste de pointage, liste et attribution des prix, ainsi que les statistiques (3.1.0)
+- Sélection de plusieurs tournois pour différents aperçus d’impression : liste des joueur·euses, liste de pointage, liste et attribution des prix et statistiques (3.1.0)
+- Affichage du statut pointé/non-pointé des joueur·euses sur les listes de pointage (3.1.0)
 
 ## ChessEvent
 
@@ -73,6 +74,7 @@ English version below
 - Statistics print view (3.1.0)
 - QR Code print view (3.1.0)
 - Multiple tournaments can now be selected for several print views: Players List, Check-in List, Prize List and Assignment, and Statistics (3.1.0)
+- Display the check-in status on check-in lists (3.1.0)
 
 ## ChessEvent
 
