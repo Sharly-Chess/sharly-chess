@@ -1,7 +1,7 @@
 <tr id="player-{{ player.id }}" class="player-row {{ row_class }}">
     {% if checkin_list %}
         {{ macros.extra_column_header("checkin", extra_columns)}}
-        <td class="checkinboard_number">☐</td>
+        <td class="checkin">{{ "☑" if player.check_in else "☐" }}</td>
     {% elif not pairings_list %}
         {{ macros.extra_column_data("rank", player, extra_columns)}}
         <td class="rank">
