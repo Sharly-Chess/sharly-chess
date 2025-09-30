@@ -8,8 +8,6 @@
             label=_('Licence number:'),
             placeholder=_('E.g.: %(string)s', string='R08943'),
             help_text='',
-            disabled=action == 'delete',
-            error=action == 'delete',
             data=data, errors=errors
         ) }}
     </div>
@@ -19,8 +17,6 @@
             label=_('Licence:'),
             help_text='',
             select_options=licence_options,
-            disabled=action == 'delete',
-            error=action == 'delete',
             data=data, errors=errors
         ) }}
     </div>
@@ -30,7 +26,6 @@
             label=_('FFE Uniq ID:'),
             help_text='',
             disabled=true,
-            error=action == 'delete',
             min=1,
             data=data, errors=errors
         ) }}
@@ -43,8 +38,6 @@
             label=_('League:'),
             help_text='',
             select_options=ffe_leagues,
-            disabled=action == 'delete',
-            error=action == 'delete',
             data=data, errors=errors
         ) }}
     </div>

@@ -8,8 +8,6 @@
                     {{ _('Edit player') }}
                 {% elif action == 'replace' %}
                     {{ _('Replace player') }}
-                {% elif action == 'delete' %}
-                    {{ _('Delete player') }}
                 {% else %}
                     ?
                 {% endif %}
@@ -24,20 +22,12 @@
                     hx-patch="{{ url_for('admin-player-update', event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
                 {% elif action == 'replace' %}
                     hx-patch="{{ url_for('admin-player-replace', event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
-                {% elif action == 'delete' %}
-                    hx-delete="{{ url_for('admin-player-delete', event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
                 {% else %}
                     hx-get="{{ url_for('unknown-action-' ~ action) }}"
                 {% endif %}
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                {% if action == 'delete' %}
-                    <h4 class="text-danger">
-                        {{ _('Warning: the deletion is permanent!') }}
-                    </h4>
-                {% endif %}
-
                 {% if action in ['create', 'replace'] %}
                     {% if previous_player %}
                         {% if warning_message %}
@@ -129,8 +119,6 @@
                             label=_('Name:'),
                             placeholder=_('E.g.: DOE'),
                             help_text='',
-                            disabled=action == 'delete',
-                            error=action == 'delete',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -140,8 +128,6 @@
                             label=_('First name:'),
                             placeholder=_('E.g.: John'),
                             help_text='',
-                            disabled=action == 'delete',
-                            error=action == 'delete',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -150,8 +136,6 @@
                             name='date_of_birth',
                             label=_('Date of birth:'),
                             help_text='',
-                            disabled=action == 'delete',
-                            error=action == 'delete',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -161,8 +145,6 @@
                             label=_('Gender:'),
                             help_text='',
                             select_options=gender_options,
-                            disabled=action == 'delete',
-                            error=action == 'delete',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -172,8 +154,6 @@
                             label=_('Club:'),
                             placeholder=_('E.g.: My favourite club!'),
                             help_text='',
-                            disabled=action == 'delete',
-                            error=action == 'delete',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -200,8 +180,7 @@
                                 label=_('Tournament:'),
                                 help_text='',
                                 select_options=tournament_options,
-                                disabled=action == 'delete' or admin_player.has_real_pairings,
-                                error=action == 'delete',
+                                disabled=admin_player.has_real_pairings,
                                 data=data, errors=errors
                             ) }}
                             {% if admin_player.has_real_pairings %}
@@ -215,9 +194,7 @@
                             name='fixed',
                             label=_('Fixed board:'),
                             help_text='',
-                            tooltip_text=_('The board number the player will always be assigned to (use it for disabled people).') if action != 'delete' else '',
-                            disabled=action == 'delete',
-                            error=action == 'delete',
+                            tooltip_text=_('The board number the player will always be assigned to (use it for disabled people).'),
                             min=1,
                             data=data, errors=errors
                         ) }}
@@ -247,17 +224,15 @@
                                         type="number"
                                         id="{{ id }}"
                                         data-testid="{{ id }}"
-                                        class="form-control d-inline {% if name in errors or action == 'delete' %}is-invalid{% endif %}"
+                                        class="form-control d-inline {% if name in errors %}is-invalid{% endif %}"
                                         aria-describedby="{{ id }}-help {{ id }}-error"
                                         value="{{ data[name] }}"
-                                        {% if action == 'delete' %}disabled{% endif %}
                                     />
                                     <select
                                         id="{{ type_id }}"
                                         data-testid="{{ type_id }}"
                                         name="{{ name2 }}"
-                                        class="mt-2 form-control d-inline {% if name in errors or action == 'delete' %}is-invalid{% endif %}"
-                                        {% if action == 'delete' %}disabled{% endif %}
+                                        class="mt-2 form-control d-inline {% if name in errors %}is-invalid{% endif %}"
                                     >
                                         {% for value, text in rating_type_options.items() %}
                                             <option value="{{ value }}" {% if value == data[name2] %}selected{%endif %} {% if not value %}class="fst-italic"{% endif %}>
@@ -286,7 +261,6 @@
                             label=_('FIDE ID:'),
                             help_text='',
                             disabled=true,
-                            error=action == 'delete',
                             min=1,
                             data=data, errors=errors
                         ) }}
@@ -297,8 +271,6 @@
                             label=_('FIDE Title:'),
                             help_text='',
                             select_options=title_options,
-                            disabled=action == 'delete',
-                            error=action == 'delete',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -308,8 +280,6 @@
                             label=_('Federation:'),
                             help_text='',
                             select_options=federation_options,
-                            disabled=action == 'delete',
-                            error=action == 'delete',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -329,8 +299,6 @@
                             label=_('Email:'),
                             placeholder=_('E.g.: john.doe@chess.com'),
                             help_text='',
-                            disabled=action == 'delete',
-                            error=action == 'delete',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -339,8 +307,6 @@
                             name='phone',
                             label=_('Phone number:'),
                             help_text='',
-                            disabled=action == 'delete',
-                            error=action == 'delete',
                             data=data, errors=errors
                         ) }}
                         {# TODO add an example depending on the federation placeholder=_('E.g.: %(phone_number)s', phone_number=admin_event.phone_number_example), #}
@@ -352,8 +318,6 @@
                             name='owed',
                             label=_('Owed:'),
                             help_text='',
-                            disabled=action == 'delete',
-                            error=action == 'delete',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -362,8 +326,6 @@
                             name='paid',
                             label=_('Paid:'),
                             help_text='',
-                            disabled=action == 'delete',
-                            error=action == 'delete',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -372,8 +334,6 @@
                             name='comment',
                             label=_('Comment:'),
                             help_text='',
-                            disabled=action == 'delete',
-                            error=action == 'delete',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -396,7 +356,7 @@
                 <button
                     type="submit"
                     form="modal-form"
-                    class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                    class="text-nowrap white btn btn-primary"
                 >
                     {% if action == 'create' %}
                         <i class="bi-floppy-fill pe-1"></i>
@@ -404,9 +364,6 @@
                     {% elif action in ['update', 'replace'] %}
                         <i class="bi-floppy-fill pe-1"></i>
                         {{ _('Save') }}
-                    {% elif action == 'delete' %}
-                        <i class="bi-trash pe-1"></i>
-                        {{ _('Delete') }}
                     {% else %}
                         ?
                     {% endif %}

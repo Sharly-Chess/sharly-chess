@@ -822,6 +822,11 @@ class PlayerAdminController(BaseEventAdminController):
                     'data': data,
                     'errors': errors,
                 }
+            case 'player-delete':
+                assert admin_player is not None
+                template_context |= {
+                    'modal': modal,
+                }
             case 'record':
                 assert admin_player is not None
                 assert admin_player.tournament is not None
@@ -1077,6 +1082,22 @@ class PlayerAdminController(BaseEventAdminController):
             request,
             modal='player',
             action=action,
+            player_id=player_id,
+        )
+
+    @get(
+        path='/player-delete-modal/{event_uniq_id:str}/{player_id:int}',
+        name='admin-player-delete-modal',
+    )
+    async def htmx_admin_player_delete_modal(
+        self,
+        request: HTMXRequest,
+        player_id: int,
+    ) -> Template:
+        return self._admin_event_players_render(
+            request,
+            modal='player-delete',
+            action='delete',
             player_id=player_id,
         )
 
