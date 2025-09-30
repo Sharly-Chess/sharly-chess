@@ -26,9 +26,9 @@ from common.i18n import _, ngettext
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
+from data.access_levels.client import Client
 from data.input_output.data_source import PlayerComparator, DataSource
 from data.input_output.managers import DataSourceManager
-from data.pairing import Pairing
 from data.player import Player, Federation, Club, PlayerRating
 from data.print_documents.documents import (
     PlayerListPrintDocument,
@@ -52,9 +52,10 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
 )
 from web.controllers.base_controller import WebContext
-from web.guards import EventGuard, TournamentActionGuard, ActionGuard
+from web.guards import EventGuard, TournamentActionGuard, ActionGuard, SetByeGuard
 from web.messages import Message
 from web.session import SessionHandler
+from web.utils import SelectOption
 
 logger: Logger = get_logger()
 
@@ -478,6 +479,54 @@ class PlayerAdminController(BaseEventAdminController):
         except ValueError:
             pass
 
+    @staticmethod
+    def _get_bye_options(
+        client: Client, player: Player, round_: int
+    ) -> dict[str, SelectOption]:
+        tournament = player.tournament
+        hpb_disabled_message: str | None = None
+        fpb_disabled_message: str | None = None
+        if not client.can_set_half_point_bye(tournament.id):
+            hpb_disabled_message = _('You are not allowed to set Half-Point Byes.')
+        if not client.can_set_full_point_bye(tournament.id):
+            fpb_disabled_message = _('You are not allowed to set Full-Point Byes.')
+        current_byes = player.byes_count
+        if current_byes + 1 > tournament.max_byes:
+            hpb_disabled_message = _(
+                'Not enough byes available to set a Half-Point Bye (required: 1).'
+            )
+        if current_byes + 2 > tournament.max_byes:
+            fpb_disabled_message = _(
+                'Not enough byes available to set a Full-Point Bye (required: 2).'
+            )
+        if round_ > tournament.rounds - tournament.last_rounds_no_byes:
+            message = ngettext(
+                "Byes can't be set for the last round of the tournament.",
+                "Byes can't be set for the last {rounds} rounds of the tournament.",
+                tournament.last_rounds_no_byes,
+            ).format(rounds=tournament.last_rounds_no_byes)
+            hpb_disabled_message = message
+            fpb_disabled_message = message
+        bye_options: dict[Result, SelectOption] = {
+            Result.NO_RESULT: SelectOption(_('Present')),
+            Result.ZERO_POINT_BYE: SelectOption(_('Absent')),
+            Result.HALF_POINT_BYE: SelectOption(
+                _('Half-Point Bye'),
+                tooltip=hpb_disabled_message,
+                disabled=bool(hpb_disabled_message),
+            ),
+            Result.FULL_POINT_BYE: SelectOption(
+                _('Full-Point Bye (deprecated)'),
+                tooltip=fpb_disabled_message,
+                disabled=bool(fpb_disabled_message),
+                classes='' if fpb_disabled_message else 'text-danger',
+            ),
+        }
+        return {
+            str(result.value): select_option
+            for result, select_option in bye_options.items()
+        }
+
     @classmethod
     def _admin_event_players_render(
         cls,
@@ -829,17 +878,18 @@ class PlayerAdminController(BaseEventAdminController):
                 }
             case 'record':
                 assert admin_player is not None
-                assert admin_player.tournament is not None
+                tournament = admin_player.tournament
                 data = {
                     f'round_{round_}_result': WebContext.value_to_form_data(
                         admin_player.pairings[round_].result.value
                     )  # type: ignore
                     for round_ in range(
-                        max(1, admin_player.tournament.current_round),
-                        admin_player.tournament.rounds + 1,
+                        max(1, tournament.current_round),
+                        tournament.rounds + 1,
                     )
                 }
                 template_context |= {
+                    'get_bye_options': cls._get_bye_options,
                     'modal': modal,
                     'data': data,
                 }
@@ -1104,6 +1154,7 @@ class PlayerAdminController(BaseEventAdminController):
     @get(
         path='/record-modal/{event_uniq_id:str}/{player_id:int}',
         name='admin-record-modal',
+        guards=[ActionGuard(AuthAction.UPDATE_PLAYERS_HISTORY)],
     )
     async def htmx_admin_record_modal(
         self, request: HTMXRequest, player_id: int
@@ -1354,99 +1405,24 @@ class PlayerAdminController(BaseEventAdminController):
             data=data,
         )
 
-    @staticmethod
-    def _new_byes(
-        web_context: PlayerAdminWebContext,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-    ) -> dict[int, Result]:
-        """Returns a dict containing the byes that should be saved (changes only)."""
-        new_byes: dict[int, Result] = {}
-        assert web_context.admin_player is not None
-        admin_player: Player = web_context.admin_player
-        assert admin_player.tournament is not None
-        admin_tournament: Tournament = admin_player.tournament
-        pairings: dict[int, Pairing] = admin_player.pairings
-        for round_ in range(
-            max(1, admin_player.tournament.current_round),
-            admin_player.tournament.rounds + 1,
-        ):
-            field = f'round_{round_}_result'
-            if field in data:
-                pairing: Pairing = pairings[round_]
-                if not (
-                    pairing.not_paired
-                    or pairing.result
-                    in [
-                        Result.ZERO_POINT_BYE,
-                        Result.HALF_POINT_BYE,
-                        Result.FULL_POINT_BYE,
-                    ]
-                ):
-                    logger.warning(
-                        'Player [%s] already paired for round [%d].',
-                        admin_player,
-                        round_,
-                    )
-                    return {}
-                result: Result = Result(int(data[field]))
-                if result == pairings[round_].result:
-                    continue
-                match result:
-                    case Result.ZERO_POINT_BYE | Result.NO_RESULT:
-                        new_byes[round_] = result
-                        continue
-                    case Result.HALF_POINT_BYE | Result.FULL_POINT_BYE:
-                        if (
-                            round_
-                            > admin_tournament.rounds
-                            - admin_tournament.last_rounds_no_byes
-                        ):
-                            logger.warning('Bye not allowed for round [%d].', round_)
-                            return {}
-                        new_byes[round_] = result
-                        continue
-                    case _:
-                        raise ValueError(f'{result=}')
-        # check that the total number of byes is allowed
-        byes: int = 0
-        for round_ in pairings:
-            match new_byes.get(round_, pairings[round_].result):
-                case Result.HALF_POINT_BYE:
-                    byes += 1
-                case Result.FULL_POINT_BYE:
-                    byes += 2
-            if byes > admin_tournament.max_byes:
-                logger.warning('Too many byes.')
-                return {}
-        return new_byes
-
     @patch(
-        path='/player-record/{event_uniq_id:str}/{player_id:int}',
-        name='admin-player-record',
-        guard=[TournamentActionGuard(AuthAction.UPDATE_PLAYERS_HISTORY)],
+        path='/player-set-bye/{event_uniq_id:str}/{player_id:int}/{round:int}',
+        name='admin-player-set-bye',
+        guard=[SetByeGuard()],
     )
-    async def htmx_admin_player_record(
+    async def htmx_admin_player_set_bye(
         self,
         request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
         player_id: int,
+        round: int,
+        result: int,
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
-        if web_context.admin_player is None:
-            raise RuntimeError('admin_player not defined')
-        if web_context.admin_player.tournament is None:
-            raise RuntimeError('admin_player.tournament not defined')
-        if new_byes := self._new_byes(web_context, data):
-            web_context.admin_player.tournament.set_player_byes(
-                web_context.admin_player, new_byes
-            )
-        return self._admin_event_players_render(request, reload_event=True)
+        player = web_context.get_admin_player()
+        player.tournament.set_player_byes(player, {round: Result(result)})
+        return self._admin_event_players_render(
+            request, player_id=player_id, modal='record', reload_event=True
+        )
 
     @delete(
         path='/player-delete/{event_uniq_id:str}/{player_id:int}',

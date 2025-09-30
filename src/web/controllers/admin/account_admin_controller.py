@@ -26,7 +26,7 @@ from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard, ManageAccountGuard
 from web.messages import Message
 from web.session import SessionHandler
-from web.utils import RequestUtils
+from web.utils import RequestUtils, SelectOption
 
 
 class AccountAdminWebContext(BaseEventAdminWebContext):
@@ -429,6 +429,22 @@ class AccountAdminController(BaseEventAdminController):
             for access_level in manageable_access_levels
             if access_level.scope == AccessLevelScope.TOURNAMENT
         ]
+        access_level_options: dict[str, SelectOption] = {}
+        for access_level in manageable_access_levels:
+            tooltip = access_level.help_text
+            if access_level in current_access_levels:
+                tooltip = _('Access level already defined for the account.')
+            if access_level in inherited_permissions_by_access_level:
+                tooltip = _('Inherited by permission [{permission}].').format(
+                    permission=inherited_permissions_by_access_level[
+                        access_level
+                    ].inherited_by.name
+                )
+            access_level_options[access_level.id] = SelectOption(
+                name=access_level.name,
+                tooltip=tooltip,
+                disabled=access_level in not_selectable,
+            )
         default_data = WebContext.values_dict_to_form_data(
             {
                 'access_level': (
@@ -440,10 +456,8 @@ class AccountAdminController(BaseEventAdminController):
         return {
             'modal': 'account_permission_form',
             'action': action,
-            'manageable_access_levels': manageable_access_levels,
-            'current_access_levels': current_access_levels,
+            'access_level_options': access_level_options,
             'selectable_access_levels': selectable_access_levels,
-            'inherited_permissions_by_access_level': inherited_permissions_by_access_level,
             'tournament_access_level_ids': tournament_access_level_ids,
             'tournament_options': web_context.get_tournament_options(),
             'data': default_data | (data or {}),

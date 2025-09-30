@@ -492,6 +492,16 @@ class Player:
     def vpoints_str(self) -> str:
         return StaticUtils.points_str(self.vpoints)
 
+    @property
+    def byes_count(self) -> int:
+        byes_count = 0
+        for pairing in self.pairings_by_round.values():
+            if pairing.result == Result.HALF_POINT_BYE:
+                byes_count += 1
+            elif pairing.result == Result.FULL_POINT_BYE:
+                byes_count += 2
+        return byes_count
+
     def to_trf(
         self,
         after_round: int,
