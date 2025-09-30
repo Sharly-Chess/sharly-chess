@@ -223,3 +223,17 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).one('hide.bs.modal', function (e) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        htmx.ajax('GET',
+            "{{ url_for(
+                'admin-player-row',
+                event_uniq_id=admin_event.uniq_id,
+                player_id=admin_player.id,
+            ) }}",
+        );
+    });
+</script>

@@ -948,7 +948,6 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_admin_event_players_tab(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         admin_players_sort: str | None = None,
         admin_players_filter_columns: list[str] | None = None,
         admin_players_filter_federations: list[str] | None = None,
@@ -1059,6 +1058,15 @@ class PlayerAdminController(BaseEventAdminController):
         self, request: HTMXRequest, page: int
     ) -> Template:
         return self._admin_event_players_render(request, page=page)
+
+    @get(
+        path='/player-row/{event_uniq_id:str}/{player_id:int}',
+        name='admin-player-row',
+    )
+    async def htmx_admin_player_row(
+        self, request: HTMXRequest, player_id: int
+    ) -> Template:
+        return self._admin_event_players_render(request, player_id=player_id)
 
     @get(
         path='/player-modal/create/{event_uniq_id:str}',
