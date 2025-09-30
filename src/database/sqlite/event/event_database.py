@@ -1008,6 +1008,7 @@ class EventDatabase(MigrationDatabase):
                 'federation',
                 'club',
                 'fixed',
+                'check_in',
             ],
         ) | {
             'date_of_birth': cls.dump_date_to_database_field(
