@@ -8,6 +8,7 @@ from common.logger import get_logger
 from data.board import Board
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPairing
+from utils import StaticUtils
 from utils.enum import Result, BoardColor
 
 if TYPE_CHECKING:
@@ -51,6 +52,14 @@ class Pairing:
     @property
     def result(self) -> Result:
         return Result(self.stored_pairing.result)
+
+    @property
+    def points(self) -> float:
+        return self.result.points(self.player.point_values)
+
+    @property
+    def points_str(self) -> str:
+        return StaticUtils.points_str(self.points)
 
     @property
     def illegal_moves(self) -> int:
