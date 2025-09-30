@@ -2336,6 +2336,9 @@ msgstr "Système de Haley"
 msgid "Half-Point Bye"
 msgstr "Demi-point joker (bye)"
 
+msgid "Half-Point Bye attributed to player [{player}]."
+msgstr "Un demi-point joker a été attribué au·à la joueur·euse [{player}]."
+
 msgid "Handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. You may also choose to use this rating for seeding and pairings."
 msgstr "Gestion des joueur·euses sans classement rapide/blitz. Pour le calcul des classements FIDE, ces joueur·euses sont considéré·es comme classé·es avec leur classement FIDE standard. Vous pouvez également choisir d’utiliser ce classement pour le classement initial et les appariements."
 
@@ -3457,6 +3460,9 @@ msgstr "Système d'appariements"
 msgid "Pairing system [{pairing_system}] is not compatible with the PAPI format."
 msgstr "Le système d'appariements [{pairing_system}] n'est pas compatible avec le format PAPI."
 
+msgid "Pairing-Allocated Bye assigned to player [{player}]."
+msgstr "Le·la joueur·euse [{player}] a été désigné·e exempt·e."
+
 msgid "Pairings"
 msgstr "Appariements"
 
@@ -3605,8 +3611,20 @@ msgstr "Le·la joueur·euse [{player}] a été créé·e."
 msgid "Player [{player}] has been moved from tournament [{src_tournament}] to tournament [{dst_tournament}]."
 msgstr "Le·la joueur·euse [{player}] a été déplacé·e du tournoi [{src_tournament}] au tournoi [{dst_tournament}]."
 
+msgid "Player [{player}] has been paired against [{opponent}] at board #{board}."
+msgstr "Le·la joueur·euse [{player}] a été apparié·e contre [{opponent}] à l'échiquier n°{board}."
+
 msgid "Player [{player}] has pairings in tournament [{tournament}]."
 msgstr "Le·la joueur·euse [{player}] a déjà été apparié·e dans le tournoi [{tournament}]."
+
+msgid "Player [{player}] has returned for all the remaining rounds."
+msgstr "Le·la joueur·euse [{player}] est de retour pour toutes les rondes restantes."
+
+msgid "Player [{player}] has returned for this round."
+msgstr "Le·la joueur·euse [{player}] est de retour pour cette ronde."
+
+msgid "Player [{player}] withdrawn from the tournament."
+msgstr "Le·la joueur·euse [{player}] a été retiré·e du tournoi."
 
 msgid "Player does not match tournament criteria: {names}"
 msgstr "Le·la joueur·euse ne correspond pas aux critères du tournoi : {names}"
@@ -5832,6 +5850,9 @@ msgstr "Vous devez saisir le numéro d’homologation et le mot de passe dans le
 
 msgid "Zero-Point Bye"
 msgstr "Absent·e"
+
+msgid "Zero-Point Bye attributed to player [{player}]."
+msgstr "Le·la joueur·euse [{player}] a été marqué·e absent·e."
 
 msgid "[Sharly Chess {version}] Request for the integration of custom files"
 msgstr "[Sharly Chess {version}] Demande d'intégration de fichiers de personnalisation"
