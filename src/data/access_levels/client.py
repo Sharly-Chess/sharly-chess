@@ -48,8 +48,13 @@ class Client:
             else:
                 self.account = Account.predefined_anonymous_account()
 
-    def __repr__(self) -> str:
-        return f'{self.__class__}(account={self.account}, host={self.host})'
+    def __str__(self) -> str:
+        return f'{self.__class__.__name__}(account={self.account}, host={self.host})'
+
+    def __repr__(self):
+        return (
+            f'{self.__class__.__name__}(request={self.request!r}, event={self.event!r})'
+        )
 
     # ---------------------------------------------------------------------------------
     # Permissions / actions

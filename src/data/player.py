@@ -741,7 +741,7 @@ class Player:
             return NotImplemented
         return self.board_number_sort_key == other.board_number_sort_key
 
-    def __repr__(self):
+    def __str__(self):
         ratings_str: str = '/'.join(
             f'{self.ratings.get(tournament_rating, "  -  ")}'
             for tournament_rating in TournamentRating
@@ -750,6 +750,9 @@ class Player:
             f'(#{self.id} rank={self._rank} ratings={ratings_str} title={self.title.value} gender={self.gender.value} '
             f'name={self.last_name} {self.first_name} points={self.points})'
         )
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(tournament={self.tournament!r}, stored_player={self.stored_player!r})'
 
     # --------------------------------------------------------------------------
     # Legacy

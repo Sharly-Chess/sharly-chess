@@ -69,5 +69,8 @@ class Prize:
             return NotImplemented
         return self.id == other.id
 
-    def __repr__(self):
+    def __str__(self):
         return f'{self.__class__.__name__} - {self.stored_prize}'
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(prize_category={self.prize_category!r}, stored_prize={self.stored_prize!r})'

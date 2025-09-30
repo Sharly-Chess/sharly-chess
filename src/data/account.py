@@ -209,8 +209,11 @@ class Account:
             return permission.tournament_ids.issubset(other_permission.tournament_ids)
         return bool(permission.tournament_ids)
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         return f'Account(id={self.id}, full_name={self.full_name})'
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(stored_account={self.stored_account!r})'
 
     # Accounts are stored at event-level, the methods below provide event-free
     # instances that can be used when no events are available (welcome page, ...)

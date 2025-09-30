@@ -180,5 +180,8 @@ class PrizeCategory:
         if prize_id in self.prizes_by_id:
             del self.prizes_by_id[prize_id]
 
-    def __repr__(self):
+    def __str__(self):
         return f'{self.__class__.__name__} - {self.id}/{self.name}'
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(prize_group={self.prize_group!r}, stored_prize_category={self.stored_prize_category!r})'
