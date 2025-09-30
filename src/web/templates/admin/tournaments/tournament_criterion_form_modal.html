@@ -41,7 +41,7 @@
                     ) }}"
                 {% endif %}
             >
-                <div class="row mb-3">
+                <div class="row gy-2 gx-3">
                     {{ admin_macros.select_input(
                         name='type',
                         label=_('%(string)s:', string=_('Type')),
@@ -52,7 +52,7 @@
                 </div>
                 {% for option in player_filter_options %}
                     <div
-                        class="row"
+                        class="row gy-2 gx-3"
                         id="{{ option.container_id }}"
                         {% if option.container_id not in containers_by_type[data['type']] %}
                             style="display:none"
@@ -87,7 +87,7 @@
                 ) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
-                preload
+
             >
                 <i class="bi-arrow-left-circle-fill pe-1"></i>
                 {{ _('Back') }}
@@ -108,12 +108,4 @@
     </div>
 </div>
 
-{% if not admin_tournament.criteria %}
-    <script>
-        // We need to reload the page when the modal is hidden, because the criteria might have changed.
-        $(document).one('hide.bs.modal', function(e) {
-            e.preventDefault();
-            document.body.dispatchEvent(new CustomEvent('request_refresh'));
-        });
-    </script>
-{% endif %}
+<script>requestRefresh()</script>

@@ -3,7 +3,6 @@ from typing import Any
 from litestar import get
 from litestar.plugins.htmx import HTMXRequest
 from litestar.response import Template, Redirect
-from litestar_htmx import ClientRedirect
 
 from data.display_controller import DisplayController
 from data.rotator import Rotator
@@ -14,6 +13,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
 )
+from web.guards import EventGuard
 from web.urls import (
     admin_event_pairings_url,
     admin_event_players_url,
@@ -22,34 +22,28 @@ from web.urls import (
 
 
 class EventAdminController(BaseEventAdminController):
+    guards = [EventGuard()]
+
     @classmethod
     def _admin_event_render(
         cls,
         web_context: BaseEventAdminWebContext,
         template_context: dict[str, Any] | None = None,
-    ) -> Template | ClientRedirect | Redirect:
-        if web_context.error:
-            return web_context.error
+    ) -> Template:
         return cls._admin_base_event_render(
             web_context.template_context | (template_context or {}),
         )
 
     @get(
-        path='/admin/event/{event_uniq_id:str}',
+        path='/event/{event_uniq_id:str}',
         name='admin-event',
     )
     async def htmx_admin_event(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Template | Redirect | ClientRedirect:
-        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            data=None,
-        )
-        if web_context.error:
-            return web_context.error
+    ) -> Template | Redirect:
+        web_context = BaseEventAdminWebContext(request)
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
         started_tournaments: list[Tournament] = [

@@ -577,6 +577,7 @@ class AdministrationAccessLevel(AccessLevel):
         return [
             AuthAction.MANAGE_APPLICATION_SETTINGS,
             AuthAction.MANAGE_SOURCE_DATABASES,
+            AuthAction.MANAGE_ARCHIVES,
             AuthAction.VIEW_PRIVATE_EVENTS,
             AuthAction.VIEW_PASSED_EVENTS,
             AuthAction.ADD_EVENTS,

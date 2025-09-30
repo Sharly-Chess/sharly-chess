@@ -75,7 +75,6 @@
                     hx-patch="{{ url_for('admin-display-controller-clear', event_uniq_id=admin_event.uniq_id, display_controller_id=display_controller.id) }}"
                     hx-target="body"
                     hx-indicator="#please-wait"
-                    preload
                 >
                     <i class="bi bi-x-lg"></i>
                 </button>
@@ -92,7 +91,6 @@
                 hx-get="{{ url_for('admin-display-controller-modal', action='update', event_uniq_id=admin_event.uniq_id, display_controller_id=display_controller.id) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
-                preload
                 data-bs-toggle="modal"
                 data-bs-target="#modal-wrapper"
             >
@@ -105,7 +103,6 @@
                 hx-get="{{ url_for('admin-display-controller-modal', action='delete', event_uniq_id=admin_event.uniq_id, display_controller_id=display_controller.id) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
-                preload
                 data-bs-toggle="modal"
                 data-bs-target="#modal-wrapper"
             >

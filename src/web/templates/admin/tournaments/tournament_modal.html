@@ -24,9 +24,6 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                {# These inputs are a trick to avoid autocomplete #}
-                <input type="text" style="display:none">
-                <input type="password" style="display:none">
 
                 {% if previous_tournament %}
                     {% with type='success', auto_remove=true, message=_(
@@ -39,8 +36,11 @@
                 <h4>
                     {{ _('Properties') }}
                 </h4>
-                <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
+                {# These inputs are a trick to avoid autocomplete #}
+                <input type="text" style="display:none">
+                <input type="password" style="display:none">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='name',
                             label=_('Name:'),
@@ -50,7 +50,7 @@
                         ) }}
                     </div>
 
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.number_input(
                             name='rounds',
                             label=_('%(string)s:', string=_('Rounds')),
@@ -59,8 +59,8 @@
                         ) }}
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
                             name='rating',
                             label=_('Rating:'),
@@ -70,7 +70,7 @@
                         ) }}
                     </div>
 
-                    <div class="col-12 col-md-6 col-lg-3 mb-3">
+                    <div class="col-12 col-md-6 col-lg-3">
                         {{ admin_macros.datetime_input(
                             name='start',
                             label=_('Start:'),
@@ -78,7 +78,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6 col-lg-3 mb-3">
+                    <div class="col-12 col-md-6 col-lg-3">
                         {{ admin_macros.datetime_input(
                             name='stop',
                             label=_('End:'),
@@ -87,8 +87,8 @@
                         ) }}
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='location',
                             label=_('%(string)s:', string=_('Location')),
@@ -108,8 +108,8 @@
                     {{ _('Estimated ratings') }}
                 </h4>
 
-                <div class="row estimated-ratings">
-                    <div class="col-12 col-md-6 mb-3">
+                <div class="row gy-2 gx-3 estimated-ratings">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
                             name='override_unrated_rapid_blitz',
                             label=_('Seeding of unrated rapid/blitz'),
@@ -146,8 +146,8 @@
                 {% set trf25 = data.time_control_trf25 or '' %}
                 <input type="hidden" name="time_control_trf25" id="time-control-trf25" value="{{ trf25 }}">
 
-                <div class="row">
-                    <div class="col-12 mb-3">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12">
                         <div id="tc-editor-modal" class="tc" data-initial="{{ trf25 }}">
                             <!-- Read-only display -->
                             <div class="tc-display d-flex align-items-center gap-2">
@@ -187,8 +187,8 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-12 col-md-4 mb-3">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-4">
                         {{ admin_macros.number_input(
                             name='time_control_handicap_penalty_value',
                             label=_('Penalty (handicap, seconds):'),
@@ -197,7 +197,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-4 mb-3">
+                    <div class="col-12 col-md-4">
                         {{ admin_macros.number_input(
                             name='time_control_handicap_penalty_step',
                             label=_('Elo step (handicap):'),
@@ -206,7 +206,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-4 mb-3">
+                    <div class="col-12 col-md-4">
                         {{ admin_macros.number_input(
                             name='time_control_handicap_min_time',
                             label=_('Minimal time (handicap, seconds):'),
@@ -220,8 +220,8 @@
                 <h4>
                     {{ _('Rules') }}
                 </h4>
-                <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='rules',
                             label=_('Rules file location:'),
@@ -234,7 +234,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.number_input(
                             name='record_illegal_moves',
                             label=_('Illegal moves recording:'),
@@ -253,9 +253,9 @@
                 <h4>
                     {{ _('Pairings') }}
                 </h4>
-                <div class="row">
+                <div class="row gy-2 gx-3">
                     <div
-                        class="col-12 col-md-6 mb-3"
+                        class="col-12 col-md-6"
                         {% if admin_tournament.started %}
                             {{ macros.tooltip_attributes(
                                 'info',
@@ -279,7 +279,7 @@
                     {% endif %}
                     {% for pairing_system in pairing_systems %}
                         <div
-                            class="col-12 col-md-6 mb-3"
+                            class="col-12 col-md-6"
                             id="{{ pairing_system.variation_container_id }}"
                             {% if pairing_system.id != data['pairing_system'] %}
                                 style="display:none"
@@ -322,8 +322,8 @@
                         });
                     </script>
                 </div>
-                <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.number_input(
                             name='first_board_number',
                             label=_('First board number:'),
@@ -332,7 +332,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.number_input(
                             name='max_byes',
                             label=_('Max byes:'),
@@ -341,7 +341,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.number_input(
                             name='last_rounds_no_byes',
                             label=_('No. final rounds without byes:'),
@@ -350,7 +350,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.switch_input(
                             name='three_points_for_a_win',
                             label=_('%(string)s:', string=_('Point counting')),
@@ -367,7 +367,7 @@
                 {% for pairing_system in pairing_systems %}
                     <div
                         id="{{ pairing_system.tie_break_help_container_id }}"
-                        class="row"
+                        class="row gy-2 gx-3"
                         {% if pairing_system.id != data['pairing_system'] %}
                             style="display:none"
                         {% endif %}
@@ -391,9 +391,9 @@
                         </div>
                     </div>
                 {% endfor %}
-                <div class="row">
+                <div class="row gy-2 gx-3">
                     {% for index in [1, 2, 3] %}
-                        <div class="col-12 col-md-4 mb-3">
+                        <div class="col-12 col-md-4">
                             {{ admin_macros.select_input(
                                 name='tie_break_' ~ index|string,
                                 label=_('Tie-break #%(index)d:', index=index),
@@ -438,17 +438,9 @@
     </div>
 </div>
 
-{% if previous_tournament %}
-    <script>
-        // We need to reload the page when the modal is hidden, because tournaments were added.
-        $(document).one('hide.bs.modal', function(e) {
-            e.preventDefault();
-            document.body.dispatchEvent(new CustomEvent('request_refresh'));
-        });
-    </script>
-{% endif %}
-
 <script>
+    requestRefresh();
+
     function ensureWhite(tc)  {
         return { white: (tc.white && tc.white.length ? tc.white : [{ seconds: 0 }]), black: tc.black };
     }

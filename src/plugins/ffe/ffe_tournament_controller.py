@@ -8,6 +8,7 @@ from litestar_htmx import HTMXRequest, ClientRedirect
 from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
+from data.access_levels.actions import AuthAction
 from plugins import ffe
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_background_uploader import (
@@ -21,7 +22,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
 )
 from web.controllers.admin.tournament_admin_controller import TournamentAdminWebContext
-from web.controllers.base_controller import Redirect
+from web.guards import ActionGuard, EventGuard, TournamentActionGuard
 from web.messages import Message
 
 logger = get_logger()
@@ -29,25 +30,22 @@ get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
 
 class FfeAdminTournamentController(BaseEventAdminController):
+    guards = [
+        EventGuard(),
+        ActionGuard(AuthAction.VIEW_TOURNAMENTS_TAB),
+    ]
+
     @post(
         path='/ffe/make-visible/{event_uniq_id:str}/{tournament_id:int}',
         name='ffe-make-visible',
+        guards=[TournamentActionGuard(AuthAction.PUBLISH_RESULTS)],
     )
     async def htmx_ffe_make_visible(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect | Redirect:
-        web_context: TournamentAdminWebContext = TournamentAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-            criterion_id=None,
-            data=None,
-        )
-        if web_context.error:
-            return web_context.error
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
 
         admin_event = web_context.admin_event
         assert admin_event is not None
@@ -112,22 +110,14 @@ class FfeAdminTournamentController(BaseEventAdminController):
     @post(
         path='/ffe/upload-rules/{event_uniq_id:str}/{tournament_id:int}',
         name='ffe-upload-rules',
+        guards=[TournamentActionGuard(AuthAction.PUBLISH_RULES)],
     )
     async def htmx_ffe_upload_rules(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect | Redirect:
-        web_context: TournamentAdminWebContext = TournamentAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-            criterion_id=None,
-            data=None,
-        )
-        if web_context.error:
-            return web_context.error
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
 
         admin_event = web_context.admin_event
         assert admin_event is not None
@@ -208,22 +198,15 @@ class FfeAdminTournamentController(BaseEventAdminController):
     @get(
         path='/ffe/extract-fees/{event_uniq_id:str}/{tournament_id:int}',
         name='ffe-extract-fees',
+        guards=[TournamentActionGuard(AuthAction.DOWNLOAD_FEES)],
     )
     async def htmx_ffe_extract_fees(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect | Redirect:
-        web_context: TournamentAdminWebContext = TournamentAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-            criterion_id=None,
-            data=None,
-        )
-        if web_context.error:
-            return web_context.error
+    ) -> Template | ClientRedirect:
+        web_context = TournamentAdminWebContext(request, tournament_id)
 
         admin_event = web_context.admin_event
         assert admin_event is not None
@@ -304,22 +287,15 @@ class FfeAdminTournamentController(BaseEventAdminController):
     @get(
         path='/ffe/download-fees/{event_uniq_id:str}/{tournament_id:int}',
         name='ffe-download-fees',
+        guards=[TournamentActionGuard(AuthAction.DOWNLOAD_FEES)],
     )
     async def ffe_download_fees(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect | Redirect | File:
-        web_context: TournamentAdminWebContext = TournamentAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-            criterion_id=None,
-            data=None,
-        )
-        if web_context.error:
-            return web_context.error
+    ) -> Template | File:
+        web_context = TournamentAdminWebContext(request, tournament_id)
 
         admin_event = web_context.admin_event
         assert admin_event is not None

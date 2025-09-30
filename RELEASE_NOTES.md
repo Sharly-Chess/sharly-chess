@@ -6,7 +6,7 @@ English version below
 - Permissions des clients connectés au serveur (3.1.0)
 - Prise en charge des serveurs avec plusieurs adresses IP (3.1.0)
 - Amélioration de la console du serveur (3.1.0)
-– Amélioration de l’ergonomie pour la modification, la duplication et l’archivage des événements (3.1.0)
+- Amélioration de l’ergonomie pour la modification, la duplication et l’archivage des événements (3.1.0)
 
 ## Tournois
 
@@ -16,6 +16,7 @@ English version below
 ## Joueur·euses
 
 - Amélioration de la recherche de joueur·euses (3.1.0)
+- Remplacement des joueur·euses ajouté·es par erreur (3.1.0)
 
 ## Écrans
 
@@ -28,6 +29,7 @@ English version below
 ## Impressions
 
 - Vue imprimable des statistiques des joueur·euses (3.1.0)
+- Vue imprimable des QR Codes (3.1.0)
 - Il est désormais possible de sélectionner plusieurs tournois pour différents aperçus d’impression : liste des joueur·euses, liste de pointage, liste et attribution des prix, ainsi que les statistiques (3.1.0)
 
 ## ChessEvent
@@ -52,7 +54,8 @@ English version below
 
 ## Players
 
-- Improved player search results (3.1.0)
+- Improved player search (3.1.0)
+- Replace players added by mistake (3.1.0)
 
 ## Screens
 
@@ -65,6 +68,7 @@ English version below
 ## Print views
 
 - Statistics print view (3.1.0)
+- QR Code print view (3.1.0)
 - Multiple tournaments can now be selected for several print views: Players List, Check-in List, Prize List and Assignment, and Statistics (3.1.0)
 
 ## ChessEvent

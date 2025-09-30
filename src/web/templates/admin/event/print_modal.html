@@ -15,8 +15,8 @@
                 hx-post="{{ url_for('admin-event-print', event_uniq_id=admin_event.uniq_id) }}"
                 hx-indicator="#please-wait"
             >
-                <div class="row">
-                    <div class="col-12 mb-3">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12">
                         {{ admin_macros.select_input(
                             name='document',
                             label=_('Document:'),
@@ -28,7 +28,7 @@
                 </div>
                 {% for option in print_options %}
                     <div
-                        class="row"
+                        class="row gy-2 gx-3"
                         id="{{ option.container_id }}"
                         {% if option.id not in current_document_option_ids %}
                             style="display:none"

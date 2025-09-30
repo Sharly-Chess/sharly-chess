@@ -1,11 +1,16 @@
+from typing import Any
+
 from litestar.exceptions import (
     NotFoundException,
-    ClientException,
+    ValidationException,
 )
 from litestar_htmx import HTMXRequest
 
 from common.exception import SharlyChessException
+from data.access_levels.access_levels import AccessLevel
 from data.access_levels.client import Client
+from data.access_levels.manager import AccessLevelManager
+from data.account import Account
 from data.board import Board
 from data.display_controller import DisplayController
 from data.event import Event
@@ -18,60 +23,43 @@ from utils.enum import Result
 
 
 class RequestUtils:
+    """Class fetching objects from the requests path params
+    and storing them into the request."""
+
+    @staticmethod
+    def _get_path_param(request: HTMXRequest, param: str) -> Any:
+        if param not in request.path_params:
+            raise ValidationException(f'Path parameter [{param}] not found.')
+        return request.path_params[param]
+
     REQUEST_EVENT_ATTR: str = 'sharly_chess_event'
     EVENT_UNIQ_ID_PARAM: str = 'event_uniq_id'
 
     @classmethod
-    def _get_event(
-        cls,
-        request: HTMXRequest,
-        optional: bool,
-    ) -> Event | None:
-        """Returns the event of the request (stored in the state of the request)."""
-        if cls.REQUEST_EVENT_ATTR not in request.state:
-            request.state[cls.REQUEST_EVENT_ATTR] = None
-            if cls.EVENT_UNIQ_ID_PARAM in request.path_params:
-                event_uniq_id: str = request.path_params[cls.EVENT_UNIQ_ID_PARAM]
-                try:
-                    request.state[cls.REQUEST_EVENT_ATTR] = EventLoader.get(
-                        request
-                    ).load_event(event_uniq_id)
-                except SharlyChessException as sce:
-                    raise NotFoundException(
-                        f'Event [{event_uniq_id}] not found.'
-                    ) from sce
-        if not optional and request.state[cls.REQUEST_EVENT_ATTR] is None:
-            raise ClientException(
-                f'Path parameter [{cls.EVENT_UNIQ_ID_PARAM}] not found.'
-            )
-        return request.state[cls.REQUEST_EVENT_ATTR]
+    def get_event(cls, request: HTMXRequest, reload: bool = False) -> Event:
+        if cls.REQUEST_EVENT_ATTR in request.state and not reload:
+            return request.state[cls.REQUEST_EVENT_ATTR]
+        event_uniq_id = cls._get_path_param(request, cls.EVENT_UNIQ_ID_PARAM)
+        try:
+            event = EventLoader.get(request).load_event(event_uniq_id)
+        except SharlyChessException as sce:
+            raise NotFoundException(f'Event [{event_uniq_id}] not found.') from sce
+        request.state[cls.REQUEST_EVENT_ATTR] = event
+        return event
 
     @classmethod
     def get_optional_event(
-        cls,
-        request: HTMXRequest,
+        cls, request: HTMXRequest, reload: bool = False
     ) -> Event | None:
-        """Returns the event of the request, optional (stored in the state of the request)."""
-        return cls._get_event(request, optional=True)
-
-    @classmethod
-    def get_event(
-        cls,
-        request: HTMXRequest,
-    ) -> Event:
-        """Returns the event of the request, required (stored in the state of the request)."""
-        event: Event | None = cls._get_event(request, optional=False)
-        assert event is not None
-        return event
+        try:
+            return cls.get_event(request, reload)
+        except ValidationException:
+            return None
 
     REQUEST_CLIENT_ATTR: str = 'sharly_chess_client'
 
     @classmethod
-    def get_client(
-        cls,
-        request: HTMXRequest,
-    ) -> Client:
-        """Returns the client of the request (stored in the state of the request)."""
+    def get_client(cls, request: HTMXRequest) -> Client:
         if cls.REQUEST_CLIENT_ATTR not in request.state:
             request.state[cls.REQUEST_CLIENT_ATTR] = Client(
                 request, cls.get_optional_event(request)
@@ -82,210 +70,186 @@ class RequestUtils:
     SCREEN_UNIQ_ID_PARAM: str = 'screen_uniq_id'
 
     @classmethod
-    def get_screen(
-        cls,
-        request: HTMXRequest,
-    ) -> Screen:
-        """Returns the screen of the request, required (stored in the state of the request)."""
-        if cls.REQUEST_SCREEN_ATTR not in request.state:
-            if cls.SCREEN_UNIQ_ID_PARAM not in request.path_params:
-                raise ClientException(
-                    f'Path parameter [{cls.SCREEN_UNIQ_ID_PARAM}] not found.'
-                )
-            screen_uniq_id: str = request.path_params[cls.SCREEN_UNIQ_ID_PARAM]
-            try:
-                request.state[cls.REQUEST_SCREEN_ATTR] = cls.get_event(
-                    request
-                ).screens_by_uniq_id[screen_uniq_id]
-            except KeyError:
-                raise NotFoundException(f'Screen [{screen_uniq_id}] not found.')
-        return request.state[cls.REQUEST_SCREEN_ATTR]
+    def get_screen(cls, request: HTMXRequest) -> Screen:
+        if cls.REQUEST_SCREEN_ATTR in request.state:
+            return request.state[cls.REQUEST_SCREEN_ATTR]
+        screen_uniq_id = cls._get_path_param(request, cls.SCREEN_UNIQ_ID_PARAM)
+        try:
+            screen = cls.get_event(request).screens_by_uniq_id[screen_uniq_id]
+        except KeyError:
+            raise NotFoundException(f'Screen [{screen_uniq_id}] not found.')
+        request.state[cls.REQUEST_SCREEN_ATTR] = screen
+        return screen
 
     REQUEST_ROTATOR_ATTR: str = 'sharly_chess_rotator'
     ROTATOR_ID_PARAM: str = 'rotator_id'
-    REQUEST_ROTATOR_SCREEN_INDEX_ATTR: str = 'sharly_chess_rotator_screen_index'
-    ROTATOR_SCREEN_INDEX_PARAM: str = 'rotator_screen_index'
 
     @classmethod
-    def get_rotator(
-        cls,
-        request: HTMXRequest,
-    ) -> tuple[Rotator, int, Screen]:
-        """Returns a tuple made of the rotator, the rotator screen index and the
-        screen of the request (stored in the state of the request)."""
-        if cls.REQUEST_ROTATOR_ATTR not in request.state:
-            if cls.ROTATOR_ID_PARAM not in request.path_params:
-                raise ClientException(
-                    f'Path parameter [{cls.ROTATOR_ID_PARAM}] not found.'
-                )
-            rotator_id: int = request.path_params[cls.ROTATOR_ID_PARAM]
-            try:
-                rotator: Rotator = cls.get_event(request).rotators_by_id[rotator_id]
-            except KeyError:
-                raise NotFoundException(f'Rotator [{rotator_id}] not found.')
-            rotator_screen_index: int = 0
-            screen: Screen | None = None
-            if rotator.rotating_screens:
-                if cls.ROTATOR_SCREEN_INDEX_PARAM in request.path_params:
-                    rotator_screen_index = request.path_params[
-                        cls.ROTATOR_SCREEN_INDEX_PARAM
-                    ] % len(rotator.rotating_screens)
-                screen = rotator.rotating_screens[rotator_screen_index]
-            request.state[cls.REQUEST_ROTATOR_ATTR] = rotator
-            request.state[cls.REQUEST_ROTATOR_SCREEN_INDEX_ATTR] = rotator_screen_index
-            request.state[cls.REQUEST_SCREEN_ATTR] = screen
-        return (
-            request.state[cls.REQUEST_ROTATOR_ATTR],
-            request.state[cls.REQUEST_ROTATOR_SCREEN_INDEX_ATTR],
-            request.state[cls.REQUEST_SCREEN_ATTR],
-        )
+    def get_rotator(cls, request: HTMXRequest) -> Rotator:
+        if cls.REQUEST_ROTATOR_ATTR in request.state:
+            return request.state[cls.REQUEST_ROTATOR_ATTR]
+        rotator_id = cls._get_path_param(request, cls.ROTATOR_ID_PARAM)
+        try:
+            rotator = cls.get_event(request).rotators_by_id[rotator_id]
+        except KeyError:
+            raise NotFoundException(f'Rotator [{rotator_id}] not found.')
+        request.state[cls.REQUEST_ROTATOR_ATTR] = rotator
+        return rotator
+
+    @classmethod
+    def get_optional_rotator(cls, request: HTMXRequest) -> Rotator | None:
+        try:
+            return cls.get_rotator(request)
+        except ValidationException:
+            return None
 
     REQUEST_DISPLAY_CONTROLLER_ATTR: str = 'sharly_chess_display_controller'
     DISPLAY_CONTROLLER_ID_PARAM: str = 'display_controller_id'
 
     @classmethod
-    def get_display_controller(
-        cls,
-        request: HTMXRequest,
-    ) -> tuple[DisplayController, int, Screen]:
-        """Returns a tuple made of the display controller, the rotator screen index and the
-        screen of the request (stored in the state of the request)."""
-        if cls.REQUEST_DISPLAY_CONTROLLER_ATTR not in request.state:
-            if cls.DISPLAY_CONTROLLER_ID_PARAM not in request.path_params:
-                raise ClientException(
-                    f'Path parameter [{cls.DISPLAY_CONTROLLER_ID_PARAM}] not found.'
-                )
-            display_controller_id: int = request.path_params[
-                cls.DISPLAY_CONTROLLER_ID_PARAM
-            ]
-            try:
-                display_controller: DisplayController = cls.get_event(
-                    request
-                ).display_controllers_by_id[display_controller_id]
-            except KeyError:
-                raise NotFoundException(
-                    f'Display controller [{display_controller_id}] not found.'
-                )
-            rotator_screen_index: int = 0
-            if display_controller.rotator:
-                if cls.ROTATOR_SCREEN_INDEX_PARAM in request.path_params:
-                    rotator_screen_index = request.path_params[
-                        cls.ROTATOR_SCREEN_INDEX_PARAM
-                    ] % len(display_controller.rotator.rotating_screens)
-                else:
-                    rotator_screen_index = 0
-                screen: Screen = display_controller.rotator.rotating_screens[
-                    rotator_screen_index
-                ]
-            else:
-                screen: Screen = display_controller.screen
-            request.state[cls.REQUEST_DISPLAY_CONTROLLER_ATTR] = display_controller
-            request.state[cls.REQUEST_ROTATOR_SCREEN_INDEX_ATTR] = rotator_screen_index
-            request.state[cls.REQUEST_SCREEN_ATTR] = screen
-        return (
-            request.state[cls.REQUEST_DISPLAY_CONTROLLER_ATTR],
-            request.state[cls.REQUEST_ROTATOR_SCREEN_INDEX_ATTR],
-            request.state[cls.REQUEST_SCREEN_ATTR],
+    def get_display_controller(cls, request: HTMXRequest) -> DisplayController:
+        if cls.REQUEST_DISPLAY_CONTROLLER_ATTR in request.state:
+            return request.state[cls.REQUEST_DISPLAY_CONTROLLER_ATTR]
+        display_controller_id = cls._get_path_param(
+            request, cls.DISPLAY_CONTROLLER_ID_PARAM
         )
+        try:
+            display_controller = cls.get_event(request).display_controllers_by_id[
+                display_controller_id
+            ]
+        except KeyError:
+            raise NotFoundException(
+                f'Display controller [{display_controller_id}] not found.'
+            )
+        request.state[cls.REQUEST_DISPLAY_CONTROLLER_ATTR] = display_controller
+        return display_controller
 
     REQUEST_TOURNAMENT_ATTR: str = 'sharly_chess_tournament'
     TOURNAMENT_ID_PARAM: str = 'tournament_id'
 
     @classmethod
-    def get_tournament(
-        cls,
-        request: HTMXRequest,
-    ) -> Tournament:
-        """Returns the tournament of the request, required (stored in the state of the request)."""
-        if cls.REQUEST_TOURNAMENT_ATTR not in request.state:
-            if cls.TOURNAMENT_ID_PARAM not in request.path_params:
-                raise ClientException(
-                    f'Path parameter [{cls.TOURNAMENT_ID_PARAM}] not found.'
-                )
-            tournament_id: int = request.path_params[cls.TOURNAMENT_ID_PARAM]
-            try:
-                request.state[cls.REQUEST_TOURNAMENT_ATTR] = cls.get_event(
-                    request
-                ).tournaments_by_id[tournament_id]
-            except KeyError:
-                raise NotFoundException(f'Tournament [{tournament_id}] not found.')
-        return request.state[cls.REQUEST_TOURNAMENT_ATTR]
-
-    REQUEST_BOARD_ATTR: str = 'sharly_chess_board'
-    BOARD_ID_PARAM: str = 'board_id'
+    def get_tournament(cls, request: HTMXRequest) -> Tournament:
+        if cls.REQUEST_TOURNAMENT_ATTR in request.state:
+            return request.state[cls.REQUEST_TOURNAMENT_ATTR]
+        tournament_id = cls._get_path_param(request, cls.TOURNAMENT_ID_PARAM)
+        try:
+            tournament = cls.get_event(request).tournaments_by_id[tournament_id]
+        except KeyError:
+            raise NotFoundException(f'Tournament [{tournament_id}] not found.')
+        request.state[cls.REQUEST_TOURNAMENT_ATTR] = tournament
+        return tournament
 
     @classmethod
-    def get_board(
-        cls,
-        request: HTMXRequest,
-    ) -> Board:
-        """Returns the board of the request (stored in the state of the request)."""
-        if cls.REQUEST_BOARD_ATTR not in request.state:
-            tournament: Tournament = cls.get_tournament(request)
-            if cls.BOARD_ID_PARAM not in request.path_params:
-                raise ClientException(
-                    f'Path parameter [{cls.BOARD_ID_PARAM}] not found.'
-                )
-            board_id: int = request.path_params[cls.BOARD_ID_PARAM]
-            try:
-                request.state[cls.REQUEST_BOARD_ATTR] = tournament.boards[board_id - 1]
-            except KeyError:
-                raise NotFoundException(f'Board [{board_id}] not found.')
-        return request.state[cls.REQUEST_BOARD_ATTR]
+    def get_optional_tournament(cls, request: HTMXRequest) -> Tournament | None:
+        try:
+            return cls.get_tournament(request)
+        except ValidationException:
+            return None
 
-    REQUEST_ROUND_ATTR: str = 'sharly_chess_round'
+    REQUEST_BOARD_ATTR: str = 'sharly_chess_board'
+    BOARD_INDEX_PARAM: str = 'board_id'
     ROUND_PARAM: str = 'round'
+
+    @classmethod
+    def get_board(cls, request: HTMXRequest) -> Board:
+        # TODO (Molrn) use board IDs instead of board index in every request
+        if cls.REQUEST_BOARD_ATTR in request.state:
+            return request.state[cls.REQUEST_BOARD_ATTR]
+        tournament: Tournament = cls.get_tournament(request)
+        board_index = cls._get_path_param(request, cls.BOARD_INDEX_PARAM)
+        round_ = request.path_params.get(cls.ROUND_PARAM, tournament.current_round)
+        if not 0 <= round_ <= tournament.rounds:
+            raise ValidationException(f'Invalid round number [{round_}].')
+        board = next(
+            (
+                board_
+                for board_ in tournament.get_round_boards(round_)
+                if board_.id == board_index
+            ),
+            None,
+        )
+        if not board:
+            raise NotFoundException(f'Board [{board_index}] not found.')
+        request.state[cls.REQUEST_BOARD_ATTR] = board
+        return board
+
     REQUEST_RESULT_ATTR: str = 'sharly_chess_result'
     RESULT_PARAM: str = 'result'
 
     @classmethod
-    def get_round_board_result(
+    def get_result(
         cls,
         request: HTMXRequest,
-    ) -> tuple[int, Board, Result]:
-        """Returns the round, board and (optional) result of the request (stored in the state of the request)."""
-        if cls.REQUEST_ROUND_ATTR not in request.state:
-            tournament: Tournament = cls.get_tournament(request)
-            if cls.ROUND_PARAM not in request.path_params:
-                raise ClientException(f'Path parameter [{cls.ROUND_PARAM}] not found.')
-            request.state[cls.REQUEST_ROUND_ATTR] = request.path_params[cls.ROUND_PARAM]
-            if request.state[cls.REQUEST_ROUND_ATTR] not in range(
-                1, tournament.rounds + 1
-            ):
-                raise ClientException(
-                    f'Invalid round number [{request.state[cls.REQUEST_ROUND_ATTR]}].'
-                )
+    ) -> Result:
+        if cls.REQUEST_RESULT_ATTR in request.state:
+            return request.state[cls.REQUEST_RESULT_ATTR]
+        result_value = request.path_params.get(cls.RESULT_PARAM, None)
+        if result_value is not None:
             try:
-                request.state[cls.REQUEST_RESULT_ATTR] = Result(
-                    request.path_params[cls.RESULT_PARAM]
-                )
-            except KeyError:
-                request.state[cls.REQUEST_RESULT_ATTR] = Result.NO_RESULT
-        return (
-            request.state[cls.REQUEST_ROUND_ATTR],
-            cls.get_board(request),
-            request.state[cls.REQUEST_RESULT_ATTR],
-        )
+                result = Result(result_value)
+            except ValueError:
+                raise NotFoundException(f'Unknown result [{result_value}].')
+        else:
+            result = Result.NO_RESULT
+        request.state[cls.REQUEST_RESULT_ATTR] = result
+        return result
 
     REQUEST_PLAYER_ATTR: str = 'sharly_chess_player'
     PLAYER_ID_PARAM: str = 'player_id'
 
     @classmethod
-    def get_player(
-        cls,
-        request: HTMXRequest,
-    ) -> Player:
-        """Returns the player of the request, required (stored in the state of the request)."""
-        if cls.REQUEST_PLAYER_ATTR not in request.state:
-            if cls.PLAYER_ID_PARAM not in request.path_params:
-                raise ClientException(
-                    f'Path parameter [{cls.PLAYER_ID_PARAM}] not found.'
-                )
-            player_id: int = request.path_params[cls.PLAYER_ID_PARAM]
-            try:
-                request.state[cls.REQUEST_PLAYER_ATTR] = cls.get_tournament(
-                    request
-                ).players_by_id[player_id]
-            except KeyError:
-                raise NotFoundException(f'Player [{player_id}] not found.')
+    def get_player(cls, request: HTMXRequest) -> Player:
+        if cls.REQUEST_PLAYER_ATTR in request.state:
+            return request.state[cls.REQUEST_PLAYER_ATTR]
+        player_id = cls._get_path_param(request, cls.PLAYER_ID_PARAM)
+        try:
+            request.state[cls.REQUEST_PLAYER_ATTR] = cls.get_tournament(
+                request
+            ).players_by_id[player_id]
+        except KeyError:
+            raise NotFoundException(f'Player [{player_id}] not found.')
         return request.state[cls.REQUEST_PLAYER_ATTR]
+
+    REQUEST_ACCOUNT_ATTR: str = 'sharly_chess_account'
+    ACCOUNT_ID_PARAM: str = 'account_id'
+
+    @classmethod
+    def get_account(cls, request: HTMXRequest) -> Account:
+        if cls.REQUEST_ACCOUNT_ATTR in request.state:
+            return request.state[cls.REQUEST_ACCOUNT_ATTR]
+        account_id = cls._get_path_param(request, cls.ACCOUNT_ID_PARAM)
+        try:
+            account = cls.get_event(request).accounts_by_id[account_id]
+        except KeyError:
+            raise NotFoundException(f'Account [{account_id}] not found.')
+        request.state[cls.REQUEST_ACCOUNT_ATTR] = account
+        return account
+
+    @classmethod
+    def get_optional_account(cls, request: HTMXRequest) -> Account | None:
+        try:
+            return cls.get_account(request)
+        except ValidationException:
+            return None
+
+    REQUEST_ACCESS_LEVEL_ATTR: str = 'sharly_chess_access_level'
+    ACCESS_LEVEL_PARAM: str = 'access_level'
+
+    @classmethod
+    def get_access_level(cls, request: HTMXRequest) -> AccessLevel:
+        if cls.REQUEST_ACCESS_LEVEL_ATTR in request.state:
+            return request.state[cls.REQUEST_ACCESS_LEVEL_ATTR]
+        access_level_id = cls._get_path_param(request, cls.ACCESS_LEVEL_PARAM)
+        try:
+            access_level = AccessLevelManager.get_object(access_level_id)
+        except KeyError:
+            raise NotFoundException(f'Unknown access level [{access_level_id}].')
+        request.state[cls.REQUEST_ACCESS_LEVEL_ATTR] = access_level
+        return access_level
+
+    @classmethod
+    def get_optional_access_level(cls, request: HTMXRequest) -> AccessLevel | None:
+        try:
+            return cls.get_access_level(request)
+        except ValidationException:
+            return None

@@ -85,25 +85,20 @@ class FideDatabase(LocalSourceDatabase):
             response: Response = get(fide_database_url, allow_redirects=True, timeout=5)
             if response.status_code != 200:
                 logger.error(
-                    self.log_prefix
-                    + _('Could not download [{url}], error code [{code}].').format(
-                        url=fide_database_url, code=response.status_code
-                    )
+                    self.log_prefix + 'Could not download [%s], error code [%d].',
+                    fide_database_url,
+                    response.status_code,
                 )
                 return False
         except ConnectionError as ex:
             logger.error(
-                self.log_prefix
-                + _('Could not download [{url}]: {error}.').format(
-                    url=fide_database_url, error=ex
-                )
+                self.log_prefix + 'Could not download [%s]: %s.', fide_database_url, ex
             )
             return False
         local_zip_file.write_bytes(response.content)
         if not local_zip_file.exists():
             logger.error(
-                self.log_prefix
-                + _('No data received from [{url}].').format(url=fide_database_url)
+                self.log_prefix + 'No data received from [%s].', fide_database_url
             )
             return False
 
@@ -112,7 +107,7 @@ class FideDatabase(LocalSourceDatabase):
             zip_ref.extractall(TMP_DIR)
         local_zip_file.unlink()
         if not self._source_file_path.exists():
-            logger.error(self.log_prefix + _('Could not unzip data.'))
+            logger.error(self.log_prefix + 'Could not unzip data.')
             return False
         return True
 
@@ -178,8 +173,7 @@ class FideDatabase(LocalSourceDatabase):
                 database.commit()
 
         logger.info(
-            self.log_prefix
-            + _('{number} players written to the database.').format(number=player_count)
+            self.log_prefix + '%d players written to the database.', player_count
         )
         return True
 

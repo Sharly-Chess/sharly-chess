@@ -4,12 +4,14 @@ from data.print_documents import (
     player_splitters,
     player_sorters,
     pairing_styles,
+    qrcode_types,
 )
 from data.print_documents.documents import PrintDocument
 from data.print_documents.options import PrintOption
 from data.print_documents.pairing_styles import PairingStyle
 from data.print_documents.player_sorters import PlayerSorter
 from data.print_documents.player_splitters import PlayerSplitter
+from data.print_documents.qrcode_types import QRCodeType
 from plugins.manager import plugin_manager
 from utils.entity import EntityManager
 
@@ -29,6 +31,7 @@ class PrintDocumentManager(EntityManager[PrintDocument]):
             documents.PrizeListPrintDocument,
             documents.PrizeAssignmentPrintDocument,
             documents.StatisticsPrintDocument,
+            documents.QRCodePrintDocument,
         ]
 
 
@@ -36,6 +39,7 @@ class PrintDocumentOptionManager(EntityManager[PrintOption]):
     @staticmethod
     def entity_types() -> list[type[options.PrintOption]]:
         return [
+            options.QRCodePrintOption,
             options.TournamentPrintOption,
             options.TournamentsPrintOption,
             options.PairingStylePrintOption,
@@ -44,6 +48,7 @@ class PrintDocumentOptionManager(EntityManager[PrintOption]):
             options.PlayerSortPrintOption,
             options.ShowWarningsPrintOption,
             options.ClubThresholdPrintOption,
+            options.QRCodeNetworkPrintOption,
         ]
 
 
@@ -80,3 +85,13 @@ class PrintPairingStyleManager(EntityManager[PairingStyle]):
             pairing_styles.BoardsPairingStyle,
             pairing_styles.PlayersPairingStyleSorter,
         ]
+
+
+class PrintQRCodeTypeManager(EntityManager[QRCodeType]):
+    @staticmethod
+    def entity_types() -> list[type[QRCodeType]]:
+        types: list[type[QRCodeType]] = [
+            qrcode_types.NetworkQRCodeType,
+        ]
+        plugin_manager.hook.insert_print_qrcode_types(qrcode_types=types)
+        return types

@@ -223,6 +223,9 @@ msgstr ""
 msgid "20+"
 msgstr ""
 
+msgid "400 - Bad request"
+msgstr ""
+
 msgid "401 - Authentication failed"
 msgstr ""
 
@@ -273,6 +276,9 @@ msgstr ""
 
 msgid "<smart_count> week |||| <smart_count> weeks"
 msgstr ""
+
+msgid "A - Competition *** FFE licence"
+msgstr "A - Competition"
 
 msgid "A URL, or the path to the rules file on the server, in PDF format."
 msgstr ""
@@ -529,9 +535,6 @@ msgstr ""
 msgid "Anonymous"
 msgstr ""
 
-msgid "Any comment on the player (comments are visible only by the arbiters)."
-msgstr ""
-
 msgid "Any number of devices can be controlled by the same display controller."
 msgstr ""
 
@@ -587,6 +590,9 @@ msgid "At least one federation is expected."
 msgstr ""
 
 msgid "At least one league is expected."
+msgstr ""
+
+msgid "At least one licence type is expected."
 msgstr ""
 
 msgid "At least one rating type is expected."
@@ -660,6 +666,9 @@ msgstr "Avg. Perfect Perf."
 
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
 msgstr "B"
+
+msgid "B - Leisure *** FFE licence"
+msgstr "B - Leisure"
 
 msgid "BLACK WINS"
 msgstr ""
@@ -945,6 +954,9 @@ msgstr ""
 msgid "Choose at least one league."
 msgstr ""
 
+msgid "Choose at least one licence type."
+msgstr ""
+
 msgid "Choose at least one rating type."
 msgstr ""
 
@@ -1074,6 +1086,12 @@ msgstr ""
 msgid "Configuration"
 msgstr ""
 
+msgid "Connect to the Sharly Chess network via {type},<br />then scan to access the Sharly Chess server."
+msgstr ""
+
+msgid "Connect to the Sharly Chess network, then scan to access the Sharly Chess server."
+msgstr ""
+
 msgid "Connection French Chess Federation"
 msgstr ""
 
@@ -1101,6 +1119,9 @@ msgstr ""
 msgid "Console logs"
 msgstr ""
 
+msgid "Consult the logs for more details."
+msgstr ""
+
 msgid "Consult the players and the prize assignment of this category."
 msgstr ""
 
@@ -1117,15 +1138,6 @@ msgid "Copying to tmp .sce file failed."
 msgstr ""
 
 msgid "Could not connect to data source [{data_source}]."
-msgstr ""
-
-msgid "Could not download [{url}], error code [{code}]."
-msgstr ""
-
-msgid "Could not download [{url}]: {error}."
-msgstr ""
-
-msgid "Could not unzip data."
 msgstr ""
 
 msgid "Create"
@@ -1297,9 +1309,6 @@ msgstr ""
 msgid "Data is already displayed on the FFE website."
 msgstr ""
 
-msgid "Data source"
-msgstr ""
-
 #, python-format
 msgid "Data source: %(data_source)s"
 msgstr ""
@@ -1310,16 +1319,7 @@ msgstr ""
 msgid "Database"
 msgstr ""
 
-msgid "Database [{database}] - "
-msgstr ""
-
 msgid "Database [{database}] successfully updated."
-msgstr ""
-
-msgid "Database [{database}] unexpectedly not found at path [{path}]."
-msgstr ""
-
-msgid "Database successfully updated."
 msgstr ""
 
 msgid "Date of birth"
@@ -1577,9 +1577,6 @@ msgstr ""
 msgid "Download tournament fees"
 msgstr ""
 
-msgid "Downloading source file…"
-msgstr ""
-
 msgid "Drag the hours to order them."
 msgstr ""
 
@@ -1729,9 +1726,6 @@ msgid "E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf"
 msgstr ""
 
 msgid "E.g.: https://my.club.us/tournament.jpg"
-msgstr ""
-
-msgid "E.g.: john doe"
 msgstr ""
 
 msgid "E.g.: john.doe@chess.com"
@@ -1889,9 +1883,6 @@ msgstr ""
 msgid "Error when updating database [{database}]."
 msgstr ""
 
-msgid "Error while creating the database: {error}."
-msgstr ""
-
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr "Estimated"
 
@@ -1938,6 +1929,9 @@ msgstr ""
 msgid "Experimental features in version %(version)s are:"
 msgstr ""
 
+msgid "Expired *** FFE licence"
+msgstr "Expired"
+
 msgid "Expired FFE licence"
 msgstr ""
 
@@ -1975,6 +1969,9 @@ msgid "FFE ID"
 msgstr ""
 
 msgid "FFE Licence"
+msgstr ""
+
+msgid "FFE Licence type"
 msgstr ""
 
 msgid "FFE Uniq ID:"
@@ -2339,6 +2336,9 @@ msgstr ""
 msgid "Half-Point Bye"
 msgstr ""
 
+msgid "Half-Point Bye attributed to player [{player}]."
+msgstr ""
+
 msgid "Handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. You may also choose to use this rating for seeding and pairings."
 msgstr ""
 
@@ -2508,6 +2508,9 @@ msgid "Input screens can't be part of rotators."
 msgstr ""
 
 msgid "Input screens show pairings by board number and allow people to enter results."
+msgstr ""
+
+msgid "Install"
 msgstr ""
 
 msgid "Installation of [{lib}] failed."
@@ -2697,6 +2700,9 @@ msgstr ""
 msgid "Licence number:"
 msgstr ""
 
+msgid "Licence types"
+msgstr ""
+
 msgid "Licence:"
 msgstr ""
 
@@ -2775,6 +2781,9 @@ msgid "Manage accounts"
 msgstr ""
 
 msgid "Manage application settings"
+msgstr ""
+
+msgid "Manage archives"
 msgstr ""
 
 msgid "Manage prizes"
@@ -2966,6 +2975,12 @@ msgstr ""
 msgid "Neither screen nor rotator currently assigned"
 msgstr ""
 
+msgid "Network"
+msgstr ""
+
+msgid "Network:"
+msgstr ""
+
 msgid "New category"
 msgstr ""
 
@@ -3011,6 +3026,9 @@ msgstr ""
 msgid "No ChessEvent tournament defined"
 msgstr ""
 
+msgid "No FFE ID defined for tournament [{tournament}]."
+msgstr ""
+
 msgid "No FFE Licence"
 msgstr ""
 
@@ -3042,9 +3060,6 @@ msgid "No criteria."
 msgstr ""
 
 msgid "No current events."
-msgstr ""
-
-msgid "No data received from [{url}]."
 msgstr ""
 
 msgid "No display controllers"
@@ -3176,6 +3191,9 @@ msgstr ""
 msgid "None"
 msgstr ""
 
+msgid "None *** FFE licence"
+msgstr "None"
+
 msgid "Not assigned"
 msgstr ""
 
@@ -3183,9 +3201,6 @@ msgid "Not checked-in yet"
 msgstr ""
 
 msgid "Not connected to internet"
-msgstr ""
-
-msgid "Not connected, impossible to update."
 msgstr ""
 
 msgid "Not logged in"
@@ -3290,6 +3305,9 @@ msgid "Only include players of these leagues."
 msgstr ""
 
 msgid "Only include players of this gender."
+msgstr ""
+
+msgid "Only include players with one of the selected licence types."
 msgstr ""
 
 msgid "Only one age category is expected with options including other categories."
@@ -3442,6 +3460,9 @@ msgstr ""
 msgid "Pairing system [{pairing_system}] is not compatible with the PAPI format."
 msgstr ""
 
+msgid "Pairing-Allocated Bye assigned to player [{player}]."
+msgstr ""
+
 msgid "Pairings"
 msgstr ""
 
@@ -3590,7 +3611,19 @@ msgstr ""
 msgid "Player [{player}] has been moved from tournament [{src_tournament}] to tournament [{dst_tournament}]."
 msgstr ""
 
+msgid "Player [{player}] has been paired against [{opponent}] at board #{board}."
+msgstr ""
+
 msgid "Player [{player}] has pairings in tournament [{tournament}]."
+msgstr ""
+
+msgid "Player [{player}] has returned for all the remaining rounds."
+msgstr ""
+
+msgid "Player [{player}] has returned for this round."
+msgstr ""
+
+msgid "Player [{player}] withdrawn from the tournament."
 msgstr ""
 
 msgid "Player does not match tournament criteria: {names}"
@@ -3880,6 +3913,12 @@ msgstr ""
 msgid "Q *** THE LETTER TO ANSWER QUIT"
 msgstr "Q"
 
+msgid "QR Code"
+msgstr ""
+
+msgid "QR Code type:"
+msgstr ""
+
 #, python-format
 msgid "R %(round)d *** ROUND FOR TABLE HEADER"
 msgstr "R %(round)d"
@@ -4018,11 +4057,14 @@ msgstr ""
 msgid "Rename events"
 msgstr ""
 
-msgid "Renaming the database failed: {ex}."
+msgid "Replace"
 msgstr ""
 
 #, python-format
 msgid "Replace [%(old)s] by [%(new)s]"
+msgstr ""
+
+msgid "Replace player"
 msgstr ""
 
 #, python-format
@@ -4230,6 +4272,9 @@ msgstr ""
 msgid "Save the set or cancel."
 msgstr ""
 
+msgid "Scan to access the tournament on the FFE site."
+msgstr ""
+
 msgid "Scope"
 msgstr ""
 
@@ -4393,6 +4438,9 @@ msgstr ""
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
 msgstr ""
 
+msgid "Should only be used when the wrong player has been added by mistake."
+msgstr ""
+
 msgid "Show Log"
 msgstr ""
 
@@ -4535,9 +4583,6 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-msgid "Storing data…"
-msgstr ""
-
 msgid "Strong"
 msgstr ""
 
@@ -4631,9 +4676,6 @@ msgstr ""
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
 msgstr ""
 
-msgid "The data source to search players in."
-msgstr ""
-
 msgid "The date of the first hour is not defined (mandatory)."
 msgstr ""
 
@@ -4669,9 +4711,6 @@ msgid "The greater number of wins"
 msgstr ""
 
 msgid "The greater number of wins with Black (unplayed games are counted as played with White)"
-msgstr ""
-
-msgid "The last set of a screen can not be deleted."
 msgstr ""
 
 msgid "The location of the event."
@@ -4749,6 +4788,9 @@ msgstr ""
 msgid "The name of the tournament, used for display."
 msgstr ""
 
+msgid "The network on which the devices are connected."
+msgstr ""
+
 msgid "The number of boards per screen, optional (the number of screens adapts to the number of boards)."
 msgstr ""
 
@@ -4816,57 +4858,6 @@ msgid "The player with FFE licence number [{ffe_licence_number}] already plays t
 msgstr ""
 
 msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
-msgstr ""
-
-msgid "The player's FIDE ID (do not change)."
-msgstr ""
-
-msgid "The player's FIDE title."
-msgstr ""
-
-msgid "The player's Uniq ID for the French federation (do not change)."
-msgstr ""
-
-msgid "The player's birth date."
-msgstr ""
-
-msgid "The player's club."
-msgstr ""
-
-msgid "The player's email."
-msgstr ""
-
-msgid "The player's federation."
-msgstr ""
-
-msgid "The player's first name."
-msgstr ""
-
-msgid "The player's gender."
-msgstr ""
-
-msgid "The player's last name."
-msgstr ""
-
-msgid "The player's league."
-msgstr ""
-
-msgid "The player's licence number."
-msgstr ""
-
-msgid "The player's licence."
-msgstr ""
-
-msgid "The player's phone number."
-msgstr ""
-
-msgid "The player's tournament."
-msgstr ""
-
-msgid "The price the player already paid."
-msgstr ""
-
-msgid "The price the player pays to register."
 msgstr ""
 
 msgid "The qualification number given by the French Federation is an integer, it is used to connect to the FFE website."
@@ -4951,6 +4942,9 @@ msgstr ""
 msgid "The tournaments to print."
 msgstr ""
 
+msgid "The type of QR code to print."
+msgstr ""
+
 msgid "The type of criterion used to filter the players."
 msgstr ""
 
@@ -4997,6 +4991,9 @@ msgid "This account is not active, anonymous users can not log in to it."
 msgstr ""
 
 msgid "This data source in unavailable (for more details: Menu > Data sources)."
+msgstr ""
+
+msgid "This database is not installed (to install it: Menu > Data sources)."
 msgstr ""
 
 msgid "This display controller is private (not visible by the spectators)."
@@ -5225,6 +5222,9 @@ msgstr ""
 msgid "Tournament not yet uploaded."
 msgstr ""
 
+msgid "Tournament on the FFE site"
+msgstr ""
+
 msgid "Tournament performance rating"
 msgstr ""
 
@@ -5348,9 +5348,6 @@ msgid "Unable to set tournament visibility."
 msgstr ""
 
 msgid "Unable to upload tournament rules."
-msgstr ""
-
-msgid "Unauthenticated access has been updated."
 msgstr ""
 
 msgid "Undefined **** PLURAL"
@@ -5854,6 +5851,9 @@ msgstr ""
 msgid "Zero-Point Bye"
 msgstr ""
 
+msgid "Zero-Point Bye attributed to player [{player}]."
+msgstr ""
+
 msgid "[Sharly Chess {version}] Request for the integration of custom files"
 msgstr ""
 
@@ -6065,9 +6065,6 @@ msgid "{family_type}-screen"
 msgstr ""
 
 msgid "{first_name} {last_name}"
-msgstr ""
-
-msgid "{number} players written to the database."
 msgstr ""
 
 msgid "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."

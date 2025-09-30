@@ -1,13 +1,9 @@
 import logging
-from functools import cached_property
-from typing import Annotated, Any
+from typing import Any
 
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
-from litestar.enums import RequestEncodingType
-from litestar.params import Body
 
 from common.i18n import _
-from data.access_levels.client import Client
 from data.access_levels.client_tracker import ClientTracker
 from data.display_controller import DisplayController
 from data.event import Event
@@ -21,23 +17,14 @@ from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
 )
+from web.guards import EventGuard
 from web.messages import Message
 from web.session import SessionHandler
 
 
 class BaseEventAdminWebContext(AdminWebContext):
-    def __init__(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str | None,
-        data: Annotated[
-            dict[str, str] | None,
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ] = None,
-    ):
-        super().__init__(
-            request, event_uniq_id=event_uniq_id, data=data, admin_tab=None
-        )
+    def __init__(self, request: HTMXRequest, reload_event: bool = False):
+        super().__init__(request, reload_event=reload_event)
 
         # tracks the visit of the client
         ClientTracker().track_client(
@@ -45,11 +32,6 @@ class BaseEventAdminWebContext(AdminWebContext):
             self.client.event.uniq_id if self.client.event else None,
             self.client.account.id,
         )
-
-    @cached_property
-    def client(self) -> Client:
-        """Returns the client of the request."""
-        return Client(self.request, self.admin_event)
 
     def get_admin_event(self) -> Event:
         assert self.admin_event is not None
@@ -72,7 +54,12 @@ class BaseEventAdminWebContext(AdminWebContext):
         ):
             event_uniq_id, tids = last_tournaments
             if event_uniq_id == self.get_admin_event().uniq_id:
-                tournament_ids = tids
+                # Remove ids that are not in the event anymore
+                tournament_ids = [
+                    tid
+                    for tid in tids
+                    if tid in self.get_admin_event().tournaments_by_id
+                ]
 
         return tournament_ids
 
@@ -317,6 +304,8 @@ class BaseEventAdminWebContext(AdminWebContext):
 
 
 class BaseEventAdminController(BaseAdminController):
+    guards = [EventGuard()]
+
     @classmethod
     def _admin_base_event_render(
         cls,

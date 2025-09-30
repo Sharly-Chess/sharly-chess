@@ -90,25 +90,20 @@ class FfeDatabase(LocalSourceDatabase):
             response: Response = get(ffe_database_url, allow_redirects=True, timeout=5)
             if response.status_code != 200:
                 logger.error(
-                    self.log_prefix
-                    + _('Could not download [{url}], error code [{code}].').format(
-                        url=ffe_database_url, code=response.status_code
-                    )
+                    self.log_prefix + 'Could not download [%s], error code [%d].',
+                    ffe_database_url,
+                    response.status_code,
                 )
                 return False
         except ConnectionError as ex:
             logger.error(
-                self.log_prefix
-                + _('Could not download [{url}]: {error}.').format(
-                    url=ffe_database_url, error=ex
-                )
+                self.log_prefix + 'Could not download [%s]: %s.', ffe_database_url, ex
             )
             return False
         local_zip_file.write_bytes(response.content)
         if not local_zip_file.exists():
             logger.error(
-                self.log_prefix
-                + _('No data received from [{url}].').format(url=ffe_database_url)
+                self.log_prefix + 'No data received from [%s].', ffe_database_url
             )
             return False
         self._source_file_path.unlink(missing_ok=True)
@@ -116,7 +111,7 @@ class FfeDatabase(LocalSourceDatabase):
             zip_ref.extractall(ffe.TMP_DIR)
         local_zip_file.unlink()
         if not self._source_file_path.exists():
-            logger.error(self.log_prefix + _('Could not unzip data.'))
+            logger.error(self.log_prefix + 'Could not unzip data.')
             return False
         return True
 
@@ -145,7 +140,7 @@ class FfeDatabase(LocalSourceDatabase):
                 )
                 self.commit()
         except (sqlite3.DatabaseError, sqlite3.OperationalError) as e:
-            logger.error(self.log_prefix + f'Error creating database indexes: {e}.')
+            logger.error(self.log_prefix + 'Error creating database indexes: %s.', e)
             raise
 
     @staticmethod

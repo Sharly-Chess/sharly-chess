@@ -718,7 +718,11 @@ class Event:
         if self.predefined_accounts:
             self.create_predefined_accounts()
         with EventDatabase(self.uniq_id, True) as database:
-            stored_account = database.add_stored_account(stored_account)
+            account_id = database.add_stored_account(stored_account)
+            stored_account.id = account_id
+            for stored_permission in stored_account.stored_permissions:
+                stored_permission.account_id = account_id
+                database.add_stored_permission(stored_permission)
         self.stored_event.stored_accounts.append(stored_account)
         account = Account(stored_account)
         self.accounts_by_id[account.id] = account

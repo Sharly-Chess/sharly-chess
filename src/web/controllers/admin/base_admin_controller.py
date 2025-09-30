@@ -1,20 +1,19 @@
 from pathlib import Path
-from typing import Annotated, Any
+from typing import Any
 
 import requests
 import validators
+from litestar.exceptions import NotFoundException
 from litestar.plugins.htmx import HTMXRequest
-from litestar.enums import RequestEncodingType
-from litestar.params import Body
 
-from common import REQUEST_TIMEOUT, SharlyChessException
+from common import REQUEST_TIMEOUT
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
-from data.loader import EventLoader
 from utils.enum import TournamentRating
 from plugins.manager import plugin_manager
 from web.controllers.base_controller import BaseController, WebContext
+from web.utils import RequestUtils
 
 
 class AdminWebContext(WebContext):
@@ -25,29 +24,13 @@ class AdminWebContext(WebContext):
     def __init__(
         self,
         request: HTMXRequest,
-        event_uniq_id: str | None,
-        data: Annotated[
-            dict[str, str] | None,
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-        admin_tab: str | None,
+        admin_tab: str | None = None,
+        reload_event: bool = False,
     ):
-        super().__init__(request, data=data)
+        super().__init__(request)
         self.admin_tab: str | None = admin_tab
         self.admin_event: Event | None = None
-        if self.error:
-            return
-        if event_uniq_id:
-            try:
-                self.admin_event = EventLoader.get(request=self.request).load_event(
-                    event_uniq_id
-                )
-            except SharlyChessException as pwe:
-                self._redirect_error(f'Event [{event_uniq_id}] not found: {pwe}')
-                return
-
-        if self.error:
-            return
+        self.admin_event = RequestUtils.get_optional_event(request, reload_event)
         self.check_admin_tab()
 
     def get_admin_event(self) -> Event:
@@ -63,7 +46,7 @@ class AdminWebContext(WebContext):
             'coming_events',
             'archives',
         ]:
-            self._redirect_error(
+            raise NotFoundException(
                 f'Invalid value [{self.admin_tab}] for parameter [admin_tab]'
             )
 

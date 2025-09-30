@@ -13,7 +13,6 @@
                 {% if l != locale %}
                     hx-get="{{ url }}"
                     hx-vals='{"locale": "{{ l }}"}'
-                    preload
                     hx-target="body"
                     hx-indicator="#please-wait"
                     hx-trigger="click, keyup[key=='Enter']"

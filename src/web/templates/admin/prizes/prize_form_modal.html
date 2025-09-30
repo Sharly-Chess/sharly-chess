@@ -50,7 +50,7 @@
                     ) }}"
                 {% endif %}
             >
-                <div class="row mb-3">
+                <div class="row gy-2 gx-3">
                     {% if action == 'create' %}
                         {{ admin_macros.text_input(
                             name='values',
@@ -69,7 +69,7 @@
                         ) }}
                     {% endif %}
                 </div>
-                <div class="d-flex mb-3">
+                <div class="d-flex">
                     <span
                         class="fit-content"
                         {% if admin_prize_category.are_prizes_shared %}
@@ -99,7 +99,7 @@
                 </div>
                 <div
                     id="description-container"
-                    class="row"
+                    class="row gy-2 gx-3"
                     {{ macros.tooltip_attributes(
                         'info', _('Descriptions can only be defined for non-monetary prizes.'), 'top'
                     ) }}
@@ -145,7 +145,6 @@
                     ) }}"
                     hx-target="body"
                     hx-indicator="#please-wait"
-                    preload
                     data-bs-target="#modal-wrapper"
                 {% else %}
                     data-bs-dismiss="modal"
@@ -170,12 +169,4 @@
     </div>
 </div>
 
-{% if not admin_prize_category.prizes %}
-    <script>
-        // We need to reload the page when the modal is hidden, because the prizes might have changed.
-        $(document).one('hide.bs.modal', function(e) {
-            e.preventDefault();
-            document.body.dispatchEvent(new CustomEvent('request_refresh'));
-        });
-    </script>
-{% endif %}
+<script>requestRefresh()</script>

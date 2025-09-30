@@ -24,10 +24,7 @@
         });
         $('#archive').trigger('change');
 
-         $(document).one('hide.bs.modal', function(e) {
-            e.preventDefault();
-            document.body.dispatchEvent(new CustomEvent('request_refresh'));
-        });
+        requestRefresh();
     </script>
 {% endblock %}
 
@@ -43,10 +40,5 @@
 
 
 {% block delete_modal_script %}
-    <script>
-        $(document).one('hide.bs.modal', function(e) {
-            e.preventDefault();
-            document.body.dispatchEvent(new CustomEvent('request_refresh'));
-        });
-    </script>
+    <script>requestRefresh()</script>
 {% endblock %}

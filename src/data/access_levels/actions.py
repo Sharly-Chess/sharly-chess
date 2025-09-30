@@ -60,6 +60,7 @@ class AuthAction(StrEnum):
     # Application
     MANAGE_APPLICATION_SETTINGS = auto()
     MANAGE_SOURCE_DATABASES = auto()
+    MANAGE_ARCHIVES = auto()
 
     # Events access
     VIEW_PRIVATE_EVENTS = auto()
@@ -142,6 +143,7 @@ class AuthAction(StrEnum):
             case (
                 AuthAction.MANAGE_APPLICATION_SETTINGS
                 | AuthAction.MANAGE_SOURCE_DATABASES
+                | AuthAction.MANAGE_ARCHIVES
             ):
                 return AuthActionCategory.APPLICATION
             case (
@@ -214,6 +216,7 @@ class AuthAction(StrEnum):
             case _:
                 raise ValueError(f'auth={self}')
 
+    @property
     def name(self) -> str:
         return self.localized_name()
 
@@ -223,6 +226,8 @@ class AuthAction(StrEnum):
                 return _('Manage application settings', locale)
             case AuthAction.MANAGE_SOURCE_DATABASES:
                 return _('Manage source databases', locale)
+            case AuthAction.MANAGE_SOURCE_DATABASES:
+                return _('Manage archives', locale)
             case AuthAction.VIEW_PRIVATE_EVENTS:
                 return _('View private events', locale)
             case AuthAction.VIEW_PASSED_EVENTS:

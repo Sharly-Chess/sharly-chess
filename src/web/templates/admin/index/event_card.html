@@ -10,9 +10,9 @@
     {% endif %}
     {% with start_date=format_timestamp_date(event.start), stop_date=format_timestamp_date(event.stop) %}
         {% if start_date == stop_date %}
-        <span class="fw-bold">
-            {{ start_date }}
-        </span> {{ format_timestamp_time(event.start) }}-{{ format_timestamp_time(event.start) }}
+            <span class="fw-bold">
+                {{ start_date }}
+            </span> {{ format_timestamp_time(event.start) }}-{{ format_timestamp_time(event.stop) }}
         {% else %}
             <span class="fw-bold">{{ start_date }} - {{ stop_date }}</span>
         {% endif %}
@@ -120,7 +120,6 @@
                 hx-indicator="#please-wait"
                 data-bs-toggle="modal"
                 data-bs-target="#modal-wrapper"
-                preload
             >
                 <i class="bi-pencil-fill"></i>
             </button>
@@ -144,7 +143,6 @@
                 hx-indicator="#please-wait"
                 data-bs-toggle="modal"
                 data-bs-target="#modal-wrapper"
-                preload
             >
                 <i class="bi-copy"></i>
             </button>
@@ -165,7 +163,6 @@
                 ) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
-                preload
                 data-bs-toggle="modal"
                 data-bs-target="#modal-wrapper"
             >

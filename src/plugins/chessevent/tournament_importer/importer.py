@@ -176,7 +176,8 @@ class ChessEventTournamentImporter(TournamentImporter):
 
         if ffe.PLUGIN_NAME not in stored_tournament.plugin_data:
             stored_tournament.plugin_data[ffe.PLUGIN_NAME] = {}
-        stored_tournament.plugin_data[ffe.PLUGIN_NAME]['ffe_id'] = tournament.ffe_id
+        if not stored_tournament.plugin_data[ffe.PLUGIN_NAME].get('ffe_id', None):
+            stored_tournament.plugin_data[ffe.PLUGIN_NAME]['ffe_id'] = tournament.ffe_id
         (
             chessevent_event_id,
             chessevent_user_id,

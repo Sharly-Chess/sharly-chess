@@ -70,14 +70,9 @@ class PairingEngine(ABC):
             Board(tournament, round_, stored_board) for stored_board in stored_boards
         ]
         if self.reorder_boards:
-            board_indexes = [
-                board.index
-                for board in tournament.get_round_boards(round_)
-                if board.black_player
-            ]
-            index_delta = max(board_indexes) + 1 if board_indexes else 0
-            for index, board in enumerate(sorted(boards, reverse=True)):
-                board.stored_board.index = index_delta + index
+            available_indexes = tournament.get_available_board_indexes(round_)
+            for board in sorted(boards, reverse=True):
+                board.stored_board.index = available_indexes.pop(0)
         tournament.create_boards(stored_boards, round_, self.pab_result)
 
     def pairings_generation_disabled_message(

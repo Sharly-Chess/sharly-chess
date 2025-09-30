@@ -1,14 +1,11 @@
-from functools import cached_property
 from typing import Any
 
 from litestar.plugins.htmx import HTMXRequest
 
 from common.sharly_chess_config import SharlyChessConfig
-from data.access_levels.client import Client
 from data.access_levels.client_tracker import ClientTracker
 from data.event import Event
-from web.controllers.user.base_user_controller import UserWebContext, BaseUserController
-from web.guards import Guard
+from web.controllers.user.base_user_controller import UserWebContext
 from web.utils import RequestUtils
 
 
@@ -21,19 +18,12 @@ class EventUserWebContext(UserWebContext):
         super().__init__(request, user_tab=None)
         self.user_event: Event = RequestUtils.get_event(request)
         self.user_event_tab: str | None = user_event_tab
-        if self.error:
-            return
         # tracks the visit of the client
         ClientTracker().track_client(
             self.client.host,
             self.client.event.uniq_id if self.client.event else None,
             self.client.account.id,
         )
-
-    @cached_property
-    def client(self) -> Client:
-        """Returns the client of the request."""
-        return Client(self.request, self.user_event)
 
     def check_user_tab(self):
         pass
@@ -52,11 +42,3 @@ class EventUserWebContext(UserWebContext):
             'user_event_tab': self.user_event_tab,
             'user_event': self.user_event,
         }
-
-
-class EventUserController(BaseUserController):
-    """An abstract class inherited by the user controllers depending on an event."""
-
-    event_guards = [
-        Guard.event_is_visible,
-    ]

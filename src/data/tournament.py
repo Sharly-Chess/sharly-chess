@@ -109,7 +109,7 @@ class Tournament:
         return (
             f'{self.event.name} - {self.name}'
             if len(self.event.tournaments_by_id.values()) > 1
-            else self.name
+            else self.event.name
         )
 
     @property
@@ -500,13 +500,7 @@ class Tournament:
     @cached_property
     def players_by_name_without_unpaired(self) -> list[Player]:
         return sorted(
-            [
-                player
-                for player in self.players
-                if not self.current_round
-                or player.board_id is not None
-                and player not in self.unpaired_players
-            ],
+            [player for player in self.players if player not in self.unpaired_players],
             key=by('last_name', 'first_name'),
         )
 
@@ -1216,6 +1210,27 @@ class Tournament:
         if player_id in self.players_by_id:
             del self.players_by_id[player_id]
 
+    def get_available_board_indexes(self, round_: int) -> list[int]:
+        board_indexes = [
+            board.index for board in self.get_round_boards(round_) if not board.exempt
+        ]
+        max_board_count = len(self.players) // 2 + len(self.players) % 2
+        return [
+            index for index in range(0, max_board_count) if index not in board_indexes
+        ]
+
+    def get_pab_board_index(
+        self,
+        round_: int,
+        new_indexes: list[int] | None = None,
+    ) -> int:
+        board_indexes = [
+            board.index for board in self.get_round_boards(round_) if not board.exempt
+        ] + (new_indexes or [])
+        if not board_indexes:
+            return 0
+        return max(board_indexes) + 1
+
     def _set_players_pairing_numbers(self) -> list[Player]:
         """Set the pairing numbers of all the players in the tournament.
         Returns a list of players sorted by pairing number."""
@@ -1265,7 +1280,7 @@ class Tournament:
 
     def create_round_pairing(
         self, round_nb: int, white_player_id: int, black_player_id: int | None
-    ):
+    ) -> Board:
         """Creates a pairing for a round."""
         white_player = self.players_by_id[white_player_id]
         black_player = self.players_by_id[black_player_id] if black_player_id else None
@@ -1289,6 +1304,7 @@ class Tournament:
                 assert board is not None
                 board_id = board.identifier
                 board.replace_player(black_player, 'black')
+                board.stored_board.index = self.get_available_board_indexes(round_nb)[0]
                 black_pairing.stored_pairing.result = result.value
                 black_pairing.stored_pairing.board_id = board_id
                 black_pairing.update(database)
@@ -1300,20 +1316,22 @@ class Tournament:
                     id=None,
                     white_player_id=white_player.id,
                     black_player_id=None,
-                    index=max(board.index for board in round_boards) + 1
-                    if round_boards
-                    else 0,
+                    index=round_boards[-1].index + 1 if round_boards else 0,
                 )
                 board_id = database.add_stored_board(stored_board)
                 stored_board.id = board_id
-                self.boards_by_id[board_id] = Board(self, round_nb, stored_board)
+                board = Board(self, round_nb, stored_board)
+                self.boards_by_id[board_id] = board
             white_pairing.stored_pairing.result = result.value
             white_pairing.stored_pairing.board_id = board_id
             white_pairing.update(database)
+        return board
 
     def unpair_boards(self, boards: list[Board]):
+        rounds: set[int] = set()
         with EventDatabase(self.event.uniq_id, True) as database:
             for board in boards:
+                rounds.add(board.round)
                 board.white_player.delete_pairing(board.round, database)
                 board.white_player.reset_board()
                 if board.black_player:
@@ -1322,13 +1340,19 @@ class Tournament:
                 database.delete_stored_board(board.identifier)
                 if board.identifier in self.boards_by_id:
                     del self.boards_by_id[board.identifier]
+            for round_ in rounds:
+                if pab_board := self.get_round_pab_board(round_):
+                    pab_board.stored_board.index = self.get_pab_board_index(round_)
+                    database.update_stored_board(pab_board.stored_board)
 
     def create_boards(
         self, stored_boards: list[StoredBoard], round_: int, pab_result: Result
     ):
         with EventDatabase(self.event.uniq_id, True) as database:
             if pab_board := self.get_round_pab_board(round_):
-                pab_board.stored_board.index += len(stored_boards)
+                pab_board.stored_board.index = self.get_pab_board_index(
+                    round_, [board.index for board in stored_boards]
+                )
                 database.update_stored_board(pab_board.stored_board)
             for stored_board in stored_boards:
                 id_ = database.add_stored_board(stored_board)

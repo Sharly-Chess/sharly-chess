@@ -5,12 +5,11 @@
         hx-trigger="click{% if sharly_chess_config.force_edit %}, load{% endif %}"
         hx-target="body"
         hx-indicator="#please-wait"
-        preload
         data-bs-toggle="modal"
         data-bs-target="#modal-wrapper"
     >
         <div class="d-block">
-            <i class="bi bi-gear"></i>
+            <i class="bi bi-sliders"></i>
             <span class="pe-2 expanded-only">
                 {{ _('Settings') }}
             </span>

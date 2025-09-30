@@ -5,9 +5,6 @@
         _('Display controllers'),
         'screens-display-controllers' if client.can_manage_screens else ''
     ) }}
-    {{ macros.refresh_listener(
-        hx_get=url_for('admin-event-display-controllers-tab', event_uniq_id=admin_event.uniq_id),
-    ) }}
 
     <script>
         preparePrintModal()
@@ -28,7 +25,6 @@
                 hx-get="{{ url_for('admin-display-controller-create-modal', event_uniq_id=admin_event.uniq_id) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
-                preload
                 data-bs-toggle="modal"
                 data-bs-target="#modal-wrapper"
             >
@@ -40,7 +36,7 @@
 {% endblock %}
 
 {% block cards_container_cards %}
-    <div class="row">
+    <div class="row gy-2 gx-3">
         {% if admin_display_controllers %}
             {% for display_controller in admin_display_controllers %}
                 {% with

@@ -1,5 +1,6 @@
 from typing import Any
 
+from litestar.exceptions import NotFoundException
 from litestar.plugins.htmx import HTMXRequest
 
 from common.sharly_chess_config import SharlyChessConfig
@@ -16,10 +17,8 @@ class UserWebContext(WebContext):
         request: HTMXRequest,
         user_tab: str | None,
     ):
-        super().__init__(request, data=None)
+        super().__init__(request)
         self.user_tab: str | None = user_tab
-        if self.error:
-            return
         self.check_user_tab()
 
     def check_user_tab(self):
@@ -29,7 +28,7 @@ class UserWebContext(WebContext):
             'current_events',
             'coming_events',
         ]:
-            self._redirect_error(
+            raise NotFoundException(
                 f'Invalid value [{self.user_tab}] for parameter [user_tab]'
             )
 

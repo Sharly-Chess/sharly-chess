@@ -155,7 +155,7 @@ class TestUtils:
 
         if via_api_request_context:
             res = via_api_request_context.post(
-                '/admin/home/create-event',
+                '/home/create-event',
                 headers={'Content-Type': 'application/x-www-form-urlencoded'},
                 data=form_data,
             )
@@ -174,7 +174,7 @@ class TestUtils:
     ):
         if via_api_request_context:
             res = via_api_request_context.delete(
-                f'/admin/current_events/event-delete/{uniq_id}',
+                f'/current_events/event-delete/{uniq_id}',
                 headers={'Content-Type': 'application/x-www-form-urlencoded'},
             )
             TestUtils.check_api_response(res)
@@ -226,7 +226,7 @@ class TestUtils:
             data['SWISS_pairing_variation'] = StandardSwissVariation.static_id()
             form_data = cls.prepare_form_data(data)
             res = via_api_request_context.post(
-                f'/admin/tournament-create/{event_uniq_id}',
+                f'/tournament-create/{event_uniq_id}',
                 headers={'Content-Type': 'application/x-www-form-urlencoded'},
                 data=form_data,
             )
@@ -247,7 +247,7 @@ class TestUtils:
             if via_api_request_context:
                 # Send as multipart/form-data with a real file field named "file"
                 res = via_api_request_context.post(
-                    f'/admin/tournament-import/{event_uniq_id}/{stored_tournament.id}/PAPI_JSON',
+                    f'/tournament-import/{event_uniq_id}/{stored_tournament.id}/PAPI_JSON',
                     multipart={
                         # UploadFile field name in your handler is "file"
                         'file': {
@@ -273,7 +273,7 @@ class TestUtils:
         stored_tournament: StoredTournament,
     ):
         res = api_request_context.delete(
-            f'/admin/tournament-delete/{event_uniq_id}/{stored_tournament.id}',
+            f'/tournament-delete/{event_uniq_id}/{stored_tournament.id}',
             headers={'Content-Type': 'application/x-www-form-urlencoded'},
         )
         cls.check_api_response(res)
@@ -325,7 +325,7 @@ class TestUtils:
 
         form_data = cls.prepare_form_data(data)
         res = api_request_context.post(
-            f'/admin/screen-create/{event_uniq_id}/{screen_type.value}',
+            f'/screen-create/{event_uniq_id}/{screen_type.value}',
             headers={'Content-Type': 'application/x-www-form-urlencoded'},
             data=form_data,
         )
@@ -341,7 +341,7 @@ class TestUtils:
         cls, api_request_context: APIRequestContext, event_uniq_id: str, screen_id: int
     ):
         res = api_request_context.delete(
-            f'/admin/screen-delete/{event_uniq_id}/{screen_id}',
+            f'/screen-delete/{event_uniq_id}/{screen_id}',
             headers={'Content-Type': 'application/x-www-form-urlencoded'},
         )
         cls.check_api_response(res)
@@ -393,7 +393,7 @@ class TestUtils:
 
         form_data = cls.prepare_form_data(data)
         res = api_request_context.post(
-            f'/admin/family-create/{event_uniq_id}/{family_type.value}',
+            f'/family-create/{event_uniq_id}/{family_type.value}',
             headers={'Content-Type': 'application/x-www-form-urlencoded'},
             data=form_data,
         )
@@ -409,7 +409,7 @@ class TestUtils:
         cls, api_request_context: APIRequestContext, event_uniq_id: str, family_id: int
     ):
         res = api_request_context.delete(
-            f'/admin/family-delete/{event_uniq_id}/{family_id}',
+            f'/family-delete/{event_uniq_id}/{family_id}',
             headers={'Content-Type': 'application/x-www-form-urlencoded'},
         )
         cls.check_api_response(res)
@@ -440,7 +440,7 @@ class TestUtils:
 
         form_data = cls.prepare_form_data(data)
         res = api_request_context.post(
-            f'/admin/rotator-create/{event_uniq_id}',
+            f'/rotator-create/{event_uniq_id}',
             headers={'Content-Type': 'application/x-www-form-urlencoded'},
             data=form_data,
         )
@@ -458,7 +458,7 @@ class TestUtils:
                 }
             )
             res = api_request_context.post(
-                f'/admin/rotating-screens-create/{event_uniq_id}/{stored_rotator.id}',
+                f'/rotating-screens-create/{event_uniq_id}/{stored_rotator.id}',
                 headers={'Content-Type': 'application/x-www-form-urlencoded'},
                 data=form_data,
             )
@@ -470,7 +470,7 @@ class TestUtils:
         cls, api_request_context: APIRequestContext, event_uniq_id: str, rotator_id: int
     ):
         res = api_request_context.delete(
-            f'/admin/rotator-delete/{event_uniq_id}/{rotator_id}',
+            f'/rotator-delete/{event_uniq_id}/{rotator_id}',
             headers={'Content-Type': 'application/x-www-form-urlencoded'},
         )
         cls.check_api_response(res)

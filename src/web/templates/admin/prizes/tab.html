@@ -3,24 +3,6 @@
 {% block top_left_nav %}
     {% if client.can_view_prizes_tab %}
         {{ admin_macros.admin_title(_('Prizes'), 'prizes') }}
-        {% if admin_prize_group %}
-            {{ macros.refresh_listener(
-                hx_get=url_for(
-                    'admin-event-prizes-tab',
-                    event_uniq_id=admin_event.uniq_id,
-                    tournament_id=admin_tournament.id,
-                    prize_group_id=admin_prize_group.id,
-                ),
-            ) }}
-        {% elif admin_tournament %}
-            {{ macros.refresh_listener(
-                hx_get=url_for(
-                    'admin-event-prizes-tab',
-                    event_uniq_id=admin_event.uniq_id,
-                    tournament_id=admin_tournament.id,
-                )
-            ) }}
-        {% endif %}
     {% endif %}
 
     <script>
@@ -80,7 +62,6 @@
                         ) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
-                        preload
                         data-bs-toggle="modal"
                         data-bs-target="#modal-wrapper"
                     {% endif %}
@@ -110,7 +91,6 @@
                         ) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
-                        preload
                         data-bs-toggle="modal"
                         data-bs-target="#modal-wrapper"
                     {% endif %}
@@ -164,7 +144,6 @@
                                 ) }}"
                                 hx-target="body"
                                 hx-indicator="#please-wait"
-                                preload
                                 data-bs-toggle="modal"
                                 data-bs-target="#modal-wrapper"
                             {% endif %}
@@ -194,7 +173,6 @@
                             ) }}"
                             hx-target="body"
                             hx-indicator="#please-wait"
-                            preload
                         {% endif %}
                     >
                         <button
@@ -249,7 +227,7 @@
             {% endif %}
         >
             <div
-                class="row {% if admin_prize_group and admin_prize_group.categories %}sortable{% endif %}"
+                class="row gy-2 gx-3 {% if admin_prize_group and admin_prize_group.categories %}sortable{% endif %}"
             >
                 {% if not admin_prize_group %}
                     <div class="mx-auto" style="max-width: 500px;">

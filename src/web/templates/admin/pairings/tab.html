@@ -11,24 +11,19 @@
 {% if admin_tournament %}
     <div
         hx-get="{{ url_for('admin-pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="result") }}"
-        hx-trigger="sse:new-user-results/{{ admin_event.uniq_id }}/{{ admin_tournament.id }}/{{ admin_tournament.current_round }}"
+        hx-trigger="ws:new-user-results|{{ admin_event.uniq_id }}|{{ admin_tournament.id }}|{{ admin_tournament.current_round }} from:body"
         hx-target="#refresh-message"
         hx-swap="innerHTML"
     >
     </div>
     <div
         hx-get="{{ url_for('admin-pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="checkin") }}"
-        hx-trigger="sse:new-checkins/{{ admin_event.uniq_id }}/{{ admin_tournament.id }}/{{ admin_tournament.current_round }}""
+        hx-trigger="ws:new-checkins|{{ admin_event.uniq_id }}|{{ admin_tournament.id }}|{{ admin_tournament.current_round }} from:body"
         hx-target="#refresh-message"
         hx-swap="innerHTML"
     >
     </div>
     {% set has_unpaired = admin_unpaired|length > 0 or admin_bye_players|length > 0 %}
-
-    {{ macros.refresh_listener(
-        hx_get=url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id),
-        hx_include="[name='round']"
-    ) }}
 
     <div class="container-fluid">
         <div class="pt-1 pb-1 row">
@@ -60,7 +55,6 @@
                                     hx-trigger="click"
                                     hx-target="body"
                                     hx-indicator="#please-wait"
-                                    preload
                                     data-bs-toggle="modal"
                                     data-bs-target="#modal-wrapper"
                                     {{ macros.tooltip_attributes('info', _('Close check-in for tournament [%(tournament)s].', tournament=admin_tournament.name), 'top') }}
@@ -146,7 +140,6 @@
                                                 data-bs-target="#modal-wrapper"
                                                 hx-indicator="#please-wait"
                                                 hx-target="body"
-                                                preload
                                             {% endif %}
                                         >
                                             {{ _('Overwrite') }}
@@ -177,7 +170,7 @@
 
             {% if not display_rankings %}
                 {% if has_unpaired %}
-                    <div class="col-12 col-lg-3 mb-3">
+                    <div class="col-12 col-lg-3">
                         {% if admin_unpaired|length > 0 %}
                             {% with title=_('Unpaired (%(unpaired)d)', unpaired=admin_unpaired|length), unpaired=admin_unpaired, table_id='unpaired-players-table' %}
                                 {% include '/admin/pairings/unpaired_table.html' %}
@@ -192,7 +185,7 @@
                     </div>
                 {% endif %}
 
-                <div class="col-12 {{ 'col-lg-9' if has_unpaired else 'col-lg-12' }} mb-3">
+                <div class="col-12 {{ 'col-lg-9' if has_unpaired else 'col-lg-12' }}">
                     <table
                         id="pairings-table"
                         class="pairings-table table prominent table-striped table-sm table-hover w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %}"

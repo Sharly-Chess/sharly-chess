@@ -23,13 +23,18 @@
                 id="modal-form"
                 {% if action == 'update' %}
                     hx-patch="{{ url_for('admin-account-update', event_uniq_id=admin_event.uniq_id, account_id=admin_account.id) }}"
+                {% elif action == 'clone' %}
+                    hx-post="{{ url_for('admin-account-clone', event_uniq_id=admin_event.uniq_id, account_id=admin_account.id) }}"
                 {% else %}
                     hx-post="{{ url_for('admin-account-create', event_uniq_id=admin_event.uniq_id) }}"
                 {% endif %}
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                <div class="row mb-3">
+                {# These inputs are a trick to avoid autocomplete #}
+                <input type="text" style="display:none">
+                <input type="password" style="display:none">
+                <div class="row gy-2 gx-3">
                     {{ admin_macros.switch_input(
                         name='active',
                         label='',
@@ -41,7 +46,7 @@
                         data=data, errors=errors
                     ) }}
                 </div>
-                <div class="row mb-3">
+                <div class="row gy-2 gx-3">
                     {{ admin_macros.text_input(
                         name='last_name',
                         label=_('Last name:'),
@@ -50,7 +55,7 @@
                         data=data, errors=errors
                     ) }}
                 </div>
-                <div class="row mb-3">
+                <div class="row gy-2 gx-3">
                     {{ admin_macros.text_input(
                         name='first_name',
                         label=_('First name:'),
@@ -59,8 +64,8 @@
                         data=data, errors=errors
                     ) }}
                 </div>
-                <input type="password" name="fake_password" style="display:none" autocomplete="current-password">
-                <div class="row">
+                <div class="row gy-2 gx-3">
+                    <input type="password" name="fake_password" style="display:none" autocomplete="current-password">
                     {{ admin_macros.password_input(
                         name='password',
                         label=_('Password:'),

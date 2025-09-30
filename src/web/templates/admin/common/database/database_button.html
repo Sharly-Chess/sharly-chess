@@ -4,15 +4,14 @@
             hx-get="{{ url_for('admin-database-modal') }}"
             hx-target="body"
             hx-indicator="#please-wait"
-            preload
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
         >
-           <i class="bi bi-database"></i>
+           <i class="bi bi-database-fill"></i>
             <span class="pe-2 expanded-only">{{ _('Data sources') }}</span>
             <span
                 hx-get="{{ url_for('admin-database-status-badge') }}"
-                hx-trigger="sse:database-status-updated, load"
+                hx-trigger="ws:database-status-updated from:body, load"
                 hx-target="this"
                 hx-swap="innerHTML"
             ></span>

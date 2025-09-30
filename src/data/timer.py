@@ -92,14 +92,14 @@ class TimerHour:
     def text_before(self) -> str:
         return self._format_stored_text(
             self.stored_timer_hour.text_before,
-            SharlyChessConfig.default_timer_round_text_before,
+            SharlyChessConfig().default_timer_round_text_before,
         )
 
     @cached_property
     def text_after(self) -> str:
         return self._format_stored_text(
             self.stored_timer_hour.text_after,
-            SharlyChessConfig.default_timer_round_text_after,
+            SharlyChessConfig().default_timer_round_text_after,
         )
 
     @property
@@ -142,11 +142,14 @@ class TimerHour:
     def datetime_str_next(self) -> str:
         return format_timestamp_date_time(self.timestamp_next)
 
-    def __repr__(self):
+    def __str__(self):
         return (
             f'{self.__class__.__name__}(id={self.id} order={self.order} uniq_id={self.uniq_id} '
             f'datetime={self.datetime_str} texts=[{self.text_before}]/[{self.text_after}])'
         )
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(timer={self.timer!r}, stored_timer_hour={self.stored_timer_hour!r})'
 
 
 class Timer:
@@ -311,5 +314,8 @@ class Timer:
             previous_timer_hour = th
         return None
 
-    def __repr__(self):
+    def __str__(self):
         return f'{type(self).__name__}({self.colors} {self.delays} {self.timer_hours_by_id})'
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(event={self.event!r}, stored_timer={self.stored_timer!r})'

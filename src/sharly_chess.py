@@ -1,5 +1,39 @@
+import os
+import warnings
 import platform
 import sys
+
+# Nuclear option: Override warnings.warn to block specific messages
+# warnings.filterwarnings simply would not work
+_original_warn = warnings.warn
+
+
+def _filtered_warn(*args, **kwargs):
+    """Custom warn function that filters out known problematic warnings"""
+    if len(args) > 0:
+        message_str = str(args[0])
+
+        # List of warning messages to suppress
+        suppressed_messages = [
+            'server parameter is deprecated, use dsn instead',
+        ]
+
+        # Check if this message should be suppressed
+        for suppressed in suppressed_messages:
+            if suppressed in message_str:
+                return  # Suppress this warning
+
+        # Also suppress if it's a DeprecationWarning category
+        if len(args) > 1 and args[1] is DeprecationWarning:
+            category_str = str(args[1])
+            if 'DeprecationWarning' in category_str:
+                return
+
+    # If not suppressed, call the original warn function
+    _original_warn(*args, **kwargs)
+
+
+warnings.warn = _filtered_warn
 
 if platform.system() == 'Windows':
     # Windows marks the downloaded files as unsure and blocks their usage.
@@ -84,16 +118,17 @@ try:
     if args.server:
         print_interactive_warning(_('Argument --server is deprecated, ignored.'))
 
+    port = args.port or None
     # Check if GUI mode should be used
     if not TEST_ENV and not (DEVEL_ENV and args.cli):
         # Create and run the Toga app - this should block until the app exits
-        app = SharlyChessServerToga()
+        app = SharlyChessServerToga(debug=args.debug, port=port)
         app.main_loop()
         sys.exit(0)
 
     # Original console mode
     try:
-        se: ServerEngine = ServerEngine(debug=args.debug, port=args.port or None)
+        se: ServerEngine = ServerEngine(debug=args.debug, port=port)
         asyncio.run(se.serve())
     except KeyboardInterrupt:
         pass
