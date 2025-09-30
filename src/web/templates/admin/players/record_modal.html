@@ -52,12 +52,12 @@
                         {% for round, pairing in admin_player.pairings.items() %}
                             {% set name='round_' ~ round ~ '_result' %}
                             {% set id=name|replace('_', '-') %}
-                            {% set zero_point_bye_allowed = round >= admin_player.tournament.current_round %}
+                            {% set zero_point_bye_allowed = round >= admin_player.tournament.current_round and not pairing.board %}
                             {% if pairing.opponent_id %}
                                 {% set opponent_player=admin_player.tournament.players_by_id[pairing.opponent_id] %}
                                 {% set opponent=opponent_player.full_name %}
                                 {% set federation=opponent_player.federation %}
-                                {% set rating=opponent_player.rating %}
+                                {% set rating=opponent_player.rating_str %}
                                 {% set color=pairing.color %}
                             {% else %}
                                 {% set opponent='' %}
@@ -68,7 +68,7 @@
                             {% if zero_point_bye_allowed or pairing.playing %}
                                 {% set score='' %}
                             {% else %}
-                                {% set score=pairing.result.point_value %}
+                                {% set score=pairing.points_str %}
                             {% endif %}
                             {% set zero_point_bye = false %}
                             {% set half_point_bye = false %}
@@ -118,7 +118,7 @@
                                 <td class="text-nowrap text-center">
                                     {{ score }}
                                 </td>
-                                {% if zero_point_bye_allowed and not (opponent or pairing.exempt) %}
+                                {% if zero_point_bye_allowed %}
                                     <td colspan="5" class="text-nowrap text-start">
                                         {% if bye_definition_allowed %}
                                             <select
