@@ -108,7 +108,7 @@ class Tournament:
         return (
             f'{self.event.name} - {self.name}'
             if len(self.event.tournaments_by_id.values()) > 1
-            else self.name
+            else self.event.name
         )
 
     @property
