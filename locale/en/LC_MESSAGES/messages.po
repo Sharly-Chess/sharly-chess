@@ -5361,7 +5361,7 @@ msgstr ""
 msgid "Unable to upload tournament rules."
 msgstr ""
 
-msgid "Undefined **** PLURAL"
+msgid "Undefined *** PLURAL"
 msgstr "Undefined"
 
 msgid "Under 10"
@@ -5464,8 +5464,11 @@ msgstr ""
 msgid "Unpairing all the boards of this round is not possible because the round has results."
 msgstr ""
 
-msgid "Unrated"
-msgstr ""
+msgid "Unrated *** PLURAL"
+msgstr "Unrated"
+
+msgid "Unrated *** SINGULAR"
+msgstr "Unrated"
 
 msgid "Unrated Draw"
 msgstr ""

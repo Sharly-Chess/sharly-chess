@@ -16,7 +16,13 @@
 {% if player.year_of_birth %}
     ({{ player.year_of_birth }}, {{ player.category.short_name }})
 {% endif %}
-- {{ player.standard_rating_str }}
+-
+{% set rating = player.first_real_rating %}
+{% if rating %}
+    {{ rating }}
+{% else %}
+    <i>{{ _('Unrated *** SINGULAR') }}</i>
+{% endif %}
 {% if player.plugin_data.ffe.league %}
     - {{ player.plugin_data.ffe.league }}
 {% endif %}

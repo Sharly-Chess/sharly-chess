@@ -5361,7 +5361,7 @@ msgstr "Impossible de définir la visibilité du tournoi."
 msgid "Unable to upload tournament rules."
 msgstr "Impossible de téléverser le règlement du tournoi."
 
-msgid "Undefined **** PLURAL"
+msgid "Undefined *** PLURAL"
 msgstr "Non définis"
 
 msgid "Under 10"
@@ -5464,8 +5464,11 @@ msgstr "Désapparier une ronde publiée peut être très désagréable pour les 
 msgid "Unpairing all the boards of this round is not possible because the round has results."
 msgstr "Désapparier tous les échiquiers est impossible tant que la ronde a des résultats enregistrés."
 
-msgid "Unrated"
+msgid "Unrated *** PLURAL"
 msgstr "Non-classé·es"
+
+msgid "Unrated *** SINGULAR"
+msgstr "Non-classé·e"
 
 msgid "Unrated Draw"
 msgstr "Nulle non comptabilisé pour le classement Elo"

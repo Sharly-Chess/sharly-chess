@@ -417,8 +417,15 @@ class Player:
         return self.get_rating(self.tournament.rating)
 
     @property
-    def standard_rating_str(self) -> str:
-        return str(self.ratings.get(TournamentRating.STANDARD))
+    def first_real_rating(self) -> PlayerRating | None:
+        return next(
+            (
+                rating
+                for rating in self.ratings.values()
+                if rating.type != PlayerRatingType.ESTIMATED
+            ),
+            None,
+        )
 
     def ratings_str(self) -> str:
         return '/'.join(
