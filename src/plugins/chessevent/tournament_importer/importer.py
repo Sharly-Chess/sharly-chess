@@ -144,8 +144,6 @@ class ChessEventTournamentImporter(TournamentImporter):
     ) -> StoredTournament:
         if not stored_tournament:
             stored_tournament = StoredTournament(id=None, name=tournament.name)
-        else:
-            stored_tournament.name = tournament.name
         stored_tournament.rounds = tournament.rounds
         try:
             stored_tournament.pairing = ChessEventPairingVariation.get_core_object(
