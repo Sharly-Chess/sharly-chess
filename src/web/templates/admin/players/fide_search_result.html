@@ -8,6 +8,7 @@
 <span class="fw-bold">
     {{ player.full_name }}
 </span>
-{{ player.year_of_birth }}
-{{ player.category }}
-{{ player.ratings_str }}
+{% if player.year_of_birth %}
+    ({{ player.year_of_birth }}, {{ player.category.short_name }})
+{% endif %}
+- {{ player.ratings_str }}
