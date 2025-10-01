@@ -1,7 +1,0 @@
-1st hotfix of Sharly Chess 3.1
-
-- Fixed the player search without tournament
-- Fixed terminal flashing during the FFE upload
-- Fixed TRF import with no games
-- Fixed Windows bundle signature
-- Added year of birth to player search results
