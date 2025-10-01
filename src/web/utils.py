@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Any
 
 from litestar.exceptions import (
@@ -27,10 +28,15 @@ class RequestUtils:
     and storing them into the request."""
 
     @staticmethod
-    def _get_path_param(request: HTMXRequest, param: str) -> Any:
-        if param not in request.path_params:
-            raise ValidationException(f'Path parameter [{param}] not found.')
-        return request.path_params[param]
+    def _get_request_param(request: HTMXRequest, param: str) -> Any:
+        if value := request.path_params.get(param, None):
+            return value
+        if value := request.query_params.get(param, None):
+            if isinstance(value, str) and value.isdigit():
+                return int(value)
+            return value
+
+        raise ValidationException(f'Parameter [{param}] not found.')
 
     REQUEST_EVENT_ATTR: str = 'sharly_chess_event'
     EVENT_UNIQ_ID_PARAM: str = 'event_uniq_id'
@@ -39,7 +45,7 @@ class RequestUtils:
     def get_event(cls, request: HTMXRequest, reload: bool = False) -> Event:
         if cls.REQUEST_EVENT_ATTR in request.state and not reload:
             return request.state[cls.REQUEST_EVENT_ATTR]
-        event_uniq_id = cls._get_path_param(request, cls.EVENT_UNIQ_ID_PARAM)
+        event_uniq_id = cls._get_request_param(request, cls.EVENT_UNIQ_ID_PARAM)
         try:
             event = EventLoader.get(request).load_event(event_uniq_id)
         except SharlyChessException as sce:
@@ -73,7 +79,7 @@ class RequestUtils:
     def get_screen(cls, request: HTMXRequest) -> Screen:
         if cls.REQUEST_SCREEN_ATTR in request.state:
             return request.state[cls.REQUEST_SCREEN_ATTR]
-        screen_uniq_id = cls._get_path_param(request, cls.SCREEN_UNIQ_ID_PARAM)
+        screen_uniq_id = cls._get_request_param(request, cls.SCREEN_UNIQ_ID_PARAM)
         try:
             screen = cls.get_event(request).screens_by_uniq_id[screen_uniq_id]
         except KeyError:
@@ -88,7 +94,7 @@ class RequestUtils:
     def get_rotator(cls, request: HTMXRequest) -> Rotator:
         if cls.REQUEST_ROTATOR_ATTR in request.state:
             return request.state[cls.REQUEST_ROTATOR_ATTR]
-        rotator_id = cls._get_path_param(request, cls.ROTATOR_ID_PARAM)
+        rotator_id = cls._get_request_param(request, cls.ROTATOR_ID_PARAM)
         try:
             rotator = cls.get_event(request).rotators_by_id[rotator_id]
         except KeyError:
@@ -110,7 +116,7 @@ class RequestUtils:
     def get_display_controller(cls, request: HTMXRequest) -> DisplayController:
         if cls.REQUEST_DISPLAY_CONTROLLER_ATTR in request.state:
             return request.state[cls.REQUEST_DISPLAY_CONTROLLER_ATTR]
-        display_controller_id = cls._get_path_param(
+        display_controller_id = cls._get_request_param(
             request, cls.DISPLAY_CONTROLLER_ID_PARAM
         )
         try:
@@ -131,7 +137,7 @@ class RequestUtils:
     def get_tournament(cls, request: HTMXRequest) -> Tournament:
         if cls.REQUEST_TOURNAMENT_ATTR in request.state:
             return request.state[cls.REQUEST_TOURNAMENT_ATTR]
-        tournament_id = cls._get_path_param(request, cls.TOURNAMENT_ID_PARAM)
+        tournament_id = cls._get_request_param(request, cls.TOURNAMENT_ID_PARAM)
         try:
             tournament = cls.get_event(request).tournaments_by_id[tournament_id]
         except KeyError:
@@ -156,7 +162,7 @@ class RequestUtils:
         if cls.REQUEST_BOARD_ATTR in request.state:
             return request.state[cls.REQUEST_BOARD_ATTR]
         tournament: Tournament = cls.get_tournament(request)
-        board_index = cls._get_path_param(request, cls.BOARD_INDEX_PARAM)
+        board_index = cls._get_request_param(request, cls.BOARD_INDEX_PARAM)
         round_ = request.path_params.get(cls.ROUND_PARAM, tournament.current_round)
         if not 0 <= round_ <= tournament.rounds:
             raise ValidationException(f'Invalid round number [{round_}].')
@@ -201,7 +207,7 @@ class RequestUtils:
     def get_player(cls, request: HTMXRequest) -> Player:
         if cls.REQUEST_PLAYER_ATTR in request.state:
             return request.state[cls.REQUEST_PLAYER_ATTR]
-        player_id = cls._get_path_param(request, cls.PLAYER_ID_PARAM)
+        player_id = cls._get_request_param(request, cls.PLAYER_ID_PARAM)
         try:
             request.state[cls.REQUEST_PLAYER_ATTR] = cls.get_tournament(
                 request
@@ -217,7 +223,7 @@ class RequestUtils:
     def get_account(cls, request: HTMXRequest) -> Account:
         if cls.REQUEST_ACCOUNT_ATTR in request.state:
             return request.state[cls.REQUEST_ACCOUNT_ATTR]
-        account_id = cls._get_path_param(request, cls.ACCOUNT_ID_PARAM)
+        account_id = cls._get_request_param(request, cls.ACCOUNT_ID_PARAM)
         try:
             account = cls.get_event(request).accounts_by_id[account_id]
         except KeyError:
@@ -239,7 +245,7 @@ class RequestUtils:
     def get_access_level(cls, request: HTMXRequest) -> AccessLevel:
         if cls.REQUEST_ACCESS_LEVEL_ATTR in request.state:
             return request.state[cls.REQUEST_ACCESS_LEVEL_ATTR]
-        access_level_id = cls._get_path_param(request, cls.ACCESS_LEVEL_PARAM)
+        access_level_id = cls._get_request_param(request, cls.ACCESS_LEVEL_PARAM)
         try:
             access_level = AccessLevelManager.get_object(access_level_id)
         except KeyError:
@@ -253,3 +259,11 @@ class RequestUtils:
             return cls.get_access_level(request)
         except ValidationException:
             return None
+
+
+@dataclass
+class SelectOption:
+    name: str
+    tooltip: str | None = None
+    disabled: bool = False
+    classes: str = ''

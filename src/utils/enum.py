@@ -511,6 +511,18 @@ class TournamentRating(IntEnum):
             case _:
                 raise ValueError(f'Unknown rating: {self}')
 
+    @property
+    def acronym(self) -> str:
+        match self:
+            case TournamentRating.STANDARD:
+                return _('Std *** STANDARD RATING ACRONYM')
+            case TournamentRating.RAPID:
+                return _('Rpd *** RAPID RATING ACRONYM')
+            case TournamentRating.BLITZ:
+                return _('Blz *** BLITZ RATING ACRONYM')
+            case _:
+                raise ValueError(f'Unknown rating: {self}')
+
     def __str__(self) -> str:
         return self.name
 
