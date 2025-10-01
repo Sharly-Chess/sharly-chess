@@ -7,6 +7,7 @@ English version below
 - Prise en charge des serveurs avec plusieurs adresses IP (3.1.0)
 - Amélioration de la console du serveur (3.1.0)
 - Amélioration de l’ergonomie pour la modification, la duplication et l’archivage des événements (3.1.0)
+- Correction de l'apparition d'un terminal lors de l'upload FFE (3.1.1)
 
 ## Tournois
 
@@ -50,6 +51,7 @@ English version below
 - Support for servers with multiple IP addresses (3.1.0)
 - Improved the server console (3.1.0)
 - Improved the ergonomy for modifying, duplicating and archiving events (3.1.0)
+- Fixed terminal flashing during the FFE upload (3.1.1)
 
 ## Tournaments
 
