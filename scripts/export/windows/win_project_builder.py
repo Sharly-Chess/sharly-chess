@@ -21,6 +21,8 @@ class WinProjectBuilder(ProjectBuilder):
     """Windows specific class to export the project."""
 
     def __init__(self):
+        # The fingerprint of the certificate used to sign files
+        self.signtool_cert_fingerprint: str = ''
         super().__init__(clean_project_on_exit=True)
         self.exe_filename: str = self.basename + '.exe'
         self.exe: Path = self.project_dir / self.exe_filename
@@ -28,8 +30,6 @@ class WinProjectBuilder(ProjectBuilder):
         self.signtool_dir: Path = Path(
             f'C:/Program Files (x86)/Windows Kits/10/bin/{signtool_version}/x64'
         )
-        # The fingerprint of the certificate used to sign files
-        self.signtool_cert_fingerprint: str = ''
 
     def hook_extend_sys_path(
         self,

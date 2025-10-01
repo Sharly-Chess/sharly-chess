@@ -141,7 +141,6 @@
 {% endmacro %}
 
 {% macro gender_icon(gender) %}
-    <!-- gender_icon() -->
     {% if gender.value == 0 %}
         {% set _icon_class='-' %}
     {% elif gender.value == 1 %}
@@ -151,8 +150,7 @@
     {% else %}
         {% set _icon_class='bi-question' %}
     {% endif %}
-    {% if _icon_class %}<i class="{{ _icon_class }}"></i>{% endif %}
-    <!-- end gender_icon() -->
+    {%- if _icon_class -%}<i class="{{ _icon_class }}"></i>{%- endif -%}
 {% endmacro %}
 
 {% macro _select_option(value, text_or_option, selected) %}
