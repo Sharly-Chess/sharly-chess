@@ -15,6 +15,7 @@ English version below
 - Les tournois peuvent désormais avoir des critères de joueur·euses associés (3.1.0)
 - Import de tournois au format TRF (3.1.0)
 - Export des tournois au format TRF (3.1.0)
+- Correction de l'import TRF sans partie (3.1.1)
 
 ## Joueur·euses
 
@@ -61,6 +62,7 @@ English version below
 - Tournaments may now have player criteria associated with them (3.1.0)
 - Import tournaments from TRF (3.1.0)
 - Export tournaments to TRF (3.1.0)
+- Fixed TRF import with no games (3.1.1)
 
 ## Players
 
