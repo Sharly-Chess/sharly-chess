@@ -278,6 +278,21 @@ class Player:
             return player_rating
         return PlayerRating(0, PlayerRatingType.ESTIMATED)
 
+    @property
+    def has_real_rating(self) -> bool:
+        return any(
+            rating.type != PlayerRatingType.ESTIMATED
+            for rating in self.ratings.values()
+        )
+
+    @property
+    def first_real_rating_str(self) -> str:
+        for tournament_rating in TournamentRating:
+            rating = self.get_rating(tournament_rating)
+            if rating.type != PlayerRatingType.ESTIMATED:
+                return f'{rating} ({tournament_rating.acronym})'
+        raise ValueError('Player expected to have a real rating')
+
     def update_ratings(self, ratings: dict[TournamentRating, PlayerRating]):
         for tournament_rating, player_rating in ratings.items():
             self.stored_player.ratings[tournament_rating.value] = (
@@ -415,17 +430,6 @@ class Player:
             return rating
 
         return self.get_rating(self.tournament.rating)
-
-    @property
-    def first_real_rating(self) -> PlayerRating | None:
-        return next(
-            (
-                rating
-                for rating in self.ratings.values()
-                if rating.type != PlayerRatingType.ESTIMATED
-            ),
-            None,
-        )
 
     def ratings_str(self) -> str:
         return '/'.join(

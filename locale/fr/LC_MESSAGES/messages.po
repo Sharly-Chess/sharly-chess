@@ -731,6 +731,9 @@ msgstr "Classement blitz"
 msgid "Blitz:"
 msgstr "Blitz :"
 
+msgid "Blz *** BLITZ RATING ACRONYM"
+msgstr "Blz"
+
 #, python-format
 msgid "Board #%(board_number)d with %(color)s"
 msgstr "Échiquier n°%(board_number)d avec les %(color)s"
@@ -4247,6 +4250,9 @@ msgstr "Rondes"
 msgid "Rounds one Elected to Play"
 msgstr "Rondes jouées"
 
+msgid "Rpd *** RAPID RATING ACRONYM"
+msgstr "Rpd"
+
 msgid "Rules"
 msgstr "Règles"
 
@@ -4596,6 +4602,9 @@ msgstr "Statistiques"
 
 msgid "Status"
 msgstr "Statut"
+
+msgid "Std *** STANDARD RATING ACRONYM"
+msgstr "Std"
 
 msgid "Strong"
 msgstr "Préférence forte"

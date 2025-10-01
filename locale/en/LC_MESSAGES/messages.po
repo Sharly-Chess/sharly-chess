@@ -731,6 +731,9 @@ msgstr ""
 msgid "Blitz:"
 msgstr ""
 
+msgid "Blz *** BLITZ RATING ACRONYM"
+msgstr "Blz"
+
 #, python-format
 msgid "Board #%(board_number)d with %(color)s"
 msgstr ""
@@ -4247,6 +4250,9 @@ msgstr ""
 msgid "Rounds one Elected to Play"
 msgstr ""
 
+msgid "Rpd *** RAPID RATING ACRONYM"
+msgstr "Rpd"
+
 msgid "Rules"
 msgstr ""
 
@@ -4596,6 +4602,9 @@ msgstr ""
 
 msgid "Status"
 msgstr ""
+
+msgid "Std *** STANDARD RATING ACRONYM"
+msgstr "Std"
 
 msgid "Strong"
 msgstr ""

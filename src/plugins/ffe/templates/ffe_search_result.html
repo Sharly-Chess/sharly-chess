@@ -17,9 +17,8 @@
     ({{ player.year_of_birth }}, {{ player.category.short_name }})
 {% endif %}
 -
-{% set rating = player.first_real_rating %}
-{% if rating %}
-    {{ rating }}
+{% if player.has_real_rating %}
+    {{ player.first_real_rating_str }}
 {% else %}
     <i>{{ _('Unrated *** SINGULAR') }}</i>
 {% endif %}
