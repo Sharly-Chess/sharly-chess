@@ -431,6 +431,7 @@ class Player:
 
         return self.get_rating(self.tournament.rating)
 
+    @property
     def ratings_str(self) -> str:
         return '/'.join(
             [
