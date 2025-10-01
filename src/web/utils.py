@@ -29,10 +29,9 @@ class RequestUtils:
 
     @staticmethod
     def _get_request_param(request: HTMXRequest, param: str) -> Any:
-        if param in request.path_params:
-            return request.path_params[param]
-        if param in request.query_params:
-            value = request.query_params[param]
+        if value := request.path_params.get(param, None):
+            return value
+        if value := request.query_params.get(param, None):
             if isinstance(value, str) and value.isdigit():
                 return int(value)
             return value
