@@ -22,6 +22,7 @@ English version below
 - Remplacement des joueur·euses ajouté·es par erreur (3.1.0)
 - Amélioration de l'historique (3.1.0)
 - Correction de la recherche sans tournoi (3.1.1)
+- Ajout de l’année de naissance aux résultats de recherche (3.1.1)
 
 ## Écrans
 
@@ -67,6 +68,7 @@ English version below
 - Replace players added by mistake (3.1.0)
 - Improved player history (3.1.0)
 - Fixed the player search without tournament (3.1.1)
+- Added year of birth to search results (3.1.1)
 
 ## Screens
 

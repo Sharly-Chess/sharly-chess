@@ -731,6 +731,9 @@ msgstr ""
 msgid "Blitz:"
 msgstr ""
 
+msgid "Blz *** BLITZ RATING ACRONYM"
+msgstr "Blz"
+
 #, python-format
 msgid "Board #%(board_number)d with %(color)s"
 msgstr ""
@@ -4247,6 +4250,9 @@ msgstr ""
 msgid "Rounds one Elected to Play"
 msgstr ""
 
+msgid "Rpd *** RAPID RATING ACRONYM"
+msgstr "Rpd"
+
 msgid "Rules"
 msgstr ""
 
@@ -4596,6 +4602,9 @@ msgstr ""
 
 msgid "Status"
 msgstr ""
+
+msgid "Std *** STANDARD RATING ACRONYM"
+msgstr "Std"
 
 msgid "Strong"
 msgstr ""
@@ -5361,7 +5370,7 @@ msgstr ""
 msgid "Unable to upload tournament rules."
 msgstr ""
 
-msgid "Undefined **** PLURAL"
+msgid "Undefined *** PLURAL"
 msgstr "Undefined"
 
 msgid "Under 10"
@@ -5464,8 +5473,11 @@ msgstr ""
 msgid "Unpairing all the boards of this round is not possible because the round has results."
 msgstr ""
 
-msgid "Unrated"
-msgstr ""
+msgid "Unrated *** PLURAL"
+msgstr "Unrated"
+
+msgid "Unrated *** SINGULAR"
+msgstr "Unrated"
 
 msgid "Unrated Draw"
 msgstr ""
