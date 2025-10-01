@@ -428,7 +428,8 @@ class TrfTournamentImporter(FileTournamentImporter):
             stored_player.stored_tournament_player = stored_tournament_player
             stored_players.append(stored_player)
         stored_tournament.stored_boards_by_round = stored_boards_by_round
-        stored_tournament.rounds = max(tuple(stored_boards_by_round))
+        if stored_boards_by_round:
+            stored_tournament.rounds = max(tuple(stored_boards_by_round))
         return stored_tournament, stored_players
 
     @staticmethod
