@@ -73,8 +73,9 @@ __pycache__/
 /src/web/static/lib/select2/select2-*
 /src/web/static/lib/select2/themes/bootstrap-5-*
 
-
 /src/common/i18n/.auto-update*
 /tests/screenshots/*.png
 /*.diff
 /scripts/access_levels/*.md
+
+/TAG_MESSAGE*.txt

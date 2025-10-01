@@ -6269,6 +6269,3 @@ msgstr ""
 msgid "½ - ½ (U)"
 msgstr ""
 
-#~ msgid "No public screens"
-#~ msgstr ""
-
