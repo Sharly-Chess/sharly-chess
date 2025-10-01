@@ -228,15 +228,21 @@ class FFESqlServer(SqlServer):
         for token in tokens:
             order_clauses.append("""
                 CASE
-                    WHEN (UPPER(joueur.Nom) LIKE %s OR UPPER(joueur.Prenom) LIKE %s) AND federation = %s THEN 0
-                    WHEN (UPPER(joueur.Nom) LIKE %s OR UPPER(joueur.Prenom) LIKE %s) THEN 1
-                    WHEN federation = %s THEN 2
-                    ELSE 3
+                    WHEN UPPER(joueur.Nom) LIKE %s AND federation = %s THEN 0
+                    WHEN UPPER(joueur.Prenom) LIKE %s AND federation = %s THEN 1
+                    WHEN (UPPER(joueur.Nom) LIKE %s OR UPPER(joueur.Prenom) LIKE %s) AND federation = %s THEN 2
+                    WHEN UPPER(joueur.Nom) LIKE %s OR UPPER(joueur.Prenom) LIKE %s THEN 3
+                    WHEN federation = %s THEN 4
+                    ELSE 5
                 END
             """)
 
             # Params for this token in the same order
             params += [
+                f'{token}%',
+                federation,
+                f'{token}%',
+                federation,
                 f'{token}%',
                 f'{token}%',
                 federation,
