@@ -1,4 +1,5 @@
 {% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros %}
 
 <img
     class="player-federation-flag pe-1"
@@ -12,7 +13,15 @@
 <span class="fw-bold">
     {{ player.full_name }}
 </span>
-{{ player.ratings_str }}
+{% if player.year_of_birth %}
+    ({{ player.year_of_birth }}, {{ player.category.short_name }})
+{% endif %}
+-
+{% if player.has_real_rating %}
+    {{ player.first_real_rating_str }}
+{% else %}
+    <i>{{ _('Unrated *** SINGULAR') }}</i>
+{% endif %}
 {% if player.plugin_data.ffe.league %}
     - {{ player.plugin_data.ffe.league }}
 {% endif %}

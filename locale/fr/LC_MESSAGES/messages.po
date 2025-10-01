@@ -731,6 +731,9 @@ msgstr "Classement blitz"
 msgid "Blitz:"
 msgstr "Blitz :"
 
+msgid "Blz *** BLITZ RATING ACRONYM"
+msgstr "Blz"
+
 #, python-format
 msgid "Board #%(board_number)d with %(color)s"
 msgstr "Échiquier n°%(board_number)d avec les %(color)s"
@@ -4247,6 +4250,9 @@ msgstr "Rondes"
 msgid "Rounds one Elected to Play"
 msgstr "Rondes jouées"
 
+msgid "Rpd *** RAPID RATING ACRONYM"
+msgstr "Rpd"
+
 msgid "Rules"
 msgstr "Règles"
 
@@ -4596,6 +4602,9 @@ msgstr "Statistiques"
 
 msgid "Status"
 msgstr "Statut"
+
+msgid "Std *** STANDARD RATING ACRONYM"
+msgstr "Std"
 
 msgid "Strong"
 msgstr "Préférence forte"
@@ -5361,7 +5370,7 @@ msgstr "Impossible de définir la visibilité du tournoi."
 msgid "Unable to upload tournament rules."
 msgstr "Impossible de téléverser le règlement du tournoi."
 
-msgid "Undefined **** PLURAL"
+msgid "Undefined *** PLURAL"
 msgstr "Non définis"
 
 msgid "Under 10"
@@ -5464,8 +5473,11 @@ msgstr "Désapparier une ronde publiée peut être très désagréable pour les 
 msgid "Unpairing all the boards of this round is not possible because the round has results."
 msgstr "Désapparier tous les échiquiers est impossible tant que la ronde a des résultats enregistrés."
 
-msgid "Unrated"
+msgid "Unrated *** PLURAL"
 msgstr "Non-classé·es"
+
+msgid "Unrated *** SINGULAR"
+msgstr "Non-classé·e"
 
 msgid "Unrated Draw"
 msgstr "Nulle non comptabilisé pour le classement Elo"

@@ -7,18 +7,23 @@ English version below
 - Prise en charge des serveurs avec plusieurs adresses IP (3.1.0)
 - Amélioration de la console du serveur (3.1.0)
 - Amélioration de l’ergonomie pour la modification, la duplication et l’archivage des événements (3.1.0)
+- Correction de l'apparition d'un terminal lors de l'upload FFE (3.1.1)
+- Restauration de la signature de l'application (3.1.1)
 
 ## Tournois
 
 - Les tournois peuvent désormais avoir des critères de joueur·euses associés (3.1.0)
 - Import de tournois au format TRF (3.1.0)
 - Export des tournois au format TRF (3.1.0)
+- Correction de l'import TRF sans partie (3.1.1)
 
 ## Joueur·euses
 
 - Amélioration de la recherche de joueur·euses (3.1.0)
 - Remplacement des joueur·euses ajouté·es par erreur (3.1.0)
 - Amélioration de l'historique (3.1.0)
+- Correction de la recherche sans tournoi (3.1.1)
+- Ajout de l’année de naissance aux résultats de recherche (3.1.1)
 
 ## Écrans
 
@@ -49,18 +54,23 @@ English version below
 - Support for servers with multiple IP addresses (3.1.0)
 - Improved the server console (3.1.0)
 - Improved the ergonomy for modifying, duplicating and archiving events (3.1.0)
+- Fixed terminal flashing during the FFE upload (3.1.1)
+- Restore the app signature (3.1.1)
 
 ## Tournaments
 
 - Tournaments may now have player criteria associated with them (3.1.0)
 - Import tournaments from TRF (3.1.0)
 - Export tournaments to TRF (3.1.0)
+- Fixed TRF import with no games (3.1.1)
 
 ## Players
 
 - Improved player search (3.1.0)
 - Replace players added by mistake (3.1.0)
 - Improved player history (3.1.0)
+- Fixed the player search without tournament (3.1.1)
+- Added year of birth to search results (3.1.1)
 
 ## Screens
 
