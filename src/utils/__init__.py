@@ -1,8 +1,11 @@
 import re
+import subprocess
+import sys
 from abc import ABC, abstractmethod
 from decimal import Decimal
 from functools import lru_cache, cache
 from math import floor
+from subprocess import CompletedProcess
 from typing import Callable, Iterable, Protocol, Hashable, Collection
 
 import iso4217parse
@@ -201,6 +204,17 @@ class StaticUtils:
             index += 1
             name = f'{base_name} ({index})'
         return name
+
+    @staticmethod
+    def run_process(cmd: list, **kwargs) -> CompletedProcess:
+        """Run a subprocess without showing a console window on Windows."""
+        if sys.platform == 'win32':
+            # Prevent flashing console windows when app is packaged with PyInstaller (--windowed)
+            startupinfo = subprocess.STARTUPINFO()
+            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+            kwargs.setdefault('startupinfo', startupinfo)
+            kwargs.setdefault('creationflags', subprocess.CREATE_NO_WINDOW)
+        return subprocess.run(cmd, **kwargs)
 
 
 class SharedUtils:

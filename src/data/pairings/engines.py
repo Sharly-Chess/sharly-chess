@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-import subprocess
 from functools import cache
 from operator import attrgetter
 from pathlib import Path
@@ -17,6 +16,7 @@ from common.tool_installer import BbpPairingsInstaller
 from data.board import Board
 from data.pairings.settings import BergerNumbersSetting
 from database.sqlite.event.event_store import StoredBoard
+from utils import StaticUtils
 from utils.enum import TrfType, Result
 
 if TYPE_CHECKING:
@@ -183,7 +183,7 @@ class BbpPairings(PairingEngine):
         )
         with open(trf_file_path, 'w', encoding='utf-8') as trf_file:
             trf.dump(trf_file, trf_tournament)
-        result = subprocess.run(
+        result = StaticUtils.run_process(
             [
                 self.executable_path,
                 '--dutch',
@@ -255,12 +255,12 @@ class BbpPairings(PairingEngine):
         )
         with open(trfx_file_path, 'w', encoding='utf-8') as trf_file:
             trf.dump(trf_file, trf_tournament)
-        result = subprocess.run(
+        result = StaticUtils.run_process(
             [
                 self.executable_path,
                 '--dutch',
                 trfx_file_path,
-                # The only way to get a checklist is to actaully pair the round....
+                # The only way to get a checklist is to actually pair the round....
                 '-p',
                 pairings_file_path,
                 # Request the checklist
