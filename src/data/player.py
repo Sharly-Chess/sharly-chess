@@ -513,7 +513,6 @@ class Player:
             self.tournament.rating, self.tournament.player_rating_type
         )
 
-    @property
     def ratings_str(self) -> str:
         return '/'.join(
             [
