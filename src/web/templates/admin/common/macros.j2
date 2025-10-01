@@ -176,7 +176,7 @@
     {% endif %}
 {% endmacro %}
 
-{% macro _select_content(
+{% macro select_content(
     id,
     name,
     options,
@@ -433,7 +433,7 @@ with_indicator: display a loading indicator, optional
                 "
             >
                 {% if input_type == 'select' %}
-                    {{ _select_content(
+                    {{ select_content(
                         id=id,
                         name=name,
                         options=select_options,
@@ -1170,7 +1170,7 @@ with_indicator: display a loading indicator, optional
         hx-indicator="#please-wait"
         style="flex-wrap: nowrap !important;"
     >
-        {{ _select_content(
+        {{ select_content(
             id=id ~ '-select',
             name=name,
             options=options,

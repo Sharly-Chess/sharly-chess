@@ -39,7 +39,6 @@ from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import (
     StoredConfig,
     StoredPlugin,
-    StoredLocalSourceDatabase,
 )
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
@@ -49,8 +48,14 @@ from database.sqlite.local_source_database import (
     OutdatedActionManager,
     OutdatedDelayManager,
 )
-from database.sqlite.local_source_database.actions import NotifOutdatedAction
-from database.sqlite.local_source_database.delays import DisabledOutdatedDelay
+from database.sqlite.local_source_database.actions import (
+    NotifOutdatedAction,
+    OutdatedAction,
+)
+from database.sqlite.local_source_database.delays import (
+    DisabledOutdatedDelay,
+    OutdatedDelay,
+)
 from plugins.manager import plugin_manager
 from utils import StaticUtils
 from utils.enum import FormAction
@@ -1065,30 +1070,16 @@ class IndexAdminController(BaseAdminController):
             },
         )
 
-    def _database_modal_context(
-        self,
-        data: dict[str, str] | None = None,
-        errors: dict[str, str] | None = None,
-    ) -> dict[str, Any]:
-        data = data or {}
-        databases: list[LocalSourceDatabase] = LocalSourceDatabaseManager.objects()
-        for database in databases:
-            data |= {
-                f'{database.id}_outdate_delay': database.outdate_delay.id,
-                f'{database.id}_outdate_action': (database.outdate_action.id),
-            }
-        template_context = {
-            'databases': databases,
+    @staticmethod
+    def _database_modal_context() -> dict[str, Any]:
+        return {
+            'databases': LocalSourceDatabaseManager.objects(),
             'online_data_sources': OnlineDataSourceManager.objects(),
             'network_connected': NetworkMonitor.connected(),
             'outdate_delay_options': OutdatedDelayManager.options(),
             'outdate_action_options': OutdatedActionManager.options(),
             'modal': 'database',
-            'data': data,
-            'errors': errors or {},
         }
-
-        return template_context
 
     @get(
         path='/database-modal',
@@ -1104,7 +1095,7 @@ class IndexAdminController(BaseAdminController):
         )
 
     @patch(
-        path='/database-options-update',
+        path='/database-options-update/{database_id:str}',
         name='admin-database-options-update',
         guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
     )
@@ -1115,46 +1106,23 @@ class IndexAdminController(BaseAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
+        database_id: str,
     ) -> Template:
-        source_databases: list[LocalSourceDatabase] = (
-            LocalSourceDatabaseManager.objects()
-        )
+        database = LocalSourceDatabaseManager.get_object(database_id)
+        stored_database = database.stored_source_database
+        delay: OutdatedDelay = DisabledOutdatedDelay()
+        if delay_id := WebContext.form_data_to_str(data, 'outdate_delay'):
+            delay = OutdatedDelayManager.get_object(delay_id)
+        action: OutdatedAction = NotifOutdatedAction()
+        if action_id := WebContext.form_data_to_str(data, 'outdate_action'):
+            action = OutdatedActionManager.get_object(action_id)
+        stored_database.outdate_delay = delay.id
+        stored_database.outdate_action = action.id
         with ConfigDatabase(write=True) as config_database:
-            for source_database in source_databases:
-                outdate_delay = (
-                    WebContext.form_data_to_str(
-                        data,
-                        f'{source_database.id}_outdate_delay',
-                    )
-                    or DisabledOutdatedDelay.static_id()
-                )
-                outdate_action = (
-                    WebContext.form_data_to_str(
-                        data, f'{source_database.id}_outdate_action'
-                    )
-                    or NotifOutdatedAction.static_id()
-                )
-                config_database.update_stored_local_source_database(
-                    StoredLocalSourceDatabase(
-                        name=source_database.id,
-                        outdate_delay=outdate_delay,
-                        outdate_action=outdate_action,
-                        updated_at=source_database.updated_at_timestamp,
-                    )
-                )
-        Message.success(
-            request, _('Local source databases settings have been updated.')
-        )
-
-        # Clear the modal contents, and send an event
+            config_database.update_stored_local_source_database(stored_database)
         return HTMXTemplate(
-            template_name='common/empty_modal_and_messages.html',
-            context={
-                'messages': Message.messages(request),
-            },
-            re_target='#modal-wrapper',
-            trigger_event='close_modal',
-            after='receive',
+            template_name='admin/common/database/database_row.html',
+            context=self._database_modal_context() | {'database': database},
         )
 
     @get(
