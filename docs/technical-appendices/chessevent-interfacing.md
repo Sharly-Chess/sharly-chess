@@ -8,9 +8,64 @@ This page describes the technical aspects of _Sharly Chess_'s interfacing with t
 
 ## Authentication
 
-Downloading requires authentication to limit the dissemination of player contact information (email addresses and phone numbers).
+Requests to the ChessEvent platform require authentication to limit the dissemination of player contact information (email addresses and phone numbers).
 
 The credentials used for authentication are those of the _ChessEvent_ platform (administrator, user, or event manager).
+
+## Tournament Request
+
+> [!NOTE]
+> :information_source: Tournaments requests are not implemented yet.
+
+Tournament requests are used to retrieve the names of the tournaments of a ChessEvent event (request to Dominique RUHLMANN 20251002).
+
+### URL
+
+The request URL is https://services.breizh-chess-online.fr/chessevent/tournaments.
+
+### Parameters
+
+All parameters are passed in clear text in the payload of the HTTPS request (POST method).
+
+| Parameter          | Description                                       | Example                |
+|--------------------|---------------------------------------------------|------------------------|
+| `user_id`          | The user's FFE ID on the _ChessEvent_ platform.   | `C69548`               |
+| `password`         | The user's password on the _ChessEvent_ platform. | `my-password`          |
+| `event_id`         | The event ID on the _ChessEvent_ platform.        | `BRE_35_domloupfide36` |
+
+### Expected Data
+
+The data received is expected as a list of strings in JSON format (`Content-Type: application/json`).
+
+| Field                                       | Type        | Description                                   |
+|---------------------------------------------|-------------|-----------------------------------------------|
+| `tournaments`                               | `str`       | The list of tournament names (details below). |
+
+Example:
+
+`[`<br/>
+&nbsp;&nbsp;`'Tournoi A',`<br/>
+&nbsp;&nbsp;`'Tournoi B',`<br/>
+&nbsp;&nbsp;`'Tournoi C',`<br/>
+&nbsp;&nbsp;`'Tournoi D',`<br/>
+&nbsp;&nbsp;`'Tournoi E',`<br/>
+&nbsp;&nbsp;`'Tournoi F',`<br/>
+`]`
+
+### Error Codes
+
+In case of error, the JSON response contains only one `error: str` field that specifies the error encountered.
+
+The following error codes are used:
+
+| HTTP Status  | Meaning                                                                  | `error` Field          |
+|--------------|--------------------------------------------------------------------------|------------------------|
+| 200          | _success_                                                                |                        |
+| 401          | Authentication problem (unable to log in to the _ChessEvent_ platform)   | `Unauthorized`         |
+| 403          | Authorization problem (unauthorized credentials for the requested event) | `Access forbidden`     |
+| 497          | User not found                                                           | `User not found`       |
+| 499          | Event not found                                                          | `Event not found`      |
+| 500          | Other errors                                                             | Specify                |
 
 ## Download Requests
 
@@ -29,9 +84,9 @@ All parameters are passed in clear text in the payload of the HTTPS request (POS
 | `event_id`         | The event ID on the _ChessEvent_ platform.        | `BRE_35_domloupfide36` |
 | `tournament_name`  | The tournament name on the _ChessEvent_ platform. | `Tournoi A`            |
 
-## Expected Data
+### Expected Data
 
-### Tournament Description
+#### Tournament Description
 
 The data received is expected as a dictionary in JSON format (`Content-Type: application/json`).
 
@@ -71,7 +126,7 @@ Example of tournament:
 &nbsp;&nbsp;`],`<br/>
 `}`
 
-### Player description
+#### Player description
 
 | Field                  | Type        | Description                                                                                                                                                                                                          |
 |------------------------|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -137,7 +192,7 @@ Example of player:
 &nbsp;&nbsp;`}`<br/>
 `}`
 
-## Error Codes
+### Error Codes
 
 In case of error, the JSON response contains only one `error: str` field that specifies the error encountered.
 
