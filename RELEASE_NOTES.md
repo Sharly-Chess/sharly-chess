@@ -25,6 +25,7 @@ English version below
 - Amélioration de l'historique (3.1.0)
 - Correction de la recherche sans tournoi (3.1.1)
 - Ajout de l’année de naissance aux résultats de recherche (3.1.1)
+- Amélioration de la recherche des joueur·euses (3.1.2)
 
 ## Écrans
 
@@ -74,11 +75,12 @@ English version below
 - Improved player history (3.1.0)
 - Fixed the player search without tournament (3.1.1)
 - Added year of birth to search results (3.1.1)
+- Improved player search (3.1.2)
 
 ## Screens
 
 - Rotator screens reordering (3.1.0)
-- Fixed the screen uniq ID update (3.1.2)
+- Fixed screen uniq ID update (3.1.2)
 
 ## Pairings
 
