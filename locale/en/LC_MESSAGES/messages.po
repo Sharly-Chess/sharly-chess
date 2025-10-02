@@ -433,9 +433,6 @@ msgstr ""
 msgid "Add an account to the event."
 msgstr ""
 
-msgid "Add events"
-msgstr ""
-
 msgid "Add families"
 msgstr ""
 
@@ -1396,9 +1393,6 @@ msgid "Delete account"
 msgstr ""
 
 msgid "Delete display controller"
-msgstr ""
-
-msgid "Delete events"
 msgstr ""
 
 msgid "Delete player"
@@ -2796,6 +2790,9 @@ msgstr ""
 msgid "Manage archives"
 msgstr ""
 
+msgid "Manage events"
+msgstr ""
+
 msgid "Manage prizes"
 msgstr ""
 
@@ -4086,7 +4083,7 @@ msgstr ""
 msgid "Remove the screen from the display controller."
 msgstr ""
 
-msgid "Rename events"
+msgid "Rename event"
 msgstr ""
 
 msgid "Replace"
@@ -5521,7 +5518,7 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
-msgid "Update events"
+msgid "Update event"
 msgstr ""
 
 msgid "Update players"

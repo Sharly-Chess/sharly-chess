@@ -7,49 +7,50 @@
             {{ _('Edit event') }}
         </span>
     </h2>
-    <div id="uniq-id-field" class="form-text pt-0 mt-0">
-        {{ _('Unique ID: [%(uniq_id)s]', uniq_id=admin_event.uniq_id) }}
-        <span
-            {{ macros.tooltip_attributes(
-                'info', _('Edit the unique ID.'), 'right'
-            ) }}
-        >
-            <button
-                id="uniq-id-update-button"
-                data-testid="uniq-id-update-button"
-                type="button"
-                class="btn btn-sm text-primary text-nowrap"
+    {% if client.can_rename_event %}
+        <div id="uniq-id-field" class="form-text pt-0 mt-0">
+            {{ _('Unique ID: [%(uniq_id)s]', uniq_id=admin_event.uniq_id) }}
+            <span
+                {{ macros.tooltip_attributes(
+                    'info', _('Edit the unique ID.'), 'right'
+                ) }}
             >
-                <i class="bi-pencil"></i>
-            </button>
-        </span>
-    </div>
-    <div
-        id="uniq-id-update-form-container"
-        class="mt-1 mb-1 col-12 col-md-6"
-        style="display: none"
-    >
-        {{ admin_macros.uniq_id_form(
-            current_uniq_id=admin_event.uniq_id,
-            existing_uniq_ids=event_uniq_ids,
-            placeholder=_('E.g.: %(string)s', string=_('my-event')),
-            patch_url=url_for(
-                'admin-event-uniq-id-update',
-                event_uniq_id=admin_event.uniq_id,
-                event_id=admin_event.id
-            ),
-        ) }}
-    </div>
+                <button
+                    id="uniq-id-update-button"
+                    data-testid="uniq-id-update-button"
+                    type="button"
+                    class="btn btn-sm text-primary text-nowrap"
+                >
+                    <i class="bi-pencil"></i>
+                </button>
+            </span>
+        </div>
+        <div
+            id="uniq-id-update-form-container"
+            class="mt-1 mb-1 col-12 col-md-6"
+            style="display: none"
+        >
+            {{ admin_macros.uniq_id_form(
+                current_uniq_id=admin_event.uniq_id,
+                existing_uniq_ids=event_uniq_ids,
+                placeholder=_('E.g.: %(string)s', string=_('my-event')),
+                patch_url=url_for(
+                    'admin-event-uniq-id-update',
+                    event_uniq_id=admin_event.uniq_id,
+                    event_id=admin_event.id
+                ),
+            ) }}
+        </div>
+        <script>
+            {% set id = 'uniq-id-update' %}
+            $('#{{ id }}-button').click(() => {
+                $('#{{ id }}-form-container').css('display', '');
+                $('#uniq-id-field').css('display', 'none');
+            });
+            $('#{{ id }}-cancel-button').click(() => {
+                $('#{{ id }}-form-container').css('display', 'none');
+                $('#uniq-id-field').css('display', '');
+            });
+        </script>
+    {% endif %}
 </div>
-
-<script>
-    {% set id = 'uniq-id-update' %}
-    $('#{{ id }}-button').click(() => {
-        $('#{{ id }}-form-container').css('display', '');
-        $('#uniq-id-field').css('display', 'none');
-    });
-    $('#{{ id }}-cancel-button').click(() => {
-        $('#{{ id }}-form-container').css('display', 'none');
-        $('#uniq-id-field').css('display', '');
-    });
-</script>

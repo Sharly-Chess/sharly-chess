@@ -126,29 +126,24 @@ class Client:
         return AuthAction.VIEW_PASSED_EVENTS in self.allowed_actions
 
     @property
-    def can_add_event(self) -> bool:
-        """Returns true if the client can add an event."""
-        return AuthAction.ADD_EVENTS in self.allowed_actions
-
-    @property
     def can_view_detailed_event_cards(self) -> bool:
         """Returns true if the client can view the details on the event cards."""
         return AuthAction.VIEW_DETAILED_EVENT_CARDS in self.allowed_actions
 
     @property
-    def can_delete_event(self) -> bool:
-        """Returns true if the client can delete the event."""
-        return AuthAction.DELETE_EVENTS in self.allowed_actions
+    def can_manage_events(self) -> bool:
+        """Returns true if the client can manage the events."""
+        return AuthAction.MANAGE_EVENTS in self.allowed_actions
 
     @property
     def can_rename_event(self) -> bool:
         """Returns true if the client can rename the event (change the URLs)."""
-        return AuthAction.RENAME_EVENTS in self.allowed_actions
+        return AuthAction.RENAME_EVENT in self.allowed_actions
 
     @property
     def can_update_event(self) -> bool:
         """Returns true if the client can update the event."""
-        return AuthAction.UPDATE_EVENTS in self.allowed_actions
+        return AuthAction.UPDATE_EVENT in self.allowed_actions
 
     @property
     def can_view_event_config(self) -> bool:
