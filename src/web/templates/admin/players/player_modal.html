@@ -69,9 +69,9 @@
                                     hx-target="#search-results"
                                     hx-get="{{ url_for('admin-search-player', event_uniq_id=admin_event.uniq_id) }}"
                                     hx-vals='js:{
-                                    data_source_id: $("#data-source-select").val(),
-                                    {% if admin_player %}player_id: {{ admin_player.id }}{% endif %}
-                                }'
+                                        data_source_id: $("#data-source-select").val(),
+                                        {% if admin_player %}player_id: {{ admin_player.id }}{% endif %}
+                                    }'
                                     hx-on::before-request="$('#search-results').show();"
                                     hx-on::after-request="$('#search-results').show();"
                                     hx-sync="this:replace"
