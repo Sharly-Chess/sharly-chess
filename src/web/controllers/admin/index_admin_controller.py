@@ -1120,6 +1120,7 @@ class IndexAdminController(BaseAdminController):
         stored_database.outdate_action = action.id
         with ConfigDatabase(write=True) as config_database:
             config_database.update_stored_local_source_database(stored_database)
+        database.check()
         return HTMXTemplate(
             template_name='admin/common/database/database_row.html',
             context=self._database_modal_context() | {'database': database},
