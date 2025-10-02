@@ -230,10 +230,9 @@ class FFESqlServer(SqlServer):
                 CASE
                     WHEN UPPER(joueur.Nom) LIKE %s AND federation = %s THEN 0
                     WHEN UPPER(joueur.Prenom) LIKE %s AND federation = %s THEN 1
-                    WHEN (UPPER(joueur.Nom) LIKE %s OR UPPER(joueur.Prenom) LIKE %s) AND federation = %s THEN 2
-                    WHEN UPPER(joueur.Nom) LIKE %s OR UPPER(joueur.Prenom) LIKE %s THEN 3
-                    WHEN federation = %s THEN 4
-                    ELSE 5
+                    WHEN UPPER(joueur.Nom) LIKE %s OR UPPER(joueur.Prenom) LIKE %s THEN 2
+                    WHEN federation = %s THEN 3
+                    ELSE 4
                 END
             """)
 
@@ -241,9 +240,6 @@ class FFESqlServer(SqlServer):
             params += [
                 f'{token}%',
                 federation,
-                f'{token}%',
-                federation,
-                f'{token}%',
                 f'{token}%',
                 federation,
                 f'{token}%',

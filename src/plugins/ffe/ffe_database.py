@@ -223,10 +223,9 @@ class FfeDatabase(LocalSourceDatabase):
                 CASE
                     WHEN last_name LIKE ? AND federation = ? THEN 0
                     WHEN first_name LIKE ? AND federation = ? THEN 1
-                    WHEN (last_name LIKE ? OR first_name LIKE ?) AND federation = ? THEN 2
-                    WHEN (last_name LIKE ? OR first_name LIKE ?) THEN 3
-                    WHEN federation = ? THEN 4
-                    ELSE 5
+                    WHEN (last_name LIKE ? OR first_name LIKE ?) THEN 2
+                    WHEN federation = ? THEN 3
+                    ELSE 4
                 END
             """)
 
@@ -234,9 +233,6 @@ class FfeDatabase(LocalSourceDatabase):
             params += [
                 f'{token}%',
                 federation,
-                f'{token}%',
-                federation,
-                f'{token}%',
                 f'{token}%',
                 federation,
                 f'{token}%',
