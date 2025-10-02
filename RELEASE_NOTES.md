@@ -29,6 +29,7 @@ English version below
 ## Écrans
 
 - Réorganisation des écrans composant les écrans rotatifs (3.1.0)
+- Correction de la mise à jour de l'identifiant unique des écrans (3.1.2)
 
 ## Appariements
 
@@ -77,6 +78,7 @@ English version below
 ## Screens
 
 - Rotator screens reordering (3.1.0)
+- Fixed the screen uniq ID update (3.1.2)
 
 ## Pairings
 

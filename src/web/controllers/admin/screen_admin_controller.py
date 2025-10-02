@@ -1093,8 +1093,9 @@ class ScreenAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
+        screen_id: int,
     ) -> HTMXTemplate:
-        web_context = ScreenAdminWebContext(request)
+        web_context = ScreenAdminWebContext(request, screen_id)
         event = web_context.get_admin_event()
         screen = web_context.get_admin_screen()
         new_uniq_id = WebContext.form_data_to_str(data, 'uniq_id')
@@ -1114,10 +1115,10 @@ class ScreenAdminController(BaseEventAdminController):
         with EventDatabase(event.uniq_id, True) as database:
             database.update_stored_screen(stored_screen)
 
-        web_context = ScreenAdminWebContext(request, reload_event=True)
+        web_context = ScreenAdminWebContext(request, screen_id, reload_event=True)
         event = web_context.get_admin_event()
         return HTMXTemplate(
-            template_name='/screens/screen_update_modal_header.html',
+            template_name='/admin/screens/screen_update_modal_header.html',
             context=web_context.template_context
             | {'screen_uniq_ids': list(event.screens_by_uniq_id.keys())},
             re_swap='innerHTML',
