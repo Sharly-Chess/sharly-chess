@@ -205,6 +205,11 @@
                     {{ _('Ratings') }}
                 </h4>
                 <div class="row gy-2 gx-3">
+                    {% set show_estimated = (
+                        data['standard_rating_estimated'] or
+                        data['rapid_rating_estimated'] or
+                        data['blitz_rating_estimated']
+                    ) %}
                     {% for tournament_rating, tournament_rating_strings in tournament_ratings_strings.items() %}
                         <div class="col-4">
                             {# can not use *_input() here because of a specific pattern for rating type/value #}
@@ -245,7 +250,12 @@
                                         />
                                         <div>{{ rating_type_labels['national'] }}</div>
                                     </div>
-                                    <div class="d-flex align-items-center gap-2">
+                                    <div
+                                        class="estimated-container d-flex align-items-center gap-2"
+                                        {% if not show_estimated_ratings %}
+                                            style="display:none !important"
+                                        {% endif %}
+                                    >
                                         <input
                                             name="{{ estimated }}"
                                             type="number"
@@ -257,7 +267,6 @@
                                         />
                                         <div>{{ rating_type_labels['estimated'] }}</div>
                                     </div>
-
                                     {% if name in errors %}
                                         <div id="{{ id }}-error" class="form-text invalid-feedback">
                                             {{ errors[name] }}
@@ -267,6 +276,24 @@
                             {% endwith %}
                         </div>
                     {% endfor %}
+                    {% if not show_estimated_ratings %}
+                        <div class="text-center">
+                            <button
+                                id="add-estimated"
+                                class="btn btn-sm btn-outline-primary"
+                            >
+                                <i class="bi-plus-circle pe-1"></i>
+                                {{ _('Add estimated ratings') }}
+                            </button>
+                            <script>
+                                $('#add-estimated').click(function (e) {
+                                    e.preventDefault();
+                                    $('.estimated-container').css('display', 'flex');
+                                    $(this).parent().css('display', 'none');
+                                })
+                            </script>
+                        </div>
+                    {% endif %}
                 </div>
 
                 <h4>
