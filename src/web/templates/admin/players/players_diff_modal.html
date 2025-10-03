@@ -324,7 +324,7 @@
                                         {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=player.ratings[rt], new=player_match.updated_ratings(rt)), 'top') }}{% endif %}
                                     >
                                         {% if field_updated %}
-                                            {{ match_player.ratings[rt] }}
+                                            {{ player_match.updated_ratings(rt) }}
                                         {% else %}
                                             {{ player.ratings[rt] }}
                                         {% endif %}

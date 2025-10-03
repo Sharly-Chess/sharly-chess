@@ -102,7 +102,14 @@ class PlayerRating:
         }
 
     def __str__(self) -> str:
-        return f'{self.fide or "-"}F/{self.national or "-"}N/{self.estimated or "-"}E'
+        parts = []
+        if self.fide is not None:
+            parts.append(f'{self.fide}{PlayerRatingType.FIDE.short_name}')
+        if self.national is not None:
+            parts.append(f'{self.national}{PlayerRatingType.NATIONAL.short_name}')
+        if self.estimated is not None:
+            parts.append(f'{self.estimated}{PlayerRatingType.ESTIMATED.short_name}')
+        return '/'.join(parts) if parts else '-'
 
 
 @dataclass
