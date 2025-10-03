@@ -116,7 +116,7 @@ class StoredTournamentPlayer:
 class StoredPlayer:
     id: int | None
     last_name: str
-    ratings: dict[int, dict[str, int]]
+    ratings: dict[int, dict[str, int | None]]
     first_name: str | None = None
     date_of_birth: date | None = None
     gender: int = 0
@@ -165,6 +165,7 @@ class StoredTournament:
     check_in_open: bool = False
     rounds: int = 1
     rating: int = 1
+    player_rating_type: int = 3
     last_update: float = 0.0
     last_player_update: float = 0.0
     last_pairing_update: float = 0.0

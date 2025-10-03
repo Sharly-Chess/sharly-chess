@@ -174,7 +174,13 @@ class PrizesTestCase(TestCase):
             owed=0,
             paid=0,
             ratings={
-                rating: PlayerRating(elo, rating_type).stored_value
+                rating: PlayerRating(
+                    estimated=elo
+                    if rating_type == PlayerRatingType.ESTIMATED
+                    else None,
+                    national=elo if rating_type == PlayerRatingType.NATIONAL else None,
+                    fide=elo if rating_type == PlayerRatingType.FIDE else None,
+                ).stored_value
                 for rating in TournamentRating
             },
             club=club,

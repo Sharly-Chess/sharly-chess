@@ -376,6 +376,10 @@ class Tournament:
     def rating(self) -> TournamentRating:
         return TournamentRating(self.stored_tournament.rating)
 
+    @cached_property
+    def player_rating_type(self) -> PlayerRatingType:
+        return PlayerRatingType(self.stored_tournament.player_rating_type)
+
     @property
     def override_unrated_rapid_blitz(self) -> bool:
         if self.stored_tournament.override_unrated_rapid_blitz is not None:

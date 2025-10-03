@@ -74,11 +74,9 @@ class TestPlayersFunctionality:
             assert player.club.name == 'SC Club'
             assert player.fixed == 100
             assert player.ratings == {
-                TournamentRating.STANDARD: PlayerRating(
-                    1000, PlayerRatingType.ESTIMATED
-                ),
-                TournamentRating.RAPID: PlayerRating(1500, PlayerRatingType.NATIONAL),
-                TournamentRating.BLITZ: PlayerRating(2000, PlayerRatingType.FIDE),
+                TournamentRating.STANDARD: PlayerRating(estimated=1000),
+                TournamentRating.RAPID: PlayerRating(national=1500),
+                TournamentRating.BLITZ: PlayerRating(fide=2000),
             }
             assert player.title == PlayerTitle.GRANDMASTER
             assert player.federation.name == 'FRA'
