@@ -5,7 +5,7 @@ from database.sqlite.event.event_database import EventDatabase
 import pytest
 from playwright.sync_api import Page, expect, APIRequestContext
 from tests.test_config import TestUtils
-from utils.enum import PlayerGender, PlayerRatingType, PlayerTitle, TournamentRating
+from utils.enum import PlayerGender, PlayerTitle, TournamentRating
 
 EVENT_ID = 'event-test-players'
 TOURNAMENT_ID = 'tournament-test-players'
@@ -36,18 +36,9 @@ class TestPlayersFunctionality:
         modal.get_by_test_id('gender').select_option(str(PlayerGender.MALE.value))
         modal.get_by_test_id('club').fill('SC Club')
         modal.get_by_test_id('fixed').fill('100')
-        modal.get_by_test_id('standard-rating').fill('1000')
-        modal.get_by_test_id('standard-rating-type').select_option(
-            str(PlayerRatingType.ESTIMATED.value)
-        )
-        modal.get_by_test_id('rapid-rating').fill('1500')
-        modal.get_by_test_id('rapid-rating-type').select_option(
-            str(PlayerRatingType.NATIONAL.value)
-        )
-        modal.get_by_test_id('blitz-rating').fill('2000')
-        modal.get_by_test_id('blitz-rating-type').select_option(
-            str(PlayerRatingType.FIDE.value)
-        )
+        modal.get_by_test_id('standard-rating-estimated').fill('1000')
+        modal.get_by_test_id('rapid-rating-national').fill('1500')
+        modal.get_by_test_id('blitz-rating-fide').fill('2000')
         modal.get_by_test_id('title').select_option(str(PlayerTitle.GRANDMASTER.value))
         modal.get_by_test_id('federation').select_option('FRA')
         modal.get_by_test_id('mail').fill('john.doe@sharly-chess.com')
