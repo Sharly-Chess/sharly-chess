@@ -16,6 +16,7 @@ English version below
 - Import de tournois au format TRF (3.1.0)
 - Export des tournois au format TRF (3.1.0)
 - Correction de l'import TRF sans partie (3.1.1)
+- Correction du problème de réimportation ChessEvent et TRF (3.1.2)
 
 ## Joueur·euses
 
@@ -24,10 +25,12 @@ English version below
 - Amélioration de l'historique (3.1.0)
 - Correction de la recherche sans tournoi (3.1.1)
 - Ajout de l’année de naissance aux résultats de recherche (3.1.1)
+- Amélioration de la recherche des joueur·euses (3.1.2)
 
 ## Écrans
 
 - Réorganisation des écrans composant les écrans rotatifs (3.1.0)
+- Correction de la mise à jour de l'identifiant unique des écrans (3.1.2)
 
 ## Appariements
 
@@ -63,6 +66,7 @@ English version below
 - Import tournaments from TRF (3.1.0)
 - Export tournaments to TRF (3.1.0)
 - Fixed TRF import with no games (3.1.1)
+- Fixed ChessEvent and TRF re-import issue (3.1.2)
 
 ## Players
 
@@ -71,10 +75,12 @@ English version below
 - Improved player history (3.1.0)
 - Fixed the player search without tournament (3.1.1)
 - Added year of birth to search results (3.1.1)
+- Improved player search (3.1.2)
 
 ## Screens
 
 - Rotator screens reordering (3.1.0)
+- Fixed screen uniq ID update (3.1.2)
 
 ## Pairings
 

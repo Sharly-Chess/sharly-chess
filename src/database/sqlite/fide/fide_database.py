@@ -269,16 +269,18 @@ class FideDatabase(LocalSourceDatabase):
         for token in tokens:
             order_clauses.append("""
                 CASE
-                    WHEN (last_name LIKE ? OR first_name LIKE ?) AND federation = ? THEN 0
-                    WHEN (last_name LIKE ? OR first_name LIKE ?) THEN 1
-                    WHEN federation = ? THEN 2
-                    ELSE 3
+                    WHEN last_name LIKE ? AND federation = ? THEN 0
+                    WHEN first_name LIKE ? AND federation = ? THEN 1
+                    WHEN (last_name LIKE ? OR first_name LIKE ?) THEN 2
+                    WHEN federation = ? THEN 3
+                    ELSE 4
                 END
             """)
 
             # Params for this token in the same order
             params += [
                 f'{token}%',
+                federation,
                 f'{token}%',
                 federation,
                 f'{token}%',

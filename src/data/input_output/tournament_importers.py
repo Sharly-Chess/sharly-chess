@@ -70,6 +70,7 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
         Use the ids from the source to link data.
         If a StoredTournament object is provided, add the values to this one,
         otherwise creates a new one.
+        Should not update the name of the tournament.
         Raise an OptionError for an error displayed on a form element.
         Raise an ImporterError for an error displayed on the head of the form.
         Raise a SharlyChessException for an error to log.
@@ -514,8 +515,6 @@ class TrfTournamentImporter(FileTournamentImporter):
     ) -> StoredTournament:
         if not stored_tournament:
             stored_tournament = StoredTournament(id=None, name=trf_tournament.name)
-        else:
-            stored_tournament.name = trf_tournament.name
         stored_tournament.pairing = StandardSwissVariation.static_id()
         stored_tournament.location = trf_tournament.city
         return stored_tournament
