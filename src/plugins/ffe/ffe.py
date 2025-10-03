@@ -405,7 +405,7 @@ class FfePlugin(Plugin):
             )
 
     @hookimpl
-    def get_player_estimated_rating(
+    def get_player_rating(
         self,
         event_federation: str,
         tournament_rating: TournamentRating,

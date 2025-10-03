@@ -293,7 +293,7 @@ class Player:
             rating = player_ratings.national
             type = PlayerRatingType.NATIONAL
         if rating is None:
-            rating_and_type = plugin_manager.hook.get_player_estimated_rating(
+            rating_and_type = plugin_manager.hook.get_player_rating(
                 event_federation=self.event.federation,
                 tournament_rating=tournament_rating,
                 player_rating_type=player_rating_type,
