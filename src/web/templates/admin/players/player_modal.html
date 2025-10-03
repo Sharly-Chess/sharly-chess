@@ -280,9 +280,12 @@
                             <button
                                 id="add-estimated"
                                 class="btn btn-sm btn-outline-primary"
+                                {{ macros.tooltip_attributes(
+                                    'info', _('Players may have default estimated ratings depending on the activated plugins.'), 'top'
+                                ) }}
                             >
                                 <i class="bi-plus-circle pe-1"></i>
-                                {{ _('Add estimated ratings') }}
+                                {{ _('Add manual estimated ratings') }}
                             </button>
                             <script>
                                 $('#add-estimated').click(function (e) {
