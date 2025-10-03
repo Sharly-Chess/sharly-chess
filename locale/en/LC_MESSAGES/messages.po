@@ -463,6 +463,9 @@ msgstr ""
 msgid "Administrator"
 msgstr ""
 
+msgid "Affects the rating that will be chosen for each player."
+msgstr ""
+
 msgid "Age"
 msgstr ""
 
@@ -1349,6 +1352,9 @@ msgid "Default handling of players without a rapid/blitz rating. For rating calc
 msgstr ""
 
 msgid "Default timer configuration"
+msgstr ""
+
+msgid "Default tournament type:"
 msgstr ""
 
 #, python-format
@@ -2734,9 +2740,6 @@ msgstr ""
 msgid "Local databases"
 msgstr ""
 
-msgid "Local source databases settings have been updated."
-msgstr ""
-
 msgid "Location"
 msgstr ""
 
@@ -2853,6 +2856,9 @@ msgid "Maximum number of results displayed:"
 msgstr ""
 
 msgid "Maximum rating"
+msgstr ""
+
+msgid "May be overridden on a per-tournament basis."
 msgstr ""
 
 msgid "May be used for per-round prize giveaways etc."
@@ -3307,9 +3313,6 @@ msgid "Only allowed users can view private rotators."
 msgstr ""
 
 msgid "Only current and future events that have been declared as <b>public</b> by the administrator are visible via the network."
-msgstr ""
-
-msgid "Only estimated ratings are optional."
 msgstr ""
 
 msgid "Only include players of these clubs."
@@ -5261,6 +5264,9 @@ msgstr ""
 msgid "Tournament rules are not set"
 msgstr ""
 
+msgid "Tournament type:"
+msgstr ""
+
 msgid "Tournament visibility successfully set"
 msgstr ""
 
@@ -6133,4 +6139,7 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "National"
+#~ msgstr ""
 

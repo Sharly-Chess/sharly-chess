@@ -4,6 +4,13 @@ from database.sqlite.migration import BaseMigration
 
 class Migration(BaseMigration):
     def forward(self):
+        self.database.execute(
+            'ALTER TABLE `info` ADD `player_rating_type` INTEGER NOT NULL DEFAULT 3'
+        )
+        self.database.execute(
+            'ALTER TABLE `tournament` ADD `player_rating_type` INTEGER'
+        )
+
         self.database.execute('SELECT `id`, `ratings` FROM `player`')
         for row in self.database.fetchall():
             player_id = row['id']
@@ -52,3 +59,9 @@ class Migration(BaseMigration):
                 'UPDATE `player` SET `ratings` = ? WHERE `id` = ?',
                 (json.dumps(old_ratings), player_id),
             )
+
+        self.database.execute(
+            'ALTER TABLE `tournament` DROP COLUMN `player_rating_type`'
+        )
+
+        self.database.execute('ALTER TABLE `info` DROP COLUMN `player_rating_type`')

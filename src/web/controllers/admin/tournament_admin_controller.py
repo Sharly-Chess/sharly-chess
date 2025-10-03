@@ -16,7 +16,7 @@ from common.exception import SharlyChessException, OptionError, ImporterError
 from common.logger import get_logger
 from common.i18n import _
 from data.access_levels.actions import AuthAction
-from data.board import Board
+from data.board import Board, PlayerRatingType
 from data.event import Event
 from data.input_output import (
     DataSourceManager,
@@ -215,6 +215,7 @@ class TournamentAdminController(BaseEventAdminController):
             tie_break_2: str | None = None
             tie_break_3: str | None = None
             location: str | None = None
+            player_rating_type: int | None = None
             start: float | None = None
             stop: float | None = None
             rounds: int | None = None
@@ -246,6 +247,7 @@ class TournamentAdminController(BaseEventAdminController):
                     max_byes = stored_tournament.max_byes
                     last_rounds_no_byes = stored_tournament.last_rounds_no_byes
                     location = stored_tournament.location
+                    player_rating_type = stored_tournament.player_rating_type
                     start = stored_tournament.start
                     stop = stored_tournament.stop
                     rating = admin_tournament.rating.value
@@ -304,6 +306,7 @@ class TournamentAdminController(BaseEventAdminController):
                     'tie_break_2': tie_break_2,
                     'tie_break_3': tie_break_3,
                     'location': location,
+                    'player_rating_type': player_rating_type,
                     'rounds': rounds,
                     'rating': rating,
                     'pairing_system': pairing_system.id,
@@ -351,6 +354,18 @@ class TournamentAdminController(BaseEventAdminController):
             ]
         )
 
+        player_rating_type_options: dict[str, str] = {
+            '': '',
+            str(PlayerRatingType.FIDE.value): _('FIDE'),
+            str(PlayerRatingType.NATIONAL.value): _(
+                'National *** NAME FOR RATING TYPE NATIONAL'
+            ),
+        }
+        event_player_rating_type = admin_event.player_rating_type.value
+        player_rating_type_options[''] = _("Use Event's default - {option}").format(
+            option=player_rating_type_options[str(event_player_rating_type)]
+        )
+
         template_context = {
             'tie_break_options': tie_break_options,
             'rating_options': cls._get_rating_options(),
@@ -369,6 +384,7 @@ class TournamentAdminController(BaseEventAdminController):
             'admin_tournament': None
             if action == 'clone'
             else web_context.admin_tournament,
+            'player_rating_type_options': player_rating_type_options,
             'modal': 'tournament',
             'action': action,
             'data': data,
@@ -518,6 +534,7 @@ class TournamentAdminController(BaseEventAdminController):
         max_byes = WebContext.form_data_to_int(data, 'max_byes')
         last_rounds_no_byes = WebContext.form_data_to_int(data, 'last_rounds_no_byes')
         location = WebContext.form_data_to_str(data, 'location')
+        player_rating_type = WebContext.form_data_to_int(data, 'player_rating_type')
         three_points_for_a_win = WebContext.form_data_to_bool(
             data, 'three_points_for_a_win'
         )
@@ -563,6 +580,7 @@ class TournamentAdminController(BaseEventAdminController):
             check_in_open=check_in_open,
             tie_breaks=tie_breaks,
             location=location,
+            player_rating_type=player_rating_type,
             start=start,
             stop=stop,
             rounds=rounds or 1,

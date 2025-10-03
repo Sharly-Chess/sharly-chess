@@ -165,7 +165,7 @@ class StoredTournament:
     check_in_open: bool = False
     rounds: int = 1
     rating: int = 1
-    player_rating_type: int = 3
+    player_rating_type: int | None = None
     last_update: float = 0.0
     last_player_update: float = 0.0
     last_pairing_update: float = 0.0
@@ -327,6 +327,7 @@ class BaseStoredEvent:
     uniq_id: str
     name: str
     federation: str
+    player_rating_type: int
     start: float
     stop: float
     hide_background_image: bool

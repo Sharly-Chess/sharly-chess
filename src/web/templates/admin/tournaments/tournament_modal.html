@@ -69,7 +69,20 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.select_input(
+                            name='player_rating_type',
+                            label=_('Tournament type:'),
+                            help_text=_(
+                                'Affects the rating that will be chosen for each player.',
+                                default=admin_event.player_rating_type
+                            ),
+                            select_options=player_rating_type_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+                <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6 col-lg-3">
                         {{ admin_macros.datetime_input(
                             name='start',
@@ -86,8 +99,6 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                </div>
-                <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='location',

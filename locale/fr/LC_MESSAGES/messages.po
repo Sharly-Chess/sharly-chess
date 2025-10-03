@@ -463,6 +463,9 @@ msgstr "Administration"
 msgid "Administrator"
 msgstr "Administrateur·ice"
 
+msgid "Affects the rating that will be chosen for each player."
+msgstr "Influe sur le classement qui sera choisi pour chaque joueur·euse."
+
 msgid "Age"
 msgstr "Age"
 
@@ -1350,6 +1353,9 @@ msgstr "Gestion par défaut des joueur·euses sans classement rapide/blitz. Pour
 
 msgid "Default timer configuration"
 msgstr "Configuration par défaut des chronomètres"
+
+msgid "Default tournament type:"
+msgstr "Type de tournoi par défaut"
 
 #, python-format
 msgid "Default: %(string)s"
@@ -2734,9 +2740,6 @@ msgstr "URL locale : {local_url}"
 msgid "Local databases"
 msgstr "Bases de données locales"
 
-msgid "Local source databases settings have been updated."
-msgstr "les paramètres des bases de données locales ont été mis à jour."
-
 msgid "Location"
 msgstr "Lieu"
 
@@ -2854,6 +2857,9 @@ msgstr "Nombre maximum de résultats affichés :"
 
 msgid "Maximum rating"
 msgstr "Elo maximum"
+
+msgid "May be overridden on a per-tournament basis."
+msgstr "Peut être remplacé au niveau de chaque tournoi."
 
 msgid "May be used for per-round prize giveaways etc."
 msgstr "Peut être utilisé pour des tirages au sort de prix par ronde, etc."
@@ -3308,9 +3314,6 @@ msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les écrans ro
 
 msgid "Only current and future events that have been declared as <b>public</b> by the administrator are visible via the network."
 msgstr "Seuls les événements actuels et à venir déclarés comme <b>publics</b> par l’administrateur·ice sont visibles via le réseau."
-
-msgid "Only estimated ratings are optional."
-msgstr "Seuls les classements estimés sont optionnels."
 
 msgid "Only include players of these clubs."
 msgstr "N'inclure que les joueur·euses de ces clubs."
@@ -5260,6 +5263,9 @@ msgstr "Historique"
 
 msgid "Tournament rules are not set"
 msgstr "Le règlement du tournoi n’est pas défini"
+
+msgid "Tournament type:"
+msgstr "Type de tournoi :"
 
 msgid "Tournament visibility successfully set"
 msgstr "Visibilité du tournoi définie avec succès"
