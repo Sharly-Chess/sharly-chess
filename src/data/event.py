@@ -19,6 +19,7 @@ from common.i18n.utils import by
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.account import Account, Permission
+from data.board import PlayerRatingType
 from data.display_controller import DisplayController
 from data.family import Family
 from data.player import Player, Club, Federation
@@ -80,6 +81,10 @@ class Event:
     @property
     def federation(self) -> str:
         return self.stored_event.federation
+
+    @property
+    def player_rating_type(self) -> PlayerRatingType:
+        return PlayerRatingType(self.stored_event.player_rating_type)
 
     @cached_property
     def prize_currency(self) -> str:

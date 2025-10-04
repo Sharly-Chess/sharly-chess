@@ -24,7 +24,6 @@ from utils.enum import (
     PlayerGender,
     PlayerTitle,
     TournamentRating,
-    PlayerRatingType,
 )
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
@@ -207,8 +206,7 @@ class FideDatabase(LocalSourceDatabase):
         }
         ratings = {
             tournament_rating.value: PlayerRating(
-                row[key],
-                PlayerRatingType.FIDE if row[key] else PlayerRatingType.ESTIMATED,
+                fide=row[key] or None,
             ).stored_value
             for tournament_rating, key in rating_keys.items()
         }

@@ -179,21 +179,6 @@ class PlayerAdminController(BaseEventAdminController):
             # should never happen, not translated.
             errors[field] = f'Invalid gender value [{data[field]}].'
             data[field] = ''
-        ratings: dict[TournamentRating, PlayerRating] = {
-            tr: PlayerRating(
-                value=WebContext.form_data_to_int(data, f'{tr.form_key}_rating') or 0,
-                type=PlayerRatingType(
-                    WebContext.form_data_to_int(data, f'{tr.form_key}_rating_type')
-                    or PlayerRatingType.ESTIMATED.value
-                ),
-            )
-            for tr in TournamentRating
-        }
-        for tr, rating in ratings.items():
-            if rating.type != PlayerRatingType.ESTIMATED and not rating.value:
-                errors[f'{tr.form_key}_rating_type'] = _(
-                    'Only estimated ratings are optional.'
-                )
         try:
             if value := WebContext.form_data_to_int(data, field := 'title'):
                 PlayerTitle(value)
@@ -262,11 +247,16 @@ class PlayerAdminController(BaseEventAdminController):
             title=WebContext.form_data_to_int(data, 'title') or PlayerTitle.NONE.value,
             ratings={
                 tr.value: PlayerRating(
-                    WebContext.form_data_to_int(data, f'{tr.form_key}_rating') or 0,
-                    PlayerRatingType(
-                        WebContext.form_data_to_int(data, f'{tr.form_key}_rating_type')
-                        or PlayerRatingType.ESTIMATED
-                    ),
+                    estimated=WebContext.form_data_to_int(
+                        data, f'{tr.form_key}_rating_estimated'
+                    )
+                    or None,
+                    national=WebContext.form_data_to_int(
+                        data, f'{tr.form_key}_rating_national'
+                    )
+                    or None,
+                    fide=WebContext.form_data_to_int(data, f'{tr.form_key}_rating_fide')
+                    or None,
                 ).stored_value
                 for tr in TournamentRating
             },
@@ -699,8 +689,7 @@ class PlayerAdminController(BaseEventAdminController):
                     date_of_birth: date | None = None
                     gender: int = PlayerGender.NONE.value
                     ratings: dict[TournamentRating, PlayerRating] = {
-                        tr: PlayerRating(0, PlayerRatingType.ESTIMATED)
-                        for tr in TournamentRating
+                        tr: PlayerRating(estimated=0) for tr in TournamentRating
                     }
                     title: int = PlayerTitle.NONE.value
                     federation = admin_event.federation
@@ -755,11 +744,14 @@ class PlayerAdminController(BaseEventAdminController):
                         rating_ = ratings[tournament_rating]
                         key = tournament_rating.form_key
                         rating_data |= {
-                            f'{key}_rating': WebContext.value_to_form_data(
-                                rating_.value or None
+                            f'{key}_rating_fide': WebContext.value_to_form_data(
+                                rating_.fide or None
                             ),
-                            f'{key}_rating_type': WebContext.value_to_form_data(
-                                rating_.type.value
+                            f'{key}_rating_national': WebContext.value_to_form_data(
+                                rating_.national or None
+                            ),
+                            f'{key}_rating_estimated': WebContext.value_to_form_data(
+                                rating_.estimated or None
                             ),
                         }
 
@@ -836,8 +828,10 @@ class PlayerAdminController(BaseEventAdminController):
                             ),
                         },
                     },
-                    'rating_type_options': {
-                        str(tr.value): tr.name for tr in PlayerRatingType
+                    'rating_type_labels': {
+                        'fide': PlayerRatingType.FIDE.short_name,
+                        'national': PlayerRatingType.NATIONAL.short_name,
+                        'estimated': PlayerRatingType.ESTIMATED.short_name,
                     },
                     'title_options': {
                         str(t.value): f'{t.short_name} - {t.name}'
@@ -1837,12 +1831,15 @@ class PlayerAdminController(BaseEventAdminController):
         'owed',
         'paid',
         'comment',
-        'St',
-        'S',
-        'Ra',
-        'R',
-        'Bl',
-        'B',
+        'St (F)',
+        'St (N)',
+        'St (E)',
+        'Ra (F)',
+        'Ra (N)',
+        'Ra (E)',
+        'Bl (F)',
+        'Bl (N)',
+        'Bl (E)',
     ]
 
     @classmethod
@@ -1908,12 +1905,15 @@ class PlayerAdminController(BaseEventAdminController):
                     player.owed,
                     player.paid,
                     player.comment,
-                    player.get_rating(TournamentRating.STANDARD).value,
-                    player.get_rating(TournamentRating.STANDARD).type.short_name,
-                    player.get_rating(TournamentRating.RAPID).value,
-                    player.get_rating(TournamentRating.RAPID).type.short_name,
-                    player.get_rating(TournamentRating.BLITZ).value,
-                    player.get_rating(TournamentRating.BLITZ).type.short_name,
+                    player.ratings[TournamentRating.STANDARD].fide,
+                    player.ratings[TournamentRating.STANDARD].national,
+                    player.ratings[TournamentRating.STANDARD].estimated,
+                    player.ratings[TournamentRating.RAPID].fide,
+                    player.ratings[TournamentRating.RAPID].national,
+                    player.ratings[TournamentRating.RAPID].estimated,
+                    player.ratings[TournamentRating.BLITZ].fide,
+                    player.ratings[TournamentRating.BLITZ].national,
+                    player.ratings[TournamentRating.BLITZ].estimated,
                 ],
                 player,
             )

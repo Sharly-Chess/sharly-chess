@@ -3,6 +3,7 @@
 import time
 from urllib import parse
 from common import BASE_DIR
+from data.board import PlayerRatingType
 from data.input_output.tournament_importer_options import FileOption
 from data.loader import EventLoader
 from data.pairings.variations import StandardSwissVariation
@@ -47,6 +48,7 @@ class TestUtils:
         'federation': 'FRA',
         'public': True,
         'location': 'Paris',
+        'player_rating_type': PlayerRatingType.FIDE.value,
         'hide_background_image': True,
         'background_image': None,
         'background_color': '#ffffff',

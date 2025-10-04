@@ -20,7 +20,7 @@ from utils.enum import Result, ScreenType, TournamentRating
 if TYPE_CHECKING:
     from data.input_output import DataSource, TournamentExporter, TournamentImporter
     from data.pairings.variations import SwissVariation
-    from data.player import Player, PlayerRating
+    from data.player import Player, PlayerRatingAndType, PlayerRatingType
     from data.print_documents import PrintDocument, PlayerSplitter, QRCodeType
     from data.criteria.player_filter_options import PlayerFilterOption
     from data.criteria.player_filters import PlayerFilter
@@ -130,12 +130,13 @@ class AppHookSpecs:
         """Add plugin specific data to a player after a successful player search"""
 
     @hookspec(firstresult=True)
-    def get_player_estimated_rating(
+    def get_player_rating(
         self,
         event_federation: str,
         tournament_rating: TournamentRating,
+        player_rating_type: 'PlayerRatingType',
         player: 'Player',
-    ) -> Optional['PlayerRating']:
+    ) -> Optional['PlayerRatingAndType']:
         """Get the estimated rating of a player."""
 
     @hookspec(firstresult=True)

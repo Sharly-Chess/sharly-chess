@@ -298,6 +298,7 @@ class EventDatabase(MigrationDatabase):
             uniq_id=self.uniq_id,
             name=row['name'],
             federation=row.get('federation', ''),
+            player_rating_type=row.get('player_rating_type', 3),
             start=row['start'],
             stop=row['stop'],
             public=self.load_bool_from_database_field(row['public']),
@@ -384,6 +385,7 @@ class EventDatabase(MigrationDatabase):
                     'public',
                     'federation',
                     'location',
+                    'player_rating_type',
                     'hide_background_image',
                     'background_image',
                     'background_color',
@@ -729,6 +731,7 @@ class EventDatabase(MigrationDatabase):
             start=row['start'],
             stop=row['stop'],
             location=row['location'],
+            player_rating_type=row['player_rating_type'],
             three_points_for_a_win=cls.load_bool_from_database_field(
                 row['three_points_for_a_win']
             ),
@@ -802,6 +805,7 @@ class EventDatabase(MigrationDatabase):
                     'rating',
                     'pairing',
                     'location',
+                    'player_rating_type',
                     'start',
                     'stop',
                     'last_rounds_no_byes',

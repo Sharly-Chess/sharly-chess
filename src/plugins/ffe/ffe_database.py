@@ -158,17 +158,15 @@ class FfeDatabase(LocalSourceDatabase):
             paid=0.0,
             title=PlayerTitle(row['fide_title']),
             ratings={
-                TournamentRating.STANDARD: PlayerRating(
+                TournamentRating.STANDARD.value: PlayerRating.from_type(
                     row['standard_rating'],
                     PlayerRatingType(row['standard_rating_type']),
                 ).stored_value,
-                TournamentRating.RAPID: PlayerRating(
-                    row['rapid_rating'],
-                    PlayerRatingType(row['rapid_rating_type']),
+                TournamentRating.RAPID.value: PlayerRating.from_type(
+                    row['rapid_rating'], PlayerRatingType(row['rapid_rating_type'])
                 ).stored_value,
-                TournamentRating.BLITZ: PlayerRating(
-                    row['blitz_rating'],
-                    PlayerRatingType(row['blitz_rating_type']),
+                TournamentRating.BLITZ.value: PlayerRating.from_type(
+                    row['blitz_rating'], PlayerRatingType(row['blitz_rating_type'])
                 ).stored_value,
             },
             fide_id=int(row['fide_id']) if row['fide_id'] else None,
