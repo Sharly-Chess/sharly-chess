@@ -145,6 +145,19 @@ class FfeDatabase(LocalSourceDatabase):
 
     @staticmethod
     def get_stored_player_from_row(row: dict[str, Any]) -> StoredPlayer:
+        def build_rating(row: dict[str, Any], prefix: str) -> dict[str, int | None]:
+            value = row[f'{prefix}_rating']
+            rating_type = row[f'{prefix}_rating_type']
+            return PlayerRating(
+                fide=value if rating_type == PlayerRatingType.FIDE.value else None,
+                national=value
+                if rating_type == PlayerRatingType.NATIONAL.value
+                else None,
+                estimated=value
+                if rating_type == PlayerRatingType.ESTIMATED.value
+                else None,
+            ).stored_value
+
         return StoredPlayer(
             id=0,
             first_name=row['first_name'].title() if row['first_name'] else '',
@@ -158,30 +171,9 @@ class FfeDatabase(LocalSourceDatabase):
             paid=0.0,
             title=PlayerTitle(row['fide_title']),
             ratings={
-                TournamentRating.STANDARD: PlayerRating(
-                    national=row['standard_rating']
-                    if row['standard_rating_type'] == PlayerRatingType.NATIONAL.value
-                    else None,
-                    fide=row['standard_rating']
-                    if row['standard_rating_type'] == PlayerRatingType.FIDE.value
-                    else None,
-                ).stored_value,
-                TournamentRating.RAPID: PlayerRating(
-                    national=row['rapid_rating']
-                    if row['rapid_rating_type'] == PlayerRatingType.NATIONAL.value
-                    else None,
-                    fide=row['rapid_rating']
-                    if row['rapid_rating_type'] == PlayerRatingType.FIDE.value
-                    else None,
-                ).stored_value,
-                TournamentRating.BLITZ: PlayerRating(
-                    national=row['blitz_rating']
-                    if row['blitz_rating_type'] == PlayerRatingType.NATIONAL.value
-                    else None,
-                    fide=row['blitz_rating']
-                    if row['blitz_rating_type'] == PlayerRatingType.FIDE.value
-                    else None,
-                ).stored_value,
+                TournamentRating.STANDARD: build_rating(row, 'standard'),
+                TournamentRating.RAPID: build_rating(row, 'rapid'),
+                TournamentRating.BLITZ: build_rating(row, 'blitz'),
             },
             fide_id=int(row['fide_id']) if row['fide_id'] else None,
             federation=row['federation'],
