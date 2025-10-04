@@ -310,14 +310,7 @@ class BaseEventAdminController(BaseAdminController):
         template_context: dict[str, Any],
     ) -> HTMXTemplate:
         if 'modal' in template_context:
-            return HTMXTemplate(
-                template_name='admin/modals.html',
-                context=template_context,
-                re_target='#modal-wrapper',
-                re_swap='innerHTML',
-                trigger_event='modal_opened',
-                after='settle',
-            )
+            return cls._render_modal('admin/modals.html', template_context)
 
         return HTMXTemplate(
             template_name='admin/event_layout.html',

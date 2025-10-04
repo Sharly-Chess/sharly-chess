@@ -2431,6 +2431,9 @@ msgstr ""
 msgid "How to split the results."
 msgstr ""
 
+msgid "I confirm that I have read and acknowledged the warning"
+msgstr ""
+
 msgid "I confirm that I want to archive this event."
 msgstr ""
 
@@ -4678,6 +4681,14 @@ msgstr ""
 msgid "Swiss"
 msgstr ""
 
+msgid "Synchronisation failed for {count} tournament"
+msgid_plural "Synchronisation failed for {count} tournaments"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Synchronization failed for tournament [{tournament}]."
+msgstr ""
+
 msgid "Synchronize all tournaments"
 msgstr ""
 
@@ -5306,6 +5317,9 @@ msgid "Tournament [{tournament}] is finished, you can not add players any longer
 msgstr ""
 
 msgid "Tournament [{tournament}] successfully imported."
+msgstr ""
+
+msgid "Tournament [{tournament}] successfully synchronized."
 msgstr ""
 
 msgid "Tournament exempt from registration fees."
@@ -5955,6 +5969,9 @@ msgstr ""
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr ""
 
+msgid "You have to acknowledge the warning first."
+msgstr ""
+
 msgid "You have to update the ChessEvent settings before being able to use synchronisation."
 msgstr ""
 
@@ -6186,6 +6203,16 @@ msgstr[1] ""
 
 msgid "{count} player updated."
 msgid_plural "{count} players updated."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{count} tournament ignored"
+msgid_plural "{count} tournaments ignored"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{count} tournament successfully synchronized"
+msgid_plural "{count} tournament successfully synchronized"
 msgstr[0] ""
 msgstr[1] ""
 

@@ -2431,6 +2431,9 @@ msgstr "Comment trier les joueur·euses."
 msgid "How to split the results."
 msgstr "Comment regrouper les résultats."
 
+msgid "I confirm that I have read and acknowledged the warning"
+msgstr "Je confirme avoir pris connaissance de l'avertissement"
+
 msgid "I confirm that I want to archive this event."
 msgstr "Je confirme vouloir archiver cet évènement."
 
@@ -4678,6 +4681,14 @@ msgstr "Support pour la plateforme ChessEvent utilsée pour l'organisation de to
 msgid "Swiss"
 msgstr "Suisse"
 
+msgid "Synchronisation failed for {count} tournament"
+msgid_plural "Synchronisation failed for {count} tournaments"
+msgstr[0] "Synchronisation échouée pour {count} tournoi"
+msgstr[1] "Synchronisation échouée pour {count} tournois"
+
+msgid "Synchronization failed for tournament [{tournament}]."
+msgstr "Synchronisation échouée pour le tournoi [{tournament}]."
+
 msgid "Synchronize all tournaments"
 msgstr "Synchroniser tous les tournois"
 
@@ -5307,6 +5318,9 @@ msgstr "Le tournoi [{tournament}] est terminé, on ne peut plus y ajouter de jou
 
 msgid "Tournament [{tournament}] successfully imported."
 msgstr "Le tournoi [{tournament}] a été importé avec succès."
+
+msgid "Tournament [{tournament}] successfully synchronized."
+msgstr "Le tournoi [{tournament}] a été synchronisé avec succès."
 
 msgid "Tournament exempt from registration fees."
 msgstr "Tournoi exempt de droits d'homologation."
@@ -5955,6 +5969,9 @@ msgstr "Vous ne pouvez pas pas ajouter davantage de permissions à ce compte."
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement…) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans simples seront générés automatiquement."
 
+msgid "You have to acknowledge the warning first."
+msgstr "Vous devez prendre connaissance de l'avertissement."
+
 msgid "You have to update the ChessEvent settings before being able to use synchronisation."
 msgstr "Vous devez modifier les paramètres ChessEvent avant de pouvoir utiliser la synchronisation."
 
@@ -6188,6 +6205,16 @@ msgid "{count} player updated."
 msgid_plural "{count} players updated."
 msgstr[0] "{count} joueur·euse mis·e à jour."
 msgstr[1] "{count} joueur·euses mis·es à jour."
+
+msgid "{count} tournament ignored"
+msgid_plural "{count} tournaments ignored"
+msgstr[0] "{count} tournoi ignoré"
+msgstr[1] "{count} tournois ignorés"
+
+msgid "{count} tournament successfully synchronized"
+msgid_plural "{count} tournament successfully synchronized"
+msgstr[0] "{count} tournoi synchonisé avec succès"
+msgstr[1] "{count} tournois synchonisés avec succès"
 
 msgid "{days} days"
 msgstr "{days} jours"
