@@ -38,7 +38,7 @@ from data.tie_breaks import TieBreak, TieBreakManager
 from data.tournament import Tournament
 from data.tournament_criterion import TournamentCriterion
 from utils import StaticUtils
-from utils.enum import FormAction, TournamentRating
+from utils.enum import FormAction, Result, TournamentRating
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredTournament,
@@ -223,7 +223,8 @@ class TournamentAdminController(BaseEventAdminController):
             pairing_variations: dict[str, str | None] = {
                 system.variation_field_id: None for system in pairing_systems
             }
-            three_points_for_a_win: bool = False
+            three_points_for_a_win: bool | None = None
+            pab_value: int | None = None
             override_unrated_rapid_blitz: bool | None = None
             match action:
                 case 'update' | 'clone':
@@ -256,7 +257,8 @@ class TournamentAdminController(BaseEventAdminController):
                     pairing_variations[
                         admin_tournament.pairing_system.variation_field_id
                     ] = admin_tournament.pairing_variation.id
-                    three_points_for_a_win = admin_tournament.three_points_for_a_win
+                    three_points_for_a_win = stored_tournament.three_points_for_a_win
+                    pab_value = stored_tournament.pab_value
                     override_unrated_rapid_blitz = (
                         stored_tournament.override_unrated_rapid_blitz
                     )
@@ -311,6 +313,7 @@ class TournamentAdminController(BaseEventAdminController):
                     'rating': rating,
                     'pairing_system': pairing_system.id,
                     'three_points_for_a_win': three_points_for_a_win,
+                    'pab_value': pab_value,
                     'override_unrated_rapid_blitz': override_unrated_rapid_blitz,
                 }
                 | {field: variation for field, variation in pairing_variations.items()}
@@ -361,9 +364,31 @@ class TournamentAdminController(BaseEventAdminController):
                 'National *** NAME FOR RATING TYPE NATIONAL'
             ),
         }
-        event_player_rating_type = admin_event.player_rating_type.value
         player_rating_type_options[''] = _("Use Event's default - {option}").format(
-            option=player_rating_type_options[str(event_player_rating_type)]
+            option=player_rating_type_options[str(admin_event.player_rating_type.value)]
+        )
+
+        three_points_for_a_win_options = {
+            '': '',
+            WebContext.value_to_form_data(True): _('Use three points for a win'),
+            WebContext.value_to_form_data(False): _('Use standard points'),
+        }
+        three_points_for_a_win_options[''] = _("Use Event's default - {option}").format(
+            option=three_points_for_a_win_options[
+                WebContext.value_to_form_data(
+                    admin_event.three_points_for_a_win or False
+                )
+            ]
+        )
+
+        pab_value_options = {
+            '': '',
+            str(Result.WIN.value): _('Win'),
+            str(Result.DRAW.value): _('Draw'),
+            str(Result.LOSS.value): _('Loss'),
+        }
+        pab_value_options[''] = _("Use Event's default - {option}").format(
+            option=pab_value_options[str(admin_event.pab_value.value)]
         )
 
         template_context = {
@@ -385,6 +410,8 @@ class TournamentAdminController(BaseEventAdminController):
             if action == 'clone'
             else web_context.admin_tournament,
             'player_rating_type_options': player_rating_type_options,
+            'pab_value_options': pab_value_options,
+            'three_points_for_a_win_options': three_points_for_a_win_options,
             'modal': 'tournament',
             'action': action,
             'data': data,
@@ -535,12 +562,13 @@ class TournamentAdminController(BaseEventAdminController):
         last_rounds_no_byes = WebContext.form_data_to_int(data, 'last_rounds_no_byes')
         location = WebContext.form_data_to_str(data, 'location')
         player_rating_type = WebContext.form_data_to_int(data, 'player_rating_type')
-        three_points_for_a_win = WebContext.form_data_to_bool(
+        three_points_for_a_win = WebContext.form_data_to_bool_or_none(
             data, 'three_points_for_a_win'
         )
         override_unrated_rapid_blitz = WebContext.form_data_to_bool_or_none(
             data, 'override_unrated_rapid_blitz'
         )
+        pab_value = WebContext.form_data_to_int(data, 'pab_value')
 
         # Have plugins validate their fields and return private plugin data
         per_plugin_tournament_data = (
@@ -587,6 +615,7 @@ class TournamentAdminController(BaseEventAdminController):
             rating=rating or TournamentRating.STANDARD.value,
             pairing=pairing or '',
             three_points_for_a_win=three_points_for_a_win,
+            pab_value=pab_value,
             override_unrated_rapid_blitz=override_unrated_rapid_blitz,
             plugin_data=plugin_data,
         )

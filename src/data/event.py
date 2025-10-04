@@ -31,6 +31,7 @@ from database.sqlite.event.event_database import EventDatabase
 from plugins.manager import plugin_manager
 from utils import StaticUtils
 from utils.enum import (
+    Result,
     ScreenType,
     PlayerGender,
 )
@@ -99,6 +100,14 @@ class Event:
     @property
     def override_unrated_rapid_blitz(self) -> bool:
         return self.stored_event.override_unrated_rapid_blitz or False
+
+    @property
+    def three_points_for_a_win(self) -> bool:
+        return self.stored_event.three_points_for_a_win or False
+
+    @property
+    def pab_value(self) -> Result:
+        return Result(self.stored_event.pab_value) or Result.WIN
 
     @property
     def formatted_start_date_time(self) -> str:

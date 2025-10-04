@@ -392,8 +392,15 @@ class Tournament:
 
     @property
     def three_points_for_a_win(self) -> bool:
-        # TODO (Molrn) Replace by a detailed point value override
-        return self.stored_tournament.three_points_for_a_win
+        if self.stored_tournament.three_points_for_a_win is not None:
+            return self.stored_tournament.three_points_for_a_win
+        return self.event.three_points_for_a_win
+
+    @property
+    def pab_value(self) -> Result:
+        if self.stored_tournament.pab_value is not None:
+            return Result(self.stored_tournament.pab_value)
+        return self.event.pab_value
 
     @cached_property
     def tie_breaks(self) -> list[TieBreak]:
