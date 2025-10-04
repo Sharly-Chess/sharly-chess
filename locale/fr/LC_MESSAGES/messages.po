@@ -2773,6 +2773,9 @@ msgstr "URL locale : {local_url}"
 msgid "Local databases"
 msgstr "Bases de données locales"
 
+msgid "Local source databases settings have been updated."
+msgstr "les paramètres des bases de données locales ont été mis à jour."
+
 msgid "Location"
 msgstr "Lieu"
 

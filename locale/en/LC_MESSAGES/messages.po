@@ -2773,6 +2773,9 @@ msgstr ""
 msgid "Local databases"
 msgstr ""
 
+msgid "Local source databases settings have been updated."
+msgstr ""
+
 msgid "Location"
 msgstr ""
 
