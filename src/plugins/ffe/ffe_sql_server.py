@@ -7,7 +7,6 @@ from common.exception import SharlyChessException
 from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
-from data.player import PlayerRating
 from database.sqlite.event.event_store import StoredPlayer
 from plugins.ffe.papi_mappers import (
     PapiPlayerTitle,
@@ -102,21 +101,6 @@ class FFESqlServer(SqlServer):
 
     @staticmethod
     def _get_stored_player_from_row(row: dict[str, Any]) -> StoredPlayer:
-        def build_papi_rating(
-            row: dict[str, Any], rating_key: str, fide_key: str
-        ) -> dict[str, int | None]:
-            value = row[rating_key]
-            rating_type = PapiPlayerRatingType.get_core_object(row[fide_key])
-            return PlayerRating(
-                fide=value if rating_type == PlayerRatingType.FIDE.value else None,
-                national=value
-                if rating_type == PlayerRatingType.NATIONAL.value
-                else None,
-                estimated=value
-                if rating_type == PlayerRatingType.ESTIMATED.value
-                else None,
-            ).stored_value
-
         return StoredPlayer(
             id=None,
             first_name=row['Prenom'].title() if row['Prenom'] else '',
@@ -130,9 +114,39 @@ class FFESqlServer(SqlServer):
             paid=0.0,
             title=PapiPlayerTitle.get_core_object(row['FideTitre'] or '').value,
             ratings={
-                TournamentRating.STANDARD: build_papi_rating(row, 'Elo', 'Fide'),
-                TournamentRating.RAPID: build_papi_rating(row, 'Rapide', 'Fide03'),
-                TournamentRating.BLITZ: build_papi_rating(row, 'Elo06', 'Fide06'),
+                TournamentRating.STANDARD: {
+                    'fide': row['Elo']
+                    if PapiPlayerRatingType.get_core_object(row['Fide'])
+                    == PlayerRatingType.FIDE.value
+                    else None,
+                    'national': row['Elo']
+                    if PapiPlayerRatingType.get_core_object(row['Fide'])
+                    == PlayerRatingType.NATIONAL.value
+                    else None,
+                    'estimated': None,
+                },
+                TournamentRating.RAPID: {
+                    'fide': row['Rapide']
+                    if PapiPlayerRatingType.get_core_object(row['Fide03'])
+                    == PlayerRatingType.FIDE.value
+                    else None,
+                    'national': row['Rapide']
+                    if PapiPlayerRatingType.get_core_object(row['Fide03'])
+                    == PlayerRatingType.NATIONAL.value
+                    else None,
+                    'estimated': None,
+                },
+                TournamentRating.BLITZ: {
+                    'fide': row['Elo06']
+                    if PapiPlayerRatingType.get_core_object(row['Fide06'])
+                    == PlayerRatingType.FIDE.value
+                    else None,
+                    'national': row['Elo06']
+                    if PapiPlayerRatingType.get_core_object(row['Fide06'])
+                    == PlayerRatingType.NATIONAL.value
+                    else None,
+                    'estimated': None,
+                },
             },
             fide_id=int(row['FideCode'].strip("' ")) if row['FideCode'] else 0,
             federation=row['Federation'],
