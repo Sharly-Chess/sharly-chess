@@ -8,7 +8,6 @@ from text_unidecode import unidecode
 from common.exception import OptionError, DictReaderException, SharlyChessException
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
-from data.board import PlayerRatingType
 from data.event import Event
 from data.input_output import TournamentImporter
 from data.input_output.dict_reader import dict_to_dataclass
@@ -234,38 +233,14 @@ class ChessEventTournamentImporter(TournamentImporter):
             raise unknown_exception('blitz_rating_type')
 
         ratings = {
-            TournamentRating.STANDARD.value: PlayerRating(
-                estimated=player.standard_rating
-                if standard_rating_type == PlayerRatingType.ESTIMATED
-                else None,
-                national=player.standard_rating
-                if standard_rating_type == PlayerRatingType.NATIONAL
-                else None,
-                fide=player.standard_rating
-                if standard_rating_type == PlayerRatingType.FIDE
-                else None,
+            TournamentRating.STANDARD.value: PlayerRating.from_type(
+                player.standard_rating, standard_rating_type
             ).stored_value,
-            TournamentRating.RAPID.value: PlayerRating(
-                estimated=player.rapid_rating
-                if rapid_rating_type == PlayerRatingType.ESTIMATED
-                else None,
-                national=player.rapid_rating
-                if rapid_rating_type == PlayerRatingType.NATIONAL
-                else None,
-                fide=player.rapid_rating
-                if rapid_rating_type == PlayerRatingType.FIDE
-                else None,
+            TournamentRating.RAPID.value: PlayerRating.from_type(
+                player.rapid_rating, rapid_rating_type
             ).stored_value,
-            TournamentRating.BLITZ.value: PlayerRating(
-                estimated=player.blitz_rating
-                if blitz_rating_type == PlayerRatingType.ESTIMATED
-                else None,
-                national=player.blitz_rating
-                if blitz_rating_type == PlayerRatingType.NATIONAL
-                else None,
-                fide=player.blitz_rating
-                if blitz_rating_type == PlayerRatingType.FIDE
-                else None,
+            TournamentRating.BLITZ.value: PlayerRating.from_type(
+                player.blitz_rating, blitz_rating_type
             ).stored_value,
         }
         try:

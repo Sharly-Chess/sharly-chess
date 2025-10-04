@@ -86,12 +86,24 @@ class PlayerRating:
     fide: int | None = None
 
     @classmethod
-    def from_stored_value(cls, dict_rating: dict[str, int | None]):
+    def from_stored_value(cls, dict_rating: dict[str, int | None]) -> Self:
         return cls(
             estimated=dict_rating.get('estimated'),
             national=dict_rating.get('national'),
             fide=dict_rating.get('fide'),
         )
+
+    @classmethod
+    def from_type(cls, value: int | None, rating_type: PlayerRatingType) -> Self:
+        match rating_type:
+            case PlayerRatingType.FIDE:
+                return cls(fide=value)
+            case PlayerRatingType.NATIONAL:
+                return cls(national=value)
+            case PlayerRatingType.ESTIMATED:
+                return cls(estimated=value)
+            case _:
+                raise ValueError(f'{rating_type=}')
 
     @property
     def stored_value(self) -> dict[str, int | None]:
@@ -292,13 +304,13 @@ class Player:
     ) -> PlayerRatingAndType:
         player_ratings = self.ratings[tournament_rating]
         rating: int | None = None
-        type: PlayerRatingType
+        type_: PlayerRatingType = PlayerRatingType.ESTIMATED
         if player_rating_type == PlayerRatingType.FIDE:
             rating = player_ratings.fide
-            type = PlayerRatingType.FIDE
+            type_ = PlayerRatingType.FIDE
         elif player_rating_type == PlayerRatingType.NATIONAL:
             rating = player_ratings.national
-            type = PlayerRatingType.NATIONAL
+            type_ = PlayerRatingType.NATIONAL
         if rating is None:
             if player_ratings.estimated:
                 return PlayerRatingAndType(
@@ -314,7 +326,7 @@ class Player:
             if rating_and_type:
                 return rating_and_type
 
-        return PlayerRatingAndType(rating or 0, type or PlayerRatingType.ESTIMATED)
+        return PlayerRatingAndType(rating or 0, type_)
 
     @property
     def has_real_rating(self) -> bool:

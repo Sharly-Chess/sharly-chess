@@ -6146,6 +6146,3 @@ msgstr ""
 msgid "½ - ½ (U)"
 msgstr ""
 
-#~ msgid "National"
-#~ msgstr ""
-

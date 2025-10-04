@@ -1358,7 +1358,7 @@ msgid "Default timer configuration"
 msgstr "Configuration par défaut des chronomètres"
 
 msgid "Default tournament type:"
-msgstr "Type de tournoi par défaut"
+msgstr "Type de tournoi par défaut :"
 
 #, python-format
 msgid "Default: %(string)s"

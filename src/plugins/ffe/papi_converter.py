@@ -524,16 +524,8 @@ class PapiConverter:
                     rating_type = PapiPlayerRatingType.get_core_object(papi_rating.type)
                 except KeyError:
                     raise_unknown_value(papi_rating.type_field, papi_rating.type)
-            ratings[papi_rating.tournament_rating.value] = PlayerRating(
-                estimated=papi_rating.value
-                if rating_type == PlayerRatingType.ESTIMATED
-                else None,
-                national=papi_rating.value
-                if rating_type == PlayerRatingType.NATIONAL
-                else None,
-                fide=papi_rating.value
-                if rating_type == PlayerRatingType.FIDE
-                else None,
+            ratings[papi_rating.tournament_rating.value] = PlayerRating.from_type(
+                papi_rating.value, rating_type
             ).stored_value
 
         fide_id: int | None = None
