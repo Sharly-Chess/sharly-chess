@@ -36,7 +36,7 @@ class TestPlayersFunctionality:
         modal.get_by_test_id('gender').select_option(str(PlayerGender.MALE.value))
         modal.get_by_test_id('club').fill('SC Club')
         modal.get_by_test_id('fixed').fill('100')
-        TestUtils.button_by_text(modal, 'Add estimated ratings').click()
+        TestUtils.button_by_text(modal, 'Add manual estimated ratings').click()
         modal.get_by_test_id('standard-rating-estimated').fill('1000')
         modal.get_by_test_id('rapid-rating-national').fill('1500')
         modal.get_by_test_id('blitz-rating-fide').fill('2000')
