@@ -529,6 +529,9 @@ msgstr "Autorise l'appariement des joueur·euses, en utilisant un moteur d'appar
 msgid "An error occurred. Consult the logs for more details."
 msgstr "Une erreur s'est produite. Consultez les logs pour plus de détails."
 
+msgid "An unexpected error occurred, either in Sharly Chess or in ChessEvent. Consult the logs for more details."
+msgstr "Une erreur inattendue s'est produite, soit dans Sharly Chess soit dans ChessEvent. Consultez les logs pour plus d'informations."
+
 msgid "An unexpected error occurred."
 msgstr "Une erreur inattendue s'est produite."
 
@@ -606,6 +609,9 @@ msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] "Au plus %(num)d coup illegal est enregistré."
 msgstr[1] "Au plus %(num)d coups illégaux sont enregistrés."
+
+msgid "Authentication failed"
+msgstr "Authentification échouée"
 
 msgid "Authentication failed."
 msgstr "L'authentification a échoué."
@@ -881,6 +887,15 @@ msgstr "Cochez la case pour autoriser les autres écrans à afficher un lien ver
 msgid "Check the box to allow other screens to display a link to this screen."
 msgstr "Cochez la case pour autoriser les autres écrans à afficher un lien vers cet écran."
 
+msgid "Check the event ID then try again."
+msgstr "Vérifiez l'identifiant de l'évènement puis réessayez."
+
+msgid "Check the tournament name then try again."
+msgstr "Vérifiez le nom du tournoi puis réessayez."
+
+msgid "Check the username and the password then try again."
+msgstr "Vérifiez l'identifiant et le mot de passe puis réessayez."
+
 msgid "Check-in"
 msgstr "Pointage"
 
@@ -921,8 +936,17 @@ msgstr "Échecs"
 msgid "ChessEvent"
 msgstr "ChessEvent"
 
+msgid "ChessEvent actions are no longer available once the tournament has started."
+msgstr "Les actions ChessEvent ne sont plus disponibles une fois le tournoi démarré."
+
+msgid "ChessEvent event not defined."
+msgstr "L'évènement ChessEvent n'est pas défini."
+
 msgid "ChessEvent event:"
 msgstr "Évènement ChessEvent :"
+
+msgid "ChessEvent password not defined."
+msgstr "Le mot de passe ChessEvent n'est pas défini."
 
 msgid "ChessEvent password:"
 msgstr "Mot de passe ChessEvent :"
@@ -930,11 +954,17 @@ msgstr "Mot de passe ChessEvent :"
 msgid "ChessEvent settings"
 msgstr "Paramètres ChessEvent"
 
+msgid "ChessEvent tournament"
+msgstr "Tournoi ChessEvent"
+
 msgid "ChessEvent tournament:"
 msgstr "Nom du tournoi ChessEvent :"
 
 msgid "ChessEvent user name:"
 msgstr "Identifiant ChessEvent :"
+
+msgid "ChessEvent user not defined."
+msgstr "L'identifiant ChessEvent n'est pas défini."
 
 #, python-format
 msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s"
@@ -1093,6 +1123,9 @@ msgstr "Appariements complémentaires générés avec succès !"
 
 msgid "Configuration"
 msgstr "Configuration"
+
+msgid "Configure the ChessEvent settings of this tournament."
+msgstr "Configurer les paramètres ChessEvent de ce tournoi."
 
 msgid "Connect to the Sharly Chess network via {type},<br />then scan to access the Sharly Chess server."
 msgstr "Connectez-vous au réseau Sharly Chess via {type},<br />puis scannez pour accéder au serveur Sharly Chess."
@@ -1912,6 +1945,9 @@ msgstr "L'évènement [{uniq_id}] a été supprimé, la base de données a été
 msgid "Event [{uniq_id}] has been updated."
 msgstr "L'évènement [{uniq_id}] a été modifié."
 
+msgid "Event not found"
+msgstr "Évènements introuvable"
+
 msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
 msgstr "L'identifiant unique de l'évènement à été renommé de [{old_uniq_id}] à [{new_uniq_id}]."
 
@@ -2665,6 +2701,9 @@ msgstr "Derniers résultats"
 msgid "Last results ({num})"
 msgstr "Derniers résultats ({num})"
 
+msgid "Last synchronization"
+msgstr "Dernière synchronisation"
+
 msgid "Last update"
 msgstr "Dernière mise à jour"
 
@@ -2733,9 +2772,6 @@ msgstr "URL locale : {local_url}"
 
 msgid "Local databases"
 msgstr "Bases de données locales"
-
-msgid "Local source databases settings have been updated."
-msgstr "les paramètres des bases de données locales ont été mis à jour."
 
 msgid "Location"
 msgstr "Lieu"
@@ -2988,6 +3024,9 @@ msgstr "Réseau"
 msgid "Network:"
 msgstr "Réseau :"
 
+msgid "Never synchronized"
+msgstr "Jamais synchronisé"
+
 msgid "New category"
 msgstr "Nouvelle catégorie"
 
@@ -3206,6 +3245,9 @@ msgstr "Non-attribué"
 
 msgid "Not checked-in yet"
 msgstr "Pas encore point·ée"
+
+msgid "Not configured"
+msgstr "Non-configuré"
 
 msgid "Not connected to internet"
 msgstr "Aucune connection à internet"
@@ -3921,6 +3963,9 @@ msgstr "Publier les appariements"
 msgid "Publish rankings"
 msgstr "Publier les classements"
 
+msgid "Publish the tournaments to the FFE website."
+msgstr "Publier les tournois sur le site de la FFE."
+
 msgid "Publish tournament results"
 msgstr "Publier les résultats"
 
@@ -4422,6 +4467,9 @@ msgstr "Utiliser les départages recommandés"
 msgid "Settings"
 msgstr "Paramètres"
 
+msgid "Settings error"
+msgstr "Erreur de configuration"
+
 msgid "Share the prizes"
 msgstr "Partager les prix"
 
@@ -4591,6 +4639,9 @@ msgstr "Début de la ronde {} dans %s"
 msgid "Start:"
 msgstr "Début :"
 
+msgid "Started"
+msgstr "Démarré"
+
 msgid "Starting Sharly Chess server, Please wait…"
 msgstr "Démarrage du serveur Sharly Chess, veuillez patienter…"
 
@@ -4609,6 +4660,9 @@ msgstr "Std"
 msgid "Strong"
 msgstr "Préférence forte"
 
+msgid "Success"
+msgstr "Succès"
+
 msgid "Sum of Buchholz"
 msgstr "Somme des Buchholz"
 
@@ -4620,6 +4674,21 @@ msgstr "Support pour la plateforme ChessEvent utilsée pour l'organisation de to
 
 msgid "Swiss"
 msgstr "Suisse"
+
+msgid "Synchronize all tournaments"
+msgstr "Synchroniser tous les tournois"
+
+msgid "Synchronize the tournaments with the ChessEvent platform."
+msgstr "Synchroniser les tournois avec la plateforme ChessEvent."
+
+msgid "Synchronize this tournament from its ChessEvent tournament."
+msgstr "Synchroniser ce tournoi à partir de son tournoi ChessEvent."
+
+msgid "Synchronize tournaments with ChessEvent"
+msgstr "Synchroniser les tournois avec ChessEvent"
+
+msgid "Synchronize with ChessEvent"
+msgstr "Synchroniser avec ChessEvent"
 
 msgid "TRF file"
 msgstr "Fichier TRF"
@@ -4714,6 +4783,9 @@ msgstr "La date et l'heure de fin de l'évènement."
 #, python-format
 msgid "The end time of the tournament (defaults to %(datetime)s)."
 msgstr "L'horaire de fin du tournoi (par défaut %(datetime)s)."
+
+msgid "The event [{event_id}] is not accessible to the user [{user_id}]."
+msgstr "L'évènement [{event_id}] n'est pas accessible via l'identifiant [{user_id}]."
 
 msgid "The federation that organizes the event. Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr "La fédération qui organise l’évènement. Sharly Chess peut proposer des fonctionnalités spécifiques à la fédération choisie pour chaque évènement."
@@ -4974,6 +5046,9 @@ msgstr "Le type de document à imprimer."
 msgid "The type of rating to use for the tournament."
 msgstr "Le type de classement utilsé."
 
+msgid "The username / password provided are not allowed to access this ChessEvent event."
+msgstr "L'identifiant et ne mot de passe fournis ne permettent pas d'accéder à cet évènement ChessEvent."
+
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
 msgstr "La valeur doit être supérieure au seuil de partage de la catégorie ({threshold})."
 
@@ -5233,8 +5308,14 @@ msgstr "Le tournoi [{tournament}] a été importé avec succès."
 msgid "Tournament exempt from registration fees."
 msgstr "Tournoi exempt de droits d'homologation."
 
+msgid "Tournament has not been configured to be used with ChessEvent."
+msgstr "Le tournoi n'a pas été configuré pour être utilisé avec ChessEvent."
+
 msgid "Tournament modified, awaiting auto-upload"
 msgstr "Tournoi mis à jour, en attente de l’envoi automatique"
+
+msgid "Tournament not found"
+msgstr "Tournoi introuvable"
 
 msgid "Tournament not modified since last upload"
 msgstr "Tournoi non modifié depuis le dernier envoi"
@@ -5370,6 +5451,9 @@ msgstr "Impossible de définir la visibilité du tournoi."
 msgid "Unable to upload tournament rules."
 msgstr "Impossible de téléverser le règlement du tournoi."
 
+msgid "Unauthorized access"
+msgstr "Accès non-autorisé"
+
 msgid "Undefined *** PLURAL"
 msgstr "Non définis"
 
@@ -5393,6 +5477,9 @@ msgstr "Moins de 20"
 
 msgid "Under 8"
 msgstr "Moins de 8"
+
+msgid "Unexpected error"
+msgstr "Erreur inattendue"
 
 #, python-format
 msgid "Unique ID: %(uniq_id)s"
@@ -5663,6 +5750,9 @@ msgstr "Avertissement : les fonctionnalités expérimentales sont activées !"
 msgid "Warning: round #%(round)d is not finished."
 msgstr "Attention : la ronde n°%(round)d n'est pas terminée."
 
+msgid "Warning: synchronizing a tournament overwrites all of its player data."
+msgstr "Attention : synchroniser un tournoi écrase toutes les données de ses joueur·euses."
+
 #, python-format
 msgid "Warning: the %(player_count)d players in the tournament will be deleted."
 msgstr "Attention : les %(player_count)d joueur·euses du tournoi seront supprimé·es."
@@ -5826,6 +5916,9 @@ msgstr "Vous n'êtes pas autorisé·e à enregistrer des absences."
 msgid "You are not allowed to unpair rounds."
 msgstr "Vous n'êtes pas autorisé·e à désapparier les rondes."
 
+msgid "You are not allowed to update players."
+msgstr "Vous n'êtes pas autorisé·e à modifier les joueur·euses."
+
 msgid "You are not allowed to update results."
 msgstr "Vous n'êtes pas autorisé·e à modifier les résultats."
 
@@ -5858,6 +5951,9 @@ msgstr "Vous ne pouvez pas pas ajouter davantage de permissions à ce compte."
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement…) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans simples seront générés automatiquement."
+
+msgid "You have to update the ChessEvent settings before being able to use synchronisation."
+msgstr "Vous devez modifier les paramètres ChessEvent avant de pouvoir utiliser la synchronisation."
 
 msgid "You may also connect to this server from other devices using"
 msgstr "Vous pouvez également vous connecter à ce serveur depuis d’autres appareils"

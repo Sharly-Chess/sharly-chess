@@ -1,5 +1,5 @@
 from types import ModuleType
-from typing import Any, TYPE_CHECKING, override, Optional
+from typing import Any, TYPE_CHECKING, override, Optional, Iterable
 
 from packaging.version import Version
 
@@ -7,13 +7,14 @@ from common.i18n import _
 from data.input_output import TournamentImporter
 from database.sqlite.event.event_database import EventDatabase
 from plugins.chessevent import migrations, PLUGIN_NAME
+from plugins.chessevent.chessevent_controller import ChessEventController
 from plugins.chessevent.tournament_importer.importer import ChessEventTournamentImporter
 from plugins.chessevent.utils import ChessEventUtils
 from plugins.hookspec import hookimpl
 from plugins.migration import PluginMigrationManager
 from plugins.utils import Plugin
 
-from web.controllers.base_controller import WebContext
+from web.controllers.base_controller import WebContext, BaseController
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -60,6 +61,10 @@ class ChessEventPlugin(Plugin):
         self, event_database: EventDatabase
     ) -> PluginMigrationManager:
         return self.get_migration_manager(event_database)
+
+    @hookimpl
+    def get_controllers(self) -> Iterable[type[BaseController]]:
+        return [ChessEventController]
 
     # ---------------------------------------------------------------------------------
     # Input-Output
@@ -162,6 +167,8 @@ class ChessEventPlugin(Plugin):
             'chessevent_password': row['chessevent_password'],
             'chessevent_event_id': row['chessevent_event_id'],
             'chessevent_tournament_name': row['chessevent_tournament_name'],
+            'chessevent_last_sync': row['chessevent_last_sync'],
+            'chessevent_status': row['chessevent_status'],
         }
 
     @hookimpl
@@ -178,6 +185,8 @@ class ChessEventPlugin(Plugin):
             'chessevent_tournament_name': self.get_data(
                 td, 'chessevent_tournament_name', ''
             ),
+            'chessevent_last_sync': self.get_data(td, 'chessevent_last_sync', None),
+            'chessevent_status': self.get_data(td, 'chessevent_status', None),
         }
 
     @hookimpl
@@ -186,3 +195,7 @@ class ChessEventPlugin(Plugin):
             '/chessevent_tournament_card_block.html',
             {'chessevent_utils': ChessEventUtils},
         )
+
+    @hookimpl
+    def get_tournament_tab_action_menu_items_template(self) -> str:
+        return '/chessevent_tournament_tab_action_menu_items.html'

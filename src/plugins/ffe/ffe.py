@@ -77,7 +77,6 @@ from plugins.migration import PluginMigrationManager
 from plugins.utils import (
     ExtraStatisticsSection,
     Plugin,
-    PluginNavBarItem,
     PluginUtils,
     PluginData,
 )
@@ -801,8 +800,12 @@ class FfePlugin(Plugin):
         )
 
     @hookimpl
-    def get_tournament_card_menu_items_template(self) -> str:
-        return '/ffe_tournament_action_items.html'
+    def get_tournament_card_action_menu_items_template(self) -> str:
+        return '/ffe_tournament_card_action_menu_items.html'
+
+    @hookimpl
+    def get_tournament_tab_action_menu_items_template(self) -> str:
+        return '/ffe_tournament_tab_action_menu_items.html'
 
     @hookimpl
     def signal_tournament_set(
@@ -912,19 +915,6 @@ class FfePlugin(Plugin):
                 )
             ]
         return []
-
-    # ---------------------------------------------------------------------------------
-    # Nav bar
-    # ---------------------------------------------------------------------------------
-
-    @hookimpl
-    def get_event_nav_bar_items_and_data(
-        self, event: 'Event'
-    ) -> tuple[Iterable[PluginNavBarItem], dict[str, Any]]:
-        return (
-            [PluginNavBarItem(at='database', template='/ffe_nav_buttons.html')],
-            {},
-        )
 
     # ---------------------------------------------------------------------------------
     # User screens

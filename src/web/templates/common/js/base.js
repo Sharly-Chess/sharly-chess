@@ -97,6 +97,12 @@ window.addEventListener("show.bs.dropdown", function(event) {
     closeTooltips();
 });
 
+window.addEventListener('htmx:afterSwap', function(event) {
+    // Activate the tooltips after a swap
+    activateTooltips();
+    closeTooltips();
+});
+
 window.addEventListener('request_refresh', function(event) {
     location.reload();
 });

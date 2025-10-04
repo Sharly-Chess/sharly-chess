@@ -131,8 +131,11 @@ class TournamentAdminController(BaseEventAdminController):
             for (block_template, data) in tournament_form_fields_templates_and_data
             for key, value in data.items()
         }
-        tournament_action_menu_items = (
-            plugin_manager.hook.get_tournament_card_menu_items_template()
+        tournament_card_action_menu_items_templates = (
+            plugin_manager.hook.get_tournament_card_action_menu_items_template()
+        )
+        tournament_tab_action_menu_items_templates = (
+            plugin_manager.hook.get_tournament_tab_action_menu_items_template()
         )
         tournament_importers: list[TournamentImporter] = (
             TournamentImporterManager.objects()
@@ -147,7 +150,8 @@ class TournamentAdminController(BaseEventAdminController):
                 'tournament_card_blocks': tournament_card_blocks,
                 'tournament_importers': tournament_importers,
                 'tournament_exporters': tournament_exporters,
-                'tournament_action_menu_items': tournament_action_menu_items,
+                'tournament_card_action_menu_items_templates': tournament_card_action_menu_items_templates,
+                'tournament_tab_action_menu_items_templates': tournament_tab_action_menu_items_templates,
                 'admin_tournaments_show_details': (
                     SessionHandler.get_session_admin_tournaments_show_details(
                         web_context.request
@@ -1232,7 +1236,7 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_random_player(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: int | None,
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
 

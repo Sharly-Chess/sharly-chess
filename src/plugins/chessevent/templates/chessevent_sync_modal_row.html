@@ -1,0 +1,93 @@
+{% import '/common/macros.j2' as macros with context %}
+
+{% set tournament_status = chessevent_utils.resolve_tournament_status(tournament) %}
+<tr id="chessevent-tournament-{{ tournament.id }}-row">
+    <td class="text-center">{{ tournament.name }}</td>
+    <td class="text-center">
+        {% set chessevent_event_id = chessevent_utils.resolve_event_id(tournament) %}
+        {% set chessevent_tournament_name = chessevent_utils.resolve_tournament_name(tournament) %}
+        {% if chessevent_event_id and chessevent_tournament_name %}
+            <a
+                href="https://chessevent.echecs-bretagne.fr/public/inscrList.php?event={{ chessevent_event_id }}"
+                target="_blank"
+            >
+                {{ chessevent_event_id }} | {{ chessevent_tournament_name }}
+            </a>
+        {% else %}
+            -
+        {% endif %}
+    </td>
+    <td class="text-center">
+        <span class="{{ tournament_status.css_classes }}">
+            {{ tournament_status.name }}
+        </span>
+        {% if tournament_status.tooltip %}
+            <i
+                class="bi-info-circle-fill ps-1"
+                {{ macros.tooltip_attributes('info', tournament_status.tooltip, 'top') }}
+            ></i>
+        {% endif %}
+    </td>
+    <td class="text-center">
+        {% set tournament_last_sync = tournament.plugin_data.chessevent.chessevent_last_sync %}
+        {% if tournament_last_sync %}
+            {{ format_timestamp_date_time(tournament_last_sync) }}
+        {% endif %}
+    </td>
+    <td>
+        <div class="d-flex gap-2 justify-content-end">
+            <span
+                {{ macros.tooltip_attributes(
+                    'info',
+                    tournament_status.settings_disabled_message or
+                    _('Configure the ChessEvent settings of this tournament.'),
+                    'top'
+                ) }}
+            >
+                <button
+                    type="button"
+                    class="btn btn-outline-primary btn-sm"
+                    {% if tournament_status.settings_disabled_message %}
+                        disabled
+                    {% else %}
+                        hx-get="{{ url_for(
+                            'admin-tournament-import-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=tournament.id,
+                            importer_id=chessevent_importer.id
+                        ) }}"
+                    {% endif %}
+                >
+                    <i class="bi-gear-fill"></i>
+                </button>
+            </span>
+            <span
+                {{ macros.tooltip_attributes(
+                    'info',
+                    tournament_status.sync_disabled_message or
+                    _('Synchronize this tournament from its ChessEvent tournament.'),
+                    'top'
+                ) }}
+            >
+                <button
+                    type="button"
+                    class="btn btn-outline-primary btn-sm"
+                    {% if tournament_status.sync_disabled_message %}
+                        disabled
+                    {% else %}
+                        hx-patch="{{ url_for(
+                            'chessevent-sync-tournament',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=tournament.id
+                        ) }}"
+                        hx-target="#chessevent-tournament-{{ tournament.id }}-row"
+                        hx-swap="outerHTML"
+                        hx-indicator="#please-wait"
+                    {% endif %}
+                >
+                    <i class="bi-arrow-repeat"></i>
+                </button>
+            </span>
+        </div>
+    </td>
+</tr>
