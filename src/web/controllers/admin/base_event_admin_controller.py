@@ -323,3 +323,14 @@ class BaseEventAdminController(BaseAdminController):
             template_name='admin/event_layout.html',
             context=template_context,
         )
+
+    @staticmethod
+    def _render_modal(template_name: str, template_context: dict[str, Any]):
+        return HTMXTemplate(
+            template_name=template_name,
+            context=template_context,
+            re_target='#modal-wrapper',
+            re_swap='innerHTML',
+            trigger_event='modal_opened',
+            after='settle',
+        )

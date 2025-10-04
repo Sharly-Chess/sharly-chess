@@ -160,8 +160,8 @@ class FfePlugin(Plugin):
     ) -> PluginMigrationManager:
         return self.get_migration_manager(event_database)
 
-    @hookimpl
-    def get_controllers(self) -> Iterable[type[BaseController]]:
+    @property
+    def controllers(self) -> list[type[BaseController]]:
         return [
             FfeAdminEventController,
             FfeAdminTournamentController,

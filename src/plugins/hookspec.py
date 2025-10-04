@@ -36,7 +36,6 @@ if TYPE_CHECKING:
     )
     from database.sqlite.local_source_database.databases import LocalSourceDatabase
     from plugins.migration import PluginMigrationManager
-    from web.controllers.base_controller import BaseController
     from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 
 hookspec = pluggy.HookspecMarker(APP_NAME)
@@ -58,10 +57,6 @@ class AppHookSpecs:
         self, event_database: 'EventDatabase'
     ) -> 'PluginMigrationManager':
         """Provide a migration manager for event databases"""
-
-    @hookspec
-    def get_controllers(self) -> Iterable[type['BaseController']]:
-        """Provide controllers for the application"""
 
     @hookspec
     def get_base_admin_template_context(self) -> dict[str, Any]:
