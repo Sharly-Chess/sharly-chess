@@ -665,10 +665,14 @@ class Tournament:
 
     @property
     def point_values(self) -> dict[Result, float]:
+        values: dict[Result, float]
         if self.three_points_for_a_win:
-            return {Result.WIN: 3, Result.DRAW: 1, Result.LOSS: 0}
+            values = {Result.WIN: 3, Result.DRAW: 1, Result.LOSS: 0}
         else:
-            return {Result.WIN: 1, Result.DRAW: 0.5, Result.LOSS: 0}
+            values = {Result.WIN: 1, Result.DRAW: 0.5, Result.LOSS: 0}
+
+        values[Result.PAIRING_ALLOCATED_BYE] = values[self.pab_value]
+        return values
 
     @property
     def plugin_data(self) -> dict[str, dict[str, Any]]:
