@@ -639,8 +639,8 @@ class PapiConverter:
         return None
 
     @classmethod
-    def check_result(cls, result: Result) -> str | None:
-        if not PapiRound.is_convertible_to_papi(result):
+    def check_result(cls, result: Result, tournament: Tournament) -> str | None:
+        if not PapiRound.is_convertible_to_papi(result, tournament):
             return _(
                 'Result [{result}] is not compatible with the PAPI format.'
             ).format(result=result)
@@ -671,7 +671,7 @@ class PapiConverter:
 
         for round in range(1, tournament.rounds + 1):
             for player in tournament.players:
-                if msg := cls.check_result(player.pairings[round].result):
+                if msg := cls.check_result(player.pairings[round].result, tournament):
                     return msg
 
         return None
@@ -788,7 +788,10 @@ class PapiConverter:
         papi_players: list[PapiPlayer] = []
         for player in tournament.players:
             papi_player = self._player_to_papi_player(
-                player, player_id_to_index, has_manual_tiebreak
+                player,
+                player_id_to_index,
+                has_manual_tiebreak,
+                pab_value=tournament.pab_value,
             )
             papi_players.append(papi_player)
 
@@ -799,6 +802,7 @@ class PapiConverter:
         player: Player,
         player_id_to_index: dict[int, int],
         has_manual_tiebreak: bool,
+        pab_value: Result,
     ) -> PapiPlayer:
         """Convert a Player object to PapiPlayer."""
 
@@ -847,7 +851,7 @@ class PapiConverter:
 
         # Convert rounds/pairings
         for round, pairing in player.pairings_by_round.items():
-            papi_round = PapiRound.from_pairing(pairing)
+            papi_round = PapiRound.from_pairing(pairing, pab_value)
 
             # Get opponent index using the mapping from internal player ID to list index
             opponent_index = None
