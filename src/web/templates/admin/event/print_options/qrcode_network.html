@@ -1,0 +1,9 @@
+<div class="col-12">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('Network:'),
+        help_text=_('The network on which the devices are connected.'),
+        select_options=option.network_options,
+        data=data, errors=errors
+    ) }}
+</div>

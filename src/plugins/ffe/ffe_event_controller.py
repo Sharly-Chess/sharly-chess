@@ -2,13 +2,14 @@ from functools import partial
 from typing import Annotated, Any
 from litestar import get, post
 from litestar.response import Template
-from litestar_htmx import HTMXRequest, ClientRedirect, HTMXTemplate
+from litestar_htmx import HTMXRequest, HTMXTemplate
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 
 from common import format_timestamp_date_time
 from common.i18n import _
 from common.network import NetworkMonitor
+from data.access_levels.actions import AuthAction
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader, FfeUploadStatus
 from plugins.ffe.ffe_session import FFESession
@@ -22,30 +23,25 @@ from web.controllers.admin.base_event_admin_controller import (
 from web.controllers.admin.player_admin_controller import PlayerAdminController
 from web.controllers.admin.tournament_admin_controller import TournamentAdminWebContext
 from web.controllers.base_controller import WebContext
+from web.guards import EventGuard, ActionGuard, TournamentActionGuard
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
 
 class FfeAdminEventController(BaseEventAdminController):
+    guards = []
+
     @get(
         path='/ffe/event/{event_uniq_id:str}/players',
         name='ffe-admin-event-players-tab',
+        guards=[EventGuard(), ActionGuard(AuthAction.VIEW_PLAYERS_TAB)],
     )
     async def htmx_ffe_event_tab(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         admin_players_filter_leagues: list[str] | None = None,
         admin_players_filter_licences: list[int] | None = None,
-    ) -> Template | ClientRedirect:
-        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            data=None,
-        )
-        if web_context.error:
-            return web_context.error
-
+    ) -> Template:
         if admin_players_filter_leagues is not None:
             FFESessionHandler.set_session_admin_players_filter_leagues(
                 request,
@@ -64,10 +60,9 @@ class FfeAdminEventController(BaseEventAdminController):
                     if query_param >= 0  # -1 must be ignored
                 ],
             )
-        PlayerAdminController.set_players_search_results(request, event_uniq_id)
+        PlayerAdminController.set_players_search_results(request)
         return PlayerAdminController._admin_event_players_render(
-            request,
-            event_uniq_id=event_uniq_id,
+            request, reload_event=True
         )
 
     @post(
@@ -76,12 +71,11 @@ class FfeAdminEventController(BaseEventAdminController):
     )
     async def htmx_ffe_test_auth(
         self,
-        request: HTMXRequest,
         data: Annotated[
             dict[str, Any],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | ClientRedirect:
+    ) -> Template:
         ffe_auth_valid: bool | None = None
 
         if NetworkMonitor.connected():
@@ -119,22 +113,15 @@ class FfeAdminEventController(BaseEventAdminController):
     @get(
         path='/ffe/ffe-upload-modal/{event_uniq_id:str}',
         name='ffe-upload-modal',
+        guards=[EventGuard(), ActionGuard(AuthAction.PUBLISH_RESULTS)],
     )
     async def htmx_admin_ffe_upload_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-    ) -> Template | ClientRedirect:
-        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            data=None,
-        )
-        if web_context.error:
-            return web_context.error
-        assert web_context.admin_event is not None
+    ) -> Template:
+        web_context = BaseEventAdminWebContext(request)
 
-        FfeBackgroundUploader.update_eligible_tournaments(web_context.admin_event)
+        FfeBackgroundUploader.update_eligible_tournaments(web_context.get_admin_event())
 
         return HTMXTemplate(
             template_name='/ffe_upload_modal.html',
@@ -152,11 +139,8 @@ class FfeAdminEventController(BaseEventAdminController):
 
     @staticmethod
     def _render_upload_results(
-        request: HTMXRequest,
         web_context: BaseEventAdminWebContext,
-    ) -> Template | ClientRedirect:
-        assert web_context.admin_event is not None
-
+    ) -> Template:
         return HTMXTemplate(
             template_name='/ffe_upload_results.html',
             context=web_context.template_context
@@ -171,88 +155,46 @@ class FfeAdminEventController(BaseEventAdminController):
     @get(
         path='/ffe/ffe-upload-results/{event_uniq_id:str}',
         name='ffe-upload-results',
+        guards=[EventGuard(), ActionGuard(AuthAction.PUBLISH_RESULTS)],
     )
-    async def htmx_admin_ffe_upload_results(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-    ) -> Template | ClientRedirect:
-        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            data=None,
-        )
-        if web_context.error:
-            return web_context.error
-        return self._render_upload_results(request, web_context)
+    async def htmx_admin_ffe_upload_results(self, request: HTMXRequest) -> Template:
+        web_context = BaseEventAdminWebContext(request)
+        return self._render_upload_results(web_context)
 
     @post(
         path='/ffe/ffe-upload/{event_uniq_id:str}',
         name='ffe-upload',
+        guards=[EventGuard(), ActionGuard(AuthAction.PUBLISH_RESULTS)],
     )
-    async def htmx_admin_ffe_upload(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-    ) -> Template | ClientRedirect:
-        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            data=None,
-        )
-        if web_context.error:
-            return web_context.error
-
-        admin_event = web_context.admin_event
-        assert admin_event is not None
-        FfeBackgroundUploader.upload_event(admin_event)
-
-        return self._render_upload_results(request, web_context)
+    async def htmx_admin_ffe_upload(self, request: HTMXRequest) -> Template:
+        web_context = BaseEventAdminWebContext(request)
+        FfeBackgroundUploader.upload_event(web_context.get_admin_event())
+        return self._render_upload_results(web_context)
 
     @post(
         path='/ffe/ffe-upload-tournament/{event_uniq_id:str}/{tournament_id:int}',
         name='ffe-upload-tournament',
+        guards=[EventGuard(), TournamentActionGuard(AuthAction.PUBLISH_RESULTS)],
     )
     async def htmx_admin_ffe_upload_tournament(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect:
-        web_context: TournamentAdminWebContext = TournamentAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-            data=None,
-        )
-        if web_context.error:
-            return web_context.error
-
-        admin_event = web_context.admin_event
-        assert admin_event is not None
-        tournament = web_context.admin_tournament
-        assert tournament is not None
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        tournament = web_context.get_admin_tournament()
 
         FfeBackgroundUploader.schedule_upload(tournament, True)
 
-        return self._render_upload_results(request, web_context)
+        return self._render_upload_results(web_context)
 
     @get(
         path='/ffe/nav-upload-button/{event_uniq_id:str}',
         name='ffe-nav-upload-button',
+        guards=[EventGuard()],
     )
-    async def htmx_admin_ffe_nav_upload_button(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-    ) -> Template | ClientRedirect:
-        web_context: BaseEventAdminWebContext = BaseEventAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            data=None,
-        )
-        if web_context.error:
-            return web_context.error
+    async def htmx_admin_ffe_nav_upload_button(self, request: HTMXRequest) -> Template:
+        web_context = BaseEventAdminWebContext(request)
         admin_event = web_context.admin_event
         assert admin_event is not None
 

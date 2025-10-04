@@ -12,8 +12,8 @@ from common import APP_NAME
 from plugins.utils import (
     ExtraAdminColumn,
     ExtraColumn,
-    PluginEngineArgument,
     PluginNavBarItem,
+    ExtraStatisticsSection,
     PluginData,
 )
 from utils.enum import Result, ScreenType, TournamentRating
@@ -21,10 +21,10 @@ from utils.enum import Result, ScreenType, TournamentRating
 if TYPE_CHECKING:
     from data.input_output import DataSource, TournamentExporter, TournamentImporter
     from data.pairings.variations import SwissVariation
-    from data.player import Player, PlayerRating
-    from data.print_documents import PrintDocument, PlayerSplitter
-    from data.prize.player_filter_options import PlayerFilterOption
-    from data.prize.player_filters import PlayerFilter
+    from data.player import Player, PlayerRatingAndType, PlayerRatingType
+    from data.print_documents import PrintDocument, PlayerSplitter, QRCodeType
+    from data.criteria.player_filter_options import PlayerFilterOption
+    from data.criteria.player_filters import PlayerFilter
     from data.tie_breaks import TieBreak
     from data.tournament import Tournament
     from data.event import Event
@@ -67,11 +67,6 @@ class AppHookSpecs:
     @hookspec
     def get_base_admin_template_context(self) -> dict[str, Any]:
         """Provide additional template context for AdminWebContext"""
-
-    # TODO remove this hook after having integrated ChessEvent into the web UI
-    @hookspec
-    def get_engine_argument(self) -> PluginEngineArgument:
-        """Provide an engine argument"""
 
     # ---------------------------------------------------------------------------------
     # Input-Output
@@ -140,10 +135,14 @@ class AppHookSpecs:
     ):
         """Add plugin specific data to a player after a successful player search"""
 
-    @hookspec
-    def get_player_estimated_rating(
-        self, federation: str, tournament_rating: TournamentRating, player: 'Player'
-    ) -> Optional['PlayerRating']:
+    @hookspec(firstresult=True)
+    def get_player_rating(
+        self,
+        event_federation: str,
+        tournament_rating: TournamentRating,
+        player_rating_type: 'PlayerRatingType',
+        player: 'Player',
+    ) -> Optional['PlayerRatingAndType']:
         """Get the estimated rating of a player."""
 
     @hookspec(firstresult=True)
@@ -199,10 +198,6 @@ class AppHookSpecs:
         """Provide addition column data for events when writing to the database"""
 
     @hookspec
-    def get_event_info_rows_template(self) -> str:
-        """Provide a path to the template containing extra event info rows"""
-
-    @hookspec
     def get_event_card_block_template(self) -> str:
         """Provide a path to the template to be added to event cards"""
 
@@ -234,7 +229,9 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def on_tournament_data_updated(self, event_uniq_id: str, tournament_id: int):
+    def on_tournament_data_updated(
+        self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
+    ):
         """Called when the (publishable) data of a tournament is updated"""
 
     @hookspec
@@ -305,6 +302,10 @@ class AppHookSpecs:
         """Provide print player splitting options"""
 
     @hookspec
+    def insert_print_qrcode_types(self, qrcode_types: list[type['QRCodeType']]):
+        """Provide QR Code options"""
+
+    @hookspec
     def get_extra_print_view_columns(
         self, document: 'PrintDocument'
     ) -> Iterable[ExtraColumn]:
@@ -313,6 +314,12 @@ class AppHookSpecs:
     @hookspec
     def get_extra_print_view_css(self, document: 'PrintDocument') -> str:
         """Provide extra CSS for the print view"""
+
+    @hookspec
+    def get_extra_statistics_sections(
+        self, document: 'PrintDocument', tournaments: list['Tournament']
+    ) -> Iterable[ExtraStatisticsSection]:
+        """Provide extra sections for the statistics print view"""
 
     # ---------------------------------------------------------------------------------
     # Nav bar
@@ -367,13 +374,13 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def insert_prize_player_filter_types(
+    def insert_player_filter_types(
         self, player_filter_types: list[type['PlayerFilter']]
     ):
         """Provide extra player filters for prizes."""
 
     @hookspec
-    def insert_prize_player_filter_option_types(
+    def insert_player_filter_option_types(
         self, player_filter_option_types: list[type['PlayerFilterOption']]
     ):
         """Provide the options of the added prize player filters."""

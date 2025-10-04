@@ -1,9 +1,13 @@
 import time
+from contextlib import suppress
+from logging import Logger
 from typing import TYPE_CHECKING
 
 from litestar.plugins.htmx import HTMXRequest
 
+from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
+from data.account import Account
 from data.input_output import DataSourceManager
 from data.player import Federation, Club
 from data.safety_mode import SafetyMode
@@ -13,22 +17,66 @@ if TYPE_CHECKING:
     from data.event import Event
     from web.controllers.admin.pairings_admin_controller import PageIdentifier
 
+logger: Logger = get_logger()
+
 
 class SessionHandler:
-    AUTH_SESSION_KEY: str = 'auth'
+    USER_ACCOUNT_SESSION_KEY: str = 'user_account'
+    USER_ACCOUNT_PASSWORD_HASH_SESSION_KEY: str = 'user_account_password_hash'
 
     @classmethod
-    def store_password(cls, request: HTMXRequest, event: 'Event', password: str | None):
-        if cls.AUTH_SESSION_KEY not in request.session:
-            request.session[cls.AUTH_SESSION_KEY] = {}
-        request.session[cls.AUTH_SESSION_KEY][event.uniq_id] = password
+    def store_user_account(
+        cls,
+        request: HTMXRequest,
+        event: 'Event',
+        user_account: Account | None,
+    ):
+        if cls.USER_ACCOUNT_SESSION_KEY not in request.session:
+            request.session[cls.USER_ACCOUNT_SESSION_KEY] = {}
+        if cls.USER_ACCOUNT_PASSWORD_HASH_SESSION_KEY not in request.session:
+            request.session[cls.USER_ACCOUNT_PASSWORD_HASH_SESSION_KEY] = {}
+        if user_account:
+            request.session[cls.USER_ACCOUNT_SESSION_KEY][event.uniq_id] = (
+                user_account.id
+            )
+            # store the password hash at the time the authentication is successful
+            # to be able to invalidate the session if the password is changed
+            request.session[cls.USER_ACCOUNT_PASSWORD_HASH_SESSION_KEY][
+                event.uniq_id
+            ] = user_account.password_hash
+        else:
+            with suppress(KeyError):
+                del request.session[cls.USER_ACCOUNT_SESSION_KEY][event.uniq_id]
+                del request.session[cls.USER_ACCOUNT_PASSWORD_HASH_SESSION_KEY][
+                    event.uniq_id
+                ]
 
     @classmethod
-    def get_stored_password(cls, request: HTMXRequest, event: 'Event') -> str | None:
+    def get_user_account(
+        cls,
+        request: HTMXRequest,
+        event: 'Event',
+    ) -> Account:
         try:
-            return request.session[cls.AUTH_SESSION_KEY][event.uniq_id]
+            account: Account = event.active_user_accounts_by_id[
+                request.session[cls.USER_ACCOUNT_SESSION_KEY][event.uniq_id]
+            ]
         except KeyError:
-            return None
+            return event.anonymous_account
+        # if the password has been changed, disconnect the client to force the re-authentication
+        if (
+            account.password_hash
+            != request.session[cls.USER_ACCOUNT_PASSWORD_HASH_SESSION_KEY][
+                event.uniq_id
+            ]
+        ):
+            logger.info(
+                'Password has changed for account [%s], force the re-authentication.',
+                account.full_name,
+            )
+            cls.store_user_account(request, event, None)
+            return event.anonymous_account
+        return account
 
     LAST_RESULT_UPDATED_SESSION_KEY: str = 'last_result_updated'
 
@@ -143,6 +191,34 @@ class SessionHandler:
     def get_session_admin_tournaments_show_details(cls, request: HTMXRequest) -> bool:
         return request.session.get(cls.ADMIN_TOURNAMENTS_SHOW_DETAILS_KEY, False)
 
+    ADMIN_ACCOUNTS_SHOW_DETAILS_KEY: str = 'admin_accounts_show_details'
+
+    @classmethod
+    def set_session_admin_accounts_show_details(cls, request: HTMXRequest, b: bool):
+        request.session[cls.ADMIN_ACCOUNTS_SHOW_DETAILS_KEY] = b
+
+    @classmethod
+    def get_session_admin_accounts_show_details(cls, request: HTMXRequest) -> bool:
+        return request.session.get(cls.ADMIN_ACCOUNTS_SHOW_DETAILS_KEY, False)
+
+    ADMIN_TOURNAMENT_CRITERION_ADD_OTHER_ACTIVE_KEY: str = (
+        'admin_tournament_criterion_add_other_active'
+    )
+
+    @classmethod
+    def set_session_admin_tournament_criterion_add_other_active(
+        cls, request: HTMXRequest, b: bool
+    ):
+        request.session[cls.ADMIN_TOURNAMENT_CRITERION_ADD_OTHER_ACTIVE_KEY] = b
+
+    @classmethod
+    def get_session_admin_tournament_criterion_add_other_active(
+        cls, request: HTMXRequest
+    ) -> bool:
+        return request.session.get(
+            cls.ADMIN_TOURNAMENT_CRITERION_ADD_OTHER_ACTIVE_KEY, False
+        )
+
     ADMIN_EVENTS_SHOW_DETAILS_KEY: str = 'admin_events_show_details'
 
     @classmethod
@@ -180,14 +256,7 @@ class SessionHandler:
         return set(
             request.session.get(
                 cls.ADMIN_SCREENS_SCREEN_TYPES_KEY,
-                [
-                    'boards',
-                    'input',
-                    'players',
-                    'results',
-                    'ranking',
-                    'image',
-                ],
+                [],
             )
         )
 
@@ -525,13 +594,70 @@ class SessionHandler:
     PRINT_TOURNAMENT_KEY: str = 'admin_print_last_tournament'
 
     @classmethod
-    def set_session_admin_print_last_tournament(
-        cls, request: HTMXRequest, event_uniq_id: str, tournament_id: int
+    def set_session_admin_print_last_tournaments(
+        cls, request: HTMXRequest, event_uniq_id: str, tournament_ids: list[int]
     ):
-        request.session[cls.PRINT_TOURNAMENT_KEY] = (event_uniq_id, tournament_id)
+        request.session[cls.PRINT_TOURNAMENT_KEY] = (event_uniq_id, tournament_ids)
 
     @classmethod
-    def get_session_admin_print_last_tournament(
+    def get_session_admin_print_last_tournaments(
         cls, request: HTMXRequest
-    ) -> tuple[str, int] | None:
+    ) -> tuple[str, list[int]] | None:
         return request.session.get(cls.PRINT_TOURNAMENT_KEY, None)
+
+    PAIRINGS_SELECTED_TOURNAMENT_KEY: str = 'admin_pairings_selected_tournament'
+
+    @classmethod
+    def set_session_admin_pairings_selected_tournament(
+        cls, request: HTMXRequest, event_uniq_id: str, tournament_id: int
+    ):
+        if cls.PAIRINGS_SELECTED_TOURNAMENT_KEY not in request.session:
+            request.session[cls.PAIRINGS_SELECTED_TOURNAMENT_KEY] = {}
+        request.session[cls.PAIRINGS_SELECTED_TOURNAMENT_KEY][event_uniq_id] = (
+            tournament_id
+        )
+
+    @classmethod
+    def get_session_admin_pairings_selected_tournament(
+        cls,
+        request: HTMXRequest,
+        event_uniq_id: str,
+    ) -> int | None:
+        try:
+            return request.session[cls.PAIRINGS_SELECTED_TOURNAMENT_KEY][event_uniq_id]
+        except KeyError:
+            return None
+
+    PAIRINGS_SELECTED_ROUND_KEY: str = 'admin_pairings_selected_round'
+
+    @classmethod
+    def set_session_admin_pairings_selected_round(
+        cls,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+        round: int,
+    ):
+        # dict keys are stored as strings because they are always read as strings
+        if cls.PAIRINGS_SELECTED_ROUND_KEY not in request.session:
+            request.session[cls.PAIRINGS_SELECTED_ROUND_KEY] = {}
+        if event_uniq_id not in request.session[cls.PAIRINGS_SELECTED_ROUND_KEY]:
+            request.session[cls.PAIRINGS_SELECTED_ROUND_KEY][event_uniq_id] = {}
+        request.session[cls.PAIRINGS_SELECTED_ROUND_KEY][event_uniq_id][
+            str(tournament_id)
+        ] = round
+
+    @classmethod
+    def get_session_admin_pairings_selected_round(
+        cls,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+    ) -> int | None:
+        # dict keys are stored as strings because they are always read as strings
+        try:
+            return request.session[cls.PAIRINGS_SELECTED_ROUND_KEY][event_uniq_id][
+                str(tournament_id)
+            ]
+        except KeyError:
+            return None

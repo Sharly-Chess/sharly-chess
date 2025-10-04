@@ -1,0 +1,111 @@
+<div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered"
+    style="--bs-modal-width: min(90vw, 400px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {% if action == 'update' %}
+                    {{ _('Edit criterion') }}
+                {% else %}
+                     {{ _('Create criterion') }}
+                {% endif %}
+            </h2>
+        </div>
+        <div class="modal-body">
+            {% if previous_criterion %}
+                {% with type='success', message=_(
+                    'Criterion [%(criterion)s] successfully created!',
+                    criterion=previous_criterion.name
+                ) %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
+
+            <form
+                id="modal-form"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                {% if action == 'update' %}
+                    hx-patch="{{ url_for(
+                        'admin-tournament-criterion-update',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        tournament_criterion_id=admin_tournament_criterion.id,
+                    ) }}"
+                {% else %}
+                    hx-post="{{ url_for(
+                        'admin-tournament-criterion-create',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                    ) }}"
+                {% endif %}
+            >
+                <div class="row gy-2 gx-3">
+                    {{ admin_macros.select_input(
+                        name='type',
+                        label=_('%(string)s:', string=_('Type')),
+                        help_text=_('The type of criterion used to filter the players.'),
+                        select_options=player_filter_select_options,
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                {% for option in player_filter_options %}
+                    <div
+                        class="row gy-2 gx-3"
+                        id="{{ option.container_id }}"
+                        {% if option.container_id not in containers_by_type[data['type']] %}
+                            style="display:none"
+                        {% endif %}
+                    >
+                        {% include option.template_name %}
+                    </div>
+                {% endfor %}
+                <script>
+                    $('#type').change(function() {
+                        const type_containers = {{ containers_by_type|tojson }}[$(this).val()];
+                        let container_id = '';
+                        {% for option in player_filter_options %}
+                            container_id = '{{ option.container_id }}';
+                            $('#' + container_id).css(
+                                'display', type_containers.includes(container_id) ? 'block' : 'none'
+                            );
+                        {% endfor %}
+                    });
+                </script>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                hx-get="{{ url_for(
+                    'admin-tournament-criteria-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+
+            >
+                <i class="bi-arrow-left-circle-fill pe-1"></i>
+                {{ _('Back') }}
+            </button>
+            {% if action == 'update' %}
+                <button
+                    type="submit"
+                    form="modal-form"
+                    class="text-nowrap white btn btn-primary"
+                >
+                    <i class="bi bi-floppy-fill pe-1"></i>
+                    {{ _('Save') }}
+                </button>
+            {% else %}
+                {{ admin_macros.create_with_add_other_split_buttons(add_other_active) }}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>requestRefresh()</script>

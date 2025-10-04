@@ -20,6 +20,10 @@ import requests
 from tests.test_config import TestConfig
 from utils.file import shutil_delete_onerror
 
+# Set up environment variables here to make TEST_ENV available in common.i18n
+env = os.environ.copy()
+env.update(TestConfig.get_test_env_vars())
+
 
 def pytest_configure(config):
     """Register custom markers."""
@@ -62,9 +66,6 @@ class BackendServer:
 
     def start(self):
         """Start the backend server."""
-        # Set up environment variables
-        env = os.environ.copy()
-        env.update(TestConfig.get_test_env_vars())
 
         # Add src directory to PYTHONPATH for server to find modules
         current_pythonpath = env.get('PYTHONPATH', '')
@@ -137,13 +138,15 @@ class BackendServer:
                 pass
             time.sleep(0.5)
 
+        error_message = f'Server did not start within {timeout} seconds'
+
         # If server didn't start, capture the output for debugging
         if self.process and self.process.poll() is not None:
             stdout, stderr = self.process.communicate()
-            print(f'Server stdout: {stdout}')
-            print(f'Server stderr: {stderr}')
+            error_message += f'\n\nServer stdout: {stdout}'
+            error_message += f'\n\nServer stderr: {stderr}'
 
-        raise RuntimeError(f'Server did not start within {timeout} seconds')
+        raise RuntimeError(error_message)
 
 
 @pytest.fixture(autouse=True, scope='session')
@@ -186,6 +189,7 @@ def setup_page(page, backend_server):
         return None
 
     page.set_default_timeout(15000)
+    page.set_default_navigation_timeout(10000)
     return page
 
 
@@ -193,15 +197,16 @@ def setup_page(page, backend_server):
 def lan_context(browser: Browser):
     config = SharlyChessConfig()
     config.web_port = 9000
-    context = browser.new_context(base_url=config.lan_url)
+    context = browser.new_context(base_url=config.lan_urls[0])
     yield context
     context.close()
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def lan_page(lan_context):
     page = lan_context.new_page()
     page.set_default_timeout(15000)
+    page.set_default_navigation_timeout(10000)
     return page
 
 

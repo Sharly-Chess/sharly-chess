@@ -1,24 +1,22 @@
-from dataclasses import dataclass
-from pathlib import Path
 import random
-import tempfile
 import time
 from datetime import datetime
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
-import urllib.parse
 
 from litestar import post, get, patch, delete
-from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
+from litestar.exceptions import NotFoundException, ClientException
+from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template, File
-from litestar.datastructures import UploadFile
 from litestar.status_codes import HTTP_200_OK
 
-from common.exception import SharlyChessException
+from common.exception import SharlyChessException, OptionError, ImporterError
+from common.logger import get_logger
 from common.i18n import _
-from data.board import Board
+from data.access_levels.actions import AuthAction
+from data.board import Board, PlayerRatingType
 from data.event import Event
 from data.input_output import (
     DataSourceManager,
@@ -26,19 +24,27 @@ from data.input_output import (
     TournamentExporterManager,
     TournamentImporterManager,
 )
+from data.input_output.tournament_importer_options import TournamentImporterOption
 from data.input_output.tournament_importers import TournamentImporter
 from data.pairings import PairingSystem, PairingSystemManager
 from data.pairings.systems import SwissPairingSystem
 from data.player import Player
-from data.print_documents import PrintDocumentManager
-from data.print_documents.options import PrintOption
+from data.criteria.managers import (
+    PlayerFilter,
+    PlayerFilterManager,
+    PlayerFilterOptionManager,
+)
 from data.tie_breaks import TieBreak, TieBreakManager
 from data.tournament import Tournament
+from data.tournament_criterion import TournamentCriterion
 from utils import StaticUtils
-from utils.enum import TournamentRating
+from utils.enum import FormAction, TournamentRating
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import StoredTournament, StoredScreen
-from plugins.hookspec import ExtraColumn
+from database.sqlite.event.event_store import (
+    StoredTournament,
+    StoredScreen,
+    StoredTournamentCriterion,
+)
 from plugins.manager import plugin_manager
 from utils.time_control import parse_time_control_trf25
 from web.controllers.admin.base_event_admin_controller import (
@@ -46,59 +52,354 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
 )
 from web.controllers.base_controller import WebContext
+from web.guards import EventGuard, ActionGuard
 from web.messages import Message
 from web.session import SessionHandler
+
+
+logger = get_logger()
 
 
 class TournamentAdminWebContext(BaseEventAdminWebContext):
     def __init__(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        tournament_id: int | None,
-        data: Annotated[
-            dict[str, str] | None,
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ] = None,
+        tournament_id: int | None = None,
+        criterion_id: int | None = None,
+        reload_event: bool = False,
     ):
-        super().__init__(
-            request,
-            event_uniq_id=event_uniq_id,
-            data=data,
-        )
+        super().__init__(request, reload_event)
         assert self.admin_event is not None
 
         self.admin_tournament: Tournament | None = None
-        if self.error:
-            return
         if tournament_id:
             try:
                 self.admin_tournament = self.admin_event.tournaments_by_id[
                     tournament_id
                 ]
             except KeyError:
-                self._redirect_error(f'Tournament [{tournament_id}] not found.')
-                return
+                raise NotFoundException(f'Tournament [{tournament_id}] not found.')
+
+        self.admin_tournament_criterion: TournamentCriterion | None = None
+        if criterion_id:
+            assert self.admin_tournament is not None
+            if criterion_id not in self.admin_tournament.criteria_by_id:
+                raise NotFoundException(
+                    f'Unknown criterion ID [{criterion_id}] for tournament [{self.admin_tournament.name}].'
+                )
+            self.admin_tournament_criterion = self.admin_tournament.criteria_by_id[
+                criterion_id
+            ]
 
     def get_admin_tournament(self) -> Tournament:
         assert self.admin_tournament is not None
         return self.admin_tournament
 
+    def get_admin_tournament_criterion(self) -> TournamentCriterion:
+        assert self.admin_tournament_criterion is not None
+        return self.admin_tournament_criterion
+
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
             'admin_tournament': self.admin_tournament,
+            'admin_tournament_criterion': self.admin_tournament_criterion,
         }
 
 
 class TournamentAdminController(BaseEventAdminController):
+    guards = [
+        EventGuard(),
+        ActionGuard(AuthAction.VIEW_TOURNAMENTS_TAB),
+    ]
+
     @classmethod
-    def _admin_validate_tournament_update_data(
+    def _admin_event_tournaments_render(
+        cls,
+        web_context: TournamentAdminWebContext,
+        template_context: dict[str, Any] | None = None,
+    ) -> Template:
+        tournament_form_fields_templates_and_data = (
+            plugin_manager.hook.get_tournament_card_block_template_and_data()
+        )
+        tournament_card_blocks = [
+            block_template
+            for (block_template, data) in tournament_form_fields_templates_and_data
+        ]
+        tournament_card_block_data = {
+            key: value
+            for (block_template, data) in tournament_form_fields_templates_and_data
+            for key, value in data.items()
+        }
+        tournament_action_menu_items = (
+            plugin_manager.hook.get_tournament_card_menu_items_template()
+        )
+        tournament_importers: list[TournamentImporter] = (
+            TournamentImporterManager.objects()
+        )
+        tournament_exporters: list[TournamentExporter] = (
+            TournamentExporterManager.objects()
+        )
+        template_context = (
+            web_context.template_context
+            | {
+                'admin_event_tab': 'admin-event-tournaments-tab',
+                'tournament_card_blocks': tournament_card_blocks,
+                'tournament_importers': tournament_importers,
+                'tournament_exporters': tournament_exporters,
+                'tournament_action_menu_items': tournament_action_menu_items,
+                'admin_tournaments_show_details': (
+                    SessionHandler.get_session_admin_tournaments_show_details(
+                        web_context.request
+                    )
+                ),
+                'data_sources': DataSourceManager.objects(),
+            }
+            | tournament_card_block_data
+            | (template_context or {})
+        )
+
+        return cls._admin_base_event_render(template_context)
+
+    @get(
+        path='/event/{event_uniq_id:str}/tournaments',
+        name='admin-event-tournaments-tab',
+    )
+    async def htmx_admin_event_tournaments_tab(
+        self,
+        request: HTMXRequest,
+        admin_tournaments_show_details: bool | None,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request)
+        if admin_tournaments_show_details is not None:
+            SessionHandler.set_session_admin_tournaments_show_details(
+                request, admin_tournaments_show_details
+            )
+
+        return self._admin_event_tournaments_render(web_context)
+
+    @classmethod
+    def _prepare_tournament_modal_data(
+        cls,
+        action: FormAction,
+        web_context: TournamentAdminWebContext,
+        data: dict[str, str] | None = None,
+        errors: dict[str, str] | None = None,
+    ):
+        admin_event = web_context.get_admin_event()
+        pairing_systems = PairingSystemManager.objects()
+        pairing_system: PairingSystem = SwissPairingSystem()
+        if data is None:
+            match action:
+                case 'update':
+                    name = web_context.get_admin_tournament().stored_tournament.name
+                case 'create':
+                    name = admin_event.get_unused_tournament_name()
+                case 'clone':
+                    name = admin_event.get_unused_tournament_name(
+                        web_context.get_admin_tournament().stored_tournament.name
+                    )
+                case _:
+                    raise ValueError(f'action=[{action}]')
+            time_control_trf25: str | None = None
+            time_control_handicap_penalty_value: int | None = None
+            time_control_handicap_penalty_step: int | None = None
+            time_control_handicap_min_time: int | None = None
+            record_illegal_moves: int | None = None
+            rules: str | None = None
+            first_board_number: int | None = None
+            paired_bye_result: float | None = None
+            max_byes: int | None = None
+            last_rounds_no_byes: int | None = None
+            tie_break_1: str | None = None
+            tie_break_2: str | None = None
+            tie_break_3: str | None = None
+            location: str | None = None
+            player_rating_type: int | None = None
+            start: float | None = None
+            stop: float | None = None
+            rounds: int | None = None
+            rating: int | None = None
+            pairing_variations: dict[str, str | None] = {
+                system.variation_field_id: None for system in pairing_systems
+            }
+            three_points_for_a_win: bool = False
+            override_unrated_rapid_blitz: bool | None = None
+            match action:
+                case 'update' | 'clone':
+                    admin_tournament = web_context.get_admin_tournament()
+                    assert admin_tournament.stored_tournament is not None
+                    stored_tournament = admin_tournament.stored_tournament
+                    time_control_trf25 = stored_tournament.time_control_trf25
+                    time_control_handicap_penalty_value = (
+                        stored_tournament.time_control_handicap_penalty_value
+                    )
+                    time_control_handicap_penalty_step = (
+                        stored_tournament.time_control_handicap_penalty_step
+                    )
+                    time_control_handicap_min_time = (
+                        stored_tournament.time_control_handicap_min_time
+                    )
+                    record_illegal_moves = stored_tournament.record_illegal_moves
+                    rules = stored_tournament.rules
+                    first_board_number = stored_tournament.first_board_number
+                    paired_bye_result = stored_tournament.paired_bye_result
+                    max_byes = stored_tournament.max_byes
+                    last_rounds_no_byes = stored_tournament.last_rounds_no_byes
+                    location = stored_tournament.location
+                    player_rating_type = stored_tournament.player_rating_type
+                    start = stored_tournament.start
+                    stop = stored_tournament.stop
+                    rating = admin_tournament.rating.value
+                    rounds = admin_tournament.rounds or 1
+                    pairing_system = admin_tournament.pairing_system
+                    pairing_variations[
+                        admin_tournament.pairing_system.variation_field_id
+                    ] = admin_tournament.pairing_variation.id
+                    three_points_for_a_win = admin_tournament.three_points_for_a_win
+                    override_unrated_rapid_blitz = (
+                        stored_tournament.override_unrated_rapid_blitz
+                    )
+                case 'create':
+                    rounds = 1
+                    rating = TournamentRating.STANDARD.value
+                case _:
+                    raise ValueError(f'action=[{action}]')
+            if action in [
+                'update',
+                'clone',
+            ]:
+                assert admin_tournament is not None
+                assert admin_tournament.stored_tournament is not None
+                tie_breaks = admin_tournament.tie_breaks
+                tie_break_1, tie_break_2, tie_break_3 = (
+                    tie_breaks.pop(0).id if tie_breaks else None for __ in range(3)
+                )
+
+            per_plugin_form_data = plugin_manager.hook.get_tournament_form_data(
+                event=admin_event,
+                tournament=web_context.admin_tournament,
+                action=action,
+            )
+            plugin_form_data = {
+                key: value
+                for data in per_plugin_form_data
+                for key, value in data.items()
+            }
+            data: dict[str, str] = {
+                'start': WebContext.value_to_datetime_form_data(start),
+                'stop': WebContext.value_to_datetime_form_data(stop),
+            } | WebContext.values_dict_to_form_data(
+                {
+                    'name': name,
+                    'time_control_trf25': time_control_trf25,
+                    'time_control_handicap_penalty_value': time_control_handicap_penalty_value,
+                    'time_control_handicap_penalty_step': time_control_handicap_penalty_step,
+                    'time_control_handicap_min_time': time_control_handicap_min_time,
+                    'record_illegal_moves': record_illegal_moves,
+                    'rules': rules,
+                    'first_board_number': first_board_number,
+                    'paired_bye_result': paired_bye_result,
+                    'max_byes': max_byes,
+                    'last_rounds_no_byes': last_rounds_no_byes,
+                    'tie_break_1': tie_break_1,
+                    'tie_break_2': tie_break_2,
+                    'tie_break_3': tie_break_3,
+                    'location': location,
+                    'player_rating_type': player_rating_type,
+                    'rounds': rounds,
+                    'rating': rating,
+                    'pairing_system': pairing_system.id,
+                    'three_points_for_a_win': three_points_for_a_win,
+                    'override_unrated_rapid_blitz': override_unrated_rapid_blitz,
+                }
+                | {field: variation for field, variation in pairing_variations.items()}
+                | plugin_form_data
+            )
+            stored_tournament, errors = cls._admin_get_validated_tournament_data(
+                action, web_context, data
+            )
+
+        plugin_results = (
+            plugin_manager.hook.get_tournament_form_fields_template_and_data(
+                event=admin_event, tournament=web_context.admin_tournament
+            )
+        )
+
+        plugin_form_fields_templates = [template for template, __ in plugin_results]
+        form_fields_templates_data = {
+            key: value for __, data in plugin_results for key, value in data.items()
+        }
+        tie_break_options = {'': '-'} | {
+            type_.static_id(): type_.static_name()
+            for type_ in sorted(
+                TieBreakManager.entity_types(),
+                key=lambda tie_break: tie_break.static_name(),
+            )
+        }
+
+        override_unrated_rapid_blitz_options = {
+            '': '',
+            WebContext.value_to_form_data(True): _('Use standard ratings'),
+            WebContext.value_to_form_data(False): _('Fallback to estimated ratings'),
+        }
+
+        override_unrated_rapid_blitz_options[''] = _(
+            "Use Event's default - {option}"
+        ).format(
+            option=override_unrated_rapid_blitz_options[
+                WebContext.value_to_form_data(
+                    admin_event.override_unrated_rapid_blitz or False
+                )
+            ]
+        )
+
+        player_rating_type_options: dict[str, str] = {
+            '': '',
+            str(PlayerRatingType.FIDE.value): _('FIDE'),
+            str(PlayerRatingType.NATIONAL.value): _(
+                'National *** NAME FOR RATING TYPE NATIONAL'
+            ),
+        }
+        event_player_rating_type = admin_event.player_rating_type.value
+        player_rating_type_options[''] = _("Use Event's default - {option}").format(
+            option=player_rating_type_options[str(event_player_rating_type)]
+        )
+
+        template_context = {
+            'tie_break_options': tie_break_options,
+            'rating_options': cls._get_rating_options(),
+            'override_unrated_rapid_blitz_options': override_unrated_rapid_blitz_options,
+            'pairing_systems': pairing_systems,
+            'pairing_system_options': PairingSystemManager.options(),
+            'plugin_form_fields_templates': plugin_form_fields_templates,
+            'previous_tournament': (
+                web_context.admin_tournament if action == 'create' else None
+            ),
+            'add_other_active': (
+                SessionHandler.get_session_admin_tournament_add_other_active(
+                    web_context.request
+                )
+            ),
+            'admin_tournament': None
+            if action == 'clone'
+            else web_context.admin_tournament,
+            'player_rating_type_options': player_rating_type_options,
+            'modal': 'tournament',
+            'action': action,
+            'data': data,
+            'errors': errors,
+        } | form_fields_templates_data
+
+        return template_context
+
+    @classmethod
+    def _admin_get_validated_tournament_data(
         cls,
         action: str,
         web_context: TournamentAdminWebContext,
         data: dict[str, str] | None = None,
-    ) -> StoredTournament:
+    ) -> tuple[StoredTournament, dict[str, str]]:
         assert web_context.admin_event is not None
         errors: dict[str, str] = {}
         if data is None:
@@ -233,6 +534,7 @@ class TournamentAdminController(BaseEventAdminController):
         max_byes = WebContext.form_data_to_int(data, 'max_byes')
         last_rounds_no_byes = WebContext.form_data_to_int(data, 'last_rounds_no_byes')
         location = WebContext.form_data_to_str(data, 'location')
+        player_rating_type = WebContext.form_data_to_int(data, 'player_rating_type')
         three_points_for_a_win = WebContext.form_data_to_bool(
             data, 'three_points_for_a_win'
         )
@@ -255,7 +557,7 @@ class TournamentAdminController(BaseEventAdminController):
             for key, value in data.items()
         }
 
-        return StoredTournament(
+        stored_tournament = StoredTournament(
             id=web_context.admin_tournament.id
             if web_context.admin_tournament
             and action
@@ -278,6 +580,7 @@ class TournamentAdminController(BaseEventAdminController):
             check_in_open=check_in_open,
             tie_breaks=tie_breaks,
             location=location,
+            player_rating_type=player_rating_type,
             start=start,
             stop=stop,
             rounds=rounds or 1,
@@ -285,501 +588,43 @@ class TournamentAdminController(BaseEventAdminController):
             pairing=pairing or '',
             three_points_for_a_win=three_points_for_a_win,
             override_unrated_rapid_blitz=override_unrated_rapid_blitz,
-            errors=errors,
             plugin_data=plugin_data,
         )
-
-    @classmethod
-    def _admin_event_tournaments_render(
-        cls,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        modal: str | None = None,
-        action: str | None = None,
-        tournament_id: int | None = None,
-        data: dict[str, str] | None = None,
-        errors: dict[str, str] | None = None,
-    ) -> Template | ClientRedirect:
-        web_context: TournamentAdminWebContext = TournamentAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-            data=data,
-        )
-        if web_context.error:
-            return web_context.error
-        if web_context.admin_event is None:
-            raise RuntimeError('admin_event not defined')
-        admin_event: Event = web_context.admin_event
-        admin_tournament: Tournament | None = web_context.admin_tournament
-
-        tournament_form_fields_templates_and_data = (
-            plugin_manager.hook.get_tournament_card_block_template_and_data()
-        )
-        tournament_card_blocks = [
-            block_template
-            for (block_template, data) in tournament_form_fields_templates_and_data
-        ]
-        tournament_card_block_data = {
-            key: value
-            for (block_template, data) in tournament_form_fields_templates_and_data
-            for key, value in data.items()
-        }
-        tournament_action_menu_items = (
-            plugin_manager.hook.get_tournament_card_menu_items_template()
-        )
-        tournament_importers: list[TournamentImporter] = (
-            TournamentImporterManager.objects()
-        )
-        tournament_exporters: list[TournamentExporter] = (
-            TournamentExporterManager.objects()
-        )
-        template_context = (
-            web_context.template_context
-            | {
-                'admin_event_tab': 'admin-event-tournaments-tab',
-                'paired_bye_result_options': cls._get_paired_bye_result_options(),
-                'tournament_card_blocks': tournament_card_blocks,
-                'tournament_importers': tournament_importers,
-                'tournament_exporters': tournament_exporters,
-                'tournament_action_menu_items': tournament_action_menu_items,
-                'admin_tournaments_show_details': (
-                    SessionHandler.get_session_admin_tournaments_show_details(
-                        web_context.request
-                    )
-                ),
-                'data_sources': DataSourceManager.objects(),
-            }
-            | tournament_card_block_data
-        )
-
-        match modal:
-            case None:
-                pass
-            case 'tournament':
-                pairing_systems = PairingSystemManager.objects()
-                pairing_system: PairingSystem = SwissPairingSystem()
-                if data is None:
-                    match action:
-                        case 'update':
-                            assert admin_tournament is not None
-                            name = admin_tournament.stored_tournament.name
-                        case 'create':
-                            name = admin_event.get_unused_tournament_name()
-                        case 'clone':
-                            assert admin_tournament is not None
-                            name = admin_event.get_unused_tournament_name(
-                                admin_tournament.stored_tournament.name
-                            )
-                        case _:
-                            raise ValueError(f'action=[{action}]')
-                    time_control_trf25: str | None = None
-                    time_control_handicap_penalty_value: int | None = None
-                    time_control_handicap_penalty_step: int | None = None
-                    time_control_handicap_min_time: int | None = None
-                    record_illegal_moves: int | None = None
-                    rules: str | None = None
-                    first_board_number: int | None = None
-                    paired_bye_result: float | None = None
-                    max_byes: int | None = None
-                    last_rounds_no_byes: int | None = None
-                    tie_break_1: str | None = None
-                    tie_break_2: str | None = None
-                    tie_break_3: str | None = None
-                    location: str | None = None
-                    start: float | None = None
-                    stop: float | None = None
-                    rounds: int | None = None
-                    rating: int | None = None
-                    pairing_variations: dict[str, str | None] = {
-                        system.variation_field_id: None for system in pairing_systems
-                    }
-                    three_points_for_a_win: bool = False
-                    override_unrated_rapid_blitz: bool | None = None
-                    match action:
-                        case 'update' | 'clone':
-                            assert admin_tournament is not None
-                            assert admin_tournament.stored_tournament is not None
-                            stored_tournament = admin_tournament.stored_tournament
-                            time_control_trf25 = stored_tournament.time_control_trf25
-                            time_control_handicap_penalty_value = (
-                                stored_tournament.time_control_handicap_penalty_value
-                            )
-                            time_control_handicap_penalty_step = (
-                                stored_tournament.time_control_handicap_penalty_step
-                            )
-                            time_control_handicap_min_time = (
-                                stored_tournament.time_control_handicap_min_time
-                            )
-                            record_illegal_moves = (
-                                stored_tournament.record_illegal_moves
-                            )
-                            rules = stored_tournament.rules
-                            first_board_number = stored_tournament.first_board_number
-                            paired_bye_result = stored_tournament.paired_bye_result
-                            max_byes = stored_tournament.max_byes
-                            last_rounds_no_byes = stored_tournament.last_rounds_no_byes
-                            location = stored_tournament.location
-                            start = stored_tournament.start
-                            stop = stored_tournament.stop
-                            rating = admin_tournament.rating.value
-                            rounds = admin_tournament.rounds or 1
-                            pairing_system = admin_tournament.pairing_system
-                            pairing_variations[
-                                admin_tournament.pairing_system.variation_field_id
-                            ] = admin_tournament.pairing_variation.id
-                            three_points_for_a_win = (
-                                admin_tournament.three_points_for_a_win
-                            )
-                            override_unrated_rapid_blitz = (
-                                stored_tournament.override_unrated_rapid_blitz
-                            )
-                        case 'create':
-                            rounds = 1
-                            rating = TournamentRating.STANDARD.value
-                        case _:
-                            raise ValueError(f'action=[{action}]')
-                    if action in [
-                        'update',
-                        'clone',
-                    ]:
-                        assert admin_tournament is not None
-                        assert admin_tournament.stored_tournament is not None
-                        tie_breaks = admin_tournament.tie_breaks
-                        tie_break_1, tie_break_2, tie_break_3 = (
-                            tie_breaks.pop(0).id if tie_breaks else None
-                            for __ in range(3)
-                        )
-
-                    per_plugin_form_data = plugin_manager.hook.get_tournament_form_data(
-                        event=admin_event,
-                        tournament=web_context.admin_tournament,
-                        action=action,
-                    )
-                    plugin_form_data = {
-                        key: value
-                        for data in per_plugin_form_data
-                        for key, value in data.items()
-                    }
-                    data: dict[str, str] = {
-                        'start': WebContext.value_to_datetime_form_data(start),
-                        'stop': WebContext.value_to_datetime_form_data(stop),
-                    } | WebContext.values_dict_to_form_data(
-                        {
-                            'name': name,
-                            'time_control_trf25': time_control_trf25,
-                            'time_control_handicap_penalty_value': time_control_handicap_penalty_value,
-                            'time_control_handicap_penalty_step': time_control_handicap_penalty_step,
-                            'time_control_handicap_min_time': time_control_handicap_min_time,
-                            'record_illegal_moves': record_illegal_moves,
-                            'rules': rules,
-                            'first_board_number': first_board_number,
-                            'paired_bye_result': paired_bye_result,
-                            'max_byes': max_byes,
-                            'last_rounds_no_byes': last_rounds_no_byes,
-                            'tie_break_1': tie_break_1,
-                            'tie_break_2': tie_break_2,
-                            'tie_break_3': tie_break_3,
-                            'location': location,
-                            'rounds': rounds,
-                            'rating': rating,
-                            'pairing_system': pairing_system.id,
-                            'three_points_for_a_win': three_points_for_a_win,
-                            'override_unrated_rapid_blitz': override_unrated_rapid_blitz,
-                        }
-                        | {
-                            field: variation
-                            for field, variation in pairing_variations.items()
-                        }
-                        | plugin_form_data
-                    )
-                    stored_tournament: StoredTournament = (
-                        cls._admin_validate_tournament_update_data(
-                            action, web_context, data
-                        )
-                    )
-                    errors = stored_tournament.errors
-                if errors is None:
-                    errors = {}
-
-                plugin_results = (
-                    plugin_manager.hook.get_tournament_form_fields_template_and_data(
-                        event=admin_event, tournament=admin_tournament
-                    )
-                )
-
-                plugin_form_fields_templates = [
-                    template for template, __ in plugin_results
-                ]
-                form_fields_templates_data = {
-                    key: value
-                    for __, data in plugin_results
-                    for key, value in data.items()
-                }
-                tie_break_options = {'': '-'} | {
-                    type_.static_id(): type_.static_name()
-                    for type_ in sorted(
-                        TieBreakManager.entity_types(),
-                        key=lambda tie_break: tie_break.static_name(),
-                    )
-                }
-
-                override_unrated_rapid_blitz_options = {
-                    '': '',
-                    WebContext.value_to_form_data(True): _('Use standard ratings'),
-                    WebContext.value_to_form_data(False): _(
-                        'Fallback to estimated ratings'
-                    ),
-                }
-
-                override_unrated_rapid_blitz_options[''] = _(
-                    "Use Event's default - {option}"
-                ).format(
-                    option=override_unrated_rapid_blitz_options[
-                        WebContext.value_to_form_data(
-                            admin_event.override_unrated_rapid_blitz or False
-                        )
-                    ]
-                )
-
-                template_context |= {
-                    'record_illegal_moves_options': cls._get_record_illegal_moves_options(
-                        admin_event.record_illegal_moves
-                    ),
-                    'paired_bye_result_options': cls._get_paired_bye_result_options(),
-                    'tie_break_options': tie_break_options,
-                    'rating_options': cls._get_rating_options(),
-                    'override_unrated_rapid_blitz_options': override_unrated_rapid_blitz_options,
-                    'pairing_systems': pairing_systems,
-                    'pairing_system_options': PairingSystemManager.options(),
-                    'plugin_form_fields_templates': plugin_form_fields_templates,
-                    'previous_tournament': (
-                        web_context.admin_tournament if action == 'create' else None
-                    ),
-                    'add_other_active': (
-                        SessionHandler.get_session_admin_tournament_add_other_active(
-                            request
-                        )
-                    ),
-                    'admin_tournament': None
-                    if action == 'clone'
-                    else web_context.admin_tournament,
-                    'modal': modal,
-                    'action': action,
-                    'data': data,
-                    'errors': errors,
-                } | form_fields_templates_data
-            case _:
-                raise ValueError(f'modal=[{modal}]')
-        return cls._admin_event_render(template_context)
+        return (stored_tournament, errors)
 
     @get(
-        path='/admin/event/{event_uniq_id:str}/tournaments',
-        name='admin-event-tournaments-tab',
-    )
-    async def htmx_admin_event_tournaments_tab(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        admin_tournaments_show_details: bool | None,
-    ) -> Template | ClientRedirect:
-        if admin_tournaments_show_details is not None:
-            SessionHandler.set_session_admin_tournaments_show_details(
-                request, admin_tournaments_show_details
-            )
-        return self._admin_event_tournaments_render(
-            request,
-            event_uniq_id=event_uniq_id,
-        )
-
-    @get(
-        path='/admin/tournament-modal/create/{event_uniq_id:str}',
+        path='/tournament-modal/create/{event_uniq_id:str}',
         name='admin-tournament-create-modal',
     )
     async def htmx_admin_tournament_create_modal(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+        self, request: HTMXRequest
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request)
+        template_context = self._prepare_tournament_modal_data(
+            FormAction.CREATE, web_context
+        )
+
         return self._admin_event_tournaments_render(
-            request,
-            event_uniq_id=event_uniq_id,
-            modal='tournament',
-            action='create',
-            tournament_id=None,
+            web_context=web_context,
+            template_context=template_context,
         )
 
     @get(
-        path='/admin/tournament-delete-modal/{event_uniq_id:str}/{tournament_id:int}',
-        name='admin-tournament-delete-modal',
-    )
-    async def htmx_admin_tournament_delete_modal(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        tournament_id: int | None,
-    ) -> Template | ClientRedirect:
-        web_context = TournamentAdminWebContext(request, event_uniq_id, tournament_id)
-        return self._admin_event_render(
-            web_context.template_context | {'modal': 'tournament-delete'}
-        )
-
-    @get(
-        path='/admin/tournament-modal/{action:str}/{event_uniq_id:str}/{tournament_id:int}',
+        path='/tournament-modal/{action:str}/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tournament-modal',
     )
     async def htmx_admin_tournament_modal(
         self,
         request: HTMXRequest,
-        action: str,
-        event_uniq_id: str,
+        action: FormAction,
         tournament_id: int | None,
-    ) -> Template | ClientRedirect:
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id=tournament_id)
+        template_context = self._prepare_tournament_modal_data(action, web_context)
+
         return self._admin_event_tournaments_render(
-            request,
-            event_uniq_id=event_uniq_id,
-            modal='tournament',
-            action=action,
-            tournament_id=tournament_id,
-        )
-
-    @get(
-        path='/admin/tournament-export/{event_uniq_id:str}/{tournament_id:int}/{exporter_id:str}',
-        name='admin-tournament-export',
-    )
-    async def admin_tournament_export(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        tournament_id: int,
-        exporter_id: str,
-    ) -> File:
-        context = TournamentAdminWebContext(request, event_uniq_id, tournament_id, None)
-        tournament = context.admin_tournament
-        if tournament is None:
-            raise RuntimeError('tournament not defined')
-        exporter = TournamentExporterManager.get_object(exporter_id)
-        temp_file = NamedTemporaryFile(
-            delete=False,
-            mode='wb' if exporter.is_binary_file else 'w',
-            suffix=f'.{exporter.file_extension}',
-            encoding=exporter.file_encoding,
-        )
-        with temp_file:
-            exporter.dump_to_file(temp_file, tournament)
-        return File(
-            path=temp_file.name,
-            filename=f'{exporter.file_name(tournament)}.{exporter.file_extension}',
-        )
-
-    @staticmethod
-    def _tournament_import_modal_context(
-        importer_id: str,
-        data: dict[str, str] | None = None,
-        errors: dict[str, str] | None = None,
-    ) -> dict[str, Any]:
-        importer = TournamentImporterManager.get_object(importer_id)
-        return {
-            'data': data or {},
-            'importer': importer,
-            'modal': 'tournament-import',
-            'errors': errors or {},
-        }
-
-    @get(
-        path=[
-            '/admin/tournament-import-modal/{event_uniq_id:str}/{importer_id:str}',
-            '/admin/tournament-import-modal/{event_uniq_id:str}/{tournament_id:int}/{importer_id:str}',
-        ],
-        name='admin-tournament-import-modal',
-    )
-    async def htmx_admin_tournament_import_modal(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        tournament_id: int | None,
-        importer_id: str,
-    ) -> Template | ClientRedirect:
-        web_context: TournamentAdminWebContext = TournamentAdminWebContext(
-            request, event_uniq_id=event_uniq_id, tournament_id=tournament_id, data={}
-        )
-        template_context = (
-            web_context.template_context
-            | self._tournament_import_modal_context(importer_id=importer_id)
-        )
-        return self._admin_event_render(template_context)
-
-    @dataclass
-    class TournamentImportForm:
-        file: UploadFile | None = None
-
-    @post(
-        path=[
-            '/admin/tournament-import/{event_uniq_id:str}//{importer_id:str}',
-            '/admin/tournament-import/{event_uniq_id:str}/{tournament_id:int}/{importer_id:str}',
-        ],
-        name='admin-tournament-import',
-    )
-    async def admin_tournament_import(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            TournamentImportForm, Body(media_type=RequestEncodingType.MULTI_PART)
-        ],
-        event_uniq_id: str,
-        tournament_id: int | None,
-        importer_id: str,
-    ) -> Template | ClientRedirect:
-        web_context = TournamentAdminWebContext(
-            request, event_uniq_id, tournament_id, None
-        )
-        if web_context.admin_tournament and web_context.admin_tournament.started:
-            return self.redirect_error(
-                request, 'Import only possible before the tournament starts.'
-            )
-
-        event = web_context.get_admin_event()
-        importer = TournamentImporterManager.get_object(importer_id)
-
-        tmp_path: Path
-        if data.file is not None:
-            suffix = Path(data.file.filename or 'upload').suffix
-            fd, tmp_name = tempfile.mkstemp(prefix='tournament-import-', suffix=suffix)
-            Path(tmp_name).write_bytes(await data.file.read())
-            tmp_path = Path(tmp_name)
-        else:
-            errors: dict[str, str] = {'file': _('A file is expected.')}
-            template_context = (
-                web_context.template_context
-                | self._tournament_import_modal_context(importer_id, errors=errors)
-            )
-            return self._admin_event_render(template_context)
-
-        try:
-            tournament = importer.load_tournament(
-                tmp_path, event, web_context.admin_tournament
-            )
-            Message.success(
-                request,
-                _('Tournament [{tournament}] successfully imported.').format(
-                    tournament=tournament.uniq_id
-                ),
-            )
-        except SharlyChessException as e:
-            errors = {'file': str(e)}
-            template_context = (
-                web_context.template_context
-                | self._tournament_import_modal_context(importer_id, errors=errors)
-            )
-            return self._admin_event_render(template_context)
-        finally:
-            if tmp_path:
-                try:
-                    tmp_path.unlink(missing_ok=True)
-                except OSError:
-                    pass
-        return self._admin_event_tournaments_render(
-            request, event_uniq_id=event_uniq_id
+            web_context=web_context,
+            template_context=template_context,
         )
 
     def _admin_tournament_update(
@@ -789,37 +634,28 @@ class TournamentAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        action: str,
-        event_uniq_id: str,
+        action: FormAction,
         tournament_id: int | None,
-    ) -> Template | ClientRedirect:
-        web_context = TournamentAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-            data=data,
-        )
-        if web_context.error:
-            return web_context.error
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id=tournament_id)
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
         add_other = 'add_other' in data
-        if action == 'create':
+        if action == FormAction.CREATE:
             SessionHandler.set_session_admin_tournament_add_other_active(
                 request, add_other
             )
-        stored_tournament: StoredTournament = (
-            self._admin_validate_tournament_update_data(action, web_context, data)
+
+        stored_tournament, errors = self._admin_get_validated_tournament_data(
+            action, web_context, data
         )
-        if stored_tournament.errors:
+        if errors:
+            template_context = self._prepare_tournament_modal_data(
+                action, web_context, data, errors=errors
+            )
             return self._admin_event_tournaments_render(
-                request,
-                event_uniq_id=event_uniq_id,
-                modal='tournament',
-                action=action,
-                tournament_id=tournament_id,
-                data=data,
-                errors=stored_tournament.errors,
+                web_context=web_context,
+                template_context=template_context,
             )
 
         if message := plugin_manager.hook.signal_tournament_set(
@@ -830,7 +666,7 @@ class TournamentAdminController(BaseEventAdminController):
         with EventDatabase(
             web_context.admin_event.uniq_id, write=True
         ) as event_database:
-            if action == 'update':
+            if action == FormAction.UPDATE:
                 stored_tournament = event_database.update_stored_tournament(
                     stored_tournament
                 )
@@ -842,11 +678,14 @@ class TournamentAdminController(BaseEventAdminController):
                     stored_tournament
                 )
                 if 'add_screens' in data:
+                    timer_id: int | None = None
+                    if len(web_context.admin_event.timers_by_id) == 1:
+                        timer_id = list(web_context.admin_event.timers_by_id.keys())[0]
                     for type_, menu, name in [
                         (
                             'input',
                             '@input',
-                            _('Results entry ({tournament_name})').format(
+                            _('Check-in / Results entry ({tournament_name})').format(
                                 tournament_name=stored_tournament.name
                             ),
                         ),
@@ -888,7 +727,7 @@ class TournamentAdminController(BaseEventAdminController):
                                 menu_link=True,
                                 menu_text=None,
                                 menu=menu,
-                                timer_id=None,
+                                timer_id=timer_id,
                                 input_exit_button=None,
                                 players_show_unpaired=None,
                                 players_show_opponent=None,
@@ -918,21 +757,27 @@ class TournamentAdminController(BaseEventAdminController):
                 tournament_id = stored_tournament.id
 
         if add_other:
+            web_context = TournamentAdminWebContext(
+                request, tournament_id, reload_event=True
+            )
+            template_context = self._prepare_tournament_modal_data(
+                FormAction.CREATE, web_context
+            )
             return self._admin_event_tournaments_render(
-                request,
-                event_uniq_id=event_uniq_id,
-                modal='tournament',
-                action='create',
-                tournament_id=tournament_id,
+                web_context=web_context,
+                template_context=template_context,
             )
         Message.success(request, success_message)
-        return self._admin_event_tournaments_render(
-            request, event_uniq_id=event_uniq_id
+
+        web_context = TournamentAdminWebContext(
+            request, tournament_id, reload_event=True
         )
+        return self._admin_event_tournaments_render(web_context)
 
     @post(
-        path='/admin/tournament-create/{event_uniq_id:str}',
+        path='/tournament-create/{event_uniq_id:str}',
         name='admin-tournament-create',
+        guards=[ActionGuard(AuthAction.ADD_TOURNAMENTS)],
     )
     async def htmx_admin_tournament_create(
         self,
@@ -941,19 +786,18 @@ class TournamentAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        event_uniq_id: str,
-    ) -> Template | ClientRedirect:
+    ) -> Template:
         return self._admin_tournament_update(
             request,
-            event_uniq_id=event_uniq_id,
-            action='create',
+            action=FormAction.CREATE,
             tournament_id=None,
             data=data,
         )
 
     @patch(
-        path='/admin/tournament-update/{event_uniq_id:str}/{tournament_id:int}',
+        path='/tournament-update/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tournament-update',
+        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
     )
     async def htmx_admin_tournament_update(
         self,
@@ -962,20 +806,33 @@ class TournamentAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect:
+    ) -> Template:
         return self._admin_tournament_update(
             request,
-            event_uniq_id=event_uniq_id,
-            action='update',
+            action=FormAction.UPDATE,
             tournament_id=tournament_id,
             data=data,
         )
 
+    @get(
+        path='/tournament-delete-modal/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-tournament-delete-modal',
+    )
+    async def htmx_admin_tournament_delete_modal(
+        self,
+        request: HTMXRequest,
+        tournament_id: int | None,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        return self._admin_base_event_render(
+            web_context.template_context | {'modal': 'tournament-delete'}
+        )
+
     @delete(
-        path='/admin/tournament-delete/{event_uniq_id:str}/{tournament_id:int}',
+        path='/tournament-delete/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tournament-delete',
+        guards=[ActionGuard(AuthAction.DELETE_TOURNAMENTS)],
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_tournament_delete(
@@ -983,10 +840,8 @@ class TournamentAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect:
-        web_context = TournamentAdminWebContext(request, event_uniq_id, tournament_id)
-        if web_context.error:
-            return web_context.error
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
         with EventDatabase(event_uniq_id, True) as database:
             database.delete_stored_tournament(tournament_id)
         Message.success(
@@ -995,92 +850,410 @@ class TournamentAdminController(BaseEventAdminController):
                 tournament=web_context.get_admin_tournament().name
             ),
         )
-        return self._admin_event_tournaments_render(request, event_uniq_id)
+
+        web_context = TournamentAdminWebContext(request, reload_event=True)
+        return self._admin_event_tournaments_render(web_context)
+
+    # -------------------------------------------------------------------------
+    # Tournament import/export
+    # -------------------------------------------------------------------------
 
     @get(
-        path='/admin/tournament-print-view/{event_uniq_id:str}/{tournament_id:int}/{document: str}',
-        name='admin-tournament-print-view',
+        path='/tournament-export/{event_uniq_id:str}/{tournament_id:int}/{exporter_id:str}',
+        name='admin-tournament-export',
     )
-    async def htmx_tournament_print_view(
+    async def admin_tournament_export(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        exporter_id: str,
+    ) -> File:
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        tournament = web_context.get_admin_tournament()
+        exporter = TournamentExporterManager.get_object(exporter_id)
+        temp_file = NamedTemporaryFile(
+            delete=False,
+            mode='wb' if exporter.is_binary_file else 'w',
+            suffix=f'.{exporter.file_extension}',
+            encoding=exporter.file_encoding,
+        )
+        with temp_file:
+            exporter.dump_to_file(temp_file, tournament)
+        return File(
+            path=temp_file.name,
+            filename=f'{exporter.file_name(tournament)}.{exporter.file_extension}',
+        )
+
+    @staticmethod
+    def _tournament_import_modal_context(
+        importer_id: str,
+        tournament: Tournament | None = None,
+        data: dict[str, str] | None = None,
+        errors: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        importer = TournamentImporterManager.get_object(importer_id)
+        default_data = WebContext.values_dict_to_form_data(
+            {
+                option.id: option.get_default_value(tournament)
+                for option in importer.default_options()
+            }
+        )
+        return {
+            'data': default_data | (data or {}),
+            'importer': importer,
+            'modal': 'tournament-import',
+            'errors': errors or {},
+        }
+
+    @get(
+        path=[
+            '/tournament-import-modal/{event_uniq_id:str}/{importer_id:str}',
+            '/tournament-import-modal/{event_uniq_id:str}/{tournament_id:int}/{importer_id:str}',
+        ],
+        name='admin-tournament-import-modal',
+    )
+    async def htmx_admin_tournament_import_modal(
+        self,
+        request: HTMXRequest,
+        tournament_id: int | None,
+        importer_id: str,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        template_context = self._tournament_import_modal_context(
+            importer_id, web_context.admin_tournament
+        )
+        return self._admin_base_event_render(
+            web_context.template_context | template_context
+        )
+
+    @post(
+        path=[
+            '/tournament-import/{event_uniq_id:str}/{importer_id:str}',
+            '/tournament-import/{event_uniq_id:str}/{tournament_id:int}/{importer_id:str}',
+        ],
+        name='admin-tournament-import',
+        guards=[ActionGuard(AuthAction.ADD_TOURNAMENTS)],
+    )
+    async def admin_tournament_import(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, Any], Body(media_type=RequestEncodingType.MULTI_PART)
+        ],
+        tournament_id: int | None,
+        importer_id: str,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        if web_context.admin_tournament and web_context.admin_tournament.started:
+            raise ClientException('Import only possible before the tournament starts.')
+        errors: dict[str, str] = {}
+        event = web_context.get_admin_event()
+        normalized_data = await WebContext.normalize_multipart_data(data)
+        importer_type = TournamentImporterManager.get_type(importer_id)
+        importer_options: list[TournamentImporterOption] = []
+        for importer_option in importer_type.default_options():
+            value = WebContext.form_data_to_value(
+                normalized_data, importer_option.id, importer_option.type
+            )
+            importer_options.append(type(importer_option)(value))
+        importer = importer_type(importer_options)
+        try:
+            importer.validate_options(event)
+            tournament = importer.load_tournament(event, web_context.admin_tournament)
+            Message.success(
+                request,
+                _('Tournament [{tournament}] successfully imported.').format(
+                    tournament=tournament.uniq_id
+                ),
+            )
+            web_context = TournamentAdminWebContext(
+                request, tournament_id, reload_event=True
+            )
+            return self._admin_event_tournaments_render(web_context)
+        except OptionError as error:
+            errors[error.option.id] = str(error)
+        except ImporterError as error:
+            errors['alert'] = str(error)
+        except SharlyChessException as error:
+            logger.error(f'Tournament importer [{importer.id}] error: {error}')
+            errors['alert'] = _('An error occurred. Consult the logs for more details.')
+        finally:
+            importer.on_import_finished()
+        template_context = self._tournament_import_modal_context(
+            importer_id,
+            web_context.admin_tournament,
+            data=normalized_data,
+            errors=errors,
+        )
+        return self._admin_base_event_render(
+            web_context.template_context | template_context
+        )
+
+    # -------------------------------------------------------------------------
+    # Tournament criteria
+    # -------------------------------------------------------------------------
+
+    @classmethod
+    def _validate_tournament_criterion_form_data(
+        cls, data: dict[str, str]
+    ) -> dict[str, str]:
+        errors: dict[str, str] = {}
+        field = 'type'
+        player_filter_id = data.get(field, '')
+        try:
+            PlayerFilterManager.get_type(player_filter_id)
+        except KeyError:
+            errors[field] = _('Please select a type of criterion.')
+            return errors
+        player_filter = cls.player_filter_from_data(data)
+        try:
+            player_filter.validate_options()
+        except OptionError as error:
+            errors[error.option.id] = str(error)
+        return errors
+
+    @staticmethod
+    def player_filter_from_data(data: dict[str, str]) -> PlayerFilter:
+        player_filter_type = PlayerFilterManager.get_type(data['type'])
+        options = []
+        for option in player_filter_type.default_options():
+            value = WebContext.form_data_to_value(data, option.id, option.type)
+            options.append(type(option)(value))
+        return player_filter_type(options)
+
+    @staticmethod
+    def _tournament_criterion_form_modal_context(
+        request: HTMXRequest,
+        data: dict[str, str],
+        action: FormAction,
+        errors: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        default_data = {
+            option.id: WebContext.value_to_form_data(option.default_value)
+            for option in PlayerFilterOptionManager.objects()
+        } | {'type': ''}
+        return {
+            'modal': 'tournament_criterion_form',
+            'action': action,
+            'player_filter_select_options': {'': '-'} | PlayerFilterManager.options(),
+            'player_filter_options': PlayerFilterOptionManager.objects(),
+            'containers_by_type': {
+                player_filter.id: [
+                    option.container_id for option in player_filter.default_options()
+                ]
+                for player_filter in PlayerFilterManager.objects()
+            }
+            | {'': []},
+            'add_other_active': (
+                SessionHandler.get_session_admin_tournament_criterion_add_other_active(
+                    request
+                )
+            ),
+            'data': default_data | data,
+            'errors': errors or {},
+        }
+
+    @post(
+        path=(
+            '/tournaments/tournament-criterion/create/{event_uniq_id:str}/{tournament_id:int}'
+        ),
+        name='admin-tournament-criterion-create',
+        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+    )
+    async def htmx_admin_tournament_criterion_create(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        tournament_id: int,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        add_other = 'add_other' in data
+        SessionHandler.set_session_admin_tournament_criterion_add_other_active(
+            request, add_other
+        )
+        flat_data = WebContext.flatten_list_data(data)
+        if errors := self._validate_tournament_criterion_form_data(flat_data):
+            return self._admin_base_event_render(
+                web_context.template_context
+                | self._tournament_criterion_form_modal_context(
+                    request, flat_data, FormAction.CREATE, errors
+                )
+            )
+
+        player_filter = self.player_filter_from_data(flat_data)
+        criterion = web_context.get_admin_tournament().add_criterion(
+            StoredTournamentCriterion(
+                id=None,
+                tournament_id=tournament_id,
+                type=player_filter.id,
+                options={option.id: option.value for option in player_filter.options},
+            )
+        )
+        if add_other:
+            template_context = self._tournament_criterion_form_modal_context(
+                request, {}, FormAction.CREATE, errors
+            ) | {'previous_criterion': criterion}
+        else:
+            template_context = {'modal': 'tournament_criteria'}
+        return self._admin_base_event_render(
+            web_context.template_context | template_context
+        )
+
+    @patch(
+        path=(
+            '/tournaments/tournament-criterion/update/{event_uniq_id:str}'
+            '/{tournament_id:int}/{tournament_criterion_id:int}'
+        ),
+        name='admin-tournament-criterion-update',
+        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+    )
+    async def htmx_admin_tournament_criterion_update(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        tournament_id: int,
+        tournament_criterion_id: int,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(
+            request,
+            tournament_id,
+            tournament_criterion_id,
+        )
+
+        flat_data = WebContext.flatten_list_data(data)
+        if errors := self._validate_tournament_criterion_form_data(flat_data):
+            self._admin_base_event_render(
+                web_context.template_context
+                | self._tournament_criterion_form_modal_context(
+                    request, flat_data, FormAction.UPDATE, errors
+                )
+            )
+        player_filter = self.player_filter_from_data(flat_data)
+        tournament_criterion = web_context.get_admin_tournament_criterion()
+        stored_tournament_criterion = tournament_criterion.stored_tournament_criterion
+        stored_tournament_criterion.type = player_filter.id
+        stored_tournament_criterion.options = {
+            option.id: option.value for option in player_filter.options
+        }
+        tournament_criterion.update()
+        return self._admin_base_event_render(
+            web_context.template_context | {'modal': 'tournament_criteria'}
+        )
+
+    @delete(
+        path=(
+            '/tournaments/tournament-criterion/delete/{event_uniq_id:str}/{tournament_id:int}'
+            '/{tournament_criterion_id:int}'
+        ),
+        name='admin-tournament-criterion-delete',
+        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+        status_code=HTTP_200_OK,
+    )
+    async def htmx_admin_tournament_criterion_delete(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        tournament_criterion_id: int,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(
+            request,
+            tournament_id,
+            tournament_criterion_id,
+        )
+        web_context.get_admin_tournament().delete_criterion(tournament_criterion_id)
+        return self._admin_base_event_render(
+            web_context.template_context | {'modal': 'tournament_criteria'}
+        )
+
+    @get(
+        path=(
+            '/tournaments/tournament-criteria-modal/{event_uniq_id:str}/{tournament_id:int}'
+        ),
+        name='admin-tournament-criteria-modal',
+    )
+    async def htmx_admin_tournament_criteria_modal(
         self,
         request: HTMXRequest,
         event_uniq_id: str,
         tournament_id: int,
-        document: str,
-        options: str | None = None,
-    ) -> Template | ClientRedirect:
-        web_context: TournamentAdminWebContext = TournamentAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-            data=None,
-        )
-        if web_context.error:
-            return web_context.error
-        if web_context.admin_tournament is None:
-            raise RuntimeError('admin_tournament not defined')
-        admin_tournament: Tournament = web_context.admin_tournament
-        document_type = PrintDocumentManager.get_type(document)
-        option_data: dict[str, str] = {}
-        if options:
-            for option in urllib.parse.unquote(options).split('|'):
-                key, raw_value = option.split('=')
-                option_data[key] = raw_value
-        print_options: list[PrintOption] = []
-        for print_option in document_type.default_options():
-            value = WebContext.form_data_to_value(
-                option_data, print_option.id, print_option.type
-            )
-            print_options.append(type(print_option)(value))
-        print_document = document_type(print_options, admin_tournament)
-
-        per_plugin_columns = plugin_manager.hook.get_extra_print_view_columns(
-            document=print_document
-        )
-        extra_columns: dict[str, list[ExtraColumn]] = {}
-        for plugin_columns in per_plugin_columns:
-            for extra_column in plugin_columns:
-                c = extra_columns.setdefault(extra_column.at, [])
-                c.append(extra_column)
-        per_plugin_css: list[str] = plugin_manager.hook.get_extra_print_view_css(
-            document=print_document
-        )
-        extra_css: str = '\n'.join(per_plugin_css)
-
-        template_context = (
-            web_context.template_context
-            | {
-                'document': print_document,
-                'extra_columns': extra_columns,
-                'extra_css': extra_css,
-            }
-            | print_document.template_context
-        )
-        return HTMXTemplate(
-            template_name=print_document.template_name, context=template_context
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        return self._admin_base_event_render(
+            web_context.template_context | {'modal': 'tournament_criteria'}
         )
 
     @get(
+        path=(
+            '/tournaments/criterion-modal/create/{event_uniq_id:str}/{tournament_id:int}'
+        ),
+        name='admin-tournament-criterion-create-modal',
+    )
+    async def htmx_admin_tournament_criterion_create_modal(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        return self._admin_base_event_render(
+            web_context.template_context
+            | self._tournament_criterion_form_modal_context(
+                request, {}, FormAction.CREATE
+            )
+        )
+
+    @get(
+        path=(
+            '/tournaments/criterion-modal/update/{event_uniq_id:str}'
+            '/{tournament_id:int}/{tournament_criterion_id:int}'
+        ),
+        name='admin-tournament-criterion-update-modal',
+    )
+    async def htmx_admin_tournament_criterion_update_modal(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        tournament_criterion_id: int,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(
+            request, tournament_id, tournament_criterion_id
+        )
+
+        tournament_criterion = web_context.get_admin_tournament_criterion()
+        data = {'type': tournament_criterion.player_filter.id} | {
+            option.id: WebContext.value_to_form_data(option.value)
+            for option in tournament_criterion.player_filter.options
+        }
+        return self._admin_base_event_render(
+            web_context.template_context
+            | self._tournament_criterion_form_modal_context(
+                request, data, FormAction.UPDATE
+            )
+        )
+
+    # -------------------------------------------------------------------------
+    # Misc
+    # -------------------------------------------------------------------------
+
+    @get(
         path=[
-            '/admin/random-player/{event_uniq_id:str}',
-            '/admin/random-player/{event_uniq_id:str}/{tournament_id:int}',
+            '/random-player/{event_uniq_id:str}',
+            '/random-player/{event_uniq_id:str}/{tournament_id:int}',
         ],
         name='admin-random-player',
     )
     async def htmx_random_player(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
-    ) -> Template | ClientRedirect:
-        web_context: TournamentAdminWebContext = TournamentAdminWebContext(
-            request,
-            event_uniq_id=event_uniq_id,
-            tournament_id=tournament_id,
-            data=None,
-        )
-        if web_context.error:
-            return web_context.error
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
+
         assert web_context.admin_event is not None
         admin_event: Event = web_context.admin_event
         admin_tournament: Tournament | None = web_context.admin_tournament
@@ -1125,6 +1298,7 @@ class TournamentAdminController(BaseEventAdminController):
                 'random_player': random_player,
                 'opponent_name': opponent.full_name if opponent else None,
                 'tournament': admin_tournament,
+                'admin_event': admin_event,
                 'board': board,
             },
             re_target='#modal-wrapper',

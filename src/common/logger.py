@@ -1,12 +1,21 @@
 import logging
 from logging import Logger, getLogger
 from logging.config import dictConfig
-from pathlib import Path
+import sys
 from typing import Any
 
 from colorama import Fore, Style
 
-from common import APP_NAME
+from common import APP_NAME, LOG_FILE, DEVEL_ENV
+from gui.gui_logger import GUILogHandler
+
+
+class ConsoleOrNullHandler(logging.Handler):
+    def __new__(cls, *args, **kwargs):
+        if DEVEL_ENV:
+            return logging.StreamHandler(sys.stdout)
+        else:
+            return logging.NullHandler()
 
 
 class LoggingConfigValues:
@@ -16,7 +25,6 @@ class LoggingConfigValues:
     console_color: bool = True
     console_show_date: bool = False
     console_show_level: bool = False
-    file_path: Path | None = None
 
 
 def default_logging_config_values() -> LoggingConfigValues:
@@ -40,7 +48,6 @@ def set_logging_config(
     console_color: bool | None = None,
     console_show_date: bool | None = None,
     console_show_level: bool | None = None,
-    file_path: Path | None = None,
 ) -> dict[str, Any]:
     """Set logging parameters, returns the logging config as a dict that can be used by logging libraries."""
     global _LOGGING_CONFIG_VALUES, _LOGGER
@@ -52,10 +59,6 @@ def set_logging_config(
         _LOGGING_CONFIG_VALUES.console_show_date = console_show_date
     if console_show_level is not None:
         _LOGGING_CONFIG_VALUES.console_show_level = console_show_level
-    if file_path is not None:
-        _LOGGING_CONFIG_VALUES.file_path = file_path
-    if _LOGGING_CONFIG_VALUES.file_path is not None:
-        _LOGGING_CONFIG_VALUES.file_path.parent.mkdir(parents=True, exist_ok=True)
     dictConfig(logging_config := get_logging_config())
     _LOGGER = getLogger(APP_NAME)
     return logging_config
@@ -66,9 +69,10 @@ def get_logging_config() -> dict[str, Any]:
     global _LOGGING_CONFIG_VALUES
     console_format: str = f'{
         "%(log_color)s" if _LOGGING_CONFIG_VALUES.console_color else ""
-    }{"%(asctime)s " if _LOGGING_CONFIG_VALUES.console_show_date else ""}{
+    }{"[%(asctime)s] " if _LOGGING_CONFIG_VALUES.console_show_date else ""}{
         "%(levelname)-10s" if _LOGGING_CONFIG_VALUES.console_show_level else ""
     }%(message)s{"%(reset)s" if _LOGGING_CONFIG_VALUES.console_color else ""}'
+
     logging_config: dict[str, Any] = {
         'version': 1,
         'disable_existing_loggers': False,
@@ -76,7 +80,7 @@ def get_logging_config() -> dict[str, Any]:
             'console_formatter': {
                 '()': 'colorlog.ColoredFormatter',
                 'fmt': console_format,
-                'datefmt': '%Y-%m-%d %H:%M:%S',
+                'datefmt': '%H:%M:%S',
                 'reset': True,
                 'log_colors': {
                     'DEBUG': 'white',
@@ -96,56 +100,60 @@ def get_logging_config() -> dict[str, Any]:
         },
         'handlers': {
             'console': {
-                'class': 'logging.StreamHandler',
+                'class': ConsoleOrNullHandler,
                 'level': _LOGGING_CONFIG_VALUES.console_log_level,
                 'formatter': 'console_formatter',
                 'stream': 'ext://sys.stdout',
             },
+            'gui': {
+                '()': 'gui.gui_logger.build_gui_handler',
+                'formatter': 'console_formatter',
+                'level': _LOGGING_CONFIG_VALUES.console_log_level,
+            },
         },
         'loggers': {
             APP_NAME: {
-                'handlers': ['console'],
+                'handlers': ['console', 'gui'],
                 'level': logging.DEBUG,
                 'propagate': False,
             },
             'litestar': {
-                'handlers': ['console'],
+                'handlers': ['console', 'gui'],
                 'level': logging.INFO,
             },
             'uvicorn': {
-                'handlers': ['console'],
+                'handlers': ['console', 'gui'],
                 'level': logging.INFO,
                 'propagate': False,
             },
             'uvicorn.error': {
-                'handlers': ['console'],
+                'handlers': ['console', 'gui'],
                 'level': logging.INFO,
                 'propagate': False,
             },
             'uvicorn.access': {
-                'handlers': ['console'],
+                'handlers': ['console', 'gui'],
                 'level': logging.INFO,
                 'propagate': False,
             },
             'pytds': {
-                'handlers': ['console'],
+                'handlers': ['console', 'gui'],
                 'level': logging.WARNING,
                 'propagate': False,
             },
         },
     }
-    if _LOGGING_CONFIG_VALUES.file_path:
-        logging_config['handlers']['file'] = {  # type: ignore
-            'class': 'logging.handlers.RotatingFileHandler',
-            'level': logging.DEBUG,
-            'formatter': 'file_formatter',
-            'filename': str(_LOGGING_CONFIG_VALUES.file_path),
-            'maxBytes': 500 * 1024,
-            'backupCount': 5,
-            'encoding': 'UTF-8',
-        }
-        for logger_name in logging_config['loggers']:
-            logging_config['loggers'][logger_name]['handlers'].append('file')  # type: ignore
+    logging_config['handlers']['file'] = {  # type: ignore
+        'class': 'logging.handlers.RotatingFileHandler',
+        'level': logging.DEBUG,
+        'formatter': 'file_formatter',
+        'filename': str(LOG_FILE),
+        'maxBytes': 500 * 1024,
+        'backupCount': 5,
+        'encoding': 'UTF-8',
+    }
+    for logger_name in logging_config['loggers']:
+        logging_config['loggers'][logger_name]['handlers'].append('file')  # type: ignore
     return logging_config
 
 
@@ -197,9 +205,76 @@ def input_interactive(string: str) -> str:
     """Prints the message to stdout with color, and returns the user input.
     If the message could not be Unicode decoded, raises KeyboardInterrupt."""
     __flush_logger()
+
+    if GUILogHandler.instance:
+        return GUILogHandler.instance.gui.handle_interactive_input(string)
+
     print(Fore.CYAN + Style.BRIGHT + string + Style.RESET_ALL, end='')
     try:
         result = input().strip().upper()
     except UnicodeDecodeError as exc:
         raise KeyboardInterrupt() from exc
     return result
+
+
+def input_interactive_choices(
+    question: str, choices: dict[str, str], default: str
+) -> str | None:
+    """Prints the message to stdout with color, and returns the user input.
+    If the message could not be Unicode decoded, raises KeyboardInterrupt."""
+    from common.i18n import _
+
+    __flush_logger()
+
+    if GUILogHandler.instance:
+        return GUILogHandler.instance.gui.handle_interactive_choices(
+            question, choices, default
+        )
+
+    question = question + _(' [{default_choice}: {default_value}]: ').format(
+        default_choice=default,
+        default_value=choices[default],
+    )
+
+    print_interactive_input(question)
+    for choice, text in choices.items():
+        print_interactive_input(f'  - [{choice}] {text}')
+
+    try:
+        result = input().strip().upper()
+    except UnicodeDecodeError as exc:
+        raise KeyboardInterrupt() from exc
+    return result
+
+
+def input_interactive_yn(question: str, yes_is_default: bool = False) -> bool:
+    """Prints the message to stdout with color postfixed with [Y/n] etc, and returns the user input.
+    If the message could not be Unicode decoded, raises KeyboardInterrupt."""
+    from common.i18n import _
+
+    __flush_logger()
+
+    if GUILogHandler.instance:
+        return GUILogHandler.instance.gui.handle_interactive_yn(
+            question, yes_is_default
+        )
+
+    yes_answer = _('Y *** THE LETTER TO ANSWER YES')
+    no_answer = _('N *** THE LETTER TO ANSWER NO')
+    question = question + _(' [{yes_answer}/{no_answer}]?').format(
+        yes_answer=yes_answer.upper() if yes_is_default else yes_answer.lower(),
+        no_answer=no_answer.upper() if not yes_is_default else no_answer.lower(),
+    )
+
+    while True:
+        print(Fore.CYAN + Style.BRIGHT + question + Style.RESET_ALL, end='')
+
+        try:
+            result = input().strip().upper()
+        except UnicodeDecodeError as exc:
+            raise KeyboardInterrupt() from exc
+
+        if result == yes_answer or (result == '' and yes_is_default):
+            return True
+        if result == no_answer or (result == '' and not yes_is_default):
+            return False

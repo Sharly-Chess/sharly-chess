@@ -36,6 +36,12 @@
                 {% endfor %}
             {% endif %}
         </div>
+        {% if tournament.num_players_not_matching_criteria > 0 %}
+            <i
+                class="bi-exclamation-triangle-fill text-warning"
+                {{ macros.tooltip_attributes('info', ngettext('%(num)d player does not match criteria.', '%(num)d players do not match criteria.', tournament.num_players_not_matching_criteria), 'top') }}
+            ></i>
+        {% endif %}
     </div>
 {% endblock %}
 
@@ -46,7 +52,7 @@
 
     <div class="d-flex flex-column gap-1">
         <div class="text-start">
-            {{ tournament.rating }}
+            {{ tournament.rating }} ({{ tournament.player_rating_type.name }})
         </div>
         {% if tournament.rating != 1 %}
             <div class="text-start {% if tournament.override_unrated_rapid_blitz %}text-secondary{% endif %}">
@@ -74,6 +80,18 @@
                 {% endif %}
             {% endwith %}
         </div>
+        <div class="d-flex gap-2">
+            <div>{{ _('%(string)s:', string=_('Criteria')) }}</div>
+            <div>
+                {% if tournament.criteria %}
+                    {{ tournament.criteria_string }}
+                {% else %}
+                    <span class="text-secondary">
+                        <i>{{ _('Undefined *** PLURAL') }}</i>
+                    </span>
+                {% endif %}
+            </div>
+        </div>
         {% if admin_tournaments_show_details %}
             <div class="text-start {% if not tournament.tie_breaks %}text-secondary{%endif%}">
                 {% if tournament.tie_breaks %}
@@ -98,11 +116,6 @@
             <div class="text-start {% if not tournament.stored_tournament.first_board_number %}text-secondary{% endif %}">
                 {{ _('First board number: %(board_number)d', board_number=tournament.first_board_number) }}
             </div>
-            {#
-            <div class="text-start {% if not tournament.stored_tournament.paired_bye_result %}text-secondary{% endif %}">
-                {{ _('Paired bye result: %(string)s', string=paired_bye_result_options[tournament.paired_bye_result.value|string]) }}
-            </div>
-            #}
             <div class="text-start {% if tournament.stored_tournament.max_byes is none %}text-secondary{% endif %}">
                 {{ _('Maximum number of byes: %(max_byes)d', max_byes=tournament.max_byes) }}
             </div>
@@ -119,20 +132,22 @@
             {{ _('Actions') }}
         </button>
         <ul class="dropdown-menu">
-            <li class="dropdown-submenu">
-                <span
-                    {{ macros.tooltip_attributes('info', _('Update the players\' information from an external data source.'), 'top') }}
-                >
-                    <button class="dropdown-item d-flex justify-content-between">
-                        <span><i class="bi-arrow-repeat pe-1"></i>
-                        {{ _('Update players') }}</span>
-                        <i class="ps-3 bi bi-caret-right-fill"></i>
-                    </button>
-                </span>
-                <ul class="dropdown-menu">
-                    {% include '/admin/players/players_diff.html' %}
-                </ul>
-            </li>
+            {% if client.can_update_players %}
+                <li class="dropdown-submenu">
+                    <span
+                        {{ macros.tooltip_attributes('info', _('Update the players\' information from an external data source.'), 'top') }}
+                    >
+                        <button class="dropdown-item d-flex justify-content-between">
+                            <span><i class="bi-arrow-repeat pe-1"></i>
+                            {{ _('Update players') }}</span>
+                            <i class="ps-3 bi bi-caret-right-fill"></i>
+                        </button>
+                    </span>
+                    <ul class="dropdown-menu">
+                        {% include '/admin/players/players_diff.html' %}
+                    </ul>
+                </li>
+            {% endif %}
             <li>
                 <span
                     {{ macros.tooltip_attributes('info', _('Print players, results, etc.'), 'top') }}
@@ -142,7 +157,6 @@
                         hx-get="{{ url_for('admin-print-modal', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
-                        preload
                         data-bs-toggle="modal"
                         data-bs-target="#modal-wrapper"
                     >
@@ -182,7 +196,6 @@
                                 ) }}"
                                 hx-target="body"
                                 hx-indicator="#please-wait"
-                                preload
                                 data-bs-toggle="modal"
                                 data-bs-target="#modal-wrapper"
                                 {{ macros.tooltip_attributes('info', importer.tooltip, 'right') }}
@@ -213,11 +226,11 @@
                         {% else %}
                             <li
                                 class="dropdown-item text-start cursor-pointer"
-                                onclick="$('#export-form-{{ exporter.id }}').submit()"
+                                onclick="$('#export-form-{{ tournament.id }}-{{ exporter.id }}').submit()"
                                {{ macros.tooltip_attributes('info', exporter.tooltip, 'right') }}
                             >
                                 <form
-                                    id="export-form-{{ exporter.id }}"
+                                    id="export-form-{{ tournament.id }}-{{ exporter.id }}"
                                     action="{{ url_for(
                                         'admin-tournament-export',
                                         event_uniq_id=admin_event.uniq_id,
@@ -254,6 +267,27 @@
             {% endfor %}
         </ul>
     </div>
+    <span
+        {{ macros.tooltip_attributes('info', _('Define the criteria for players to participate in this tournament.'), 'top') }}
+    >
+        <button
+            class="btn btn-sm btn-outline-primary"
+            hx-get="{{ url_for(
+                'admin-tournament-criteria-modal'
+                if tournament.criteria else
+                'admin-tournament-criterion-create-modal',
+                event_uniq_id=admin_event.uniq_id,
+                tournament_id=tournament.id,
+            ) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        >
+            <i class="bi-filter pe-1"></i>
+            {{ _('Criteria') }}
+        </button>
+    </span>
     <span {{ macros.tooltip_attributes('info', _('Go to the pairings.'), 'top') }}>
         <a
             class="btn btn-sm btn-outline-primary"
@@ -265,41 +299,65 @@
 {% endblock %}
 
 {% block card_buttons_right %}
-    <span {{ macros.tooltip_attributes('info', _('Edit the properties of the tournament.'), 'top') }}>
+    <span
+        {% if client.can_update_tournaments %}
+            {{ macros.tooltip_attributes('info', _('Edit the properties of the tournament.'), 'top') }}
+        {% else %}
+            {{ macros.tooltip_attributes('warning', _('You are not allowed to update the tournament.'), 'top') }}
+        {% endif %}
+    >
         <button
             class="btn btn-sm btn-outline-primary text-nowrap"
             hx-get="{{ url_for('admin-tournament-modal', action='update', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
             hx-target="body"
             hx-indicator="#please-wait"
-            preload
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
+            {% if not client.can_update_tournaments %}
+                disabled
+            {% endif %}
         >
             <i class="bi-pencil-fill"></i>
         </button>
     </span>
-    <span {{ macros.tooltip_attributes('info', _('Duplicate the tournament.'), 'top') }}>
+    <span
+        {% if client.can_add_tournament %}
+            {{ macros.tooltip_attributes('info', _('Duplicate the tournament.'), 'top') }}
+        {% else %}
+            {{ macros.tooltip_attributes('warning', _('You are not allowed to create tournaments.'), 'top') }}
+        {% endif %}
+    >
         <button
             class="btn btn-sm btn-outline-primary text-nowrap"
             hx-get="{{ url_for('admin-tournament-modal', action='clone', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
             hx-target="body"
             hx-indicator="#please-wait"
-            preload
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
+            {% if not client.can_add_tournament %}
+                disabled
+            {% endif %}
         >
             <i class="bi-copy"></i>
         </button>
     </span>
-    <span {{ macros.tooltip_attributes('info', _('Delete the tournament.'), 'top') }}>
+    <span
+        {% if client.can_delete_tournaments %}
+            {{ macros.tooltip_attributes('info', _('Delete the tournament.'), 'top') }}
+        {% else %}
+            {{ macros.tooltip_attributes('warning', _('You are not allowed to delete the tournament.'), 'top') }}
+        {% endif %}
+    >
         <button
-            class="btn btn-sm btn-outline-danger text-nowrap"
+            class="btn btn-sm {% if client.can_delete_tournaments %}btn-outline-danger{% else %}btn-outline-primary{% endif %} text-nowrap"
             hx-get="{{ url_for('admin-tournament-delete-modal', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
             hx-target="body"
             hx-indicator="#please-wait"
-            preload
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
+            {% if not client.can_delete_tournaments %}
+                disabled
+            {% endif %}
         >
             <i class="bi-trash-fill"></i>
         </button>

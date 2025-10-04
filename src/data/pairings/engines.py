@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-import subprocess
 from functools import cache
 from operator import attrgetter
 from pathlib import Path
@@ -17,6 +16,7 @@ from common.tool_installer import BbpPairingsInstaller
 from data.board import Board
 from data.pairings.settings import BergerNumbersSetting
 from database.sqlite.event.event_store import StoredBoard
+from utils import StaticUtils
 from utils.enum import TrfType, Result
 
 if TYPE_CHECKING:
@@ -60,7 +60,7 @@ class PairingEngine(ABC):
         if self.pairings_generation_disabled_message(tournament, round_):
             raise ValueError(
                 f'Pairings generation not allowed for round {round_} '
-                f'of tournament [{tournament.uniq_id}].'
+                f'of tournament [{tournament.name}].'
             )
         stored_boards = self._generate_stored_boards(
             tournament, round_, partial_pairings
@@ -70,14 +70,9 @@ class PairingEngine(ABC):
             Board(tournament, round_, stored_board) for stored_board in stored_boards
         ]
         if self.reorder_boards:
-            board_indexes = [
-                board.index
-                for board in tournament.get_round_boards(round_)
-                if board.black_player
-            ]
-            index_delta = max(board_indexes) + 1 if board_indexes else 0
-            for index, board in enumerate(sorted(boards, reverse=True)):
-                board.stored_board.index = index_delta + index
+            available_indexes = tournament.get_available_board_indexes(round_)
+            for board in sorted(boards, reverse=True):
+                board.stored_board.index = available_indexes.pop(0)
         tournament.create_boards(stored_boards, round_, self.pab_result)
 
     def pairings_generation_disabled_message(
@@ -188,7 +183,7 @@ class BbpPairings(PairingEngine):
         )
         with open(trf_file_path, 'w', encoding='utf-8') as trf_file:
             trf.dump(trf_file, trf_tournament)
-        result = subprocess.run(
+        result = StaticUtils.run_process(
             [
                 self.executable_path,
                 '--dutch',
@@ -260,12 +255,12 @@ class BbpPairings(PairingEngine):
         )
         with open(trfx_file_path, 'w', encoding='utf-8') as trf_file:
             trf.dump(trf_file, trf_tournament)
-        result = subprocess.run(
+        result = StaticUtils.run_process(
             [
                 self.executable_path,
                 '--dutch',
                 trfx_file_path,
-                # The only way to get a checklist is to actaully pair the round....
+                # The only way to get a checklist is to actually pair the round....
                 '-p',
                 pairings_file_path,
                 # Request the checklist

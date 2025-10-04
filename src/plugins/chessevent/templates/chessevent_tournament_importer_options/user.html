@@ -1,0 +1,16 @@
+{% set chessevent_user_id = admin_event.plugin_data.chessevent.chessevent_user_id %}
+
+<div class="col-12">
+    {{ admin_macros.text_input(
+        name=option.id,
+        label=_('ChessEvent user name:'),
+        autocomplete='off',
+        placeholder=(
+            _('Default: %(string)s', string=chessevent_user_id)
+            if chessevent_user_id else
+            _('E.g.: %(string)s', string='Z00000')
+        ),
+        help_text='',
+        data=data, errors=errors
+    ) }}
+</div>

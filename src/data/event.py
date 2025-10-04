@@ -1,10 +1,12 @@
 import copy
+import time
 from collections import defaultdict, Counter
+from contextlib import suppress
 from functools import total_ordering, cached_property
 from logging import Logger
 from operator import attrgetter
 from types import NotImplementedType
-from typing import Any, Iterable
+from typing import Any, Collection
 
 from common import (
     format_timestamp_date_time,
@@ -13,8 +15,11 @@ from common import (
 )
 from common.background import inline_image_url
 from common.i18n import _
+from common.i18n.utils import by
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
+from data.account import Account, Permission
+from data.board import PlayerRatingType
 from data.display_controller import DisplayController
 from data.family import Family
 from data.player import Player, Club, Federation
@@ -32,6 +37,9 @@ from utils.enum import (
 from database.sqlite.event.event_store import (
     StoredEvent,
     StoredPlayer,
+    StoredAccount,
+    StoredRotator,
+    StoredPermission,
 )
 
 logger: Logger = get_logger()
@@ -60,9 +68,23 @@ class Event:
     def stop(self) -> float:
         return self.stored_event.stop
 
+    def passed(self, now: float | None = None) -> bool:
+        return self.stored_event.stop < (now or time.time())
+
+    def coming(self, now: float | None = None) -> bool:
+        return self.stored_event.start > (now or time.time())
+
+    def current(self, now: float | None = None) -> bool:
+        now = now or time.time()
+        return not self.passed(now) and not self.coming(now)
+
     @property
     def federation(self) -> str:
         return self.stored_event.federation
+
+    @property
+    def player_rating_type(self) -> PlayerRatingType:
+        return PlayerRatingType(self.stored_event.player_rating_type)
 
     @cached_property
     def prize_currency(self) -> str:
@@ -126,11 +148,7 @@ class Event:
             or SharlyChessConfig.default_background_color
         )
 
-    @property
-    def update_password(self) -> str | None:
-        return self.stored_event.update_password
-
-    @property
+    @cached_property
     def record_illegal_moves(self) -> int:
         return (
             self.stored_event.record_illegal_moves
@@ -184,10 +202,10 @@ class Event:
 
     @property
     def screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return sorted(self.screens_by_uniq_id.values(), key=lambda screen: screen.name)
+        return sorted(self.screens_by_uniq_id.values(), key=by('name'))
 
     @property
-    def screens_of_type_sorted_by_uniq_id(
+    def screens_by_screen_type_sorted_by_uniq_id(
         self,
     ) -> defaultdict[ScreenType, list[Screen]]:
         screens_of_type_sorted_by_uniq_id: defaultdict[ScreenType, list[Screen]] = (
@@ -198,67 +216,19 @@ class Event:
         return screens_of_type_sorted_by_uniq_id
 
     @property
-    def input_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.INPUT]
-
-    @property
-    def boards_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.BOARDS]
-
-    @property
-    def players_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.PLAYERS]
-
-    @property
-    def results_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.RESULTS]
-
-    @property
-    def ranking_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.RANKING]
-
-    @property
-    def image_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.screens_of_type_sorted_by_uniq_id[ScreenType.IMAGE]
-
-    @property
     def public_screens_sorted_by_uniq_id(self) -> list[Screen]:
         return [screen for screen in self.screens_by_uniq_id.values() if screen.public]
 
     @property
-    def public_screens_of_type_sorted_by_uniq_id(
+    def public_screens_by_screen_type_sorted_by_uniq_id(
         self,
     ) -> defaultdict[ScreenType, list[Screen]]:
-        public_screens_of_type_sorted_by_uniq_id: defaultdict[
+        public_screens_by_screen_type_sorted_by_uniq_id: defaultdict[
             ScreenType, list[Screen]
         ] = defaultdict(list[Screen])
         for screen in self.public_screens_sorted_by_uniq_id:
-            public_screens_of_type_sorted_by_uniq_id[screen.type].append(screen)
-        return public_screens_of_type_sorted_by_uniq_id
-
-    @property
-    def public_input_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.INPUT]
-
-    @property
-    def public_boards_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.BOARDS]
-
-    @property
-    def public_players_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.PLAYERS]
-
-    @property
-    def public_results_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.RESULTS]
-
-    @property
-    def public_ranking_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.RANKING]
-
-    @property
-    def public_image_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return self.public_screens_of_type_sorted_by_uniq_id[ScreenType.IMAGE]
+            public_screens_by_screen_type_sorted_by_uniq_id[screen.type].append(screen)
+        return public_screens_by_screen_type_sorted_by_uniq_id
 
     @cached_property
     def rotators_sorted_by_uniq_id(self) -> list[Rotator]:
@@ -300,7 +270,7 @@ class Event:
         )
 
     @property
-    def tournaments(self) -> Iterable[Tournament]:
+    def tournaments(self) -> Collection[Tournament]:
         return self.tournaments_by_id.values()
 
     @cached_property
@@ -406,7 +376,7 @@ class Event:
     def players_sorted_by_name(self) -> list[Player]:
         return sorted(
             self.players_by_id.values(),
-            key=lambda player: (player.last_name, player.first_name),
+            key=by('last_name', 'first_name'),
         )
 
     @cached_property
@@ -482,7 +452,7 @@ class Event:
 
     @cached_property
     def basic_screens_sorted_by_name(self) -> list[Screen]:
-        return sorted(self.basic_screens_by_id.values(), key=lambda screen: screen.name)
+        return sorted(self.basic_screens_by_id.values(), key=by('name'))
 
     def get_unused_screen_uniq_id(
         self,
@@ -522,6 +492,31 @@ class Event:
             ],
         )
 
+    @property
+    def basic_screens_by_screen_type_by_id(
+        self,
+    ) -> defaultdict[ScreenType, dict[int, Screen]]:
+        basic_screens_by_screen_type_by_id: defaultdict[
+            ScreenType, dict[int, Screen]
+        ] = defaultdict(dict[int, Screen])
+        for screen in self.basic_screens_by_id.values():
+            basic_screens_by_screen_type_by_id[screen.type][screen.id] = screen
+        return basic_screens_by_screen_type_by_id
+
+    @property
+    def basic_screens_by_screen_type_sorted_by_uniq_id(
+        self,
+    ) -> defaultdict[ScreenType, list[Screen]]:
+        basic_screens_by_screen_type_sorted_by_uniq_id: defaultdict[
+            ScreenType, list[Screen]
+        ] = defaultdict(list[Screen])
+        for screen_type in self.basic_screens_by_screen_type_by_id:
+            basic_screens_by_screen_type_sorted_by_uniq_id[screen_type] = sorted(
+                self.basic_screens_by_screen_type_by_id[screen_type].values(),
+                key=lambda screen: screen.uniq_id,
+            )
+        return basic_screens_by_screen_type_sorted_by_uniq_id
+
     @cached_property
     def families_by_id(self) -> dict[int, Family]:
         families_by_id: dict[int, Family] = {
@@ -533,11 +528,18 @@ class Event:
 
     @cached_property
     def families_sorted_by_name(self) -> list[Family]:
-        return sorted(self.families_by_id.values(), key=lambda family: family.name)
+        return sorted(self.families_by_id.values(), key=by('name'))
 
     @cached_property
     def families_by_uniq_id(self) -> dict[str, Family]:
         return {family.uniq_id: family for family in self.families_by_id.values()}
+
+    @property
+    def families_by_screen_type(self) -> dict[ScreenType, list[Family]]:
+        families_by_screen_type: dict[ScreenType, list[Family]] = defaultdict(list)
+        for family in self.families_sorted_by_name:
+            families_by_screen_type[family.type].append(family)
+        return families_by_screen_type
 
     def get_unused_family_uniq_id(
         self,
@@ -606,6 +608,32 @@ class Event:
             base_name or _('New rotator'), self.rotators_by_uniq_id
         )
 
+    def create_rotator(self, stored_rotator: StoredRotator) -> Rotator:
+        with EventDatabase(self.uniq_id, True) as database:
+            rotator_id = database.add_stored_rotator(stored_rotator)
+            stored_rotator.id = rotator_id
+            for rotating_screen in stored_rotator.stored_rotating_screens:
+                rotating_screen.rotator_id = rotator_id
+                rotating_screen.id = database.add_stored_rotating_screen(
+                    rotating_screen
+                )
+        self.stored_event.stored_rotators.append(stored_rotator)
+        rotator = Rotator(self, stored_rotator)
+        self.rotators_by_id[rotator.id] = rotator
+        return rotator
+
+    def update_rotator(self, stored_rotator: StoredRotator):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.update_stored_rotator(stored_rotator)
+
+    def delete_rotator(self, rotator: Rotator):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.delete_stored_rotator(rotator.id)
+        with suppress(ValueError):
+            self.stored_event.stored_rotators.remove(rotator.stored_rotator)
+        if rotator.id in self.rotators_by_id:
+            del self.rotators_by_id[rotator.id]
+
     @cached_property
     def display_controllers_by_id(self) -> dict[int, DisplayController]:
         display_controllers_by_id: dict[int, DisplayController] = {
@@ -651,6 +679,181 @@ class Event:
                 for display_controller in self.display_controllers_by_id.values()
             ],
         )
+
+    # -------------------------------------------------------------------------
+    # Accounts
+    # -------------------------------------------------------------------------
+
+    @property
+    def predefined_accounts(self) -> bool:
+        """Returns True if predefined accounts, False otherwise."""
+        return not self.stored_event.stored_accounts
+
+    @cached_property
+    def accounts_by_id(self) -> dict[int, Account]:
+        if self.predefined_accounts:
+            return {
+                account.id: account
+                for account in [
+                    Account.predefined_administrator_account(),
+                    Account.predefined_anonymous_account(),
+                ]
+            }
+        else:
+            return {
+                stored_account.id: Account(stored_account)
+                for stored_account in self.stored_event.stored_accounts
+                if stored_account.id is not None
+            }
+
+    def create_predefined_accounts(self):
+        """Sets own accounts if not already done"""
+        if not self.predefined_accounts:
+            raise ValueError('Default accounts already exist.')
+        with EventDatabase(self.uniq_id, True) as database:
+            for account in self.accounts_by_id.values():
+                stored_account = account.stored_account
+                database.add_stored_account(stored_account)
+                for stored_permission in stored_account.stored_permissions:
+                    database.add_stored_permission(stored_permission)
+                self.stored_event.stored_accounts.append(stored_account)
+
+    def create_account(self, stored_account: StoredAccount) -> Account:
+        if self.predefined_accounts:
+            self.create_predefined_accounts()
+        with EventDatabase(self.uniq_id, True) as database:
+            account_id = database.add_stored_account(stored_account)
+            stored_account.id = account_id
+            for stored_permission in stored_account.stored_permissions:
+                stored_permission.account_id = account_id
+                database.add_stored_permission(stored_permission)
+        self.stored_event.stored_accounts.append(stored_account)
+        account = Account(stored_account)
+        self.accounts_by_id[account.id] = account
+        return account
+
+    def update_account(self, stored_account: StoredAccount):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.update_stored_account(stored_account)
+
+    def delete_account(self, account: Account):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.delete_stored_account(account.id)
+            database.commit()
+        with suppress(ValueError):
+            self.stored_event.stored_accounts.remove(account.stored_account)
+        if account.id in self.accounts_by_id:
+            del self.accounts_by_id[account.id]
+
+    @staticmethod
+    def _delete_redundant_account_permissions(
+        account: Account, database: EventDatabase
+    ):
+        redundant_stored_permissions = [
+            permission.stored_permission
+            for permission in account.permissions
+            if account.is_permission_redundant(permission)
+        ]
+        for stored_permission in redundant_stored_permissions:
+            database.delete_stored_permission(stored_permission)
+            account.stored_account.stored_permissions.remove(stored_permission)
+
+    def add_account_permission(
+        self, account: Account, stored_permission: StoredPermission
+    ):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.add_stored_permission(stored_permission)
+            account.stored_account.stored_permissions.append(stored_permission)
+            self._delete_redundant_account_permissions(account, database)
+
+    def update_account_permission(
+        self,
+        account: Account,
+        permission: Permission,
+        stored_permission: StoredPermission,
+    ):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.delete_stored_permission(permission.stored_permission)
+            database.add_stored_permission(stored_permission)
+            stored_permissions = account.stored_account.stored_permissions
+            stored_permissions.remove(permission.stored_permission)
+            stored_permissions.append(stored_permission)
+            self._delete_redundant_account_permissions(account, database)
+
+    def delete_account_permission(self, account: Account, permission: Permission):
+        stored_permission = permission.stored_permission
+        with EventDatabase(self.uniq_id, True) as database:
+            database.delete_stored_permission(stored_permission)
+        account.stored_account.stored_permissions.remove(stored_permission)
+
+    @property
+    def accounts_sorted_by_name(self) -> list[Account]:
+        return sorted(
+            self.accounts_by_id.values(),
+            key=lambda account: (
+                not account.administrator,
+                account.anonymous,
+                account.full_name,
+            ),
+        )
+
+    @property
+    def user_accounts_by_id(self) -> dict[int, Account]:
+        return {
+            account.id: account
+            for account in self.accounts_by_id.values()
+            if account.user_account
+        }
+
+    @property
+    def active_user_accounts_by_id(self) -> dict[int, Account]:
+        return {
+            account.id: account
+            for account in self.accounts_by_id.values()
+            if account.user_account and account.active
+        }
+
+    @property
+    def user_accounts_by_name(self) -> dict[str, Account]:
+        return {
+            account.full_name: account
+            for account in self.accounts_by_id.values()
+            if account.user_account
+        }
+
+    @property
+    def user_accounts_sorted_by_name(self) -> list[Account]:
+        return sorted(
+            self.user_accounts_by_name.values(),
+            key=by('full_name'),
+        )
+
+    @property
+    def active_user_accounts_by_name(self) -> dict[str, Account]:
+        return {
+            account.full_name: account
+            for account in self.accounts_by_id.values()
+            if account.user_account and account.active
+        }
+
+    @property
+    def active_user_accounts_sorted_by_name(self) -> list[Account]:
+        return sorted(
+            self.active_user_accounts_by_name.values(),
+            key=by('full_name'),
+        )
+
+    @property
+    def administrator_account(self) -> Account:
+        return self.accounts_by_id[Account.ADMINISTRATOR_ID]
+
+    @property
+    def anonymous_account(self) -> Account:
+        return self.accounts_by_id[Account.ANONYMOUS_ID]
+
+    # -------------------------------------------------------------------------
+    # Plugins
+    # -------------------------------------------------------------------------
 
     @property
     def plugin_data(self) -> dict[str, dict[str, Any]]:

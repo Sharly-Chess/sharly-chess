@@ -31,15 +31,21 @@
         <ul class="dropdown-menu">
             <li>
                 <span
-                    {{ macros.tooltip_attributes(
-                        'info', _('By default, tournaments are not visible on the FFE site.'), 'right'
-                    ) }}
+                    {% if not client.can_publish_results %}
+                        {{ macros.tooltip_attributes('warning', _('You are not allowed to publish results.'), 'right') }}
+                    {% else %}
+                        {{ macros.tooltip_attributes('info', _('By default, tournaments are not visible on the FFE site.'), 'right') }}
+                    {% endif %}
                 >
                     <button
                         class="dropdown-item text-nowrap"
-                        hx-post="{{ url_for('ffe-make-visible', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
+                        {% if client.can_publish_results %}
+                            hx-post="{{ url_for('ffe-make-visible', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        {% else %}
+                            disabled
+                        {% endif %}
                     >
                         <i class="bi bi-eye-fill pe-1"></i>
                         {{ _('Make visible on FFE site') }}
@@ -48,15 +54,21 @@
             </li>
             <li>
                 <span
-                    {{ macros.tooltip_attributes(
-                        'info', _('Uploading the PDF rules file allows the players to read the rules online.'), 'right'
-                    ) }}
+                    {% if not client.can_publish_rules %}
+                        {{ macros.tooltip_attributes('warning', _('You are not allowed to publish rules.'), 'right') }}
+                    {% else %}
+                        {{ macros.tooltip_attributes('info', _('Uploading the PDF rules file allows the players to read the rules online.'), 'right') }}
+                    {% endif %}
                 >
                     <button
                         class="dropdown-item text-nowrap"
-                        hx-post="{{ url_for('ffe-upload-rules', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
+                        {% if client.can_publish_rules %}
+                            hx-post="{{ url_for('ffe-upload-rules', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        {% else %}
+                            disabled
+                        {% endif %}
                     >
                         <i class="bi bi-file-earmark-arrow-up-fill pe-1"></i>
                         {{ _('Upload rules') }}
@@ -65,16 +77,22 @@
             </li>
             <li>
                 <span
-                    {{ macros.tooltip_attributes(
-                        'info', _('Download the fees that the organizer should pay to the FFE.'), 'right'
-                    ) }}
+                    {% if not client.can_download_fees %}
+                        {{ macros.tooltip_attributes('warning', _('You are not allowed to download fees.'), 'right') }}
+                    {% else %}
+                        {{ macros.tooltip_attributes('info', _('Download the fees that the organizer should pay to the FFE.'), 'right') }}
+                    {% endif %}
                 >
                     <button
                         id="ffe-extract-fees-button"
                         class="dropdown-item text-nowrap"
-                        hx-get="{{ url_for('ffe-extract-fees', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
+                        {% if client.can_download_fees %}
+                            hx-get="{{ url_for('ffe-extract-fees', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        {% else %}
+                            disabled
+                        {% endif %}
                     >
                         <i class="bi bi-file-earmark-arrow-up-fill pe-1"></i>
                         {{ _('Download fees') }}

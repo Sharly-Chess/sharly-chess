@@ -2,23 +2,29 @@ import asyncio
 import platform
 import signal
 import socket
-from pathlib import Path
 import sys
 from threading import Thread
 from time import sleep
 from types import FrameType
-from typing import ClassVar
+from typing import Callable, ClassVar, cast
 from webbrowser import open
 
 import requests
 import uvicorn
 from litestar import Litestar
-from litestar.plugins.htmx import HTMXRequest
+from litestar.exceptions import (
+    PermissionDeniedException,
+    NotFoundException,
+    ClientException,
+    ValidationException,
+)
 from litestar.logging import LoggingConfig
+from litestar.plugins.htmx import HTMXRequest
+from litestar.types import Scope, HTTPScope
 
-from common import REQUEST_TIMEOUT, LOG_FILE, set_is_server_engine
+from common import REQUEST_TIMEOUT
 from common.engine import Engine
-from common.i18n import _, set_locale
+from common.i18n import _
 from common.logger import (
     print_interactive_info,
     print_interactive_error,
@@ -26,9 +32,10 @@ from common.logger import (
     get_logger,
     set_logging_config,
 )
-from common.sharly_chess_config import SharlyChessConfig
 from common.network import NetworkMonitor
+from common.sharly_chess_config import SharlyChessConfig
 from data.input_output import DataSourceManager
+from web.channels import channels_plugin
 from web.settings import (
     route_handlers,
     template_config,
@@ -37,7 +44,6 @@ from web.settings import (
     exception_handlers,
     listeners,
 )
-from web.channels import channels_plugin
 
 logger = get_logger()
 
@@ -51,7 +57,7 @@ if sys.platform == 'win32':  # pragma: py-not-win32
 
 def launch_browser(url: str):
     # Set the locale as the function is called in a new thread.
-    set_locale(SharlyChessConfig().locale)
+    SharlyChessConfig().load_and_set_env()
     print_interactive_info(
         _('Opening the welcome page [{url}] in a browser…').format(url=url)
     )
@@ -76,13 +82,36 @@ class ServerEngine(Engine):
         self,
         debug: bool = False,
         port: int | None = None,
+        loop: asyncio.AbstractEventLoop | None = None,
+        handle_signals: bool = True,
+        on_port_chosen: Callable[[], None] | None = None,
     ):
         super().__init__()
         self.debug = debug
+        self.handle_signals = handle_signals
+        self.port = port
+        self.on_port_chosen = on_port_chosen
         if self.error:
             return
 
-        set_is_server_engine(True)
+        self.loop = self._ensure_loop(loop)
+
+    def _ensure_loop(
+        self, loop: asyncio.AbstractEventLoop | None
+    ) -> asyncio.AbstractEventLoop:
+        if loop is not None:
+            return loop
+        # Try running loop first (inside an event-loop callback)
+        try:
+            return asyncio.get_running_loop()
+        except RuntimeError:
+            pass
+        # No current running loop -> create & set one
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        return loop
+
+    async def serve(self):
         logger.debug('System information:')
         logger.debug(
             ' - Machine/processor: %s/%s', platform.machine(), platform.processor()
@@ -100,15 +129,15 @@ class ServerEngine(Engine):
         for data_source in DataSourceManager.objects():
             data_source.on_app_init()
 
-        if port:
-            if self.__port_in_use(port):
+        if self.port:
+            if self.__port_in_use(self.port):
                 print_interactive_warning(
                     _(
                         'Port [{port}] already in use, can not start Sharly Chess server.'
-                    ).format(port=port)
+                    ).format(port=self.port)
                 )
                 return
-            sharly_chess_config.web_port = port
+            sharly_chess_config.web_port = self.port
         else:
             for port in sharly_chess_config.web_ports:
                 if self.__port_in_use(port):
@@ -130,6 +159,9 @@ class ServerEngine(Engine):
                 )
                 return
 
+        if self.on_port_chosen:
+            self.on_port_chosen()
+
         print_interactive_info(
             _('Port: {port}').format(port=sharly_chess_config.web_port)
         )
@@ -143,8 +175,28 @@ class ServerEngine(Engine):
         NetworkMonitor.start_monitoring()
 
         logging_config = set_logging_config(
-            console_log_level=sharly_chess_config.console_log_level
+            console_log_level=sharly_chess_config.console_log_level,
         )
+
+        def log_http_exception(exc: Exception, scope: Scope):
+            if not scope['type'] == 'http':
+                return
+            if isinstance(exc, PermissionDeniedException):
+                prefix = '403 permission denied'
+            elif isinstance(exc, NotFoundException):
+                prefix = '404 not found'
+            elif isinstance(exc, ClientException) and exc.status_code == 400:
+                prefix = '400 bad request'
+            else:
+                return
+            http = cast(HTTPScope, scope)
+            logger.error(
+                '%s: %s %s\n%s',
+                prefix,
+                http.get('method', '?'),
+                http.get('path', '?'),
+                exc,
+            )
 
         app: Litestar = Litestar(
             debug=True,
@@ -152,7 +204,19 @@ class ServerEngine(Engine):
             route_handlers=route_handlers,
             exception_handlers=exception_handlers,  # type: ignore
             template_config=template_config,
-            logging_config=LoggingConfig(**logging_config),  # type: ignore
+            logging_config=LoggingConfig(
+                **logging_config,
+                disable_stack_trace={
+                    400,
+                    403,
+                    404,
+                    ClientException,
+                    ValidationException,
+                    PermissionDeniedException,
+                    NotFoundException,
+                },
+            ),  # type: ignore
+            after_exception=[log_http_exception],
             middleware=middlewares,
             stores=stores,
             pdb_on_exception=self.debug,
@@ -173,25 +237,19 @@ class ServerEngine(Engine):
         def handle_exit(sig_: int, frame: FrameType | None) -> None:
             server.should_exit = True
             server.force_exit = True
-            # Close the SSE connections gracefully
-            if channels_plugin and channels_plugin._pub_queue is not None:
-                channels_plugin.publish(
-                    {'event': 'server_shutdown', 'data': ''}, ['sse']
-                )
 
         # We need to handle signals ourselves in order to gracefully shut down the SSE connections.
         # Calling `serve` doesn't allow us to intercept signals, so we use `_serve` instead.  The only
         # difference is that `serve` captures signals before calling `_serve` internally.
 
-        for sig in HANDLED_SIGNALS:
-            signal.signal(sig, handle_exit)
+        if self.handle_signals:
+            import threading
 
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(server._serve())
+            if threading.current_thread() is threading.main_thread():
+                for sig in HANDLED_SIGNALS:
+                    signal.signal(sig, handle_exit)
 
-    @property
-    def log_file_path(self) -> Path:
-        return LOG_FILE
+        await server._serve()
 
     @staticmethod
     def __port_in_use(port: int) -> bool:

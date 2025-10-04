@@ -1,23 +1,11 @@
-/*
-###########################################################
-# EVENT
-###########################################################
-*/
-
-.dropdown-menu.players-set-tournament-check-ins,
-.dropdown-menu.players-set-player-tournament,
-.dropdown-menu.players-player-actions,
-.dropdown-menu.players-download-players,
-.dropdown-menu.players-filter-columns,
-.dropdown-menu.players-filter-gender,
-.dropdown-menu.players-filter-licence,
-.dropdown-menu.players-filter-check-in,
-.dropdown-menu.players-filter-tournament,
-.dropdown-menu.players-filter-federation,
-.dropdown-menu.players-filter-league,
-.dropdown-menu.players-filter-club {
-    min-width: 0;
+#main-wrapper.home.non-admin {
+    --side-bar-width: 0px;
 }
+
+#main-wrapper.home.non-admin .sidebar {
+    display: none;
+}
+
 .admin-players-filter-name, .admin-players-filter-origin {
     width: 5em;
 }
@@ -100,6 +88,12 @@
   width: max-content;   /* shrink to fit table */
 }
 
+.search-results-dropdown {
+    max-height: 400px;
+    width: fit-content;
+    overflow-y: auto;
+}
+
 /* Time control editor – bootstrap-free layout for period rows */
 
 .tc-side-title { font-size: 95%; margin-top: 0.3rem; }
@@ -114,4 +108,78 @@
     .tc .tc-period { position: relative; display: grid; grid-template-columns: 1fr; gap: .5rem; align-items: start; padding-right: 56px; }
     .tc .tc-field { grid-column: 1; }
     .tc .tc-del-wrap { position: absolute; right: 0; top: 50%; transform: translateY(-50%); height: 40px; display: flex; align-items: center; justify-content: center; }
+}
+
+/* Select2 */
+
+[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option.select2-results__option--highlighted {
+    color: white;
+    background-color: var(--pw-nav-bg);
+}
+[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option.select2-results__option--selected,
+[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option[aria-selected=true]:not(.select2-results__option--highlighted) {
+    color: var(--bs-body-bg);
+    background-color: var(--bs-primary);
+}
+[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option[aria-selected=true] {
+    color: var(--pw-contrast-text);
+    background-color: var(--bs-link-hover-color);
+}
+[data-bs-theme=dark] .select2-container--bootstrap-5.select2-container--focus .select2-selection, .select2-container--bootstrap-5.select2-container--open .select2-selection {
+    box-shadow: none;
+    border-color: var(--bs-border-color);
+    outline: 0.15rem solid rgba(var(--bs-primary-rgb), 0.70);
+    outline-offset: 4px;
+}
+[data-bs-theme=dark] .select2-container--bootstrap-5.select2-container--open.select2-container--below .select2-selection {
+    border-bottom: 0 solid transparent;
+    border-bottom-right-radius: 0.25rem;
+    border-bottom-left-radius:  0.25rem;
+}
+[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice {
+    padding: 0 0.5em;
+    margin-right: 0;
+    margin-bottom: 0;
+    background-color: var(--bs-modal-bg);
+    display: inline-flex;
+}
+[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection {
+    padding: .375rem .375rem;
+}
+[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered {
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: .375rem;
+}
+[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice .select2-selection__choice__remove:hover {
+    filter: invert(1);
+}
+/* this ugly piece of style here allows us to hide the search bar (empty row) if we have no focus on the select, but still allow tab on it, while preserving the placeholder if no choices are selected */
+/* NOTE (Molrn) the width / height = 0 prevents options from being deselected when the select is not focused
+[data-bs-theme=dark] .select2-container--bootstrap-5:not(.select2-container--focus) .select2-selection--multiple .select2-selection__rendered:has(.select2-selection__choice) .select2-search {
+	display: inline-block;
+	width: 0;
+	height: 0;
+	overflow: hidden;
+} */
+
+.select2-search__field {
+    width: 100%;
+}
+
+.select2-selection__rendered {
+    width: 100%;
+}
+
+#data-source-select {
+    flex: 0 0 auto;
+    outline: none;
+}
+
+/* Screen size below md */
+@media (max-width: 768px) {
+    #data-source-select {
+        width: 100px !important;
+    }
 }

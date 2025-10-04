@@ -7,7 +7,7 @@ from functools import cached_property
 from logging import Logger
 from typing import override, ClassVar
 
-from common import format_timestamp_date_time
+from common import format_timestamp_date_time, SharlyChessException
 from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
@@ -17,7 +17,7 @@ from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
 from plugins.manager import plugin_manager
 from utils.entity import IdentifiableEntity
-from utils.enum import TournamentRating, PlayerRatingType
+from utils.enum import TournamentRating
 
 logger: Logger = get_logger()
 
@@ -73,11 +73,12 @@ class FidePlayerComparator(PlayerComparator):
         for tr in TournamentRating:
             field_id: str = f'rating_{tr.value}'
             if field_id in self.field_ids:
-                src_rating = self.player.get_rating(tr)
-                match_rating = self.match_player.get_rating(tr)
-
-                if match_rating.value and src_rating != match_rating:
-                    diff_field_ids.append(field_id)
+                src_rating = self.player.ratings[tr]
+                match_rating = self.match_player.ratings[tr]
+                for type_ in ['fide', 'national', 'estimated']:
+                    value: int | None = getattr(match_rating, type_)
+                    if value and getattr(src_rating, type_) != value:
+                        diff_field_ids.append(field_id)
         field_id: str = 'name'
         if field_id in self.field_ids:
             if (self.player.first_name, self.player.last_name) != (
@@ -114,6 +115,17 @@ class FidePlayerComparator(PlayerComparator):
                 diff_field_ids.append(field_id)
         return diff_field_ids
 
+    def updated_ratings(self, tournament_rating: TournamentRating) -> PlayerRating:
+        if not self.match_player:
+            return self.player.ratings[tournament_rating]
+        match_player_rating = self.match_player.ratings[tournament_rating]
+        player_rating = self.player.ratings[tournament_rating]
+        return PlayerRating(
+            fide=match_player_rating.fide or player_rating.fide,
+            national=match_player_rating.national or player_rating.national,
+            estimated=match_player_rating.estimated or player_rating.estimated,
+        )
+
     def update_player_from_match(self, field_ids: list[str]):
         if not self.match_player:
             return
@@ -123,9 +135,7 @@ class FidePlayerComparator(PlayerComparator):
         for tr in TournamentRating:
             field_id: str = f'rating_{tr.value}'
             if field_id in field_ids:
-                match_rating = self.match_player.get_rating(tr)
-                if match_rating.value:
-                    updated_ratings[tr] = match_rating
+                updated_ratings[tr] = self.updated_ratings(tr)
         self.player.update_ratings(updated_ratings)
         field_id: str = 'name'
         if field_id in field_ids:
@@ -195,7 +205,7 @@ class DataSource(IdentifiableEntity, ABC):
     """Abstract class representing data source.
     Data sources can be used to search players or update them."""
 
-    SEARCH_LIMIT = 10
+    SEARCH_LIMIT = 30
 
     @property
     @abstractmethod
@@ -205,6 +215,12 @@ class DataSource(IdentifiableEntity, ABC):
     def on_app_init(self):
         """Function to execute at the start of the server to initialize the data source."""
 
+    @property
+    def info_or_warning_message(self) -> tuple[str, bool]:
+        """Message displayed on the players update modal and the player search.
+        If the bool is set to True, show the message as a warning."""
+        return '', False
+
     # --------------------------------------------------------------------------
     # Players update
     # --------------------------------------------------------------------------
@@ -213,12 +229,6 @@ class DataSource(IdentifiableEntity, ABC):
     @abstractmethod
     def player_updater_fields(self) -> list[PlayerUpdaterField]:
         """Returns the player fields that can be updated by the data source."""
-
-    @property
-    def players_update_message(self) -> tuple[str, bool]:
-        """Message displayed on the players update modal.
-        If the bool is set to True, show the message as a warning."""
-        return '', False
 
     @abstractmethod
     async def get_player_matches(
@@ -279,9 +289,14 @@ class DataSource(IdentifiableEntity, ABC):
         """Template containing the info to display for a player as a search result.
         Template takes [player] as a template variable."""
 
+    @property
+    @abstractmethod
+    def search_error_icon(self) -> str:
+        """Icon to display in the search results in case of an error."""
+
     @abstractmethod
     async def search_player(
-        self, string: str, limit: int | None = None
+        self, string: str, federation: str, page: int = 0, limit: int | None = None
     ) -> list[StoredPlayer]:
         """Search a player in the data source from a string.
         Returns maximum *limit* results (no limit if *limit* is None)."""
@@ -325,20 +340,24 @@ class DataSource(IdentifiableEntity, ABC):
                 )
                 if not stored_fide_rating:
                     continue
-                fide_rating = PlayerRating.from_stored_value(stored_fide_rating)
+                fide_rating = PlayerRating.from_stored_value(stored_fide_rating).fide
+                if not fide_rating:
+                    continue
                 stored_source_rating = src_stored_player.ratings.get(
                     rating_type.value, None
                 )
-                source_rating = (
-                    PlayerRating.from_stored_value(stored_source_rating)
-                    if stored_source_rating
-                    else None
-                )
-                if not source_rating or (
-                    source_rating.type == PlayerRatingType.ESTIMATED
-                    and fide_rating.type != PlayerRatingType.ESTIMATED
-                ):
-                    src_stored_player.ratings[rating_type.value] = stored_fide_rating
+                if not stored_source_rating:
+                    src_stored_player.ratings[rating_type.value] = PlayerRating(
+                        fide=fide_rating
+                    ).stored_value
+                    continue
+                source_rating = PlayerRating.from_stored_value(stored_source_rating)
+                if source_rating.fide is None:
+                    src_stored_player.ratings[rating_type.value] = PlayerRating(
+                        fide=fide_rating,
+                        national=source_rating.national,
+                        estimated=source_rating.estimated,
+                    ).stored_value
 
 
 class LocalDataSource(DataSource, ABC):
@@ -347,17 +366,20 @@ class LocalDataSource(DataSource, ABC):
     def local_database_type(self) -> type[LocalSourceDatabase]:
         """The type of the local database used for this source."""
 
+    @cached_property
+    def database(self) -> LocalSourceDatabase:
+        return self.local_database_type()
+
     @property
-    def players_update_message(self) -> tuple[str, bool]:
-        database = self.local_database_type()
+    def info_or_warning_message(self) -> tuple[str, bool]:
         message = (
             _('Last update: {updated_at} (outdated)')
-            if database.is_outdated
+            if self.database.is_outdated
             else _('Last update: {updated_at}')
         )
         return (
-            message.format(updated_at=database.updated_at_str),
-            database.is_outdated,
+            message.format(updated_at=self.database.updated_at_str),
+            self.database.is_outdated,
         )
 
     @property
@@ -365,13 +387,24 @@ class LocalDataSource(DataSource, ABC):
         return self.local_database_type.file_path().exists()
 
     def on_app_init(self):
-        self.local_database_type().check()
+        self.database.check()
+
+    @property
+    def search_error_icon(self) -> str:
+        return 'bi-database-fill-dash'
 
     async def search_player(
-        self, string: str, limit: int | None = None
+        self, string: str, federation: str, page: int = 0, limit: int | None = None
     ) -> list[StoredPlayer]:
+        if not self.is_available:
+            raise SharlyChessException(
+                _(
+                    'This database is not installed '
+                    '(to install it: Menu > Data sources).'
+                )
+            )
         with self.local_database_type() as database:
-            return database.search_player(string, limit)
+            return database.search_player(string, federation, page, limit)
 
 
 class OnlineDataSource(DataSource, ABC):
@@ -385,22 +418,56 @@ class OnlineDataSource(DataSource, ABC):
         If it fails, log the error."""
 
     def on_app_init(self):
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.reload_connection_status())
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            # No running loop yet — safe fallback if someone calls too early
+            loop = asyncio.get_event_loop()
+
+        # Schedule background task
+        loop.create_task(self.reload_connection_status())
 
     @classmethod
     async def reload_connection_status(cls):
         cls._connection_last_checked_at = time.time()
-        if NetworkMonitor.connected():
-            cls.connection_status = await cls.check_connection()
+        if not NetworkMonitor.connected():
+            cls.connection_status = None
+        cls.connection_status = await cls.check_connection()
 
     @property
     def is_available(self) -> bool:
-        return NetworkMonitor.connected() and bool(self.connection_status)
+        return True
 
     @property
     def connection_last_checked_at_str(self) -> str:
         return format_timestamp_date_time(self._connection_last_checked_at)
+
+    @property
+    def search_error_icon(self) -> str:
+        return 'bi-cloud-fill-dash'
+
+    async def search_player(
+        self, string: str, federation: str, page: int = 0, limit: int | None = None
+    ) -> list[StoredPlayer]:
+        cls = self.__class__
+        cls._connection_last_checked_at = time.time()
+        if not NetworkMonitor.connected():
+            cls.connection_status = None
+            raise SharlyChessException(_('Not connected to internet'))
+        try:
+            players = await self._search_player(string, federation, page, limit)
+            cls.connection_status = True
+            return players
+        except SharlyChessException as exception:
+            cls.connection_status = False
+            raise exception
+
+    @abstractmethod
+    async def _search_player(
+        self, string: str, federation: str, page: int = 0, limit: int | None = None
+    ) -> list[StoredPlayer]:
+        """Search a player in the data source from a string.
+        Returns maximum *limit* results (no limit if *limit* is None)."""
 
 
 class FideDataSource(LocalDataSource):

@@ -38,7 +38,6 @@
             hx-get="{{ url_for('admin-timer-hours-modal', action='update', event_uniq_id=admin_event.uniq_id, timer_id=timer.id) }}"
             hx-target="body"
             hx-indicator="#please-wait"
-            preload
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
         >
@@ -55,7 +54,6 @@
             hx-get="{{ url_for('admin-timer-modal', action='update', event_uniq_id=admin_event.uniq_id, timer_id=timer.id) }}"
             hx-target="body"
             hx-indicator="#please-wait"
-            preload
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
         >
@@ -68,7 +66,6 @@
             hx-get="{{ url_for('admin-timer-modal', action='clone', event_uniq_id=admin_event.uniq_id, timer_id=timer.id) }}"
             hx-target="body"
             hx-indicator="#please-wait"
-            preload
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
         >
@@ -81,7 +78,6 @@
             hx-get="{{ url_for('admin-timer-modal', action='delete', event_uniq_id=admin_event.uniq_id, timer_id=timer.id) }}"
             hx-target="body"
             hx-indicator="#please-wait"
-            preload
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
         >

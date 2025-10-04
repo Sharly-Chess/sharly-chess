@@ -1,7 +1,7 @@
 <tbody
     id="upload-results"
     hx-get="{{ url_for('ffe-upload-results', event_uniq_id=admin_event.uniq_id) }}"
-    hx-trigger="sse:ffe-upload-event"
+    hx-trigger="ws:ffe-upload-event from:body"
     hx-swap="outerHTML"
 >
     {% for tournament in admin_event.tournaments_sorted_by_uniq_id %}

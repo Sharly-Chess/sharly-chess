@@ -26,9 +26,12 @@ class QRCodeController(BaseController):
             error_correction=qrcode.constants.ERROR_CORRECT_H,
         )
         # fallback to the website if no URL provided
-        qr.add_data(url or SharlyChessConfig().url)
+        qr.add_data(url or SharlyChessConfig().web_url)
         qr.make()
-        img = qr.make_image(fill_color='black', back_color='white')
+        img = qr.make_image(
+            fill_color='black' if logo else 'rgb(223, 226, 230)',
+            back_color='white' if logo else 'rgb(34, 37, 41)',
+        )
         if logo:
             logo_file: Path = (
                 BASE_DIR
@@ -59,20 +62,21 @@ class QRCodeController(BaseController):
         )
 
     @get(
-        path='/qrcode/lan_url',
+        path='/qrcode/lan_url/{ip:str}',
         name='qrcode-lan-url',
     )
     async def qrcode(
         self,
         request: HTMXRequest,
+        ip: str,
         logo: Any = None,
     ) -> File:
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         suffix: str | None = None
-        if sharly_chess_config.lan_ip:
-            suffix = f'lan_url_{sharly_chess_config.lan_ip.replace(".", "_")}'
+        if ip:
+            suffix = f'lan_url_{ip.replace(".", "_")}'
         return self.qrcode_response(
-            url=sharly_chess_config.lan_url,
+            url=sharly_chess_config.app_url(ip),
             filename_suffix=suffix,
             logo=logo is not None,
         )

@@ -7,6 +7,7 @@ from logging import Logger
 from pathlib import Path
 from typing import Any, override
 
+from common.i18n.utils import unicode_normalize
 from packaging.version import Version
 from requests import Response, get
 from requests.exceptions import ConnectionError
@@ -52,7 +53,7 @@ class FfeDatabase(LocalSourceDatabase):
 
     @staticmethod
     def static_name() -> str:
-        return 'FFE'
+        return _('FFE')
 
     @property
     def min_recovery_version(self) -> Version:
@@ -89,25 +90,20 @@ class FfeDatabase(LocalSourceDatabase):
             response: Response = get(ffe_database_url, allow_redirects=True, timeout=5)
             if response.status_code != 200:
                 logger.error(
-                    self.log_prefix
-                    + _('Could not download [{url}], error code [{code}].').format(
-                        url=ffe_database_url, code=response.status_code
-                    )
+                    self.log_prefix + 'Could not download [%s], error code [%d].',
+                    ffe_database_url,
+                    response.status_code,
                 )
                 return False
         except ConnectionError as ex:
             logger.error(
-                self.log_prefix
-                + _('Could not download [{url}]: {error}.').format(
-                    url=ffe_database_url, error=ex
-                )
+                self.log_prefix + 'Could not download [%s]: %s.', ffe_database_url, ex
             )
             return False
         local_zip_file.write_bytes(response.content)
         if not local_zip_file.exists():
             logger.error(
-                self.log_prefix
-                + _('No data received from [{url}].').format(url=ffe_database_url)
+                self.log_prefix + 'No data received from [%s].', ffe_database_url
             )
             return False
         self._source_file_path.unlink(missing_ok=True)
@@ -115,7 +111,7 @@ class FfeDatabase(LocalSourceDatabase):
             zip_ref.extractall(ffe.TMP_DIR)
         local_zip_file.unlink()
         if not self._source_file_path.exists():
-            logger.error(self.log_prefix + _('Could not unzip data.'))
+            logger.error(self.log_prefix + 'Could not unzip data.')
             return False
         return True
 
@@ -144,7 +140,7 @@ class FfeDatabase(LocalSourceDatabase):
                 )
                 self.commit()
         except (sqlite3.DatabaseError, sqlite3.OperationalError) as e:
-            logger.error(self.log_prefix + f'Error creating database indexes: {e}.')
+            logger.error(self.log_prefix + 'Error creating database indexes: %s.', e)
             raise
 
     @staticmethod
@@ -162,17 +158,15 @@ class FfeDatabase(LocalSourceDatabase):
             paid=0.0,
             title=PlayerTitle(row['fide_title']),
             ratings={
-                TournamentRating.STANDARD: PlayerRating(
+                TournamentRating.STANDARD.value: PlayerRating.from_type(
                     row['standard_rating'],
                     PlayerRatingType(row['standard_rating_type']),
                 ).stored_value,
-                TournamentRating.RAPID: PlayerRating(
-                    row['rapid_rating'],
-                    PlayerRatingType(row['rapid_rating_type']),
+                TournamentRating.RAPID.value: PlayerRating.from_type(
+                    row['rapid_rating'], PlayerRatingType(row['rapid_rating_type'])
                 ).stored_value,
-                TournamentRating.BLITZ: PlayerRating(
-                    row['blitz_rating'],
-                    PlayerRatingType(row['blitz_rating_type']),
+                TournamentRating.BLITZ.value: PlayerRating.from_type(
+                    row['blitz_rating'], PlayerRatingType(row['blitz_rating_type'])
                 ).stored_value,
             },
             fide_id=int(row['fide_id']) if row['fide_id'] else None,
@@ -191,12 +185,16 @@ class FfeDatabase(LocalSourceDatabase):
         )
 
     def search_player(
-        self, string: str, limit: int | None = None
+        self,
+        string: str,
+        federation: str,
+        page: int = 0,
+        limit: int | None = None,
     ) -> list[StoredPlayer]:
-        tokens: list[str] = string.split(' ')
+        tokens: list[str] = [unicode_normalize(token) for token in string.split(' ')]
         str_fields: tuple[tuple[str, str, str], ...] = (
             ('last_name', '%', '%'),
-            ('first_name', '', '%'),
+            ('first_name', '%', '%'),
             ('ffe_licence_number', '', ''),
         )
         int_fields: tuple[str, ...] = ('fide_id',)
@@ -205,7 +203,6 @@ class FfeDatabase(LocalSourceDatabase):
         for token in tokens:
             expressions = [f'({field[0]} LIKE ?)' for field in str_fields]
             params += [f'{field[1]}{token}{field[2]}' for field in str_fields]
-            int_value: int
             with suppress(ValueError):
                 int_value = int(token.strip())
                 expressions += [f'({field} = ?)' for field in int_fields]
@@ -216,23 +213,56 @@ class FfeDatabase(LocalSourceDatabase):
         conditions: str = ' AND '.join(
             map(lambda condition: f'({condition})', token_conditions.values())
         )
-        order_conditions = ' OR '.join(
-            [
-                '(last_name LIKE ?)',
+
+        # We build one CASE block that sorts best → worst
+        order_clauses = []
+        for token in tokens:
+            order_clauses.append("""
+                CASE
+                    WHEN last_name LIKE ? AND federation = ? THEN 0
+                    WHEN first_name LIKE ? AND federation = ? THEN 1
+                    WHEN (last_name LIKE ? OR first_name LIKE ?) THEN 2
+                    WHEN federation = ? THEN 3
+                    ELSE 4
+                END
+            """)
+
+            # Params for this token in the same order
+            params += [
+                f'{token}%',
+                federation,
+                f'{token}%',
+                federation,
+                f'{token}%',
+                f'{token}%',
+                federation,
             ]
-            * len(tokens)
-        )
-        params += [f'{token}%' for token in tokens]
-        query: str = f'SELECT * FROM player WHERE {conditions} ORDER BY (CASE WHEN {order_conditions} THEN 0 ELSE 1 END), last_name'
+
+        order_expr = ' + '.join(order_clauses)
+
+        query: str = f"""
+            SELECT *
+            FROM player
+            WHERE {conditions}
+            ORDER BY {order_expr}, last_name, first_name
+        """
+
         if limit:
             query += ' LIMIT ?'
             params += [
                 limit,
             ]
+        if page and limit:
+            query += ' OFFSET ?'
+            params += [
+                page * limit,
+            ]
+
         self.execute(
             query,
             tuple(params),
         )
+
         return [self.get_stored_player_from_row(row) for row in self.fetchall()]
 
     def _get_stored_player_by_id(

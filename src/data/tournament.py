@@ -1,5 +1,7 @@
 from datetime import datetime
 import weakref
+from babel.lists import format_list
+from common.i18n import get_locale
 from collections import Counter
 from collections.abc import Collection
 from functools import cached_property
@@ -9,6 +11,7 @@ from operator import attrgetter
 from typing import TYPE_CHECKING, Any, Iterable
 from _weakref import ReferenceType
 
+from common.i18n.utils import by
 from trf import Tournament as TrfTournament
 
 from common import format_timestamp
@@ -17,6 +20,7 @@ from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
 
 from data.board import Board
+from data.criteria.managers import PlayerFilter
 from data.family import Family
 from data.player import Player, Federation, Club
 from data.prize.prize_category import PrizeCategory
@@ -28,9 +32,11 @@ from data.tie_breaks import (
     TieBreakManager,
     TieBreakOptionManager,
 )
+from data.tournament_criterion import TournamentCriterion
 from database.sqlite.event.event_store import (
     StoredPlayer,
     StoredBoard,
+    StoredTournamentCriterion,
     StoredTournamentPlayer,
     StoredPairing,
 )
@@ -70,6 +76,7 @@ class Tournament:
         self.boards_by_id = self._get_boards_by_id()
         self.prize_groups_by_id = self._get_prize_groups_by_id()
         self._players_by_rank: dict[int, Player] | None = None
+        self.criteria_by_id = self._get_criteria_by_id()
 
     @property
     def event(self) -> 'Event':
@@ -101,7 +108,7 @@ class Tournament:
         return (
             f'{self.event.name} - {self.name}'
             if len(self.event.tournaments_by_id.values()) > 1
-            else self.name
+            else self.event.name
         )
 
     @property
@@ -197,6 +204,74 @@ class Tournament:
             return SharlyChessConfig.default_last_rounds_no_byes
         else:
             return self.stored_tournament.last_rounds_no_byes
+
+    def _get_criteria_by_id(self) -> dict[int, TournamentCriterion]:
+        criteria_by_id = {}
+        for stored_criterion in self.stored_tournament.stored_criteria:
+            assert stored_criterion.id is not None
+            criteria_by_id[stored_criterion.id] = TournamentCriterion(
+                self, stored_criterion
+            )
+        return criteria_by_id
+
+    @property
+    def criteria(self) -> Collection[TournamentCriterion]:
+        return self.criteria_by_id.values()
+
+    def player_matches_criteria(self, player: Player) -> bool:
+        """Check if the player matches all criteria of this tournament."""
+        return all(
+            criterion.player_filter.is_player_included_function(player)
+            for criterion in self.criteria
+        )
+
+    def failing_criteria(self, player: Player) -> list[PlayerFilter]:
+        """Return the list of criteria that the player does not match."""
+        return [
+            criterion.player_filter
+            for criterion in self.criteria
+            if not criterion.player_filter.is_player_included_function(player)
+        ]
+
+    def failing_criteria_message(self, player: Player) -> str:
+        """Return the list of criteria that the player does not match."""
+        locale = get_locale()
+        return format_list(
+            [criteria.name for criteria in self.failing_criteria(player)], locale=locale
+        )
+
+    @cached_property
+    def num_players_not_matching_criteria(self) -> int:
+        """Return the number of players matching all criteria of this tournament."""
+        return sum(
+            1
+            for player in self.players_by_id.values()
+            if not self.player_matches_criteria(player)
+        )
+
+    @property
+    def sorted_criteria(self) -> list[TournamentCriterion]:
+        return sorted(self.criteria, key=lambda criteria: criteria.id)
+
+    @property
+    def criteria_string(self) -> str:
+        return ', '.join(criterion.name for criterion in self.criteria)
+
+    def add_criterion(
+        self, stored_criterion: StoredTournamentCriterion
+    ) -> TournamentCriterion:
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            object_id = database.add_stored_tournament_criterion(stored_criterion)
+        stored_criterion.id = object_id
+        tournament_criterion = TournamentCriterion(self, stored_criterion)
+        self.criteria_by_id[object_id] = tournament_criterion
+        return tournament_criterion
+
+    def delete_criterion(self, criterion_id: int):
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            database.delete_stored_tournament_criterion(criterion_id)
+        if criterion_id in self.criteria_by_id:
+            del self.criteria_by_id[criterion_id]
 
     @cached_property
     def players_by_check_in_status(self) -> dict[bool | None, list[Player]]:
@@ -300,6 +375,14 @@ class Tournament:
     @cached_property
     def rating(self) -> TournamentRating:
         return TournamentRating(self.stored_tournament.rating)
+
+    @cached_property
+    def player_rating_type(self) -> PlayerRatingType:
+        return (
+            PlayerRatingType(self.stored_tournament.player_rating_type)
+            if self.stored_tournament.player_rating_type is not None
+            else self.event.player_rating_type
+        )
 
     @property
     def override_unrated_rapid_blitz(self) -> bool:
@@ -418,20 +501,14 @@ class Tournament:
     def players_by_name_with_unpaired(self) -> list[Player]:
         return sorted(
             self.players,
-            key=lambda player: (player.last_name, player.first_name),
+            key=by('last_name', 'first_name'),
         )
 
     @cached_property
     def players_by_name_without_unpaired(self) -> list[Player]:
         return sorted(
-            [
-                player
-                for player in self.players
-                if not self.current_round
-                or player.board_id
-                and player not in self.unpaired_players
-            ],
-            key=lambda p: (p.last_name, p.first_name),
+            [player for player in self.players if player not in self.unpaired_players],
+            key=by('last_name', 'first_name'),
         )
 
     @property
@@ -778,7 +855,7 @@ class Tournament:
             after_round = self.rounds
         self.compute_player_ranks(after_round=after_round)
         return TrfTournament(
-            name=self.full_name,
+            name=self.name,
             city=self.location,
             startdate=format_timestamp(self.start_timestamp, '%Y/%m/%d'),
             enddate=format_timestamp(self.stop_timestamp, '%Y/%m/%d'),
@@ -809,11 +886,12 @@ class Tournament:
         return self.players_by_id[player_id].rank
 
     def _trf_xx_fields(self, next_round: int):
+        from data.input_output.trf_mappers import TrfSeedColor
         from data.pairings.settings import ColorSeedSetting
 
         fields: dict[str, str] = {
             'XXR': str(self.rounds),
-            'XXC': ColorSeedSetting.get_value(self).to_trf_first_round_pairing,
+            'XXC': TrfSeedColor.get_outer_value(ColorSeedSetting.get_value(self)) or '',
             'XXZ': ' '.join(
                 [
                     str(trf_id)
@@ -1059,11 +1137,11 @@ class Tournament:
             board.round,
             board.id,
             board.white_player.last_name,
-            board.white_player.first_name,
+            board.white_player.first_name or '',
             board.white_player.rating,
             white_result,
             board.black_player.last_name,
-            board.black_player.first_name,
+            board.black_player.first_name or '',
             board.black_player.rating,
         )
 
@@ -1130,6 +1208,27 @@ class Tournament:
         if player_id in self.players_by_id:
             del self.players_by_id[player_id]
 
+    def get_available_board_indexes(self, round_: int) -> list[int]:
+        board_indexes = [
+            board.index for board in self.get_round_boards(round_) if not board.exempt
+        ]
+        max_board_count = len(self.players) // 2 + len(self.players) % 2
+        return [
+            index for index in range(0, max_board_count) if index not in board_indexes
+        ]
+
+    def get_pab_board_index(
+        self,
+        round_: int,
+        new_indexes: list[int] | None = None,
+    ) -> int:
+        board_indexes = [
+            board.index for board in self.get_round_boards(round_) if not board.exempt
+        ] + (new_indexes or [])
+        if not board_indexes:
+            return 0
+        return max(board_indexes) + 1
+
     def _set_players_pairing_numbers(self) -> list[Player]:
         """Set the pairing numbers of all the players in the tournament.
         Returns a list of players sorted by pairing number."""
@@ -1179,7 +1278,7 @@ class Tournament:
 
     def create_round_pairing(
         self, round_nb: int, white_player_id: int, black_player_id: int | None
-    ):
+    ) -> Board:
         """Creates a pairing for a round."""
         white_player = self.players_by_id[white_player_id]
         black_player = self.players_by_id[black_player_id] if black_player_id else None
@@ -1203,6 +1302,7 @@ class Tournament:
                 assert board is not None
                 board_id = board.identifier
                 board.replace_player(black_player, 'black')
+                board.stored_board.index = self.get_available_board_indexes(round_nb)[0]
                 black_pairing.stored_pairing.result = result.value
                 black_pairing.stored_pairing.board_id = board_id
                 black_pairing.update(database)
@@ -1214,20 +1314,22 @@ class Tournament:
                     id=None,
                     white_player_id=white_player.id,
                     black_player_id=None,
-                    index=max(board.index for board in round_boards) + 1
-                    if round_boards
-                    else 0,
+                    index=round_boards[-1].index + 1 if round_boards else 0,
                 )
                 board_id = database.add_stored_board(stored_board)
                 stored_board.id = board_id
-                self.boards_by_id[board_id] = Board(self, round_nb, stored_board)
+                board = Board(self, round_nb, stored_board)
+                self.boards_by_id[board_id] = board
             white_pairing.stored_pairing.result = result.value
             white_pairing.stored_pairing.board_id = board_id
             white_pairing.update(database)
+        return board
 
     def unpair_boards(self, boards: list[Board]):
+        rounds: set[int] = set()
         with EventDatabase(self.event.uniq_id, True) as database:
             for board in boards:
+                rounds.add(board.round)
                 board.white_player.delete_pairing(board.round, database)
                 board.white_player.reset_board()
                 if board.black_player:
@@ -1236,13 +1338,19 @@ class Tournament:
                 database.delete_stored_board(board.identifier)
                 if board.identifier in self.boards_by_id:
                     del self.boards_by_id[board.identifier]
+            for round_ in rounds:
+                if pab_board := self.get_round_pab_board(round_):
+                    pab_board.stored_board.index = self.get_pab_board_index(round_)
+                    database.update_stored_board(pab_board.stored_board)
 
     def create_boards(
         self, stored_boards: list[StoredBoard], round_: int, pab_result: Result
     ):
         with EventDatabase(self.event.uniq_id, True) as database:
             if pab_board := self.get_round_pab_board(round_):
-                pab_board.stored_board.index += len(stored_boards)
+                pab_board.stored_board.index = self.get_pab_board_index(
+                    round_, [board.index for board in stored_boards]
+                )
                 database.update_stored_board(pab_board.stored_board)
             for stored_board in stored_boards:
                 id_ = database.add_stored_board(stored_board)

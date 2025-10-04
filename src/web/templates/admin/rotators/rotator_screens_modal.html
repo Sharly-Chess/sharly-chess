@@ -1,0 +1,173 @@
+<div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered"
+    style="--bs-modal-width: fit-content; min-width: min(90vw, 450px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Screens list') }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <div
+                id="screens-form-container"
+                data-testid="screens-form-container"
+                style="display: none"
+            >
+                {{ admin_macros.inline_multi_select_form(
+                    'screens',
+                    'screen_ids',
+                    placeholder=_('Choose screens to add'),
+                    options=screen_options,
+                    post_url=url_for(
+                        'admin-rotating-screens-create',
+                        event_uniq_id=admin_event.uniq_id,
+                        rotator_id=admin_rotator.id
+                    )
+                ) }}
+            </div>
+            <div
+                id="families-form-container"
+                style="display: none"
+            >
+                {{ admin_macros.inline_multi_select_form(
+                    'families',
+                    'family_ids',
+                    placeholder=_('Choose families to add'),
+                    options=family_options,
+                    post_url=url_for(
+                        'admin-rotating-screens-create',
+                        event_uniq_id=admin_event.uniq_id,
+                        rotator_id=admin_rotator.id
+                    )
+                ) }}
+            </div>
+            <div class="d-flex justify-content-end gap-2 mb-3">
+                <span
+                    {% if not screen_options %}
+                       {{ macros.tooltip_attributes(
+                            'info', _('No screens to add.'), 'top'
+                        ) }}
+                    {% endif %}
+                >
+                    <button
+                        id="screens-add-button"
+                        data-testid="screens-add-button"
+                        class="btn btn-primary text-nowrap rotating-screen-button"
+                        {% if not screen_options %}disabled{% endif %}
+                    >
+                        <i class="bi-plus-square pe-1"></i>
+                        {{ _('Add screens') }}
+                    </button>
+                </span>
+                <span
+                    {% if not family_options %}
+                       {{ macros.tooltip_attributes(
+                            'info', _('No families to add.'), 'top'
+                        ) }}
+                    {% endif %}
+                >
+                    <button
+                        id="families-add-button"
+                        data-testid="families-add-button"
+                        class="btn btn-primary text-nowrap rotating-screen-button"
+                        {% if not family_options %}disabled{% endif %}
+                    >
+                        <i class="bi-plus-square pe-1"></i>
+                        {{ _('Add families') }}
+                    </button>
+                </span>
+            </div>
+            <script>
+                $('#screens-add-button').click(() => {
+                    $('#screens-form-container').css('display', '');
+                    $('.rotating-screen-button').css('display', 'none');
+                });
+                $('#screens-cancel-button').click(() => {
+                    $('#screens-form-container').css('display', 'none');
+                    $('.rotating-screen-button').css('display', '');
+                });
+                $('#families-add-button').click(() => {
+                    $('#families-form-container').css('display', '');
+                    $('.rotating-screen-button').css('display', 'none');
+                });
+                $('#families-cancel-button').click(() => {
+                    $('#families-form-container').css('display', 'none');
+                    $('.rotating-screen-button').css('display', '');
+                });
+            </script>
+            {% set rotating_screens = admin_rotator.sorted_rotating_screens %}
+            {% if not rotating_screens %}
+                <div class="text-danger">{{ _('No screens.') }}</div>
+            {% else %}
+                <form
+                    class="sortable d-flex flex-column gap-2"
+                    hx-patch="{{ url_for(
+                        'admin-rotator-reorder-screens',
+                        event_uniq_id=admin_event.uniq_id,
+                        rotator_id=admin_rotator.id
+                    ) }}"
+                    hx-target="body"
+                    hx-trigger="end"
+                    hx-indicator="#please-wait"
+                >
+                    {% set reorder_screens = rotating_screens|length > 1 %}
+                    {% for rotating_screen in rotating_screens %}
+                        {% set screen = rotating_screen.screen %}
+                        {% set family = rotating_screen.family %}
+                        <div class="border border-secondary bg-body-tertiary {% if reorder_screens %}cursor-grab{% endif %}">
+                            <input type="hidden" name="rotating_screen_ids" value="{{ rotating_screen.id }}"/>
+                            <div class="p-2 d-flex align-items-center gap-4 rotating-screen-row">
+                                {% if reorder_screens %}
+                                    <i class="bi-grip-horizontal"></i>
+                                {% endif %}
+                                <div class="text-start flex-grow-1">
+                                    {% if screen %}
+                                        <span class="pe-1">
+                                            {{ macros.screen_type_icon(screen.type, true) }}
+                                        </span>
+                                        {{ screen.name }}
+                                    {% elif family %}
+                                        <span class="pe-1">
+                                            {{ macros.screen_type_icon(family.type, true) }}
+                                        </span>
+                                        {{ family.name }}
+                                        <i class="ps-1">{{ _('(family)') }}</i>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-shrink-0 d-flex gap-2 align-items-center">
+                                    <button
+                                        class="btn btn-sm btn-outline-danger text-nowrap"
+                                        hx-delete="{{ url_for(
+                                            'admin-rotator-screen-delete',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            rotator_id=admin_rotator.id,
+                                            rotating_screen_id=rotating_screen.id,
+                                        ) }}"
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                        data-bs-target="#modal-wrapper"
+                                    >
+                                        <i class="bi-trash-fill"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </form>
+            {% endif %}
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Close') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>requestRefresh()</script>

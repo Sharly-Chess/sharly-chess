@@ -1,26 +1,26 @@
-{% extends '../common/base.html' %}
+{% extends '/common/base.html' %}
 
 {% block header %}
     <div id="user-screen-header" class="header user-header user-screen-header">
         {% if screen.type != 'input' or screen.input_exit_button %}
             <button
-                id="user-screen-exit-button"
+                id="screen-exit-button"
                 class="btn btn-danger position-fixed bottom-0 end-0 me-2 mb-2 z-2"
-                hx-get="{{ url_for('user-event-tab', event_uniq_id=user_event.uniq_id, user_event_tab=user_event_tab) }}"
-                preload
+                hx-get="{{ url_for(
+                    'admin-event-screens-tab' if client.can_manage_screens else 'admin-event-' ~ screen.type.value ~ '-screens-tab',
+                    event_uniq_id=user_event.uniq_id
+                ) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
                 <i class="bi-x-circle-fill"></i>
             </button>
         {% endif %}
-        {% if screen.timer %}
-            {% if not screen.timer.error %}
-                <script>
-                    <!-- timer.js -->
-                    {% include 'screen/timer.js' %}
-                </script>
-            {% endif %}
+        {% if screen.timer and not screen.timer.error %}
+            <script>
+                <!-- timer.js -->
+                {% include 'screen/timer.js' %}
+            </script>
         {% endif %}
         {% if display_controller %}
             <div
@@ -56,7 +56,7 @@
             <div class="alert-message-wrapper">
                 <div
                     id="alert-message"
-                    class="row alert-message w-100 m-0 fw-bold position-fixed bottom-0 overflow-hidden z-1"
+                    class="row gy-2 gx-3 alert-message w-100 m-0 fw-bold position-fixed bottom-0 overflow-hidden z-1"
                     style="background-color: {{ screen.event.message_background_color }}; color: {{ screen.event.message_color }}"
                 >
                     <h2
@@ -68,35 +68,34 @@
                 </div>
             </div>
         {% endif %}
-        {{ macros.copyright_script(show=screen.type != 'image') }}
+        {{ macros.copyright_script(show=screen.type.value != 'image') }}
     </div>
 {% endblock %}
 
 {% block content %}
     <div id="top-nav-wrapper">
-        {% if not rotator and not display_controller %}
-            {% set menu_screens = screen.admin_menu_screens if admin_auth else screen.public_menu_screens %}
-                <div id="top-nav-content">
-                    {% if menu_screens %}
-                        <div id="screen-menu" class="screen-menu text-start w-100 m-0 p-2 fw-bold">
-                            {% for entry in menu_screens %}
-                                {% if entry.menu_label is not none %}
-                                    <a
-                                        class="screen-menu-item cursor-pointer text-nowrap py-0 px-1 my-0 {% if loop.first %}ms-0{% else %}ms-1{% endif %} {% if loop.last %}me-0{% else %}me-1{% endif %} {% if screen.uniq_id == entry.uniq_id %}selected{% endif %}"
-                                        hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=entry.uniq_id) }}"
-                                        preload
-                                        hx-target="body"
-                                        hx-push-url="true"
-                                        hx-indicator="#please-wait"
-                                    >{{ entry.menu_label }}</a>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-        {% endif %}
-        {% if screen.timer %}
-                <!-- timer.html -->
+        <div id="top-nav-content">
+            {% if not rotator and not display_controller %}
+                {% set menu_screens = screen.admin_menu_screens if client.can_view_private_screens else screen.public_menu_screens %}
+                {% if menu_screens %}
+                    <div id="screen-menu" class="screen-menu text-start w-100 m-0 p-2 fw-bold">
+                        {% for entry in menu_screens %}
+                            {% if entry.menu_label is not none %}
+                                <a
+                                    class="screen-menu-item cursor-pointer text-nowrap py-0 px-1 my-0 {% if loop.first %}ms-0{% else %}ms-1{% endif %} {% if loop.last %}me-0{% else %}me-1{% endif %} {% if screen.uniq_id == entry.uniq_id %}selected{% endif %}"
+                                    hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=entry.uniq_id) }}"
+                                    hx-target="body"
+                                    hx-push-url="true"
+                                    hx-indicator="#please-wait"
+                                >{{ entry.menu_label }}</a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+        {% if screen.timer and not screen.timer.error %}
+            <!-- timer.html -->
             {% include 'screen/timer.html' %}
         {% endif %}
     </div>

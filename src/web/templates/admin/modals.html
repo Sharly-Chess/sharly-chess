@@ -15,8 +15,14 @@
     {% include 'tournaments/tournament_delete_modal.html' %}
 {% elif modal == 'tournament-import' %}
     {% include 'tournaments/tournament_import_modal.html' %}
+{% elif modal == 'tournament_criteria' %}
+    {% include 'tournaments/tournament_criteria_modal.html' %}
+{% elif modal == 'tournament_criterion_form' %}
+    {% include 'tournaments/tournament_criterion_form_modal.html' %}
 {% elif modal == 'player' %}
     {% include 'players/player_modal.html' %}
+{% elif modal == 'player-delete' %}
+    {% include 'players/player_delete_modal.html' %}
 {% elif modal == 'record' %}
     {% include 'players/record_modal.html' %}
 {% elif modal == 'close_check_in' %}
@@ -43,6 +49,10 @@
     {% include 'families/family_modal.html' %}
 {% elif modal == 'rotator' %}
     {% include 'rotators/rotator_modal.html' %}
+{% elif modal == 'rotator_delete' %}
+    {% include 'rotators/rotator_delete_modal.html' %}
+{% elif modal == 'rotator_screens' %}
+    {% include 'rotators/rotator_screens_modal.html' %}
 {% elif modal == 'default-timers' %}
     {% include 'timers/default_timers_modal.html' %}
 {% elif modal == 'timer' %}
@@ -69,6 +79,14 @@
     {% include 'prizes/prize_form_modal.html' %}
 {% elif modal == 'prize_players' %}
     {% include 'prizes/prize_players_modal.html' %}
+{% elif modal == 'account' %}
+    {% include 'accounts/account_modal.html' %}
+{% elif modal == 'account_delete' %}
+    {% include 'accounts/account_delete_modal.html' %}
+{% elif modal == 'account_permissions' %}
+    {% include 'accounts/account_permissions_modal.html' %}
+{% elif modal == 'account_permission_form' %}
+    {% include 'accounts/account_permission_form_modal.html' %}
 {% elif modal %}
     {% include modal ~ '_modal_not_found.html' %}
 {% endif %}

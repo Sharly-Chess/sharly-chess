@@ -1,20 +1,21 @@
-import asyncio
 import json
 from typing import AsyncGenerator
 
-from litestar import Response, get, route, HttpMethod, status_codes
+from litestar import Response, get, route, HttpMethod, status_codes, websocket_stream
 from litestar.config.response_cache import CACHE_FOREVER
 from litestar.exceptions import HTTPException
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.response import Redirect, Template
 from litestar.channels import ChannelsPlugin
-from litestar.response import ServerSentEventMessage, ServerSentEvent
 from litestar.status_codes import HTTP_204_NO_CONTENT
 
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
+from web.controllers.admin.base_admin_controller import AdminWebContext
+from web.controllers.admin.index_admin_controller import IndexAdminController
 from web.controllers.base_controller import BaseController, WebContext
 from web.messages import Message
+from web.session import SessionHandler
 
 
 class IndexController(BaseController):
@@ -35,20 +36,15 @@ class IndexController(BaseController):
         self,
         request: HTMXRequest,
         locale: str | None,
+        admin_events_show_details: bool | None,
     ) -> Template | Redirect:
+        web_context = AdminWebContext(request)
         self.set_locale(request, locale)
-        web_context: WebContext = WebContext(request)
-
-        if not web_context.admin_auth:
-            return Redirect(request.app.route_reverse('user'))
-
-        return HTMXTemplate(
-            template_name='index.html',
-            context=web_context.template_context
-            | {
-                'messages': Message.messages(request),
-            },
-        )
+        if admin_events_show_details is not None:
+            SessionHandler.set_session_admin_events_show_details(
+                request, admin_events_show_details
+            )
+        return IndexAdminController._admin_render(web_context)
 
     @get(
         path='/wait',
@@ -107,6 +103,9 @@ class IndexController(BaseController):
         if request.htmx:
             reload_message = _('Reload the page')
         match status_code:
+            case status_codes.HTTP_400_BAD_REQUEST:
+                title = _('400 - Bad request')
+                error_message = _('Consult the logs for more details.')
             case status_codes.HTTP_401_UNAUTHORIZED:
                 title = _('401 - Authentication failed')
                 error_message = _('Sorry, authorization failed.')
@@ -161,33 +160,27 @@ class IndexController(BaseController):
     ) -> HTMXTemplate:
         return self._error_template(request, status_code)
 
-    @get('/sse')
-    async def sse_handler(self, channels: ChannelsPlugin) -> ServerSentEvent:
-        async def generator() -> AsyncGenerator[ServerSentEventMessage, None]:
-            try:
-                async with channels.start_subscription(['sse']) as subscriber:
-                    async for raw_event in subscriber.iter_events():
-                        # Parse from string if needed
-                        if isinstance(raw_event, (bytes, str)):
-                            event = json.loads(raw_event)
-                        else:
-                            event = raw_event
-
-                        yield ServerSentEventMessage(
-                            event=event.get('event', 'message'),
-                            data=event.get('data', ''),
-                        )
-            except asyncio.CancelledError:
-                return
-
-        return ServerSentEvent(generator())
+    @websocket_stream('/ws')
+    async def ws_handler(self, channels: ChannelsPlugin) -> AsyncGenerator[dict, None]:
+        async with channels.start_subscription(['ws']) as subscriber:
+            async for raw_event in subscriber.iter_events():
+                event = (
+                    json.loads(raw_event)
+                    if isinstance(raw_event, (bytes, str))
+                    else raw_event
+                )
+                yield event
 
     @get('/.well-known/appspecific/com.chrome.devtools.json')
     async def chrome_devtools_placeholder(self) -> Response:
         return Response(content='{}', media_type='application/json')
 
     @get(
-        path=['/apple-touch-icon.png', '/apple-touch-icon-precomposed.png'],
+        path=[
+            '/apple-touch-icon.png',
+            '/apple-touch-icon-precomposed.png',
+            '/currentsetting.htm',
+        ],
     )
     async def no_content(self) -> Response:
         return Response(status_code=HTTP_204_NO_CONTENT, content=None)

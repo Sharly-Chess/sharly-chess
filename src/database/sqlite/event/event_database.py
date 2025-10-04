@@ -1,6 +1,6 @@
 import shutil
-from sqlite3 import OperationalError
 import time
+from collections import defaultdict
 from collections.abc import Iterator
 from contextlib import suppress
 from functools import cached_property
@@ -15,7 +15,6 @@ from common import (
     format_timestamp_time,
     DEVEL_ENV,
     EVENTS_DIR,
-    is_server_engine,
 )
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
@@ -35,9 +34,13 @@ from database.sqlite.event.event_store import (
     StoredPrizeCriterion,
     StoredPrize,
     StoredPlayer,
+    StoredTournamentCriterion,
     StoredTournamentPlayer,
     StoredPairing,
     StoredBoard,
+    StoredAccount,
+    StoredRotatingScreen,
+    StoredPermission,
 )
 from database.sqlite.event import migrations
 from database.sqlite.migration_database import MigrationDatabase
@@ -79,22 +82,35 @@ class EventDatabase(MigrationDatabase):
             super().__init__(self.event_database_path(self.uniq_id), write)
 
     def __exit__(self, exc_type, exc_value, tb):
-        dirty_tournaments: list[int] = []
-        if self.write and exc_type is None:
-            try:
-                self.execute('SELECT `id` FROM tournament WHERE dirty = 1;')
-                dirty_tournaments = [row['id'] for row in self.fetchall()]
+        dirty_tournaments: list[StoredTournament] = []
+        stored_event: StoredEvent | None = None
+        if (
+            self.write
+            and exc_type is None
+            # NOTE(Amaras): when auto-uploading to the FFE website, the database is copied to
+            # tmpdir/event.sce. Not taking the database path into account will make the hook below
+            # try to load the wrong event (which will error out or load an unrelated event).
+            and self.event_database_path(self.uniq_id).resolve() == self.file.resolve()
+        ):
+            self.execute('SELECT * FROM tournament WHERE dirty = 1;')
+            dirty_tournaments = [
+                self._row_to_stored_tournament(row) for row in self.fetchall()
+            ]
+            if dirty_tournaments:
+                self.execute('SELECT * FROM `info`')
+                stored_event = self._row_to_base_stored_event(
+                    self.fetchone(), StoredEvent
+                )
                 self.execute('UPDATE tournament SET dirty = 0 WHERE dirty = 1;')
-            except OperationalError:
-                pass
+
         super().__exit__(exc_type, exc_value, tb)
 
         # We need call the hook on all dirty tournaments after committing the changes above
-        if self.write and exc_type is None and is_server_engine():
-            for tournament_id in dirty_tournaments:
-                plugin_manager.hook.on_tournament_data_updated(
-                    event_uniq_id=self.uniq_id, tournament_id=tournament_id
-                )
+        for stored_tournament in dirty_tournaments:
+            plugin_manager.hook.on_tournament_data_updated(
+                stored_event=stored_event,
+                stored_tournament=stored_tournament,
+            )
 
     @classmethod
     def create_instance(cls, file: Path, write: bool = False) -> Self:
@@ -259,6 +275,7 @@ class EventDatabase(MigrationDatabase):
             uniq_id=self.uniq_id,
             name=row['name'],
             federation=row.get('federation', ''),
+            player_rating_type=row.get('player_rating_type', 3),
             start=row['start'],
             stop=row['stop'],
             public=self.load_bool_from_database_field(row['public']),
@@ -271,7 +288,6 @@ class EventDatabase(MigrationDatabase):
             ),
             background_image=row['background_image'],
             background_color=row['background_color'],
-            update_password=row['update_password'],
             record_illegal_moves=row['record_illegal_moves'],
             rules=row['rules'],
             timer_colors=self.set_dict_int_keys(
@@ -303,10 +319,11 @@ class EventDatabase(MigrationDatabase):
         stored_event.stored_timers = list(self.load_stored_timers())
         stored_event.stored_families = list(self.load_stored_families())
         stored_event.stored_screens = list(self.load_stored_screens())
-        stored_event.stored_rotators = list(self.load_stored_rotators())
+        stored_event.stored_rotators = self.load_stored_rotators()
         stored_event.stored_display_controllers = list(
             self.load_stored_display_controllers()
         )
+        stored_event.stored_accounts = self.load_stored_accounts()
         return stored_event
 
     def load_stored_event_metadata(self) -> EventMetadata:
@@ -322,9 +339,11 @@ class EventDatabase(MigrationDatabase):
         metadata.rotator_count = self._get_table_count('rotator')
         return metadata
 
-    def update_stored_event(self, stored_event: StoredEvent):
-        """Updates the event database with the information in the provided
-        `stored_event`."""
+    def update_stored_event(
+        self,
+        stored_event: StoredEvent,
+    ):
+        """Updates the event database with the information in the provided `stored_event`."""
 
         per_plugin_event_data = plugin_manager.hook.event_data_for_db_write(
             stored_event=stored_event
@@ -343,10 +362,10 @@ class EventDatabase(MigrationDatabase):
                     'public',
                     'federation',
                     'location',
+                    'player_rating_type',
                     'hide_background_image',
                     'background_image',
                     'background_color',
-                    'update_password',
                     'record_illegal_moves',
                     'rules',
                     'message_text',
@@ -689,6 +708,7 @@ class EventDatabase(MigrationDatabase):
             start=row['start'],
             stop=row['stop'],
             location=row['location'],
+            player_rating_type=row['player_rating_type'],
             three_points_for_a_win=cls.load_bool_from_database_field(
                 row['three_points_for_a_win']
             ),
@@ -718,6 +738,9 @@ class EventDatabase(MigrationDatabase):
             stored_tournament = self._row_to_stored_tournament(row)
             id_ = stored_tournament.id
             assert id_ is not None
+            stored_tournament.stored_criteria = self.load_stored_tournament_criteria(
+                id_
+            )
             stored_tournament.stored_prize_groups = (
                 self.load_tournament_stored_prize_groups(id_)
             )
@@ -759,6 +782,7 @@ class EventDatabase(MigrationDatabase):
                     'rating',
                     'pairing',
                     'location',
+                    'player_rating_type',
                     'start',
                     'stop',
                     'last_rounds_no_byes',
@@ -852,6 +876,76 @@ class EventDatabase(MigrationDatabase):
         )
 
     # ---------------------------------------------------------------------------------
+    # StoredTournamentCriterion
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_tournament_criterion(
+        cls, row: dict[str, Any]
+    ) -> StoredTournamentCriterion:
+        return StoredTournamentCriterion(
+            id=row['id'],
+            tournament_id=row['tournament_id'],
+            type=row['type'],
+            options=cls.load_json_from_database_field(row['options']),
+        )
+
+    def load_stored_tournament_criteria(
+        self, tournament_id: int
+    ) -> list[StoredTournamentCriterion]:
+        self.execute(
+            'SELECT * FROM `tournament_criterion` WHERE `tournament_id` = ?',
+            (tournament_id,),
+        )
+        return [
+            self._row_to_stored_tournament_criterion(row) for row in self.fetchall()
+        ]
+
+    def add_stored_tournament_criterion(
+        self,
+        stored_tournament_criterion: StoredTournamentCriterion,
+    ) -> int:
+        fields = self._get_fields_dict(
+            stored_tournament_criterion, ['tournament_id', 'type']
+        ) | {
+            'options': self.dump_to_json_database_field(
+                stored_tournament_criterion.options
+            )
+        }
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `tournament_criterion`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        if not (tournament_criterion_id := self._last_inserted_id()):
+            raise RuntimeError('Tournament criterion insertion failed')
+        return tournament_criterion_id
+
+    def update_stored_tournament_criterion(
+        self,
+        stored_tournament_criterion: StoredTournamentCriterion,
+    ):
+        fields = self._get_fields_dict(
+            stored_tournament_criterion, ['tournament_id', 'type']
+        ) | {
+            'options': self.dump_to_json_database_field(
+                stored_tournament_criterion.options
+            )
+        }
+        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        self.execute(
+            f'UPDATE `tournament_criterion` SET {field_sets} WHERE `id` = ?',
+            tuple(fields.values()) + (stored_tournament_criterion.id,),
+        )
+
+    def delete_stored_tournament_criterion(self, tournament_criterion_id: int):
+        self.execute(
+            'DELETE FROM `tournament_criterion` WHERE `id` = ?;',
+            (tournament_criterion_id,),
+        )
+
+    # ---------------------------------------------------------------------------------
     # StoredPlayer
     # ---------------------------------------------------------------------------------
 
@@ -878,7 +972,7 @@ class EventDatabase(MigrationDatabase):
             club=row['club'],
             fixed=row['fixed'],
             check_in=row['check_in'],
-            plugin_data=cls.load_json_from_database_field(row['plugin_data']),
+            plugin_data=cls.load_json_from_database_field(row['plugin_data'], {}),
         )
 
     def load_tournament_stored_players(self, tournament_id: int) -> list[StoredPlayer]:
@@ -918,6 +1012,7 @@ class EventDatabase(MigrationDatabase):
                 'federation',
                 'club',
                 'fixed',
+                'check_in',
             ],
         ) | {
             'date_of_birth': cls.dump_date_to_database_field(
@@ -1599,10 +1694,10 @@ class EventDatabase(MigrationDatabase):
             last_update=row['last_update'],
         )
 
-    def get_stored_screen_set(self, screen_id: int) -> StoredScreenSet | None:
+    def get_stored_screen_set(self, screen_set_id: int) -> StoredScreenSet | None:
         self.execute(
             'SELECT * FROM `screen_set` WHERE `id` = ?',
-            (screen_id,),
+            (screen_set_id,),
         )
         row: dict[str, Any]
         if row := self.fetchone():
@@ -1676,7 +1771,7 @@ class EventDatabase(MigrationDatabase):
             if screen_set_id is None:
                 raise RuntimeError('Screen set insertion failed')
             fetched_stored_screen_set = self.get_stored_screen_set(
-                screen_id=screen_set_id
+                screen_set_id=screen_set_id
             )
         else:
             field_sets = [f'`{f}` = ?' for f in fields]
@@ -1686,7 +1781,7 @@ class EventDatabase(MigrationDatabase):
                 tuple(params),
             )
             fetched_stored_screen_set = self.get_stored_screen_set(
-                screen_id=stored_screen_set.id
+                screen_set_id=stored_screen_set.id
             )
         if fetched_stored_screen_set is None:
             raise RuntimeError('Screen set write failed')
@@ -1762,31 +1857,20 @@ class EventDatabase(MigrationDatabase):
             delay=row['delay'],
             message_default=cls.load_bool_from_database_field(row['message_default']),
             message_text=row['message_text'],
-            screen_ids=cls.load_json_from_database_field(row['screen_ids']),
-            family_ids=cls.load_json_from_database_field(row['family_ids']),
         )
 
-    def get_stored_rotator(self, rotator_id: int) -> StoredRotator | None:
-        self.execute(
-            'SELECT * FROM `rotator` WHERE `id` = ?',
-            (rotator_id,),
-        )
-        row: dict[str, Any]
-        if row := self.fetchone():
-            return self._row_to_stored_rotator(row)
-        return None
+    def load_stored_rotators(self) -> list[StoredRotator]:
+        self.execute('SELECT * FROM `rotator` ORDER BY `name`')
+        stored_rotators: list[StoredRotator] = []
+        for row in self.fetchall():
+            stored_rotator = self._row_to_stored_rotator(row)
+            stored_rotator.stored_rotating_screens = (
+                self.load_rotator_stored_rotating_screens(row['id'])
+            )
+            stored_rotators.append(stored_rotator)
+        return stored_rotators
 
-    def load_stored_rotators(self) -> Iterator[StoredRotator]:
-        self.execute(
-            'SELECT * FROM `rotator` ORDER BY `name`',
-            (),
-        )
-        yield from map(self._row_to_stored_rotator, self.fetchall())
-
-    def _write_stored_rotator(
-        self,
-        stored_rotator: StoredRotator,
-    ) -> StoredRotator:
+    def add_stored_rotator(self, stored_rotator: StoredRotator) -> int:
         fields: dict[str, Any] = self._get_fields_dict(
             stored_rotator,
             [
@@ -1796,51 +1880,98 @@ class EventDatabase(MigrationDatabase):
                 'message_default',
                 'message_text',
             ],
-        ) | {
-            'screen_ids': self.dump_to_json_database_field(
-                stored_rotator.screen_ids, []
-            ),
-            'family_ids': self.dump_to_json_database_field(
-                stored_rotator.family_ids, []
-            ),
-        }
-        if stored_rotator.id is None:
-            protected_fields = [f'`{f}`' for f in fields]
-            self.execute(
-                f'INSERT INTO `rotator`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
-                tuple(fields.values()),
-            )
-            rotator_id: int | None = self._last_inserted_id()
-            if rotator_id is None:
-                raise RuntimeError('Rotator insertion failed')
-            fetched_stored_rotator = self.get_stored_rotator(rotator_id=rotator_id)
-        else:
-            field_sets = [f'`{f}` = ?' for f in fields]
-            self.execute(
-                f'UPDATE `rotator` SET {", ".join(field_sets)} WHERE `id` = ?',
-                tuple(fields.values()) + (stored_rotator.id,),
-            )
-            fetched_stored_rotator = self.get_stored_rotator(stored_rotator.id)
-        if fetched_stored_rotator is None:
-            raise RuntimeError('Rotator write failed')
-        return fetched_stored_rotator
+        )
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `rotator`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        if not (rotator_id := self._last_inserted_id()):
+            raise RuntimeError('Insertion failed')
+        return rotator_id
 
-    def add_stored_rotator(
-        self,
-        stored_rotator: StoredRotator,
-    ) -> StoredRotator:
-        assert stored_rotator.id is None
-        return self._write_stored_rotator(stored_rotator)
-
-    def update_stored_rotator(
-        self,
-        stored_rotator: StoredRotator,
-    ) -> StoredRotator:
-        assert stored_rotator.id is not None
-        return self._write_stored_rotator(stored_rotator)
+    def update_stored_rotator(self, stored_rotator: StoredRotator):
+        fields: dict[str, Any] = self._get_fields_dict(
+            stored_rotator,
+            [
+                'name',
+                'public',
+                'delay',
+                'message_default',
+                'message_text',
+            ],
+        )
+        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        self.execute(
+            f'UPDATE `rotator` SET {field_sets} WHERE `id` = ?',
+            tuple(fields.values()) + (stored_rotator.id,),
+        )
 
     def delete_stored_rotator(self, rotator_id: int):
         self.execute('DELETE FROM `rotator` WHERE `id` = ?;', (rotator_id,))
+
+    # ---------------------------------------------------------------------------------
+    # StoredRotatingScreen
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_rotating_screen(
+        cls, row: dict[str, Any]
+    ) -> StoredRotatingScreen:
+        return StoredRotatingScreen(
+            id=row['id'],
+            rotator_id=row['rotator_id'],
+            screen_id=row['screen_id'],
+            family_id=row['family_id'],
+            index=row['index'],
+        )
+
+    def load_rotator_stored_rotating_screens(
+        self, rotator_id: int
+    ) -> list[StoredRotatingScreen]:
+        self.execute(
+            'SELECT * FROM `rotating_screen` WHERE `rotator_id` = ? ORDER BY `index`',
+            (rotator_id,),
+        )
+        return [self._row_to_stored_rotating_screen(row) for row in self.fetchall()]
+
+    def add_stored_rotating_screen(
+        self,
+        stored_rotating_screen: StoredRotatingScreen,
+    ):
+        fields = self._get_fields_dict(
+            stored_rotating_screen,
+            [
+                'rotator_id',
+                'screen_id',
+                'family_id',
+                'index',
+            ],
+        )
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `rotating_screen`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        if not (rotating_screen_id := self._last_inserted_id()):
+            raise RuntimeError('Insertion failed')
+        return rotating_screen_id
+
+    def update_stored_rotating_screen(
+        self, stored_rotating_screen: StoredRotatingScreen
+    ):
+        self.execute(
+            'UPDATE `rotating_screen` SET `index` = ? WHERE `id` = ?',
+            (stored_rotating_screen.index, stored_rotating_screen.id),
+        )
+
+    def delete_stored_rotating_screen(self, rotating_screen_id: int):
+        self.execute(
+            'DELETE FROM `rotating_screen` WHERE `id` = ?',
+            (rotating_screen_id,),
+        )
 
     # ---------------------------------------------------------------------------------
     # StoredDisplayController
@@ -2200,3 +2331,124 @@ class EventDatabase(MigrationDatabase):
 
     def delete_stored_prize(self, prize_id: int):
         self.execute('DELETE FROM `prize` WHERE `id` = ?;', (prize_id,))
+
+    # ---------------------------------------------------------------------------------
+    # StoredAccount
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_account(cls, row: dict[str, Any]) -> StoredAccount:
+        return StoredAccount(
+            id=row['id'],
+            active=cls.load_bool_from_database_field(row['active']),
+            first_name=row['first_name'],
+            last_name=row['last_name'],
+            password_hash=row['password_hash'],
+        )
+
+    def get_stored_account(self, account_id: int) -> StoredAccount | None:
+        self.execute(
+            'SELECT * FROM `account` WHERE `id` = ?',
+            (account_id,),
+        )
+        row: dict[str, Any]
+        if row := self.fetchone():
+            return self._row_to_stored_account(row)
+        return None
+
+    def load_stored_accounts(self) -> list[StoredAccount]:
+        stored_accounts: list[StoredAccount] = []
+        self.execute('SELECT * FROM `account`')
+        for row in self.fetchall():
+            stored_account = self._row_to_stored_account(row)
+            assert stored_account.id is not None
+            stored_account.stored_permissions = self.load_account_stored_permissions(
+                stored_account.id
+            )
+            stored_accounts.append(stored_account)
+        return stored_accounts
+
+    def add_stored_account(self, stored_account: StoredAccount) -> int:
+        fields = self._get_fields_dict(
+            stored_account, ['active', 'first_name', 'last_name', 'password_hash']
+        )
+        if stored_account.id:
+            fields |= {'id': stored_account.id}
+        fields_str = ', '.join(f'`{field}`' for field in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `account`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        account_id: int | None = self._last_inserted_id()
+        if account_id is None:
+            raise RuntimeError('Account insertion failed')
+        return account_id
+
+    def update_stored_account(self, stored_account: StoredAccount) -> StoredAccount:
+        fields = self._get_fields_dict(
+            stored_account, ['active', 'first_name', 'last_name', 'password_hash']
+        )
+        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        assert stored_account.id is not None
+        self.execute(
+            f'UPDATE `account` SET {field_sets} WHERE `id` = ?',
+            tuple(fields.values()) + (stored_account.id,),
+        )
+        fetched_stored_account = self.get_stored_account(account_id=stored_account.id)
+        if fetched_stored_account is None:
+            raise RuntimeError('Account write failed')
+        return fetched_stored_account
+
+    def delete_stored_account(self, account_id: int):
+        self.execute('DELETE FROM `account` WHERE `id` = ?;', (account_id,))
+
+    # ---------------------------------------------------------------------------------
+    # StoredPermission
+    # ---------------------------------------------------------------------------------
+
+    def load_account_stored_permissions(
+        self, account_id: int
+    ) -> list[StoredPermission]:
+        self.execute(
+            'SELECT * from `account_permission` WHERE `account_id` = ?',
+            (account_id,),
+        )
+        tournament_ids_by_access_level: dict[str, list[int]] = defaultdict(list)
+        for row in self.fetchall():
+            access_level = row['access_level']
+            tournament_id = row['tournament_id']
+            if not tournament_id:
+                tournament_ids_by_access_level[access_level] = []
+                continue
+            tournament_ids_by_access_level[access_level].append(tournament_id)
+        return [
+            StoredPermission(account_id, access_level, tournament_ids or None)
+            for access_level, tournament_ids in tournament_ids_by_access_level.items()
+        ]
+
+    def delete_stored_permission(self, stored_permission: StoredPermission):
+        self.execute(
+            'DELETE FROM `account_permission` '
+            'WHERE `account_id` = ? AND `access_level` = ?',
+            (stored_permission.account_id, stored_permission.access_level),
+        )
+
+    def add_stored_permission(self, stored_permission: StoredPermission):
+        inserted_values: list[int] | list[None]
+        if stored_permission.tournament_ids:
+            inserted_values = stored_permission.tournament_ids
+        else:
+            inserted_values = [None]
+        for tournament_id in inserted_values:
+            fields = {
+                'account_id': stored_permission.account_id,
+                'access_level': stored_permission.access_level,
+                'tournament_id': tournament_id,
+            }
+            fields_str = ', '.join(f'`{f}`' for f in fields)
+            values_str = ', '.join(['?'] * len(fields))
+            self.execute(
+                f'INSERT INTO `account_permission`({fields_str}) VALUES ({values_str})',
+                tuple(fields.values()),
+            )

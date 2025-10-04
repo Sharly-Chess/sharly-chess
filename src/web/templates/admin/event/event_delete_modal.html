@@ -23,15 +23,22 @@
            $('#delete-button').prop('disabled', !$(this).is(':checked'));
         });
         $('#archive').trigger('change');
+
+        requestRefresh();
     </script>
 {% endblock %}
 
 {% block delete_url %}
-    {{ url_for('admin-event-delete', event_uniq_id=admin_event.uniq_id) }}
+    {{ url_for('admin-event-delete', admin_tab=admin_tab, event_uniq_id=admin_event.uniq_id) }}
 {% endblock %}
 
 
 {% block delete_button_content %}
     <i class="bi-archive-fill pe-1"></i>
     {{ _('Archive') }}
+{% endblock %}
+
+
+{% block delete_modal_script %}
+    <script>requestRefresh()</script>
 {% endblock %}

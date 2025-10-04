@@ -2,7 +2,7 @@ import json
 import os
 import shutil
 import subprocess
-from abc import ABC, abstractmethod
+from abc import ABC
 from argparse import ArgumentParser, Namespace
 from logging import Logger
 from pathlib import Path
@@ -10,11 +10,10 @@ from pkgutil import iter_modules
 from types import ModuleType
 from zipfile import ZipFile, ZIP_DEFLATED
 
-import requests
 from PyInstaller.__main__ import run
 from packaging.version import Version, InvalidVersion
 
-from common import BASE_DIR, EVENTS_FOLDER, TMP_DIR
+from common import BASE_DIR, EVENTS_FOLDER
 from common import SHARLY_CHESS_VERSION
 from common.installation_checker import (
     InstallationChecker,
@@ -48,12 +47,9 @@ class ProjectBuilder(ABC):
         self.spec_file: Path = BASE_DIR / f'{self.basename}.spec'
         self.src_dir: Path = BASE_DIR / 'src'
         self.licences_dir = self.project_dir / 'LICENSES'
-        self.tools_dir: Path = self.project_dir / 'tools'
         self.zip_file: Path = self.export_dir / f'{self.basename}.zip'
         self.test_dir: Path = BASE_DIR / 'export-test' / self.basename
         self.clean_project_on_exit: bool = clean_project_on_exit
-
-    def run(self) -> bool:
         parser = ArgumentParser(description='Export Sharly Chess.')
         # option --github is used when generating the EXE file from a GITHUB action
         # to verify that the name of the tag matches the Sharly Chess version.
@@ -70,7 +66,10 @@ class ProjectBuilder(ABC):
                 logger.info('Version [%s] is valid.', args.github)
         else:
             logger.info('The version is not verified (not running on GitHub).')
+        self.runs_on_github: bool = bool(args.github)
         self.hook_check_params(args)
+
+    def run(self) -> bool:
         self.clean_on_startup()
         if not self.build_project():
             return False
@@ -81,20 +80,17 @@ class ProjectBuilder(ABC):
         self.clean_on_exit()
         return True
 
-    @abstractmethod
     def hook_extend_sys_path(
         self,
     ):
         """Let the builder extend to path (needed by external commands)."""
 
-    @abstractmethod
     def hook_add_params(
         self,
         parser: ArgumentParser,
     ):
         """Let the builder add params (for example to pass secrets on the command line)."""
 
-    @abstractmethod
     def hook_check_params(
         self,
         args: Namespace,
@@ -124,9 +120,15 @@ class ProjectBuilder(ABC):
         self._delete_file(self.zip_file)
         self.hook_post_clean_on_startup()
 
-    @abstractmethod
     def hook_post_clean_on_startup(self):
-        pass
+        """Runs at the end of `clean_on_startup`"""
+
+    @property
+    def hook_get_venv_lib_path(
+        self,
+    ) -> Path:
+        """Returns the path to the libraries of the virtual environment."""
+        raise NotImplementedError(f'Class {self.__class__} not implemented yet.')
 
     def clean_on_exit(self):
         self._delete_folder(self.build_dir)
@@ -146,8 +148,6 @@ class ProjectBuilder(ABC):
             'Adding data from folder [%s] to [%s]...', self.project_dir, self.data_dir
         )
         shutil.copytree(self.data_dir, self.project_dir, dirs_exist_ok=True)
-        logger.info('Creating tools folder [%s]...', self.tools_dir)
-        self.tools_dir.mkdir(parents=True, exist_ok=True)
         events_dir: Path = self.project_dir / EVENTS_FOLDER
         logger.info('Creating events folder [%s]...', events_dir)
         events_dir.mkdir(exist_ok=True)
@@ -500,7 +500,7 @@ class ProjectBuilder(ABC):
         with open(notice_file, 'w', encoding='utf-8') as f:
             f.write(f"""SHARLY CHESS {SHARLY_CHESS_VERSION}
     {SharlyChessConfig.en_copyright}
-    {SharlyChessConfig.url}
+    {SharlyChessConfig.web_url}
 
     This software includes third-party libraries and components.
     See THIRD_PARTY_LICENSES.txt for detailed license information.
@@ -552,8 +552,8 @@ class ProjectBuilder(ABC):
             '--hiddenimport=babel.numbers',
             '--hiddenimport=pyexcel_io.writers',
             '--hiddenimport=colorlog',
+            '--hiddenimport=toga',
             '--paths=.',
-            f'--icon=src/web/static/images/{self.project_name}.ico',
             '--optimize',
             '1',
             'src/sharly_chess.py',
@@ -628,6 +628,10 @@ class ProjectBuilder(ABC):
             PLUGINS_DIR / 'ffe' / '.credentials',
         ]
 
+        # Add GUI resources
+        gui_dir: Path = self.src_dir / 'gui'
+        files += [file for file in gui_dir.glob('**/*') if file.is_file()]
+
         # Use correct path separator for PyInstaller --add-data based on OS
         data_separator = ':' if os.name != 'nt' else ';'
 
@@ -642,36 +646,26 @@ class ProjectBuilder(ABC):
                 # File is outside BASE_DIR, add to root
                 pyinstaller_params.append(f'--add-data={file}{data_separator}.')
                 logger.info(f'Adding external file to root: {file}')
-        iso4217parse_dir: Path = TMP_DIR / 'iso4217parse'
-        iso4217parse_dir.mkdir(parents=True, exist_ok=True)
-        iso4217parse_version = '0.6.2'
-        iso4217parse_url: str = f'https://raw.githubusercontent.com/tammoippen/iso4217parse/refs/tags/v{iso4217parse_version}/iso4217parse'
-        for filename in [
-            'data.json',
-            'symbols.json',
+        venv_lib_path = self.hook_get_venv_lib_path
+        toga_path: Path = venv_lib_path / 'toga'
+        iso4217parse_path: Path = venv_lib_path / 'iso4217parse'
+        for file in [
+            toga_path / '__init__.pyi',
+            iso4217parse_path / 'data.json',
+            iso4217parse_path / 'symbols.json',
         ]:
-            url: str = f'{iso4217parse_url}/{filename}'
-            logger.info(f'Downloading {url}...')
-            response = requests.get(url, stream=True, timeout=3)
-            response.raise_for_status()
-            file: Path = iso4217parse_dir / filename
-            with open(file, 'wb') as f:
-                for chunk in response.iter_content(chunk_size=8192):
-                    f.write(chunk)
-            logger.info('Done.')
             pyinstaller_params.append(
-                f'--add-data={file}{data_separator}{file.parent.relative_to(TMP_DIR)}'
+                f'--add-data={file}{data_separator}{file.parent.relative_to(venv_lib_path)}'
             )
         pyinstaller_params += self.hook_pyinstaller_additional_params()
         run(pyinstaller_params)
         return True
 
-    @abstractmethod
     def hook_pyinstaller_additional_params(self) -> list[str]:
         return []
 
-    @abstractmethod
     def hook_post_build_project(self) -> bool:
+        """Executed after the project build, return True on success and False on failure."""
         return True
 
     def build_zip_file(self) -> bool:

@@ -1,5 +1,5 @@
 {% set bye_definition_allowed=admin_player.tournament.pairing_system.allow_bye_definition %}
-<div id="player-modal" class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-record-edit-modal">
+<div id="player-record-modal" class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-record-edit-modal">
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
@@ -7,242 +7,208 @@
             </h2>
         </div>
         <div class="modal-body">
-            <form
-                id="modal-form"
-                hx-patch="{{ url_for('admin-player-record', event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
+            <h4>
+                {{ _('Tournament record') }}
+            </h4>
+            <table
+                id="record-table"
+                class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center"
             >
-                <h4>
-                    {{ _('Tournament record') }}
-                </h4>
-                <table
-                    id="record-table"
-                    class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center"
+                <thead
+                    id="record-table-header"
                 >
-                    <thead
-                        id="record-table-header"
-                    >
-                        <tr>
-                            <th scope="col" class="text-nowrap text-center">
-                                {{ _('Round') }}
-                            </th>
-                            <th scope="col" class="text-nowrap text-center">
-                                {{ _('Score') }}
-                            </th>
-                            <th scope="col" class="text-nowrap text-start">
-                                {{ _('Result') }}
-                            </th>
-                            <th scope="col" class="text-nowrap text-start">
-                                {{ _('Color') }}
-                            </th>
-                            <th scope="col" class="text-nowrap text-start">
-                                {{ _('Opponent') }}
-                            </th>
-                            <th scope="col" class="text-nowrap text-center">
-                                {{ _('Federation') }}
-                            </th>
-                            <th scope="col" class="text-nowrap text-end">
-                                {{ _('Rating') }}
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="record-table-body">
-                        <input type="hidden" name="max_byes" value="{{ admin_player.tournament.max_byes }}"/>
-                        {% for round, pairing in admin_player.pairings.items() %}
-                            {% set name='round_' ~ round ~ '_result' %}
-                            {% set id=name|replace('_', '-') %}
-                            {% set zero_point_bye_allowed = round >= admin_player.tournament.current_round %}
-                            {% if pairing.opponent_id %}
-                                {% set opponent_player=admin_player.tournament.players_by_id[pairing.opponent_id] %}
-                                {% set opponent=opponent_player.full_name %}
-                                {% set federation=opponent_player.federation %}
-                                {% set rating=opponent_player.rating %}
-                                {% set color=pairing.color %}
+                    <tr>
+                        <th scope="col" class="text-nowrap text-center">
+                            {{ _('Round') }}
+                        </th>
+                        <th scope="col" class="text-nowrap text-center">
+                            {{ _('Score') }}
+                        </th>
+                        <th scope="col" class="text-nowrap text-start">
+                            {{ _('Result') }}
+                        </th>
+                        <th scope="col" class="text-nowrap text-start">
+                            {{ _('Color') }}
+                        </th>
+                        <th scope="col" class="text-nowrap text-start">
+                            {{ _('Opponent') }}
+                        </th>
+                        <th scope="col" class="text-nowrap text-center">
+                            {{ _('Federation') }}
+                        </th>
+                        <th scope="col" class="text-nowrap text-end">
+                            {{ _('Rating') }}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="record-table-body">
+                    <input type="hidden" name="max_byes" value="{{ admin_player.tournament.max_byes }}"/>
+                    {% set can_set_hpb = client.can_set_half_point_bye(admin_player.tournament.id) %}
+                    {% set can_set_fpb = client.can_set_full_point_bye(admin_player.tournament.id) %}
+                    {% for round, pairing in admin_player.pairings.items() %}
+                        {% set name='round_' ~ round ~ '_result' %}
+                        {% set id=name|replace('_', '-') %}
+                        {% set zero_point_bye_allowed = round >= admin_player.tournament.current_round and not pairing.board %}
+                        {% if pairing.opponent_id %}
+                            {% set opponent_player=admin_player.tournament.players_by_id[pairing.opponent_id] %}
+                            {% set opponent=opponent_player.full_name %}
+                            {% set federation=opponent_player.federation %}
+                            {% set rating=opponent_player.rating_str %}
+                            {% set color=pairing.color %}
+                        {% else %}
+                            {% set opponent='' %}
+                            {% set federation='' %}
+                            {% set rating='' %}
+                            {% set color='' %}
+                        {% endif %}
+                        {% if zero_point_bye_allowed or pairing.playing %}
+                            {% set score='' %}
+                        {% else %}
+                            {% set score=pairing.points_str %}
+                        {% endif %}
+                        {% set zero_point_bye = false %}
+                        {% set half_point_bye = false %}
+                        {% set full_point_bye = false %}
+                        {% if pairing.zero_point_bye %}
+                            {% set text=_('Round skipped') %}
+                            {% set zero_point_bye = true %}
+                        {% elif pairing.not_paired %}
+                            {% set text = '' %}
+                        {% elif pairing.paired_no_result %}
+                            {% if admin_player.tournament.current_round == round %}
+                                {% set text=_('Playing') %}
                             {% else %}
-                                {% set opponent='' %}
-                                {% set federation='' %}
-                                {% set rating='' %}
-                                {% set color='' %}
+                                {% set text=_('Pending') %}
                             {% endif %}
-                            {% if zero_point_bye_allowed or pairing.playing %}
-                                {% set score='' %}
-                            {% else %}
-                                {% set score=pairing.result.point_value %}
-                            {% endif %}
-                            {% set zero_point_bye = false %}
-                            {% set half_point_bye = false %}
-                            {% set full_point_bye = false %}
-                            {% if pairing.zero_point_bye %}
-                                {% set text=_('Round skipped') %}
-                                {% set zero_point_bye = true %}
-                            {% elif pairing.not_paired %}
-                                {% set text = '' %}
-                            {% elif pairing.paired_no_result %}
-                                {% if admin_player.tournament.current_round == round %}
-                                    {% set text=_('Playing') %}
-                                {% else %}
-                                    {% set text=_('Pending') %}
-                                {% endif %}
-                            {% elif pairing.exempt %}
-                                {% set text=_('Pairing Allocated Bye') %}
-                            {% elif pairing.unrated_loss %}
-                                {% set text=_('Unrated Loss') %}
-                            {% elif pairing.loss %}
-                                {% set text=_('Loss') %}
-                            {% elif pairing.unrated_draw %}
-                                {% set text=_('Unrated Draw') %}
-                            {% elif pairing.draw %}
-                                {% set text=_('Draw') %}
-                            {% elif pairing.win %}
-                                {% set text=_('Win') %}
-                            {% elif pairing.half_point_bye %}
-                                {% set text=_('Half-Point Bye') %}
-                                {% set half_point_bye = true %}
-                            {% elif pairing.full_point_bye %}
-                                {% set text=_('Full-Point Bye (deprecated)') %}
-                                {% set full_point_bye = true %}
-                            {% elif pairing.forfeit_loss %}
-                                {% set text=_('Forfeit Loss') %}
-                            {% elif pairing.double_forfeit %}
-                                {% set text=_('Forfeit Loss') %}
-                            {% elif pairing.forfeit_gain %}
-                                {% set text=_('Forfeit Win') %}
-                            {% else %}
-                                {% set text='???' %}
-                            {% endif %}
-                            <tr id="round-{{ round }}">
-                                <th scope="row" class="text-nowrap text-center">
-                                    {{ round }}
-                                </th>
-                                <td class="text-nowrap text-center">
-                                    {{ score }}
-                                </td>
-                                {% if zero_point_bye_allowed and not (opponent or pairing.exempt) %}
-                                    <td colspan="5" class="text-nowrap text-start">
-                                        {% if bye_definition_allowed %}
-                                            <select
-                                                id="{{ id }}"
-                                                name="{{ name }}"
-                                                class="bye show form-select py-1"
-                                                onchange="updateRecordByes()"
-                                            >
-                                                <option
-                                                        value="0"
-                                                        {% if data[name] == '0' %}
-                                                            selected
-                                                        {% endif %}
-                                                >
-                                                    {{ _('Present') }}
-                                                </option>
-                                                <option
-                                                        value="7"
-                                                        {% if data[name] == '7' %}
-                                                            selected
-                                                        {% endif %}
-                                                >
-                                                    {{ _('Absent') }}
-                                                </option>
-                                                {% if round <= admin_player.tournament.rounds - admin_player.tournament.last_rounds_no_byes %}
-                                                    <option
-                                                            value="8"
-                                                            {% if data[name] == '8' %}
-                                                                selected
-                                                            {% endif %}
-                                                    >
-                                                        {{ _('Half-Point Bye') }}
-                                                    </option>
-                                                    <option
-                                                            value="10"
-                                                            class="text-danger"
-                                                            {% if data[name] == '10' %}
-                                                                selected
-                                                            {% endif %}
-                                                    >
-                                                        {{ _('Full-Point Bye (deprecated)') }}
-                                                    </option>
-                                                {% endif %}
-                                            </select>
+                        {% elif pairing.exempt %}
+                            {% set text=_('Pairing Allocated Bye') %}
+                        {% elif pairing.unrated_loss %}
+                            {% set text=_('Unrated Loss') %}
+                        {% elif pairing.loss %}
+                            {% set text=_('Loss') %}
+                        {% elif pairing.unrated_draw %}
+                            {% set text=_('Unrated Draw') %}
+                        {% elif pairing.draw %}
+                            {% set text=_('Draw') %}
+                        {% elif pairing.win %}
+                            {% set text=_('Win') %}
+                        {% elif pairing.half_point_bye %}
+                            {% set text=_('Half-Point Bye') %}
+                            {% set half_point_bye = true %}
+                        {% elif pairing.full_point_bye %}
+                            {% set text=_('Full-Point Bye (deprecated)') %}
+                            {% set full_point_bye = true %}
+                        {% elif pairing.forfeit_loss %}
+                            {% set text=_('Forfeit Loss') %}
+                        {% elif pairing.double_forfeit %}
+                            {% set text=_('Forfeit Loss') %}
+                        {% elif pairing.forfeit_gain %}
+                            {% set text=_('Forfeit Win') %}
+                        {% else %}
+                            {% set text='???' %}
+                        {% endif %}
+                        <tr id="round-{{ round }}">
+                            <th scope="row gy-2 gx-3" class="text-nowrap text-center">
+                                {{ round }}
+                            </th>
+                            <td class="text-nowrap text-center">
+                                {{ score }}
+                            </td>
+                            {% if zero_point_bye_allowed %}
+                                <td colspan="5" class="text-nowrap text-start">
+                                    {% if bye_definition_allowed %}
+                                        <span
+                                            {% if pairing.half_point_bye and not can_set_hpb %}
+                                                {{ macros.tooltip_attributes(
+                                                    'info', _('You are not allowed to modify Half-Point Byes.'), 'top'
+                                                ) }}
+                                            {% elif pairing.full_point_bye and not can_set_fpb %}
+                                                {{ macros.tooltip_attributes(
+                                                    'info', _('You are not allowed to modify Full-Point Byes.'), 'top'
+                                                ) }}
+                                            {% endif %}
+                                        >
+                                            {{ admin_macros.select_input(
+                                                name=name,
+                                                label='',
+                                                help_text='',
+                                                select_options=get_bye_options(client, admin_player, round),
+                                                tooltip_select=true,
+                                                disabled=(
+                                                    (pairing.half_point_bye and not can_set_hpb)
+                                                    or (pairing.full_point_bye and not can_set_fpb)
+                                                ),
+                                                data=data,
+                                            ) }}
                                             <script>
                                                 $('#{{ id }}').change(function () {
-                                                    {# get the maximum number of bye that can be given #}
-                                                    max_byes = Number($('[name="max_byes"]').val());
-                                                    if (isNaN(max_byes)) {
-                                                        {# nothing to do #}
-                                                        return;
-                                                    }
-                                                    {# count the total number of byes given, including all the rounds #}
-                                                    byes = $('option[value="8"]:selected').length + 2 * $('option[value="10"]:selected').length;
-                                                    {% if DEVEL_ENV %}
-                                                        console.log('max_byes=' + max_byes + ', byes=' + byes);
-                                                    {% endif %}
-                                                    {# for each visible select, allow the possible options #}
-                                                    $('select.bye.show').each(function() {
-                                                        name = $(this).attr('name')
-                                                        selectedValue = Number($(this).find(':selected').val());
-                                                        if (selectedValue == 8) {
-                                                            {# if HPB is selected, one more bye only is needed for FPB #}
-                                                            {% if DEVEL_ENV %}
-                                                                console.log('name=' + name + ', selectedValue=' + selectedValue + ', fpb_disabled=' + (byes + 1 > max_byes))
-                                                            {% endif %}
-                                                            $(this).find('option[value="10"]').prop('disabled', byes + 1 > max_byes);
-                                                        } else if (selectedValue == 10) {
-                                                            {# if FPB is selected, HPB is always possible #}
-                                                            {% if DEVEL_ENV %}
-                                                                console.log('name=' + name + ', selectedValue=' + selectedValue + ', hpb_disabled=' + false)
-                                                            {% endif %}
-                                                            $(this).find('option[value="8"]').prop('disabled', false);
-                                                        } else {
-                                                            {# one bye is needed for HPB, two for FPB #}
-                                                            {% if DEVEL_ENV %}
-                                                                console.log('name=' + name + ', selectedValue=' + selectedValue + ', hpb_disabled=' + (byes + 1 > max_byes) + ', fpb_disabled=' + (byes + 2 > max_byes))
-                                                            {% endif %}
-                                                            $(this).find('option[value="8"]').prop('disabled', byes + 1 > max_byes);
-                                                            $(this).find('option[value="10"]').prop('disabled', byes + 2 > max_byes);
-                                                        }
-                                                    });
+                                                    htmx.ajax('PATCH',
+                                                        "{{ url_for(
+                                                            'admin-player-set-bye',
+                                                            event_uniq_id=admin_event.uniq_id,
+                                                            player_id=admin_player.id,
+                                                            round=round
+                                                        ) }}?result=" + $(this).val(),
+                                                        {
+                                                            target: "body",
+                                                            swap: "outerHTML",
+                                                        },
+                                                    );
                                                 });
-                                                $('#{{ id }}').trigger('change');
                                             </script>
-                                        {% else %}
-                                            {{ admin_player.not_paired_str }}
-                                        {% endif %}
-                                    </td>
-                                {% else %}
-                                    <td class="text-nowrap text-start">
-                                        {{ text }}
-                                        {# add hidden selects below to count the total number of byes #}
-                                        <select class="bye hide d-none">
-                                            <option value="{{ pairing.result.value }}" selected>
-                                                {{ pairing.result.value }}
-                                            </option>
-                                        </select>
-                                    </td>
-                                    <td class="text-nowrap text-start">
-                                        {{ color }}
-                                    </td>
-                                    <td class="text-nowrap text-start">
-                                        {{ opponent }}
-                                    </td>
-                                    <td class="text-nowrap text-center">
-                                        {% if federation %}
-                                            <img
-                                                class="player-federation-flag pe-1"
-                                                src="{{ macros.federation_flag_url(federation) }}"
-                                            />
-                                        {% endif %}
-                                    </td>
-                                    <td class="text-nowrap text-end">
-                                        {{ rating }}
-                                    </td>
-                                {% endif %}
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                <div class="fst-italic">{{ _('Maximum number of byes: %(max_byes)d', max_byes=admin_player.tournament.max_byes) }}</div>
-                <div class="fst-italic">{{ _('Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d', last_rounds_no_byes=admin_player.tournament.last_rounds_no_byes) }}</div>
-            </form>
+                                        </span>
+                                    {% else %}
+                                        {{ admin_player.not_paired_str }}
+                                    {% endif %}
+                                </td>
+                            {% else %}
+                                <td class="text-nowrap text-start">
+                                    {{ text }}
+                                </td>
+                                <td class="text-nowrap text-start">
+                                    {{ color }}
+                                </td>
+                                <td class="text-nowrap text-start">
+                                    {{ opponent }}
+                                </td>
+                                <td class="text-nowrap text-center">
+                                    {% if federation %}
+                                        <img
+                                            class="player-federation-flag pe-1"
+                                            src="{{ macros.federation_flag_url(federation) }}"
+                                        />
+                                    {% endif %}
+                                </td>
+                                <td class="text-nowrap text-end">
+                                    {{ rating }}
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div>
+                <span class="fst-italic">
+                    {{ _(
+                        'Number of byes: %(byes)d (maximum: %(max_byes)d)',
+                        byes=admin_player.byes_count,
+                        max_byes=admin_player.tournament.max_byes
+                    ) }}
+                </span>
+                <i
+                    class="bi-info-circle-fill ps-1"
+                    {{ macros.tooltip_attributes(
+                        '',
+                        '<div class="text-center text-nowrap">' ~
+                            _('%(string)s:', string=_('Half-Point Bye')) ~
+                        ' 1</div>'
+                        '<div class="text-center text-nowrap">' ~
+                            _('%(string)s:', string=_('Full-Point Bye')) ~
+                        ' 2</div>',
+                        'right',
+                    ) }}
+                ></i>
+            </div>
         </div>
         <div class="modal-footer">
             <button
@@ -251,18 +217,22 @@
                 data-bs-dismiss="modal"
             >
                 <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Cancel') }}
+                {{ _('Close') }}
             </button>
-            {% if bye_definition_allowed %}
-                <button
-                    type="submit"
-                    form="modal-form"
-                    class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
-                >
-                    <i class="bi-floppy-fill pe-1"></i>
-                    {{ _('Save') }}
-                </button>
-            {% endif %}
         </div>
     </div>
 </div>
+
+<script>
+    $(document).one('hide.bs.modal', function (e) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        htmx.ajax('GET',
+            "{{ url_for(
+                'admin-player-row',
+                event_uniq_id=admin_event.uniq_id,
+                player_id=admin_player.id,
+            ) }}",
+        );
+    });
+</script>

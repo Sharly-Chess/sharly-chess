@@ -31,9 +31,9 @@ class TestFamilyScreensFunctionality:
         TestUtils.delete_tournament(api_request_context, EVENT_ID, tournament)
 
     def test_create_and_delete_family_screen(self, page: Page):
-        page.goto(f'/admin/event/{EVENT_ID}/families')
+        page.goto(f'/event/{EVENT_ID}/families')
         TestUtils.button_by_text(page, 'Create a screen family').click()
-        TestUtils.button_by_text(page, 'Results entry').click()
+        TestUtils.button_by_text(page, 'Check-in / Results entry').click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
 
@@ -66,7 +66,7 @@ class TestFamilyScreensFunctionality:
             ScreenType.INPUT,
             {'parts': 2},
         )
-        lan_page.goto(f'/user/screen/{EVENT_ID}/{FAMILY_ID}:001')
+        lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:001')
         rows = lan_page.locator('table tbody tr')
         expect(rows).to_have_count(4)
 
@@ -75,7 +75,7 @@ class TestFamilyScreensFunctionality:
         expect(first_row).to_contain_text('ALYX')
         expect(last_row).to_contain_text('DAVID')
 
-        lan_page.goto(f'/user/screen/{EVENT_ID}/{FAMILY_ID}:002')
+        lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:002')
         rows = lan_page.locator('table tbody tr')
         expect(rows).to_have_count(4)
 
@@ -108,7 +108,7 @@ class TestFamilyScreensFunctionality:
             ScreenType.INPUT,
             {'number': 2},
         )
-        lan_page.goto(f'/user/screen/{EVENT_ID}/{FAMILY_ID}:001')
+        lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:001')
         rows = lan_page.locator('table tbody tr')
         expect(rows).to_have_count(2)
 
@@ -117,7 +117,7 @@ class TestFamilyScreensFunctionality:
         expect(first_row).to_contain_text('ALYX')
         expect(last_row).to_contain_text('BRUNO')
 
-        lan_page.goto(f'/user/screen/{EVENT_ID}/{FAMILY_ID}:004')
+        lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:004')
         rows = lan_page.locator('table tbody tr')
         expect(rows).to_have_count(2)
 
@@ -142,7 +142,7 @@ class TestFamilyScreensFunctionality:
             ScreenType.BOARDS,
             {'parts': 2},
         )
-        lan_page.goto(f'/user/screen/{EVENT_ID}/{FAMILY_ID}:001')
+        lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:001')
         rows = lan_page.locator('table tbody tr')
         expect(rows).to_have_count(4)
 
@@ -151,7 +151,7 @@ class TestFamilyScreensFunctionality:
         expect(first_row).to_contain_text('ALYX')
         expect(last_row).to_contain_text('DAVID')
 
-        lan_page.goto(f'/user/screen/{EVENT_ID}/{FAMILY_ID}:002')
+        lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:002')
         rows = lan_page.locator('table tbody tr')
         expect(rows).to_have_count(4)
 
@@ -176,7 +176,7 @@ class TestFamilyScreensFunctionality:
             ScreenType.BOARDS,
             {'number': 2},
         )
-        lan_page.goto(f'/user/screen/{EVENT_ID}/{FAMILY_ID}:001')
+        lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:001')
         rows = lan_page.locator('table tbody tr')
         expect(rows).to_have_count(2)
 
@@ -185,7 +185,7 @@ class TestFamilyScreensFunctionality:
         expect(first_row).to_contain_text('ALYX')
         expect(last_row).to_contain_text('BRUNO')
 
-        lan_page.goto(f'/user/screen/{EVENT_ID}/{FAMILY_ID}:004')
+        lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:004')
         rows = lan_page.locator('table tbody tr')
         expect(rows).to_have_count(2)
 
@@ -210,7 +210,7 @@ class TestFamilyScreensFunctionality:
             ScreenType.PLAYERS,
             {'parts': 2},
         )
-        lan_page.goto(f'/user/screen/{EVENT_ID}/{FAMILY_ID}:001')
+        lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:001')
         rows = lan_page.locator('table tbody tr')
         expect(rows).to_have_count(8)
 
@@ -219,7 +219,7 @@ class TestFamilyScreensFunctionality:
         expect(first_row).to_contain_text('ALYX')
         expect(last_row).to_contain_text('IRINA')
 
-        lan_page.goto(f'/user/screen/{EVENT_ID}/{FAMILY_ID}:002')
+        lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:002')
         rows = lan_page.locator('table tbody tr')
         expect(rows).to_have_count(8)
 
@@ -244,7 +244,7 @@ class TestFamilyScreensFunctionality:
             ScreenType.PLAYERS,
             {'number': 2},
         )
-        lan_page.goto(f'/user/screen/{EVENT_ID}/{FAMILY_ID}:001')
+        lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:001')
         rows = lan_page.locator('table tbody tr')
         expect(rows).to_have_count(2)
 
@@ -253,7 +253,7 @@ class TestFamilyScreensFunctionality:
         expect(first_row).to_contain_text('ALYX')
         expect(last_row).to_contain_text('BRUNO')
 
-        lan_page.goto(f'/user/screen/{EVENT_ID}/{FAMILY_ID}:008')
+        lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:008')
         rows = lan_page.locator('table tbody tr')
         expect(rows).to_have_count(2)
 

@@ -8,12 +8,12 @@ from logging import Logger
 from pathlib import Path
 from typing import Literal
 
+from common.i18n.utils import by, normalized_key
 from litestar.plugins.htmx import HTMXRequest
 from packaging.version import Version
 
 from common import (
     format_timestamp_date_time,
-    unicode_normalize,
     SHARLY_CHESS_VERSION,
     EVENTS_DIR,
 )
@@ -23,6 +23,7 @@ from common.logger import get_logger
 from data.event import Event
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import EventMetadata
+from utils import StaticUtils
 
 logger: Logger = get_logger()
 
@@ -67,11 +68,11 @@ class EventLoader:
 
     @classmethod
     def _clean_not_existing_event_database_files(cls, event_uniq_ids: set[str]):
-        to_remove = (
+        to_remove = [
             uniq_id
             for uniq_id in event_uniq_ids
             if not EventDatabase.event_database_path(uniq_id).exists()
-        )
+        ]
         for uniq_id in to_remove:
             event_uniq_ids.remove(uniq_id)
 
@@ -111,41 +112,12 @@ class EventLoader:
         return ids
 
     def get_unused_event_uniq_id(self, base_uniq_id: str) -> str:
-        """Returns the first unused event uniq_id looking like base_uniq_id:
-        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1..."""
-        index: int
-        uniq_id: str
-        base_uniq_id = unicode_normalize(base_uniq_id)
-        if matches := re.match(r'^(.*)-(\d+)$', base_uniq_id):
-            base_uniq_id = matches.group(1)
-            index = int(matches.group(2))
-            uniq_id = f'{base_uniq_id}-{index + 1}'
-        else:
-            index = 1
-            uniq_id = base_uniq_id
-        used_event_ids = self.all_event_ids()
-        while uniq_id in used_event_ids:
-            index += 1
-            uniq_id = f'{base_uniq_id}-{index}'
-        return uniq_id
+        return StaticUtils.get_unused_item_uniq_id(base_uniq_id, self.all_event_ids())
 
     def get_unused_event_name(self, base_name: str) -> str:
-        """Returns the first unused event name looking like base_name:
-        base_name, or base_name (2), or base_name (n+1)..."""
-        index: int
-        name: str
-        if matches := re.match(r'^(.*) \((\d+)\)$', base_name):
-            base_name = matches.group(1)
-            index = int(matches.group(2))
-            name = f'{base_name} ({index + 1})'
-        else:
-            index = 1
-            name = base_name
-        event_names: list[str] = [event.name for event in self.events_by_id.values()]
-        while name in event_names:
-            index += 1
-            name = f'{base_name} ({index})'
-        return name
+        return StaticUtils.get_unused_item_name(
+            base_name, [event.name for event in self.get_events_metadata()]
+        )
 
     def load_event(self, uniq_id: str) -> Event:
         self.load_event_ids(uniq_id)
@@ -154,24 +126,15 @@ class EventLoader:
         return event
 
     @cached_property
-    def events_by_id(self) -> dict[str, Event]:
+    def events_sorted_by_name(self) -> list[Event]:
+        # TODO (Molrn) Remove (loading all the events at once should be avoided at all cost)
         events_by_id: dict[str, Event] = {}
         for uniq_id in self.event_uniq_ids:
             try:
                 events_by_id[uniq_id] = self.load_event(uniq_id)
             except SharlyChessException as pwe:
                 logger.error(pwe)
-        return events_by_id
-
-    @cached_property
-    def events_sorted_by_name(self) -> list[Event]:
-        return sorted(self.events_by_id.values(), key=lambda event: event.name)
-
-    @cached_property
-    def events_with_tournaments_sorted_by_name(self) -> list[Event]:
-        return [
-            event for event in self.events_sorted_by_name if event.tournaments_by_id
-        ]
+        return sorted(events_by_id.values(), key=by('name'))
 
     @classmethod
     def load_event_metadata(cls, uniq_id: str) -> EventMetadata:
@@ -193,12 +156,12 @@ class EventLoader:
             case 'passed':
                 conditions.append(lambda event: event.stop < now)
             case 'current':
-                conditions.append(lambda event: event.start < now < event.stop)
+                conditions.append(lambda event: event.start <= now <= event.stop)
             case 'coming':
                 conditions.append(lambda event: now < event.start)
         return sorted(
             cls._filter_events_metadata(conditions),
-            key=lambda event: (-event.stop, -event.start, event.name),
+            key=lambda event: (-event.stop, -event.start, normalized_key('name')),
         )
 
     @classmethod

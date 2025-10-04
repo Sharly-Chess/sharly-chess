@@ -1,0 +1,105 @@
+<div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-account-edit-modal"
+    style="--bs-modal-width: min(90vw, 450px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {% if action == 'update' %}
+                    {{ _('Edit account') }}
+                {% else %}
+                    {{ _('Create account') }}
+                {% endif %}
+            </h2>
+        </div>
+        <div class="modal-body">
+            {% if action == 'update' %}
+                <h4 class="mb-3">
+                    {{ _('%(string)s:', string=_('Account')) }}
+                    {{ admin_account.full_name }}
+                </h4>
+            {% endif %}
+            <form
+                id="modal-form"
+                {% if action == 'update' %}
+                    hx-patch="{{ url_for('admin-account-update', event_uniq_id=admin_event.uniq_id, account_id=admin_account.id) }}"
+                {% elif action == 'clone' %}
+                    hx-post="{{ url_for('admin-account-clone', event_uniq_id=admin_event.uniq_id, account_id=admin_account.id) }}"
+                {% else %}
+                    hx-post="{{ url_for('admin-account-create', event_uniq_id=admin_event.uniq_id) }}"
+                {% endif %}
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                {# These inputs are a trick to avoid autocomplete #}
+                <input type="text" style="display:none">
+                <input type="password" style="display:none">
+                <div class="row gy-2 gx-3">
+                    {{ admin_macros.switch_input(
+                        name='active',
+                        label='',
+                        help_text='',
+                        placeholder=_('Enable this account'),
+                        info=_(
+                            'You can temporarily invalidate accounts by turning this switch off.'
+                        ),
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <div class="row gy-2 gx-3">
+                    {{ admin_macros.text_input(
+                        name='last_name',
+                        label=_('Last name:'),
+                        placeholder=_('E.g.: DOE'),
+                        help_text='',
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <div class="row gy-2 gx-3">
+                    {{ admin_macros.text_input(
+                        name='first_name',
+                        label=_('First name:'),
+                        placeholder=_('E.g.: John'),
+                        help_text='',
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <div class="row gy-2 gx-3">
+                    <input type="password" name="fake_password" style="display:none" autocomplete="current-password">
+                    {{ admin_macros.password_input(
+                        name='password',
+                        label=_('Password:'),
+                        autocomplete='new-password',
+                        help_text=(
+                            _('New password. Leave blank for no change.')
+                            if action == 'update' else ''
+                        ),
+                        data=data, errors=errors
+                    ) }}
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                data-bs-dismiss="modal"
+                class="btn btn-secondary text-nowrap"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn btn-primary"
+            >
+                <i class="bi-floppy-fill pe-1"></i>
+                {% if action == 'update' %}
+                    {{ _('Save') }}
+                {% else %}
+                    {{ _('Create') }}
+                {% endif %}
+            </button>
+        </div>
+    </div>
+</div>

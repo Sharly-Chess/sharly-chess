@@ -48,30 +48,18 @@
                         {{ _('Warning: the deletion is permanent!') }}
                     </h4>
                 {% else %}
-                    <h4>
-                        {% if family_type == 'input' %}
-                            {{ _('Properties (results entry)') }}
-                        {% elif family_type == 'boards' %}
-                            {{ _('Properties (pairings by board)') }}
-                        {% elif family_type == 'players' %}
-                            {{ _('Properties (pairings by player)') }}
-                        {% elif family_type == 'ranking' %}
-                            {{ _('Properties (ranking)') }}
-                        {% else %}
-                            ?
-                        {% endif %}
-                    </h4>
-                    <div class="row">
-                        <div class="col-12 col-md-6 mb-3">
+                    <h4>{{ _('Properties') }}</h4>
+                    <div class="row gy-2 gx-3">
+                        <div class="col-12 col-md-6">
                             {{ admin_macros.switch_input(
                                 name='public',
                                 label=_('Visibility:'),
                                 placeholder=_('Public family'),
-                                help_text=_('Only arbiters can see private screen families.'),
+                                help_text=_('Only allowed users can see private screen families.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6 mb-3">
+                        <div class="col-12 col-md-6">
                             {{ admin_macros.text_input(
                                 name='name',
                                 label=_('Name:'),
@@ -80,20 +68,20 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6 mb-3">
+                        <div class="col-12 col-md-6">
                             {{ admin_macros.select_input(
                                 name='tournament_id',
                                 label=_('Tournament:'),
-                                help_text=_('The tournament of the screens of the family, mandatory (unlike basic screens, only one tournament can be displayed on family screens).'),
+                                help_text=_('The tournament of the screens of the family.'),
                                 select_options=tournament_options,
                                 data=data, errors=errors
                             ) }}
                         </div>
                         {% if family_type == 'ranking' %}
-                            <div class="col-12 col-md-6 mb-3">
+                            <div class="col-12 col-md-6">
                                 {% include '../common/modal/ranking_crosstable.html' %}
                             </div>
-                            <div class="col-12 col-md-6 mb-3">
+                            <div class="col-12 col-md-6">
                                 {% include '../common/modal/ranking_round.html' %}
                             </div>
                         {% endif %}
@@ -108,54 +96,54 @@
                             {{ _('Player selection (by rank)') }}
                         {% endif %}
                     </h4>
-                    <div class="row">
-                        <div class="col-12 col-md-6 mb-3">
+                    <div class="row gy-2 gx-3">
+                        <div class="col-12 col-md-6">
                             {% if family_type in ['boards', 'input'] %}
-                                {% set help_text=_('The number of the first board to select, optional (the first board by default).') %}
+                                {% set help_text=_('The number of the first board to select.') %}
                             {% elif family_type == 'players' %}
-                                {% set help_text=_('The number of the first player to select, optional (the first player by alphabetical order by default).') %}
+                                {% set help_text=_('The number of the first player to select.') %}
                             {% else %}
-                                {% set help_text=_('The rank of the first player to select, optional (1 by default).') %}
+                                {% set help_text=_('The rank of the first player to select.') %}
                             {% endif %}
                             {{ admin_macros.number_input(
                                 name='first',
                                 label=_('First board:') if family_type in ['boards', 'input'] else _('First player:'),
-                                placeholder=_('E.g.: %(num)d', num=15),
+                                placeholder=_('Default: %(string)s', string=1),
                                 help_text=help_text,
                                 data=data, errors=errors,
                                 min=1
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6 mb-3">
+                        <div class="col-12 col-md-6">
                             {% if family_type in ['boards', 'input'] %}
-                                {% set help_text=_('The number of the last board to select, optional (the last board by default).') %}
+                                {% set help_text=_('The number of the last board to select.') %}
                             {% elif family_type == 'players' %}
-                                {% set help_text=_('The number of the last player to select, optional (the last player by alphabetical order by default).') %}
+                                {% set help_text=_('The number of the last player to select.') %}
                             {% else %}
-                                {% set help_text=_('The rank of the last player to select, optional (the rank of the last rank player by default).') %}
+                                {% set help_text=_('The rank of the last player to select.') %}
                             {% endif %}
                             {{ admin_macros.number_input(
                                 name='last',
                                 label=_('Last board:') if family_type in ['boards', 'input'] else _('Last player:'),
-                                placeholder=_('E.g.: %(num)d', num=40),
+                                placeholder=_('Default: %(string)s', string=_('last')),
                                 help_text=help_text,
                                 data=data, errors=errors,
                                 min=1
                             ) }}
                         </div>
                         {% if family_type == 'ranking' %}
-                            <div class="col-12 col-md-6 mb-3">
+                            <div class="col-12 col-md-6">
                                 {% include '../common/modal/ranking_min_points.html' %}
                             </div>
-                            <div class="col-12 col-md-6 mb-3">
+                            <div class="col-12 col-md-6">
                                 {% include '../common/modal/ranking_max_points.html' %}
                             </div>
                         {% endif %}
                         {% if family_type == 'players' %}
-                            <div class="col-12 col-md-6 mb-3">
+                            <div class="col-12 col-md-6">
                                 {% include '../common/modal/show_unpaired.html' %}
                             </div>
-                            <div class="col-12 col-md-6 mb-3">
+                            <div class="col-12 col-md-6">
                                 {% include '../common/modal/show_opponent.html' %}
                             </div>
                         {% endif %}
@@ -164,8 +152,8 @@
                     <h4 class="mt-4">
                         {{ _('Layout') }}
                     </h4>
-                    <div class="row">
-                        <div class="col-12 col-md-6 mb-3">
+                    <div class="row gy-2 gx-3">
+                        <div class="col-12 col-md-6">
                             {{ admin_macros.number_input(
                                 name='parts',
                                 label=_('On a given number of screens:'),
@@ -180,7 +168,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6 mb-3">
+                        <div class="col-12 col-md-6">
                             {{ admin_macros.number_input(
                                 name='number',
                                 label=_('On fixed size screens:'),
@@ -195,16 +183,18 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6 mb-3">
-                            {{ admin_macros.select_input(
-                                name='timer_id',
-                                label=_('Timer:'),
-                                help_text=_('The timer displayed on the screens of the family.'),
-                                select_options=timer_options,
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6 mb-3">
+                        {% if admin_event.timers_by_id %}
+                            <div class="col-12 col-md-6">
+                                {{ admin_macros.select_input(
+                                    name='timer_id',
+                                    label=_('Timer:'),
+                                    help_text=_('The timer displayed on the screens of the family.'),
+                                    select_options=timer_options,
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        {% endif %}
+                        <div class="col-12 col-md-6">
                             {{ admin_macros.number_input(
                                 name='columns',
                                 label=_('Columns:'),
@@ -213,34 +203,30 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6 mb-3">
+                        <div class="col-12 col-md-6">
                             {{ admin_macros.number_input(
                                 name='font_size',
                                 label=_('Font size adjustment (%%):'),
-                                placeholder=_('E.g.: %(num)d%%', num=105),
-                                help_text=_('Font size adjustment for the screen where 100%% is the default font size.'),
+                                placeholder=_('Default: %(string)s', string='100%'),
+                                help_text=_('Font size adjustment for the screen.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
                         {% if family_type == 'input' %}
-                            <div class="col-12 col-md-6 mb-3">
+                            <div class="col-12 col-md-6">
                                 {% include '../common/modal/exit_button.html' %}
                             </div>
                         {% endif %}
-                        {% with
-                            message_help_text=_('When not defined at family-level, the alert message defined at rotator or event-level is used (if no alert message is set, the scrolling banner at the bottom of the screens of the family is not displayed).')
-                        %}
-                            <div class="col-12 mb-3">
-                                {% include '../common/modal/alert_message.html' %}
-                            </div>
-                        {% endwith %}
+                        <div class="col-12">
+                            {% include '../common/modal/alert_message.html' %}
+                        </div>
                     </div>
 
                     <h4 class="mt-4">
                         {{ _('Menus') }}
                     </h4>
-                    <div class="row">
-                        <div class="col-12 col-xl-5 mb-3">
+                    <div class="row gy-2 gx-3">
+                        <div class="col-12 col-xl-5">
                             {{ admin_macros.text_input(
                                 name='menu',
                                 label=_('Links displayed on the screen menu:'),
@@ -249,7 +235,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6 col-xl-3 mb-3">
+                        <div class="col-12 col-md-6 col-xl-3">
                             {{ admin_macros.switch_input(
                                 name='menu_link',
                                 label=_('Links to this screen:'),
@@ -258,7 +244,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6 col-xl-4 mb-3">
+                        <div class="col-12 col-md-6 col-xl-4">
                             {{ admin_macros.text_input(
                                 name='menu_text',
                                 label=_('Menu link label:'),

@@ -12,12 +12,12 @@
                 <i class="bi-download"></i>
             </span>
         </button>
-        <ul class="dropdown-menu players-download-players p-0">
+        <ul class="dropdown-menu table-dropdown-menu p-0">
             {% with name='player_ids' %}
                 {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
                 <input type="hidden" name="{{ name }}" value="0" />
                 <li class="dropdown-item title text-nowrap no-hover">
-                    <div class="row">
+                    <div class="row gy-2 gx-3">
                         <div class="col text-start">
                             <input
                                 type="checkbox"
@@ -32,7 +32,7 @@
                                 'xlsx': _('Download the information of the selected players (XLSX format).'),
                             }.items() %}
                                 <span
-                                    {{ macros.tooltip_attributes('top', tooltip_text, 'top') }}
+                                    {{ macros.tooltip_attributes('info', tooltip_text, 'top') }}
                                 >
                                     <button type="submit" name="download_format" value="{{ format }}" class="btn py-0" data-bs-dismiss="modal" >
                                         <i class="bi-download"></i>

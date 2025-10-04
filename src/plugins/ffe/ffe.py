@@ -14,16 +14,17 @@ from packaging.version import Version
 
 from common import TEST_ENV, DEVEL_ENV
 from common.exception import SharlyChessException
-from common.i18n import _
+from common.i18n import _, ngettext
 from data.input_output import DataSource, TournamentExporter, TournamentImporter
 from data.input_output.data_source import FideDataSource
 from data.pairings.managers import PairingVariationManager
 from data.pairings.variations import SwissVariation
 from data.print_documents import PlayerSplitter, PrintDocument
-from data.print_documents.documents import PlayerPrintDocument
+from data.print_documents.documents import PlayerPrintDocument, StatisticsPrintDocument
 from data.print_documents.player_splitters import ClubPlayerSplitter
-from data.prize.player_filter_options import PlayerFilterOption, ClubsFilterOption
-from data.prize.player_filters import PlayerFilter, ClubPlayerFilter
+from data.criteria.player_filter_options import PlayerFilterOption
+from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
+from data.print_documents.qrcode_types import QRCodeType
 from data.tie_breaks import TieBreak
 from data.tie_breaks.managers import TieBreakManager, TieBreakOptionManager
 from data.tie_breaks.options import TieBreakOption
@@ -52,17 +53,20 @@ from utils.enum import (
     ScreenType,
     TournamentRating,
 )
-from data.player import Player, PlayerRating
+from data.player import Player, PlayerRating, PlayerRatingAndType
 from database.sqlite.event.event_database import EventDatabase
 from plugins.ffe import migrations, PLUGIN_NAME, ffe_tie_breaks
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_entity import (
+    FFESiteQRCodeType,
     FfeLocalDataSource,
     LeaguePlayerSplitter,
     NicoisSwissVariation,
     FfeLeaguePlayerFilter,
-    FfeLeaguesFilterOption,
+    FfeLicencePlayerFilter,
+    FfeLicenceFilterOption,
     FfeOnlineDataSource,
+    FfeLeaguesFilterOption,
 )
 from plugins.ffe.ffe_event_controller import FfeAdminEventController
 from plugins.ffe.ffe_session_handler import FFESessionHandler
@@ -70,7 +74,13 @@ from plugins.ffe.ffe_tie_breaks import papi_performance_bonus
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from plugins.hookspec import ExtraAdminColumn, hookimpl, ExtraColumn
 from plugins.migration import PluginMigrationManager
-from plugins.utils import Plugin, PluginNavBarItem, PluginUtils, PluginData
+from plugins.utils import (
+    ExtraStatisticsSection,
+    Plugin,
+    PluginNavBarItem,
+    PluginUtils,
+    PluginData,
+)
 
 from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController, WebContext
@@ -90,7 +100,7 @@ class FfePlugin(Plugin):
 
     @staticmethod
     def static_name() -> str:
-        return 'FFE'
+        return _('FFE')
 
     @property
     def description(self) -> str:
@@ -363,12 +373,25 @@ class FfePlugin(Plugin):
                     if stored_rating
                     else None
                 )
-                if not rating or rating.type == PlayerRatingType.ESTIMATED:
-                    ffe_stored_rating = ffe_stored_player.ratings.get(
-                        rating_type.value, None
+                ffe_stored_rating = ffe_stored_player.ratings.get(
+                    rating_type.value, None
+                )
+                if ffe_stored_rating:
+                    ffe_rating = PlayerRating.from_stored_value(ffe_stored_rating)
+                    augmented_rating = PlayerRating(
+                        fide=rating.fide
+                        if rating and rating.fide is not None
+                        else ffe_rating.fide,
+                        national=rating.national
+                        if rating and rating.national is not None
+                        else ffe_rating.national,
+                        estimated=rating.estimated
+                        if rating and rating.estimated is not None
+                        else ffe_rating.estimated,
                     )
-                    if ffe_stored_rating:
-                        stored_player.ratings[rating_type.value] = ffe_stored_rating
+                    stored_player.ratings[rating_type.value] = (
+                        augmented_rating.stored_value
+                    )
             if not stored_player.date_of_birth or (
                 ffe_stored_player.date_of_birth
                 and stored_player.date_of_birth.year
@@ -382,11 +405,23 @@ class FfePlugin(Plugin):
             )
 
     @hookimpl
-    def get_player_estimated_rating(
-        self, federation: str, tournament_rating: TournamentRating, player: 'Player'
-    ) -> PlayerRating | None:
-        if federation != 'FRA':
+    def get_player_rating(
+        self,
+        event_federation: str,
+        tournament_rating: TournamentRating,
+        player_rating_type: PlayerRatingType,
+        player: 'Player',
+    ) -> Optional[PlayerRatingAndType]:
+        if event_federation != 'FRA':
             return None
+
+        # In France, regardless of the player_rating_type of the tournament,
+        # the FIDE rating is used, if available, falling back to the national rating
+        ratings = player.ratings[tournament_rating]
+        if ratings.fide is not None:
+            return PlayerRatingAndType(ratings.fide, PlayerRatingType.FIDE)
+        if ratings.national is not None:
+            return PlayerRatingAndType(ratings.national, PlayerRatingType.NATIONAL)
 
         value = 0
         match tournament_rating:
@@ -420,7 +455,7 @@ class FfePlugin(Plugin):
                         value = 1299
                     case _:
                         value = 1399
-        return PlayerRating(value, PlayerRatingType.ESTIMATED)
+        return PlayerRatingAndType(value, PlayerRatingType.ESTIMATED)
 
     @hookimpl
     def is_tournament_participation_possible(
@@ -507,7 +542,7 @@ class FfePlugin(Plugin):
     def player_club_sort_key(self, player: Player):
         # We sort by league first
         return (
-            FFEUtils.get_player_plugin_data(player).league,
+            FFEUtils.get_player_plugin_data(player).league or '',
             player.club,
             player.last_name,
             player.first_name,
@@ -581,8 +616,6 @@ class FfePlugin(Plugin):
     def augment_event_after_db_fetch(
         self, stored_event: 'StoredEvent', row: dict[str, Any]
     ):
-        if not stored_event.plugin_data:
-            stored_event.plugin_data = {}
         stored_event.plugin_data[self.id] = {
             'ffe_auto_upload': row.get('ffe_auto_upload', False),
             'ffe_auto_upload_delay': row.get('ffe_auto_upload_delay', None),
@@ -595,10 +628,6 @@ class FfePlugin(Plugin):
             'ffe_auto_upload': int(self.get_data(td, 'ffe_auto_upload') or False),
             'ffe_auto_upload_delay': self.get_data(td, 'ffe_auto_upload_delay'),
         }
-
-    @hookimpl
-    def get_event_info_rows_template(self) -> str:
-        return '/ffe_event_info_rows.html'
 
     @hookimpl
     def get_event_card_block_template(self) -> str:
@@ -639,8 +668,8 @@ class FfePlugin(Plugin):
         )
         if ffe_auto_upload_delay and ffe_auto_upload_delay < FFE_MIN_UPLOAD_DELAY:
             errors[field] = _(
-                f'The delay must be at least {FFE_MIN_UPLOAD_DELAY} minutes to avoid overloading the FFE server.'
-            )
+                'The delay must be at least {min_delay} minutes to avoid overloading the FFE server.'
+            ).format(min_delay=FFE_MIN_UPLOAD_DELAY)
 
         # Keep data other than these two fields
         previous_data = event.plugin_data.get(self.id, {}) if event else {}
@@ -662,19 +691,24 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def on_tournament_data_updated(self, event_uniq_id: str, tournament_id: int):
-        event = EventLoader().events_by_id.get(event_uniq_id, None)
-        if event and tournament_id in event.tournaments_by_id:
-            tournament = event.tournaments_by_id[tournament_id]
-            if FFEUtils.resolve_auto_upload(tournament):
-                FfeBackgroundUploader.schedule_upload(tournament)
+    def on_tournament_data_updated(
+        self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
+    ):
+        # This hook being called in most database writes, it needs to be optimized
+        if not FfeBackgroundUploader.should_schedule_tournament_upload(
+            stored_event, stored_tournament
+        ):
+            return
+        event = EventLoader().load_event(stored_event.uniq_id)
+        tournament_id = stored_tournament.id
+        assert tournament_id is not None
+        tournament = event.tournaments_by_id[tournament_id]
+        FfeBackgroundUploader.schedule_upload(tournament)
 
     @hookimpl
     def augment_tournament_after_db_fetch(
         self, stored_tournament: 'StoredTournament', row: dict[str, Any]
     ):
-        if not stored_tournament.plugin_data:
-            stored_tournament.plugin_data = {}
         stored_tournament.plugin_data[self.id] = {
             'ffe_id': row.get('ffe_id', ''),
             'ffe_password': row.get('ffe_password', ''),
@@ -801,26 +835,25 @@ class FfePlugin(Plugin):
         )
         if blocker := PapiConverter.check_pairing_variation(pairing_variation):
             return blocker
+        if blocker := PapiConverter.check_rounds(stored_tournament.rounds):
+            return blocker
 
-        if not blocker:
-            tie_break_type_by_id: dict[str, type[TieBreak]] = (
-                TieBreakManager.type_by_id()
-            )
-            option_type_by_id: dict[str, type[TieBreakOption]] = (
-                TieBreakOptionManager.type_by_id()
-            )
-            for tie_break_dict in stored_tournament.tie_breaks:
-                assert isinstance(tie_break_dict['type'], str)
-                assert isinstance(tie_break_dict['options'], dict)
-                tie_break_id = tie_break_dict['type']
-                options: list[TieBreakOption] = []
-                for option_id, value in tie_break_dict['options'].items():
-                    if option_type := option_type_by_id.get(option_id, None):
-                        options.append(option_type(value))
-                if tie_break_type := tie_break_type_by_id.get(tie_break_id, None):
-                    tie_break = tie_break_type(options)
-                    if blocker := PapiConverter.check_tiebreak(tie_break):
-                        return blocker
+        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager.type_by_id()
+        option_type_by_id: dict[str, type[TieBreakOption]] = (
+            TieBreakOptionManager.type_by_id()
+        )
+        for tie_break_dict in stored_tournament.tie_breaks:
+            assert isinstance(tie_break_dict['type'], str)
+            assert isinstance(tie_break_dict['options'], dict)
+            tie_break_id = tie_break_dict['type']
+            options: list[TieBreakOption] = []
+            for option_id, value in tie_break_dict['options'].items():
+                if option_type := option_type_by_id.get(option_id, None):
+                    options.append(option_type(value))
+            if tie_break_type := tie_break_type_by_id.get(tie_break_id, None):
+                tie_break = tie_break_type(options)
+                if blocker := PapiConverter.check_tiebreak(tie_break):
+                    return blocker
 
         return None
 
@@ -841,6 +874,10 @@ class FfePlugin(Plugin):
         lps: type[PlayerSplitter] = LeaguePlayerSplitter
         cps: type[PlayerSplitter] = ClubPlayerSplitter
         PluginUtils.insert_on_equals(player_splitter_types, lps, cps)
+
+    @hookimpl
+    def insert_print_qrcode_types(self, qrcode_types: list[type[QRCodeType]]):
+        qrcode_types.append(FFESiteQRCodeType)
 
     @hookimpl
     def get_extra_print_view_columns(
@@ -864,6 +901,39 @@ class FfePlugin(Plugin):
         if isinstance(document, PlayerPrintDocument):
             return '.player-table .league { text-align: center; }'
         return ''
+
+    @hookimpl
+    def get_extra_statistics_sections(
+        self, document: PrintDocument, tournaments: list['Tournament']
+    ) -> Iterable[ExtraStatisticsSection]:
+        if isinstance(document, StatisticsPrintDocument):
+            counter = Counter[str](
+                league
+                for tournament in tournaments
+                for p in tournament.players
+                if (league := FFEUtils.get_player_plugin_data(p).league) is not None
+            )
+
+            if not counter:
+                return []
+
+            items: list[tuple[str, int]] = list(counter.items())
+            items = sorted(items, key=lambda item: (-item[1], item[0]))
+            rows = {k: v for k, v in items}
+
+            return [
+                ExtraStatisticsSection(
+                    at='club',
+                    title=_('Leagues'),
+                    rows=rows,
+                    subtitle=ngettext(
+                        '{count} league represented',
+                        '{count} leagues represented',
+                        len(rows),
+                    ).format(count=len(rows)),
+                )
+            ]
+        return []
 
     # ---------------------------------------------------------------------------------
     # Nav bar
@@ -942,17 +1012,19 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def insert_prize_player_filter_types(
+    def insert_player_filter_types(
         self, player_filter_types: list[type['PlayerFilter']]
     ):
         league: type[PlayerFilter] = FfeLeaguePlayerFilter
         club: type[PlayerFilter] = ClubPlayerFilter
         PluginUtils.insert_on_equals(player_filter_types, league, club)
+        player_filter_types.append(FfeLicencePlayerFilter)
 
     @hookimpl
-    def insert_prize_player_filter_option_types(
+    def insert_player_filter_option_types(
         self, player_filter_option_types: list[type['PlayerFilterOption']]
     ):
+        licence: type[PlayerFilterOption] = FfeLicenceFilterOption
         league: type[PlayerFilterOption] = FfeLeaguesFilterOption
-        club: type[PlayerFilterOption] = ClubsFilterOption
-        PluginUtils.insert_on_equals(player_filter_option_types, league, club)
+        player_filter_option_types.append(licence)
+        player_filter_option_types.append(league)

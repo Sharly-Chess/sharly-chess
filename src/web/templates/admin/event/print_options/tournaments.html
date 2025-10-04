@@ -1,0 +1,12 @@
+<div class="col-12">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('Tournaments:'),
+        placeholder=_('All the tournaments'),
+        help_text=_('The tournaments to print.'),
+        multiple_select=true,
+        select_all=true,
+        select_options=tournament_options,
+        data=data, errors=errors
+    ) }}
+</div>

@@ -1,0 +1,115 @@
+<div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered"
+    style="--bs-modal-width: min(90vw, 500px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {% if action == 'update' %}
+                    {{ _('Edit permission') }}
+                {% else %}
+                     {{ _('Create permission') }}
+                {% endif %}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <h4 class="mb-3">
+                {{ _('%(string)s:', string=_('Account')) }}
+                {{ admin_account.full_name }}
+            </h4>
+            <form
+                id="modal-form"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                {% if action == 'update' %}
+                    hx-patch="{{ url_for(
+                        'admin-account-permission-update',
+                        event_uniq_id=admin_event.uniq_id,
+                        account_id=admin_account.id,
+                        access_level=admin_permission.access_level.id
+                    ) }}"
+                {% else %}
+                    hx-post="{{ url_for(
+                        'admin-account-permission-create',
+                        event_uniq_id=admin_event.uniq_id,
+                        account_id=admin_account.id
+                    ) }}"
+                {% endif %}
+            >
+                <div class="row gy-2 gx-3">
+                    {{ admin_macros.select_input(
+                        name='access_level',
+                        label=_('%(string)s:', string=_('Access level')),
+                        help_text='',
+                        select_options=access_level_options,
+                        tooltip_select=true,
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <div
+                    id="tournament-select-container"
+                    class="row gy-2 gx-3"
+                    {% if data['access_level'] not in tournament_access_level_ids %}
+                        style="display:none"
+                    {% endif %}
+                >
+                    {{ admin_macros.select_input(
+                        name='tournament_ids',
+                        label=_('%(string)s:', string=_('Tournaments')),
+                        help_text=_('The tournaments on which the permission is applied (by default, the permission is applied to all the tournaments).'),
+                        select_all=true,
+                        select_options=tournament_options,
+                        multiple_select=true,
+                        placeholder=_('Choose one, many or no tournaments.'),
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <script>
+                    $('#access-level').change(function () {
+                        const tournamentLevels = {{ tournament_access_level_ids|tojson }};
+                        $('#tournament-select-container').css(
+                            'display',
+                            tournamentLevels.includes($(this).val()) ? 'block': 'none',
+                        );
+                    });
+                </script>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                {% if admin_account.permissions %}
+                    hx-get="{{ url_for(
+                        'admin-account-permissions-modal',
+                        event_uniq_id=admin_event.uniq_id,
+                        account_id=admin_account.id
+                    ) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-target="#modal-wrapper"
+                {% else %}
+                    data-bs-dismiss="modal"
+                {% endif %}
+            >
+                <i class="bi-arrow-left-circle-fill pe-1"></i>
+                {{ _('Back') }}
+            </button>
+
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn btn-primary"
+            >
+                <i class="bi bi-floppy-fill pe-1"></i>
+                {% if action == 'update' %}
+                    {{ _('Save') }}
+                {% else %}
+                    {{ _('Create') }}
+                {% endif %}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>requestRefresh()</script>

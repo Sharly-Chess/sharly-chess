@@ -21,7 +21,7 @@ FFE_EPOCH = datetime(2000, 1, 1)
 
 class FFEUtils:
     @staticmethod
-    def resolve_auto_upload(tournament: Tournament) -> str | None:
+    def resolve_auto_upload(tournament: Tournament) -> bool:
         if (
             ffe_auto_upload := get_data(tournament.plugin_data, 'ffe_auto_upload')
         ) is not None:
@@ -77,6 +77,20 @@ class PlayerFFELicence(IntEnum):
                 return _('FFE licence B (leisure)')
             case PlayerFFELicence.A:
                 return _('FFE licence A (competition)')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def compact_name(self) -> str:
+        match self:
+            case PlayerFFELicence.NONE:
+                return _('None *** FFE licence')
+            case PlayerFFELicence.N:
+                return _('Expired *** FFE licence')
+            case PlayerFFELicence.A:
+                return _('A - Competition *** FFE licence')
+            case PlayerFFELicence.B:
+                return _('B - Leisure *** FFE licence')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 

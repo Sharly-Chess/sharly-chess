@@ -28,34 +28,34 @@
     </svg>
 {% endmacro %}
 
-{% macro visibility_icon(object_type, public, tooltip_public_text, tooltip_private_text, class) %}
+{% macro visibility_icon(object_type, public, tooltip_public_text, tooltip_private_text, class='') %}
     <!-- visibility_icon() -->
     {% if public %}
         {% if object_type == 'event' %}
-            {% set _tooltip_text=tooltip_public_text or _('This event is public (by default, screens are visible by the users).') %}
+            {% set _tooltip_text=tooltip_public_text or _('This event is public (by default, screens are visible by the spectators).') %}
         {% elif object_type == 'screen' %}
-            {% set _tooltip_text=tooltip_public_text or _('This screen is public (visible by the users).') %}
+            {% set _tooltip_text=tooltip_public_text or _('This screen is public (visible by the spectators).') %}
         {% elif object_type == 'family' %}
-            {% set _tooltip_text=tooltip_public_text or _('This screen family is public (visible by the users).') %}
+            {% set _tooltip_text=tooltip_public_text or _('This screen family is public (visible by the spectators).') %}
         {% elif object_type == 'rotator' %}
-            {% set _tooltip_text=tooltip_public_text or _('This rotator is public (visible by the users).') %}
+            {% set _tooltip_text=tooltip_public_text or _('This rotator is public (visible by the spectators).') %}
         {% elif object_type == 'display_controller' %}
-            {% set _tooltip_text=tooltip_public_text or _('This display controller is public (visible by the users).') %}
+            {% set _tooltip_text=tooltip_public_text or _('This display controller is public (visible by the spectators).') %}
         {% else %}
             {% set _tooltip_text=tooltip_public_text or '???' %}
         {% endif %}
         {% set _icon_class='bi-eye-fill text-success' %}
     {% else %}
         {% if object_type == 'event' %}
-            {% set _tooltip_text=tooltip_private_text or _('This event is private (by default, screens are not visible by the users).') %}
+            {% set _tooltip_text=tooltip_private_text or _('This event is private (by default, screens are not visible by the spectators).') %}
         {% elif object_type == 'screen' %}
-            {% set _tooltip_text=tooltip_private_text or _('This screen is private (not visible by the users).') %}
+            {% set _tooltip_text=tooltip_private_text or _('This screen is private (not visible by the spectators).') %}
         {% elif object_type == 'family' %}
-            {% set _tooltip_text=tooltip_private_text or _('This screen family is private (not visible by the users).') %}
+            {% set _tooltip_text=tooltip_private_text or _('This screen family is private (not visible by the spectators).') %}
         {% elif object_type == 'rotator' %}
-            {% set _tooltip_text=tooltip_private_text or _('This rotator is private (not visible by the users).') %}
+            {% set _tooltip_text=tooltip_private_text or _('This rotator is private (not visible by the spectators).') %}
         {% elif object_type == 'display_controller' %}
-            {% set _tooltip_text=tooltip_private_text or _('This display controller is private (not visible by the users).') %}
+            {% set _tooltip_text=tooltip_private_text or _('This display controller is private (not visible by the spectators).') %}
         {% else %}
             {% set _tooltip_text=tooltip_private_text or '???' %}
         {% endif %}
@@ -70,8 +70,12 @@
     <!-- end visibility_icon() -->
 {% endmacro %}
 
+{% macro doc_url(url) %}
+    https://sharly-chess.com/{% if locale != 'en' %}{{ locale }}/{% endif %}h/{{ url }}
+{% endmacro %}
+
 {% macro doc_icon(url, class) %}
-    <a href="https://sharly-chess.com/{% if locale != 'en' %}{{ locale }}/{% endif %}h/{{ url }}" target="_blank" class="{{ class }}">
+    <a href="{{ doc_url(url) }}" target="_blank" class="{{ class }}">
         <i class="bi-info-circle"></i>
     </a>
 {% endmacro %}
@@ -142,7 +146,7 @@
     <!-- display_controller_icon() -->
     <span
         class="fw-bold"
-        {{ tooltip_attributes('info', _('The screens displayed by the display controller are controlled by the administrator.'), 'top') }}
+        {{ tooltip_attributes('info', _('The screens displayed by the display controller are controlled by the screen managers.'), 'top') }}
     >
         <i class="bi bi-box-arrow-in-right"></i>
     </span>
@@ -241,22 +245,6 @@
             ></i>
         </div>
     {% endif %}
-{% endmacro %}
-
-{% macro refresh_listener(
-    hx_get,
-    hx_include
-)%}
-    <div
-        class="d-none"
-        hx-get={{ hx_get }}
-        {% if hx_include %}
-            hx-include={{ hx_include }}
-        {% endif %}
-        hx-trigger="request_refresh from:body"
-        hx-target="body"
-        hx-indicator="#please-wait"
-    ></div>
 {% endmacro %}
 
 {% macro federation_flag_url(

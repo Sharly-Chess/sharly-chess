@@ -13,6 +13,7 @@ from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
+from database.sqlite.event.event_store import StoredTournament, StoredEvent
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_session import FFESession
 from plugins.ffe.utils import FFEUtils
@@ -116,11 +117,11 @@ class FfeBackgroundUploader:
         return True
 
     @classmethod
-    def ffe_last_upload(cls, tournament: Tournament) -> float:
+    def ffe_last_upload(cls, tournament: Tournament | StoredTournament) -> float:
         return get_data(tournament.plugin_data, 'ffe_last_upload', 0.0)
 
     @classmethod
-    def ffe_upload_needed(cls, tournament: Tournament) -> bool:
+    def ffe_upload_needed(cls, tournament: Tournament | StoredTournament) -> bool:
         return cls.ffe_last_upload(tournament) < max(
             tournament.last_update,
             tournament.last_player_update,
@@ -135,7 +136,7 @@ class FfeBackgroundUploader:
                     'event': 'ffe-upload-event',
                     'data': '',
                 },
-                ['sse'],
+                ['ws'],
             )
 
     @classmethod
@@ -152,10 +153,11 @@ class FfeBackgroundUploader:
         set_locale(SharlyChessConfig().locale)
 
         # We refetch the latest event and tournament
-        event = EventLoader().events_by_id.get(event_uniq_id, None)
-        if not event:
+        loader = EventLoader()
+        if event_uniq_id not in loader.event_uniq_ids:
             # The event has been deleted
             return
+        event = loader.load_event(event_uniq_id)
 
         tournament = event.tournaments_by_id.get(tournament_id, None)
         if not tournament:
@@ -275,28 +277,46 @@ class FfeBackgroundUploader:
         uploader.start()
 
     @classmethod
+    def should_schedule_tournament_upload(
+        cls,
+        stored_event: StoredEvent,
+        stored_tournament: StoredTournament,
+    ) -> bool:
+        # Check if the auto upload is enabled
+        tournament_auto_upload = get_data(
+            stored_tournament.plugin_data, 'ffe_auto_upload'
+        )
+        if tournament_auto_upload is None:
+            tournament_auto_upload = get_data(
+                stored_event.plugin_data, 'ffe_auto_upload'
+            )
+        if not tournament_auto_upload:
+            return False
+
+        assert stored_tournament.id is not None
+        result_id = cls.result_id(stored_event.uniq_id, stored_tournament.id)
+        thread = cls.timeout_threads.get(result_id)
+        if thread and thread.is_alive():
+            # There's already a thread running for this tournament
+            return False
+
+        if not cls.ffe_upload_needed(stored_tournament):
+            # Latest version already uploaded
+            return False
+
+        return True
+
+    @classmethod
     def schedule_upload(cls, tournament: Tournament, force=False) -> None:
         """Schedule the upload of a tournament that has been modified."""
-
-        result_id = cls.result_id(tournament.event.uniq_id, tournament.id)
-        if not force:
-            result = cls.get_updated_tournament_upload_result(tournament)
-            if result.status == FfeUploadStatus.SETTINGS_ERROR:
-                # Skip this tournament if we have a SETTINGS_ERROR
-                return
-
-            if not cls.ffe_upload_needed(tournament):
-                # Latest version already uploaded
-                return
-
-            thread = cls.timeout_threads.get(result_id)
-            if thread and thread.is_alive():
-                # There's already a thread running for this tournament
-                return
-
+        result = cls.get_updated_tournament_upload_result(tournament)
+        if result.status == FfeUploadStatus.SETTINGS_ERROR:
+            # Skip this tournament if we have a SETTINGS_ERROR
+            return
         ffe_last_upload = cls.ffe_last_upload(tournament)
         delay = FFEUtils.resolve_auto_upload_delay(tournament.event)
         wait_time = 0.1
+        result_id = cls.result_id(tournament.event.uniq_id, tournament.id)
         if not force and time() < ffe_last_upload + delay * 60:
             wait_time = max(delay * 60 - (time() - ffe_last_upload), 0.1)
             cls.upload_status_messages[result_id] = FfeUploadResult(

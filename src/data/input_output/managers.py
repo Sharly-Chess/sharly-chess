@@ -5,7 +5,10 @@ from data.input_output.data_source import (
     DataSource,
 )
 from data.input_output.tournament_exporters import TournamentExporter
-from data.input_output.tournament_importers import TournamentImporter
+from data.input_output.tournament_importers import (
+    TournamentImporter,
+    TrfTournamentImporter,
+)
 from plugins.manager import plugin_manager
 from utils.entity import EntityManager
 
@@ -43,6 +46,6 @@ class TournamentExporterManager(EntityManager[TournamentExporter]):
 class TournamentImporterManager(EntityManager[TournamentImporter]):
     @staticmethod
     def entity_types() -> list[type[TournamentImporter]]:
-        importers: list[type[TournamentImporter]] = []
+        importers: list[type[TournamentImporter]] = [TrfTournamentImporter]
         plugin_manager.hook.insert_tournament_importers(importers=importers)
         return importers

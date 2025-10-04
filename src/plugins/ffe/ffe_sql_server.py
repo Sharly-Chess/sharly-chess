@@ -115,13 +115,13 @@ class FFESqlServer(SqlServer):
             paid=0.0,
             title=PapiPlayerTitle.get_core_object(row['FideTitre'] or '').value,
             ratings={
-                TournamentRating.STANDARD: PlayerRating(
+                TournamentRating.STANDARD.value: PlayerRating.from_type(
                     row['Elo'], PapiPlayerRatingType.get_core_object(row['Fide'])
                 ).stored_value,
-                TournamentRating.RAPID: PlayerRating(
+                TournamentRating.RAPID.value: PlayerRating.from_type(
                     row['Rapide'], PapiPlayerRatingType.get_core_object(row['Fide03'])
                 ).stored_value,
-                TournamentRating.BLITZ: PlayerRating(
+                TournamentRating.BLITZ.value: PlayerRating.from_type(
                     row['Elo06'], PapiPlayerRatingType.get_core_object(row['Fide06'])
                 ).stored_value,
             },
@@ -175,7 +175,7 @@ class FFESqlServer(SqlServer):
         return f"'{fide_id}'"
 
     async def search_player(
-        self, string: str, limit: int | None = None
+        self, string: str, federation: str, page: int = 0, limit: int | None = None
     ) -> list[StoredPlayer]:
         """Searches the SQL server for the given tokens, raises SharlyChessException on error."""
         # NOTE(Amaras): Quicken search if the string looks like a complete FFE
@@ -196,7 +196,7 @@ class FFESqlServer(SqlServer):
         tokens: list[str] = string.split(' ')
         str_fields: tuple[tuple[str, str, str], ...] = (
             ('joueur.Nom', '%', '%'),
-            ('joueur.Prenom', '', '%'),
+            ('joueur.Prenom', '%', '%'),
             ('joueur.NrFFE', '', ''),
         )
         conditions: list[str] = [
@@ -222,24 +222,47 @@ class FFESqlServer(SqlServer):
             ]
             params += token_params
         condition: str = ' AND '.join(map(lambda c: f'({c})', conditions))
-        order = ' OR '.join(
-            [
-                '(UPPER(joueur.Nom) LIKE %s)',
+
+        # We build one CASE block that sorts best → worst
+        order_clauses = []
+        for token in tokens:
+            order_clauses.append("""
+                CASE
+                    WHEN UPPER(joueur.Nom) LIKE %s AND federation = %s THEN 0
+                    WHEN UPPER(joueur.Prenom) LIKE %s AND federation = %s THEN 1
+                    WHEN UPPER(joueur.Nom) LIKE %s OR UPPER(joueur.Prenom) LIKE %s THEN 2
+                    WHEN federation = %s THEN 3
+                    ELSE 4
+                END
+            """)
+
+            # Params for this token in the same order
+            params += [
+                f'{token}%',
+                federation,
+                f'{token}%',
+                federation,
+                f'{token}%',
+                f'{token}%',
+                federation,
             ]
-            * len(tokens)
-        )
-        params += [f'{token}%' for token in tokens]
+
+        order_expr = ' + '.join(order_clauses)
+
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
             f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
             f'WHERE {condition} '
-            f'ORDER BY (CASE WHEN {order} THEN 0 ELSE 1 END), Joueur.Nom, Joueur.Prenom'
+            f'ORDER BY {order_expr}, Joueur.Nom, Joueur.Prenom'
         )
+
         if limit:
-            query += ' OFFSET 0 ROWS FETCH NEXT %s ROWS ONLY'
+            query += ' OFFSET %s ROWS FETCH NEXT %s ROWS ONLY'
             params += [
+                page * limit,
                 limit,
             ]
+
         await self.execute(
             query,
             tuple(params),

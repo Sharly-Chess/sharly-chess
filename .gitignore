@@ -32,15 +32,9 @@ __pycache__/
 *.ldb
 
 # Generated database files
-*.db
-*.db-shm
-*.db-wal
+*-shm
+*-wal
 .scc
-.scc-wal
-.scc-shm
-.sce
-.sce-wal
-.sce-shm
 
 # MacOS files
 .DS_Store
@@ -71,7 +65,7 @@ __pycache__/
 /src/web/static/lib/htmx/htmx-*
 /src/web/static/lib/htmx/preload-*
 /src/web/static/lib/htmx/multi-swap-*
-/src/web/static/lib/htmx/sse-*
+/src/web/static/lib/htmx/ws-*
 /src/web/static/lib/htmx/remove-me-*
 /src/web/static/lib/Sortable
 /src/web/static/lib/jstree
@@ -79,8 +73,9 @@ __pycache__/
 /src/web/static/lib/select2/select2-*
 /src/web/static/lib/select2/themes/bootstrap-5-*
 
-
-/src/common/i18n/.auto-update
+/src/common/i18n/.auto-update*
 /tests/screenshots/*.png
 /*.diff
-/locale/*/LC_MESSAGES/messages.updated
+/scripts/access_levels/*.md
+
+/TAG_MESSAGE*.txt

@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import IO, override
 
+from common.i18n.utils import unicode_normalize
 import trf
 
-from common import unicode_normalize
 from common.i18n import _
 from data.tournament import Tournament
 from utils.entity import IdentifiableEntity
@@ -53,7 +53,7 @@ class Trf16TournamentExporter(TournamentExporter):
 
     @staticmethod
     def static_name() -> str:
-        return 'TRF16'
+        return _('TRF16')
 
     @property
     def tooltip(self) -> str:
@@ -79,7 +79,7 @@ class TrfBxTournamentExporter(TournamentExporter):
 
     @staticmethod
     def static_name() -> str:
-        return 'TRF(bx)'
+        return _('TRF(bx)')
 
     @property
     def tooltip(self) -> str:
@@ -107,7 +107,7 @@ class PgnTournamentExporter(TournamentExporter):
 
     @staticmethod
     def static_name() -> str:
-        return 'PGN'
+        return _('PGN')
 
     @property
     def tooltip(self) -> str:

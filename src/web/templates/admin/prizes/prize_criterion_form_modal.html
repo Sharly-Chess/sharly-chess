@@ -6,9 +6,9 @@
         <div class="modal-header">
             <h2 class="modal-title">
                 {% if action == 'update' %}
-                    {{ _('Prize criterion edition') }}
+                    {{ _('Edit criterion') }}
                 {% else %}
-                     {{ _('Prize criterion creation') }}
+                     {{ _('Create criterion') }}
                 {% endif %}
             </h2>
         </div>
@@ -49,7 +49,7 @@
                     ) }}"
                 {% endif %}
             >
-                <div class="row mb-3">
+                <div class="row gy-2 gx-3">
                     {{ admin_macros.select_input(
                         name='type',
                         label=_('%(string)s:', string=_('Type')),
@@ -60,7 +60,7 @@
                 </div>
                 {% for option in player_filter_options %}
                     <div
-                        class="row"
+                        class="row gy-2 gx-3"
                         id="{{ option.container_id }}"
                         {% if option.container_id not in containers_by_type[data['type']] %}
                             style="display:none"
@@ -97,10 +97,9 @@
                 ) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
-                preload
             >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Close') }}
+                <i class="bi-arrow-left-circle-fill pe-1"></i>
+                {{ _('Back') }}
             </button>
             {% if action == 'update' %}
                 <button
@@ -118,12 +117,4 @@
     </div>
 </div>
 
-{% if not admin_prize_category.criteria %}
-    <script>
-        // We need to reload the page when the modal is hidden, because the criteria might have changed.
-        $(document).one('hide.bs.modal', function(e) {
-            e.preventDefault();
-            document.body.dispatchEvent(new CustomEvent('request_refresh'));
-        });
-    </script>
-{% endif %}
+<script>requestRefresh()</script>

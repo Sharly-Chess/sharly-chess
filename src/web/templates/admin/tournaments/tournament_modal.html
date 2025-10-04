@@ -24,6 +24,7 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
+
                 {% if previous_tournament %}
                     {% with type='success', auto_remove=true, message=_(
                         'Tournament [%(tournament)s] has been created.',
@@ -35,8 +36,11 @@
                 <h4>
                     {{ _('Properties') }}
                 </h4>
-                <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
+                {# These inputs are a trick to avoid autocomplete #}
+                <input type="text" style="display:none">
+                <input type="password" style="display:none">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='name',
                             label=_('Name:'),
@@ -46,7 +50,7 @@
                         ) }}
                     </div>
 
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.number_input(
                             name='rounds',
                             label=_('%(string)s:', string=_('Rounds')),
@@ -55,8 +59,8 @@
                         ) }}
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
                             name='rating',
                             label=_('Rating:'),
@@ -65,8 +69,21 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-
-                    <div class="col-12 col-md-6 col-lg-3 mb-3">
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.select_input(
+                            name='player_rating_type',
+                            label=_('Player ratings to use:'),
+                            help_text=_(
+                                'Affects the rating that will be chosen for each player.',
+                                default=admin_event.player_rating_type
+                            ),
+                            select_options=player_rating_type_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6 col-lg-3">
                         {{ admin_macros.datetime_input(
                             name='start',
                             label=_('Start:'),
@@ -74,7 +91,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6 col-lg-3 mb-3">
+                    <div class="col-12 col-md-6 col-lg-3">
                         {{ admin_macros.datetime_input(
                             name='stop',
                             label=_('End:'),
@@ -82,9 +99,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='location',
                             label=_('%(string)s:', string=_('Location')),
@@ -104,8 +119,8 @@
                     {{ _('Estimated ratings') }}
                 </h4>
 
-                <div class="row estimated-ratings">
-                    <div class="col-12 col-md-6 mb-3">
+                <div class="row gy-2 gx-3 estimated-ratings">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
                             name='override_unrated_rapid_blitz',
                             label=_('Seeding of unrated rapid/blitz'),
@@ -142,8 +157,8 @@
                 {% set trf25 = data.time_control_trf25 or '' %}
                 <input type="hidden" name="time_control_trf25" id="time-control-trf25" value="{{ trf25 }}">
 
-                <div class="row">
-                    <div class="col-12 mb-3">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12">
                         <div id="tc-editor-modal" class="tc" data-initial="{{ trf25 }}">
                             <!-- Read-only display -->
                             <div class="tc-display d-flex align-items-center gap-2">
@@ -183,8 +198,8 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-12 col-md-4 mb-3">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-4">
                         {{ admin_macros.number_input(
                             name='time_control_handicap_penalty_value',
                             label=_('Penalty (handicap, seconds):'),
@@ -193,7 +208,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-4 mb-3">
+                    <div class="col-12 col-md-4">
                         {{ admin_macros.number_input(
                             name='time_control_handicap_penalty_step',
                             label=_('Elo step (handicap):'),
@@ -202,7 +217,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-4 mb-3">
+                    <div class="col-12 col-md-4">
                         {{ admin_macros.number_input(
                             name='time_control_handicap_min_time',
                             label=_('Minimal time (handicap, seconds):'),
@@ -216,25 +231,31 @@
                 <h4>
                     {{ _('Rules') }}
                 </h4>
-                <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='rules',
                             label=_('Rules file location:'),
-                            placeholder=_('E.g.: c:\\chess\\tournaments\\main\\rules.pdf'),
-                            help_text=_('A URL, or the path to the rules file on the server, in PDF format (optional, by default the rules files of the event).'),
+                            placeholder=(
+                                _('Default: %(string)s', string=admin_event.rules)
+                                if admin_event.rules else
+                                _('E.g.: c:\\chess\\tournaments\\main\\rules.pdf')
+                            ),
+                            help_text=_('A URL, or the path to the rules file on the server, in PDF format.'),
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
-                        {{ admin_macros.select_input(
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.number_input(
                             name='record_illegal_moves',
                             label=_('Illegal moves recording:'),
+                            placeholder=_('Default: %(string)s', string=admin_event.record_illegal_moves),
+                            min=0,
+                            max=3,
                             help_text=_(
-                                'The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d).',
-                                default=admin_event.record_illegal_moves
+                                'The maximum number of illegal moves that '
+                                'can be recorded per round for a player.',
                             ),
-                            select_options=record_illegal_moves_options,
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -243,8 +264,17 @@
                 <h4>
                     {{ _('Pairings') }}
                 </h4>
-                <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
+                <div class="row gy-2 gx-3">
+                    <div
+                        class="col-12 col-md-6"
+                        {% if admin_tournament.started %}
+                            {{ macros.tooltip_attributes(
+                                'info',
+                                _('This field can\'t be modified once the tournament has started.'),
+                                'top'
+                            ) }}
+                        {% endif %}
+                    >
                         {{ admin_macros.select_input(
                             name='pairing_system',
                             label=_('%(string)s:', string=_('Pairing system')),
@@ -260,10 +290,17 @@
                     {% endif %}
                     {% for pairing_system in pairing_systems %}
                         <div
-                            class="col-12 col-md-6 mb-3"
+                            class="col-12 col-md-6"
                             id="{{ pairing_system.variation_container_id }}"
                             {% if pairing_system.id != data['pairing_system'] %}
                                 style="display:none"
+                            {% endif %}
+                            {% if admin_tournament.started %}
+                                {{ macros.tooltip_attributes(
+                                    'info',
+                                    _('This field can\'t be modified once the tournament has started.'),
+                                    'top'
+                                ) }}
                             {% endif %}
                         >
                             {{ admin_macros.select_input(
@@ -296,55 +333,35 @@
                         });
                     </script>
                 </div>
-                <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.number_input(
                             name='first_board_number',
                             label=_('First board number:'),
-                            placeholder=_('E.g.: %(num)d', num=20),
-                            help_text=_(
-                                'The number of the first board of the tournament (if not set, defaults to %(default)d).',
-                                default=sharly_chess_config.default_first_board_number
-                            ),
+                            placeholder=_('Default: %(string)s', string=sharly_chess_config.default_first_board_number),
+                            help_text=_('The number of the first board of the tournament.'),
                             data=data, errors=errors
                         ) }}
                     </div>
-                    {#
-                    <div class="col-12 col-md-6 mb-3">
-                        {{ admin_macros.select_input(
-                            name='paired_bye_result',
-                            label=_('Paired bye points:'),
-                            help_text=_('The points scored by players who are paired bye.'),
-                            select_options=paired_bye_result_options,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    #}
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.number_input(
                             name='max_byes',
                             label=_('Max byes:'),
-                            placeholder=_('E.g.: %(num)d', num=2),
-                            help_text=_(
-                                'The maximum number of byes a player can pretend to (if not set, defaults to %(default)d).',
-                                default=sharly_chess_config.default_max_byes
-                            ),
+                            placeholder=_('Default: %(string)s', string=sharly_chess_config.default_max_byes),
+                            help_text=_('The maximum number of byes a player can pretend to.'),
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.number_input(
                             name='last_rounds_no_byes',
                             label=_('No. final rounds without byes:'),
-                            placeholder=_('E.g.: %(num)d', num=3),
-                            help_text=_(
-                                'The number of final rounds in which byes are not permitted (if not set, defaults to %(default)d).',
-                                default=sharly_chess_config.default_last_rounds_no_byes
-                            ),
+                            placeholder=_('Default: %(string)s', string=sharly_chess_config.default_last_rounds_no_byes),
+                            help_text=_('The number of final rounds in which byes are not permitted.'),
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.switch_input(
                             name='three_points_for_a_win',
                             label=_('%(string)s:', string=_('Point counting')),
@@ -361,7 +378,7 @@
                 {% for pairing_system in pairing_systems %}
                     <div
                         id="{{ pairing_system.tie_break_help_container_id }}"
-                        class="row"
+                        class="row gy-2 gx-3"
                         {% if pairing_system.id != data['pairing_system'] %}
                             style="display:none"
                         {% endif %}
@@ -385,9 +402,9 @@
                         </div>
                     </div>
                 {% endfor %}
-                <div class="row">
+                <div class="row gy-2 gx-3">
                     {% for index in [1, 2, 3] %}
-                        <div class="col-12 col-md-4 mb-3">
+                        <div class="col-12 col-md-4">
                             {{ admin_macros.select_input(
                                 name='tie_break_' ~ index|string,
                                 label=_('Tie-break #%(index)d:', index=index),
@@ -432,17 +449,9 @@
     </div>
 </div>
 
-{% if previous_tournament %}
-    <script>
-        // We need to reload the page when the modal is hidden, because tournaments were added.
-        $(document).one('hide.bs.modal', function(e) {
-            e.preventDefault();
-            document.body.dispatchEvent(new CustomEvent('request_refresh'));
-        });
-    </script>
-{% endif %}
-
 <script>
+    requestRefresh();
+
     function ensureWhite(tc)  {
         return { white: (tc.white && tc.white.length ? tc.white : [{ seconds: 0 }]), black: tc.black };
     }

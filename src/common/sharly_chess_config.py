@@ -2,11 +2,10 @@ import locale
 import logging
 import os
 import re
-import socket
 import subprocess
 import sys
 from pathlib import Path
-from typing import Optional, overload, ClassVar, TYPE_CHECKING
+from typing import Optional, overload, TYPE_CHECKING
 
 import jinja2
 import litestar
@@ -29,7 +28,9 @@ from common.i18n import (
     set_locale,
 )
 from common.logger import set_logging_config, get_logger
+from common.network import find_lan_interfaces, LOCALHOST_IP
 from common.singleton import Singleton
+from plugins.manager import plugin_manager
 from utils.enum import Result
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredConfig
@@ -43,14 +44,9 @@ logger: logging.Logger = get_logger()
 class SharlyChessConfig(metaclass=Singleton):
     """The configuration for the application, read from the database."""
 
-    _stored_config: ClassVar[StoredConfig | None] = None
-
     def __init__(self):
         self.web_port: int | None = None
-
-    @classmethod
-    def reload(cls):
-        cls._stored_config = cls.load_stored_config()
+        self._stored_config: StoredConfig | None = None
 
     @staticmethod
     def _get_system_user_locale() -> str | None:
@@ -152,18 +148,16 @@ class SharlyChessConfig(metaclass=Singleton):
             )
         return DEFAULT_LOCALE
 
-    @classmethod
-    def load_stored_config(cls) -> StoredConfig:
+    def load_and_set_env(self):
         with ConfigDatabase() as config_database:
             stored_config: StoredConfig = config_database.load_stored_config()
         if not stored_config.locale:
-            system_user_locale: str | None = cls._get_system_user_locale()
-            stored_config.locale = cls._get_user_locale(system_user_locale)
-
-            if TEST_ENV:
-                stored_config.federation = SharlyChessConfig.tests_federation
+            system_user_locale: str | None = self._get_system_user_locale()
+            stored_config.locale = self._get_user_locale(system_user_locale)
             with ConfigDatabase(write=True) as config_database:
                 config_database.update_stored_config(stored_config)
+        if TEST_ENV:
+            stored_config.federation = SharlyChessConfig.tests_federation
         set_locale(stored_config.locale)
         set_logging_config(
             console_log_level=stored_config.console_log_level,
@@ -172,14 +166,15 @@ class SharlyChessConfig(metaclass=Singleton):
             console_show_level=stored_config.console_show_level,
         )
         enable_experimental_features(stored_config.experimental)
-        return stored_config
+        plugin_manager.reload_register()
+        self._stored_config = stored_config
 
     @property
     def stored_config(self) -> StoredConfig:
-        cls = self.__class__
-        if not cls._stored_config:
-            cls._stored_config = self.load_stored_config()
-        return cls._stored_config
+        if not self._stored_config:
+            self.load_and_set_env()
+            assert self._stored_config is not None
+        return self._stored_config
 
     @property
     def force_edit(self) -> bool:
@@ -263,7 +258,7 @@ class SharlyChessConfig(metaclass=Singleton):
     default_pairing_variation_id = 'SWISS_STANDARD'
 
     """ The URL of the project. """
-    url: str = 'https://sharly-chess.com'
+    web_url: str = 'https://sharly-chess.com'
 
     """ The contact email. """
     mail: str = 'contact@sharly-chess.com'
@@ -329,10 +324,9 @@ class SharlyChessConfig(metaclass=Singleton):
     bootstrap_version: Version = Version('5.3.3')
     bootstrap_icons_version: Version = Version('1.11.3')
     htmx_version: Version = Version('2.0.4')
-    htmx_preload_version: Version = Version('2.1.0')
     htmx_remove_me_version: Version = Version('2.0.0')
     htmx_multi_swap_version: Version = Version('2.0.0')
-    htmx_sse_version: Version = Version('2.2.3')
+    htmx_ws_version: Version = Version('2.0.3')
     jquery_version: Version = Version('3.7.1')
     sortable_version: Version = Version('1.15.6')
     jstree_version: Version = Version('3.3.17')
@@ -341,45 +335,45 @@ class SharlyChessConfig(metaclass=Singleton):
     select2_bootstrap_theme_version: Version = Version('1.3.0')
 
     @overload
-    def _url(self, ip: str) -> str: ...
+    def app_url(self, ip: str) -> str: ...
 
     @overload
-    def _url(self, ip: None) -> None: ...
+    def app_url(self, ip: None) -> None: ...
 
-    def _url(self, ip: str | None) -> str | None:
+    def app_url(self, ip: str | None) -> str | None:
         """Returns the URL of the application for the given IP."""
         if ip is None:
             return None
         return f'http://{ip}{f":{self.web_port}" if self.web_port != 80 else ""}'
 
     @property
-    def lan_ip(self) -> str | None:
-        """Returns the IP of the server on the LAN/WAN."""
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.settimeout(0)
+    def lan_ifaces(self) -> list[dict[str, str]]:
+        """[{ip, iface, type, label}]"""
         try:
-            s.connect(('10.254.254.254', 1))  # doesn't even have to be reachable
-            return s.getsockname()[0]
-        except Exception:  # pylint: disable=broad-exception-caught
-            pass
-        finally:
-            s.close()
-        return None
+            data = find_lan_interfaces()
+            logger.debug('LAN ifaces: %s', data)
+            return data
+        except Exception as e:
+            logger.debug('find_lan_interfaces failed: %s', e)
+            return []
+
+    @property
+    def lan_ips(self) -> list[str]:
+        return [d['ip'] for d in self.lan_ifaces]
 
     @property
     def local_ip(self) -> str:
         """Returns the local IP (localhost) of the server (with arbiter access)."""
-        return '127.0.0.1'
+        return LOCALHOST_IP
 
     @property
-    def lan_url(self) -> str | None:
-        """The URL of the application on the LAN/WAN."""
-        return self._url(self.lan_ip)
+    def lan_urls(self) -> list[str]:
+        return [self.app_url(ip_info['ip']) for ip_info in self.lan_ifaces]
 
     @property
     def local_url(self) -> str:
         """The local URL of the application (with arbiter access)."""
-        return self._url(self.local_ip)
+        return self.app_url(self.local_ip)
 
     # The default number of illegal moves to record.
     default_record_illegal_moves_number: int = 0
@@ -416,11 +410,15 @@ class SharlyChessConfig(metaclass=Singleton):
     # The default delay between pages on rotators (in seconds).
     default_rotator_delay: int = 1 if TEST_ENV else 15
 
-    # The default text shown on timers before the start of a round.
-    default_timer_round_text_before: str = 'Début de la ronde {} dans %s'
+    @property
+    def default_timer_round_text_before(self) -> str:
+        """Returns the default text shown on timers before the start of a round."""
+        return _('Start of round {} in %s')
 
-    # The default text shown on timers after the start of a round.
-    default_timer_round_text_after: str = 'Ronde {} commencée depuis %s'
+    @property
+    def default_timer_round_text_after(self) -> str:
+        """Returns the default text shown on timers after the start of a round."""
+        return _('Round {} started for %s')
 
     # The delay before checking if the user index page has changed.
     user_index_update_delay: int = 1 if TEST_ENV else 10

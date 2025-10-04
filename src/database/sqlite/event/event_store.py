@@ -77,6 +77,14 @@ class StoredPrizeGroup:
 
 
 @dataclass
+class StoredTournamentCriterion:
+    id: int | None
+    tournament_id: int
+    type: str
+    options: dict[str, Any]
+
+
+@dataclass
 class StoredPairing:
     tournament_id: int
     player_id: int
@@ -108,21 +116,21 @@ class StoredTournamentPlayer:
 class StoredPlayer:
     id: int | None
     last_name: str
-    first_name: str | None
-    date_of_birth: date | None
-    gender: int
-    mail: str | None
-    phone: str | None
-    comment: str | None
-    owed: float
-    paid: float
-    title: int
-    ratings: dict[int, dict[str, int]]
-    fide_id: int | None
-    federation: str
-    club: str | None
-    fixed: int | None
-    check_in: bool
+    ratings: dict[int, dict[str, int | None]]
+    first_name: str | None = None
+    date_of_birth: date | None = None
+    gender: int = 0
+    mail: str | None = None
+    phone: str | None = None
+    comment: str | None = None
+    owed: float = 0.0
+    paid: float = 0.0
+    title: int = 0
+    fide_id: int | None = None
+    federation: str = 'FID'
+    club: str | None = None
+    fixed: int | None = None
+    check_in: bool = False
     # TODO (Molrn - multi tournament) move to a list in StoredTournament
     stored_tournament_player: StoredTournamentPlayer = field(
         default_factory=StoredTournamentPlayer
@@ -157,11 +165,15 @@ class StoredTournament:
     check_in_open: bool = False
     rounds: int = 1
     rating: int = 1
+    player_rating_type: int | None = None
     last_update: float = 0.0
     last_player_update: float = 0.0
     last_pairing_update: float = 0.0
     three_points_for_a_win: bool = False
     override_unrated_rapid_blitz: bool | None = None
+    stored_criteria: list[StoredTournamentCriterion] = field(
+        default_factory=list[StoredTournamentCriterion]
+    )
     stored_prize_groups: list[StoredPrizeGroup] = field(
         default_factory=list[StoredPrizeGroup]
     )
@@ -172,10 +184,11 @@ class StoredTournament:
     stored_boards_by_round: dict[int, list[StoredBoard]] = field(
         default_factory=dict[int, list[StoredBoard]]
     )
-    errors: dict[str, str] = field(default_factory=dict[str, str])
 
     # Plugins can add their own tournament data
-    plugin_data: dict[str, dict[str, Any]] | None = None
+    plugin_data: dict[str, dict[str, Any]] = field(
+        default_factory=dict[str, dict[str, Any]]
+    )
 
 
 @dataclass
@@ -259,16 +272,25 @@ class StoredFamily:
 
 
 @dataclass
+class StoredRotatingScreen:
+    id: int | None
+    rotator_id: int
+    screen_id: int | None = None
+    family_id: int | None = None
+    index: int = 0
+
+
+@dataclass
 class StoredRotator:
     id: int | None
     name: str
-    family_ids: list[int] | None
-    screen_ids: list[int] | None
-    delay: int | None
+    delay: int | None = None
     public: bool = True
     message_default: bool = True
     message_text: str | None = None
-    errors: dict[str, str] = field(default_factory=dict[str, str])
+    stored_rotating_screens: list[StoredRotatingScreen] = field(
+        default_factory=list[StoredRotatingScreen]
+    )
 
 
 @dataclass
@@ -282,18 +304,37 @@ class StoredDisplayController:
 
 
 @dataclass
+class StoredPermission:
+    account_id: int
+    access_level: str
+    tournament_ids: list[int] | None = None
+
+
+@dataclass
+class StoredAccount:
+    id: int | None
+    active: bool
+    first_name: str | None
+    last_name: str | None
+    password_hash: str | None
+    stored_permissions: list[StoredPermission] = field(
+        default_factory=list[StoredPermission]
+    )
+
+
+@dataclass
 class BaseStoredEvent:
     uniq_id: str
     name: str
     federation: str
+    player_rating_type: int
     start: float
     stop: float
+    hide_background_image: bool
     public: bool = False
     location: str | None = None
-    hide_background_image: bool = SharlyChessConfig.default_hide_background_image
     background_image: str | None = None
     background_color: str | None = None
-    update_password: str | None = None
     record_illegal_moves: int | None = None
     rules: str | None = None
     timer_colors: dict[int, str | None] | None = None
@@ -305,7 +346,9 @@ class BaseStoredEvent:
     override_unrated_rapid_blitz: bool | None = None
 
     # Plugins can add their own tournament data
-    plugin_data: dict[str, dict[str, Any]] | None = None
+    plugin_data: dict[str, dict[str, Any]] = field(
+        default_factory=dict[str, dict[str, Any]]
+    )
 
 
 @dataclass
@@ -320,7 +363,7 @@ class StoredEvent(BaseStoredEvent):
     stored_display_controllers: list[StoredDisplayController] = field(
         default_factory=list[StoredDisplayController]
     )
-    errors: dict[str, str] = field(default_factory=dict[str, str])
+    stored_accounts: list[StoredAccount] = field(default_factory=list[StoredAccount])
 
 
 @dataclass

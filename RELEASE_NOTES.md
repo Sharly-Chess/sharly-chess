@@ -3,51 +3,49 @@ English version below
 
 ## Fonctionnement
 
-- Suppression du format de stockage Access de Papi (3.0.0)
-- Support de macOS (Apple Silicon Macs seulement, 3.0.0)
-- Amélioration des temps de réponses de l'interface utilisateur (3.0.0)
-- Signature des exécutables Windows (3.0.0)
-- Correction de la récupération des versions précédentes (3.0.1)
-
-## Évènements
-
-- Restauration des évènements archivés (3.0.0)
-- Masquage des identifiants uniques (3.0.0)
+- Permissions des clients connectés au serveur (3.1.0)
+- Prise en charge des serveurs avec plusieurs adresses IP (3.1.0)
+- Amélioration de la console du serveur (3.1.0)
+- Amélioration de l’ergonomie pour la modification, la duplication et l’archivage des événements (3.1.0)
+- Correction de l'apparition d'un terminal lors de l'upload FFE (3.1.1)
+- Restauration de la signature de l'application (3.1.1)
 
 ## Tournois
 
-- Création des tournois par import d'un fichier Papi (3.0.0)
-- Export des tournois au format Papi (3.0.0)
-- Éditeur interactif de la cadence de jeu (3.0.0)
+- Les tournois peuvent désormais avoir des critères de joueur·euses associés (3.1.0)
+- Import de tournois au format TRF (3.1.0)
+- Export des tournois au format TRF (3.1.0)
+- Correction de l'import TRF sans partie (3.1.1)
+- Correction du problème de réimportation ChessEvent et TRF (3.1.2)
 
-### Joueur·euses
+## Joueur·euses
 
-- Suppression de la limite à 10 caractères des numéros de téléphone (3.0.0)
-
-## Appariements
-
-- Affichage des informations d'appariement : groupes, flotteurs, historiques et préférences couleurs (3.0.0)
-- Remplacement des classements estimés rapide/blitz par les classements standards (3.0.0)
-- Suppression de la renumérotation automatique des échiquiers en cas d'appariement manuel (3.0.0)
-- Saisie des résultats non comptabilisés et des pénalités (3.0.0)
-- Ajout de la recherche de joueur·euse sur l'onglet Appariements (3.0.0)
+- Amélioration de la recherche de joueur·euses (3.1.0)
+- Remplacement des joueur·euses ajouté·es par erreur (3.1.0)
+- Amélioration de l'historique (3.1.0)
+- Correction de la recherche sans tournoi (3.1.1)
+- Ajout de l’année de naissance aux résultats de recherche (3.1.1)
+- Amélioration de la recherche des joueur·euses (3.1.2)
 
 ## Écrans
 
-- Ajout du numéro dans le cas des échiquiers fixes (3.0.0)
-- Correction de l'affichage des chronomètres sur les écrans rotatifs et les pilotes d'afficheurs (3.0.1)
+- Réorganisation des écrans composant les écrans rotatifs (3.1.0)
+- Correction de la mise à jour de l'identifiant unique des écrans (3.1.2)
 
-## Classements
+## Appariements
 
-- Ajout de départages non compatibles avec Papi (expérimental) (3.0.0)
-- Ajout d’une option de départage manuel (3.0.0)
-- Ajout d’une vue du classement dans l’onglet Appariements après la dernière ronde du tournoi (3.0.0)
+- Amélioration de la navigation de l'onglet Appariements (3.1.0)
 
 ## Impressions
 
-- Amélioration des appariements par ordre alphabétique (3.0.0)
-- Ajout des titres FIDE dans les attributions de prix (3.0.0)
-- Ajout des départages sur les grilles Berger (3.0.0)
+- Vue imprimable des statistiques des joueur·euses (3.1.0)
+- Vue imprimable des QR Codes (3.1.0)
+- Sélection de plusieurs tournois pour différents aperçus d’impression : liste des joueur·euses, liste de pointage, liste et attribution des prix et statistiques (3.1.0)
+- Affichage du statut pointé/non-pointé des joueur·euses sur les listes de pointage (3.1.0)
+
+## ChessEvent
+
+- Import de tournois ChessEvent depuis l'interface web (remplace le script `tools/chessevent.bat`) (3.1.0)
 
 ---
 
@@ -55,48 +53,46 @@ English version below
 
 ## Usage
 
-- Remove Papi Access storage (3.0.0)
-- Native macOS support (Apple Silicon Macs only, 3.0.0)
-- Improved UI response times (3.0.0)
-- Use signed programs on Windows (3.0.0)
-- Fixed previous versions recovering (3.0.1)
-
-## Events
-
-- Restoring of archived events (3.0.0)
-- Hide unique IDS (3.0.0)
+- Permissions for clients connected to the server (3.1.0)
+- Support for servers with multiple IP addresses (3.1.0)
+- Improved the server console (3.1.0)
+- Improved the ergonomy for modifying, duplicating and archiving events (3.1.0)
+- Fixed terminal flashing during the FFE upload (3.1.1)
+- Restore the app signature (3.1.1)
 
 ## Tournaments
 
-- Create tournaments from Papi files (3.0.0)
-- Export tournaments to Papi format (3.0.0)
-- Interactive time control editor (3.0.0)
+- Tournaments may now have player criteria associated with them (3.1.0)
+- Import tournaments from TRF (3.1.0)
+- Export tournaments to TRF (3.1.0)
+- Fixed TRF import with no games (3.1.1)
+- Fixed ChessEvent and TRF re-import issue (3.1.2)
 
 ## Players
 
-- Removed the 10-character limit on phone numbers (3.0.0)
-
-## Pairings
-
-- Display pairing information: groups, floaters, history and colour preferences (3.0.0)
-- Allow overriding of unrated rapid/blitz ratings by standard ratings (3.0.0)
-- Removed automatic renumbering of boards when manually pairing (3.0.0)
-- Entry of unrated and penalty results (3.0.0)
-- Added player search on the pairings tab (3.0.0)
+- Improved player search (3.1.0)
+- Replace players added by mistake (3.1.0)
+- Improved player history (3.1.0)
+- Fixed the player search without tournament (3.1.1)
+- Added year of birth to search results (3.1.1)
+- Improved player search (3.1.2)
 
 ## Screens
 
-- Added board IDs in case of fixed boards (3.0.0)
-- Fixed the display of timers on rotators and display controllers (3.0.1)
+- Rotator screens reordering (3.1.0)
+- Fixed screen uniq ID update (3.1.2)
 
-## Rankings
+## Pairings
 
-- Added tie-breaks not compatible with Papi (experimental) (3.0.0)
-- Added a manual tie-break option (3.0.0)
-- Added a ranking view on the Pairings tab after the last round of the tournament (3.0.0)
+- Improved navigation on the Pairings tab (3.1.0)
 
-## Printing
+## Print views
 
-- Improved alphabétical pairings (3.0.0)
-- Added FIDE titles on prize assignments (3.0.0)
-- Added tie-breaks to Berger grids (3.0.0)
+- Statistics print view (3.1.0)
+- QR Code print view (3.1.0)
+- Multiple tournaments can now be selected for several print views: Players List, Check-in List, Prize List and Assignment, and Statistics (3.1.0)
+- Display the check-in status on check-in lists (3.1.0)
+
+## ChessEvent
+
+- Import ChessEvent tournament from the web interface (3.1.0)

@@ -1,14 +1,17 @@
 <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-event-edit-modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 class="modal-title">
-                {% if action == 'update' %}
-                    {{ _('Edit event') }}
-                    <span style="font-size: 90%">{{ macros.doc_icon('events-create', 'ms-2') }}</span>
-                {% else %}
-                    {{ _('Create event') }}<span style="font-size: 70%">{{ macros.doc_icon('events-create', 'ms-2') }}</span>
-                {% endif %}
-            </h2>
+            {% if action == 'update' and client.can_update_event %}
+                {% include 'event_update_modal_header.html' %}
+            {% else %}
+                <h2 class="modal-title">
+                    {% if not client.can_update_event %}
+                        {{ admin_event.name }}
+                    {% else %}
+                        {{ _('Create event') }}<span style="font-size: 70%">{{ macros.doc_icon('events-create', 'ms-2') }}</span>
+                    {% endif %}
+                </h2>
+            {% endif %}
         </div>
         <div class="modal-body">
             <form
@@ -17,9 +20,9 @@
                     hx-post="{{ url_for('admin-tab-create-event', admin_tab=admin_tab) }}"
                     hx-push-url="true"
                 {% elif action == 'clone' %}
-                    hx-post="{{ url_for('admin-event-clone', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-post="{{ url_for('admin-event-clone', event_uniq_id=admin_event.uniq_id or '') }}"
                 {% elif action == 'update' %}
-                    hx-patch="{{ url_for('admin-event-update', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-patch="{{ url_for('admin-event-update', admin_tab=admin_tab or '', event_uniq_id=admin_event.uniq_id or '') }}"
                 {% endif %}
                 hx-target="body"
                 hx-indicator="#please-wait"
@@ -27,69 +30,91 @@
                 <h4>
                     {{ _('Properties') }}
                 </h4>
-                <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.switch_input(
                             name='public',
                             label=_('Visibility:'),
                             placeholder=_('Public event'),
-                            help_text=_('Only arbiters can see private events.'),
+                            help_text=_('Only allowed users can see private events.'),
+                            disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
+                </div>
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
                             name='federation',
                             label=_('Federation:'),
                             help_text=_('The federation that organizes the event. Sharly Chess may provide functionality specific to the federation chosen for each event.'),
                             select_options=federation_options,
+                            disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='name',
                             label=_('Name:'),
                             placeholder=_('E.g.: World championship'),
                             help_text=_('The name of the event, used for display and reports.'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-3 mb-3">
-                        {{ admin_macros.datetime_input(
-                            name='start',
-                            label=_('Start:'),
-                            help_text=_('The start date and time of the event.'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-3 mb-3">
-                        {{ admin_macros.datetime_input(
-                            name='stop',
-                            label=_('End:'),
-                            help_text=_('The end date and time of the event.'),
+                            disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.datetime_input(
+                            name='start',
+                            label=_('Start:'),
+                            help_text=_('The start date and time of the event.'),
+                            disabled=not client.can_update_event,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.datetime_input(
+                            name='stop',
+                            label=_('End:'),
+                            help_text=_('The end date and time of the event.'),
+                            disabled=not client.can_update_event,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.select_input(
+                            name='player_rating_type',
+                            label=_('Player ratings to use by default:'),
+                            help_text=_(
+                                'May be overridden on a per-tournament basis.',
+                            ),
+                            select_options=player_rating_type_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='location',
                             label=_('%(string)s:', string=_('Location')),
                             placeholder=_('E.g.: Paris'),
                             help_text=_('The location of the event.'),
+                            disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
                     </div>
+                </div>
+                <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='prize_currency',
                             label=_('%(string)s:', string=_('Prize currency')),
                             placeholder=_('E.g.: %(string)s', string=_("'EUR' or '€'")),
                             help_text=_('The currency used to represent monetary prizes (defaults to the currency of the event federation).'),
+                            disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -101,71 +126,61 @@
                 <h4>
                     {{ _('Estimated ratings') }}
                 </h4>
-                <div class="row">
+                <div class="row gy-2 gx-3">
                     {{ admin_macros.switch_input(
                         name='override_unrated_rapid_blitz',
                         label='',
                         placeholder=_('In rapid/blitz tournaments, use the standard rating for unrated players'),
                         doc_icon='standard-rating',
                         help_text=_('Default handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. If checked, this rating will also be used for seeding and pairings. If unchecked, they will be treated as unrated and require an estimated rating.'),
+                        disabled=not client.can_update_event,
                         data=data, errors=errors
                     ) }}
                 </div>
 
                 <h4>
-                    {{ _('Results entry') }}
-                </h4>
-                <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
-                        {{ admin_macros.password_input(
-                            name='update_password',
-                            label=_('Password to enter results:'),
-                            placeholder=_('E.g.: my_password'),
-                            help_text=_('The password required on input screens to enter results (optional).'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-md-6 mb-3">
-                        {{ admin_macros.select_input(
-                            name='record_illegal_moves',
-                            label=_('Illegal moves recording:'),
-                            help_text=_(
-                                'The maximum number of illegal moves that can be recorded per round for a player (from 0 to 3, by default %(default)d). This value can be modified for each tournament.',
-                                default=sharly_chess_config.default_record_illegal_moves_number
-                            ),
-                            select_options=record_illegal_moves_options,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                </div>
-
-                <h4>
                     {{ _('Rules') }}
                 </h4>
-                <div class="row">
-                    <div class="col-12 mb-3">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='rules',
                             label=_('Rules file location:'),
                             placeholder=_('E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf'),
-                            help_text=_('A URL, or the path to the rules file on the server, in PDF format (optional).'),
+                            help_text=_('A URL, or the path to the rules file on the server, in PDF format.'),
+                            disabled=not client.can_update_event,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.number_input(
+                            name='record_illegal_moves',
+                            label=_('Illegal moves recording:'),
+                            placeholder=_('Default: %(string)s', string=sharly_chess_config.default_record_illegal_moves_number),
+                            min=0,
+                            max=3,
+                            help_text=_(
+                                'The maximum number of illegal moves that '
+                                'can be recorded per round for a player.',
+                            ),
+                            disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
                     </div>
                 </div>
-
                 <h4>
                     {{ _('Display') }}
                 </h4>
-                <div class="row">
-                    <div class="col-12 col-md-6 mb-3">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
                         <div>
                             {{ admin_macros.text_input(
                                 name='background_image',
                                 label=_('Background image:'),
-                                help_text=_("The URL or the path of the image (relative to the 'custom' folder) to display (by default the Sharly Chess logo)."),
+                                help_text=_("The URL or the path of the image (relative to the 'custom' folder) to display."),
                                 default_checkbox=true,
                                 default_checkbox_text=_('no background image'),
+                                disabled=not client.can_update_event,
                                 data=data, errors=errors
                             ) }}
                             <script>
@@ -185,13 +200,14 @@
                             id="background-image-picker-wrapper"
                             style="display: {% if data['background_image_checkbox'] == 'on' %}none{% else %}block{% endif %}"
                         >
-                            <div class="row">
+                            <div class="row gy-2 gx-3">
                                 <div class="col-12 text-nowrap d-inline-flex align-items-center gap-4 my-2">
                                     <button
                                         type="button"
                                         class="collapse-button collapsed text-body"
                                         data-bs-toggle="collapse"
                                         data-bs-target="#custom-tree"
+                                        disabled=not client.can_update_event,
                                     >
                                         <span
                                             class="d-inline-flex align-items-center gap-2"
@@ -227,13 +243,12 @@
                             </script>
                         </div>
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.color_input(
                             name='background_color',
                             label=_('Background colour:'),
                             help_text=_('The background colour is used when the image does not fill the whole screen.'),
-                            default_checkbox=true,
-                            default_color=sharly_chess_config.default_background_color,
+                            disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
                         <script>
@@ -249,7 +264,7 @@
                         </script>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row gy-2 gx-3">
                     <div class="col-12">
                         <div
                             id="background-image-test"
@@ -271,33 +286,37 @@
                 <h4>
                     {{ _('Alert message') }}
                 </h4>
-                <div class="row">
-                    <div class="col-12 col-md-6 col-xl-3 mb-3">
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6 col-xl-3">
                         {{ admin_macros.color_input(
                             name='message_background_color',
                             label=_('Background colour:'),
                             help_text=_('The background colour of the alert messages.'),
-                            default_checkbox=true,
-                            default_color=sharly_chess_config.default_message_background_color,
+                            disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6 col-xl-3 mb-3">
+                    <div class="col-12 col-md-6 col-xl-3">
                         {{ admin_macros.color_input(
                             name='message_color',
                             label=_('Text colour:'),
                             help_text=_('The text colour of the alert messages.'),
-                            default_checkbox=true,
-                            default_color=sharly_chess_config.default_message_color,
+                            disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-xl-6 mb-3">
-                        {% with
-                            message_help_text=_('When defined, the alert message is displayed in a scrolling banner at the bottom of the screens. The alert message defined at event-level can be overridden at rotator, screen family or screen-level.')
-                        %}
-                            {% include '../common/modal/alert_message.html' %}
-                        {% endwith %}
+                    <div class="col-12 col-xl-6">
+                        {{ admin_macros.text_input(
+                            name='message_text',
+                            label=_('Alert message:'),
+                            placeholder=_('E.g.: Please keep quiet until the end of the round!'),
+                            help_text=_(
+                                'When defined, the alert message is displayed in a '
+                                'scrolling banner at the bottom of the screens.'
+                            ),
+                            disabled=not client.can_update_event,
+                            data=data, errors=errors
+                        ) }}
                     </div>
                 </div>
             </form>
@@ -310,26 +329,30 @@
                 data-bs-dismiss="modal"
             >
                 <i class="bi-x-circle-fill"></i>
-                {{ _('Cancel') }}
+                {{ _('Cancel') if client.can_update_event else _('Close') }}
             </button>
-            {% if action == 'clone' %}
-                {{ admin_macros.split_submit_buttons(
-                    options={
-                        'duplicate': _('Duplicate without players'),
-                        'with_players': _('Duplicate with players'),
-                    },
-                    active_option='duplicate'
-                ) }}
-            {% else %}
-                <button
-                    type="submit"
-                    form="modal-form"
-                    class="text-nowrap white btn btn-primary"
-                >
-                    <i class="bi-floppy-fill pe-1"></i>
-                    {{ _('Save') if action == 'update' else _('Create') }}
-                </button>
+            {% if client.can_update_event %}
+                {% if action == 'clone' %}
+                    {{ admin_macros.split_submit_buttons(
+                        options={
+                            'duplicate': _('Duplicate without players'),
+                            'with_players': _('Duplicate with players'),
+                        },
+                        active_option='duplicate'
+                    ) }}
+                {% else %}
+                    <button
+                        type="submit"
+                        form="modal-form"
+                        class="text-nowrap white btn btn-primary"
+                    >
+                        <i class="bi-floppy-fill pe-1"></i>
+                        {{ _('Save') if action == 'update' else _('Create') }}
+                    </button>
+                {% endif %}
             {% endif %}
         </div>
     </div>
 </div>
+
+<script>requestRefresh()</script>

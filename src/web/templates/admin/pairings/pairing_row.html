@@ -12,26 +12,44 @@
     {% if admin_tournament.print_real_points(admin_round) %}
         <td class="text-start">[{{ wp.points_str }}]</td>
     {% endif %}
+    {% if admin_tournament.record_illegal_moves %}
+        {% with player=wp, illegal_moves=board.white_pairing.illegal_moves %}{% include 'illegal_moves_cell.html' %}{% endwith %}
+    {% endif %}
     <td>{{ wp.full_name }} ({{ wp.rating_str }})</td>
     <td class="text-center" style="width: 4.5rem;">
-        <button
-            class="btn btn-sm btn-outline-primary text-nowrap"
-            style="width: 4.5rem;"
-            hx-get="{{ url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id) }}"
-            hx-trigger="click"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            preload
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-            {% if 'MANUAL_UNPAIRING' not in existing_actions and board.exempt %}
-                disabled
+        <span
+            {% if not client.can_enter_results(admin_tournament.id) %}
+                {{ macros.tooltip_attributes('warning', _('You are not allowed to enter results.'), 'top') }}
+                {% set allowed=false %}
+            {% elif board.result_str and not client.can_update_results(admin_tournament.id) %}
+                {{ macros.tooltip_attributes('warning', _('You are not allowed to update results.'), 'top') }}
+                {% set allowed=false %}
+            {% else %}
+                {% set allowed=true %}
             {% endif %}
         >
-            {% if board.result_str %}{{ board.result_str }}{% else %}-{% endif %}
-        </button>
+            <button
+                class="btn btn-sm btn-outline-primary text-nowrap"
+                style="width: 4.5rem;"
+                {% if not_allowed or ('MANUAL_UNPAIRING' not in existing_actions and board.exempt) %}
+                    disabled
+                {% else %}
+                    hx-get="{{ url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id) }}"
+                    hx-trigger="click"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                {% endif %}
+            >
+                {% if board.result_str %}{{ board.result_str }}{% else %}-{% endif %}
+            </button>
+        </span>
     </td>
     {% if bp %}
+        {% if admin_tournament.record_illegal_moves %}
+            {% with player=bp, illegal_moves=board.black_pairing.illegal_moves if bp else 0 %}{% include 'illegal_moves_cell.html' %}{% endwith %}
+        {% endif %}
         <td>{{ bp.full_name }} ({{ bp.rating_str }})</td>
         {% if admin_tournament.print_real_points(admin_round) %}
             <td class="text-end">[{{ bp.points_str }}]</td>
@@ -40,6 +58,9 @@
 
     {% else %}
         {% set first_pab_round = wp.first_pab_round %}
+        {% if admin_tournament.record_illegal_moves %}
+            <td></td>
+        {% endif %}
         <td>
             {% if first_pab_round and first_pab_round < admin_round %}
                 <span class="text-danger">

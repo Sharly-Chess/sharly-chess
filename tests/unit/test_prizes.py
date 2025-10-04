@@ -9,7 +9,7 @@ from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
 from data.player import Federation, PlayerRating, Club
-from data.prize.player_filter_options import (
+from data.criteria.player_filter_options import (
     GenderOption,
     MaxRatingOption,
     MinRatingOption,
@@ -20,7 +20,7 @@ from data.prize.player_filter_options import (
     FederationsFilterOption,
     RatingTypesFilterOption,
 )
-from data.prize.player_filters import (
+from data.criteria.player_filters import (
     GenderPlayerFilter,
     PlayerFilter,
     RatingPlayerFilter,
@@ -174,7 +174,7 @@ class PrizesTestCase(TestCase):
             owed=0,
             paid=0,
             ratings={
-                rating: PlayerRating(elo, rating_type).stored_value
+                rating: PlayerRating.from_type(elo, rating_type).stored_value
                 for rating in TournamentRating
             },
             club=club,

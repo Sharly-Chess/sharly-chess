@@ -24,7 +24,6 @@ from utils.enum import (
     PlayerGender,
     PlayerTitle,
     TournamentRating,
-    PlayerRatingType,
 )
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
@@ -50,7 +49,7 @@ class FideDatabase(LocalSourceDatabase):
 
     @staticmethod
     def static_name() -> str:
-        return 'FIDE'
+        return _('FIDE')
 
     @property
     def min_recovery_version(self) -> Version:
@@ -85,25 +84,20 @@ class FideDatabase(LocalSourceDatabase):
             response: Response = get(fide_database_url, allow_redirects=True, timeout=5)
             if response.status_code != 200:
                 logger.error(
-                    self.log_prefix
-                    + _('Could not download [{url}], error code [{code}].').format(
-                        url=fide_database_url, code=response.status_code
-                    )
+                    self.log_prefix + 'Could not download [%s], error code [%d].',
+                    fide_database_url,
+                    response.status_code,
                 )
                 return False
         except ConnectionError as ex:
             logger.error(
-                self.log_prefix
-                + _('Could not download [{url}]: {error}.').format(
-                    url=fide_database_url, error=ex
-                )
+                self.log_prefix + 'Could not download [%s]: %s.', fide_database_url, ex
             )
             return False
         local_zip_file.write_bytes(response.content)
         if not local_zip_file.exists():
             logger.error(
-                self.log_prefix
-                + _('No data received from [{url}].').format(url=fide_database_url)
+                self.log_prefix + 'No data received from [%s].', fide_database_url
             )
             return False
 
@@ -112,7 +106,7 @@ class FideDatabase(LocalSourceDatabase):
             zip_ref.extractall(TMP_DIR)
         local_zip_file.unlink()
         if not self._source_file_path.exists():
-            logger.error(self.log_prefix + _('Could not unzip data.'))
+            logger.error(self.log_prefix + 'Could not unzip data.')
             return False
         return True
 
@@ -178,8 +172,7 @@ class FideDatabase(LocalSourceDatabase):
                 database.commit()
 
         logger.info(
-            self.log_prefix
-            + _('{number} players written to the database.').format(number=player_count)
+            self.log_prefix + '%d players written to the database.', player_count
         )
         return True
 
@@ -213,8 +206,7 @@ class FideDatabase(LocalSourceDatabase):
         }
         ratings = {
             tournament_rating.value: PlayerRating(
-                row[key],
-                PlayerRatingType.FIDE if row[key] else PlayerRatingType.ESTIMATED,
+                fide=row[key] or None,
             ).stored_value
             for tournament_rating, key in rating_keys.items()
         }
@@ -243,12 +235,14 @@ class FideDatabase(LocalSourceDatabase):
     def search_player(
         self,
         string: str,
+        federation: str,
+        page: int = 0,
         limit: int | None = None,
     ) -> list[StoredPlayer]:
         tokens: list[str] = string.split(' ')
         str_fields: tuple[tuple[str, str, str], ...] = (
             ('last_name', '%', '%'),
-            ('first_name', '', '%'),
+            ('first_name', '%', '%'),
         )
         int_fields: tuple[str, ...] = ('fide_id',)
         token_conditions: dict[str, str] = {}
@@ -267,19 +261,51 @@ class FideDatabase(LocalSourceDatabase):
         conditions: str = ' AND '.join(
             map(lambda condition: f'({condition})', token_conditions.values())
         )
-        order_conditions = ' OR '.join(
-            [
-                '(last_name LIKE ?)',
+
+        # We build one CASE block that sorts best → worst
+        order_clauses = []
+        for token in tokens:
+            order_clauses.append("""
+                CASE
+                    WHEN last_name LIKE ? AND federation = ? THEN 0
+                    WHEN first_name LIKE ? AND federation = ? THEN 1
+                    WHEN (last_name LIKE ? OR first_name LIKE ?) THEN 2
+                    WHEN federation = ? THEN 3
+                    ELSE 4
+                END
+            """)
+
+            # Params for this token in the same order
+            params += [
+                f'{token}%',
+                federation,
+                f'{token}%',
+                federation,
+                f'{token}%',
+                f'{token}%',
+                federation,
             ]
-            * len(tokens)
-        )
-        params += [f'{token}%' for token in tokens]
-        query: str = f'SELECT * FROM player WHERE {conditions} ORDER BY (CASE WHEN {order_conditions} THEN 0 ELSE 1 END), last_name'
+
+        order_expr = ' + '.join(order_clauses)
+
+        query: str = f"""
+            SELECT *
+            FROM player
+            WHERE {conditions}
+            ORDER BY {order_expr}, last_name, first_name
+        """
+
         if limit:
             query += ' LIMIT ?'
             params += [
                 limit,
             ]
+        if page and limit:
+            query += ' OFFSET ?'
+            params += [
+                page * limit,
+            ]
+
         self.execute(query, tuple(params))
         return [self._get_player_from_row(row) for row in self.fetchall()]
 

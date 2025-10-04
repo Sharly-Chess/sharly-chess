@@ -4,7 +4,7 @@
 {% set player_unchanged_class='text-secondary' %}
 {% set field_updated_class='text-warning fw-bold' %}
 {% set field_unchanged_class='' %}
-<div id="player-modal" class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-players-update-modal" style="max-width: 90%;">
+<div id="player-diff-modal" class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-players-update-modal" style="max-width: 90%;">
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
@@ -19,7 +19,7 @@
             <h4>
                 {{ _('Data source: %(data_source)s', data_source=data_source.name) }}
             </h4>
-            {% with message, is_warning = data_source.players_update_message %}
+            {% with message, is_warning = data_source.info_or_warning_message %}
                 {% if message %}
                     <h6 class="{% if is_warning %}text-danger{% endif %}">
                         {{ message }}
@@ -38,7 +38,7 @@
                 {# these inputs are always checked with an empty value (ignored) to be sure to get list parameters. #}
                 <input type="hidden" name="player_ids" value="" />
                 <input type="hidden" name="field_ids" value="" />
-                <div class="row">
+                <div class="row gy-2 gx-3">
                     <div class="col-6">
                         <p>
                             {% if update_enabled %}
@@ -321,10 +321,10 @@
                                     {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
                                     <td
                                         scope="col" colspan="2" class="text-nowrap text-center {{ player_class }} {{ field_class }}"
-                                        {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=player.ratings[rt], new=match_player.ratings[rt]), 'top') }}{% endif %}
+                                        {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=player.ratings[rt], new=player_match.updated_ratings(rt)), 'top') }}{% endif %}
                                     >
                                         {% if field_updated %}
-                                            {{ match_player.ratings[rt] }}
+                                            {{ player_match.updated_ratings(rt) }}
                                         {% else %}
                                             {{ player.ratings[rt] }}
                                         {% endif %}
@@ -351,7 +351,7 @@
                                 </td>
                                 {{ admin_macros.extra_admin_column_cell("end", player_context, admin_players_update_extra_columns)}}
                                 {% if show_tournament %}
-                                    <td scope="col" class="text-nowrap text-start {{ player_class }} {{ field_class }}">
+                                    <td scope="col" class="text-nowrap text-start {{ player_class }}">
                                         {{ player.tournament.uniq_id }}
                                     </td>
                                 {% endif %}

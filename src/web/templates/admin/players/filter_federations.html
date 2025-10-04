@@ -8,7 +8,7 @@
                 {{ macros.tooltip_attributes('info', _('Filter the federations.'), 'top') }}
             ></i>
         </button>
-        <ul class="dropdown-menu players-filter-federation p-0">
+        <ul class="dropdown-menu table-dropdown-menu p-0">
             {% with name='admin_players_filter_federations' %}
                 {# this input is always checked with a special value (ignored) to be sure to get a list parameter. #}
                 <input type="hidden" name="{{ name }}" value="*" />

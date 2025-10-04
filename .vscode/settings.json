@@ -110,6 +110,7 @@
     "Ligue",
     "litestar",
     "Litestar",
+    "logview",
     "LOUDIER",
     "MEIPASS",
     "mktime",
@@ -197,6 +198,9 @@
   "cSpell.language": "en,fr-FR,en-GB,fr",
   "files.associations": {
     "*.html": "jinja"
+  },
+  "workbench.editorAssociations": {
+    "*.svg": "default"
   },
   "editor.formatOnSave": false,
   "editor.formatOnPaste": false,

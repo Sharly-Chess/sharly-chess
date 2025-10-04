@@ -7,10 +7,9 @@ from collections import namedtuple
 from datetime import datetime
 from functools import wraps
 from pathlib import Path
-
-import unicodedata
 from packaging.version import Version
 
+from common.exception import SharlyChessException
 
 APP_NAME: str = 'sharly-chess'
 SHARLY_CHESS_VERSION: Version = Version(importlib.metadata.version(APP_NAME))
@@ -33,19 +32,6 @@ def experimental_features_enabled() -> bool:
     return _EXPERIMENTAL_FEATURES_ENABLED
 
 
-_IS_SERVER_ENGINE: bool = False
-
-
-def set_is_server_engine(is_server_engine_: bool):
-    global _IS_SERVER_ENGINE
-    _IS_SERVER_ENGINE = is_server_engine_
-
-
-def is_server_engine() -> bool:
-    global _IS_SERVER_ENGINE
-    return _IS_SERVER_ENGINE
-
-
 REQUEST_TIMEOUT: int = 10
 
 RGB = namedtuple('RGB', ['red', 'green', 'blue'])
@@ -54,12 +40,42 @@ RGB = namedtuple('RGB', ['red', 'green', 'blue'])
 """ The temporary directory. """
 TMP_DIR: Path = Path('tmp')
 
-# The base directory, differs for developers. base_dir must be used when looking for application files
-# (images, templates, ...) while user file should be search in the current directory.
-BASE_DIR: Path = (
-    Path(__file__).resolve().parents[2] if DEVEL_ENV else Path(sys._MEIPASS)  # type: ignore
-)
 
+def app_base_dir() -> Path:
+    """
+    Return the directory that holds bundled resources for:
+      - Dev:      repo/source tree
+      - Onefile:  sys._MEIPASS
+      - macOS .app onedir: .../My.app/Contents/Resources
+      - Other frozen onedir: directory next to the executable
+    """
+
+    # PyInstaller onefile
+    meipass = getattr(sys, '_MEIPASS', None)
+    if meipass:
+        return Path(meipass)
+
+    # macOS .app onedir
+    try:
+        exe = Path(sys.argv[0]).resolve()
+        # .../My.app/Contents/MacOS/<exe>
+        contents = exe.parent.parent
+        if contents.name == 'Contents' and contents.parent.suffix == '.app':
+            resources = contents / 'Resources'
+            if resources.is_dir():
+                return resources
+    except Exception:
+        pass
+
+    # Other frozen (non-.app) onedir
+    if getattr(sys, 'frozen', False):
+        return Path(sys.executable).resolve().parent
+
+    # Dev: project / package root (adjust levels to your layout)
+    return Path(__file__).resolve().parents[2]
+
+
+BASE_DIR: Path = app_base_dir()
 
 """The events folder name, used to recover events from previous releases."""
 EVENTS_FOLDER: str = 'events'
@@ -75,13 +91,12 @@ try:
     with open(LOG_FILE, 'a'):
         pass
 except OSError as error:
-    input(
+    raise SharlyChessException(
         f'Log file [{LOG_FILE.absolute()}] could not be opened: {error}\n'
         f'Write permission is most likely missing from '
         f'[{LOG_FILE.parent.parent.absolute()}].\n'
         f'Check the permissions then try again.'
     )
-    sys.exit(1)
 
 
 for directory in (EVENTS_DIR, TMP_DIR):
@@ -90,13 +105,9 @@ for directory in (EVENTS_DIR, TMP_DIR):
     except PermissionError as error:
         from common.logger import get_logger
 
-        get_logger().critical(
-            'Could not create directory [%s]: %s',
-            directory.absolute(),
-            error,
-        )
-        input()
-        sys.exit(1)
+        message = f'Could not create directory [{directory.absolute()}]: {error}'
+        get_logger().critical(message)
+        raise SharlyChessException(message)
 
 
 if DEVEL_ENV:
@@ -193,13 +204,3 @@ def show_duration(func):
         return result
 
     return show_duration_wrapper
-
-
-def unicode_normalize(string: str) -> str:
-    """Removes the accents of the string, cf https://www.unicode.org/reports/tr15/#Norm_Forms"""
-    return ''.join(
-        filter(
-            lambda c: not unicodedata.combining(c),
-            unicodedata.normalize('NFKD', string),
-        )
-    )

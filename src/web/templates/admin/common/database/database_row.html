@@ -1,50 +1,53 @@
-<tr>
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+
+<tr id="database-{{ database.id }}-row">
+    <button
+        id="database-{{ database.id }}-submit"
+        hx-patch="{{ url_for('admin-database-options-update', database_id=database.id) }}"
+        hx-vals='js:{
+            outdate_delay: $("#{{ database.id }}-outdate-delay").val(),
+            outdate_action: $("#{{ database.id }}-outdate-action").val(),
+        }'
+        hx-target="#database-{{ database.id }}-row"
+        hx-swap="outerHTML"
+        hx-indicator="#please-wait"
+        style="display:none"
+    ></button>
     <th >{{ database.name }}</th>
     <td>
-        {{ admin_macros.select_input(
-            name=database.id ~ '_outdate_delay',
-            label=None,
-            help_text=None,
-            select_options=outdate_delay_options,
-            data=data, errors=errors
+        {{ admin_macros.select_content(
+            id=database.id ~ '-outdate-delay',
+            name='outdate_delay',
+            selected=[database.outdate_delay.id],
+            options=outdate_delay_options,
+            onchange="$('#database-" ~ database.id ~ "-submit').click()",
         ) }}
     </td>
     <td>
         <span
-            id="{{ database.id }}-outdate-action-container"
-            {% if data[database.id ~ '_outdate_delay'] == 'disabled' %}
+            {% if database.outdate_delay.id == 'disabled' %}
                 class="invisible"
             {% endif %}
         >
-            {{ admin_macros.select_input(
-                name=database.id ~ '_outdate_action',
-                label=None,
-                help_text=None,
-                select_options=outdate_action_options,
-                data=data, errors=errors
+            {{ admin_macros.select_content(
+                id=database.id ~ '-outdate-action',
+                name='outdate_action',
+                selected=[database.outdate_action.id],
+                options=outdate_action_options,
+                onchange="$('#database-" ~ database.id ~ "-submit').click()",
             ) }}
         </span>
-
     </td>
     <td id="{{ database.id }}-updated-at" class="text-center"></td>
     <td class="text-end">
         <div
             hx-get="{{ url_for('admin-database-status', database_id=database.id) }}"
-            hx-trigger="sse:database-status-updated/{{ database.id }}"
+            hx-trigger="ws:database-status-updated|{{ database.id }} from:body"
             hx-target="this"
             hx-swap="innerHTML"
         >
             {% include 'database_update_buttons.html' %}
         </div>
     </td>
-    <script>
-        $('#{{ database.id }}-outdate-delay').change(function () {
-            const outdateAction = $('#{{ database.id }}-outdate-action-container');
-            if ($(this).val() === 'disabled') {
-                outdateAction.addClass('invisible');
-            } else {
-                outdateAction.removeClass('invisible');
-            }
-        });
-    </script>
 </tr>

@@ -9,12 +9,13 @@ from litestar import Router
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import CacheControlHeader
 from litestar.events import listener
-from litestar.middleware.session.client_side import CookieBackendConfig
+from litestar.middleware.session.server_side import ServerSideSessionConfig
 from litestar.static_files import create_static_files_router
 from litestar.status_codes import (
     HTTP_404_NOT_FOUND,
     HTTP_500_INTERNAL_SERVER_ERROR,
     HTTP_403_FORBIDDEN,
+    HTTP_400_BAD_REQUEST,
 )
 from litestar.stores.file import FileStore
 from litestar.stores.base import Store
@@ -35,16 +36,16 @@ from web.controllers.admin.family_admin_controller import FamilyAdminController
 from web.controllers.admin.index_admin_controller import IndexAdminController
 from web.controllers.admin.player_admin_controller import PlayerAdminController
 from web.controllers.admin.prize_admin_controller import PrizeAdminController
+from web.controllers.profile_controller import ProfileController
 from web.controllers.admin.rotator_admin_controller import RotatorAdminController
 from web.controllers.admin.screen_admin_controller import ScreenAdminController
 from web.controllers.admin.pairings_admin_controller import PairingsAdminController
 from web.controllers.admin.timer_admin_controller import TimerAdminController
 from web.controllers.admin.tournament_admin_controller import TournamentAdminController
+from web.controllers.admin.account_admin_controller import AccountAdminController
 from web.controllers.background_controller import BackgroundController
 from web.controllers.index_controller import IndexController
 from web.controllers.qrcode_controller import QRCodeController
-from web.controllers.user.event_user_controller import EventUserController
-from web.controllers.user.index_user_controller import IndexUserController
 from web.controllers.user.screen_user_controller import ScreenUserController
 from web.controllers.user.tournament_user_controller import (
     CheckInUserController,
@@ -70,8 +71,6 @@ static_files_router: Router = create_static_files_router(
 route_handlers: Sequence[ControllerRouterHandler] = [
     IndexController,
     BackgroundController,
-    IndexUserController,
-    EventUserController,
     ScreenUserController,
     ResultUserController,
     CheckInUserController,
@@ -89,6 +88,8 @@ route_handlers: Sequence[ControllerRouterHandler] = [
     PlayerAdminController,
     DisplayControllerAdminController,
     QRCodeController,
+    AccountAdminController,
+    ProfileController,
     static_files_router,
     # Plugin controllers
     *[
@@ -99,6 +100,7 @@ route_handlers: Sequence[ControllerRouterHandler] = [
 ]
 
 exception_handlers = {
+    HTTP_400_BAD_REQUEST: IndexController.handle_exception,
     HTTP_403_FORBIDDEN: IndexController.handle_exception,
     HTTP_404_NOT_FOUND: IndexController.handle_exception,
     HTTP_500_INTERNAL_SERVER_ERROR: IndexController.handle_exception,
@@ -200,8 +202,19 @@ template_config: TemplateConfig = TemplateConfig(
 sessions_dir: Path = TMP_DIR / 'sessions'
 sessions_dir.mkdir(parents=True, exist_ok=True)
 
-stores: dict[str, Store] = {'sessions': FileStore(path=sessions_dir)}
+stores: dict[str, Store] = {
+    'sessions': FileStore(
+        path=sessions_dir,
+        create_directories=True,
+    )
+}
 
 middlewares: Sequence[Middleware] = [
-    CookieBackendConfig(secret=os.urandom(16)).middleware,
+    ServerSideSessionConfig(
+        key='sharly-chess-session',
+        exclude=[
+            r'^/static/*',
+            r'.*\.(png|jpg|jpeg|gif|css|js|svg)$',
+        ],
+    ).middleware,
 ]

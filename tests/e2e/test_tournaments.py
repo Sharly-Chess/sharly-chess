@@ -13,7 +13,7 @@ class TestTournamentFunctionality:
         self, page: Page, api_request_context: APIRequestContext
     ):
         TestUtils.create_event(EVENT_ID, via_api_request_context=api_request_context)
-        page.goto(f'/admin/event/{EVENT_ID}/tournaments')
+        page.goto(f'/event/{EVENT_ID}/tournaments')
         TestUtils.button_by_text(page, 'Create a tournament').click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()

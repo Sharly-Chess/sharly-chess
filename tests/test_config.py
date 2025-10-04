@@ -1,11 +1,15 @@
 """Test configuration and utilities."""
 
+import time
 from urllib import parse
 from common import BASE_DIR
+from data.board import PlayerRatingType
+from data.input_output.tournament_importer_options import FileOption
+from data.loader import EventLoader
 from data.pairings.variations import StandardSwissVariation
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, Optional, Any
+from typing import Callable, Dict, Optional, Any
 import re
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
@@ -13,6 +17,8 @@ from database.sqlite.event.event_store import (
     StoredTournament,
 )
 from playwright.sync_api import Page, Locator, APIRequestContext, APIResponse
+
+from plugins.ffe.ffe_tournament_importers import PapiJsonTournamentImporter
 from utils.enum import ScreenType
 
 
@@ -42,38 +48,41 @@ class TestUtils:
         'federation': 'FRA',
         'public': True,
         'location': 'Paris',
+        'player_rating_type': PlayerRatingType.FIDE.value,
         'hide_background_image': True,
         'background_image': None,
         'background_color': '#ffffff',
-        'update_password': '',
         'record_illegal_moves': 0,
         'rules': '',
         'message_text': '',
         'message_color': '#000000',
         'message_background_color': '#ffffff',
         'prize_currency': 'EUR',
-        'errors': [],
         'timer_colors': {i: None for i in range(1, 4)},
         'timer_delays': {i: None for i in range(1, 4)},
         'plugin_data': {},
     }
 
     @staticmethod
-    def prepare_form_data(data: dict[str, str]):
-        form_data = {
-            k: (
-                ''
-                if v is None
-                else 'off'
-                if v is False
-                else 'on'
-                if v is True
-                else str(v)
-            )
-            for k, v in data.items()
-        }
+    def prepare_form_data(data: dict[str, object]) -> str:
+        out: dict[str, object] = {}
 
-        return parse.urlencode(form_data)
+        for k, v in data.items():
+            if v is None:
+                continue
+            if isinstance(v, bool):
+                if v:
+                    # HTML checkbox semantics
+                    out[k] = 'on'
+                else:
+                    continue
+            elif isinstance(v, (list, tuple)):
+                # leave as sequence; urlencode(doseq=True) expands it
+                out[k] = [str(x) for x in v]
+            else:
+                out[k] = str(v)
+
+        return parse.urlencode(out, doseq=True)
 
     @staticmethod
     def check_api_response(response: APIResponse):
@@ -91,6 +100,30 @@ class TestUtils:
         errors = [(div_id, text.strip()) for div_id, text in matches]
 
         assert not errors, errors
+
+    @staticmethod
+    def wait_for_htmx_idle(page, timeout=5000):
+        page.wait_for_function(
+            "() => !document.querySelector('.htmx-request, .htmx-swapping')",
+            timeout=timeout,
+        )
+
+    @staticmethod
+    def poll_expect_with_reload(
+        page,
+        assertion: Callable[[], None],
+        retries: int = 5,
+        delay_secs: float = 0.2,
+    ):
+        for attempt in range(retries):
+            page.reload()
+            try:
+                assertion()
+                return
+            except AssertionError:
+                if attempt == retries - 1:
+                    raise
+                time.sleep(delay_secs)
 
     @classmethod
     def create_event(
@@ -124,7 +157,7 @@ class TestUtils:
 
         if via_api_request_context:
             res = via_api_request_context.post(
-                '/admin/config/create-event',
+                '/home/create-event',
                 headers={'Content-Type': 'application/x-www-form-urlencoded'},
                 data=form_data,
             )
@@ -143,7 +176,7 @@ class TestUtils:
     ):
         if via_api_request_context:
             res = via_api_request_context.delete(
-                f'/admin/event-delete/{uniq_id}',
+                f'/current_events/event-delete/{uniq_id}',
                 headers={'Content-Type': 'application/x-www-form-urlencoded'},
             )
             TestUtils.check_api_response(res)
@@ -185,7 +218,6 @@ class TestUtils:
             'rounds': 7,
             'rating': 1,
             'stored_prize_groups': [],
-            'errors': {},
             'plugin_data': None,
         }
 
@@ -196,7 +228,7 @@ class TestUtils:
             data['SWISS_pairing_variation'] = StandardSwissVariation.static_id()
             form_data = cls.prepare_form_data(data)
             res = via_api_request_context.post(
-                f'/admin/tournament-create/{event_uniq_id}',
+                f'/tournament-create/{event_uniq_id}',
                 headers={'Content-Type': 'application/x-www-form-urlencoded'},
                 data=form_data,
             )
@@ -210,23 +242,28 @@ class TestUtils:
             tournaments = event_database.load_stored_tournaments()
             stored_tournament = next(t for t in tournaments if t.name == name)
 
-        if json_file and via_api_request_context:
+        if json_file:
             json_path = BASE_DIR / 'tests' / 'json' / f'{json_file}.json'
             assert json_path.exists(), f'Missing test file: {json_path}'
 
-            # Send as multipart/form-data with a real file field named "file"
-            res = via_api_request_context.post(
-                f'/admin/tournament-import/{event_uniq_id}/{stored_tournament.id}/PAPI_JSON',
-                multipart={
-                    # UploadFile field name in your handler is "file"
-                    'file': {
-                        'name': f'{json_file}.json',
-                        'mimeType': 'application/json',
-                        'buffer': json_path.read_bytes(),
+            if via_api_request_context:
+                # Send as multipart/form-data with a real file field named "file"
+                res = via_api_request_context.post(
+                    f'/tournament-import/{event_uniq_id}/{stored_tournament.id}/PAPI_JSON',
+                    multipart={
+                        # UploadFile field name in your handler is "file"
+                        'file': {
+                            'name': f'{json_file}.json',
+                            'mimeType': 'application/json',
+                            'buffer': json_path.read_bytes(),
+                        },
                     },
-                },
-            )
-            cls.check_api_response(res)
+                )
+                cls.check_api_response(res)
+            else:
+                event = EventLoader().load_event(event_uniq_id)
+                importer = PapiJsonTournamentImporter([FileOption(json_path)])
+                importer.load_tournament(event, event.tournaments_by_uniq_id[name])
 
         return stored_tournament
 
@@ -238,7 +275,7 @@ class TestUtils:
         stored_tournament: StoredTournament,
     ):
         res = api_request_context.delete(
-            f'/admin/tournament-delete/{event_uniq_id}/{stored_tournament.id}',
+            f'/tournament-delete/{event_uniq_id}/{stored_tournament.id}',
             headers={'Content-Type': 'application/x-www-form-urlencoded'},
         )
         cls.check_api_response(res)
@@ -248,7 +285,7 @@ class TestUtils:
         cls,
         api_request_context: APIRequestContext,
         event_uniq_id: str,
-        uniq_id: str,
+        name: str,
         screen_type: ScreenType,
         overrides: Optional[dict] = None,
     ):
@@ -257,8 +294,7 @@ class TestUtils:
         # Provide defaults
         defaults: dict[str, Any] = {
             'id': None,
-            'uniq_id': uniq_id,
-            'name': uniq_id,
+            'name': name,
             'init_set_tournament_id': None,
             'columns': None,
             'font_size': None,
@@ -291,7 +327,7 @@ class TestUtils:
 
         form_data = cls.prepare_form_data(data)
         res = api_request_context.post(
-            f'/admin/screen-create/{event_uniq_id}/{screen_type.value}',
+            f'/screen-create/{event_uniq_id}/{screen_type.value}',
             headers={'Content-Type': 'application/x-www-form-urlencoded'},
             data=form_data,
         )
@@ -299,7 +335,7 @@ class TestUtils:
 
         with EventDatabase(event_uniq_id) as event_database:
             stored_screens = event_database.load_stored_screens()
-            stored_screen = next(s for s in stored_screens if s.uniq_id == uniq_id)
+            stored_screen = next(s for s in stored_screens if s.name == name)
             return stored_screen
 
     @classmethod
@@ -307,7 +343,7 @@ class TestUtils:
         cls, api_request_context: APIRequestContext, event_uniq_id: str, screen_id: int
     ):
         res = api_request_context.delete(
-            f'/admin/screen-delete/{event_uniq_id}/{screen_id}',
+            f'/screen-delete/{event_uniq_id}/{screen_id}',
             headers={'Content-Type': 'application/x-www-form-urlencoded'},
         )
         cls.check_api_response(res)
@@ -359,7 +395,7 @@ class TestUtils:
 
         form_data = cls.prepare_form_data(data)
         res = api_request_context.post(
-            f'/admin/family-create/{event_uniq_id}/{family_type.value}',
+            f'/family-create/{event_uniq_id}/{family_type.value}',
             headers={'Content-Type': 'application/x-www-form-urlencoded'},
             data=form_data,
         )
@@ -375,7 +411,68 @@ class TestUtils:
         cls, api_request_context: APIRequestContext, event_uniq_id: str, family_id: int
     ):
         res = api_request_context.delete(
-            f'/admin/family-delete/{event_uniq_id}/{family_id}',
+            f'/family-delete/{event_uniq_id}/{family_id}',
+            headers={'Content-Type': 'application/x-www-form-urlencoded'},
+        )
+        cls.check_api_response(res)
+
+    @classmethod
+    def create_rotator(
+        cls,
+        api_request_context: APIRequestContext,
+        event_uniq_id: str,
+        name: str,
+        overrides: Optional[dict] = None,
+        screen_ids: list | None = None,
+        family_ids: list | None = None,
+    ) -> int:
+        overrides = overrides or {}
+
+        # Provide defaults
+        defaults = {
+            'name': name,
+            'public': True,
+            'delay': None,
+            'message_text_checkbox': True,
+            'message_text': '',
+        }
+
+        # Merge overrides
+        data = {**defaults, **overrides}
+
+        form_data = cls.prepare_form_data(data)
+        res = api_request_context.post(
+            f'/rotator-create/{event_uniq_id}',
+            headers={'Content-Type': 'application/x-www-form-urlencoded'},
+            data=form_data,
+        )
+        cls.check_api_response(res)
+        with EventDatabase(event_uniq_id) as event_database:
+            stored_rotators = event_database.load_stored_rotators()
+        stored_rotator = next(r for r in stored_rotators if r.name == name)
+        assert stored_rotator.id is not None
+
+        if screen_ids or family_ids:
+            form_data = cls.prepare_form_data(
+                {
+                    'screen_ids': screen_ids,
+                    'family_ids': family_ids,
+                }
+            )
+            res = api_request_context.post(
+                f'/rotating-screens-create/{event_uniq_id}/{stored_rotator.id}',
+                headers={'Content-Type': 'application/x-www-form-urlencoded'},
+                data=form_data,
+            )
+            cls.check_api_response(res)
+        return stored_rotator.id
+
+    @classmethod
+    def delete_rotator(
+        cls, api_request_context: APIRequestContext, event_uniq_id: str, rotator_id: int
+    ):
+        res = api_request_context.delete(
+            f'/rotator-delete/{event_uniq_id}/{rotator_id}',
             headers={'Content-Type': 'application/x-www-form-urlencoded'},
         )
         cls.check_api_response(res)
@@ -385,7 +482,9 @@ class TestUtils:
         """
         Returns a button by visible text (case-insensitive), ignoring icons or extra whitespace.
         """
-        return obj.get_by_role('button', name=re.compile(rf'\b{text}\b', re.IGNORECASE))
+        return obj.get_by_role(
+            'button', name=re.compile(rf'\b{text.replace("/", "\\/")}\b', re.IGNORECASE)
+        )
 
     @staticmethod
     def take_screenshot(page, name: str):

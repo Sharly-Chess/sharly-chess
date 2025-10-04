@@ -1,5 +1,10 @@
 <div id="top-nav-wrapper">
     <div id="top-nav-content">
+        <div class="d-flex gap-2 me-auto align-items-center">
+            <div>
+                {{ admin_macros.admin_title(nav_tab.page_title) }}
+            </div>
+        </div>
         <div class="flex-grow-1"></div>
         <div class="d-flex gap-2 ms-auto align-items-center">
             {% include 'create_event_button.html' %}
@@ -22,7 +27,7 @@
         {% if nav_tab.archives %}
             {% for archive in nav_tab.archives %}
                 <tr>
-                    <th scope="row" class="text-nowrap">{{ archive.name }}</th>
+                    <th scope="row gy-2 gx-3" class="text-nowrap">{{ archive.name }}</th>
                     <td>{{ archive.date_str }}</td>
                     <td>
                         <button
@@ -38,7 +43,7 @@
             {% endfor %}
         {% else %}
             <tr>
-                <th scope="row" class="text-nowrap" colspan="2">{{ nav_tab.empty_str }}</th>
+                <th scope="row gy-2 gx-3" class="text-nowrap" colspan="2">{{ nav_tab.empty_str }}</th>
             </tr>
         {% endif %}
     </tbody>

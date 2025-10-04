@@ -191,6 +191,24 @@ body[data-bs-theme="dark"] #top-nav-wrapper {
     border-color: var(--bs-form-valid-border-color);
 }
 
+.form-control:focus {
+  border-color: var(--bs-border-color);
+  box-shadow: none;
+}
+
+.input-group .form-control:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: var(--bs-border-color);
+}
+
+[data-bs-theme=dark] .input-group:focus-within {
+    box-shadow: none;
+    outline: 0.15rem solid rgba(var(--bs-primary-rgb), 0.70);
+    outline-offset: 4px;
+    border-radius: var(--bs-border-radius)
+}
+
 .is-invalid {
     scroll-margin-top: 40px
 }
@@ -248,6 +266,26 @@ body[data-bs-theme="dark"] #top-nav-wrapper {
     margin-left: -32px;
     z-index: 3;
     padding: 3px;
+}
+.with-input-group-indicator .htmx-indicator {
+    height: 1.5em;
+    width: 1.5em;
+    padding: 3px;
+    display: none;
+}
+.with-input-group-indicator > .bi {
+    height: 1.5em;
+    width: 1.5em;
+}
+.with-input-group-indicator.htmx-request > .bi {
+    display: none;
+}
+.with-input-group-indicator.htmx-request .htmx-indicator {
+    display: flex;
+}
+.input-group-text .htmx-indicator
+.input-group-text .htmx-indicator.htmx-request {
+    display: block;
 }
 body[data-bs-theme="dark"] .htmx-indicator {
     background-color: rgba(0, 0, 0, 0.3);
@@ -318,9 +356,12 @@ body[data-bs-theme="dark"] .htmx-indicator {
 .locale-flag {
     height: 1em;
 }
-.dropdown-menu.locale,
-.dropdown-menu.columns-number {
+.dropdown-menu {
     min-width: 0;
+}
+.table-dropdown-menu {
+    max-height: 70vh;
+    overflow-y: auto;
 }
 .dropdown-item.no-hover:hover {
     color: var(--bs-dropdown-link-color);
@@ -367,10 +408,16 @@ body[data-bs-theme="dark"] .htmx-indicator {
     --bs-modal-width: min(90vw, 1000px);
 }
 .modal * + h4 {
-    margin-top: 1.5rem
+    margin-top: 1.5rem;
+}
+.modal h4 {
+    font-size: 1.3rem;
 }
 .modal-dialog:has(.empty-modal) {
     display: none;
+}
+.modal .row + .row {
+    margin-top: 0.001rem;
 }
 
 /* Colour themes */
@@ -761,4 +808,9 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
   width: 1.3ch;
   text-align: center;
   font-family: inherit;
+}
+
+input[type="color"].form-control {
+    height: calc(1.5em + 0.75rem + 2px); /* line-height * font-size + padding-y + border */
+    padding: 0;
 }

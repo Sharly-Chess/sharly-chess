@@ -2,8 +2,8 @@
     {{ _('Connection French Chess Federation') }}
 </h4>
 {% include 'ffe_tournament_ffe_auth_fields.html' %}
-<div class="row">
-    <div class="col-12 col-md-6 mb-3">
+<div class="row gy-2 gx-3">
+    <div class="col-12 col-md-6">
         {{ admin_macros.select_input(
             name='ffe_auto_upload',
             label=_('Auto-upload:'),
@@ -16,3 +16,9 @@
         ) }}
     </div>
 </div>
+
+<script>
+    $('#player-rating-type').val('3');
+    $('#player-rating-type').prop('disabled', true);
+    $('#player-rating-type-help').text('{{ _('The FFE always uses the FIDE rating when available.') }}');
+</script>

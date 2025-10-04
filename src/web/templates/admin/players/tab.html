@@ -1,18 +1,14 @@
 {% with url=url_for('admin-event-players-tab', event_uniq_id=admin_event.uniq_id) %}
-    {{ macros.refresh_listener(
-        hx_get=url,
-    ) }}
-
-    <div
+   <div
         hx-get="{{ url_for('admin-players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="result") }}"
-        hx-trigger="sse:new-user-results/{{ admin_event.uniq_id }}"
+        hx-trigger="ws:new-user-results|{{ admin_event.uniq_id }} from:body"
         hx-target="#refresh-message"
         hx-swap="innerHTML"
     >
     </div>
     <div
         hx-get="{{ url_for('admin-players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="checkin") }}"
-        hx-trigger="sse:new-checkins/{{ admin_event.uniq_id }}"
+        hx-trigger="ws:new-checkins|{{ admin_event.uniq_id }} from:body"
         hx-target="#refresh-message"
         hx-swap="innerHTML"
     >
@@ -25,13 +21,20 @@
             <div class="d-flex gap-2 ms-auto flex-wrap justify-content-end">
                 <div class="dropdown d-inline">
                     <span
-                        {{ macros.tooltip_attributes('info', _('Update the players\' information from an external data source.'), 'top') }}
+                        {% if client.can_update_players %}
+                            {{ macros.tooltip_attributes('info', _('Update the players\' information from an external data source.'), 'top') }}
+                        {% else %}
+                            {{ macros.tooltip_attributes('warning', _('You are not allowed to update the players\' information from an external data source.'), 'top') }}
+                        {% endif %}
                     >
                         <button
                             class="btn btn-outline-primary dropdown-toggle mx-auto"
                             type="button"
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
+                            {% if not client.can_update_players %}
+                                disabled
+                            {% endif %}
                         >
                             <i class="bi-arrow-repeat pe-1"></i>
                             {{ _('Update') }}
@@ -49,7 +52,9 @@
                 {% endif %}
                 {% include 'filter_columns.html' %}
                 <span
-                    {% if admin_event.not_finished_tournaments_sorted_by_uniq_id %}
+                    {% if not client.can_add_player %}
+                        {{ macros.tooltip_attributes('warning', _('You are not allowed to add players to the event.'), 'top') }}
+                    {% elif admin_event.not_finished_tournaments_sorted_by_uniq_id %}
                         {{ macros.tooltip_attributes('info', _('Add a player to the event.'), 'top') }}
                     {% elif admin_event.tournaments_sorted_by_uniq_id %}
                         {{ macros.tooltip_attributes('warning', _('Tournaments are finished, you can not add players any longer.'), 'top') }}
@@ -58,15 +63,13 @@
                     {% endif %}
                 >
                     <button
-                        data-testid="add-player-button"
-                        class="btn btn-primary text-nowrap"
+                        data-testid="add-player-button"class="btn btn-primary text-nowrap"
                         hx-get="{{ url_for('admin-player-create-modal', event_uniq_id=admin_event.uniq_id) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
-                        preload
                         data-bs-toggle="modal"
                         data-bs-target="#modal-wrapper"
-                        {% if not admin_event.not_finished_tournaments_sorted_by_uniq_id %}
+                        {% if not client.can_add_player or not admin_event.not_finished_tournaments_sorted_by_uniq_id %}
                             disabled
                         {% endif %}
                     >

@@ -1,3 +1,4 @@
+import tempfile
 from collections.abc import Callable
 from itertools import cycle
 import re
@@ -5,13 +6,12 @@ import time
 from datetime import datetime, date
 from logging import Logger
 from pathlib import Path
-from typing import Annotated, Any
+from typing import Any
 
 from httpdate.httpdate import httpdate_to_unixtime, unixtime_to_httpdate
-from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect
+from litestar.datastructures import UploadFile
+from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.controller import Controller
-from litestar.enums import RequestEncodingType
-from litestar.params import Body
 from litestar.response import Template
 
 from common import check_rgb_str, DEVEL_ENV
@@ -25,10 +25,11 @@ from common.i18n.utils import (
 )
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
+from data.access_levels.client_tracker import ClientTracker
 from data.player import Federation, Club
 from web.messages import Message
 from web.session import SessionHandler
-from web.urls import index_url
+from web.utils import RequestUtils
 
 logger: Logger = get_logger()
 
@@ -39,20 +40,16 @@ class WebContext:
     Web contexts are used by controllers to get the context of the request based on the payload data received.
     """
 
-    def __init__(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ]
-        | None = None,
-    ):
+    def __init__(self, request: HTMXRequest):
         self.request: HTMXRequest = request
-        self.data: dict[str, str] | None = data
-        self.error: ClientRedirect | None = None
+        self.client = RequestUtils.get_client(request)
         # sets the session locale to the thread
         set_locale(SessionHandler.get_session_locale(request))
+        if request.client:
+            # tracks the visit of the client
+            ClientTracker().track_client(request.client.host)
+        else:
+            logger.warning('Request with no client!')
 
     @property
     def background_image(self) -> str | None:
@@ -100,6 +97,19 @@ class WebContext:
         }
 
     @classmethod
+    async def normalize_multipart_data(cls, data: dict[str, Any]) -> dict[str, str]:
+        normalized_data: dict[str, str] = {}
+        for key, value in data.items():
+            if isinstance(value, UploadFile):
+                suffix = Path(value.filename).suffix
+                __, tmp_name = tempfile.mkstemp(suffix=suffix)
+                Path(tmp_name).write_bytes(await value.read())
+                normalized_data[key] = tmp_name
+            else:
+                normalized_data[key] = cls.value_to_form_data(value)
+        return normalized_data
+
+    @classmethod
     def form_data_to_value[T](
         cls,
         data: dict[str, str],
@@ -114,6 +124,7 @@ class WebContext:
             date: cls.form_data_to_date,
             list[int]: cls.form_data_to_list_int,
             list[str]: cls.form_data_to_list_str,
+            Path: cls.form_data_to_path,
         }
         for type_, function in type_functions.items():
             if expected_type in (type_, type_ | None):
@@ -134,11 +145,6 @@ class WebContext:
         if not data[field]:
             return empty_value
         return data[field]
-
-    def _form_data_to_str(
-        self, field: str, empty_value: str | None = None
-    ) -> str | None:
-        return self.form_data_to_str(self.data, field, empty_value)
 
     @staticmethod
     def form_data_to_int(
@@ -165,11 +171,6 @@ class WebContext:
             raise ValueError(f'{int_val} < {minimum}')
         return int_val
 
-    def _form_data_to_int(
-        self, field: str, empty_value: int | None = None, minimum: int | None = None
-    ) -> int | None:
-        return self.form_data_to_int(self.data, field, empty_value, minimum)
-
     @staticmethod
     def form_data_to_float(
         data: dict[str, str] | None,
@@ -188,11 +189,6 @@ class WebContext:
         if minimum is not None and float_val < minimum:
             raise ValueError(f'{float_val} < {minimum}')
         return float_val
-
-    def _form_data_to_float(
-        self, field: str, empty_value: float | None = None, minimum: float | None = None
-    ) -> float | None:
-        return self.form_data_to_float(self.data, field, empty_value, minimum)
 
     @staticmethod
     def form_data_to_bool(data: dict[str, str] | None, field: str) -> bool:
@@ -214,7 +210,7 @@ class WebContext:
     def form_data_to_list_int(
         data: dict[str, str], field: str, empty_value: list[int] | None = None
     ) -> list[int]:
-        if field not in data:
+        if field not in data or not data[field]:
             return empty_value or []
         return [int(element) for element in data[field].split(';')]
 
@@ -222,9 +218,15 @@ class WebContext:
     def form_data_to_list_str(
         data: dict[str, str], field: str, empty_value: list[str] | None = None
     ) -> list[str]:
-        if field not in data:
+        if field not in data or not data[field]:
             return empty_value or []
         return [element.strip() for element in data[field].split(';')]
+
+    @staticmethod
+    def form_data_to_path(data: dict[str, str], field: str) -> Path | None:
+        if field not in data or not data[field]:
+            return None
+        return Path(data[field])
 
     @staticmethod
     def form_data_to_rgb(
@@ -238,11 +240,6 @@ class WebContext:
         if not data[field]:
             return empty_value
         return check_rgb_str(data[field])
-
-    def _form_data_to_rgb(
-        self, field: str, empty_value: str | None = None
-    ) -> str | None:
-        return self.form_data_to_rgb(self.data, field, empty_value)
 
     @staticmethod
     def form_data_to_date(
@@ -314,23 +311,6 @@ class WebContext:
             return ''
         return f'{value.year}-{value.month:02d}-{value.day:02d}'
 
-    def _redirect_error(self, errors: str | list[str]):
-        self.error = BaseController.redirect_error(self.request, errors)
-
-    @property
-    def admin_auth(self) -> bool:
-        """
-        A method that tell if the client is authorized to view admin pages.
-        At this time, local requests (from the server) are allowed, adding an auth mechanism to allow access from other
-        clients is planned.
-        :return: True if the client is allowed to view admin pages.
-        """
-        # NOTE(Amaras): see https://docs.litestar.dev/2/usage/security/index.html
-        # for security considerations in Litestar
-        if self.request.client and self.request.client.host == '127.0.0.1':
-            return True
-        return False
-
     @property
     def template_context(self) -> dict[str, Any]:
         """
@@ -354,12 +334,12 @@ class WebContext:
             'now': now,
             'now_http_date': unixtime_to_httpdate(int(now)),
             'sharly_chess_config': sharly_chess_config,
-            'admin_auth': self.admin_auth,
             'background_info': self.background_info,
             'theme': self.theme,
             'locale_infos': locale_infos,
             'locale_options': locale_options,
             'locale': SessionHandler.get_session_locale(self.request),
+            'client': self.client,
         }
 
 
@@ -368,13 +348,6 @@ class BaseController(Controller):
     The basic controller, inherited by all the controllers of the application.
     Controllers are used to handle web requests and respond to clients.
     """
-
-    @staticmethod
-    def redirect_error(
-        request: HTMXRequest, errors: str | list[str] | Exception
-    ) -> ClientRedirect:
-        Message.error(request, errors)
-        return ClientRedirect(redirect_to=index_url(request))
 
     @staticmethod
     def render_messages(

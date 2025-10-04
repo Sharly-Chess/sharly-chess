@@ -81,19 +81,53 @@ class Club:
 
 @dataclass
 class PlayerRating:
-    value: int
-    type: PlayerRatingType
+    estimated: int | None = None
+    national: int | None = None
+    fide: int | None = None
 
     @classmethod
-    def from_stored_value(cls, dict_rating: dict[str, int]):
-        return cls(dict_rating['value'], PlayerRatingType(dict_rating['type']))
+    def from_stored_value(cls, dict_rating: dict[str, int | None]) -> Self:
+        return cls(
+            estimated=dict_rating.get('estimated'),
+            national=dict_rating.get('national'),
+            fide=dict_rating.get('fide'),
+        )
+
+    @classmethod
+    def from_type(cls, value: int | None, rating_type: PlayerRatingType) -> Self:
+        match rating_type:
+            case PlayerRatingType.FIDE:
+                return cls(fide=value)
+            case PlayerRatingType.NATIONAL:
+                return cls(national=value)
+            case PlayerRatingType.ESTIMATED:
+                return cls(estimated=value)
+            case _:
+                raise ValueError(f'{rating_type=}')
 
     @property
-    def stored_value(self) -> dict[str, int]:
+    def stored_value(self) -> dict[str, int | None]:
         return {
-            'value': self.value,
-            'type': self.type.value,
+            'estimated': self.estimated,
+            'national': self.national,
+            'fide': self.fide,
         }
+
+    def __str__(self) -> str:
+        parts = []
+        if self.fide is not None:
+            parts.append(f'{self.fide}{PlayerRatingType.FIDE.short_name}')
+        if self.national is not None:
+            parts.append(f'{self.national}{PlayerRatingType.NATIONAL.short_name}')
+        if self.estimated is not None:
+            parts.append(f'{self.estimated}{PlayerRatingType.ESTIMATED.short_name}')
+        return '/'.join(parts) if parts else '-'
+
+
+@dataclass
+class PlayerRatingAndType:
+    value: int
+    type: PlayerRatingType
 
     def __str__(self) -> str:
         return f'{self.value} {self.type.short_name}'
@@ -175,13 +209,20 @@ class Player:
     def first_name(self) -> str | None:
         return self.stored_player.first_name
 
+    @staticmethod
+    def player_full_name(
+        first_name: str | None,
+        last_name: str,
+    ) -> str:
+        if first_name:
+            return _('{first_name} {last_name}').format(
+                first_name=first_name, last_name=last_name
+            )
+        return last_name
+
     @property
     def full_name(self) -> str:
-        if self.first_name:
-            return _('{first_name} {last_name}').format(
-                first_name=self.first_name, last_name=self.last_name
-            )
-        return self.last_name
+        return self.player_full_name(self.first_name, self.last_name)
 
     @property
     def date_of_birth(self) -> date | None:
@@ -258,14 +299,55 @@ class Player:
             for tr_value, rating in self.stored_player.ratings.items()
         }
 
-    def get_rating(self, tournament_rating: TournamentRating) -> PlayerRating:
-        return (
-            self.ratings.get(tournament_rating, None)
-            or plugin_manager.hook.get_player_estimated_rating(
-                self.event.federation, tournament_rating, self
+    def get_rating_and_type(
+        self, tournament_rating: TournamentRating, player_rating_type: PlayerRatingType
+    ) -> PlayerRatingAndType:
+        player_ratings = self.ratings[tournament_rating]
+        rating: int | None = None
+        type_: PlayerRatingType = PlayerRatingType.ESTIMATED
+        if player_rating_type == PlayerRatingType.FIDE:
+            rating = player_ratings.fide
+            type_ = PlayerRatingType.FIDE
+        elif player_rating_type == PlayerRatingType.NATIONAL:
+            rating = player_ratings.national
+            type_ = PlayerRatingType.NATIONAL
+        if rating is None:
+            if player_ratings.estimated:
+                return PlayerRatingAndType(
+                    player_ratings.estimated, PlayerRatingType.ESTIMATED
+                )
+
+            rating_and_type = plugin_manager.hook.get_player_rating(
+                event_federation=self.event.federation,
+                tournament_rating=tournament_rating,
+                player_rating_type=player_rating_type,
+                player=self,
             )
-            or PlayerRating(0, PlayerRatingType.ESTIMATED)
+            if rating_and_type:
+                return rating_and_type
+
+        return PlayerRatingAndType(rating or 0, type_)
+
+    @property
+    def has_real_rating(self) -> bool:
+        return any(
+            rating.fide is not None or rating.national is not None
+            for rating in self.ratings.values()
         )
+
+    @property
+    def first_real_rating_str(self) -> str:
+        for tournament_rating in TournamentRating:
+            rating_and_type = self.get_rating_and_type(
+                tournament_rating, PlayerRatingType.FIDE
+            )
+            if rating_and_type.type == PlayerRatingType.ESTIMATED:
+                rating_and_type = self.get_rating_and_type(
+                    tournament_rating, PlayerRatingType.NATIONAL
+                )
+            if rating_and_type.type != PlayerRatingType.ESTIMATED:
+                return f'{rating_and_type} ({tournament_rating.acronym})'
+        raise ValueError('Player expected to have a real rating')
 
     def update_ratings(self, ratings: dict[TournamentRating, PlayerRating]):
         for tournament_rating, player_rating in ratings.items():
@@ -377,17 +459,23 @@ class Player:
     def rating_str(self) -> str:
         return str(self._tournament_rating)
 
-    def rating_is_overridden(self, tournament_rating: TournamentRating) -> bool:
+    def rating_is_overridden(
+        self, tournament_rating: TournamentRating, player_rating_type: PlayerRatingType
+    ) -> bool:
         if not self.tournament.override_unrated_rapid_blitz:
             return False
 
-        rating = self.ratings.get(tournament_rating, None)
-        if rating and rating.type == PlayerRatingType.FIDE:
+        if player_rating_type == PlayerRatingType.FIDE:
+            # We only override FIDE ratings
+            return False
+
+        ratings = self.ratings.get(tournament_rating, None)
+        if ratings and ratings.fide is not None:
             return False
 
         if tournament_rating != TournamentRating.STANDARD:
-            rating = self.ratings.get(TournamentRating.STANDARD, None)
-            if rating and rating.type == PlayerRatingType.FIDE:
+            ratings = self.ratings.get(TournamentRating.STANDARD, None)
+            if ratings and ratings.fide is not None:
                 return True
 
         return False
@@ -397,19 +485,28 @@ class Player:
         return self.stored_tournament_player.manual_tiebreak
 
     @property
-    def _tournament_rating(self) -> PlayerRating:
-        if self.rating_is_overridden(self.tournament.rating):
+    def _tournament_rating(self) -> PlayerRatingAndType:
+        if self.rating_is_overridden(
+            self.tournament.rating, self.tournament.player_rating_type
+        ):
             rating = self.ratings.get(TournamentRating.STANDARD)
             assert rating is not None
-            return rating
+            assert rating.fide is not None
+            return PlayerRatingAndType(rating.fide, PlayerRatingType.FIDE)
 
-        return self.get_rating(self.tournament.rating)
+        return self.get_rating_and_type(
+            self.tournament.rating, self.tournament.player_rating_type
+        )
 
     @property
     def ratings_str(self) -> str:
         return '/'.join(
             [
-                str(self.get_rating(tournament_rating))
+                str(
+                    self.get_rating_and_type(
+                        tournament_rating, self.tournament.player_rating_type
+                    )
+                )
                 for tournament_rating in TournamentRating
             ]
         )
@@ -481,6 +578,16 @@ class Player:
     def vpoints_str(self) -> str:
         return StaticUtils.points_str(self.vpoints)
 
+    @property
+    def byes_count(self) -> int:
+        byes_count = 0
+        for pairing in self.pairings_by_round.values():
+            if pairing.result == Result.HALF_POINT_BYE:
+                byes_count += 1
+            elif pairing.result == Result.FULL_POINT_BYE:
+                byes_count += 2
+        return byes_count
+
     def to_trf(
         self,
         after_round: int,
@@ -488,6 +595,8 @@ class Player:
         include_next_round_bye: bool,
     ) -> TrfPlayer:
         games: list[TrfGame] = []
+        from data.input_output.trf_mappers import TrfPlayerGender, TrfPlayerTitle
+
         for round_nb, pairing in self.pairings.items():
             trf_game = pairing.to_trf(round_nb)
             if round_nb <= after_round:
@@ -498,7 +607,7 @@ class Player:
                 elif next_round_pairings_as_zpb and not pairing.not_paired:
                     games.append(
                         TrfGame(
-                            startrank='0000',  # type: ignore
+                            startrank=0,
                             color='-',
                             result=Result.ZERO_POINT_BYE.to_trf,
                             round=round_nb,
@@ -508,8 +617,8 @@ class Player:
         return TrfPlayer(
             startrank=self.pairing_number,
             name=f'{self.last_name}, {self.first_name or ""}'[:32],
-            sex=self.gender.to_trf,
-            title=self.title.to_trf,
+            sex=TrfPlayerGender.get_outer_value(self.gender),
+            title=TrfPlayerTitle.get_outer_value(self.title),
             rating=self.rating,
             fed=self.federation.name,
             id=self.fide_id,
@@ -691,7 +800,7 @@ class Player:
             if isinstance(tie_break_value.tie_break, tie_break_type):
                 tie_break_found = True
                 break
-            tie_break_sort_key.append(-tie_break_value.value)
+            tie_break_sort_key.append(-float(tie_break_value.value))
         if not tie_break_found:
             tie_break_sort_key = []
         return (-(self.points or 0.0),) + tuple(tie_break_sort_key)
@@ -702,7 +811,7 @@ class Player:
         """Returns a rank sort key as if the tie-break of type *tie_break_type* was not set."""
 
         tie_break_sort_key = tuple(
-            -tie_break_value.value
+            -float(tie_break_value.value)
             for tie_break_value in self.tie_break_values
             if not isinstance(tie_break_value.tie_break, tie_break_type)
         )
@@ -712,7 +821,7 @@ class Player:
     @property
     def rank_sort_key(self) -> tuple:
         tie_break_sort_key = tuple(
-            -tie_break_value.value for tie_break_value in self.tie_break_values
+            -float(tie_break_value.value) for tie_break_value in self.tie_break_values
         )
         return (-(self.points or 0.0),) + tie_break_sort_key + (self.pairing_number,)
 
@@ -728,15 +837,15 @@ class Player:
             return NotImplemented
         return self.board_number_sort_key == other.board_number_sort_key
 
-    def __repr__(self):
-        ratings_str: str = '/'.join(
-            f'{self.ratings.get(tournament_rating, "  -  ")}'
-            for tournament_rating in TournamentRating
-        )
+    def __str__(self):
         return (
-            f'(#{self.id} rank={self._rank} ratings={ratings_str} title={self.title.value} gender={self.gender.value} '
+            f'(#{self.id} rank={self._rank} ratings={self.ratings_str} '
+            f'title={self.title.value} gender={self.gender.value} '
             f'name={self.last_name} {self.first_name} points={self.points})'
         )
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(tournament={self.tournament!r}, stored_player={self.stored_player!r})'
 
     # --------------------------------------------------------------------------
     # Legacy

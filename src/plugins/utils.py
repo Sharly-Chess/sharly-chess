@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from collections.abc import Callable, Hashable
+from collections.abc import Callable
 from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
@@ -12,7 +12,6 @@ from utils.entity import IdentifiableEntity
 from plugins import PLUGINS_DIR
 
 if TYPE_CHECKING:
-    from common.engine import Engine
     from database.sqlite.event.event_database import EventDatabase
     from plugins.migration import PluginMigrationManager
 
@@ -269,6 +268,13 @@ class ExtraAdminColumn(NamedTuple):
     at: str
     header_template: str
     cell_template: str
+
+
+class ExtraStatisticsSection(NamedTuple):
+    at: str
+    title: str
+    rows: dict[str, int]
+    subtitle: str | None
 
 
 class PluginNavBarItem(NamedTuple):

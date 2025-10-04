@@ -114,7 +114,7 @@
 | `time_str`    | `TEXT`    |                                            |     | The time of the schedule in hh:mm format                                                                                              |
 | `text_before` | `TEXT`    |                                            |     | The text to display on the timer before the schedule                                                                                  |
 | `text_after`  | `TEXT`    |                                            |     | The text to display on the timer after the schedule                                                                                   |
-|               |           | UNIQUE(`uniq_id`, `timer_id`)              |     |                                                                                                                                       |---------------------------------------------------|
+|               |           | UNIQUE(`uniq_id`, `timer_id`)              |     |                                                                                                                                       |
 
 ### `tournament` (tournaments)
 
@@ -157,6 +157,15 @@
 | `ffe_password`                            | `TEXT`    |                                            | ffe        | The tournament access code on the FFE federal website (consisting of 10 capital letters)                                                                   |
 | `ffe_last_upload`                         | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   | ffe        | The date the tournament was last uploaded to the FFE federal website                                                                                       |
 | `ffe_last_rules_upload`                   | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   | ffe        | The date of the last sending of the tournament rules to the FFE federal website                                                                            |
+
+### `tournament_criterion` (tournament criteria)
+
+| Field               | Type      | Constraint                                                | Ext | Description                        |
+|---------------------|-----------|-----------------------------------------------------------|-----|------------------------------------|
+| `id`                | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT<br/>UNIQUE     |     | The tournament criterion ID        |
+| `tournament_id`     | `INTEGER` | NOT NULL<br/>REFERENCES `tournament`(`id`)                |     | The tournament ID                  |
+| `type`              | `TEXT`    | NOT NULL                                                  |     | The criterion type                 |
+| `options`           | `TEXT`    |                                                           |     | Criterion options in JSON format   |
 
 ### `player` (players)
 
@@ -216,7 +225,7 @@
 |--------------------------|-----------|--------------------------------------------|-----|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `id`                     | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT |     | The screen ID                                                                                                                                                                                                     |
 | `uniq_id`                | `TEXT`    | NOT NULL<br/>UNIQUE                        |     | The unique text ID of the screen                                                                                                                                                                                  |
-| `type`                   | `TEXT`    | NOT NULL                                   |     | The screen type:<br/>- `input`: results entry<br/>- `boards`: pairings by chessboard<br/>- `players`: pairings in alphabetical order<br/>- `results`: latest results<br/>- `image`: image                         |
+| `type`                   | `TEXT`    | NOT NULL                                   |     | The screen type:<br/>- `input`: player check-in and results entry<br/>- `boards`: pairings by chessboard<br/>- `players`: pairings in alphabetical order<br/>- `results`: latest results<br/>- `image`: image     |
 | `public`                 | `INTEGER` |                                            |     | Boolean:<br/>- `1`: the screen is public (visible to users on the public interface);<br/>- `0`: the screen is reserved for referees                                                                               |
 | `name`                   | `TEXT`    |                                            |     | The name of the screen                                                                                                                                                                                            |
 | `columns`                | `INTEGER` |                                            |     | The number of columns on the screen                                                                                                                                                                               |
@@ -262,7 +271,7 @@
 |-------------------------|-----------|--------------------------------------------|-----|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `id`                    | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT |     | The family ID                                                                                                                                                                                                                    |
 | `uniq_id`               | `TEXT`    | NOT NULL<br/>UNIQUE                        |     | The unique text ID of the family                                                                                                                                                                                                 |
-| `type`                  | `TEXT`    | NOT NULL                                   |     | The screen type:<br/>- `input`: results entry<br/>- `boards`: pairings by chessboard<br/>- `players`: pairings in alphabetical order<br/>- `results`: latest results<br/>- `image`: image                                        |
+| `type`                  | `TEXT`    | NOT NULL                                   |     | The screen type:<br/>- `input`: player check-in and results entry<br/>- `boards`: pairings by chessboard<br/>- `players`: pairings in alphabetical order<br/>- `results`: latest results<br/>- `image`: image                    |
 | `public`                | `INTEGER` |                                            |     | Boolean:<br/>- `1`: the family is public (visible to users on the public interface);<br/>- `0`: the family is reserved for referees                                                                                              |
 | `name`                  | `TEXT`    |                                            |     | The name of the family                                                                                                                                                                                                           |
 | `columns`               | `INTEGER` |                                            |     | The number of columns in the family's screens                                                                                                                                                                                    |
@@ -283,7 +292,7 @@
 | `message_text`          | `TEXT`    |                                            |     | The text of the screen's alert message (by default, no alert message is displayed)                                                                                                                                               |
 | `last_update`           | `FLOAT`   | NOT NULL                                   |     | The last date the screen was modified                                                                                                                                                                                            |
 
-### `rotator` (rotating screens)
+### `rotator` (rotators)
 
 | Field             | Type      | Constraint                                 | Ext | Description                                                                                                                                                                                                  |
 |-------------------|-----------|--------------------------------------------|-----|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -294,7 +303,17 @@
 | `family_ids`      | `TEXT`    |                                            |     | The list of screen families to display, in JSON format                                                                                                                                                       |
 | `delay`           | `INTEGER` |                                            |     | The screen rotation delay in seconds, optional (default 15)                                                                                                                                                  |
 | `message_default` | `INTEGER` | NOT NULL<br/>DEFAULT 1                     |     | Boolean:<br/>- `1`: The event alert message is used (unless a message is defined for the screens);<br/>- `0`: The alert message for the rotating screen's screens is used instead of the event alert message |
-| `message_text`    | `TEXT`    |                                            |     | The screen's alert message text (by default, no alert message is displayed)                                                                                  |
+| `message_text`    | `TEXT`    |                                            |     | The screen's alert message text (by default, no alert message is displayed)                                                                                                                                  |
+
+### `rotating_screen` (rotating screens)
+
+| Field             | Type      | Constraint                                 | Ext | Description                                                           |
+|-------------------|-----------|--------------------------------------------|-----|-----------------------------------------------------------------------|
+| `id`              | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT |     | The rotating screen's identifier                                      |
+| `rotator_id`      | `INTEGER` | NOT NULL                                   |     | The ID of the rotator                                                 |
+| `screen_id`       | `INTEGER` |                                            |     | The ID of the screen, `NULL` if a family                              |
+| `family_id`       | `INTEGER` |                                            |     | The ID of the family, `NULL` if a basic screen                        |
+| `index`           | `INTEGER` | NOT NULL                                   |     | The order of the screen/family in the screens/families of the rotator |
 
 ### `display_controller` (display controllers)
 
