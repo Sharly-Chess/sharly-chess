@@ -115,13 +115,13 @@ class FFESqlServer(SqlServer):
             paid=0.0,
             title=PapiPlayerTitle.get_core_object(row['FideTitre'] or '').value,
             ratings={
-                TournamentRating.STANDARD: PlayerRating(
+                TournamentRating.STANDARD.value: PlayerRating.from_type(
                     row['Elo'], PapiPlayerRatingType.get_core_object(row['Fide'])
                 ).stored_value,
-                TournamentRating.RAPID: PlayerRating(
+                TournamentRating.RAPID.value: PlayerRating.from_type(
                     row['Rapide'], PapiPlayerRatingType.get_core_object(row['Fide03'])
                 ).stored_value,
-                TournamentRating.BLITZ: PlayerRating(
+                TournamentRating.BLITZ.value: PlayerRating.from_type(
                     row['Elo06'], PapiPlayerRatingType.get_core_object(row['Fide06'])
                 ).stored_value,
             },

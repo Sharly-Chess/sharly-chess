@@ -321,10 +321,10 @@
                                     {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
                                     <td
                                         scope="col" colspan="2" class="text-nowrap text-center {{ player_class }} {{ field_class }}"
-                                        {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=player.ratings[rt], new=match_player.ratings[rt]), 'top') }}{% endif %}
+                                        {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=player.ratings[rt], new=player_match.updated_ratings(rt)), 'top') }}{% endif %}
                                     >
                                         {% if field_updated %}
-                                            {{ match_player.ratings[rt] }}
+                                            {{ player_match.updated_ratings(rt) }}
                                         {% else %}
                                             {{ player.ratings[rt] }}
                                         {% endif %}

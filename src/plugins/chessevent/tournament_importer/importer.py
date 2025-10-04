@@ -231,17 +231,14 @@ class ChessEventTournamentImporter(TournamentImporter):
             raise unknown_exception('blitz_rating_type')
 
         ratings = {
-            TournamentRating.STANDARD.value: PlayerRating(
-                value=player.standard_rating,
-                type=standard_rating_type,
+            TournamentRating.STANDARD.value: PlayerRating.from_type(
+                player.standard_rating, standard_rating_type
             ).stored_value,
-            TournamentRating.RAPID.value: PlayerRating(
-                value=player.rapid_rating,
-                type=rapid_rating_type,
+            TournamentRating.RAPID.value: PlayerRating.from_type(
+                player.rapid_rating, rapid_rating_type
             ).stored_value,
-            TournamentRating.BLITZ.value: PlayerRating(
-                value=player.blitz_rating,
-                type=blitz_rating_type,
+            TournamentRating.BLITZ.value: PlayerRating.from_type(
+                player.blitz_rating, blitz_rating_type
             ).stored_value,
         }
         try:

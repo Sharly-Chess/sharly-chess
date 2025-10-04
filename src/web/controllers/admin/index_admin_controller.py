@@ -17,6 +17,7 @@ from common import (
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.access_levels.actions import AuthAction
+from data.board import PlayerRatingType
 from data.event import Event
 from data.input_output import OnlineDataSourceManager
 from data.loader import ArchiveLoader, EventLoader
@@ -359,6 +360,7 @@ class IndexAdminController(BaseAdminController):
         background_image: str | None = None
         background_color: str | None = None
         location: str | None = None
+        player_rating_type: int
         record_illegal_moves: int | None = None
         rules: str | None = None
         message_text: str | None = None
@@ -376,6 +378,7 @@ class IndexAdminController(BaseAdminController):
                 background_image = stored_event.background_image
                 background_color = stored_event.background_color
                 location = stored_event.location
+                player_rating_type = stored_event.player_rating_type
                 record_illegal_moves = stored_event.record_illegal_moves
                 rules = stored_event.rules
                 message_text = stored_event.message_text
@@ -396,6 +399,7 @@ class IndexAdminController(BaseAdminController):
                     if sharly_chess_config.federation
                     else ''
                 )
+                player_rating_type = PlayerRatingType.FIDE.value
                 hide_background_image = (
                     sharly_chess_config.default_hide_background_image
                 )
@@ -417,6 +421,7 @@ class IndexAdminController(BaseAdminController):
             'federation': WebContext.value_to_form_data(federation),
             'start': WebContext.value_to_datetime_form_data(start),
             'stop': WebContext.value_to_datetime_form_data(stop),
+            'player_rating_type': WebContext.value_to_form_data(player_rating_type),
             'background_image_checkbox': WebContext.value_to_form_data(
                 hide_background_image
             ),
@@ -450,6 +455,7 @@ class IndexAdminController(BaseAdminController):
         errors: dict[str, str] = {}
         start: float | None = None
         stop: float | None = None
+
         background_image: str | None = None
         message_color: str | None = None
         message_background_color: str | None = None
@@ -494,6 +500,10 @@ class IndexAdminController(BaseAdminController):
             errors[field] = _('Please enter a date after the start date.')
         public = WebContext.form_data_to_bool(data, 'public')
         location = WebContext.form_data_to_str(data, 'location')
+        player_rating_type: int = (
+            WebContext.form_data_to_int(data, 'player_rating_type')
+            or PlayerRatingType.FIDE.value
+        )
         field = 'background_image'
         hide_background_image = WebContext.form_data_to_bool(data, field + '_checkbox')
         if not hide_background_image:
@@ -587,6 +597,7 @@ class IndexAdminController(BaseAdminController):
             stop=stop,
             public=bool(public),
             location=location,
+            player_rating_type=player_rating_type,
             hide_background_image=bool(hide_background_image),
             background_image=background_image,
             background_color=background_color,
@@ -641,6 +652,12 @@ class IndexAdminController(BaseAdminController):
             'modal': 'event',
             'event_uniq_ids': list(EventLoader().event_uniq_ids),
             'plugin_form_fields_templates': plugin_form_fields_templates,
+            'player_rating_type_options': {
+                str(PlayerRatingType.FIDE.value): _('FIDE'),
+                str(PlayerRatingType.NATIONAL.value): _(
+                    'National *** NAME FOR RATING TYPE NATIONAL'
+                ),
+            },
             'action': action,
             'data': data,
             'errors': errors or {},

@@ -52,7 +52,7 @@
 
     <div class="d-flex flex-column gap-1">
         <div class="text-start">
-            {{ tournament.rating }}
+            {{ tournament.rating }} ({{ tournament.player_rating_type.name }})
         </div>
         {% if tournament.rating != 1 %}
             <div class="text-start {% if tournament.override_unrated_rapid_blitz %}text-secondary{% endif %}">

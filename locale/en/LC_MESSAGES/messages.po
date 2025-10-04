@@ -442,6 +442,9 @@ msgstr ""
 msgid "Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!"
 msgstr ""
 
+msgid "Add manual estimated ratings"
+msgstr ""
+
 msgid "Add period"
 msgstr ""
 
@@ -461,6 +464,9 @@ msgid "Administration"
 msgstr ""
 
 msgid "Administrator"
+msgstr ""
+
+msgid "Affects the rating that will be chosen for each player."
 msgstr ""
 
 msgid "Age"
@@ -2734,9 +2740,6 @@ msgstr ""
 msgid "Local databases"
 msgstr ""
 
-msgid "Local source databases settings have been updated."
-msgstr ""
-
 msgid "Location"
 msgstr ""
 
@@ -2853,6 +2856,9 @@ msgid "Maximum number of results displayed:"
 msgstr ""
 
 msgid "Maximum rating"
+msgstr ""
+
+msgid "May be overridden on a per-tournament basis."
 msgstr ""
 
 msgid "May be used for per-round prize giveaways etc."
@@ -3309,9 +3315,6 @@ msgstr ""
 msgid "Only current and future events that have been declared as <b>public</b> by the administrator are visible via the network."
 msgstr ""
 
-msgid "Only estimated ratings are optional."
-msgstr ""
-
 msgid "Only include players of these clubs."
 msgstr ""
 
@@ -3649,6 +3652,12 @@ msgstr ""
 msgid "Player pairings"
 msgstr ""
 
+msgid "Player ratings to use by default:"
+msgstr ""
+
+msgid "Player ratings to use:"
+msgstr ""
+
 msgid "Player selection (by alphabetical order)"
 msgstr ""
 
@@ -3677,6 +3686,9 @@ msgstr ""
 
 #, python-format
 msgid "Players from %(first)s to %(last)s"
+msgstr ""
+
+msgid "Players may have default estimated ratings depending on the activated plugins."
 msgstr ""
 
 #, python-format
@@ -4652,6 +4664,9 @@ msgid "The Buchholz System (the sum of the scores of each of the opponents of a 
 msgstr ""
 
 msgid "The FFE ID is a positive integer."
+msgstr ""
+
+msgid "The FFE always uses the FIDE rating when available."
 msgstr ""
 
 msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b> to the current one may be modified. Changes to pairings previous to this should be made at the <b>end</b> of the tournament, <b>after</b> the rankings have been published, and solely for the computation of the FIDE ratings."
