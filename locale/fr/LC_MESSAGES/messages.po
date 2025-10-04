@@ -3810,6 +3810,9 @@ msgstr "Plug-ins"
 msgid "Point counting"
 msgstr "Comptage des points"
 
+msgid "Points"
+msgstr "Points"
+
 #, python-format
 msgid "Points: %(min)s or more"
 msgstr "Points: %(min)s ou plus"
@@ -5581,11 +5584,17 @@ msgstr "Utiliser des couleurs spécifiques au niveau de log"
 msgid "Use pairing engines"
 msgstr "Utiliser les moteurs d'appariement"
 
+msgid "Use standard points"
+msgstr "Utiliser le barème standard"
+
 msgid "Use standard ratings"
 msgstr "Utiliser les Elos standard"
 
-msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system."
-msgstr "Utiliser le système de points 3/1/0 au lieu du système standard 1/0,5/0."
+msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system. May be overridden on a per-tournament basis"
+msgstr "Utiliser le système de points 3/1/0 au lieu du système standard 1/0,5/0. Peut être remplacé au niveau de chaque tournoi."
+
+msgid "Use three points for a win"
+msgstr "Utiliser trois points pour une victoire"
 
 msgid "Using colors helps in finding quickly important information on the console."
 msgstr "Utiliser les couleurs peut permettre de trouver facilement les informations importantes sur la console."
@@ -5595,6 +5604,9 @@ msgstr "Valider"
 
 msgid "Value"
 msgstr "Valeur"
+
+msgid "Value of the pairing allocated bye:"
+msgstr "Points attribués en cas d’exemption :"
 
 msgid "Values"
 msgstr "Valeurs"
