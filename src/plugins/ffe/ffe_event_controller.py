@@ -11,7 +11,7 @@ from common.i18n import _
 from common.network import NetworkMonitor
 from data.access_levels.actions import AuthAction
 from plugins.ffe import PLUGIN_NAME
-from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader, FfeUploadStatus
+from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
 from plugins.ffe.ffe_session import FFESession
 from plugins.ffe.ffe_session_handler import FFESessionHandler
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
@@ -187,33 +187,3 @@ class FfeAdminEventController(BaseEventAdminController):
         FfeBackgroundUploader.schedule_upload(tournament, True)
 
         return self._render_upload_results(web_context)
-
-    @get(
-        path='/ffe/nav-upload-button/{event_uniq_id:str}',
-        name='ffe-nav-upload-button',
-        guards=[EventGuard()],
-    )
-    async def htmx_admin_ffe_nav_upload_button(self, request: HTMXRequest) -> Template:
-        web_context = BaseEventAdminWebContext(request)
-        admin_event = web_context.admin_event
-        assert admin_event is not None
-
-        has_upload_error = False
-        statuses = FfeBackgroundUploader.upload_status_messages
-        tournaments = admin_event.tournaments
-        for tournament in tournaments:
-            result = statuses.get(
-                FfeBackgroundUploader.result_id(admin_event.uniq_id, tournament.id),
-                None,
-            )
-            if result and result.status == FfeUploadStatus.ERROR:
-                has_upload_error = True
-                break
-
-        return HTMXTemplate(
-            template_name='/ffe_upload_button.html',
-            context=web_context.template_context
-            | {
-                'has_upload_error': has_upload_error,
-            },
-        )

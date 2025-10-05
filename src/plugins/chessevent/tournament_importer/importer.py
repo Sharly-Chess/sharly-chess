@@ -1,11 +1,17 @@
 import json
+import time
 import zoneinfo
 from datetime import datetime, timedelta
 
 from requests import JSONDecodeError
 from text_unidecode import unidecode
 
-from common.exception import OptionError, DictReaderException, SharlyChessException
+from common.exception import (
+    OptionError,
+    DictReaderException,
+    SharlyChessException,
+    ImporterError,
+)
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
@@ -13,6 +19,8 @@ from data.input_output import TournamentImporter
 from data.input_output.dict_reader import dict_to_dataclass
 from data.input_output.tournament_importer_options import TournamentImporterOption
 from data.player import PlayerRating
+from data.tournament import Tournament
+from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredTournament,
     StoredPlayer,
@@ -21,7 +29,16 @@ from database.sqlite.event.event_store import (
 )
 from plugins import ffe
 from plugins.chessevent import PLUGIN_NAME, TMP_DIR
-from plugins.chessevent.chessevent_session import ChessEventSession
+from plugins.chessevent.chessevent_session import (
+    ChessEventSession,
+    ChessEventTournamentRequestData,
+)
+from plugins.chessevent.chessevent_status import (
+    SuccessChessEventStatus,
+    ChessEventStatus,
+    UnexpectedErrorChessEventStatus,
+)
+from plugins.chessevent.exceptions import ChessEventStatusError
 from plugins.chessevent.tournament_importer.data import (
     ChessEventTournament,
     ChessEventPlayer,
@@ -65,25 +82,40 @@ class ChessEventTournamentImporter(TournamentImporter):
     def modal_title(self) -> str:
         return _('Import from ChessEvent')
 
-    def _get_chessevent_tournament(self, event: Event) -> ChessEventTournament:
-        (
-            chessevent_event_id,
-            chessevent_user_id,
-            chessevent_password,
-            chessevent_tournament_name,
-        ) = self.get_option_values()
-        if not chessevent_user_id:
-            chessevent_user_id = get_data(event.plugin_data, 'chessevent_user_id')
-        if not chessevent_password:
-            chessevent_password = get_data(event.plugin_data, 'chessevent_password')
-        if not chessevent_event_id:
-            chessevent_event_id = get_data(event.plugin_data, 'chessevent_event_id')
-        chessevent_data = ChessEventSession(
-            chessevent_user_id,
-            chessevent_password,
-            chessevent_event_id,
-            chessevent_tournament_name,
-        ).read_data()
+    @property
+    def doc_url(self) -> str | None:
+        return 'chessevent'
+
+    def _on_status_error_raised(
+        self, error: ChessEventStatusError, tournament: Tournament | None
+    ):
+        """Executed when an ChessEventStatusError is raised."""
+
+    def _on_standard_error_raised(
+        self, error: SharlyChessException, tournament: Tournament | None
+    ):
+        """Executed when a SharlyChessException is raised."""
+
+    def _resolve_request_data(self, event: Event) -> ChessEventTournamentRequestData:
+        event_id, user_id, password, tournament_name = self.get_option_values()
+        if not user_id:
+            user_id = get_data(event.plugin_data, 'chessevent_user_id')
+        if not password:
+            password = get_data(event.plugin_data, 'chessevent_password')
+        if not event_id:
+            event_id = get_data(event.plugin_data, 'chessevent_event_id')
+        return ChessEventTournamentRequestData(
+            event_id=event_id,
+            user_id=user_id,
+            password=password,
+            tournament_name=tournament_name,
+        )
+
+    @staticmethod
+    def _get_chessevent_tournament(
+        request_data: ChessEventTournamentRequestData,
+    ) -> ChessEventTournament:
+        chessevent_data = ChessEventSession().read_tournament_data(request_data)
         try:
             chessevent_tournament = dict_to_dataclass(
                 ChessEventTournament, json.loads(chessevent_data)
@@ -124,21 +156,44 @@ class ChessEventTournamentImporter(TournamentImporter):
         if not tournament_option.value:
             raise OptionError(_('A value is expected.'), tournament_option)
 
+    def load_tournament(
+        self,
+        event: Event,
+        tournament: Tournament | None = None,
+    ) -> Tournament:
+        try:
+            return super().load_tournament(event, tournament)
+        except ChessEventStatusError as error:
+            self._on_status_error_raised(error, tournament)
+            raise ImporterError(str(error))
+        except SharlyChessException as error:
+            self._on_standard_error_raised(error, tournament)
+            raise error
+
     def load_stored_tournament(
         self, event: Event, stored_tournament: StoredTournament | None = None
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
-        tournament = self._get_chessevent_tournament(event)
+        request_data = self._resolve_request_data(event)
+        tournament = self._get_chessevent_tournament(request_data)
         stored_tournament = self._read_chessevent_tournament(
             tournament, stored_tournament
         )
+        stored_tournament.plugin_data[PLUGIN_NAME] = {
+            'chessevent_event_id': request_data.event_id,
+            'chessevent_user_id': request_data.user_id,
+            'chessevent_password': request_data.password,
+            'chessevent_tournament_name': request_data.tournament_name,
+            'chessevent_last_sync': time.time(),
+            'chessevent_status': SuccessChessEventStatus().id,
+        }
         stored_players = [
             self._read_chessevent_player(player, player_id)
             for player_id, player in enumerate(tournament.players)
         ]
         return stored_tournament, stored_players
 
+    @staticmethod
     def _read_chessevent_tournament(
-        self,
         tournament: ChessEventTournament,
         stored_tournament: StoredTournament | None = None,
     ) -> StoredTournament:
@@ -176,18 +231,6 @@ class ChessEventTournamentImporter(TournamentImporter):
             stored_tournament.plugin_data[ffe.PLUGIN_NAME] = {}
         if not stored_tournament.plugin_data[ffe.PLUGIN_NAME].get('ffe_id', None):
             stored_tournament.plugin_data[ffe.PLUGIN_NAME]['ffe_id'] = tournament.ffe_id
-        (
-            chessevent_event_id,
-            chessevent_user_id,
-            chessevent_password,
-            chessevent_tournament_name,
-        ) = self.get_option_values()
-        stored_tournament.plugin_data[PLUGIN_NAME] = {
-            'chessevent_event_id': chessevent_event_id,
-            'chessevent_user_id': chessevent_user_id,
-            'chessevent_password': chessevent_password,
-            'chessevent_tournament_name': chessevent_tournament_name,
-        }
         # Check-in not yet opened if no player has checked in,
         # opened if some players have, but closed if all players have
         stored_tournament.check_in_open = any(
@@ -304,3 +347,29 @@ class ChessEventTournamentImporter(TournamentImporter):
                 )
             )
         return stored_pairings
+
+
+class ChessEventSyncTournamentImporter(ChessEventTournamentImporter):
+    @staticmethod
+    def _save_tournament_chessevent_status(
+        status: ChessEventStatus, tournament: Tournament | None
+    ):
+        if not tournament:
+            return
+        with EventDatabase(tournament.event.uniq_id, True) as database:
+            database.execute(
+                'UPDATE `tournament` SET `chessevent_status` = ? WHERE `id` = ?',
+                (status.id, tournament.id),
+            )
+
+    def _on_status_error_raised(
+        self, error: ChessEventStatusError, tournament: Tournament | None
+    ):
+        self._save_tournament_chessevent_status(error.status, tournament)
+
+    def _on_standard_error_raised(
+        self, error: SharlyChessException, tournament: Tournament | None
+    ):
+        self._save_tournament_chessevent_status(
+            UnexpectedErrorChessEventStatus(), tournament
+        )

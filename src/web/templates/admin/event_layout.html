@@ -168,11 +168,9 @@
         {% endif %}
     {% endfor %}
 
-    {{ admin_macros.extra_admin_nav_item("print", extra_admin_nav_items)}}
     {% if client.can_print %}
         {% include '/admin/common/print_button.html' %}
     {% endif %}
-    {{ admin_macros.extra_admin_nav_item("database", extra_admin_nav_items)}}
     {% if client.can_manage_source_databases or client.can_manage_application_settings %}
         <div class="sidebar-divider my-3"></div>
     {% endif %}

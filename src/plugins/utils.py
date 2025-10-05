@@ -14,6 +14,7 @@ from plugins import PLUGINS_DIR
 if TYPE_CHECKING:
     from database.sqlite.event.event_database import EventDatabase
     from plugins.migration import PluginMigrationManager
+    from web.controllers.base_controller import BaseController
 
 
 class PluginUtils:
@@ -160,6 +161,12 @@ class Plugin(IdentifiableEntity, ABC):
     @property
     def static_path(self) -> Path:
         return PLUGINS_DIR / self.id / 'static'
+
+    @property
+    def controllers(self) -> list[type['BaseController']]:
+        """List of controllers for the plugin. Has to be passed this way instead
+        of a hook as controllers are initialized at the start of the application."""
+        return []
 
     def get_migration_manager(
         self, database: 'EventDatabase'
