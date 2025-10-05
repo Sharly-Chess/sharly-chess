@@ -224,7 +224,7 @@ class AuthAction(StrEnum):
                 return _('Manage application settings', locale)
             case AuthAction.MANAGE_SOURCE_DATABASES:
                 return _('Manage source databases', locale)
-            case AuthAction.MANAGE_SOURCE_DATABASES:
+            case AuthAction.MANAGE_ARCHIVES:
                 return _('Manage archives', locale)
             case AuthAction.VIEW_PRIVATE_EVENTS:
                 return _('View private events', locale)
