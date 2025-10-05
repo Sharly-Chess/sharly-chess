@@ -6,6 +6,9 @@
         <div class="modal-header">
             <h2 class="modal-title">
                 {{ importer.modal_title }}
+                {% if importer.doc_url %}
+                    <span style="font-size: 70%">{{ macros.doc_icon(importer.doc_url, 'ms-2') }}</span>
+                {% endif %}
             </h2>
         </div>
         <div class="modal-body">

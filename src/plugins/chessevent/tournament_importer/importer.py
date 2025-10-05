@@ -82,6 +82,10 @@ class ChessEventTournamentImporter(TournamentImporter):
     def modal_title(self) -> str:
         return _('Import from ChessEvent')
 
+    @property
+    def doc_url(self) -> str | None:
+        return 'chessevent'
+
     def _on_status_error_raised(
         self, error: ChessEventStatusError, tournament: Tournament | None
     ):
