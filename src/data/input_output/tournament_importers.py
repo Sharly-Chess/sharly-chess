@@ -50,6 +50,12 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
         """The title to display in the import modal."""
 
     @property
+    def doc_url(self) -> str | None:
+        """The doc URL of the icon to display on the modal header.
+        If None, display no icon."""
+        return None
+
+    @property
     def reorder_boards(self) -> bool:
         """Determines if the boards need reordering after they've been loaded."""
         return True
