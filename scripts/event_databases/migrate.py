@@ -86,7 +86,11 @@ if __name__ == '__main__':
         databases.append(ConfigDatabase(not args.validate))
     else:
         for event_id in args.events or EventLoader().all_event_ids():
-            databases.append(EventDatabase(event_id, not args.validate))
+            databases.append(
+                EventDatabase(
+                    event_id, not args.validate, check_dirty_tournaments=False
+                )
+            )
 
     if args.validate:
         for database in databases:
