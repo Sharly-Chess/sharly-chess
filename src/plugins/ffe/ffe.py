@@ -864,7 +864,7 @@ class FfePlugin(Plugin):
     def signal_special_result_set(
         self, tournament: 'Tournament', result: Result
     ) -> str | None:
-        return PapiConverter.check_result(result)
+        return PapiConverter.check_result(result, tournament)
 
     # ---------------------------------------------------------------------------------
     # Printing

@@ -89,6 +89,18 @@ class Board:
 
     @property
     def result_str(self) -> str:
+        if self.exempt:
+            match self.tournament.pab_value:
+                case Result.WIN:
+                    return str(Result.PAIRING_ALLOCATED_BYE)
+                case Result.DRAW:
+                    return str(Result.PENALTY_DL)
+                case Result.LOSS:
+                    return str(Result.REST_GAME)
+                case _:
+                    raise ValueError(
+                        f'Unexpected pab value: {self.tournament.pab_value}'
+                    )
         return str(self.result)
 
     @property

@@ -392,8 +392,15 @@ class Tournament:
 
     @property
     def three_points_for_a_win(self) -> bool:
-        # TODO (Molrn) Replace by a detailed point value override
-        return self.stored_tournament.three_points_for_a_win
+        if self.stored_tournament.three_points_for_a_win is not None:
+            return self.stored_tournament.three_points_for_a_win
+        return self.event.three_points_for_a_win
+
+    @property
+    def pab_value(self) -> Result:
+        if self.stored_tournament.pab_value is not None:
+            return Result(self.stored_tournament.pab_value)
+        return self.event.pab_value
 
     @cached_property
     def tie_breaks(self) -> list[TieBreak]:
@@ -658,10 +665,14 @@ class Tournament:
 
     @property
     def point_values(self) -> dict[Result, float]:
+        values: dict[Result, float]
         if self.three_points_for_a_win:
-            return {Result.WIN: 3, Result.DRAW: 1, Result.LOSS: 0}
+            values = {Result.WIN: 3, Result.DRAW: 1, Result.LOSS: 0}
         else:
-            return {Result.WIN: 1, Result.DRAW: 0.5, Result.LOSS: 0}
+            values = {Result.WIN: 1, Result.DRAW: 0.5, Result.LOSS: 0}
+
+        values[Result.PAIRING_ALLOCATED_BYE] = values[self.pab_value]
+        return values
 
     @property
     def plugin_data(self) -> dict[str, dict[str, Any]]:
