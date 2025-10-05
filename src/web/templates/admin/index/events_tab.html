@@ -25,7 +25,7 @@
             </div>
         {% endwith %}
     {% endif %}
-    {% if client.can_add_event %}
+    {% if client.can_manage_events %}
         <div class="d-flex gap-2 ms-auto align-items-center">
             {% include 'create_event_button.html' %}
         </div>

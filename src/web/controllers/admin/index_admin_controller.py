@@ -715,7 +715,7 @@ class IndexAdminController(BaseAdminController):
     @post(
         path='/{admin_tab:str}/create-event',
         name='admin-tab-create-event',
-        guards=[ActionGuard(AuthAction.ADD_EVENTS)],
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
     async def htmx_admin_tab_event_create(
         self,
@@ -751,7 +751,7 @@ class IndexAdminController(BaseAdminController):
     @get(
         path='/{admin_tab:str}/event-modal/delete/{event_uniq_id:str}',
         name='admin-event-delete-modal',
-        guards=[ActionGuard(AuthAction.DELETE_EVENTS)],
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
     async def htmx_admin_event_delete_modal(
         self, request: HTMXRequest, admin_tab: str
@@ -762,7 +762,7 @@ class IndexAdminController(BaseAdminController):
     @delete(
         path='/{admin_tab:str}/event-delete/{event_uniq_id:str}',
         name='admin-event-delete',
-        guards=[ActionGuard(AuthAction.DELETE_EVENTS)],
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_event_delete(
@@ -787,7 +787,7 @@ class IndexAdminController(BaseAdminController):
     @post(
         path='/event-clone/{event_uniq_id:str}',
         name='admin-event-clone',
-        guards=[ActionGuard(AuthAction.ADD_EVENTS)],
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
     async def htmx_admin_event_clone(
         self,
@@ -829,7 +829,7 @@ class IndexAdminController(BaseAdminController):
             '/{admin_tab:str}/event-update/{event_uniq_id:str}',
         ],
         name='admin-event-update',
-        guards=[ActionGuard(AuthAction.UPDATE_EVENTS)],
+        guards=[ActionGuard(AuthAction.UPDATE_EVENT)],
     )
     async def htmx_admin_event_update(
         self,
@@ -875,7 +875,7 @@ class IndexAdminController(BaseAdminController):
     @patch(
         path='/event-uniq-id-update/{event_uniq_id:str}',
         name='admin-event-uniq-id-update',
-        guards=[ActionGuard(AuthAction.RENAME_EVENTS)],
+        guards=[ActionGuard(AuthAction.RENAME_EVENT)],
     )
     async def htmx_admin_event_uniq_id_update(
         self,

@@ -446,7 +446,7 @@ class ChiefArbitrationAccessLevel(AccessLevel):
     @staticmethod
     def access_level_actions() -> list[AuthAction]:
         return [
-            AuthAction.UPDATE_EVENTS,
+            AuthAction.UPDATE_EVENT,
             AuthAction.MANAGE_ACCOUNTS,
             AuthAction.ADD_TOURNAMENTS,
             AuthAction.DELETE_TOURNAMENTS,
@@ -524,7 +524,7 @@ class OrganizationAccessLevel(AccessLevel):
     @staticmethod
     def access_level_actions() -> list[AuthAction]:
         return [
-            AuthAction.UPDATE_EVENTS,
+            AuthAction.UPDATE_EVENT,
             AuthAction.VIEW_EVENT_CONFIG,
             AuthAction.VIEW_EVENT_CONFIG,
             AuthAction.DOWNLOAD_FEES,
@@ -580,10 +580,9 @@ class AdministrationAccessLevel(AccessLevel):
             AuthAction.MANAGE_ARCHIVES,
             AuthAction.VIEW_PRIVATE_EVENTS,
             AuthAction.VIEW_PASSED_EVENTS,
-            AuthAction.ADD_EVENTS,
+            AuthAction.MANAGE_EVENTS,
             AuthAction.VIEW_DETAILED_EVENT_CARDS,
-            AuthAction.DELETE_EVENTS,
-            AuthAction.RENAME_EVENTS,
+            AuthAction.RENAME_EVENT,
         ]
 
     def _help_text_content(self, locale: str | None = None) -> str:

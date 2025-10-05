@@ -102,7 +102,7 @@
 {% endblock %}
 
 {% block card_buttons_right %}
-    {% if client.can_update_event %}
+    {% if client.can_manage_events %}
         <span
         {{ macros.tooltip_attributes('info', _('Edit the properties of the event.'), 'top') }}
         >
@@ -124,8 +124,6 @@
                 <i class="bi-pencil-fill"></i>
             </button>
         </span>
-    {% endif %}
-    {% if client.can_add_event %}
         <span
            {{ macros.tooltip_attributes('info', _('Duplicate the event.'), 'top') }}
         >
@@ -147,8 +145,6 @@
                 <i class="bi-copy"></i>
             </button>
         </span>
-    {% endif %}
-    {% if client.can_delete_event %}
         <span
             {{ macros.tooltip_attributes('info', _('Archive the event.'), 'top') }}
         >
