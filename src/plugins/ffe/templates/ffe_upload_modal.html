@@ -30,7 +30,7 @@
                 {% include 'ffe_upload_results.html' %}
             </table>
 
-            <div class="text-center my-4">
+            <div class="text-center mt-4 mb-1">
                 <button
                     type="button"
                     hx-post="{{ url_for('ffe-upload', event_uniq_id=admin_event.uniq_id) }}"
