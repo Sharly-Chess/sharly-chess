@@ -535,6 +535,9 @@ msgstr ""
 msgid "An unexpected error occurred, either in Sharly Chess or in ChessEvent. Consult the logs for more details."
 msgstr ""
 
+msgid "An unexpected error occurred, either in Sharly Chess or in ChessEvent. Consult the logs for more details."
+msgstr ""
+
 msgid "An unexpected error occurred."
 msgstr ""
 
@@ -899,6 +902,15 @@ msgstr ""
 msgid "Check the username and the password then try again."
 msgstr ""
 
+msgid "Check the event ID then try again."
+msgstr ""
+
+msgid "Check the tournament name then try again."
+msgstr ""
+
+msgid "Check the username and the password then try again."
+msgstr ""
+
 msgid "Check-in"
 msgstr ""
 
@@ -945,7 +957,16 @@ msgstr ""
 msgid "ChessEvent event not defined."
 msgstr ""
 
+msgid "ChessEvent actions are no longer available once the tournament has started."
+msgstr ""
+
+msgid "ChessEvent event not defined."
+msgstr ""
+
 msgid "ChessEvent event:"
+msgstr ""
+
+msgid "ChessEvent password not defined."
 msgstr ""
 
 msgid "ChessEvent password not defined."
@@ -960,10 +981,16 @@ msgstr ""
 msgid "ChessEvent tournament"
 msgstr ""
 
+msgid "ChessEvent tournament"
+msgstr ""
+
 msgid "ChessEvent tournament:"
 msgstr ""
 
 msgid "ChessEvent user name:"
+msgstr ""
+
+msgid "ChessEvent user not defined."
 msgstr ""
 
 msgid "ChessEvent user not defined."
@@ -2434,6 +2461,9 @@ msgstr ""
 msgid "I confirm that I have read and acknowledged the warning"
 msgstr ""
 
+msgid "I confirm that I have read and acknowledged the warning"
+msgstr ""
+
 msgid "I confirm that I want to archive this event."
 msgstr ""
 
@@ -3264,6 +3294,9 @@ msgstr ""
 msgid "Not configured"
 msgstr ""
 
+msgid "Not configured"
+msgstr ""
+
 msgid "Not connected to internet"
 msgstr ""
 
@@ -3990,6 +4023,9 @@ msgstr ""
 msgid "Publish the tournaments to the FFE website."
 msgstr ""
 
+msgid "Publish the tournaments to the FFE website."
+msgstr ""
+
 msgid "Publish tournament results"
 msgstr ""
 
@@ -4669,6 +4705,9 @@ msgstr ""
 msgid "Started"
 msgstr ""
 
+msgid "Started"
+msgstr ""
+
 msgid "Starting Sharly Chess server, Please wait…"
 msgstr ""
 
@@ -4690,6 +4729,9 @@ msgstr ""
 msgid "Success"
 msgstr ""
 
+msgid "Success"
+msgstr ""
+
 msgid "Sum of Buchholz"
 msgstr ""
 
@@ -4700,6 +4742,29 @@ msgid "Support for the ChessEvent platform used for organising tournaments in Fr
 msgstr ""
 
 msgid "Swiss"
+msgstr ""
+
+msgid "Synchronisation failed for {count} tournament"
+msgid_plural "Synchronisation failed for {count} tournaments"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Synchronization failed for tournament [{tournament}]."
+msgstr ""
+
+msgid "Synchronize all tournaments"
+msgstr ""
+
+msgid "Synchronize the tournaments with the ChessEvent platform."
+msgstr ""
+
+msgid "Synchronize this tournament from its ChessEvent tournament."
+msgstr ""
+
+msgid "Synchronize tournaments with ChessEvent"
+msgstr ""
+
+msgid "Synchronize with ChessEvent"
 msgstr ""
 
 msgid "Synchronisation failed for {count} tournament"
@@ -4820,6 +4885,9 @@ msgstr ""
 
 #, python-format
 msgid "The end time of the tournament (defaults to %(datetime)s)."
+msgstr ""
+
+msgid "The event [{event_id}] is not accessible to the user [{user_id}]."
 msgstr ""
 
 msgid "The event [{event_id}] is not accessible to the user [{user_id}]."
@@ -5082,6 +5150,9 @@ msgid "The type of document to print."
 msgstr ""
 
 msgid "The type of rating to use for the tournament."
+msgstr ""
+
+msgid "The username / password provided are not allowed to access this ChessEvent event."
 msgstr ""
 
 msgid "The username / password provided are not allowed to access this ChessEvent event."
@@ -5358,7 +5429,13 @@ msgstr ""
 msgid "Tournament has not been configured to be used with ChessEvent."
 msgstr ""
 
+msgid "Tournament has not been configured to be used with ChessEvent."
+msgstr ""
+
 msgid "Tournament modified, awaiting auto-upload"
+msgstr ""
+
+msgid "Tournament not found"
 msgstr ""
 
 msgid "Tournament not found"
@@ -5502,7 +5579,6 @@ msgid "Unauthorized access"
 msgstr ""
 
 msgid "Undefined *** PLURAL"
-msgid "Undefined *** PLURAL"
 msgstr "Undefined"
 
 msgid "Under 10"
@@ -5524,6 +5600,9 @@ msgid "Under 20"
 msgstr ""
 
 msgid "Under 8"
+msgstr ""
+
+msgid "Unexpected error"
 msgstr ""
 
 msgid "Unexpected error"
