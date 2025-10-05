@@ -433,9 +433,6 @@ msgstr "Ajouter un tournoi à l'évènement."
 msgid "Add an account to the event."
 msgstr "Ajouter un compte à l'évènement."
 
-msgid "Add events"
-msgstr "Ajouter des évènements"
-
 msgid "Add families"
 msgstr "Ajouter des familles"
 
@@ -1430,9 +1427,6 @@ msgstr "Supprimer le compte"
 
 msgid "Delete display controller"
 msgstr "Supprimer le pilote d'afficheurs"
-
-msgid "Delete events"
-msgstr "Supprimer des évènements"
 
 msgid "Delete player"
 msgstr "Supprimer le·la joueur·euse"
@@ -2841,6 +2835,9 @@ msgstr "Gestion des paramètres de l'application"
 msgid "Manage archives"
 msgstr "Gestion des archives"
 
+msgid "Manage events"
+msgstr "Gestion des évènements"
+
 msgid "Manage prizes"
 msgstr "Gestion des prix"
 
@@ -4143,8 +4140,8 @@ msgstr "Supprimer le·la joueur·euse de l'évènement."
 msgid "Remove the screen from the display controller."
 msgstr "Supprimer la redirection du pilote d'afficheurs vers cet écran."
 
-msgid "Rename events"
-msgstr "Renommer les évènements"
+msgid "Rename event"
+msgstr "Renommer l'évènement"
 
 msgid "Replace"
 msgstr "Remplacer"
@@ -5634,8 +5631,8 @@ msgstr "Évènements à venir"
 msgid "Update"
 msgstr "Mettre à jour"
 
-msgid "Update events"
-msgstr "Modifier les évènements"
+msgid "Update event"
+msgstr "Mettre à jour l'évènement"
 
 msgid "Update players"
 msgstr "Mettre à jour les joueur·euses"
