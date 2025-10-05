@@ -1,5 +1,5 @@
 from types import ModuleType
-from typing import Any, TYPE_CHECKING, override, Optional, Iterable
+from typing import Any, TYPE_CHECKING, override, Optional
 
 from packaging.version import Version
 
@@ -63,7 +63,7 @@ class ChessEventPlugin(Plugin):
         return self.get_migration_manager(event_database)
 
     @property
-    def controllers(self) -> Iterable[type[BaseController]]:
+    def controllers(self) -> list[type[BaseController]]:
         return [ChessEventController]
 
     # ---------------------------------------------------------------------------------
