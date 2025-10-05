@@ -9,6 +9,7 @@ English version below
 - Amélioration de l’ergonomie pour la modification, la duplication et l’archivage des événements (3.1.0)
 - Correction de l'apparition d'un terminal lors de l'upload FFE (3.1.1)
 - Restauration de la signature de l'application (3.1.1)
+- Il est désormais possible de définir la valeur des points attribués en cas d’exemption (3.x)
 
 ## Tournois
 
@@ -67,6 +68,7 @@ English version below
 - Export tournaments to TRF (3.1.0)
 - Fixed TRF import with no games (3.1.1)
 - Fixed ChessEvent and TRF re-import issue (3.1.2)
+- It's now possible to define the value of the pairing allocated bye (3.x)
 
 ## Players
 

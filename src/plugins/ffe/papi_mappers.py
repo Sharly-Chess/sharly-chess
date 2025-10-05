@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from enum import StrEnum, IntEnum
 from typing import Self
 
+from data.tournament import Tournament
 from data.pairing import Pairing
 from data.pairings import PairingVariation, variations
 from data.pairings.systems import (
@@ -230,12 +231,15 @@ class PapiRound:
                 raise ValueError(f'Unknown value: {self.result}')
 
     @classmethod
-    def from_pairing(cls, pairing: Pairing) -> Self:
+    def from_pairing(cls, pairing: Pairing, pab_value: Result) -> Self:
         papi_color: PapiColor | None
         if (
             pairing.result == Result.NO_RESULT and not pairing.board
         ) or pairing.result == Result.REST_GAME:
             papi_color = PapiColor.UNPAIRED
+        elif pairing.result == Result.PAIRING_ALLOCATED_BYE and pab_value != Result.WIN:
+            # Since Papi does not support custom PAB values, we convert these case to a Bye
+            papi_color = PapiColor.BYE
         elif pairing.color == BoardColor.WHITE:
             papi_color = PapiColor.WHITE
         elif pairing.color == BoardColor.BLACK:
@@ -245,11 +249,11 @@ class PapiRound:
         return cls(
             papi_color,
             pairing.opponent_id,
-            cls._result_to_papi_result(pairing.result),
+            cls._result_to_papi_result(pairing.result, pab_value),
         )
 
     @staticmethod
-    def _result_to_papi_result(result: Result):
+    def _result_to_papi_result(result: Result, pab_value: Result):
         match result:
             case Result.WIN:
                 return PapiResult.WIN
@@ -261,21 +265,27 @@ class PapiRound:
                 return PapiResult.UNPLAYED_OR_NOT_PAIRED
             case Result.FORFEIT_LOSS:
                 return PapiResult.FORFEIT_LOSS
-            case (
-                Result.FORFEIT_WIN
-                | Result.PAIRING_ALLOCATED_BYE
-                | Result.FULL_POINT_BYE
-            ):
+            case Result.FORFEIT_WIN | Result.FULL_POINT_BYE:
                 return PapiResult.PAB_OR_FORFEIT_WIN_OR_FPB
+            case Result.PAIRING_ALLOCATED_BYE:
+                match pab_value:
+                    case Result.WIN:
+                        return PapiResult.PAB_OR_FORFEIT_WIN_OR_FPB
+                    case Result.LOSS:
+                        return PapiResult.UNPLAYED_OR_NOT_PAIRED
+                    case Result.DRAW:
+                        return PapiResult.DRAW_OR_HPB
+                    case _:
+                        raise ValueError(f'Unexpected PAB value: {pab_value}')
             case Result.DOUBLE_FORFEIT:
                 return PapiResult.DOUBLE_FORFEIT
             case _:
                 raise ValueError(f'Unknown value: {result}')
 
     @staticmethod
-    def is_convertible_to_papi(result: Result) -> bool:
+    def is_convertible_to_papi(result: Result, tournament: Tournament) -> bool:
         try:
-            PapiRound._result_to_papi_result(result)
+            PapiRound._result_to_papi_result(result, tournament.pab_value)
             return True
         except ValueError:
             return False

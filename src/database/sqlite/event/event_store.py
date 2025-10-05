@@ -7,6 +7,7 @@ from datetime import date
 from typing import Any
 
 from common.sharly_chess_config import SharlyChessConfig
+from utils.enum import Result
 
 
 @dataclass
@@ -169,7 +170,8 @@ class StoredTournament:
     last_update: float = 0.0
     last_player_update: float = 0.0
     last_pairing_update: float = 0.0
-    three_points_for_a_win: bool = False
+    three_points_for_a_win: bool | None = False
+    pab_value: int | None = None
     override_unrated_rapid_blitz: bool | None = None
     stored_criteria: list[StoredTournamentCriterion] = field(
         default_factory=list[StoredTournamentCriterion]
@@ -344,6 +346,8 @@ class BaseStoredEvent:
     message_background_color: str | None = None
     prize_currency: str | None = None
     override_unrated_rapid_blitz: bool | None = None
+    three_points_for_a_win: bool = False
+    pab_value: int = Result.WIN.value
 
     # Plugins can add their own tournament data
     plugin_data: dict[str, dict[str, Any]] = field(

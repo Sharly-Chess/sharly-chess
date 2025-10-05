@@ -59,7 +59,7 @@ from database.sqlite.local_source_database.delays import (
 )
 from plugins.manager import plugin_manager
 from utils import StaticUtils
-from utils.enum import FormAction
+from utils.enum import FormAction, Result
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
@@ -362,6 +362,8 @@ class IndexAdminController(BaseAdminController):
         location: str | None = None
         player_rating_type: int
         record_illegal_moves: int | None = None
+        three_points_for_a_win: bool
+        pab_value: int
         rules: str | None = None
         message_text: str | None = None
         message_color: str | None = None
@@ -386,6 +388,8 @@ class IndexAdminController(BaseAdminController):
                 message_background_color = admin_event.message_background_color
                 prize_currency = stored_event.prize_currency
                 override_unrated_rapid_blitz = stored_event.override_unrated_rapid_blitz
+                three_points_for_a_win = stored_event.three_points_for_a_win
+                pab_value = stored_event.pab_value
             case 'create':
                 sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
                 public = False
@@ -404,6 +408,8 @@ class IndexAdminController(BaseAdminController):
                     sharly_chess_config.default_hide_background_image
                 )
                 override_unrated_rapid_blitz = True
+                three_points_for_a_win = False
+                pab_value = Result.WIN.value
             case _:
                 raise ValueError(f'action=[{action}]')
 
@@ -439,6 +445,10 @@ class IndexAdminController(BaseAdminController):
             'override_unrated_rapid_blitz': WebContext.value_to_form_data(
                 override_unrated_rapid_blitz
             ),
+            'three_points_for_a_win': WebContext.value_to_form_data(
+                three_points_for_a_win
+            ),
+            'pab_value': WebContext.value_to_form_data(pab_value),
         } | plugin_form_data
 
     @classmethod
@@ -570,6 +580,10 @@ class IndexAdminController(BaseAdminController):
         override_unrated_rapid_blitz = WebContext.form_data_to_bool(
             data, 'override_unrated_rapid_blitz'
         )
+        three_points_for_a_win = WebContext.form_data_to_bool(
+            data, 'three_points_for_a_win'
+        )
+        pab_value = WebContext.form_data_to_int(data, 'pab_value') or Result.WIN.value
 
         # Have plugins validate their fields and return private plugin data
         per_plugin_tournament_data = (
@@ -608,6 +622,8 @@ class IndexAdminController(BaseAdminController):
             message_background_color=message_background_color,
             prize_currency=prize_currency,
             override_unrated_rapid_blitz=override_unrated_rapid_blitz,
+            three_points_for_a_win=three_points_for_a_win,
+            pab_value=pab_value,
             # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
             timer_colors={
                 i: admin_event.timer_colors[i] if admin_event else None
@@ -657,6 +673,11 @@ class IndexAdminController(BaseAdminController):
                 str(PlayerRatingType.NATIONAL.value): _(
                     'National *** NAME FOR RATING TYPE NATIONAL'
                 ),
+            },
+            'three_points_for_a_win_options': {
+                str(Result.WIN.value): _('Win'),
+                str(Result.DRAW.value): _('Draw'),
+                str(Result.LOSS.value): _('Loss'),
             },
             'action': action,
             'data': data,
