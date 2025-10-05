@@ -370,8 +370,8 @@ class TournamentAdminController(BaseEventAdminController):
 
         three_points_for_a_win_options = {
             '': '',
-            WebContext.value_to_form_data(True): _('Use three points for a win'),
-            WebContext.value_to_form_data(False): _('Use standard points'),
+            WebContext.value_to_form_data(True): _('Three points for a win (3-1-0)'),
+            WebContext.value_to_form_data(False): _('Standard points (1-0.5-0)'),
         }
         three_points_for_a_win_options[''] = _("Use Event's default - {option}").format(
             option=three_points_for_a_win_options[

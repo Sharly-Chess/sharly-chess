@@ -4587,6 +4587,9 @@ msgstr "Staff configuré par défaut"
 msgid "Standard"
 msgstr "Standard"
 
+msgid "Standard points (1-0.5-0)"
+msgstr "Barème standard (1-0.5-0)"
+
 msgid "Standard rating"
 msgstr "Classement standard"
 
@@ -5106,6 +5109,9 @@ msgstr "Cet identifiant unique est déjà utilisé."
 msgid "Three points for a win"
 msgstr "Victoire à 3 points"
 
+msgid "Three points for a win (3-1-0)"
+msgstr "Victoire à trois points (3-1-0)"
+
 #, python-format
 msgid "Tie-break #%(index)d:"
 msgstr "Départage n°%(index)d :"
@@ -5584,17 +5590,11 @@ msgstr "Utiliser des couleurs spécifiques au niveau de log"
 msgid "Use pairing engines"
 msgstr "Utiliser les moteurs d'appariement"
 
-msgid "Use standard points"
-msgstr "Utiliser le barème standard"
-
 msgid "Use standard ratings"
 msgstr "Utiliser les Elos standard"
 
-msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system. May be overridden on a per-tournament basis"
+msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system. May be overridden on a per-tournament basis."
 msgstr "Utiliser le système de points 3/1/0 au lieu du système standard 1/0,5/0. Peut être remplacé au niveau de chaque tournoi."
-
-msgid "Use three points for a win"
-msgstr "Utiliser trois points pour une victoire"
 
 msgid "Using colors helps in finding quickly important information on the console."
 msgstr "Utiliser les couleurs peut permettre de trouver facilement les informations importantes sur la console."

@@ -4587,6 +4587,9 @@ msgstr ""
 msgid "Standard"
 msgstr ""
 
+msgid "Standard points (1-0.5-0)"
+msgstr ""
+
 msgid "Standard rating"
 msgstr ""
 
@@ -5106,6 +5109,9 @@ msgstr ""
 msgid "Three points for a win"
 msgstr ""
 
+msgid "Three points for a win (3-1-0)"
+msgstr ""
+
 #, python-format
 msgid "Tie-break #%(index)d:"
 msgstr ""
@@ -5584,16 +5590,10 @@ msgstr ""
 msgid "Use pairing engines"
 msgstr ""
 
-msgid "Use standard points"
-msgstr ""
-
 msgid "Use standard ratings"
 msgstr ""
 
-msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system. May be overridden on a per-tournament basis"
-msgstr ""
-
-msgid "Use three points for a win"
+msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system. May be overridden on a per-tournament basis."
 msgstr ""
 
 msgid "Using colors helps in finding quickly important information on the console."

@@ -11,6 +11,7 @@ class Migration(BaseMigration):
         )
         self.database.execute('ALTER TABLE `tournament` ADD `pab_value` INTEGER')
 
+        # A temp column is required because of the NOT NULL constraint on the `three_points_for_a_win` column
         self.database.execute(
             'ALTER TABLE tournament ADD COLUMN tmp_three_points INTEGER;'
         )
