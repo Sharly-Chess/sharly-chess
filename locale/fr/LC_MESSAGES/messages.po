@@ -1946,7 +1946,7 @@ msgid "Event [{uniq_id}] has been updated."
 msgstr "L'évènement [{uniq_id}] a été modifié."
 
 msgid "Event not found"
-msgstr "Évènements introuvable"
+msgstr "Évènement introuvable"
 
 msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
 msgstr "L'identifiant unique de l'évènement à été renommé de [{old_uniq_id}] à [{new_uniq_id}]."
@@ -3253,7 +3253,7 @@ msgid "Not checked-in yet"
 msgstr "Pas encore point·ée"
 
 msgid "Not configured"
-msgstr "Non-configuré"
+msgstr "Non configuré"
 
 msgid "Not connected to internet"
 msgstr "Aucune connection à internet"
@@ -5061,7 +5061,7 @@ msgid "The type of rating to use for the tournament."
 msgstr "Le type de classement utilsé."
 
 msgid "The username / password provided are not allowed to access this ChessEvent event."
-msgstr "L'identifiant et ne mot de passe fournis ne permettent pas d'accéder à cet évènement ChessEvent."
+msgstr "L'identifiant et le mot de passe fournis ne permettent pas d'accéder à cet évènement ChessEvent."
 
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
 msgstr "La valeur doit être supérieure au seuil de partage de la catégorie ({threshold})."
