@@ -17,6 +17,7 @@ English version below
 - Export des tournois au format TRF (3.1.0)
 - Correction de l'import TRF sans partie (3.1.1)
 - Correction du problème de réimportation ChessEvent et TRF (3.1.2)
+- Synchronisation des tournois avec ChessEvent (3.1.3)
 
 ## Joueur·euses
 
@@ -67,6 +68,7 @@ English version below
 - Export tournaments to TRF (3.1.0)
 - Fixed TRF import with no games (3.1.1)
 - Fixed ChessEvent and TRF re-import issue (3.1.2)
+- Tournament synchronization with ChessEvent (3.1.3)
 
 ## Players
 

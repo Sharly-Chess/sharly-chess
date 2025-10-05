@@ -261,9 +261,9 @@
                     </button>
                 </span>
             </li>
-            {% for items_template in tournament_action_menu_items %}
+            {% for menu_items_template in tournament_card_action_menu_items_templates %}
                 <li><hr class="dropdown-divider"></li>
-                {% include items_template %}
+                {% include menu_items_template %}
             {% endfor %}
         </ul>
     </div>
