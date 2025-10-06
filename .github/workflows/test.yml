@@ -36,6 +36,11 @@ jobs:
               run: |
                 python scripts/i18n/i18n_update.py
 
+            - name: Run ruff
+              run: |
+                ruff check .
+                ruff format --check .
+
             - name: Run Mypy
               run: |
                 mypy src
