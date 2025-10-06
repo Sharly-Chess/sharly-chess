@@ -6,7 +6,7 @@ from contextlib import suppress
 from functools import cached_property
 from logging import Logger
 from pathlib import Path
-from typing import Any, TYPE_CHECKING, override, Self, cast
+from typing import Any, TYPE_CHECKING, override, cast
 
 from packaging.version import Version
 
@@ -63,6 +63,7 @@ class EventDatabase(MigrationDatabase):
         *,
         file_path: Path | None = None,
         check_dirty_tournaments: bool = True,
+        enable_foreign_keys: bool = True,
     ):
         """Initialize EventDatabase with either a unique ID or a file path."""
         if uniq_id is not None and file_path is not None:
@@ -74,14 +75,12 @@ class EventDatabase(MigrationDatabase):
         if file_path is not None:
             # Initialize with file path
             self.uniq_id = file_path.stem
-            self.update_event_loader = False
-            super().__init__(file_path, write)
         else:
             # Traditional initialization with uniq_id
             assert uniq_id is not None
             self.uniq_id = uniq_id
-            self.update_event_loader = True
-            super().__init__(self.event_database_path(self.uniq_id), write)
+            file_path = self.event_database_path(self.uniq_id)
+        super().__init__(file_path, write, enable_foreign_keys=enable_foreign_keys)
 
     def __exit__(self, exc_type, exc_value, tb):
         dirty_tournaments: list[StoredTournament] = []
@@ -127,10 +126,6 @@ class EventDatabase(MigrationDatabase):
                 stored_tournament=stored_tournament,
             )
 
-    @classmethod
-    def create_instance(cls, file: Path, write: bool = False) -> Self:
-        return cls(file.stem, write)
-
     @cached_property
     def migration_managers(self) -> list['DatabaseMigrationManager']:
         from database.sqlite.migration import DatabaseMigrationManager
@@ -160,10 +155,23 @@ class EventDatabase(MigrationDatabase):
             Version('2.4.27'): 'm016_add_family_ranking',
         }
 
+    @property
+    def migration_instance_kwargs(self) -> dict[str, Any]:
+        return {
+            'file_path': self.file,
+            'check_dirty_tournaments': False,
+        }
+
+    @property
+    def log_prefix(self) -> str:
+        return f'Database [{self.uniq_id}] - '
+
     @override
     def upgrade(self):
-        if DEVEL_ENV and self.is_metadata_table_installed():
-            self.create_backup()
+        if DEVEL_ENV:
+            with self.get_migration_instance() as database:
+                if database.is_metadata_table_installed():
+                    database.create_backup()
         super().upgrade()
 
     @staticmethod

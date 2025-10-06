@@ -56,13 +56,9 @@ class EventLoader:
             if event_id in known_event_ids:
                 continue
             try:
-                with EventDatabase(event_id) as database:
-                    status = database.check_status()
-                if not status:
-                    with EventDatabase(
-                        event_id, True, check_dirty_tournaments=False
-                    ) as database:
-                        database.upgrade()
+                database = EventDatabase(event_id)
+                if not database.check_status():
+                    database.upgrade()
                 cls._valid_event_ids.add(event_id)
             except SharlyChessException as e:
                 logger.error(e)

@@ -1,7 +1,7 @@
 from functools import cached_property
 from logging import Logger
 from pathlib import Path
-from typing import Any, Self, override, TYPE_CHECKING, ClassVar
+from typing import Any, TYPE_CHECKING, ClassVar
 
 from packaging.version import Version
 
@@ -31,16 +31,15 @@ class ConfigDatabase(MigrationDatabase):
     config_database_path: ClassVar[Path] = EVENTS_DIR / config_database_name
     is_setup = False
 
-    def __init__(self, write: bool = False):
-        super().__init__(self.config_database_path, write)
+    def __init__(self, write: bool = False, enable_foreign_keys: bool = True):
+        super().__init__(
+            self.config_database_path,
+            write,
+            enable_foreign_keys=enable_foreign_keys,
+        )
         if not self.is_setup:
             self.__class__.is_setup = True
             self.setup()
-
-    @classmethod
-    @override
-    def create_instance(cls, file: Path, write: bool = False) -> Self:
-        return cls(write)
 
     @cached_property
     def migration_managers(self) -> list['DatabaseMigrationManager']:
@@ -56,6 +55,10 @@ class ConfigDatabase(MigrationDatabase):
             Version('2.4.30'): 'm003_create_local_source_database_table',
         }
 
+    @property
+    def log_prefix(self) -> str:
+        return 'Config database - '
+
     @classmethod
     def setup(cls):
         """Setup the config database. If it does not exist, create it.
@@ -65,11 +68,9 @@ class ConfigDatabase(MigrationDatabase):
             database.create()
         else:
             try:
-                with database:
-                    status = database.check_status()
+                status = database.check_status()
                 if not status:
-                    with cls(True) as write_database:
-                        write_database.upgrade()
+                    database.upgrade()
             except SharlyChessException as e:
                 logger.error(e)
                 database.file.unlink(missing_ok=True)

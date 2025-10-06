@@ -1,8 +1,7 @@
 from abc import abstractmethod, ABC
 from functools import cached_property
-from pathlib import Path
 from sqlite3 import OperationalError
-from typing import Self, TYPE_CHECKING
+from typing import Self, TYPE_CHECKING, Any
 
 from packaging.version import Version
 
@@ -11,17 +10,27 @@ from common.exception import SharlyChessException
 from database.sqlite.sqlite_database import SQLiteDatabase
 
 if TYPE_CHECKING:
-    from database.sqlite.migration import DatabaseMigrationManager
+    from database.sqlite.migration import DatabaseMigrationManager, PostUpgradeTask
 
 
 class MigrationDatabase(SQLiteDatabase, ABC):
     """Abstract class representing databases which
     can handle one or more timelines of migrations."""
 
-    @classmethod
-    @abstractmethod
-    def create_instance(cls, file: Path, write: bool = False) -> Self:
-        """Alternative constructor with base params."""
+    @property
+    def migration_instance_kwargs(self) -> dict[str, Any]:
+        """Get the kwargs required to initiate a new instance of the class,
+        used in the context of migrating the database."""
+        return {}
+
+    def get_migration_instance(
+        self, write: bool = False, enable_foreign_keys: bool = True
+    ) -> Self:
+        kwargs = self.migration_instance_kwargs | {
+            'write': write,
+            'enable_foreign_keys': enable_foreign_keys,
+        }
+        return self.__class__(**kwargs)
 
     @cached_property
     @abstractmethod
@@ -34,6 +43,11 @@ class MigrationDatabase(SQLiteDatabase, ABC):
     def migration_by_legacy_version(self) -> dict[Version, str]:
         """Name of migration by version
         according to the legacy migration system."""
+
+    @property
+    @abstractmethod
+    def log_prefix(self) -> str:
+        """Prefix identifying the database in the logs."""
 
     # ---------------------------------------------------------------------------------
     # Metadata
@@ -104,19 +118,21 @@ class MigrationDatabase(SQLiteDatabase, ABC):
         in the current version the application.
         Returns True if it can, False if it needs an upgrade.
         If it can't be upgraded, raises a *SharlyChessException*."""
-        return all(manager.check_status() for manager in self.migration_managers)
+        with self.get_migration_instance() as database:
+            return all(
+                manager.check_status(database) for manager in self.migration_managers
+            )
 
     def upgrade(self):
         """Upgrades the database to the latest version.
         This may change the structure of the database."""
+        post_upgrade_tasks: list[PostUpgradeTask] = []
         for manager in self.migration_managers:
             manager.migrate()
+            post_upgrade_tasks += manager.post_upgrade_tasks
 
-        self.commit()
-
-        for manager in self.migration_managers:
-            for task in manager.post_upgrade_tasks:
-                task.execute()
+        for task in post_upgrade_tasks:
+            task.execute()
 
     def create(self):
         """Create a database by running the migrations from scratch.
@@ -129,9 +145,8 @@ class MigrationDatabase(SQLiteDatabase, ABC):
             )
 
         self._create()
-        with self.create_instance(self.file, True) as database:
-            for manager in database.migration_managers:
-                manager.migrate()
+        for manager in self.migration_managers:
+            manager.migrate()
 
     def __enter__(self) -> Self:
         if not self.exists():
