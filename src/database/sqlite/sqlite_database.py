@@ -20,6 +20,7 @@ class SQLiteDatabase:
 
     file: Path
     write: bool = field(default=False)
+    enable_foreign_keys: bool = field(default=True)
     database: Connection | None = field(init=False, default=None)
     cursor: Cursor | None = field(init=False, default=None)
 
@@ -52,10 +53,11 @@ class SQLiteDatabase:
             self.database = connect(db_url, detect_types=1, uri=True)
             self.cursor = self.database.cursor()
 
-            self.cursor.execute('PRAGMA foreign_keys=ON')
             self.cursor.execute('PRAGMA busy_timeout=5000')
 
             if self.write:
+                if self.enable_foreign_keys:
+                    self.cursor.execute('PRAGMA foreign_keys=ON')
                 self.cursor.execute('PRAGMA journal_mode=DELETE')
                 self.cursor.execute('BEGIN IMMEDIATE')
 

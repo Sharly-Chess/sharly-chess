@@ -9,6 +9,7 @@ English version below
 - Amélioration de l’ergonomie pour la modification, la duplication et l’archivage des événements (3.1.0)
 - Correction de l'apparition d'un terminal lors de l'upload FFE (3.1.1)
 - Restauration de la signature de l'application (3.1.1)
+- Correction de l'import d'évènements depuis une version ≤ 2.4.18 (3.1.4)
 
 ## Tournois
 
@@ -60,6 +61,7 @@ English version below
 - Improved the ergonomy for modifying, duplicating and archiving events (3.1.0)
 - Fixed terminal flashing during the FFE upload (3.1.1)
 - Restore the app signature (3.1.1)
+- Fixed events import from versions ≤ 2.4.18 (3.1.4)
 
 ## Tournaments
 

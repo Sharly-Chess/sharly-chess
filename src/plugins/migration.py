@@ -25,55 +25,53 @@ class PluginMigrationManager(MigrationManager[EventDatabase]):
 
     def __init__(
         self,
-        database: EventDatabase,
+        base_database: EventDatabase,
         base_migration_module: ModuleType,
         plugin: Plugin,
     ):
-        super().__init__(database, base_migration_module)
+        super().__init__(base_database, base_migration_module)
         self.plugin = plugin
 
-    def get_migration(self) -> str:
-        return self.database.get_plugin_migration(self.plugin.id)
+    def get_migration(self, database: EventDatabase) -> str:
+        return database.get_plugin_migration(self.plugin.id)
 
-    def set_migration(self, migration: str):
-        self.database.set_plugin_migration(self.plugin.id, migration)
+    def set_migration(self, migration: str, database: EventDatabase):
+        database.set_plugin_migration(self.plugin.id, migration)
 
-    def get_version(self) -> Version:
-        return self.database.get_plugin_version(self.plugin.id)
+    def get_version(self, database: EventDatabase) -> Version:
+        return database.get_plugin_version(self.plugin.id)
 
-    def set_version(self, version: Version):
-        self.database.set_plugin_version(self.plugin.id, version)
+    def set_version(self, version: Version, database: EventDatabase):
+        database.set_plugin_version(self.plugin.id, version)
 
     @property
     def latest_version(self) -> Version:
         return self.plugin.version
 
-    @property
-    def is_metadata_installed(self) -> bool:
+    def is_metadata_installed(self, database: EventDatabase) -> bool:
         try:
-            return self.database.is_plugin_in_metadata_table(self.plugin.id)
+            return database.is_plugin_in_metadata_table(self.plugin.id)
         except OperationalError:
             return False
 
-    def install_metadata(self):
-        self.database.create_plugin_metadata_table()
-        self.database.insert_plugin_metadata(self.plugin.id, self.plugin.version)
+    def install_metadata(self, database: EventDatabase):
+        database.create_plugin_metadata_table()
+        database.insert_plugin_metadata(self.plugin.id, self.plugin.version)
 
-    @override
     @property
     def log_prefix(self) -> str:
-        return f'Database [{self.database.file.name}] - Plugin [{self.plugin.name}] - '
+        return super().log_prefix + f'Plugin [{self.plugin.name}] - '
 
-    def get_migration_from_legacy_version(self) -> str | None:
+    def get_migration_from_legacy_version(self, database: EventDatabase) -> str | None:
         try:
-            self.database.execute(f'SELECT `{self._legacy_version_field}` FROM `info`')
+            database.execute(f'SELECT `{self._legacy_version_field}` FROM `info`')
         except OperationalError:
             return None
         return 'm001_retrieve_deprecated_plugin_columns'
 
-    def remove_legacy_version_field(self):
+    def remove_legacy_version_field(self, database: EventDatabase):
         try:
-            self.database.execute(
+            database.execute(
                 f'ALTER TABLE `info` DROP COLUMN `{self._legacy_version_field}`'
             )
         except OperationalError:
