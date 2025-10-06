@@ -36,10 +36,11 @@ jobs:
               run: |
                 python scripts/i18n/i18n_update.py
 
-            - name: Run ruff
-              run: |
-                ruff check .
-                ruff format --check .
+            - name: Ruff check
+              run: ruff check --target-version=py312 --exit-non-zero-on-fix .
+
+            - name: Check format
+              run: ruff format --check .
 
             - name: Run Mypy
               run: |
