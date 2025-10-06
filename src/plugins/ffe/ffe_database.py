@@ -158,17 +158,15 @@ class FfeDatabase(LocalSourceDatabase):
             paid=0.0,
             title=PlayerTitle(row['fide_title']),
             ratings={
-                TournamentRating.STANDARD: PlayerRating(
+                TournamentRating.STANDARD.value: PlayerRating.from_type(
                     row['standard_rating'],
                     PlayerRatingType(row['standard_rating_type']),
                 ).stored_value,
-                TournamentRating.RAPID: PlayerRating(
-                    row['rapid_rating'],
-                    PlayerRatingType(row['rapid_rating_type']),
+                TournamentRating.RAPID.value: PlayerRating.from_type(
+                    row['rapid_rating'], PlayerRatingType(row['rapid_rating_type'])
                 ).stored_value,
-                TournamentRating.BLITZ: PlayerRating(
-                    row['blitz_rating'],
-                    PlayerRatingType(row['blitz_rating_type']),
+                TournamentRating.BLITZ.value: PlayerRating.from_type(
+                    row['blitz_rating'], PlayerRatingType(row['blitz_rating_type'])
                 ).stored_value,
             },
             fide_id=int(row['fide_id']) if row['fide_id'] else None,
@@ -221,16 +219,18 @@ class FfeDatabase(LocalSourceDatabase):
         for token in tokens:
             order_clauses.append("""
                 CASE
-                    WHEN (last_name LIKE ? OR first_name LIKE ?) AND federation = ? THEN 0
-                    WHEN (last_name LIKE ? OR first_name LIKE ?) THEN 1
-                    WHEN federation = ? THEN 2
-                    ELSE 3
+                    WHEN last_name LIKE ? AND federation = ? THEN 0
+                    WHEN first_name LIKE ? AND federation = ? THEN 1
+                    WHEN (last_name LIKE ? OR first_name LIKE ?) THEN 2
+                    WHEN federation = ? THEN 3
+                    ELSE 4
                 END
             """)
 
             # Params for this token in the same order
             params += [
                 f'{token}%',
+                federation,
                 f'{token}%',
                 federation,
                 f'{token}%',

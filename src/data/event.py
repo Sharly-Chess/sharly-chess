@@ -19,6 +19,7 @@ from common.i18n.utils import by
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.account import Account, Permission
+from data.board import PlayerRatingType
 from data.display_controller import DisplayController
 from data.family import Family
 from data.player import Player, Club, Federation
@@ -30,6 +31,7 @@ from database.sqlite.event.event_database import EventDatabase
 from plugins.manager import plugin_manager
 from utils import StaticUtils
 from utils.enum import (
+    Result,
     ScreenType,
     PlayerGender,
 )
@@ -81,6 +83,10 @@ class Event:
     def federation(self) -> str:
         return self.stored_event.federation
 
+    @property
+    def player_rating_type(self) -> PlayerRatingType:
+        return PlayerRatingType(self.stored_event.player_rating_type)
+
     @cached_property
     def prize_currency(self) -> str:
         if stored := self.stored_event.prize_currency:
@@ -94,6 +100,14 @@ class Event:
     @property
     def override_unrated_rapid_blitz(self) -> bool:
         return self.stored_event.override_unrated_rapid_blitz or False
+
+    @property
+    def three_points_for_a_win(self) -> bool:
+        return self.stored_event.three_points_for_a_win or False
+
+    @property
+    def pab_value(self) -> Result:
+        return Result(self.stored_event.pab_value) or Result.WIN
 
     @property
     def formatted_start_date_time(self) -> str:

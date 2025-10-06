@@ -47,14 +47,12 @@
         <div style="width: 200px; max-width: 60vw; margin: 20px auto 20px;" class="text-primary">
             {{ svg_logo | safe }}
         </div>
-        {% if client.account.administrator %}
-            {% if client.can_add_event %}
-                    {% with button_class='btn-lg' %}
-                <div class="text-center my-3">
-                        {% include 'create_event_button.html' %}
-                    {% endwith %}
-                </div>
-            {% endif %}
+        {% if client.can_manage_events %}
+                {% with button_class='btn-lg' %}
+            <div class="text-center my-3">
+                    {% include 'create_event_button.html' %}
+                {% endwith %}
+            </div>
         {% endif %}
     </div>
 </div>

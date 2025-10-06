@@ -69,9 +69,9 @@
                                     hx-target="#search-results"
                                     hx-get="{{ url_for('admin-search-player', event_uniq_id=admin_event.uniq_id) }}"
                                     hx-vals='js:{
-                                    data_source_id: $("#data-source-select").val(),
-                                    {% if admin_player %}player_id: {{ admin_player.id }}{% endif %}
-                                }'
+                                        data_source_id: $("#data-source-select").val(),
+                                        {% if admin_player %}player_id: {{ admin_player.id }}{% endif %}
+                                    }'
                                     hx-on::before-request="$('#search-results').show();"
                                     hx-on::after-request="$('#search-results').show();"
                                     hx-sync="this:replace"
@@ -205,41 +205,67 @@
                     {{ _('Ratings') }}
                 </h4>
                 <div class="row gy-2 gx-3">
+                    {% set show_estimated_ratings = (
+                        data['standard_rating_estimated'] or
+                        data['rapid_rating_estimated'] or
+                        data['blitz_rating_estimated']
+                    ) %}
                     {% for tournament_rating, tournament_rating_strings in tournament_ratings_strings.items() %}
-                        <div class="col-12 col-sm-4">
-                            {# can not use *_input() here because of a specific pattern for rating type/value #}
+                        <div class="col-4">
                             {%
                                 with
-                                    name=tournament_rating.form_key ~ '_rating',
-                                    name2=tournament_rating.form_key ~ '_rating_type'
+                                    fide=tournament_rating.form_key ~ '_rating_fide',
+                                    national=tournament_rating.form_key ~ '_rating_national',
+                                    estimated=tournament_rating.form_key ~ '_rating_estimated'
                             %}
                                 {%
                                     with
-                                        id=name|replace('_', '-'),
-                                        type_id=name2|replace('_', '-')
+                                        fide_id=fide|replace('_', '-'),
+                                        national_id=national|replace('_', '-'),
+                                        estimated_id=estimated|replace('_', '-')
                                 %}
                                     <label for="{{ id }}" class="form-check-label d-block pb-1">{{ tournament_rating_strings['label'] }}</label>
-                                    <input
-                                        name="{{ name }}"
-                                        type="number"
-                                        id="{{ id }}"
-                                        data-testid="{{ id }}"
-                                        class="form-control d-inline {% if name in errors %}is-invalid{% endif %}"
-                                        aria-describedby="{{ id }}-help {{ id }}-error"
-                                        value="{{ data[name] }}"
-                                    />
-                                    <select
-                                        id="{{ type_id }}"
-                                        data-testid="{{ type_id }}"
-                                        name="{{ name2 }}"
-                                        class="mt-2 form-control d-inline {% if name in errors %}is-invalid{% endif %}"
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input
+                                            name="{{ fide }}"
+                                            type="number"
+                                            id="{{ fide_id }}"
+                                            data-testid="{{ fide_id }}"
+                                            class="form-control d-inline {% if name in errors %}is-invalid{% endif %} mb-2"
+                                            aria-describedby="{{ fide_id }}-help {{ fide_id }}-error"
+                                            value="{{ data[fide] }}"
+                                        />
+                                        <div>{{ rating_type_labels['fide'] }}</div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input
+                                            name="{{ national }}"
+                                            type="number"
+                                            id="{{ national_id }}"
+                                            data-testid="{{ national_id }}"
+                                            class="form-control d-inline {% if name in errors %}is-invalid{% endif %} mb-2"
+                                            aria-describedby="{{ finational_idde_id }}-help {{ national_id }}-error"
+                                            value="{{ data[national] }}"
+                                        />
+                                        <div>{{ rating_type_labels['national'] }}</div>
+                                    </div>
+                                    <div
+                                        class="estimated-container d-flex align-items-center gap-2"
+                                        {% if not show_estimated_ratings %}
+                                            style="display:none !important"
+                                        {% endif %}
                                     >
-                                        {% for value, text in rating_type_options.items() %}
-                                            <option value="{{ value }}" {% if value == data[name2] %}selected{%endif %} {% if not value %}class="fst-italic"{% endif %}>
-                                                {{ text }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
+                                        <input
+                                            name="{{ estimated }}"
+                                            type="number"
+                                            id="{{ estimated_id }}"
+                                            data-testid="{{ estimated_id }}"
+                                            class="form-control d-inline {% if name in errors %}is-invalid{% endif %}"
+                                            aria-describedby="{{ estimated_id }}-help {{ estimated_id }}-error"
+                                            value="{{ data[estimated] }}"
+                                        />
+                                        <div>{{ rating_type_labels['estimated'] }}</div>
+                                    </div>
                                     {% if name in errors %}
                                         <div id="{{ id }}-error" class="form-text invalid-feedback">
                                             {{ errors[name] }}
@@ -249,6 +275,27 @@
                             {% endwith %}
                         </div>
                     {% endfor %}
+                    {% if not show_estimated_ratings %}
+                        <div class="text-center">
+                            <button
+                                id="add-estimated"
+                                class="btn btn-sm btn-outline-primary"
+                                {{ macros.tooltip_attributes(
+                                    'info', _('Players may have default estimated ratings depending on the activated plugins.'), 'top'
+                                ) }}
+                            >
+                                <i class="bi-plus-circle pe-1"></i>
+                                {{ _('Add manual estimated ratings') }}
+                            </button>
+                            <script>
+                                $('#add-estimated').click(function (e) {
+                                    e.preventDefault();
+                                    $('.estimated-container').css('display', 'flex');
+                                    $(this).parent().css('display', 'none');
+                                })
+                            </script>
+                        </div>
+                    {% endif %}
                 </div>
 
                 <h4>

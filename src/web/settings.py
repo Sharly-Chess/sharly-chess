@@ -94,8 +94,8 @@ route_handlers: Sequence[ControllerRouterHandler] = [
     # Plugin controllers
     *[
         controller
-        for controllers in plugin_manager.hook.get_controllers()
-        for controller in controllers
+        for plugin in plugin_manager.all_plugins
+        for controller in plugin.controllers
     ],
 ]
 

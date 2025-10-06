@@ -489,7 +489,7 @@ class PapiConverter:
             except KeyError:
                 raise_unknown_value('fideTitle', papi_player.fideTitle)
 
-        ratings: dict[int, dict[str, int]] = {}
+        ratings: dict[int, dict[str, int | None]] = {}
         papi_ratings = [
             PapiRating(
                 'elo',
@@ -524,7 +524,7 @@ class PapiConverter:
                     rating_type = PapiPlayerRatingType.get_core_object(papi_rating.type)
                 except KeyError:
                     raise_unknown_value(papi_rating.type_field, papi_rating.type)
-            ratings[papi_rating.tournament_rating.value] = PlayerRating(
+            ratings[papi_rating.tournament_rating.value] = PlayerRating.from_type(
                 papi_rating.value, rating_type
             ).stored_value
 
@@ -639,8 +639,8 @@ class PapiConverter:
         return None
 
     @classmethod
-    def check_result(cls, result: Result) -> str | None:
-        if not PapiRound.is_convertible_to_papi(result):
+    def check_result(cls, result: Result, tournament: Tournament) -> str | None:
+        if not PapiRound.is_convertible_to_papi(result, tournament):
             return _(
                 'Result [{result}] is not compatible with the PAPI format.'
             ).format(result=result)
@@ -671,7 +671,7 @@ class PapiConverter:
 
         for round in range(1, tournament.rounds + 1):
             for player in tournament.players:
-                if msg := cls.check_result(player.pairings[round].result):
+                if msg := cls.check_result(player.pairings[round].result, tournament):
                     return msg
 
         return None
@@ -788,7 +788,10 @@ class PapiConverter:
         papi_players: list[PapiPlayer] = []
         for player in tournament.players:
             papi_player = self._player_to_papi_player(
-                player, player_id_to_index, has_manual_tiebreak
+                player,
+                player_id_to_index,
+                has_manual_tiebreak,
+                pab_value=tournament.pab_value,
             )
             papi_players.append(papi_player)
 
@@ -799,6 +802,7 @@ class PapiConverter:
         player: Player,
         player_id_to_index: dict[int, int],
         has_manual_tiebreak: bool,
+        pab_value: Result,
     ) -> PapiPlayer:
         """Convert a Player object to PapiPlayer."""
 
@@ -847,7 +851,7 @@ class PapiConverter:
 
         # Convert rounds/pairings
         for round, pairing in player.pairings_by_round.items():
-            papi_round = PapiRound.from_pairing(pairing)
+            papi_round = PapiRound.from_pairing(pairing, pab_value)
 
             # Get opponent index using the mapping from internal player ID to list index
             opponent_index = None
@@ -860,17 +864,22 @@ class PapiConverter:
 
     def _get_papi_elo(self, player: Player, tournament_rating: TournamentRating) -> int:
         # Override unrated rapid/blitz rating in the export
-        if player.rating_is_overridden(tournament_rating):
+        # When exporting to Papi we can safely assume that the player type for the touranment rating is FIDE
+        if player.rating_is_overridden(tournament_rating, PlayerRatingType.FIDE):
             tournament_rating = TournamentRating.STANDARD
-        return player.get_rating(tournament_rating).value
+        return player.get_rating_and_type(
+            tournament_rating, PlayerRatingType.FIDE
+        ).value
 
     def _get_papi_elo_type(
         self, player: Player, tournament_rating: TournamentRating
     ) -> str:
-        if player.rating_is_overridden(tournament_rating):
+        if player.rating_is_overridden(tournament_rating, PlayerRatingType.FIDE):
             tournament_rating = TournamentRating.STANDARD
-        rating = player.ratings.get(tournament_rating, None)
-        rating_type = rating.type if rating else None
+        rating_and_type = player.get_rating_and_type(
+            tournament_rating, PlayerRatingType.FIDE
+        )
+        rating_type = rating_and_type.type
         default_rating = PapiPlayerRatingType.get_outer_value(
             PlayerRatingType.ESTIMATED
         )

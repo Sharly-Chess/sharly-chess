@@ -86,6 +86,17 @@
                 </div>
                 <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6">
+                        {{ admin_macros.select_input(
+                            name='player_rating_type',
+                            label=_('Player ratings to use by default:'),
+                            help_text=_(
+                                'May be overridden on a per-tournament basis.',
+                            ),
+                            select_options=player_rating_type_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='location',
                             label=_('%(string)s:', string=_('Location')),
@@ -95,6 +106,8 @@
                             data=data, errors=errors
                         ) }}
                     </div>
+                </div>
+                <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='prize_currency',
@@ -123,6 +136,32 @@
                         disabled=not client.can_update_event,
                         data=data, errors=errors
                     ) }}
+                </div>
+
+                <h4>
+                    {{ _('Points') }}
+                </h4>
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.select_input(
+                            name='pab_value',
+                            label=_('Value of the pairing allocated bye:'),
+                            help_text=_(
+                                'May be overridden on a per-tournament basis.',
+                            ),
+                            select_options=three_points_for_a_win_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.switch_input(
+                            name='three_points_for_a_win',
+                            label=_('%(string)s:', string=_('Point counting')),
+                            placeholder=_('Three points for a win'),
+                            help_text=_('Use the 3/1/0 points system instead of the standard 1/0.5/0 system. May be overridden on a per-tournament basis.'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
                 </div>
 
                 <h4>

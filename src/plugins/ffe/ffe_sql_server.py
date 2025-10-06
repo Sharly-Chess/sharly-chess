@@ -115,13 +115,13 @@ class FFESqlServer(SqlServer):
             paid=0.0,
             title=PapiPlayerTitle.get_core_object(row['FideTitre'] or '').value,
             ratings={
-                TournamentRating.STANDARD: PlayerRating(
+                TournamentRating.STANDARD.value: PlayerRating.from_type(
                     row['Elo'], PapiPlayerRatingType.get_core_object(row['Fide'])
                 ).stored_value,
-                TournamentRating.RAPID: PlayerRating(
+                TournamentRating.RAPID.value: PlayerRating.from_type(
                     row['Rapide'], PapiPlayerRatingType.get_core_object(row['Fide03'])
                 ).stored_value,
-                TournamentRating.BLITZ: PlayerRating(
+                TournamentRating.BLITZ.value: PlayerRating.from_type(
                     row['Elo06'], PapiPlayerRatingType.get_core_object(row['Fide06'])
                 ).stored_value,
             },
@@ -228,16 +228,18 @@ class FFESqlServer(SqlServer):
         for token in tokens:
             order_clauses.append("""
                 CASE
-                    WHEN (UPPER(joueur.Nom) LIKE %s OR UPPER(joueur.Prenom) LIKE %s) AND federation = %s THEN 0
-                    WHEN (UPPER(joueur.Nom) LIKE %s OR UPPER(joueur.Prenom) LIKE %s) THEN 1
-                    WHEN federation = %s THEN 2
-                    ELSE 3
+                    WHEN UPPER(joueur.Nom) LIKE %s AND federation = %s THEN 0
+                    WHEN UPPER(joueur.Prenom) LIKE %s AND federation = %s THEN 1
+                    WHEN UPPER(joueur.Nom) LIKE %s OR UPPER(joueur.Prenom) LIKE %s THEN 2
+                    WHEN federation = %s THEN 3
+                    ELSE 4
                 END
             """)
 
             # Params for this token in the same order
             params += [
                 f'{token}%',
+                federation,
                 f'{token}%',
                 federation,
                 f'{token}%',

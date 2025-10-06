@@ -12,7 +12,6 @@ from common import APP_NAME
 from plugins.utils import (
     ExtraAdminColumn,
     ExtraColumn,
-    PluginNavBarItem,
     ExtraStatisticsSection,
     PluginData,
 )
@@ -21,7 +20,7 @@ from utils.enum import Result, ScreenType, TournamentRating
 if TYPE_CHECKING:
     from data.input_output import DataSource, TournamentExporter, TournamentImporter
     from data.pairings.variations import SwissVariation
-    from data.player import Player, PlayerRating
+    from data.player import Player, PlayerRatingAndType, PlayerRatingType
     from data.print_documents import PrintDocument, PlayerSplitter, QRCodeType
     from data.criteria.player_filter_options import PlayerFilterOption
     from data.criteria.player_filters import PlayerFilter
@@ -37,7 +36,6 @@ if TYPE_CHECKING:
     )
     from database.sqlite.local_source_database.databases import LocalSourceDatabase
     from plugins.migration import PluginMigrationManager
-    from web.controllers.base_controller import BaseController
     from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 
 hookspec = pluggy.HookspecMarker(APP_NAME)
@@ -59,10 +57,6 @@ class AppHookSpecs:
         self, event_database: 'EventDatabase'
     ) -> 'PluginMigrationManager':
         """Provide a migration manager for event databases"""
-
-    @hookspec
-    def get_controllers(self) -> Iterable[type['BaseController']]:
-        """Provide controllers for the application"""
 
     @hookspec
     def get_base_admin_template_context(self) -> dict[str, Any]:
@@ -136,12 +130,13 @@ class AppHookSpecs:
         """Add plugin specific data to a player after a successful player search"""
 
     @hookspec(firstresult=True)
-    def get_player_estimated_rating(
+    def get_player_rating(
         self,
         event_federation: str,
         tournament_rating: TournamentRating,
+        player_rating_type: 'PlayerRatingType',
         player: 'Player',
-    ) -> Optional['PlayerRating']:
+    ) -> Optional['PlayerRatingAndType']:
         """Get the estimated rating of a player."""
 
     @hookspec(firstresult=True)
@@ -275,20 +270,24 @@ class AppHookSpecs:
         """Provide a path to the template to be added to tournament cards"""
 
     @hookspec
-    def get_tournament_card_menu_items_template(self) -> str:
-        """Provide a path to the template to be added to the action menu"""
+    def get_tournament_card_action_menu_items_template(self) -> str:
+        """Path to the template to be added to the 'Actions' menu of the tournament card"""
+
+    @hookspec
+    def get_tournament_tab_action_menu_items_template(self) -> str:
+        """Path to the template to be added to the 'Actions' menu of the tournament tab."""
 
     @hookspec
     def signal_tournament_set(
         self, tournament: 'Tournament | None', stored_tournament: 'StoredTournament'
     ) -> str | None:
-        """An signal sent when a tournament is updated.  Returns a string to be displayed to the user"""
+        """A signal sent when a tournament is updated. Returns a string to be displayed to the user"""
 
     @hookspec
     def signal_special_result_set(
         self, tournament: 'Tournament | None', result: Result
     ) -> str | None:
-        """An signal sent when a special result is set.  Returns a string to be displayed to the user"""
+        """A signal sent when a special result is set. Returns a string to be displayed to the user"""
 
     # ---------------------------------------------------------------------------------
     # Printing
@@ -319,16 +318,6 @@ class AppHookSpecs:
         self, document: 'PrintDocument', tournaments: list['Tournament']
     ) -> Iterable[ExtraStatisticsSection]:
         """Provide extra sections for the statistics print view"""
-
-    # ---------------------------------------------------------------------------------
-    # Nav bar
-    # ---------------------------------------------------------------------------------
-
-    @hookspec
-    def get_event_nav_bar_items_and_data(
-        self, event: 'Event'
-    ) -> tuple[Iterable[PluginNavBarItem], dict[str, Any]]:
-        """Provide extra nav bar items"""
 
     # ---------------------------------------------------------------------------------
     # User screens

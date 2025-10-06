@@ -60,7 +60,9 @@ class EventLoader:
                 with EventDatabase(event_id) as database:
                     status = database.check_status()
                 if not status:
-                    with EventDatabase(event_id, True) as database:
+                    with EventDatabase(
+                        event_id, True, check_dirty_tournaments=False
+                    ) as database:
                         database.upgrade()
                 cls._valid_event_ids.add(event_id)
             except SharlyChessException as e:

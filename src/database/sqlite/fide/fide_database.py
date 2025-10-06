@@ -24,7 +24,6 @@ from utils.enum import (
     PlayerGender,
     PlayerTitle,
     TournamentRating,
-    PlayerRatingType,
 )
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
@@ -207,8 +206,7 @@ class FideDatabase(LocalSourceDatabase):
         }
         ratings = {
             tournament_rating.value: PlayerRating(
-                row[key],
-                PlayerRatingType.FIDE if row[key] else PlayerRatingType.ESTIMATED,
+                fide=row[key] or None,
             ).stored_value
             for tournament_rating, key in rating_keys.items()
         }
@@ -269,16 +267,18 @@ class FideDatabase(LocalSourceDatabase):
         for token in tokens:
             order_clauses.append("""
                 CASE
-                    WHEN (last_name LIKE ? OR first_name LIKE ?) AND federation = ? THEN 0
-                    WHEN (last_name LIKE ? OR first_name LIKE ?) THEN 1
-                    WHEN federation = ? THEN 2
-                    ELSE 3
+                    WHEN last_name LIKE ? AND federation = ? THEN 0
+                    WHEN first_name LIKE ? AND federation = ? THEN 1
+                    WHEN (last_name LIKE ? OR first_name LIKE ?) THEN 2
+                    WHEN federation = ? THEN 3
+                    ELSE 4
                 END
             """)
 
             # Params for this token in the same order
             params += [
                 f'{token}%',
+                federation,
                 f'{token}%',
                 federation,
                 f'{token}%',

@@ -1,0 +1,33 @@
+<li>
+    <span
+        {% if client.can_update_players %}
+            {{ macros.tooltip_attributes(
+                'info', _('Synchronize the tournaments with the ChessEvent platform.'), 'right'
+            ) }}
+        {% else %}
+            {{ macros.tooltip_attributes(
+                'warning', _('You are not allowed to update players.'), 'right'
+            ) }}
+        {% endif %}
+    >
+        <button
+            class="dropdown-item text-nowrap"
+            {% if client.can_update_players %}
+                hx-get="{{ url_for('chessevent-sync-modal', event_uniq_id=admin_event.uniq_id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            {% else %}
+                disabled
+            {% endif %}
+        >
+            <span>
+                <img
+                    src="{{ url_for('static', file_path='/images/chessevent.png') }}?version={{ sharly_chess_config.version }}"
+                    style="height: 1.2em"
+                    class="pe-1"
+                />
+            </span>
+            {{ _('Synchronize with ChessEvent') }}
+        </button>
+    </span>
+</li>

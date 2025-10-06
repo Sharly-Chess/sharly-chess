@@ -10,8 +10,6 @@ from data.event import Event
 from data.rotator import Rotator
 from data.screen import Screen
 from data.tournament import Tournament
-from plugins.manager import plugin_manager
-from plugins.utils import PluginNavBarItem
 from utils.enum import FormAction, ScreenType
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
@@ -312,41 +310,20 @@ class BaseEventAdminController(BaseAdminController):
         template_context: dict[str, Any],
     ) -> HTMXTemplate:
         if 'modal' in template_context:
-            return HTMXTemplate(
-                template_name='admin/modals.html',
-                context=template_context,
-                re_target='#modal-wrapper',
-                re_swap='innerHTML',
-                trigger_event='modal_opened',
-                after='settle',
-            )
-
-        assert 'admin_event' in template_context
-
-        nav_bar_items_and_data = plugin_manager.hook.get_event_nav_bar_items_and_data(
-            event=template_context['admin_event']
-        )
-        per_plugin_nav_bar_items = [
-            nav_bar_items for (nav_bar_items, data) in nav_bar_items_and_data
-        ]
-        plugin_nav_bar_data = {
-            key: value
-            for (nav_bar_items, data) in nav_bar_items_and_data
-            for key, value in data.items()
-        }
-
-        extra_admin_nav_items: dict[str, list[PluginNavBarItem]] = {}
-
-        for plugin_nav_bar_items in per_plugin_nav_bar_items:
-            for nav_bar_item in plugin_nav_bar_items:
-                c = extra_admin_nav_items.setdefault(nav_bar_item.at, [])
-                c.append(nav_bar_item)
+            return cls._render_modal('admin/modals.html', template_context)
 
         return HTMXTemplate(
             template_name='admin/event_layout.html',
-            context=template_context
-            | {
-                'extra_admin_nav_items': extra_admin_nav_items,
-            }
-            | plugin_nav_bar_data,
+            context=template_context,
+        )
+
+    @staticmethod
+    def _render_modal(template_name: str, template_context: dict[str, Any]):
+        return HTMXTemplate(
+            template_name=template_name,
+            context=template_context,
+            re_target='#modal-wrapper',
+            re_swap='innerHTML',
+            trigger_event='modal_opened',
+            after='settle',
         )

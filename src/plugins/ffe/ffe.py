@@ -53,7 +53,7 @@ from utils.enum import (
     ScreenType,
     TournamentRating,
 )
-from data.player import Player, PlayerRating
+from data.player import Player, PlayerRating, PlayerRatingAndType
 from database.sqlite.event.event_database import EventDatabase
 from plugins.ffe import migrations, PLUGIN_NAME, ffe_tie_breaks
 from plugins.ffe.ffe_database import FfeDatabase
@@ -77,7 +77,6 @@ from plugins.migration import PluginMigrationManager
 from plugins.utils import (
     ExtraStatisticsSection,
     Plugin,
-    PluginNavBarItem,
     PluginUtils,
     PluginData,
 )
@@ -161,8 +160,8 @@ class FfePlugin(Plugin):
     ) -> PluginMigrationManager:
         return self.get_migration_manager(event_database)
 
-    @hookimpl
-    def get_controllers(self) -> Iterable[type[BaseController]]:
+    @property
+    def controllers(self) -> list[type[BaseController]]:
         return [
             FfeAdminEventController,
             FfeAdminTournamentController,
@@ -373,12 +372,25 @@ class FfePlugin(Plugin):
                     if stored_rating
                     else None
                 )
-                if not rating or rating.type == PlayerRatingType.ESTIMATED:
-                    ffe_stored_rating = ffe_stored_player.ratings.get(
-                        rating_type.value, None
+                ffe_stored_rating = ffe_stored_player.ratings.get(
+                    rating_type.value, None
+                )
+                if ffe_stored_rating:
+                    ffe_rating = PlayerRating.from_stored_value(ffe_stored_rating)
+                    augmented_rating = PlayerRating(
+                        fide=rating.fide
+                        if rating and rating.fide is not None
+                        else ffe_rating.fide,
+                        national=rating.national
+                        if rating and rating.national is not None
+                        else ffe_rating.national,
+                        estimated=rating.estimated
+                        if rating and rating.estimated is not None
+                        else ffe_rating.estimated,
                     )
-                    if ffe_stored_rating:
-                        stored_player.ratings[rating_type.value] = ffe_stored_rating
+                    stored_player.ratings[rating_type.value] = (
+                        augmented_rating.stored_value
+                    )
             if not stored_player.date_of_birth or (
                 ffe_stored_player.date_of_birth
                 and stored_player.date_of_birth.year
@@ -392,14 +404,23 @@ class FfePlugin(Plugin):
             )
 
     @hookimpl
-    def get_player_estimated_rating(
+    def get_player_rating(
         self,
         event_federation: str,
         tournament_rating: TournamentRating,
+        player_rating_type: PlayerRatingType,
         player: 'Player',
-    ) -> PlayerRating | None:
+    ) -> Optional[PlayerRatingAndType]:
         if event_federation != 'FRA':
             return None
+
+        # In France, regardless of the player_rating_type of the tournament,
+        # the FIDE rating is used, if available, falling back to the national rating
+        ratings = player.ratings[tournament_rating]
+        if ratings.fide is not None:
+            return PlayerRatingAndType(ratings.fide, PlayerRatingType.FIDE)
+        if ratings.national is not None:
+            return PlayerRatingAndType(ratings.national, PlayerRatingType.NATIONAL)
 
         value = 0
         match tournament_rating:
@@ -433,7 +454,7 @@ class FfePlugin(Plugin):
                         value = 1299
                     case _:
                         value = 1399
-        return PlayerRating(value, PlayerRatingType.ESTIMATED)
+        return PlayerRatingAndType(value, PlayerRatingType.ESTIMATED)
 
     @hookimpl
     def is_tournament_participation_possible(
@@ -801,8 +822,12 @@ class FfePlugin(Plugin):
         )
 
     @hookimpl
-    def get_tournament_card_menu_items_template(self) -> str:
-        return '/ffe_tournament_action_items.html'
+    def get_tournament_card_action_menu_items_template(self) -> str:
+        return '/ffe_tournament_card_action_menu_items.html'
+
+    @hookimpl
+    def get_tournament_tab_action_menu_items_template(self) -> str:
+        return '/ffe_tournament_tab_action_menu_items.html'
 
     @hookimpl
     def signal_tournament_set(
@@ -839,7 +864,7 @@ class FfePlugin(Plugin):
     def signal_special_result_set(
         self, tournament: 'Tournament', result: Result
     ) -> str | None:
-        return PapiConverter.check_result(result)
+        return PapiConverter.check_result(result, tournament)
 
     # ---------------------------------------------------------------------------------
     # Printing
@@ -912,19 +937,6 @@ class FfePlugin(Plugin):
                 )
             ]
         return []
-
-    # ---------------------------------------------------------------------------------
-    # Nav bar
-    # ---------------------------------------------------------------------------------
-
-    @hookimpl
-    def get_event_nav_bar_items_and_data(
-        self, event: 'Event'
-    ) -> tuple[Iterable[PluginNavBarItem], dict[str, Any]]:
-        return (
-            [PluginNavBarItem(at='database', template='/ffe_nav_buttons.html')],
-            {},
-        )
 
     # ---------------------------------------------------------------------------------
     # User screens

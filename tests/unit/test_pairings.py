@@ -326,8 +326,7 @@ class PairingTestCase(TestCase):
         player = tournament.players_by_pairing_number[9]
         player.stored_player.ratings |= {
             1: {
-                'value': 2250,
-                'type': 3,
+                'fide': 2250,
             }
         }
         with EventDatabase(EVENT_ID, True) as database:
@@ -397,8 +396,7 @@ class PairingTestCase(TestCase):
         new_stored_player.last_name = 'PIERRE'
         new_stored_player.ratings |= {
             1: {
-                'value': 1925,
-                'type': 3,
+                'fide': 1925,
             }
         }
         with EventDatabase(EVENT_ID, True) as database:

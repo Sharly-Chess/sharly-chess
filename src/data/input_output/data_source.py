@@ -17,7 +17,7 @@ from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
 from plugins.manager import plugin_manager
 from utils.entity import IdentifiableEntity
-from utils.enum import TournamentRating, PlayerRatingType
+from utils.enum import TournamentRating
 
 logger: Logger = get_logger()
 
@@ -73,11 +73,12 @@ class FidePlayerComparator(PlayerComparator):
         for tr in TournamentRating:
             field_id: str = f'rating_{tr.value}'
             if field_id in self.field_ids:
-                src_rating = self.player.get_rating(tr)
-                match_rating = self.match_player.get_rating(tr)
-
-                if match_rating.value and src_rating != match_rating:
-                    diff_field_ids.append(field_id)
+                src_rating = self.player.ratings[tr]
+                match_rating = self.match_player.ratings[tr]
+                for type_ in ['fide', 'national', 'estimated']:
+                    value: int | None = getattr(match_rating, type_)
+                    if value and getattr(src_rating, type_) != value:
+                        diff_field_ids.append(field_id)
         field_id: str = 'name'
         if field_id in self.field_ids:
             if (self.player.first_name, self.player.last_name) != (
@@ -114,6 +115,17 @@ class FidePlayerComparator(PlayerComparator):
                 diff_field_ids.append(field_id)
         return diff_field_ids
 
+    def updated_ratings(self, tournament_rating: TournamentRating) -> PlayerRating:
+        if not self.match_player:
+            return self.player.ratings[tournament_rating]
+        match_player_rating = self.match_player.ratings[tournament_rating]
+        player_rating = self.player.ratings[tournament_rating]
+        return PlayerRating(
+            fide=match_player_rating.fide or player_rating.fide,
+            national=match_player_rating.national or player_rating.national,
+            estimated=match_player_rating.estimated or player_rating.estimated,
+        )
+
     def update_player_from_match(self, field_ids: list[str]):
         if not self.match_player:
             return
@@ -123,9 +135,7 @@ class FidePlayerComparator(PlayerComparator):
         for tr in TournamentRating:
             field_id: str = f'rating_{tr.value}'
             if field_id in field_ids:
-                match_rating = self.match_player.get_rating(tr)
-                if match_rating.value:
-                    updated_ratings[tr] = match_rating
+                updated_ratings[tr] = self.updated_ratings(tr)
         self.player.update_ratings(updated_ratings)
         field_id: str = 'name'
         if field_id in field_ids:
@@ -330,20 +340,24 @@ class DataSource(IdentifiableEntity, ABC):
                 )
                 if not stored_fide_rating:
                     continue
-                fide_rating = PlayerRating.from_stored_value(stored_fide_rating)
+                fide_rating = PlayerRating.from_stored_value(stored_fide_rating).fide
+                if not fide_rating:
+                    continue
                 stored_source_rating = src_stored_player.ratings.get(
                     rating_type.value, None
                 )
-                source_rating = (
-                    PlayerRating.from_stored_value(stored_source_rating)
-                    if stored_source_rating
-                    else None
-                )
-                if not source_rating or (
-                    source_rating.type == PlayerRatingType.ESTIMATED
-                    and fide_rating.type != PlayerRatingType.ESTIMATED
-                ):
-                    src_stored_player.ratings[rating_type.value] = stored_fide_rating
+                if not stored_source_rating:
+                    src_stored_player.ratings[rating_type.value] = PlayerRating(
+                        fide=fide_rating
+                    ).stored_value
+                    continue
+                source_rating = PlayerRating.from_stored_value(stored_source_rating)
+                if source_rating.fide is None:
+                    src_stored_player.ratings[rating_type.value] = PlayerRating(
+                        fide=fide_rating,
+                        national=source_rating.national,
+                        estimated=source_rating.estimated,
+                    ).stored_value
 
 
 class LocalDataSource(DataSource, ABC):

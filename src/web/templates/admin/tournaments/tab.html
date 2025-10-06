@@ -8,92 +8,120 @@
 {% endblock %}
 
 {% block top_right_nav %}
-    {% if client.can_view_tournaments_tab %}
-        {% with id='admin-tournaments-show-details', name='admin_tournaments_show_details', show=admin_tournaments_show_details %}
-            <div
-                class="form-check form-switch d-inline-block pe-3 mt-2"
-                {{ macros.tooltip_attributes('info', _('Enable/disable the details on the cards below.'), 'top') }}
+    {% with id='admin-tournaments-show-details', name='admin_tournaments_show_details', show=admin_tournaments_show_details %}
+        <div
+            class="form-check form-switch d-inline-block pe-3 mt-2"
+            {{ macros.tooltip_attributes('info', _('Enable/disable the details on the cards below.'), 'top') }}
+        >
+            <input
+                hx-get="{{ url_for('admin-event-tournaments-tab', event_uniq_id=admin_event.uniq_id) }}"
+                hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
+                hx-target="body"
+                hx-indicator="#please-wait"
+                class="form-check-input"
+                type="checkbox"
+                id="{{ id }}"
+                {% if show %}checked{% endif %} /><label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
+        </div>
+    {% endwith %}
+    {% if admin_event.tournaments_by_id %}
+        <div class="dropdown dropdown-menu-end">
+            <button
+                class="btn btn-outline-primary dropdown-toggle"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
             >
-                <input
-                    hx-get="{{ url_for('admin-event-tournaments-tab', event_uniq_id=admin_event.uniq_id) }}"
-                    hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    class="form-check-input"
-                    type="checkbox"
-                    id="{{ id }}"
-                    {% if show %}checked{% endif %} /><label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
-            </div>
-        {% endwith %}
-        {% if client.can_add_tournament %}
-            <span
-                class="dropdown-end"
-                {{ macros.tooltip_attributes(
-                    'info', _('Import a tournament to the event from an external source.'), 'top'
-                ) }}
-            >
-                <button
-                    class="btn btn-primary dropdown-toggle mx-auto"
-                    type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                >
-                    <i class="bi-download pe-1"></i>
-                    {{ _('Import a tournament') }}
-                </button>
-                <ul class="dropdown-menu">
-                    {% for importer in tournament_importers %}
-                        <li
-                            class="dropdown-item text-start cursor-pointer"
-                            hx-get="{{ url_for(
-                                'admin-tournament-import-modal',
-                                event_uniq_id=admin_event.uniq_id,
-                                importer_id=importer.id
-                            ) }}"
+                {{ _('Actions') }}
+            </button>
+            <ul class="dropdown-menu">
+                {% for menu_items_template in tournament_tab_action_menu_items_templates %}
+                    {% include menu_items_template %}
+                {% endfor %}
+                <li>
+                    <span
+                        {{ macros.tooltip_attributes('info', _('May be used for per-round prize giveaways etc.'), 'right') }}
+                    >
+                        <button
+                            class="dropdown-item text-nowrap"
+                            hx-get="{{ url_for('admin-random-player', event_uniq_id=admin_event.uniq_id) }}"
                             hx-target="body"
                             hx-indicator="#please-wait"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
-                            {{ macros.tooltip_attributes('info', importer.tooltip, 'right') }}
                         >
-                            {{ importer.name }}
-                        </li>
-                    {% endfor %}
-                </ul>
-            </span>
-            <span {{ macros.tooltip_attributes('info', _('Add a tournament to the event.'), 'top') }}>
-                <button
-                    class="btn btn-primary text-nowrap ms-1"
-                    hx-get="{{ url_for('admin-tournament-create-modal', event_uniq_id=admin_event.uniq_id) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                >
-                    <i class="bi-plus-square pe-1"></i>
-                    {{ _('Create a tournament') }}
-                </button>
-            </span>
-        {% endif %}
+                            <i class="bi bi-dice-3-fill pe-1"></i>
+                            {{ _('Choose a player at random') }}
+                        </button>
+                    </span>
+                </li>
+            </ul>
+        </div>
+    {% endif %}
+    {% if client.can_add_tournament %}
+        <span
+            class="dropdown-end"
+            {{ macros.tooltip_attributes(
+                'info', _('Import a tournament to the event from an external source.'), 'top'
+            ) }}
+        >
+            <button
+                class="btn btn-outline-primary dropdown-toggle mx-auto"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+            >
+                <i class="bi-download pe-1"></i>
+                {{ _('Import a tournament') }}
+            </button>
+            <ul class="dropdown-menu">
+                {% for importer in tournament_importers %}
+                    <li
+                        class="dropdown-item text-start cursor-pointer"
+                        hx-get="{{ url_for(
+                            'admin-tournament-import-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            importer_id=importer.id
+                        ) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                        {{ macros.tooltip_attributes('info', importer.tooltip, 'right') }}
+                    >
+                        {{ importer.name }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </span>
+        <span {{ macros.tooltip_attributes('info', _('Add a tournament to the event.'), 'top') }}>
+            <button
+                class="btn btn-primary text-nowrap ms-1"
+                hx-get="{{ url_for('admin-tournament-create-modal', event_uniq_id=admin_event.uniq_id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            >
+                <i class="bi-plus-square pe-1"></i>
+                {{ _('Create a tournament') }}
+            </button>
+        </span>
     {% endif %}
 {% endblock %}
 
 {% block cards_container_cards %}
-    {% if client.can_view_tournaments_tab %}
-        <div class="row gy-2 gx-3">
-            {% if admin_event.tournaments_by_uniq_id %}
-                {% for tournament in admin_event.tournaments_by_uniq_id.values() %}
-                    {% include 'tournament_card.html' %}
-                {% endfor %}
-            {% else %}
-                <div class="mx-auto" style="max-width: 500px;">
-                    <h5 class="mt-2 my-5 text-center">
-                        {{ _('No tournaments.') }}
-                    </h5>
-                </div>
-            {% endif %}
-        </div>
-    {% endif %}
+    <div class="row gy-2 gx-3">
+        {% if admin_event.tournaments_by_uniq_id %}
+            {% for tournament in admin_event.tournaments_by_uniq_id.values() %}
+                {% include 'tournament_card.html' %}
+            {% endfor %}
+        {% else %}
+            <div class="mx-auto" style="max-width: 500px;">
+                <h5 class="mt-2 my-5 text-center">
+                    {{ _('No tournaments.') }}
+                </h5>
+            </div>
+        {% endif %}
+    </div>
     <script>
         $(document).ready(function() {
             document.querySelectorAll('.tc-human').forEach(el => {

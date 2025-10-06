@@ -17,6 +17,7 @@ from common import (
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.access_levels.actions import AuthAction
+from data.board import PlayerRatingType
 from data.event import Event
 from data.input_output import OnlineDataSourceManager
 from data.loader import ArchiveLoader, EventLoader
@@ -39,7 +40,6 @@ from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import (
     StoredConfig,
     StoredPlugin,
-    StoredLocalSourceDatabase,
 )
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
@@ -49,11 +49,17 @@ from database.sqlite.local_source_database import (
     OutdatedActionManager,
     OutdatedDelayManager,
 )
-from database.sqlite.local_source_database.actions import NotifOutdatedAction
-from database.sqlite.local_source_database.delays import DisabledOutdatedDelay
+from database.sqlite.local_source_database.actions import (
+    NotifOutdatedAction,
+    OutdatedAction,
+)
+from database.sqlite.local_source_database.delays import (
+    DisabledOutdatedDelay,
+    OutdatedDelay,
+)
 from plugins.manager import plugin_manager
 from utils import StaticUtils
-from utils.enum import FormAction
+from utils.enum import FormAction, Result
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
@@ -354,7 +360,10 @@ class IndexAdminController(BaseAdminController):
         background_image: str | None = None
         background_color: str | None = None
         location: str | None = None
+        player_rating_type: int
         record_illegal_moves: int | None = None
+        three_points_for_a_win: bool
+        pab_value: int
         rules: str | None = None
         message_text: str | None = None
         message_color: str | None = None
@@ -371,6 +380,7 @@ class IndexAdminController(BaseAdminController):
                 background_image = stored_event.background_image
                 background_color = stored_event.background_color
                 location = stored_event.location
+                player_rating_type = stored_event.player_rating_type
                 record_illegal_moves = stored_event.record_illegal_moves
                 rules = stored_event.rules
                 message_text = stored_event.message_text
@@ -378,6 +388,8 @@ class IndexAdminController(BaseAdminController):
                 message_background_color = admin_event.message_background_color
                 prize_currency = stored_event.prize_currency
                 override_unrated_rapid_blitz = stored_event.override_unrated_rapid_blitz
+                three_points_for_a_win = stored_event.three_points_for_a_win
+                pab_value = stored_event.pab_value
             case 'create':
                 sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
                 public = False
@@ -391,10 +403,13 @@ class IndexAdminController(BaseAdminController):
                     if sharly_chess_config.federation
                     else ''
                 )
+                player_rating_type = PlayerRatingType.FIDE.value
                 hide_background_image = (
                     sharly_chess_config.default_hide_background_image
                 )
                 override_unrated_rapid_blitz = True
+                three_points_for_a_win = False
+                pab_value = Result.WIN.value
             case _:
                 raise ValueError(f'action=[{action}]')
 
@@ -412,6 +427,7 @@ class IndexAdminController(BaseAdminController):
             'federation': WebContext.value_to_form_data(federation),
             'start': WebContext.value_to_datetime_form_data(start),
             'stop': WebContext.value_to_datetime_form_data(stop),
+            'player_rating_type': WebContext.value_to_form_data(player_rating_type),
             'background_image_checkbox': WebContext.value_to_form_data(
                 hide_background_image
             ),
@@ -429,6 +445,10 @@ class IndexAdminController(BaseAdminController):
             'override_unrated_rapid_blitz': WebContext.value_to_form_data(
                 override_unrated_rapid_blitz
             ),
+            'three_points_for_a_win': WebContext.value_to_form_data(
+                three_points_for_a_win
+            ),
+            'pab_value': WebContext.value_to_form_data(pab_value),
         } | plugin_form_data
 
     @classmethod
@@ -445,6 +465,7 @@ class IndexAdminController(BaseAdminController):
         errors: dict[str, str] = {}
         start: float | None = None
         stop: float | None = None
+
         background_image: str | None = None
         message_color: str | None = None
         message_background_color: str | None = None
@@ -489,6 +510,10 @@ class IndexAdminController(BaseAdminController):
             errors[field] = _('Please enter a date after the start date.')
         public = WebContext.form_data_to_bool(data, 'public')
         location = WebContext.form_data_to_str(data, 'location')
+        player_rating_type: int = (
+            WebContext.form_data_to_int(data, 'player_rating_type')
+            or PlayerRatingType.FIDE.value
+        )
         field = 'background_image'
         hide_background_image = WebContext.form_data_to_bool(data, field + '_checkbox')
         if not hide_background_image:
@@ -555,6 +580,10 @@ class IndexAdminController(BaseAdminController):
         override_unrated_rapid_blitz = WebContext.form_data_to_bool(
             data, 'override_unrated_rapid_blitz'
         )
+        three_points_for_a_win = WebContext.form_data_to_bool(
+            data, 'three_points_for_a_win'
+        )
+        pab_value = WebContext.form_data_to_int(data, 'pab_value') or Result.WIN.value
 
         # Have plugins validate their fields and return private plugin data
         per_plugin_tournament_data = (
@@ -582,6 +611,7 @@ class IndexAdminController(BaseAdminController):
             stop=stop,
             public=bool(public),
             location=location,
+            player_rating_type=player_rating_type,
             hide_background_image=bool(hide_background_image),
             background_image=background_image,
             background_color=background_color,
@@ -592,6 +622,8 @@ class IndexAdminController(BaseAdminController):
             message_background_color=message_background_color,
             prize_currency=prize_currency,
             override_unrated_rapid_blitz=override_unrated_rapid_blitz,
+            three_points_for_a_win=three_points_for_a_win,
+            pab_value=pab_value,
             # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
             timer_colors={
                 i: admin_event.timer_colors[i] if admin_event else None
@@ -636,6 +668,17 @@ class IndexAdminController(BaseAdminController):
             'modal': 'event',
             'event_uniq_ids': list(EventLoader().event_uniq_ids),
             'plugin_form_fields_templates': plugin_form_fields_templates,
+            'player_rating_type_options': {
+                str(PlayerRatingType.FIDE.value): _('FIDE'),
+                str(PlayerRatingType.NATIONAL.value): _(
+                    'National *** NAME FOR RATING TYPE NATIONAL'
+                ),
+            },
+            'three_points_for_a_win_options': {
+                str(Result.WIN.value): _('Win'),
+                str(Result.DRAW.value): _('Draw'),
+                str(Result.LOSS.value): _('Loss'),
+            },
             'action': action,
             'data': data,
             'errors': errors or {},
@@ -672,7 +715,7 @@ class IndexAdminController(BaseAdminController):
     @post(
         path='/{admin_tab:str}/create-event',
         name='admin-tab-create-event',
-        guards=[ActionGuard(AuthAction.ADD_EVENTS)],
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
     async def htmx_admin_tab_event_create(
         self,
@@ -708,7 +751,7 @@ class IndexAdminController(BaseAdminController):
     @get(
         path='/{admin_tab:str}/event-modal/delete/{event_uniq_id:str}',
         name='admin-event-delete-modal',
-        guards=[ActionGuard(AuthAction.DELETE_EVENTS)],
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
     async def htmx_admin_event_delete_modal(
         self, request: HTMXRequest, admin_tab: str
@@ -719,7 +762,7 @@ class IndexAdminController(BaseAdminController):
     @delete(
         path='/{admin_tab:str}/event-delete/{event_uniq_id:str}',
         name='admin-event-delete',
-        guards=[ActionGuard(AuthAction.DELETE_EVENTS)],
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_event_delete(
@@ -744,7 +787,7 @@ class IndexAdminController(BaseAdminController):
     @post(
         path='/event-clone/{event_uniq_id:str}',
         name='admin-event-clone',
-        guards=[ActionGuard(AuthAction.ADD_EVENTS)],
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
     async def htmx_admin_event_clone(
         self,
@@ -786,7 +829,7 @@ class IndexAdminController(BaseAdminController):
             '/{admin_tab:str}/event-update/{event_uniq_id:str}',
         ],
         name='admin-event-update',
-        guards=[ActionGuard(AuthAction.UPDATE_EVENTS)],
+        guards=[ActionGuard(AuthAction.UPDATE_EVENT)],
     )
     async def htmx_admin_event_update(
         self,
@@ -832,7 +875,7 @@ class IndexAdminController(BaseAdminController):
     @patch(
         path='/event-uniq-id-update/{event_uniq_id:str}',
         name='admin-event-uniq-id-update',
-        guards=[ActionGuard(AuthAction.RENAME_EVENTS)],
+        guards=[ActionGuard(AuthAction.RENAME_EVENT)],
     )
     async def htmx_admin_event_uniq_id_update(
         self,
@@ -1065,30 +1108,16 @@ class IndexAdminController(BaseAdminController):
             },
         )
 
-    def _database_modal_context(
-        self,
-        data: dict[str, str] | None = None,
-        errors: dict[str, str] | None = None,
-    ) -> dict[str, Any]:
-        data = data or {}
-        databases: list[LocalSourceDatabase] = LocalSourceDatabaseManager.objects()
-        for database in databases:
-            data |= {
-                f'{database.id}_outdate_delay': database.outdate_delay.id,
-                f'{database.id}_outdate_action': (database.outdate_action.id),
-            }
-        template_context = {
-            'databases': databases,
+    @staticmethod
+    def _database_modal_context() -> dict[str, Any]:
+        return {
+            'databases': LocalSourceDatabaseManager.objects(),
             'online_data_sources': OnlineDataSourceManager.objects(),
             'network_connected': NetworkMonitor.connected(),
             'outdate_delay_options': OutdatedDelayManager.options(),
             'outdate_action_options': OutdatedActionManager.options(),
             'modal': 'database',
-            'data': data,
-            'errors': errors or {},
         }
-
-        return template_context
 
     @get(
         path='/database-modal',
@@ -1104,7 +1133,7 @@ class IndexAdminController(BaseAdminController):
         )
 
     @patch(
-        path='/database-options-update',
+        path='/database-options-update/{database_id:str}',
         name='admin-database-options-update',
         guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
     )
@@ -1115,46 +1144,24 @@ class IndexAdminController(BaseAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
+        database_id: str,
     ) -> Template:
-        source_databases: list[LocalSourceDatabase] = (
-            LocalSourceDatabaseManager.objects()
-        )
+        database = LocalSourceDatabaseManager.get_object(database_id)
+        stored_database = database.stored_source_database
+        delay: OutdatedDelay = DisabledOutdatedDelay()
+        if delay_id := WebContext.form_data_to_str(data, 'outdate_delay'):
+            delay = OutdatedDelayManager.get_object(delay_id)
+        action: OutdatedAction = NotifOutdatedAction()
+        if action_id := WebContext.form_data_to_str(data, 'outdate_action'):
+            action = OutdatedActionManager.get_object(action_id)
+        stored_database.outdate_delay = delay.id
+        stored_database.outdate_action = action.id
         with ConfigDatabase(write=True) as config_database:
-            for source_database in source_databases:
-                outdate_delay = (
-                    WebContext.form_data_to_str(
-                        data,
-                        f'{source_database.id}_outdate_delay',
-                    )
-                    or DisabledOutdatedDelay.static_id()
-                )
-                outdate_action = (
-                    WebContext.form_data_to_str(
-                        data, f'{source_database.id}_outdate_action'
-                    )
-                    or NotifOutdatedAction.static_id()
-                )
-                config_database.update_stored_local_source_database(
-                    StoredLocalSourceDatabase(
-                        name=source_database.id,
-                        outdate_delay=outdate_delay,
-                        outdate_action=outdate_action,
-                        updated_at=source_database.updated_at_timestamp,
-                    )
-                )
-        Message.success(
-            request, _('Local source databases settings have been updated.')
-        )
-
-        # Clear the modal contents, and send an event
+            config_database.update_stored_local_source_database(stored_database)
+        database.check()
         return HTMXTemplate(
-            template_name='common/empty_modal_and_messages.html',
-            context={
-                'messages': Message.messages(request),
-            },
-            re_target='#modal-wrapper',
-            trigger_event='close_modal',
-            after='receive',
+            template_name='admin/common/database/database_row.html',
+            context=self._database_modal_context() | {'database': database},
         )
 
     @get(

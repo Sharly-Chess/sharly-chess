@@ -66,12 +66,11 @@ class AuthAction(StrEnum):
     VIEW_PRIVATE_EVENTS = auto()
     VIEW_PASSED_EVENTS = auto()
     VIEW_DETAILED_EVENT_CARDS = auto()
+    MANAGE_EVENTS = auto()
 
-    # Events management
-    ADD_EVENTS = auto()
-    DELETE_EVENTS = auto()
-    RENAME_EVENTS = auto()
-    UPDATE_EVENTS = auto()
+    # Event
+    RENAME_EVENT = auto()
+    UPDATE_EVENT = auto()
     VIEW_EVENT_CONFIG = auto()
 
     # Access
@@ -150,10 +149,9 @@ class AuthAction(StrEnum):
                 AuthAction.VIEW_PRIVATE_EVENTS
                 | AuthAction.VIEW_PASSED_EVENTS
                 | AuthAction.VIEW_DETAILED_EVENT_CARDS
-                | AuthAction.ADD_EVENTS
-                | AuthAction.DELETE_EVENTS
-                | AuthAction.RENAME_EVENTS
-                | AuthAction.UPDATE_EVENTS
+                | AuthAction.MANAGE_EVENTS
+                | AuthAction.RENAME_EVENT
+                | AuthAction.UPDATE_EVENT
                 | AuthAction.VIEW_EVENT_CONFIG
             ):
                 return AuthActionCategory.EVENTS
@@ -226,22 +224,20 @@ class AuthAction(StrEnum):
                 return _('Manage application settings', locale)
             case AuthAction.MANAGE_SOURCE_DATABASES:
                 return _('Manage source databases', locale)
-            case AuthAction.MANAGE_SOURCE_DATABASES:
+            case AuthAction.MANAGE_ARCHIVES:
                 return _('Manage archives', locale)
             case AuthAction.VIEW_PRIVATE_EVENTS:
                 return _('View private events', locale)
             case AuthAction.VIEW_PASSED_EVENTS:
                 return _('View passed events', locale)
-            case AuthAction.ADD_EVENTS:
-                return _('Add events', locale)
             case AuthAction.VIEW_DETAILED_EVENT_CARDS:
                 return _('View event cards details', locale)
-            case AuthAction.DELETE_EVENTS:
-                return _('Delete events', locale)
-            case AuthAction.RENAME_EVENTS:
-                return _('Rename events', locale)
-            case AuthAction.UPDATE_EVENTS:
-                return _('Update events')
+            case AuthAction.MANAGE_EVENTS:
+                return _('Manage events', locale)
+            case AuthAction.RENAME_EVENT:
+                return _('Rename event', locale)
+            case AuthAction.UPDATE_EVENT:
+                return _('Update event', locale)
             case AuthAction.VIEW_EVENT_CONFIG:
                 return _('View event configuration', locale)
             case AuthAction.MANAGE_ACCOUNTS:

@@ -174,7 +174,7 @@ class PrizesTestCase(TestCase):
             owed=0,
             paid=0,
             ratings={
-                rating: PlayerRating(elo, rating_type).stored_value
+                rating: PlayerRating.from_type(elo, rating_type).stored_value
                 for rating in TournamentRating
             },
             club=club,

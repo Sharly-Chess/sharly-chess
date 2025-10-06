@@ -63,12 +63,14 @@ class EventDatabase(MigrationDatabase):
         *,
         file_path: Path | None = None,
         generate_views: bool = False,
+        check_dirty_tournaments: bool = True,
     ):
         """Initialize EventDatabase with either a unique ID or a file path."""
         if uniq_id is not None and file_path is not None:
             raise ValueError('Cannot specify both uniq_id and file_path')
         if uniq_id is None and file_path is None:
             raise ValueError('Must specify either uniq_id or file_path')
+        self.check_dirty_tournaments = check_dirty_tournaments
 
         if file_path is not None:
             # Initialize with file path
@@ -104,26 +106,39 @@ class EventDatabase(MigrationDatabase):
     def __exit__(self, exc_type, exc_value, tb):
         dirty_tournaments: list[StoredTournament] = []
         stored_event: StoredEvent | None = None
-        if (
-            self.write
-            and exc_type is None
-            # NOTE(Amaras): when auto-uploading to the FFE website, the database is copied to
-            # tmpdir/event.sce. Not taking the database path into account will make the hook below
-            # try to load the wrong event (which will error out or load an unrelated event).
-            and self.event_database_path(self.uniq_id).resolve() == self.file.resolve()
-        ):
-            self.execute('SELECT * FROM tournament WHERE dirty = 1;')
-            dirty_tournaments = [
-                self._row_to_stored_tournament(row) for row in self.fetchall()
-            ]
-            if dirty_tournaments:
-                self.execute('SELECT * FROM `info`')
-                stored_event = self._row_to_base_stored_event(
-                    self.fetchone(), StoredEvent
-                )
-                self.execute('UPDATE tournament SET dirty = 0 WHERE dirty = 1;')
 
-        super().__exit__(exc_type, exc_value, tb)
+        try:
+            if (
+                self.write
+                and exc_type is None
+                and self.check_dirty_tournaments
+                # When auto-uploading to the FFE website, the database is copied to
+                # tmpdir/event.sce. Not taking the database path into account will make the hook below
+                # try to load the wrong event (which will error out or load an unrelated event).
+                and self.event_database_path(self.uniq_id).resolve()
+                == self.file.resolve()
+            ):
+                try:
+                    self.execute('SELECT * FROM tournament WHERE dirty = 1;')
+                    dirty_tournaments = [
+                        self._row_to_stored_tournament(row) for row in self.fetchall()
+                    ]
+                    if dirty_tournaments:
+                        self.execute('SELECT * FROM `info`')
+                        stored_event = self._row_to_base_stored_event(
+                            self.fetchone(), StoredEvent
+                        )
+                        self.execute('UPDATE tournament SET dirty = 0 WHERE dirty = 1;')
+                except Exception as e:
+                    # Log but don’t block cleanup
+                    logger.error(
+                        'Error in EventDatabase.__exit__ pre-cleanup: %s',
+                        e,
+                        exc_info=True,
+                    )
+        finally:
+            # Always release DB
+            super().__exit__(exc_type, exc_value, tb)
 
         # We need call the hook on all dirty tournaments after committing the changes above
         for stored_tournament in dirty_tournaments:
@@ -299,6 +314,7 @@ class EventDatabase(MigrationDatabase):
             uniq_id=self.uniq_id,
             name=row['name'],
             federation=row.get('federation', ''),
+            player_rating_type=row.get('player_rating_type', 3),
             start=row['start'],
             stop=row['stop'],
             public=self.load_bool_from_database_field(row['public']),
@@ -326,6 +342,10 @@ class EventDatabase(MigrationDatabase):
             override_unrated_rapid_blitz=self.load_bool_from_database_field(
                 row['override_unrated_rapid_blitz']
             ),
+            three_points_for_a_win=self.load_bool_from_database_field(
+                row['three_points_for_a_win']
+            ),
+            pab_value=row['pab_value'],
         )
 
         plugin_manager.hook.augment_event_after_db_fetch(
@@ -385,6 +405,7 @@ class EventDatabase(MigrationDatabase):
                     'public',
                     'federation',
                     'location',
+                    'player_rating_type',
                     'hide_background_image',
                     'background_image',
                     'background_color',
@@ -395,6 +416,8 @@ class EventDatabase(MigrationDatabase):
                     'message_background_color',
                     'prize_currency',
                     'override_unrated_rapid_blitz',
+                    'three_points_for_a_win',
+                    'pab_value',
                 ],
             )
             | {
@@ -730,12 +753,14 @@ class EventDatabase(MigrationDatabase):
             start=row['start'],
             stop=row['stop'],
             location=row['location'],
-            three_points_for_a_win=cls.load_bool_from_database_field(
+            player_rating_type=row['player_rating_type'],
+            three_points_for_a_win=cls.load_bool_or_none_from_database_field(
                 row['three_points_for_a_win']
             ),
             override_unrated_rapid_blitz=cls.load_bool_or_none_from_database_field(
                 row['override_unrated_rapid_blitz']
             ),
+            pab_value=row['pab_value'],
         )
         plugin_manager.hook.augment_tournament_after_db_fetch(
             stored_tournament=stored_tournament, row=row
@@ -803,11 +828,13 @@ class EventDatabase(MigrationDatabase):
                     'rating',
                     'pairing',
                     'location',
+                    'player_rating_type',
                     'start',
                     'stop',
                     'last_rounds_no_byes',
                     'three_points_for_a_win',
                     'override_unrated_rapid_blitz',
+                    'pab_value',
                 ],
             )
             | {
