@@ -34,6 +34,7 @@ class ChessEventPlayer:
     skipped_rounds: dict[int, int | float] = field(
         default_factory=dict[int, int | float]
     )
+    # TODO (Molrn) Add the fields: initial_fee, discount, paid_for, paid_site
 
 
 @dataclass

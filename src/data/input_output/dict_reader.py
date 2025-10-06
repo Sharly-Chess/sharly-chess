@@ -3,8 +3,12 @@ from enum import Enum
 from types import UnionType, GenericAlias
 from typing import Any, get_origin, get_args, cast
 
+from common import get_logger
 from common.exception import DictReaderException
 from common.i18n import _
+
+
+logger = get_logger()
 
 
 def dict_to_dataclass[T](
@@ -28,9 +32,9 @@ def dict_to_dataclass[T](
 
     for key, value in dict_obj.items():
         if key not in field_types:
-            raise DictReaderException(
-                path, _('Unknown field [{field}].').format(field=key)
-            )
+            path_str = '.'.join(path) + ' - ' if path else ''
+            logger.warning(path_str + f'Unknown field [{key}].')
+            continue
         field_type = field_types[key]
         kwargs[key] = _read_field_value(key, value, field_type, path)
 
