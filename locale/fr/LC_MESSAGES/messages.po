@@ -3186,8 +3186,8 @@ msgstr "Aucun prix."
 msgid "No public events."
 msgstr "Aucun événement public."
 
-msgid "No public screens"
-msgstr "Aucun écran public"
+msgid "No public screens."
+msgstr "Aucun écran public."
 
 msgid "No result"
 msgstr "Pas de résultat"
@@ -6268,4 +6268,7 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "No public screens"
+#~ msgstr "Aucun écran public"
 
