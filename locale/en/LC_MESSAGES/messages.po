@@ -442,6 +442,9 @@ msgstr ""
 msgid "Add manual estimated ratings"
 msgstr ""
 
+msgid "Add manual estimated ratings"
+msgstr ""
+
 msgid "Add period"
 msgstr ""
 
@@ -530,6 +533,9 @@ msgid "Allows pairing of the players, either using a pairing engine or manually"
 msgstr ""
 
 msgid "An error occurred. Consult the logs for more details."
+msgstr ""
+
+msgid "An unexpected error occurred, either in Sharly Chess or in ChessEvent. Consult the logs for more details."
 msgstr ""
 
 msgid "An unexpected error occurred, either in Sharly Chess or in ChessEvent. Consult the logs for more details."
@@ -911,6 +917,15 @@ msgstr ""
 msgid "Check the username and the password then try again."
 msgstr ""
 
+msgid "Check the event ID then try again."
+msgstr ""
+
+msgid "Check the tournament name then try again."
+msgstr ""
+
+msgid "Check the username and the password then try again."
+msgstr ""
+
 msgid "Check-in"
 msgstr ""
 
@@ -963,7 +978,16 @@ msgstr ""
 msgid "ChessEvent event not defined."
 msgstr ""
 
+msgid "ChessEvent actions are no longer available once the tournament has started."
+msgstr ""
+
+msgid "ChessEvent event not defined."
+msgstr ""
+
 msgid "ChessEvent event:"
+msgstr ""
+
+msgid "ChessEvent password not defined."
 msgstr ""
 
 msgid "ChessEvent password not defined."
@@ -984,10 +1008,16 @@ msgstr ""
 msgid "ChessEvent tournament"
 msgstr ""
 
+msgid "ChessEvent tournament"
+msgstr ""
+
 msgid "ChessEvent tournament:"
 msgstr ""
 
 msgid "ChessEvent user name:"
+msgstr ""
+
+msgid "ChessEvent user not defined."
 msgstr ""
 
 msgid "ChessEvent user not defined."
@@ -1975,6 +2005,9 @@ msgstr ""
 msgid "Event not found"
 msgstr ""
 
+msgid "Event not found"
+msgstr ""
+
 msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
 msgstr ""
 
@@ -2461,9 +2494,6 @@ msgstr ""
 msgid "I confirm that I have read and acknowledged the warning"
 msgstr ""
 
-msgid "I confirm that I have read and acknowledged the warning"
-msgstr ""
-
 msgid "I confirm that I want to archive this event."
 msgstr ""
 
@@ -2483,6 +2513,9 @@ msgid "Identity"
 msgstr ""
 
 msgid "If you can't control who has access to the network you are connected to, it is highly recommended to not create any account."
+msgstr ""
+
+msgid "If you have an account you may connect by clicking on the <i>Profile</i> button in the menu."
 msgstr ""
 
 msgid "If you have an account you may connect by clicking on the <i>Profile</i> button in the menu."
@@ -2868,6 +2901,9 @@ msgstr ""
 msgid "Manage events"
 msgstr ""
 
+msgid "Manage events"
+msgstr ""
+
 msgid "Manage prizes"
 msgstr ""
 
@@ -3219,6 +3255,9 @@ msgstr ""
 msgid "No public events."
 msgstr ""
 
+msgid "No public screens"
+msgstr ""
+
 msgid "No public screens."
 msgstr ""
 
@@ -3289,6 +3328,9 @@ msgid "Not assigned"
 msgstr ""
 
 msgid "Not checked-in yet"
+msgstr ""
+
+msgid "Not configured"
 msgstr ""
 
 msgid "Not configured"
@@ -3775,6 +3817,9 @@ msgstr ""
 msgid "Players may have default estimated ratings depending on the activated plugins."
 msgstr ""
 
+msgid "Players may have default estimated ratings depending on the activated plugins."
+msgstr ""
+
 #, python-format
 msgid "Players of category [%(category)s]"
 msgstr ""
@@ -3892,6 +3937,9 @@ msgid "Plugins"
 msgstr ""
 
 msgid "Point counting"
+msgstr ""
+
+msgid "Points"
 msgstr ""
 
 msgid "Points"
@@ -4018,6 +4066,9 @@ msgid "Publish pairings"
 msgstr ""
 
 msgid "Publish rankings"
+msgstr ""
+
+msgid "Publish the tournaments to the FFE website."
 msgstr ""
 
 msgid "Publish the tournaments to the FFE website."
@@ -4708,6 +4759,9 @@ msgstr ""
 msgid "Started"
 msgstr ""
 
+msgid "Started"
+msgstr ""
+
 msgid "Starting Sharly Chess server, Please wait…"
 msgstr ""
 
@@ -4729,9 +4783,6 @@ msgstr ""
 msgid "Success"
 msgstr ""
 
-msgid "Success"
-msgstr ""
-
 msgid "Sum of Buchholz"
 msgstr ""
 
@@ -4742,6 +4793,29 @@ msgid "Support for the ChessEvent platform used for organising tournaments in Fr
 msgstr ""
 
 msgid "Swiss"
+msgstr ""
+
+msgid "Synchronisation failed for {count} tournament"
+msgid_plural "Synchronisation failed for {count} tournaments"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Synchronization failed for tournament [{tournament}]."
+msgstr ""
+
+msgid "Synchronize all tournaments"
+msgstr ""
+
+msgid "Synchronize the tournaments with the ChessEvent platform."
+msgstr ""
+
+msgid "Synchronize this tournament from its ChessEvent tournament."
+msgstr ""
+
+msgid "Synchronize tournaments with ChessEvent"
+msgstr ""
+
+msgid "Synchronize with ChessEvent"
 msgstr ""
 
 msgid "Synchronisation failed for {count} tournament"
@@ -4826,6 +4900,9 @@ msgstr ""
 msgid "The FFE always uses the FIDE rating when available."
 msgstr ""
 
+msgid "The FFE always uses the FIDE rating when available."
+msgstr ""
+
 msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b> to the current one may be modified. Changes to pairings previous to this should be made at the <b>end</b> of the tournament, <b>after</b> the rankings have been published, and solely for the computation of the FIDE ratings."
 msgstr ""
 
@@ -4885,6 +4962,9 @@ msgstr ""
 
 #, python-format
 msgid "The end time of the tournament (defaults to %(datetime)s)."
+msgstr ""
+
+msgid "The event [{event_id}] is not accessible to the user [{user_id}]."
 msgstr ""
 
 msgid "The event [{event_id}] is not accessible to the user [{user_id}]."
@@ -5158,6 +5238,9 @@ msgstr ""
 msgid "The username / password provided are not allowed to access this ChessEvent event."
 msgstr ""
 
+msgid "The username / password provided are not allowed to access this ChessEvent event."
+msgstr ""
+
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
 msgstr ""
 
@@ -5168,6 +5251,9 @@ msgid "The variation of the pairing system."
 msgstr ""
 
 msgid "The way to share the prizes between players with the same points."
+msgstr ""
+
+msgid "There are no public screens available for this event."
 msgstr ""
 
 msgid "There are no public screens available for this event."
@@ -5273,6 +5359,9 @@ msgid "This unique ID is already used."
 msgstr ""
 
 msgid "Three points for a win"
+msgstr ""
+
+msgid "Three points for a win (3-1-0)"
 msgstr ""
 
 msgid "Three points for a win (3-1-0)"
@@ -5423,6 +5512,9 @@ msgstr ""
 msgid "Tournament [{tournament}] successfully synchronized."
 msgstr ""
 
+msgid "Tournament [{tournament}] successfully synchronized."
+msgstr ""
+
 msgid "Tournament exempt from registration fees."
 msgstr ""
 
@@ -5432,7 +5524,13 @@ msgstr ""
 msgid "Tournament has not been configured to be used with ChessEvent."
 msgstr ""
 
+msgid "Tournament has not been configured to be used with ChessEvent."
+msgstr ""
+
 msgid "Tournament modified, awaiting auto-upload"
+msgstr ""
+
+msgid "Tournament not found"
 msgstr ""
 
 msgid "Tournament not found"
@@ -5600,9 +5698,6 @@ msgid "Under 20"
 msgstr ""
 
 msgid "Under 8"
-msgstr ""
-
-msgid "Unexpected error"
 msgstr ""
 
 msgid "Unexpected error"
@@ -5880,6 +5975,9 @@ msgstr ""
 msgid "Warning: synchronizing a tournament overwrites all of its player data."
 msgstr ""
 
+msgid "Warning: synchronizing a tournament overwrites all of its player data."
+msgstr ""
+
 #, python-format
 msgid "Warning: the %(player_count)d players in the tournament will be deleted."
 msgstr ""
@@ -6077,6 +6175,12 @@ msgid "You can't add any more permission to this account."
 msgstr ""
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
+msgstr ""
+
+msgid "You have to acknowledge the warning first."
+msgstr ""
+
+msgid "You have to update the ChessEvent settings before being able to use synchronisation."
 msgstr ""
 
 msgid "You have to acknowledge the warning first."
