@@ -12,7 +12,9 @@ class Migration(BaseMigration):
             DELETE FROM screen
             WHERE id NOT IN (
                 SELECT DISTINCT screen_id FROM screen_set
-            )
+            ) 
+            AND 
+            type IN ('input', 'boards', 'players')
             """
         )
 
