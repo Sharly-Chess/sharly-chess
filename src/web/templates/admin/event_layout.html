@@ -216,4 +216,17 @@
             {% endwith %}
         {% endif %}
     {% endfor %}
+    {% if not admin_event_tab %}
+        <div class="mx-auto" style="max-width: 500px;">
+            <h5 class="my-5 text-center">
+                {{ _('No public screens.') }}
+            </h5>
+            <p class="text-center">
+                {{ _("There are no public screens available for this event.") }}
+            </p>
+            <p class="text-center">
+                {{ _("If you have an account you may connect by clicking on the <i>Profile</i> button in the menu.") }}
+            </p>
+        </div>
+    {% endif %}
 {% endblock admin_content %}

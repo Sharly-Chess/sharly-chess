@@ -2455,6 +2455,9 @@ msgstr ""
 msgid "If you can't control who has access to the network you are connected to, it is highly recommended to not create any account."
 msgstr ""
 
+msgid "If you have an account you may connect by clicking on the <i>Profile</i> button in the menu."
+msgstr ""
+
 msgid "Illegal moves are not recorded."
 msgstr ""
 
@@ -3181,6 +3184,9 @@ msgid "No prizes."
 msgstr ""
 
 msgid "No public events."
+msgstr ""
+
+msgid "No public screens"
 msgstr ""
 
 msgid "No result"
@@ -5073,6 +5079,9 @@ msgid "The variation of the pairing system."
 msgstr ""
 
 msgid "The way to share the prizes between players with the same points."
+msgstr ""
+
+msgid "There are no public screens available for this event."
 msgstr ""
 
 msgid "There can only be one main category."

@@ -2,7 +2,7 @@ msgid " [{default_choice}: {default_value}]: "
 msgstr " [{default_choice} : {default_value}] : "
 
 msgid " [{yes_answer}/{no_answer}]?"
-msgstr " [{yes_answer}/{no_answer}] ?"
+msgstr " [{yes_answer}/{no_answer}] ?"
 
 msgid "\"Niçois\" accelerated system"
 msgstr "Système accéléré niçois"
@@ -90,8 +90,8 @@ msgstr[1] "%(num)d groupes de prix"
 #, python-format
 msgid "%(num)d prize successfully created!"
 msgid_plural "%(num)d prizes successfully created!"
-msgstr[0] "%(num)d prix créé avec succès !"
-msgstr[1] "%(num)d prix créés avec succès !"
+msgstr[0] "%(num)d prix créé avec succès !"
+msgstr[1] "%(num)d prix créés avec succès !"
 
 #, python-format
 msgid "%(num)d screen"
@@ -702,7 +702,7 @@ msgid "Before configuring accounts, you have to be aware of a few security warni
 msgstr "Avant de configurer des comptes, vous devez avoir en tête quelques avertissements de sécurité :"
 
 msgid "Benefit from the very last (experimental) features (USE AT YOUR OWN RISKS!)."
-msgstr "Bénéficiez des toutes dernières fonctionnalités (expérimentales) de l'application (UTILISEZ À VOS PROPRES RISQUES !)."
+msgstr "Bénéficiez des toutes dernières fonctionnalités (expérimentales) de l'application (UTILISEZ À VOS PROPRES RISQUES !)."
 
 msgid "Berger"
 msgstr "Berger"
@@ -873,7 +873,7 @@ msgstr "Catégorie"
 
 #, python-format
 msgid "Category [%(category)s] successfully created!"
-msgstr "La catégorie [%(category)s] créée avec succès !"
+msgstr "La catégorie [%(category)s] créée avec succès !"
 
 msgid "Change the player's tournament."
 msgstr "Changer le joueur de tournoi."
@@ -1119,7 +1119,7 @@ msgid "Complementary pairings generated."
 msgstr "Appariements complémentaires générés."
 
 msgid "Complementary pairings successfully generated!"
-msgstr "Appariements complémentaires générés avec succès !"
+msgstr "Appariements complémentaires générés avec succès !"
 
 msgid "Configuration"
 msgstr "Configuration"
@@ -2455,6 +2455,9 @@ msgstr "Identité"
 msgid "If you can't control who has access to the network you are connected to, it is highly recommended to not create any account."
 msgstr "Si vous ne pouvez pas contrôler qui a accès au réseau auquel vous êtes connecté, il est fortement recommandé de ne pas créer de compte."
 
+msgid "If you have an account you may connect by clicking on the <i>Profile</i> button in the menu."
+msgstr "Si vous disposez d’un compte, vous pouvez vous connecter en cliquant sur le bouton Profil dans le menu."
+
 msgid "Illegal moves are not recorded."
 msgstr "Les coups illégaux ne sont pas enregistrés."
 
@@ -3183,6 +3186,9 @@ msgstr "Aucun prix."
 msgid "No public events."
 msgstr "Aucun événement public."
 
+msgid "No public screens"
+msgstr "Aucun écran public"
+
 msgid "No result"
 msgstr "Pas de résultat"
 
@@ -3284,7 +3290,7 @@ msgstr "Numéro"
 
 #, python-format
 msgid "Number of byes: %(byes)d (maximum: %(max_byes)d)"
-msgstr "Nombre de demi-points joker : %(byes)d (maximum : %(max_byes)d)"
+msgstr "Nombre de demi-points joker : %(byes)d (maximum : %(max_byes)d)"
 
 #, python-format
 msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
@@ -3668,7 +3674,7 @@ msgid "Player [{player_id}]: {error}"
 msgstr "Joueur·euse [{player_id}] : {error}"
 
 msgid "Player [{player}] has been created, but does not match tournament criteria: {names}"
-msgstr "Le·la joueur·euse [{player}] a été créé·e. Cependant, il·elle ne correspond pas aux critères du tournoi : {names}"
+msgstr "Le·la joueur·euse [{player}] a été créé·e. Cependant, il·elle ne correspond pas aux critères du tournoi : {names}"
 
 msgid "Player [{player}] has been created."
 msgstr "Le·la joueur·euse [{player}] a été créé·e."
@@ -5074,6 +5080,9 @@ msgstr "La variante du système d'appariements."
 
 msgid "The way to share the prizes between players with the same points."
 msgstr "La manière de partages les prix entre les joueurs ayant le même nombre de points."
+
+msgid "There are no public screens available for this event."
+msgstr "Aucun écran public n’est disponible pour cet évènement."
 
 msgid "There can only be one main category."
 msgstr "Il ne peut y avoir qu'une seule catégorie générale."
