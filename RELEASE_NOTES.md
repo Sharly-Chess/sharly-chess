@@ -49,6 +49,10 @@ English version below
 
 - Import de tournois ChessEvent depuis l'interface web (remplace le script `tools/chessevent.bat`) (3.1.0)
 
+## FFE
+
+- Correction de l'export PAPI des tournois toutes rondes en Berger aller-retour (3.1.4)
+
 ---
 
 # English
@@ -100,3 +104,7 @@ English version below
 ## ChessEvent
 
 - Import ChessEvent tournament from the web interface (3.1.0)
+
+## FFE
+
+- Fixed the PAPI export of Round-Robin double Berger tournaments (3.1.4)
