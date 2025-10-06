@@ -3,7 +3,7 @@ from enum import Enum
 from types import UnionType, GenericAlias
 from typing import Any, get_origin, get_args, cast
 
-from common import get_logger
+from common.logger import get_logger
 from common.exception import DictReaderException
 from common.i18n import _
 

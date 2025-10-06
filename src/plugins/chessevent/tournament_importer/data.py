@@ -31,10 +31,13 @@ class ChessEventPlayer:
     ffe_club_id: int = 0
     ffe_club: str = ''
     category: PlayerCategory = PlayerCategory.NONE
+    initial_fee: str | int | float | None = None
+    discount: str | int | float | None = None
+    paid_before: str | int | float | None = None
+    paid_site: str | int | float | None = None
     skipped_rounds: dict[int, int | float] = field(
         default_factory=dict[int, int | float]
     )
-    # TODO (Molrn) Add the fields: initial_fee, discount, paid_for, paid_site
 
 
 @dataclass
