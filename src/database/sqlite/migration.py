@@ -284,7 +284,7 @@ class MigrationManager[T: MigrationDatabase](ABC):
 
     def _upgrade(self, current_migration: str, target_migration: str):
         migration: str | None = current_migration
-        while migration := self._next_migration(migration, target_migration):
+        while migration := self._next_migration(migration or '', target_migration):
             migration_class = self._get_migration_class(migration)
             with self.get_database(
                 True, migration_class.are_foreign_keys_enabled()
