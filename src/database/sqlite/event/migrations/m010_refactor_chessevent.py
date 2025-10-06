@@ -4,6 +4,10 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
+    @staticmethod
+    def are_foreign_keys_enabled() -> bool:
+        return False
+
     def forward(self):
         # No need to store the rounds skipped by the users since pairing information is stored
         # at player-level after the ChessEvent import. IF EXISTS is used because the table is not
@@ -57,7 +61,6 @@ class Migration(BaseMigration):
         # error in table tournament after drop column: unknown column "chessevent_id" in foreign key definition
         # Since there is no simple way in SQlite to remove a constraint (https://sqlite.org/lang_altertable.html part 7),
         # copy the table and rename:
-        self.database.execute('PRAGMA foreign_keys=off')
         self.database.execute('ALTER TABLE `tournament` RENAME TO `tournament_copy`')
         self.database.execute(
             'CREATE TABLE `tournament` ('
@@ -149,6 +152,5 @@ class Migration(BaseMigration):
             'FROM `tournament_copy`'
         )
         self.database.execute('DROP TABLE `tournament_copy`')
-        self.database.execute('PRAGMA foreign_keys=on')
         # Eventually drop the now useless chessevent table
         self.database.execute('DROP TABLE `chessevent`')
