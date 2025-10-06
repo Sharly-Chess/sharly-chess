@@ -2416,6 +2416,9 @@ msgstr "Identité"
 msgid "If you can't control who has access to the network you are connected to, it is highly recommended to not create any account."
 msgstr "Si vous ne pouvez pas contrôler qui a accès au réseau auquel vous êtes connecté, il est fortement recommandé de ne pas créer de compte."
 
+msgid "If you have an account you may connect by clicking on the <i>Profile</i> button in the menu."
+msgstr "Si vous disposez d’un compte, vous pouvez vous connecter en cliquant sur le bouton Profil dans le menu."
+
 msgid "Illegal moves are not recorded."
 msgstr "Les coups illégaux ne sont pas enregistrés."
 
@@ -3140,6 +3143,9 @@ msgstr "Aucun prix."
 
 msgid "No public events."
 msgstr "Aucun événement public."
+
+msgid "No public screens"
+msgstr "Aucun écran public"
 
 msgid "No result"
 msgstr "Pas de résultat"
@@ -5003,6 +5009,9 @@ msgstr "La variante du système d'appariements."
 
 msgid "The way to share the prizes between players with the same points."
 msgstr "La manière de partages les prix entre les joueurs ayant le même nombre de points."
+
+msgid "There are no public screens available for this event."
+msgstr "Aucun écran public n’est disponible pour cet évènement."
 
 msgid "There can only be one main category."
 msgstr "Il ne peut y avoir qu'une seule catégorie générale."
