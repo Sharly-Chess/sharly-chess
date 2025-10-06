@@ -624,11 +624,13 @@ class PapiConverter:
 
     @classmethod
     def check_pairing_variation(cls, pairing_variation: PairingVariation) -> str | None:
-        if pairing_variation not in PapiPairingVariation.core_objects():
+        try:
+            PapiPairingVariation.get_outer_value(pairing_variation)
+            return None
+        except KeyError:
             return _(
                 'Pairing system [{pairing_system}] is not compatible with the PAPI format.'
             ).format(pairing_system=pairing_variation.name)
-        return None
 
     @classmethod
     def check_tiebreak(cls, tie_break: TieBreak) -> str | None:
