@@ -9,6 +9,6 @@ English version below
 
 # English
 
-## Tournaments
+## Pairings
 
 - Definition of the value of the Pairing Allocated Bye (3.2.0)
