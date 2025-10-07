@@ -34,7 +34,7 @@ from database.sqlite.event.event_store import (
     StoredBoard,
     StoredPairing,
 )
-from utils.enum import TournamentRating, PlayerRatingType, Result, BoardColor
+from utils.enum import TournamentRating, Result, BoardColor
 from utils.option import OptionHandler
 
 
@@ -527,14 +527,7 @@ class TrfTournamentImporter(FileTournamentImporter):
 
     @staticmethod
     def _read_trf_player(trf_player: TrfPlayer) -> StoredPlayer:
-        rating = PlayerRating(
-            trf_player.rating,
-            (
-                PlayerRatingType.FIDE
-                if trf_player.rating
-                else PlayerRatingType.ESTIMATED
-            ),
-        )
+        rating = PlayerRating(fide=trf_player.rating or None)
         return StoredPlayer(
             id=trf_player.startrank,
             last_name=trf_player.name.split(',')[0].strip().upper(),
