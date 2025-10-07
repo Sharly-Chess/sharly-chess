@@ -28,6 +28,7 @@ English version below
 - Correction de la recherche sans tournoi (3.1.1)
 - Ajout de l’année de naissance aux résultats de recherche (3.1.1)
 - Amélioration de la recherche des joueur·euses (3.1.2)
+- Correction de l'affichage des joueur·euses sans prénom (3.1.5)
 
 ## Écrans
 
@@ -84,6 +85,7 @@ English version below
 - Fixed the player search without tournament (3.1.1)
 - Added year of birth to search results (3.1.1)
 - Improved player search (3.1.2)
+- Fixed the display of players with no first name (3.1.5)
 
 ## Screens
 
