@@ -3707,7 +3707,7 @@ msgid "Player ratings to use by default:"
 msgstr "Classements des joueur·euses à utiliser par défaut :"
 
 msgid "Player ratings to use:"
-msgstr "lassements des joueur·euses à utiliser :"
+msgstr "Classements des joueur·euses à utiliser :"
 
 msgid "Player selection (by alphabetical order)"
 msgstr "Sélection des joueur·euses (par ordre alphabétique)"
