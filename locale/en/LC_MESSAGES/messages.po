@@ -3189,7 +3189,7 @@ msgstr ""
 msgid "No public events."
 msgstr ""
 
-msgid "No public screens"
+msgid "No public screens."
 msgstr ""
 
 msgid "No result"
@@ -5544,9 +5544,6 @@ msgid "Unknown color [{color}]."
 msgstr ""
 
 msgid "Unknown federation [{federation}]."
-msgstr ""
-
-msgid "Unknown field [{field}]."
 msgstr ""
 
 msgid "Unknown gender [{gender}]."

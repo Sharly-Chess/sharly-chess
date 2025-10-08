@@ -126,9 +126,8 @@ if __name__ == '__main__':
 
     set_logging_config(console_log_level=logging.DEBUG)
     for database in databases:
-        with database:
-            try:
-                database.migration_managers[0].migrate(migration)
-            except SharlyChessException as e:
-                print_interactive_error(str(e))
-                raise e
+        try:
+            database.migration_managers[0].migrate(migration)
+        except SharlyChessException as e:
+            print_interactive_error(str(e))
+            raise e
