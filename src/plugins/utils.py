@@ -181,13 +181,6 @@ class Plugin(IdentifiableEntity, ABC):
         if self.base_migration_module is not None:
             self._migrate_all_events()
 
-    def on_disable(self):
-        """Method called when the plugin is disabled."""
-        from plugins.migration import PluginMigrationManager
-
-        if self.base_migration_module is not None:
-            self._migrate_all_events(PluginMigrationManager.MIGRATION_ZERO)
-
     def _migrate_all_events(self, target_migration: str | None = None):
         """Migrates all the event databases to migration."""
         from data.loader import EventLoader
