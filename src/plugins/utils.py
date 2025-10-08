@@ -194,9 +194,9 @@ class Plugin(IdentifiableEntity, ABC):
         from database.sqlite.event.event_database import EventDatabase
 
         for uniq_id in EventLoader().event_uniq_ids:
-            with EventDatabase(uniq_id, True) as database:
-                if migration_manager := self.get_migration_manager(database):
-                    migration_manager.migrate(target_migration)
+            database = EventDatabase(uniq_id)
+            if migration_manager := self.get_migration_manager(database):
+                migration_manager.migrate(target_migration)
 
     def reload_context(self):
         self.context = PluginContext(self)
