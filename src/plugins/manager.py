@@ -16,12 +16,14 @@ class AppPluginManager(PluginManager):
 
     @cached_property
     def all_plugins(self) -> list[Plugin]:
+        from plugins.chess_results.chess_results import ChessResultsPlugin
         from plugins.chessevent.chessevent import ChessEventPlugin
         from plugins.ffe.ffe import FfePlugin
         from plugins.pairing_acceleration.plugin import PairingAccelerationPlugin
 
         return [
             PairingAccelerationPlugin(),
+            ChessResultsPlugin(),
             FfePlugin(),
             ChessEventPlugin(),
         ]
