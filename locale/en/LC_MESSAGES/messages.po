@@ -5525,9 +5525,6 @@ msgstr ""
 msgid "Unknown federation [{federation}]."
 msgstr ""
 
-msgid "Unknown field [{field}]."
-msgstr ""
-
 msgid "Unknown gender [{gender}]."
 msgstr ""
 

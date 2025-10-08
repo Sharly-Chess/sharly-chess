@@ -5525,9 +5525,6 @@ msgstr "Couleur [{color}] inconnue."
 msgid "Unknown federation [{federation}]."
 msgstr "Fédération [{federation}] inconnue."
 
-msgid "Unknown field [{field}]."
-msgstr "Champ [{field}] inconnu."
-
 msgid "Unknown gender [{gender}]."
 msgstr "Genre [{gender}] inconnu."
 
