@@ -187,7 +187,7 @@ class ChessResultsPlugin(Plugin):
         self, stored_tournament: 'StoredTournament', row: dict[str, Any]
     ):
         stored_tournament.plugin_data[self.id] = {
-            'trn': row.get('chess_results_trn', ''),
+            'tnr': row.get('chess_results_tnr', ''),
             'creator_id': row.get('chess_results_creator_id', None),
             'auto_upload': SQLiteDatabase.load_bool_or_none_from_database_field(
                 row.get('chess_results_auto_upload', None)
@@ -201,7 +201,7 @@ class ChessResultsPlugin(Plugin):
     ) -> dict[str, Any]:
         data = stored_tournament.plugin_data
         return {
-            'chess_results_trn': self.get_data(data, 'trn', None),
+            'chess_results_tnr': self.get_data(data, 'tnr', None),
             'chess_results_creator_id': self.get_data(data, 'creator_id', None),
             'chess_results_auto_upload': self.get_data(data, 'auto_upload', None),
         }

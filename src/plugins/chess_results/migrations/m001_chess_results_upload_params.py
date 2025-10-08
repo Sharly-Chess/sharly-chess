@@ -11,7 +11,7 @@ class Migration(BasePluginMigration):
         )
 
         self.database.execute(
-            'ALTER TABLE `tournament` ADD `chess_results_trn` INTEGER'
+            'ALTER TABLE `tournament` ADD `chess_results_tnr` INTEGER'
         )
         self.database.execute(
             'ALTER TABLE `tournament` ADD `chess_results_creator_id` TEXT'

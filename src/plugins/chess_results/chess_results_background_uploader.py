@@ -189,6 +189,7 @@ class ChessResultsBackgroundUploader:
             )
 
         try:
+            tournament.compute_player_ranks()
             ChessResultsSession(
                 tournament,
                 report_error=partial(
