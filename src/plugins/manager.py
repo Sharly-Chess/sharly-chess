@@ -63,6 +63,7 @@ class AppPluginManager(PluginManager):
                 plugin.on_enable()
                 self.register(plugin, plugin.id)
             elif not is_enabled and was_enabled:
+                plugin.on_disable()
                 self.unregister(plugin, plugin.id)
 
 
