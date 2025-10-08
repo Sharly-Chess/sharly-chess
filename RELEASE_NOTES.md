@@ -49,6 +49,7 @@ English version below
 ## ChessEvent
 
 - Import de tournois ChessEvent depuis l'interface web (remplace le script `tools/chessevent.bat`) (3.1.0)
+- Correction de l'activation du plugin (3.1.5)
 
 ## FFE
 
@@ -106,6 +107,7 @@ English version below
 ## ChessEvent
 
 - Import ChessEvent tournament from the web interface (3.1.0)
+- Fixed the plugin activation (3.1.5)
 
 ## FFE
 
