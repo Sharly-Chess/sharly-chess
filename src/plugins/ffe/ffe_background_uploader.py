@@ -121,7 +121,7 @@ class FfeBackgroundUploader:
             assert isinstance(tournament, Tournament)
             plugin_data = FFEUtils.get_tournament_plugin_data(tournament)
         else:
-            raw_plugin_data = tournament.plugin_data[PLUGIN_NAME] or {}
+            raw_plugin_data = tournament.plugin_data.get(PLUGIN_NAME, {})
             plugin_data = FfeTournamentPluginData.from_stored_value(raw_plugin_data)
 
         return plugin_data.last_upload or 0.0
@@ -290,12 +290,12 @@ class FfeBackgroundUploader:
     ) -> bool:
         # Check if the auto upload is enabled
         tournament_plugin_data = FfeTournamentPluginData.from_stored_value(
-            stored_tournament.plugin_data[PLUGIN_NAME] or {}
+            stored_tournament.plugin_data.get(PLUGIN_NAME, {})
         )
         tournament_auto_upload = tournament_plugin_data.auto_upload
         if tournament_auto_upload is None:
             event_plugin_data = FfeEventPluginData.from_stored_value(
-                stored_event.plugin_data[PLUGIN_NAME] or {}
+                stored_event.plugin_data.get(PLUGIN_NAME, {})
             )
             tournament_auto_upload = event_plugin_data.auto_upload
         if not tournament_auto_upload:

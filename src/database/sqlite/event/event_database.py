@@ -399,7 +399,9 @@ class EventDatabase(MigrationDatabase):
             'timer_delays': self.dump_to_json_database_timer_delays(
                 stored_event.timer_delays
             ),
-            'plugin_data': self.dump_to_json_database_field(stored_event.plugin_data),
+            'plugin_data': self.dump_to_json_database_field(
+                stored_event.plugin_data, {}
+            ),
         }
 
         field_sets = (f'`{f}` = ?' for f in fields.keys())
@@ -802,7 +804,7 @@ class EventDatabase(MigrationDatabase):
             ),
             'last_update': time.time(),
             'plugin_data': self.dump_to_json_database_field(
-                stored_tournament.plugin_data
+                stored_tournament.plugin_data, {}
             ),
         }
 
