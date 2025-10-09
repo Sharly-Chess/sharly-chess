@@ -4840,10 +4840,10 @@ msgid "The default language used."
 msgstr "La langue utilisée par défaut."
 
 msgid "The delay must be at least {min_delay} minutes to avoid overloading the Chess-Results server."
-msgstr "Le délai doit au moins être de {min_delay} minutes pour éviter de surcharger le serveur FFE."
+msgstr "Le délai doit au moins être de {min_delay} minutes pour éviter de surcharger le serveur Chess-Results.."
 
 msgid "The delay must be at least {min_delay} minutes to avoid overloading the FFE server."
-msgstr "Le délai doit au moins être de {min_delay} minutes pour éviter de surcharger le serveur Chess-Results."
+msgstr "Le délai doit au moins être de {min_delay} minutes pour éviter de surcharger le serveur FFE"
 
 msgid "The end date and time of the event."
 msgstr "La date et l'heure de fin de l'évènement."
@@ -6341,4 +6341,3 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-

@@ -45,7 +45,7 @@ class ChessResultsTieBreak:
         ffe_tie_breaks.PapiPerformanceTieBreak: ('88', '0', '', '', ''),
         # Kashdan doesn't have a Chess-Results.com equivalent, we map to "Tiebreak 1"
         tie_breaks.KashdanTieBreak: ('26', '', '', '', ''),
-        tie_breaks.PapiKashdanTieBreak: ('26', '', '', '', ''),
+        ffe_tie_breaks.PapiKashdanTieBreak: ('26', '', '', '', ''),
     }
 
     @classmethod

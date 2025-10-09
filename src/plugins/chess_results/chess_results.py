@@ -183,34 +183,3 @@ class ChessResultsPlugin(Plugin):
     @hookimpl
     def get_tournament_tab_action_menu_items_template(self) -> str:
         return '/chess_results_tournament_tab_action_menu_items.html'
-
-    # @hookimpl
-    # def signal_tournament_set(
-    # self, tournament: 'Tournament', stored_tournament: 'StoredTournament'
-    # ) -> str | None:
-    # pairing_variation = PairingVariationManager.get_object(
-    # stored_tournament.pairing
-    # )
-    # if blocker := PapiConverter.check_pairing_variation(pairing_variation):
-    # return blocker
-    # if blocker := PapiConverter.check_rounds(stored_tournament.rounds):
-    # return blocker
-
-    # tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager.type_by_id()
-    # option_type_by_id: dict[str, type[TieBreakOption]] = (
-    # TieBreakOptionManager.type_by_id()
-    # )
-    # for tie_break_dict in stored_tournament.tie_breaks:
-    # assert isinstance(tie_break_dict['type'], str)
-    # assert isinstance(tie_break_dict['options'], dict)
-    # tie_break_id = tie_break_dict['type']
-    # options: list[TieBreakOption] = []
-    # for option_id, value in tie_break_dict['options'].items():
-    # if option_type := option_type_by_id.get(option_id, None):
-    # options.append(option_type(value))
-    # if tie_break_type := tie_break_type_by_id.get(tie_break_id, None):
-    # tie_break = tie_break_type(options)
-    # if blocker := PapiConverter.check_tiebreak(tie_break):
-    # return blocker
-
-    # return None

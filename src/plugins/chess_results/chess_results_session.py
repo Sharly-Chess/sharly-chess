@@ -151,7 +151,7 @@ class ChessResultsSession(Session):
                 'type': '0',  # 0=Swiss, 1=Round robin, etc.
                 'name': tournament.full_name,
                 'fideeventid': '',
-                'remark': f'#{ChessResultsUtils.resolve_remark(tournament)}',
+                'remark': f'#{ChessResultsUtils.resolve_remark(tournament)}'[:599],
                 'director': '',
                 'organiser': '',
                 'location': tournament.location or '',
