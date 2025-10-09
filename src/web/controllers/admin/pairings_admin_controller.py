@@ -1266,24 +1266,16 @@ class PairingsAdminController(BaseEventAdminController):
         )
         return self._admin_event_pairings_render(web_context)
 
-    @staticmethod
-    def _validate_pairing_settings(
-        tournament: Tournament, data: dict[str, str]
-    ) -> dict[str, str]:
-        errors: dict[str, str] = {}
-        for setting in tournament.pairing_variation.settings:
-            errors |= setting.get_data_errors(tournament, data)
-        return errors
-
     def _pairings_settings_modal_error_context(
         self,
         tournament: Tournament,
         data: dict[str, str],
     ) -> dict[str, Any] | None:
-        if errors := self._validate_pairing_settings(tournament, data):
+        pairing_variation = tournament.pairing_variation
+        if errors := pairing_variation.get_settings_data_error(tournament, data):
             if data is None:
                 data = {}
-                for setting in tournament.pairing_variation.settings:
+                for setting in pairing_variation.settings:
                     data |= setting.default_form_data(tournament)
 
             return {

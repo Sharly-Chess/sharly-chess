@@ -313,6 +313,9 @@ msgstr ""
 msgid "Accelerated variations of the swiss pairing system."
 msgstr ""
 
+msgid "Acceleration groups"
+msgstr ""
+
 msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
 msgstr ""
 
@@ -2363,7 +2366,7 @@ msgstr ""
 msgid "Group"
 msgstr ""
 
-msgid "Groups"
+msgid "Group {group_id}"
 msgstr ""
 
 #, python-format
@@ -2798,9 +2801,6 @@ msgstr ""
 msgid "Loss"
 msgstr ""
 
-msgid "Lower rating limit"
-msgstr ""
-
 msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr "M"
 
@@ -2898,6 +2898,9 @@ msgid "Maximum number of results displayed:"
 msgstr ""
 
 msgid "Maximum rating"
+msgstr ""
+
+msgid "Maximum value must be greater than the minimum value."
 msgstr ""
 
 msgid "May be overridden on a per-tournament basis."
@@ -3097,6 +3100,9 @@ msgid "No Prize Category"
 msgstr ""
 
 msgid "No Prize Group"
+msgstr ""
+
+msgid "No acceleration."
 msgstr ""
 
 msgid "No alert message"
@@ -3516,6 +3522,10 @@ msgstr ""
 msgid "Pairing number"
 msgstr ""
 
+#, python-format
+msgid "Pairing number range of the group (recommended: %(min)d-%(max)d)."
+msgstr ""
+
 msgid "Pairing numbers selection"
 msgstr ""
 
@@ -3885,6 +3895,9 @@ msgstr ""
 msgid "Port: {port}"
 msgstr ""
 
+msgid "Positive values are expected."
+msgstr ""
+
 msgid "Pref."
 msgstr ""
 
@@ -4075,27 +4088,7 @@ msgstr ""
 msgid "Rating *** RATING FOR PLAYERS COLUMNS"
 msgstr "Rating"
 
-msgid "Rating limit"
-msgstr ""
-
-msgid "Rating limits"
-msgstr ""
-
 msgid "Rating ranges"
-msgstr ""
-
-#, python-format
-msgid "Rating splitting groups A and B (recommended: %(recommended)d)."
-msgstr ""
-
-msgid "Rating splitting groups A and B."
-msgstr ""
-
-#, python-format
-msgid "Rating splitting groups B and C (recommended: %(recommended)d)."
-msgstr ""
-
-msgid "Rating splitting groups B and C."
 msgstr ""
 
 msgid "Rating type"
@@ -4293,6 +4286,9 @@ msgstr ""
 msgid "Round skipped"
 msgstr ""
 
+msgid "Round {round}"
+msgstr ""
+
 #, python-format
 msgid "Round {} started for %s"
 msgstr ""
@@ -4314,6 +4310,9 @@ msgid "Rounds"
 msgstr ""
 
 msgid "Rounds one Elected to Play"
+msgstr ""
+
+msgid "Rounds {min_round}-{max_round}"
 msgstr ""
 
 msgid "Rpd *** RAPID RATING ACRONYM"
@@ -5673,12 +5672,6 @@ msgstr ""
 msgid "Uploading tournament…"
 msgstr ""
 
-msgid "Upper limit expected to be greater than lower limit."
-msgstr ""
-
-msgid "Upper rating limit"
-msgstr ""
-
 msgid "Use Event's default - {option}"
 msgstr ""
 
@@ -5758,6 +5751,12 @@ msgid "View the Tournaments tab"
 msgstr ""
 
 msgid "View the files on filebin.net"
+msgstr ""
+
+msgid "Virtual points"
+msgstr ""
+
+msgid "Virtual points are granted to players according to their group. Those points only are used for pairing, not for ranking."
 msgstr ""
 
 msgid "Visibility:"
@@ -6134,6 +6133,9 @@ msgstr ""
 msgid "players on {parts} screens"
 msgstr ""
 
+msgid "points"
+msgstr ""
+
 msgid "ranking from #{first} to #{last}"
 msgstr ""
 
@@ -6283,4 +6285,34 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "Groups"
+#~ msgstr ""
+
+#~ msgid "Lower rating limit"
+#~ msgstr ""
+
+#~ msgid "Rating limit"
+#~ msgstr ""
+
+#~ msgid "Rating limits"
+#~ msgstr ""
+
+#~ msgid "Rating splitting groups A and B (recommended: %(recommended)d)."
+#~ msgstr ""
+
+#~ msgid "Rating splitting groups A and B."
+#~ msgstr ""
+
+#~ msgid "Rating splitting groups B and C (recommended: %(recommended)d)."
+#~ msgstr ""
+
+#~ msgid "Rating splitting groups B and C."
+#~ msgstr ""
+
+#~ msgid "Upper limit expected to be greater than lower limit."
+#~ msgstr ""
+
+#~ msgid "Upper rating limit"
+#~ msgstr ""
 

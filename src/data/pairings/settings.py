@@ -152,7 +152,7 @@ class ColorSeedSetting(PairingSetting[BoardColor]):
         return object_.value
 
     @classmethod
-    def check_value(cls, tournament: 'Tournament', value: BoardColor):
+    def check_value(cls, tournament: 'Tournament', value: BoardColor) -> bool:
         return True
 
     def default_form_data(self, tournament: 'Tournament') -> dict[str, str]:
@@ -237,7 +237,7 @@ class BergerNumbersSetting(PairingSetting[dict[int, int]]):
         }
 
     @classmethod
-    def check_value(cls, tournament: 'Tournament', value: dict[int, int]):
+    def check_value(cls, tournament: 'Tournament', value: dict[int, int]) -> bool:
         berger_numbers = value
         if len(set(berger_numbers.values())) != len(set(berger_numbers.keys())):
             return False

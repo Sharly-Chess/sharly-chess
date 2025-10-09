@@ -313,6 +313,9 @@ msgstr "Appariements accélérés"
 msgid "Accelerated variations of the swiss pairing system."
 msgstr "Variantes accélérées du système d'appariements suisse."
 
+msgid "Acceleration groups"
+msgstr "Groupes d'accélération"
+
 msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
 msgstr "Les caractères acceptés sont les lettres, chiffres, souligné (« tiret du 8 ») et moins (« tiret du 6 »)."
 
@@ -2363,8 +2366,8 @@ msgstr "Grand Maître International"
 msgid "Group"
 msgstr "Groupe"
 
-msgid "Groups"
-msgstr "Groupes"
+msgid "Group {group_id}"
+msgstr "Groupe {group_id}"
 
 #, python-format
 msgid "Groups must be composed of at least 25%% and at most 50%% of players."
@@ -2798,9 +2801,6 @@ msgstr "Niveau de log"
 msgid "Loss"
 msgstr "Défaite"
 
-msgid "Lower rating limit"
-msgstr "Limite Elo basse"
-
 msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr "M"
 
@@ -2899,6 +2899,9 @@ msgstr "Nombre maximum de résultats affichés :"
 
 msgid "Maximum rating"
 msgstr "Elo maximum"
+
+msgid "Maximum value must be greater than the minimum value."
+msgstr "La valeur maximale doit être supérieure à la valeur minimale."
 
 msgid "May be overridden on a per-tournament basis."
 msgstr "Peut être remplacé au niveau de chaque tournoi."
@@ -3098,6 +3101,9 @@ msgstr "Aucune catégorie de prix"
 
 msgid "No Prize Group"
 msgstr "Aucun groupe de prix"
+
+msgid "No acceleration."
+msgstr "Pas d'accélération."
 
 msgid "No alert message"
 msgstr "Pas de message d'alerte"
@@ -3516,6 +3522,10 @@ msgstr "Appariement non-trouvé."
 msgid "Pairing number"
 msgstr "Numéro d'appariement"
 
+#, python-format
+msgid "Pairing number range of the group (recommended: %(min)d-%(max)d)."
+msgstr "Plage de numéros d'appariements du groupe (recommandé : %(min)d-%(max)d)."
+
 msgid "Pairing numbers selection"
 msgstr "Sélection des numéros d'appariements"
 
@@ -3885,6 +3895,9 @@ msgstr "Le port [{port}] est déjà utilisé."
 msgid "Port: {port}"
 msgstr "Port : {port}"
 
+msgid "Positive values are expected."
+msgstr "Des valeurs positives sont attendues."
+
 msgid "Pref."
 msgstr "Préf."
 
@@ -4075,28 +4088,8 @@ msgstr "Elo"
 msgid "Rating *** RATING FOR PLAYERS COLUMNS"
 msgstr "Classement"
 
-msgid "Rating limit"
-msgstr "Limite Elo"
-
-msgid "Rating limits"
-msgstr "Limites Elo"
-
 msgid "Rating ranges"
 msgstr "Tranches de classement"
-
-#, python-format
-msgid "Rating splitting groups A and B (recommended: %(recommended)d)."
-msgstr "Classement Elo séparant les groupes A et B (recommandation : %(recommended)d)."
-
-msgid "Rating splitting groups A and B."
-msgstr "Classement Elo séparant les groupes A et B."
-
-#, python-format
-msgid "Rating splitting groups B and C (recommended: %(recommended)d)."
-msgstr "Classement Elo séparant les groupes B et C (recommandation : %(recommended)d)."
-
-msgid "Rating splitting groups B and C."
-msgstr "Classement ELO séparant les groupes B et C."
 
 msgid "Rating type"
 msgstr "Type de classement"
@@ -4293,6 +4286,9 @@ msgstr "Indicateurs de performance pour la ronde"
 msgid "Round skipped"
 msgstr "Absent·e"
 
+msgid "Round {round}"
+msgstr "Ronde {round}"
+
 #, python-format
 msgid "Round {} started for %s"
 msgstr "Ronde {} commencée depuis %s"
@@ -4315,6 +4311,9 @@ msgstr "Rondes"
 
 msgid "Rounds one Elected to Play"
 msgstr "Rondes jouées"
+
+msgid "Rounds {min_round}-{max_round}"
+msgstr "Rondes {min_round}-{max_round}"
 
 msgid "Rpd *** RAPID RATING ACRONYM"
 msgstr "Rpd"
@@ -5673,12 +5672,6 @@ msgstr "Envoyer le fichier PDF des règles sur le site de la FFE permet aux joue
 msgid "Uploading tournament…"
 msgstr "Mise en ligne en cours…"
 
-msgid "Upper limit expected to be greater than lower limit."
-msgstr "La limite Elo haute doit être supérieure à la limite Elo basse."
-
-msgid "Upper rating limit"
-msgstr "Limite Elo haute"
-
 msgid "Use Event's default - {option}"
 msgstr "Défaut de l’événement – {option}"
 
@@ -5759,6 +5752,12 @@ msgstr "Voir l'onglet Tournois"
 
 msgid "View the files on filebin.net"
 msgstr "Voir les fichiers sur filebin.net"
+
+msgid "Virtual points"
+msgstr "Points virtuels"
+
+msgid "Virtual points are granted to players according to their group. Those points only are used for pairing, not for ranking."
+msgstr "Des points virtuels sont accordés aux joueur·euses selon leur groupe. Ces points ne sont utilisés que pour l'appariement, pas pour le classement."
 
 msgid "Visibility:"
 msgstr "Visibilité :"
@@ -6134,6 +6133,9 @@ msgstr "joueur·euses du début au n°{last}, sur {parts} écrans"
 msgid "players on {parts} screens"
 msgstr "joueur·euses sur {parts} écrans"
 
+msgid "points"
+msgstr "points"
+
 msgid "ranking from #{first} to #{last}"
 msgstr "classement de {first} à {last}"
 
@@ -6283,4 +6285,34 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "Groups"
+#~ msgstr "Groupes"
+
+#~ msgid "Lower rating limit"
+#~ msgstr "Limite Elo basse"
+
+#~ msgid "Rating limit"
+#~ msgstr "Limite Elo"
+
+#~ msgid "Rating limits"
+#~ msgstr "Limites Elo"
+
+#~ msgid "Rating splitting groups A and B (recommended: %(recommended)d)."
+#~ msgstr "Classement Elo séparant les groupes A et B (recommandation : %(recommended)d)."
+
+#~ msgid "Rating splitting groups A and B."
+#~ msgstr "Classement Elo séparant les groupes A et B."
+
+#~ msgid "Rating splitting groups B and C (recommended: %(recommended)d)."
+#~ msgstr "Classement Elo séparant les groupes B et C (recommandation : %(recommended)d)."
+
+#~ msgid "Rating splitting groups B and C."
+#~ msgstr "Classement ELO séparant les groupes B et C."
+
+#~ msgid "Upper limit expected to be greater than lower limit."
+#~ msgstr "La limite Elo haute doit être supérieure à la limite Elo basse."
+
+#~ msgid "Upper rating limit"
+#~ msgstr "Limite Elo haute"
 
