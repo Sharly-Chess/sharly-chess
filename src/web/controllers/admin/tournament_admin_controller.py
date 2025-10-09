@@ -291,7 +291,7 @@ class TournamentAdminController(BaseEventAdminController):
             ) in Tournament.plugin_data_class_by_plugin_id().items():
                 plugin_form_data |= plugin_data_class.from_stored_value(
                     stored_plugin_data.get(plugin_id, {})
-                ).to_form_data()
+                ).to_form_data(action=action)
 
             data: dict[str, str] = {
                 'start': WebContext.value_to_datetime_form_data(start),
@@ -440,6 +440,7 @@ class TournamentAdminController(BaseEventAdminController):
         start: float | None = None
         stop: float | None = None
         rounds = WebContext.form_data_to_int(data, field := 'rounds') or 1
+        tournament: Tournament | None = None
         if rounds < 1:
             errors[field] = _('A positive integer is expected.')
         elif action == 'update':
@@ -583,10 +584,18 @@ class TournamentAdminController(BaseEventAdminController):
             errors=errors,
         )
 
-        plugin_data: dict[str, dict[str, Any]] = {
-            plugin_id: plugin_data_class.from_form_data(data).to_stored_value()
-            for plugin_id, plugin_data_class in Tournament.plugin_data_class_by_plugin_id().items()
-        }
+        plugin_data: dict[str, dict[str, Any]] = {}
+        for (
+            plugin_id,
+            plugin_data_class,
+        ) in Tournament.plugin_data_class_by_plugin_id().items():
+            previous_object = None
+            if tournament is not None:
+                previous_object = tournament.plugin_data.get(plugin_id)
+
+            plugin_data[plugin_id] = plugin_data_class.from_form_data(
+                data, action=action, previous_object=previous_object
+            ).to_stored_value()
 
         stored_tournament = StoredTournament(
             id=web_context.admin_tournament.id

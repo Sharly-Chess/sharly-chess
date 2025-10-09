@@ -105,12 +105,15 @@ class PluginData(ABC):
     @classmethod
     @abstractmethod
     def from_form_data(
-        cls, data: dict[str, str], previous_object: Self | None = None
+        cls,
+        data: dict[str, str],
+        previous_object: Self | None = None,
+        action: str | None = None,
     ) -> Self:
         """Initialize an object from form data."""
 
     @abstractmethod
-    def to_form_data(self) -> dict[str, str]:
+    def to_form_data(self, action: str | None = None) -> dict[str, str]:
         """The values to use in a form."""
 
 

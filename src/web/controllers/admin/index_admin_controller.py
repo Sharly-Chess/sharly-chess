@@ -422,7 +422,7 @@ class IndexAdminController(BaseAdminController):
         ) in Event.plugin_data_class_by_plugin_id().items():
             plugin_form_data |= plugin_data_class.from_stored_value(
                 stored_plugin_data.get(plugin_id, {})
-            ).to_form_data()
+            ).to_form_data(action=action)
 
         return {
             'uniq_id': WebContext.value_to_form_data(uniq_id),
@@ -592,8 +592,24 @@ class IndexAdminController(BaseAdminController):
         plugin_manager.hook.validate_event_form_fields(
             action=action, event=admin_event, data=data, errors=errors
         )
+
+        plugin_data: dict[str, dict[str, Any]] = {}
+        for (
+            plugin_id,
+            plugin_data_class,
+        ) in Event.plugin_data_class_by_plugin_id().items():
+            previous_object = None
+            if admin_event is not None:
+                previous_object = admin_event.plugin_data.get(plugin_id)
+
+            plugin_data[plugin_id] = plugin_data_class.from_form_data(
+                data, action=action, previous_object=previous_object
+            ).to_stored_value()
+
         plugin_data: dict[str, dict[str, Any]] = {
-            plugin_id: plugin_data_class.from_form_data(data).to_stored_value()
+            plugin_id: plugin_data_class.from_form_data(
+                data, action=action
+            ).to_stored_value()
             for plugin_id, plugin_data_class in Event.plugin_data_class_by_plugin_id().items()
         }
 

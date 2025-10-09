@@ -132,7 +132,10 @@ class ChessEventEventPluginData(PluginData):
 
     @classmethod
     def from_form_data(
-        cls, data: dict[str, str], previous_object: Self | None = None
+        cls,
+        data: dict[str, str],
+        previous_object: Self | None = None,
+        action: str | None = None,
     ) -> Self:
         return cls(
             user=WebContext.form_data_to_str(data, 'chessevent_user'),
@@ -140,12 +143,12 @@ class ChessEventEventPluginData(PluginData):
             event_id=WebContext.form_data_to_str(data, 'chessevent_event_id'),
         )
 
-    def to_form_data(self) -> dict[str, str]:
+    def to_form_data(self, action: str | None = None) -> dict[str, str]:
         return WebContext.values_dict_to_form_data(
             {
-                'chessevent_user': self.user,
-                'chessevent_password': self.password,
-                'chessevent_event_id': self.event_id,
+                'chessevent_user': self.user if action != 'clone' else '',
+                'chessevent_password': self.password if action != 'clone' else '',
+                'chessevent_event_id': self.event_id if action != 'clone' else '',
             }
         )
 
@@ -182,18 +185,37 @@ class ChessEventTournamentPluginData(PluginData):
 
     @classmethod
     def from_form_data(
-        cls, data: dict[str, str], previous_object: Self | None = None
+        cls,
+        data: dict[str, str],
+        previous_object: Self | None = None,
+        action: str | None = None,
     ) -> Self:
+        user = previous_object.user if previous_object and action != 'clone' else None
+        password = (
+            previous_object.password if previous_object and action != 'clone' else None
+        )
+        event_id = (
+            previous_object.event_id if previous_object and action != 'clone' else None
+        )
+        tournament_name = (
+            previous_object.tournament_name
+            if previous_object and action != 'clone'
+            else None
+        )
+        status = (
+            previous_object.status if previous_object and action != 'clone' else None
+        )
+        last_sync = (
+            previous_object.last_sync if previous_object and action != 'clone' else None
+        )
         return cls(
-            user=previous_object.user if previous_object else None,
-            password=previous_object.password if previous_object else None,
-            event_id=previous_object.event_id if previous_object else None,
-            tournament_name=previous_object.tournament_name
-            if previous_object
-            else None,
-            status=previous_object.status if previous_object else None,
-            last_sync=previous_object.last_sync if previous_object else None,
+            user=user,
+            password=password,
+            event_id=event_id,
+            tournament_name=tournament_name,
+            status=status,
+            last_sync=last_sync,
         )
 
-    def to_form_data(self) -> dict[str, str]:
+    def to_form_data(self, action: str | None = None) -> dict[str, str]:
         return {}

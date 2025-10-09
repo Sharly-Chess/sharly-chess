@@ -138,7 +138,10 @@ class FfeEventPluginData(PluginData):
 
     @classmethod
     def from_form_data(
-        cls, data: dict[str, str], previous_object: Self | None = None
+        cls,
+        data: dict[str, str],
+        previous_object: Self | None = None,
+        action: str | None = None,
     ) -> Self:
         return cls(
             auto_upload=WebContext.form_data_to_bool(data, 'ffe_auto_upload'),
@@ -146,7 +149,7 @@ class FfeEventPluginData(PluginData):
             or FFE_DEFAULT_UPLOAD_DELAY,
         )
 
-    def to_form_data(self) -> dict[str, str]:
+    def to_form_data(self, action: str | None = None) -> dict[str, str]:
         return WebContext.values_dict_to_form_data(
             {
                 'ffe_auto_upload': self.auto_upload,
@@ -184,23 +187,34 @@ class FfeTournamentPluginData(PluginData):
 
     @classmethod
     def from_form_data(
-        cls, data: dict[str, str], previous_object: Self | None = None
+        cls,
+        data: dict[str, str],
+        previous_object: Self | None = None,
+        action: str | None = None,
     ) -> Self:
+        last_upload = (
+            previous_object.last_upload
+            if previous_object and action != 'clone'
+            else None
+        )
+        last_rules_upload = (
+            previous_object.last_rules_upload
+            if previous_object and action != 'clone'
+            else None
+        )
         return cls(
-            last_upload=previous_object.last_upload if previous_object else None,
-            last_rules_upload=previous_object.last_rules_upload
-            if previous_object
-            else None,
+            last_upload=last_upload,
+            last_rules_upload=last_rules_upload,
             ffe_id=WebContext.form_data_to_int(data, 'ffe_id'),
             password=WebContext.form_data_to_str(data, 'ffe_password'),
             auto_upload=WebContext.form_data_to_bool_or_none(data, 'ffe_auto_upload'),
         )
 
-    def to_form_data(self) -> dict[str, str]:
+    def to_form_data(self, action: str | None = None) -> dict[str, str]:
         return WebContext.values_dict_to_form_data(
             {
-                'ffe_id': self.ffe_id,
-                'ffe_password': self.password,
+                'ffe_id': self.ffe_id if action != 'clone' else '',
+                'ffe_password': self.password if action != 'clone' else '',
                 'ffe_auto_upload': self.auto_upload,
             }
         )
@@ -234,7 +248,10 @@ class FfePlayerPluginData(PluginData):
 
     @classmethod
     def from_form_data(
-        cls, data: dict[str, str], previous_object: Self | None = None
+        cls,
+        data: dict[str, str],
+        previous_object: Self | None = None,
+        action: str | None = None,
     ) -> Self:
         return cls(
             ffe_id=WebContext.form_data_to_int(data, 'ffe_id'),
@@ -246,7 +263,7 @@ class FfePlayerPluginData(PluginData):
             league=WebContext.form_data_to_str(data, 'ffe_league'),
         )
 
-    def to_form_data(self) -> dict[str, str]:
+    def to_form_data(self, action: str | None = None) -> dict[str, str]:
         return WebContext.values_dict_to_form_data(
             {
                 'ffe_id': self.ffe_id,
