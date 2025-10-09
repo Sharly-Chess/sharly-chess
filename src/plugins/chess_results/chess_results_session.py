@@ -183,7 +183,7 @@ class ChessResultsSession(Session):
                 'playerperteam': '',
                 'category': '0',
                 'ratingavg': str(round(tournament.average_player_rating)),
-                'endstatus': 'J' if tournament.finished else 'N',
+                'endstatus': 'N',
                 'tb1_detail': tb_details[0][1],
                 'tb2_detail': tb_details[1][1],
                 'tb3_detail': tb_details[2][1],
@@ -275,7 +275,8 @@ class ChessResultsSession(Session):
             tournament.set_for_round(round_)
             tournament.compute_player_ranks(after_round=round_)
             last_board_id = 0
-            for board in tournament.get_round_boards(round_):
+            boards = tournament.get_round_boards(round_)
+            for board in boards:
                 ET.SubElement(
                     ppair,
                     'playerpairing',
@@ -309,7 +310,7 @@ class ChessResultsSession(Session):
                 )
                 last_board_id = board.board_id
 
-            for player in tournament.unpaired_players:
+            for player in tournament.get_unpaired_players(boards):
                 last_board_id += 1
                 result = player.pairings_by_round[round_].result
                 ET.SubElement(
@@ -320,7 +321,7 @@ class ChessResultsSession(Session):
                         'pairing': str(last_board_id),
                         'board': '1',
                         'whiteno': str(player.pairing_number),
-                        'blackno': '-1' if result.is_bye else '-2',
+                        'blackno': '-2',
                         'reswhite': str(result.points() or ''),
                         'resblack': '',
                         'forfeit': '',
@@ -363,7 +364,7 @@ class ChessResultsSession(Session):
             tnr = self.get_new_tournament_key(13, sid, creator_id, self.tournament)
 
             with EventDatabase(
-                self.tournament.event.uniq_id, write=True
+                self.tournament.event.uniq_id, write=True, check_dirty_tournaments=False
             ) as event_database:
                 event_database.execute(
                     """
@@ -392,7 +393,9 @@ class ChessResultsSession(Session):
         response.raise_for_status()
         print(response.text)
 
-        with EventDatabase(self.tournament.event.uniq_id, write=True) as event_database:
+        with EventDatabase(
+            self.tournament.event.uniq_id, write=True, check_dirty_tournaments=False
+        ) as event_database:
             now = time.time()
             event_database.execute(
                 """
