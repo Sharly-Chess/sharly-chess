@@ -41,7 +41,7 @@ class ChessResultsPlugin(Plugin):
 
     @staticmethod
     def static_name() -> str:
-        return _('ChessResults')
+        return _('Chess-Results.com')
 
     @property
     def description(self) -> str:
@@ -123,7 +123,7 @@ class ChessResultsPlugin(Plugin):
         )
         if auto_upload_delay and auto_upload_delay < CHESS_RESULTS_MIN_UPLOAD_DELAY:
             errors[field] = _(
-                'The delay must be at least {min_delay} minutes to avoid overloading the ChessResults server.'
+                'The delay must be at least {min_delay} minutes to avoid overloading the Chess-Results server.'
             ).format(min_delay=CHESS_RESULTS_MIN_UPLOAD_DELAY)
 
     # ---------------------------------------------------------------------------------
