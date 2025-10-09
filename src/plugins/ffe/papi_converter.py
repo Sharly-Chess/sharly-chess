@@ -773,7 +773,9 @@ class PapiConverter:
             timeControl='',
             ratingThreshold1=str(sharing_thresholds[1]),
             ratingThreshold2=str(sharing_thresholds[0]),
-            homologation=str(FFEUtils.get_tournament_plugin_data(tournament).ffe_id),
+            homologation=str(
+                FFEUtils.get_tournament_plugin_data(tournament).ffe_id or ''
+            ),
         )
 
         has_manual_tiebreak = any(

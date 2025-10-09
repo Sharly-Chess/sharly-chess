@@ -192,16 +192,11 @@ class FfeTournamentPluginData(PluginData):
         previous_object: Self | None = None,
         action: str | None = None,
     ) -> Self:
-        last_upload = (
-            previous_object.last_upload
-            if previous_object and action != 'clone'
-            else None
-        )
-        last_rules_upload = (
-            previous_object.last_rules_upload
-            if previous_object and action != 'clone'
-            else None
-        )
+        last_upload: float | None = None
+        last_rules_upload: float | None = None
+        if previous_object and action != 'clone':
+            last_upload = previous_object.last_upload
+            last_rules_upload = previous_object.last_rules_upload
         return cls(
             last_upload=last_upload,
             last_rules_upload=last_rules_upload,

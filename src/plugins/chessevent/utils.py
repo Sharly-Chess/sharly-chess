@@ -190,24 +190,19 @@ class ChessEventTournamentPluginData(PluginData):
         previous_object: Self | None = None,
         action: str | None = None,
     ) -> Self:
-        user = previous_object.user if previous_object and action != 'clone' else None
-        password = (
-            previous_object.password if previous_object and action != 'clone' else None
-        )
-        event_id = (
-            previous_object.event_id if previous_object and action != 'clone' else None
-        )
-        tournament_name = (
-            previous_object.tournament_name
-            if previous_object and action != 'clone'
-            else None
-        )
-        status = (
-            previous_object.status if previous_object and action != 'clone' else None
-        )
-        last_sync = (
-            previous_object.last_sync if previous_object and action != 'clone' else None
-        )
+        user: str | None = None
+        password: str | None = None
+        event_id: str | None = None
+        tournament_name: str | None = None
+        status: str | None = None
+        last_sync: float | None = None
+        if previous_object and action != 'clone':
+            user = previous_object.user
+            password = previous_object.password
+            event_id = previous_object.event_id
+            tournament_name = previous_object.tournament_name
+            status = previous_object.status
+            last_sync = previous_object.last_sync
         return cls(
             user=user,
             password=password,

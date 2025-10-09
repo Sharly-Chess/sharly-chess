@@ -98,12 +98,13 @@ class ChessEventTournamentImporter(TournamentImporter):
 
     def _resolve_request_data(self, event: Event) -> ChessEventTournamentRequestData:
         event_id, user_id, password, tournament_name = self.get_option_values()
+        event_plugin_data = ChessEventUtils.get_event_plugin_data(event)
         if not user_id:
-            user_id = ChessEventUtils.get_event_plugin_data(event).user
+            user_id = event_plugin_data.user
         if not password:
-            password = ChessEventUtils.get_event_plugin_data(event).password
+            password = event_plugin_data.password
         if not event_id:
-            event_id = ChessEventUtils.get_event_plugin_data(event).event_id
+            event_id = event_plugin_data.event_id
         return ChessEventTournamentRequestData(
             event_id=event_id,
             user_id=user_id,
