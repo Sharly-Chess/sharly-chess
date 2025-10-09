@@ -40,6 +40,8 @@ from database.sqlite.event.event_store import (
     StoredTournamentPlayer,
     StoredPairing,
 )
+from plugins.utils import PluginData
+from plugins.manager import plugin_manager
 from utils import SharedUtils, StaticUtils
 from utils.enum import (
     BoardColor,
@@ -77,6 +79,14 @@ class Tournament:
         self.prize_groups_by_id = self._get_prize_groups_by_id()
         self._players_by_rank: dict[int, Player] | None = None
         self.criteria_by_id = self._get_criteria_by_id()
+        self.plugin_data = self._get_plugin_data()
+
+    @staticmethod
+    def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
+        return {
+            plugin_id: plugin_data_class
+            for plugin_id, plugin_data_class in plugin_manager.hook.get_tournament_plugin_data_class()
+        }
 
     @property
     def event(self) -> 'Event':
@@ -204,6 +214,14 @@ class Tournament:
             return SharlyChessConfig.default_last_rounds_no_byes
         else:
             return self.stored_tournament.last_rounds_no_byes
+
+    def _get_plugin_data(self) -> dict[str, PluginData]:
+        return {
+            plugin_id: plugin_data_class.from_stored_value(
+                self.stored_tournament.plugin_data.get(plugin_id, {})
+            )
+            for plugin_id, plugin_data_class in self.plugin_data_class_by_plugin_id().items()
+        }
 
     def _get_criteria_by_id(self) -> dict[int, TournamentCriterion]:
         criteria_by_id = {}
@@ -673,10 +691,6 @@ class Tournament:
 
         values[Result.PAIRING_ALLOCATED_BYE] = values[self.pab_value]
         return values
-
-    @property
-    def plugin_data(self) -> dict[str, dict[str, Any]]:
-        return self.stored_tournament.plugin_data or {}
 
     @cached_property
     def current_round(self) -> int:

@@ -19,6 +19,7 @@ from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from plugins import ffe
 from plugins.ffe import PLUGIN_NAME
+from plugins.ffe.utils import FFEUtils
 from plugins.ffe.papi_converter import PapiConverter
 from plugins.utils import PluginUtils
 
@@ -370,9 +371,8 @@ class FFESession(Session):
         """Fetches the certification number and password for the tournament from the plugin data."""
 
         assert self.tournament is not None
-        pd = self.tournament.plugin_data
-        ffe_id: int | None = get_data(pd, 'ffe_id')
-        ffe_password: str | None = get_data(pd, 'ffe_password')
+        ffe_id = FFEUtils.get_tournament_plugin_data(self.tournament).ffe_id
+        ffe_password = FFEUtils.get_tournament_plugin_data(self.tournament).password
         if not ffe_id or not ffe_password:
             logger.warning(
                 'FFE certification number and password are not correctly set for tournament [%s], data can not be sent to the FFE website.',
@@ -490,14 +490,18 @@ class FFESession(Session):
         with EventDatabase(event_uniq_id, write=True) as event_database:
             now = time.time()
             event_database.execute(
-                'UPDATE `tournament` SET `ffe_last_upload` = ?, '
-                '`last_update` = ? WHERE `id` = ?',
-                (
-                    now,
-                    now,
-                    self.tournament.id,
-                ),
+                """
+                UPDATE tournament
+                SET plugin_data = json_set(
+                        plugin_data,
+                        '$.ffe.last_upload', ?
+                    ),
+                    last_update = ?
+                WHERE id = ?
+                """,
+                (now, now, self.tournament.id),
             )
+
         if not set_visible:
             self.report_success(_('Results upload OK'))
             return

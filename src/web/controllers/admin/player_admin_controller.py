@@ -762,7 +762,7 @@ class PlayerAdminController(BaseEventAdminController):
                     ) in Player.plugin_data_class_by_plugin_id().items():
                         plugin_form_data |= plugin_data_class.from_stored_value(
                             stored_plugin_data.get(plugin_id, {})
-                        ).to_form_data()
+                        ).to_form_data(action=action)
 
                     data = WebContext.values_dict_to_form_data(
                         {

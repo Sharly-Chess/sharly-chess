@@ -5,7 +5,7 @@ from typing import Any
 from data.input_output.tournament_importer_options import TournamentImporterOption
 from data.tournament import Tournament
 from plugins.chessevent import PLUGIN_NAME
-from plugins.chessevent.utils import get_data
+from plugins.chessevent.utils import ChessEventUtils
 
 
 class ChessEventImporterOption(TournamentImporterOption, ABC):
@@ -39,7 +39,7 @@ class ChessEventUserOption(ChessEventImporterOption):
     def get_default_value(self, tournament: Tournament | None = None) -> Any:
         if not tournament:
             return None
-        return get_data(tournament.plugin_data, 'chessevent_user_id', None)
+        return ChessEventUtils.get_tournament_plugin_data(tournament).user
 
 
 class ChessEventPasswordOption(ChessEventImporterOption):
@@ -54,7 +54,7 @@ class ChessEventPasswordOption(ChessEventImporterOption):
     def get_default_value(self, tournament: Tournament | None = None) -> Any:
         if not tournament:
             return None
-        return get_data(tournament.plugin_data, 'chessevent_password', None)
+        return ChessEventUtils.get_tournament_plugin_data(tournament).password
 
 
 class ChessEventEventOption(ChessEventImporterOption):
@@ -69,7 +69,7 @@ class ChessEventEventOption(ChessEventImporterOption):
     def get_default_value(self, tournament: Tournament | None = None) -> Any:
         if not tournament:
             return None
-        return get_data(tournament.plugin_data, 'chessevent_event_id', None)
+        return ChessEventUtils.get_tournament_plugin_data(tournament).event_id
 
 
 class ChessEventTournamentOption(ChessEventImporterOption):
@@ -84,4 +84,4 @@ class ChessEventTournamentOption(ChessEventImporterOption):
     def get_default_value(self, tournament: Tournament | None = None) -> Any:
         if not tournament:
             return None
-        return get_data(tournament.plugin_data, 'chessevent_tournament_name', None)
+        return ChessEventUtils.get_tournament_plugin_data(tournament).tournament_name

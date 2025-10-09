@@ -230,6 +230,7 @@ class TournamentAdminController(BaseEventAdminController):
             three_points_for_a_win: bool | None = None
             pab_value: int | None = None
             override_unrated_rapid_blitz: bool | None = None
+            stored_plugin_data: dict[str, dict[str, Any]] = {}
             match action:
                 case 'update' | 'clone':
                     admin_tournament = web_context.get_admin_tournament()
@@ -266,6 +267,7 @@ class TournamentAdminController(BaseEventAdminController):
                     override_unrated_rapid_blitz = (
                         stored_tournament.override_unrated_rapid_blitz
                     )
+                    stored_plugin_data = stored_tournament.plugin_data
                 case 'create':
                     rounds = 1
                     rating = TournamentRating.STANDARD.value
@@ -282,16 +284,15 @@ class TournamentAdminController(BaseEventAdminController):
                     tie_breaks.pop(0).id if tie_breaks else None for __ in range(3)
                 )
 
-            per_plugin_form_data = plugin_manager.hook.get_tournament_form_data(
-                event=admin_event,
-                tournament=web_context.admin_tournament,
-                action=action,
-            )
-            plugin_form_data = {
-                key: value
-                for data in per_plugin_form_data
-                for key, value in data.items()
-            }
+            plugin_form_data: dict[str, str] = {}
+            for (
+                plugin_id,
+                plugin_data_class,
+            ) in Tournament.plugin_data_class_by_plugin_id().items():
+                plugin_form_data |= plugin_data_class.from_stored_value(
+                    stored_plugin_data.get(plugin_id, {})
+                ).to_form_data(action=action)
+
             data: dict[str, str] = {
                 'start': WebContext.value_to_datetime_form_data(start),
                 'stop': WebContext.value_to_datetime_form_data(stop),
@@ -439,6 +440,7 @@ class TournamentAdminController(BaseEventAdminController):
         start: float | None = None
         stop: float | None = None
         rounds = WebContext.form_data_to_int(data, field := 'rounds') or 1
+        tournament: Tournament | None = None
         if rounds < 1:
             errors[field] = _('A positive integer is expected.')
         elif action == 'update':
@@ -574,20 +576,26 @@ class TournamentAdminController(BaseEventAdminController):
         )
         pab_value = WebContext.form_data_to_int(data, 'pab_value')
 
-        # Have plugins validate their fields and return private plugin data
-        per_plugin_tournament_data = (
-            plugin_manager.hook.get_validated_tournament_form_fields(
-                action=action,
-                tournament=web_context.admin_tournament,
-                data=data,
-                errors=errors,
-            )
+        # Validate
+        plugin_manager.hook.validate_tournament_form_fields(
+            action=action,
+            tournament=web_context.admin_tournament,
+            data=data,
+            errors=errors,
         )
-        plugin_data = {
-            key: value
-            for data in per_plugin_tournament_data
-            for key, value in data.items()
-        }
+
+        plugin_data: dict[str, dict[str, Any]] = {}
+        for (
+            plugin_id,
+            plugin_data_class,
+        ) in Tournament.plugin_data_class_by_plugin_id().items():
+            previous_object = None
+            if tournament is not None:
+                previous_object = tournament.plugin_data.get(plugin_id)
+
+            plugin_data[plugin_id] = plugin_data_class.from_form_data(
+                data, action=action, previous_object=previous_object
+            ).to_stored_value()
 
         stored_tournament = StoredTournament(
             id=web_context.admin_tournament.id
