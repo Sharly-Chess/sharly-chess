@@ -268,9 +268,6 @@ class ChessResultsSession(Session):
 
         # --- Pairings / Results ---
         ppair = ET.SubElement(root, 'playerpairings')
-        point_values: dict[Result, float] = {
-            Result.PAIRING_ALLOCATED_BYE: tournament.pab_value.point_value
-        }
         for round_ in range(1, tournament.current_round + 1):
             tournament.set_for_round(round_)
             tournament.compute_player_ranks(after_round=round_)
@@ -291,9 +288,13 @@ class ChessResultsSession(Session):
                             else -1
                         ),
                         'reswhite': str(
-                            board.white_pairing.result.points(point_values) or ''
+                            board.white_pairing.result.points(tournament.point_values)
+                            or ''
                         ),
-                        'resblack': str(board.black_pairing.result.points() or '')
+                        'resblack': str(
+                            board.black_pairing.result.points(tournament.point_values)
+                            or ''
+                        )
                         if board.black_player
                         else '',
                         'forfeit': 'K'
@@ -322,7 +323,7 @@ class ChessResultsSession(Session):
                         'board': '1',
                         'whiteno': str(player.pairing_number),
                         'blackno': '-2',
-                        'reswhite': str(result.points() or ''),
+                        'reswhite': str(result.points(tournament.point_values) or ''),
                         'resblack': '',
                         'forfeit': '',
                     },
@@ -385,29 +386,44 @@ class ChessResultsSession(Session):
 
         assert creator_id is not None
         xml_data = self.build_tournament_xml(self.tournament, sid, tnr, creator_id)
-        print(xml_data)
+        logger.debug(xml_data)
 
         xml_sanitized = xml_data.replace('<', '{').replace('>', '}')
         url = f'{CHESS_RESULTS_URL}?key1=UPLOAD'
         response = requests.post(url, data={'xml': xml_sanitized})
         response.raise_for_status()
-        print(response.text)
 
-        with EventDatabase(
-            self.tournament.event.uniq_id, write=True, check_dirty_tournaments=False
-        ) as event_database:
-            now = time.time()
-            event_database.execute(
-                """
-                UPDATE tournament
-                SET plugin_data = json_set(
-                        plugin_data,
-                        '$.chess_results.last_upload', ?
-                    ),
-                    last_update = ?
-                WHERE id = ?
-                """,
-                (now, now, self.tournament.id),
-            )
+        root = ET.fromstring(response.text)
+        result = root.find('result')
+        logger.debug(response.text)
+        if result is not None and result.attrib.get('status') == 'OK':
+            with EventDatabase(
+                self.tournament.event.uniq_id, write=True, check_dirty_tournaments=False
+            ) as event_database:
+                now = time.time()
+                event_database.execute(
+                    """
+                    UPDATE tournament
+                    SET plugin_data = json_set(
+                            plugin_data,
+                            '$.chess_results.last_upload', ?
+                        ),
+                        last_update = ?
+                    WHERE id = ?
+                    """,
+                    (now, now, self.tournament.id),
+                )
 
-        self.report_success(_('Results upload OK'))
+            self.report_success(_('Results upload OK'))
+            return
+
+        msg = root.find('.//message')
+
+        if msg is not None:
+            error_text = msg.attrib.get('Text', '')
+            if 'MsgNo:28' in error_text:
+                self.report_error(_('Tournament finished, upload no longer possible.'))
+            else:
+                self.report_error(error_text)
+        else:
+            self.report_error(_('Unknown error when uploading results.'))
