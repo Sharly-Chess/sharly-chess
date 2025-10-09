@@ -16,7 +16,10 @@ from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredTournament, StoredEvent
 from plugins.chess_results import PLUGIN_NAME
 from plugins.chess_results.chess_results_session import ChessResultsSession
-from plugins.chess_results.utils import ChessResultsUtils
+from plugins.chess_results.utils import (
+    ChessResultsTournamentPluginData,
+    ChessResultsUtils,
+)
 from plugins.utils import PluginUtils
 from web.channels import channels_plugin
 
@@ -104,7 +107,17 @@ class ChessResultsBackgroundUploader:
     def chess_results_last_upload(
         cls, tournament: Tournament | StoredTournament
     ) -> float:
-        return get_data(tournament.plugin_data, 'last_upload', 0.0)
+        plugin_data: ChessResultsTournamentPluginData
+        if isinstance(tournament, Tournament):
+            assert isinstance(tournament, Tournament)
+            plugin_data = ChessResultsUtils.get_tournament_plugin_data(tournament)
+        else:
+            raw_plugin_data = tournament.plugin_data[PLUGIN_NAME] or {}
+            plugin_data = ChessResultsTournamentPluginData.from_stored_value(
+                raw_plugin_data
+            )
+
+        return plugin_data.last_upload or 0.0
 
     @classmethod
     def chess_results_upload_needed(

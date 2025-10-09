@@ -1,10 +1,13 @@
+from dataclasses import dataclass
 from datetime import datetime
 from functools import partial
+from typing import Any, Self
 
 from data.event import Event
 from data.tournament import Tournament
 from plugins.chess_results import PLUGIN_NAME
-from plugins.utils import PluginUtils
+from plugins.utils import PluginData, PluginUtils
+from web.controllers.base_controller import WebContext
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
@@ -14,16 +17,127 @@ CHESS_RESULTS_EPOCH = datetime(2000, 1, 1)
 
 
 class ChessResultsUtils:
-    @staticmethod
-    def resolve_auto_upload(tournament: Tournament) -> bool:
-        if (auto_upload := get_data(tournament.plugin_data, 'auto_upload')) is not None:
-            return auto_upload
-        return get_data(tournament.event.plugin_data, 'auto_upload')
+    @classmethod
+    def resolve_auto_upload(cls, tournament: Tournament) -> bool:
+        tournament_plugin_data = cls.get_tournament_plugin_data(tournament)
+        if tournament_plugin_data.auto_upload is not None:
+            return tournament_plugin_data.auto_upload
+        event_plugin_data = cls.get_event_plugin_data(tournament.event)
+        return event_plugin_data.auto_upload
+
+    @classmethod
+    def resolve_auto_upload_delay(cls, event: Event) -> int:
+        plugin_data = cls.get_event_plugin_data(event)
+        if plugin_data.auto_upload_delay is not None:
+            return plugin_data.auto_upload_delay
+        return CHESS_RESULTS_DEFAULT_UPLOAD_DELAY
 
     @staticmethod
-    def resolve_auto_upload_delay(event: Event) -> int:
-        if (
-            auto_upload_delay := get_data(event.plugin_data, 'auto_upload_delay')
-        ) is not None:
-            return auto_upload_delay
-        return CHESS_RESULTS_DEFAULT_UPLOAD_DELAY
+    def get_event_plugin_data(event: Event) -> 'ChessResultsEventPluginData':
+        plugin_data = event.plugin_data[PLUGIN_NAME]
+        assert isinstance(plugin_data, ChessResultsEventPluginData)
+        return plugin_data
+
+    @staticmethod
+    def get_tournament_plugin_data(
+        tournament: Tournament,
+    ) -> 'ChessResultsTournamentPluginData':
+        plugin_data = tournament.plugin_data[PLUGIN_NAME]
+        assert isinstance(plugin_data, ChessResultsTournamentPluginData)
+        return plugin_data
+
+
+@dataclass
+class ChessResultsEventPluginData(PluginData):
+    auto_upload: bool
+    auto_upload_delay: int
+
+    @classmethod
+    def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
+        return cls(
+            auto_upload=stored_value.get('auto_upload') or False,
+            auto_upload_delay=stored_value.get(
+                'auto_upload_delay', CHESS_RESULTS_DEFAULT_UPLOAD_DELAY
+            ),
+        )
+
+    def to_stored_value(self) -> dict[str, Any]:
+        return {
+            'auto_upload': self.auto_upload,
+            'auto_upload_delay': self.auto_upload_delay,
+        }
+
+    @classmethod
+    def from_form_data(
+        cls,
+        data: dict[str, str],
+        previous_object: Self | None = None,
+        action: str | None = None,
+    ) -> Self:
+        return cls(
+            auto_upload=WebContext.form_data_to_bool(data, 'auto_upload'),
+            auto_upload_delay=WebContext.form_data_to_int(data, 'auto_upload_delay')
+            or CHESS_RESULTS_DEFAULT_UPLOAD_DELAY,
+        )
+
+    def to_form_data(self, action: str | None = None) -> dict[str, str]:
+        return WebContext.values_dict_to_form_data(
+            {
+                'auto_upload': self.auto_upload,
+                'auto_upload_delay': self.auto_upload_delay,
+            }
+        )
+
+
+@dataclass
+class ChessResultsTournamentPluginData(PluginData):
+    auto_upload: bool | None
+    tnr: str | None
+    creator_id: str | None
+    last_upload: float | None
+
+    @classmethod
+    def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
+        return cls(
+            tnr=stored_value.get('tnr', None),
+            creator_id=stored_value.get('creator_id', None),
+            auto_upload=stored_value.get('auto_upload', None),
+            last_upload=stored_value.get('last_upload', 0.0),
+        )
+
+    def to_stored_value(self) -> dict[str, Any]:
+        return {
+            'tnr': self.tnr,
+            'creator_id': self.creator_id,
+            'auto_upload': self.auto_upload,
+            'last_upload': self.last_upload,
+        }
+
+    @classmethod
+    def from_form_data(
+        cls,
+        data: dict[str, str],
+        previous_object: Self | None = None,
+        action: str | None = None,
+    ) -> Self:
+        tnr: str | None = None
+        creator_id: str | None = None
+        last_upload: float | None = None
+        if previous_object and action != 'clone':
+            tnr = previous_object.tnr
+            creator_id = previous_object.creator_id
+            last_upload = previous_object.last_upload
+
+        return cls(
+            tnr=tnr,
+            creator_id=creator_id,
+            last_upload=last_upload,
+            auto_upload=WebContext.form_data_to_bool_or_none(data, 'auto_upload'),
+        )
+
+    def to_form_data(self, action: str | None = None) -> dict[str, str]:
+        return WebContext.values_dict_to_form_data(
+            {
+                'auto_upload': self.auto_upload,
+            }
+        )

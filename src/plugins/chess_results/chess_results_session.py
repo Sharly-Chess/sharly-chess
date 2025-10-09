@@ -20,6 +20,7 @@ from plugins.chess_results.chess_results_mappers import (
     ChessResultsPlayerGender,
     ChessResultsTieBreak,
 )
+from plugins.chess_results.utils import ChessResultsUtils
 from plugins.utils import PluginUtils
 from utils.enum import Result
 
@@ -118,7 +119,7 @@ class ChessResultsSession(Session):
             raise RuntimeError('GETKEY failed: ' + resp.text)
 
     def build_tournament_xml(
-        self, tournament: Tournament, sid: str, tnr: int, creator_id: str
+        self, tournament: Tournament, sid: str, tnr: str, creator_id: str
     ) -> str:
         """
         Build Chess-Results upload XML from a Sharly Chess Rournament.
@@ -352,8 +353,9 @@ class ChessResultsSession(Session):
         )
 
         sid = self._chess_results_init()
-        tnr = get_data(self.tournament.plugin_data, 'tnr')
-        creator_id = get_data(self.tournament.plugin_data, 'creator_id')
+        plugin_data = ChessResultsUtils.get_tournament_plugin_data(self.tournament)
+        tnr = plugin_data.tnr
+        creator_id = plugin_data.creator_id
         if not tnr:
             # First upload, create the tournament on the site
             creator_id = str(uuid.uuid4())
@@ -363,8 +365,15 @@ class ChessResultsSession(Session):
                 self.tournament.event.uniq_id, write=True
             ) as event_database:
                 event_database.execute(
-                    'UPDATE `tournament` SET `chess_results_tnr` = ?, '
-                    '`chess_results_creator_id` = ? WHERE `id` = ?',
+                    """
+                    UPDATE tournament
+                    SET plugin_data = json_set(
+                            plugin_data,
+                            '$.chess_results.tnr', ?,
+                            '$.chess_results.creator_id', ?
+                        )
+                    WHERE id = ?
+                    """,
                     (
                         tnr,
                         creator_id,
@@ -372,6 +381,7 @@ class ChessResultsSession(Session):
                     ),
                 )
 
+        assert creator_id is not None
         xml_data = self.build_tournament_xml(self.tournament, sid, tnr, creator_id)
         print(xml_data)
 
@@ -384,13 +394,16 @@ class ChessResultsSession(Session):
         # with EventDatabase(self.tournament.event.uniq_id, write=True) as event_database:
         #     now = time.time()
         #     event_database.execute(
-        #         'UPDATE `tournament` SET `chess_results_last_upload` = ?, '
-        #         '`last_update` = ? WHERE `id` = ?',
-        #         (
-        #             now,
-        #             now,
-        #             self.tournament.id,
-        #         ),
+        #         """
+        #         UPDATE tournament
+        #         SET plugin_data = json_set(
+        #                 plugin_data,
+        #                 '$.chess_results.last_upload', ?
+        #             ),
+        #             last_update = ?
+        #         WHERE id = ?
+        #         """,
+        #         (now, now, self.tournament.id),
         #     )
 
         self.report_success(_('Results upload OK'))

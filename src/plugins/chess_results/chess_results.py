@@ -1,10 +1,8 @@
-from types import ModuleType
-from typing import Any, TYPE_CHECKING, Optional, override
+from typing import Any, TYPE_CHECKING, override
 
 from packaging.version import Version
 
 from common.i18n import _
-from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.chess_results.chess_results_background_uploader import (
     EventLoader,
     ChessResultsBackgroundUploader,
@@ -12,17 +10,18 @@ from plugins.chess_results.chess_results_background_uploader import (
 from plugins.chess_results.utils import (
     CHESS_RESULTS_DEFAULT_UPLOAD_DELAY,
     CHESS_RESULTS_MIN_UPLOAD_DELAY,
+    ChessResultsEventPluginData,
+    ChessResultsTournamentPluginData,
     ChessResultsUtils,
 )
-from database.sqlite.event.event_database import EventDatabase
-from plugins.chess_results import PLUGIN_NAME, migrations
+from plugins.chess_results import PLUGIN_NAME
 from plugins.chess_results.chess_results_event_controller import (
     ChessResultsAdminEventController,
 )
 from plugins.hookspec import hookimpl
-from plugins.migration import PluginMigrationManager
 from plugins.utils import (
     Plugin,
+    PluginData,
 )
 
 from web.controllers.base_controller import BaseController, WebContext
@@ -62,20 +61,9 @@ class ChessResultsPlugin(Plugin):
     def is_state_editable(self) -> bool:
         return True
 
-    @override
-    @property
-    def base_migration_module(self) -> ModuleType:
-        return migrations
-
     # ---------------------------------------------------------------------------------
     # Initialisation and configuration
     # ---------------------------------------------------------------------------------
-
-    @hookimpl
-    def get_event_migration_manager(
-        self, event_database: EventDatabase
-    ) -> PluginMigrationManager:
-        return self.get_migration_manager(event_database)
 
     @property
     def controllers(self) -> list[type[BaseController]]:
@@ -92,6 +80,10 @@ class ChessResultsPlugin(Plugin):
     # ---------------------------------------------------------------------------------
     # Events
     # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def get_event_plugin_data_class(self) -> tuple[str, type[PluginData]]:
+        return self.id, ChessResultsEventPluginData
 
     @hookimpl
     def augment_event_after_db_fetch(
@@ -119,31 +111,13 @@ class ChessResultsPlugin(Plugin):
         return '/chess_results_event_form_fields.html'
 
     @hookimpl
-    def get_event_form_data(self, event: Optional['Event']) -> dict[str, Any]:
-        if not event:
-            return {
-                'auto_upload': 'off',
-                'auto_upload_delay': '',
-            }
-
-        return {
-            'auto_upload': WebContext.value_to_form_data(
-                bool(self.get_data(event.plugin_data, 'auto_upload', False))
-            ),
-            'auto_upload_delay': WebContext.value_to_form_data(
-                self.get_data(event.plugin_data, 'auto_upload_delay', '')
-            ),
-        }
-
-    @hookimpl
-    def get_validated_event_form_fields(
+    def validate_event_form_fields(
         self,
         action: str,
         event: 'Event | None',
         data: dict[str, str],
         errors: dict[str, str],
-    ) -> dict[str, Any]:
-        auto_upload = WebContext.form_data_to_bool(data, 'auto_upload')
+    ):
         auto_upload_delay = WebContext.form_data_to_int(
             data, field := 'auto_upload_delay'
         )
@@ -152,20 +126,13 @@ class ChessResultsPlugin(Plugin):
                 'The delay must be at least {min_delay} minutes to avoid overloading the ChessResults server.'
             ).format(min_delay=CHESS_RESULTS_MIN_UPLOAD_DELAY)
 
-        # Keep data other than these two fields
-        previous_data = event.plugin_data.get(self.id, {}) if event else {}
-
-        return {
-            self.id: previous_data
-            | {
-                'auto_upload': auto_upload or False,
-                'auto_upload_delay': auto_upload_delay,
-            }
-        }
-
     # ---------------------------------------------------------------------------------
     # Tournaments
     # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def get_tournament_plugin_data_class(self) -> tuple[str, type[PluginData]]:
+        return self.id, ChessResultsTournamentPluginData
 
     @hookimpl
     def on_tournament_data_updated(
@@ -183,30 +150,6 @@ class ChessResultsPlugin(Plugin):
         ChessResultsBackgroundUploader.schedule_upload(tournament)
 
     @hookimpl
-    def augment_tournament_after_db_fetch(
-        self, stored_tournament: 'StoredTournament', row: dict[str, Any]
-    ):
-        stored_tournament.plugin_data[self.id] = {
-            'tnr': row.get('chess_results_tnr', ''),
-            'creator_id': row.get('chess_results_creator_id', None),
-            'auto_upload': SQLiteDatabase.load_bool_or_none_from_database_field(
-                row.get('chess_results_auto_upload', None)
-            ),
-            'last_upload': row.get('chess_results_last_upload', 0.0),
-        }
-
-    @hookimpl
-    def tournament_data_for_db_write(
-        self, stored_tournament: 'StoredTournament'
-    ) -> dict[str, Any]:
-        data = stored_tournament.plugin_data
-        return {
-            'chess_results_tnr': self.get_data(data, 'tnr', None),
-            'chess_results_creator_id': self.get_data(data, 'creator_id', None),
-            'chess_results_auto_upload': self.get_data(data, 'auto_upload', None),
-        }
-
-    @hookimpl
     def get_tournament_form_fields_template_and_data(
         self, event: 'Event', tournament: 'Tournament | None'
     ) -> tuple[str, dict[str, Any]]:
@@ -216,7 +159,7 @@ class ChessResultsPlugin(Plugin):
         } | {
             WebContext.value_to_form_data(True): _('Enabled'),
         }
-        event_auto_upload = bool(self.get_data(event.plugin_data, 'auto_upload', False))
+        event_auto_upload = ChessResultsUtils.get_event_plugin_data(event).auto_upload
         auto_upload_options[''] = _("Use Event's default - {option}").format(
             option=auto_upload_options[WebContext.value_to_form_data(event_auto_upload)]
         )
@@ -227,44 +170,6 @@ class ChessResultsPlugin(Plugin):
                 'auto_upload_options': auto_upload_options,
             },
         )
-
-    @hookimpl
-    def get_tournament_form_data(
-        self,
-        event: 'Event',
-        tournament: 'Tournament | None',
-        action: str,
-    ) -> dict[str, Any]:
-        if not tournament:
-            return {
-                'auto_upload': '',
-            }
-
-        return {
-            'auto_upload': self.get_data(tournament.plugin_data, 'auto_upload', None),
-        }
-
-    @hookimpl
-    def get_validated_tournament_form_fields(
-        self,
-        action: str,
-        tournament: 'Tournament | None',
-        data: dict[str, str],
-        errors: dict[str, str],
-    ) -> dict[str, Any]:
-        auto_upload = WebContext.form_data_to_bool_or_none(data, 'auto_upload')
-        # Keep data other than these two fields (such as file upload times)
-        previous_data = tournament.plugin_data.get(self.id, {}) if tournament else {}
-
-        return {
-            self.id: previous_data
-            | {
-                'creator_id': ''
-                if action == 'clone'
-                else previous_data.get('creator_id', None),
-                'auto_upload': auto_upload,
-            }
-        }
 
     @hookimpl
     def get_tournament_card_block_template_and_data(self) -> tuple[str, dict[str, Any]]:
