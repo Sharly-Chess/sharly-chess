@@ -1,5 +1,6 @@
 from functools import partial
 from logging import Logger
+import time
 import uuid
 import xml.etree.ElementTree as ET
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
@@ -391,19 +392,19 @@ class ChessResultsSession(Session):
         response.raise_for_status()
         print(response.text)
 
-        # with EventDatabase(self.tournament.event.uniq_id, write=True) as event_database:
-        #     now = time.time()
-        #     event_database.execute(
-        #         """
-        #         UPDATE tournament
-        #         SET plugin_data = json_set(
-        #                 plugin_data,
-        #                 '$.chess_results.last_upload', ?
-        #             ),
-        #             last_update = ?
-        #         WHERE id = ?
-        #         """,
-        #         (now, now, self.tournament.id),
-        #     )
+        with EventDatabase(self.tournament.event.uniq_id, write=True) as event_database:
+            now = time.time()
+            event_database.execute(
+                """
+                UPDATE tournament
+                SET plugin_data = json_set(
+                        plugin_data,
+                        '$.chess_results.last_upload', ?
+                    ),
+                    last_update = ?
+                WHERE id = ?
+                """,
+                (now, now, self.tournament.id),
+            )
 
         self.report_success(_('Results upload OK'))
