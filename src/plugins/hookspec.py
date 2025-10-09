@@ -30,7 +30,6 @@ if TYPE_CHECKING:
     from database.sqlite.event.event_store import StoredPlayer
     from database.sqlite.event.event_database import EventDatabase
     from database.sqlite.event.event_store import (
-        BaseStoredEvent,
         StoredEvent,
         StoredTournament,
     )
@@ -182,14 +181,9 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def augment_event_after_db_fetch(
-        self, stored_event: 'BaseStoredEvent', row: dict[str, Any]
-    ):
-        """Add plugin specific data to the StoredEvent after all columns are fetched from the database"""
-
-    @hookspec
-    def event_data_for_db_write(self, stored_event: 'StoredEvent') -> dict[str, Any]:
-        """Provide addition column data for events when writing to the database"""
+    def get_event_plugin_data_class(self) -> tuple[str, type[PluginData]]:
+        """Get the data class to use to store plugin event values.
+        Also provide the ID of the plugin."""
 
     @hookspec
     def get_event_card_block_template(self) -> str:
@@ -204,14 +198,14 @@ class AppHookSpecs:
         """Provide form data for the additional event form fields"""
 
     @hookspec
-    def get_validated_event_form_fields(
+    def validate_event_form_fields(
         self,
         action: str,
         event: Optional['Event'],
         data: dict[str, str],
         errors: dict[str, str],
-    ) -> dict[str, Any]:
-        """Validate the additional event form fields and return as plugin data"""
+    ):
+        """Validate the additional event form fields"""
 
     @hookspec(firstresult=True)
     def get_default_prize_currency(self) -> str:
@@ -223,22 +217,15 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
+    def get_tournament_plugin_data_class(self) -> tuple[str, type[PluginData]]:
+        """Get the data class to use to store plugin tournament values.
+        Also provide the ID of the plugin."""
+
+    @hookspec
     def on_tournament_data_updated(
         self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
     ):
         """Called when the (publishable) data of a tournament is updated"""
-
-    @hookspec
-    def augment_tournament_after_db_fetch(
-        self, stored_tournament: 'StoredTournament', row: dict[str, Any]
-    ):
-        """Add plugin specific data to a StoredTournament after all columns are fetched from the database"""
-
-    @hookspec
-    def tournament_data_for_db_write(
-        self, stored_tournament: 'StoredTournament'
-    ) -> dict[str, Any]:
-        """Provide addition column data for tournaments when writing to the database"""
 
     @hookspec
     def get_tournament_form_fields_template_and_data(
@@ -247,23 +234,14 @@ class AppHookSpecs:
         """Provide a path to the template containing additional tournament form fields"""
 
     @hookspec
-    def get_tournament_form_data(
-        self,
-        event: 'Event',
-        tournament: 'Tournament | None',
-        action: str,
-    ) -> dict[str, Any]:
-        """Provide form data for the additional tournament form fields"""
-
-    @hookspec
-    def get_validated_tournament_form_fields(
+    def validate_tournament_form_fields(
         self,
         action: str,
         tournament: 'Tournament',
         data: dict[str, str],
         errors: dict[str, str],
-    ) -> dict[str, Any]:
-        """Validate the additional tournament form fields and return as plugin data"""
+    ):
+        """Validate the additional tournament form fields"""
 
     @hookspec
     def get_tournament_card_block_template_and_data(self) -> tuple[str, dict[str, Any]]:

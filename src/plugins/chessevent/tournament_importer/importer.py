@@ -29,6 +29,7 @@ from database.sqlite.event.event_store import (
 )
 from plugins import ffe
 from plugins.chessevent import PLUGIN_NAME, TMP_DIR
+from plugins.chessevent.utils import ChessEventTournamentPluginData, ChessEventUtils
 from plugins.chessevent.chessevent_session import (
     ChessEventSession,
     ChessEventTournamentRequestData,
@@ -51,7 +52,6 @@ from plugins.chessevent.tournament_importer.mappers import (
     ChessEventTitle,
     ChessEventRatingType,
 )
-from plugins.chessevent.utils import get_data
 from plugins.ffe.ffe import FfePlugin
 from plugins.ffe.utils import FfePlayerPluginData
 from utils.enum import TournamentRating, Result
@@ -99,11 +99,11 @@ class ChessEventTournamentImporter(TournamentImporter):
     def _resolve_request_data(self, event: Event) -> ChessEventTournamentRequestData:
         event_id, user_id, password, tournament_name = self.get_option_values()
         if not user_id:
-            user_id = get_data(event.plugin_data, 'chessevent_user_id')
+            user_id = ChessEventUtils.get_event_plugin_data(event).user
         if not password:
-            password = get_data(event.plugin_data, 'chessevent_password')
+            password = ChessEventUtils.get_event_plugin_data(event).password
         if not event_id:
-            event_id = get_data(event.plugin_data, 'chessevent_event_id')
+            event_id = ChessEventUtils.get_event_plugin_data(event).event_id
         return ChessEventTournamentRequestData(
             event_id=event_id,
             user_id=user_id,
@@ -141,17 +141,12 @@ class ChessEventTournamentImporter(TournamentImporter):
             event_option,
             tournament_option,
         ) = self.options
-        if not user_option.value and not get_data(
-            event.plugin_data, 'chessevent_user_id'
-        ):
+        plugin_data = ChessEventUtils.get_event_plugin_data(event)
+        if not user_option.value and not plugin_data.user:
             raise OptionError(_('A value is expected.'), user_option)
-        if not password_option.value and not get_data(
-            event.plugin_data, 'chessevent_password'
-        ):
+        if not password_option.value and not plugin_data.password:
             raise OptionError(_('A value is expected.'), password_option)
-        if not event_option.value and not get_data(
-            event.plugin_data, 'chessevent_event_id'
-        ):
+        if not event_option.value and not plugin_data.event_id:
             raise OptionError(_('A value is expected.'), event_option)
         if not tournament_option.value:
             raise OptionError(_('A value is expected.'), tournament_option)
@@ -178,14 +173,14 @@ class ChessEventTournamentImporter(TournamentImporter):
         stored_tournament = self._read_chessevent_tournament(
             tournament, stored_tournament
         )
-        stored_tournament.plugin_data[PLUGIN_NAME] = {
-            'chessevent_event_id': request_data.event_id,
-            'chessevent_user_id': request_data.user_id,
-            'chessevent_password': request_data.password,
-            'chessevent_tournament_name': request_data.tournament_name,
-            'chessevent_last_sync': time.time(),
-            'chessevent_status': SuccessChessEventStatus().id,
-        }
+        stored_tournament.plugin_data[PLUGIN_NAME] = ChessEventTournamentPluginData(
+            user=request_data.user_id,
+            password=request_data.password,
+            event_id=request_data.event_id,
+            tournament_name=request_data.tournament_name,
+            status=SuccessChessEventStatus().id,
+            last_sync=time.time(),
+        ).to_stored_value()
         stored_players = [
             self._read_chessevent_player(player, player_id)
             for player_id, player in enumerate(tournament.players)

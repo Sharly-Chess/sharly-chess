@@ -369,6 +369,7 @@ class IndexAdminController(BaseAdminController):
         message_color: str | None = None
         message_background_color: str | None = None
         prize_currency: str | None = None
+        stored_plugin_data: dict[str, dict[str, Any]] = {}
         match action:
             case 'update' | 'clone':
                 if admin_event is None:
@@ -390,6 +391,7 @@ class IndexAdminController(BaseAdminController):
                 override_unrated_rapid_blitz = stored_event.override_unrated_rapid_blitz
                 three_points_for_a_win = stored_event.three_points_for_a_win
                 pab_value = stored_event.pab_value
+                stored_plugin_data = stored_event.plugin_data
             case 'create':
                 sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
                 public = False
@@ -413,12 +415,14 @@ class IndexAdminController(BaseAdminController):
             case _:
                 raise ValueError(f'action=[{action}]')
 
-        per_plugin_form_data = plugin_manager.hook.get_event_form_data(
-            event=admin_event
-        )
-        plugin_form_data = {
-            key: value for data in per_plugin_form_data for key, value in data.items()
-        }
+        plugin_form_data: dict[str, str] = {}
+        for (
+            plugin_id,
+            plugin_data_class,
+        ) in Event.plugin_data_class_by_plugin_id().items():
+            plugin_form_data |= plugin_data_class.from_stored_value(
+                stored_plugin_data.get(plugin_id, {})
+            ).to_form_data()
 
         return {
             'uniq_id': WebContext.value_to_form_data(uniq_id),
@@ -585,16 +589,12 @@ class IndexAdminController(BaseAdminController):
         )
         pab_value = WebContext.form_data_to_int(data, 'pab_value') or Result.WIN.value
 
-        # Have plugins validate their fields and return private plugin data
-        per_plugin_tournament_data = (
-            plugin_manager.hook.get_validated_event_form_fields(
-                action=action, event=admin_event, data=data, errors=errors
-            )
+        plugin_manager.hook.validate_event_form_fields(
+            action=action, event=admin_event, data=data, errors=errors
         )
-        plugin_data = {
-            key: value
-            for data in per_plugin_tournament_data
-            for key, value in data.items()
+        plugin_data: dict[str, dict[str, Any]] = {
+            plugin_id: plugin_data_class.from_form_data(data).to_stored_value()
+            for plugin_id, plugin_data_class in Event.plugin_data_class_by_plugin_id().items()
         }
 
         assert start is not None
