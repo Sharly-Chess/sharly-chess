@@ -1,0 +1,207 @@
+{% import '/common/macros.j2' as macros with context %}
+
+<div
+    id="nav-{{nav_id}}-wrapper"
+    class="w-100"
+    {% if swap_oob %}
+        hx-swap-oob="true"
+    {% endif %}
+    {% if nav_tab.refresh_trigger_event %}
+        hx-trigger="{{ nav_tab.refresh_trigger_event }}"
+        hx-get="{{ nav_tab.refresh_url }}"
+    {% endif %}
+>
+    {% if 'submenu' in nav_tab %}
+        {# Dropdown for compact mode #}
+        {% with active=(admin_event_tab in nav_tab.submenu.keys()) %}
+            <div class="dropend compact-only w-100">
+                <span class="sidebar-tooltip" {{ macros.tooltip_attributes('info', nav_tab.title, 'right') }}>
+                    <button
+                        class="nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {% if active %}active{% endif %}"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        {% if nav_tab.disabled %}
+                            disabled
+                        {% endif %}
+                        aria-expanded="false"
+                    >
+                        <div class="d-flex align-items-center">
+                            {% if nav_tab.icon_class %}
+                                <i class="{{ nav_tab.icon_class }}"></i>
+                            {% endif %}
+                            {% if nav_tab.has_error %}
+                                <span
+                                    class="nav-icon-badge rounded-circle bg-danger mb-1"
+                                    style="font-size: 15px;"
+                                >
+                                    <i class="bi bi-exclamation"></i>
+                                </span>
+                            {% endif %}
+                            <i class="bi bi-chevron-compact-right px-0"></i>
+                        </div>
+                    </button>
+                    <ul class="dropdown-menu">
+                        {% for sub_nav_id, sub_nav_tab in nav_tab.submenu.items() %}
+                            {% if sub_nav_tab.separator %}
+                                <li class="dropdown-divider"></li>
+                            {% endif %}
+                            <li>
+                                <button
+                                    class="dropdown-item d-flex align-items-center {% if sub_nav_id == admin_event_tab %}active{% endif %}"
+                                    {% if 'modal' in sub_nav_tab %}
+                                        hx-get="{{ url_for(sub_nav_tab.modal, action=nav_tab.action, event_uniq_id=admin_event.uniq_id) }}"
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal-wrapper"
+                                    {% else %}
+                                        hx-get="{{ url_for(sub_nav_id, event_uniq_id=admin_event.uniq_id) }}"
+                                        hx-target="body"
+                                        hx-push-url="true"
+                                        type="button"
+                                        hx-indicator="#please-wait"
+                                    {% endif %}
+                                    {% if sub_nav_tab.disabled %}
+                                        disabled
+                                    {% endif %}
+                                >
+                                    {% if nav_tab.icon_class %}
+                                        <i class="{{ sub_nav_tab.icon_class }} pe-1"></i>
+                                    {% endif %}
+                                    {{ sub_nav_tab.title }}
+                                    {% if sub_nav_tab.has_error %}
+                                        <span
+                                            class="nav-icon-badge rounded-circle bg-danger ms-2 mb-1"
+                                            style="font-size: 15px;"
+                                        >
+                                            <i class="bi bi-exclamation"></i>
+                                        </span>
+                                    {% endif %}
+                                </button>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </span>
+            </div>
+        {% endwith %}
+
+        {# Expanding menu for expanded mode #}
+        {% with active=(admin_event_tab == nav_id) %}
+            <button
+                class="expanded-only btn-toggle nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %}"
+                id="nav-{{ nav_id }}-tab"
+                data-testid="nav-{{ nav_id }}-tab"
+                data-bs-toggle="collapse"
+                data-bs-target="#{{ nav_id }}-collapse"
+            >
+                <div class="d-flex align-items-center w-100">
+                    {% if nav_tab.icon_class %}
+                        <i class="{{ nav_tab.icon_class }}"></i>
+                    {% endif %}
+                    <span class="expanded-only">{{ nav_tab.title }}</span>
+                    {% if nav_tab.has_error %}
+                        <span
+                            class="nav-icon-badge rounded-circle bg-danger ms-2 mb-1"
+                            style="font-size: 15px;"
+                        >
+                            <i class="bi bi-exclamation"></i>
+                        </span>
+                    {% endif %}
+                    <i class="dropdown-arrow bi bi-chevron-right"></i>
+                </div>
+            </button>
+            <div class="collapse w-100 expanded-only" id="{{ nav_id }}-collapse">
+                {% for sub_nav_id, sub_nav in nav_tab.submenu.items() %}
+                    {% if sub_nav.separator %}
+                        <div class="sidebar-divider"></div>
+                    {% endif %}
+                    <button
+                        class="nav-link text-start d-flex align-items-center {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
+                        id="nav-{{ sub_nav_id }}-tab"
+                        data-testid="nav-{{ sub_nav_id }}-tab"
+                        {% if 'modal' in sub_nav %}
+                            hx-get="{{ url_for(sub_nav.modal, action=nav_tab.action, event_uniq_id=admin_event.uniq_id) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                        {% else %}
+                            hx-get="{{ url_for(sub_nav_id, event_uniq_id=admin_event.uniq_id) }}"
+                            hx-target="body"
+                            hx-push-url="true"
+                            type="button"
+                            hx-indicator="#please-wait"
+                        {% endif %}
+                        {% if sub_nav.disabled %}
+                            disabled
+                        {% endif %}
+                    >
+                        {% if nav_tab.icon_class %}
+                            <i class="indented {{ sub_nav.icon_class }}"></i>
+                        {% endif %}
+                        {% if nav_tab.icon_class %}
+                            <img
+                                src="{{ url_for('static', file_path='/images/ffe.png') }}?version={{ sharly_chess_config.version }}"
+                                style="height: 1.2em"
+                                class="pe-1"
+                            />
+                        {% endif %}
+                        {{ sub_nav.title }}
+                        {% if sub_nav.has_error %}
+                            <span
+                                class="nav-icon-badge rounded-circle bg-danger ms-2 mb-1"
+                                style="font-size: 15px;"
+                            >
+                                <i class="bi bi-exclamation"></i>
+                            </span>
+                        {% endif %}
+                    </button>
+                {% endfor %}
+            </div>
+        {% endwith %}
+    {% elif 'modal' in nav_tab %}
+        <button
+            id="nav-{{ nav_id }}-tab"
+            data-testid="nav-{{ nav_id }}-tab"
+            class="nav-link text-start me-1 position-relative align-items-center"
+            hx-get="{{ url_for(nav_tab.modal, action=nav_tab.action, event_uniq_id=admin_event.uniq_id) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        >
+            {% if nav_tab.icon_class %}
+                <i class="{{ nav_tab.icon_class }}"></i>
+            {% endif %}
+            <span id="nav-{{ nav_id }}-tab-title" class=" expanded-only">{{ nav_tab.title }}</span>
+        </button>
+    {% else %}
+        {% with active=(admin_event_tab == nav_id) %}
+            <span class="sidebar-tooltip" {{ macros.tooltip_attributes('info', nav_tab.title, 'right') }}>
+                <button
+                    class="nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
+                    id="nav-{{ nav_id }}-tab"
+                    data-testid="nav-{{ nav_id }}-tab"
+                    hx-get="{{ url_for(nav_id, event_uniq_id=admin_event.uniq_id) }}"
+                    hx-target="body"
+                    hx-push-url="true"
+                    data-bs-toggle="tab"
+                    data-bs-target="#nav-{{ nav_tab.name }}"
+                    type="button"
+                    role="tab"
+                    aria-controls="nav-{{ nav_id }}"
+                    aria-selected="true"
+                    hx-indicator="#please-wait"
+                    {% if nav_tab.disabled %}
+                        disabled
+                    {% endif %}
+                >
+                    {% if nav_tab.icon_class %}
+                        <i class="{{ nav_tab.icon_class }}"></i>
+                    {% endif %}
+                    <span id="nav-{{ nav_id }}-tab-title" class=" expanded-only">{{ nav_tab.title }}</span>
+                </button>
+            </span>
+        {% endwith %}
+    {% endif %}
+</div>

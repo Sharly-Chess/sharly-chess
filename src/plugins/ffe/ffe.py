@@ -31,7 +31,11 @@ from data.tie_breaks.options import TieBreakOption
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
-from plugins.ffe.ffe_background_uploader import EventLoader, FfeBackgroundUploader
+from plugins.ffe.ffe_background_uploader import (
+    EventLoader,
+    FfeBackgroundUploader,
+    FfeUploadStatus,
+)
 from plugins.ffe.ffe_tournament_exporters import PapiTournamentExporter
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.ffe_tournament_importers import (
@@ -77,6 +81,7 @@ from plugins.hookspec import ExtraAdminColumn, hookimpl, ExtraColumn
 from plugins.migration import PluginMigrationManager
 from plugins.utils import (
     ExtraStatisticsSection,
+    NavUploadItem,
     Plugin,
     PluginUtils,
     PluginData,
@@ -723,10 +728,6 @@ class FfePlugin(Plugin):
         return '/ffe_tournament_card_action_menu_items.html'
 
     @hookimpl
-    def get_tournament_tab_action_menu_items_template(self) -> str:
-        return '/ffe_tournament_tab_action_menu_items.html'
-
-    @hookimpl
     def signal_tournament_set(
         self, tournament: 'Tournament', stored_tournament: 'StoredTournament'
     ) -> str | None:
@@ -762,6 +763,34 @@ class FfePlugin(Plugin):
         self, tournament: 'Tournament', result: Result
     ) -> str | None:
         return PapiConverter.check_result(result, tournament)
+
+    # ---------------------------------------------------------------------------------
+    # Upload
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def get_nav_upload_items(self, event: 'Event') -> Iterable[NavUploadItem]:
+        has_upload_error = False
+        statuses = FfeBackgroundUploader.upload_status_messages
+        tournaments = event.tournaments
+        for tournament in tournaments:
+            result = statuses.get(
+                FfeBackgroundUploader.result_id(event.uniq_id, tournament.id),
+                None,
+            )
+            if result and result.status == FfeUploadStatus.ERROR:
+                has_upload_error = True
+                break
+
+        return [
+            NavUploadItem(
+                key='ffe_upload',
+                title=_('FFE'),
+                icon_path='/images/ffe.png',
+                modal_route_name='ffe-upload-modal',
+                has_upload_error=has_upload_error,
+            )
+        ]
 
     # ---------------------------------------------------------------------------------
     # Printing

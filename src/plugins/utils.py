@@ -227,8 +227,11 @@ class ExtraStatisticsSection(NamedTuple):
     subtitle: str | None
 
 
-class PluginNavBarItem(NamedTuple):
-    """Class representing a plugin item in the navigation bar."""
+class NavUploadItem(NamedTuple):
+    """Class representing an upload item in the navigation bar."""
 
-    at: str
-    template: str
+    key: str
+    title: str
+    icon_path: str
+    modal_route_name: str
+    has_upload_error: bool

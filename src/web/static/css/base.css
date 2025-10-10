@@ -58,7 +58,7 @@ body[data-bs-theme="light"] #main-wrapper {
     font-size: 1.25rem;
 }
 
-.sidebar button > i {
+.sidebar button > i, .sidebar button > div > i {
     padding-right: 0.25rem;
 }
 

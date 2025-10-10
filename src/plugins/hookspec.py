@@ -13,6 +13,7 @@ from plugins.utils import (
     ExtraAdminColumn,
     ExtraColumn,
     ExtraStatisticsSection,
+    NavUploadItem,
     PluginData,
 )
 from utils.enum import Result, ScreenType, TournamentRating
@@ -266,6 +267,14 @@ class AppHookSpecs:
         self, tournament: 'Tournament | None', result: Result
     ) -> str | None:
         """A signal sent when a special result is set. Returns a string to be displayed to the user"""
+
+    # ---------------------------------------------------------------------------------
+    # Upload
+    # ---------------------------------------------------------------------------------
+
+    @hookspec
+    def get_nav_upload_items(self, event: 'Event') -> Iterable['NavUploadItem']:
+        """Provide upload items for the menu"""
 
     # ---------------------------------------------------------------------------------
     # Printing
