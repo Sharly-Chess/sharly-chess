@@ -40,6 +40,7 @@ dependencies = [
   "pycountry ~= 24.6.1",
   "pyexcel-ods3 ~= 0.6.1",
   "python-tds ~= 1.16.0",
+  "python-dotenv ~= 1.1.1",
   "qrcode[pil] ~= 7.4.2",
   "requests ~= 2.32.3",
   "rubicon-objc ~= 0.5.2",
