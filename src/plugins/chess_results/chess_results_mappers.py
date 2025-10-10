@@ -18,6 +18,7 @@ class ChessResultsPlayerGender(CoreMapper[str, PlayerGender]):
 
 
 class ChessResultsTieBreak:
+    # Mapping from our tie-breaks to the ones used by the Chess-Results (id + up to four parameters, see /docs/chess-results/Tie-Breaks.xlsx)
     mapping: ClassVar[dict[type[TieBreak], tuple[str, str, str, str, str]]] = {
         tie_breaks.StandardBuchholzTieBreak: ('2', '', '', '', ''),
         tie_breaks.ManualTieBreak: ('5', '', '', '', ''),

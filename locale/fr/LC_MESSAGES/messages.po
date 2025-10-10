@@ -626,10 +626,10 @@ msgid "Auto-update"
 msgstr "Mise à jour"
 
 msgid "Auto-upload results to Chess-Results.com"
-msgstr "Mise en ligne automatique des résultats sur Chess-Results.co"
+msgstr "Mise en ligne automatique des résultats sur Chess-Results.com"
 
 msgid "Auto-upload results to Chess-Results.com when a tournament is updated."
-msgstr "ise en ligne automatique des résultats sur Chess-Results.com lorsqu’un tournoi est mis à jour."
+msgstr "Mise en ligne automatique des résultats sur Chess-Results.com lorsqu’un tournoi est mis à jour."
 
 msgid "Auto-upload results to FFE site"
 msgstr "Envoi automatique des résultats sur le site de la FFE"
@@ -4840,10 +4840,10 @@ msgid "The default language used."
 msgstr "La langue utilisée par défaut."
 
 msgid "The delay must be at least {min_delay} minutes to avoid overloading the Chess-Results server."
-msgstr "Le délai doit au moins être de {min_delay} minutes pour éviter de surcharger le serveur Chess-Results.."
+msgstr "Le délai doit au moins être de {min_delay} minutes pour éviter de surcharger le serveur Chess-Results."
 
 msgid "The delay must be at least {min_delay} minutes to avoid overloading the FFE server."
-msgstr "Le délai doit au moins être de {min_delay} minutes pour éviter de surcharger le serveur FFE"
+msgstr "Le délai doit au moins être de {min_delay} minutes pour éviter de surcharger le serveur FFE."
 
 msgid "The end date and time of the event."
 msgstr "La date et l'heure de fin de l'évènement."
