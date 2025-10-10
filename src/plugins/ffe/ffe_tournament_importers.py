@@ -45,19 +45,21 @@ class FfeTournamentImporter(FileTournamentImporter):
         if (rating_threshold_1, rating_threshold_2) == (0, 0):
             return
         if rating_threshold_1 == rating_threshold_2 or rating_threshold_2 == 0:
-            self.post_import_task.append(
+            self.post_import_task.insert(
+                0,
                 partial(
                     PairingAccelerationUtils.set_pairing_settings_from_rating_threshold,
                     rating_threshold=rating_threshold_1,
-                )
+                ),
             )
         else:
-            self.post_import_task.append(
+            self.post_import_task.insert(
+                0,
                 partial(
                     PairingAccelerationUtils.set_pairing_settings_from_dual_rating_thresholds,
                     lower_rating_threshold=rating_threshold_2,
                     upper_rating_threshold=rating_threshold_1,
-                )
+                ),
             )
 
 

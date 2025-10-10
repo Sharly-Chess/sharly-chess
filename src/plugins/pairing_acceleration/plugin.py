@@ -1,9 +1,13 @@
+from types import ModuleType
+
 from packaging.version import Version
 
 from common.i18n import _
 from data.pairings.variations import SwissVariation, StandardSwissVariation
+from database.sqlite.event.event_database import EventDatabase
 from plugins.hookspec import hookimpl
-from plugins.pairing_acceleration import PLUGIN_NAME
+from plugins.migration import PluginMigrationManager
+from plugins.pairing_acceleration import PLUGIN_NAME, migrations
 from plugins.pairing_acceleration.pairing_variations import (
     HaleySwissVariation,
     HaleySoftSwissVariation,
@@ -39,6 +43,16 @@ class PairingAccelerationPlugin(Plugin):
         # FFE plugin is dependent from acceleration for Papi compatibility
         # Until FFE plugin can be disabled, this one should remain not editable
         return False
+
+    @property
+    def base_migration_module(self) -> ModuleType:
+        return migrations
+
+    @hookimpl
+    def get_event_migration_manager(
+        self, event_database: EventDatabase
+    ) -> PluginMigrationManager:
+        return self.get_migration_manager(event_database)
 
     @hookimpl
     def insert_swiss_pairing_variation_types(
