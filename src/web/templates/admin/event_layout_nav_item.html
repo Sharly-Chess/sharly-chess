@@ -67,6 +67,13 @@
                                 >
                                     {% if nav_tab.icon_class %}
                                         <i class="{{ sub_nav_tab.icon_class }} pe-1"></i>
+                                    {% endif %}{{nav_tab.icon_class}}
+                                    {% if sub_nav_tab.icon_path %}
+                                        <img
+                                            src="{{ url_for('static', file_path=sub_nav_tab.icon_path) }}?version={{ sharly_chess_config.version }}"
+                                            style="height: 1.2em"
+                                            class="pe-1"
+                                        />
                                     {% endif %}
                                     {{ sub_nav_tab.title }}
                                     {% if sub_nav_tab.has_error %}
@@ -139,9 +146,9 @@
                         {% if nav_tab.icon_class %}
                             <i class="indented {{ sub_nav.icon_class }}"></i>
                         {% endif %}
-                        {% if nav_tab.icon_class %}
+                        {% if sub_nav.icon_path %}
                             <img
-                                src="{{ url_for('static', file_path='/images/ffe.png') }}?version={{ sharly_chess_config.version }}"
+                                src="{{ url_for('static', file_path=sub_nav.icon_path) }}?version={{ sharly_chess_config.version }}"
                                 style="height: 1.2em"
                                 class="pe-1"
                             />
