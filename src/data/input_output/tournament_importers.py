@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from collections import defaultdict
+from collections.abc import Callable
 from datetime import datetime
 
 import trf
@@ -39,6 +40,12 @@ from utils.option import OptionHandler
 
 
 class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
+    def __init__(self, options: list[TournamentImporterOption] | None = None):
+        super().__init__(options)
+        self.post_import_task: list[Callable[[Tournament], None]] = []
+        if self.reorder_boards:
+            self.post_import_task.append(self._reorder_tournament_boards)
+
     @property
     def display_in_menu(self) -> bool:
         """Determines if the import is visible in the import menu."""
@@ -59,6 +66,16 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
     def reorder_boards(self) -> bool:
         """Determines if the boards need reordering after they've been loaded."""
         return True
+
+    @staticmethod
+    def _reorder_tournament_boards(tournament: Tournament):
+        with EventDatabase(tournament.event.uniq_id, True) as database:
+            for round_ in range(1, tournament.rounds + 1):
+                tournament.set_for_round(round_)
+                boards = tournament.get_round_boards(round_)
+                for index, board in enumerate(sorted(boards, reverse=True)):
+                    board.stored_board.index = index
+                    database.update_stored_board(board.stored_board)
 
     def on_import_finished(self):
         """Function to execute when the import process ends, whether it fails or succeeds."""
@@ -104,16 +121,11 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
             tournament_id = self._write_stored_tournament(
                 stored_tournament, stored_players, database
             )
-            database.commit()
-            event = EventLoader().load_event(event.uniq_id)
-            tournament = event.tournaments_by_id[tournament_id]
-            if self.reorder_boards:
-                for round_ in range(1, tournament.rounds + 1):
-                    tournament.set_for_round(round_)
-                    boards = tournament.get_round_boards(round_)
-                    for index, board in enumerate(sorted(boards, reverse=True)):
-                        board.stored_board.index = index
-                        database.update_stored_board(board.stored_board)
+        event = EventLoader().load_event(event.uniq_id)
+        tournament = event.tournaments_by_id[tournament_id]
+        tournament.set_players_pairing_numbers()
+        for task in self.post_import_task:
+            task(tournament)
         return tournament
 
     @staticmethod

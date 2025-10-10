@@ -214,14 +214,8 @@ class PapiConverter:
                 )
             return True
 
-    def read_papi_file(
-        self,
-        source_file: Path,
-        stored_tournament: StoredTournament | None = None,
-    ) -> tuple[StoredTournament, list[StoredPlayer]]:
+    def read_papi_file(self, source_file: Path) -> PapiData:
         """Read the papi file *source_file* into stored objects.
-        If a StoredTournament object is provided, add the values to this one,
-        otherwise creates a new one.
         Raises a SharlyChessException if the conversion fails."""
         target_file = TMP_DIR / 'papi-converter-output.json'
         target_file.unlink(missing_ok=True)
@@ -243,15 +237,16 @@ class PapiConverter:
 
         with open(target_file, 'r', encoding='utf-8') as file:
             papi_data_dict = json.load(file)
-        return self.read_papi_data(papi_data_dict, stored_tournament)
+        return dict_to_dataclass(PapiData, papi_data_dict)
 
     def read_papi_data(
         self,
-        papi_data_dict: dict[str, Any],
+        papi_data: PapiData,
         stored_tournament: StoredTournament | None = None,
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
-        """Read a dict in the format of the papi-converter into stored objects."""
-        papi_data = dict_to_dataclass(PapiData, papi_data_dict)
+        """Read a PapiData object into stored objects.
+        If a StoredTournament object is provided, add the values to this one,
+        otherwise creates a new one."""
 
         stored_tournament = self._read_papi_variables(
             papi_data.variables, stored_tournament

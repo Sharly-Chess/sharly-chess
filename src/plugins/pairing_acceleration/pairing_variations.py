@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
+from copy import copy
 from functools import cache, partial
-from typing import Callable
+from typing import Callable, Iterable
 
 from common.i18n import _
 from data.pairings.settings import PairingSetting
@@ -24,6 +25,10 @@ class AccelerationSwissVariation(SwissVariation, ABC):
     @classmethod
     def static_id(cls) -> str:
         return f'{PLUGIN_NAME}-{super().static_id()}'
+
+    @property
+    def vpoints_use_pairing_numbers(self) -> bool:
+        return True
 
     @classmethod
     @abstractmethod
@@ -94,6 +99,41 @@ class Acceleration2GroupsSwissVariation(AccelerationSwissVariation, ABC):
             return AccelerationGroup.A
         return AccelerationGroup.B
 
+    def update_settings_from_deleted_pairing_numbers(
+        self,
+        tournament: 'Tournament',
+        pairing_numbers: Iterable[int],
+    ) -> bool:
+        if not self.validate_settings(tournament):
+            return False
+        max_a = GroupA2GroupsSetting.get_value(tournament)[1]
+        new_max_a = max_a
+        for pairing_number in pairing_numbers:
+            if pairing_number <= max_a:
+                new_max_a -= 1
+        previous_pairing_settings = copy(tournament.stored_tournament.pairing_settings)
+        tournament.stored_tournament.pairing_settings |= {
+            GroupA2GroupsSetting().id: (1, new_max_a),
+            GroupB2GroupsSetting().id: (new_max_a + 1, tournament.player_count),
+        }
+        return (
+            previous_pairing_settings != tournament.stored_tournament.pairing_settings
+        )
+
+    def update_settings_from_added_pairing_number(
+        self, tournament: 'Tournament', pairing_number: int
+    ):
+        if not self.validate_settings(tournament):
+            return False
+        max_a = GroupA2GroupsSetting.get_value(tournament)[1]
+        if pairing_number <= max_a:
+            max_a += 1
+        tournament.stored_tournament.pairing_settings |= {
+            GroupA2GroupsSetting().id: (1, max_a),
+            GroupB2GroupsSetting().id: (max_a + 1, tournament.player_count),
+        }
+        return True
+
 
 class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
     @property
@@ -124,6 +164,50 @@ class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
         if player.pairing_number <= group_b_max:
             return AccelerationGroup.B
         return AccelerationGroup.C
+
+    def update_settings_from_deleted_pairing_numbers(
+        self,
+        tournament: 'Tournament',
+        pairing_numbers: Iterable[int],
+    ) -> bool:
+        if not self.validate_settings(tournament):
+            return False
+        max_a = GroupA3GroupsSetting.get_value(tournament)[1]
+        max_b = GroupB3GroupsSetting.get_value(tournament)[1]
+        new_max_a = max_a
+        new_max_b = max_b
+        for pairing_number in pairing_numbers:
+            if pairing_number <= max_a:
+                new_max_a -= 1
+            if pairing_number <= max_b:
+                new_max_b -= 1
+        previous_pairing_settings = copy(tournament.stored_tournament.pairing_settings)
+        tournament.stored_tournament.pairing_settings |= {
+            GroupA3GroupsSetting().id: (1, new_max_a),
+            GroupB3GroupsSetting().id: (new_max_a + 1, new_max_b),
+            GroupC3GroupsSetting().id: (new_max_b + 1, tournament.player_count),
+        }
+        return (
+            previous_pairing_settings != tournament.stored_tournament.pairing_settings
+        )
+
+    def update_settings_from_added_pairing_number(
+        self, tournament: 'Tournament', pairing_number: int
+    ):
+        if not self.validate_settings(tournament):
+            return False
+        max_a = GroupA3GroupsSetting.get_value(tournament)[1]
+        max_b = GroupB3GroupsSetting.get_value(tournament)[1]
+        if pairing_number <= max_a:
+            max_a += 1
+        if pairing_number <= max_b:
+            max_b += 1
+        tournament.stored_tournament.pairing_settings |= {
+            GroupA3GroupsSetting().id: (1, max_a),
+            GroupB3GroupsSetting().id: (max_a + 1, max_b),
+            GroupC3GroupsSetting().id: (max_b + 1, tournament.player_count),
+        }
+        return True
 
     @staticmethod
     def _format_vpoints_inequality(
@@ -169,7 +253,7 @@ class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
                 previous_vpoints = vpoints
 
         message_parts.append(cls._format_vpoints_inequality(vpoints, points))
-        return ''.join('<br/>&nbsp;&nbsp;' + part for part in message_parts)
+        return ''.join('<br/>' + '&nbsp;' * 4 + part for part in message_parts)
 
 
 class HaleySwissVariation(Acceleration2GroupsSwissVariation):

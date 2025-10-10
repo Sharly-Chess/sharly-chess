@@ -912,9 +912,8 @@ class PairingsAdminController(BaseEventAdminController):
             action=PairingAction.FULL_PAIRING,
         )
         tournament = web_context.get_admin_tournament()
+        tournament.set_valid_pairing_settings()
         round_ = web_context.admin_round
-        if not tournament.are_pairing_settings_valid:
-            tournament.set_default_pairing_settings()
         tournament.pairing_variation.engine.generate_pairings(tournament, round_)
         Message.success(request, _('Pairings successfully generated.'))
 
@@ -944,9 +943,8 @@ class PairingsAdminController(BaseEventAdminController):
             action=PairingAction.PARTIAL_PAIRING,
         )
         tournament = web_context.get_admin_tournament()
+        tournament.set_valid_pairing_settings()
         round_ = web_context.admin_round
-        if not tournament.are_pairing_settings_valid:
-            tournament.set_default_pairing_settings()
         tournament.pairing_variation.engine.generate_pairings(tournament, round_, True)
         unpaired_count = sum(
             player.pairings[round_].not_paired for player in tournament.players

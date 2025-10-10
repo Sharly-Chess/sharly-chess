@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
 from common.i18n import _
@@ -48,24 +49,10 @@ class PairingVariation(IdentifiableEntity, ABC):
     def engine(self) -> PairingEngine:
         """Pairing engine that generates the pairings of a tournament."""
 
-    @staticmethod
-    def print_real_points(current_round: int, rounds: int) -> bool:
-        return False
-
     @property
     @abstractmethod
     def settings(self) -> list[PairingSetting]:
         """List of pairing settings required for the variation to work."""
-
-    @classmethod
-    def compute_virtual_points(
-        cls,
-        tournament: 'Tournament',
-        player: Player,
-        at_round: int,
-    ) -> float:
-        """Compute the virtual points of a player for round *at_round*."""
-        return 0.0
 
     def validate_settings(self, tournament: 'Tournament') -> bool:
         return all(setting.is_valid(tournament) for setting in self.settings)
@@ -94,6 +81,47 @@ class PairingVariation(IdentifiableEntity, ABC):
                 for message in setting_messages
             ]
         )
+
+    # -------------------------------------------------------------------------
+    # Acceleration
+    # -------------------------------------------------------------------------
+
+    @classmethod
+    def compute_virtual_points(
+        cls,
+        tournament: 'Tournament',
+        player: Player,
+        at_round: int,
+    ) -> float:
+        """Compute the virtual points of a player for round *at_round*."""
+        return 0.0
+
+    @staticmethod
+    def print_real_points(current_round: int, rounds: int) -> bool:
+        """Defines if the real points have to be displayed
+        in addition to the virtual points for a round."""
+        return False
+
+    @property
+    def vpoints_use_pairing_numbers(self) -> bool:
+        """Defines if the pairing numbers need to be computed before."""
+        return False
+
+    def update_settings_from_deleted_pairing_numbers(
+        self,
+        _tournament: 'Tournament',
+        _pairing_numbers: Iterable[int],
+    ) -> bool:
+        """Update the settings when pairing numbers have been deleted.
+        Return True if the settings have been updated."""
+        return False
+
+    def update_settings_from_added_pairing_number(
+        self, _tournament: 'Tournament', _pairing_number: int
+    ):
+        """Update the settings when a pairing number has been added.
+        Return True if the settings have been updated."""
+        return False
 
 
 class SwissVariation(PairingVariation, ABC):

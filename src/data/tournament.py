@@ -358,7 +358,7 @@ class Tournament:
         return self.pairing_variation.system()
 
     @property
-    def stored_pairing_settings(self) -> dict[str, Any] | None:
+    def stored_pairing_settings(self) -> dict[str, Any]:
         return self.stored_tournament.pairing_settings
 
     @cached_property
@@ -368,19 +368,18 @@ class Tournament:
             for setting in self.pairing_variation.settings
         }
 
-    def set_default_pairing_settings(self):
-        stored_settings: dict[str, Any] = {
-            setting.id: setting.to_stored_value(setting.default_value(self))
-            for setting in self.pairing_variation.settings
-        }
-        self.update_pairing_settings(stored_settings)
-
-    @cached_property
-    def are_pairing_settings_valid(self) -> bool:
-        return not self.pairing_variation.settings or (
-            self.stored_pairing_settings is not None
-            and self.pairing_variation.validate_settings(self)
-        )
+    def set_valid_pairing_settings(self):
+        modified_settings: dict[str, Any] = {}
+        for setting in self.pairing_variation.settings:
+            if setting.is_valid(self):
+                continue
+            modified_settings[setting.id] = setting.to_stored_value(
+                setting.default_value(self)
+            )
+        if modified_settings:
+            self.update_pairing_settings(
+                self.stored_pairing_settings | modified_settings
+            )
 
     def update_pairing_settings(self, pairing_settings: dict[str, Any]):
         with EventDatabase(self.event.uniq_id, write=True) as database:
@@ -519,8 +518,11 @@ class Tournament:
 
     @cached_property
     def players_by_pairing_number(self) -> dict[int, Player]:
-        sorted_players = self._set_players_pairing_numbers()
-        return {player.pairing_number or 0: player for player in sorted_players}
+        self._set_players_pairing_numbers()
+        return {
+            player.pairing_number or 0: player
+            for player in sorted(self.players, key=attrgetter('pairing_number'))
+        }
 
     @cached_property
     def players_by_name_with_unpaired(self) -> list[Player]:
@@ -964,6 +966,8 @@ class Tournament:
     def _calculate_player_virtual_points(
         self, player: Player, *, at_round: int
     ) -> float:
+        if self.pairing_variation.vpoints_use_pairing_numbers:
+            self.set_players_pairing_numbers()
         return self.pairing_variation.compute_virtual_points(self, player, at_round)
 
     def _estimate_players(self, players: Iterable[Player], *, after_round: int):
@@ -1095,7 +1099,7 @@ class Tournament:
         if after_round is None:
             after_round = self.max_ranking_round
 
-        self._set_players_pairing_numbers()
+        self.set_players_pairing_numbers()
         self._estimate_players(self.players, after_round=after_round)
         for player in self.players:
             player.points = player.points_after(after_round)
@@ -1254,52 +1258,79 @@ class Tournament:
             return 0
         return max(board_indexes) + 1
 
-    def _set_players_pairing_numbers(self) -> list[Player]:
+    def set_players_pairing_numbers(self):
+        # Set up the cached property, which makes sure the
+        # pairing number checking process is not executed twice
+        __ = self.players_by_pairing_number
+
+    def _set_players_pairing_numbers(self):
         """Set the pairing numbers of all the players in the tournament.
         Returns a list of players sorted by pairing number."""
+        inserted_players: list[Player] = []
+        current_players: list[Player] = []
+        current_pairing_numbers: set[int] = set()
+        for player in self.players:
+            if player.pairing_number is None:
+                inserted_players.append(player)
+            else:
+                current_players.append(player)
+                current_pairing_numbers.add(player.pairing_number)
+        deleted_pairing_numbers = set(range(1, self.player_count + 1)).difference(
+            current_pairing_numbers
+        )
+        settings_updated = (
+            self.pairing_variation.update_settings_from_deleted_pairing_numbers(
+                self, deleted_pairing_numbers
+            )
+        )
         if self.current_round >= 4:
             # FIDE Handbook C.04.2.B.3: No modification of a pairing number
             # is allowed after the fourth round has been paired.
             # --> We keep the numbering only to inserted / deleted players
-            players_to_insert = [
-                player for player in self.players if player.pairing_number is None
-            ]
-            sorted_players = sorted(
-                [
-                    player
-                    for player in self.players
-                    if player.pairing_number is not None
-                ],
-                key=lambda player: player.pairing_number or 0,
-            )
-            if not players_to_insert and sorted_players[-1].pairing_number == len(
-                self.players
+            if (
+                not inserted_players
+                and not deleted_pairing_numbers
+                and not settings_updated
             ):
-                # No player was removed or added, no need to renumber
-                return sorted_players
-            for player in players_to_insert:
-                player_index = next(
-                    (
-                        index
-                        for index, player_ in enumerate(sorted_players)
-                        if player_.starting_rank_sort_key
-                        > player.starting_rank_sort_key
-                    ),
-                    len(sorted_players),
-                )
-                sorted_players.insert(player_index, player)
+                return
+            sorted_players = sorted(current_players, key=attrgetter('pairing_number'))
         else:
             sorted_players = sorted(
-                self.players, key=lambda player: player.starting_rank_sort_key
+                current_players, key=attrgetter('starting_rank_sort_key')
+            )
+        for player in inserted_players:
+            player_index = next(
+                (
+                    index
+                    for index, player_ in enumerate(sorted_players)
+                    if player_.starting_rank_sort_key > player.starting_rank_sort_key
+                ),
+                len(sorted_players),
+            )
+            sorted_players.insert(player_index, player)
+            settings_updated |= (
+                self.pairing_variation.update_settings_from_added_pairing_number(
+                    self, player_index + 1
+                )
             )
 
+        players_by_updated_pairing_number = {
+            pairing_number: player
+            for pairing_number, player in enumerate(sorted_players, start=1)
+            if pairing_number != player.pairing_number
+        }
+        if not players_by_updated_pairing_number:
+            return
         with EventDatabase(self.event.uniq_id, True) as database:
-            for pairing_number, player in enumerate(sorted_players, start=1):
+            for pairing_number, player in players_by_updated_pairing_number.items():
                 player.stored_tournament_player.pairing_number = pairing_number
                 database.set_tournament_player_pairing_number(
                     player.stored_tournament_player
                 )
-        return sorted_players
+            if settings_updated:
+                database.set_tournament_pairing_settings(
+                    self.id, self.stored_pairing_settings
+                )
 
     def create_round_pairing(
         self, round_nb: int, white_player_id: int, black_player_id: int | None

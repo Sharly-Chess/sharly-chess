@@ -83,12 +83,6 @@ class PairingGroupSetting(PairingSetting[tuple[int, int]], ABC):
         return errors
 
     @classmethod
-    def check_value(cls, tournament: 'Tournament', value: tuple[int, int]) -> bool:
-        total = tournament.player_count
-        group_count = value[1] - value[0] + 1
-        return total < 3 or total / 4 <= group_count <= total / 2
-
-    @classmethod
     def default_value(cls, tournament: 'Tournament') -> tuple[int, int]:
         return cls.default_values_by_group(tournament)[cls.group()]
 
@@ -103,9 +97,9 @@ class Base2GroupsSetting(PairingGroupSetting, ABC):
         cls, tournament: 'Tournament'
     ) -> dict[AccelerationGroup, tuple[int, int]]:
         player_count = tournament.player_count
-        if player_count < 2:
+        if player_count < 3:
             return {group: (0, 0) for group in AccelerationGroup}
-        max_a = player_count // 2
+        max_a = round(player_count / 4) * 2
         return {
             AccelerationGroup.A: (1, max_a),
             AccelerationGroup.B: (max_a + 1, player_count),
@@ -117,19 +111,14 @@ class Base2GroupsSetting(PairingGroupSetting, ABC):
         if errors := super().get_data_errors(tournament, data):
             return errors
 
-        if not self.check_value(tournament, self.from_form_data(data)):
+        min_number, max_number = self.from_form_data(data)
+        if tournament.player_count / 4 > max_number - min_number + 1:
             return {
                 self.id: _(
                     'Groups must be composed of at least 25%% of players.'
                 ).replace('%%', '%')
             }
         return {}
-
-    @classmethod
-    def check_value(cls, tournament: 'Tournament', value: tuple[int, int]) -> bool:
-        total = tournament.player_count
-        group_count = value[1] - value[0] + 1
-        return total < 2 or total / 4 <= group_count <= 3 * total / 4
 
 
 class GroupA2GroupsSetting(Base2GroupsSetting):
@@ -142,14 +131,6 @@ class GroupB2GroupsSetting(Base2GroupsSetting):
     @staticmethod
     def group() -> AccelerationGroup:
         return AccelerationGroup.B
-
-    @classmethod
-    def check_value(cls, tournament: 'Tournament', value: tuple[int, int]) -> bool:
-        # Invalidate if the pairing numbers have been changed
-        return (
-            super().check_value(tournament, value)
-            and tournament.player_count == value[1]
-        )
 
 
 class Base3GroupsSetting(PairingGroupSetting, ABC):
@@ -188,7 +169,10 @@ class Base3GroupsSetting(PairingGroupSetting, ABC):
         if errors := super().get_data_errors(tournament, data):
             return errors
 
-        if not self.check_value(tournament, self.from_form_data(data)):
+        min_number, max_number = self.from_form_data(data)
+        group_count = max_number - min_number + 1
+        player_count = tournament.player_count
+        if not player_count / 4 <= group_count <= player_count / 2:
             return {
                 self.id: _(
                     'Groups must be composed of at least '
@@ -196,12 +180,6 @@ class Base3GroupsSetting(PairingGroupSetting, ABC):
                 ).replace('%%', '%')
             }
         return {}
-
-    @classmethod
-    def check_value(cls, tournament: 'Tournament', value: tuple[int, int]) -> bool:
-        total = tournament.player_count
-        group_count = value[1] - value[0] + 1
-        return total < 3 or total / 4 <= group_count <= total / 2
 
 
 class GroupA3GroupsSetting(Base3GroupsSetting):
@@ -220,11 +198,3 @@ class GroupC3GroupsSetting(Base3GroupsSetting):
     @staticmethod
     def group() -> AccelerationGroup:
         return AccelerationGroup.C
-
-    @classmethod
-    def check_value(cls, tournament: 'Tournament', value: tuple[int, int]) -> bool:
-        # Invalidate if the pairing numbers have been changed
-        return (
-            super().check_value(tournament, value)
-            and tournament.player_count == value[1]
-        )
