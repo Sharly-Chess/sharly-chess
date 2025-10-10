@@ -16,7 +16,7 @@ from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredTournament, StoredEvent
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_session import FFESession
-from plugins.ffe.utils import FFEUtils
+from plugins.ffe.utils import FFEUtils, FfeEventPluginData, FfeTournamentPluginData
 from plugins.utils import PluginUtils
 from web.channels import channels_plugin
 
@@ -109,16 +109,22 @@ class FfeBackgroundUploader:
 
     @staticmethod
     def check_id_and_password(tournament: Tournament) -> bool:
-        pd = tournament.plugin_data
-        ffe_id = get_data(pd, 'ffe_id')
-        ffe_password = get_data(pd, 'ffe_password')
-        if not ffe_id or not ffe_password:
+        pd = FFEUtils.get_tournament_plugin_data(tournament)
+        if not pd.ffe_id or not pd.password:
             return False
         return True
 
     @classmethod
     def ffe_last_upload(cls, tournament: Tournament | StoredTournament) -> float:
-        return get_data(tournament.plugin_data, 'ffe_last_upload', 0.0)
+        plugin_data: FfeTournamentPluginData
+        if isinstance(tournament, Tournament):
+            assert isinstance(tournament, Tournament)
+            plugin_data = FFEUtils.get_tournament_plugin_data(tournament)
+        else:
+            raw_plugin_data = tournament.plugin_data.get(PLUGIN_NAME, {})
+            plugin_data = FfeTournamentPluginData.from_stored_value(raw_plugin_data)
+
+        return plugin_data.last_upload or 0.0
 
     @classmethod
     def ffe_upload_needed(cls, tournament: Tournament | StoredTournament) -> bool:
@@ -133,7 +139,7 @@ class FfeBackgroundUploader:
         if channels_plugin:
             channels_plugin.publish(
                 {
-                    'event': 'ffe-upload-event',
+                    'event': 'upload-event',
                     'data': '',
                 },
                 ['ws'],
@@ -283,13 +289,15 @@ class FfeBackgroundUploader:
         stored_tournament: StoredTournament,
     ) -> bool:
         # Check if the auto upload is enabled
-        tournament_auto_upload = get_data(
-            stored_tournament.plugin_data, 'ffe_auto_upload'
+        tournament_plugin_data = FfeTournamentPluginData.from_stored_value(
+            stored_tournament.plugin_data.get(PLUGIN_NAME, {})
         )
+        tournament_auto_upload = tournament_plugin_data.auto_upload
         if tournament_auto_upload is None:
-            tournament_auto_upload = get_data(
-                stored_event.plugin_data, 'ffe_auto_upload'
+            event_plugin_data = FfeEventPluginData.from_stored_value(
+                stored_event.plugin_data.get(PLUGIN_NAME, {})
             )
+            tournament_auto_upload = event_plugin_data.auto_upload
         if not tournament_auto_upload:
             return False
 

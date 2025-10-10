@@ -31,8 +31,11 @@ from data.tie_breaks.options import TieBreakOption
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
-from database.sqlite.sqlite_database import SQLiteDatabase
-from plugins.ffe.ffe_background_uploader import EventLoader, FfeBackgroundUploader
+from plugins.ffe.ffe_background_uploader import (
+    EventLoader,
+    FfeBackgroundUploader,
+    FfeUploadStatus,
+)
 from plugins.ffe.ffe_tournament_exporters import PapiTournamentExporter
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.ffe_tournament_importers import (
@@ -43,7 +46,9 @@ from plugins.ffe.papi_converter import PapiConverter
 from plugins.ffe.utils import (
     FFE_DEFAULT_UPLOAD_DELAY,
     FFE_MIN_UPLOAD_DELAY,
+    FfeEventPluginData,
     FfePlayerPluginData,
+    FfeTournamentPluginData,
 )
 from plugins.ffe.ffe_tournament_controller import FfeAdminTournamentController
 from utils.enum import (
@@ -76,6 +81,7 @@ from plugins.hookspec import ExtraAdminColumn, hookimpl, ExtraColumn
 from plugins.migration import PluginMigrationManager
 from plugins.utils import (
     ExtraStatisticsSection,
+    NavUploadItem,
     Plugin,
     PluginUtils,
     PluginData,
@@ -612,21 +618,8 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def augment_event_after_db_fetch(
-        self, stored_event: 'StoredEvent', row: dict[str, Any]
-    ):
-        stored_event.plugin_data[self.id] = {
-            'ffe_auto_upload': row.get('ffe_auto_upload', False),
-            'ffe_auto_upload_delay': row.get('ffe_auto_upload_delay', None),
-        }
-
-    @hookimpl
-    def event_data_for_db_write(self, stored_event: 'StoredEvent') -> dict[str, Any]:
-        td = stored_event.plugin_data
-        return {
-            'ffe_auto_upload': int(self.get_data(td, 'ffe_auto_upload') or False),
-            'ffe_auto_upload_delay': self.get_data(td, 'ffe_auto_upload_delay'),
-        }
+    def get_event_plugin_data_class(self) -> tuple[str, type[PluginData]]:
+        return self.id, FfeEventPluginData
 
     @hookimpl
     def get_event_card_block_template(self) -> str:
@@ -637,31 +630,13 @@ class FfePlugin(Plugin):
         return '/ffe_event_form_fields.html'
 
     @hookimpl
-    def get_event_form_data(self, event: Optional['Event']) -> dict[str, Any]:
-        if not event:
-            return {
-                'ffe_auto_upload': 'off',
-                'ffe_auto_upload_delay': '',
-            }
-
-        return {
-            'ffe_auto_upload': WebContext.value_to_form_data(
-                bool(self.get_data(event.plugin_data, 'ffe_auto_upload', False))
-            ),
-            'ffe_auto_upload_delay': WebContext.value_to_form_data(
-                self.get_data(event.plugin_data, 'ffe_auto_upload_delay', '')
-            ),
-        }
-
-    @hookimpl
-    def get_validated_event_form_fields(
+    def validate_event_form_fields(
         self,
         action: str,
         event: 'Event | None',
         data: dict[str, str],
         errors: dict[str, str],
-    ) -> dict[str, Any]:
-        ffe_auto_upload = WebContext.form_data_to_bool(data, 'ffe_auto_upload')
+    ):
         ffe_auto_upload_delay = WebContext.form_data_to_int(
             data, field := 'ffe_auto_upload_delay'
         )
@@ -670,17 +645,6 @@ class FfePlugin(Plugin):
                 'The delay must be at least {min_delay} minutes to avoid overloading the FFE server.'
             ).format(min_delay=FFE_MIN_UPLOAD_DELAY)
 
-        # Keep data other than these two fields
-        previous_data = event.plugin_data.get(self.id, {}) if event else {}
-
-        return {
-            self.id: previous_data
-            | {
-                'ffe_auto_upload': ffe_auto_upload or False,
-                'ffe_auto_upload_delay': ffe_auto_upload_delay,
-            }
-        }
-
     @hookimpl
     def get_default_prize_currency(self) -> str:
         return 'EUR'
@@ -688,6 +652,10 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
     # Tournaments
     # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def get_tournament_plugin_data_class(self) -> tuple[str, type[PluginData]]:
+        return self.id, FfeTournamentPluginData
 
     @hookimpl
     def on_tournament_data_updated(
@@ -705,31 +673,6 @@ class FfePlugin(Plugin):
         FfeBackgroundUploader.schedule_upload(tournament)
 
     @hookimpl
-    def augment_tournament_after_db_fetch(
-        self, stored_tournament: 'StoredTournament', row: dict[str, Any]
-    ):
-        stored_tournament.plugin_data[self.id] = {
-            'ffe_id': row.get('ffe_id', ''),
-            'ffe_password': row.get('ffe_password', ''),
-            'ffe_auto_upload': SQLiteDatabase.load_bool_or_none_from_database_field(
-                row.get('ffe_auto_upload', None)
-            ),
-            'ffe_last_upload': row.get('ffe_last_upload', 0.0),
-            'ffe_last_rules_upload': row.get('ffe_last_rules_upload', 0.0),
-        }
-
-    @hookimpl
-    def tournament_data_for_db_write(
-        self, stored_tournament: 'StoredTournament'
-    ) -> dict[str, Any]:
-        data = stored_tournament.plugin_data
-        return {
-            'ffe_id': self.get_data(data, 'ffe_id', None),
-            'ffe_password': self.get_data(data, 'ffe_password', None),
-            'ffe_auto_upload': self.get_data(data, 'ffe_auto_upload', None),
-        }
-
-    @hookimpl
     def get_tournament_form_fields_template_and_data(
         self, event: 'Event', tournament: 'Tournament | None'
     ) -> tuple[str, dict[str, Any]]:
@@ -739,9 +682,7 @@ class FfePlugin(Plugin):
         } | {
             WebContext.value_to_form_data(True): _('Enabled'),
         }
-        event_auto_upload = bool(
-            self.get_data(event.plugin_data, 'ffe_auto_upload', False)
-        )
+        event_auto_upload = FFEUtils.get_event_plugin_data(event).auto_upload
         ffe_auto_upload_options[''] = _("Use Event's default - {option}").format(
             option=ffe_auto_upload_options[
                 WebContext.value_to_form_data(event_auto_upload)
@@ -756,42 +697,15 @@ class FfePlugin(Plugin):
         )
 
     @hookimpl
-    def get_tournament_form_data(
-        self,
-        event: 'Event',
-        tournament: 'Tournament | None',
-        action: str,
-    ) -> dict[str, Any]:
-        if not tournament:
-            return {
-                'ffe_id': '',
-                'ffe_password': '',
-                'ffe_auto_upload': '',
-            }
-
-        return {
-            'ffe_id': ''
-            if action == 'clone'
-            else self.get_data(tournament.plugin_data, 'ffe_id', None),
-            'ffe_password': ''
-            if action == 'clone'
-            else self.get_data(tournament.plugin_data, 'ffe_password', None),
-            'ffe_auto_upload': self.get_data(
-                tournament.plugin_data, 'ffe_auto_upload', None
-            ),
-        }
-
-    @hookimpl
-    def get_validated_tournament_form_fields(
+    def validate_tournament_form_fields(
         self,
         action: str,
         tournament: 'Tournament | None',
         data: dict[str, str],
         errors: dict[str, str],
-    ) -> dict[str, Any]:
-        ffe_id = None
+    ):
         try:
-            ffe_id = WebContext.form_data_to_int(data, 'ffe_id')
+            WebContext.form_data_to_int(data, 'ffe_id')
         except ValueError:
             errors['ffe_id'] = _('The FFE ID is a positive integer.')
         ffe_password = WebContext.form_data_to_str(data, 'ffe_password')
@@ -799,18 +713,6 @@ class FfePlugin(Plugin):
             errors['ffe_password'] = _(
                 'The password of the tournament on the FFE website is made of 10 uppercase letters.'
             )
-        ffe_auto_upload = WebContext.form_data_to_bool_or_none(data, 'ffe_auto_upload')
-        # Keep data other than these two fields (such as file upload times)
-        previous_data = tournament.plugin_data.get(self.id, {}) if tournament else {}
-
-        return {
-            self.id: previous_data
-            | {
-                'ffe_id': ffe_id,
-                'ffe_password': ffe_password,
-                'ffe_auto_upload': ffe_auto_upload,
-            }
-        }
 
     @hookimpl
     def get_tournament_card_block_template_and_data(self) -> tuple[str, dict[str, Any]]:
@@ -824,10 +726,6 @@ class FfePlugin(Plugin):
     @hookimpl
     def get_tournament_card_action_menu_items_template(self) -> str:
         return '/ffe_tournament_card_action_menu_items.html'
-
-    @hookimpl
-    def get_tournament_tab_action_menu_items_template(self) -> str:
-        return '/ffe_tournament_tab_action_menu_items.html'
 
     @hookimpl
     def signal_tournament_set(
@@ -865,6 +763,34 @@ class FfePlugin(Plugin):
         self, tournament: 'Tournament', result: Result
     ) -> str | None:
         return PapiConverter.check_result(result, tournament)
+
+    # ---------------------------------------------------------------------------------
+    # Upload
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def get_nav_upload_items(self, event: 'Event') -> Iterable[NavUploadItem]:
+        has_upload_error = False
+        statuses = FfeBackgroundUploader.upload_status_messages
+        tournaments = event.tournaments
+        for tournament in tournaments:
+            result = statuses.get(
+                FfeBackgroundUploader.result_id(event.uniq_id, tournament.id),
+                None,
+            )
+            if result and result.status == FfeUploadStatus.ERROR:
+                has_upload_error = True
+                break
+
+        return [
+            NavUploadItem(
+                key='ffe_upload',
+                title=_('FFE'),
+                icon_path='/images/ffe.png',
+                modal_route_name='ffe-upload-modal',
+                has_upload_error=has_upload_error,
+            )
+        ]
 
     # ---------------------------------------------------------------------------------
     # Printing

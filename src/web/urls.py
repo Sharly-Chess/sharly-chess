@@ -40,3 +40,12 @@ def admin_event_pairings_url(
         event_uniq_id=event_uniq_id,
         tournament_id=tournament_id,
     )
+
+
+def admin_upload_item_url(
+    request: HTMXRequest,
+    event_uniq_id: str,
+) -> str:
+    return request.app.route_reverse(
+        'admin-event-upload-item', event_uniq_id=event_uniq_id
+    )

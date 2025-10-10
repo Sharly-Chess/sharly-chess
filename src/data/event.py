@@ -6,7 +6,7 @@ from functools import total_ordering, cached_property
 from logging import Logger
 from operator import attrgetter
 from types import NotImplementedType
-from typing import Any, Collection
+from typing import Collection
 
 from common import (
     format_timestamp_date_time,
@@ -29,6 +29,7 @@ from data.timer import Timer
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from plugins.manager import plugin_manager
+from plugins.utils import PluginData
 from utils import StaticUtils
 from utils.enum import (
     Result,
@@ -52,6 +53,14 @@ class Event:
 
     def __init__(self, stored_event: StoredEvent):
         self.stored_event: StoredEvent = stored_event
+        self.plugin_data = self._get_plugin_data()
+
+    @staticmethod
+    def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
+        return {
+            plugin_id: plugin_data_class
+            for plugin_id, plugin_data_class in plugin_manager.hook.get_event_plugin_data_class()
+        }
 
     @property
     def uniq_id(self) -> str:
@@ -322,6 +331,14 @@ class Event:
             for tournament in self.tournaments_sorted_by_uniq_id
             if tournament.can_add_players
         ]
+
+    def _get_plugin_data(self) -> dict[str, PluginData]:
+        return {
+            plugin_id: plugin_data_class.from_stored_value(
+                self.stored_event.plugin_data.get(plugin_id, {})
+            )
+            for plugin_id, plugin_data_class in self.plugin_data_class_by_plugin_id().items()
+        }
 
     # --------------------------------------------------------------------------
     # Players
@@ -863,10 +880,6 @@ class Event:
     # -------------------------------------------------------------------------
     # Plugins
     # -------------------------------------------------------------------------
-
-    @property
-    def plugin_data(self) -> dict[str, dict[str, Any]]:
-        return self.stored_event.plugin_data or {}
 
     def __lt__(self, other: 'Event'):
         # p1 < p2 calls p1.__lt__(p2)

@@ -330,11 +330,9 @@ class EventDatabase(MigrationDatabase):
                 row['three_points_for_a_win']
             ),
             pab_value=row['pab_value'],
+            plugin_data=self.load_json_from_database_field(row['plugin_data'], {}),
         )
 
-        plugin_manager.hook.augment_event_after_db_fetch(
-            stored_event=stored_event, row=row
-        )
         return cast(T, stored_event)
 
     def load_stored_event(self) -> StoredEvent:
@@ -371,49 +369,40 @@ class EventDatabase(MigrationDatabase):
         stored_event: StoredEvent,
     ):
         """Updates the event database with the information in the provided `stored_event`."""
-
-        per_plugin_event_data = plugin_manager.hook.event_data_for_db_write(
-            stored_event=stored_event
-        )
-        plugin_data = {
-            key: value for data in per_plugin_event_data for key, value in data.items()
+        fields = self._get_fields_dict(
+            stored_event,
+            [
+                'name',
+                'start',
+                'stop',
+                'public',
+                'federation',
+                'location',
+                'player_rating_type',
+                'hide_background_image',
+                'background_image',
+                'background_color',
+                'record_illegal_moves',
+                'rules',
+                'message_text',
+                'message_color',
+                'message_background_color',
+                'prize_currency',
+                'override_unrated_rapid_blitz',
+                'three_points_for_a_win',
+                'pab_value',
+            ],
+        ) | {
+            'timer_colors': self.dump_to_json_database_timer_colors(
+                stored_event.timer_colors
+            ),
+            'timer_delays': self.dump_to_json_database_timer_delays(
+                stored_event.timer_delays
+            ),
+            'plugin_data': self.dump_to_json_database_field(
+                stored_event.plugin_data, {}
+            ),
         }
-
-        fields = (
-            self._get_fields_dict(
-                stored_event,
-                [
-                    'name',
-                    'start',
-                    'stop',
-                    'public',
-                    'federation',
-                    'location',
-                    'player_rating_type',
-                    'hide_background_image',
-                    'background_image',
-                    'background_color',
-                    'record_illegal_moves',
-                    'rules',
-                    'message_text',
-                    'message_color',
-                    'message_background_color',
-                    'prize_currency',
-                    'override_unrated_rapid_blitz',
-                    'three_points_for_a_win',
-                    'pab_value',
-                ],
-            )
-            | {
-                'timer_colors': self.dump_to_json_database_timer_colors(
-                    stored_event.timer_colors
-                ),
-                'timer_delays': self.dump_to_json_database_timer_delays(
-                    stored_event.timer_delays
-                ),
-            }
-            | plugin_data
-        )
 
         field_sets = (f'`{f}` = ?' for f in fields.keys())
         self.execute(
@@ -745,10 +734,9 @@ class EventDatabase(MigrationDatabase):
                 row['override_unrated_rapid_blitz']
             ),
             pab_value=row['pab_value'],
+            plugin_data=cls.load_json_from_database_field(row['plugin_data'], {}),
         )
-        plugin_manager.hook.augment_tournament_after_db_fetch(
-            stored_tournament=stored_tournament, row=row
-        )
+
         return stored_tournament
 
     def get_stored_tournament(self, tournament_id: int) -> StoredTournament | None:
@@ -785,50 +773,40 @@ class EventDatabase(MigrationDatabase):
         self,
         stored_tournament: StoredTournament,
     ) -> StoredTournament:
-        per_plugin_tournament_data = plugin_manager.hook.tournament_data_for_db_write(
-            stored_tournament=stored_tournament
-        )
-        plugin_data = {
-            key: value
-            for data in per_plugin_tournament_data
-            for key, value in data.items()
+        fields = self._get_fields_dict(
+            stored_tournament,
+            [
+                'name',
+                'time_control_trf25',
+                'time_control_handicap_penalty_step',
+                'time_control_handicap_penalty_value',
+                'time_control_handicap_min_time',
+                'record_illegal_moves',
+                'rules',
+                'first_board_number',
+                'paired_bye_result',
+                'max_byes',
+                'rounds',
+                'rating',
+                'pairing',
+                'location',
+                'player_rating_type',
+                'start',
+                'stop',
+                'last_rounds_no_byes',
+                'three_points_for_a_win',
+                'override_unrated_rapid_blitz',
+                'pab_value',
+            ],
+        ) | {
+            'tie_breaks': self.dump_to_json_database_field(
+                stored_tournament.tie_breaks
+            ),
+            'last_update': time.time(),
+            'plugin_data': self.dump_to_json_database_field(
+                stored_tournament.plugin_data, {}
+            ),
         }
-
-        fields = (
-            self._get_fields_dict(
-                stored_tournament,
-                [
-                    'name',
-                    'time_control_trf25',
-                    'time_control_handicap_penalty_step',
-                    'time_control_handicap_penalty_value',
-                    'time_control_handicap_min_time',
-                    'record_illegal_moves',
-                    'rules',
-                    'first_board_number',
-                    'paired_bye_result',
-                    'max_byes',
-                    'rounds',
-                    'rating',
-                    'pairing',
-                    'location',
-                    'player_rating_type',
-                    'start',
-                    'stop',
-                    'last_rounds_no_byes',
-                    'three_points_for_a_win',
-                    'override_unrated_rapid_blitz',
-                    'pab_value',
-                ],
-            )
-            | {
-                'tie_breaks': self.dump_to_json_database_field(
-                    stored_tournament.tie_breaks
-                ),
-                'last_update': time.time(),
-            }
-            | plugin_data
-        )
 
         if stored_tournament.id is None:
             fields_str = ', '.join(f'`{f}`' for f in fields)

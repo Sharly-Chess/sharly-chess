@@ -105,12 +105,15 @@ class PluginData(ABC):
     @classmethod
     @abstractmethod
     def from_form_data(
-        cls, data: dict[str, str], previous_object: Self | None = None
+        cls,
+        data: dict[str, str],
+        previous_object: Self | None = None,
+        action: str | None = None,
     ) -> Self:
         """Initialize an object from form data."""
 
     @abstractmethod
-    def to_form_data(self) -> dict[str, str]:
+    def to_form_data(self, action: str | None = None) -> dict[str, str]:
         """The values to use in a form."""
 
 
@@ -181,22 +184,15 @@ class Plugin(IdentifiableEntity, ABC):
         if self.base_migration_module is not None:
             self._migrate_all_events()
 
-    def on_disable(self):
-        """Method called when the plugin is disabled."""
-        from plugins.migration import PluginMigrationManager
-
-        if self.base_migration_module is not None:
-            self._migrate_all_events(PluginMigrationManager.MIGRATION_ZERO)
-
     def _migrate_all_events(self, target_migration: str | None = None):
         """Migrates all the event databases to migration."""
         from data.loader import EventLoader
         from database.sqlite.event.event_database import EventDatabase
 
         for uniq_id in EventLoader().event_uniq_ids:
-            with EventDatabase(uniq_id, True) as database:
-                if migration_manager := self.get_migration_manager(database):
-                    migration_manager.migrate(target_migration)
+            database = EventDatabase(uniq_id)
+            if migration_manager := self.get_migration_manager(database):
+                migration_manager.migrate(target_migration)
 
     def reload_context(self):
         self.context = PluginContext(self)
@@ -231,8 +227,11 @@ class ExtraStatisticsSection(NamedTuple):
     subtitle: str | None
 
 
-class PluginNavBarItem(NamedTuple):
-    """Class representing a plugin item in the navigation bar."""
+class NavUploadItem(NamedTuple):
+    """Class representing an upload item in the navigation bar."""
 
-    at: str
-    template: str
+    key: str
+    title: str
+    icon_path: str
+    modal_route_name: str
+    has_upload_error: bool

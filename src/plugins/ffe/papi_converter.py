@@ -32,6 +32,7 @@ from database.sqlite.event.event_store import (
     StoredPairing,
 )
 from plugins.ffe import TMP_DIR, PLUGIN_NAME
+from plugins.ffe.utils import FFEUtils
 from plugins.ffe.papi_mappers import (
     PapiPairingVariation,
     PapiPlayerCategory,
@@ -772,8 +773,8 @@ class PapiConverter:
             timeControl='',
             ratingThreshold1=str(sharing_thresholds[1]),
             ratingThreshold2=str(sharing_thresholds[0]),
-            homologation=tournament.plugin_data.get(PLUGIN_NAME, {}).get(
-                'ffe_id', None
+            homologation=str(
+                FFEUtils.get_tournament_plugin_data(tournament).ffe_id or ''
             ),
         )
 

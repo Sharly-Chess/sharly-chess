@@ -319,7 +319,8 @@ class FFESiteQRCodeType(QRCodeType):
     @staticmethod
     def url(doc: QRCodePrintDocument) -> tuple[bool, str]:
         tournament = doc.tournament
-        ffe_id = tournament.plugin_data[PLUGIN_NAME].get('ffe_id', None)
+        ffe_id = FFEUtils.get_tournament_plugin_data(tournament).ffe_id
+
         if not ffe_id:
             return False, _('No FFE ID defined for tournament [{tournament}].').format(
                 tournament=tournament.uniq_id

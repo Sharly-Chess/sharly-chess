@@ -7,9 +7,11 @@ from common.i18n import _
 from data.access_levels.client_tracker import ClientTracker
 from data.display_controller import DisplayController
 from data.event import Event
+from data.pairings.managers import plugin_manager
 from data.rotator import Rotator
 from data.screen import Screen
 from data.tournament import Tournament
+from plugins.utils import NavUploadItem
 from utils.enum import FormAction, ScreenType
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
@@ -18,6 +20,7 @@ from web.controllers.admin.base_admin_controller import (
 from web.guards import EventGuard
 from web.messages import Message
 from web.session import SessionHandler
+from web.urls import admin_upload_item_url
 
 
 class BaseEventAdminWebContext(AdminWebContext):
@@ -283,6 +286,37 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'icon_class': 'bi-person-fill-lock',
                 },
             }
+        if self.client.can_publish_results:
+            per_plugin_upload_items = plugin_manager.hook.get_nav_upload_items(
+                event=self.get_admin_event()
+            )
+            upload_items: list[NavUploadItem] = [
+                item for items in per_plugin_upload_items for item in items
+            ]
+            has_error = any(item.has_upload_error for item in upload_items)
+
+            if upload_items:
+                nav_tabs |= {
+                    'admin-upload': {
+                        'title': _('Upload'),
+                        'icon_class': 'bi-cloud-arrow-up-fill',
+                        'has_error': has_error,
+                        'refresh_trigger_event': 'ws:upload-event from:body',
+                        'refresh_url': admin_upload_item_url(
+                            self.request, self.get_admin_event().uniq_id
+                        ),
+                        'submenu': {
+                            item.key: {
+                                'title': item.title,
+                                'icon_path': item.icon_path,
+                                'modal': item.modal_route_name,
+                                'action': 'upload',
+                                'has_error': item.has_upload_error,
+                            }
+                            for item in upload_items
+                        },
+                    }
+                }
 
         return super().template_context | {
             'messages': Message.messages(self.request),
