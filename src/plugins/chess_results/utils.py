@@ -56,6 +56,40 @@ class ChessResultsUtils:
 
 
 @dataclass
+class ChessResultsConfigPluginData(PluginData):
+    creator_id: str | None = None
+
+    @classmethod
+    def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
+        return cls(
+            creator_id=stored_value.get('creator_id'),
+        )
+
+    def to_stored_value(self) -> dict[str, Any]:
+        return {
+            'creator_id': self.creator_id,
+        }
+
+    @classmethod
+    def from_form_data(
+        cls,
+        data: dict[str, str],
+        previous_object: Self | None = None,
+        action: str | None = None,
+    ) -> Self:
+        return cls(
+            creator_id=WebContext.form_data_to_str(data, 'creator_id'),
+        )
+
+    def to_form_data(self, action: str | None = None) -> dict[str, str]:
+        return WebContext.values_dict_to_form_data(
+            {
+                'creator_id': self.creator_id,
+            }
+        )
+
+
+@dataclass
 class ChessResultsEventPluginData(PluginData):
     auto_upload: bool
     auto_upload_delay: int

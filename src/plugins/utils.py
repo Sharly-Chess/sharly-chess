@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
 from types import ModuleType
-from typing import TYPE_CHECKING, Any, NamedTuple, Self
+from typing import TYPE_CHECKING, Any, Generic, NamedTuple, Self, TypeVar
 
 from packaging.version import Version
 
@@ -80,7 +80,7 @@ class PluginContext:
         from database.sqlite.config.config_database import ConfigDatabase
         from database.sqlite.config.config_store import StoredPlugin
 
-        self.stored_plugin: StoredPlugin | None = None
+        self.stored_plugin: StoredPlugin
         with ConfigDatabase() as database:
             stored_plugin = database.load_stored_plugin(plugin.id)
         if not stored_plugin:
@@ -90,6 +90,9 @@ class PluginContext:
                 )
                 database.insert_stored_plugin(stored_plugin)
         self.stored_plugin = stored_plugin
+
+    def get_raw_plugin_data(self) -> dict[str, Any]:
+        return self.stored_plugin.plugin_data or {}
 
 
 class PluginData(ABC):
@@ -117,7 +120,13 @@ class PluginData(ABC):
         """The values to use in a form."""
 
 
-class Plugin(IdentifiableEntity, ABC):
+# Define a TypeVar bound to PluginData
+PD = TypeVar('PD', bound=PluginData)
+
+
+class Plugin(Generic[PD], IdentifiableEntity, ABC):
+    data_class: type[PD] | None = None
+
     def __init__(self):
         self.context: PluginContext = PluginContext(self)
 
@@ -170,6 +179,14 @@ class Plugin(IdentifiableEntity, ABC):
         """List of controllers for the plugin. Has to be passed this way instead
         of a hook as controllers are initialized at the start of the application."""
         return []
+
+    def get_plugin_data(self) -> PD:
+        raw_data = self.context.get_raw_plugin_data()
+        if self.data_class is None:
+            raise NotImplementedError(
+                f'{self.__class__.__name__} must define data_class'
+            )
+        return self.data_class.from_stored_value(raw_data)
 
     def get_migration_manager(
         self, database: 'EventDatabase'

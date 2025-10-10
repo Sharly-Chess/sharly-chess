@@ -10,6 +10,7 @@ from plugins.chess_results.chess_results_background_uploader import (
 from plugins.chess_results.utils import (
     CHESS_RESULTS_DEFAULT_UPLOAD_DELAY,
     CHESS_RESULTS_MIN_UPLOAD_DELAY,
+    ChessResultsConfigPluginData,
     ChessResultsEventPluginData,
     ChessResultsTournamentPluginData,
     ChessResultsUtils,
@@ -34,7 +35,9 @@ if TYPE_CHECKING:
     from database.sqlite.event.event_store import StoredTournament
 
 
-class ChessResultsPlugin(Plugin):
+class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
+    data_class = ChessResultsConfigPluginData
+
     @staticmethod
     def static_id() -> str:
         return PLUGIN_NAME

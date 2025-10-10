@@ -15,6 +15,7 @@ from requests import Session
 from common.i18n import _
 from common.logger import get_logger
 from data.tournament import Tournament
+from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.event.event_database import EventDatabase
 from plugins.chess_results import PLUGIN_NAME
 from plugins.chess_results.chess_results_mappers import (
@@ -23,6 +24,7 @@ from plugins.chess_results.chess_results_mappers import (
 )
 from plugins.chess_results.utils import ChessResultsUtils
 from plugins.utils import PluginUtils
+from plugins.manager import plugin_manager
 from utils.enum import Result
 
 load_dotenv()
@@ -360,8 +362,25 @@ class ChessResultsSession(Session):
         tnr = plugin_data.tnr
         creator_id = plugin_data.creator_id
         if not tnr:
+            # See if we have a creator_id stored in the config
+            from plugins.chess_results.chess_results import ChessResultsPlugin
+
+            chess_results_plugin = plugin_manager.get_plugin_by_class(
+                ChessResultsPlugin
+            )
+            chess_results_plugin_data = chess_results_plugin.get_plugin_data()
+            creator_id = chess_results_plugin_data.creator_id
+            if not creator_id:
+                creator_id = str(uuid.uuid4())
+                with ConfigDatabase(write=True) as config_database:
+                    chess_results_plugin_data.creator_id = creator_id
+                    stored_plugin = chess_results_plugin.context.stored_plugin
+                    stored_plugin.plugin_data = (
+                        chess_results_plugin_data.to_stored_value()
+                    )
+                    config_database.update_stored_plugin(stored_plugin)
+
             # First upload, create the tournament on the site
-            creator_id = str(uuid.uuid4())
             tnr = self.get_new_tournament_key(13, sid, creator_id, self.tournament)
 
             with EventDatabase(
