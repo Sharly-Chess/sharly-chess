@@ -134,7 +134,7 @@ class ChessResultsBackgroundUploader:
         if channels_plugin:
             channels_plugin.publish(
                 {
-                    'event': 'chess-results-upload-event',
+                    'event': 'upload-event',
                     'data': '',
                 },
                 ['ws'],

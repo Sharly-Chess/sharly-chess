@@ -1,9 +1,10 @@
-from typing import Any, TYPE_CHECKING, override
+from typing import Any, TYPE_CHECKING, Iterable, override
 
 from packaging.version import Version
 
 from common.i18n import _
 from plugins.chess_results.chess_results_background_uploader import (
+    ChessResultsUploadStatus,
     EventLoader,
     ChessResultsBackgroundUploader,
 )
@@ -21,6 +22,7 @@ from plugins.chess_results.chess_results_event_controller import (
 )
 from plugins.hookspec import hookimpl
 from plugins.utils import (
+    NavUploadItem,
     Plugin,
     PluginData,
 )
@@ -183,6 +185,30 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
             },
         )
 
+    # ---------------------------------------------------------------------------------
+    # Upload
+    # ---------------------------------------------------------------------------------
+
     @hookimpl
-    def get_tournament_tab_action_menu_items_template(self) -> str:
-        return '/chess_results_tournament_tab_action_menu_items.html'
+    def get_nav_upload_items(self, event: 'Event') -> Iterable[NavUploadItem]:
+        has_upload_error = False
+        statuses = ChessResultsBackgroundUploader.upload_status_messages
+        tournaments = event.tournaments
+        for tournament in tournaments:
+            result = statuses.get(
+                ChessResultsBackgroundUploader.result_id(event.uniq_id, tournament.id),
+                None,
+            )
+            if result and result.status == ChessResultsUploadStatus.ERROR:
+                has_upload_error = True
+                break
+
+        return [
+            NavUploadItem(
+                key='chess_results_upload',
+                title=_('Chess-Results.com'),
+                icon_path='/images/chess-results.png',
+                modal_route_name='chess-results-upload-modal',
+                has_upload_error=has_upload_error,
+            )
+        ]
