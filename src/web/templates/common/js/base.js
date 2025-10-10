@@ -97,11 +97,51 @@ window.addEventListener("show.bs.dropdown", function(event) {
     closeTooltips();
 });
 
+const saveState = (id, isOpen) => {
+    const states = JSON.parse(localStorage.getItem('collapseStates') || '{}');
+    states[id] = isOpen;
+    localStorage.setItem('collapseStates', JSON.stringify(states));
+};
+
+// Listen globally for Bootstrap collapse show/hide
+window.addEventListener('show.bs.collapse', e => {
+    if (e.target.id) saveState(e.target.id, true);
+});
+
+window.addEventListener('hide.bs.collapse', e => {
+    if (e.target.id) saveState(e.target.id, false);
+});
+
+const restoreState = () => {
+  const states = JSON.parse(localStorage.getItem('collapseStates') || '{}');
+  Object.entries(states).forEach(([id, isOpen]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (isOpen) {
+        // Immediately show, bypassing Bootstrap animation
+        el.classList.add('show');
+        el.style.height = 'auto';
+        el.setAttribute('aria-expanded', 'true');
+    } else {
+        el.classList.remove('show');
+        el.style.height = '';
+        el.setAttribute('aria-expanded', 'false');
+    }
+  });
+};
+
+$(document).ready(restoreState);
+
 window.addEventListener('htmx:afterSwap', function(event) {
     // Activate the tooltips after a swap
     activateTooltips();
     closeTooltips();
 });
+
+window.addEventListener('htmx:afterSettle', function(event) {
+    restoreState();
+});
+
 
 window.addEventListener('request_refresh', function(event) {
     location.reload();

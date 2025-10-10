@@ -30,144 +30,8 @@
 {% block admin_nav %}
     <h4 class="w-100 px-2 fs-5 mt-2 text-center">{{ admin_event.name }}</h4>
     {% for nav_id, nav_tab in nav_tabs.items() %}
-        {% if 'submenu' in nav_tab %}
-            {# Dropdown for compact mode #}
-            {% with active=(admin_event_tab in nav_tab.submenu.keys()) %}
-                <div class="dropend compact-only w-100">
-                    <span class="sidebar-tooltip" {{ macros.tooltip_attributes('info', nav_tab.title, 'right') }}>
-                        <button
-                            class="nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {% if active %}active{% endif %}"
-                            type="button"
-                            data-bs-toggle="dropdown"
-                            {% if nav_tab.disabled %}
-                                disabled
-                            {% endif %}
-                            aria-expanded="false"
-                        >
-                            <div class="d-flex align-items-center">
-                                {% if nav_tab.icon_class %}
-                                   <i class="{{ nav_tab.icon_class }}"></i>
-                                {% endif %}
-                                <i class="bi bi-chevron-compact-right px-0"></i>
-                            </div>
-                        </button>
-                        <ul class="dropdown-menu">
-                            {% for sub_nav_id, sub_nav_tab in nav_tab.submenu.items() %}
-                                {% if sub_nav_tab.separator %}
-                                    <li class="dropdown-divider"></li>
-                                {% endif %}
-                                <li>
-                                    <button
-                                        class="dropdown-item {% if sub_nav_id == admin_event_tab %}active{% endif %}"
-                                        hx-get="{{ url_for(sub_nav_id, event_uniq_id=admin_event.uniq_id) }}"
-                                        hx-target="body"
-                                        hx-push-url="true"
-                                        type="button"
-                                        hx-indicator="#please-wait"
-                                        {% if sub_nav_tab.disabled %}
-                                            disabled
-                                        {% endif %}
-                                    >
-                                        {% if nav_tab.icon_class %}
-                                            <i class="{{ sub_nav_tab.icon_class }} pe-1"></i>
-                                        {% endif %}
-                                        {{ sub_nav_tab.title }}
-                                    </button>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </span>
-                </div>
-            {% endwith %}
-
-            {# Expanding menu for expanded mode #}
-            {% with active=(admin_event_tab == nav_id) %}
-                <button
-                    class="expanded-only btn-toggle nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %}"
-                    id="nav-{{ nav_id }}-tab"
-                    data-testid="nav-{{ nav_id }}-tab"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#{{ nav_id }}-collapse"
-                >
-                    {% if nav_tab.icon_class %}
-                        <i class="{{ nav_tab.icon_class }}"></i>
-                    {% endif %}
-                    <span class="expanded-only">{{ nav_tab.title }}</span>
-                    <i class="dropdown-arrow bi bi-chevron-right"></i>
-                </button>
-                <div class="collapse w-100 expanded-only" id="{{ nav_id }}-collapse">
-                    {% for sub_nav_id, sub_nav in nav_tab.submenu.items() %}
-                        {% if sub_nav.separator %}
-                            <div class="sidebar-divider"></div>
-                        {% endif %}
-                        <button
-                            class="nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
-                            id="nav-{{ sub_nav_id }}-tab"
-                            data-testid="nav-{{ sub_nav_id }}-tab"
-                            hx-get="{{ url_for(sub_nav_id, event_uniq_id=admin_event.uniq_id) }}"
-                            hx-target="body"
-                            hx-push-url="true"
-                            type="button"
-                            hx-indicator="#please-wait"
-                            {% if sub_nav.disabled %}
-                                disabled
-                            {% endif %}
-                        >
-                            {% if nav_tab.icon_class %}
-                                <i class="indented {{ sub_nav.icon_class }}"></i>
-                            {% endif %}
-                            {{ sub_nav.title }}
-                        </button>
-                    {% endfor %}
-                </div>
-            {% endwith %}
-        {% elif 'modal' in nav_tab %}
-            <button
-                id="nav-{{ nav_id }}-tab"
-                data-testid="nav-{{ nav_id }}-tab"
-                class="nav-link text-start me-1 position-relative align-items-center"
-                hx-get="{{ url_for(nav_tab.modal, action=nav_tab.action, event_uniq_id=admin_event.uniq_id) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
-            >
-                {% if nav_tab.icon_class %}
-                    <i class="{{ nav_tab.icon_class }}"></i>
-                {% endif %}
-                <span id="nav-{{ nav_id }}-tab-title" class=" expanded-only">{{ nav_tab.title }}</span>
-            </button>
-        {% else %}
-            {% with active=(admin_event_tab == nav_id) %}
-                <span class="sidebar-tooltip" {{ macros.tooltip_attributes('info', nav_tab.title, 'right') }}>
-                    <button
-                        class="nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
-                        id="nav-{{ nav_id }}-tab"
-                        data-testid="nav-{{ nav_id }}-tab"
-                        hx-get="{{ url_for(nav_id, event_uniq_id=admin_event.uniq_id) }}"
-                        hx-target="body"
-                        hx-push-url="true"
-                        data-bs-toggle="tab"
-                        data-bs-target="#nav-{{ nav_tab.name }}"
-                        type="button"
-                        role="tab"
-                        aria-controls="nav-{{ nav_id }}"
-                        aria-selected="true"
-                        hx-indicator="#please-wait"
-                        {% if nav_tab.disabled %}
-                            disabled
-                        {% endif %}
-                    >
-                        {% if nav_tab.icon_class %}
-                            <i class="{{ nav_tab.icon_class }}"></i>
-                        {% endif %}
-                        <span id="nav-{{ nav_id }}-tab-title" class=" expanded-only">{{ nav_tab.title }}</span>
-                    </button>
-                </span>
-            {% endwith %}
-        {% endif %}
+        {% include '/admin/event_layout_nav_item.html' %}
     {% endfor %}
-
     {% if client.can_print %}
         {% include '/admin/common/print_button.html' %}
     {% endif %}
@@ -219,7 +83,7 @@
     {% if not admin_event_tab %}
         <div class="mx-auto" style="max-width: 500px;">
             <h5 class="my-5 text-center">
-                {{ _('No public screens.') }}
+                {{ _('No public screens') }}
             </h5>
             <p class="text-center">
                 {{ _("There are no public screens available for this event.") }}

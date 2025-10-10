@@ -1,6 +1,6 @@
 from typing import Any
 
-from litestar import get
+from litestar import Response, get
 from litestar.plugins.htmx import HTMXRequest
 from litestar.response import Template, Redirect
 
@@ -8,11 +8,13 @@ from data.display_controller import DisplayController
 from data.rotator import Rotator
 from data.screen import Screen
 from data.tournament import Tournament
+from plugins.ffe.ffe_event_controller import HTMXTemplate
 from utils.enum import ScreenType
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
 )
+from web.controllers.index_controller import HTTP_204_NO_CONTENT
 from web.guards import EventGuard
 from web.urls import (
     admin_event_pairings_url,
@@ -120,3 +122,27 @@ class EventAdminController(BaseEventAdminController):
 
         # default display with no tab selected
         return self._admin_base_event_render(web_context.template_context)
+
+    @get(
+        path='/event/{event_uniq_id:str}/upload-item',
+        name='admin-event-upload-item',
+    )
+    async def htmx_admin_event_upload_item(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+    ) -> HTMXTemplate | Response:
+        web_context = BaseEventAdminWebContext(request)
+        upload_item = web_context.template_context['nav_tabs'].get('admin-upload')
+        if not upload_item:
+            return Response(status_code=HTTP_204_NO_CONTENT, content=None)
+
+        return HTMXTemplate(
+            template_name='admin/event_layout_nav_item.html',
+            context=web_context.template_context
+            | {
+                'swap_oob': True,
+                'nav_id': 'admin-upload',
+                'nav_tab': upload_item,
+            },
+        )
