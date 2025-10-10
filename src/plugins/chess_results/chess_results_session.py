@@ -270,6 +270,9 @@ class ChessResultsSession(Session):
 
         # --- Pairings / Results ---
         ppair = ET.SubElement(root, 'playerpairings')
+        point_values: dict[Result, float] = {
+            Result.PAIRING_ALLOCATED_BYE: tournament.pab_value.point_value,
+        }
         for round_ in range(1, tournament.current_round + 1):
             tournament.set_for_round(round_)
             tournament.compute_player_ranks(after_round=round_)
@@ -290,12 +293,10 @@ class ChessResultsSession(Session):
                             else -1
                         ),
                         'reswhite': str(
-                            board.white_pairing.result.points(tournament.point_values)
-                            or ''
+                            board.white_pairing.result.points(point_values) or ''
                         ),
                         'resblack': str(
-                            board.black_pairing.result.points(tournament.point_values)
-                            or ''
+                            board.black_pairing.result.points(point_values) or ''
                         )
                         if board.black_player
                         else '',
@@ -325,7 +326,7 @@ class ChessResultsSession(Session):
                         'board': '1',
                         'whiteno': str(player.pairing_number),
                         'blackno': '-2',
-                        'reswhite': str(result.points(tournament.point_values) or ''),
+                        'reswhite': str(result.points(point_values) or ''),
                         'resblack': '',
                         'forfeit': '',
                     },
