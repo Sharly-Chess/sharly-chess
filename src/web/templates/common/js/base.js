@@ -117,7 +117,6 @@ const restoreState = () => {
   Object.entries(states).forEach(([id, isOpen]) => {
     const el = document.getElementById(id);
     if (!el) return;
-    console.log(id, isOpen, el);
     if (isOpen) {
         // Immediately show, bypassing Bootstrap animation
         el.classList.add('show');
