@@ -714,7 +714,9 @@ class EventDatabase(MigrationDatabase):
             max_byes=row['max_byes'],
             last_rounds_no_byes=row['last_rounds_no_byes'],
             pairing=row['pairing'],
-            pairing_settings=cls.load_json_from_database_field(row['pairing_settings']),
+            pairing_settings=cls.load_json_from_database_field(
+                row['pairing_settings'], {}
+            ),
             current_round=row['current_round'],
             check_in_open=cls.load_bool_from_database_field(row['check_in_open']),
             rounds=row['rounds'],

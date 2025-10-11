@@ -368,6 +368,8 @@ with_indicator: display a loading indicator, optional
     file_accept='',
     number_min='',
     number_max='',
+    min_disabled=false,
+    max_disabled=false,
     number_step='',
     radio_value='',
     info='',
@@ -405,7 +407,7 @@ with_indicator: display a loading indicator, optional
                         {% if tooltip_text %}
                             <i
                                 class="bi bi-info-circle-fill ms-2"
-                                {{ macros.tooltip_attributes('info', tooltip_text, 'top') }}
+                                {{ macros.tooltip_attributes('', tooltip_text, 'top') }}
                             ></i>
                         {% endif %}
                     </label>
@@ -427,7 +429,7 @@ with_indicator: display a loading indicator, optional
             <div
                 class="
                     pw-input-group
-                    {% if input_type == 'password' or input_type == 'search' %}input-group{% endif %}
+                    {% if input_type in ['password', 'search', 'integer-range'] %}input-group{% endif %}
                     {% if input_type == 'switch' %}form-check form-switch d-inline-block pe-3{% endif %}
                     {% if input_type == 'checkbox' %}form-check d-inline-block pe-3{% endif %}
                 "
@@ -474,13 +476,39 @@ with_indicator: display a loading indicator, optional
                             disabled
                         {% endif %}
                     />
-                        {{ placeholder }}
-                        {% if info %}
-                            <i
-                                class="bi bi-info-circle-fill"
-                                {{ macros.tooltip_attributes('info', info, 'top') }}
-                            ></i>
+                    {{ placeholder }}
+                    {% if info %}
+                        <i
+                            class="bi bi-info-circle-fill"
+                            {{ macros.tooltip_attributes('info', info, 'top') }}
+                        ></i>
+                    {% endif %}
+                {% elif input_type == 'integer-range' %}
+                    <input
+                        id="{{ id }}-min"
+                        name="{{ name }}_min"
+                        class="form-control"
+                        type="number"
+                        step="1"
+                        min="{{ number_min }}"
+                        value="{{ data[name ~ '_min'] }}"
+                        aria-describedby="{{ id }}-help {{ id }}-error"
+                        {% if disabled or min_disabled %}
+                            disabled
                         {% endif %}
+                    />
+                    <input
+                        id="{{ id }}-max"
+                        name="{{ name }}_max"
+                        class="form-control"
+                        type="number"
+                        step="1"
+                        max="{{ number_max }}"
+                        value="{{ data[name ~ '_max'] }}"
+                        {% if disabled or max_disabled %}
+                            disabled
+                        {% endif %}
+                    />
                 {% else %}
                     {% if disabled %}
                         <input
@@ -591,6 +619,24 @@ with_indicator: display a loading indicator, optional
                     {% endif %}
                 {% endif %}
             </div>
+            {% if input_type == 'integer-range' %}
+                {% if disabled or min_disabled %}
+                    <input
+                        id="{{ id }}-min"
+                        name="{{ name }}_min"
+                        type="hidden"
+                        value="{{ data[name ~ '_min'] }}"
+                    />
+                {% endif %}
+                {% if disabled or max_disabled %}
+                    <input
+                        id="{{ id }}-max"
+                        name="{{ name }}_max"
+                        type="hidden"
+                        value="{{ data[name ~ '_max'] }}"
+                    />
+                {% endif %}
+            {% endif %}
             {% if info and input_type != 'radio' %}
                 <i
                     class="bi bi-info-circle-fill"
@@ -603,7 +649,11 @@ with_indicator: display a loading indicator, optional
                 </div>
             {% endif %}
             {% if name in errors %}
-                <div id="{{ id }}-error" class="form-text invalid-feedback">
+                <div
+                    id="{{ id }}-error"
+                    class="form-text invalid-feedback"
+                    style="display:block"
+                >
                     {{ errors[name] }}
                 </div>
             {% endif %}
@@ -1046,6 +1096,35 @@ with_indicator: display a loading indicator, optional
         data=data,
         errors=errors,
         error=error,
+        disabled=disabled,
+    ) }}
+{% endmacro %}
+
+{% macro integer_range_input(
+    name,
+    label='NO LABEL',
+    help_text='',
+    tooltip_text='',
+    number_min='',
+    number_max='',
+    min_disabled=false,
+    max_disabled=false,
+    data={},
+    errors={},
+    disabled=false
+) %}
+    {{ _generic_input(
+        name=name,
+        input_type='integer-range',
+        label=label,
+        tooltip_text=tooltip_text,
+        help_text=help_text,
+        number_min=number_min,
+        number_max=number_max,
+        min_disabled=min_disabled,
+        max_disabled=max_disabled,
+        data=data,
+        errors=errors,
         disabled=disabled,
     ) }}
 {% endmacro %}

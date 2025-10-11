@@ -48,10 +48,6 @@ from plugins.ffe.papi_mappers import (
     PapiPairingSystem,
 )
 from plugins.ffe.utils import FfePlayerPluginData, PlayerFFELicence
-from plugins.pairing_acceleration.pairing_settings import (
-    DualRatingLimitsSetting,
-    RatingLimitSetting,
-)
 from utils import StaticUtils
 from utils.enum import (
     TournamentRating,
@@ -218,14 +214,8 @@ class PapiConverter:
                 )
             return True
 
-    def read_papi_file(
-        self,
-        source_file: Path,
-        stored_tournament: StoredTournament | None = None,
-    ) -> tuple[StoredTournament, list[StoredPlayer]]:
+    def read_papi_file(self, source_file: Path) -> PapiData:
         """Read the papi file *source_file* into stored objects.
-        If a StoredTournament object is provided, add the values to this one,
-        otherwise creates a new one.
         Raises a SharlyChessException if the conversion fails."""
         target_file = TMP_DIR / 'papi-converter-output.json'
         target_file.unlink(missing_ok=True)
@@ -247,15 +237,16 @@ class PapiConverter:
 
         with open(target_file, 'r', encoding='utf-8') as file:
             papi_data_dict = json.load(file)
-        return self.read_papi_data(papi_data_dict, stored_tournament)
+        return dict_to_dataclass(PapiData, papi_data_dict)
 
     def read_papi_data(
         self,
-        papi_data_dict: dict[str, Any],
+        papi_data: PapiData,
         stored_tournament: StoredTournament | None = None,
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
-        """Read a dict in the format of the papi-converter into stored objects."""
-        papi_data = dict_to_dataclass(PapiData, papi_data_dict)
+        """Read a PapiData object into stored objects.
+        If a StoredTournament object is provided, add the values to this one,
+        otherwise creates a new one."""
 
         stored_tournament = self._read_papi_variables(
             papi_data.variables, stored_tournament
@@ -386,30 +377,6 @@ class PapiConverter:
             except KeyError:
                 raise_unknown_value('ratingClass', variables.ratingClass)
         stored_tournament.rating = rating.value
-        rating_threshold_1 = 0
-        if variables.ratingThreshold1:
-            if not variables.ratingThreshold1.isdigit():
-                raise_exception(
-                    'ratingThreshold1', _('A positive integer is expected.')
-                )
-            rating_threshold_1 = int(variables.ratingThreshold1)
-        rating_threshold_2 = 0
-        if variables.ratingThreshold2:
-            if not variables.ratingThreshold2.isdigit():
-                raise_exception(
-                    'ratingThreshold2', _('A positive integer is expected.')
-                )
-            rating_threshold_2 = int(variables.ratingThreshold2)
-        if (rating_threshold_1, rating_threshold_2) != (0, 0):
-            pairing_settings = stored_tournament.pairing_settings or {}
-            if rating_threshold_1 == rating_threshold_2 or rating_threshold_2 == 0:
-                pairing_settings[RatingLimitSetting.static_id()] = rating_threshold_1
-            else:
-                pairing_settings[DualRatingLimitsSetting.static_id()] = (
-                    rating_threshold_2,
-                    rating_threshold_1,
-                )
-            stored_tournament.pairing_settings = pairing_settings
         tie_breaks: list[dict[str, Any]] = []
         for index, papi_tie_break in enumerate(
             (variables.tiebreak1, variables.tiebreak2, variables.tiebreak3)
@@ -729,20 +696,6 @@ class PapiConverter:
     def _tournament_to_papi_data(self, tournament: Tournament) -> PapiData:
         """Convert a Tournament object to PapiData."""
 
-        pairing_settings = tournament.pairing_settings
-        if (
-            pairing_settings
-            and (setting_id := DualRatingLimitsSetting.static_id()) in pairing_settings
-        ):
-            sharing_thresholds = pairing_settings[setting_id]
-        elif (
-            pairing_settings
-            and (setting_id := RatingLimitSetting.static_id()) in pairing_settings
-        ):
-            sharing_thresholds = (pairing_settings[setting_id],) * 2
-        else:
-            sharing_thresholds = 0, 0
-
         # Convert tournament variables
         variables = PapiVariables(
             name=tournament.full_name,
@@ -771,8 +724,8 @@ class PapiConverter:
             ),
             arbiter='',
             timeControl='',
-            ratingThreshold1=str(sharing_thresholds[1]),
-            ratingThreshold2=str(sharing_thresholds[0]),
+            ratingThreshold1='0',
+            ratingThreshold2='0',
             homologation=str(
                 FFEUtils.get_tournament_plugin_data(tournament).ffe_id or ''
             ),

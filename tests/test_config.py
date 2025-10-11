@@ -249,7 +249,7 @@ class TestUtils:
             if via_api_request_context:
                 # Send as multipart/form-data with a real file field named "file"
                 res = via_api_request_context.post(
-                    f'/tournament-import/{event_uniq_id}/{stored_tournament.id}/PAPI_JSON',
+                    f'/tournament-import/{event_uniq_id}/{stored_tournament.id}/ffe-PAPI_JSON',
                     multipart={
                         # UploadFile field name in your handler is "file"
                         'file': {

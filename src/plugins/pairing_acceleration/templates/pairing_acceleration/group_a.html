@@ -1,0 +1,31 @@
+<h4>
+    {{ _('Acceleration groups') }}
+    <i
+        class="bi-info-circle-fill ps-1 text-body"
+        style="font-size: 90%"
+        {{ macros.tooltip_attributes(
+            '', _(
+                'Virtual points are granted to players according to their group. '
+                'Those points only are used for pairing, not for ranking.'
+            ), 'top'
+        ) }}
+    ></i>
+</h4>
+<div class="row mb-3">
+    <div class="col-12">
+        {% set recommended = setting.default_value(admin_tournament) %}
+        {{ admin_macros.integer_range_input(
+            name=setting.id,
+            label=_('%(string)s:', string=setting.name),
+            help_text=_(
+                'Pairing number range of the group (recommended: %(min)d-%(max)d).',
+                min=recommended[0],
+                max=recommended[1],
+            ),
+            tooltip_text=admin_tournament.pairing_variation.get_group_a_tooltip(admin_tournament),
+            min_disabled=true,
+            data=data,
+            errors=errors,
+        ) }}
+    </div>
+</div>

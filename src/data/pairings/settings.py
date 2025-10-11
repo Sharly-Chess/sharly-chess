@@ -55,23 +55,21 @@ class PairingSetting[T](IdentifiableEntity, ABC):
     def is_valid(cls, tournament: 'Tournament') -> bool:
         if not cls.is_set(tournament):
             return False
-        assert tournament.pairing_settings is not None
-        assert tournament.stored_pairing_settings is not None
         return cls.check_value(
             tournament,
             cls.from_stored_value(tournament.stored_pairing_settings[cls.static_id()]),
         )
 
     @classmethod
-    @abstractmethod
     def check_value(cls, tournament: 'Tournament', value: T) -> bool:
-        """Check if a value of type T is valid for pairing generation for a tournament."""
+        """Check if a value of type T is valid for pairing generation for a tournament.
+        If False, pairing generation falls back to default settings."""
+        return True
 
     @classmethod
     def is_set(cls, tournament: 'Tournament'):
         """Check if the value is set in the stored settings."""
-        settings = tournament.stored_pairing_settings
-        return settings and cls.static_id() in settings
+        return cls.static_id() in tournament.stored_pairing_settings
 
     def default_form_data(self, tournament: 'Tournament') -> dict[str, str]:
         return self.to_form_data(self.default_value(tournament))
@@ -83,7 +81,7 @@ class PairingSetting[T](IdentifiableEntity, ABC):
 
     @classmethod
     def get_value(cls, tournament: 'Tournament') -> T:
-        if tournament.stored_pairing_settings and cls.is_set(tournament):
+        if cls.is_set(tournament):
             value = cls.from_stored_value(
                 tournament.stored_pairing_settings[cls.static_id()]
             )
@@ -136,7 +134,6 @@ class ColorSeedSetting(PairingSetting[BoardColor]):
                 for player in sorted(
                     tournament.players,
                     key=lambda player: player.starting_rank_sort_key,
-                    reverse=True,
                 )
                 if 1 in player.pairings and player.pairings[1].color is not None
             ),
@@ -150,10 +147,6 @@ class ColorSeedSetting(PairingSetting[BoardColor]):
     @classmethod
     def to_stored_value(cls, object_: BoardColor) -> Any:
         return object_.value
-
-    @classmethod
-    def check_value(cls, tournament: 'Tournament', value: BoardColor):
-        return True
 
     def default_form_data(self, tournament: 'Tournament') -> dict[str, str]:
         color = self._computed_value(tournament)
@@ -237,7 +230,7 @@ class BergerNumbersSetting(PairingSetting[dict[int, int]]):
         }
 
     @classmethod
-    def check_value(cls, tournament: 'Tournament', value: dict[int, int]):
+    def check_value(cls, tournament: 'Tournament', value: dict[int, int]) -> bool:
         berger_numbers = value
         if len(set(berger_numbers.values())) != len(set(berger_numbers.keys())):
             return False

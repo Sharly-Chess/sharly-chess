@@ -1,0 +1,36 @@
+<div class="row mb-3">
+    <div class="col-12">
+        {% set recommended = setting.default_value(admin_tournament) %}
+        {{ admin_macros.integer_range_input(
+            name=setting.id,
+            label=_('%(string)s:', string=setting.name),
+            help_text=_(
+                'Pairing number range of the group (recommended: %(min)d-%(max)d).',
+                min=recommended[0],
+                max=recommended[1],
+            ),
+            tooltip_text=admin_tournament.pairing_variation.get_group_b_tooltip(admin_tournament),
+            max_disabled=setting.group_count() == 2,
+            data=data,
+            errors=errors,
+        ) }}
+    </div>
+</div>
+<script>
+    {% set min_field = 'pairing-acceleration-GROUP-B-' ~ setting.group_count() ~ '-min' %}
+    {% set previous_max_field = 'pairing-acceleration-GROUP-A-' ~ setting.group_count() ~ '-max' %}
+    $('#{{ min_field }}').change(function () {
+        var newVal = '';
+        if ($(this).val() !== '') {
+            newVal = String(parseInt($(this).val(), 10) - 1);
+        }
+        $('#{{ previous_max_field }}').val(newVal);
+    });
+    $('#{{ previous_max_field }}').change(function () {
+        var newVal = '';
+        if ($(this).val() !== '') {
+            newVal = String(parseInt($(this).val(), 10) + 1);
+        }
+        $('#{{ min_field }}').val(newVal);
+    });
+</script>

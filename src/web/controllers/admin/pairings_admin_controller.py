@@ -912,9 +912,8 @@ class PairingsAdminController(BaseEventAdminController):
             action=PairingAction.FULL_PAIRING,
         )
         tournament = web_context.get_admin_tournament()
+        tournament.set_valid_pairing_settings()
         round_ = web_context.admin_round
-        if not tournament.are_pairing_settings_valid:
-            tournament.set_default_pairing_settings()
         tournament.pairing_variation.engine.generate_pairings(tournament, round_)
         Message.success(request, _('Pairings successfully generated.'))
 
@@ -944,9 +943,8 @@ class PairingsAdminController(BaseEventAdminController):
             action=PairingAction.PARTIAL_PAIRING,
         )
         tournament = web_context.get_admin_tournament()
+        tournament.set_valid_pairing_settings()
         round_ = web_context.admin_round
-        if not tournament.are_pairing_settings_valid:
-            tournament.set_default_pairing_settings()
         tournament.pairing_variation.engine.generate_pairings(tournament, round_, True)
         unpaired_count = sum(
             player.pairings[round_].not_paired for player in tournament.players
@@ -1266,24 +1264,16 @@ class PairingsAdminController(BaseEventAdminController):
         )
         return self._admin_event_pairings_render(web_context)
 
-    @staticmethod
-    def _validate_pairing_settings(
-        tournament: Tournament, data: dict[str, str]
-    ) -> dict[str, str]:
-        errors: dict[str, str] = {}
-        for setting in tournament.pairing_variation.settings:
-            errors |= setting.get_data_errors(tournament, data)
-        return errors
-
     def _pairings_settings_modal_error_context(
         self,
         tournament: Tournament,
         data: dict[str, str],
     ) -> dict[str, Any] | None:
-        if errors := self._validate_pairing_settings(tournament, data):
+        pairing_variation = tournament.pairing_variation
+        if errors := pairing_variation.get_settings_data_error(tournament, data):
             if data is None:
                 data = {}
-                for setting in tournament.pairing_variation.settings:
+                for setting in pairing_variation.settings:
                     data |= setting.default_form_data(tournament)
 
             return {

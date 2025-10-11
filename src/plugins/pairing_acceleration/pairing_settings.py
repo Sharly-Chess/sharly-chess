@@ -1,5 +1,5 @@
-import math
-from enum import auto, Enum
+from abc import ABC, abstractmethod
+from enum import StrEnum
 from typing import TYPE_CHECKING
 
 from common.i18n import _
@@ -8,45 +8,111 @@ from plugins.pairing_acceleration import PLUGIN_NAME
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
-    from data.player import Player
 
 
-class RatingGroup(Enum):
-    A = auto()
-    B = auto()
-    C = auto()
+class AccelerationGroup(StrEnum):
+    A = 'A'
+    B = 'B'
+    C = 'C'
 
 
-class RatingLimitSetting(PairingSetting[int]):
+class PairingGroupSetting(PairingSetting[tuple[int, int]], ABC):
+    @classmethod
+    def static_id(cls) -> str:
+        return f'{PLUGIN_NAME}-GROUP_{cls.group()}_{cls.group_count()}'
+
+    @classmethod
+    def static_name(cls) -> str:
+        return _('Group {group_id}').format(group_id=cls.group())
+
     @staticmethod
-    def static_id() -> str:
-        return f'{PLUGIN_NAME}-rating_limit'
+    @abstractmethod
+    def group() -> AccelerationGroup:
+        """The acceleration group matching the setting."""
 
     @staticmethod
-    def static_name() -> str:
-        return _('Rating limit')
+    @abstractmethod
+    def group_count() -> int:
+        """Number of groups used in the settings group."""
+
+    @classmethod
+    @abstractmethod
+    def default_values_by_group(
+        cls, tournament: 'Tournament'
+    ) -> dict[AccelerationGroup, tuple[int, int]]:
+        """Compute the default values of each group."""
 
     @property
     def template_path(self) -> str:
-        return f'/{PLUGIN_NAME}/rating_limit.html'
+        return f'/{PLUGIN_NAME}/group_{self.group().lower()}.html'
 
-    def tooltip_representation(self, value: int) -> str | None:
-        if value != 0:
-            return str(value)
-        return None
+    @property
+    def min_field(self) -> str:
+        return f'{self.id}_min'
 
-    def from_form_data(self, data: dict[str, str]) -> int:
-        return int(data[self.id])
+    @property
+    def max_field(self) -> str:
+        return f'{self.id}_max'
 
-    def to_form_data(self, object_: int) -> dict[str, str]:
-        return {self.id: str(object_)}
+    def tooltip_representation(self, value: tuple[int, int]) -> str | None:
+        return f'{value[0]} - {value[1]}'
+
+    def from_form_data(self, data: dict[str, str]) -> tuple[int, int]:
+        return (
+            int(data[self.min_field]),
+            int(data[self.max_field]),
+        )
+
+    def to_form_data(self, object_: tuple[int, int]) -> dict[str, str]:
+        return {
+            self.min_field: str(object_[0]),
+            self.max_field: str(object_[1]),
+        }
 
     def get_data_errors(
         self, tournament: 'Tournament', data: dict[str, str]
     ) -> dict[str, str]:
-        if not data.get(self.id, None) or int(data[self.id]) < 0:
-            return {self.id: _('A positive integer is expected.')}
-        if not self._check_rating_limit(tournament, int(data[self.id])):
+        errors: dict[str, str] = {}
+        for field in (self.min_field, self.max_field):
+            if not data.get(field, None) or int(data[field]) < 0:
+                errors[self.id] = _('Positive values are expected.')
+                return errors
+        min_number, max_number = self.from_form_data(data)
+        if min_number >= max_number:
+            errors[self.id] = _('Maximum value must be greater than the minimum value.')
+        return errors
+
+    @classmethod
+    def default_value(cls, tournament: 'Tournament') -> tuple[int, int]:
+        return cls.default_values_by_group(tournament)[cls.group()]
+
+
+class Base2GroupsSetting(PairingGroupSetting, ABC):
+    @staticmethod
+    def group_count() -> int:
+        return 2
+
+    @classmethod
+    def default_values_by_group(
+        cls, tournament: 'Tournament'
+    ) -> dict[AccelerationGroup, tuple[int, int]]:
+        player_count = tournament.player_count
+        if player_count < 3:
+            return {group: (0, 0) for group in AccelerationGroup}
+        max_a = round(player_count / 4) * 2
+        return {
+            AccelerationGroup.A: (1, max_a),
+            AccelerationGroup.B: (max_a + 1, player_count),
+        }
+
+    def get_data_errors(
+        self, tournament: 'Tournament', data: dict[str, str]
+    ) -> dict[str, str]:
+        if errors := super().get_data_errors(tournament, data):
+            return errors
+
+        min_number, max_number = self.from_form_data(data)
+        if tournament.player_count / 4 > max_number - min_number + 1:
             return {
                 self.id: _(
                     'Groups must be composed of at least 25%% of players.'
@@ -54,170 +120,81 @@ class RatingLimitSetting(PairingSetting[int]):
             }
         return {}
 
-    @classmethod
-    def default_value(cls, tournament: 'Tournament') -> int:
-        ratings = cls.player_ratings(tournament)
-        if len(ratings) < 2:
-            return 0
-        first_b = len(ratings) // 2 - 1
-        return math.ceil((ratings[first_b] + ratings[first_b + 1]) / 2)
 
-    recommended_value = default_value
-
-    @classmethod
-    def check_value(cls, tournament: 'Tournament', value: int):
-        return cls._check_rating_limit(tournament, value)
-
+class GroupA2GroupsSetting(Base2GroupsSetting):
     @staticmethod
-    def player_ratings(tournament: 'Tournament') -> list[int]:
-        return sorted(player.rating for player in tournament.players)
-
-    @classmethod
-    def group_counts(
-        cls, tournament: 'Tournament', rating_limit: int
-    ) -> tuple[int, int]:
-        """Number of players in groups A and B."""
-        ratings = cls.player_ratings(tournament)
-        group_a = len([rating for rating in ratings if rating_limit <= rating])
-        return group_a, len(ratings) - group_a
-
-    @classmethod
-    def _check_rating_limit(cls, tournament: 'Tournament', rating_limit: int) -> bool:
-        a_group, b_group = cls.group_counts(tournament, rating_limit)
-        total = a_group + b_group
-        return total < 2 or total / 4 <= b_group <= 3 * total / 4
-
-    @classmethod
-    def get_player_rating_group(
-        cls, tournament: 'Tournament', player: 'Player'
-    ) -> RatingGroup:
-        rating_limit = tournament.pairing_settings[cls.static_id()]
-        return RatingGroup.A if player.rating >= rating_limit else RatingGroup.B
+    def group() -> AccelerationGroup:
+        return AccelerationGroup.A
 
 
-class DualRatingLimitsSetting(PairingSetting[tuple[int, int]]):
-    lower_limit_field = 'lower-limit-field'
-    upper_limit_field = 'upper-limit-field'
-
+class GroupB2GroupsSetting(Base2GroupsSetting):
     @staticmethod
-    def static_id() -> str:
-        return f'{PLUGIN_NAME}-dual_rating_limits'
+    def group() -> AccelerationGroup:
+        return AccelerationGroup.B
 
+
+class Base3GroupsSetting(PairingGroupSetting, ABC):
     @staticmethod
-    def static_name() -> str:
-        return _('Rating limits')
+    def group_count() -> int:
+        return 3
 
-    @property
-    def template_path(self) -> str:
-        return f'/{PLUGIN_NAME}/dual_rating_limits.html'
-
-    def tooltip_representation(self, value: tuple[int, int]) -> str | None:
-        if value != (0, 0):
-            return f'{value[0]} - {value[1]}'
-        return None
-
-    def from_form_data(self, data: dict[str, str]) -> tuple[int, int]:
-        return (
-            int(data[self.lower_limit_field]),
-            int(data[self.upper_limit_field]),
-        )
-
-    def to_form_data(self, object_: tuple[int, int]) -> dict[str, str]:
+    @classmethod
+    def default_values_by_group(
+        cls, tournament: 'Tournament'
+    ) -> dict[AccelerationGroup, tuple[int, int]]:
+        """Recommended values for an ideal repartition of players.
+        Ideal repartition:
+            - Group A: closest multiple of 4 to a third of the players
+            - Group B: closest multiple of 2 of half of the remaining players
+            - Group C: remaining players"""
+        player_count = len(tournament.players)
+        if player_count < 3:
+            return {group: (0, 0) for group in AccelerationGroup}
+        if player_count < 11:
+            # Min ideal repartition: A(4), B(4), C(3)
+            max_a = player_count // 3
+            max_b = 2 * player_count // 3
+        else:
+            max_a = 4 * round((player_count / 3) / 4)
+            max_b = max_a + 2 * round((player_count - max_a) / 4)
         return {
-            self.lower_limit_field: str(object_[0]),
-            self.upper_limit_field: str(object_[1]),
+            AccelerationGroup.A: (1, max_a),
+            AccelerationGroup.B: (max_a + 1, max_b),
+            AccelerationGroup.C: (max_b + 1, player_count),
         }
 
     def get_data_errors(
         self, tournament: 'Tournament', data: dict[str, str]
     ) -> dict[str, str]:
-        for field in (self.lower_limit_field, self.upper_limit_field):
-            if not data.get(field, None) or int(data[field]) < 0:
-                return {field: _('A positive integer is expected.')}
+        if errors := super().get_data_errors(tournament, data):
+            return errors
 
-        lower_limit = int(data[self.lower_limit_field])
-        upper_limit = int(data[self.upper_limit_field])
-        if lower_limit >= upper_limit:
+        min_number, max_number = self.from_form_data(data)
+        group_count = max_number - min_number + 1
+        player_count = tournament.player_count
+        if not player_count / 4 <= group_count <= player_count / 2:
             return {
-                self.upper_limit_field: _(
-                    'Upper limit expected to be greater than lower limit.'
-                )
-            }
-        group_counts = self.group_counts(tournament, (lower_limit, upper_limit))
-        for index, group_count in enumerate(group_counts):
-            if self._check_group_count(group_count, sum(group_counts)):
-                continue
-            field = self.lower_limit_field if index <= 1 else self.upper_limit_field
-            return {
-                field: _(
+                self.id: _(
                     'Groups must be composed of at least '
                     '25%% and at most 50%% of players.'
                 ).replace('%%', '%')
             }
         return {}
 
-    @classmethod
-    def default_value(cls, tournament: 'Tournament') -> tuple[int, int]:
-        """Recommend the values for an ideal repartition of players.
-        Ideal repartition:
-            - Group A: closest multiple of 4 to a third of the players
-            - Group B: closest multiple of 2 of half of the remaining players
-            - Group C: remaining players"""
-        ratings = cls.player_ratings(tournament)
-        player_count = len(ratings)
-        if player_count < 3:
-            return 0, 0
-        if player_count < 11:
-            # Min ideal repartition: A(4), B(4), C(3)
-            first_c = player_count // 3 - 1
-            first_b = 2 * player_count // 3 - 1
-        else:
-            a_count = 4 * round((player_count / 3) / 4)
-            b_count = 2 * round((player_count - a_count) / 4)
-            first_b = (player_count - 1) - a_count
-            first_c = (player_count - 1) - (a_count + b_count)
-        return (
-            math.ceil((ratings[first_c] + ratings[first_c + 1]) / 2),
-            math.ceil((ratings[first_b] + ratings[first_b + 1]) / 2),
-        )
 
-    recommended_value = default_value
-
-    @classmethod
-    def check_value(cls, tournament: 'Tournament', value: tuple[int, int]):
-        group_counts = cls.group_counts(tournament, value)
-        return all(
-            cls._check_group_count(group_count, sum(group_counts))
-            for group_count in group_counts
-        )
-
+class GroupA3GroupsSetting(Base3GroupsSetting):
     @staticmethod
-    def player_ratings(tournament: 'Tournament') -> list[int]:
-        return sorted(player.rating for player in tournament.players)
+    def group() -> AccelerationGroup:
+        return AccelerationGroup.A
 
-    @classmethod
-    def group_counts(
-        cls, tournament: 'Tournament', rating_limits: tuple[int, int]
-    ) -> tuple[int, int, int]:
-        """Number of players in groups A, B and C."""
-        ratings = cls.player_ratings(tournament)
-        group_a = len([rating for rating in ratings if rating_limits[1] <= rating])
-        group_c = len([rating for rating in ratings if rating < rating_limits[0]])
-        return group_a, max(len(ratings) - (group_a + group_c), 0), group_c
 
-    @classmethod
-    def _check_group_count(cls, group_count: int, total: int) -> bool:
-        return total < 3 or total / 4 <= group_count <= total / 2
+class GroupB3GroupsSetting(Base3GroupsSetting):
+    @staticmethod
+    def group() -> AccelerationGroup:
+        return AccelerationGroup.B
 
-    @classmethod
-    def get_player_rating_group(
-        cls, tournament: 'Tournament', player: 'Player'
-    ) -> RatingGroup:
-        lower_limit, upper_limit = tournament.pairing_settings[cls.static_id()]
-        rating = player.rating
-        if rating >= upper_limit:
-            return RatingGroup.A
-        elif rating >= lower_limit:
-            return RatingGroup.B
-        else:
-            return RatingGroup.C
+
+class GroupC3GroupsSetting(Base3GroupsSetting):
+    @staticmethod
+    def group() -> AccelerationGroup:
+        return AccelerationGroup.C

@@ -16,8 +16,6 @@ from data.input_output.data_source import (
     LocalDataSource,
     OnlineDataSource,
 )
-from data.pairings.settings import PairingSetting
-from data.pairings.variations import SwissVariation
 from data.player import Player
 from data.print_documents import PlayerSplitter
 from data.criteria.player_filter_options import (
@@ -34,9 +32,9 @@ from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_database import FfeDatabase, PlayerFFELicence
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.utils import FFEUtils
-from plugins.pairing_acceleration.pairing_settings import (
-    DualRatingLimitsSetting,
-    RatingGroup,
+from plugins.pairing_acceleration.pairing_settings import AccelerationGroup
+from plugins.pairing_acceleration.pairing_variations import (
+    Acceleration3GroupsSwissVariation,
 )
 from plugins.utils import PluginUtils
 from utils.enum import Result
@@ -333,7 +331,7 @@ class FFESiteQRCodeType(QRCodeType):
         return QRCodeType.generate_qr_code(url=url, logo=False)
 
 
-class NicoisSwissVariation(SwissVariation):
+class NicoisSwissVariation(Acceleration3GroupsSwissVariation):
     """Variation of the Progressive swiss system,
     with even more progressive virtual points.
     A draw virtual point is added every 2 real draw points,
@@ -351,10 +349,6 @@ class NicoisSwissVariation(SwissVariation):
     def static_name() -> str:
         return _('"Niçois" accelerated system')
 
-    @property
-    def settings(self) -> list[PairingSetting]:
-        return super().settings + [DualRatingLimitsSetting()]
-
     @classmethod
     def compute_virtual_points(
         cls,
@@ -367,48 +361,88 @@ class NicoisSwissVariation(SwissVariation):
             # points, and use a simple Swiss Dutch system.
             return 0.0
         return cls._compute_virtual_points(
-            rating_group=DualRatingLimitsSetting.get_player_rating_group(
-                tournament, player
-            ),
+            group=cls.get_player_group(tournament, player),
             points=player.points_before(at_round),
             tournament_rounds=tournament.rounds,
             draw_points=Result.DRAW.points(tournament.point_values),
-            gain_points=Result.WIN.points(tournament.point_values),
+            win_points=Result.WIN.points(tournament.point_values),
         )
+
+    @classmethod
+    def _get_group_a_tooltip_lines(
+        cls, tournament: Tournament
+    ) -> list[tuple[str, float | None]]:
+        win_points = Result.WIN.points(tournament.point_values)
+        return [
+            (cls._rounds_prefix(1, tournament.rounds - 2), 2 * win_points),
+            (cls._rounds_prefix(tournament.rounds - 1, tournament.rounds), 0),
+        ]
+
+    @classmethod
+    def _get_detailed_group_tooltip_lines(
+        cls, tournament: Tournament, group: AccelerationGroup
+    ) -> list[tuple[str, float | None]]:
+        draw_points = Result.DRAW.points(tournament.point_values)
+        win_points = Result.WIN.points(tournament.point_values)
+        get_vpoints = partial(
+            cls._compute_virtual_points,
+            group=group,
+            tournament_rounds=tournament.rounds,
+            draw_points=draw_points,
+            win_points=win_points,
+        )
+        return [
+            (cls._rounds_prefix(1, tournament.rounds - 2), None),
+            *cls._get_incremental_points_lines(
+                get_vpoints, draw_points, 2 * win_points
+            ),
+            (cls._rounds_prefix(tournament.rounds - 1, tournament.rounds), 0),
+        ]
+
+    @classmethod
+    def _get_group_b_tooltip_lines(
+        cls, tournament: Tournament
+    ) -> list[tuple[str, float | None]]:
+        return cls._get_detailed_group_tooltip_lines(tournament, AccelerationGroup.B)
+
+    @classmethod
+    def _get_group_c_tooltip_lines(
+        cls, tournament: Tournament
+    ) -> list[tuple[str, float | None]]:
+        return cls._get_detailed_group_tooltip_lines(tournament, AccelerationGroup.C)
 
     @staticmethod
     @cache
     def _compute_virtual_points(
-        rating_group: RatingGroup,
         points: int,
+        group: AccelerationGroup,
         tournament_rounds: int,
         draw_points: float,
-        gain_points: float,
+        win_points: float,
     ) -> float:
-        if 2 * points >= tournament_rounds * gain_points:
+        if 2 * points >= tournament_rounds * win_points:
             # If a player gets at least half the possible score,
             # their capital is set at 2 points.
-            return 2 * gain_points
+            return 2 * win_points
 
-        match rating_group:
-            case RatingGroup.A:
+        vpoints = 0.0
+        match group:
+            case AccelerationGroup.A:
                 # Starts with 2 gain points (max)
-                return 2 * gain_points
-            case RatingGroup.B:
+                return 2 * win_points
+            case AccelerationGroup.B:
                 # Starts with 1 gain point
                 # Earns a draw point at 3 real draw points, and a final one at 5
-                vpoints = gain_points
+                vpoints = win_points
                 if points >= 3 * draw_points:
                     vpoints += draw_points
                     if points >= 5 * draw_points:
                         vpoints += draw_points
-            case RatingGroup.C:
+            case AccelerationGroup.C:
                 # Starts with 0 virtual points
                 # Players get a virtual draw points for 2 real draw points
                 vpoints = draw_points * (points // (2 * draw_points))
-            case _:
-                raise ValueError(f'{rating_group=}')
-        return min(2 * gain_points, vpoints)
+        return min(2 * win_points, vpoints)
 
 
 class FfeLeaguePlayerFilter(PlayerFilter):
