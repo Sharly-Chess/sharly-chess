@@ -369,20 +369,19 @@ class NicoisSwissVariation(Acceleration3GroupsSwissVariation):
         )
 
     @classmethod
-    def _get_group_a_tooltip_lines(cls, tournament: Tournament) -> list[str]:
+    def _get_group_a_tooltip_lines(
+        cls, tournament: Tournament
+    ) -> list[tuple[str, float | None]]:
+        win_points = Result.WIN.points(tournament.point_values)
         return [
-            cls._round_range_tooltip_line(
-                1,
-                tournament.rounds - 2,
-                2 * Result.WIN.points(tournament.point_values),
-            ),
-            cls._round_range_tooltip_line(tournament.rounds - 1, tournament.rounds),
+            (cls._rounds_prefix(1, tournament.rounds - 2), 2 * win_points),
+            (cls._rounds_prefix(tournament.rounds - 1, tournament.rounds), 0),
         ]
 
     @classmethod
     def _get_detailed_group_tooltip_lines(
         cls, tournament: Tournament, group: AccelerationGroup
-    ) -> list[str]:
+    ) -> list[tuple[str, float | None]]:
         draw_points = Result.DRAW.points(tournament.point_values)
         win_points = Result.WIN.points(tournament.point_values)
         get_vpoints = partial(
@@ -392,24 +391,24 @@ class NicoisSwissVariation(Acceleration3GroupsSwissVariation):
             draw_points=draw_points,
             win_points=win_points,
         )
-        message = cls._get_incremental_points_message(
-            get_vpoints, draw_points, 2 * win_points
-        )
         return [
-            cls._round_range_tooltip_line(
-                1,
-                tournament.rounds - 2,
-                message=message,
+            (cls._rounds_prefix(1, tournament.rounds - 2), None),
+            *cls._get_incremental_points_lines(
+                get_vpoints, draw_points, 2 * win_points
             ),
-            cls._round_range_tooltip_line(tournament.rounds - 1, tournament.rounds),
+            (cls._rounds_prefix(tournament.rounds - 1, tournament.rounds), 0),
         ]
 
     @classmethod
-    def _get_group_b_tooltip_lines(cls, tournament: Tournament) -> list[str]:
+    def _get_group_b_tooltip_lines(
+        cls, tournament: Tournament
+    ) -> list[tuple[str, float | None]]:
         return cls._get_detailed_group_tooltip_lines(tournament, AccelerationGroup.B)
 
     @classmethod
-    def _get_group_c_tooltip_lines(cls, tournament: Tournament) -> list[str]:
+    def _get_group_c_tooltip_lines(
+        cls, tournament: Tournament
+    ) -> list[tuple[str, float | None]]:
         return cls._get_detailed_group_tooltip_lines(tournament, AccelerationGroup.C)
 
     @staticmethod

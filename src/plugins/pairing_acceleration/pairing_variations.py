@@ -32,12 +32,16 @@ class AccelerationSwissVariation(SwissVariation, ABC):
 
     @classmethod
     @abstractmethod
-    def _get_group_a_tooltip_lines(cls, tournament: Tournament) -> list[str]:
+    def _get_group_a_tooltip_lines(
+        cls, tournament: Tournament
+    ) -> list[tuple[str, float | None]]:
         """Tooltip representing the group A."""
 
     @classmethod
     @abstractmethod
-    def _get_group_b_tooltip_lines(cls, tournament: Tournament) -> list[str]:
+    def _get_group_b_tooltip_lines(
+        cls, tournament: Tournament
+    ) -> list[tuple[str, float | None]]:
         """Tooltip representing the group B."""
 
     @classmethod
@@ -49,30 +53,36 @@ class AccelerationSwissVariation(SwissVariation, ABC):
         return cls._build_tooltip(cls._get_group_b_tooltip_lines(tournament))
 
     @staticmethod
-    def _build_tooltip(tooltip_lines: list[str]) -> str:
+    def _build_tooltip(tooltip_lines: list[tuple[str, float | None]]) -> str:
         if not tooltip_lines:
             return _('No acceleration.')
-        title = f'<h6>{_("Virtual points")}</h6>'
-        return title + ''.join(
-            f'<div class="text-start">{line}</div>' for line in tooltip_lines
+        return (
+            f'<h6>{_("Virtual points")}</h6>'
+            '<div '
+            '   class="gap-0 d-grid align-self-center" '
+            '   style="grid-template-columns: min-content min-content;"'
+            '>'
+            + ''.join(
+                f'<div class="text-start text-nowrap">{prefix}</div>'
+                f'<div class="text-start text-nowrap ps-1">'
+                f'  {"→ " + StaticUtils.points_str(points) if points is not None else ""}'
+                f'</div>'
+                for prefix, points in tooltip_lines
+            )
+            + '</div>'
         )
 
     @staticmethod
-    def _round_range_tooltip_line(
+    def _rounds_prefix(
         min_round: int,
         max_round: int | None = None,
-        points: float = 0.0,
-        message: str | None = None,
     ) -> str:
         if not max_round or min_round >= max_round:
-            prefix = _('Round {round}').format(round=min_round)
+            return _('Round {round}').format(round=min_round)
         else:
-            prefix = _('Rounds {min_round}-{max_round}').format(
+            return _('Rounds {min_round}-{max_round}').format(
                 min_round=min_round, max_round=max_round
             )
-        if not message:
-            message = StaticUtils.points_str(points)
-        return _('{string}: {value}').format(string=prefix, value=message)
 
     @classmethod
     @abstractmethod
@@ -146,7 +156,9 @@ class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
 
     @classmethod
     @abstractmethod
-    def _get_group_c_tooltip_lines(cls, tournament: Tournament) -> list[str]:
+    def _get_group_c_tooltip_lines(
+        cls, tournament: Tournament
+    ) -> list[tuple[str, float | None]]:
         """Tooltip representing the group C."""
 
     @classmethod
@@ -211,7 +223,6 @@ class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
 
     @staticmethod
     def _format_vpoints_inequality(
-        vpoints: float,
         min_points: float | None = None,
         max_points: float | None = None,
     ) -> str:
@@ -224,18 +235,16 @@ class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
             inequality = f'{points_name} ≥ {min_str}'
         else:
             inequality = f'{min_str} ≤ {points_name} < {max_str}'
-        return _('{string}: {value}').format(
-            string=inequality, value=StaticUtils.points_str(vpoints)
-        )
+        return '&nbsp;' * 4 + inequality
 
     @classmethod
-    def _get_incremental_points_message(
+    def _get_incremental_points_lines(
         cls,
         get_vpoints: Callable[[float], float],
         step: float,
         max_vpoints: float,
-    ) -> str:
-        message_parts: list[str] = []
+    ) -> list[tuple[str, float | None]]:
+        message_lines: list[tuple[str, float | None]] = []
         points = 0.0
         previous_threshold: float | None = None
         previous_vpoints = get_vpoints(points)
@@ -244,16 +253,22 @@ class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
             points += step
             vpoints = get_vpoints(points)
             if previous_vpoints != vpoints:
-                message_parts.append(
-                    cls._format_vpoints_inequality(
-                        previous_vpoints, previous_threshold, points
+                message_lines.append(
+                    (
+                        cls._format_vpoints_inequality(previous_threshold, points),
+                        previous_vpoints,
                     )
                 )
                 previous_threshold = points
                 previous_vpoints = vpoints
 
-        message_parts.append(cls._format_vpoints_inequality(vpoints, points))
-        return ''.join('<br/>' + '&nbsp;' * 4 + part for part in message_parts)
+        message_lines.append(
+            (
+                cls._format_vpoints_inequality(points),
+                vpoints,
+            )
+        )
+        return message_lines
 
 
 class HaleySwissVariation(Acceleration2GroupsSwissVariation):
@@ -266,16 +281,19 @@ class HaleySwissVariation(Acceleration2GroupsSwissVariation):
         return _('Haley system')
 
     @classmethod
-    def _get_group_a_tooltip_lines(cls, tournament: Tournament) -> list[str]:
+    def _get_group_a_tooltip_lines(
+        cls, tournament: Tournament
+    ) -> list[tuple[str, float | None]]:
+        win_points = Result.WIN.points(tournament.point_values)
         return [
-            cls._round_range_tooltip_line(
-                1, 2, Result.WIN.points(tournament.point_values)
-            ),
-            cls._round_range_tooltip_line(3, tournament.rounds),
+            (cls._rounds_prefix(1, 2), win_points),
+            (cls._rounds_prefix(3, tournament.rounds), 0),
         ]
 
     @classmethod
-    def _get_group_b_tooltip_lines(cls, tournament: Tournament) -> list[str]:
+    def _get_group_b_tooltip_lines(
+        cls, tournament: Tournament
+    ) -> list[tuple[str, float | None]]:
         return []
 
     @classmethod
@@ -306,22 +324,24 @@ class HaleySoftSwissVariation(Acceleration2GroupsSwissVariation):
         return _('Soft Haley system')
 
     @classmethod
-    def _get_group_a_tooltip_lines(cls, tournament: Tournament) -> list[str]:
+    def _get_group_a_tooltip_lines(
+        cls, tournament: Tournament
+    ) -> list[tuple[str, float | None]]:
+        win_points = Result.WIN.points(tournament.point_values)
         return [
-            cls._round_range_tooltip_line(
-                1, 2, Result.WIN.points(tournament.point_values)
-            ),
-            cls._round_range_tooltip_line(3, tournament.rounds),
+            (cls._rounds_prefix(1, 2), win_points),
+            (cls._rounds_prefix(3, tournament.rounds), 0),
         ]
 
     @classmethod
-    def _get_group_b_tooltip_lines(cls, tournament: Tournament) -> list[str]:
+    def _get_group_b_tooltip_lines(
+        cls, tournament: Tournament
+    ) -> list[tuple[str, float | None]]:
+        draw_points = Result.DRAW.points(tournament.point_values)
         return [
-            cls._round_range_tooltip_line(1),
-            cls._round_range_tooltip_line(
-                2, points=Result.DRAW.points(tournament.point_values)
-            ),
-            cls._round_range_tooltip_line(3, tournament.rounds),
+            (cls._rounds_prefix(1), 0),
+            (cls._rounds_prefix(2), draw_points),
+            (cls._rounds_prefix(3, tournament.rounds), 0),
         ]
 
     @classmethod
@@ -356,20 +376,19 @@ class ProgressiveSwissVariation(Acceleration3GroupsSwissVariation):
         return _('Progressive accelerated system')
 
     @classmethod
-    def _get_group_a_tooltip_lines(cls, tournament: Tournament) -> list[str]:
+    def _get_group_a_tooltip_lines(
+        cls, tournament: Tournament
+    ) -> list[tuple[str, float | None]]:
+        win_points = Result.WIN.points(tournament.point_values)
         return [
-            cls._round_range_tooltip_line(
-                1,
-                tournament.rounds - 2,
-                2 * Result.WIN.points(tournament.point_values),
-            ),
-            cls._round_range_tooltip_line(tournament.rounds - 1, tournament.rounds),
+            (cls._rounds_prefix(1, tournament.rounds - 2), 2 * win_points),
+            (cls._rounds_prefix(tournament.rounds - 1, tournament.rounds), 0),
         ]
 
     @classmethod
     def _get_detailed_group_tooltip_lines(
         cls, tournament: Tournament, group: AccelerationGroup
-    ) -> list[str]:
+    ) -> list[tuple[str, float | None]]:
         draw_points = Result.DRAW.points(tournament.point_values)
         win_points = Result.WIN.points(tournament.point_values)
         get_vpoints = partial(
@@ -379,24 +398,24 @@ class ProgressiveSwissVariation(Acceleration3GroupsSwissVariation):
             draw_points=draw_points,
             win_points=win_points,
         )
-        message = cls._get_incremental_points_message(
-            get_vpoints, draw_points, 2 * win_points
-        )
         return [
-            cls._round_range_tooltip_line(
-                1,
-                tournament.rounds - 2,
-                message=message,
+            (cls._rounds_prefix(1, tournament.rounds - 2), None),
+            *cls._get_incremental_points_lines(
+                get_vpoints, draw_points, 2 * win_points
             ),
-            cls._round_range_tooltip_line(tournament.rounds - 1, tournament.rounds),
+            (cls._rounds_prefix(tournament.rounds - 1, tournament.rounds), 0),
         ]
 
     @classmethod
-    def _get_group_b_tooltip_lines(cls, tournament: Tournament) -> list[str]:
+    def _get_group_b_tooltip_lines(
+        cls, tournament: Tournament
+    ) -> list[tuple[str, float | None]]:
         return cls._get_detailed_group_tooltip_lines(tournament, AccelerationGroup.B)
 
     @classmethod
-    def _get_group_c_tooltip_lines(cls, tournament: Tournament) -> list[str]:
+    def _get_group_c_tooltip_lines(
+        cls, tournament: Tournament
+    ) -> list[tuple[str, float | None]]:
         return cls._get_detailed_group_tooltip_lines(tournament, AccelerationGroup.C)
 
     @classmethod
