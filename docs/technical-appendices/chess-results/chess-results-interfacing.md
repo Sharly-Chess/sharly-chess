@@ -11,6 +11,8 @@ Upload of a tournament on chess-results.com is done using an XML file.
 > [!NOTE]
 > An AES key given by Herzog is necessary to sign all the calls, except GETSID.
 > See the "Notes on Security" section for more detail.
+> In particular, this means that only select few applications can send results to Chess-Results.
+> Other applications will have a different source ID as well.
 
 ## Base requirements
 
