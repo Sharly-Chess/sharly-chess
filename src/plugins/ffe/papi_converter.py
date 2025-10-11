@@ -843,7 +843,7 @@ class PapiConverter:
             fideBlitzElo=self._get_papi_elo_type(player, TournamentRating.BLITZ),
             licenceType=PapiPlayerFFELicence.get_outer_value(plugin_data.ffe_licence),
             refFFE=plugin_data.ffe_id
-            or int((datetime.now() - FFE_EPOCH).total_seconds()),
+            or (int((datetime.now() - FFE_EPOCH).total_seconds()) + player.id),
             nrFFE=plugin_data.ffe_licence_number,
             league=plugin_data.league,
         )
