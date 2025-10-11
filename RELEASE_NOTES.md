@@ -54,6 +54,7 @@ English version below
 ## FFE
 
 - Correction de l'export PAPI des tournois toutes rondes en Berger aller-retour (3.1.4)
+- Correction de l'export PAPI des joueur·euses sans identifiant FFE (3.1.6)
 
 ---
 
@@ -112,3 +113,4 @@ English version below
 ## FFE
 
 - Fixed the PAPI export of Round-Robin double Berger tournaments (3.1.4)
+- Fixed the PAPI export of players without FFE ID (3.1.6)
