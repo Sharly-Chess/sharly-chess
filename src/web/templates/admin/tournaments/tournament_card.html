@@ -224,10 +224,15 @@
                                 {{ exporter.name }}
                             </li>
                         {% else %}
+                            {% set warning_message = exporter.warning_message(tournament) %}
                             <li
                                 class="dropdown-item text-start cursor-pointer"
                                 onclick="$('#export-form-{{ tournament.id }}-{{ exporter.id }}').submit()"
-                               {{ macros.tooltip_attributes('info', exporter.tooltip, 'right') }}
+                                {% if warning_message %}
+                                    {{ macros.tooltip_attributes('warning', warning_message, 'right') }}
+                                {% else %}
+                                    {{ macros.tooltip_attributes('info', exporter.tooltip, 'right') }}
+                                {% endif %}
                             >
                                 <form
                                     id="export-form-{{ tournament.id }}-{{ exporter.id }}"

@@ -731,11 +731,6 @@ class FfePlugin(Plugin):
     def signal_tournament_set(
         self, tournament: 'Tournament', stored_tournament: 'StoredTournament'
     ) -> str | None:
-        pairing_variation = PairingVariationManager.get_object(
-            stored_tournament.pairing
-        )
-        if blocker := PapiConverter.check_pairing_variation(pairing_variation):
-            return blocker
         if blocker := PapiConverter.check_rounds(stored_tournament.rounds):
             return blocker
 
@@ -755,7 +750,11 @@ class FfePlugin(Plugin):
                 tie_break = tie_break_type(options)
                 if blocker := PapiConverter.check_tiebreak(tie_break):
                     return blocker
-
+        pairing_variation = PairingVariationManager.get_object(
+            stored_tournament.pairing
+        )
+        if warning := PapiConverter.check_pairing_variation_warning(pairing_variation):
+            return warning
         return None
 
     @hookimpl

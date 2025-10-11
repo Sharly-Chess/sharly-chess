@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from copy import copy
 from functools import cache, partial
+from math import ceil
 from typing import Callable, Iterable
 
 from common.i18n import _
@@ -28,6 +29,11 @@ class AccelerationSwissVariation(SwissVariation, ABC):
 
     @property
     def vpoints_use_pairing_numbers(self) -> bool:
+        return True
+
+    @property
+    def are_groups_editable(self) -> bool:
+        """Defines if the pairing groups can be edited."""
         return True
 
     @classmethod
@@ -269,6 +275,71 @@ class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
             )
         )
         return message_lines
+
+
+class BakuSwissVariation(Acceleration2GroupsSwissVariation):
+    @staticmethod
+    def variation_id() -> str:
+        return 'BAKU'
+
+    @staticmethod
+    def static_name():
+        return _('Baku acceleration system')
+
+    @property
+    def are_groups_editable(self) -> bool:
+        return False
+
+    @staticmethod
+    def print_real_points(current_round, rounds):
+        return current_round <= ceil(rounds / 2)
+
+    @staticmethod
+    def accelerated_rounds(rounds: int) -> int:
+        return ceil(rounds / 2)
+
+    @classmethod
+    def full_point_rounds(cls, rounds: int) -> int:
+        return ceil(cls.accelerated_rounds(rounds) / 2)
+
+    @classmethod
+    def compute_virtual_points(
+        cls, tournament: Tournament, player: Player, at_round: int
+    ) -> float:
+        if at_round > cls.accelerated_rounds(tournament.rounds):
+            return 0
+        rating_group = cls.get_player_group(tournament, player)
+        if at_round > cls.full_point_rounds(tournament.rounds):
+            if rating_group == AccelerationGroup.A:
+                return Result.DRAW.points(tournament.point_values)
+            else:
+                return 0
+        else:
+            if rating_group == AccelerationGroup.A:
+                return Result.WIN.points(tournament.point_values)
+            else:
+                return 0
+
+    @classmethod
+    def _get_group_a_tooltip_lines(
+        cls, tournament: Tournament
+    ) -> list[tuple[str, float | None]]:
+        win_points = Result.WIN.points(tournament.point_values)
+        draw_points = Result.DRAW.points(tournament.point_values)
+        rounds = tournament.rounds
+        win_max_rounds = cls.full_point_rounds(rounds)
+        draw_max_rounds = cls.accelerated_rounds(rounds)
+        return [
+            (cls._rounds_prefix(1, win_max_rounds), win_points),
+            (cls._rounds_prefix(win_max_rounds + 1, draw_max_rounds), draw_points),
+            (cls._rounds_prefix(draw_max_rounds + 1, rounds), 0),
+        ]
+
+    @classmethod
+    def _get_group_b_tooltip_lines(
+        cls, tournament: Tournament
+    ) -> list[tuple[str, float | None]]:
+        return []
 
 
 class HaleySwissVariation(Acceleration2GroupsSwissVariation):

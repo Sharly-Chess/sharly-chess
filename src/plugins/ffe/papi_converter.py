@@ -48,6 +48,7 @@ from plugins.ffe.papi_mappers import (
     PapiPairingSystem,
 )
 from plugins.ffe.utils import FfePlayerPluginData, PlayerFFELicence
+from plugins.pairing_acceleration.pairing_variations import BakuSwissVariation
 from utils import StaticUtils
 from utils.enum import (
     TournamentRating,
@@ -591,14 +592,15 @@ class PapiConverter:
         return stored_pairing, stored_board
 
     @classmethod
-    def check_pairing_variation(cls, pairing_variation: PairingVariation) -> str | None:
-        try:
-            PapiPairingVariation.get_outer_value(pairing_variation)
-            return None
-        except KeyError:
+    def check_pairing_variation_warning(
+        cls, pairing_variation: PairingVariation
+    ) -> str | None:
+        if pairing_variation == BakuSwissVariation():
             return _(
-                'Pairing system [{pairing_system}] is not compatible with the PAPI format.'
-            ).format(pairing_system=pairing_variation.name)
+                'The Baku acceleration system may cause differences in '
+                'the pairings display for Papi exports and FFE upload.'
+            )
+        return None
 
     @classmethod
     def check_tiebreak(cls, tie_break: TieBreak) -> str | None:
@@ -632,9 +634,6 @@ class PapiConverter:
         if rounds_blocker := cls.check_rounds(tournament.rounds):
             return rounds_blocker
 
-        if pairing_blocker := cls.check_pairing_variation(tournament.pairing_variation):
-            return pairing_blocker
-
         for tie_break in tournament.tie_breaks:
             if tie_break_blocker := cls.check_tiebreak(tie_break):
                 return tie_break_blocker
@@ -644,6 +643,12 @@ class PapiConverter:
                 if msg := cls.check_result(player.pairings[round].result, tournament):
                     return msg
 
+        return None
+
+    @classmethod
+    def papi_export_warning(cls, tournament: Tournament) -> str | None:
+        if warning := cls.check_pairing_variation_warning(tournament.pairing_variation):
+            return warning
         return None
 
     def write_papi_file(
