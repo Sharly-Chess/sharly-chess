@@ -6286,33 +6286,3 @@ msgstr ""
 msgid "½ - ½ (U)"
 msgstr ""
 
-#~ msgid "Groups"
-#~ msgstr ""
-
-#~ msgid "Lower rating limit"
-#~ msgstr ""
-
-#~ msgid "Rating limit"
-#~ msgstr ""
-
-#~ msgid "Rating limits"
-#~ msgstr ""
-
-#~ msgid "Rating splitting groups A and B (recommended: %(recommended)d)."
-#~ msgstr ""
-
-#~ msgid "Rating splitting groups A and B."
-#~ msgstr ""
-
-#~ msgid "Rating splitting groups B and C (recommended: %(recommended)d)."
-#~ msgstr ""
-
-#~ msgid "Rating splitting groups B and C."
-#~ msgstr ""
-
-#~ msgid "Upper limit expected to be greater than lower limit."
-#~ msgstr ""
-
-#~ msgid "Upper rating limit"
-#~ msgstr ""
-

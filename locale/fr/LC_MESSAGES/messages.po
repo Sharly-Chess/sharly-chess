@@ -6286,33 +6286,3 @@ msgstr "½ - 0 (NC)"
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
 
-#~ msgid "Groups"
-#~ msgstr "Groupes"
-
-#~ msgid "Lower rating limit"
-#~ msgstr "Limite Elo basse"
-
-#~ msgid "Rating limit"
-#~ msgstr "Limite Elo"
-
-#~ msgid "Rating limits"
-#~ msgstr "Limites Elo"
-
-#~ msgid "Rating splitting groups A and B (recommended: %(recommended)d)."
-#~ msgstr "Classement Elo séparant les groupes A et B (recommandation : %(recommended)d)."
-
-#~ msgid "Rating splitting groups A and B."
-#~ msgstr "Classement Elo séparant les groupes A et B."
-
-#~ msgid "Rating splitting groups B and C (recommended: %(recommended)d)."
-#~ msgstr "Classement Elo séparant les groupes B et C (recommandation : %(recommended)d)."
-
-#~ msgid "Rating splitting groups B and C."
-#~ msgstr "Classement ELO séparant les groupes B et C."
-
-#~ msgid "Upper limit expected to be greater than lower limit."
-#~ msgstr "La limite Elo haute doit être supérieure à la limite Elo basse."
-
-#~ msgid "Upper rating limit"
-#~ msgstr "Limite Elo haute"
-
