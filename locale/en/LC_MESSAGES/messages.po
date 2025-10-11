@@ -6353,9 +6353,3 @@ msgstr ""
 msgid "½ - ½ (U)"
 msgstr ""
 
-#~ msgid "Pairing system [{pairing_system}] is not compatible with the PAPI format."
-#~ msgstr ""
-
-#~ msgid "The Baku acceleration system may cause differences in the board numbers and pairing displays for Papi exports and FFE upload."
-#~ msgstr ""
-
