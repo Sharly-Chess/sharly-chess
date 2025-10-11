@@ -4,6 +4,7 @@ Author Heinz Herzog, created on 2017-02-18, last update on 2024-11-20.
 
 Transcribed by [Sammy Plat](https://github.com/Amaras) for use in Sharly Chess.
 The "Notes on Security" section was written by Sammy Plat.
+Last update: 2025-10-11.
 
 Upload of a tournament on chess-results.com is done using an XML file.
 
@@ -35,7 +36,7 @@ An XML file similar to the following will be returned upon successful request.
 
 Parameters:
 
-| field indetifier | explanation                                             |
+| field identifier | explanation                                             |
 |------------------|---------------------------------------------------------|
 | sid              | Security ID, necessary to authenticate subsequent calls |
 | sidEncrypt       | (testing phase only) encrypted SID, using the AES key given by Herzog. |
