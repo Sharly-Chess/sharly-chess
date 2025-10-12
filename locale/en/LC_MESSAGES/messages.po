@@ -5727,7 +5727,7 @@ msgstr ""
 msgid "Upload:"
 msgstr ""
 
-msgid "Uploading of tournaments to Chess-Results.com ."
+msgid "Uploading of tournaments to Chess-Results.com."
 msgstr ""
 
 msgid "Uploading the PDF rules file allows the players to read the rules online."

@@ -50,7 +50,7 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
 
     @property
     def description(self) -> str:
-        return _('Uploading of tournaments to Chess-Results.com .')
+        return _('Uploading of tournaments to Chess-Results.com.')
 
     @property
     def version(self) -> Version:

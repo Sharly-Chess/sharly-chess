@@ -1,4 +1,4 @@
-# Uploading a chess tournament to the Chess-Results.com  database
+# Uploading a chess tournament to the Chess-Results.com database
 
 Author Heinz Herzog, created on 2017-02-18, last update on 2024-11-20.
 
@@ -19,7 +19,7 @@ Upload of a tournament on Chess-Results.com is done using an XML file.
 1. Each user requires a unique `CreatorID`, so that tournaments cannot be overwritten by other users.
 2. Each tournament has a unique identifier (database key).
 
-This unique identifier is given upon request by Chess-Results.com , using the following protocol.
+This unique identifier is given upon request by Chess-Results.com, using the following protocol.
 
 ## Tournament key request protocol
 
@@ -91,7 +91,7 @@ On failure, the following XML file is returned:
 <chessresults>
 <result status="ERROR"/>
 <messages>
-<message type="error" Text="Error getting New Chess-Results.com  key (node /chessresults/getkey
+<message type="error" Text="Error getting New Chess-Results.com key (node /chessresults/getkey
 not found)"/>
 </massages>
 </chessresults>
@@ -163,7 +163,7 @@ This section is the one that allows the platform to authenticate the request.
 ### Player data (mandatory)
 
 > [!IMPORTANT]
-> On Chess-Results.com , the players are displayed in the order they are sent.
+> On Chess-Results.com, the players are displayed in the order they are sent.
 
 | Field | Description | Mandatory (M) / Optional (O) / Forbidden (F) / Unknown (?) |
 |-------|-------------|------------------------------------------------------------|
