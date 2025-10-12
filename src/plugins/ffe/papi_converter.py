@@ -597,8 +597,8 @@ class PapiConverter:
     ) -> str | None:
         if pairing_variation == BakuSwissVariation():
             return _(
-                'The Baku acceleration system may cause differences in '
-                'the pairings display for Papi exports and FFE upload.'
+                'The Baku acceleration system, not handled by FFE, may cause '
+                'differences in the pairings display for Papi exports and FFE upload.'
             )
         return None
 

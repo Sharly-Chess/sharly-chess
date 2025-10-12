@@ -4781,7 +4781,7 @@ msgstr ""
 msgid "Thanks :-)"
 msgstr ""
 
-msgid "The Baku acceleration system may cause differences in the pairings display for Papi exports and FFE upload."
+msgid "The Baku acceleration system, not handled by FFE, may cause differences in the pairings display for Papi exports and FFE upload."
 msgstr ""
 
 msgid "The Buchholz Cut 1 (the sum of the scores of each of the opponents of a player reduced by the lowest score of the opponents)"

@@ -714,7 +714,7 @@ msgid "Background image:"
 msgstr "Image de fond :"
 
 msgid "Baku acceleration system"
-msgstr "Système d'accélération de Baku"
+msgstr "Système d'accélération de Bakou"
 
 msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
 msgstr "Ech."
@@ -2391,7 +2391,7 @@ msgid "Group {group_id}"
 msgstr "Groupe {group_id}"
 
 msgid "Groups can't be edited for this pairing system."
-msgstr "Les groupes ne peuvent être mis à jour pour ce système d'appariements."
+msgstr "Les groupes ne peuvent être mis à jour pour ce système d'appariement."
 
 #, python-format
 msgid "Groups must be composed of at least 25%% and at most 50%% of players."
@@ -3547,11 +3547,11 @@ msgid "Pairing number"
 msgstr "Numéro d'appariement"
 
 msgid "Pairing number range of players the group."
-msgstr "Plage de numéros d'appariemets des joueur·euses du groupe."
+msgstr "Plage de numéros d'appariemet des joueur·euses du groupe."
 
 #, python-format
 msgid "Pairing number range of the group (recommended: %(min)d-%(max)d)."
-msgstr "Plage de numéros d'appariements du groupe (recommandé : %(min)d-%(max)d)."
+msgstr "Plage de numéros d'appariement du groupe (recommandé : %(min)d-%(max)d)."
 
 msgid "Pairing numbers selection"
 msgstr "Sélection des numéros d'appariements"
@@ -4781,8 +4781,8 @@ msgstr "Les textes avant et après l'horaire ci-dessous sont facultatifs pour le
 msgid "Thanks :-)"
 msgstr "Merci :-)"
 
-msgid "The Baku acceleration system may cause differences in the pairings display for Papi exports and FFE upload."
-msgstr "Le système d'accélération de Baku peut provoquer des différences dans l'affichage des appariements lors de l'export Papi et de la mise en ligne FFE."
+msgid "The Baku acceleration system, not handled by FFE, may cause differences in the pairings display for Papi exports and FFE upload."
+msgstr "Le système d'accélération de Bakou, non pris en charge par la FFE, peut provoquer des différences dans l'affichage des appariements lors de l'export Papi et de la mise en ligne FFE."
 
 msgid "The Buchholz Cut 1 (the sum of the scores of each of the opponents of a player reduced by the lowest score of the opponents)"
 msgstr "Buchholz tronqué (la somme des scores des adversaires du·de la joueur·euse diminué du plus faible score des adversaires)"
