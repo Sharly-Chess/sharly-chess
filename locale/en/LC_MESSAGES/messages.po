@@ -628,10 +628,22 @@ msgstr ""
 msgid "Auto-update"
 msgstr ""
 
+msgid "Auto-upload results to Chess-Results.com"
+msgstr ""
+
+msgid "Auto-upload results to Chess-Results.com when a tournament is updated."
+msgstr ""
+
 msgid "Auto-upload results to FFE site"
 msgstr ""
 
 msgid "Auto-upload results to FFE site when a tournament is updated. You must enter the tournament certification number and password for this to take effect."
+msgstr ""
+
+msgid "Auto-upload to Chess-Results.com disabled"
+msgstr ""
+
+msgid "Auto-upload to Chess-Results.com enabled"
 msgstr ""
 
 msgid "Auto-upload to FFE enabled"
@@ -937,6 +949,9 @@ msgid "Checked-in"
 msgstr ""
 
 msgid "Chess"
+msgstr ""
+
+msgid "Chess-Results.com"
 msgstr ""
 
 msgid "ChessEvent"
@@ -1776,6 +1791,9 @@ msgid "E.g.: john.doe@chess.com"
 msgstr ""
 
 msgid "E.g.: my_password"
+msgstr ""
+
+msgid "E.g.: €1000 in prizes, FIDE rated, 2 byes 1/2 possible."
 msgstr ""
 
 msgid "EXEMPT"
@@ -4000,6 +4018,12 @@ msgstr ""
 msgid "Publish rankings"
 msgstr ""
 
+msgid "Publish the tournaments to Chess-Results.com."
+msgstr ""
+
+msgid "Publish the tournaments to the FFE website."
+msgstr ""
+
 msgid "Publish tournament results"
 msgstr ""
 
@@ -4122,6 +4146,9 @@ msgid "Refresh this page."
 msgstr ""
 
 msgid "Reload the page"
+msgstr ""
+
+msgid "Remark:"
 msgstr ""
 
 msgid "Remove the player from the event."
@@ -4556,6 +4583,9 @@ msgstr ""
 msgid "Single Screens ({num})"
 msgstr ""
 
+msgid "Site"
+msgstr ""
+
 msgid "Soft Haley system"
 msgstr ""
 
@@ -4808,6 +4838,9 @@ msgstr ""
 msgid "The default language used."
 msgstr ""
 
+msgid "The delay must be at least {min_delay} minutes to avoid overloading the Chess-Results server."
+msgstr ""
+
 msgid "The delay must be at least {min_delay} minutes to avoid overloading the FFE server."
 msgstr ""
 
@@ -4875,6 +4908,9 @@ msgid "The maximum rating must be at most equal to the minimum rating."
 msgstr ""
 
 msgid "The message displayed on the scrolling banner at the bottom of the screen."
+msgstr ""
+
+msgid "The minimum delay between auto-uploads to Chess-Results.com."
 msgstr ""
 
 msgid "The minimum delay between auto-uploads to the FFE server."
@@ -5351,6 +5387,9 @@ msgstr ""
 msgid "Tournament exempt from registration fees."
 msgstr ""
 
+msgid "Tournament finished, upload no longer possible."
+msgstr ""
+
 msgid "Tournament has not been configured to be used with ChessEvent."
 msgstr ""
 
@@ -5364,6 +5403,10 @@ msgid "Tournament not modified since last upload"
 msgstr ""
 
 msgid "Tournament not yet uploaded."
+msgstr ""
+
+#, python-format
+msgid "Tournament number: %(tnr)s"
 msgstr ""
 
 msgid "Tournament on the FFE site"
@@ -5539,6 +5582,9 @@ msgstr ""
 msgid "Unknown color [{color}]."
 msgstr ""
 
+msgid "Unknown error when uploading results."
+msgstr ""
+
 msgid "Unknown federation [{federation}]."
 msgstr ""
 
@@ -5657,13 +5703,25 @@ msgstr ""
 msgid "Upload rules"
 msgstr ""
 
+msgid "Upload to Chess-Results.com"
+msgstr ""
+
+msgid "Upload to the FFE"
+msgstr ""
+
 msgid "Upload tournaments now"
+msgstr ""
+
+msgid "Upload tournaments to Chess-Results.com"
 msgstr ""
 
 msgid "Upload tournaments to the FFE"
 msgstr ""
 
 msgid "Upload:"
+msgstr ""
+
+msgid "Uploading of tournaments to chess-results.com."
 msgstr ""
 
 msgid "Uploading the PDF rules file allows the players to read the rules online."
@@ -6285,4 +6343,3 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-

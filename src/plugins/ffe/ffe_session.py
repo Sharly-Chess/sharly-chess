@@ -439,7 +439,7 @@ class FFESession(Session):
 
             # Prepare for upload
             with EventDatabase(
-                file_path=tmp_sce_file, write=True
+                file_path=tmp_sce_file, write=True, check_dirty_tournaments=False
             ) as tmp_event_database:
                 tmp_event = Event(tmp_event_database.load_stored_event())
                 tmp_tournament = tmp_event.tournaments_by_id[self.tournament.id]
@@ -487,7 +487,9 @@ class FFESession(Session):
                 self.report_error(_('Upload failed'))
                 return
 
-        with EventDatabase(event_uniq_id, write=True) as event_database:
+        with EventDatabase(
+            event_uniq_id, write=True, check_dirty_tournaments=False
+        ) as event_database:
             now = time.time()
             event_database.execute(
                 """
@@ -601,7 +603,9 @@ class FFESession(Session):
         if error:
             logger.error(error)
             return
-        with EventDatabase(self.tournament.event.uniq_id, write=True) as event_database:
+        with EventDatabase(
+            self.tournament.event.uniq_id, write=True, check_dirty_tournaments=False
+        ) as event_database:
             now = time.time()
             event_database.execute(
                 'UPDATE `tournament` SET `ffe_last_rules_upload` = ?, '

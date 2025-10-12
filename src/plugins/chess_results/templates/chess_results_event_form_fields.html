@@ -1,0 +1,36 @@
+<h4>
+    {{ _('Chess-Results.com') }}
+</h4>
+<div class="row gy-2 gx-3">
+    <div class="col-12 col-md-6">
+        {{ admin_macros.switch_input(
+            name='auto_upload',
+            label=_('Upload:'),
+            placeholder=_('Auto-upload results to Chess-Results.com'),
+            help_text="",
+            disabled=not client.can_update_event,
+            data=data, errors=errors
+        ) }}
+    </div>
+    <div class="col-12 col-md-6">
+        {{ admin_macros.number_input(
+            name='auto_upload_delay',
+            label=_('Minimum delay between uploads (minutes):'),
+            placeholder=_('Default: %(string)s', string=CHESS_RESULTS_DEFAULT_UPLOAD_DELAY),
+            help_text=_("The minimum delay between auto-uploads to Chess-Results.com."),
+            disabled=not client.can_update_event,
+            data=data, errors=errors,
+            min=1
+        ) }}
+    </div>
+    <div class="col-12">
+        {{ admin_macros.text_input(
+            name='remark',
+            label=_('Remark:'),
+            placeholder=(_('E.g.: €1000 in prizes, FIDE rated, 2 byes 1/2 possible.')),
+            help_text=_("May be overridden on a per-tournament basis."),
+            disabled=not client.can_update_event,
+            data=data, errors=errors,
+        ) }}
+    </div>
+</div>

@@ -628,11 +628,23 @@ msgstr "Authentification échouée. Merci de vérifier vos identifiants et rées
 msgid "Auto-update"
 msgstr "Mise à jour"
 
+msgid "Auto-upload results to Chess-Results.com"
+msgstr "Mise en ligne automatique des résultats sur Chess-Results.com"
+
+msgid "Auto-upload results to Chess-Results.com when a tournament is updated."
+msgstr "Mise en ligne automatique des résultats sur Chess-Results.com lorsqu’un tournoi est mis à jour."
+
 msgid "Auto-upload results to FFE site"
 msgstr "Envoi automatique des résultats sur le site de la FFE"
 
 msgid "Auto-upload results to FFE site when a tournament is updated. You must enter the tournament certification number and password for this to take effect."
 msgstr "Mise en ligne automatique des résultats vers le site de la FFE. Vous devez saisir l’identifiant et le mot de passe du tournoi pour que cela fonctionne."
+
+msgid "Auto-upload to Chess-Results.com disabled"
+msgstr "Envoi automatique vers Chess-Results.com désactivé"
+
+msgid "Auto-upload to Chess-Results.com enabled"
+msgstr "Envoi automatique vers Chess-Results.com activé"
 
 msgid "Auto-upload to FFE enabled"
 msgstr "Envoi automatique vers la FFE activé"
@@ -938,6 +950,9 @@ msgstr "Pointé·e"
 
 msgid "Chess"
 msgstr "Échecs"
+
+msgid "Chess-Results.com"
+msgstr "Chess-Results.com"
 
 msgid "ChessEvent"
 msgstr "ChessEvent"
@@ -1777,6 +1792,9 @@ msgstr "Exemple : pierre.dupont@chess.com"
 
 msgid "E.g.: my_password"
 msgstr "Exemple : mon_mot_de_passe"
+
+msgid "E.g.: €1000 in prizes, FIDE rated, 2 byes 1/2 possible."
+msgstr "Par ex. : 1000 € de prix, homologué FIDE, 2 exemptions à 0,5 point possibles."
 
 msgid "EXEMPT"
 msgstr "EXEMPT·E"
@@ -4000,6 +4018,12 @@ msgstr "Publier les appariements"
 msgid "Publish rankings"
 msgstr "Publier les classements"
 
+msgid "Publish the tournaments to Chess-Results.com."
+msgstr "Publier les tournois sur Chess-Results.com."
+
+msgid "Publish the tournaments to the FFE website."
+msgstr "Publier les tournois sur le site de la FFE."
+
 msgid "Publish tournament results"
 msgstr "Publier les résultats"
 
@@ -4123,6 +4147,9 @@ msgstr "Actualiser la page."
 
 msgid "Reload the page"
 msgstr "Recharger la page"
+
+msgid "Remark:"
+msgstr "Remarque :"
 
 msgid "Remove the player from the event."
 msgstr "Supprimer le·la joueur·euse de l'évènement."
@@ -4556,6 +4583,9 @@ msgstr "Écrans simples"
 msgid "Single Screens ({num})"
 msgstr "Écrans simples ({num})"
 
+msgid "Site"
+msgstr "Site"
+
 msgid "Soft Haley system"
 msgstr "Système de Haley dégressif"
 
@@ -4808,6 +4838,9 @@ msgstr "La fédération par défaut pour vos évènements. Sharly Chess peut pro
 msgid "The default language used."
 msgstr "La langue utilisée par défaut."
 
+msgid "The delay must be at least {min_delay} minutes to avoid overloading the Chess-Results server."
+msgstr "Le délai doit au moins être de {min_delay} minutes pour éviter de surcharger le serveur Chess-Results."
+
 msgid "The delay must be at least {min_delay} minutes to avoid overloading the FFE server."
 msgstr "Le délai doit au moins être de {min_delay} minutes pour éviter de surcharger le serveur FFE."
 
@@ -4876,6 +4909,9 @@ msgstr "Le Elo maximum doit au moins être égal au Elo minimum."
 
 msgid "The message displayed on the scrolling banner at the bottom of the screen."
 msgstr "Le message affiché sur le bandeau déroulant en bas de l'écran."
+
+msgid "The minimum delay between auto-uploads to Chess-Results.com."
+msgstr "Le délai minimum entre deux envois automatiques vers Chess-Results.com."
 
 msgid "The minimum delay between auto-uploads to the FFE server."
 msgstr "Le délai minimum entre deux envois automatiques vers le serveur de la FFE."
@@ -5351,6 +5387,9 @@ msgstr "Le tournoi [{tournament}] a été synchronisé avec succès."
 msgid "Tournament exempt from registration fees."
 msgstr "Tournoi exempt de droits d'homologation."
 
+msgid "Tournament finished, upload no longer possible."
+msgstr "Tournoi terminé, mise en ligne non autorisée."
+
 msgid "Tournament has not been configured to be used with ChessEvent."
 msgstr "Le tournoi n'a pas été configuré pour être utilisé avec ChessEvent."
 
@@ -5365,6 +5404,10 @@ msgstr "Tournoi non modifié depuis le dernier envoi"
 
 msgid "Tournament not yet uploaded."
 msgstr "Tournoi pas encore mis en ligne."
+
+#, python-format
+msgid "Tournament number: %(tnr)s"
+msgstr "Numéro de tournoi : %(tnr)s"
 
 msgid "Tournament on the FFE site"
 msgstr "Tournoi sur le site de la FFE"
@@ -5539,6 +5582,9 @@ msgstr "Type de FFE Licence FFE inconnu [%(ffe_licence)s]."
 msgid "Unknown color [{color}]."
 msgstr "Couleur [{color}] inconnue."
 
+msgid "Unknown error when uploading results."
+msgstr "Erreur inconnue lors de la mise en ligne des résultats."
+
 msgid "Unknown federation [{federation}]."
 msgstr "Fédération [{federation}] inconnue."
 
@@ -5657,14 +5703,26 @@ msgstr "Lien de mise en ligne introuvable, vérifiez que le tournoi n’est pas 
 msgid "Upload rules"
 msgstr "Téléverser le règlement"
 
+msgid "Upload to Chess-Results.com"
+msgstr "Publication Chess-Results.com"
+
+msgid "Upload to the FFE"
+msgstr "Publication FFE"
+
 msgid "Upload tournaments now"
 msgstr "Mettre en ligne les tournois maintenant"
+
+msgid "Upload tournaments to Chess-Results.com"
+msgstr "Mettre en ligne les tournois sur Chess-Results.com"
 
 msgid "Upload tournaments to the FFE"
 msgstr "Mettre en ligne les tournois vers la FFE"
 
 msgid "Upload:"
 msgstr "Mise en ligne :"
+
+msgid "Uploading of tournaments to chess-results.com."
+msgstr "Mise en ligne des tournois sur Chess-Results.com."
 
 msgid "Uploading the PDF rules file allows the players to read the rules online."
 msgstr "Envoyer le fichier PDF des règles sur le site de la FFE permet aux joueur·euses de lire les règles en ligne."
@@ -6285,4 +6343,3 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-

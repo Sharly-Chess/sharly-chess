@@ -3,6 +3,7 @@ All the classes of this module are basic data classes stored in the config datab
 """
 
 from dataclasses import dataclass, field
+from typing import Any
 
 
 @dataclass
@@ -23,6 +24,9 @@ class StoredConfig:
 class StoredPlugin:
     name: str
     is_enabled: bool
+    plugin_data: dict[str, dict[str, dict[str, Any]]] = field(
+        default_factory=dict[str, dict[str, dict[str, Any]]]
+    )
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 

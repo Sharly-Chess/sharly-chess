@@ -136,6 +136,7 @@ class ConfigDatabase(MigrationDatabase):
         return StoredPlugin(
             name=row['name'],
             is_enabled=self.load_bool_from_database_field(row['is_enabled']),
+            plugin_data=self.load_json_from_database_field(row['plugin_data'], {}),
         )
 
     def load_stored_plugin(self, plugin_name: str) -> StoredPlugin | None:
@@ -149,9 +150,10 @@ class ConfigDatabase(MigrationDatabase):
 
     def update_stored_plugin(self, stored_plugin: StoredPlugin) -> StoredPlugin | None:
         self.execute(
-            'UPDATE `plugin` SET `is_enabled` = ? WHERE `name` = ?',
+            'UPDATE `plugin` SET `is_enabled` = ?, `plugin_data` = ? WHERE `name` = ?',
             (
                 stored_plugin.is_enabled,
+                self.dump_to_json_database_field(stored_plugin.plugin_data),
                 stored_plugin.name,
             ),
         )
@@ -161,10 +163,12 @@ class ConfigDatabase(MigrationDatabase):
         fields: list[str] = [
             'name',
             'is_enabled',
+            'plugin_data',
         ]
         params = (
             stored_plugin.name,
             stored_plugin.is_enabled,
+            self.dump_to_json_database_field(stored_plugin.plugin_data or {}),
         )
         fields_str = ', '.join(f'`{field}`' for field in fields)
         self.execute(

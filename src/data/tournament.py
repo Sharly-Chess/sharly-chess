@@ -550,6 +550,12 @@ class Tournament:
             return None
         return max(player.rating for player in self.players)
 
+    @property
+    def average_player_rating(self) -> float:
+        if not self.players:
+            return 0
+        return sum(player.rating for player in self.players) / len(self.players)
+
     @cached_property
     def gender_counts(self) -> Counter[PlayerGender]:
         """Returns the number of players by gender."""

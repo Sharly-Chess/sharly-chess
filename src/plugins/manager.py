@@ -1,11 +1,15 @@
 from functools import cached_property
 from pathlib import Path
+from typing import Any, Type, TypeVar
 
 from apluggy import PluginManager  # type: ignore
 
 from common import APP_NAME
 from plugins.hookspec import AppHookSpecs
 from plugins.utils import Plugin
+
+
+TPlugin = TypeVar('TPlugin', bound=Plugin[Any])
 
 
 class AppPluginManager(PluginManager):
@@ -16,15 +20,23 @@ class AppPluginManager(PluginManager):
 
     @cached_property
     def all_plugins(self) -> list[Plugin]:
+        from plugins.chess_results.chess_results import ChessResultsPlugin
         from plugins.chessevent.chessevent import ChessEventPlugin
         from plugins.ffe.ffe import FfePlugin
         from plugins.pairing_acceleration.plugin import PairingAccelerationPlugin
 
         return [
             PairingAccelerationPlugin(),
+            ChessResultsPlugin(),
             FfePlugin(),
             ChessEventPlugin(),
         ]
+
+    def get_plugin_by_class(self, plugin_cls: Type[TPlugin]) -> TPlugin:
+        for plugin in self.all_plugins:
+            if isinstance(plugin, plugin_cls):
+                return plugin
+        raise ValueError(f'Plugin {plugin_cls.__name__} not found')
 
     @property
     def enabled_plugins(self) -> list[Plugin]:
@@ -85,4 +97,4 @@ class LazyPluginManager:
         return getattr(get_plugin_manager(), name)
 
 
-plugin_manager = LazyPluginManager()
+plugin_manager: AppPluginManager = LazyPluginManager()  # type: ignore[assignment]

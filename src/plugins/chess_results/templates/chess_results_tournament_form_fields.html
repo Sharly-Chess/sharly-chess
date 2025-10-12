@@ -1,0 +1,31 @@
+<h4>
+    {{ _('Chess-Results.com') }}
+</h4>
+<div class="row gy-2 gx-3">
+    <div class="col-12 col-md-6">
+        {{ admin_macros.select_input(
+            name='auto_upload',
+            label=_('Auto-upload:'),
+            help_text=_(
+                'Auto-upload results to Chess-Results.com when a tournament is updated.',
+                default=admin_event.plugin_data.chess_results.auto_upload
+            ),
+            select_options=auto_upload_options,
+            data=data, errors=errors
+        ) }}
+    </div>
+    <div class="col-12">
+        {{ admin_macros.text_input(
+            name='remark',
+            label=_('Remark:'),
+            help_text='',
+            placeholder=(
+                _('Default: %(string)s', string=admin_event.plugin_data.chess_results.remark)
+                if admin_event.plugin_data.chess_results.remark else
+                _('E.g.: €1000 in prizes, FIDE rated, 2 byes 1/2 possible.')
+            ),
+            default_checkbox=true,
+            data=data, errors=errors
+        ) }}
+    </div>
+</div>
