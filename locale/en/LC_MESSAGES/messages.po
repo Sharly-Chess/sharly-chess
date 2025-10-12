@@ -4857,9 +4857,6 @@ msgstr ""
 msgid "The federation that organizes the event. Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr ""
 
-msgid "The file to import."
-msgstr ""
-
 msgid "The first tournament of the screen."
 msgstr ""
 
