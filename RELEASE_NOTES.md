@@ -19,6 +19,7 @@ English version below
 - Correction de l'import TRF sans partie (3.1.1)
 - Correction du problème de réimportation ChessEvent et TRF (3.1.2)
 - Synchronisation des tournois avec ChessEvent (3.1.3)
+- Définition du type de classement des tournois importés depuis le format TRF (3.1.6)
 
 ## Joueur·euses
 
@@ -78,6 +79,7 @@ English version below
 - Fixed TRF import with no games (3.1.1)
 - Fixed ChessEvent and TRF re-import issue (3.1.2)
 - Tournament synchronization with ChessEvent (3.1.3)
+- Define the rating type of when importing tournaments from TRF files (3.1.6)
 
 ## Players
 

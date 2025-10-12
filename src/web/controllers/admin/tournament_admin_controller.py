@@ -884,12 +884,15 @@ class TournamentAdminController(BaseEventAdminController):
                 for option in importer.default_options()
             }
         )
-        return {
+        context: dict[str, Any] = {
             'data': default_data | (data or {}),
             'importer': importer,
             'modal': 'tournament-import',
             'errors': errors or {},
         }
+        for option in importer.default_options():
+            context |= option.template_context
+        return context
 
     @get(
         path=[
