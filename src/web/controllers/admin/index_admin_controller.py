@@ -833,6 +833,8 @@ class IndexAdminController(BaseAdminController):
             event_database.update_stored_event(stored_event)
             if 'with_players' not in data:
                 event_database.delete_all_stored_players()
+            plugin_manager.hook.on_event_duplicated(event_database=event_database)
+
         Message.success(
             request,
             _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id),

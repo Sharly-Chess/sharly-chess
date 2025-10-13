@@ -3,6 +3,7 @@ from typing import Any, TYPE_CHECKING, Iterable, override
 from packaging.version import Version
 
 from common.i18n import _
+from database.sqlite.event.event_database import EventDatabase
 from plugins.chess_results.chess_results_background_uploader import (
     ChessResultsUploadStatus,
     EventLoader,
@@ -85,6 +86,26 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
     # ---------------------------------------------------------------------------------
     # Events
     # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def on_event_duplicated(self, event_database: EventDatabase):
+        stored_tournaments = event_database.load_stored_tournaments()
+        for stored_tournament in stored_tournaments:
+            old_plugin_data = ChessResultsTournamentPluginData.from_stored_value(
+                stored_tournament.plugin_data.get(PLUGIN_NAME, {})
+            )
+
+            # Only retain the remark setting
+            # We don't retain the auto_upload setting since that would cause an immediate upload of the tournament since
+            # we don't need an other fields to be set in order to do an upload.
+            new_plugin_data = ChessResultsTournamentPluginData(
+                remark=old_plugin_data.remark,
+                remark_default=old_plugin_data.remark_default,
+            )
+            stored_tournament.plugin_data[PLUGIN_NAME] = (
+                new_plugin_data.to_stored_value()
+            )
+            event_database.update_stored_tournament(stored_tournament)
 
     @hookimpl
     def get_event_plugin_data_class(self) -> tuple[str, type[PluginData]]:

@@ -138,10 +138,10 @@ class ChessResultsEventPluginData(PluginData):
 
 @dataclass
 class ChessResultsTournamentPluginData(PluginData):
-    auto_upload: bool | None
-    tnr: str | None
-    creator_id: str | None
-    last_upload: float | None
+    auto_upload: bool | None = None
+    tnr: str | None = None
+    creator_id: str | None = None
+    last_upload: float | None = None
     remark: str | None = None
     remark_default: bool = True
 
