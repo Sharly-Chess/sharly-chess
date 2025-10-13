@@ -18,7 +18,7 @@ If a related issue doesn't exist, you can open a new issue using a relevant [iss
 
 ### Contributing code
 
-This project uses [Python 3.12](https://www.python.org/downloads/release/python-3129/), and is reliant on Windows-specific APIs.
+This project uses [Python 3.13](https://www.python.org/downloads/release/python-3138/), and is reliant on Windows-specific APIs.
 As such, this project does not support Linux or MacOS, or any other operating system.
 This will change in the future.
 
