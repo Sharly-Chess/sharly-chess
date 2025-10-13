@@ -1,4 +1,4 @@
-# Uploading a chess tournament to the chess-results.com database
+# Uploading a chess tournament to the Chess-Results.com database
 
 Author Heinz Herzog, created on 2017-02-18, last update on 2024-11-20.
 
@@ -6,7 +6,7 @@ Transcribed by [Sammy Plat](https://github.com/Amaras) for use in Sharly Chess.
 The "Notes on Security" section was written by Sammy Plat.
 Last update: 2025-10-11.
 
-Upload of a tournament on chess-results.com is done using an XML file.
+Upload of a tournament on Chess-Results.com is done using an XML file.
 
 > [!NOTE]
 > An AES key given by Herzog is necessary to sign all the calls, except GETSID.
@@ -19,7 +19,7 @@ Upload of a tournament on chess-results.com is done using an XML file.
 1. Each user requires a unique `CreatorID`, so that tournaments cannot be overwritten by other users.
 2. Each tournament has a unique identifier (database key).
 
-This unique identifier is given upon request by chess-results.com, using the following protocol.
+This unique identifier is given upon request by Chess-Results.com, using the following protocol.
 
 ## Tournament key request protocol
 
@@ -91,7 +91,7 @@ On failure, the following XML file is returned:
 <chessresults>
 <result status="ERROR"/>
 <messages>
-<message type="error" Text="Error getting New chess-results.com key (node /chessresults/getkey
+<message type="error" Text="Error getting New Chess-Results.com key (node /chessresults/getkey
 not found)"/>
 </massages>
 </chessresults>
@@ -163,7 +163,7 @@ This section is the one that allows the platform to authenticate the request.
 ### Player data (mandatory)
 
 > [!IMPORTANT]
-> On chess-results.com, the players are displayed in the order they are sent.
+> On Chess-Results.com, the players are displayed in the order they are sent.
 
 | Field | Description | Mandatory (M) / Optional (O) / Forbidden (F) / Unknown (?) |
 |-------|-------------|------------------------------------------------------------|
@@ -270,7 +270,7 @@ This section contains a description of the playing schedule.
 ## Notes on Security
 
 The threat model used by the author of Chess-Results is not available, and as such it was never audited.
-From what I can gather, the main threat in that model is a malicious and/or inattentive tournament administrator manipulating tournament data that they have not created, thus preventing <chess-results.com> from displaying results faithfully.
+From what I can gather, the main threat in that model is a malicious and/or inattentive tournament administrator manipulating tournament data that they have not created, thus preventing Chess-Results.com from displaying results faithfully.
 
 ### Encryption and signature
 
