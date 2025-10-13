@@ -47,7 +47,7 @@ from plugins.ffe.papi_mappers import (
     PapiPlayerTitle,
     PapiPairingSystem,
 )
-from plugins.ffe.utils import FfePlayerPluginData, PlayerFFELicence
+from plugins.ffe.utils import FfePlayerPluginData, PlayerFFELicence, FFE_EPOCH
 from plugins.pairing_acceleration.pairing_variations import BakuSwissVariation
 from utils import StaticUtils
 from utils.enum import (
@@ -805,7 +805,8 @@ class PapiConverter:
             blitzElo=self._get_papi_elo(player, TournamentRating.BLITZ),
             fideBlitzElo=self._get_papi_elo_type(player, TournamentRating.BLITZ),
             licenceType=PapiPlayerFFELicence.get_outer_value(plugin_data.ffe_licence),
-            refFFE=plugin_data.ffe_id,
+            refFFE=plugin_data.ffe_id
+            or (int((datetime.now() - FFE_EPOCH).total_seconds()) + player.id),
             nrFFE=plugin_data.ffe_licence_number,
             league=plugin_data.league,
         )

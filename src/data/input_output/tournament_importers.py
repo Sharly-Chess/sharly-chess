@@ -16,6 +16,7 @@ from data.event import Event
 from data.input_output.tournament_importer_options import (
     TournamentImporterOption,
     FileOption,
+    TournamentRatingOption,
 )
 from data.input_output.trf_mappers import (
     TrfPlayerGender,
@@ -360,7 +361,7 @@ class FileTournamentImporter(TournamentImporter, ABC):
             )
 
     def on_import_finished(self):
-        (file_path,) = self.get_option_values()
+        file_path = self._get_option(FileOption).value
         if file_path:
             try:
                 file_path.unlink(missing_ok=True)
@@ -377,6 +378,13 @@ class TrfTournamentImporter(FileTournamentImporter):
     def static_name() -> str:
         return _('TRF file')
 
+    @staticmethod
+    def available_options() -> list[type[TournamentImporterOption]]:
+        return [
+            FileOption,
+            TournamentRatingOption,
+        ]
+
     @property
     def modal_title(self) -> str:
         return _('Import TRF file')
@@ -388,13 +396,14 @@ class TrfTournamentImporter(FileTournamentImporter):
     def load_stored_tournament(
         self, event: Event, stored_tournament: StoredTournament | None = None
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
-        (file_path,) = self.get_option_values()
+        (file_path, tournament_rating) = self.get_option_values()
         try:
             with open(file_path, 'r', encoding='utf-8') as file:
                 trf_tournament = trf.load(file)
         except TrfException as exception:
             raise SharlyChessException(str(exception))
         stored_tournament = self._read_trf_tournament(trf_tournament, stored_tournament)
+        stored_tournament.rating = tournament_rating
         next_board_id = 1
         board_id_by_player_id_by_round: dict[int, dict[int, int]] = defaultdict(dict)
         stored_boards_by_round: dict[int, list[StoredBoard]] = defaultdict(list)
@@ -410,7 +419,9 @@ class TrfTournamentImporter(FileTournamentImporter):
                         error=exception,
                     )
                 )
-            stored_player = self._read_trf_player(trf_player)
+            stored_player = self._read_trf_player(
+                trf_player, TournamentRating(tournament_rating)
+            )
             stored_tournament_player = StoredTournamentPlayer(
                 player_id=player_id,
                 pairing_number=trf_player.startrank,
@@ -538,15 +549,17 @@ class TrfTournamentImporter(FileTournamentImporter):
         return stored_tournament
 
     @staticmethod
-    def _read_trf_player(trf_player: TrfPlayer) -> StoredPlayer:
-        rating = PlayerRating(fide=trf_player.rating or None)
+    def _read_trf_player(
+        trf_player: TrfPlayer, tournament_rating: TournamentRating
+    ) -> StoredPlayer:
+        ratings = {tr.value: PlayerRating().stored_value for tr in TournamentRating}
+        ratings[tournament_rating.value] = PlayerRating(
+            fide=trf_player.rating or None
+        ).stored_value
         return StoredPlayer(
             id=trf_player.startrank,
             last_name=trf_player.name.split(',')[0].strip().upper(),
-            ratings={
-                tournament_rating.value: rating.stored_value
-                for tournament_rating in TournamentRating
-            },
+            ratings=ratings,
             first_name=(
                 trf_player.name.split(',')[1].strip()
                 if ',' in trf_player.name
