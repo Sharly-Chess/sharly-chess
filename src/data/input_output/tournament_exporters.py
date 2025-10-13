@@ -23,6 +23,11 @@ class TournamentExporter(IdentifiableEntity, ABC):
         Returns None if the export is available."""
         return None
 
+    def warning_message(self, tournament: Tournament) -> str | None:
+        """Get a warning message about the export for the tournament.
+        Returns None for no warning."""
+        return None
+
     @abstractmethod
     def dump_to_file(self, file: IO, tournament: Tournament):
         """Dump the content of the *tournament* to export into the *file*."""

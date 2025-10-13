@@ -23,6 +23,9 @@ class PapiTournamentExporter(TournamentExporter):
     def is_unavailable_message(self, tournament: Tournament) -> str | None:
         return PapiConverter.papi_export_unavailable_message(tournament)
 
+    def warning_message(self, tournament: Tournament) -> str | None:
+        return PapiConverter.papi_export_warning(tournament)
+
     @property
     def file_extension(self) -> str:
         return 'papi'

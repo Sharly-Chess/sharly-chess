@@ -44,7 +44,12 @@ class PapiPairingVariation(CoreMapper[str, PairingVariation]):
 
     @classmethod
     def get_outer_value(cls, core_object: PairingVariation) -> str | None:
-        if core_object == variations.DoubleBergerRoundRobinVariation():
+        if papi_key := super().get_outer_value(core_object):
+            return papi_key
+        pairing_system = core_object.system()
+        if pairing_system == SwissPairingSystem():
+            core_object = variations.StandardSwissVariation()
+        elif pairing_system == RoundRobinPairingSystem():
             core_object = variations.BergerRoundRobinVariation()
         return super().get_outer_value(core_object)
 

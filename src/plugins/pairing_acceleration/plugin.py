@@ -12,6 +12,7 @@ from plugins.pairing_acceleration.pairing_variations import (
     HaleySwissVariation,
     HaleySoftSwissVariation,
     ProgressiveSwissVariation,
+    BakuSwissVariation,
 )
 from plugins.utils import Plugin, PluginUtils
 
@@ -59,6 +60,7 @@ class PairingAccelerationPlugin(Plugin):
         self, variation_types: list[type[SwissVariation]]
     ):
         ordered_types: list[type[SwissVariation]] = [
+            BakuSwissVariation,
             HaleySwissVariation,
             HaleySoftSwissVariation,
             ProgressiveSwissVariation,

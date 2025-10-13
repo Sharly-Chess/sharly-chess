@@ -4,12 +4,19 @@
         {{ admin_macros.integer_range_input(
             name=setting.id,
             label=_('%(string)s:', string=setting.name),
-            help_text=_(
-                'Pairing number range of the group (recommended: %(min)d-%(max)d).',
-                min=recommended[0],
-                max=recommended[1],
+            help_text=(
+                _(
+                    'Pairing number range of the group (recommended: %(min)d-%(max)d).',
+                    min=recommended[0],
+                    max=recommended[1],
+                ) if setting.are_groups_editable else
+                _('Pairing number range of players the group.')
             ),
             tooltip_text=admin_tournament.pairing_variation.get_group_b_tooltip(admin_tournament),
+            disabled_message=(
+                '' if setting.are_groups_editable else
+                _('Groups can\'t be edited for this pairing system.')
+            ),
             max_disabled=setting.group_count() == 2,
             data=data,
             errors=errors,

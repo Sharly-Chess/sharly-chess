@@ -713,6 +713,9 @@ msgstr ""
 msgid "Background image:"
 msgstr ""
 
+msgid "Baku acceleration system"
+msgstr ""
+
 msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
 msgstr "Bd."
 
@@ -2387,6 +2390,9 @@ msgstr ""
 msgid "Group {group_id}"
 msgstr ""
 
+msgid "Groups can't be edited for this pairing system."
+msgstr ""
+
 #, python-format
 msgid "Groups must be composed of at least 25%% and at most 50%% of players."
 msgstr ""
@@ -3540,6 +3546,9 @@ msgstr ""
 msgid "Pairing number"
 msgstr ""
 
+msgid "Pairing number range of players the group."
+msgstr ""
+
 #, python-format
 msgid "Pairing number range of the group (recommended: %(min)d-%(max)d)."
 msgstr ""
@@ -3554,9 +3563,6 @@ msgid "Pairing style:"
 msgstr ""
 
 msgid "Pairing system"
-msgstr ""
-
-msgid "Pairing system [{pairing_system}] is not compatible with the PAPI format."
 msgstr ""
 
 msgid "Pairing-Allocated Bye assigned to player [{player}]."
@@ -4773,6 +4779,9 @@ msgid "Texts before and after the hour below are optional for round numbers, man
 msgstr ""
 
 msgid "Thanks :-)"
+msgstr ""
+
+msgid "The Baku acceleration system, not handled by FFE, may cause differences in the pairings display for Papi exports and FFE upload."
 msgstr ""
 
 msgid "The Buchholz Cut 1 (the sum of the scores of each of the opponents of a player reduced by the lowest score of the opponents)"
@@ -6340,3 +6349,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
