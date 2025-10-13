@@ -2850,6 +2850,9 @@ msgstr "Homme"
 msgid "Man. *** ACRONYM FOR MANUAL TIEBREAK"
 msgstr "Man."
 
+msgid "Manage"
+msgstr "Gérer"
+
 msgid "Manage accounts"
 msgstr "Gestion des comptes"
 
@@ -4023,12 +4026,6 @@ msgstr "Publier les appariements"
 
 msgid "Publish rankings"
 msgstr "Publier les classements"
-
-msgid "Publish the tournaments to Chess-Results.com."
-msgstr "Publier les tournois sur Chess-Results.com."
-
-msgid "Publish the tournaments to the FFE website."
-msgstr "Publier les tournois sur le site de la FFE."
 
 msgid "Publish tournament results"
 msgstr "Publier les résultats"
@@ -5709,12 +5706,6 @@ msgstr "Lien de mise en ligne introuvable, vérifiez que le tournoi n’est pas 
 msgid "Upload rules"
 msgstr "Téléverser le règlement"
 
-msgid "Upload to Chess-Results.com"
-msgstr "Publication Chess-Results.com"
-
-msgid "Upload to the FFE"
-msgstr "Publication FFE"
-
 msgid "Upload tournaments now"
 msgstr "Mettre en ligne les tournois maintenant"
 
@@ -6349,3 +6340,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
