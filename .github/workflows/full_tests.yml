@@ -13,7 +13,7 @@ on:
 
 jobs:
     full-test:
-        runs-on: windows-latest
+        runs-on: macos-latest
         defaults:
             run:
                 shell: pwsh
@@ -23,7 +23,7 @@ jobs:
               uses: actions/checkout@v4
 
             - name: Set up Python
-              uses: actions/setup-python@v4
+              uses: actions/setup-python@v5
               with:
                 python-version: '3.13'
 
@@ -48,7 +48,7 @@ jobs:
 
             - name: Install Playwright browsers
               run: |
-                python -m playwright install --with-deps chromium
+                python -m playwright install chromium
 
             - name: Run all tests
               run: pytest
