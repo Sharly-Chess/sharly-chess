@@ -1,9 +1,13 @@
+from functools import partial
 import os
 import posixpath
+import sqlite3
 import typing as t
 from pathlib import Path
 from typing import Sequence
 
+import aiosqlite
+from aiosqlitepool import SQLiteConnectionPool
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 from litestar import Router
 from litestar.contrib.jinja import JinjaTemplateEngine
@@ -17,7 +21,7 @@ from litestar.status_codes import (
     HTTP_403_FORBIDDEN,
     HTTP_400_BAD_REQUEST,
 )
-from litestar.stores.file import FileStore
+
 from litestar.stores.base import Store
 from litestar.template import TemplateConfig
 from litestar.types import ControllerRouterHandler, Middleware
@@ -52,6 +56,7 @@ from web.controllers.user.tournament_user_controller import (
     IllegalMoveUserController,
     ResultUserController,
 )
+from web.sqlite_store import SQLiteStore
 
 
 static_files_base_dir = BASE_DIR / 'src/web/static'
@@ -199,15 +204,46 @@ template_config: TemplateConfig = TemplateConfig(
     # engine_callback=register_template_callables,
 )
 
-sessions_dir: Path = TMP_DIR / 'sessions'
-sessions_dir.mkdir(parents=True, exist_ok=True)
 
-stores: dict[str, Store] = {
-    'sessions': FileStore(
-        path=sessions_dir,
-        create_directories=True,
+sessions_path: Path = TMP_DIR / 'session.db'
+
+
+def create_sessions_database(path: Path):
+    database = sqlite3.connect(path)
+    cursor = database.cursor()
+    cursor.execute(
+        'CREATE TABLE IF NOT EXISTS store(key TEXT PRIMARY KEY, data BLOB, expires_at)'
     )
-}
+    cursor.execute('CREATE INDEX IF NOT EXISTS expiry_index ON store(expires_at)')
+    database.commit()
+    cursor.close()
+    database.close()
+    return None
+
+
+create_sessions_database(sessions_path)
+
+
+async def create_connection(path: os.PathLike[str]) -> aiosqlite.Connection:
+    conn = await aiosqlite.connect(path)
+    # Apply high-performance pragmas
+    await conn.execute('PRAGMA journal_mode = WAL')
+    await conn.execute('PRAGMA synchronous = NORMAL')
+    await conn.execute('PRAGMA cache_size = 10000')
+    await conn.execute('PRAGMA temp_store = MEMORY')
+    await conn.execute('PRAGMA foreign_keys = ON')
+    await conn.execute('PRAGMA mmap_size = 268435456')
+
+    return conn
+
+
+session_pool = SQLiteConnectionPool(
+    connection_factory=partial(create_connection, sessions_path),
+    pool_size=10,
+    acquisition_timeout=30,
+)
+
+stores: dict[str, Store] = {'sessions': SQLiteStore(session_pool)}
 
 middlewares: Sequence[Middleware] = [
     ServerSideSessionConfig(
