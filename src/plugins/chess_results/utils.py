@@ -92,7 +92,7 @@ class ChessResultsUtils:
 
         plugin_data = cls.get_tournament_plugin_data(tournament)
         tnr = plugin_data.tnr
-        creator_id = plugin_data.creator_id
+        creator_id = plugin_data.creator_id or ''
         return {
             'tnr_sec': cls.encrypt(str(tnr)),
             'creator_id_sec': cls.encrypt(creator_id),
