@@ -96,4 +96,4 @@ class SQLiteStore(Store):
             await db.commit()
         if not row:
             return None
-        return datetime.fromisoformat(row[0])
+        return int((datetime.fromisoformat(row[0]) - datetime.now()).total_seconds())
