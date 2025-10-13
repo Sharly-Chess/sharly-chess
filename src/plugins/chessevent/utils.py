@@ -111,9 +111,9 @@ class _ChessEventRequestStatusManager(EntityManager[ChessEventStatus]):
 
 @dataclass
 class ChessEventEventPluginData(PluginData):
-    user: str | None
-    password: str | None
-    event_id: str | None
+    user: str | None = None
+    password: str | None = None
+    event_id: str | None = None
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
@@ -155,12 +155,12 @@ class ChessEventEventPluginData(PluginData):
 
 @dataclass
 class ChessEventTournamentPluginData(PluginData):
-    user: str | None
-    password: str | None
-    event_id: str | None
-    tournament_name: str | None
-    status: str | None
-    last_sync: float | None
+    user: str | None = None
+    password: str | None = None
+    event_id: str | None = None
+    tournament_name: str | None = None
+    status: str | None = None
+    last_sync: float | None = None
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:

@@ -81,6 +81,23 @@ class ChessEventPlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
+    def on_event_duplicated(self, event_database: EventDatabase):
+        stored_event = event_database.load_stored_event()
+
+        stored_event.plugin_data[PLUGIN_NAME] = (
+            ChessEventEventPluginData().to_stored_value()
+        )
+        event_database.update_stored_event(stored_event)
+
+        for stored_tournament in stored_event.stored_tournaments:
+            # Clear all the chessevent data
+            new_plugin_data = ChessEventTournamentPluginData()
+            stored_tournament.plugin_data[PLUGIN_NAME] = (
+                new_plugin_data.to_stored_value()
+            )
+            event_database.update_stored_tournament(stored_tournament)
+
+    @hookimpl
     def get_event_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         return self.id, ChessEventEventPluginData
 

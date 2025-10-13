@@ -607,14 +607,18 @@ class FFESession(Session):
             self.tournament.event.uniq_id, write=True, check_dirty_tournaments=False
         ) as event_database:
             now = time.time()
+
             event_database.execute(
-                'UPDATE `tournament` SET `ffe_last_rules_upload` = ?, '
-                '`last_update` = ? WHERE `id` = ?',
-                (
-                    now,
-                    now,
-                    self.tournament.id,
-                ),
+                """
+                UPDATE tournament
+                SET plugin_data = json_set(
+                        plugin_data,
+                        '$.ffe.last_rules_upload', ?
+                    ),
+                    last_update = ?
+                WHERE id = ?
+                """,
+                (now, now, self.tournament.id),
             )
         logger.info('Rules uploaded')
         self.report_success(_('Rules uploaded'))

@@ -160,11 +160,11 @@ class FfeEventPluginData(PluginData):
 
 @dataclass
 class FfeTournamentPluginData(PluginData):
-    ffe_id: int | None
-    password: str | None
-    auto_upload: bool | None
-    last_upload: float | None
-    last_rules_upload: float | None
+    ffe_id: int | None = None
+    password: str | None = None
+    auto_upload: bool | None = False
+    last_upload: float | None = None
+    last_rules_upload: float | None = None
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:

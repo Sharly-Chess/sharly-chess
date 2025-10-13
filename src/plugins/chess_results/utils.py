@@ -1,7 +1,12 @@
 from dataclasses import dataclass
 from datetime import datetime
 from functools import partial
+import os
 from typing import Any, Self
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import padding
+from dotenv import load_dotenv
 
 from data.event import Event
 from data.tournament import Tournament
@@ -14,6 +19,8 @@ get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 CHESS_RESULTS_MIN_UPLOAD_DELAY = 3
 CHESS_RESULTS_DEFAULT_UPLOAD_DELAY = 3
 CHESS_RESULTS_EPOCH = datetime(2000, 1, 1)
+
+load_dotenv()
 
 
 class ChessResultsUtils:
@@ -53,6 +60,43 @@ class ChessResultsUtils:
         plugin_data = tournament.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, ChessResultsTournamentPluginData)
         return plugin_data
+
+    @staticmethod
+    def get_bytes_from_env(var_name: str) -> bytes:
+        value = os.getenv(var_name)
+        if not value:
+            raise ValueError(f'Missing environment variable: {var_name}')
+        return bytes.fromhex(value)
+
+    @classmethod
+    def encrypt(cls, decrypted_string: str) -> str:
+        """
+        Returns a HEX-encoded encrypted string (uppercase).
+        """
+        key = cls.get_bytes_from_env('CHESS_RESULTS_AES_KEY')
+        iv = cls.get_bytes_from_env('CHESS_RESULTS_AES_IV')
+
+        data = decrypted_string.encode('utf-8')
+
+        padder = padding.PKCS7(128).padder()
+        padded_data = padder.update(data) + padder.finalize()
+        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+        encryptor = cipher.encryptor()
+
+        encrypted_bytes = encryptor.update(padded_data) + encryptor.finalize()
+        return encrypted_bytes.hex().upper()
+
+    @classmethod
+    def get_connection_parameters(cls, tournament: Tournament) -> dict[str, str]:
+        """Gets the parameters needed to manage a tournament on Chess-Results.com."""
+
+        plugin_data = cls.get_tournament_plugin_data(tournament)
+        tnr = plugin_data.tnr
+        creator_id = plugin_data.creator_id or ''
+        return {
+            'tnr_sec': cls.encrypt(str(tnr)),
+            'creator_id_sec': cls.encrypt(creator_id),
+        }
 
 
 @dataclass
@@ -138,10 +182,10 @@ class ChessResultsEventPluginData(PluginData):
 
 @dataclass
 class ChessResultsTournamentPluginData(PluginData):
-    auto_upload: bool | None
-    tnr: str | None
-    creator_id: str | None
-    last_upload: float | None
+    auto_upload: bool | None = None
+    tnr: str | None = None
+    creator_id: str | None = None
+    last_upload: float | None = None
     remark: str | None = None
     remark_default: bool = True
 

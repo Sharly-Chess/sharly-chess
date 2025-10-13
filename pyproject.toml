@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sharly-chess"
 description = "An application to help chess arbiters and organizers manage their tournaments"
-requires-python = ">=3.12.0"
+requires-python = ">=3.13.0"
 version = "3.1.6"
 
 authors = [
@@ -22,7 +22,7 @@ dependencies = [
   "aiosqlitepool ~= 1.0.0",
   "XlsxWriter ~= 3.2.2",
   "apluggy ~= 1.1.0",
-  # Latests compatible version should always be preferred due to security reasons
+  # Latest compatible version should always be preferred due to security reasons
   # This can be pinned later due to security concerns
   "argon2-cffi",
   "babel ~= 2.16.0",

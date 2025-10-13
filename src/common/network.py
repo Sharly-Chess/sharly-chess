@@ -428,7 +428,7 @@ class NetworkMonitor:
         """Starts a thread to test for internet connectivity every few seconds"""
         # NOTE(Amaras): The entire Python program exits when only daemon threads
         # are left, and those threads will be stopped abruptly on program shutdown
-        # See https://docs.python.org/3.12/library/threading.html#thread-objects
+        # See https://docs.python.org/3.13/library/threading.html#thread-objects
         # for more documentation
         #
         # By passing cls as an arg, we can share it with the main thread.

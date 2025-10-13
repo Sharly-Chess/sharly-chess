@@ -1,5 +1,4 @@
 /.idea/
-/venv/
 /papi/
 /events/
 /logs/
@@ -34,6 +33,7 @@ __pycache__/
 # Generated database files
 *-shm
 *-wal
+*-journal
 .scc
 
 # MacOS files
@@ -54,8 +54,9 @@ __pycache__/
 .env
 
 # virtual environments
-/.venv-dev
-/.venv-export
+/.venv-*
+/.venv
+/venv/
 
 # PyInstaller spec files
 /*.spec

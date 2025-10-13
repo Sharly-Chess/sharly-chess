@@ -182,6 +182,10 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
+    def on_event_duplicated(self, event_database: 'EventDatabase'):
+        """Called after an event is duplicated"""
+
+    @hookspec
     def get_event_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         """Get the data class to use to store plugin event values.
         Also provide the ID of the plugin."""

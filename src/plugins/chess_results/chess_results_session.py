@@ -1,13 +1,8 @@
 from functools import partial
 from logging import Logger
+import random
 import time
-import uuid
 import xml.etree.ElementTree as ET
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import padding
-from dotenv import load_dotenv
-import os
 
 import requests
 from requests import Session
@@ -27,7 +22,6 @@ from plugins.utils import PluginUtils
 from plugins.manager import plugin_manager
 from utils.enum import Result
 
-load_dotenv()
 logger: Logger = get_logger()
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
@@ -50,30 +44,6 @@ class ChessResultsSession(Session):
         self.report_info = report_info
         self.report_success = report_success
         self.report_error = report_error
-
-    @staticmethod
-    def get_bytes_from_env(var_name: str) -> bytes:
-        value = os.getenv(var_name)
-        if not value:
-            raise ValueError(f'Missing environment variable: {var_name}')
-        return bytes.fromhex(value)
-
-    def encrypt(self, decrypted_string: str) -> str:
-        """
-        Returns a HEX-encoded encrypted string (uppercase).
-        """
-        key = self.get_bytes_from_env('CHESS_RESULTS_AES_KEY')
-        iv = self.get_bytes_from_env('CHESS_RESULTS_AES_IV')
-
-        data = decrypted_string.encode('utf-8')
-
-        padder = padding.PKCS7(128).padder()
-        padded_data = padder.update(data) + padder.finalize()
-        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
-        encryptor = cipher.encryptor()
-
-        encrypted_bytes = encryptor.update(padded_data) + encryptor.finalize()
-        return encrypted_bytes.hex().upper()
 
     def _chess_results_init(self) -> str:
         """Initializes a session on Chess-Results.com
@@ -99,7 +69,7 @@ class ChessResultsSession(Session):
             <chessresults>
                 <getkey
                     source="{source}"
-                    sid="{self.encrypt(sid)}"
+                    sid="{ChessResultsUtils.encrypt(sid)}"
                     creatorID="{creator_id}"
                     federation="{tournament.event.federation}"
                     tournament="{tournament.full_name}" />
@@ -339,9 +309,9 @@ class ChessResultsSession(Session):
             'securitydata',
             {
                 'source': str(CHESS_RESULTS_SOURCE),
-                'sid': self.encrypt(sid),
-                'creator_sid': self.encrypt(creator_id),
-                'tnr_sid': self.encrypt(str(tnr)),
+                'sid': ChessResultsUtils.encrypt(sid),
+                'creator_sid': ChessResultsUtils.encrypt(creator_id),
+                'tnr_sid': ChessResultsUtils.encrypt(str(tnr)),
             },
         )
 
@@ -362,6 +332,7 @@ class ChessResultsSession(Session):
         plugin_data = ChessResultsUtils.get_tournament_plugin_data(self.tournament)
         tnr = plugin_data.tnr
         creator_id = plugin_data.creator_id
+
         if not tnr:
             # See if we have a creator_id stored in the config
             from plugins.chess_results.chess_results import ChessResultsPlugin
@@ -372,7 +343,7 @@ class ChessResultsSession(Session):
             chess_results_plugin_data = chess_results_plugin.get_plugin_data()
             creator_id = chess_results_plugin_data.creator_id
             if not creator_id:
-                creator_id = str(uuid.uuid4())
+                creator_id = str(random.randint(1, 2**16 - 1))
                 with ConfigDatabase(write=True) as config_database:
                     chess_results_plugin_data.creator_id = creator_id
                     stored_plugin = chess_results_plugin.context.stored_plugin
@@ -443,7 +414,44 @@ class ChessResultsSession(Session):
             error_text = msg.attrib.get('Text', '')
             if 'MsgNo:28' in error_text:
                 self.report_error(_('Tournament finished, upload no longer possible.'))
-            else:
-                self.report_error(error_text)
+                return
+
+            # Retry logic: Invalid Source-ID or tournament number
+            # This can happen if the user deletes the tournament and then tries to upload again
+            if 'Source-ID (Swiss-Manager Tournaments) not valid' in error_text:
+                logger.warning(
+                    'Invalid Source-ID detected, retrying without tnr/creator_id...'
+                )
+
+                # Remove the invalid keys
+                with EventDatabase(
+                    self.tournament.event.uniq_id,
+                    write=True,
+                    check_dirty_tournaments=False,
+                ) as event_database:
+                    event_database.execute(
+                        """
+                        UPDATE tournament
+                        SET plugin_data = json_remove(
+                                plugin_data,
+                                '$.chess_results.tnr',
+                                '$.chess_results.creator_id'
+                            )
+                        WHERE id = ?
+                        """,
+                        (self.tournament.id,),
+                    )
+
+                # Clear in-memory values too
+                plugin_data.tnr = None
+                plugin_data.creator_id = None
+                self.tournament.stored_tournament.plugin_data[PLUGIN_NAME] = (
+                    plugin_data.to_stored_value()
+                )
+
+                # Retry the upload once (fresh creation)
+                return self.upload()
+
+            self.report_error(error_text)
         else:
             self.report_error(_('Unknown error when uploading results.'))

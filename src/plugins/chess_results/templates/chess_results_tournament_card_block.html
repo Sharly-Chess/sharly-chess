@@ -10,6 +10,10 @@
             <a href="https://chess-results.com/tnr{{ tournament.plugin_data.chess_results.tnr }}.aspx" target="_blank">
                 <i class="bi bi-box-arrow-up-right"></i>
             </a>
+            <span>
+                (<a href="https://chess-results.com/Stammdaten.aspx?&art=1&lan=1&tabkey=26&key1={{ tournament.plugin_data.chess_results.tnr }}&luser_sec={{chess_results_utils.get_connection_parameters(tournament).creator_id_sec}}&tnr_sec={{chess_results_utils.get_connection_parameters(tournament).tnr_sec}}"
+                 target="_blank">{{ _('Manage') }}</a>)
+            </span>
         {% endif %}
     </div>
     {% with auto_upload=chess_results_utils.resolve_auto_upload(tournament) %}

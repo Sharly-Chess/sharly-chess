@@ -618,6 +618,23 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
+    def on_event_duplicated(self, event_database: EventDatabase):
+        stored_tournaments = event_database.load_stored_tournaments()
+        for stored_tournament in stored_tournaments:
+            old_plugin_data = FfeTournamentPluginData.from_stored_value(
+                stored_tournament.plugin_data.get(PLUGIN_NAME, {})
+            )
+
+            # Only retain the auto_upload setting
+            new_plugin_data = FfeTournamentPluginData(
+                auto_upload=old_plugin_data.auto_upload
+            )
+            stored_tournament.plugin_data[PLUGIN_NAME] = (
+                new_plugin_data.to_stored_value()
+            )
+            event_database.update_stored_tournament(stored_tournament)
+
+    @hookimpl
     def get_event_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         return self.id, FfeEventPluginData
 
