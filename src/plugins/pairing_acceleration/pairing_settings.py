@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from enum import StrEnum
+from math import ceil
 from typing import TYPE_CHECKING
 
 from common.i18n import _
@@ -99,7 +100,7 @@ class Base2GroupsSetting(PairingGroupSetting, ABC):
         player_count = tournament.player_count
         if player_count < 3:
             return {group: (0, 0) for group in AccelerationGroup}
-        max_a = round(player_count / 4) * 2
+        max_a = ceil(player_count / 4) * 2
         return {
             AccelerationGroup.A: (1, max_a),
             AccelerationGroup.B: (max_a + 1, player_count),
