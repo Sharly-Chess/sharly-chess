@@ -39,7 +39,7 @@ jobs:
           # Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset.
           # NOTE(pascalaubry): on Windows self-hosted runners, the first install fails:
           # https://github.com/actions/setup-python/issues/969
-          python-version: 3.12
+          python-version: 3.13
       - name: Install dependencies
         shell: cmd  # pwsh is not found on Windows self-hosted runners (https://github.com/actions/runner/issues/3415)
         run: |
