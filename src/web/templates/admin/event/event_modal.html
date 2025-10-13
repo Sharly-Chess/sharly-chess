@@ -194,7 +194,9 @@
                                         class="collapse-button collapsed text-body"
                                         data-bs-toggle="collapse"
                                         data-bs-target="#custom-tree"
-                                        disabled=not client.can_update_event,
+                                        {% if not client.can_update_event %}
+                                            disabled
+                                        {% endif %}
                                     >
                                         <span
                                             class="d-inline-flex align-items-center gap-2"
