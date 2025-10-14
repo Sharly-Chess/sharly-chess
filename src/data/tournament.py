@@ -227,9 +227,19 @@ class Tournament:
         criteria_by_id = {}
         for stored_criterion in self.stored_tournament.stored_criteria:
             assert stored_criterion.id is not None
-            criteria_by_id[stored_criterion.id] = TournamentCriterion(
-                self, stored_criterion
-            )
+            try:
+                criteria_by_id[stored_criterion.id] = TournamentCriterion(
+                    self, stored_criterion
+                )
+            except KeyError as e:
+                # This can happen when the plugin that defined the criteria is not enabled
+                logger.warning(
+                    'Criterion [%s] not found for tournament [%s]: %s',
+                    stored_criterion.id,
+                    self.uniq_id,
+                    e,
+                )
+                pass
         return criteria_by_id
 
     @property
