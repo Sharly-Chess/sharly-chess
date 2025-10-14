@@ -994,6 +994,13 @@ class Player:
             tie_break_sort_key = []
         return (-(self.points or 0.0),) + tuple(tie_break_sort_key)
 
+    def rank_sort_key_with_first_tie_breaks(self, tie_break_count: int) -> tuple:
+        """Returns a rank sort key up to the first *tie_break_count* tie breaks."""
+        tie_break_sort_key: list = []
+        for tie_break_value in self.tie_break_values[:tie_break_count]:
+            tie_break_sort_key.append(-float(tie_break_value.value))
+        return (-(self.points or 0.0),) + tuple(tie_break_sort_key)
+
     def rank_sort_key_without_tie_break(
         self, tie_break_type: type['TieBreak']
     ) -> tuple:

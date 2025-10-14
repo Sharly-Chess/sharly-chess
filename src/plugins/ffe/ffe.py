@@ -771,8 +771,8 @@ class FfePlugin(Plugin):
                     options.append(option_type(value))
             if tie_break_type := tie_break_type_by_id.get(tie_break_id, None):
                 tie_break = tie_break_type(options)
-                if blocker := PapiConverter.check_tiebreak(tie_break):
-                    return blocker
+                if warning := PapiConverter.check_tiebreak_warning(tie_break):
+                    return warning
         pairing_variation = PairingVariationManager(event).get_object(
             stored_tournament.pairing
         )

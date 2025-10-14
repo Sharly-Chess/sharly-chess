@@ -4212,9 +4212,6 @@ msgstr "Le résultat [{result}] ne peut être utilisé sans adversaire."
 msgid "Result [{result}] is incompatible with the opponent's result [{opponent_result}]."
 msgstr "Le résultat [{result}] est incompatible avec le résultat de l'adversaire [{opponent_result}]."
 
-msgid "Result [{result}] is not compatible with the PAPI format."
-msgstr "Le résultat [{result}] n’est pas compatible avec le format PAPI."
-
 msgid "Results"
 msgstr "Résultats"
 
@@ -4782,8 +4779,8 @@ msgstr "Couleur du texte :"
 msgid "Texts before and after the hour below are optional for round numbers, mandatory otherwise."
 msgstr "Les textes avant et après l'horaire ci-dessous sont facultatifs pour les numéros de rondes, obligatoires sinon."
 
-msgid "The Baku acceleration system, not handled by FFE, may cause differences in the pairings display for Papi exports and FFE upload."
-msgstr "Le système d'accélération de Bakou, non pris en charge par la FFE, peut provoquer des différences dans l'affichage des appariements lors de l'export Papi et de la mise en ligne FFE."
+msgid "The Baku acceleration system is not compatible with Papi, there may be differences in the Papi pairings display."
+msgstr "Le système d'accélération de Bakou n'est pas compatible avec Papi, il peut y avoir des différences dans l'affichage des appariements Papi."
 
 msgid "The Buchholz Cut 1 (the sum of the scores of each of the opponents of a player reduced by the lowest score of the opponents)"
 msgstr "Buchholz tronqué (la somme des scores des adversaires du·de la joueur·euse diminué du plus faible score des adversaires)"
@@ -4802,6 +4799,9 @@ msgstr "Le règlement FIDE indique que seuls les appariements de la ronde <b>pr�
 
 msgid "The PAPI format does not support {rounds} rounds (maximum: {max})."
 msgstr "Le format PAPI ne supporte pas {rounds} rounds (maximum : {max})."
+
+msgid "The Papi format does not support result [{result}]."
+msgstr "Le format Papi ne supporte pas le résultat [{result}]."
 
 msgid "The URL of the image to display."
 msgstr "L'URL de l'image à afficher."
@@ -5253,8 +5253,8 @@ msgstr "Victoire à trois points (3-1-0)"
 msgid "Tie-break #%(index)d:"
 msgstr "Départage n°%(index)d :"
 
-msgid "Tie-break [{tie_break}] is not compatible with the PAPI format."
-msgstr "Le départage [{tie_break}] n’est pas compatible avec le format PAPI."
+msgid "Tie-break [{tie_break}] is not compatible with Papi, it will not appear in the Papi results."
+msgstr "Le départage [{tie_break}] n'est pas compatible avec Papi, il n'apparaitra pas dans les résultats Papi."
 
 msgid "Tie-break already in use."
 msgstr "Départage déjà utilisé."

@@ -1,5 +1,6 @@
 import json
 import tempfile
+from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from pathlib import Path
@@ -597,25 +598,26 @@ class PapiConverter:
     ) -> str | None:
         if pairing_variation == BakuSwissVariation():
             return _(
-                'The Baku acceleration system, not handled by FFE, may cause '
-                'differences in the pairings display for Papi exports and FFE upload.'
+                'The Baku acceleration system is not compatible with Papi, '
+                'there may be differences in the Papi pairings display.'
             )
         return None
 
     @classmethod
-    def check_tiebreak(cls, tie_break: TieBreak) -> str | None:
+    def check_tiebreak_warning(cls, tie_break: TieBreak) -> str | None:
         if tie_break not in PapiTieBreak.core_objects():
             return _(
-                'Tie-break [{tie_break}] is not compatible with the PAPI format.'
+                'Tie-break [{tie_break}] is not compatible with Papi, '
+                'it will not appear in the Papi results.'
             ).format(tie_break=tie_break.name)
         return None
 
     @classmethod
     def check_result(cls, result: Result, tournament: Tournament) -> str | None:
         if not PapiRound.is_convertible_to_papi(result, tournament):
-            return _(
-                'Result [{result}] is not compatible with the PAPI format.'
-            ).format(result=result)
+            return _('The Papi format does not support result [{result}].').format(
+                result=result
+            )
         return None
 
     MAX_PAPI_ROUNDS = 24
@@ -634,19 +636,18 @@ class PapiConverter:
         if rounds_blocker := cls.check_rounds(tournament.rounds):
             return rounds_blocker
 
-        for tie_break in tournament.tie_breaks:
-            if tie_break_blocker := cls.check_tiebreak(tie_break):
-                return tie_break_blocker
-
-        for round in range(1, tournament.rounds + 1):
+        for round_ in range(1, tournament.rounds + 1):
             for player in tournament.players:
-                if msg := cls.check_result(player.pairings[round].result, tournament):
+                if msg := cls.check_result(player.pairings[round_].result, tournament):
                     return msg
 
         return None
 
     @classmethod
     def papi_export_warning(cls, tournament: Tournament) -> str | None:
+        for tie_break in tournament.tie_breaks:
+            if warning := cls.check_tiebreak_warning(tie_break):
+                return warning
         if warning := cls.check_pairing_variation_warning(tournament.pairing_variation):
             return warning
         return None
@@ -700,7 +701,9 @@ class PapiConverter:
 
     def _tournament_to_papi_data(self, tournament: Tournament) -> PapiData:
         """Convert a Tournament object to PapiData."""
-
+        papi_tiebreaks, manual_tiebreak_by_player_id = (
+            self._tiebreaks_to_papi_tiebreaks(tournament)
+        )
         # Convert tournament variables
         variables = PapiVariables(
             name=tournament.full_name,
@@ -709,21 +712,19 @@ class PapiConverter:
             pairing=PapiPairingVariation.get_outer_value(tournament.pairing_variation),
             ratingClass=PapiTournamentRating.get_outer_value(tournament.rating),
             venue=tournament.location,
-            startDate=self._format_date_for_papi(tournament.start_timestamp)
-            if tournament.start_timestamp
-            else None,
-            endDate=self._format_date_for_papi(tournament.stop_timestamp)
-            if tournament.stop_timestamp
-            else None,
-            tiebreak1=PapiTieBreak.get_outer_value(tournament.tie_breaks[0])
-            if tournament.tie_breaks and tournament.tie_breaks[0]
-            else None,
-            tiebreak2=PapiTieBreak.get_outer_value(tournament.tie_breaks[1])
-            if len(tournament.tie_breaks) > 1 and tournament.tie_breaks[1]
-            else None,
-            tiebreak3=PapiTieBreak.get_outer_value(tournament.tie_breaks[2])
-            if len(tournament.tie_breaks) > 2 and tournament.tie_breaks[2]
-            else None,
+            startDate=(
+                self._format_date_for_papi(tournament.start_timestamp)
+                if tournament.start_timestamp
+                else None
+            ),
+            endDate=(
+                self._format_date_for_papi(tournament.stop_timestamp)
+                if tournament.stop_timestamp
+                else None
+            ),
+            tiebreak1=papi_tiebreaks[0],
+            tiebreak2=papi_tiebreaks[1],
+            tiebreak3=papi_tiebreaks[2],
             pointSystem=PapiThreePointsForAWin.get_outer_value(
                 tournament.three_points_for_a_win
             ),
@@ -734,10 +735,6 @@ class PapiConverter:
             homologation=str(
                 FFEUtils.get_tournament_plugin_data(tournament).ffe_id or ''
             ),
-        )
-
-        has_manual_tiebreak = any(
-            isinstance(tiebreak, ManualTieBreak) for tiebreak in tournament.tie_breaks
         )
 
         # Create mapping from internal player ID to index in PapiPlayer list
@@ -751,19 +748,84 @@ class PapiConverter:
             papi_player = self._player_to_papi_player(
                 player,
                 player_id_to_index,
-                has_manual_tiebreak,
-                pab_value=tournament.pab_value,
+                tournament.pab_value,
+                manual_tiebreak_by_player_id.get(player.id, None),
             )
             papi_players.append(papi_player)
 
         return PapiData(variables=variables, players=papi_players)
 
+    @staticmethod
+    def _tiebreaks_to_papi_tiebreaks(
+        tournament: Tournament,
+    ) -> tuple[list[str | None], dict[int, int]]:
+        papi_tiebreaks: list[str | None] = []
+        manual_tiebreak_by_player_id: dict[int, int] = {}
+        manual_index: int | None = None
+        use_manual: bool = False
+        for index, tiebreak in enumerate(tournament.tie_breaks):
+            if tiebreak == ManualTieBreak():
+                manual_index = index
+            papi_tiebreak = PapiTieBreak.get_outer_value(tiebreak)
+            if index > 2 or not papi_tiebreak:
+                use_manual = True
+                break
+            papi_tiebreaks.append(papi_tiebreak)
+        if use_manual:
+            # Replace the final Papi tie-break by a manual tie-break representing the SC ranking
+            tournament.compute_player_ranks()
+            if manual_index is not None:
+                papi_tiebreaks = papi_tiebreaks[: manual_index + 1]
+            else:
+                papi_tiebreaks = papi_tiebreaks[:2]
+                papi_tiebreaks.append(PapiTieBreak.get_outer_value(ManualTieBreak()))
+            players_by_rank_group: dict[tuple, list[Player]] = defaultdict(list)
+            papi_tiebreak_count = len(papi_tiebreaks) - 1
+            for player in tournament.players:
+                rank_group = player.rank_sort_key_with_first_tie_breaks(
+                    papi_tiebreak_count
+                )
+                players_by_rank_group[rank_group].append(player)
+            for player_group in players_by_rank_group.values():
+                player_group_count = len(player_group)
+                if player_group_count <= 1:
+                    continue
+                for index, player in enumerate(
+                    sorted(player_group, key=lambda p: p.rank)
+                ):
+                    manual_tiebreak_by_player_id[player.id] = player_group_count - index
+        elif len(papi_tiebreaks) < 3 and not manual_index:
+            # If a spot is available, add a manual tie-break representing the start rank
+            papi_tiebreaks.append(PapiTieBreak.get_outer_value(ManualTieBreak()))
+            player_count = tournament.player_count
+            for index, player in enumerate(
+                sorted(tournament.players, key=lambda p: p.starting_rank_sort_key)
+            ):
+                manual_tiebreak_by_player_id[player.id] = player_count - index
+        elif manual_index:
+            # Setup the manual tie-break values from the stored value
+            manual_tiebreak_by_player_id = {
+                player.id: player.manual_tiebreak
+                for player in tournament.players
+                if player.manual_tiebreak is not None
+            }
+            # Those values can be negative, so to have a clean representation in Papi a delta is added
+            if manual_tiebreak_by_player_id:
+                min_value = min(manual_tiebreak_by_player_id.values())
+                if min_value <= 0:
+                    manual_tiebreak_by_player_id = {
+                        player_id: manual_tiebreak - (min_value + 1)
+                        for player_id, manual_tiebreak in manual_tiebreak_by_player_id.items()
+                    }
+        papi_tiebreaks += [None] * (3 - len(papi_tiebreaks))
+        return papi_tiebreaks, manual_tiebreak_by_player_id
+
     def _player_to_papi_player(
         self,
         player: Player,
         player_id_to_index: dict[int, int],
-        has_manual_tiebreak: bool,
         pab_value: Result,
+        manual_tie_break_value: int | None = None,
     ) -> PapiPlayer:
         """Convert a Player object to PapiPlayer."""
 
@@ -771,13 +833,9 @@ class PapiConverter:
         assert isinstance(plugin_data, FfePlayerPluginData)
 
         fixed_board: int | None = player.fixed
-        if (
-            has_manual_tiebreak
-            and player.stored_tournament_player.manual_tiebreak is not None
-        ):
-            # The relative order of the players is stored in the fixed table field with values above 1000!
-            # Our values can be negative, so we need to add 2000 to the value
-            fixed_board = player.stored_tournament_player.manual_tiebreak + 2000
+        if manual_tie_break_value is not None:
+            # The relative order of the players is stored in the fixed table field with values above 1000
+            fixed_board = manual_tie_break_value + 1000
 
         papi_player = PapiPlayer(
             lastName=player.last_name,
@@ -826,7 +884,7 @@ class PapiConverter:
 
     def _get_papi_elo(self, player: Player, tournament_rating: TournamentRating) -> int:
         # Override unrated rapid/blitz rating in the export
-        # When exporting to Papi we can safely assume that the player type for the touranment rating is FIDE
+        # When exporting to Papi we can safely assume that the player type for the tournament rating is FIDE
         if player.rating_is_overridden(tournament_rating, PlayerRatingType.FIDE):
             tournament_rating = TournamentRating.STANDARD
         return player.get_rating_and_type(
