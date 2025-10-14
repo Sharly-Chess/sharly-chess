@@ -123,6 +123,10 @@ class FfePlugin(Plugin):
         return True
 
     @override
+    def is_enabled_for_event(self, event: Optional['Event']) -> bool:
+        return not event or event.federation == 'FRA'
+
+    @override
     @property
     def is_state_editable(self) -> bool:
         return False

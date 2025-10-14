@@ -102,7 +102,9 @@ class Event:
             return stored
         if federation := StaticUtils.get_country_currency(self.federation):
             return federation
-        if plugin := plugin_manager.hook.get_default_prize_currency():
+        if plugin := plugin_manager.hook_for_event(
+            self, 'get_default_prize_currency'
+        )():
             return plugin
         return SharlyChessConfig.default_prize_currency
 

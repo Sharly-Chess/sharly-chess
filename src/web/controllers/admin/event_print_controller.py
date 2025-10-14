@@ -223,6 +223,7 @@ class EventPrintController(BaseEventAdminController):
         options: str | None = None,
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
+        event = web_context.get_admin_event()
         document_type = PrintDocumentManager.get_type(document)
         option_data: dict[str, str] = {}
         if options:
@@ -237,17 +238,17 @@ class EventPrintController(BaseEventAdminController):
             print_options.append(type(print_option)(value))
         print_document = document_type(web_context.get_admin_event(), print_options)
 
-        per_plugin_columns = plugin_manager.hook.get_extra_print_view_columns(
-            document=print_document
-        )
+        per_plugin_columns = plugin_manager.hook_for_event(
+            event, 'get_extra_print_view_columns'
+        )(document=print_document)
         extra_columns: dict[str, list[ExtraColumn]] = {}
         for plugin_columns in per_plugin_columns:
             for extra_column in plugin_columns:
                 c = extra_columns.setdefault(extra_column.at, [])
                 c.append(extra_column)
-        per_plugin_css: list[str] = plugin_manager.hook.get_extra_print_view_css(
-            document=print_document
-        )
+        per_plugin_css: list[str] = plugin_manager.hook_for_event(
+            event, 'get_extra_print_view_css'
+        )(document=print_document)
         extra_css: str = '\n'.join(per_plugin_css)
 
         template_context = (

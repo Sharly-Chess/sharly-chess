@@ -153,9 +153,9 @@ class BaseScreenUserController(BaseUserController):
         per_plugin_columns: Iterable[Iterable[ExtraColumn]] = []
         if web_context.screen is not None:
             per_plugin_columns: Iterable[Iterable[ExtraColumn]] = (
-                plugin_manager.hook.get_extra_screen_columns(
-                    screen=web_context.screen.type
-                )
+                plugin_manager.hook_for_event(
+                    web_context.user_event, 'get_extra_screen_columns'
+                )(screen=web_context.screen.type)
             )
         extra_columns: dict[str, list[ExtraColumn]] = {}
         for plugin_columns in per_plugin_columns:

@@ -119,9 +119,10 @@ class TournamentAdminController(BaseEventAdminController):
         web_context: TournamentAdminWebContext,
         template_context: dict[str, Any] | None = None,
     ) -> Template:
-        tournament_form_fields_templates_and_data = (
-            plugin_manager.hook.get_tournament_card_block_template_and_data()
-        )
+        event = web_context.get_admin_event()
+        tournament_form_fields_templates_and_data = plugin_manager.hook_for_event(
+            event, 'get_tournament_card_block_template_and_data'
+        )()
         tournament_card_blocks = [
             block_template
             for (block_template, data) in tournament_form_fields_templates_and_data
@@ -131,12 +132,12 @@ class TournamentAdminController(BaseEventAdminController):
             for (block_template, data) in tournament_form_fields_templates_and_data
             for key, value in data.items()
         }
-        tournament_card_action_menu_items_templates = (
-            plugin_manager.hook.get_tournament_card_action_menu_items_template()
-        )
-        tournament_tab_action_menu_items_templates = (
-            plugin_manager.hook.get_tournament_tab_action_menu_items_template()
-        )
+        tournament_card_action_menu_items_templates = plugin_manager.hook_for_event(
+            event, 'get_tournament_card_action_menu_items_template'
+        )()
+        tournament_tab_action_menu_items_templates = plugin_manager.hook_for_event(
+            event, 'get_tournament_tab_action_menu_items_template'
+        )()
         tournament_importers: list[TournamentImporter] = (
             TournamentImporterManager.objects()
         )
@@ -328,11 +329,9 @@ class TournamentAdminController(BaseEventAdminController):
                 action, web_context, data
             )
 
-        plugin_results = (
-            plugin_manager.hook.get_tournament_form_fields_template_and_data(
-                event=admin_event, tournament=web_context.admin_tournament
-            )
-        )
+        plugin_results = plugin_manager.hook_for_event(
+            admin_event, 'get_tournament_form_fields_template_and_data'
+        )(event=admin_event, tournament=web_context.admin_tournament)
 
         plugin_form_fields_templates = [template for template, __ in plugin_results]
         form_fields_templates_data = {
@@ -577,7 +576,9 @@ class TournamentAdminController(BaseEventAdminController):
         pab_value = WebContext.form_data_to_int(data, 'pab_value')
 
         # Validate
-        plugin_manager.hook.validate_tournament_form_fields(
+        plugin_manager.hook_for_event(
+            web_context.get_admin_event(), 'validate_tournament_form_fields'
+        )(
             action=action,
             tournament=web_context.admin_tournament,
             data=data,
@@ -699,9 +700,9 @@ class TournamentAdminController(BaseEventAdminController):
                 template_context=template_context,
             )
 
-        if message := plugin_manager.hook.signal_tournament_set(
-            tournament=web_context.admin_tournament, stored_tournament=stored_tournament
-        ):
+        if message := plugin_manager.hook_for_event(
+            web_context.get_admin_event(), 'signal_tournament_set'
+        )(tournament=web_context.admin_tournament, stored_tournament=stored_tournament):
             Message.warning(request, message)
 
         with EventDatabase(

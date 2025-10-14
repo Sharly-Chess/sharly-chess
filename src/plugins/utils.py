@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
 from types import ModuleType
-from typing import TYPE_CHECKING, Any, Generic, NamedTuple, Self, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, NamedTuple, Self, TypeVar, Optional
 
 from packaging.version import Version
 
@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from database.sqlite.event.event_database import EventDatabase
     from plugins.migration import PluginMigrationManager
     from web.controllers.base_controller import BaseController
+    from data.event import Event
 
 
 class PluginUtils:
@@ -161,6 +162,10 @@ class Plugin(Generic[PD], IdentifiableEntity, ABC):
     def is_enabled(self) -> bool:
         assert self.context.stored_plugin is not None
         return self.context.stored_plugin.is_enabled
+
+    def is_enabled_for_event(self, event: Optional['Event']) -> bool:
+        """Determines if the plugin is enabled for the given event"""
+        return True
 
     @property
     def form_key(self) -> str:

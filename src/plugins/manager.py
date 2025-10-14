@@ -1,6 +1,6 @@
 from functools import cached_property
 from pathlib import Path
-from typing import Any, Type, TypeVar
+from typing import Any, Type, TypeVar, TYPE_CHECKING, Optional
 
 from apluggy import PluginManager  # type: ignore
 
@@ -8,6 +8,8 @@ from common import APP_NAME
 from plugins.hookspec import AppHookSpecs
 from plugins.utils import Plugin
 
+if TYPE_CHECKING:
+    from data.event import Event
 
 TPlugin = TypeVar('TPlugin', bound=Plugin[Any])
 
@@ -76,6 +78,18 @@ class AppPluginManager(PluginManager):
                 self.register(plugin, plugin.id)
             elif not is_enabled and was_enabled:
                 self.unregister(plugin, plugin.id)
+
+    def hook_for_event(self, event: Optional['Event'], hook_name: str):
+        disabled_plugins = (
+            [
+                plugin
+                for plugin in plugin_manager.enabled_plugins
+                if not plugin.is_enabled_for_event(event)
+            ]
+            if event
+            else []
+        )
+        return self.subset_hook_caller(hook_name, remove_plugins=disabled_plugins)
 
 
 _plugin_manager = None

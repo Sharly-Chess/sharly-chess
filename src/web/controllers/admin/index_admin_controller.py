@@ -659,12 +659,15 @@ class IndexAdminController(BaseAdminController):
 
     def _event_modal_context(
         self,
+        web_context: AdminWebContext,
         action: FormAction,
         data: dict[str, str],
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
+        event = web_context.get_admin_event()
         plugin_form_fields_templates = (
-            plugin_manager.hook.get_event_form_fields_template() or []
+            plugin_manager.hook_for_event(event, 'get_event_form_fields_template')()
+            or []
         )
         template_context = {
             'federation_options': self._get_federation_options(),
@@ -719,6 +722,7 @@ class IndexAdminController(BaseAdminController):
         web_context = AdminWebContext(request, admin_tab=admin_tab)
         data = self._prepare_event_modal_data(action, request, web_context.admin_event)
         template_context = self._event_modal_context(
+            web_context,
             action,
             data,
         )
@@ -748,7 +752,7 @@ class IndexAdminController(BaseAdminController):
         )
         if not stored_event:
             template_context = self._event_modal_context(
-                FormAction.CREATE, data, errors=errors
+                web_context, FormAction.CREATE, data, errors=errors
             )
             return self._admin_render(
                 web_context=web_context,
@@ -819,7 +823,7 @@ class IndexAdminController(BaseAdminController):
         )
         if not stored_event:
             template_context = self._event_modal_context(
-                FormAction.CLONE, data, errors=errors
+                web_context, FormAction.CLONE, data, errors=errors
             )
             return self._admin_render(
                 web_context=web_context,
@@ -864,7 +868,7 @@ class IndexAdminController(BaseAdminController):
         )
         if not stored_event:
             template_context = self._event_modal_context(
-                FormAction.UPDATE, data, errors=errors
+                web_context, FormAction.UPDATE, data, errors=errors
             )
             return self._admin_render(
                 web_context=web_context,
