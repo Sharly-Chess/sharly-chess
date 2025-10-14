@@ -823,7 +823,7 @@ class PrizeAdminController(BaseEventAdminController):
     def player_filter_from_data(event: Event, data: dict[str, str]) -> PlayerFilter:
         player_filter_type = PlayerFilterManager(event).get_type(data['type'])
         options = []
-        for option in player_filter_type.default_options():
+        for option in player_filter_type().default_options():
             value = WebContext.form_data_to_value(data, option.id, option.type)
             options.append(type(option)(value))
         return player_filter_type(options)

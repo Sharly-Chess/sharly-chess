@@ -26,7 +26,7 @@ class TournamentCriterion:
             self.stored_tournament_criterion.type
         )
         options = []
-        for option in filter_type.default_options():
+        for option in filter_type().default_options():
             value = self.stored_tournament_criterion.options.get(
                 option.id, option.default_value
             )

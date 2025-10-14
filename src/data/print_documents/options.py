@@ -1,7 +1,7 @@
 from abc import ABC
 from functools import cached_property
 from types import UnionType
-from typing import TYPE_CHECKING, override, Any
+from typing import TYPE_CHECKING, Optional, override, Any
 
 from common.exception import OptionError
 from common.i18n import _
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 class PrintOption(Option, ABC):
     """Parent class of all the options of print documents."""
 
-    def __init__(self, event: 'Event', value: Any | None = None):
+    def __init__(self, event: Optional['Event'], value: Any | None = None):
         super().__init__(value)
         self.event = event
 

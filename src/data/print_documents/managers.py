@@ -14,10 +14,10 @@ from data.print_documents.player_sorters import PlayerSorter
 from data.print_documents.player_splitters import PlayerSplitter
 from data.print_documents.qrcode_types import QRCodeType
 from plugins.manager import plugin_manager
-from utils.entity import EntityManager, EventBoundEntityManager
+from utils.entity import EventBoundEntityManager
 
 
-class PrintDocumentManager(EntityManager[PrintDocument]):
+class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
     @override
     def entity_types(self) -> list[type[PrintDocument]]:
         return [
@@ -35,6 +35,10 @@ class PrintDocumentManager(EntityManager[PrintDocument]):
             documents.QRCodePrintDocument,
         ]
 
+    @override
+    def objects(self) -> list[PrintDocument]:
+        return [type_(self.event) for type_ in self.entity_types()]
+
 
 class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
     @override
@@ -51,6 +55,10 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.ClubThresholdPrintOption,
             options.QRCodeNetworkPrintOption,
         ]
+
+    @override
+    def objects(self) -> list[PrintOption]:
+        return [type_(self.event) for type_ in self.entity_types()]
 
 
 class PrintPlayerSplitterManager(EventBoundEntityManager[PlayerSplitter]):

@@ -1001,7 +1001,7 @@ class TournamentAdminController(BaseEventAdminController):
         normalized_data = await WebContext.normalize_multipart_data(data)
         importer_type = TournamentImporterManager(event).get_type(importer_id)
         importer_options: list[TournamentImporterOption] = []
-        for importer_option in importer_type.default_options():
+        for importer_option in importer_type().default_options():
             value = WebContext.form_data_to_value(
                 normalized_data, importer_option.id, importer_option.type
             )
@@ -1067,7 +1067,7 @@ class TournamentAdminController(BaseEventAdminController):
     def player_filter_from_data(event: Event, data: dict[str, str]) -> PlayerFilter:
         player_filter_type = PlayerFilterManager(event).get_type(data['type'])
         options = []
-        for option in player_filter_type.default_options():
+        for option in player_filter_type().default_options():
             value = WebContext.form_data_to_value(data, option.id, option.type)
             options.append(type(option)(value))
         return player_filter_type(options)
