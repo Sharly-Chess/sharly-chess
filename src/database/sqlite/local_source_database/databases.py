@@ -130,7 +130,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
     def outdate_delay(self) -> OutdatedDelay:
         from database.sqlite.local_source_database import OutdatedDelayManager
 
-        return OutdatedDelayManager.get_object(
+        return OutdatedDelayManager().get_object(
             self.stored_source_database.outdate_delay
         )
 
@@ -138,7 +138,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
     def outdate_action(self) -> OutdatedAction:
         from database.sqlite.local_source_database import OutdatedActionManager
 
-        return OutdatedActionManager.get_object(
+        return OutdatedActionManager().get_object(
             self.stored_source_database.outdate_action
         )
 

@@ -73,7 +73,9 @@ class PrizeCategory:
 
     @property
     def prize_sharing(self) -> PrizeSharing:
-        return PrizeSharingManager.get_object(self.stored_prize_category.prize_sharing)
+        return PrizeSharingManager().get_object(
+            self.stored_prize_category.prize_sharing
+        )
 
     @property
     def criteria(self) -> Collection[PrizeCriterion]:

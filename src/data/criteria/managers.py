@@ -1,3 +1,4 @@
+from typing import override
 from data.criteria.player_filter_options import PlayerFilterOption
 from data.criteria.player_filters import PlayerFilter
 from plugins.manager import plugin_manager
@@ -5,8 +6,8 @@ from utils.entity import EntityManager
 
 
 class PlayerFilterManager(EntityManager[PlayerFilter]):
-    @staticmethod
-    def entity_types() -> list[type[PlayerFilter]]:
+    @override
+    def entity_types(self) -> list[type[PlayerFilter]]:
         from data.criteria import player_filters as filters
 
         player_filters: list[type[PlayerFilter]] = [
@@ -24,8 +25,8 @@ class PlayerFilterManager(EntityManager[PlayerFilter]):
 
 
 class PlayerFilterOptionManager(EntityManager[PlayerFilterOption]):
-    @staticmethod
-    def entity_types() -> list[type[PlayerFilterOption]]:
+    @override
+    def entity_types(self) -> list[type[PlayerFilterOption]]:
         from data.criteria import player_filter_options as options
 
         filter_options: list[type[PlayerFilterOption]] = [

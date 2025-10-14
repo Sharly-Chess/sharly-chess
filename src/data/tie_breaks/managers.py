@@ -1,3 +1,4 @@
+from typing import override
 from common import experimental_features_enabled
 from data.tie_breaks import tie_breaks, options
 from data.tie_breaks.options import TieBreakOption
@@ -7,8 +8,8 @@ from utils.entity import EntityManager
 
 
 class TieBreakManager(EntityManager[TieBreak]):
-    @staticmethod
-    def entity_types() -> list[type[TieBreak]]:
+    @override
+    def entity_types(self) -> list[type[TieBreak]]:
         # Include all the tie-breaks available in Papi
         tie_break_types = [
             tie_breaks.ProgressiveScoresTieBreak,
@@ -41,8 +42,8 @@ class TieBreakManager(EntityManager[TieBreak]):
 
 
 class TieBreakOptionManager(EntityManager[TieBreakOption]):
-    @staticmethod
-    def entity_types() -> list[type[TieBreakOption]]:
+    @override
+    def entity_types(self) -> list[type[TieBreakOption]]:
         return [
             options.CutTieBreakOption,
             options.CutTopTieBreakOption,

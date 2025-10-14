@@ -57,7 +57,7 @@ class EventPrintController(BaseEventAdminController):
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
-        print_options = PrintDocumentOptionManager.objects()
+        print_options = PrintDocumentOptionManager().objects()
         event = web_context.get_admin_event()
         if len(event.tournaments) == 1:
             tournament_ids = list(event.tournaments_by_id)
@@ -74,20 +74,20 @@ class EventPrintController(BaseEventAdminController):
         data = default_data | (data or {})
         containers_by_document: dict[str, list[str]] = {'': []} | {
             document.id: [option.container_id for option in document.default_options()]
-            for document in PrintDocumentManager.objects()
+            for document in PrintDocumentManager().objects()
         }
         current_document_option_ids = []
         if document_id := data.get('document', None):
             current_document_option_ids = [
                 option.id
-                for option in PrintDocumentManager.get_type(
-                    document_id
-                ).default_options()
+                for option in PrintDocumentManager()
+                .get_type(document_id)
+                .default_options()
             ]
         return {
             'modal': 'print',
             'tournament_options': web_context.get_tournament_options(),
-            'document_options': PrintDocumentManager.options(),
+            'document_options': PrintDocumentManager().options(),
             'current_document_option_ids': current_document_option_ids,
             'print_options': print_options,
             'containers_by_document': containers_by_document,
@@ -145,7 +145,7 @@ class EventPrintController(BaseEventAdminController):
         document_type: type[PrintDocument] | None = None
         field = 'document'
         try:
-            document_type = PrintDocumentManager.get_type(
+            document_type = PrintDocumentManager().get_type(
                 WebContext.form_data_to_str(flat_data, field) or ''
             )
         except KeyError:
@@ -224,7 +224,7 @@ class EventPrintController(BaseEventAdminController):
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
         event = web_context.get_admin_event()
-        document_type = PrintDocumentManager.get_type(document)
+        document_type = PrintDocumentManager().get_type(document)
         option_data: dict[str, str] = {}
         if options:
             for option in urllib.parse.unquote(options).split('|'):

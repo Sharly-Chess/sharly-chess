@@ -24,7 +24,7 @@ class Permission:
 
     @property
     def access_level(self) -> AccessLevel:
-        return AccessLevelManager.get_object(self.stored_permission.access_level)
+        return AccessLevelManager().get_object(self.stored_permission.access_level)
 
     @property
     def inherited(self) -> bool:
@@ -131,7 +131,7 @@ class Account:
 
     @property
     def sorted_permissions(self) -> list[Permission]:
-        access_level_ids = AccessLevelManager.ids()
+        access_level_ids = AccessLevelManager().ids()
         return sorted(
             self.permissions,
             key=lambda p: access_level_ids.index(p.stored_permission.access_level),
@@ -173,7 +173,7 @@ class Account:
                 )
         return {
             access_level: permissions_by_access_level[access_level]
-            for access_level in AccessLevelManager.objects()
+            for access_level in AccessLevelManager().objects()
             if access_level in permissions_by_access_level
         }
 

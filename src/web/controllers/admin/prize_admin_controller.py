@@ -414,7 +414,7 @@ class PrizeAdminController(BaseEventAdminController):
             field = 'prize_sharing'
             prize_sharing_id = WebContext.form_data_to_str(data, field) or ''
             try:
-                PrizeSharingManager.get_object(prize_sharing_id)
+                PrizeSharingManager().get_object(prize_sharing_id)
             except KeyError:
                 message = f'Unknown prize sharing ID [{prize_sharing_id}]'
                 errors[field] = message
@@ -446,7 +446,7 @@ class PrizeAdminController(BaseEventAdminController):
         action: FormAction,
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
-        prize_sharing_options = PrizeSharingManager.options()
+        prize_sharing_options = PrizeSharingManager().options()
         prize_sharing_options.pop(NoPrizeSharing.static_id())
         return {
             'modal': 'prize_category',
@@ -807,7 +807,7 @@ class PrizeAdminController(BaseEventAdminController):
         field = 'type'
         player_filter_id = data.get(field, '')
         try:
-            PlayerFilterManager.get_type(player_filter_id)
+            PlayerFilterManager().get_type(player_filter_id)
         except KeyError:
             errors[field] = _('Please select a type of criterion.')
             return errors
@@ -820,7 +820,7 @@ class PrizeAdminController(BaseEventAdminController):
 
     @staticmethod
     def player_filter_from_data(data: dict[str, str]) -> PlayerFilter:
-        player_filter_type = PlayerFilterManager.get_type(data['type'])
+        player_filter_type = PlayerFilterManager().get_type(data['type'])
         options = []
         for option in player_filter_type.default_options():
             value = WebContext.form_data_to_value(data, option.id, option.type)
@@ -836,18 +836,18 @@ class PrizeAdminController(BaseEventAdminController):
     ) -> dict[str, Any]:
         default_data = {
             option.id: WebContext.value_to_form_data(option.default_value)
-            for option in PlayerFilterOptionManager.objects()
+            for option in PlayerFilterOptionManager().objects()
         } | {'type': ''}
         return {
             'modal': 'prize_criterion_form',
             'action': action,
-            'player_filter_select_options': {'': '-'} | PlayerFilterManager.options(),
-            'player_filter_options': PlayerFilterOptionManager.objects(),
+            'player_filter_select_options': {'': '-'} | PlayerFilterManager().options(),
+            'player_filter_options': PlayerFilterOptionManager().objects(),
             'containers_by_type': {
                 player_filter.id: [
                     option.container_id for option in player_filter.default_options()
                 ]
-                for player_filter in PlayerFilterManager.objects()
+                for player_filter in PlayerFilterManager().objects()
             }
             | {'': []},
             'add_other_active': (

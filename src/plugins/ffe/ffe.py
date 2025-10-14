@@ -755,9 +755,9 @@ class FfePlugin(Plugin):
         if blocker := PapiConverter.check_rounds(stored_tournament.rounds):
             return blocker
 
-        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager.type_by_id()
+        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager().type_by_id()
         option_type_by_id: dict[str, type[TieBreakOption]] = (
-            TieBreakOptionManager.type_by_id()
+            TieBreakOptionManager().type_by_id()
         )
         for tie_break_dict in stored_tournament.tie_breaks:
             assert isinstance(tie_break_dict['type'], str)
@@ -771,7 +771,7 @@ class FfePlugin(Plugin):
                 tie_break = tie_break_type(options)
                 if blocker := PapiConverter.check_tiebreak(tie_break):
                     return blocker
-        pairing_variation = PairingVariationManager.get_object(
+        pairing_variation = PairingVariationManager().get_object(
             stored_tournament.pairing
         )
         if warning := PapiConverter.check_pairing_variation_warning(pairing_variation):

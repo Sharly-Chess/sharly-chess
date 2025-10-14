@@ -1095,7 +1095,7 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
     ) -> Template:
         source_databases: list[LocalSourceDatabase] = (
-            LocalSourceDatabaseManager.objects()
+            LocalSourceDatabaseManager().objects()
         )
         for database in source_databases:
             database.check()
@@ -1133,11 +1133,11 @@ class IndexAdminController(BaseAdminController):
     @staticmethod
     def _database_modal_context() -> dict[str, Any]:
         return {
-            'databases': LocalSourceDatabaseManager.objects(),
-            'online_data_sources': OnlineDataSourceManager.objects(),
+            'databases': LocalSourceDatabaseManager().objects(),
+            'online_data_sources': OnlineDataSourceManager().objects(),
             'network_connected': NetworkMonitor.connected(),
-            'outdate_delay_options': OutdatedDelayManager.options(),
-            'outdate_action_options': OutdatedActionManager.options(),
+            'outdate_delay_options': OutdatedDelayManager().options(),
+            'outdate_action_options': OutdatedActionManager().options(),
             'modal': 'database',
         }
 
@@ -1168,14 +1168,14 @@ class IndexAdminController(BaseAdminController):
         ],
         database_id: str,
     ) -> Template:
-        database = LocalSourceDatabaseManager.get_object(database_id)
+        database = LocalSourceDatabaseManager().get_object(database_id)
         stored_database = database.stored_source_database
         delay: OutdatedDelay = DisabledOutdatedDelay()
         if delay_id := WebContext.form_data_to_str(data, 'outdate_delay'):
-            delay = OutdatedDelayManager.get_object(delay_id)
+            delay = OutdatedDelayManager().get_object(delay_id)
         action: OutdatedAction = NotifOutdatedAction()
         if action_id := WebContext.form_data_to_str(data, 'outdate_action'):
-            action = OutdatedActionManager.get_object(action_id)
+            action = OutdatedActionManager().get_object(action_id)
         stored_database.outdate_delay = delay.id
         stored_database.outdate_action = action.id
         with ConfigDatabase(write=True) as config_database:
@@ -1192,7 +1192,7 @@ class IndexAdminController(BaseAdminController):
         guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
     )
     async def _database_update_status(self, database_id: str) -> Template:
-        database = LocalSourceDatabaseManager.get_object(database_id)
+        database = LocalSourceDatabaseManager().get_object(database_id)
         return HTMXTemplate(
             template_name='/admin/common/database/database_update_buttons.html',
             context={'database': database},
@@ -1204,7 +1204,7 @@ class IndexAdminController(BaseAdminController):
         guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
     )
     async def _database_update(self, database_id: str) -> Reswap:
-        database = LocalSourceDatabaseManager.get_object(database_id)
+        database = LocalSourceDatabaseManager().get_object(database_id)
         database.update()
         return Reswap(content=None, method='none', status_code=HTTP_200_OK)
 
@@ -1216,7 +1216,7 @@ class IndexAdminController(BaseAdminController):
     )
     async def _database_delete(self, database_id: str) -> Template:
         try:
-            database = LocalSourceDatabaseManager.get_object(database_id)
+            database = LocalSourceDatabaseManager().get_object(database_id)
             database.delete()
         except KeyError:
             raise NotFoundException(f'Unknown database [{database_id}].')
@@ -1237,7 +1237,7 @@ class IndexAdminController(BaseAdminController):
     ) -> Template:
         web_context = AdminWebContext(request)
         try:
-            data_source = OnlineDataSourceManager.get_object(data_source_id)
+            data_source = OnlineDataSourceManager().get_object(data_source_id)
             await data_source.reload_connection_status()
         except KeyError:
             raise NotFoundException(f'Unknown data source [{data_source_id}].')

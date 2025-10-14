@@ -1,3 +1,4 @@
+from typing import override
 from data.print_documents import (
     documents,
     options,
@@ -17,8 +18,8 @@ from utils.entity import EntityManager
 
 
 class PrintDocumentManager(EntityManager[PrintDocument]):
-    @staticmethod
-    def entity_types() -> list[type[PrintDocument]]:
+    @override
+    def entity_types(self) -> list[type[PrintDocument]]:
         return [
             documents.PlayerListPrintDocument,
             documents.PlayerCheckinListPrintDocument,
@@ -36,8 +37,8 @@ class PrintDocumentManager(EntityManager[PrintDocument]):
 
 
 class PrintDocumentOptionManager(EntityManager[PrintOption]):
-    @staticmethod
-    def entity_types() -> list[type[options.PrintOption]]:
+    @override
+    def entity_types(self) -> list[type[options.PrintOption]]:
         return [
             options.QRCodePrintOption,
             options.TournamentPrintOption,
@@ -53,8 +54,8 @@ class PrintDocumentOptionManager(EntityManager[PrintOption]):
 
 
 class PrintPlayerSplitterManager(EntityManager[PlayerSplitter]):
-    @staticmethod
-    def entity_types() -> list[type[PlayerSplitter]]:
+    @override
+    def entity_types(self) -> list[type[PlayerSplitter]]:
         splitters = [
             player_splitters.NoSplitPlayerSplitter,
             player_splitters.CategoryPlayerSplitter,
@@ -68,8 +69,8 @@ class PrintPlayerSplitterManager(EntityManager[PlayerSplitter]):
 
 
 class PrintPlayerSorterManager(EntityManager[PlayerSorter]):
-    @staticmethod
-    def entity_types() -> list[type[PlayerSorter]]:
+    @override
+    def entity_types(self) -> list[type[PlayerSorter]]:
         return [
             player_sorters.NamePlayerSorter,
             player_sorters.RankPlayerSorter,
@@ -79,8 +80,8 @@ class PrintPlayerSorterManager(EntityManager[PlayerSorter]):
 
 
 class PrintPairingStyleManager(EntityManager[PairingStyle]):
-    @staticmethod
-    def entity_types() -> list[type[PairingStyle]]:
+    @override
+    def entity_types(self) -> list[type[PairingStyle]]:
         return [
             pairing_styles.BoardsPairingStyle,
             pairing_styles.PlayersPairingStyleSorter,
@@ -88,8 +89,8 @@ class PrintPairingStyleManager(EntityManager[PairingStyle]):
 
 
 class PrintQRCodeTypeManager(EntityManager[QRCodeType]):
-    @staticmethod
-    def entity_types() -> list[type[QRCodeType]]:
+    @override
+    def entity_types(self) -> list[type[QRCodeType]]:
         types: list[type[QRCodeType]] = [
             qrcode_types.NetworkQRCodeType,
         ]

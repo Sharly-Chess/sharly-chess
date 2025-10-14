@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from functools import partial
-from typing import Any, Self
+from typing import Any, Self, override
 
 from data.event import Event
 from data.tournament import Tournament
@@ -75,7 +75,7 @@ class ChessEventUtils:
         status = tournament_plugin_data.status
         if not status:
             return NeverSyncedChessEventStatus()
-        return _ChessEventRequestStatusManager.get_object(status)
+        return _ChessEventRequestStatusManager().get_object(status)
 
     @staticmethod
     def get_event_plugin_data(event: Event) -> 'ChessEventEventPluginData':
@@ -96,8 +96,8 @@ class _ChessEventRequestStatusManager(EntityManager[ChessEventStatus]):
     """Manager for the ChessEvent statuses that are the result of a request.
     Those statuses are the ones stored in the DB."""
 
-    @staticmethod
-    def entity_types() -> list[type[ChessEventStatus]]:
+    @override
+    def entity_types(self) -> list[type[ChessEventStatus]]:
         return [
             SuccessChessEventStatus,
             ConnectionErrorChessEventStatus,

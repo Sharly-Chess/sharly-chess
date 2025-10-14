@@ -99,7 +99,7 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
         self.admin_data_source: DataSource | None = None
         if data_source_id:
             try:
-                self.admin_data_source = DataSourceManager.get_object(data_source_id)
+                self.admin_data_source = DataSourceManager().get_object(data_source_id)
             except KeyError:
                 raise NotFoundException(f'Unknown data source [{data_source_id}].')
 
@@ -684,7 +684,7 @@ class PlayerAdminController(BaseEventAdminController):
                     web_context.request
                 ),
                 'admin_players_extra_columns': extra_columns,
-                'data_sources': DataSourceManager.objects(),
+                'data_sources': DataSourceManager().objects(),
                 'player_addable_tournaments': admin_event.player_addable_tournaments,
             }
             | {
@@ -865,7 +865,7 @@ class PlayerAdminController(BaseEventAdminController):
                     'selected_data_source': SessionHandler.get_session_admin_players_active_data_source(
                         request
                     ),
-                    'data_source_options': DataSourceManager.options(),
+                    'data_source_options': DataSourceManager().options(),
                     'plugin_form_fields_templates': plugin_form_fields_templates,
                     'previous_player': (
                         admin_event.players_by_id.get(old_player_id, None)

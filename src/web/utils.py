@@ -247,7 +247,7 @@ class RequestUtils:
             return request.state[cls.REQUEST_ACCESS_LEVEL_ATTR]
         access_level_id = cls._get_request_param(request, cls.ACCESS_LEVEL_PARAM)
         try:
-            access_level = AccessLevelManager.get_object(access_level_id)
+            access_level = AccessLevelManager().get_object(access_level_id)
         except KeyError:
             raise NotFoundException(f'Unknown access level [{access_level_id}].')
         request.state[cls.REQUEST_ACCESS_LEVEL_ATTR] = access_level

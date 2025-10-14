@@ -5,6 +5,10 @@ For a feature to implement the architecture:
     (location: /src/data/entity_managers.py)"""
 
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from data.event import Event
 
 
 class IdentifiableEntity(ABC):
@@ -42,42 +46,40 @@ class IdentifiableEntity(ABC):
 
 
 class EntityManager[T: IdentifiableEntity](ABC):
-    @staticmethod
     @abstractmethod
-    def entity_types() -> list[type[T]]:
+    def entity_types(self) -> list[type[T]]:
         """List of all the *IdentifiableEntity* classes to manage."""
 
-    @classmethod
-    def options(cls) -> dict[str, str]:
+    def options(self) -> dict[str, str]:
         return {
             entity_type.static_id(): entity_type.static_name()
-            for entity_type in cls.entity_types()
+            for entity_type in self.entity_types()
         }
 
-    @classmethod
-    def type_by_id(cls) -> dict[str, type[T]]:
+    def type_by_id(self) -> dict[str, type[T]]:
         return {
-            entity_type.static_id(): entity_type for entity_type in cls.entity_types()
+            entity_type.static_id(): entity_type for entity_type in self.entity_types()
         }
 
-    @classmethod
-    def get_type(cls, id_: str) -> type[T]:
+    def get_type(self, id_: str) -> type[T]:
         """Get a type by its ID.
         Raises a KeyError if the ID is unknown."""
-        return cls.type_by_id()[id_]
+        return self.type_by_id()[id_]
 
-    @classmethod
-    def get_object(cls, id_: str) -> T:
+    def get_object(self, id_: str) -> T:
         """Get an object by its ID.
         Raises a KeyError if the ID is unknown."""
-        return cls.type_by_id()[id_]()
+        return self.type_by_id()[id_]()
 
-    @classmethod
-    def objects(cls) -> list[T]:
+    def objects(self) -> list[T]:
         """Get one object per type initialized with the default constructor."""
-        return [type_() for type_ in cls.entity_types()]
+        return [type_() for type_ in self.entity_types()]
 
-    @classmethod
-    def ids(cls) -> list[str]:
+    def ids(self) -> list[str]:
         """Get a list of all the entity IDs."""
-        return [type_.static_id() for type_ in cls.entity_types()]
+        return [type_.static_id() for type_ in self.entity_types()]
+
+
+class EventBoundEntityManager[T: IdentifiableEntity](EntityManager[T]):
+    def __init__(self, event: 'Event'):
+        self.event = event

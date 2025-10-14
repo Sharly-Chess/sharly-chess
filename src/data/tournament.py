@@ -351,7 +351,7 @@ class Tournament:
     def pairing_variation(self) -> 'PairingVariation':
         from data.pairings import PairingVariationManager
 
-        return PairingVariationManager.get_object(self.stored_tournament.pairing)
+        return PairingVariationManager().get_object(self.stored_tournament.pairing)
 
     @property
     def pairing_system(self) -> 'PairingSystem':
@@ -422,9 +422,9 @@ class Tournament:
     @cached_property
     def tie_breaks(self) -> list[TieBreak]:
         tie_breaks: list[TieBreak] = []
-        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager.type_by_id()
+        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager().type_by_id()
         option_type_by_id: dict[str, type[TieBreakOption]] = (
-            TieBreakOptionManager.type_by_id()
+            TieBreakOptionManager().type_by_id()
         )
         for tie_break_dict in self.stored_tournament.tie_breaks:
             assert isinstance(tie_break_dict['type'], str)

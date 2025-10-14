@@ -1,4 +1,4 @@
-from typing import cast
+from typing import cast, override
 
 from data.pairings import systems, PairingVariation
 from data.pairings.systems import PairingSystem
@@ -14,8 +14,8 @@ from utils.entity import EntityManager
 
 
 class PairingSystemManager(EntityManager[PairingSystem]):
-    @staticmethod
-    def entity_types() -> list[type[PairingSystem]]:
+    @override
+    def entity_types(self) -> list[type[PairingSystem]]:
         return [
             systems.SwissPairingSystem,
             systems.RoundRobinPairingSystem,
@@ -23,8 +23,8 @@ class PairingSystemManager(EntityManager[PairingSystem]):
 
 
 class SwissVariationManager(EntityManager[SwissVariation]):
-    @staticmethod
-    def entity_types() -> list[type[SwissVariation]]:
+    @override
+    def entity_types(self) -> list[type[SwissVariation]]:
         variations: list[type[SwissVariation]] = [StandardSwissVariation]
         plugin_manager.hook.insert_swiss_pairing_variation_types(
             variation_types=variations
@@ -33,8 +33,8 @@ class SwissVariationManager(EntityManager[SwissVariation]):
 
 
 class RoundRobinVariationManager(EntityManager[RoundRobinVariation]):
-    @staticmethod
-    def entity_types() -> list[type[RoundRobinVariation]]:
+    @override
+    def entity_types(self) -> list[type[RoundRobinVariation]]:
         return [
             BergerRoundRobinVariation,
             DoubleBergerRoundRobinVariation,
@@ -42,10 +42,10 @@ class RoundRobinVariationManager(EntityManager[RoundRobinVariation]):
 
 
 class PairingVariationManager(EntityManager[PairingVariation]):
-    @staticmethod
-    def entity_types() -> list[type[PairingVariation]]:
+    @override
+    def entity_types(self) -> list[type[PairingVariation]]:
         return cast(
-            list[type[PairingVariation]], SwissVariationManager.entity_types()
+            list[type[PairingVariation]], SwissVariationManager().entity_types()
         ) + cast(
-            list[type[PairingVariation]], RoundRobinVariationManager.entity_types()
+            list[type[PairingVariation]], RoundRobinVariationManager().entity_types()
         )

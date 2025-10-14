@@ -139,10 +139,10 @@ class TournamentAdminController(BaseEventAdminController):
             event, 'get_tournament_tab_action_menu_items_template'
         )()
         tournament_importers: list[TournamentImporter] = (
-            TournamentImporterManager.objects()
+            TournamentImporterManager().objects()
         )
         tournament_exporters: list[TournamentExporter] = (
-            TournamentExporterManager.objects()
+            TournamentExporterManager().objects()
         )
         template_context = (
             web_context.template_context
@@ -158,7 +158,7 @@ class TournamentAdminController(BaseEventAdminController):
                         web_context.request
                     )
                 ),
-                'data_sources': DataSourceManager.objects(),
+                'data_sources': DataSourceManager().objects(),
             }
             | tournament_card_block_data
             | (template_context or {})
@@ -192,7 +192,7 @@ class TournamentAdminController(BaseEventAdminController):
         errors: dict[str, str] | None = None,
     ):
         admin_event = web_context.get_admin_event()
-        pairing_systems = PairingSystemManager.objects()
+        pairing_systems = PairingSystemManager().objects()
         pairing_system: PairingSystem = SwissPairingSystem()
         if data is None:
             match action:
@@ -340,7 +340,7 @@ class TournamentAdminController(BaseEventAdminController):
         tie_break_options = {'': '-'} | {
             type_.static_id(): type_.static_name()
             for type_ in sorted(
-                TieBreakManager.entity_types(),
+                TieBreakManager().entity_types(),
                 key=lambda tie_break: tie_break.static_name(),
             )
         }
@@ -400,7 +400,7 @@ class TournamentAdminController(BaseEventAdminController):
             'rating_options': cls._get_rating_options(),
             'override_unrated_rapid_blitz_options': override_unrated_rapid_blitz_options,
             'pairing_systems': pairing_systems,
-            'pairing_system_options': PairingSystemManager.options(),
+            'pairing_system_options': PairingSystemManager().options(),
             'plugin_form_fields_templates': plugin_form_fields_templates,
             'previous_tournament': (
                 web_context.admin_tournament if action == 'create' else None
@@ -486,7 +486,7 @@ class TournamentAdminController(BaseEventAdminController):
             elif start and stop < start:
                 errors[field] = _('End time needs to be after start time.')
 
-        pairing_system = PairingSystemManager.get_object(
+        pairing_system = PairingSystemManager().get_object(
             WebContext.form_data_to_str(data, 'pairing_system')
             or SwissPairingSystem.static_id()
         )
@@ -495,7 +495,7 @@ class TournamentAdminController(BaseEventAdminController):
         )
 
         tie_breaks = []
-        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager.type_by_id()
+        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager().type_by_id()
         used_tie_break_ids: list[str] = []
         for index in (1, 2, 3):
             field = f'tie_break_{index}'
@@ -912,7 +912,7 @@ class TournamentAdminController(BaseEventAdminController):
     ) -> File:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
-        exporter = TournamentExporterManager.get_object(exporter_id)
+        exporter = TournamentExporterManager().get_object(exporter_id)
         temp_file = NamedTemporaryFile(
             delete=False,
             mode='wb' if exporter.is_binary_file else 'w',
@@ -933,7 +933,7 @@ class TournamentAdminController(BaseEventAdminController):
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
-        importer = TournamentImporterManager.get_object(importer_id)
+        importer = TournamentImporterManager().get_object(importer_id)
         default_data = WebContext.values_dict_to_form_data(
             {
                 option.id: option.get_default_value(tournament)
@@ -994,7 +994,7 @@ class TournamentAdminController(BaseEventAdminController):
         errors: dict[str, str] = {}
         event = web_context.get_admin_event()
         normalized_data = await WebContext.normalize_multipart_data(data)
-        importer_type = TournamentImporterManager.get_type(importer_id)
+        importer_type = TournamentImporterManager().get_type(importer_id)
         importer_options: list[TournamentImporterOption] = []
         for importer_option in importer_type.default_options():
             value = WebContext.form_data_to_value(
@@ -1046,7 +1046,7 @@ class TournamentAdminController(BaseEventAdminController):
         field = 'type'
         player_filter_id = data.get(field, '')
         try:
-            PlayerFilterManager.get_type(player_filter_id)
+            PlayerFilterManager().get_type(player_filter_id)
         except KeyError:
             errors[field] = _('Please select a type of criterion.')
             return errors
@@ -1059,7 +1059,7 @@ class TournamentAdminController(BaseEventAdminController):
 
     @staticmethod
     def player_filter_from_data(data: dict[str, str]) -> PlayerFilter:
-        player_filter_type = PlayerFilterManager.get_type(data['type'])
+        player_filter_type = PlayerFilterManager().get_type(data['type'])
         options = []
         for option in player_filter_type.default_options():
             value = WebContext.form_data_to_value(data, option.id, option.type)
@@ -1075,18 +1075,18 @@ class TournamentAdminController(BaseEventAdminController):
     ) -> dict[str, Any]:
         default_data = {
             option.id: WebContext.value_to_form_data(option.default_value)
-            for option in PlayerFilterOptionManager.objects()
+            for option in PlayerFilterOptionManager().objects()
         } | {'type': ''}
         return {
             'modal': 'tournament_criterion_form',
             'action': action,
-            'player_filter_select_options': {'': '-'} | PlayerFilterManager.options(),
-            'player_filter_options': PlayerFilterOptionManager.objects(),
+            'player_filter_select_options': {'': '-'} | PlayerFilterManager().options(),
+            'player_filter_options': PlayerFilterOptionManager().objects(),
             'containers_by_type': {
                 player_filter.id: [
                     option.container_id for option in player_filter.default_options()
                 ]
-                for player_filter in PlayerFilterManager.objects()
+                for player_filter in PlayerFilterManager().objects()
             }
             | {'': []},
             'add_other_active': (
