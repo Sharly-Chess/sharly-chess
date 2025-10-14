@@ -132,7 +132,6 @@ class AppHookSpecs:
     @hookspec(firstresult=True)
     def get_player_rating(
         self,
-        event_federation: str,
         tournament_rating: TournamentRating,
         player_rating_type: 'PlayerRatingType',
         player: 'Player',

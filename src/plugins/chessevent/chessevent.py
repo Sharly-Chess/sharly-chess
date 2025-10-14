@@ -1,5 +1,5 @@
 from types import ModuleType
-from typing import Any, TYPE_CHECKING, override
+from typing import Any, TYPE_CHECKING, Optional, override
 
 from packaging.version import Version
 
@@ -48,6 +48,10 @@ class ChessEventPlugin(Plugin):
     @property
     def default_is_enabled(self) -> bool:
         return False
+
+    @override
+    def is_enabled_for_event(self, event: Optional['Event']) -> bool:
+        return not event or event.federation == 'FRA'
 
     @override
     @property
