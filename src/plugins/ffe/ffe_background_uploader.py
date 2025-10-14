@@ -288,6 +288,9 @@ class FfeBackgroundUploader:
         stored_event: StoredEvent,
         stored_tournament: StoredTournament,
     ) -> bool:
+        if stored_event.federation != 'FRA':
+            return False
+
         # Check if the auto upload is enabled
         tournament_plugin_data = FfeTournamentPluginData.from_stored_value(
             stored_tournament.plugin_data.get(PLUGIN_NAME, {})

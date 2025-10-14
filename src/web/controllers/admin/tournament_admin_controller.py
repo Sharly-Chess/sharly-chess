@@ -138,12 +138,12 @@ class TournamentAdminController(BaseEventAdminController):
         tournament_tab_action_menu_items_templates = plugin_manager.hook_for_event(
             event, 'get_tournament_tab_action_menu_items_template'
         )()
-        tournament_importers: list[TournamentImporter] = (
-            TournamentImporterManager().objects()
-        )
-        tournament_exporters: list[TournamentExporter] = (
-            TournamentExporterManager().objects()
-        )
+        tournament_importers: list[TournamentImporter] = TournamentImporterManager(
+            event
+        ).objects()
+        tournament_exporters: list[TournamentExporter] = TournamentExporterManager(
+            event
+        ).objects()
         template_context = (
             web_context.template_context
             | {
@@ -913,8 +913,9 @@ class TournamentAdminController(BaseEventAdminController):
         exporter_id: str,
     ) -> File:
         web_context = TournamentAdminWebContext(request, tournament_id)
+        event = web_context.get_admin_event()
         tournament = web_context.get_admin_tournament()
-        exporter = TournamentExporterManager().get_object(exporter_id)
+        exporter = TournamentExporterManager(event).get_object(exporter_id)
         temp_file = NamedTemporaryFile(
             delete=False,
             mode='wb' if exporter.is_binary_file else 'w',
@@ -930,12 +931,13 @@ class TournamentAdminController(BaseEventAdminController):
 
     @staticmethod
     def _tournament_import_modal_context(
+        event: Event,
         importer_id: str,
         tournament: Tournament | None = None,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
-        importer = TournamentImporterManager().get_object(importer_id)
+        importer = TournamentImporterManager(event).get_object(importer_id)
         default_data = WebContext.values_dict_to_form_data(
             {
                 option.id: option.get_default_value(tournament)
@@ -966,8 +968,9 @@ class TournamentAdminController(BaseEventAdminController):
         importer_id: str,
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
+        event = web_context.get_admin_event()
         template_context = self._tournament_import_modal_context(
-            importer_id, web_context.admin_tournament
+            event, importer_id, web_context.admin_tournament
         )
         return self._admin_base_event_render(
             web_context.template_context | template_context
@@ -996,7 +999,7 @@ class TournamentAdminController(BaseEventAdminController):
         errors: dict[str, str] = {}
         event = web_context.get_admin_event()
         normalized_data = await WebContext.normalize_multipart_data(data)
-        importer_type = TournamentImporterManager().get_type(importer_id)
+        importer_type = TournamentImporterManager(event).get_type(importer_id)
         importer_options: list[TournamentImporterOption] = []
         for importer_option in importer_type.default_options():
             value = WebContext.form_data_to_value(
@@ -1027,6 +1030,7 @@ class TournamentAdminController(BaseEventAdminController):
         finally:
             importer.on_import_finished()
         template_context = self._tournament_import_modal_context(
+            event,
             importer_id,
             web_context.admin_tournament,
             data=normalized_data,

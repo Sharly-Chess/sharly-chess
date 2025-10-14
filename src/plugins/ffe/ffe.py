@@ -654,6 +654,11 @@ class FfePlugin(Plugin):
         data: dict[str, str],
         errors: dict[str, str],
     ):
+        federation = WebContext.form_data_to_str(data, field := 'federation')
+        if federation != 'FRA':
+            # We only validate FFE fields for the FRA federation
+            return
+
         ffe_auto_upload_delay = WebContext.form_data_to_int(
             data, field := 'ffe_auto_upload_delay'
         )
