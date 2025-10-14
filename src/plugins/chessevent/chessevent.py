@@ -121,6 +121,11 @@ class ChessEventPlugin(Plugin):
         data: dict[str, str],
         errors: dict[str, str],
     ):
+        federation = WebContext.form_data_to_str(data, field := 'federation')
+        if federation != 'FRA':
+            # We only validate FFE fields for the FRA federation
+            return
+
         chessevent_user_id = WebContext.form_data_to_str(data, 'chessevent_user')
         chessevent_password = WebContext.form_data_to_str(
             data, field := 'chessevent_password'

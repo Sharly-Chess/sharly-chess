@@ -1,12 +1,13 @@
-{% if client.can_view_detailed_event_cards and admin_events_show_details %}
-    <div class="d-flex gap-2 card-plugin-block {% if not event.plugin_data.chessevent.chessevent_user_id or not event.chessevent_event_id %}text-secondary{% endif %}">
+{% set chessevent = event.plugin_data.get('chessevent', {}) %}
+{% if event.federation == 'FRA' and client.can_view_detailed_event_cards and admin_events_show_details %}
+    <div class="d-flex gap-2 card-plugin-block {% if not chessevent.chessevent_user_id or not event.chessevent_event_id %}text-secondary{% endif %}">
         <i class="bi-download pe-1" ></i>
-        {% if event.plugin_data.chessevent.chessevent_user_id and event.plugin_data.chessevent.chessevent_event_id %}
+        {% if chessevent.chessevent_user_id and chessevent.chessevent_event_id %}
             {{ _(
                 'Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s',
-                chessevent_user_id=event.plugin_data.chessevent.chessevent_user_id or '-',
-                chessevent_event_id=event.plugin_data.chessevent.chessevent_event_id or '-') }}
-        {% elif not event.plugin_data.chessevent.chessevent_user_id %}
+                chessevent_user_id=chessevent.chessevent_user_id or '-',
+                chessevent_event_id=chessevent.chessevent_event_id or '-') }}
+        {% elif not chessevent.chessevent_user_id %}
             {{ _('No ChessEvent identifier defined') }}
         {% else %}
             {{ _('No ChessEvent event defined') }}
