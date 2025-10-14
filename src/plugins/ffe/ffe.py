@@ -755,7 +755,9 @@ class FfePlugin(Plugin):
         if blocker := PapiConverter.check_rounds(stored_tournament.rounds):
             return blocker
 
-        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager().type_by_id()
+        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager(
+            tournament.event
+        ).type_by_id()
         option_type_by_id: dict[str, type[TieBreakOption]] = (
             TieBreakOptionManager().type_by_id()
         )

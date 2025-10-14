@@ -424,7 +424,9 @@ class Tournament:
     @cached_property
     def tie_breaks(self) -> list[TieBreak]:
         tie_breaks: list[TieBreak] = []
-        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager().type_by_id()
+        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager(
+            self.event
+        ).type_by_id()
         option_type_by_id: dict[str, type[TieBreakOption]] = (
             TieBreakOptionManager().type_by_id()
         )

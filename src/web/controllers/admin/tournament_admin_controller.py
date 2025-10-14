@@ -340,7 +340,7 @@ class TournamentAdminController(BaseEventAdminController):
         tie_break_options = {'': '-'} | {
             type_.static_id(): type_.static_name()
             for type_ in sorted(
-                TieBreakManager().entity_types(),
+                TieBreakManager(admin_event).entity_types(),
                 key=lambda tie_break: tie_break.static_name(),
             )
         }
@@ -495,7 +495,9 @@ class TournamentAdminController(BaseEventAdminController):
         )
 
         tie_breaks = []
-        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager().type_by_id()
+        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager(
+            web_context.admin_event
+        ).type_by_id()
         used_tie_break_ids: list[str] = []
         for index in (1, 2, 3):
             field = f'tie_break_{index}'

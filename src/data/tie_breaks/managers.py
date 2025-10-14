@@ -4,10 +4,10 @@ from data.tie_breaks import tie_breaks, options
 from data.tie_breaks.options import TieBreakOption
 from data.tie_breaks.tie_breaks import TieBreak
 from plugins.manager import plugin_manager
-from utils.entity import EntityManager
+from utils.entity import EntityManager, EventBoundEntityManager
 
 
-class TieBreakManager(EntityManager[TieBreak]):
+class TieBreakManager(EventBoundEntityManager[TieBreak]):
     @override
     def entity_types(self) -> list[type[TieBreak]]:
         # Include all the tie-breaks available in Papi
@@ -37,7 +37,9 @@ class TieBreakManager(EntityManager[TieBreak]):
                 tie_breaks.AveragePerfectPerformanceTieBreak,
                 tie_breaks.DirectEncounterTieBreak,
             ]
-        plugin_manager.hook.insert_tie_break_types(tie_break_types=tie_break_types)
+        plugin_manager.hook_for_event(self.event, 'insert_tie_break_types')(
+            tie_break_types=tie_break_types
+        )
         return tie_break_types
 
 
