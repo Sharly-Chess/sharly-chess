@@ -306,7 +306,7 @@
                             {{ admin_macros.select_input(
                                 name=pairing_system.variation_field_id,
                                 label=_('%(string)s:', string=_('Variation')),
-                                select_options=pairing_system.variation_manager.options(),
+                                select_options=pairing_system.variation_manager(admin_event).options(),
                                 help_text=_('The variation of the pairing system.'),
                                 disabled=admin_tournament.started,
                                 data=data, errors=errors

@@ -10,10 +10,10 @@ from data.pairings.variations import (
     DoubleBergerRoundRobinVariation,
 )
 from plugins.manager import plugin_manager
-from utils.entity import EntityManager, EventBoundEntityManager
+from utils.entity import EventBoundEntityManager
 
 
-class PairingSystemManager(EntityManager[PairingSystem]):
+class PairingSystemManager(EventBoundEntityManager[PairingSystem]):
     @override
     def entity_types(self) -> list[type[PairingSystem]]:
         return [

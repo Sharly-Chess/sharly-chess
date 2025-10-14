@@ -15,11 +15,11 @@ from data.pairings.settings import (
     ColorSeedSetting,
     BergerNumbersSetting,
 )
-from data.pairings.systems import PairingSystem
 from data.player import Player
 from utils.entity import IdentifiableEntity
 
 if TYPE_CHECKING:
+    from data.pairings.systems import PairingSystem
     from data.tournament import Tournament
 
 
@@ -41,7 +41,7 @@ class PairingVariation(IdentifiableEntity, ABC):
 
     @staticmethod
     @abstractmethod
-    def system() -> PairingSystem:
+    def system() -> 'PairingSystem':
         """Pairing system associated to the variation."""
 
     @property
@@ -130,7 +130,7 @@ class SwissVariation(PairingVariation, ABC):
     the generation of the pairings."""
 
     @staticmethod
-    def system() -> PairingSystem:
+    def system() -> 'PairingSystem':
         return systems.SwissPairingSystem()
 
     @property
@@ -146,7 +146,7 @@ class RoundRobinVariation(PairingVariation, ABC):
     """Parent class of all the Round-Robin pairing variations."""
 
     @staticmethod
-    def system() -> PairingSystem:
+    def system() -> 'PairingSystem':
         return systems.RoundRobinPairingSystem()
 
 

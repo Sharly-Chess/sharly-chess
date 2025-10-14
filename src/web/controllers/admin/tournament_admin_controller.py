@@ -192,7 +192,7 @@ class TournamentAdminController(BaseEventAdminController):
         errors: dict[str, str] | None = None,
     ):
         admin_event = web_context.get_admin_event()
-        pairing_systems = PairingSystemManager().objects()
+        pairing_systems = PairingSystemManager(admin_event).objects()
         pairing_system: PairingSystem = SwissPairingSystem()
         if data is None:
             match action:
@@ -400,7 +400,7 @@ class TournamentAdminController(BaseEventAdminController):
             'rating_options': cls._get_rating_options(),
             'override_unrated_rapid_blitz_options': override_unrated_rapid_blitz_options,
             'pairing_systems': pairing_systems,
-            'pairing_system_options': PairingSystemManager().options(),
+            'pairing_system_options': PairingSystemManager(admin_event).options(),
             'plugin_form_fields_templates': plugin_form_fields_templates,
             'previous_tournament': (
                 web_context.admin_tournament if action == 'create' else None
@@ -486,7 +486,7 @@ class TournamentAdminController(BaseEventAdminController):
             elif start and stop < start:
                 errors[field] = _('End time needs to be after start time.')
 
-        pairing_system = PairingSystemManager().get_object(
+        pairing_system = PairingSystemManager(web_context.admin_event).get_object(
             WebContext.form_data_to_str(data, 'pairing_system')
             or SwissPairingSystem.static_id()
         )

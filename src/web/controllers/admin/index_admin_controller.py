@@ -664,7 +664,7 @@ class IndexAdminController(BaseAdminController):
         data: dict[str, str],
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
-        event = web_context.get_admin_event()
+        event = web_context.admin_event
         plugin_form_fields_templates = (
             plugin_manager.hook_for_event(event, 'get_event_form_fields_template')()
             or []
