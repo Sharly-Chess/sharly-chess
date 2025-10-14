@@ -3,7 +3,7 @@ English version below
 
 ## Fonctionnement
 
-- Plug-ins spécifiques à une fédération (v3.2.0)
+- Plug-ins spécifiques à une fédération (3.2.0)
 - Mise en ligne sur Chess-Results.com (3.2.0)
 
 ## Joueur·euses

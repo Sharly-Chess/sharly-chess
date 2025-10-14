@@ -238,7 +238,6 @@ class TestUtils:
                 headers={'Content-Type': 'application/x-www-form-urlencoded'},
                 data=form_data,
             )
-            print(res)
             cls.check_api_response(res)
         else:
             with EventDatabase(event_uniq_id, write=True) as event_database:
