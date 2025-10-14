@@ -703,8 +703,8 @@ class TournamentAdminController(BaseEventAdminController):
             )
 
         if message := plugin_manager.hook_for_event(
-            web_context.get_admin_event(), 'signal_tournament_set'
-        )(tournament=web_context.admin_tournament, stored_tournament=stored_tournament):
+            web_context.admin_event, 'signal_tournament_set'
+        )(event=web_context.admin_event, stored_tournament=stored_tournament):
             Message.warning(request, message)
 
         with EventDatabase(

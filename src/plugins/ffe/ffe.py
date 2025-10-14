@@ -751,13 +751,13 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def signal_tournament_set(
-        self, tournament: 'Tournament', stored_tournament: 'StoredTournament'
+        self, event: 'Event', stored_tournament: 'StoredTournament'
     ) -> str | None:
         if blocker := PapiConverter.check_rounds(stored_tournament.rounds):
             return blocker
 
         tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager(
-            tournament.event
+            event
         ).type_by_id()
         option_type_by_id: dict[str, type[TieBreakOption]] = (
             TieBreakOptionManager().type_by_id()
@@ -774,7 +774,7 @@ class FfePlugin(Plugin):
                 tie_break = tie_break_type(options)
                 if blocker := PapiConverter.check_tiebreak(tie_break):
                     return blocker
-        pairing_variation = PairingVariationManager(tournament.event).get_object(
+        pairing_variation = PairingVariationManager(event).get_object(
             stored_tournament.pairing
         )
         if warning := PapiConverter.check_pairing_variation_warning(pairing_variation):

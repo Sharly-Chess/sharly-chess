@@ -89,6 +89,12 @@ class TestUtils:
         assert response.ok
         body = response.body().decode('utf-8')
 
+        # Look for Internal Server Error in an <h1>
+        if re.search(
+            r'<h1>\s*500\s*[-–—]\s*Internal Server Error\s*</h1>', body, re.IGNORECASE
+        ):
+            raise AssertionError('Server 500 Internal Server Error page detected')
+
         # Match divs with class containing 'invalid-feedback', extract id and inner text
         matches = re.findall(
             r'<div[^>]*\bid="([^"]+)"[^>]*class="[^"]*\binvalid-feedback\b[^"]*"[^>]*>(.*?)</div>',
@@ -232,6 +238,7 @@ class TestUtils:
                 headers={'Content-Type': 'application/x-www-form-urlencoded'},
                 data=form_data,
             )
+            print(res)
             cls.check_api_response(res)
         else:
             with EventDatabase(event_uniq_id, write=True) as event_database:

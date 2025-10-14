@@ -261,7 +261,7 @@ class AppHookSpecs:
 
     @hookspec
     def signal_tournament_set(
-        self, tournament: 'Tournament | None', stored_tournament: 'StoredTournament'
+        self, event: 'Event', stored_tournament: 'StoredTournament'
     ) -> str | None:
         """A signal sent when a tournament is updated. Returns a string to be displayed to the user"""
 
