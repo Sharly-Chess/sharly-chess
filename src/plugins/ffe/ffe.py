@@ -105,12 +105,12 @@ class FfePlugin(Plugin):
 
     @staticmethod
     def static_name() -> str:
-        return _('FFE')
+        return _('Fédération Française des Échecs')
 
     @property
     def description(self) -> str:
         return _(
-            'French Federation specific features (player search, leagues, Papi compatibility).'
+            'French Federation specific features (player search, results uploading, leagues, Papi import/export...).'
         )
 
     @property
@@ -124,12 +124,12 @@ class FfePlugin(Plugin):
 
     @override
     def is_enabled_for_event(self, event: Optional['Event']) -> bool:
-        return not event or event.federation == 'FRA'
+        return event is not None and event.federation == 'FRA'
 
     @override
     @property
-    def is_state_editable(self) -> bool:
-        return False
+    def federation(self) -> str | None:
+        return 'FRA'
 
     @override
     @property

@@ -51,7 +51,12 @@ class ChessEventPlugin(Plugin):
 
     @override
     def is_enabled_for_event(self, event: Optional['Event']) -> bool:
-        return not event or event.federation == 'FRA'
+        return event is not None and event.federation == 'FRA'
+
+    @override
+    @property
+    def federation(self) -> str | None:
+        return 'FRA'
 
     @override
     @property

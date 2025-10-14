@@ -1,8 +1,9 @@
 from datetime import datetime
+from itertools import groupby
 from logging import Logger
 from pathlib import Path
 import time
-from typing import Annotated, Any
+from typing import Annotated, Any, cast
 
 import requests
 import validators
@@ -34,7 +35,7 @@ from common.i18n import (
     _,
     locales,
 )
-from common.i18n.utils import locale_localized_name, by
+from common.i18n.utils import locale_localized_name, by, unicode_normalize
 from common.sharly_chess_config import SharlyChessConfig
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import (
@@ -1010,10 +1011,35 @@ class IndexAdminController(BaseAdminController):
         locale_options: dict[str, str] = {
             locale: locale_localized_name(locale) for locale in locales
         }
+
+        all_plugins = sorted(
+            plugin_manager.all_plugins, key=lambda p: unicode_normalize(p.name)
+        )
+
+        plugins_by_federation = {
+            federation: list(group)
+            for federation, group in groupby(
+                all_plugins, key=lambda p: getattr(p, 'federation', None)
+            )
+        }
+
+        global_plugins = plugins_by_federation.pop(None, [])
+
+        plugins_by_federation = {
+            SharlyChessConfig.federations.get(
+                cast(str, code_key), str(code_key)
+            ): plugins
+            for code_key, plugins in sorted(
+                plugins_by_federation.items(),
+                key=lambda kv: SharlyChessConfig.federations.get(cast(str, kv[0]), ''),
+            )
+        }
+
         template_context = {
             'console_log_level_options': console_log_level_options,
             'locale_options': locale_options,
-            'plugins': plugin_manager.all_plugins,
+            'global_plugins': global_plugins,
+            'federation_plugins': plugins_by_federation,
             'federation_options': (
                 {} if data['federation'] else {'': _('Please choose a federation')}
             )

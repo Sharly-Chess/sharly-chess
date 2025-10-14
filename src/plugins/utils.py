@@ -159,6 +159,11 @@ class Plugin(Generic[PD], IdentifiableEntity, ABC):
         return True
 
     @property
+    def federation(self) -> str | None:
+        """Returns the federation for which the plugin is enabled,, or None for all"""
+        return None
+
+    @property
     def is_enabled(self) -> bool:
         assert self.context.stored_plugin is not None
         return self.context.stored_plugin.is_enabled
