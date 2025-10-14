@@ -1,9 +1,11 @@
 import base64
+from operator import attrgetter
 import weakref
-from dataclasses import dataclass
+from collections import Counter
+from dataclasses import dataclass, field
 from datetime import date
 from functools import total_ordering, cached_property
-from typing import Self, SupportsFloat, TYPE_CHECKING
+from typing import Optional, Self, SupportsFloat, TYPE_CHECKING
 from trf import Player as TrfPlayer
 from trf.Player import Game as TrfGame
 
@@ -15,10 +17,12 @@ from plugins.manager import plugin_manager
 from plugins.utils import PluginData
 from utils import StaticUtils
 from utils.enum import (
+    NormFailExplanation,
     PlayerGender,
     PlayerTitle,
     BoardColor,
     Result,
+    TitleNorm,
     TournamentRating,
     PlayerRatingType,
     PlayerCategory,
@@ -131,6 +135,30 @@ class PlayerRatingAndType:
 
     def __str__(self) -> str:
         return f'{self.value} {self.type.short_name}'
+
+
+@dataclass
+class NormCheckResult:
+    title_norm: TitleNorm
+    meets_gender: bool
+    failures: list[NormFailExplanation] = field(default_factory=list)
+
+    played_games: Optional[int] = None
+    federations_count: Optional[int] = None
+    max_one_federation_violation: Optional[tuple[Federation, int]] = None
+    num_title_holders: Optional[int] = None
+    required_titles_met: Optional[int] = None
+    score: Optional[float] = None
+    average_rating: Optional[float] = None
+    performance: Optional[float] = None
+    over_performance: Optional[float] = None
+
+    def is_met(self) -> bool:
+        return not self.failures
+
+    def add_failure(self, explanation: NormFailExplanation):
+        if explanation not in self.failures:
+            self.failures.append(explanation)
 
 
 class TieBreakValue:
@@ -642,6 +670,145 @@ class Player:
         self.board_id = board_id
         self.board_number = board_number
         self.color = color
+
+    def achieves_any_title_norm(self) -> dict[TitleNorm, NormCheckResult]:
+        results: dict[TitleNorm, NormCheckResult] = {
+            tn: NormCheckResult(
+                title_norm=tn, meets_gender=tn.satisfies_gender_requirement(self.gender)
+            )
+            for tn in TitleNorm.values()
+        }
+
+        # Gather data from pairings
+        rounds = self.tournament.rounds
+        played_games = 0
+        federations_counter: Counter[Federation] = Counter()
+        titles_counter: Counter[PlayerTitle] = Counter()
+        ratings: list[PlayerRatingAndType] = []
+        results_list: list[Result] = []
+        forfeits_or_byes = 0
+
+        for rnd, pairing in self.pairings_by_round.items():
+            if pairing.result.is_board_bye or pairing.result == Result.FORFEIT_WIN:
+                forfeits_or_byes += 1
+
+            if pairing.opponent and not pairing.result.is_unplayed:
+                played_games += 1
+                opponent = pairing.opponent
+                federations_counter[opponent.federation] += 1
+                titles_counter[opponent.title] += 1
+                results_list.append(pairing.result)
+
+                opp_fide_rating = opponent.ratings[TournamentRating.STANDARD].fide
+                if opp_fide_rating is not None:
+                    ratings.append(
+                        PlayerRatingAndType(opp_fide_rating, PlayerRatingType.FIDE)
+                    )
+                else:
+                    ratings.append(
+                        PlayerRatingAndType(1400, PlayerRatingType.ESTIMATED)
+                    )
+
+        # Precompute required titles counts
+        required_titles = {
+            tn: Counter(
+                {
+                    title: count
+                    for title, count in titles_counter.items()
+                    if title in tn.title_holders
+                }
+            )
+            for tn in TitleNorm.values()
+        }
+
+        score = sum(r.points() for r in results_list)
+
+        # Process each norm
+        for tn, res in results.items():
+            if not res.meets_gender:
+                res.add_failure(NormFailExplanation.WRONG_GENDER)
+                continue
+
+            # Games criterion
+            if played_games < tn.minimum_rounds():
+                res.add_failure(NormFailExplanation.NOT_ENOUGH_GAMES)
+            elif (
+                rounds == tn.minimum_rounds()
+                and played_games == tn.minimum_rounds() - 1
+                and forfeits_or_byes != 1
+            ):
+                res.add_failure(NormFailExplanation.NOT_ENOUGH_GAMES)
+
+            res.played_games = played_games
+
+            # Federation criterion
+            own_count = federations_counter.get(self.federation, 0)
+            num_feds = len(federations_counter)
+            if own_count != 0:
+                if num_feds <= 2:
+                    res.add_failure(NormFailExplanation.NOT_ENOUGH_FEDERATIONS)
+                elif own_count > tn.maximum_of_own_federation(rounds):
+                    res.add_failure(NormFailExplanation.TOO_MANY_OWN_FEDERATION)
+            else:
+                if num_feds < 2:
+                    res.add_failure(NormFailExplanation.NOT_ENOUGH_FEDERATIONS)
+            res.federations_count = num_feds
+
+            # Too many in one federation
+            if federations_counter:
+                top_fed, top_count = federations_counter.most_common(1)[0]
+                if top_count > tn.maximum_of_one_federation(rounds):
+                    res.max_one_federation_violation = (top_fed, top_count)
+
+            # Title holders criterion
+            num_titles = sum(titles_counter.values())
+            if num_titles < tn.minimum_title_holders(rounds):
+                res.add_failure(NormFailExplanation.NOT_ENOUGH_TITLE_HOLDERS)
+
+            res.num_title_holders = num_titles
+
+            # Required titles criterion
+            req = required_titles.get(tn, Counter())
+            total_req = sum(req.values())
+            if total_req < tn.minimum_required_titles(rounds):
+                res.add_failure(NormFailExplanation.NOT_ENOUGH_REQUIRED_TITLES)
+
+            res.required_titles_met = total_req
+
+            # Score criterion
+            if score < TitleNorm.minimum_score(rounds):
+                res.add_failure(NormFailExplanation.SCORE_TOO_LOW)
+            else:
+                res.score = score
+
+        # Rating / performance criteria
+        ratings.sort(key=attrgetter('value'))
+        adjusted_ratings = {tn: list(ratings) for tn in TitleNorm.values()}
+
+        for tn, res in results.items():
+            rating_list = adjusted_ratings[tn]
+
+            # Minimum rating floor
+            if rating_list and rating_list[0].value < tn.minimum_rating:
+                rating_list[0].value = tn.minimum_rating
+                rating_list.sort(key=attrgetter('value'))
+
+            values = [r.value for r in rating_list]
+            avg = StaticUtils.round_ranking(sum(values) / len(values)) if values else 0
+            if avg < tn.minimum_average:
+                res.add_failure(NormFailExplanation.AVERAGE_TOO_LOW)
+
+            res.average_rating = avg
+
+            max_score = Result.WIN.points() * len(results_list)
+            bonus = StaticUtils.performance_bonus(score / max_score)
+            performance = avg + bonus
+            if performance < tn.minimum_performance:
+                res.add_failure(NormFailExplanation.PERFORMANCE_TOO_LOW)
+
+            res.performance = performance
+
+        return results
 
     @cached_property
     def has_real_pairings(self) -> bool:
