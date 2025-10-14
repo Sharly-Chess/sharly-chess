@@ -14,7 +14,7 @@ from data.print_documents.player_sorters import PlayerSorter
 from data.print_documents.player_splitters import PlayerSplitter
 from data.print_documents.qrcode_types import QRCodeType
 from plugins.manager import plugin_manager
-from utils.entity import EntityManager
+from utils.entity import EntityManager, EventBoundEntityManager
 
 
 class PrintDocumentManager(EntityManager[PrintDocument]):
@@ -36,7 +36,7 @@ class PrintDocumentManager(EntityManager[PrintDocument]):
         ]
 
 
-class PrintDocumentOptionManager(EntityManager[PrintOption]):
+class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
     @override
     def entity_types(self) -> list[type[options.PrintOption]]:
         return [
@@ -53,7 +53,7 @@ class PrintDocumentOptionManager(EntityManager[PrintOption]):
         ]
 
 
-class PrintPlayerSplitterManager(EntityManager[PlayerSplitter]):
+class PrintPlayerSplitterManager(EventBoundEntityManager[PlayerSplitter]):
     @override
     def entity_types(self) -> list[type[PlayerSplitter]]:
         splitters = [
@@ -62,13 +62,13 @@ class PrintPlayerSplitterManager(EntityManager[PlayerSplitter]):
             player_splitters.ClubPlayerSplitter,
             player_splitters.FederationPlayerSplitter,
         ]
-        plugin_manager.hook.insert_print_player_splitter_types(
+        plugin_manager.hook_for_event(self.event, 'insert_print_player_splitter_types')(
             player_splitter_types=splitters
         )
         return splitters
 
 
-class PrintPlayerSorterManager(EntityManager[PlayerSorter]):
+class PrintPlayerSorterManager(EventBoundEntityManager[PlayerSorter]):
     @override
     def entity_types(self) -> list[type[PlayerSorter]]:
         return [
@@ -79,7 +79,7 @@ class PrintPlayerSorterManager(EntityManager[PlayerSorter]):
         ]
 
 
-class PrintPairingStyleManager(EntityManager[PairingStyle]):
+class PrintPairingStyleManager(EventBoundEntityManager[PairingStyle]):
     @override
     def entity_types(self) -> list[type[PairingStyle]]:
         return [
@@ -88,11 +88,13 @@ class PrintPairingStyleManager(EntityManager[PairingStyle]):
         ]
 
 
-class PrintQRCodeTypeManager(EntityManager[QRCodeType]):
+class PrintQRCodeTypeManager(EventBoundEntityManager[QRCodeType]):
     @override
     def entity_types(self) -> list[type[QRCodeType]]:
         types: list[type[QRCodeType]] = [
             qrcode_types.NetworkQRCodeType,
         ]
-        plugin_manager.hook.insert_print_qrcode_types(qrcode_types=types)
+        plugin_manager.hook_for_event(self.event, 'insert_print_qrcode_types')(
+            qrcode_types=types
+        )
         return types

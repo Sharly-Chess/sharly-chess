@@ -57,7 +57,8 @@ class EventPrintController(BaseEventAdminController):
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
-        print_options = PrintDocumentOptionManager().objects()
+        event = web_context.get_admin_event()
+        print_options = PrintDocumentOptionManager(event).objects()
         event = web_context.get_admin_event()
         if len(event.tournaments) == 1:
             tournament_ids = list(event.tournaments_by_id)
@@ -139,6 +140,7 @@ class EventPrintController(BaseEventAdminController):
     ) -> Template:
         flat_data = WebContext.flatten_list_data(data)
         web_context = BaseEventAdminWebContext(request)
+        event = web_context.get_admin_event()
 
         errors: dict[str, str] = {}
 
@@ -156,7 +158,7 @@ class EventPrintController(BaseEventAdminController):
             options = []
             for option in document_type.default_options():
                 value = WebContext.form_data_to_value(flat_data, option.id, option.type)
-                options.append(type(option)(value))
+                options.append(type(option)(event, value))
 
                 if isinstance(option, TournamentPrintOption):
                     tournament_id = web_context.form_data_to_int(
@@ -235,7 +237,7 @@ class EventPrintController(BaseEventAdminController):
             value = WebContext.form_data_to_value(
                 option_data, print_option.id, print_option.type
             )
-            print_options.append(type(print_option)(value))
+            print_options.append(type(print_option)(event, value))
         print_document = document_type(web_context.get_admin_event(), print_options)
 
         per_plugin_columns = plugin_manager.hook_for_event(

@@ -1,7 +1,7 @@
 from abc import ABC
 from functools import cached_property
 from types import UnionType
-from typing import override, Any
+from typing import TYPE_CHECKING, override, Any
 
 from common.exception import OptionError
 from common.i18n import _
@@ -15,9 +15,16 @@ from data.print_documents.player_splitters import PlayerSplitter, NoSplitPlayerS
 from data.print_documents.qrcode_types import NetworkQRCodeType, QRCodeType
 from utils.option import Option
 
+if TYPE_CHECKING:
+    from data.event import Event
+
 
 class PrintOption(Option, ABC):
     """Parent class of all the options of print documents."""
+
+    def __init__(self, event: 'Event', value: Any | None = None):
+        super().__init__(value)
+        self.event = event
 
     @property
     def template_name(self) -> str:
@@ -114,13 +121,13 @@ class PlayerSplitPrintOption(PrintOption):
     def player_splitter_options(self) -> dict[str, str]:
         from data.print_documents import PrintPlayerSplitterManager
 
-        return PrintPlayerSplitterManager().options()
+        return PrintPlayerSplitterManager(self.event).options()
 
     @cached_property
     def player_splitter(self) -> PlayerSplitter:
         from data.print_documents import PrintPlayerSplitterManager
 
-        return PrintPlayerSplitterManager().get_object(self.value)
+        return PrintPlayerSplitterManager(self.event).get_object(self.value)
 
     @override
     def validate(self):
@@ -148,13 +155,13 @@ class PlayerSortPrintOption(PrintOption):
     def player_sorter_options(self) -> dict[str, str]:
         from data.print_documents import PrintPlayerSorterManager
 
-        return PrintPlayerSorterManager().options()
+        return PrintPlayerSorterManager(self.event).options()
 
     @cached_property
     def player_sorter(self) -> PlayerSorter:
         from data.print_documents import PrintPlayerSorterManager
 
-        return PrintPlayerSorterManager().get_object(self.value)
+        return PrintPlayerSorterManager(self.event).get_object(self.value)
 
     @override
     def validate(self):
@@ -182,13 +189,13 @@ class PairingStylePrintOption(PrintOption):
     def pairing_style_options(self) -> dict[str, str]:
         from data.print_documents import PrintPairingStyleManager
 
-        return PrintPairingStyleManager().options()
+        return PrintPairingStyleManager(self.event).options()
 
     @cached_property
     def pairing_style(self) -> PairingStyle:
         from data.print_documents import PrintPairingStyleManager
 
-        return PrintPairingStyleManager().get_object(self.value)
+        return PrintPairingStyleManager(self.event).get_object(self.value)
 
     @override
     def validate(self):
@@ -260,19 +267,19 @@ class QRCodePrintOption(PrintOption):
     def qrcode_type_options(self) -> dict[str, str]:
         from data.print_documents import PrintQRCodeTypeManager
 
-        return PrintQRCodeTypeManager().options()
+        return PrintQRCodeTypeManager(self.event).options()
 
     @cached_property
     def qrcode_type(self) -> QRCodeType:
         from data.print_documents import PrintQRCodeTypeManager
 
-        return PrintQRCodeTypeManager().get_object(self.value)
+        return PrintQRCodeTypeManager(self.event).get_object(self.value)
 
     @property
     def valid_options_per_type(self) -> dict[str, list[str]]:
         from data.print_documents import PrintQRCodeTypeManager
 
-        type_options = PrintQRCodeTypeManager().type_by_id()
+        type_options = PrintQRCodeTypeManager(self.event).type_by_id()
         return {
             type_id: type_options[type_id].get_valid_options()
             for type_id in type_options
