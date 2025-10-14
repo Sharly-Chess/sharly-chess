@@ -296,7 +296,7 @@ class FamilyAdminController(BaseEventAdminController):
         action: str | None = None,
         family_id: int | None = None,
         family_type: str | None = None,
-        data: dict[str, str] | None = None,  # type: ignore
+        data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
     ) -> Template:
         web_context = FamilyAdminWebContext(

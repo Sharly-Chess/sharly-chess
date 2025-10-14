@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
 from types import ModuleType
-from typing import TYPE_CHECKING, Any, Generic, NamedTuple, Self, TypeVar, Optional
+from typing import TYPE_CHECKING, Any, NamedTuple, Self, Optional
 
 from packaging.version import Version
 
@@ -121,11 +121,7 @@ class PluginData(ABC):
         """The values to use in a form."""
 
 
-# Define a TypeVar bound to PluginData
-PD = TypeVar('PD', bound=PluginData)
-
-
-class Plugin(Generic[PD], IdentifiableEntity, ABC):
+class Plugin[PD: PluginData](IdentifiableEntity, ABC):
     data_class: type[PD] | None = None
 
     def __init__(self):

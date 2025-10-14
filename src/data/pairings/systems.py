@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from functools import cached_property
-from typing import TYPE_CHECKING, Generic, TypeVar, override
+from typing import TYPE_CHECKING, override
 
 from common.i18n import _
 from data.safety_mode import (
@@ -23,10 +23,7 @@ if TYPE_CHECKING:
     from data.event import Event
 
 
-PV = TypeVar('PV', bound='PairingVariation')
-
-
-class PairingSystem(IdentifiableEntity, ABC, Generic[PV]):
+class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
     """Abstract class representing all the different pairing systems.
     Each system can have different variations."""
 

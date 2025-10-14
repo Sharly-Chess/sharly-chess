@@ -114,7 +114,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
         action: str | None = None,
         display_controller_id: int | None = None,
         reload_event: bool = False,
-        data: dict[str, str] | None = None,  # type: ignore
+        data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
     ) -> Template:
         web_context = DisplayControllerAdminWebContext(

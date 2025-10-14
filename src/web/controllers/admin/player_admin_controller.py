@@ -894,7 +894,7 @@ class PlayerAdminController(BaseEventAdminController):
                 data = {
                     f'round_{round_}_result': WebContext.value_to_form_data(
                         admin_player.pairings[round_].result.value
-                    )  # type: ignore
+                    )
                     for round_ in range(
                         max(1, tournament.current_round),
                         tournament.rounds + 1,
