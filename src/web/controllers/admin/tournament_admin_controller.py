@@ -1040,17 +1040,17 @@ class TournamentAdminController(BaseEventAdminController):
 
     @classmethod
     def _validate_tournament_criterion_form_data(
-        cls, data: dict[str, str]
+        cls, event: Event, data: dict[str, str]
     ) -> dict[str, str]:
         errors: dict[str, str] = {}
         field = 'type'
         player_filter_id = data.get(field, '')
         try:
-            PlayerFilterManager().get_type(player_filter_id)
+            PlayerFilterManager(event).get_type(player_filter_id)
         except KeyError:
             errors[field] = _('Please select a type of criterion.')
             return errors
-        player_filter = cls.player_filter_from_data(data)
+        player_filter = cls.player_filter_from_data(event, data)
         try:
             player_filter.validate_options()
         except OptionError as error:
@@ -1058,8 +1058,8 @@ class TournamentAdminController(BaseEventAdminController):
         return errors
 
     @staticmethod
-    def player_filter_from_data(data: dict[str, str]) -> PlayerFilter:
-        player_filter_type = PlayerFilterManager().get_type(data['type'])
+    def player_filter_from_data(event: Event, data: dict[str, str]) -> PlayerFilter:
+        player_filter_type = PlayerFilterManager(event).get_type(data['type'])
         options = []
         for option in player_filter_type.default_options():
             value = WebContext.form_data_to_value(data, option.id, option.type)
@@ -1069,24 +1069,26 @@ class TournamentAdminController(BaseEventAdminController):
     @staticmethod
     def _tournament_criterion_form_modal_context(
         request: HTMXRequest,
+        event: Event,
         data: dict[str, str],
         action: FormAction,
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         default_data = {
             option.id: WebContext.value_to_form_data(option.default_value)
-            for option in PlayerFilterOptionManager().objects()
+            for option in PlayerFilterOptionManager(event).objects()
         } | {'type': ''}
         return {
             'modal': 'tournament_criterion_form',
             'action': action,
-            'player_filter_select_options': {'': '-'} | PlayerFilterManager().options(),
-            'player_filter_options': PlayerFilterOptionManager().objects(),
+            'player_filter_select_options': {'': '-'}
+            | PlayerFilterManager(event).options(),
+            'player_filter_options': PlayerFilterOptionManager(event).objects(),
             'containers_by_type': {
                 player_filter.id: [
                     option.container_id for option in player_filter.default_options()
                 ]
-                for player_filter in PlayerFilterManager().objects()
+                for player_filter in PlayerFilterManager(event).objects()
             }
             | {'': []},
             'add_other_active': (
@@ -1115,20 +1117,21 @@ class TournamentAdminController(BaseEventAdminController):
         tournament_id: int,
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
+        event = web_context.get_admin_event()
         add_other = 'add_other' in data
         SessionHandler.set_session_admin_tournament_criterion_add_other_active(
             request, add_other
         )
         flat_data = WebContext.flatten_list_data(data)
-        if errors := self._validate_tournament_criterion_form_data(flat_data):
+        if errors := self._validate_tournament_criterion_form_data(event, flat_data):
             return self._admin_base_event_render(
                 web_context.template_context
                 | self._tournament_criterion_form_modal_context(
-                    request, flat_data, FormAction.CREATE, errors
+                    request, event, flat_data, FormAction.CREATE, errors
                 )
             )
 
-        player_filter = self.player_filter_from_data(flat_data)
+        player_filter = self.player_filter_from_data(event, flat_data)
         criterion = web_context.get_admin_tournament().add_criterion(
             StoredTournamentCriterion(
                 id=None,
@@ -1139,7 +1142,7 @@ class TournamentAdminController(BaseEventAdminController):
         )
         if add_other:
             template_context = self._tournament_criterion_form_modal_context(
-                request, {}, FormAction.CREATE, errors
+                request, event, {}, FormAction.CREATE, errors
             ) | {'previous_criterion': criterion}
         else:
             template_context = {'modal': 'tournament_criteria'}
@@ -1170,16 +1173,17 @@ class TournamentAdminController(BaseEventAdminController):
             tournament_id,
             tournament_criterion_id,
         )
+        event = web_context.get_admin_event()
 
         flat_data = WebContext.flatten_list_data(data)
-        if errors := self._validate_tournament_criterion_form_data(flat_data):
+        if errors := self._validate_tournament_criterion_form_data(event, flat_data):
             self._admin_base_event_render(
                 web_context.template_context
                 | self._tournament_criterion_form_modal_context(
-                    request, flat_data, FormAction.UPDATE, errors
+                    request, event, flat_data, FormAction.UPDATE, errors
                 )
             )
-        player_filter = self.player_filter_from_data(flat_data)
+        player_filter = self.player_filter_from_data(event, flat_data)
         tournament_criterion = web_context.get_admin_tournament_criterion()
         stored_tournament_criterion = tournament_criterion.stored_tournament_criterion
         stored_tournament_criterion.type = player_filter.id
@@ -1245,10 +1249,11 @@ class TournamentAdminController(BaseEventAdminController):
         tournament_id: int,
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
+        event = web_context.get_admin_event()
         return self._admin_base_event_render(
             web_context.template_context
             | self._tournament_criterion_form_modal_context(
-                request, {}, FormAction.CREATE
+                request, event, {}, FormAction.CREATE
             )
         )
 
@@ -1268,6 +1273,7 @@ class TournamentAdminController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(
             request, tournament_id, tournament_criterion_id
         )
+        event = web_context.get_admin_event()
 
         tournament_criterion = web_context.get_admin_tournament_criterion()
         data = {'type': tournament_criterion.player_filter.id} | {
@@ -1277,7 +1283,7 @@ class TournamentAdminController(BaseEventAdminController):
         return self._admin_base_event_render(
             web_context.template_context
             | self._tournament_criterion_form_modal_context(
-                request, data, FormAction.UPDATE
+                request, event, data, FormAction.UPDATE
             )
         )
 
