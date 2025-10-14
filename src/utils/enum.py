@@ -2,9 +2,13 @@
 
 from datetime import date, datetime, timedelta
 from enum import Enum, StrEnum, IntEnum
-from typing import Self
+from typing import TYPE_CHECKING, Self
 
 from common.i18n import _
+
+
+if TYPE_CHECKING:
+    from data.event import Event
 
 
 class Result(IntEnum):
@@ -639,6 +643,7 @@ class PlayerCategory(IntEnum):
 
     @staticmethod
     def from_year_of_birth(
+        event: 'Event',
         year_of_birth: int | None,
         tournament_start: datetime | None = None,
         tournament_end: datetime | None = None,
@@ -665,7 +670,9 @@ class PlayerCategory(IntEnum):
             ref_date = date.today()
 
         ref_year: int = (
-            plugin_manager.hook.adjust_category_reference_year(reference_date=ref_date)
+            plugin_manager.hook_for_event(event, 'adjust_category_reference_year')(
+                reference_date=ref_date
+            )
             or ref_date.year
         )
 

@@ -416,14 +416,10 @@ class FfePlugin(Plugin):
     @hookimpl
     def get_player_rating(
         self,
-        event_federation: str,
         tournament_rating: TournamentRating,
         player_rating_type: PlayerRatingType,
         player: 'Player',
     ) -> Optional[PlayerRatingAndType]:
-        if event_federation != 'FRA':
-            return None
-
         # In France, regardless of the player_rating_type of the tournament,
         # the FIDE rating is used, if available, falling back to the national rating
         ratings = player.ratings[tournament_rating]

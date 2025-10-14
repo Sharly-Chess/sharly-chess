@@ -880,9 +880,9 @@ class StatisticsPrintDocument(PrintDocument):
 
         statistics: list[StatisticsSection] = []
 
-        per_plugin_sections = plugin_manager.hook.get_extra_statistics_sections(
-            document=self, tournaments=self.tournaments
-        )
+        per_plugin_sections = plugin_manager.hook_for_event(
+            self.event, 'get_extra_statistics_sections'
+        )(document=self, tournaments=self.tournaments)
 
         for attr_name, title, sort_key, min_count, filter_func, subtitle_fn in [
             (
