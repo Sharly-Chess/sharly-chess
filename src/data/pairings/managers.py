@@ -10,7 +10,7 @@ from data.pairings.variations import (
     DoubleBergerRoundRobinVariation,
 )
 from plugins.manager import plugin_manager
-from utils.entity import EntityManager
+from utils.entity import EntityManager, EventBoundEntityManager
 
 
 class PairingSystemManager(EntityManager[PairingSystem]):
@@ -22,17 +22,17 @@ class PairingSystemManager(EntityManager[PairingSystem]):
         ]
 
 
-class SwissVariationManager(EntityManager[SwissVariation]):
+class SwissVariationManager(EventBoundEntityManager[SwissVariation]):
     @override
     def entity_types(self) -> list[type[SwissVariation]]:
         variations: list[type[SwissVariation]] = [StandardSwissVariation]
-        plugin_manager.hook.insert_swiss_pairing_variation_types(
-            variation_types=variations
-        )
+        plugin_manager.hook_for_event(
+            self.event, 'insert_swiss_pairing_variation_types'
+        )(variation_types=variations)
         return variations
 
 
-class RoundRobinVariationManager(EntityManager[RoundRobinVariation]):
+class RoundRobinVariationManager(EventBoundEntityManager[RoundRobinVariation]):
     @override
     def entity_types(self) -> list[type[RoundRobinVariation]]:
         return [
@@ -41,11 +41,13 @@ class RoundRobinVariationManager(EntityManager[RoundRobinVariation]):
         ]
 
 
-class PairingVariationManager(EntityManager[PairingVariation]):
+class PairingVariationManager(EventBoundEntityManager[PairingVariation]):
     @override
     def entity_types(self) -> list[type[PairingVariation]]:
         return cast(
-            list[type[PairingVariation]], SwissVariationManager().entity_types()
+            list[type[PairingVariation]],
+            SwissVariationManager(self.event).entity_types(),
         ) + cast(
-            list[type[PairingVariation]], RoundRobinVariationManager().entity_types()
+            list[type[PairingVariation]],
+            RoundRobinVariationManager(self.event).entity_types(),
         )

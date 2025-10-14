@@ -351,7 +351,9 @@ class Tournament:
     def pairing_variation(self) -> 'PairingVariation':
         from data.pairings import PairingVariationManager
 
-        return PairingVariationManager().get_object(self.stored_tournament.pairing)
+        return PairingVariationManager(self.event).get_object(
+            self.stored_tournament.pairing
+        )
 
     @property
     def pairing_system(self) -> 'PairingSystem':
