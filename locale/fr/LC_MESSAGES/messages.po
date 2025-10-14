@@ -2181,6 +2181,9 @@ msgstr "Fédération"
 msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
 msgstr "Féd."
 
+msgid "Federation plugins"
+msgstr "Plug-ins de fédération"
+
 msgid "Federation:"
 msgstr "Fédération :"
 
@@ -2303,8 +2306,8 @@ msgstr "Victoire par forfait"
 msgid "French Chess Federation"
 msgstr "Fédération Française des Échecs"
 
-msgid "French Federation specific features (player search, leagues, Papi compatibility)."
-msgstr "Fonctionnalités spécifiques à la Fédération Française (recherche de joueur·euses, ligues, compatibilité avec Papi)."
+msgid "French Federation specific features (player search, results uploading, leagues, Papi import/export...)"
+msgstr "Fonctionnalités spécifiques à la Fédération Française (recherche de joueur·euses, envoi des résultats, ligues, compatibilité avec Papi)"
 
 msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
 msgstr "Depuis votre appareil principal, trouvez l’écran ou l’écran rotatif que vous souhaitez afficher, puis envoyez-le au pilote d’écran à l’aide du bouton portant cette icône :"
@@ -2314,6 +2317,9 @@ msgstr "Point joker entier"
 
 msgid "Full-Point Bye (deprecated)"
 msgstr "Point joker entier (obsolète)"
+
+msgid "Fédération Française des Échecs"
+msgstr "Fédération Française des Échecs"
 
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GMI"
@@ -3777,7 +3783,7 @@ msgid "Players from %(first)s to %(last)s"
 msgstr "joueur·euses de %(first)s à %(last)s"
 
 msgid "Players may have default estimated ratings depending on the activated plugins."
-msgstr "Les joueur·euses peuvent avoir des classements estimés par défaut en fonction des plugins actifs."
+msgstr "Les joueur·euses peuvent avoir des classements estimés par défaut en fonction des plug-ins actifs."
 
 #, python-format
 msgid "Players of category [%(category)s]"
@@ -3891,9 +3897,6 @@ msgstr "La configuration est en cours sur le serveur, veuillez patienter…"
 
 msgid "Please wait…"
 msgstr "Veuillez patienter…"
-
-msgid "Plugins"
-msgstr "Plug-ins"
 
 msgid "Point counting"
 msgstr "Comptage des points"
@@ -5143,6 +5146,9 @@ msgstr "Il ne peut y avoir qu'une seule catégorie générale."
 msgid "There is no pairings for this round (last round with pairings: #{round})."
 msgstr "Il n'y a pas d'appariement pour cette ronde (dernière ronde appariée : n°{round})."
 
+msgid "These plugins enable features that are only active on events of the chosen federation.<br />You’ll be asked to select a federation when creating the event."
+msgstr "Ces plug-ins activent des fonctionnalités qui ne sont disponibles que pour les événements de la fédération sélectionnée.<br />Vous serez invité à choisir une fédération lors de la création de l’événement."
+
 msgid "These tournaments are already included for this account by a higher access level."
 msgstr "Ces tournois sont déjà inclus pour ce compte par un niveau d'accès plus élevé."
 
@@ -5747,6 +5753,9 @@ msgstr "Utiliser le système de points 3/1/0 au lieu du système standard 1/0,5/
 
 msgid "Using colors helps in finding quickly important information on the console."
 msgstr "Utiliser les couleurs peut permettre de trouver facilement les informations importantes sur la console."
+
+msgid "Utility Plugins"
+msgstr "Plug-ins utilitaires"
 
 msgid "Validate"
 msgstr "Valider"

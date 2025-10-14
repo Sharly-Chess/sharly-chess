@@ -110,7 +110,7 @@ class FfePlugin(Plugin):
     @property
     def description(self) -> str:
         return _(
-            'French Federation specific features (player search, results uploading, leagues, Papi import/export...).'
+            'French Federation specific features (player search, results uploading, leagues, Papi import/export...)'
         )
 
     @property
