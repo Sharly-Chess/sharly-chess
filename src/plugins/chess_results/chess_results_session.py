@@ -95,7 +95,7 @@ class ChessResultsSession(Session):
         self, tournament: Tournament, sid: str, tnr: str, creator_id: str
     ) -> str:
         """
-        Build Chess-Results upload XML from a Sharly Chess Rournament.
+        Build Chess-Results upload XML from a Sharly Chess Tournament.
         """
 
         root = ET.Element('chessresults')
@@ -113,6 +113,7 @@ class ChessResultsSession(Session):
             else:
                 tb_details.append(('0', ''))
         while len(tb_details) < 5:
+            # TODO (Molrn) if more than 5 tie-breaks are provided, use the rank as 5th tie-break
             tb_details.append(('0', ''))
 
         ET.SubElement(

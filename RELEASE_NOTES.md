@@ -17,6 +17,10 @@ English version below
 - Définition des groupes d'accélération par les numéros d'appariements en remplacement des seuils Elo (3.2.0)
 - Ajout du système d'accélération de Bakou (3.2.0)
 
+## FFE
+
+- Support des départages non-compatibles avec Papi lors de l'export Papi et de l'upload FFE (3.2.0)
+
 ---
 
 # English
@@ -36,3 +40,7 @@ English version below
 - Definition of the value of the Pairing Allocated Bye (3.2.0)
 - Definition of the acceleration pairing groups via pairing numbers replacing rating thresholds (3.2.0)
 - Baku acceleration system added (3.2.0)
+
+## FFE
+
+- Papi incompatible tie-breaks are now supported in the Papi export and the FFE upload (3.2.0)

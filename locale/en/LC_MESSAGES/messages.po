@@ -4233,9 +4233,6 @@ msgstr ""
 msgid "Result [{result}] is incompatible with the opponent's result [{opponent_result}]."
 msgstr ""
 
-msgid "Result [{result}] is not compatible with the PAPI format."
-msgstr ""
-
 msgid "Results"
 msgstr ""
 
@@ -4806,7 +4803,7 @@ msgstr ""
 msgid "Thanks :-)"
 msgstr ""
 
-msgid "The Baku acceleration system, not handled by FFE, may cause differences in the pairings display for Papi exports and FFE upload."
+msgid "The Baku acceleration system is not compatible with Papi, there may be differences in the Papi pairings display."
 msgstr ""
 
 msgid "The Buchholz Cut 1 (the sum of the scores of each of the opponents of a player reduced by the lowest score of the opponents)"
@@ -4825,6 +4822,9 @@ msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b>
 msgstr ""
 
 msgid "The PAPI format does not support {rounds} rounds (maximum: {max})."
+msgstr ""
+
+msgid "The Papi format does not support result [{result}]."
 msgstr ""
 
 msgid "The URL of the image to display."
@@ -5280,7 +5280,7 @@ msgstr ""
 msgid "Tie-break #%(index)d:"
 msgstr ""
 
-msgid "Tie-break [{tie_break}] is not compatible with the PAPI format."
+msgid "Tie-break [{tie_break}] is not compatible with Papi, it will not appear in the Papi results."
 msgstr ""
 
 msgid "Tie-break already in use."
