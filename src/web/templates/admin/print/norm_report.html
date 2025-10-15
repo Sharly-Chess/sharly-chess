@@ -89,6 +89,9 @@
             .error {
                 color: red;
             }
+            .error input {
+                color: red;
+            }
             .checkboxes {
                 margin-top: 0.2rem;
                 display: flex;
@@ -291,20 +294,21 @@
                 </section>
 
                 <section>
+                    {% set applying_143d = norm.not_enough_federations and is_swiss %}
                     <div style="font-size: 0.9rem; font-weight: bold;">Where applying 1.43d:</div>
                     <div class="grid" style="grid-template-columns: 3fr 5fr;">
-                        <div class="item {{ 'error' if norm.not_enough_all_federations else '' }}">
+                        <div class="item {{ 'error' if applying_143d and norm.not_enough_all_federations else '' }}">
                             <label>Number of federations:</label>
-                            <input name="total_gm" value="{{ norm.all_federations_count }}"  />
+                            <input name="total_gm" value="{{ norm.all_federations_count if applying_143d }}"  />
                         </div>
-                        <div class="item {{ 'error' if norm.not_enough_foreign_players else '' }}">
+                        <div class="item {{ 'error' if applying_143d and norm.not_enough_foreign_players else '' }}">
                             <label>Number of rated players not from host federation:</label>
-                            <input name="total_gm" value="{{ norm.eligible_players_count }}"  />
+                            <input name="total_gm" value="{{ norm.eligible_players_count if applying_143d }}"  />
                         </div>
                     </div>
-                    <div class="item {{ 'error' if norm.not_enough_all_title_holders else '' }}">
+                    <div class="item {{ 'error' if applying_143d and norm.not_enough_all_title_holders else '' }}">
                         <label>Number of players not from host federation holding GM, IM, WGM, WIM titles:</label>
-                        <input name="total_gm" value="{{ norm.eligible_players_title_count }}"  />
+                        <input name="total_gm" value="{{ norm.eligible_players_title_count if applying_143d }}"  />
                     </div>
                 </section>
                 <div class="item" style="margin-top: 0.5rem;">
@@ -318,8 +322,8 @@
                         <col style="width: auto;">   <!-- Name -->
                         <col style="width: 15ch;">   <!-- FIDE ID -->
                         <col style="width: 7ch;">    <!-- FED -->
-                        <col style="width: 10ch;">    <!-- Rating -->
-                        <col style="width: 10ch;">    <!-- 1.46c -->
+                        <col style="width: 10ch;">   <!-- Rating -->
+                        <col style="width: 10ch;">   <!-- 1.46c -->
                         <col style="width: 4ch;">    <!-- Title -->
                         <col style="width: 8ch;">    <!-- Score -->
                     </colgroup>
@@ -342,11 +346,13 @@
                         {% if opp.id == norm.adjusted_player.id %}
                             {% set adjusted_opp_rating = norm.adjusted_player_rating %}
                         {% endif %}
+                        {% set too_many_own = norm.too_many_own_federation and opp.federation == player.federation %}
+                        {% set too_many_one = norm.too_many_one_federation and opp.federation == norm.too_many_one_federation[0] %}
                         <tr>
                             <td>{{ rnd }}</td>
                             <td><input class="name-cell" name="opp_name_{{rnd}}" value="{{ opp.full_name }}" /></td>
                             <td><input name="opp_id_{{rnd}}" size="12" value="{{ opp.fide_id }}"  /></td>
-                            <td><input name="opp_fed_{{rnd}}" size="4" value="{{ opp.federation }}"  /></td>
+                            <td class="{{ 'error' if too_many_own or too_many_one }}"><input name="opp_fed_{{rnd}}" size="4" value="{{ opp.federation }}"  /></td>
                             <td><input name="opp_rating_{{rnd}}" size="5" value="{{ opp.rating }}"  /></td>
                             <td><input name="opp_146c_{{rnd}}" size="5" value="{{ adjusted_opp_rating if opp is not none}}" /></td>
                             <td><input name="opp_title_{{rnd}}" size="4" value="{{ opp.title.short_name or '-' if opp is not none }}"  /></td>
@@ -363,7 +369,7 @@
                     </div>
                     <div class="item">
                         <label>Score required:</label>
-                        <input name="score_required" value="{{ norm.score - norm.performance_diif }}" />
+                        <input name="score_required" value="{{ norm.score - norm.performance_diff }}" />
                     </div>
                     <div class="item {{ 'error' if norm.score_too_low or norm.performance_too_low else '' }}">
                         <label>Score achieved:</label>
@@ -375,13 +381,13 @@
                     <div style="display: flex; flex-direction: column; justify-content: space-between;">
                         <div class="item" style="margin-top: var(--row-gap);">
                             <label>Exceeding norm by:</label>
-                            <input name="exceeding_norm" value="{{ norm.performance_diif }}" />
+                            <input name="exceeding_norm" value="{{ norm.performance_diff if norm.performance_diff >= 0 }}" />
                             <label>points<label>
                         </div>
 
                         <div class="item" style="margin-top: var(--row-gap);">
                             <label style="font-weight: bold;">Federation confirming the result:</label>
-                            <input name="federation_confirming"></input>
+                            <input name="federation_confirming" value="{{ event.federation }}"></input>
                         </div>
                     </div>
 

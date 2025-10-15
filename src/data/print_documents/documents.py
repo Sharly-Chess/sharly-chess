@@ -10,7 +10,7 @@ from common.i18n import _, ngettext
 from common.i18n.utils import unicode_normalize
 from data.board import Board
 from data.pairings.engines import RoundRobinPairingEngine
-from data.pairings.systems import RoundRobinPairingSystem
+from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
 from data.player import Player, PlayerTitle, dataclass, plugin_manager
 from data.event import Event
 from data.print_documents.options import (
@@ -1024,6 +1024,7 @@ class NormReportPrintDocument(PrintDocument):
         return {
             'event': self.event,
             'tournament': self.tournament,
+            'is_swiss': self.tournament.pairing_system == SwissPairingSystem(),
             'start': format_timestamp(self.tournament.start_timestamp, '%Y.%m.%d'),
             'end': format_timestamp(self.tournament.stop_timestamp, '%Y.%m.%d'),
             'norms': norms,

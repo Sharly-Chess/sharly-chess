@@ -154,7 +154,7 @@ class NormCheckResult:
     adjusted_player: Optional['Player'] = None
     adjusted_player_rating: Optional[int] = None
     performance: float = 0
-    performance_diif: float = 0
+    performance_diff: float = 0
 
     all_federations_count: int = 0
     eligible_players_count: int = 0
@@ -760,7 +760,7 @@ class Player:
             if own_count != 0:
                 if num_feds <= 2:
                     res.not_enough_federations = True
-                elif own_count > tn.maximum_of_own_federation(rounds):
+                if own_count > tn.maximum_of_own_federation(rounds):
                     res.too_many_own_federation = True
             else:
                 if num_feds < 2:
@@ -774,7 +774,8 @@ class Player:
             # Too many in one federation
             if federations_counter:
                 top_fed, top_count = federations_counter.most_common(1)[0]
-                if top_count > tn.maximum_of_one_federation(rounds):
+                max_fed = tn.maximum_of_one_federation(rounds)
+                if top_count > max_fed:
                     res.too_many_one_federation = (top_fed, top_count)
 
             # Title holders criterion
@@ -850,7 +851,7 @@ class Player:
                         under_performance -= draw_points
                     else:
                         break
-                res.performance_diif = under_performance
+                res.performance_diff = under_performance
             else:
                 over_performance: float = 0
                 new_score = score
@@ -863,7 +864,7 @@ class Player:
                         over_performance += draw_points
                     else:
                         break
-                res.performance_diif = over_performance
+                res.performance_diff = over_performance
 
         # 1.43d exception
         #
