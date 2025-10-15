@@ -3,7 +3,7 @@
 from datetime import date, datetime, timedelta
 from enum import Enum, StrEnum, IntEnum, auto
 from math import ceil
-from typing import Iterable, Iterator, Self, TYPE_CHECKING
+from typing import Iterator, Self, TYPE_CHECKING
 
 from common.i18n import _
 
@@ -855,34 +855,6 @@ class PlayerTitle(IntEnum):
 
     def __str__(self) -> str:
         return self.short_name
-
-
-class NormFailExplanation(Enum):
-    WRONG_GENDER = auto()
-    NOT_ENOUGH_GAMES = auto()
-    NOT_ENOUGH_FEDERATIONS = auto()
-    TOO_MANY_OWN_FEDERATION = auto()
-    TOO_MANY_ONE_FEDERATION = auto()
-    NOT_ENOUGH_TITLE_HOLDERS = auto()
-    NOT_ENOUGH_REQUIRED_TITLES = auto()
-    SCORE_TOO_LOW = auto()
-    AVERAGE_TOO_LOW = auto()
-    PERFORMANCE_TOO_LOW = auto()
-
-    @classmethod
-    def values(cls) -> Iterable['NormFailExplanation']:
-        yield from (
-            cls.WRONG_GENDER,
-            cls.NOT_ENOUGH_GAMES,
-            cls.NOT_ENOUGH_FEDERATIONS,
-            cls.TOO_MANY_OWN_FEDERATION,
-            cls.TOO_MANY_ONE_FEDERATION,
-            cls.NOT_ENOUGH_TITLE_HOLDERS,
-            cls.NOT_ENOUGH_REQUIRED_TITLES,
-            cls.SCORE_TOO_LOW,
-            cls.AVERAGE_TOO_LOW,
-            cls.PERFORMANCE_TOO_LOW,
-        )
 
 
 class TitleNorm(Enum):

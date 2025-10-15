@@ -17,7 +17,6 @@ from plugins.manager import plugin_manager
 from plugins.utils import PluginData
 from utils import StaticUtils
 from utils.enum import (
-    NormFailExplanation,
     PlayerGender,
     PlayerTitle,
     BoardColor,
@@ -141,13 +140,11 @@ class PlayerRatingAndType:
 class NormCheckResult:
     title_norm: TitleNorm
     meets_gender: bool
-    failures: list[NormFailExplanation] = field(default_factory=list)
 
     played_games: int = 0
     federations_count: int = 0
     from_own_federations_count: int = 0
     from_host_federations_count: int = 0
-    max_one_federation_violation: Optional[tuple[Federation, int]] = None
     num_title_holders: int = 0
     title_counts: Optional[Counter[PlayerTitle]] = None
     required_titles_met: int = 0
@@ -163,12 +160,33 @@ class NormCheckResult:
     eligible_players_count: int = 0
     eligible_players_title_count: int = 0
 
-    def is_met(self) -> bool:
-        return not self.failures
+    not_enough_games: bool = False
+    not_enough_federations: bool = False
+    too_many_own_federation: bool = False
+    too_many_one_federation: Optional[tuple[Federation, int]] = None
+    not_enough_title_holders: bool = False
+    not_enough_required_titles: list[PlayerTitle] = field(default_factory=list)
+    score_too_low: bool = False
+    average_too_low: bool = False
+    performance_too_low: bool = False
 
-    def add_failure(self, explanation: NormFailExplanation):
-        if explanation not in self.failures:
-            self.failures.append(explanation)
+    # 1.4.3d
+    not_enough_all_federations: bool = False
+    not_enough_foreign_players: bool = False
+    not_enough_all_title_holders: bool = False
+
+    def is_met(self) -> bool:
+        return not (
+            self.not_enough_games
+            or self.not_enough_federations
+            or self.too_many_own_federation
+            or self.too_many_one_federation
+            or self.not_enough_title_holders
+            or self.not_enough_required_titles
+            or self.score_too_low
+            or self.average_too_low
+            or self.performance_too_low
+        )
 
 
 class TieBreakValue:
@@ -705,6 +723,8 @@ class Player:
             if pairing.opponent and not pairing.result.is_unplayed:
                 played_games += 1
                 opponent = pairing.opponent
+
+                # 1.4.2a
                 if opponent.federation != 'NON':
                     federations_counter[opponent.federation] += 1
                 if opponent.title != PlayerTitle.NONE:
@@ -714,13 +734,7 @@ class Player:
 
         # Precompute required titles counts
         required_titles = {
-            tn: Counter(
-                {
-                    title: count
-                    for title, count in titles_counter.items()
-                    if title in tn.title_holders
-                }
-            )
+            tn: Counter({t: titles_counter.get(t, 0) for t in tn.required_titles})
             for tn in TitleNorm.values()
         }
 
@@ -728,19 +742,15 @@ class Player:
 
         # Process each norm
         for tn, res in results.items():
-            if not res.meets_gender:
-                res.add_failure(NormFailExplanation.WRONG_GENDER)
-                continue
-
             # Games criterion
             if played_games < tn.minimum_rounds():
-                res.add_failure(NormFailExplanation.NOT_ENOUGH_GAMES)
+                res.not_enough_games = True
             elif (
                 rounds == tn.minimum_rounds()
                 and played_games == tn.minimum_rounds() - 1
                 and forfeits_or_byes != 1
             ):
-                res.add_failure(NormFailExplanation.NOT_ENOUGH_GAMES)
+                res.not_enough_games = True
 
             res.played_games = played_games
 
@@ -749,12 +759,12 @@ class Player:
             num_feds = len(federations_counter)
             if own_count != 0:
                 if num_feds <= 2:
-                    res.add_failure(NormFailExplanation.NOT_ENOUGH_FEDERATIONS)
+                    res.not_enough_federations = True
                 elif own_count > tn.maximum_of_own_federation(rounds):
-                    res.add_failure(NormFailExplanation.TOO_MANY_OWN_FEDERATION)
+                    res.too_many_own_federation = True
             else:
                 if num_feds < 2:
-                    res.add_failure(NormFailExplanation.NOT_ENOUGH_FEDERATIONS)
+                    res.not_enough_federations = True
             res.from_own_federations_count = own_count
             res.from_host_federations_count = federations_counter.get(
                 Federation(self.event.federation), 0
@@ -765,12 +775,12 @@ class Player:
             if federations_counter:
                 top_fed, top_count = federations_counter.most_common(1)[0]
                 if top_count > tn.maximum_of_one_federation(rounds):
-                    res.max_one_federation_violation = (top_fed, top_count)
+                    res.too_many_one_federation = (top_fed, top_count)
 
             # Title holders criterion
             num_titles = sum(titles_counter.values())
             if num_titles < tn.minimum_title_holders(rounds):
-                res.add_failure(NormFailExplanation.NOT_ENOUGH_TITLE_HOLDERS)
+                res.not_enough_title_holders = True
 
             res.num_title_holders = num_titles
             res.title_counts = titles_counter
@@ -779,13 +789,13 @@ class Player:
             req = required_titles.get(tn, Counter())
             total_req = sum(req.values())
             if total_req < tn.minimum_required_titles(rounds):
-                res.add_failure(NormFailExplanation.NOT_ENOUGH_REQUIRED_TITLES)
+                res.not_enough_required_titles = list(req.keys())
 
             res.required_titles_met = total_req
 
             # Score criterion
             if score < TitleNorm.minimum_score(rounds):
-                res.add_failure(NormFailExplanation.SCORE_TOO_LOW)
+                res.score_too_low = True
             else:
                 res.score = score
 
@@ -818,7 +828,7 @@ class Player:
             values = [r.value for r in rating_list]
             avg = StaticUtils.round_ranking(sum(values) / len(values)) if values else 0
             if avg < tn.minimum_average:
-                res.add_failure(NormFailExplanation.AVERAGE_TOO_LOW)
+                res.average_too_low = True
 
             res.average_rating = avg
 
@@ -827,8 +837,8 @@ class Player:
             performance = avg + bonus
             res.performance = performance
             if performance < tn.minimum_performance:
-                res.add_failure(NormFailExplanation.PERFORMANCE_TOO_LOW)
-            elif not res.failures:
+                res.performance_too_low = True
+            elif res.is_met():
                 over_performance: float = 0
                 new_score = score
                 new_bonus = bonus
@@ -851,16 +861,15 @@ class Player:
         #  -at least 10 of whom hold GM, IM, WGM or WIM titles.
         # For this purpose, players will be counted only if they miss at most one round (excluding pairing allocated byes)
 
-        all_federations_counter: Counter[Federation] = Counter()
-        eligible_players_title_count = 0
-        eligible_players_count = 0
+        eligible_players: list[Player] = []
 
+        # Build a list of eligible players
         for p in self.tournament.players_by_id.values():
             if p.rating_type != PlayerRatingType.FIDE:
                 continue
             if (
                 p.federation == Federation(self.tournament.event.federation)
-                or p.federation == 'NON'
+                or p.federation == 'NON'  # 1.4.2a
             ):
                 continue
             missed_rounds = 0
@@ -873,15 +882,54 @@ class Player:
             if missed_rounds > 1:
                 continue
 
-            all_federations_counter[p.federation] += 1
-            if p.title != PlayerTitle.NONE:
-                eligible_players_title_count += 1
-            eligible_players_count += 1
+            eligible_players.append(p)
+
+        # Per-round counts among eligible & present -----------------
+        worst_players: float = float('inf')
+        worst_federations: float = float('inf')
+        worst_titled: float = float('inf')
+
+        for rnd in range(1, self.tournament.rounds + 1):
+            present: list[Player] = []
+            for p in eligible_players:
+                pairing: Pairing | None = p.pairings_by_round.get(rnd)
+                if pairing and (
+                    pairing.played
+                    or pairing.result
+                    in [
+                        Result.PAIRING_ALLOCATED_BYE,
+                        Result.REST_GAME,
+                    ]
+                ):
+                    present.append(p)
+
+            n_players = len(present)
+            n_titled = sum(1 for p in present if p.title != PlayerTitle.NONE)
+
+            # 1.4.2a
+            present_not_fid = [p for p in present if p.federation != 'FID']
+            n_feds = len({p.federation for p in present_not_fid})
+
+            # Track worst (minimum) across rounds
+            worst_players = min(worst_players, n_players)
+            worst_federations = min(worst_federations, n_feds)
+            worst_titled = min(worst_titled, n_titled)
+
+        # Handle case of zero rounds gracefully
+        if worst_players is float('inf'):
+            worst_players = 0
+            worst_federations = 0
+            worst_titled = 0
 
         for tn, res in results.items():
-            res.all_federations_count = len(all_federations_counter)
-            res.eligible_players_title_count = eligible_players_title_count
-            res.eligible_players_count = eligible_players_count
+            res.all_federations_count = int(worst_federations)
+            res.not_enough_all_federations = res.all_federations_count < 3
+
+            res.eligible_players_title_count = int(worst_titled)
+            res.not_enough_all_title_holders = res.eligible_players_title_count < 10
+
+            res.eligible_players_count = int(worst_players)
+            res.not_enough_foreign_players = res.eligible_players_count < 20
 
         return results
 

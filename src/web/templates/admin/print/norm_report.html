@@ -69,6 +69,9 @@
                 border: none;
                 border-bottom: 2px dotted black;
             }
+            .error {
+                color: red;
+            }
             .checkboxes {
                 margin-top: 0.2rem;
                 display: flex;
@@ -112,6 +115,10 @@
 
                 section {
                     page-break-inside: avoid !important;
+                }
+
+                .error {
+                    color: black;
                 }
 
                 @page {
@@ -183,7 +190,7 @@
                             <input type="text" name="arbiter_name" />
                         </div>
 
-                        <div class="item">
+                        <div class="item {{ 'error' if norm.not_enough_games else '' }}">
                             <label>Number of games:</label>
                             <input type="text" name="num_games" value="{{ norm.played_games }}" />
                         </div>
@@ -193,7 +200,7 @@
                             <input type="text" name="rate_of_play" value="{{ tournament.time_control_trf25 }}"/>
                         </div>
 
-                        <div class="item">
+                        <div class="item {{ 'error' if norm.not_enough_federations else '' }}">
                             <label>Number of federations:</label>
                             <input type="text" name="num_feds" value="{{ norm.federations_count }}" />
                         </div>
@@ -212,7 +219,7 @@
                             <input type="text" name="from_host" value="{{ norm.from_host_federations_count }}" />
                         </div>
 
-                        <div class="item">
+                        <div class="item {{ 'error' if norm.not_enough_title_holders else '' }}">
                             <label>Total number titled opponents:</label>
                             <input type="text" name="total_titled" value="{{ norm.num_title_holders }}" />
                         </div>
@@ -222,27 +229,27 @@
                         <div class="item">
                             <label>Numbers of:</label>
                         </div>
-                        <div class="item">
+                        <div class="item {{ 'error' if 8 in norm.not_enough_required_titles else '' }}">
                             <label>GM:</label>
                             <input type="text" name="total_gm" value="{{ norm.title_counts[8] }}" />
                         </div>
-                        <div class="item">
+                        <div class="item {{ 'error' if 6 in norm.not_enough_required_titles else '' }}">
                             <label>IM:</label>
                             <input type="text" name="total_im" value="{{ norm.title_counts[6] }}" />
                         </div>
-                        <div class="item">
+                        <div class="item {{ 'error' if 7 in norm.not_enough_required_titles else '' }}">
                             <label>WGM:</label>
                             <input type="text" name="total_wgm" value="{{ norm.title_counts[7] }}" />
                         </div>
-                        <div class="item">
+                        <div class="item {{ 'error' if 5 in norm.not_enough_required_titles else '' }}">
                             <label>WIM:</label>
                             <input type="text" name="total_wim" value="{{ norm.title_counts[5] }}" />
                         </div>
-                        <div class="item">
+                        <div class="item {{ 'error' if 4 in norm.not_enough_required_titles else '' }}">
                             <label>FM:</label>
                             <input type="text" name="total_fm" value="{{ norm.title_counts[4] }}" />
                         </div>
-                        <div class="item">
+                        <div class="item {{ 'error' if 3 in norm.not_enough_required_titles else '' }}">
                             <label>WFM:</label>
                             <input type="text" name="total_wfm" value="{{ norm.title_counts[3] }}" />
                         </div>
@@ -252,16 +259,16 @@
                 <section>
                     <div style="font-size: 0.9rem; font-weight: bold;">Where applying 1.43d:</div>
                     <div class="grid" style="grid-template-columns: 3fr 5fr;">
-                        <div class="item">
+                        <div class="item {{ 'error' if norm.not_enough_all_federations else '' }}">
                             <label>Number of federations:</label>
                             <input type="text" name="total_gm" value="{{ norm.all_federations_count }}"  />
                         </div>
-                        <div class="item">
+                        <div class="item {{ 'error' if norm.not_enough_foreign_players else '' }}">
                             <label>Number of rated players not from host federation:</label>
                             <input type="text" name="total_gm" value="{{ norm.eligible_players_count }}"  />
                         </div>
                     </div>
-                    <div class="item">
+                    <div class="item {{ 'error' if norm.not_enough_all_title_holders else '' }}">
                         <label>Number of players not from host federation holding GM, IM, WGM, WIM titles:</label>
                         <input type="text" name="total_gm" value="{{ norm.eligible_players_title_count }}"  />
                     </div>
@@ -306,7 +313,7 @@
                 </table>
 
                 <div class="grid" style="margin-top: var(--row-gap); grid-template-columns: repeat(3, 1fr); column-gap: 4rem;">
-                    <div class="item">
+                    <div class="item {{ 'error' if norm.average_too_low else '' }}">
                         <label>Rating average (1.46b):</label>
                         <input type="text" name="rating_average" value="{{ norm.average_rating }}" />
                     </div>
@@ -314,7 +321,7 @@
                         <label>Score required:</label>
                         <input type="text" name="score_required" />
                     </div>
-                    <div class="item">
+                    <div class="item {{ 'error' if norm.score_too_low else '' }}">
                         <label>Score achieved:</label>
                         <input type="text" name="score_achieved" value="{{ norm.score }}" />
                     </div>
