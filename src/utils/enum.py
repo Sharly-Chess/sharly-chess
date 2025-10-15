@@ -10,6 +10,7 @@ from common.i18n import _
 
 if TYPE_CHECKING:
     from data.event import Event
+    from data.tournament import Tournament
 
 
 class Result(IntEnum):
@@ -920,7 +921,11 @@ class TitleNorm(Enum):
                 raise ValueError(f'Invalid title norm value: {self}')
 
     @staticmethod
-    def minimum_rounds() -> int:
+    def minimum_rounds(tournament: 'Tournament') -> int:
+        from data.pairings.variations import DoubleBergerRoundRobinVariation
+
+        if tournament.pairing_variation == DoubleBergerRoundRobinVariation():
+            return 10  # 1.4.5.f -> 6 players -> 10 rounds
         return 9
 
     @staticmethod

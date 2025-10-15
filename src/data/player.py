@@ -742,12 +742,13 @@ class Player:
 
         # Process each norm
         for tn, res in results.items():
+            min_rounds = tn.minimum_rounds(self.tournament)
             # Games criterion
-            if played_games < tn.minimum_rounds():
+            if played_games < min_rounds:
                 res.not_enough_games = True
             elif (
-                rounds == tn.minimum_rounds()
-                and played_games == tn.minimum_rounds() - 1
+                rounds == min_rounds
+                and played_games == min_rounds - 1
                 and forfeits_or_byes != 1
             ):
                 res.not_enough_games = True
@@ -834,7 +835,7 @@ class Player:
             res.average_rating = avg
 
             max_score = Result.WIN.points() * len(results_list)
-            bonus = StaticUtils.performance_bonus(score / max_score)
+            bonus = StaticUtils.performance_bonus(score / max_score) if max_score else 0
             performance = avg + bonus
             res.performance = performance
             draw_points = Result.DRAW.points()
@@ -844,9 +845,13 @@ class Player:
                 new_score = score
                 new_bonus = bonus
                 draw_points = Result.DRAW.points()
-                while True:
+                while max_score and True:
                     new_score += draw_points
-                    new_bonus = StaticUtils.performance_bonus(new_score / max_score)
+                    new_bonus = (
+                        StaticUtils.performance_bonus(new_score / max_score)
+                        if max_score
+                        else 0
+                    )
                     if res.average_rating + new_bonus < tn.minimum_performance:
                         under_performance -= draw_points
                     else:
@@ -857,9 +862,13 @@ class Player:
                 new_score = score
                 new_bonus = bonus
                 draw_points = Result.DRAW.points()
-                while True:
+                while max_score and True:
                     new_score -= draw_points
-                    new_bonus = StaticUtils.performance_bonus(new_score / max_score)
+                    new_bonus = (
+                        StaticUtils.performance_bonus(new_score / max_score)
+                        if max_score
+                        else 0
+                    )
                     if res.average_rating + new_bonus >= tn.minimum_performance:
                         over_performance += draw_points
                     else:
