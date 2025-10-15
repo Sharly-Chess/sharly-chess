@@ -939,9 +939,12 @@ class TitleNorm(Enum):
         return ceil(rounds / 2)
 
     @staticmethod
-    def minimum_required_titles(rounds: int) -> int:
-        # FIXME(Amaras): Double Round-Robin requirements is 1/2 (rounded up)
-        return max(ceil(rounds / 3), 3)
+    def minimum_required_titles(tournament: 'Tournament') -> int:
+        from data.pairings.variations import DoubleBergerRoundRobinVariation
+
+        if tournament.pairing_variation == DoubleBergerRoundRobinVariation():
+            return ceil(tournament.rounds / 2)  # 1.4.5.f
+        return max(ceil(tournament.rounds / 3), 3)
 
     @staticmethod
     def maximum_of_own_federation(rounds: int) -> int:

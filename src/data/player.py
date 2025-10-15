@@ -155,6 +155,7 @@ class NormCheckResult:
     adjusted_player_rating: Optional[int] = None
     performance: float = 0
     performance_diff: float = 0
+    ignored_opponents_ids: set[int] = field(default_factory=set)
 
     all_federations_count: int = 0
     eligible_players_count: int = 0
@@ -700,6 +701,8 @@ class Player:
         self.color = color
 
     def achieves_any_title_norm(self) -> dict[TitleNorm, NormCheckResult]:
+        from data.pairings.systems import RoundRobinPairingSystem
+
         results: dict[TitleNorm, NormCheckResult] = {
             tn: NormCheckResult(
                 title_norm=tn, meets_gender=tn.satisfies_gender_requirement(self.gender)
@@ -715,6 +718,9 @@ class Player:
         results_list: list[Result] = []
         forfeits_or_byes = 0
         opponents: list[Player] = []
+        ignored_opponents_ids: set[int] = set()
+
+        is_round_robin = self.tournament.pairing_system == RoundRobinPairingSystem()
 
         for rnd, pairing in self.pairings_by_round.items():
             if pairing.result.is_board_bye or pairing.result == Result.FORFEIT_WIN:
@@ -724,9 +730,29 @@ class Player:
                 played_games += 1
                 opponent = pairing.opponent
 
-                # 1.4.2a
-                if opponent.federation != 'NON':
+                # 1.4.2b (Ignore games against unrated players who score zero against rated opponents in round robin tournaments.)
+                if is_round_robin and opponent.rating_type != PlayerRatingType.FIDE:
+                    scored_zero_against_rated = False
+                    for opponent_pairing in opponent.pairings_by_round.values():
+                        if (
+                            opponent_pairing.opponent
+                            and opponent_pairing.result.is_loss
+                            and opponent_pairing.opponent.rating_type
+                            == PlayerRatingType.FIDE
+                        ):
+                            scored_zero_against_rated = True
+                            break
+                    if scored_zero_against_rated:
+                        ignored_opponents_ids.add(opponent.id)
+                        continue
+
+                # 1.4.2a (Ignore games against opponents who do not belong to FIDE federations)
+                if opponent.federation == 'NON':
+                    ignored_opponents_ids.add(opponent.id)
+                    continue
+                else:
                     federations_counter[opponent.federation] += 1
+
                 if opponent.title != PlayerTitle.NONE:
                     titles_counter[opponent.title] += 1
                 results_list.append(pairing.result)
@@ -742,7 +768,9 @@ class Player:
 
         # Process each norm
         for tn, res in results.items():
+            res.ignored_opponents_ids = ignored_opponents_ids
             min_rounds = tn.minimum_rounds(self.tournament)
+
             # Games criterion
             if played_games < min_rounds:
                 res.not_enough_games = True
@@ -790,7 +818,7 @@ class Player:
             # Required titles criterion
             req = required_titles.get(tn, Counter())
             total_req = sum(req.values())
-            if total_req < tn.minimum_required_titles(rounds):
+            if total_req < tn.minimum_required_titles(self.tournament):
                 res.not_enough_required_titles = list(req.keys())
 
             res.required_titles_met = total_req
@@ -841,7 +869,6 @@ class Player:
             draw_points = Result.DRAW.points()
             if performance < tn.minimum_performance:
                 res.performance_too_low = True
-                under_performance: float = 0
                 new_score = score
                 new_bonus = bonus
                 draw_points = Result.DRAW.points()
@@ -852,13 +879,10 @@ class Player:
                         if max_score
                         else 0
                     )
-                    if res.average_rating + new_bonus < tn.minimum_performance:
-                        under_performance -= draw_points
-                    else:
+                    if res.average_rating + new_bonus >= tn.minimum_performance:
                         break
-                res.performance_diff = under_performance
+                res.performance_diff = score - new_score
             else:
-                over_performance: float = 0
                 new_score = score
                 new_bonus = bonus
                 draw_points = Result.DRAW.points()
@@ -869,11 +893,9 @@ class Player:
                         if max_score
                         else 0
                     )
-                    if res.average_rating + new_bonus >= tn.minimum_performance:
-                        over_performance += draw_points
-                    else:
+                    if res.average_rating + new_bonus < tn.minimum_performance:
                         break
-                res.performance_diff = over_performance
+                res.performance_diff = score - new_score
 
         # 1.43d exception
         #

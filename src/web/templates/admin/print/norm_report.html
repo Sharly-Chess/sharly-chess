@@ -92,6 +92,9 @@
             .error input {
                 color: red;
             }
+            .ignored, .ignored input {
+                text-decoration: line-through;
+            }
             .checkboxes {
                 margin-top: 0.2rem;
                 display: flex;
@@ -348,7 +351,8 @@
                         {% endif %}
                         {% set too_many_own = norm.too_many_own_federation and opp.federation == player.federation %}
                         {% set too_many_one = norm.too_many_one_federation and opp.federation == norm.too_many_one_federation[0] %}
-                        <tr>
+                        {% set ignored = norm.ignored_opponents_ids and opp.id in norm.ignored_opponents_ids %}
+                        <tr class="{{ 'ignored' if ignored }}">
                             <td>{{ rnd }}</td>
                             <td><input class="name-cell" name="opp_name_{{rnd}}" value="{{ opp.full_name }}" /></td>
                             <td><input name="opp_id_{{rnd}}" size="12" value="{{ opp.fide_id }}"  /></td>
