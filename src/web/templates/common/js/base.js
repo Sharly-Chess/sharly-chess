@@ -144,6 +144,7 @@ window.addEventListener('htmx:afterSettle', function(event) {
 
 
 function reloadWithMessagesPreserved() {
+    sessionStorage.setItem("preserve_scroll_y", window.scrollY.toString());
     const msgDiv = document.getElementById('messages');
     if (msgDiv) {
         sessionStorage.setItem('preserve_messages_html', msgDiv.innerHTML);
@@ -176,6 +177,15 @@ window.addEventListener('DOMContentLoaded', () => {
             msgDiv.querySelectorAll('[remove-me],[data-remove-me]').forEach(maybeRemoveMe);
         }
         sessionStorage.removeItem('preserve_messages_html');
+    }
+
+    // Restore scroll
+    const scrollY = sessionStorage.getItem("preserve_scroll_y");
+    if (scrollY !== null) {
+        setTimeout(() => {
+            window.scrollTo({ top: parseInt(scrollY, 10), behavior: 'instant' });
+        }, 0);
+        sessionStorage.removeItem("preserve_scroll_y");
     }
 });
 
