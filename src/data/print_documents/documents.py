@@ -4,6 +4,7 @@ import itertools
 from typing import Any, Callable, override
 from collections import Counter
 
+from common import format_timestamp
 from common.exception import SharlyChessException, OptionError
 from common.i18n import _, ngettext
 from common.i18n.utils import unicode_normalize
@@ -1013,7 +1014,21 @@ class NormReportPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
-        return {}
+        player_id = self._get_option(PlayerPrintOption).value
+        player = self.tournament.players_by_id[player_id]
+        norms = {
+            norm_title: norm
+            for norm_title, norm in player.achieves_any_title_norm().items()
+            if norm.meets_gender
+        }
+        return {
+            'event': self.event,
+            'tournament': self.tournament,
+            'start': format_timestamp(self.tournament.start_timestamp, '%Y.%m.%d'),
+            'end': format_timestamp(self.tournament.stop_timestamp, '%Y.%m.%d'),
+            'norms': norms,
+            'player': player,
+        }
 
 
 class QRCodePrintDocument(PrintDocument):

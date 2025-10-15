@@ -143,15 +143,25 @@ class NormCheckResult:
     meets_gender: bool
     failures: list[NormFailExplanation] = field(default_factory=list)
 
-    played_games: Optional[int] = None
-    federations_count: Optional[int] = None
+    played_games: int = 0
+    federations_count: int = 0
+    from_own_federations_count: int = 0
+    from_host_federations_count: int = 0
     max_one_federation_violation: Optional[tuple[Federation, int]] = None
-    num_title_holders: Optional[int] = None
-    required_titles_met: Optional[int] = None
-    score: Optional[float] = None
-    average_rating: Optional[float] = None
-    performance: Optional[float] = None
-    over_performance: Optional[float] = None
+    num_title_holders: int = 0
+    title_counts: Optional[Counter[PlayerTitle]] = None
+    required_titles_met: int = 0
+    num_rated_players: int = 0
+    score: float = 0
+    average_rating: float = 0
+    adjusted_player: Optional['Player'] = None
+    adjusted_player_rating: Optional[int] = None
+    performance: float = 0
+    over_performance: float = 0
+
+    all_federations_count: int = 0
+    eligible_players_count: int = 0
+    eligible_players_title_count: int = 0
 
     def is_met(self) -> bool:
         return not self.failures
@@ -684,9 +694,9 @@ class Player:
         played_games = 0
         federations_counter: Counter[Federation] = Counter()
         titles_counter: Counter[PlayerTitle] = Counter()
-        ratings: list[PlayerRatingAndType] = []
         results_list: list[Result] = []
         forfeits_or_byes = 0
+        opponents: list[Player] = []
 
         for rnd, pairing in self.pairings_by_round.items():
             if pairing.result.is_board_bye or pairing.result == Result.FORFEIT_WIN:
@@ -695,19 +705,12 @@ class Player:
             if pairing.opponent and not pairing.result.is_unplayed:
                 played_games += 1
                 opponent = pairing.opponent
-                federations_counter[opponent.federation] += 1
-                titles_counter[opponent.title] += 1
+                if opponent.federation != 'NON':
+                    federations_counter[opponent.federation] += 1
+                if opponent.title != PlayerTitle.NONE:
+                    titles_counter[opponent.title] += 1
                 results_list.append(pairing.result)
-
-                opp_fide_rating = opponent.ratings[TournamentRating.STANDARD].fide
-                if opp_fide_rating is not None:
-                    ratings.append(
-                        PlayerRatingAndType(opp_fide_rating, PlayerRatingType.FIDE)
-                    )
-                else:
-                    ratings.append(
-                        PlayerRatingAndType(1400, PlayerRatingType.ESTIMATED)
-                    )
+                opponents.append(opponent)
 
         # Precompute required titles counts
         required_titles = {
@@ -752,6 +755,10 @@ class Player:
             else:
                 if num_feds < 2:
                     res.add_failure(NormFailExplanation.NOT_ENOUGH_FEDERATIONS)
+            res.from_own_federations_count = own_count
+            res.from_host_federations_count = federations_counter.get(
+                Federation(self.event.federation), 0
+            )
             res.federations_count = num_feds
 
             # Too many in one federation
@@ -766,6 +773,7 @@ class Player:
                 res.add_failure(NormFailExplanation.NOT_ENOUGH_TITLE_HOLDERS)
 
             res.num_title_holders = num_titles
+            res.title_counts = titles_counter
 
             # Required titles criterion
             req = required_titles.get(tn, Counter())
@@ -782,16 +790,30 @@ class Player:
                 res.score = score
 
         # Rating / performance criteria
-        ratings.sort(key=attrgetter('value'))
-        adjusted_ratings = {tn: list(ratings) for tn in TitleNorm.values()}
+        opponents.sort(key=attrgetter('rating'))
 
         for tn, res in results.items():
-            rating_list = adjusted_ratings[tn]
+            rating_list = [
+                PlayerRatingAndType(
+                    opponent.rating
+                    if opponent.rating_type == PlayerRatingType.FIDE
+                    else 1400,
+                    opponent.rating_type,
+                )
+                for opponent in opponents
+            ]
 
             # Minimum rating floor
             if rating_list and rating_list[0].value < tn.minimum_rating:
                 rating_list[0].value = tn.minimum_rating
+                rating_list[0].type = PlayerRatingType.FIDE
+                res.adjusted_player = opponents[0]
+                res.adjusted_player_rating = tn.minimum_rating
                 rating_list.sort(key=attrgetter('value'))
+
+            res.num_rated_players = len(
+                [r for r in rating_list if r.type == PlayerRatingType.FIDE]
+            )
 
             values = [r.value for r in rating_list]
             avg = StaticUtils.round_ranking(sum(values) / len(values)) if values else 0
@@ -803,10 +825,63 @@ class Player:
             max_score = Result.WIN.points() * len(results_list)
             bonus = StaticUtils.performance_bonus(score / max_score)
             performance = avg + bonus
+            res.performance = performance
             if performance < tn.minimum_performance:
                 res.add_failure(NormFailExplanation.PERFORMANCE_TOO_LOW)
+            elif not res.failures:
+                over_performance: float = 0
+                new_score = score
+                new_bonus = bonus
+                draw_points = Result.DRAW.points()
+                while True:
+                    new_score -= draw_points
+                    new_bonus = StaticUtils.performance_bonus(new_score / max_score)
+                    if res.average_rating + new_bonus >= tn.minimum_performance:
+                        over_performance += draw_points
+                    else:
+                        break
+                res.over_performance = over_performance
 
-            res.performance = performance
+        # 1.43d exception
+        #
+        # Swiss System tournaments in which participants include in every round at least
+        # - 20 FIDE rated players
+        # - not from the host federation
+        # - from at least 3 different federations,
+        #  -at least 10 of whom hold GM, IM, WGM or WIM titles.
+        # For this purpose, players will be counted only if they miss at most one round (excluding pairing allocated byes)
+
+        all_federations_counter: Counter[Federation] = Counter()
+        eligible_players_title_count = 0
+        eligible_players_count = 0
+
+        for p in self.tournament.players_by_id.values():
+            if p.rating_type != PlayerRatingType.FIDE:
+                continue
+            if (
+                p.federation == Federation(self.tournament.event.federation)
+                or p.federation == 'NON'
+            ):
+                continue
+            missed_rounds = 0
+            for r, pairing in p.pairings_by_round.items():
+                if pairing.unplayed and pairing.result not in [
+                    Result.PAIRING_ALLOCATED_BYE,
+                    Result.REST_GAME,
+                ]:
+                    missed_rounds += 1
+            if missed_rounds > 1:
+                continue
+
+            all_federations_counter[p.federation] += 1
+            if p.title != PlayerTitle.NONE:
+                eligible_players_title_count += 1
+            eligible_players_count += 1
+
+        for tn, res in results.items():
+            res.all_federations_count = len(all_federations_counter)
+            res.eligible_players_title_count = eligible_players_title_count
+            res.eligible_players_count = eligible_players_count
 
         return results
 

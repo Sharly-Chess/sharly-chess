@@ -86,7 +86,12 @@
             .footnote {
                 font-size: 0.7rem;
             }
-
+            .break-after {
+                page-break-after: always;
+                page-break-inside: avoid;
+                break-inside: avoid;
+                break-after: always;
+            }
             @media print {
                 body {
                     margin: 0;
@@ -117,245 +122,252 @@
         </style>
     </head>
     <body>
-        <form>
-            <h1 style="text-align: right; margin: 0; padding: 0;">IT 1</h1>
-            <section style="margin-top: 0.1rem;">
-                <h1>Certificate of Title Result (IT1)</h1>
-            </section>
+        {% for norm_title, norm in norms.items() %}
+            <form class="break-after">
+                <h1 style="text-align: right; margin: 0; padding: 0;">IT 1</h1>
+                <section style="margin-top: 0.1rem;">
+                    <h1>Certificate of Title Result (IT1)</h1>
+                </section>
 
-            <div class="checkboxes">
-                <label><input type="checkbox" name="title_gm" />GM</label>
-                <label><input type="checkbox" name="title_im" />IM</label>
-                <label><input type="checkbox" name="title_wgm" />WGM</label>
-                <label><input type="checkbox" name="title_wim" />WIM</label>
-            </div>
-            <section>
-                <div class="grid" style="grid-template-columns: 1fr 1fr;">
-                    <div class="item">
-                        <label>Name:</label>
-                        <input type="text" name="last_name" />
-                    </div>
-
-                    <div class="item">
-                        <label>First name:</label>
-                        <input type="text" name="first_name" />
-                    </div>
-
-                    <div class="item">
-                        <label>ID-number:</label>
-                        <input type="text" name="fide_id" />
-                    </div>
-
-                    <div class="item">
-                        <label>Federation:</label>
-                        <input type="text" name="federation" />
-                    </div>
+                <div class="checkboxes">
+                    <label><input type="checkbox" name="title_gm" {% if norm_title.value == 4 %}checked{% endif %} />GM</label>
+                    <label><input type="checkbox" name="title_im" {% if norm_title.value == 3 %}checked{% endif %}/>IM</label>
+                    <label><input type="checkbox" name="title_wgm" {% if norm_title.value == 2 %}checked{% endif %}/>WGM</label>
+                    <label><input type="checkbox" name="title_wim" {% if norm_title.value == 1 %}checked{% endif %}/>WIM</label>
                 </div>
-            </section>
+                <section>
+                    <div class="grid" style="grid-template-columns: 1fr 1fr;">
+                        <div class="item">
+                            <label>Name:</label>
+                            <input type="text" name="last_name" value="{{ player.last_name }}" />
+                        </div>
 
-            <section>
-                <div class="grid" style="grid-template-columns: 4fr 2fr 2fr;">
-                    <div class="item">
-                        <label>Event:</label>
-                        <input type="text" name="event" />
+                        <div class="item">
+                            <label>First name:</label>
+                            <input type="text" name="first_name" value="{{ player.first_name }}" />
+                        </div>
+
+                        <div class="item">
+                            <label>ID-number:</label>
+                            <input type="text" name="fide_id" value="{{ player.fide_id }}" />
+                        </div>
+
+                        <div class="item">
+                            <label>Federation:</label>
+                            <input type="text" name="federation" value="{{ player.federation }}" />
+                        </div>
                     </div>
+                </section>
 
-                    <div class="item">
-                        <label>Start:</label>
-                        <input type="text" name="start_date" />
-                    </div>
+                <section>
+                    <div class="grid" style="grid-template-columns: 4fr 2fr 2fr;">
+                        <div class="item">
+                            <label>Event:</label>
+                            <input type="text" name="event" value="{{ event.name }}" />
+                        </div>
 
-                    <div class="item">
-                        <label>Close:</label>
-                        <input type="text" name="end_date" />
-                    </div>
-                </div>
+                        <div class="item">
+                            <label>Start:</label>
+                            <input type="text" name="start_date" value="{{ start }}" />
+                        </div>
 
-                <div class="grid" style="grid-template-columns: 5fr 4fr;">
-                    <div class="item">
-                        <label>Chief Arbiter (name, ID):</label>
-                        <input type="text" name="arbiter_name" />
-                    </div>
-
-                    <div class="item">
-                        <label>Number of games:</label>
-                        <input type="text" name="num_games" />
-                    </div>
-
-                    <div class="item">
-                        <label>Rate of play:</label>
-                        <input type="text" name="rate_of_play" />
-                    </div>
-
-                    <div class="item">
-                        <label>Number of federations:</label>
-                        <input type="text" name="num_feds" />
-                    </div>
-
-                    <div class="item">
-                        <label>Number players not from title applicant's federation</label>
-                        <input type="text" name="not_from_fed" />
+                        <div class="item">
+                            <label>Close:</label>
+                            <input type="text" name="end_date" value="{{ end }}" />
+                        </div>
                     </div>
 
-                    <div class="item"><label>Number rated opponents:</label>
-                        <input type="text" name="num_rated" />
+                    <div class="grid" style="grid-template-columns: 5fr 4fr;">
+                        <div class="item">
+                            <label>Chief Arbiter (name, ID):</label>
+                            <input type="text" name="arbiter_name" />
+                        </div>
+
+                        <div class="item">
+                            <label>Number of games:</label>
+                            <input type="text" name="num_games" value="{{ norm.played_games }}" />
+                        </div>
+
+                        <div class="item">
+                            <label>Rate of play:</label>
+                            <input type="text" name="rate_of_play" value="{{ tournament.time_control_trf25 }}"/>
+                        </div>
+
+                        <div class="item">
+                            <label>Number of federations:</label>
+                            <input type="text" name="num_feds" value="{{ norm.federations_count }}" />
+                        </div>
+
+                        <div class="item">
+                            <label>Number players not from title applicant's federation</label>
+                            <input type="text" name="not_from_fed" value="{{ norm.played_games - norm.from_own_federations_count }}" />
+                        </div>
+
+                        <div class="item"><label>Number rated opponents:</label>
+                            <input type="text" name="num_rated" value="{{ norm.num_rated_players }}" />
+                        </div>
+
+                        <div class="item">
+                            <label>Number players from host federation:</label>
+                            <input type="text" name="from_host" value="{{ norm.from_host_federations_count }}" />
+                        </div>
+
+                        <div class="item">
+                            <label>Total number titled opponents:</label>
+                            <input type="text" name="total_titled" value="{{ norm.num_title_holders }}" />
+                        </div>
                     </div>
 
-                    <div class="item">
-                        <label>Number players from host federation:</label>
-                        <input type="text" name="from_host" />
+                    <div class="grid" style="grid-template-columns: repeat(7, 1fr);">
+                        <div class="item">
+                            <label>Numbers of:</label>
+                        </div>
+                        <div class="item">
+                            <label>GM:</label>
+                            <input type="text" name="total_gm" value="{{ norm.title_counts[8] }}" />
+                        </div>
+                        <div class="item">
+                            <label>IM:</label>
+                            <input type="text" name="total_im" value="{{ norm.title_counts[6] }}" />
+                        </div>
+                        <div class="item">
+                            <label>WGM:</label>
+                            <input type="text" name="total_wgm" value="{{ norm.title_counts[7] }}" />
+                        </div>
+                        <div class="item">
+                            <label>WIM:</label>
+                            <input type="text" name="total_wim" value="{{ norm.title_counts[5] }}" />
+                        </div>
+                        <div class="item">
+                            <label>FM:</label>
+                            <input type="text" name="total_fm" value="{{ norm.title_counts[4] }}" />
+                        </div>
+                        <div class="item">
+                            <label>WFM:</label>
+                            <input type="text" name="total_wfm" value="{{ norm.title_counts[3] }}" />
+                        </div>
                     </div>
+                </section>
 
-                    <div class="item">
-                        <label>Total number titled opponents:</label>
-                        <input type="text" name="total_titled" />
-                    </div>
-                </div>
-
-                <div class="grid" style="grid-template-columns: repeat(7, 1fr);">
-                    <div class="item">
-                        <label>Numbers of:</label>
-                    </div>
-                    <div class="item">
-                        <label>GM:</label>
-                        <input type="text" name="total_gm" />
+                <section>
+                    <div style="font-size: 0.9rem; font-weight: bold;">Where applying 1.43d:</div>
+                    <div class="grid" style="grid-template-columns: 3fr 5fr;">
+                        <div class="item">
+                            <label>Number of federations:</label>
+                            <input type="text" name="total_gm" value="{{ norm.all_federations_count }}"  />
+                        </div>
+                        <div class="item">
+                            <label>Number of rated players not from host federation:</label>
+                            <input type="text" name="total_gm" value="{{ norm.eligible_players_count }}"  />
+                        </div>
                     </div>
                     <div class="item">
-                        <label>IM:</label>
-                        <input type="text" name="total_im" />
+                        <label>Number of players not from host federation holding GM, IM, WGM, WIM titles:</label>
+                        <input type="text" name="total_gm" value="{{ norm.eligible_players_title_count }}"  />
                     </div>
-                    <div class="item">
-                        <label>WGM:</label>
-                        <input type="text" name="total_wgm" />
-                    </div>
-                    <div class="item">
-                        <label>WIM:</label>
-                        <input type="text" name="total_wim" />
-                    </div>
-                    <div class="item">
-                        <label>FM:</label>
-                        <input type="text" name="total_fm" />
-                    </div>
-                    <div class="item">
-                        <label>WFM:</label>
-                        <input type="text" name="total_wfm" />
-                    </div>
-                </div>
-            </section>
-
-            <section>
-                <div style="font-size: 0.9rem; font-weight: bold;">Where applying 1.43d:</div>
-                <div class="grid" style="grid-template-columns: 3fr 5fr;">
-                    <div class="item">
-                        <label>Number of federations:</label>
-                        <input type="text" name="total_gm" />
-                    </div>
-                    <div class="item">
-                        <label>Number of rated players not from host federation:</label>
-                        <input type="text" name="total_gm" />
-                    </div>
-                </div>
-                <div class="item">
-                    <label>Number of players not from host federation holding GM, IM, WGM, WIM titles:</label>
+                </section>
+                <div class="item" style="margin-top: 0.5rem;">
+                    <label>Special remarks:</label>
                     <input type="text" name="total_gm" />
                 </div>
-            </section>
-            <div class="item" style="margin-top: 0.5rem;">
-                <label>Special remarks:</label>
-                <input type="text" name="total_gm" />
-            </div>
 
-            <table style="margin-top: var(--row-gap);">
-                <thead>
-                    <tr>
-                        <th>Rd</th>
-                        <th>Opponent</th>
-                        <th>ID</th>
-                        <th>Fed</th>
-                        <th>Rating</th>
-                        <th>Rat. 1.46c</th>
-                        <th>Title</th>
-                        <th>Score</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for i in range(1,12) %}
-                    <tr>
-                        <td>{{ i }}</td>
-                        <td><input type="text" name="opp_name_{{i}}" /></td>
-                        <td><input type="text" name="opp_id_{{i}}" /></td>
-                        <td><input type="text" name="opp_fed_{{i}}" size="3" /></td>
-                        <td><input type="text" name="opp_rating_{{i}}" size="4" /></td>
-                        <td><input type="text" name="opp_146c_{{i}}" size="4" /></td>
-                        <td><input type="text" name="opp_title_{{i}}" size="5" /></td>
-                        <td><input type="text" name="opp_score_{{i}}" size="5" /></td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                <table style="margin-top: var(--row-gap);">
+                    <thead>
+                        <tr>
+                            <th>Rd</th>
+                            <th>Opponent</th>
+                            <th>ID</th>
+                            <th>Fed</th>
+                            <th>Rating</th>
+                            <th>Rat. 1.46c</th>
+                            <th>Title</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for rnd, pairing in player.pairings_by_round.items() %}
+                        {% set opp = pairing.opponent %}
+                        {% set adjusted_opp_rating = opp.rating if opp.rating_type == 3 else 1400 %}
+                        {% if opp.id == norm.adjusted_player.id %}
+                            {% set adjusted_opp_rating = norm.adjusted_player_rating %}
+                        {% endif %}
+                        <tr>
+                            <td>{{ rnd }}</td>
+                            <td><input type="text" name="opp_name_{{rnd}}" value="{{ opp.full_name }}" /></td>
+                            <td><input type="text" name="opp_id_{{rnd}}" value="{{ opp.fide_id }}"  /></td>
+                            <td><input type="text" name="opp_fed_{{rnd}}" size="3" value="{{ opp.federation }}"  /></td>
+                            <td><input type="text" name="opp_rating_{{rnd}}" size="4" value="{{ opp.rating }}"  /></td>
+                            <td><input type="text" name="opp_146c_{{rnd}}" size="4" value="{{ adjusted_opp_rating }}" /></td>
+                            <td><input type="text" name="opp_title_{{rnd}}" size="5" value="{{ opp.title.short_name or '-' }}"  /></td>
+                            <td><input type="text" name="opp_score_{{rnd}}" size="5" value="{{ pairing.result.to_norm_report }}" /></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
 
-            <div class="grid" style="margin-top: var(--row-gap); grid-template-columns: repeat(3, 1fr); column-gap: 4rem;">
-                <div class="item">
-                    <label>Rating average (1.46b):</label>
-                    <input type="text" name="rating_average" />
-                </div>
-                <div class="item">
-                    <label>Score required:</label>
-                    <input type="text" name="score_required" />
-                </div>
-                <div class="item">
-                    <label>Score achieved:</label>
-                    <input type="text" name="score_achieved" />
-                </div>
-            </div>
-
-            <div class="grid" style="margin-top: var(--row-gap); grid-template-columns: 1fr 2fr; column-gap: 4rem;">
-                <div style="display: flex; flex-direction: column; justify-content: space-between;">
-                    <div class="item" style="margin-top: var(--row-gap);">
-                        <label>Exceeding norm by:</label>
-                        <input type="text" name="exceeding_norm" />
-                        <label>points<label>
+                <div class="grid" style="margin-top: var(--row-gap); grid-template-columns: repeat(3, 1fr); column-gap: 4rem;">
+                    <div class="item">
+                        <label>Rating average (1.46b):</label>
+                        <input type="text" name="rating_average" value="{{ norm.average_rating }}" />
                     </div>
-
-                    <div class="item" style="margin-top: var(--row-gap);">
-                        <label style="font-weight: bold;">Federation confirming the result:</label>
-                        <input type="text" name="federation_confirming"></input>
+                    <div class="item">
+                        <label>Score required:</label>
+                        <input type="text" name="score_required" />
+                    </div>
+                    <div class="item">
+                        <label>Score achieved:</label>
+                        <input type="text" name="score_achieved" value="{{ norm.score }}" />
                     </div>
                 </div>
 
-                <div class="item" style="flex-direction: column; align-self: center; padding: 2rem 0 1rem 0;">
-                    <input type="text" name="arbiter_signature" style="width: auto; margin-left: 0;" />
-                    <label style="margin-top: 0.3rem">Chief Arbiter's signature</label>
+                <div class="grid" style="margin-top: var(--row-gap); grid-template-columns: 1fr 2fr; column-gap: 4rem;">
+                    <div style="display: flex; flex-direction: column; justify-content: space-between;">
+                        <div class="item" style="margin-top: var(--row-gap);">
+                            <label>Exceeding norm by:</label>
+                            <input type="text" name="exceeding_norm" />
+                            <label>points<label>
+                        </div>
+
+                        <div class="item" style="margin-top: var(--row-gap);">
+                            <label style="font-weight: bold;">Federation confirming the result:</label>
+                            <input type="text" name="federation_confirming"></input>
+                        </div>
+                    </div>
+
+                    <div class="item" style="flex-direction: column; align-self: center; padding: 2rem 0 1rem 0;">
+                        <input type="text" name="arbiter_signature" style="width: auto; margin-left: 0;" />
+                        <label style="margin-top: 0.3rem">Chief Arbiter's signature</label>
+                    </div>
                 </div>
-            </div>
 
-            <div class="grid" style="margin-top: 3rem; grid-template-columns: 3fr 2fr; column-gap: 4rem;">
-                <div class="item">
-                    <label>Name of federation official:</label>
-                    <input type="text" name="fed_official_name" />
+                <div class="grid" style="margin-top: 3rem; grid-template-columns: 3fr 2fr; column-gap: 4rem;">
+                    <div class="item">
+                        <label>Name of federation official:</label>
+                        <input type="text" name="fed_official_name" />
+                    </div>
+
+                    <div class="item">
+                        <label>Signature:</label>
+                        <input type="text" name="fed_official_signature" />
+                    </div>
                 </div>
 
-                <div class="item">
-                    <label>Signature:</label>
-                    <input type="text" name="fed_official_signature" />
+                <div class="privacy-notice">
+                    PRIVACY NOTICE: this form contains personal data, please check the FIDE Privacy policy at
+                    <a href="https://www.fide.com/privacy" target="_blank">www.fide.com/privacy</a>
                 </div>
-            </div>
 
-            <div class="privacy-notice">
-                PRIVACY NOTICE: this form contains personal data, please check the FIDE Privacy policy at
-                <a href="https://www.fide.com/privacy" target="_blank">www.fide.com/privacy</a>
-            </div>
+                <div class="footnote">
+                    Note: Unrated = 1000, but see 1.46b. Score = 1, ½ or 0.5, 0 for played games or +, =, - for unplayed games.
+                    <br />
+                    The organizer must provide this certificate to: each player who has achieved a title result,
+                    <br />
+                    to the organizing federation, the player's federation and the FIDE Office.
+                </div>
 
-            <div class="footnote">
-                Note: Unrated = 1000, but see 1.46b. Score = 1, ½ or 0.5, 0 for played games or +, =, - for unplayed games.
-                <br />
-                The organizer must provide this certificate to: each player who has achieved a title result,
-                <br />
-                to the organizing federation, the player’s federation and the FIDE Office.
-            </div>
-
-            <h1 style="text-align: right; margin: 0; padding: 0; font-style: italic">This report is not valid until confirmed by QC </h1>
-        </form>
+                <h1 style="text-align: right; margin: 0; padding: 0; font-style: italic">This report is not valid until confirmed by QC </h1>
+            </form>
+        {% endfor %}
 
         <script>
             document.addEventListener('DOMContentLoaded', () => {

@@ -239,6 +239,12 @@ class Result(IntEnum):
         return TrfResult.get_outer_value(self)
 
     @property
+    def to_norm_report(self) -> str:
+        from data.input_output.norm_mappers import NormResult
+
+        return NormResult.get_outer_value(self)
+
+    @property
     def to_crosstable(self) -> str:
         match self:
             case (
