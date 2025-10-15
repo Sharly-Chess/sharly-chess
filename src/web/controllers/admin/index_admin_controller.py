@@ -876,13 +876,40 @@ class IndexAdminController(BaseAdminController):
                 template_context=template_context,
             )
 
+        all_plugins = plugin_manager.enabled_plugins or []
+        enabled_before = [
+            p for p in all_plugins if p.is_enabled_for_event(web_context.admin_event)
+        ]
+
         uniq_id = stored_event.uniq_id
         with EventDatabase(uniq_id, write=True) as event_database:
             event_database.update_stored_event(stored_event)
-        Message.success(
-            request,
-            _('Event [{uniq_id}] has been updated.').format(uniq_id=uniq_id),
-        )
+
+        web_context = AdminWebContext(request, admin_tab=admin_tab, reload_event=True)
+        enabled_after = [
+            p for p in all_plugins if p.is_enabled_for_event(web_context.admin_event)
+        ]
+        disabled_plugins = [p for p in enabled_before if p not in enabled_after]
+
+        if disabled_plugins:
+            message = (
+                _(
+                    'Due to the federation change, the following plugins have been disabled for this event: <b>{plugins}</b>'
+                ).format(plugins=', '.join(p.name for p in disabled_plugins))
+                if len(disabled_plugins) > 1
+                else _(
+                    'Due to the federation change, the following plugin has been disabled for this event: <b>{plugin}</b>'
+                ).format(plugin=disabled_plugins[0].name)
+            )
+            Message.warning(
+                request,
+                message,
+            )
+        else:
+            Message.success(
+                request,
+                _('Event [{uniq_id}] has been updated.').format(uniq_id=uniq_id),
+            )
 
         if admin_tab:
             return self._admin_render(web_context)
@@ -892,7 +919,7 @@ class IndexAdminController(BaseAdminController):
             context={'messages': Message.messages(request)},
             re_target='#modal-wrapper',
             trigger_event='close_modal',
-            after='receive',
+            after='settle',
         )
 
     @patch(

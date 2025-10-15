@@ -69,8 +69,6 @@
             </script>
         {% else %}
             <div id="main-wrapper" class="{% block wrapper_class %}{% endblock wrapper_class %}" {% block ws %}{% endblock ws %}>
-
-
                 <div class="w-50 position-fixed bottom-0 end-0 me-3" style="z-index: 100">
                     {% if not request.headers.get('HX-Swap-Mode') == 'none' %}
                         {# hx-preserve shouldn't be included in responses with an hx-swap of 'none', or they'll be removed.
