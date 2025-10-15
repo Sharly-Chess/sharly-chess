@@ -129,10 +129,6 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
         }
 
     @hookimpl
-    def get_event_card_block_template(self) -> str:
-        return '/chess_results_event_card_block.html'
-
-    @hookimpl
     def get_event_form_fields_template(self) -> str:
         return '/chess_results_event_form_fields.html'
 
@@ -198,13 +194,16 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
         )
 
     @hookimpl
-    def get_tournament_card_block_template_and_data(self) -> tuple[str, dict[str, Any]]:
-        return (
-            '/chess_results_tournament_card_block.html',
-            {
-                'chess_results_utils': ChessResultsUtils,
-            },
-        )
+    def get_tournament_page_template_context(self) -> dict[str, Any]:
+        return {'chess_results_utils': ChessResultsUtils}
+
+    @hookimpl
+    def get_tournament_card_connexion_template(
+        self, tournament: 'Tournament'
+    ) -> str | None:
+        if not ChessResultsUtils.get_tournament_plugin_data(tournament).tnr:
+            return None
+        return '/chess_results_tournament_card_connexion.html'
 
     # ---------------------------------------------------------------------------------
     # Upload

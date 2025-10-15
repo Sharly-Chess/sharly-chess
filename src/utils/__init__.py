@@ -216,6 +216,10 @@ class StaticUtils:
             kwargs.setdefault('creationflags', subprocess.CREATE_NO_WINDOW)
         return subprocess.run(cmd, **kwargs)
 
+    @staticmethod
+    def concat_dicts[K, V](dict_list: list[dict[K, V]]) -> dict[K, V]:
+        return {key: value for dict_ in dict_list for key, value in dict_.items()}
+
 
 class SharedUtils:
     """Class containing the shared utils functions,

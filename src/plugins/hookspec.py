@@ -190,10 +190,6 @@ class AppHookSpecs:
         Also provide the ID of the plugin."""
 
     @hookspec
-    def get_event_card_block_template(self) -> str:
-        """Provide a path to the template to be added to event cards"""
-
-    @hookspec
     def get_event_form_fields_template(self) -> str:
         """Returns the path of the template for additional fields of the event modal"""
 
@@ -248,8 +244,20 @@ class AppHookSpecs:
         """Validate the additional tournament form fields"""
 
     @hookspec
-    def get_tournament_card_block_template_and_data(self) -> tuple[str, dict[str, Any]]:
-        """Provide a path to the template to be added to tournament cards"""
+    def get_tournament_page_template_context(self) -> dict[str, Any]:
+        """Get the context used for the templates provided for the tournament page."""
+
+    @hookspec
+    def get_tournament_card_connexion_template(
+        self, tournament: 'Tournament'
+    ) -> str | None:
+        """Add a template path for a connexion to display on the tournament cards.
+        These templates are displayed in priority in the card.
+        Return None if the connexion is undefined."""
+
+    @hookspec
+    def get_tournament_card_fields_template(self) -> str:
+        """Provide a path to the template of fields to be added to tournament cards."""
 
     @hookspec
     def get_tournament_card_action_menu_items_template(self) -> str:

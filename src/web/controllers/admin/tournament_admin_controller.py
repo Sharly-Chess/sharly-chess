@@ -1,6 +1,7 @@
 import random
 import time
 from datetime import datetime
+from functools import partial
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
 
@@ -120,22 +121,18 @@ class TournamentAdminController(BaseEventAdminController):
         template_context: dict[str, Any] | None = None,
     ) -> Template:
         event = web_context.get_admin_event()
-        tournament_form_fields_templates_and_data = plugin_manager.hook_for_event(
-            event, 'get_tournament_card_block_template_and_data'
+        plugin_context = StaticUtils.concat_dicts(
+            plugin_manager.hook_for_event(
+                event, 'get_tournament_page_template_context'
+            )()
+        )
+        plugin_card_fields_templates = plugin_manager.hook_for_event(
+            event, 'get_tournament_card_fields_template'
         )()
-        tournament_card_blocks = [
-            block_template
-            for (block_template, data) in tournament_form_fields_templates_and_data
-        ]
-        tournament_card_block_data = {
-            key: value
-            for (block_template, data) in tournament_form_fields_templates_and_data
-            for key, value in data.items()
-        }
-        tournament_card_action_menu_items_templates = plugin_manager.hook_for_event(
+        plugin_card_action_menu_items_templates = plugin_manager.hook_for_event(
             event, 'get_tournament_card_action_menu_items_template'
         )()
-        tournament_tab_action_menu_items_templates = plugin_manager.hook_for_event(
+        plugin_tab_action_menu_items_templates = plugin_manager.hook_for_event(
             event, 'get_tournament_tab_action_menu_items_template'
         )()
         tournament_importers: list[TournamentImporter] = TournamentImporterManager(
@@ -148,11 +145,14 @@ class TournamentAdminController(BaseEventAdminController):
             web_context.template_context
             | {
                 'admin_event_tab': 'admin-event-tournaments-tab',
-                'tournament_card_blocks': tournament_card_blocks,
+                'get_tournament_card_connexion_templates': partial(
+                    cls._get_tournament_card_connexion_templates, event=event
+                ),
+                'plugin_card_fields_templates': plugin_card_fields_templates,
                 'tournament_importers': tournament_importers,
                 'tournament_exporters': tournament_exporters,
-                'tournament_card_action_menu_items_templates': tournament_card_action_menu_items_templates,
-                'tournament_tab_action_menu_items_templates': tournament_tab_action_menu_items_templates,
+                'plugin_card_action_menu_items_templates': plugin_card_action_menu_items_templates,
+                'plugin_tab_action_menu_items_templates': plugin_tab_action_menu_items_templates,
                 'admin_tournaments_show_details': (
                     SessionHandler.get_session_admin_tournaments_show_details(
                         web_context.request
@@ -160,11 +160,23 @@ class TournamentAdminController(BaseEventAdminController):
                 ),
                 'data_sources': DataSourceManager().objects(),
             }
-            | tournament_card_block_data
+            | plugin_context
             | (template_context or {})
         )
 
         return cls._admin_base_event_render(template_context)
+
+    @staticmethod
+    def _get_tournament_card_connexion_templates(
+        tournament: Tournament, event: Event
+    ) -> list[str]:
+        return [
+            template
+            for template in plugin_manager.hook_for_event(
+                event, 'get_tournament_card_connexion_template'
+            )(tournament=tournament)
+            if template is not None
+        ]
 
     @get(
         path='/event/{event_uniq_id:str}/tournaments',

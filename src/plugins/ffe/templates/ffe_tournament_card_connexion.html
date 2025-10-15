@@ -1,0 +1,28 @@
+{% set tournament_ffe_data = ffe_utils.get_tournament_plugin_data(tournament) %}
+<div class="d-flex gap-2">
+    <img
+        src="{{ url_for('static', file_path='/images/ffe.png') }}?version={{ sharly_chess_config.version }}"
+        style="height: 1.2em"
+        class="p-0"
+        {{ macros.tooltip_attributes('info', _('FFE'), 'top') }}
+    />
+    {{ _('FFE certification number: %(ffe_id)d', ffe_id=tournament_ffe_data.ffe_id) }}
+    <a href="https://echecs.asso.fr/FicheTournoi.aspx?Ref={{ tournament_ffe_data.ffe_id }}" target="_blank">
+        <i class="bi bi-box-arrow-up-right"></i>
+    </a>
+    {% set auto_upload = ffe_utils.resolve_auto_upload(tournament) %}
+    <i
+        class="bi-cloud-arrow-up-fill {% if not auto_upload %}text-secondary{% endif %}"
+        style="transform: scale(1.1)"
+        {{ macros.tooltip_attributes(
+            'info', _('Auto-upload enabled') if auto_upload else _('Auto-upload disabled'), 'top'
+        ) }}
+    ></i>
+    {% set ffe_actions_unavailable_message = ffe_utils.ffe_actions_unavailable_message(tournament) %}
+    {% if ffe_actions_unavailable_message %}
+        <i
+            class="bi-exclamation-triangle-fill text-danger"
+            {{ macros.tooltip_attributes('warning', ffe_actions_unavailable_message, 'top') }}
+        ></i>
+    {% endif %}
+</div>

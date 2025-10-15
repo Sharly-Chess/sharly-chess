@@ -44,11 +44,6 @@
                 {{ _('No players') }}
             {% endif %}
         </div>
-
-        {% for block in event_card_blocks %}
-            {% include block %}
-        {% endfor %}
-
         {% if admin_events_show_details %}
             <div class="{% if not event.timer_count %}text-secondary{% endif %}">
                 <i class="bi-clock pe-1" ></i>
