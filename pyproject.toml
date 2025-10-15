@@ -18,6 +18,8 @@ license = { text = "AGPL v3.0" }
 readme = "README.md"
 dependencies = [
   "AdvancedHTMLParser ~= 9.0.2",
+  "aiosqlite ~= 0.21.0",
+  "aiosqlitepool ~= 1.0.0",
   "XlsxWriter ~= 3.2.2",
   "apluggy ~= 1.1.0",
   # Latest compatible version should always be preferred due to security reasons
