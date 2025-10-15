@@ -21,10 +21,10 @@ class NormResult(CoreMapper[str, Result]):
             Result.UNRATED_WIN: '+',
             Result.FORFEIT_LOSS: '-',
             Result.FORFEIT_WIN: '+',
-            Result.HALF_POINT_BYE: '',
-            Result.FULL_POINT_BYE: '',
+            Result.HALF_POINT_BYE: '=',
+            Result.FULL_POINT_BYE: '+',
             Result.PAIRING_ALLOCATED_BYE: '+',
-            Result.ZERO_POINT_BYE: '',
+            Result.ZERO_POINT_BYE: '-',
             Result.DOUBLE_FORFEIT: '-',
             Result.PENALTY_LL: '-',
             Result.PENALTY_LD: '-',
@@ -32,7 +32,7 @@ class NormResult(CoreMapper[str, Result]):
             Result.UNRATED_PENALTY_LL: '-',
             Result.UNRATED_PENALTY_LD: '-',
             Result.UNRATED_PENALTY_DL: '=',
-            Result.REST_GAME: '',
+            Result.REST_GAME: '+',
             Result.NO_RESULT: '',
         }
         if core_object in norm_result_by_result:

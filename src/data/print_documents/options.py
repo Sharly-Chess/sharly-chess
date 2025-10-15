@@ -117,7 +117,7 @@ class PlayerPrintOption(PrintOption):
         return {
             tournament.id: [
                 {'id': player.id, 'full_name': player.full_name}
-                for player in tournament.players_by_starting_rank.values()
+                for player in tournament.players_by_name_with_unpaired
             ]
             for tournament in tournaments
         }

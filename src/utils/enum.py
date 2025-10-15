@@ -909,13 +909,13 @@ class TitleNorm(Enum):
     def minimum_performance(self) -> float:
         match self:
             case TitleNorm.WIM:
-                return 2249.5
+                return 2250
             case TitleNorm.WGM:
-                return 2399.5
+                return 2400
             case TitleNorm.IM:
-                return 2449.5
+                return 2450
             case TitleNorm.GM:
-                return 2599.5
+                return 2600
             case _:
                 raise ValueError(f'Invalid title norm value: {self}')
 

@@ -154,7 +154,7 @@ class NormCheckResult:
     adjusted_player: Optional['Player'] = None
     adjusted_player_rating: Optional[int] = None
     performance: float = 0
-    over_performance: float = 0
+    performance_diif: float = 0
 
     all_federations_count: int = 0
     eligible_players_count: int = 0
@@ -176,7 +176,7 @@ class NormCheckResult:
     not_enough_all_title_holders: bool = False
 
     def is_met(self) -> bool:
-        return not (
+        return self.meets_gender and not (
             self.not_enough_games
             or self.not_enough_federations
             or self.too_many_own_federation
@@ -836,9 +836,22 @@ class Player:
             bonus = StaticUtils.performance_bonus(score / max_score)
             performance = avg + bonus
             res.performance = performance
+            draw_points = Result.DRAW.points()
             if performance < tn.minimum_performance:
                 res.performance_too_low = True
-            elif res.is_met():
+                under_performance: float = 0
+                new_score = score
+                new_bonus = bonus
+                draw_points = Result.DRAW.points()
+                while True:
+                    new_score += draw_points
+                    new_bonus = StaticUtils.performance_bonus(new_score / max_score)
+                    if res.average_rating + new_bonus < tn.minimum_performance:
+                        under_performance -= draw_points
+                    else:
+                        break
+                res.performance_diif = under_performance
+            else:
                 over_performance: float = 0
                 new_score = score
                 new_bonus = bonus
@@ -850,7 +863,7 @@ class Player:
                         over_performance += draw_points
                     else:
                         break
-                res.over_performance = over_performance
+                res.performance_diif = over_performance
 
         # 1.43d exception
         #
