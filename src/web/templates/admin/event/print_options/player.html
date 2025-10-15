@@ -19,7 +19,7 @@
             const tId = parseInt(tournamentSelect.val(), 10);
             const players = playersPerTournament[tId] || [];
 
-            playerSelect.innerHTML = "";
+            playerSelect.empty();
 
             playerSelect.append(
                 $('<option>', {

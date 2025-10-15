@@ -47,8 +47,21 @@
                 display: inline-block;
                 white-space: nowrap;
             }
-            input[type="text"], input[type="text"] {
+            input {
                 border: none;
+            }
+            input[type="checkbox"] {
+                accent-color: black;
+            }
+            .heading {
+                text-align: center;
+                font-white: bold;
+                font-size: 2rem;
+            }
+            .info {
+                text-align: center;
+                text-style: italic;
+                font-size: 1rem;
             }
             .grid {
                 display: grid;
@@ -68,6 +81,10 @@
                 width: 1px;
                 border: none;
                 border-bottom: 2px dotted black;
+            }
+            .name-cell {
+                width: 100%;
+                box-sizing: border-box;
             }
             .error {
                 color: red;
@@ -95,6 +112,11 @@
                 break-inside: avoid;
                 break-after: always;
             }
+            .spacer {
+                margin-top: 4rem;
+                border-top: 2px solid black;
+                padding-bottom: 4rem;
+            }
             @media print {
                 body {
                     margin: 0;
@@ -120,6 +142,9 @@
                 .error {
                     color: black;
                 }
+                .spacer, .heading, .info {
+                    display: none;
+                }
 
                 @page {
                     size: A4 portrait;
@@ -130,6 +155,15 @@
     </head>
     <body>
         {% for norm_title, norm in norms.items() %}
+            {% if not loop.first %}
+                <div class="spacer"></div>
+            {% endif %}
+            <div class="heading">
+                {{norm_title.name}}
+            </div>
+            <div class="info">
+                {{_('Scroll down to review all the norms...')}}
+            </div>
             <form class="break-after">
                 <h1 style="text-align: right; margin: 0; padding: 0;">IT 1</h1>
                 <section style="margin-top: 0.1rem;">
@@ -146,22 +180,22 @@
                     <div class="grid" style="grid-template-columns: 1fr 1fr;">
                         <div class="item">
                             <label>Name:</label>
-                            <input type="text" name="last_name" value="{{ player.last_name }}" />
+                            <input name="last_name" value="{{ player.last_name }}" />
                         </div>
 
                         <div class="item">
                             <label>First name:</label>
-                            <input type="text" name="first_name" value="{{ player.first_name }}" />
+                            <input name="first_name" value="{{ player.first_name }}" />
                         </div>
 
                         <div class="item">
                             <label>ID-number:</label>
-                            <input type="text" name="fide_id" value="{{ player.fide_id }}" />
+                            <input name="fide_id" value="{{ player.fide_id }}" />
                         </div>
 
                         <div class="item">
                             <label>Federation:</label>
-                            <input type="text" name="federation" value="{{ player.federation }}" />
+                            <input name="federation" value="{{ player.federation }}" />
                         </div>
                     </div>
                 </section>
@@ -170,58 +204,58 @@
                     <div class="grid" style="grid-template-columns: 4fr 2fr 2fr;">
                         <div class="item">
                             <label>Event:</label>
-                            <input type="text" name="event" value="{{ event.name }}" />
+                            <input name="event" value="{{ event.name }}" />
                         </div>
 
                         <div class="item">
                             <label>Start:</label>
-                            <input type="text" name="start_date" value="{{ start }}" />
+                            <input name="start_date" value="{{ start }}" />
                         </div>
 
                         <div class="item">
                             <label>Close:</label>
-                            <input type="text" name="end_date" value="{{ end }}" />
+                            <input name="end_date" value="{{ end }}" />
                         </div>
                     </div>
 
                     <div class="grid" style="grid-template-columns: 5fr 4fr;">
                         <div class="item">
                             <label>Chief Arbiter (name, ID):</label>
-                            <input type="text" name="arbiter_name" />
+                            <input name="arbiter_name" />
                         </div>
 
                         <div class="item {{ 'error' if norm.not_enough_games else '' }}">
                             <label>Number of games:</label>
-                            <input type="text" name="num_games" value="{{ norm.played_games }}" />
+                            <input name="num_games" value="{{ norm.played_games }}" />
                         </div>
 
                         <div class="item">
                             <label>Rate of play:</label>
-                            <input type="text" name="rate_of_play" value="{{ tournament.time_control_trf25 }}"/>
+                            <input name="rate_of_play" value="{{ tournament.time_control_trf25 }}"/>
                         </div>
 
                         <div class="item {{ 'error' if norm.not_enough_federations else '' }}">
                             <label>Number of federations:</label>
-                            <input type="text" name="num_feds" value="{{ norm.federations_count }}" />
+                            <input name="num_feds" value="{{ norm.federations_count }}" />
                         </div>
 
                         <div class="item">
                             <label>Number players not from title applicant's federation</label>
-                            <input type="text" name="not_from_fed" value="{{ norm.played_games - norm.from_own_federations_count }}" />
+                            <input name="not_from_fed" value="{{ norm.played_games - norm.from_own_federations_count }}" />
                         </div>
 
                         <div class="item"><label>Number rated opponents:</label>
-                            <input type="text" name="num_rated" value="{{ norm.num_rated_players }}" />
+                            <input name="num_rated" value="{{ norm.num_rated_players }}" />
                         </div>
 
                         <div class="item">
                             <label>Number players from host federation:</label>
-                            <input type="text" name="from_host" value="{{ norm.from_host_federations_count }}" />
+                            <input name="from_host" value="{{ norm.from_host_federations_count }}" />
                         </div>
 
                         <div class="item {{ 'error' if norm.not_enough_title_holders else '' }}">
                             <label>Total number titled opponents:</label>
-                            <input type="text" name="total_titled" value="{{ norm.num_title_holders }}" />
+                            <input name="total_titled" value="{{ norm.num_title_holders }}" />
                         </div>
                     </div>
 
@@ -231,27 +265,27 @@
                         </div>
                         <div class="item {{ 'error' if 8 in norm.not_enough_required_titles else '' }}">
                             <label>GM:</label>
-                            <input type="text" name="total_gm" value="{{ norm.title_counts[8] }}" />
+                            <input name="total_gm" value="{{ norm.title_counts[8] }}" />
                         </div>
                         <div class="item {{ 'error' if 6 in norm.not_enough_required_titles else '' }}">
                             <label>IM:</label>
-                            <input type="text" name="total_im" value="{{ norm.title_counts[6] }}" />
+                            <input name="total_im" value="{{ norm.title_counts[6] }}" />
                         </div>
                         <div class="item {{ 'error' if 7 in norm.not_enough_required_titles else '' }}">
                             <label>WGM:</label>
-                            <input type="text" name="total_wgm" value="{{ norm.title_counts[7] }}" />
+                            <input name="total_wgm" value="{{ norm.title_counts[7] }}" />
                         </div>
                         <div class="item {{ 'error' if 5 in norm.not_enough_required_titles else '' }}">
                             <label>WIM:</label>
-                            <input type="text" name="total_wim" value="{{ norm.title_counts[5] }}" />
+                            <input name="total_wim" value="{{ norm.title_counts[5] }}" />
                         </div>
                         <div class="item {{ 'error' if 4 in norm.not_enough_required_titles else '' }}">
                             <label>FM:</label>
-                            <input type="text" name="total_fm" value="{{ norm.title_counts[4] }}" />
+                            <input name="total_fm" value="{{ norm.title_counts[4] }}" />
                         </div>
                         <div class="item {{ 'error' if 3 in norm.not_enough_required_titles else '' }}">
                             <label>WFM:</label>
-                            <input type="text" name="total_wfm" value="{{ norm.title_counts[3] }}" />
+                            <input name="total_wfm" value="{{ norm.title_counts[3] }}" />
                         </div>
                     </div>
                 </section>
@@ -261,24 +295,34 @@
                     <div class="grid" style="grid-template-columns: 3fr 5fr;">
                         <div class="item {{ 'error' if norm.not_enough_all_federations else '' }}">
                             <label>Number of federations:</label>
-                            <input type="text" name="total_gm" value="{{ norm.all_federations_count }}"  />
+                            <input name="total_gm" value="{{ norm.all_federations_count }}"  />
                         </div>
                         <div class="item {{ 'error' if norm.not_enough_foreign_players else '' }}">
                             <label>Number of rated players not from host federation:</label>
-                            <input type="text" name="total_gm" value="{{ norm.eligible_players_count }}"  />
+                            <input name="total_gm" value="{{ norm.eligible_players_count }}"  />
                         </div>
                     </div>
                     <div class="item {{ 'error' if norm.not_enough_all_title_holders else '' }}">
                         <label>Number of players not from host federation holding GM, IM, WGM, WIM titles:</label>
-                        <input type="text" name="total_gm" value="{{ norm.eligible_players_title_count }}"  />
+                        <input name="total_gm" value="{{ norm.eligible_players_title_count }}"  />
                     </div>
                 </section>
                 <div class="item" style="margin-top: 0.5rem;">
                     <label>Special remarks:</label>
-                    <input type="text" name="total_gm" />
+                    <input name="total_gm" />
                 </div>
 
                 <table style="margin-top: var(--row-gap);">
+                    <colgroup>
+                        <col style="width: 3ch;">    <!-- Round -->
+                        <col style="width: auto;">   <!-- Name -->
+                        <col style="width: 15ch;">   <!-- FIDE ID -->
+                        <col style="width: 7ch;">    <!-- FED -->
+                        <col style="width: 10ch;">    <!-- Rating -->
+                        <col style="width: 10ch;">    <!-- 1.46c -->
+                        <col style="width: 4ch;">    <!-- Title -->
+                        <col style="width: 8ch;">    <!-- Score -->
+                    </colgroup>
                     <thead>
                         <tr>
                             <th>Rd</th>
@@ -300,13 +344,13 @@
                         {% endif %}
                         <tr>
                             <td>{{ rnd }}</td>
-                            <td><input type="text" name="opp_name_{{rnd}}" value="{{ opp.full_name }}" /></td>
-                            <td><input type="text" name="opp_id_{{rnd}}" value="{{ opp.fide_id }}"  /></td>
-                            <td><input type="text" name="opp_fed_{{rnd}}" size="3" value="{{ opp.federation }}"  /></td>
-                            <td><input type="text" name="opp_rating_{{rnd}}" size="4" value="{{ opp.rating }}"  /></td>
-                            <td><input type="text" name="opp_146c_{{rnd}}" size="4" value="{{ adjusted_opp_rating if opp is not none}}" /></td>
-                            <td><input type="text" name="opp_title_{{rnd}}" size="5" value="{{ opp.title.short_name or '-' if opp is not none }}"  /></td>
-                            <td><input type="text" name="opp_score_{{rnd}}" size="5" value="{{ pairing.result.to_norm_report }}" /></td>
+                            <td><input class="name-cell" name="opp_name_{{rnd}}" value="{{ opp.full_name }}" /></td>
+                            <td><input name="opp_id_{{rnd}}" size="12" value="{{ opp.fide_id }}"  /></td>
+                            <td><input name="opp_fed_{{rnd}}" size="4" value="{{ opp.federation }}"  /></td>
+                            <td><input name="opp_rating_{{rnd}}" size="5" value="{{ opp.rating }}"  /></td>
+                            <td><input name="opp_146c_{{rnd}}" size="5" value="{{ adjusted_opp_rating if opp is not none}}" /></td>
+                            <td><input name="opp_title_{{rnd}}" size="4" value="{{ opp.title.short_name or '-' if opp is not none }}"  /></td>
+                            <td><input name="opp_score_{{rnd}}" style="text-align: center;" size="4" value="{{ pairing.result.to_norm_report }}" /></td>
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -315,15 +359,15 @@
                 <div class="grid" style="margin-top: var(--row-gap); grid-template-columns: repeat(3, 1fr); column-gap: 4rem;">
                     <div class="item {{ 'error' if norm.average_too_low else '' }}">
                         <label>Rating average (1.46b):</label>
-                        <input type="text" name="rating_average" value="{{ norm.average_rating }}" />
+                        <input name="rating_average" value="{{ norm.average_rating }}" />
                     </div>
                     <div class="item">
                         <label>Score required:</label>
-                        <input type="text" name="score_required" value="{{ norm.score - norm.performance_diif }}" />
+                        <input name="score_required" value="{{ norm.score - norm.performance_diif }}" />
                     </div>
                     <div class="item {{ 'error' if norm.score_too_low or norm.performance_too_low else '' }}">
                         <label>Score achieved:</label>
-                        <input type="text" name="score_achieved" value="{{ norm.score }}" />
+                        <input name="score_achieved" value="{{ norm.score }}" />
                     </div>
                 </div>
 
@@ -331,18 +375,18 @@
                     <div style="display: flex; flex-direction: column; justify-content: space-between;">
                         <div class="item" style="margin-top: var(--row-gap);">
                             <label>Exceeding norm by:</label>
-                            <input type="text" name="exceeding_norm" value="{{ norm.performance_diif }}" />
+                            <input name="exceeding_norm" value="{{ norm.performance_diif }}" />
                             <label>points<label>
                         </div>
 
                         <div class="item" style="margin-top: var(--row-gap);">
                             <label style="font-weight: bold;">Federation confirming the result:</label>
-                            <input type="text" name="federation_confirming"></input>
+                            <input name="federation_confirming"></input>
                         </div>
                     </div>
 
                     <div class="item" style="flex-direction: column; align-self: center; padding: 2rem 0 1rem 0;">
-                        <input type="text" name="arbiter_signature" style="width: auto; margin-left: 0;" />
+                        <input name="arbiter_signature" style="width: auto; margin-left: 0;" />
                         <label style="margin-top: 0.3rem">Chief Arbiter's signature</label>
                     </div>
                 </div>
@@ -350,12 +394,12 @@
                 <div class="grid" style="margin-top: 3rem; grid-template-columns: 3fr 2fr; column-gap: 4rem;">
                     <div class="item">
                         <label>Name of federation official:</label>
-                        <input type="text" name="fed_official_name" />
+                        <input name="fed_official_name" />
                     </div>
 
                     <div class="item">
                         <label>Signature:</label>
-                        <input type="text" name="fed_official_signature" />
+                        <input name="fed_official_signature" />
                     </div>
                 </div>
 
