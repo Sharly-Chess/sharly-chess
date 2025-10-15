@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional, override, Any
 from common.exception import OptionError
 from common.i18n import _
 from data.event import SharlyChessConfig
+from data.player import TournamentRating
 from data.print_documents.pairing_styles import BoardsPairingStyle, PairingStyle
 from data.print_documents.player_sorters import (
     PlayerSorter,
@@ -78,6 +79,48 @@ class TournamentsPrintOption(PrintOption):
     @property
     def template_name(self) -> str:
         return '/admin/event/print_options/tournaments.html'
+
+
+class PlayerPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'player'
+
+    @property
+    def type(self) -> type | UnionType:
+        return int | None
+
+    @property
+    def default_value(self) -> Any:
+        return None
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/event/print_options/player.html'
+
+    @override
+    def validate(self):
+        super().validate()
+        if self.value is None:
+            raise OptionError(_('Please choose a player.'), self)
+
+    @property
+    def players_per_tournament(self) -> dict[int, list[dict[str, Any]]]:
+        if self.event is None:
+            return {}
+
+        tournaments = [
+            tournament
+            for tournament in self.event.tournaments
+            if tournament.rating == TournamentRating.STANDARD
+        ]
+        return {
+            tournament.id: [
+                {'id': player.id, 'full_name': player.full_name}
+                for player in tournament.players_by_starting_rank.values()
+            ]
+            for tournament in tournaments
+        }
 
 
 class RoundPrintOption(PrintOption):

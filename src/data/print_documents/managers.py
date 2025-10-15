@@ -32,6 +32,7 @@ class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
             documents.PrizeListPrintDocument,
             documents.PrizeAssignmentPrintDocument,
             documents.StatisticsPrintDocument,
+            documents.NormReportPrintDocument,
             documents.QRCodePrintDocument,
         ]
 
@@ -47,6 +48,7 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.QRCodePrintOption,
             options.TournamentPrintOption,
             options.TournamentsPrintOption,
+            options.PlayerPrintOption,
             options.PairingStylePrintOption,
             options.RoundPrintOption,
             options.PlayerSplitPrintOption,

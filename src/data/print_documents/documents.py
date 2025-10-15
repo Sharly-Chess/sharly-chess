@@ -14,6 +14,7 @@ from data.player import Player, PlayerTitle, dataclass, plugin_manager
 from data.event import Event
 from data.print_documents.options import (
     PairingStylePrintOption,
+    PlayerPrintOption,
     PlayerSplitPrintOption,
     PrintOption,
     QRCodeNetworkPrintOption,
@@ -987,6 +988,32 @@ class StatisticsPrintDocument(PrintDocument):
             'subtitle': self.subtitle,
             'statistics': statistics,
         }
+
+
+class NormReportPrintDocument(PrintDocument):
+    @staticmethod
+    def static_id() -> str:
+        return 'norm_report'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Norm Report')
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [TournamentPrintOption, PlayerPrintOption]
+
+    @property
+    def title(self) -> str:
+        return 'Certificate of Title Results'
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/norm_report.html'
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return {}
 
 
 class QRCodePrintDocument(PrintDocument):
