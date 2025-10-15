@@ -112,7 +112,7 @@ class ChessResultsBackgroundUploader:
             assert isinstance(tournament, Tournament)
             plugin_data = ChessResultsUtils.get_tournament_plugin_data(tournament)
         else:
-            raw_plugin_data = tournament.plugin_data[PLUGIN_NAME] or {}
+            raw_plugin_data = tournament.plugin_data.get(PLUGIN_NAME, {})
             plugin_data = ChessResultsTournamentPluginData.from_stored_value(
                 raw_plugin_data
             )
