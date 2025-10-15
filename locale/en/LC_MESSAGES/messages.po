@@ -1648,6 +1648,12 @@ msgstr ""
 msgid "Draw"
 msgstr ""
 
+msgid "Due to the federation change, the following plugin has been disabled for this event: <b>{plugin}</b>."
+msgstr ""
+
+msgid "Due to the federation change, the following plugins have been disabled for this event: <b>{plugins}</b>."
+msgstr ""
+
 msgid "Duplicate the account."
 msgstr ""
 
@@ -2181,6 +2187,9 @@ msgstr ""
 msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
 msgstr "Fed."
 
+msgid "Federation plugins"
+msgstr ""
+
 msgid "Federation:"
 msgstr ""
 
@@ -2303,7 +2312,7 @@ msgstr ""
 msgid "French Chess Federation"
 msgstr ""
 
-msgid "French Federation specific features (player search, leagues, Papi compatibility)."
+msgid "French Federation specific features (player search, results uploading, leagues, Papi import/export...)"
 msgstr ""
 
 msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
@@ -2313,6 +2322,9 @@ msgid "Full-Point Bye"
 msgstr ""
 
 msgid "Full-Point Bye (deprecated)"
+msgstr ""
+
+msgid "Fédération Française des Échecs"
 msgstr ""
 
 msgid "GM *** SHORT NAME FOR Grand Master"
@@ -3892,9 +3904,6 @@ msgstr ""
 msgid "Please wait…"
 msgstr ""
 
-msgid "Plugins"
-msgstr ""
-
 msgid "Point counting"
 msgstr ""
 
@@ -5143,6 +5152,9 @@ msgstr ""
 msgid "There is no pairings for this round (last round with pairings: #{round})."
 msgstr ""
 
+msgid "These plugins enable features that are only active on events of the chosen federation.<br />You’ll be asked to select a federation when creating the event."
+msgstr ""
+
 msgid "These tournaments are already included for this account by a higher access level."
 msgstr ""
 
@@ -5746,6 +5758,9 @@ msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system. May b
 msgstr ""
 
 msgid "Using colors helps in finding quickly important information on the console."
+msgstr ""
+
+msgid "Utility Plugins"
 msgstr ""
 
 msgid "Validate"

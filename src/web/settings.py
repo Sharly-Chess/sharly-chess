@@ -114,7 +114,7 @@ exception_handlers = {
 
 @listener('connected')
 async def load_first_online_data_sources_connection_status():
-    for data_source in OnlineDataSourceManager.objects():
+    for data_source in OnlineDataSourceManager().objects():
         if data_source.connection_status is None:
             await data_source.reload_connection_status()
 

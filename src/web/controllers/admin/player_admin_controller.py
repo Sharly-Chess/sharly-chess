@@ -25,6 +25,7 @@ from common.exception import SharlyChessException
 from common.i18n import _, ngettext
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
+from data.event import Event
 from data.access_levels.actions import AuthAction
 from data.access_levels.client import Client
 from data.input_output.data_source import PlayerComparator, DataSource
@@ -52,7 +53,13 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
 )
 from web.controllers.base_controller import WebContext
-from web.guards import EventGuard, TournamentActionGuard, ActionGuard, SetByeGuard
+from web.guards import (
+    EventGuard,
+    RequestUtils,
+    TournamentActionGuard,
+    ActionGuard,
+    SetByeGuard,
+)
 from web.messages import Message
 from web.session import SessionHandler
 from web.utils import SelectOption
@@ -92,7 +99,7 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
         self.admin_data_source: DataSource | None = None
         if data_source_id:
             try:
-                self.admin_data_source = DataSourceManager.get_object(data_source_id)
+                self.admin_data_source = DataSourceManager().get_object(data_source_id)
             except KeyError:
                 raise NotFoundException(f'Unknown data source [{data_source_id}].')
 
@@ -165,7 +172,9 @@ class PlayerAdminController(BaseEventAdminController):
             player = web_context.get_admin_player()
             if tournament.id != player.tournament.id:
                 try:
-                    cls._validate_player_tournament_move(player, tournament)
+                    cls._validate_player_tournament_move(
+                        web_context.admin_event, player, tournament
+                    )
                 except ValueError as e:
                     errors[field] = str(e)
 
@@ -225,9 +234,9 @@ class PlayerAdminController(BaseEventAdminController):
                 fixed_board=data[field]
             )
 
-        plugin_manager.hook.validate_player_form_fields(
-            action=action, tournament=tournament, data=data, errors=errors
-        )
+        plugin_manager.hook_for_event(
+            web_context.get_admin_event(), 'validate_player_form_fields'
+        )(action=action, tournament=tournament, data=data, errors=errors)
         return errors
 
     @classmethod
@@ -368,15 +377,17 @@ class PlayerAdminController(BaseEventAdminController):
                     filter_origin, f'{player.federation} {player.club}'
                 )
             )
-        per_plugin_context = plugin_manager.hook.get_player_admin_template_context(
-            web_context=web_context
-        )
+        per_plugin_context = plugin_manager.hook_for_event(
+            admin_event, 'get_player_admin_template_context'
+        )(web_context=web_context)
         plugin_context = {
             key: value
             for context in per_plugin_context
             for key, value in context.items()
         }
-        for plugin_filters in plugin_manager.hook.player_filters(
+        for plugin_filters in plugin_manager.hook_for_event(
+            admin_event, 'player_filters'
+        )(
             web_context=web_context,
             template_context=web_context.template_context | plugin_context,
         ):
@@ -392,7 +403,9 @@ class PlayerAdminController(BaseEventAdminController):
         return all(search_part in match_str for search_part in search_parts)
 
     @staticmethod
-    def sorted_player_ids(players: list[Player], sort_type: str) -> list[int]:
+    def sorted_player_ids(
+        event: Event, players: list[Player], sort_type: str
+    ) -> list[int]:
         def get_sort_key(player: Player) -> tuple:
             match sort_type:
                 case 'alpha':
@@ -418,7 +431,9 @@ class PlayerAdminController(BaseEventAdminController):
                 case 'category_asc':
                     return player.category, player.last_name, player.first_name or ''
                 case 'club':
-                    return plugin_manager.hook.player_club_sort_key(player=player) or (
+                    return plugin_manager.hook_for_event(event, 'player_club_sort_key')(
+                        player=player
+                    ) or (
                         player.club,
                         player.last_name,
                         player.first_name or '',
@@ -442,7 +457,7 @@ class PlayerAdminController(BaseEventAdminController):
         event = web_context.get_admin_event()
         filtered_players = cls.filtered_players(request, event.players_by_id.values())
         sort_type = SessionHandler.get_session_admin_players_sort(request)
-        search_results = cls.sorted_player_ids(filtered_players, sort_type)
+        search_results = cls.sorted_player_ids(event, filtered_players, sort_type)
         results_session_id = SessionHandler.get_session_admin_players_search_results_id(
             request
         )
@@ -563,7 +578,7 @@ class PlayerAdminController(BaseEventAdminController):
 
         # Allow plugin to provide extra columns
         per_plugin_columns: Iterable[Iterable[ExtraAdminColumn]] = (
-            plugin_manager.hook.get_extra_player_columns()
+            plugin_manager.hook_for_event(admin_event, 'get_extra_player_columns')()
         )
         extra_columns: dict[str, list[ExtraAdminColumn]] = {}
         for plugin_columns in per_plugin_columns:
@@ -599,9 +614,9 @@ class PlayerAdminController(BaseEventAdminController):
             {player.category for player in admin_event.players_by_id.values()}
         )
 
-        per_plugin_context = plugin_manager.hook.get_player_admin_template_context(
-            web_context=web_context
-        )
+        per_plugin_context = plugin_manager.hook_for_event(
+            admin_event, 'get_player_admin_template_context'
+        )(web_context=web_context)
 
         template_context = (
             web_context.template_context
@@ -669,7 +684,7 @@ class PlayerAdminController(BaseEventAdminController):
                     web_context.request
                 ),
                 'admin_players_extra_columns': extra_columns,
-                'data_sources': DataSourceManager.objects(),
+                'data_sources': DataSourceManager().objects(),
                 'player_addable_tournaments': admin_event.player_addable_tournaments,
             }
             | {
@@ -803,7 +818,10 @@ class PlayerAdminController(BaseEventAdminController):
                 tournament_options |= web_context.get_tournament_options(tournaments)
 
                 plugin_form_fields_templates = (
-                    plugin_manager.hook.get_player_form_fields_template() or []
+                    plugin_manager.hook_for_event(
+                        admin_event, 'get_player_form_fields_template'
+                    )()
+                    or []
                 )
 
                 template_context |= {
@@ -847,7 +865,7 @@ class PlayerAdminController(BaseEventAdminController):
                     'selected_data_source': SessionHandler.get_session_admin_players_active_data_source(
                         request
                     ),
-                    'data_source_options': DataSourceManager.options(),
+                    'data_source_options': DataSourceManager().options(),
                     'plugin_form_fields_templates': plugin_form_fields_templates,
                     'previous_player': (
                         admin_event.players_by_id.get(old_player_id, None)
@@ -876,7 +894,7 @@ class PlayerAdminController(BaseEventAdminController):
                 data = {
                     f'round_{round_}_result': WebContext.value_to_form_data(
                         admin_player.pairings[round_].result.value
-                    )  # type: ignore
+                    )
                     for round_ in range(
                         max(1, tournament.current_round),
                         tournament.rounds + 1,
@@ -954,6 +972,7 @@ class PlayerAdminController(BaseEventAdminController):
         admin_players_filter_name: str | None = None,
         admin_players_clear_filters: int | None = None,
     ) -> Template:
+        event = RequestUtils.get_optional_event(request)
         if admin_players_sort is not None:
             SessionHandler.set_session_admin_players_sort(request, admin_players_sort)
         elif admin_players_filter_columns is not None:
@@ -1040,7 +1059,9 @@ class PlayerAdminController(BaseEventAdminController):
             SessionHandler.set_session_admin_players_filter_categories(request, [])
             SessionHandler.set_session_admin_players_filter_name(request, '')
             SessionHandler.set_session_admin_players_filter_clubs_search(request, '')
-            plugin_manager.hook.clear_player_filters(request=request)
+            plugin_manager.hook_for_event(event, 'clear_player_filters')(
+                request=request
+            )
         self.set_players_search_results(request)
         return self._admin_event_players_render(request)
 
@@ -1281,7 +1302,7 @@ class PlayerAdminController(BaseEventAdminController):
         src_tournament = admin_player.tournament
         event = web_context.get_admin_event()
         try:
-            self._validate_player_tournament_move(admin_player, dst_tournament)
+            self._validate_player_tournament_move(event, admin_player, dst_tournament)
             event.move_player_to_tournament(admin_player, dst_tournament)
             if not self.filtered_players(request, [admin_player]):
                 self.delete_from_search_results(request, admin_player.id)
@@ -1307,7 +1328,9 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @staticmethod
-    def _validate_player_tournament_move(player: Player, dst_tournament: Tournament):
+    def _validate_player_tournament_move(
+        event: Event, player: Player, dst_tournament: Tournament
+    ):
         """Validate that a player can be moved from its current tournament to *dst_tournament*.
         Raises a ValueError if it is not possible."""
 
@@ -1339,9 +1362,9 @@ class PlayerAdminController(BaseEventAdminController):
                 ),
             )
         if plugin_error := (
-            plugin_manager.hook.is_tournament_participation_possible(
-                tournament=dst_tournament, player=player
-            )
+            plugin_manager.hook_for_event(
+                event, 'is_tournament_participation_possible'
+            )(tournament=dst_tournament, player=player)
             or None
         ):
             raise ValueError(plugin_error)
@@ -1669,7 +1692,7 @@ class PlayerAdminController(BaseEventAdminController):
             return self._admin_event_players_render(request, reload_event=True)
 
         per_plugin_columns: Iterable[Iterable[ExtraAdminColumn]] = (
-            plugin_manager.hook.get_extra_players_update_columns()
+            plugin_manager.hook_for_event(event, 'get_extra_players_update_columns')()
         )
         extra_columns: dict[str, list[ExtraAdminColumn]] = {}
         for plugin_columns in per_plugin_columns:
@@ -1784,7 +1807,7 @@ class PlayerAdminController(BaseEventAdminController):
 
     @staticmethod
     def download_players_as_vcf(
-        event_uniq_id: str,
+        event: Event,
         players: list[Player],
     ) -> Response[str]:
         """Returns a file with all the vCards of the players."""
@@ -1813,7 +1836,7 @@ class PlayerAdminController(BaseEventAdminController):
             content=data,
             media_type='text/x-vcard',
             headers={
-                'Content-Disposition': f'attachment;{event_uniq_id}.vcf',
+                'Content-Disposition': f'attachment;{event.uniq_id}.vcf',
             },
         )
 
@@ -1843,11 +1866,13 @@ class PlayerAdminController(BaseEventAdminController):
     ]
 
     @classmethod
-    def get_players_datasheet_extra_columns(cls) -> dict[int, list[ExtraColumn]]:
+    def get_players_datasheet_extra_columns(
+        cls, event: Event
+    ) -> dict[int, list[ExtraColumn]]:
         """Returns the extra data columns added by the plugins"""
-        per_plugin_columns: list[Iterable[ExtraColumn]] = (
-            plugin_manager.hook.get_extra_players_datasheet_columns()
-        )
+        per_plugin_columns: list[Iterable[ExtraColumn]] = plugin_manager.hook_for_event(
+            event, 'get_extra_players_datasheet_columns'
+        )()
         extra_columns: dict[int, list[ExtraColumn]] = {}
         for plugin_columns in per_plugin_columns:
             for extra_column in plugin_columns:
@@ -1863,13 +1888,13 @@ class PlayerAdminController(BaseEventAdminController):
         return {key: extra_columns[key] for key in reversed(sorted(extra_columns))}
 
     @classmethod
-    def get_players_datasheet_columns(cls) -> list[str]:
+    def get_players_datasheet_columns(cls, event: Event) -> list[str]:
         """Returns the names of the columns used in the datasheets that can be downloaded."""
 
         header_columns = cls.DATASHEET_COLUMNS[:]
 
         # Add plugin columns
-        extra_columns = PlayerAdminController.get_players_datasheet_extra_columns()
+        extra_columns = PlayerAdminController.get_players_datasheet_extra_columns(event)
         for index, columns in extra_columns.items():
             header_columns[index:index] = [column.title for column in columns]
 
@@ -1878,11 +1903,12 @@ class PlayerAdminController(BaseEventAdminController):
     @classmethod
     def get_players_datasheet_data(
         cls,
+        event: Event,
         players: list[Player],
     ) -> list[list[str | int | float]]:
         """Returns the data of the datasheets that can be downloaded."""
 
-        extra_columns = cls.get_players_datasheet_extra_columns()
+        extra_columns = cls.get_players_datasheet_extra_columns(event)
 
         def augment_row(row, player):
             for index, columns in extra_columns.items():
@@ -1924,15 +1950,15 @@ class PlayerAdminController(BaseEventAdminController):
     @classmethod
     def download_players_as_xlsx(
         cls,
-        event_uniq_id: str,
+        event: Event,
         players: list[Player],
     ) -> File:
         """Returns a file with all the information of the players in an XLSX format."""
         temp_file = NamedTemporaryFile(delete=False, mode='wb', suffix='.xlsx')
         workbook = xlsxwriter.Workbook(temp_file)
         worksheet = workbook.add_worksheet()
-        columns = cls.get_players_datasheet_columns()
-        data = cls.get_players_datasheet_data(players)
+        columns = cls.get_players_datasheet_columns(event)
+        data = cls.get_players_datasheet_data(event, players)
         worksheet.add_table(
             0,
             0,
@@ -1945,12 +1971,12 @@ class PlayerAdminController(BaseEventAdminController):
         )
         worksheet.autofit()
         workbook.close()
-        return File(path=temp_file.name, filename=f'{event_uniq_id}.xlsx')
+        return File(path=temp_file.name, filename=f'{event.uniq_id}.xlsx')
 
     @classmethod
     def download_players_as_csv(
         cls,
-        event_uniq_id: str,
+        event: Event,
         players: list[Player],
     ) -> File:
         """Returns a file with all the information of the players in a CSV format (comma-separated)."""
@@ -1958,24 +1984,24 @@ class PlayerAdminController(BaseEventAdminController):
             delete=False, mode='w', suffix='.csv', newline=''
         )
         writer = csv.writer(temp_file)
-        writer.writerow(cls.get_players_datasheet_columns())
-        writer.writerows(cls.get_players_datasheet_data(players))
-        return File(path=temp_file.name, filename=f'{event_uniq_id}.csv')
+        writer.writerow(cls.get_players_datasheet_columns(event))
+        writer.writerows(cls.get_players_datasheet_data(event, players))
+        return File(path=temp_file.name, filename=f'{event.uniq_id}.csv')
 
     @classmethod
     def download_players_as_ods(
         cls,
-        event_uniq_id: str,
+        event: Event,
         players: list[Player],
     ) -> File:
         """Returns a file with all the information of the players in an ODS format."""
         temp_file = NamedTemporaryFile(delete=False, mode='w+b', suffix='.ods')
         save_data(
             temp_file,
-            [cls.get_players_datasheet_columns()]
-            + cls.get_players_datasheet_data(players),
+            [cls.get_players_datasheet_columns(event)]
+            + cls.get_players_datasheet_data(event, players),
         )
-        return File(path=temp_file.name, filename=f'{event_uniq_id}.ods')
+        return File(path=temp_file.name, filename=f'{event.uniq_id}.ods')
 
     @get(
         path='/download-event-players/{event_uniq_id:str}',
@@ -1998,12 +2024,12 @@ class PlayerAdminController(BaseEventAdminController):
             players = event.players_sorted_by_name
         match download_format:
             case 'vcf':
-                return self.download_players_as_vcf(event.uniq_id, players)
+                return self.download_players_as_vcf(event, players)
             case 'csv':
-                return self.download_players_as_csv(event.uniq_id, players)
+                return self.download_players_as_csv(event, players)
             case 'xlsx':
-                return self.download_players_as_xlsx(event.uniq_id, players)
+                return self.download_players_as_xlsx(event, players)
             case 'ods':
-                return self.download_players_as_ods(event.uniq_id, players)
+                return self.download_players_as_ods(event, players)
             case _:
                 raise ValueError(f'download_format={download_format}')

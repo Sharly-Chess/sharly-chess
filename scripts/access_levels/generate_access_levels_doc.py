@@ -299,7 +299,7 @@ def generate_doc(
     dev_output_dir: Path,
     web_output_dir: Path,
 ):
-    access_levels: list[AccessLevel] = AccessLevelManager.objects()
+    access_levels: list[AccessLevel] = AccessLevelManager().objects()
     strings: dict[str, dict[str, str]] = {
         locale: {
             'edit_warning': _(

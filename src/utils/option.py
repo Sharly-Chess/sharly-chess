@@ -66,10 +66,9 @@ class OptionHandler[T: Option](IdentifiableEntity, ABC):
         """Types of options the handler can be initialized with."""
         return []
 
-    @classmethod
-    def default_options(cls) -> list[T]:
+    def default_options(self) -> list[T]:
         """List of all available options with default values."""
-        return [option_type() for option_type in cls.available_options()]
+        return [option_type() for option_type in self.available_options()]
 
     def validate_options(self):
         """Checks the validity of options, Raises a OptionError if invalid."""

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
 from types import ModuleType
-from typing import TYPE_CHECKING, Any, Generic, NamedTuple, Self, TypeVar
+from typing import TYPE_CHECKING, Any, NamedTuple, Self, Optional
 
 from packaging.version import Version
 
@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from database.sqlite.event.event_database import EventDatabase
     from plugins.migration import PluginMigrationManager
     from web.controllers.base_controller import BaseController
+    from data.event import Event
 
 
 class PluginUtils:
@@ -120,11 +121,7 @@ class PluginData(ABC):
         """The values to use in a form."""
 
 
-# Define a TypeVar bound to PluginData
-PD = TypeVar('PD', bound=PluginData)
-
-
-class Plugin(Generic[PD], IdentifiableEntity, ABC):
+class Plugin[PD: PluginData](IdentifiableEntity, ABC):
     data_class: type[PD] | None = None
 
     def __init__(self):
@@ -158,9 +155,18 @@ class Plugin(Generic[PD], IdentifiableEntity, ABC):
         return True
 
     @property
+    def federation(self) -> str | None:
+        """Returns the federation for which the plugin is enabled,, or None for all"""
+        return None
+
+    @property
     def is_enabled(self) -> bool:
         assert self.context.stored_plugin is not None
         return self.context.stored_plugin.is_enabled
+
+    def is_enabled_for_event(self, event: Optional['Event']) -> bool:
+        """Determines if the plugin is enabled for the given event"""
+        return True
 
     @property
     def form_key(self) -> str:

@@ -287,9 +287,10 @@ class BaseEventAdminWebContext(AdminWebContext):
                 },
             }
         if self.client.can_publish_results:
-            per_plugin_upload_items = plugin_manager.hook.get_nav_upload_items(
-                event=self.get_admin_event()
-            )
+            event = self.get_admin_event()
+            per_plugin_upload_items = plugin_manager.hook_for_event(
+                event, 'get_nav_upload_items'
+            )(event=event)
             upload_items: list[NavUploadItem] = [
                 item for items in per_plugin_upload_items for item in items
             ]

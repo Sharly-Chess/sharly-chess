@@ -525,7 +525,7 @@ class AccountAdminController(BaseEventAdminController):
             WebContext.form_data_to_str(data, field := 'access_level') or ''
         )
         try:
-            access_level = AccessLevelManager.get_object(access_level_id)
+            access_level = AccessLevelManager().get_object(access_level_id)
         except KeyError:
             errors[field] = f'Unknown access level [{access_level_id}].'
             return errors
@@ -585,7 +585,7 @@ class AccountAdminController(BaseEventAdminController):
                 web_context, FormAction.CREATE, flat_data, errors
             )
             return self.admin_event_account_render(web_context, template_context)
-        access_level = AccessLevelManager.get_object(
+        access_level = AccessLevelManager().get_object(
             WebContext.form_data_to_str(flat_data, 'access_level') or ''
         )
         stored_permission = StoredPermission(
@@ -626,7 +626,7 @@ class AccountAdminController(BaseEventAdminController):
                 web_context, FormAction.UPDATE, flat_data, errors
             )
             return self.admin_event_account_render(web_context, template_context)
-        access_level_ = AccessLevelManager.get_object(
+        access_level_ = AccessLevelManager().get_object(
             WebContext.form_data_to_str(flat_data, 'access_level') or ''
         )
         stored_permission = StoredPermission(

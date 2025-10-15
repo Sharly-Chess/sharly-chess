@@ -1,7 +1,7 @@
-<h4>
+<h4 id="ffe-settings-header">
     {{ _('FFE settings') }}
 </h4>
-<div class="row gy-2 gx-3">
+<div id="ffe-settings"  class="row gy-2 gx-3">
     <div class="col-12 col-md-6">
         {{ admin_macros.switch_input(
             name='ffe_auto_upload',
@@ -26,7 +26,20 @@
 </div>
 
 <script>
-    $('#player-rating-type').val('3');
-    $('#player-rating-type').prop('disabled', true);
-    $('#player-rating-type-help').text('{{ _('The FFE always uses the FIDE rating when available.') }}');
+    var ratingTypeHelpText = $('#player-rating-type-help').text();
+
+    function updateFFEVisibility() {
+        const fraSelected = $('#federation').val() === 'FRA';
+        $('#ffe-settings, #ffe-settings-header').toggle(fraSelected);
+        var helpText = ratingTypeHelpText;
+        if (fraSelected) {
+            $('#player-rating-type').val('3');
+            helpText = '{{ _('The FFE always uses the FIDE rating when available.') }}';
+        };
+        $('#player-rating-type').prop('disabled', fraSelected);
+        $('#player-rating-type-help').text(helpText);
+    }
+
+    updateFFEVisibility();
+    $('#federation').on('change', updateFFEVisibility);
 </script>

@@ -227,9 +227,19 @@ class Tournament:
         criteria_by_id = {}
         for stored_criterion in self.stored_tournament.stored_criteria:
             assert stored_criterion.id is not None
-            criteria_by_id[stored_criterion.id] = TournamentCriterion(
-                self, stored_criterion
-            )
+            try:
+                criteria_by_id[stored_criterion.id] = TournamentCriterion(
+                    self, stored_criterion
+                )
+            except KeyError as e:
+                # This can happen when the plugin that defined the criteria is not enabled
+                logger.warning(
+                    'Criterion [%s] not found for tournament [%s]: %s',
+                    stored_criterion.id,
+                    self.uniq_id,
+                    e,
+                )
+                pass
         return criteria_by_id
 
     @property
@@ -351,7 +361,9 @@ class Tournament:
     def pairing_variation(self) -> 'PairingVariation':
         from data.pairings import PairingVariationManager
 
-        return PairingVariationManager.get_object(self.stored_tournament.pairing)
+        return PairingVariationManager(self.event).get_object(
+            self.stored_tournament.pairing
+        )
 
     @property
     def pairing_system(self) -> 'PairingSystem':
@@ -422,9 +434,11 @@ class Tournament:
     @cached_property
     def tie_breaks(self) -> list[TieBreak]:
         tie_breaks: list[TieBreak] = []
-        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager.type_by_id()
+        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager(
+            self.event
+        ).type_by_id()
         option_type_by_id: dict[str, type[TieBreakOption]] = (
-            TieBreakOptionManager.type_by_id()
+            TieBreakOptionManager().type_by_id()
         )
         for tie_break_dict in self.stored_tournament.tie_breaks:
             assert isinstance(tie_break_dict['type'], str)

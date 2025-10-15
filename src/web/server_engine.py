@@ -126,7 +126,7 @@ class ServerEngine(Engine):
             )
         )
 
-        for data_source in DataSourceManager.objects():
+        for data_source in DataSourceManager().objects():
             data_source.on_app_init()
 
         if self.port:

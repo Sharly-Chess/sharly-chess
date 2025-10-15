@@ -121,10 +121,10 @@
                     </div>
                 </div>
                 <h4>
-                    {{ _('Plugins') }}
+                    {{ _('Utility Plugins') }}
                 </h4>
                 <div class="row gx-3 d-fex flex-column gap-2">
-                    {% for plugin in plugins %}
+                    {% for plugin in global_plugins %}
                         {{ admin_macros.switch_input(
                             name=plugin.form_key,
                             label='',
@@ -136,6 +136,35 @@
                         ) }}
                     {% endfor %}
                 </div>
+
+                {% if federation_plugins %}
+                    <h4>
+                        {{ _('Federation plugins') }}
+                    </h4>
+                    <div class="form-text mb-3">
+                        {{ _('These plugins enable features that are only active on events of the chosen federation.<br />You’ll be asked to select a federation when creating the event.') }}
+                    </div>
+                {% endif %}
+                {% for federation, plugins in federation_plugins.items() %}
+                    <div class="ms-4">
+                        <div class="text-body-secondary fw-bold text-uppercase pb-1">
+                            {{ federation }} ({{ plugins[0].federation }})
+                        </div>
+                        <div class="row gx-3 d-fex flex-column gap-2">
+                            {% for plugin in plugins %}
+                                {{ admin_macros.switch_input(
+                                    name=plugin.form_key,
+                                    label='',
+                                    placeholder=plugin.name,
+                                    disabled=not plugin.is_state_editable,
+                                    help_text='',
+                                    info=plugin.description,
+                                    data=data, errors=errors
+                                ) }}
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
             </form>
         </div>
 

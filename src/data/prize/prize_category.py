@@ -1,8 +1,10 @@
+from logging import Logger
 import weakref
 from _weakref import ReferenceType
 from collections.abc import Collection
 from typing import TYPE_CHECKING
 
+from common.logger import get_logger
 from common.i18n import _
 from data.player import Player
 from data.prize.managers import PrizeSharingManager
@@ -20,6 +22,8 @@ from utils import StaticUtils
 if TYPE_CHECKING:
     from data.prize.prize_group import PrizeGroup
 
+logger: Logger = get_logger()
+
 
 class PrizeCategory:
     def __init__(
@@ -34,7 +38,19 @@ class PrizeCategory:
         criteria_by_id = {}
         for stored_criterion in self.stored_prize_category.stored_prize_criteria:
             assert stored_criterion.id is not None
-            criteria_by_id[stored_criterion.id] = PrizeCriterion(self, stored_criterion)
+            try:
+                criteria_by_id[stored_criterion.id] = PrizeCriterion(
+                    self, stored_criterion
+                )
+            except KeyError as e:
+                # This can happen when the plugin that defined the criteria is not enabled
+                logger.warning(
+                    'Criterion [%s] not found for category [%s]: %s',
+                    stored_criterion.id,
+                    self.name,
+                    e,
+                )
+                pass
         return criteria_by_id
 
     def _get_prizes_by_id(self) -> dict[int, Prize]:
@@ -73,7 +89,9 @@ class PrizeCategory:
 
     @property
     def prize_sharing(self) -> PrizeSharing:
-        return PrizeSharingManager.get_object(self.stored_prize_category.prize_sharing)
+        return PrizeSharingManager().get_object(
+            self.stored_prize_category.prize_sharing
+        )
 
     @property
     def criteria(self) -> Collection[PrizeCriterion]:

@@ -453,6 +453,7 @@ class PairingsAdminController(BaseEventAdminController):
             board_id=board_id,
             action=None if validate_result else PairingAction.RESULT_UPDATE,
         )
+        event = web_context.get_admin_event()
         tournament = web_context.get_admin_tournament()
         board = web_context.get_admin_board()
 
@@ -477,9 +478,9 @@ class PairingsAdminController(BaseEventAdminController):
         else:
             r = Result(result)
             if r.is_special_result:
-                if message := plugin_manager.hook.signal_special_result_set(
-                    tournament=tournament, result=r
-                ):
+                if message := plugin_manager.hook_for_event(
+                    event, 'signal_special_result_set'
+                )(tournament=tournament, result=r):
                     Message.warning(request, message)
 
             tournament.add_result(board, r)

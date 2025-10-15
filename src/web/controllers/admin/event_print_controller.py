@@ -57,8 +57,8 @@ class EventPrintController(BaseEventAdminController):
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
-        print_options = PrintDocumentOptionManager.objects()
         event = web_context.get_admin_event()
+        print_options = PrintDocumentOptionManager(event).objects()
         if len(event.tournaments) == 1:
             tournament_ids = list(event.tournaments_by_id)
 
@@ -74,20 +74,20 @@ class EventPrintController(BaseEventAdminController):
         data = default_data | (data or {})
         containers_by_document: dict[str, list[str]] = {'': []} | {
             document.id: [option.container_id for option in document.default_options()]
-            for document in PrintDocumentManager.objects()
+            for document in PrintDocumentManager(event).objects()
         }
         current_document_option_ids = []
         if document_id := data.get('document', None):
             current_document_option_ids = [
                 option.id
-                for option in PrintDocumentManager.get_type(
-                    document_id
-                ).default_options()
+                for option in PrintDocumentManager(event)
+                .get_type(document_id)()
+                .default_options()
             ]
         return {
             'modal': 'print',
             'tournament_options': web_context.get_tournament_options(),
-            'document_options': PrintDocumentManager.options(),
+            'document_options': PrintDocumentManager(event).options(),
             'current_document_option_ids': current_document_option_ids,
             'print_options': print_options,
             'containers_by_document': containers_by_document,
@@ -139,13 +139,14 @@ class EventPrintController(BaseEventAdminController):
     ) -> Template:
         flat_data = WebContext.flatten_list_data(data)
         web_context = BaseEventAdminWebContext(request)
+        event = web_context.get_admin_event()
 
         errors: dict[str, str] = {}
 
         document_type: type[PrintDocument] | None = None
         field = 'document'
         try:
-            document_type = PrintDocumentManager.get_type(
+            document_type = PrintDocumentManager(event).get_type(
                 WebContext.form_data_to_str(flat_data, field) or ''
             )
         except KeyError:
@@ -154,9 +155,9 @@ class EventPrintController(BaseEventAdminController):
         tournament_ids: list[int] | None = None
         if document_type:
             options = []
-            for option in document_type.default_options():
+            for option in document_type().default_options():
                 value = WebContext.form_data_to_value(flat_data, option.id, option.type)
-                options.append(type(option)(value))
+                options.append(type(option)(event, value))
 
                 if isinstance(option, TournamentPrintOption):
                     tournament_id = web_context.form_data_to_int(
@@ -206,7 +207,7 @@ class EventPrintController(BaseEventAdminController):
                 'document': data['document'],
                 'options': {
                     option.id: data[option.id]
-                    for option in document_type.default_options()
+                    for option in document_type().default_options()
                     if option.id in data
                 },
             },
@@ -223,31 +224,32 @@ class EventPrintController(BaseEventAdminController):
         options: str | None = None,
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
-        document_type = PrintDocumentManager.get_type(document)
+        event = web_context.get_admin_event()
+        document_type = PrintDocumentManager(event).get_type(document)
         option_data: dict[str, str] = {}
         if options:
             for option in urllib.parse.unquote(options).split('|'):
                 key, raw_value = option.split('=')
                 option_data[key] = raw_value
         print_options: list[PrintOption] = []
-        for print_option in document_type.default_options():
+        for print_option in document_type().default_options():
             value = WebContext.form_data_to_value(
                 option_data, print_option.id, print_option.type
             )
-            print_options.append(type(print_option)(value))
+            print_options.append(type(print_option)(event, value))
         print_document = document_type(web_context.get_admin_event(), print_options)
 
-        per_plugin_columns = plugin_manager.hook.get_extra_print_view_columns(
-            document=print_document
-        )
+        per_plugin_columns = plugin_manager.hook_for_event(
+            event, 'get_extra_print_view_columns'
+        )(document=print_document)
         extra_columns: dict[str, list[ExtraColumn]] = {}
         for plugin_columns in per_plugin_columns:
             for extra_column in plugin_columns:
                 c = extra_columns.setdefault(extra_column.at, [])
                 c.append(extra_column)
-        per_plugin_css: list[str] = plugin_manager.hook.get_extra_print_view_css(
-            document=print_document
-        )
+        per_plugin_css: list[str] = plugin_manager.hook_for_event(
+            event, 'get_extra_print_view_css'
+        )(document=print_document)
         extra_css: str = '\n'.join(per_plugin_css)
 
         template_context = (

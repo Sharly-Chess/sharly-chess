@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from functools import cached_property
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 
 from common.i18n import _
 from data.safety_mode import (
@@ -13,18 +13,22 @@ from data.safety_mode import (
 from utils.entity import IdentifiableEntity, EntityManager
 
 if TYPE_CHECKING:
-    from data.pairings.variations import PairingVariation
+    from data.pairings.variations import (
+        PairingVariation,
+        SwissVariation,
+        RoundRobinVariation,
+    )
     from data.tie_breaks import TieBreak
     from data.tournament import Tournament
+    from data.event import Event
 
 
-class PairingSystem(IdentifiableEntity, ABC):
+class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
     """Abstract class representing all the different pairing systems.
     Each system can have different variations."""
 
-    @property
     @abstractmethod
-    def variation_manager(self) -> EntityManager['PairingVariation']:
+    def variation_manager(self, event: 'Event') -> EntityManager[PV]:
         """Manager of all the variations of the system."""
 
     @property
@@ -104,7 +108,7 @@ class PairingSystem(IdentifiableEntity, ABC):
         """List of tie-breaks to set as default in the tournament modal."""
 
 
-class SwissPairingSystem(PairingSystem):
+class SwissPairingSystem(PairingSystem['SwissVariation']):
     @staticmethod
     def static_id() -> str:
         return 'SWISS'
@@ -113,11 +117,11 @@ class SwissPairingSystem(PairingSystem):
     def static_name() -> str:
         return _('Swiss')
 
-    @property
-    def variation_manager(self) -> EntityManager['PairingVariation']:
+    @override
+    def variation_manager(self, event: 'Event') -> EntityManager['SwissVariation']:
         from data.pairings.managers import SwissVariationManager
 
-        return SwissVariationManager()  # type: ignore
+        return SwissVariationManager(event)
 
     @property
     def pairing_buttons_template(self) -> str:
@@ -226,7 +230,7 @@ class SwissPairingSystem(PairingSystem):
         )
 
 
-class RoundRobinPairingSystem(PairingSystem):
+class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
     @staticmethod
     def static_id() -> str:
         return 'ROUND_ROBIN'
@@ -239,11 +243,11 @@ class RoundRobinPairingSystem(PairingSystem):
     def round_per_round_pairing_generation(self) -> bool:
         return False
 
-    @property
-    def variation_manager(self) -> EntityManager['PairingVariation']:
+    @override
+    def variation_manager(self, event: 'Event') -> EntityManager['RoundRobinVariation']:
         from data.pairings.managers import RoundRobinVariationManager
 
-        return RoundRobinVariationManager()  # type: ignore
+        return RoundRobinVariationManager(event)
 
     @property
     def allow_rounds_update_once_started(self) -> bool:

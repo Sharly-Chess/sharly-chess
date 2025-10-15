@@ -28,7 +28,7 @@ from data.print_documents.options import (
 from data.tournament import Tournament
 from utils import StaticUtils
 from utils.enum import Result
-from utils.option import OptionHandler
+from utils.option import Option, OptionHandler
 
 
 class PrintDocument(OptionHandler[PrintOption], ABC):
@@ -37,8 +37,19 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
         event: Event | None = None,
         options: list[PrintOption] | None = None,
     ):
-        super().__init__(options)
         self.event = event
+        super().__init__(options)
+
+    @override
+    def default_options(self) -> list[PrintOption]:
+        return [option_type(self.event) for option_type in self.available_options()]
+
+    @override
+    def _get_option[V: Option](self, option_type: type[V]) -> V:
+        return next(
+            (option for option in self.options if isinstance(option, option_type)),
+            option_type(self.event),
+        )
 
     @property
     def tournament(self) -> Tournament:
@@ -880,9 +891,9 @@ class StatisticsPrintDocument(PrintDocument):
 
         statistics: list[StatisticsSection] = []
 
-        per_plugin_sections = plugin_manager.hook.get_extra_statistics_sections(
-            document=self, tournaments=self.tournaments
-        )
+        per_plugin_sections = plugin_manager.hook_for_event(
+            self.event, 'get_extra_statistics_sections'
+        )(document=self, tournaments=self.tournaments)
 
         for attr_name, title, sort_key, min_count, filter_func, subtitle_fn in [
             (

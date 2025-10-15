@@ -1,3 +1,4 @@
+from typing import override
 from data.access_levels.access_levels import (
     AccessLevel,
     SpectatorAccessLevel,
@@ -15,8 +16,8 @@ from utils.entity import EntityManager
 
 
 class AccessLevelManager(EntityManager[AccessLevel]):
-    @staticmethod
-    def entity_types() -> list[type[AccessLevel]]:
+    @override
+    def entity_types(self) -> list[type[AccessLevel]]:
         return [
             AdministrationAccessLevel,
             OrganizationAccessLevel,

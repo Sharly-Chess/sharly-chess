@@ -1,11 +1,11 @@
-<h4>
+<h4 id="chessevent-settings-header">
     {{ _('ChessEvent settings') }}
     <span style="font-size: 90%">{{ macros.doc_icon('chessevent', 'ms-2') }}</span>
 </h4>
-<h6 class="text-body-secondary pt-1 pb-1">
+<h6 id="chessevent-settings-info" class="text-body-secondary pt-1 pb-1">
     {{ _('Default credentials used to import tournaments from the ChessEvent platform.') }}
 </h6>
-<div class="row gy-2 gx-3">
+<div id="chessevent-settings" class="row gy-2 gx-3">
     <div class="col-12">
         {{ admin_macros.text_input(
             name='chessevent_event_id',
@@ -40,3 +40,15 @@
         ) }}
     </div>
 </div>
+
+
+<script>
+    function updateChessEventVisibility() {
+        const federation = $('#federation').val();
+        const show = federation === 'FRA';
+        $('#chessevent-settings, #chessevent-settings-header, #chessevent-settings-info').toggle(show);
+    }
+
+    updateChessEventVisibility();
+    $('#federation').on('change', updateChessEventVisibility);
+</script>

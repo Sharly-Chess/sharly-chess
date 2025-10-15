@@ -269,7 +269,7 @@ class Engine:
         logger.info('Recovering misc files...')
         files_to_recover = [
             database.file
-            for database in LocalSourceDatabaseManager.objects()
+            for database in LocalSourceDatabaseManager().objects()
             if version >= database.min_recovery_version
         ]
         misc_files: list[Path] = []

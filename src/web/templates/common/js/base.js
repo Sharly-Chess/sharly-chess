@@ -143,8 +143,50 @@ window.addEventListener('htmx:afterSettle', function(event) {
 });
 
 
-window.addEventListener('request_refresh', function(event) {
+function reloadWithMessagesPreserved() {
+    sessionStorage.setItem("preserve_scroll_y", window.scrollY.toString());
+    const msgDiv = document.getElementById('messages');
+    if (msgDiv) {
+        sessionStorage.setItem('preserve_messages_html', msgDiv.innerHTML);
+    }
     location.reload();
+}
+
+window.addEventListener('request_refresh', () => {
+    reloadWithMessagesPreserved();
+});
+
+function maybeRemoveMe(elt) {
+    var timing = elt.getAttribute('remove-me') || elt.getAttribute('data-remove-me')
+    if (timing) {
+        setTimeout(function() {
+            elt.parentElement.removeChild(elt)
+        }, htmx.parseInterval(timing))
+    }
+}
+
+// After page load, restore
+window.addEventListener('DOMContentLoaded', () => {
+    const html = sessionStorage.getItem('preserve_messages_html');
+    if (html !== null) {
+        const msgDiv = document.getElementById('messages');
+        if (msgDiv) {
+            msgDiv.innerHTML = html;
+            // The HTML remove me extension only runs after an HTMX swap. We need to remove the preserved elements
+            // after a reload too.
+            msgDiv.querySelectorAll('[remove-me],[data-remove-me]').forEach(maybeRemoveMe);
+        }
+        sessionStorage.removeItem('preserve_messages_html');
+    }
+
+    // Restore scroll
+    const scrollY = sessionStorage.getItem("preserve_scroll_y");
+    if (scrollY !== null) {
+        setTimeout(() => {
+            window.scrollTo({ top: parseInt(scrollY, 10), behavior: 'instant' });
+        }, 0);
+        sessionStorage.removeItem("preserve_scroll_y");
+    }
 });
 
 function debounce(callback, delay){

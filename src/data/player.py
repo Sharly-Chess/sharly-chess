@@ -317,8 +317,9 @@ class Player:
                     player_ratings.estimated, PlayerRatingType.ESTIMATED
                 )
 
-            rating_and_type = plugin_manager.hook.get_player_rating(
-                event_federation=self.event.federation,
+            rating_and_type = plugin_manager.hook_for_event(
+                self.event, 'get_player_rating'
+            )(
                 tournament_rating=tournament_rating,
                 player_rating_type=player_rating_type,
                 player=self,
@@ -444,7 +445,7 @@ class Player:
         else:
             tournament_start, tournament_end = None, None
         return PlayerCategory.from_year_of_birth(
-            self.year_of_birth, tournament_start, tournament_end
+            self.event, self.year_of_birth, tournament_start, tournament_end
         )
 
     @property

@@ -70,7 +70,7 @@ class Client:
         access_levels_by_action: dict[AuthAction, list[AccessLevel]] = {
             action: [] for action in AuthAction
         }
-        for access_level in AccessLevelManager.objects():
+        for access_level in AccessLevelManager().objects():
             for action in access_level.allowed_actions():
                 access_levels_by_action[action].append(access_level)
         return access_levels_by_action
@@ -162,7 +162,7 @@ class Client:
             manageable_access_levels |= access_level.manageable_access_levels()
         return [
             access_level
-            for access_level in AccessLevelManager.objects()
+            for access_level in AccessLevelManager().objects()
             if access_level in manageable_access_levels
         ]
 

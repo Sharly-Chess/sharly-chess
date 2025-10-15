@@ -22,11 +22,11 @@ class TournamentCriterion:
         self.player_filter = self._get_player_filter()
 
     def _get_player_filter(self) -> PlayerFilter:
-        filter_type = PlayerFilterManager.get_type(
+        filter_type = PlayerFilterManager(self.tournament.event).get_type(
             self.stored_tournament_criterion.type
         )
         options = []
-        for option in filter_type.default_options():
+        for option in filter_type().default_options():
             value = self.stored_tournament_criterion.options.get(
                 option.id, option.default_value
             )

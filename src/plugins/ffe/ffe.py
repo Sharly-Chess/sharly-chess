@@ -105,12 +105,12 @@ class FfePlugin(Plugin):
 
     @staticmethod
     def static_name() -> str:
-        return _('FFE')
+        return _('Fédération Française des Échecs')
 
     @property
     def description(self) -> str:
         return _(
-            'French Federation specific features (player search, leagues, Papi compatibility).'
+            'French Federation specific features (player search, results uploading, leagues, Papi import/export...)'
         )
 
     @property
@@ -123,9 +123,13 @@ class FfePlugin(Plugin):
         return True
 
     @override
+    def is_enabled_for_event(self, event: Optional['Event']) -> bool:
+        return event is not None and event.federation == 'FRA'
+
+    @override
     @property
-    def is_state_editable(self) -> bool:
-        return False
+    def federation(self) -> str | None:
+        return 'FRA'
 
     @override
     @property
@@ -412,14 +416,10 @@ class FfePlugin(Plugin):
     @hookimpl
     def get_player_rating(
         self,
-        event_federation: str,
         tournament_rating: TournamentRating,
         player_rating_type: PlayerRatingType,
         player: 'Player',
     ) -> Optional[PlayerRatingAndType]:
-        if event_federation != 'FRA':
-            return None
-
         # In France, regardless of the player_rating_type of the tournament,
         # the FIDE rating is used, if available, falling back to the national rating
         ratings = player.ratings[tournament_rating]
@@ -654,6 +654,11 @@ class FfePlugin(Plugin):
         data: dict[str, str],
         errors: dict[str, str],
     ):
+        federation = WebContext.form_data_to_str(data, field := 'federation')
+        if federation != 'FRA':
+            # We only validate FFE fields for the FRA federation
+            return
+
         ffe_auto_upload_delay = WebContext.form_data_to_int(
             data, field := 'ffe_auto_upload_delay'
         )
@@ -746,14 +751,16 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def signal_tournament_set(
-        self, tournament: 'Tournament', stored_tournament: 'StoredTournament'
+        self, event: 'Event', stored_tournament: 'StoredTournament'
     ) -> str | None:
         if blocker := PapiConverter.check_rounds(stored_tournament.rounds):
             return blocker
 
-        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager.type_by_id()
+        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager(
+            event
+        ).type_by_id()
         option_type_by_id: dict[str, type[TieBreakOption]] = (
-            TieBreakOptionManager.type_by_id()
+            TieBreakOptionManager().type_by_id()
         )
         for tie_break_dict in stored_tournament.tie_breaks:
             assert isinstance(tie_break_dict['type'], str)
@@ -767,7 +774,7 @@ class FfePlugin(Plugin):
                 tie_break = tie_break_type(options)
                 if blocker := PapiConverter.check_tiebreak(tie_break):
                     return blocker
-        pairing_variation = PairingVariationManager.get_object(
+        pairing_variation = PairingVariationManager(event).get_object(
             stored_tournament.pairing
         )
         if warning := PapiConverter.check_pairing_variation_warning(pairing_variation):

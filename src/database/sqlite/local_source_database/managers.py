@@ -1,3 +1,4 @@
+from typing import override
 from database.sqlite.local_source_database import delays, actions
 from database.sqlite.local_source_database.actions import OutdatedAction
 from database.sqlite.local_source_database.databases import LocalSourceDatabase
@@ -7,8 +8,8 @@ from utils.entity import EntityManager
 
 
 class LocalSourceDatabaseManager(EntityManager[LocalSourceDatabase]):
-    @staticmethod
-    def entity_types() -> list[type[LocalSourceDatabase]]:
+    @override
+    def entity_types(self) -> list[type[LocalSourceDatabase]]:
         from database.sqlite.fide.fide_database import FideDatabase
 
         databases: list[type[LocalSourceDatabase]] = [FideDatabase]
@@ -17,8 +18,8 @@ class LocalSourceDatabaseManager(EntityManager[LocalSourceDatabase]):
 
 
 class OutdatedDelayManager(EntityManager[OutdatedDelay]):
-    @staticmethod
-    def entity_types() -> list[type[OutdatedDelay]]:
+    @override
+    def entity_types(self) -> list[type[OutdatedDelay]]:
         return [
             delays.DisabledOutdatedDelay,
             delays.DailyOutdatedDelay,
@@ -30,8 +31,8 @@ class OutdatedDelayManager(EntityManager[OutdatedDelay]):
 
 
 class OutdatedActionManager(EntityManager[OutdatedAction]):
-    @staticmethod
-    def entity_types() -> list[type[OutdatedAction]]:
+    @override
+    def entity_types(self) -> list[type[OutdatedAction]]:
         return [
             actions.NotifOutdatedAction,
             actions.AutoUpdateOutdatedAction,

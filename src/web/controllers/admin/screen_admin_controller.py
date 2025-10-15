@@ -421,7 +421,7 @@ class ScreenAdminController(BaseEventAdminController):
         screen_type: str | None = None,
         screen_set_id: int | None = None,
         reload_event: bool = False,
-        data: dict[str, str] | None = None,  # type: ignore
+        data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
     ) -> HTMXTemplate | Redirect:
         web_context = ScreenAdminWebContext(

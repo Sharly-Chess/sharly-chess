@@ -1,3 +1,4 @@
+from typing import override
 from data.prize.prize_sharing import (
     PrizeSharing,
     NoPrizeSharing,
@@ -8,8 +9,8 @@ from utils.entity import EntityManager
 
 
 class PrizeSharingManager(EntityManager[PrizeSharing]):
-    @staticmethod
-    def entity_types() -> list[type[PrizeSharing]]:
+    @override
+    def entity_types(self) -> list[type[PrizeSharing]]:
         return [
             NoPrizeSharing,
             AveragePrizeSharing,

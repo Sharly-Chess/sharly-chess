@@ -1,5 +1,5 @@
 from types import ModuleType
-from typing import Any, TYPE_CHECKING, override
+from typing import Any, TYPE_CHECKING, Optional, override
 
 from packaging.version import Version
 
@@ -48,6 +48,15 @@ class ChessEventPlugin(Plugin):
     @property
     def default_is_enabled(self) -> bool:
         return False
+
+    @override
+    def is_enabled_for_event(self, event: Optional['Event']) -> bool:
+        return event is not None and event.federation == 'FRA'
+
+    @override
+    @property
+    def federation(self) -> str | None:
+        return 'FRA'
 
     @override
     @property
@@ -117,6 +126,11 @@ class ChessEventPlugin(Plugin):
         data: dict[str, str],
         errors: dict[str, str],
     ):
+        federation = WebContext.form_data_to_str(data, field := 'federation')
+        if federation != 'FRA':
+            # We only validate FFE fields for the FRA federation
+            return
+
         chessevent_user_id = WebContext.form_data_to_str(data, 'chessevent_user')
         chessevent_password = WebContext.form_data_to_str(
             data, field := 'chessevent_password'

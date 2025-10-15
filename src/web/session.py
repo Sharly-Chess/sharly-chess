@@ -474,7 +474,7 @@ class SessionHandler:
     def get_session_admin_players_active_data_source(cls, request: HTMXRequest) -> str:
         return request.session.get(
             cls.ADMIN_PLAYERS_ACTIVE_DATA_SOURCE_KEY,
-            DataSourceManager.entity_types()[0].static_id(),
+            DataSourceManager().entity_types()[0].static_id(),
         )
 
     ADMIN_PAIRINGS_SAFETY_MODE_KEY = 'admin_pairings_safety_mode'

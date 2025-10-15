@@ -1,8 +1,9 @@
 from datetime import datetime
+from itertools import groupby
 from logging import Logger
 from pathlib import Path
 import time
-from typing import Annotated, Any
+from typing import Annotated, Any, cast
 
 import requests
 import validators
@@ -34,7 +35,7 @@ from common.i18n import (
     _,
     locales,
 )
-from common.i18n.utils import locale_localized_name, by
+from common.i18n.utils import locale_localized_name, by, unicode_normalize
 from common.sharly_chess_config import SharlyChessConfig
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import (
@@ -659,12 +660,15 @@ class IndexAdminController(BaseAdminController):
 
     def _event_modal_context(
         self,
+        web_context: AdminWebContext,
         action: FormAction,
         data: dict[str, str],
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
+        event = web_context.admin_event
         plugin_form_fields_templates = (
-            plugin_manager.hook.get_event_form_fields_template() or []
+            plugin_manager.hook_for_event(event, 'get_event_form_fields_template')()
+            or []
         )
         template_context = {
             'federation_options': self._get_federation_options(),
@@ -719,6 +723,7 @@ class IndexAdminController(BaseAdminController):
         web_context = AdminWebContext(request, admin_tab=admin_tab)
         data = self._prepare_event_modal_data(action, request, web_context.admin_event)
         template_context = self._event_modal_context(
+            web_context,
             action,
             data,
         )
@@ -748,7 +753,7 @@ class IndexAdminController(BaseAdminController):
         )
         if not stored_event:
             template_context = self._event_modal_context(
-                FormAction.CREATE, data, errors=errors
+                web_context, FormAction.CREATE, data, errors=errors
             )
             return self._admin_render(
                 web_context=web_context,
@@ -819,7 +824,7 @@ class IndexAdminController(BaseAdminController):
         )
         if not stored_event:
             template_context = self._event_modal_context(
-                FormAction.CLONE, data, errors=errors
+                web_context, FormAction.CLONE, data, errors=errors
             )
             return self._admin_render(
                 web_context=web_context,
@@ -864,30 +869,54 @@ class IndexAdminController(BaseAdminController):
         )
         if not stored_event:
             template_context = self._event_modal_context(
-                FormAction.UPDATE, data, errors=errors
+                web_context, FormAction.UPDATE, data, errors=errors
             )
             return self._admin_render(
                 web_context=web_context,
                 template_context=template_context,
             )
 
+        all_plugins = plugin_manager.enabled_plugins or []
+        enabled_before = [
+            p for p in all_plugins if p.is_enabled_for_event(web_context.admin_event)
+        ]
+
         uniq_id = stored_event.uniq_id
         with EventDatabase(uniq_id, write=True) as event_database:
             event_database.update_stored_event(stored_event)
-        Message.success(
-            request,
-            _('Event [{uniq_id}] has been updated.').format(uniq_id=uniq_id),
-        )
 
-        if admin_tab:
-            return self._admin_render(web_context)
+        web_context = AdminWebContext(request, admin_tab=admin_tab, reload_event=True)
+        enabled_after = [
+            p for p in all_plugins if p.is_enabled_for_event(web_context.admin_event)
+        ]
+        disabled_plugins = [p for p in enabled_before if p not in enabled_after]
+
+        if disabled_plugins:
+            message = (
+                _(
+                    'Due to the federation change, the following plugins have been disabled for this event: <b>{plugins}</b>.'
+                ).format(plugins=', '.join(p.name for p in disabled_plugins))
+                if len(disabled_plugins) > 1
+                else _(
+                    'Due to the federation change, the following plugin has been disabled for this event: <b>{plugin}</b>.'
+                ).format(plugin=disabled_plugins[0].name)
+            )
+            Message.warning(
+                request,
+                message,
+            )
+        else:
+            Message.success(
+                request,
+                _('Event [{uniq_id}] has been updated.').format(uniq_id=uniq_id),
+            )
 
         return HTMXTemplate(
             template_name='common/empty_modal_and_messages.html',
             context={'messages': Message.messages(request)},
             re_target='#modal-wrapper',
             trigger_event='close_modal',
-            after='receive',
+            after='settle',
         )
 
     @patch(
@@ -1006,10 +1035,35 @@ class IndexAdminController(BaseAdminController):
         locale_options: dict[str, str] = {
             locale: locale_localized_name(locale) for locale in locales
         }
+
+        all_plugins = sorted(
+            plugin_manager.all_plugins, key=lambda p: unicode_normalize(p.name)
+        )
+
+        plugins_by_federation = {
+            federation: list(group)
+            for federation, group in groupby(
+                all_plugins, key=lambda p: getattr(p, 'federation', None)
+            )
+        }
+
+        global_plugins = plugins_by_federation.pop(None, [])
+
+        plugins_by_federation = {
+            SharlyChessConfig.federations.get(
+                cast(str, code_key), str(code_key)
+            ): plugins
+            for code_key, plugins in sorted(
+                plugins_by_federation.items(),
+                key=lambda kv: SharlyChessConfig.federations.get(cast(str, kv[0]), ''),
+            )
+        }
+
         template_context = {
             'console_log_level_options': console_log_level_options,
             'locale_options': locale_options,
-            'plugins': plugin_manager.all_plugins,
+            'global_plugins': global_plugins,
+            'federation_plugins': plugins_by_federation,
             'federation_options': (
                 {} if data['federation'] else {'': _('Please choose a federation')}
             )
@@ -1091,7 +1145,7 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
     ) -> Template:
         source_databases: list[LocalSourceDatabase] = (
-            LocalSourceDatabaseManager.objects()
+            LocalSourceDatabaseManager().objects()
         )
         for database in source_databases:
             database.check()
@@ -1129,11 +1183,11 @@ class IndexAdminController(BaseAdminController):
     @staticmethod
     def _database_modal_context() -> dict[str, Any]:
         return {
-            'databases': LocalSourceDatabaseManager.objects(),
-            'online_data_sources': OnlineDataSourceManager.objects(),
+            'databases': LocalSourceDatabaseManager().objects(),
+            'online_data_sources': OnlineDataSourceManager().objects(),
             'network_connected': NetworkMonitor.connected(),
-            'outdate_delay_options': OutdatedDelayManager.options(),
-            'outdate_action_options': OutdatedActionManager.options(),
+            'outdate_delay_options': OutdatedDelayManager().options(),
+            'outdate_action_options': OutdatedActionManager().options(),
             'modal': 'database',
         }
 
@@ -1164,14 +1218,14 @@ class IndexAdminController(BaseAdminController):
         ],
         database_id: str,
     ) -> Template:
-        database = LocalSourceDatabaseManager.get_object(database_id)
+        database = LocalSourceDatabaseManager().get_object(database_id)
         stored_database = database.stored_source_database
         delay: OutdatedDelay = DisabledOutdatedDelay()
         if delay_id := WebContext.form_data_to_str(data, 'outdate_delay'):
-            delay = OutdatedDelayManager.get_object(delay_id)
+            delay = OutdatedDelayManager().get_object(delay_id)
         action: OutdatedAction = NotifOutdatedAction()
         if action_id := WebContext.form_data_to_str(data, 'outdate_action'):
-            action = OutdatedActionManager.get_object(action_id)
+            action = OutdatedActionManager().get_object(action_id)
         stored_database.outdate_delay = delay.id
         stored_database.outdate_action = action.id
         with ConfigDatabase(write=True) as config_database:
@@ -1188,7 +1242,7 @@ class IndexAdminController(BaseAdminController):
         guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
     )
     async def _database_update_status(self, database_id: str) -> Template:
-        database = LocalSourceDatabaseManager.get_object(database_id)
+        database = LocalSourceDatabaseManager().get_object(database_id)
         return HTMXTemplate(
             template_name='/admin/common/database/database_update_buttons.html',
             context={'database': database},
@@ -1200,7 +1254,7 @@ class IndexAdminController(BaseAdminController):
         guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
     )
     async def _database_update(self, database_id: str) -> Reswap:
-        database = LocalSourceDatabaseManager.get_object(database_id)
+        database = LocalSourceDatabaseManager().get_object(database_id)
         database.update()
         return Reswap(content=None, method='none', status_code=HTTP_200_OK)
 
@@ -1212,7 +1266,7 @@ class IndexAdminController(BaseAdminController):
     )
     async def _database_delete(self, database_id: str) -> Template:
         try:
-            database = LocalSourceDatabaseManager.get_object(database_id)
+            database = LocalSourceDatabaseManager().get_object(database_id)
             database.delete()
         except KeyError:
             raise NotFoundException(f'Unknown database [{database_id}].')
@@ -1233,7 +1287,7 @@ class IndexAdminController(BaseAdminController):
     ) -> Template:
         web_context = AdminWebContext(request)
         try:
-            data_source = OnlineDataSourceManager.get_object(data_source_id)
+            data_source = OnlineDataSourceManager().get_object(data_source_id)
             await data_source.reload_connection_status()
         except KeyError:
             raise NotFoundException(f'Unknown data source [{data_source_id}].')

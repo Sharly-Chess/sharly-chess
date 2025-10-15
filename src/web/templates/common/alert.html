@@ -7,7 +7,7 @@
 >
     {% block alert_content %}
         <div class="flex-grow-1 align-self-center">
-            {{ message }}
+            {{ message | safe }}
         </div>
     {% endblock %}
     <button

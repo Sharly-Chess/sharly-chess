@@ -2,6 +2,7 @@ import copy
 from functools import partial
 from typing import Any, Annotated
 
+from data.loader import Event
 from litestar import get, post, patch, delete
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import NotFoundException
@@ -414,7 +415,7 @@ class PrizeAdminController(BaseEventAdminController):
             field = 'prize_sharing'
             prize_sharing_id = WebContext.form_data_to_str(data, field) or ''
             try:
-                PrizeSharingManager.get_object(prize_sharing_id)
+                PrizeSharingManager().get_object(prize_sharing_id)
             except KeyError:
                 message = f'Unknown prize sharing ID [{prize_sharing_id}]'
                 errors[field] = message
@@ -446,7 +447,7 @@ class PrizeAdminController(BaseEventAdminController):
         action: FormAction,
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
-        prize_sharing_options = PrizeSharingManager.options()
+        prize_sharing_options = PrizeSharingManager().options()
         prize_sharing_options.pop(NoPrizeSharing.static_id())
         return {
             'modal': 'prize_category',
@@ -801,17 +802,17 @@ class PrizeAdminController(BaseEventAdminController):
 
     @classmethod
     def _validate_prize_criterion_form_data(
-        cls, data: dict[str, str]
+        cls, event: Event, data: dict[str, str]
     ) -> dict[str, str]:
         errors: dict[str, str] = {}
         field = 'type'
         player_filter_id = data.get(field, '')
         try:
-            PlayerFilterManager.get_type(player_filter_id)
+            PlayerFilterManager(event).get_type(player_filter_id)
         except KeyError:
             errors[field] = _('Please select a type of criterion.')
             return errors
-        player_filter = cls.player_filter_from_data(data)
+        player_filter = cls.player_filter_from_data(event, data)
         try:
             player_filter.validate_options()
         except OptionError as error:
@@ -819,10 +820,10 @@ class PrizeAdminController(BaseEventAdminController):
         return errors
 
     @staticmethod
-    def player_filter_from_data(data: dict[str, str]) -> PlayerFilter:
-        player_filter_type = PlayerFilterManager.get_type(data['type'])
+    def player_filter_from_data(event: Event, data: dict[str, str]) -> PlayerFilter:
+        player_filter_type = PlayerFilterManager(event).get_type(data['type'])
         options = []
-        for option in player_filter_type.default_options():
+        for option in player_filter_type().default_options():
             value = WebContext.form_data_to_value(data, option.id, option.type)
             options.append(type(option)(value))
         return player_filter_type(options)
@@ -830,24 +831,26 @@ class PrizeAdminController(BaseEventAdminController):
     @staticmethod
     def _prize_criterion_form_modal_context(
         request: HTMXRequest,
+        event: Event,
         data: dict[str, str],
         action: FormAction,
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         default_data = {
             option.id: WebContext.value_to_form_data(option.default_value)
-            for option in PlayerFilterOptionManager.objects()
+            for option in PlayerFilterOptionManager(event).objects()
         } | {'type': ''}
         return {
             'modal': 'prize_criterion_form',
             'action': action,
-            'player_filter_select_options': {'': '-'} | PlayerFilterManager.options(),
-            'player_filter_options': PlayerFilterOptionManager.objects(),
+            'player_filter_select_options': {'': '-'}
+            | PlayerFilterManager(event).options(),
+            'player_filter_options': PlayerFilterOptionManager(event).objects(),
             'containers_by_type': {
                 player_filter.id: [
                     option.container_id for option in player_filter.default_options()
                 ]
-                for player_filter in PlayerFilterManager.objects()
+                for player_filter in PlayerFilterManager(event).objects()
             }
             | {'': []},
             'add_other_active': (
@@ -881,21 +884,22 @@ class PrizeAdminController(BaseEventAdminController):
         web_context = PrizeAdminWebContext(
             request, tournament_id, prize_group_id, prize_category_id
         )
+        event = web_context.get_admin_event()
 
         add_other = 'add_other' in data
         SessionHandler.set_session_admin_prize_criterion_add_other_active(
             request, add_other
         )
         flat_data = WebContext.flatten_list_data(data)
-        if errors := self._validate_prize_criterion_form_data(flat_data):
+        if errors := self._validate_prize_criterion_form_data(event, flat_data):
             return self._admin_event_prizes_render(
                 web_context,
                 self._prize_criterion_form_modal_context(
-                    request, flat_data, FormAction.CREATE, errors
+                    request, event, flat_data, FormAction.CREATE, errors
                 ),
             )
         prize_category = web_context.get_admin_prize_category()
-        player_filter = self.player_filter_from_data(flat_data)
+        player_filter = self.player_filter_from_data(event, flat_data)
         criterion = prize_category.add_criterion(
             StoredPrizeCriterion(
                 id=None,
@@ -906,7 +910,7 @@ class PrizeAdminController(BaseEventAdminController):
         )
         if add_other:
             template_context = self._prize_criterion_form_modal_context(
-                request, {}, FormAction.CREATE, errors
+                request, event, {}, FormAction.CREATE, errors
             ) | {'previous_criterion': criterion}
         else:
             template_context = {'modal': 'prize_criteria'}
@@ -940,16 +944,17 @@ class PrizeAdminController(BaseEventAdminController):
             prize_category_id,
             prize_criterion_id=prize_criterion_id,
         )
+        event = web_context.get_admin_event()
 
         flat_data = WebContext.flatten_list_data(data)
-        if errors := self._validate_prize_criterion_form_data(flat_data):
+        if errors := self._validate_prize_criterion_form_data(event, flat_data):
             return self._admin_event_prizes_render(
                 web_context,
                 self._prize_criterion_form_modal_context(
-                    request, flat_data, FormAction.UPDATE, errors
+                    request, event, flat_data, FormAction.UPDATE, errors
                 ),
             )
-        player_filter = self.player_filter_from_data(flat_data)
+        player_filter = self.player_filter_from_data(event, flat_data)
         prize_criterion = web_context.get_admin_prize_criterion()
         stored_prize_criterion = prize_criterion.stored_prize_criterion
         stored_prize_criterion.type = player_filter.id
@@ -1026,9 +1031,12 @@ class PrizeAdminController(BaseEventAdminController):
         web_context = PrizeAdminWebContext(
             request, tournament_id, prize_group_id, prize_category_id
         )
+        event = web_context.get_admin_event()
         return self._admin_event_prizes_render(
             web_context,
-            self._prize_criterion_form_modal_context(request, {}, FormAction.CREATE),
+            self._prize_criterion_form_modal_context(
+                request, event, {}, FormAction.CREATE
+            ),
         )
 
     @get(
@@ -1054,6 +1062,7 @@ class PrizeAdminController(BaseEventAdminController):
             prize_category_id,
             prize_criterion_id=prize_criterion_id,
         )
+        event = web_context.get_admin_event()
 
         prize_criterion = web_context.get_admin_prize_criterion()
         data = {'type': prize_criterion.player_filter.id} | {
@@ -1062,7 +1071,9 @@ class PrizeAdminController(BaseEventAdminController):
         }
         return self._admin_event_prizes_render(
             web_context,
-            self._prize_criterion_form_modal_context(request, data, FormAction.UPDATE),
+            self._prize_criterion_form_modal_context(
+                request, event, data, FormAction.UPDATE
+            ),
         )
 
     # -------------------------------------------------------------------------
