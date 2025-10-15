@@ -1648,6 +1648,12 @@ msgstr "Faites glisser les ensembles pour les ordonner."
 msgid "Draw"
 msgstr "Nulle"
 
+msgid "Due to the federation change, the following plugin has been disabled for this event: <b>{plugin}</b>."
+msgstr "En raison du changement de fédération, le plug-in suivant a été désactivé pour cet événement : <b>{plugin}</b>."
+
+msgid "Due to the federation change, the following plugins have been disabled for this event: <b>{plugins}</b>."
+msgstr "En raison du changement de fédération, les plug-ins suivants ont été désactivés pour cet événement : <b>{plugins}</b>."
+
 msgid "Duplicate the account."
 msgstr "Dupliquer le compte."
 

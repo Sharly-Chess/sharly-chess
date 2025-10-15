@@ -894,11 +894,11 @@ class IndexAdminController(BaseAdminController):
         if disabled_plugins:
             message = (
                 _(
-                    'Due to the federation change, the following plugins have been disabled for this event: <b>{plugins}</b>'
+                    'Due to the federation change, the following plugins have been disabled for this event: <b>{plugins}</b>.'
                 ).format(plugins=', '.join(p.name for p in disabled_plugins))
                 if len(disabled_plugins) > 1
                 else _(
-                    'Due to the federation change, the following plugin has been disabled for this event: <b>{plugin}</b>'
+                    'Due to the federation change, the following plugin has been disabled for this event: <b>{plugin}</b>.'
                 ).format(plugin=disabled_plugins[0].name)
             )
             Message.warning(
@@ -910,9 +910,6 @@ class IndexAdminController(BaseAdminController):
                 request,
                 _('Event [{uniq_id}] has been updated.').format(uniq_id=uniq_id),
             )
-
-        if admin_tab:
-            return self._admin_render(web_context)
 
         return HTMXTemplate(
             template_name='common/empty_modal_and_messages.html',

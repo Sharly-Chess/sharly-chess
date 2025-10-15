@@ -1648,6 +1648,12 @@ msgstr ""
 msgid "Draw"
 msgstr ""
 
+msgid "Due to the federation change, the following plugin has been disabled for this event: <b>{plugin}</b>."
+msgstr ""
+
+msgid "Due to the federation change, the following plugins have been disabled for this event: <b>{plugins}</b>."
+msgstr ""
+
 msgid "Duplicate the account."
 msgstr ""
 
