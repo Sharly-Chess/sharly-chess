@@ -166,8 +166,8 @@
             </button>
         </span>
         <div class="card-block-content">
-            <div>{{ _('%(string)s:', string=_('Criteria')) }}</div>
             <div>
+                {{ _('%(string)s:', string=_('Criteria')) }}
                 {% if tournament.criteria %}
                     {{ tournament.criteria_string }}
                 {% else %}
@@ -181,8 +181,8 @@
     </div>
     <div class="card-block">
         <div class="card-block-content">
-            <div>{{ _('%(string)s:', string=_('Tie-breaks')) }}</div>
             <div>
+                {{ _('%(string)s:', string=_('Tie-breaks')) }}
                 {% if tournament.tie_breaks %}
                     {% for tie_break in tournament.tie_breaks %}
                         <span {{ macros.tooltip_attributes('info', tie_break.name, 'top') }}>
