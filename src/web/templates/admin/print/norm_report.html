@@ -198,7 +198,7 @@
                     <br />
                     {{_('Unmet requirements are highlighted in red and should be verified. They will appear in black when printed.')}}
                     <br />
-                    {{_('All values may be modified by the arbiter necessary.')}}
+                    {{_('All values may be modified by the arbiter if necessary.')}}
                 </div>
             {% else %}
                 <div class="spacer"></div>
@@ -430,7 +430,7 @@
                             {% set adjusted_opp_rating = norm.adjusted_player_rating %}
                         {% endif %}
                         {% if not norm.is_143d_met and norm.too_many_own_federation and opp.federation == player.federation %}
-                            {% set too_many_own = true %}ds
+                            {% set too_many_own = true %}
                             {% set err = norm.too_many_own_federation %}
                         {% elif not norm.is_143d_met and norm.too_many_one_federation and opp.federation == norm.too_many_one_federation[0] %}
                             {% set too_many_one = true %}

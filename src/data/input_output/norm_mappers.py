@@ -1,5 +1,5 @@
 from utils import CoreMapper
-from utils.enum import Result, BoardColor
+from utils.enum import Result
 
 
 class NormResult(CoreMapper[str, Result]):
@@ -38,33 +38,3 @@ class NormResult(CoreMapper[str, Result]):
         if core_object in norm_result_by_result:
             return norm_result_by_result[core_object]
         raise ValueError(f'Unhandled result ({core_object.value})')
-
-
-class TrfSeedColor(CoreMapper[str, BoardColor]):
-    @staticmethod
-    def _core_object_by_outer_value() -> dict[str, BoardColor]:
-        return {
-            'white1': BoardColor.WHITE,
-            'black1': BoardColor.BLACK,
-        }
-
-
-class TrfColor(CoreMapper[str, BoardColor | None]):  # type: ignore
-    @staticmethod
-    def _core_object_by_outer_value() -> dict[str, BoardColor | None]:
-        return {
-            'w': BoardColor.WHITE,
-            'b': BoardColor.BLACK,
-            ' ': None,
-            '-': None,
-        }
-
-    @classmethod
-    def get_outer_value(
-        cls,
-        core_object: BoardColor | None,
-        is_bye: bool = False,
-    ) -> str | None:
-        if is_bye:
-            return '-'
-        return super().get_outer_value(core_object)

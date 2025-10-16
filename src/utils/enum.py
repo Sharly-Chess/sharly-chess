@@ -929,10 +929,8 @@ class TitleNorm(Enum):
         return 9
 
     @staticmethod
-    def minimum_score(
-        rounds: int, point_values: dict[Result, float] | None = None
-    ) -> float:
-        return Result.WIN.points(point_values) * 0.35 * rounds
+    def minimum_score(rounds: int) -> float:
+        return Result.WIN.points() * 0.35 * rounds
 
     @staticmethod
     def minimum_title_holders(rounds: int) -> int:

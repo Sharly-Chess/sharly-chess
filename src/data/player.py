@@ -649,7 +649,7 @@ class Player:
             num_titles = sum(titles_counter.values())
             if num_titles < tn.minimum_title_holders(rounds):
                 res.not_enough_title_holders = _(
-                    '<b>1.4.5a</b> At least 50% of the opponents shall be title-holders, excluding CM and WCM.'
+                    '<b>1.4.5a</b> At least 50%% of the opponents shall be title-holders, excluding CM and WCM.'
                 )
 
             res.num_title_holders = num_titles
@@ -671,7 +671,7 @@ class Player:
             # Score criterion
             if score < TitleNorm.minimum_score(rounds):
                 res.score_too_low = _(
-                    '<b>1.4.8b</b> The minimum score is 35% for all norms.'
+                    '<b>1.4.8b</b> The minimum score is 35%% for all norms.'
                 )
 
             res.score = score
@@ -731,9 +731,8 @@ class Player:
                         else 0
                     )
                     if res.average_rating + new_bonus >= tn.minimum_performance:
+                        res.performance_diff = score - new_score
                         break
-                if res.average_rating + new_bonus >= tn.minimum_performance:
-                    res.performance_diff = score - new_score
             else:
                 new_score = score
                 new_bonus = bonus
@@ -746,11 +745,10 @@ class Player:
                         else 0
                     )
                     if res.average_rating + new_bonus < tn.minimum_performance:
+                        res.performance_diff = score - new_score
                         break
-                if res.average_rating + new_bonus < tn.minimum_performance:
-                    res.performance_diff = score - new_score
 
-        # 1.43d exception
+        # 1.4.3d exception
         #
         # Swiss System tournaments in which participants include in every round at least
         # - 20 FIDE rated players

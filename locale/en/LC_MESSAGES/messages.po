@@ -260,7 +260,7 @@ msgid "<b>1.4.5</b> For this norm, at least {min} opponents must have these titl
 msgstr ""
 
 #, python-format
-msgid "<b>1.4.5a</b> At least 50% of the opponents shall be title-holders, excluding CM and WCM."
+msgid "<b>1.4.5a</b> At least 50%% of the opponents shall be title-holders, excluding CM and WCM."
 msgstr ""
 
 msgid "<b>1.4.8</b> The minimum performance for this norm is {min}."
@@ -270,7 +270,7 @@ msgid "<b>1.4.8a</b> The minimum average rating of the opponents for this norm i
 msgstr ""
 
 #, python-format
-msgid "<b>1.4.8b</b> The minimum score is 35% for all norms."
+msgid "<b>1.4.8b</b> The minimum score is 35%% for all norms."
 msgstr ""
 
 msgid "<first> and <second>"
@@ -531,7 +531,7 @@ msgstr ""
 msgid "All the tournaments"
 msgstr ""
 
-msgid "All values may be modified by the arbiter necessary."
+msgid "All values may be modified by the arbiter if necessary."
 msgstr ""
 
 msgid "Allow"
@@ -6386,4 +6386,3 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
