@@ -39,14 +39,13 @@ class ChessResultsTieBreak:
         tie_breaks.AveragePerformanceRatingOpponentsTieBreak: ('88', '1', '', '', ''),
         tie_breaks.PerfectTournamentPerformanceTieBreak: ('88', '2', '', '', ''),
         tie_breaks.AveragePerfectPerformanceTieBreak: ('88', '3', '', '', ''),
+        tie_breaks.KashdanTieBreak: ('92', '', '', '', ''),
         ffe_tie_breaks.PapiStandardBuchholzTieBreak: ('2', '', '', '', ''),
         ffe_tie_breaks.PapiBuchholzCutBottomTieBreak: ('3', '', '', '', ''),
         ffe_tie_breaks.PapiMedianBuchholzTieBreak: ('4', '', '', '', ''),
         ffe_tie_breaks.PapiSumOfBuchholzTieBreak: ('25', '', '', '', ''),
         ffe_tie_breaks.PapiPerformanceTieBreak: ('88', '0', '', '', ''),
-        # Kashdan doesn't have a Chess-Results.com equivalent, we map to "Tiebreak 1"
-        tie_breaks.KashdanTieBreak: ('26', '', '', '', ''),
-        ffe_tie_breaks.PapiKashdanTieBreak: ('26', '', '', '', ''),
+        ffe_tie_breaks.PapiKashdanTieBreak: ('92', '', '', '', ''),
     }
 
     @classmethod
