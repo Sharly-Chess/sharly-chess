@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from functools import cached_property, partial
 import itertools
 from typing import Any, Callable, override
@@ -8,10 +9,11 @@ from common import format_timestamp
 from common.exception import SharlyChessException, OptionError
 from common.i18n import _, ngettext
 from common.i18n.utils import unicode_normalize
+from plugins.manager import plugin_manager
 from data.board import Board
 from data.pairings.engines import RoundRobinPairingEngine
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
-from data.player import Player, PlayerTitle, dataclass, plugin_manager
+from data.player import Player
 from data.event import Event
 from data.print_documents.options import (
     PairingStylePrintOption,
@@ -30,6 +32,7 @@ from data.print_documents.options import (
 from data.tournament import Tournament
 from utils import StaticUtils
 from utils.enum import Result
+from utils.types import PlayerTitle
 from utils.option import Option, OptionHandler
 
 
