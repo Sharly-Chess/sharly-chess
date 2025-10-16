@@ -871,6 +871,18 @@ class TitleNorm(Enum):
         yield cls.IM
         yield cls.GM
 
+    @property
+    def player_title(self) -> PlayerTitle:
+        match self:
+            case TitleNorm.WIM:
+                return PlayerTitle.WOMAN_INTERNATIONAL_MASTER
+            case TitleNorm.WGM:
+                return PlayerTitle.WOMAN_GRANDMASTER
+            case TitleNorm.IM:
+                return PlayerTitle.INTERNATIONAL_MASTER
+            case TitleNorm.GM:
+                return PlayerTitle.GRANDMASTER
+
     def satisfies_gender_requirement(self, gender: PlayerGender) -> bool:
         match self:
             case TitleNorm.WIM | TitleNorm.WGM:

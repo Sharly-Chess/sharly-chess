@@ -1030,7 +1030,7 @@ class NormReportPrintDocument(PrintDocument):
         norms = {
             norm_title: norm
             for norm_title, norm in player.achieves_any_title_norm().items()
-            if norm.meets_gender
+            if norm.meets_gender and player.title < norm_title.player_title
         }
         return {
             'event': self.event,
