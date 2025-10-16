@@ -628,6 +628,12 @@ msgstr ""
 msgid "Auto-update"
 msgstr ""
 
+msgid "Auto-upload disabled"
+msgstr ""
+
+msgid "Auto-upload enabled"
+msgstr ""
+
 msgid "Auto-upload results to Chess-Results.com"
 msgstr ""
 
@@ -638,18 +644,6 @@ msgid "Auto-upload results to FFE site"
 msgstr ""
 
 msgid "Auto-upload results to FFE site when a tournament is updated. You must enter the tournament certification number and password for this to take effect."
-msgstr ""
-
-msgid "Auto-upload to Chess-Results.com disabled"
-msgstr ""
-
-msgid "Auto-upload to Chess-Results.com enabled"
-msgstr ""
-
-msgid "Auto-upload to FFE enabled"
-msgstr ""
-
-msgid "Auto-upload to FFE site disabled"
 msgstr ""
 
 msgid "Auto-upload:"
@@ -988,14 +982,6 @@ msgid "ChessEvent user name:"
 msgstr ""
 
 msgid "ChessEvent user not defined."
-msgstr ""
-
-#, python-format
-msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s"
-msgstr ""
-
-#, python-format
-msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
 msgstr ""
 
 msgid "Chief Arbitration"
@@ -2051,9 +2037,6 @@ msgstr ""
 msgid "FFE Uniq ID:"
 msgstr ""
 
-msgid "FFE actions unavailable"
-msgstr ""
-
 msgid "FFE certification number (optional):"
 msgstr ""
 
@@ -2146,9 +2129,6 @@ msgid "FORFEIT"
 msgstr ""
 
 msgid "Fallback to estimated ratings"
-msgstr ""
-
-msgid "Fallback to standard rating for unrated players"
 msgstr ""
 
 msgid "Families"
@@ -3117,15 +3097,6 @@ msgstr ""
 msgid "Next tournament"
 msgstr ""
 
-msgid "No ChessEvent event defined"
-msgstr ""
-
-msgid "No ChessEvent identifier defined"
-msgstr ""
-
-msgid "No ChessEvent tournament defined"
-msgstr ""
-
 msgid "No FFE ID defined for tournament [{tournament}]."
 msgstr ""
 
@@ -3262,9 +3233,6 @@ msgid "No screens."
 msgstr ""
 
 msgid "No such screens."
-msgstr ""
-
-msgid "No tie-break defined"
 msgstr ""
 
 msgid "No timers"
@@ -5270,9 +5238,6 @@ msgstr ""
 msgid "Tie-breaks"
 msgstr ""
 
-msgid "Tie-breaks:"
-msgstr ""
-
 msgid "Time control"
 msgstr ""
 
@@ -5676,6 +5641,9 @@ msgstr ""
 msgid "Unrated Win"
 msgstr ""
 
+msgid "Unrated players"
+msgstr ""
+
 msgid "Upcoming ({num})"
 msgstr ""
 
@@ -5740,9 +5708,6 @@ msgid "Uploading tournament…"
 msgstr ""
 
 msgid "Use Event's default - {option}"
-msgstr ""
-
-msgid "Use estimated rating for unrated players"
 msgstr ""
 
 msgid "Use log-level specific colors"
@@ -6149,6 +6114,9 @@ msgstr ""
 msgid "either the duration or the increment must be greater than 0."
 msgstr ""
 
+msgid "estimated ratings"
+msgstr ""
+
 msgid "event"
 msgstr ""
 
@@ -6171,6 +6139,9 @@ msgid "my-family"
 msgstr ""
 
 msgid "my-screen"
+msgstr ""
+
+msgid "my_password"
 msgstr ""
 
 msgid "no"
@@ -6246,6 +6217,9 @@ msgid "screens of {number} players from start to #{last}"
 msgstr ""
 
 msgid "some already played each other"
+msgstr ""
+
+msgid "standard ratings"
 msgstr ""
 
 msgid "the address of this server on your available networks:"

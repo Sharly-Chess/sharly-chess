@@ -628,6 +628,12 @@ msgstr "Authentification échouée. Merci de vérifier vos identifiants et rées
 msgid "Auto-update"
 msgstr "Mise à jour"
 
+msgid "Auto-upload disabled"
+msgstr "Mise en ligne automatique désactivée"
+
+msgid "Auto-upload enabled"
+msgstr "Mise en ligne automatique activée"
+
 msgid "Auto-upload results to Chess-Results.com"
 msgstr "Mise en ligne automatique des résultats sur Chess-Results.com"
 
@@ -639,18 +645,6 @@ msgstr "Envoi automatique des résultats sur le site de la FFE"
 
 msgid "Auto-upload results to FFE site when a tournament is updated. You must enter the tournament certification number and password for this to take effect."
 msgstr "Mise en ligne automatique des résultats vers le site de la FFE. Vous devez saisir l’identifiant et le mot de passe du tournoi pour que cela fonctionne."
-
-msgid "Auto-upload to Chess-Results.com disabled"
-msgstr "Envoi automatique vers Chess-Results.com désactivé"
-
-msgid "Auto-upload to Chess-Results.com enabled"
-msgstr "Envoi automatique vers Chess-Results.com activé"
-
-msgid "Auto-upload to FFE enabled"
-msgstr "Envoi automatique vers la FFE activé"
-
-msgid "Auto-upload to FFE site disabled"
-msgstr "Envoi automatique vers la FFE désactivé"
 
 msgid "Auto-upload:"
 msgstr "Mise en ligne automatique :"
@@ -989,14 +983,6 @@ msgstr "Identifiant ChessEvent :"
 
 msgid "ChessEvent user not defined."
 msgstr "L'identifiant ChessEvent n'est pas défini."
-
-#, python-format
-msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s"
-msgstr "Chessevent : %(chessevent_user_id)s / %(chessevent_event_id)s"
-
-#, python-format
-msgid "Chessevent: %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
-msgstr "Chessevent : %(chessevent_user_id)s / %(chessevent_event_id)s / %(chessevent_tournament_name)s"
 
 msgid "Chief Arbitration"
 msgstr "Arbitrage en chef·fe"
@@ -2051,9 +2037,6 @@ msgstr "Type de licence FFE"
 msgid "FFE Uniq ID:"
 msgstr "Identifiant unique FFE :"
 
-msgid "FFE actions unavailable"
-msgstr "Actions FFE non disponibles"
-
 msgid "FFE certification number (optional):"
 msgstr "Numéro d'homologation FFE (facultatif) :"
 
@@ -2147,9 +2130,6 @@ msgstr "FORFAIT"
 
 msgid "Fallback to estimated ratings"
 msgstr "Utilisation de classements estimés"
-
-msgid "Fallback to standard rating for unrated players"
-msgstr "Utilisation du classement FIDE standard pour les joueur·euses non classé·es"
 
 msgid "Families"
 msgstr "Familles"
@@ -3117,15 +3097,6 @@ msgstr "Ronde suivante"
 msgid "Next tournament"
 msgstr "Tournoi suivant"
 
-msgid "No ChessEvent event defined"
-msgstr "Évènement ChessEvent non défini"
-
-msgid "No ChessEvent identifier defined"
-msgstr "Connexion à ChessEvent non définie"
-
-msgid "No ChessEvent tournament defined"
-msgstr "Nom du tournoi ChessEvent non défini"
-
 msgid "No FFE ID defined for tournament [{tournament}]."
 msgstr "Aucun identifiant FFE défini pour le tournoi [{tournament}]."
 
@@ -3263,9 +3234,6 @@ msgstr "Aucun écran."
 
 msgid "No such screens."
 msgstr "Aucun écran de ce type."
-
-msgid "No tie-break defined"
-msgstr "Départages non définis"
 
 msgid "No timers"
 msgstr "Aucun chronomètre"
@@ -5270,9 +5238,6 @@ msgstr "Départage incompatible avec le système d'appariements \"{system}\"."
 msgid "Tie-breaks"
 msgstr "Départages"
 
-msgid "Tie-breaks:"
-msgstr "Départages :"
-
 msgid "Time control"
 msgstr "Cadence"
 
@@ -5676,6 +5641,9 @@ msgstr "Défaite non comptabilisé pour le classement Elo"
 msgid "Unrated Win"
 msgstr "Victoire non comptabilisé pour le classement Elo"
 
+msgid "Unrated players"
+msgstr "Joueur·euses non-classé·es"
+
 msgid "Upcoming ({num})"
 msgstr "À venir ({num})"
 
@@ -5741,9 +5709,6 @@ msgstr "Mise en ligne en cours…"
 
 msgid "Use Event's default - {option}"
 msgstr "Défaut de l’événement – {option}"
-
-msgid "Use estimated rating for unrated players"
-msgstr "Utiliser un Elo estimé pour les joueur·euses non classé·es"
 
 msgid "Use log-level specific colors"
 msgstr "Utiliser des couleurs spécifiques au niveau de log"
@@ -6149,6 +6114,9 @@ msgstr "défini dans l'évènement"
 msgid "either the duration or the increment must be greater than 0."
 msgstr "la durée ou l’incrément doit être supérieur à 0."
 
+msgid "estimated ratings"
+msgstr "classements estimés"
+
 msgid "event"
 msgstr "évènement"
 
@@ -6172,6 +6140,9 @@ msgstr "ma-famille"
 
 msgid "my-screen"
 msgstr "mon-ecran"
+
+msgid "my_password"
+msgstr "mon_mot_de_passe"
 
 msgid "no"
 msgstr "non"
@@ -6247,6 +6218,9 @@ msgstr "écrans de {number} joueur·euses du début au n°{last}"
 
 msgid "some already played each other"
 msgstr "certain·es se sont déjà rencontré·es"
+
+msgid "standard ratings"
+msgstr "classements standard"
 
 msgid "the address of this server on your available networks:"
 msgstr "en utilisant l’adresse de ce serveur sur vos réseaux disponibles :"

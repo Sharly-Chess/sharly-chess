@@ -257,8 +257,6 @@ class IndexAdminController(BaseAdminController):
                     (nav_index + 1) % len(nav_tabs)
                 ]
 
-        event_card_blocks = plugin_manager.hook.get_event_card_block_template()
-
         svg_logo = (BASE_DIR / 'src/web/static/images/sharly-chess-logo.svg').read_text(
             encoding='utf-8'
         )
@@ -276,7 +274,6 @@ class IndexAdminController(BaseAdminController):
                         web_context.request
                     )
                 ),
-                'event_card_blocks': event_card_blocks,
             }
             | (template_context or {})
         )

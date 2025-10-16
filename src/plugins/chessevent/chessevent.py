@@ -5,6 +5,7 @@ from packaging.version import Version
 
 from common.i18n import _
 from data.input_output import TournamentImporter
+from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from plugins.chessevent import migrations, PLUGIN_NAME
 from plugins.chessevent.chessevent_controller import ChessEventController
@@ -111,10 +112,6 @@ class ChessEventPlugin(Plugin):
         return self.id, ChessEventEventPluginData
 
     @hookimpl
-    def get_event_card_block_template(self) -> str:
-        return '/chessevent_event_card_block.html'
-
-    @hookimpl
     def get_event_form_fields_template(self) -> str:
         return '/chessevent_event_form_fields.html'
 
@@ -147,11 +144,16 @@ class ChessEventPlugin(Plugin):
         return self.id, ChessEventTournamentPluginData
 
     @hookimpl
-    def get_tournament_card_block_template_and_data(self) -> tuple[str, dict[str, Any]]:
-        return (
-            '/chessevent_tournament_card_block.html',
-            {'chessevent_utils': ChessEventUtils},
-        )
+    def get_tournament_page_template_context(self) -> dict[str, Any]:
+        return {'chessevent_utils': ChessEventUtils}
+
+    @hookimpl
+    def get_tournament_card_connexion_template(
+        self, tournament: Tournament
+    ) -> str | None:
+        if not ChessEventUtils.resolve_tournament_name(tournament):
+            return None
+        return '/chessevent_tournament_card_connexion.html'
 
     @hookimpl
     def get_tournament_tab_action_menu_items_template(self) -> str:

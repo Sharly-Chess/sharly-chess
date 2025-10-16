@@ -639,10 +639,6 @@ class FfePlugin(Plugin):
         return self.id, FfeEventPluginData
 
     @hookimpl
-    def get_event_card_block_template(self) -> str:
-        return '/ffe_event_card_block.html'
-
-    @hookimpl
     def get_event_form_fields_template(self) -> str:
         return '/ffe_event_form_fields.html'
 
@@ -737,13 +733,16 @@ class FfePlugin(Plugin):
             )
 
     @hookimpl
-    def get_tournament_card_block_template_and_data(self) -> tuple[str, dict[str, Any]]:
-        return (
-            '/ffe_tournament_card_block.html',
-            {
-                'ffe_utils': FFEUtils,
-            },
-        )
+    def get_tournament_page_template_context(self) -> dict[str, Any]:
+        return {'ffe_utils': FFEUtils}
+
+    @hookimpl
+    def get_tournament_card_connexion_template(
+        self, tournament: 'Tournament'
+    ) -> str | None:
+        if not FFEUtils.get_tournament_plugin_data(tournament).ffe_id:
+            return None
+        return '/ffe_tournament_card_connexion.html'
 
     @hookimpl
     def get_tournament_card_action_menu_items_template(self) -> str:

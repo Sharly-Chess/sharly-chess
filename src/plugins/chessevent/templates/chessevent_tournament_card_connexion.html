@@ -1,0 +1,17 @@
+{% with event_id=chessevent_utils.resolve_event_id(tournament), tournament_name=chessevent_utils.resolve_tournament_name(tournament) %}
+    <div class="d-flex gap-2">
+        <img
+            src="{{ url_for('static', file_path='/images/chessevent.png') }}?version={{ sharly_chess_config.version }}"
+            style="height: 1.2em"
+            class="p-0"
+            {{ macros.tooltip_attributes('info', _('ChessEvent'), 'top') }}
+        />
+        <span>{{ event_id }} | {{ tournament_name }}</span>
+        <a
+            href="https://chessevent.echecs-bretagne.fr/public/inscrList.php?event={{ event_id }}"
+            target="_blank"
+        >
+            <i class="bi bi-box-arrow-up-right"></i>
+        </a>
+    </div>
+{% endwith %}

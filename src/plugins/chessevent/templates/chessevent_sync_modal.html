@@ -69,11 +69,12 @@
                                 {% set chessevent_event_id = chessevent_utils.resolve_event_id(tournament) %}
                                 {% set chessevent_tournament_name = chessevent_utils.resolve_tournament_name(tournament) %}
                                 {% if chessevent_event_id and chessevent_tournament_name %}
+                                    {{ chessevent_event_id }} | {{ chessevent_tournament_name }}
                                     <a
                                         href="https://chessevent.echecs-bretagne.fr/public/inscrList.php?event={{ chessevent_event_id }}"
                                         target="_blank"
                                     >
-                                        {{ chessevent_event_id }} | {{ chessevent_tournament_name }}
+                                         <i class="bi bi-box-arrow-up-right ps-1"></i>
                                     </a>
                                 {% else %}
                                     -
