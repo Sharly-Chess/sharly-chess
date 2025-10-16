@@ -5177,6 +5177,9 @@ msgstr ""
 msgid "This document is only available for Round-Robin tournaments."
 msgstr ""
 
+msgid "This document is only available for standard time control tournaments."
+msgstr ""
+
 msgid "This event is private (by default, screens are not visible by the spectators)."
 msgstr ""
 

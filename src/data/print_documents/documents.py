@@ -13,7 +13,7 @@ from plugins.manager import plugin_manager
 from data.board import Board
 from data.pairings.engines import RoundRobinPairingEngine
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
-from data.player import Player
+from data.player import Player, TournamentRating
 from data.event import Event
 from data.print_documents.options import (
     PairingStylePrintOption,
@@ -1010,6 +1010,14 @@ class NormReportPrintDocument(PrintDocument):
     @property
     def title(self) -> str:
         return 'Certificate of Title Results'
+
+    @staticmethod
+    def validate_for_tournament(tournament: Tournament) -> str | None:
+        if tournament.rating != TournamentRating.STANDARD:
+            return _(
+                'This document is only available for standard time control tournaments.'
+            )
+        return None
 
     @property
     def template_name(self) -> str:

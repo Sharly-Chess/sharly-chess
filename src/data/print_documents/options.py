@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Optional, override, Any
 from common.exception import OptionError
 from common.i18n import _
 from data.event import SharlyChessConfig
-from data.player import TournamentRating
 from data.print_documents.pairing_styles import BoardsPairingStyle, PairingStyle
 from data.print_documents.player_sorters import (
     PlayerSorter,
@@ -109,11 +108,7 @@ class PlayerPrintOption(PrintOption):
         if self.event is None:
             return {}
 
-        tournaments = [
-            tournament
-            for tournament in self.event.tournaments
-            if tournament.rating == TournamentRating.STANDARD
-        ]
+        tournaments = [tournament for tournament in self.event.tournaments]
         return {
             tournament.id: [
                 {'id': player.id, 'full_name': player.full_name}
