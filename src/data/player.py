@@ -677,7 +677,9 @@ class Player:
             res.score = score
 
         # Rating / performance criteria
-        opponents.sort(key=attrgetter('rating'))
+        opponents.sort(
+            key=lambda o: o.rating if o.rating_type == PlayerRatingType.FIDE else 1400
+        )
 
         for tn, res in results.items():
             rating_list = [
