@@ -717,13 +717,11 @@ class Player:
             bonus = StaticUtils.performance_bonus(score / max_score) if max_score else 0
             performance = avg + bonus
             res.performance = performance
-            draw_points = Result.DRAW.points()
             if performance < tn.minimum_performance:
                 res.performance_too_low = _(
                     '<b>1.4.8</b> The minimum performance for this norm is {min}.'
                 ).format(min=tn.minimum_performance)
                 new_score = score
-                new_bonus = bonus
                 draw_points = Result.DRAW.points()
                 while new_score < max_score:
                     new_score += draw_points
@@ -737,7 +735,6 @@ class Player:
                         break
             else:
                 new_score = score
-                new_bonus = bonus
                 draw_points = Result.DRAW.points()
                 while new_score > 0:
                     new_score -= draw_points
@@ -747,7 +744,7 @@ class Player:
                         else 0
                     )
                     if res.average_rating + new_bonus < tn.minimum_performance:
-                        res.performance_diff = score - new_score
+                        res.performance_diff = score - new_score - draw_points
                         break
 
         # 1.4.3d exception
