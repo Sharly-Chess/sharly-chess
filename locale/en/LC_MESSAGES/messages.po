@@ -502,6 +502,9 @@ msgstr ""
 msgid "All the tournaments"
 msgstr ""
 
+msgid "All values may be modified by the arbiter necessary."
+msgstr ""
+
 msgid "Allow"
 msgstr ""
 
@@ -3268,6 +3271,9 @@ msgstr ""
 msgid "None *** FFE licence"
 msgstr "None"
 
+msgid "Norm Report"
+msgstr ""
+
 msgid "Not assigned"
 msgstr ""
 
@@ -3736,6 +3742,9 @@ msgstr ""
 msgid "Player sets of screen [%(screen_uniq_id)s]"
 msgstr ""
 
+msgid "Player:"
+msgstr ""
+
 msgid "Players"
 msgstr ""
 
@@ -3798,6 +3807,9 @@ msgid "Please choose a federation"
 msgstr ""
 
 msgid "Please choose a federation."
+msgstr ""
+
+msgid "Please choose a player."
 msgstr ""
 
 msgid "Please choose the document."
@@ -4420,6 +4432,9 @@ msgstr ""
 msgid "Screens: %(num)d"
 msgstr ""
 
+msgid "Scroll down to review all the norms…"
+msgstr ""
+
 msgid "Search"
 msgstr ""
 
@@ -4452,6 +4467,9 @@ msgid "Seeding of unrated rapid/blitz"
 msgstr ""
 
 msgid "Select All"
+msgstr ""
+
+msgid "Select player"
 msgstr ""
 
 msgid "Select the players and the data to update:"
@@ -5584,6 +5602,9 @@ msgid "Unknown value [{value}]"
 msgstr ""
 
 msgid "Unlike single Screens, families can only be used to display information about a single tournament."
+msgstr ""
+
+msgid "Unmet requirements are highlighted in red and should be verified. They will appear in black when printed."
 msgstr ""
 
 msgid "Unpair"

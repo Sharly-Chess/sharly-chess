@@ -502,6 +502,9 @@ msgstr "Tou·tes les joueur·euses supposé·es jouer la ronde ont pointé."
 msgid "All the tournaments"
 msgstr "Tous les tournois"
 
+msgid "All values may be modified by the arbiter necessary."
+msgstr "Toutes les valeurs peuvent être modifiées par l’arbitre si nécessaire."
+
 msgid "Allow"
 msgstr "Autoriser"
 
@@ -3268,6 +3271,9 @@ msgstr "Aucun"
 msgid "None *** FFE licence"
 msgstr "Aucune"
 
+msgid "Norm Report"
+msgstr "Rapport de norme"
+
 msgid "Not assigned"
 msgstr "Non-attribué"
 
@@ -3736,6 +3742,9 @@ msgstr "Sélection des joueur·euses (par classement)"
 msgid "Player sets of screen [%(screen_uniq_id)s]"
 msgstr "Ensembles de joueur·euses de l'écran [%(screen_uniq_id)s]"
 
+msgid "Player:"
+msgstr "Joueur·euse :"
+
 msgid "Players"
 msgstr "Joueur·euses"
 
@@ -3799,6 +3808,9 @@ msgstr "Veuillez choisir une fédération"
 
 msgid "Please choose a federation."
 msgstr "Veuillez choisir une fédération."
+
+msgid "Please choose a player."
+msgstr "Veuillez choisir un·e joueur·euse."
 
 msgid "Please choose the document."
 msgstr "Veuillez choisir le document."
@@ -4420,6 +4432,9 @@ msgstr "Écrans :"
 msgid "Screens: %(num)d"
 msgstr "Écrans : %(num)d"
 
+msgid "Scroll down to review all the norms…"
+msgstr "Faites défiler vers le bas pour consulter toutes les normes…"
+
 msgid "Search"
 msgstr "Recherche"
 
@@ -4453,6 +4468,9 @@ msgstr "Classement des joueur·euses sans classement FIDE rapide/blitz"
 
 msgid "Select All"
 msgstr "Tout sélectionner"
+
+msgid "Select player"
+msgstr "Sélectionner un·e joueur·euse"
 
 msgid "Select the players and the data to update:"
 msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"
@@ -5586,6 +5604,9 @@ msgstr "Valeur [{value}] inconnue."
 msgid "Unlike single Screens, families can only be used to display information about a single tournament."
 msgstr "Contrairement aux écrans simples, les familles d’écrans ne peuvent être utilisées que pour afficher des informations sur un seul tournoi."
 
+msgid "Unmet requirements are highlighted in red and should be verified. They will appear in black when printed."
+msgstr "Les exigences en rouge et doivent être vérifiées. Elles apparaîtront en noir à l’impression."
+
 msgid "Unpair"
 msgstr "Désapparier"
 
@@ -6329,4 +6350,3 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
