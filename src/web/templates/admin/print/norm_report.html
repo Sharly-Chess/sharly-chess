@@ -51,6 +51,7 @@
                 border: none;
             }
             input[type="checkbox"] {
+                pointer-events: none;
                 accent-color: black;
             }
             .heading {
@@ -97,13 +98,24 @@
                 text-decoration: line-through;
             }
             .checkboxes {
-                margin-top: 0.2rem;
+                margin-top: 0.5rem;
                 display: flex;
                 width: 100%;
                 justify-content: space-around;
             }
-            .checkboxes label {
-                text-align: center;
+            .fake-checkbox {
+                display: inline-flex;
+            }
+            .fake-checkbox .box {
+                width: 1em;
+                height: 1em;
+                border: 1px solid black;
+                background: white;
+                border-radius: 1em;
+                margin-right: 0.3em;
+            }
+            .fake-checkbox .box.checked {
+                background: black;
             }
             .privacy-notice, .privacy-notice a, .privacy-notice a:visited {
                 font-size: 0.8rem;
@@ -183,10 +195,18 @@
                 </section>
 
                 <div class="checkboxes">
-                    <label><input type="checkbox" {% if norm_title.value == 4 %}checked{% endif %} />GM</label>
-                    <label><input type="checkbox" {% if norm_title.value == 3 %}checked{% endif %}/>IM</label>
-                    <label><input type="checkbox" {% if norm_title.value == 2 %}checked{% endif %}/>WGM</label>
-                    <label><input type="checkbox" {% if norm_title.value == 1 %}checked{% endif %}/>WIM</label>
+                    <label class="fake-checkbox">
+                        <span class="box {% if norm_title.value == 4 %}checked{% endif %}"></span>GM
+                    </label>
+                    <label class="fake-checkbox">
+                        <span class="box {% if norm_title.value == 3 %}checked{% endif %}"></span>IM
+                    </label>
+                    <label class="fake-checkbox">
+                        <span class="box {% if norm_title.value == 2 %}checked{% endif %}"></span>WGM
+                    </label>
+                    <label class="fake-checkbox">
+                        <span class="box {% if norm_title.value == 1 %}checked{% endif %}"></span>WIM
+                    </label>
                 </div>
                 <section>
                     <div class="grid" style="grid-template-columns: 1fr 1fr;">
