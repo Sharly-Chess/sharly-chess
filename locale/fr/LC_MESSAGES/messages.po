@@ -244,6 +244,35 @@ msgstr "500 - Erreur interne du serveur"
 msgid "65+"
 msgstr "65+"
 
+msgid "<b>1.4.3</b> At least two federations other than that of the title applicant must be included, except 1.4.3a - 1.4.3d shall be exempt."
+msgstr "<b>1.4.3</b> Au moins deux fédérations autres que celle du·de la candidat·e au titre doivent être représentées, sauf dans les cas d’exemption prévus aux articles 1.4.3a à 1.4.3d."
+
+msgid "<b>1.4.3d</b> Swiss System tournaments in which participants include in every round at least 20 FIDE rated players, not from the host federation, from at least 3 different federations, at least 10 of whom hold GM, IM, WGM or WIM titles."
+msgstr "<b>1.4.3d</b> Tournois au système suisse dont les participant·es comprennent, à chaque ronde, au moins 20 joueur·euses classé·es FIDE n’appartenant pas à la fédération organisatrice, provenant d’au moins 3 fédérations différentes, dont au moins 10 titulaires des titres de GM, IM, WGM ou WIM."
+
+msgid "<b>1.4.4</b> A maximum of 2/3 of the opponents from one federation."
+msgstr "<b>1.4.4</b> Un maximum de 2/3 des adversaires peuvent provenir d’une même fédération."
+
+msgid "<b>1.4.4</b> A maximum of 3/5 of the opponents may come from the applicant's federation."
+msgstr "<b>1.4.4</b> Un maximum de 3/5 des adversaires peuvent provenir de la fédération du·de la candidat·e au titre."
+
+msgid "<b>1.4.5</b> For this norm, at least {min} opponents must have these title(s): {titles}"
+msgstr "<b>1.4.5</b> Pour cette norme, au moins {min} adversaires doivent détenir le ou les titre(s) suivant(s) : {titles}"
+
+#, python-format
+msgid "<b>1.4.5a</b> At least 50% of the opponents shall be title-holders, excluding CM and WCM."
+msgstr "<b>1.4.5a</b>1.4.5a Au moins 50 % des adversaires doivent être titulaires d’un titre, à l’exclusion des titres de CM et de WCM."
+
+msgid "<b>1.4.8</b> The minimum performance for this norm is {min}."
+msgstr "<b>1.4.8</b> La performance minimale requise pour cette norme est de {min}."
+
+msgid "<b>1.4.8a</b> The minimum average rating of the opponents for this norm is {min}."
+msgstr "<b>1.4.8a</b>1.4.8a La moyenne minimale des classements des adversaires requise pour cette norme est de {min}."
+
+#, python-format
+msgid "<b>1.4.8b</b> The minimum score is 35% for all norms."
+msgstr "<b>1.4.8b</b>1.4.8b Le score minimum requis pour toutes les normes est de 35 %."
+
 msgid "<first> and <second>"
 msgstr "<first> et <second>"
 
@@ -588,6 +617,10 @@ msgstr "Marquer forfait <b>pour le reste du tournoi</b>"
 
 msgid "Assign to a display controller."
 msgstr "Attribuer à un pilote d'écran."
+
+#, python-format
+msgid "At least %(min)d games must be played."
+msgstr "Au moins %(min)d parties doivent être jouées."
 
 msgid "At least a minimum or a maximum rating must be defined."
 msgstr "Au moins un Elo minimum ou un Elo maximum doit être défini."

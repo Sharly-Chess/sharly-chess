@@ -601,27 +601,32 @@ class Player:
 
             # Games criterion
             if played_games < min_rounds:
-                res.not_enough_games = True
+                res.not_enough_games = _('At least %(min)d games must be played.')
             elif (
                 rounds == min_rounds
                 and played_games == min_rounds - 1
                 and forfeits_or_byes != 1
             ):
-                res.not_enough_games = True
+                res.not_enough_games = _('At least %(min)d games must be played.')
 
             res.played_games = played_games
 
             # Federation criterion
             own_count = federations_counter.get(self.federation, 0)
             num_feds = len(federations_counter)
+            msg = _(
+                '<b>1.4.3</b> At least two federations other than that of the title applicant must be included, except 1.4.3a - 1.4.3d shall be exempt.'
+            )
             if own_count != 0:
                 if num_feds <= 2:
-                    res.not_enough_federations = True
+                    res.not_enough_federations = msg
                 if own_count > tn.maximum_of_own_federation(rounds):
-                    res.too_many_own_federation = True
+                    res.too_many_own_federation = _(
+                        "<b>1.4.4</b> A maximum of 3/5 of the opponents may come from the applicant's federation."
+                    )
             else:
                 if num_feds < 2:
-                    res.not_enough_federations = True
+                    res.not_enough_federations = msg
             res.from_own_federations_count = own_count
             res.from_host_federations_count = federations_counter.get(
                 Federation(self.event.federation), 0
@@ -633,12 +638,19 @@ class Player:
                 top_fed, top_count = federations_counter.most_common(1)[0]
                 max_fed = tn.maximum_of_one_federation(rounds)
                 if top_count > max_fed:
-                    res.too_many_one_federation = (top_fed, top_count)
+                    res.too_many_one_federation = (
+                        top_fed,
+                        _(
+                            '<b>1.4.4</b> A maximum of 2/3 of the opponents from one federation.'
+                        ),
+                    )
 
             # Title holders criterion
             num_titles = sum(titles_counter.values())
             if num_titles < tn.minimum_title_holders(rounds):
-                res.not_enough_title_holders = True
+                res.not_enough_title_holders = _(
+                    '<b>1.4.5a</b> At least 50% of the opponents shall be title-holders, excluding CM and WCM.'
+                )
 
             res.num_title_holders = num_titles
             res.title_counts = titles_counter
@@ -647,13 +659,20 @@ class Player:
             req = required_titles.get(tn, Counter())
             total_req = sum(req.values())
             if total_req < tn.minimum_required_titles(self.tournament):
-                res.not_enough_required_titles = list(req.keys())
-
+                res.not_enough_required_titles = _(
+                    '<b>1.4.5</b> For this norm, at least {min} opponents must have these title(s): {titles}'
+                ).format(
+                    min=tn.minimum_required_titles(self.tournament),
+                    titles=', '.join(str(title) for title in req.keys()),
+                )
+            res.required_titles = list(req.keys())
             res.required_titles_met = total_req
 
             # Score criterion
             if score < TitleNorm.minimum_score(rounds):
-                res.score_too_low = True
+                res.score_too_low = _(
+                    '<b>1.4.8b</b> The minimum score is 35% for all norms.'
+                )
 
             res.score = score
 
@@ -686,7 +705,9 @@ class Player:
             values = [r.value for r in rating_list]
             avg = StaticUtils.round_ranking(sum(values) / len(values)) if values else 0
             if avg < tn.minimum_average:
-                res.average_too_low = True
+                res.average_too_low = _(
+                    '<b>1.4.8a</b> The minimum average rating of the opponents for this norm is {min}.'
+                ).format(min=tn.minimum_average)
 
             res.average_rating = avg
 
@@ -696,7 +717,9 @@ class Player:
             res.performance = performance
             draw_points = Result.DRAW.points()
             if performance < tn.minimum_performance:
-                res.performance_too_low = True
+                res.performance_too_low = _(
+                    '<b>1.4.8</b> The minimum performance for this norm is {min}.'
+                ).format(min=tn.minimum_performance)
                 new_score = score
                 new_bonus = bonus
                 draw_points = Result.DRAW.points()
@@ -796,15 +819,24 @@ class Player:
             worst_federations = 0
             worst_titled = 0
 
+        msg = _(
+            '<b>1.4.3d</b> Swiss System tournaments in which participants include in every round at least 20 FIDE rated players, not from the host federation, from at least 3 different federations, at least 10 of whom hold GM, IM, WGM or WIM titles.'
+        )
         for tn, res in results.items():
             res.all_federations_count = int(worst_federations)
-            res.not_enough_all_federations = res.all_federations_count < 3
+            res.not_enough_all_federations = (
+                msg if res.all_federations_count < 3 else None
+            )
 
             res.eligible_players_title_count = int(worst_titled)
-            res.not_enough_all_title_holders = res.eligible_players_title_count < 10
+            res.not_enough_all_title_holders = (
+                msg if res.eligible_players_title_count < 10 else None
+            )
 
             res.eligible_players_count = int(worst_players)
-            res.not_enough_foreign_players = res.eligible_players_count < 20
+            res.not_enough_foreign_players = (
+                msg if res.eligible_players_count < 20 else None
+            )
 
         return results
 

@@ -84,15 +84,33 @@
                 border: none;
                 border-bottom: 2px dotted black;
             }
-            .name-cell {
-                width: 100%;
-                box-sizing: border-box;
-            }
             .error {
                 color: red;
+                position: relative;
             }
             .error input {
                 color: red;
+            }
+            .error-info {
+                display: none;
+                color: black;
+            }
+            .error:hover .error-info {
+                display: block;
+                position: absolute;
+                z-index: 10;
+                min-width: 200px;
+                max-width: 300px;
+                background-color: white;
+                border: 1px solid #000;
+                top: 1.5rem;
+                left: 1rem;
+                padding: 0.5rem;
+                box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+            }
+            .name-cell {
+                width: 100%;
+                box-sizing: border-box;
             }
             .ignored, .ignored input {
                 text-decoration: line-through;
@@ -257,6 +275,9 @@
                         </div>
 
                         <div class="item {{ 'error' if norm.not_enough_games else '' }}">
+                            <div class="error-info">
+                                {{ norm.not_enough_games | safe }}
+                            </div>
                             <label>Number of games:</label>
                             <input value="{{ norm.played_games }}" />
                         </div>
@@ -267,6 +288,9 @@
                         </div>
 
                         <div class="item {{ 'error' if norm.not_enough_federations else '' }}">
+                            <div class="error-info">
+                                {{ norm.not_enough_federations | safe }}
+                            </div>
                             <label>Number of federations:</label>
                             <input value="{{ norm.federations_count }}" />
                         </div>
@@ -286,6 +310,9 @@
                         </div>
 
                         <div class="item {{ 'error' if norm.not_enough_title_holders else '' }}">
+                            <div class="error-info">
+                                {{ norm.not_enough_title_holders | safe }}
+                            </div>
                             <label>Total number titled opponents:</label>
                             <input value="{{ norm.num_title_holders }}" />
                         </div>
@@ -295,27 +322,45 @@
                         <div class="item">
                             <label>Numbers of:</label>
                         </div>
-                        <div class="item {{ 'error' if 8 in norm.not_enough_required_titles else '' }}">
+                        <div class="item {{ 'error' if norm.not_enough_required_titles and 8 in norm.required_titles else '' }}">
+                            <div class="error-info">
+                                {{ norm.not_enough_required_titles | safe }}
+                            </div>
                             <label>GM:</label>
                             <input value="{{ norm.title_counts[8] }}" />
                         </div>
-                        <div class="item {{ 'error' if 6 in norm.not_enough_required_titles else '' }}">
+                        <div class="item {{ 'error' if norm.not_enough_required_titles and 6 in norm.required_titles else '' }}">
+                            <div class="error-info">
+                                {{ norm.not_enough_required_titles | safe }}
+                            </div>
                             <label>IM:</label>
                             <input value="{{ norm.title_counts[6] }}" />
                         </div>
-                        <div class="item {{ 'error' if 7 in norm.not_enough_required_titles else '' }}">
+                        <div class="item {{ 'error' if norm.not_enough_required_titles and 7 in norm.required_titles else '' }}">
+                            <div class="error-info">
+                                {{ norm.not_enough_required_titles | safe }}
+                            </div>
                             <label>WGM:</label>
                             <input value="{{ norm.title_counts[7] }}" />
                         </div>
-                        <div class="item {{ 'error' if 5 in norm.not_enough_required_titles else '' }}">
+                        <div class="item {{ 'error' if norm.not_enough_required_titles and 5 in norm.required_titles else '' }}">
+                            <div class="error-info">
+                                {{ norm.not_enough_required_titles | safe }}
+                            </div>
                             <label>WIM:</label>
                             <input value="{{ norm.title_counts[5] }}" />
                         </div>
-                        <div class="item {{ 'error' if 4 in norm.not_enough_required_titles else '' }}">
+                        <div class="item {{ 'error' if norm.not_enough_required_titles and 4 in norm.required_titles else '' }}">
+                            <div class="error-info">
+                                {{ norm.not_enough_required_titles | safe }}
+                            </div>
                             <label>FM:</label>
                             <input value="{{ norm.title_counts[4] }}" />
                         </div>
-                        <div class="item {{ 'error' if 3 in norm.not_enough_required_titles else '' }}">
+                        <div class="item {{ 'error' if norm.not_enough_required_titles and 3 in norm.required_titles else '' }}">
+                            <div class="error-info">
+                                {{ norm.not_enough_required_titles | safe }}
+                            </div>
                             <label>WFM:</label>
                             <input value="{{ norm.title_counts[3] }}" />
                         </div>
@@ -326,16 +371,25 @@
                     {% set applying_143d = is_swiss %}
                     <div style="font-size: 0.9rem; font-weight: bold;">Where applying 1.43d:</div>
                     <div class="grid" style="grid-template-columns: 3fr 5fr;">
-                        <div class="item {{ 'error' if applying_143d and not norm.is_143d_met else '' }}">
+                        <div class="item {{ 'error' if applying_143d and norm.not_enough_all_federations else '' }}">
+                            <div class="error-info">
+                                {{ norm.not_enough_all_federations | safe }}
+                            </div>
                             <label>Number of federations:</label>
                             <input value="{{ norm.all_federations_count if applying_143d }}"  />
                         </div>
-                        <div class="item {{ 'error' if applying_143d and not norm.is_143d_met else '' }}">
+                        <div class="item {{ 'error' if applying_143d and norm.not_enough_all_title_holders else '' }}">
+                            <div class="error-info">
+                                {{ norm.not_enough_all_title_holders | safe }}
+                            </div>
                             <label>Number of rated players not from host federation:</label>
                             <input value="{{ norm.eligible_players_count if applying_143d }}"  />
                         </div>
                     </div>
-                    <div class="item {{ 'error' if applying_143d and not norm.is_143d_met else '' }}">
+                    <div class="item {{ 'error' if applying_143d and norm.not_enough_foreign_players else '' }}">
+                        <div class="error-info">
+                            {{ norm.not_enough_foreign_players | safe }}
+                        </div>
                         <label>Number of players not from host federation holding GM, IM, WGM, WIM titles:</label>
                         <input value="{{ norm.eligible_players_title_count if applying_143d }}"  />
                     </div>
@@ -375,14 +429,26 @@
                         {% if opp.id == norm.adjusted_player.id %}
                             {% set adjusted_opp_rating = norm.adjusted_player_rating %}
                         {% endif %}
-                        {% set too_many_own = not norm.is_143d_met and norm.too_many_own_federation and opp.federation == player.federation %}
-                        {% set too_many_one = not norm.is_143d_met and norm.too_many_one_federation and opp.federation == norm.too_many_one_federation[0] %}
+                        {% if not norm.is_143d_met and norm.too_many_own_federation and opp.federation == player.federation %}
+                            {% set too_many_own = true %}ds
+                            {% set err = norm.too_many_own_federation %}
+                        {% elif not norm.is_143d_met and norm.too_many_one_federation and opp.federation == norm.too_many_one_federation[0] %}
+                            {% set too_many_one = true %}
+                            {% set err = norm.too_many_one_federation[1] %}
+                        {% endif %}
                         {% set ignored = norm.ignored_opponents_ids and opp.id in norm.ignored_opponents_ids %}
                         <tr class="{{ 'ignored' if ignored }}">
                             <td>{{ rnd }}</td>
                             <td><input class="name-cell" value="{{ opp.full_name }}" /></td>
                             <td><input size="12" value="{{ opp.fide_id }}"  /></td>
-                            <td class="{{ 'error' if too_many_own or too_many_one }}"><input size="4" value="{{ opp.federation }}"  /></td>
+                            <td>
+                                <div class="{{ 'error' if too_many_own or too_many_one }}">
+                                    <div class="error-info">
+                                        {{ err | safe }}
+                                    </div>
+                                    <input size="4" value="{{ opp.federation }}"  />
+                                </div>
+                            </td>
                             <td><input size="5" value="{{ opp.rating }}"  /></td>
                             <td><input size="5" value="{{ adjusted_opp_rating if opp is not none}}" /></td>
                             <td><input size="4" value="{{ opp.title.short_name or '-' if opp is not none }}"  /></td>
@@ -394,6 +460,9 @@
 
                 <div class="grid" style="margin-top: var(--row-gap); grid-template-columns: repeat(3, 1fr); column-gap: 4rem;">
                     <div class="item {{ 'error' if norm.average_too_low else '' }}">
+                        <div class="error-info">
+                            {{ norm.average_too_low | safe }}
+                        </div>
                         <label>Rating average (1.46b):</label>
                         <input value="{{ norm.average_rating }}" />
                     </div>
@@ -402,6 +471,11 @@
                         <input value="{{ norm.score - norm.performance_diff if norm.performance_diff is not none else '-' }}" />
                     </div>
                     <div class="item {{ 'error' if norm.score_too_low or norm.performance_too_low else '' }}">
+                        <div class="error-info">
+                            {{ norm.score_too_low | safe }}
+                            <br />
+                            {{ norm.performance_too_low | safe }}
+                        </div>
                         <label>Score achieved:</label>
                         <input value="{{ norm.score }}" />
                     </div>

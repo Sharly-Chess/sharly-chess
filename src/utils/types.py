@@ -131,6 +131,7 @@ class NormCheckResult:
     from_host_federations_count: int = 0
     num_title_holders: int = 0
     title_counts: Optional[Counter[PlayerTitle]] = None
+    required_titles: list[PlayerTitle] = field(default_factory=list)
     required_titles_met: int = 0
     num_rated_players: int = 0
     score: float = 0
@@ -145,20 +146,20 @@ class NormCheckResult:
     eligible_players_count: int = 0
     eligible_players_title_count: int = 0
 
-    not_enough_games: bool = False
-    not_enough_federations: bool = False
-    too_many_own_federation: bool = False
-    too_many_one_federation: Optional[tuple[Federation, int]] = None
-    not_enough_title_holders: bool = False
-    not_enough_required_titles: list[PlayerTitle] = field(default_factory=list)
-    score_too_low: bool = False
-    average_too_low: bool = False
-    performance_too_low: bool = False
+    not_enough_games: str | None = None
+    not_enough_federations: str | None = None
+    too_many_own_federation: str | None = None
+    too_many_one_federation: Optional[tuple[Federation, str]] = None
+    not_enough_title_holders: str | None = None
+    not_enough_required_titles: str | None = None
+    score_too_low: str | None = None
+    average_too_low: str | None = None
+    performance_too_low: str | None = None
 
     # 1.4.3d
-    not_enough_all_federations: bool = False
-    not_enough_foreign_players: bool = False
-    not_enough_all_title_holders: bool = False
+    not_enough_all_federations: str | None = None
+    not_enough_foreign_players: str | None = None
+    not_enough_all_title_holders: str | None = None
 
     @property
     def is_143d_met(self) -> bool:

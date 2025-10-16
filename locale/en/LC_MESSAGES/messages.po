@@ -244,6 +244,35 @@ msgstr ""
 msgid "65+"
 msgstr ""
 
+msgid "<b>1.4.3</b> At least two federations other than that of the title applicant must be included, except 1.4.3a - 1.4.3d shall be exempt."
+msgstr ""
+
+msgid "<b>1.4.3d</b> Swiss System tournaments in which participants include in every round at least 20 FIDE rated players, not from the host federation, from at least 3 different federations, at least 10 of whom hold GM, IM, WGM or WIM titles."
+msgstr ""
+
+msgid "<b>1.4.4</b> A maximum of 2/3 of the opponents from one federation."
+msgstr ""
+
+msgid "<b>1.4.4</b> A maximum of 3/5 of the opponents may come from the applicant's federation."
+msgstr ""
+
+msgid "<b>1.4.5</b> For this norm, at least {min} opponents must have these title(s): {titles}"
+msgstr ""
+
+#, python-format
+msgid "<b>1.4.5a</b> At least 50% of the opponents shall be title-holders, excluding CM and WCM."
+msgstr ""
+
+msgid "<b>1.4.8</b> The minimum performance for this norm is {min}."
+msgstr ""
+
+msgid "<b>1.4.8a</b> The minimum average rating of the opponents for this norm is {min}."
+msgstr ""
+
+#, python-format
+msgid "<b>1.4.8b</b> The minimum score is 35% for all norms."
+msgstr ""
+
 msgid "<first> and <second>"
 msgstr ""
 
@@ -587,6 +616,10 @@ msgid "Assign a zero-point bye <b>for the rest of the tournament</b>"
 msgstr ""
 
 msgid "Assign to a display controller."
+msgstr ""
+
+#, python-format
+msgid "At least %(min)d games must be played."
 msgstr ""
 
 msgid "At least a minimum or a maximum rating must be defined."
