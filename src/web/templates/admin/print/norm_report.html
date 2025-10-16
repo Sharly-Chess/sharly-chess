@@ -60,8 +60,9 @@
             }
             .info {
                 text-align: center;
-                text-style: italic;
+                font-style: italic;
                 font-size: 1rem;
+                margin-bottom: 1rem;
             }
             .grid {
                 display: grid;
@@ -161,14 +162,19 @@
     </head>
     <body>
         {% for norm_title, norm in norms.items() %}
-            {% if not loop.first %}
+            {% if loop.first %}
+                <div class="info">
+                    {{_('Scroll down to review all the norms...')}}
+                    <br />
+                    {{_('Unmet requirements are highlighted in red and should be verified. They will appear in black when printed.')}}
+                    <br />
+                    {{_('All values may be overwritten by the arbiter necessary.')}}
+                </div>
+            {% else %}
                 <div class="spacer"></div>
             {% endif %}
             <div class="heading">
                 {{norm_title.name}}
-            </div>
-            <div class="info">
-                {{_('Scroll down to review all the norms...')}}
             </div>
             <form class="break-after">
                 <h1 style="text-align: right; margin: 0; padding: 0;">IT 1</h1>
