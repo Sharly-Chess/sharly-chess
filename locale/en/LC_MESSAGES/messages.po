@@ -5710,9 +5710,6 @@ msgstr ""
 msgid "Use Event's default - {option}"
 msgstr ""
 
-msgid "Use estimated rating for unrated players"
-msgstr ""
-
 msgid "Use log-level specific colors"
 msgstr ""
 

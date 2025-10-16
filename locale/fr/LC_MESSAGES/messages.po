@@ -5710,9 +5710,6 @@ msgstr "Mise en ligne en cours…"
 msgid "Use Event's default - {option}"
 msgstr "Défaut de l’événement – {option}"
 
-msgid "Use estimated rating for unrated players"
-msgstr "Utiliser un Elo estimé pour les joueur·euses non classé·es"
-
 msgid "Use log-level specific colors"
 msgstr "Utiliser des couleurs spécifiques au niveau de log"
 

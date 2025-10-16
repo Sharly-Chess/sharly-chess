@@ -92,10 +92,6 @@
                             {{ _('estimated ratings') }}
                         {% endif %}
                     </span>
-                    {% if tournament.override_unrated_rapid_blitz %}
-                    {% else %}
-                        {{ _('Use estimated rating for unrated players') }}
-                    {% endif %}
                 </div>
             {% endif %}
             {% if tournament.time_control_trf25 %}
