@@ -654,8 +654,8 @@ class Player:
             # Score criterion
             if score < TitleNorm.minimum_score(rounds):
                 res.score_too_low = True
-            else:
-                res.score = score
+
+            res.score = score
 
         # Rating / performance criteria
         opponents.sort(key=attrgetter('rating'))
@@ -700,7 +700,7 @@ class Player:
                 new_score = score
                 new_bonus = bonus
                 draw_points = Result.DRAW.points()
-                while max_score and True:
+                while new_score < max_score:
                     new_score += draw_points
                     new_bonus = (
                         StaticUtils.performance_bonus(new_score / max_score)
@@ -709,12 +709,13 @@ class Player:
                     )
                     if res.average_rating + new_bonus >= tn.minimum_performance:
                         break
-                res.performance_diff = score - new_score
+                if res.average_rating + new_bonus >= tn.minimum_performance:
+                    res.performance_diff = score - new_score
             else:
                 new_score = score
                 new_bonus = bonus
                 draw_points = Result.DRAW.points()
-                while max_score and True:
+                while new_score > 0:
                     new_score -= draw_points
                     new_bonus = (
                         StaticUtils.performance_bonus(new_score / max_score)
@@ -723,7 +724,8 @@ class Player:
                     )
                     if res.average_rating + new_bonus < tn.minimum_performance:
                         break
-                res.performance_diff = score - new_score
+                if res.average_rating + new_bonus < tn.minimum_performance:
+                    res.performance_diff = score - new_score
 
         # 1.43d exception
         #

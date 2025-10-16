@@ -138,7 +138,7 @@ class NormCheckResult:
     adjusted_player: Optional['Player'] = None
     adjusted_player_rating: Optional[int] = None
     performance: float = 0
-    performance_diff: float = 0
+    performance_diff: float | None = None
     ignored_opponents_ids: set[int] = field(default_factory=set)
 
     all_federations_count: int = 0

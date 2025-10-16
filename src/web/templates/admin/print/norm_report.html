@@ -399,7 +399,7 @@
                     </div>
                     <div class="item">
                         <label>Score required:</label>
-                        <input value="{{ norm.score - norm.performance_diff }}" />
+                        <input value="{{ norm.score - norm.performance_diff if norm.performance_diff is not none else '-' }}" />
                     </div>
                     <div class="item {{ 'error' if norm.score_too_low or norm.performance_too_low else '' }}">
                         <label>Score achieved:</label>
@@ -411,7 +411,7 @@
                     <div style="display: flex; flex-direction: column; justify-content: space-between;">
                         <div class="item" style="margin-top: var(--row-gap);">
                             <label>Exceeding norm by:</label>
-                            <input value="{{ norm.performance_diff if norm.performance_diff >= 0 }}" />
+                            <input value="{{ norm.performance_diff if norm.performance_diff is not none and norm.performance_diff >= 0 }}" />
                             <label>points<label>
                         </div>
 
