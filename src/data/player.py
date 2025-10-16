@@ -176,6 +176,15 @@ class NormCheckResult:
     not_enough_foreign_players: bool = False
     not_enough_all_title_holders: bool = False
 
+    @property
+    def is_143d_met(self) -> bool:
+        return (
+            not self.not_enough_all_federations
+            and not self.not_enough_foreign_players
+            and not self.not_enough_all_title_holders
+        )
+
+    @property
     def is_met(self) -> bool:
         return self.meets_gender and not (
             self.not_enough_games

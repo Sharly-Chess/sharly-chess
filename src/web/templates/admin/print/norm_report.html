@@ -297,19 +297,19 @@
                 </section>
 
                 <section>
-                    {% set applying_143d = norm.not_enough_federations and is_swiss %}
+                    {% set applying_143d = is_swiss %}
                     <div style="font-size: 0.9rem; font-weight: bold;">Where applying 1.43d:</div>
                     <div class="grid" style="grid-template-columns: 3fr 5fr;">
-                        <div class="item {{ 'error' if applying_143d and norm.not_enough_all_federations else '' }}">
+                        <div class="item {{ 'error' if applying_143d and not norm.is_143d_met else '' }}">
                             <label>Number of federations:</label>
                             <input name="total_gm" value="{{ norm.all_federations_count if applying_143d }}"  />
                         </div>
-                        <div class="item {{ 'error' if applying_143d and norm.not_enough_foreign_players else '' }}">
+                        <div class="item {{ 'error' if applying_143d and not norm.is_143d_met else '' }}">
                             <label>Number of rated players not from host federation:</label>
                             <input name="total_gm" value="{{ norm.eligible_players_count if applying_143d }}"  />
                         </div>
                     </div>
-                    <div class="item {{ 'error' if applying_143d and norm.not_enough_all_title_holders else '' }}">
+                    <div class="item {{ 'error' if applying_143d and not norm.is_143d_met else '' }}">
                         <label>Number of players not from host federation holding GM, IM, WGM, WIM titles:</label>
                         <input name="total_gm" value="{{ norm.eligible_players_title_count if applying_143d }}"  />
                     </div>
@@ -349,8 +349,8 @@
                         {% if opp.id == norm.adjusted_player.id %}
                             {% set adjusted_opp_rating = norm.adjusted_player_rating %}
                         {% endif %}
-                        {% set too_many_own = norm.too_many_own_federation and opp.federation == player.federation %}
-                        {% set too_many_one = norm.too_many_one_federation and opp.federation == norm.too_many_one_federation[0] %}
+                        {% set too_many_own = not norm.is_143d_met and norm.too_many_own_federation and opp.federation == player.federation %}
+                        {% set too_many_one = not norm.is_143d_met and norm.too_many_one_federation and opp.federation == norm.too_many_one_federation[0] %}
                         {% set ignored = norm.ignored_opponents_ids and opp.id in norm.ignored_opponents_ids %}
                         <tr class="{{ 'ignored' if ignored }}">
                             <td>{{ rnd }}</td>
