@@ -663,7 +663,7 @@ class Player:
                     '<b>1.4.5</b> For this norm, at least {min} opponents must have these title(s): {titles}'
                 ).format(
                     min=tn.minimum_required_titles(self.tournament),
-                    titles=', '.join(str(title) for title in req.keys()),
+                    titles=', '.join(str(title) for title in tn.required_titles),
                 )
             res.required_titles = list(req.keys())
             res.required_titles_met = total_req
