@@ -14,7 +14,7 @@ from common.network import NetworkMonitor
 from data.player import Player, PlayerRating
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
-from database.sqlite.local_source_database import LocalSourceDatabase
+from database.sqlite.local_source_database.databases import LocalSourcePlayerDatabase
 from plugins.manager import plugin_manager
 from utils.entity import IdentifiableEntity
 from utils.enum import TournamentRating
@@ -363,11 +363,11 @@ class DataSource(IdentifiableEntity, ABC):
 class LocalDataSource(DataSource, ABC):
     @property
     @abstractmethod
-    def local_database_type(self) -> type[LocalSourceDatabase]:
+    def local_database_type(self) -> type[LocalSourcePlayerDatabase]:
         """The type of the local database used for this source."""
 
     @cached_property
-    def database(self) -> LocalSourceDatabase:
+    def database(self) -> LocalSourcePlayerDatabase:
         return self.local_database_type()
 
     @property
@@ -480,7 +480,7 @@ class FideDataSource(LocalDataSource):
         return _('FIDE database')
 
     @property
-    def local_database_type(self) -> type[LocalSourceDatabase]:
+    def local_database_type(self) -> type[LocalSourcePlayerDatabase]:
         return FideDatabase
 
     @property

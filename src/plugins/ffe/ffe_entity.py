@@ -27,7 +27,7 @@ from data.print_documents.documents import QRCodePrintDocument, TournamentPrintO
 from data.print_documents.qrcode_types import QRCodeType
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredPlayer
-from database.sqlite.local_source_database import LocalSourceDatabase
+from database.sqlite.local_source_database.databases import LocalSourcePlayerDatabase
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_database import FfeDatabase, PlayerFFELicence
 from plugins.ffe.ffe_sql_server import FFESqlServer
@@ -162,7 +162,7 @@ class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
         return _('FFE database (local)')
 
     @property
-    def local_database_type(self) -> type[LocalSourceDatabase]:
+    def local_database_type(self) -> type[LocalSourcePlayerDatabase]:
         return FfeDatabase
 
     @property

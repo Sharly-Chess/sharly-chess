@@ -17,7 +17,7 @@ from common.i18n import _
 from common.logger import get_logger
 from data.player import PlayerRating
 from database.sqlite.event.event_store import StoredPlayer
-from database.sqlite.local_source_database import LocalSourceDatabase
+from database.sqlite.local_source_database import LocalSourcePlayerDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
 from database.sqlite.local_source_database.delays import Days2OutdatedDelay
 from plugins.ffe.papi_converter import PapiConverter
@@ -36,7 +36,7 @@ from plugins.ffe.utils import PlayerFFELicence, FfePlayerPluginData
 logger: Logger = get_logger()
 
 
-class FfeDatabase(LocalSourceDatabase):
+class FfeDatabase(LocalSourcePlayerDatabase):
     """
     The SQLite database class for FFE players. Usage:
     1. Check if the database exists and is up-to-date.
