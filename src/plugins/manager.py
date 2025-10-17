@@ -23,15 +23,17 @@ class AppPluginManager(PluginManager):
     @cached_property
     def all_plugins(self) -> list[Plugin]:
         from plugins.chess_results.chess_results import ChessResultsPlugin
-        from plugins.chessevent.chessevent import ChessEventPlugin
         from plugins.ffe.ffe import FfePlugin
+        from plugins.chessevent.chessevent import ChessEventPlugin
+        from plugins.fra.fra_schools.fra_schools import FRASchoolsPlugin
         from plugins.pairing_acceleration.plugin import PairingAccelerationPlugin
 
         return [
             PairingAccelerationPlugin(),
-            ChessResultsPlugin(),
-            FfePlugin(),
             ChessEventPlugin(),
+            FRASchoolsPlugin(),
+            FfePlugin(),
+            ChessResultsPlugin(),
         ]
 
     def get_plugin_by_class(self, plugin_cls: Type[TPlugin]) -> TPlugin:
