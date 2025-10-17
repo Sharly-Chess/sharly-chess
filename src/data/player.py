@@ -1,9 +1,9 @@
-import base64
+from operator import attrgetter
 import weakref
-from dataclasses import dataclass
+from collections import Counter
 from datetime import date
 from functools import total_ordering, cached_property
-from typing import Self, SupportsFloat, TYPE_CHECKING
+from typing import TYPE_CHECKING
 from trf import Player as TrfPlayer
 from trf.Player import Game as TrfGame
 
@@ -19,9 +19,18 @@ from utils.enum import (
     PlayerTitle,
     BoardColor,
     Result,
+    TitleNorm,
     TournamentRating,
     PlayerRatingType,
     PlayerCategory,
+)
+from utils.types import (
+    Federation,
+    Club,
+    PlayerRating,
+    PlayerRatingAndType,
+    NormCheckResult,
+    TieBreakValue,
 )
 
 if TYPE_CHECKING:
@@ -29,130 +38,6 @@ if TYPE_CHECKING:
     from data.event import Event
     from data.tournament import Tournament
     from data.tie_breaks.tie_breaks import TieBreak
-
-
-@dataclass(frozen=True)
-@total_ordering
-class Federation:
-    name: str = ''
-
-    @cached_property
-    def to_query_param(self) -> str:
-        return base64.b64encode(self.name.encode('utf-8')).decode('utf-8')
-
-    @classmethod
-    def from_query_param(cls, query_param: str) -> Self:
-        return cls(base64.b64decode(query_param).decode('utf-8'))
-
-    def __le__(self, other: Self):
-        # p1 <= p2 calls p1.__le__(p2)
-        assert isinstance(other, self.__class__), (
-            f'Can not compare [{type(other)}] and [{self.__class__}]'
-        )
-        return self.name <= other.name
-
-    def __str__(self) -> str:
-        return self.name
-
-
-@dataclass(frozen=True)
-@total_ordering
-class Club:
-    name: str = ''
-
-    @cached_property
-    def to_query_param(self) -> str:
-        return base64.b64encode(self.name.encode('utf-8')).decode('utf-8')
-
-    @classmethod
-    def from_query_param(cls, query_param: str) -> Self:
-        return cls(base64.b64decode(query_param).decode('utf-8'))
-
-    def __le__(self, other: Self):
-        # p1 <= p2 calls p1.__le__(p2)
-        assert isinstance(other, self.__class__), (
-            f'Can not compare [{type(other)}] and [{self.__class__}]'
-        )
-        return self.name <= other.name
-
-    def __str__(self) -> str:
-        return self.name
-
-
-@dataclass
-class PlayerRating:
-    estimated: int | None = None
-    national: int | None = None
-    fide: int | None = None
-
-    @classmethod
-    def from_stored_value(cls, dict_rating: dict[str, int | None]) -> Self:
-        return cls(
-            estimated=dict_rating.get('estimated'),
-            national=dict_rating.get('national'),
-            fide=dict_rating.get('fide'),
-        )
-
-    @classmethod
-    def from_type(cls, value: int | None, rating_type: PlayerRatingType) -> Self:
-        match rating_type:
-            case PlayerRatingType.FIDE:
-                return cls(fide=value)
-            case PlayerRatingType.NATIONAL:
-                return cls(national=value)
-            case PlayerRatingType.ESTIMATED:
-                return cls(estimated=value)
-            case _:
-                raise ValueError(f'{rating_type=}')
-
-    @property
-    def stored_value(self) -> dict[str, int | None]:
-        return {
-            'estimated': self.estimated,
-            'national': self.national,
-            'fide': self.fide,
-        }
-
-    def __str__(self) -> str:
-        parts = []
-        if self.fide is not None:
-            parts.append(f'{self.fide}{PlayerRatingType.FIDE.short_name}')
-        if self.national is not None:
-            parts.append(f'{self.national}{PlayerRatingType.NATIONAL.short_name}')
-        if self.estimated is not None:
-            parts.append(f'{self.estimated}{PlayerRatingType.ESTIMATED.short_name}')
-        return '/'.join(parts) if parts else '-'
-
-
-@dataclass
-class PlayerRatingAndType:
-    value: int
-    type: PlayerRatingType
-
-    def __str__(self) -> str:
-        return f'{self.value} {self.type.short_name}'
-
-
-class TieBreakValue:
-    def __init__(self, tie_break: 'TieBreak', value: SupportsFloat):
-        self._tie_break_ref: 'ReferenceType[TieBreak]' = weakref.ref(tie_break)
-        self.value = value
-        self.rank_progress: int | None = None
-
-    @property
-    def tie_break(self) -> 'TieBreak':
-        if (tie_break := self._tie_break_ref()) is None:
-            raise RuntimeError('Reference has been garbage collected')
-        return tie_break
-
-    def __str__(self) -> str:
-        if self.rank_progress is not None:
-            if self.rank_progress > 0:
-                return f'▲ {self.rank_progress}'
-            if self.rank_progress < 0:
-                return f'▼ {-self.rank_progress}'
-            return ''
-        return StaticUtils.points_str(float(self.value))
 
 
 @total_ordering
@@ -642,6 +527,315 @@ class Player:
         self.board_id = board_id
         self.board_number = board_number
         self.color = color
+
+    def achieves_any_title_norm(self) -> dict[TitleNorm, NormCheckResult]:
+        from data.pairings.systems import RoundRobinPairingSystem
+
+        results: dict[TitleNorm, NormCheckResult] = {
+            tn: NormCheckResult(
+                title_norm=tn, meets_gender=tn.satisfies_gender_requirement(self.gender)
+            )
+            for tn in TitleNorm.values()
+        }
+
+        # Gather data from pairings
+        rounds = self.tournament.rounds
+        played_games = 0
+        federations_counter: Counter[Federation] = Counter()
+        titles_counter: Counter[PlayerTitle] = Counter()
+        results_list: list[Result] = []
+        forfeits_or_byes = 0
+        opponents: list[Player] = []
+        ignored_opponents_ids: set[int] = set()
+
+        is_round_robin = self.tournament.pairing_system == RoundRobinPairingSystem()
+
+        for rnd, pairing in self.pairings_by_round.items():
+            if pairing.result.is_board_bye or pairing.result == Result.FORFEIT_WIN:
+                forfeits_or_byes += 1
+
+            if pairing.opponent and not pairing.result.is_unplayed:
+                played_games += 1
+                opponent = pairing.opponent
+
+                # 1.4.2b (Ignore games against unrated players who score zero against rated opponents in round robin tournaments.)
+                if is_round_robin and opponent.rating_type != PlayerRatingType.FIDE:
+                    scored_zero_against_rated = False
+                    for opponent_pairing in opponent.pairings_by_round.values():
+                        if (
+                            opponent_pairing.opponent
+                            and opponent_pairing.result.is_loss
+                            and opponent_pairing.opponent.rating_type
+                            == PlayerRatingType.FIDE
+                        ):
+                            scored_zero_against_rated = True
+                            break
+                    if scored_zero_against_rated:
+                        ignored_opponents_ids.add(opponent.id)
+                        continue
+
+                # 1.4.2a (Ignore games against opponents who do not belong to FIDE federations)
+                if opponent.federation == 'NON':
+                    ignored_opponents_ids.add(opponent.id)
+                    continue
+                else:
+                    federations_counter[opponent.federation] += 1
+
+                if opponent.title != PlayerTitle.NONE:
+                    titles_counter[opponent.title] += 1
+                results_list.append(pairing.result)
+                opponents.append(opponent)
+
+        # Precompute required titles counts
+        required_titles = {
+            tn: Counter({t: titles_counter.get(t, 0) for t in tn.required_titles})
+            for tn in TitleNorm.values()
+        }
+
+        score = sum(r.points() for r in results_list)
+
+        # Process each norm
+        for tn, res in results.items():
+            res.ignored_opponents_ids = ignored_opponents_ids
+            min_rounds = tn.minimum_rounds(self.tournament)
+
+            # Games criterion
+            if played_games < min_rounds:
+                res.not_enough_games = _('At least %(min)d games must be played.')
+            elif (
+                rounds == min_rounds
+                and played_games == min_rounds - 1
+                and forfeits_or_byes != 1
+            ):
+                res.not_enough_games = _('At least %(min)d games must be played.')
+
+            res.played_games = played_games
+
+            # Federation criterion
+            own_count = federations_counter.get(self.federation, 0)
+            num_feds = len(federations_counter)
+            msg = _(
+                '<b>1.4.3</b> At least two federations other than that of the title applicant must be included, except 1.4.3a - 1.4.3d shall be exempt.'
+            )
+            if own_count != 0:
+                if num_feds <= 2:
+                    res.not_enough_federations = msg
+                if own_count > tn.maximum_of_own_federation(rounds):
+                    res.too_many_own_federation = _(
+                        "<b>1.4.4</b> A maximum of 3/5 of the opponents may come from the applicant's federation."
+                    )
+            else:
+                if num_feds < 2:
+                    res.not_enough_federations = msg
+            res.from_own_federations_count = own_count
+            res.from_host_federations_count = federations_counter.get(
+                Federation(self.event.federation), 0
+            )
+            res.federations_count = num_feds
+
+            # Too many in one federation
+            if federations_counter:
+                top_fed, top_count = federations_counter.most_common(1)[0]
+                max_fed = tn.maximum_of_one_federation(rounds)
+                if top_count > max_fed:
+                    res.too_many_one_federation = (
+                        top_fed,
+                        _(
+                            '<b>1.4.4</b> A maximum of 2/3 of the opponents from one federation.'
+                        ),
+                    )
+
+            # Title holders criterion
+            num_titles = sum(titles_counter.values())
+            if num_titles < tn.minimum_title_holders(rounds):
+                res.not_enough_title_holders = _(
+                    '<b>1.4.5a</b> At least 50%% of the opponents shall be title-holders, excluding CM and WCM.'
+                )
+
+            res.num_title_holders = num_titles
+            res.title_counts = titles_counter
+
+            # Required titles criterion
+            req = required_titles.get(tn, Counter())
+            total_req = sum(req.values())
+            if total_req < tn.minimum_required_titles(self.tournament):
+                res.not_enough_required_titles = _(
+                    '<b>1.4.5</b> For this norm, at least {min} opponents must have these title(s): {titles}'
+                ).format(
+                    min=tn.minimum_required_titles(self.tournament),
+                    titles=', '.join(str(title) for title in tn.required_titles),
+                )
+            res.required_titles = list(req.keys())
+            res.required_titles_met = total_req
+
+            # Score criterion
+            if score < TitleNorm.minimum_score(rounds):
+                res.score_too_low = _(
+                    '<b>1.4.8b</b> The minimum score is 35%% for all norms.'
+                )
+
+            res.score = score
+
+        # Rating / performance criteria
+        opponents.sort(
+            key=lambda o: o.rating if o.rating_type == PlayerRatingType.FIDE else 1400
+        )
+
+        for tn, res in results.items():
+            rating_list = [
+                PlayerRatingAndType(
+                    opponent.rating
+                    if opponent.rating_type == PlayerRatingType.FIDE
+                    else 1400,
+                    opponent.rating_type,
+                )
+                for opponent in opponents
+            ]
+
+            # Minimum rating floor
+            if rating_list and rating_list[0].value < tn.minimum_rating:
+                rating_list[0].value = tn.minimum_rating
+                rating_list[0].type = PlayerRatingType.FIDE
+                res.adjusted_player = opponents[0]
+                res.adjusted_player_rating = tn.minimum_rating
+                rating_list.sort(key=attrgetter('value'))
+
+            res.num_rated_players = len(
+                [r for r in rating_list if r.type == PlayerRatingType.FIDE]
+            )
+
+            values = [r.value for r in rating_list]
+            avg = StaticUtils.round_ranking(sum(values) / len(values)) if values else 0
+            if avg < tn.minimum_average:
+                res.average_too_low = _(
+                    '<b>1.4.8a</b> The minimum average rating of the opponents for this norm is {min}.'
+                ).format(min=tn.minimum_average)
+
+            res.average_rating = avg
+
+            max_score = Result.WIN.points() * len(results_list)
+            bonus = StaticUtils.performance_bonus(score / max_score) if max_score else 0
+            performance = avg + bonus
+            res.performance = performance
+            if performance < tn.minimum_performance:
+                res.performance_too_low = _(
+                    '<b>1.4.8</b> The minimum performance for this norm is {min}.'
+                ).format(min=tn.minimum_performance)
+                new_score = score
+                draw_points = Result.DRAW.points()
+                while new_score < max_score:
+                    new_score += draw_points
+                    new_bonus = (
+                        StaticUtils.performance_bonus(new_score / max_score)
+                        if max_score
+                        else 0
+                    )
+                    if res.average_rating + new_bonus >= tn.minimum_performance:
+                        res.performance_diff = score - new_score
+                        break
+            else:
+                new_score = score
+                draw_points = Result.DRAW.points()
+                while new_score > 0:
+                    new_score -= draw_points
+                    new_bonus = (
+                        StaticUtils.performance_bonus(new_score / max_score)
+                        if max_score
+                        else 0
+                    )
+                    if res.average_rating + new_bonus < tn.minimum_performance:
+                        res.performance_diff = score - new_score - draw_points
+                        break
+
+        # 1.4.3d exception
+        #
+        # Swiss System tournaments in which participants include in every round at least
+        # - 20 FIDE rated players
+        # - not from the host federation
+        # - from at least 3 different federations,
+        #  -at least 10 of whom hold GM, IM, WGM or WIM titles.
+        # For this purpose, players will be counted only if they miss at most one round (excluding pairing allocated byes)
+
+        eligible_players: list[Player] = []
+
+        # Build a list of eligible players
+        for p in self.tournament.players_by_id.values():
+            if p.rating_type != PlayerRatingType.FIDE:
+                continue
+            if (
+                p.federation == Federation(self.tournament.event.federation)
+                or p.federation == 'NON'  # 1.4.2a
+            ):
+                continue
+            missed_rounds = 0
+            for r, pairing in p.pairings_by_round.items():
+                if pairing.unplayed and pairing.result not in [
+                    Result.PAIRING_ALLOCATED_BYE,
+                    Result.REST_GAME,
+                ]:
+                    missed_rounds += 1
+            if missed_rounds > 1:
+                continue
+
+            eligible_players.append(p)
+
+        # Per-round counts among eligible & present -----------------
+        worst_players: float = float('inf')
+        worst_federations: float = float('inf')
+        worst_titled: float = float('inf')
+
+        for rnd in range(1, self.tournament.rounds + 1):
+            present: list[Player] = []
+            for p in eligible_players:
+                pairing: Pairing | None = p.pairings_by_round.get(rnd)
+                if pairing and (
+                    pairing.played
+                    or pairing.result
+                    in [
+                        Result.PAIRING_ALLOCATED_BYE,
+                        Result.REST_GAME,
+                    ]
+                ):
+                    present.append(p)
+
+            n_players = len(present)
+            n_titled = sum(1 for p in present if p.title != PlayerTitle.NONE)
+
+            # 1.4.2a
+            present_not_fid = [p for p in present if p.federation != 'FID']
+            n_feds = len({p.federation for p in present_not_fid})
+
+            # Track worst (minimum) across rounds
+            worst_players = min(worst_players, n_players)
+            worst_federations = min(worst_federations, n_feds)
+            worst_titled = min(worst_titled, n_titled)
+
+        # Handle case of zero rounds gracefully
+        if worst_players is float('inf'):
+            worst_players = 0
+            worst_federations = 0
+            worst_titled = 0
+
+        msg = _(
+            '<b>1.4.3d</b> Swiss System tournaments in which participants include in every round at least 20 FIDE rated players, not from the host federation, from at least 3 different federations, at least 10 of whom hold GM, IM, WGM or WIM titles.'
+        )
+        for tn, res in results.items():
+            res.all_federations_count = int(worst_federations)
+            res.not_enough_all_federations = (
+                msg if res.all_federations_count < 3 else None
+            )
+
+            res.eligible_players_title_count = int(worst_titled)
+            res.not_enough_all_title_holders = (
+                msg if res.eligible_players_title_count < 10 else None
+            )
+
+            res.eligible_players_count = int(worst_players)
+            res.not_enough_foreign_players = (
+                msg if res.eligible_players_count < 20 else None
+            )
+
+        return results
 
     @cached_property
     def has_real_pairings(self) -> bool:

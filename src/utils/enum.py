@@ -1,14 +1,16 @@
 """A file grouping all the "utility" classes/enum"""
 
 from datetime import date, datetime, timedelta
-from enum import Enum, StrEnum, IntEnum
-from typing import TYPE_CHECKING, Self
+from enum import Enum, StrEnum, IntEnum, auto
+from math import ceil
+from typing import Iterator, Self, TYPE_CHECKING
 
 from common.i18n import _
 
 
 if TYPE_CHECKING:
     from data.event import Event
+    from data.tournament import Tournament
 
 
 class Result(IntEnum):
@@ -236,6 +238,12 @@ class Result(IntEnum):
         from data.input_output.trf_mappers import TrfResult
 
         return TrfResult.get_outer_value(self)
+
+    @property
+    def to_norm_report(self) -> str:
+        from data.input_output.norm_mappers import NormResult
+
+        return NormResult.get_outer_value(self)
 
     @property
     def to_crosstable(self) -> str:
@@ -848,6 +856,148 @@ class PlayerTitle(IntEnum):
 
     def __str__(self) -> str:
         return self.short_name
+
+
+class TitleNorm(Enum):
+    WIM = auto()
+    WGM = auto()
+    IM = auto()
+    GM = auto()
+
+    @classmethod
+    def values(cls) -> Iterator['TitleNorm']:
+        yield cls.WIM
+        yield cls.WGM
+        yield cls.IM
+        yield cls.GM
+
+    @property
+    def player_title(self) -> PlayerTitle:
+        match self:
+            case TitleNorm.WIM:
+                return PlayerTitle.WOMAN_INTERNATIONAL_MASTER
+            case TitleNorm.WGM:
+                return PlayerTitle.WOMAN_GRANDMASTER
+            case TitleNorm.IM:
+                return PlayerTitle.INTERNATIONAL_MASTER
+            case TitleNorm.GM:
+                return PlayerTitle.GRANDMASTER
+
+    def satisfies_gender_requirement(self, gender: PlayerGender) -> bool:
+        match self:
+            case TitleNorm.WIM | TitleNorm.WGM:
+                return gender == PlayerGender.FEMALE
+            case _:
+                return True
+
+    @property
+    def minimum_rating(self) -> int:
+        match self:
+            case TitleNorm.WIM:
+                return 1850
+            case TitleNorm.WGM:
+                return 2000
+            case TitleNorm.IM:
+                return 2050
+            case TitleNorm.GM:
+                return 2200
+            case _:
+                raise ValueError(f'Invalid title norm value: {self}')
+
+    @property
+    def minimum_average(self) -> int:
+        match self:
+            case TitleNorm.WIM:
+                return 2030
+            case TitleNorm.WGM:
+                return 2180
+            case TitleNorm.IM:
+                return 2230
+            case TitleNorm.GM:
+                return 2380
+            case _:
+                raise ValueError(f'Invalid title norm value: {self}')
+
+    @property
+    def minimum_performance(self) -> float:
+        match self:
+            case TitleNorm.WIM:
+                return 2250
+            case TitleNorm.WGM:
+                return 2400
+            case TitleNorm.IM:
+                return 2450
+            case TitleNorm.GM:
+                return 2600
+            case _:
+                raise ValueError(f'Invalid title norm value: {self}')
+
+    @staticmethod
+    def minimum_rounds(tournament: 'Tournament') -> int:
+        from data.pairings.variations import DoubleBergerRoundRobinVariation
+
+        if tournament.pairing_variation == DoubleBergerRoundRobinVariation():
+            return 10  # 1.4.5.f -> 6 players -> 10 rounds
+        return 9
+
+    @staticmethod
+    def minimum_score(rounds: int) -> float:
+        return Result.WIN.points() * 0.35 * rounds
+
+    @staticmethod
+    def minimum_title_holders(rounds: int) -> int:
+        return ceil(rounds / 2)
+
+    @staticmethod
+    def minimum_required_titles(tournament: 'Tournament') -> int:
+        from data.pairings.variations import DoubleBergerRoundRobinVariation
+
+        if tournament.pairing_variation == DoubleBergerRoundRobinVariation():
+            return ceil(tournament.rounds / 2)  # 1.4.5.f
+        return max(ceil(tournament.rounds / 3), 3)
+
+    @staticmethod
+    def maximum_of_own_federation(rounds: int) -> int:
+        return (3 * rounds) // 5
+
+    @staticmethod
+    def maximum_of_one_federation(rounds: int) -> int:
+        return (2 * rounds) // 3
+
+    @property
+    def title_holders(self) -> tuple[PlayerTitle, ...]:
+        return (
+            PlayerTitle.WOMAN_FIDE_MASTER,
+            PlayerTitle.FIDE_MASTER,
+            PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+            PlayerTitle.INTERNATIONAL_MASTER,
+            PlayerTitle.WOMAN_GRANDMASTER,
+            PlayerTitle.GRANDMASTER,
+        )
+
+    @property
+    def required_titles(self) -> tuple[PlayerTitle, ...]:
+        match self:
+            case TitleNorm.WIM:
+                return (
+                    PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+                    PlayerTitle.WOMAN_GRANDMASTER,
+                    PlayerTitle.INTERNATIONAL_MASTER,
+                    PlayerTitle.GRANDMASTER,
+                )
+            case TitleNorm.WGM:
+                return (
+                    PlayerTitle.WOMAN_GRANDMASTER,
+                    PlayerTitle.INTERNATIONAL_MASTER,
+                    PlayerTitle.GRANDMASTER,
+                )
+            case TitleNorm.IM:
+                return (
+                    PlayerTitle.INTERNATIONAL_MASTER,
+                    PlayerTitle.GRANDMASTER,
+                )
+            case TitleNorm.GM:
+                return (PlayerTitle.GRANDMASTER,)
 
 
 class BoardColor(StrEnum):

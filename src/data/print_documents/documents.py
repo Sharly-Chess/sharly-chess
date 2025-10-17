@@ -1,19 +1,23 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from functools import cached_property, partial
 import itertools
 from typing import Any, Callable, override
 from collections import Counter
 
+from common import format_timestamp
 from common.exception import SharlyChessException, OptionError
 from common.i18n import _, ngettext
 from common.i18n.utils import unicode_normalize
+from plugins.manager import plugin_manager
 from data.board import Board
 from data.pairings.engines import RoundRobinPairingEngine
-from data.pairings.systems import RoundRobinPairingSystem
-from data.player import Player, PlayerTitle, dataclass, plugin_manager
+from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
+from data.player import Player, TournamentRating
 from data.event import Event
 from data.print_documents.options import (
     PairingStylePrintOption,
+    PlayerPrintOption,
     PlayerSplitPrintOption,
     PrintOption,
     QRCodeNetworkPrintOption,
@@ -28,6 +32,7 @@ from data.print_documents.options import (
 from data.tournament import Tournament
 from utils import StaticUtils
 from utils.enum import Result
+from utils.types import PlayerTitle
 from utils.option import Option, OptionHandler
 
 
@@ -986,6 +991,55 @@ class StatisticsPrintDocument(PrintDocument):
             'tournaments': self.tournaments,
             'subtitle': self.subtitle,
             'statistics': statistics,
+        }
+
+
+class NormReportPrintDocument(PrintDocument):
+    @staticmethod
+    def static_id() -> str:
+        return 'norm_report'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Norm Report')
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [TournamentPrintOption, PlayerPrintOption]
+
+    @property
+    def title(self) -> str:
+        return 'Certificate of Title Results'
+
+    @staticmethod
+    def validate_for_tournament(tournament: Tournament) -> str | None:
+        if tournament.rating != TournamentRating.STANDARD:
+            return _(
+                'This document is only available for standard time control tournaments.'
+            )
+        return None
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/norm_report.html'
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        player_id = self._get_option(PlayerPrintOption).value
+        player = self.tournament.players_by_id[player_id]
+        norms = {
+            norm_title: norm
+            for norm_title, norm in player.achieves_any_title_norm().items()
+            if norm.meets_gender and player.title < norm_title.player_title
+        }
+        return {
+            'event': self.event,
+            'tournament': self.tournament,
+            'is_swiss': self.tournament.pairing_system == SwissPairingSystem(),
+            'start': format_timestamp(self.tournament.start_timestamp, '%Y.%m.%d'),
+            'end': format_timestamp(self.tournament.stop_timestamp, '%Y.%m.%d'),
+            'norms': norms,
+            'player': player,
         }
 
 

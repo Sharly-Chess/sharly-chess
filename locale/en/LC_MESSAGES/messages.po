@@ -244,6 +244,35 @@ msgstr ""
 msgid "65+"
 msgstr ""
 
+msgid "<b>1.4.3</b> At least two federations other than that of the title applicant must be included, except 1.4.3a - 1.4.3d shall be exempt."
+msgstr ""
+
+msgid "<b>1.4.3d</b> Swiss System tournaments in which participants include in every round at least 20 FIDE rated players, not from the host federation, from at least 3 different federations, at least 10 of whom hold GM, IM, WGM or WIM titles."
+msgstr ""
+
+msgid "<b>1.4.4</b> A maximum of 2/3 of the opponents from one federation."
+msgstr ""
+
+msgid "<b>1.4.4</b> A maximum of 3/5 of the opponents may come from the applicant's federation."
+msgstr ""
+
+msgid "<b>1.4.5</b> For this norm, at least {min} opponents must have these title(s): {titles}"
+msgstr ""
+
+#, python-format
+msgid "<b>1.4.5a</b> At least 50%% of the opponents shall be title-holders, excluding CM and WCM."
+msgstr ""
+
+msgid "<b>1.4.8</b> The minimum performance for this norm is {min}."
+msgstr ""
+
+msgid "<b>1.4.8a</b> The minimum average rating of the opponents for this norm is {min}."
+msgstr ""
+
+#, python-format
+msgid "<b>1.4.8b</b> The minimum score is 35%% for all norms."
+msgstr ""
+
 msgid "<first> and <second>"
 msgstr ""
 
@@ -502,6 +531,9 @@ msgstr ""
 msgid "All the tournaments"
 msgstr ""
 
+msgid "All values may be modified by the arbiter if necessary."
+msgstr ""
+
 msgid "Allow"
 msgstr ""
 
@@ -584,6 +616,10 @@ msgid "Assign a zero-point bye <b>for the rest of the tournament</b>"
 msgstr ""
 
 msgid "Assign to a display controller."
+msgstr ""
+
+#, python-format
+msgid "At least %(min)d games must be played."
 msgstr ""
 
 msgid "At least a minimum or a maximum rating must be defined."
@@ -3268,6 +3304,9 @@ msgstr ""
 msgid "None *** FFE licence"
 msgstr "None"
 
+msgid "Norm Report"
+msgstr ""
+
 msgid "Not assigned"
 msgstr ""
 
@@ -3736,6 +3775,9 @@ msgstr ""
 msgid "Player sets of screen [%(screen_uniq_id)s]"
 msgstr ""
 
+msgid "Player:"
+msgstr ""
+
 msgid "Players"
 msgstr ""
 
@@ -3798,6 +3840,9 @@ msgid "Please choose a federation"
 msgstr ""
 
 msgid "Please choose a federation."
+msgstr ""
+
+msgid "Please choose a player."
 msgstr ""
 
 msgid "Please choose the document."
@@ -4420,6 +4465,9 @@ msgstr ""
 msgid "Screens: %(num)d"
 msgstr ""
 
+msgid "Scroll down to review all the norms…"
+msgstr ""
+
 msgid "Search"
 msgstr ""
 
@@ -4452,6 +4500,9 @@ msgid "Seeding of unrated rapid/blitz"
 msgstr ""
 
 msgid "Select All"
+msgstr ""
+
+msgid "Select player"
 msgstr ""
 
 msgid "Select the players and the data to update:"
@@ -5159,6 +5210,9 @@ msgstr ""
 msgid "This document is only available for Round-Robin tournaments."
 msgstr ""
 
+msgid "This document is only available for standard time control tournaments."
+msgstr ""
+
 msgid "This event is private (by default, screens are not visible by the spectators)."
 msgstr ""
 
@@ -5584,6 +5638,9 @@ msgid "Unknown value [{value}]"
 msgstr ""
 
 msgid "Unlike single Screens, families can only be used to display information about a single tournament."
+msgstr ""
+
+msgid "Unmet requirements are highlighted in red and should be verified. They will appear in black when printed."
 msgstr ""
 
 msgid "Unpair"
@@ -6329,4 +6386,3 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-

@@ -51,7 +51,7 @@
                         {% set zero_point_bye_allowed = round >= admin_player.tournament.current_round and not pairing.board %}
                         {% if pairing.opponent_id %}
                             {% set opponent_player=admin_player.tournament.players_by_id[pairing.opponent_id] %}
-                            {% set opponent=opponent_player.full_name %}
+                            {% set opponent = opponent_player.title.short_name ~ ' ' ~ opponent_player.full_name %}
                             {% set federation=opponent_player.federation %}
                             {% set rating=opponent_player.rating_str %}
                             {% set color=pairing.color %}
@@ -177,6 +177,7 @@
                                             class="player-federation-flag pe-1"
                                             src="{{ macros.federation_flag_url(federation) }}"
                                         />
+                                        {{ federation }}
                                     {% endif %}
                                 </td>
                                 <td class="text-nowrap text-end">

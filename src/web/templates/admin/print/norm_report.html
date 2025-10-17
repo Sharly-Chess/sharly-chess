@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>FIDE Norm Report Form IT1</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 900px;
+                margin: 2rem auto;
+                line-height: 1.4;
+                font-size: 0.8rem;
+                --row-gap: 0.9rem;
+            }
+            section {
+                border: 1px solid black;
+                padding: 0.6rem;
+                margin-top: var(--row-gap);
+            }
+            section > div + div {
+                margin-top: 0.6rem;
+            }
+            h1 {
+                text-align: center;
+                font-size: 1.2rem;
+                line-height: 1.2;
+                padding: 0;
+                margin: 0;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin-top: 1em;
+                border: 1px solid black;
+            }
+            th,
+            td {
+                border-top: 1px solid black;
+                border-bottom: 1px solid black;
+                padding: 0.3rem 0.3rem;
+                text-align: center;
+            }
+            th {
+                font-weight: normal;
+            }
+            label {
+                display: inline-block;
+                white-space: nowrap;
+            }
+            input {
+                border: none;
+            }
+            input[type="checkbox"] {
+                pointer-events: none;
+                accent-color: black;
+            }
+            .heading {
+                text-align: center;
+                font-white: bold;
+                font-size: 2rem;
+            }
+            .left {
+                text-align: left;
+            }
+            .center {
+                text-align: center;
+            }
+            .info {
+                text-align: center;
+                font-style: italic;
+                font-size: 1rem;
+                margin-bottom: 1rem;
+            }
+            .grid {
+                display: grid;
+                column-gap: 3rem;
+                row-gap: 0.7em;
+            }
+            .item {
+                display: flex;
+                width: 100%;
+            }
+            .item label {
+                flex-shrink: 1;
+            }
+            .item input {
+                flex-grow: 1;
+                margin-left: 1rem;
+                width: 1px;
+                border: none;
+                border-bottom: 2px dotted black;
+            }
+            .error {
+                color: red;
+                position: relative;
+            }
+            .error input {
+                color: red;
+            }
+            .error-info {
+                display: none;
+                color: black;
+            }
+            .error:hover .error-info {
+                display: block;
+                position: absolute;
+                z-index: 10;
+                min-width: 200px;
+                max-width: 300px;
+                background-color: white;
+                border: 1px solid #000;
+                top: 1.5rem;
+                left: 1rem;
+                padding: 0.5rem;
+                box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+            }
+            .name-cell {
+                width: 100%;
+                box-sizing: border-box;
+            }
+            .ignored, .ignored input {
+                text-decoration: line-through;
+            }
+            .checkboxes {
+                margin-top: 0.5rem;
+                display: flex;
+                width: 100%;
+                justify-content: space-around;
+            }
+            .fake-checkbox {
+                display: inline-flex;
+            }
+            .fake-checkbox .box {
+                width: 1em;
+                height: 1em;
+                border: 1px solid black;
+                background: white;
+                border-radius: 1em;
+                margin-right: 0.3em;
+            }
+            .fake-checkbox .box.checked {
+                background: black;
+            }
+            .privacy-notice, .privacy-notice a, .privacy-notice a:visited {
+                font-size: 0.8rem;
+                margin-top: var(--row-gap);
+                color: red;
+            }
+            .footnote {
+                font-size: 0.7rem;
+            }
+            .break-after {
+                page-break-after: always;
+                page-break-inside: avoid;
+                break-inside: avoid;
+                break-after: always;
+            }
+            .spacer {
+                margin-top: 4rem;
+                border-top: 2px solid black;
+                padding-bottom: 4rem;
+            }
+            @media print {
+                body {
+                    margin: 0;
+                    padding: 10mm;
+                    -webkit-print-color-adjust: exact;-
+                    print-color-adjust: exact;
+                }
+
+                body.paper-a4 {
+                    width: 210mm;
+                    height: 297mm;
+                }
+
+                body.paper-letter {
+                    width: 8.5in;
+                    height: 11in;
+                }
+
+                section {
+                    page-break-inside: avoid !important;
+                }
+
+                .error {
+                    color: black;
+                }
+                .spacer, .heading, .info {
+                    display: none;
+                }
+
+                @page {
+                    size: A4 portrait;
+                    margin: 10mm;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        {% for norm_title, norm in norms.items() %}
+            {% if loop.first %}
+                <div class="info">
+                    {{_('Scroll down to review all the norms…')}}
+                    <br />
+                    {{_('Unmet requirements are highlighted in red and should be verified. They will appear in black when printed.')}}
+                    <br />
+                    {{_('All values may be modified by the arbiter if necessary.')}}
+                </div>
+            {% else %}
+                <div class="spacer"></div>
+            {% endif %}
+            <div class="heading">
+                {{norm_title.name}}
+            </div>
+            <form class="break-after">
+                <h1 style="text-align: right; margin: 0; padding: 0;">IT 1</h1>
+                <section style="margin-top: 0.1rem;">
+                    <h1>Certificate of Title Result (IT1)</h1>
+                </section>
+
+                <div class="checkboxes">
+                    <label class="fake-checkbox">
+                        <span class="box {% if norm_title.value == 4 %}checked{% endif %}"></span>GM
+                    </label>
+                    <label class="fake-checkbox">
+                        <span class="box {% if norm_title.value == 3 %}checked{% endif %}"></span>IM
+                    </label>
+                    <label class="fake-checkbox">
+                        <span class="box {% if norm_title.value == 2 %}checked{% endif %}"></span>WGM
+                    </label>
+                    <label class="fake-checkbox">
+                        <span class="box {% if norm_title.value == 1 %}checked{% endif %}"></span>WIM
+                    </label>
+                </div>
+                <section>
+                    <div class="grid" style="grid-template-columns: 1fr 1fr;">
+                        <div class="item">
+                            <label>Name:</label>
+                            <input value="{{ player.last_name }}" />
+                        </div>
+
+                        <div class="item">
+                            <label>First name:</label>
+                            <input value="{{ player.first_name }}" />
+                        </div>
+
+                        <div class="item">
+                            <label>ID-number:</label>
+                            <input value="{{ player.fide_id }}" />
+                        </div>
+
+                        <div class="item">
+                            <label>Federation:</label>
+                            <input value="{{ player.federation }}" />
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <div class="grid" style="grid-template-columns: 4fr 2fr 2fr;">
+                        <div class="item">
+                            <label>Event:</label>
+                            <input value="{{ event.name }}" />
+                        </div>
+
+                        <div class="item">
+                            <label>Start:</label>
+                            <input value="{{ start }}" />
+                        </div>
+
+                        <div class="item">
+                            <label>Close:</label>
+                            <input value="{{ end }}" />
+                        </div>
+                    </div>
+
+                    <div class="grid" style="grid-template-columns: 5fr 4fr;">
+                        <div class="item">
+                            <label>Chief Arbiter (name, ID):</label>
+                            <input />
+                        </div>
+
+                        <div class="item {{ 'error' if norm.not_enough_games else '' }}">
+                            <div class="error-info">
+                                {{ norm.not_enough_games | safe }}
+                            </div>
+                            <label>Number of games:</label>
+                            <input value="{{ norm.played_games }}" />
+                        </div>
+
+                        <div class="item">
+                            <label>Rate of play:</label>
+                            <input value="{{ tournament.time_control_trf25 }}"/>
+                        </div>
+
+                        <div class="item {{ 'error' if norm.not_enough_federations else '' }}">
+                            <div class="error-info">
+                                {{ norm.not_enough_federations | safe }}
+                            </div>
+                            <label>Number of federations:</label>
+                            <input value="{{ norm.federations_count }}" />
+                        </div>
+
+                        <div class="item">
+                            <label>Number players not from title applicant's federation</label>
+                            <input value="{{ norm.played_games - norm.from_own_federations_count }}" />
+                        </div>
+
+                        <div class="item"><label>Number rated opponents:</label>
+                            <input value="{{ norm.num_rated_players }}" />
+                        </div>
+
+                        <div class="item">
+                            <label>Number players from host federation:</label>
+                            <input value="{{ norm.from_host_federations_count }}" />
+                        </div>
+
+                        <div class="item {{ 'error' if norm.not_enough_title_holders else '' }}">
+                            <div class="error-info">
+                                {{ norm.not_enough_title_holders | safe }}
+                            </div>
+                            <label>Total number titled opponents:</label>
+                            <input value="{{ norm.num_title_holders }}" />
+                        </div>
+                    </div>
+
+                    <div class="grid" style="grid-template-columns: repeat(7, 1fr);">
+                        <div class="item">
+                            <label>Numbers of:</label>
+                        </div>
+                        <div class="item {{ 'error' if norm.not_enough_required_titles and 8 in norm.required_titles else '' }}">
+                            <div class="error-info">
+                                {{ norm.not_enough_required_titles | safe }}
+                            </div>
+                            <label>GM:</label>
+                            <input value="{{ norm.title_counts[8] }}" />
+                        </div>
+                        <div class="item {{ 'error' if norm.not_enough_required_titles and 6 in norm.required_titles else '' }}">
+                            <div class="error-info">
+                                {{ norm.not_enough_required_titles | safe }}
+                            </div>
+                            <label>IM:</label>
+                            <input value="{{ norm.title_counts[6] }}" />
+                        </div>
+                        <div class="item {{ 'error' if norm.not_enough_required_titles and 7 in norm.required_titles else '' }}">
+                            <div class="error-info">
+                                {{ norm.not_enough_required_titles | safe }}
+                            </div>
+                            <label>WGM:</label>
+                            <input value="{{ norm.title_counts[7] }}" />
+                        </div>
+                        <div class="item {{ 'error' if norm.not_enough_required_titles and 5 in norm.required_titles else '' }}">
+                            <div class="error-info">
+                                {{ norm.not_enough_required_titles | safe }}
+                            </div>
+                            <label>WIM:</label>
+                            <input value="{{ norm.title_counts[5] }}" />
+                        </div>
+                        <div class="item {{ 'error' if norm.not_enough_required_titles and 4 in norm.required_titles else '' }}">
+                            <div class="error-info">
+                                {{ norm.not_enough_required_titles | safe }}
+                            </div>
+                            <label>FM:</label>
+                            <input value="{{ norm.title_counts[4] }}" />
+                        </div>
+                        <div class="item {{ 'error' if norm.not_enough_required_titles and 3 in norm.required_titles else '' }}">
+                            <div class="error-info">
+                                {{ norm.not_enough_required_titles | safe }}
+                            </div>
+                            <label>WFM:</label>
+                            <input value="{{ norm.title_counts[3] }}" />
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    {% set applying_143d = is_swiss %}
+                    <div style="font-size: 0.9rem; font-weight: bold;">Where applying 1.43d:</div>
+                    <div class="grid" style="grid-template-columns: 3fr 5fr;">
+                        <div class="item {{ 'error' if applying_143d and norm.not_enough_all_federations else '' }}">
+                            <div class="error-info">
+                                {{ norm.not_enough_all_federations | safe }}
+                            </div>
+                            <label>Number of federations:</label>
+                            <input value="{{ norm.all_federations_count if applying_143d }}"  />
+                        </div>
+                        <div class="item {{ 'error' if applying_143d and norm.not_enough_all_title_holders else '' }}">
+                            <div class="error-info">
+                                {{ norm.not_enough_all_title_holders | safe }}
+                            </div>
+                            <label>Number of rated players not from host federation:</label>
+                            <input value="{{ norm.eligible_players_count if applying_143d }}"  />
+                        </div>
+                    </div>
+                    <div class="item {{ 'error' if applying_143d and norm.not_enough_foreign_players else '' }}">
+                        <div class="error-info">
+                            {{ norm.not_enough_foreign_players | safe }}
+                        </div>
+                        <label>Number of players not from host federation holding GM, IM, WGM, WIM titles:</label>
+                        <input value="{{ norm.eligible_players_title_count if applying_143d }}"  />
+                    </div>
+                </section>
+                <div class="item" style="margin-top: 0.5rem;">
+                    <label>Special remarks:</label>
+                    <input />
+                </div>
+
+                <table style="margin-top: var(--row-gap);">
+                    <colgroup>
+                        <col style="width: 3ch;">    <!-- Round -->
+                        <col style="width: auto;">   <!-- Name -->
+                        <col style="width: 15ch;">   <!-- FIDE ID -->
+                        <col style="width: 7ch;">    <!-- FED -->
+                        <col style="width: 10ch;">   <!-- Rating -->
+                        <col style="width: 10ch;">   <!-- 1.46c -->
+                        <col style="width: 4ch;">    <!-- Title -->
+                        <col style="width: 8ch;">    <!-- Score -->
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>Rd</th>
+                            <th class="left">Opponent</th>
+                            <th>ID</th>
+                            <th>Fed</th>
+                            <th>Rating</th>
+                            <th>Rat. 1.46c</th>
+                            <th>Title</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for rnd, pairing in player.pairings_by_round.items() %}
+                        {% set opp = pairing.opponent %}
+                        {% set adjusted_opp_rating = opp.rating if opp.rating_type == 3 else 1400 %}
+                        {% if opp.id == norm.adjusted_player.id %}
+                            {% set adjusted_opp_rating = norm.adjusted_player_rating %}
+                        {% endif %}
+                        {% if not norm.is_143d_met and norm.too_many_own_federation and opp.federation == player.federation %}
+                            {% set too_many_own = true %}
+                            {% set err = norm.too_many_own_federation %}
+                        {% elif not norm.is_143d_met and norm.too_many_one_federation and opp.federation == norm.too_many_one_federation[0] %}
+                            {% set too_many_one = true %}
+                            {% set err = norm.too_many_one_federation[1] %}
+                        {% endif %}
+                        {% set ignored = norm.ignored_opponents_ids and opp.id in norm.ignored_opponents_ids %}
+                        <tr class="{{ 'ignored' if ignored }}">
+                            <td>{{ rnd }}</td>
+                            <td><input class="name-cell" value="{{ opp.full_name }}" /></td>
+                            <td><input class="center"size="12" value="{{ opp.fide_id }}"  /></td>
+                            <td>
+                                <div class="{{ 'error' if too_many_own or too_many_one }}">
+                                    <div class="error-info">
+                                        {{ err | safe }}
+                                    </div>
+                                    <input size="4" value="{{ opp.federation }}"  />
+                                </div>
+                            </td>
+                            <td><input class="center" size="5" value="{{ opp.rating }}"  /></td>
+                            <td><input class="center" size="5" value="{{ adjusted_opp_rating if opp is not none}}" /></td>
+                            <td><input class="center" size="4" value="{{ opp.title.to_fide_value or '-' if opp is not none }}"  /></td>
+                            <td><input class="center" size="4" value="{{ pairing.result.to_norm_report }}" /></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="grid" style="margin-top: var(--row-gap); grid-template-columns: repeat(3, 1fr); column-gap: 4rem;">
+                    <div class="item {{ 'error' if norm.average_too_low else '' }}">
+                        <div class="error-info">
+                            {{ norm.average_too_low | safe }}
+                        </div>
+                        <label>Rating average (1.46b):</label>
+                        <input value="{{ norm.average_rating }}" />
+                    </div>
+                    <div class="item">
+                        <label>Score required:</label>
+                        <input value="{{ norm.score - norm.performance_diff if norm.performance_diff is not none else '-' }}" />
+                    </div>
+                    <div class="item {{ 'error' if norm.score_too_low or norm.performance_too_low else '' }}">
+                        <div class="error-info">
+                            {{ norm.score_too_low | safe }}
+                            <br />
+                            {{ norm.performance_too_low | safe }}
+                        </div>
+                        <label>Score achieved:</label>
+                        <input value="{{ norm.score }}" />
+                    </div>
+                </div>
+
+                <div class="grid" style="margin-top: var(--row-gap); grid-template-columns: 1fr 2fr; column-gap: 4rem;">
+                    <div style="display: flex; flex-direction: column; justify-content: space-between;">
+                        <div class="item" style="margin-top: var(--row-gap);">
+                            <label>Exceeding norm by:</label>
+                            <input value="{{ norm.performance_diff if norm.performance_diff is not none and norm.performance_diff >= 0 }}" />
+                            <label>points<label>
+                        </div>
+
+                        <div class="item" style="margin-top: var(--row-gap);">
+                            <label style="font-weight: bold;">Federation confirming the result:</label>
+                            <input value="{{ event.federation }}"></input>
+                        </div>
+                    </div>
+
+                    <div class="item" style="flex-direction: column; align-self: center; padding: 2rem 0 1rem 0;">
+                        <input style="width: auto; margin-left: 0;" />
+                        <label style="margin-top: 0.3rem">Chief Arbiter's signature</label>
+                    </div>
+                </div>
+
+                <div class="grid" style="margin-top: 3rem; grid-template-columns: 3fr 2fr; column-gap: 4rem;">
+                    <div class="item">
+                        <label>Name of federation official:</label>
+                        <input />
+                    </div>
+
+                    <div class="item">
+                        <label>Signature:</label>
+                        <input />
+                    </div>
+                </div>
+
+                <div class="privacy-notice">
+                    PRIVACY NOTICE: this form contains personal data, please check the FIDE Privacy policy at
+                    <a href="https://www.fide.com/privacy" target="_blank">www.fide.com/privacy</a>
+                </div>
+
+                <div class="footnote">
+                    Note: Unrated = 1000, but see 1.46b. Score = 1, ½ or 0.5, 0 for played games or +, =, - for unplayed games.
+                    <br />
+                    The organizer must provide this certificate to: each player who has achieved a title result,
+                    <br />
+                    to the organizing federation, the player's federation and the FIDE Office.
+                </div>
+
+                <h1 style="text-align: right; margin: 0; padding: 0; font-style: italic">This report is not valid until confirmed by QC </h1>
+            </form>
+        {% endfor %}
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const locale = navigator.language || navigator.userLanguage;
+                const body = document.body;
+                if (locale.startsWith('en-US') || locale.startsWith('ca') || locale.startsWith('mx')) {
+                    body.classList.add('paper-letter');
+                } else {
+                    body.classList.add('paper-a4');
+                }
+            });
+            </script>
+    </body>
+</html>

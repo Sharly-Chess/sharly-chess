@@ -9,6 +9,7 @@ English version below
 ## Joueur·euses
 
 - Possibilité d'enregistrer à la fois des classements nationaux et FIDE (3.2.0)
+- Les rapports de norme peuvent désormais être générés (via l’option d’impression) (3.2.0)
 
 ## Appariements
 
@@ -28,6 +29,7 @@ English version below
 ## Players
 
 - Possibility to store both national and FIDE ratings (3.2.0)
+- Norm reports may now be generated (via the print option) (3.2.0)
 
 ## Pairings
 
