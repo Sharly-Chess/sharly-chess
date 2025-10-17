@@ -165,7 +165,7 @@ class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
         return _('FFE database (local)')
 
     @property
-    def local_database_type(self) -> type[LocalSourceDatabase]:
+    def local_database_type(self) -> type[LocalSourcePlayerDatabase]:
         return FfeDatabase
 
     @property

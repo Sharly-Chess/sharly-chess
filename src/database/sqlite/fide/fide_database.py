@@ -19,7 +19,7 @@ from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.player import PlayerRating
 from database.sqlite.event.event_store import StoredPlayer
-from database.sqlite.local_source_database import LocalSourceDatabase
+from database.sqlite.local_source_database import LocalSourcePlayerDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
 from database.sqlite.local_source_database.delays import MonthFirstDayOutdatedDelay
 from utils.enum import (
@@ -33,7 +33,7 @@ from database.sqlite.sqlite_database import SQLiteDatabase
 logger: Logger = get_logger()
 
 
-class FideDatabase(LocalSourceDatabase):
+class FideDatabase(LocalSourcePlayerDatabase):
     """
     The SQLite database class for FIDE players. Usage:
     1. Check if the database exists and is up-to-date.
