@@ -1,0 +1,28 @@
+<h4>
+    {{ _('French Schools') }}
+</h4>
+<div class="row gy-2 gx-3">
+    <div class="col-12">
+        <div class="input-group">
+            {{ admin_macros.search_indicator('data-source-indicator') }}
+            <input
+                id="fra-schools-search-input"
+                name="fra_schools_search"
+                class="dropdown form-control"
+                type="search"
+                hx-trigger="keyup changed delay:400ms"
+                hx-target="#fra-schools-search-results"
+                hx-get="{{ url_for('fra-schools-search', event_uniq_id=admin_event.uniq_id) }}"
+                hx-on::before-request="$('#fra-schools-search-results').show();"
+                hx-on::after-request="$('#fra-schools-search-results').show();"
+                hx-sync="this:replace"
+                hx-indicator="#data-source-indicator"
+            />
+        </div>
+        <ul
+            id="fra-schools-search-results"
+            class="dropdown-menu position-absolute me-3 end-0 search-results-dropdown"
+        >
+        </ul>
+    </div>
+</div>
