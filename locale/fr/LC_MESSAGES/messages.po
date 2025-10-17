@@ -267,7 +267,7 @@ msgid "<b>1.4.8</b> The minimum performance for this norm is {min}."
 msgstr "<b>1.4.8</b> La performance minimale requise pour cette norme est de {min}."
 
 msgid "<b>1.4.8a</b> The minimum average rating of the opponents for this norm is {min}."
-msgstr "<b>1.4.8a</b>1.4.8a La moyenne minimale des classements des adversaires requise pour cette norme est de {min}."
+msgstr "<b>1.4.8a</b> La moyenne minimale des classements des adversaires requise pour cette norme est de {min}."
 
 #, python-format
 msgid "<b>1.4.8b</b> The minimum score is 35%% for all norms."
