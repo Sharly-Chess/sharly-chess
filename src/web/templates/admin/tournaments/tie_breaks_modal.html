@@ -1,0 +1,117 @@
+<div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered"
+    style="--bs-modal-width: fit-content; min-width: min(90vw, 450px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Tie-breaks') }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <h4 class="mb-3">
+                {{ _('%(string)s:', string=_('Tournament')) }}
+                {{ admin_tournament.name }}
+            </h4>
+            {% if not admin_tournament.tie_breaks_by_id %}
+                <div class="text-danger">{{ _('No tie-breaks') }}</div>
+            {% else %}
+                <form
+                    class="sortable d-flex flex-column gap-2"
+                    hx-patch="{{ url_for(
+                        'admin-tournament-reorder-tie-breaks',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id
+                    ) }}"
+                    hx-target="body"
+                    hx-trigger="end"
+                    hx-indicator="#please-wait"
+                >
+                    {% set reorder_enabled = admin_tournament.tie_breaks_by_id|length > 1 %}
+                    {% for stored_id, tie_break in admin_tournament.tie_breaks_by_id.items() %}
+                        <div class="border border-secondary bg-body-tertiary {% if reorder_enabled %}cursor-grab{% endif %}">
+                            <input type="hidden" name="tie_break_ids" value="{{ stored_id }}"/>
+                            <div class="p-2 d-flex align-items-center gap-4">
+                                {% if reorder_enabled %}
+                                    <i class="bi-grip-horizontal"></i>
+                                {% endif %}
+                                <div class="text-start flex-grow-1">
+                                    {{ tie_break.full_name }} (<b>{{ tie_break.acronym }}</b>)
+                                </div>
+                                <div class="flex-shrink-0 d-flex gap-2 align-items-center">
+                                    {% set invalid_message = admin_tournament.tie_break_invalid_message(tie_break) %}
+                                    {% if invalid_message %}
+                                        <i
+                                            class="bi-exclamation-triangle-fill text-danger"
+                                            {{ macros.tooltip_attributes('warning', invalid_message, 'top') }}
+                                        ></i>
+                                    {% else %}
+                                        {% set warning_message = admin_tournament.tie_break_warning_message(tie_break) %}
+                                        {% if warning_message %}
+                                            <i
+                                                class="bi-exclamation-triangle-fill text-warning"
+                                                {{ macros.tooltip_attributes('warning', warning_message, 'top') }}
+                                            ></i>
+                                        {% endif %}
+                                    {% endif %}
+                                    <button
+                                        class="btn btn-sm btn-outline-primary text-nowrap"
+                                        hx-get="{{ url_for(
+                                            'admin-tie-break-update-modal',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=admin_tournament.id,
+                                            tie_break_id=stored_id,
+                                        ) }}"
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                        data-bs-target="#modal-wrapper"
+                                    >
+                                        <i class="bi-pencil-fill"></i>
+                                    </button>
+                                    <button
+                                        class="btn btn-sm btn-outline-danger text-nowrap"
+                                        hx-delete="{{ url_for(
+                                            'admin-tie-break-delete',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=admin_tournament.id,
+                                            tie_break_id=stored_id,
+                                        ) }}"
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                        data-bs-target="#modal-wrapper"
+                                    >
+                                        <i class="bi-trash-fill"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </form>
+            {% endif %}
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Close') }}
+            </button>
+            <button
+                class="btn btn-primary text-nowrap"
+                hx-get="{{ url_for(
+                    'admin-tie-break-create-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                ) }}"
+                hx-indicator="#please-wait"
+            >
+                <i class="bi-plus-square-fill pe-1"></i>
+                {{ _('Add') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>requestRefresh()</script>

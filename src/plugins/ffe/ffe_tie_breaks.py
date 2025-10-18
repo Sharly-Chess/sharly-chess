@@ -4,7 +4,6 @@ from functools import cache, lru_cache
 from math import floor
 from typing import TYPE_CHECKING
 
-from common import experimental_features_enabled
 from common.i18n import _
 from data.pairing import Pairing
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
@@ -50,9 +49,7 @@ class FfeTieBreak(TieBreak, ABC):
 
     @classmethod
     def static_name(cls) -> str:
-        if not experimental_features_enabled():
-            return cls.sub_name()
-        return _('{tie_break} (Papi compatible)').format(tie_break=cls.sub_name())
+        return f'{cls.sub_name()} - PAPI'
 
     @staticmethod
     @abstractmethod
@@ -321,10 +318,6 @@ class PapiSumOfBuchholzTieBreak(PapiBuchholzTieBreak):
     def acronym(self) -> str:
         return _('SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ')
 
-    @property
-    def short_name(self) -> str:
-        return _('Bu. sum *** SHORT NAME FOR SUM OF BUCHHOLZ')
-
     def compute_player_value(self, player: 'Player', *, after_round: int) -> float:
         tournament: 'Tournament' = player.tournament
         opponents: list[Player | None] = [
@@ -352,10 +345,6 @@ class PapiKashdanTieBreak(FfeTieBreak):
     @property
     def acronym(self) -> str:
         return _('Ka. *** ACRONYM FOR PAPI KASHDAN')
-
-    @property
-    def short_name(self) -> str:
-        return _('Kashdan')
 
     def compute_player_value(self, player: 'Player', *, after_round: int) -> float:
         """Legacy: unplayed rounds are counted"""

@@ -348,7 +348,7 @@ body[data-bs-theme="dark"] .htmx-indicator {
 .card-block-button {
     float: right;
     margin-left: 0.5rem;
-    margin-bottom: 0.5rem;
+    transform: scale(0.9);
 }
 .card-block-content > * + * {
     margin-top: 0.25rem;

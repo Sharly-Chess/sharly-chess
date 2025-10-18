@@ -139,6 +139,64 @@
     <div class="card-block">
         <span
             class="card-block-button"
+            {% if not client.can_update_tournaments %}
+                {{ macros.tooltip_attributes('warning', _('You are not allowed to update the tournament.'), 'top') }}
+            {% endif %}
+        >
+            <button
+                class="btn btn-sm btn-outline-primary text-nowrap"
+                hx-get="{{ url_for(
+                    'admin-tie-breaks-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=tournament.id,
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+                {% if not client.can_update_tournaments %}
+                    disabled
+                {% endif %}
+            >
+                <i class="bi-pencil-fill"></i>
+            </button>
+        </span>
+        <div class="card-block-content">
+            <div>
+                {{ _('%(string)s:', string=_('Tie-breaks')) }}
+                {% if tournament.tie_breaks_with_invalid %}
+                    {% for tie_break in tournament.tie_breaks_with_invalid %}
+                        <span {{ macros.tooltip_attributes('', tie_break.full_name, 'top') }}>
+                            {{ tie_break.acronym }}
+                        </span>
+                        {% set invalid_message = tournament.tie_break_invalid_message(tie_break) %}
+                        {% if invalid_message %}
+                            <i
+                                class="bi-exclamation-triangle-fill text-danger"
+                                {{ macros.tooltip_attributes('warning', invalid_message, 'top') }}
+                            ></i>
+                        {% else %}
+                            {% set warning_message = tournament.tie_break_warning_message(tie_break) %}
+                            {% if warning_message %}
+                                <i
+                                    class="bi-exclamation-triangle-fill text-warning"
+                                    {{ macros.tooltip_attributes('warning', warning_message, 'top') }}
+                                ></i>
+                            {% endif %}
+                        {% endif %}
+                        {% if not loop.last %}|{% endif %}
+                    {% endfor %}
+                {% else %}
+                    <span class="text-secondary">
+                        <i>{{ _('Undefined *** PLURAL') }}</i>
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="card-block">
+        <span
+            class="card-block-button"
             {% if client.can_update_tournaments %}
                 {{ macros.tooltip_attributes('info', _('Define the criteria for players to participate in this tournament.'), 'top') }}
             {% else %}
@@ -170,26 +228,6 @@
                 {{ _('%(string)s:', string=_('Criteria')) }}
                 {% if tournament.criteria %}
                     {{ tournament.criteria_string }}
-                {% else %}
-                    <span class="text-secondary">
-                        <i>{{ _('Undefined *** PLURAL') }}</i>
-                    </span>
-                {% endif %}
-            </div>
-            <div style="width: 35px"></div>
-        </div>
-    </div>
-    <div class="card-block">
-        <div class="card-block-content">
-            <div>
-                {{ _('%(string)s:', string=_('Tie-breaks')) }}
-                {% if tournament.tie_breaks %}
-                    {% for tie_break in tournament.tie_breaks %}
-                        <span {{ macros.tooltip_attributes('info', tie_break.name, 'top') }}>
-                            {{ tie_break.short_name }}
-                        </span>
-                        {% if not loop.last %}&nbsp;-&nbsp;{% endif %}
-                    {% endfor %}
                 {% else %}
                     <span class="text-secondary">
                         <i>{{ _('Undefined *** PLURAL') }}</i>

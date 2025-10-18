@@ -41,6 +41,7 @@ from database.sqlite.event.event_store import (
     StoredAccount,
     StoredRotatingScreen,
     StoredPermission,
+    StoredTieBreak,
 )
 from database.sqlite.event import migrations
 from database.sqlite.migration_database import MigrationDatabase
@@ -724,7 +725,6 @@ class EventDatabase(MigrationDatabase):
             last_update=row['last_update'],
             last_player_update=row['last_player_update'],
             last_pairing_update=row['last_pairing_update'],
-            tie_breaks=cls.load_json_from_database_field(row['tie_breaks']),
             start=row['start'],
             stop=row['stop'],
             location=row['location'],
@@ -758,6 +758,9 @@ class EventDatabase(MigrationDatabase):
             stored_tournament = self._row_to_stored_tournament(row)
             id_ = stored_tournament.id
             assert id_ is not None
+            stored_tournament.stored_tie_breaks = (
+                self.load_tournament_stored_tie_breaks(id_)
+            )
             stored_tournament.stored_criteria = self.load_stored_tournament_criteria(
                 id_
             )
@@ -801,9 +804,6 @@ class EventDatabase(MigrationDatabase):
                 'pab_value',
             ],
         ) | {
-            'tie_breaks': self.dump_to_json_database_field(
-                stored_tournament.tie_breaks
-            ),
             'last_update': time.time(),
             'plugin_data': self.dump_to_json_database_field(
                 stored_tournament.plugin_data, {}
@@ -887,6 +887,72 @@ class EventDatabase(MigrationDatabase):
         )
 
     # ---------------------------------------------------------------------------------
+    # StoredTieBreak
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_tie_break(cls, row: dict[str, Any]) -> StoredTieBreak:
+        return StoredTieBreak(
+            id=row['id'],
+            tournament_id=row['tournament_id'],
+            type=row['type'],
+            options=cls.load_json_from_database_field(row['options']),
+            index=row['index'],
+        )
+
+    def load_tournament_stored_tie_breaks(
+        self, tournament_id: int
+    ) -> list[StoredTieBreak]:
+        self.execute(
+            'SELECT * FROM `tie_break` WHERE `tournament_id` = ? ORDER BY `index`',
+            (tournament_id,),
+        )
+        return [self._row_to_stored_tie_break(row) for row in self.fetchall()]
+
+    def add_stored_tie_break(
+        self,
+        stored_tie_break: StoredTieBreak,
+    ) -> int:
+        fields = self._get_fields_dict(
+            stored_tie_break, ['tournament_id', 'type', 'index']
+        ) | {'options': self.dump_to_json_database_field(stored_tie_break.options)}
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `tie_break`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        if not (tie_break_id := self._last_inserted_id()):
+            raise RuntimeError('Tie break insertion failed')
+        return tie_break_id
+
+    def update_stored_tie_break(
+        self,
+        stored_tie_break: StoredTieBreak,
+    ):
+        fields = self._get_fields_dict(
+            stored_tie_break, ['tournament_id', 'type', 'index']
+        ) | {'options': self.dump_to_json_database_field(stored_tie_break.options)}
+        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        assert stored_tie_break.id is not None
+        self.execute(
+            f'UPDATE `tie_break` SET {field_sets} WHERE `id` = ?',
+            tuple(fields.values()) + (stored_tie_break.id,),
+        )
+
+    def delete_stored_tie_break(self, tie_break_id: int):
+        self.execute(
+            'DELETE FROM `tie_break` WHERE `id` = ?;',
+            (tie_break_id,),
+        )
+
+    def delete_all_tournament_stored_tie_breaks(self, tournament_id: int):
+        self.execute(
+            'DELETE FROM `tie_break` WHERE `tournament_id` = ?;',
+            (tournament_id,),
+        )
+
+    # ---------------------------------------------------------------------------------
     # StoredTournamentCriterion
     # ---------------------------------------------------------------------------------
 
@@ -945,6 +1011,7 @@ class EventDatabase(MigrationDatabase):
             )
         }
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        assert stored_tournament_criterion.id is not None
         self.execute(
             f'UPDATE `tournament_criterion` SET {field_sets} WHERE `id` = ?',
             tuple(fields.values()) + (stored_tournament_criterion.id,),
@@ -1051,6 +1118,7 @@ class EventDatabase(MigrationDatabase):
     def update_stored_player(self, stored_player: StoredPlayer):
         fields = self._get_player_fields_dict(stored_player)
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        assert stored_player.id is not None
         self.execute(
             f'UPDATE `player` SET {field_sets} WHERE `id` = ?',
             tuple(fields.values()) + (stored_player.id,),
@@ -1315,6 +1383,7 @@ class EventDatabase(MigrationDatabase):
             stored_board, ['white_player_id', 'black_player_id', 'index']
         )
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        assert stored_board.id is not None
         self.execute(
             f'UPDATE `board` SET {field_sets} WHERE `id` = ?',
             tuple(fields.values()) + (stored_board.id,),
@@ -1914,6 +1983,7 @@ class EventDatabase(MigrationDatabase):
             ],
         )
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        assert stored_rotator.id is not None
         self.execute(
             f'UPDATE `rotator` SET {field_sets} WHERE `id` = ?',
             tuple(fields.values()) + (stored_rotator.id,),
@@ -2128,6 +2198,7 @@ class EventDatabase(MigrationDatabase):
     def update_stored_prize_group(self, stored_prize_group: StoredPrizeGroup):
         fields = self._get_fields_dict(stored_prize_group, ['tournament_id', 'name'])
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        assert stored_prize_group.id is not None
         self.execute(
             f'UPDATE `prize_group` SET {field_sets} WHERE `id` = ?',
             tuple(fields.values()) + (stored_prize_group.id,),
@@ -2206,6 +2277,7 @@ class EventDatabase(MigrationDatabase):
             ['prize_group_id', 'name', 'prize_sharing', 'sharing_threshold', 'is_main'],
         )
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        assert stored_prize_category.id is not None
         self.execute(
             f'UPDATE `prize_category` SET {field_sets} WHERE `id` = ?',
             tuple(fields.values()) + (stored_prize_category.id,),
@@ -2275,6 +2347,7 @@ class EventDatabase(MigrationDatabase):
             'options': self.dump_to_json_database_field(stored_prize_criterion.options)
         }
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        assert stored_prize_criterion.id is not None
         self.execute(
             f'UPDATE `prize_criterion` SET {field_sets} WHERE `id` = ?',
             tuple(fields.values()) + (stored_prize_criterion.id,),
@@ -2335,6 +2408,7 @@ class EventDatabase(MigrationDatabase):
             ['prize_category_id', 'value', 'is_monetary', 'description'],
         )
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        assert stored_prize.id is not None
         self.execute(
             f'UPDATE `prize` SET {field_sets} WHERE `id` = ?',
             tuple(fields.values()) + (stored_prize.id,),

@@ -330,6 +330,21 @@ msgstr ""
 msgid "ADM"
 msgstr ""
 
+msgid "AOB *** ACRONYM FOR AVERAGE OF BUCHHOLZ"
+msgstr "AOB"
+
+msgid "AOFB *** ACRONYM FOR AVERAGE OF FORE BUCHHOLZ"
+msgstr "AOFB"
+
+msgid "APPO *** ACRONYM FOR AVERAGE PERFECT PERFORMANCE OF OPPONENTS"
+msgstr "APPO"
+
+msgid "APRO *** ACRONYM FROM AVERAGE PERFORMANCE RATING OF OPPONENTS"
+msgstr "APRO"
+
+msgid "ARO *** ACRONYM FOR AVERAGE RATING OPPONENTS"
+msgstr "ARO"
+
 msgid "Absent"
 msgstr ""
 
@@ -691,22 +706,16 @@ msgstr ""
 msgid "Average"
 msgstr ""
 
-msgid "Average Bu. *** SHORT NAME FOR AVERAGE OF BUCHHOLZ"
-msgstr "Average Bu."
-
 msgid "Average of opponents Buchholz"
 msgstr ""
 
-msgid "Average perf. *** SHORT NAME FOR AVERAGE PERFORMANCE RATING OPPONENTS"
-msgstr "Average perf."
+msgid "Average of opponents Fore Buchholz"
+msgstr ""
 
 msgid "Average perfect performance of opponents"
 msgstr ""
 
 msgid "Average performance rating of opponents"
-msgstr ""
-
-msgid "Average rating"
 msgstr ""
 
 msgid "Average rating of opponents"
@@ -715,17 +724,23 @@ msgstr ""
 msgid "Average rating: {rating}"
 msgstr ""
 
-msgid "Avg. Perfect Perf. *** SHORT NAME FOR AVERAGE PERFECT PERFORMANCE"
-msgstr "Avg. Perfect Perf."
-
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
 msgstr "B"
 
 msgid "B - Leisure *** FFE licence"
 msgstr "B - Leisure"
 
+msgid "BH *** ACRONYM FOR BUCHHOLZ"
+msgstr "BH"
+
 msgid "BLACK WINS"
 msgstr ""
+
+msgid "BPG *** ACRONYM FOR BLACK PLAYED GAMES"
+msgstr "BPG"
+
+msgid "BWG *** ACRONYM FOR BLACK WON GAMES"
+msgstr "BWG"
 
 msgid "BY FORFEIT"
 msgstr ""
@@ -762,12 +777,6 @@ msgid "Berger grid"
 msgstr ""
 
 msgid "Black"
-msgstr ""
-
-msgid "Black Wins"
-msgstr ""
-
-msgid "Black games"
 msgstr ""
 
 msgid "Black pairings are supposed to have an opponent"
@@ -835,9 +844,6 @@ msgstr ""
 
 msgid "Bu. *** ACRONYM FOR PAPI BUCHHOLZ"
 msgstr "Bu."
-
-msgid "Bu. sum *** SHORT NAME FOR SUM OF BUCHHOLZ"
-msgstr "Bu. sum"
 
 msgid "Buchholz"
 msgstr ""
@@ -1323,6 +1329,9 @@ msgstr ""
 msgid "Create screen family"
 msgstr ""
 
+msgid "Create tie-break"
+msgstr ""
+
 msgid "Create timer"
 msgstr ""
 
@@ -1381,8 +1390,32 @@ msgstr ""
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr ""
 
+msgid "Cut modifier"
+msgstr ""
+
+msgid "Cut the least and the most significant values."
+msgstr ""
+
+msgid "Cut the least significant value."
+msgstr ""
+
+msgid "Cut the two least and the two most significant values."
+msgstr ""
+
+msgid "Cut the two least significant values."
+msgstr ""
+
+msgid "Cut {value} *** CUT TIE BREAK NAME"
+msgstr "Cut {value}"
+
+msgid "C{value} *** CUT TIE BREAK ACRONYM SUFFIX"
+msgstr "C{value}"
+
 msgid "DCA"
 msgstr ""
+
+msgid "DE *** ACRONYM FOR DIRECT ENCOUNTER"
+msgstr "DE"
 
 msgid "DOUBLE"
 msgstr ""
@@ -1924,6 +1957,9 @@ msgstr ""
 msgid "Edit the unique ID."
 msgstr ""
 
+msgid "Edit tie-break"
+msgstr ""
+
 msgid "Edit timer"
 msgstr ""
 
@@ -2051,6 +2087,9 @@ msgstr "F"
 
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
+
+msgid "FB *** ACRONYM FOR FORE BUCHHOLZ"
+msgstr "FB"
 
 msgid "FFE"
 msgstr ""
@@ -2313,9 +2352,6 @@ msgstr ""
 msgid "For these reasons, it is strongly discouraged to unpair a round. It is instead recommended to use manual pairings to handle unusual situations."
 msgstr ""
 
-msgid "Fore Bu. *** SHORT NAME FOR FORE BUCHHOLZ"
-msgstr "Fore Bu."
-
 msgid "Fore Buchholz"
 msgstr ""
 
@@ -2346,13 +2382,10 @@ msgstr ""
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GM"
 
-msgid "Games played"
-msgstr ""
+msgid "GP *** ACRONYM FOR GAMES PLAYED"
+msgstr "GP"
 
 msgid "Games played with black"
-msgstr ""
-
-msgid "Games won"
 msgstr ""
 
 msgid "Games won with Black"
@@ -2719,6 +2752,12 @@ msgstr ""
 msgid "JSON file (papi-converter format)"
 msgstr ""
 
+msgid "KA *** ACRONYM FOR KASHDAN"
+msgstr "KA"
+
+msgid "KS *** ACRONYM FOR KOYA SYSTEM"
+msgstr "KS"
+
 msgid "Ka. *** ACRONYM FOR PAPI KASHDAN"
 msgstr "Ka."
 
@@ -2726,12 +2765,6 @@ msgid "Kashdan"
 msgstr ""
 
 msgid "Keyboard shortcuts:"
-msgstr ""
-
-msgid "Ko. *** ACRONYM FOR PAPI KOYA"
-msgstr "Ko."
-
-msgid "Koya"
 msgstr ""
 
 #, python-format
@@ -2813,6 +2846,10 @@ msgstr ""
 msgid "Licence:"
 msgstr ""
 
+#, python-format
+msgid "Limit (%%)"
+msgstr ""
+
 msgid "Link to a board not involving the player."
 msgstr ""
 
@@ -2856,6 +2893,9 @@ msgstr ""
 msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr "M"
 
+msgid "MAN *** ACRONYM FOR MANUAL TIEBREAK"
+msgstr "MAN"
+
 msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
 msgstr "Mail"
 
@@ -2874,9 +2914,6 @@ msgstr ""
 
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Male"
-
-msgid "Man. *** ACRONYM FOR MANUAL TIEBREAK"
-msgstr "Man."
 
 msgid "Manage"
 msgstr ""
@@ -2973,6 +3010,9 @@ msgstr "Me. Buchholz"
 msgid "Median Buchholz"
 msgstr ""
 
+msgid "Median {value}"
+msgstr ""
+
 msgid "Menu link label:"
 msgstr ""
 
@@ -3048,14 +3088,14 @@ msgstr ""
 msgid "My timer"
 msgstr ""
 
+msgid "M{value} *** MEDIAN TIE BREAK ACRONYM SUFFIX"
+msgstr "M{value}"
+
 msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
 msgstr "N"
 
 msgid "N *** THE LETTER TO ANSWER NO"
 msgstr "N"
-
-msgid "NW *** ACRONYM FOR PAPI NUMBER OF WINS"
-msgstr "NW"
 
 msgid "Name"
 msgstr ""
@@ -3271,6 +3311,9 @@ msgstr ""
 msgid "No such screens."
 msgstr ""
 
+msgid "No tie-breaks"
+msgstr ""
+
 msgid "No timers"
 msgstr ""
 
@@ -3436,6 +3479,9 @@ msgstr ""
 msgid "Only one age category is expected with options including other categories."
 msgstr ""
 
+msgid "Only take played games into account"
+msgstr ""
+
 msgid "Open Admin Interface"
 msgstr ""
 
@@ -3524,8 +3570,11 @@ msgstr ""
 msgid "PGN"
 msgstr ""
 
-msgid "PS *** ACRONYM FOR PAPI PROGRESSIVE SCORE"
+msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
 msgstr "PS"
+
+msgid "PTP *** ACRONYM FOR PERFECT TOURNAMENT PERFORMANCE"
+msgstr "PTP"
 
 msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Paid"
@@ -3663,11 +3712,11 @@ msgstr ""
 msgid "Pending"
 msgstr ""
 
+msgid "Percentage of the maximum possible score for opponents to have scored to be considered."
+msgstr ""
+
 msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
 msgstr "Perf."
-
-msgid "Perfect perf. *** SHORT NAME FOR PERFECT TOURNAMENT PERFORMANCE"
-msgstr "Perfect perf."
 
 msgid "Perfect tournament performance"
 msgstr ""
@@ -4016,9 +4065,6 @@ msgstr ""
 msgid "Profile"
 msgstr ""
 
-msgid "Progressive"
-msgstr ""
-
 msgid "Progressive accelerated system"
 msgstr ""
 
@@ -4067,6 +4113,9 @@ msgstr ""
 #, python-format
 msgid "R %(round)d *** ROUND FOR TABLE HEADER"
 msgstr "R %(round)d"
+
+msgid "REP *** ACRONYM FOR ROUNDS ONE ELECTED TO PLAY"
+msgstr "REP"
 
 msgid "RES"
 msgstr ""
@@ -4382,8 +4431,8 @@ msgstr ""
 msgid "Rules uploaded"
 msgstr ""
 
-msgid "S-Berger *** SHORT NAME FOR SONNEBORN-BERGER"
-msgstr "S-Berger"
+msgid "SB *** ACRONYM FOR SONNEBORN BERGER"
+msgstr "SB"
 
 msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
 msgstr "SBh"
@@ -4393,6 +4442,12 @@ msgstr ""
 
 msgid "SEC"
 msgstr ""
+
+msgid "SOB *** ACRONYM FOR SUM OF BUCHHOLZ"
+msgstr "SOB"
+
+msgid "SOFB *** ACRONYM FOR SUM OF FORE BUCHHOLZ"
+msgstr "SOFB"
 
 msgid "SPE"
 msgstr ""
@@ -4747,6 +4802,9 @@ msgstr ""
 msgid "Sum of Buchholz"
 msgstr ""
 
+msgid "Sum of Fore Buchholz"
+msgstr ""
+
 msgid "Support for all FIDE recognised tie-break (including ones that are not compatible with Papi)"
 msgstr ""
 
@@ -4778,6 +4836,9 @@ msgstr ""
 
 msgid "Synchronize with ChessEvent"
 msgstr ""
+
+msgid "TPR *** ACRONYM FOR TOURNAMENT PERFORMANCE RATING"
+msgstr "TPR"
 
 msgid "TRF file"
 msgstr ""
@@ -5156,6 +5217,9 @@ msgstr ""
 msgid "The values have to be higher than the sharing threshold of the category ({threshold})."
 msgstr ""
 
+msgid "The values to take into account when computing the tie-break."
+msgstr ""
+
 msgid "The variation of the pairing system."
 msgstr ""
 
@@ -5267,6 +5331,15 @@ msgstr ""
 msgid "This screen is public (visible by the spectators)."
 msgstr ""
 
+msgid "This tie-break is already used with the same modifiers."
+msgstr ""
+
+msgid "This tie-break is already used."
+msgstr ""
+
+msgid "This tie-break is not compatible with the pairing system [{pairing_system}] (ignored)."
+msgstr ""
+
 msgid "This unique ID is already used."
 msgstr ""
 
@@ -5283,10 +5356,11 @@ msgstr ""
 msgid "Tie-break [{tie_break}] is not compatible with Papi, it will not appear in the Papi results."
 msgstr ""
 
-msgid "Tie-break already in use."
+#, python-format
+msgid "Tie-break [%(tie_break)s] successfully created!"
 msgstr ""
 
-msgid "Tie-break incompatible with the \"{system}\" pairing system."
+msgid "Tie-break [{tie_break}] is not compatible with the PAPI format."
 msgstr ""
 
 msgid "Tie-breaks"
@@ -5362,9 +5436,6 @@ msgid "Too many byes for player [{player_name}]."
 msgstr ""
 
 msgid "Too much information to display on a single projector?"
-msgstr ""
-
-msgid "Top cut must be at most equal to bottom cut."
 msgstr ""
 
 msgid "Total prize value"
@@ -5767,6 +5838,9 @@ msgstr ""
 msgid "Use Event's default - {option}"
 msgstr ""
 
+msgid "Use Fore Buchholz"
+msgstr ""
+
 msgid "Use log-level specific colors"
 msgstr ""
 
@@ -5872,6 +5946,12 @@ msgstr ""
 msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr "WIM"
 
+msgid "WIN *** ACRONYM FOR NUMBER OF WINS"
+msgstr "WIN"
+
+msgid "WON *** ACRONYM FOR NUMBER OF GAMES WON"
+msgstr "WON"
+
 msgid "Warning: closing this window will stop Sharly Chess."
 msgstr ""
 
@@ -5932,9 +6012,6 @@ msgid "White wins"
 msgstr ""
 
 msgid "Win"
-msgstr ""
-
-msgid "Wins"
 msgstr ""
 
 msgid "With less players than prizes, some prizes will not be attributed."
@@ -6180,6 +6257,9 @@ msgstr ""
 msgid "from move 1"
 msgstr ""
 
+msgid "games played"
+msgstr ""
+
 msgid "last"
 msgstr ""
 
@@ -6376,9 +6456,6 @@ msgid "{status_code} - Unknown error"
 msgstr ""
 
 msgid "{string}: {value}"
-msgstr ""
-
-msgid "{tie_break} (Papi compatible)"
 msgstr ""
 
 msgid "½ - 0 (U)"

@@ -267,6 +267,12 @@ class AppHookSpecs:
     def get_tournament_tab_action_menu_items_template(self) -> str:
         """Path to the template to be added to the 'Actions' menu of the tournament tab."""
 
+    @hookspec(firstresult=True)
+    def get_tournament_tie_break_warning_message(
+        self, tournament: 'Tournament', tie_break: 'TieBreak'
+    ) -> str | None:
+        """Warning message for a tie-break on a tournament."""
+
     @hookspec
     def signal_tournament_set(
         self, event: 'Event', stored_tournament: 'StoredTournament'

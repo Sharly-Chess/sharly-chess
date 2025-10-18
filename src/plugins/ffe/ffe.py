@@ -26,8 +26,6 @@ from data.criteria.player_filter_options import PlayerFilterOption
 from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
 from data.print_documents.qrcode_types import QRCodeType
 from data.tie_breaks import TieBreak
-from data.tie_breaks.managers import TieBreakManager, TieBreakOptionManager
-from data.tie_breaks.options import TieBreakOption
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
@@ -749,30 +747,17 @@ class FfePlugin(Plugin):
         return '/ffe_tournament_card_action_menu_items.html'
 
     @hookimpl
+    def get_tournament_tie_break_warning_message(
+        self, tournament: 'Tournament', tie_break: 'TieBreak'
+    ) -> str | None:
+        return PapiConverter.check_tiebreak_warning(tie_break)
+
+    @hookimpl
     def signal_tournament_set(
         self, event: 'Event', stored_tournament: 'StoredTournament'
     ) -> str | None:
         if blocker := PapiConverter.check_rounds(stored_tournament.rounds):
             return blocker
-
-        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager(
-            event
-        ).type_by_id()
-        option_type_by_id: dict[str, type[TieBreakOption]] = (
-            TieBreakOptionManager().type_by_id()
-        )
-        for tie_break_dict in stored_tournament.tie_breaks:
-            assert isinstance(tie_break_dict['type'], str)
-            assert isinstance(tie_break_dict['options'], dict)
-            tie_break_id = tie_break_dict['type']
-            options: list[TieBreakOption] = []
-            for option_id, value in tie_break_dict['options'].items():
-                if option_type := option_type_by_id.get(option_id, None):
-                    options.append(option_type(value))
-            if tie_break_type := tie_break_type_by_id.get(tie_break_id, None):
-                tie_break = tie_break_type(options)
-                if warning := PapiConverter.check_tiebreak_warning(tie_break):
-                    return warning
         pairing_variation = PairingVariationManager(event).get_object(
             stored_tournament.pairing
         )

@@ -1,0 +1,13 @@
+<div class="col-12">
+    {{ admin_macros.number_input(
+        name=option.id,
+        label=_('%(string)s:', string=_('Limit (%%)')),
+        help_text=_(
+            'Percentage of the maximum possible score for '
+            'opponents to have scored to be considered.'
+        ),
+        placeholder=_('Default: %(string)s', string='50%'),
+        step=1,
+        data=data, errors=errors
+    ) }}
+</div>

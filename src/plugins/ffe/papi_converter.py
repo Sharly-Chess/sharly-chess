@@ -31,6 +31,7 @@ from database.sqlite.event.event_store import (
     StoredBoard,
     StoredTournamentPlayer,
     StoredPairing,
+    StoredTieBreak,
 )
 from plugins.ffe import TMP_DIR, PLUGIN_NAME
 from plugins.ffe.utils import FFEUtils
@@ -263,8 +264,8 @@ class PapiConverter:
             stored_tournament.pairing = DoubleBergerRoundRobinVariation.static_id()
 
         has_manual_tiebreak = any(
-            tiebreak.get('type') is ManualTieBreak.static_id()
-            for tiebreak in stored_tournament.tie_breaks
+            stored_tie_break.type == ManualTieBreak.static_id()
+            for stored_tie_break in stored_tournament.stored_tie_breaks
         )
 
         next_board_id = 1
@@ -379,19 +380,22 @@ class PapiConverter:
             except KeyError:
                 raise_unknown_value('ratingClass', variables.ratingClass)
         stored_tournament.rating = rating.value
-        tie_breaks: list[dict[str, Any]] = []
+        tie_breaks: list[StoredTieBreak] = []
         for index, papi_tie_break in enumerate(
-            (variables.tiebreak1, variables.tiebreak2, variables.tiebreak3)
+            (
+                variables.tiebreak1,
+                variables.tiebreak2,
+                variables.tiebreak3,
+            )
         ):
             if not papi_tie_break:
                 continue
             try:
-                tie_breaks.append(
-                    PapiTieBreak.get_core_object(papi_tie_break).to_dict()
-                )
+                tie_break = PapiTieBreak.get_core_object(papi_tie_break)
+                tie_breaks.append(tie_break.to_stored_value())
             except KeyError:
                 raise_unknown_value(f'tiebreak{index + 1}', papi_tie_break)
-        stored_tournament.tie_breaks = tie_breaks
+        stored_tournament.stored_tie_breaks = tie_breaks
         three_points_for_a_win = False
         if variables.pointSystem:
             try:
@@ -609,7 +613,7 @@ class PapiConverter:
             return _(
                 'Tie-break [{tie_break}] is not compatible with Papi, '
                 'it will not appear in the Papi results.'
-            ).format(tie_break=tie_break.name)
+            ).format(tie_break=tie_break.acronym)
         return None
 
     @classmethod

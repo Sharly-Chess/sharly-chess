@@ -206,22 +206,21 @@ class ChessEventTournamentImporter(TournamentImporter):
             )
         stored_tournament.location = tournament.location
         stored_tournament.rating = tournament.rating
-        stored_tournament.tie_breaks = []
-        for tie_break in (
+        stored_tournament.stored_tie_breaks = []
+        for ce_tie_break in (
             tournament.tie_break_1,
             tournament.tie_break_2,
             tournament.tie_break_3,
         ):
-            if not tie_break:
+            if not ce_tie_break:
                 continue
             try:
-                stored_tournament.tie_breaks.append(
-                    ChessEventTieBreak.get_core_object(tie_break).to_dict()
-                )
+                tie_break = ChessEventTieBreak.get_core_object(ce_tie_break)
             except KeyError:
                 raise SharlyChessException(
-                    f'Unknown value for tie break [{tie_break}].'
+                    f'Unknown value for tie break [{ce_tie_break}].'
                 )
+            stored_tournament.stored_tie_breaks.append(tie_break.to_stored_value())
 
         if ffe.PLUGIN_NAME not in stored_tournament.plugin_data:
             stored_tournament.plugin_data[ffe.PLUGIN_NAME] = {}

@@ -35,7 +35,7 @@ from data.criteria.managers import (
     PlayerFilterManager,
     PlayerFilterOptionManager,
 )
-from data.tie_breaks import TieBreak, TieBreakManager
+from data.tie_breaks import TieBreakManager, TieBreak, TieBreakOptionManager
 from data.tournament import Tournament
 from data.tournament_criterion import TournamentCriterion
 from utils import StaticUtils
@@ -67,6 +67,7 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
         request: HTMXRequest,
         tournament_id: int | None = None,
         criterion_id: int | None = None,
+        tie_break_id: int | None = None,
         reload_event: bool = False,
     ):
         super().__init__(request, reload_event)
@@ -91,6 +92,14 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
             self.admin_tournament_criterion = self.admin_tournament.criteria_by_id[
                 criterion_id
             ]
+        self.admin_tie_break_id = tie_break_id
+        if tie_break_id:
+            assert self.admin_tournament is not None
+            if tie_break_id not in self.admin_tournament.tie_breaks_by_id:
+                raise NotFoundException(
+                    f'Unknown tie-break ID [{tie_break_id}] '
+                    f'for tournament [{self.admin_tournament.name}].'
+                )
 
     def get_admin_tournament(self) -> Tournament:
         assert self.admin_tournament is not None
@@ -100,11 +109,16 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
         assert self.admin_tournament_criterion is not None
         return self.admin_tournament_criterion
 
+    def get_admin_tie_break(self) -> TieBreak:
+        assert self.admin_tie_break_id is not None
+        return self.get_admin_tournament().tie_breaks_by_id[self.admin_tie_break_id]
+
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
             'admin_tournament': self.admin_tournament,
             'admin_tournament_criterion': self.admin_tournament_criterion,
+            'admin_tie_break_id': self.admin_tie_break_id,
         }
 
 
@@ -228,9 +242,6 @@ class TournamentAdminController(BaseEventAdminController):
             paired_bye_result: float | None = None
             max_byes: int | None = None
             last_rounds_no_byes: int | None = None
-            tie_break_1: str | None = None
-            tie_break_2: str | None = None
-            tie_break_3: str | None = None
             location: str | None = None
             player_rating_type: int | None = None
             start: float | None = None
@@ -292,10 +303,6 @@ class TournamentAdminController(BaseEventAdminController):
             ]:
                 assert admin_tournament is not None
                 assert admin_tournament.stored_tournament is not None
-                tie_breaks = admin_tournament.tie_breaks
-                tie_break_1, tie_break_2, tie_break_3 = (
-                    tie_breaks.pop(0).id if tie_breaks else None for __ in range(3)
-                )
 
             plugin_form_data: dict[str, str] = {}
             for (
@@ -322,9 +329,6 @@ class TournamentAdminController(BaseEventAdminController):
                     'paired_bye_result': paired_bye_result,
                     'max_byes': max_byes,
                     'last_rounds_no_byes': last_rounds_no_byes,
-                    'tie_break_1': tie_break_1,
-                    'tie_break_2': tie_break_2,
-                    'tie_break_3': tie_break_3,
                     'location': location,
                     'player_rating_type': player_rating_type,
                     'rounds': rounds,
@@ -348,13 +352,6 @@ class TournamentAdminController(BaseEventAdminController):
         plugin_form_fields_templates = [template for template, __ in plugin_results]
         form_fields_templates_data = {
             key: value for __, data in plugin_results for key, value in data.items()
-        }
-        tie_break_options = {'': '-'} | {
-            type_.static_id(): type_.static_name()
-            for type_ in sorted(
-                TieBreakManager(admin_event).entity_types(),
-                key=lambda tie_break: tie_break.static_name(),
-            )
         }
 
         override_unrated_rapid_blitz_options = {
@@ -408,7 +405,6 @@ class TournamentAdminController(BaseEventAdminController):
         )
 
         template_context = {
-            'tie_break_options': tie_break_options,
             'rating_options': cls._get_rating_options(),
             'override_unrated_rapid_blitz_options': override_unrated_rapid_blitz_options,
             'pairing_systems': pairing_systems,
@@ -505,29 +501,6 @@ class TournamentAdminController(BaseEventAdminController):
         pairing = WebContext.form_data_to_str(
             data, f'{pairing_system.id}_pairing_variation'
         )
-
-        tie_breaks = []
-        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager(
-            web_context.admin_event
-        ).type_by_id()
-        used_tie_break_ids: list[str] = []
-        for index in (1, 2, 3):
-            field = f'tie_break_{index}'
-            tie_break_id = WebContext.form_data_to_str(data, field)
-            if not tie_break_id:
-                continue
-            if tie_break_id in used_tie_break_ids:
-                errors[field] = _('Tie-break already in use.')
-                break
-            used_tie_break_ids.append(tie_break_id)
-            if tie_break_type := (tie_break_type_by_id.get(tie_break_id, None)):
-                tie_break = tie_break_type()
-                if pairing_system in tie_break.forbidden_pairing_systems:
-                    errors[field] = _(
-                        'Tie-break incompatible with the "{system}" pairing system.'
-                    ).format(system=pairing_system.name)
-                    break
-                tie_breaks.append(tie_break.to_dict())
 
         if action == 'update':
             tournament = web_context.admin_tournament
@@ -633,7 +606,6 @@ class TournamentAdminController(BaseEventAdminController):
             max_byes=max_byes,
             last_rounds_no_byes=last_rounds_no_byes,
             check_in_open=check_in_open,
-            tie_breaks=tie_breaks,
             location=location,
             player_rating_type=player_rating_type,
             start=start,
@@ -1053,6 +1025,283 @@ class TournamentAdminController(BaseEventAdminController):
         )
 
     # -------------------------------------------------------------------------
+    # Tie breaks
+    # -------------------------------------------------------------------------
+
+    @classmethod
+    def _validate_tie_break_form_data(
+        cls,
+        web_context: TournamentAdminWebContext,
+        action: FormAction,
+        data: dict[str, str],
+    ) -> dict[str, str]:
+        event = web_context.get_admin_event()
+        tournament = web_context.get_admin_tournament()
+        errors: dict[str, str] = {}
+        field = 'type'
+        tie_break_id = data.get(field, '')
+        if not tie_break_id:
+            return {field: _('A value is expected.')}
+        try:
+            TieBreakManager(event).get_type(tie_break_id)
+        except KeyError:
+            return {field: f'Unknown tie-break [{tie_break_id}].'}
+        tie_break = cls._tie_break_from_data(event, data)
+        if message := tournament.tie_break_invalid_message(tie_break):
+            errors[field] = message
+        else:
+            existing_tie_breaks = [
+                tie_break
+                for object_id, tie_break in tournament.tie_breaks_by_id.items()
+                if (
+                    action != FormAction.UPDATE
+                    or object_id != web_context.admin_tie_break_id
+                )
+            ]
+            if tie_break in existing_tie_breaks:
+                errors[field] = (
+                    _('This tie-break is already used with the same modifiers.')
+                    if tie_break.available_options()
+                    else _('This tie-break is already used.')
+                )
+        try:
+            tie_break.validate_options()
+        except OptionError as error:
+            errors[error.option.id] = str(error)
+        return errors
+
+    @staticmethod
+    def _tie_break_from_data(event: Event, data: dict[str, str]) -> TieBreak:
+        tie_break_type = TieBreakManager(event).get_type(data['type'])
+        options = []
+        for option in tie_break_type().default_options():
+            value = WebContext.form_data_to_value(data, option.id, option.type)
+            options.append(type(option)(value))
+        return tie_break_type(options)
+
+    @staticmethod
+    def _tie_break_form_modal_context(
+        request: HTMXRequest,
+        event: Event,
+        data: dict[str, str],
+        action: FormAction,
+        errors: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        default_data = {
+            option.id: WebContext.value_to_form_data(option.default_value)
+            for option in TieBreakOptionManager().objects()
+        } | {'type': ''}
+        tie_break_options = {'': '-'} | {
+            type_.static_id(): type_.static_name()
+            for type_ in sorted(
+                TieBreakManager(event).entity_types(),
+                key=lambda tie_break: tie_break.static_name(),
+            )
+        }
+        return {
+            'modal': 'tie_break_form',
+            'action': action,
+            'tie_break_select_options': tie_break_options,
+            'tie_break_options': TieBreakOptionManager().objects(),
+            'containers_by_type': {
+                tie_break.id: [
+                    option.container_id for option in tie_break.default_options()
+                ]
+                for tie_break in TieBreakManager(event).objects()
+            }
+            | {'': []},
+            'add_other_active': (
+                SessionHandler.get_session_admin_tie_break_add_other_active(request)
+            ),
+            'data': default_data | data,
+            'errors': errors or {},
+        }
+
+    @post(
+        path='/tournaments/tie-break/create/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-tie-break-create',
+        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+    )
+    async def htmx_admin_tie_break_create(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        tournament_id: int,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        event = web_context.get_admin_event()
+        tournament = web_context.get_admin_tournament()
+        add_other = 'add_other' in data
+        SessionHandler.set_session_admin_tie_break_add_other_active(request, add_other)
+        if errors := self._validate_tie_break_form_data(
+            web_context, FormAction.CREATE, data
+        ):
+            return self._admin_base_event_render(
+                web_context.template_context
+                | self._tie_break_form_modal_context(
+                    request, event, data, FormAction.CREATE, errors
+                )
+            )
+        tie_break = self._tie_break_from_data(event, data)
+        tournament.add_tie_break(tie_break)
+        if add_other:
+            template_context = self._tie_break_form_modal_context(
+                request, event, {}, FormAction.CREATE, errors
+            ) | {'previous_tie_break': tie_break}
+        else:
+            template_context = {'modal': 'tie_breaks'}
+        return self._admin_base_event_render(
+            web_context.template_context | template_context
+        )
+
+    @patch(
+        path=(
+            '/tournaments/tie-break/update/{event_uniq_id:str}'
+            '/{tournament_id:int}/{tie_break_id:int}'
+        ),
+        name='admin-tie-break-update',
+        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+    )
+    async def htmx_admin_tie_break_update(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        tournament_id: int,
+        tie_break_id: int,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(
+            request,
+            tournament_id,
+            tie_break_id=tie_break_id,
+        )
+        event = web_context.get_admin_event()
+        tournament = web_context.get_admin_tournament()
+        if errors := self._validate_tie_break_form_data(
+            web_context, FormAction.UPDATE, data
+        ):
+            self._admin_base_event_render(
+                web_context.template_context
+                | self._tie_break_form_modal_context(
+                    request, event, data, FormAction.UPDATE, errors
+                )
+            )
+        tie_break = self._tie_break_from_data(event, data)
+        tournament.update_tie_break(tie_break_id, tie_break)
+        return self._admin_base_event_render(
+            web_context.template_context | {'modal': 'tie_breaks'}
+        )
+
+    @delete(
+        path=(
+            '/tournaments/tie-break/delete/{event_uniq_id:str}'
+            '/{tournament_id:int}/{tie_break_id:int}'
+        ),
+        name='admin-tie-break-delete',
+        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+        status_code=HTTP_200_OK,
+    )
+    async def htmx_admin_tie_break_delete(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        tie_break_id: int,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(
+            request,
+            tournament_id,
+            tie_break_id=tie_break_id,
+        )
+        web_context.get_admin_tournament().delete_tie_break(tie_break_id)
+        return self._admin_base_event_render(
+            web_context.template_context | {'modal': 'tie_breaks'}
+        )
+
+    @patch(
+        path='/tournament-reorder-tie-breaks/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-tournament-reorder-tie-breaks',
+    )
+    async def htmx_admin_tournament_reorder_tie_breaks(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        data: Annotated[
+            dict[str, list[int]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        tournament = web_context.get_admin_tournament()
+        tournament.reorder_tie_breaks(data.get('tie_break_ids', []))
+        return self._admin_base_event_render(
+            web_context.template_context | {'modal': 'tie_breaks'}
+        )
+
+    @get(
+        path='/tournaments/tie-breaks-modal/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-tie-breaks-modal',
+    )
+    async def htmx_admin_tie_breaks_modal(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        return self._admin_base_event_render(
+            web_context.template_context | {'modal': 'tie_breaks'}
+        )
+
+    @get(
+        path='/tournaments/tie-break-modal/create/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-tie-break-create-modal',
+    )
+    async def htmx_admin_tie_break_create_modal(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        event = web_context.get_admin_event()
+        return self._admin_base_event_render(
+            web_context.template_context
+            | self._tie_break_form_modal_context(request, event, {}, FormAction.CREATE)
+        )
+
+    @get(
+        path=(
+            '/tournaments/tie-break-modal/update/{event_uniq_id:str}'
+            '/{tournament_id:int}/{tie_break_id:int}'
+        ),
+        name='admin-tie-break-update-modal',
+    )
+    async def htmx_admin_tie_break_update_modal(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        tie_break_id: int,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(
+            request, tournament_id, tie_break_id=tie_break_id
+        )
+        event = web_context.get_admin_event()
+        tie_break = web_context.get_admin_tie_break()
+        data = {'type': tie_break.id} | {
+            option.id: WebContext.value_to_form_data(option.value)
+            for option in tie_break.options
+        }
+        return self._admin_base_event_render(
+            web_context.template_context
+            | self._tie_break_form_modal_context(
+                request, event, data, FormAction.UPDATE
+            )
+        )
+
+    # -------------------------------------------------------------------------
     # Tournament criteria
     # -------------------------------------------------------------------------
 
@@ -1247,7 +1496,6 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_admin_tournament_criteria_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)

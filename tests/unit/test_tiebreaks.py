@@ -8,6 +8,7 @@ from data.loader import EventLoader
 
 import pytest
 from data.tie_breaks import tie_breaks, options
+from data.tie_breaks.cutters import Cut1TieBreakCutter
 from data.tournament import Tournament
 from data.player import Player
 from plugins.ffe import ffe_tie_breaks
@@ -251,7 +252,7 @@ class SwissTieBreakTestCase(TieBreakTestCase):
 
     def test_progressive_cut1(self):
         tie_break_ = tie_breaks.ProgressiveScoresTieBreak(
-            [options.CutTieBreakOption(1)]
+            [options.CutterTieBreakOption(Cut1TieBreakCutter.static_id())]
         )
         results = self.get_tie_break_player_values(tie_break_)
         expected = {
@@ -299,7 +300,7 @@ class SwissTieBreakTestCase(TieBreakTestCase):
 
     def test_buchholz_cut1(self):
         tie_break_ = tie_breaks.StandardBuchholzTieBreak(
-            [options.CutBottomTieBreakOption(1)]
+            [options.CutterWithMedianTieBreakOption(Cut1TieBreakCutter().id)]
         )
         results = self.get_tie_break_player_values(
             tie_break_, only_ids=[5, 8, 11, 7, 9, 13, 1, 3, 4, 16, 12, 14, 15]
@@ -514,7 +515,9 @@ class SwissTieBreakTestCase(TieBreakTestCase):
         self.assertEqual(results, expected)
 
     def test_sb_cut1_swiss(self):
-        tie_break_ = tie_breaks.SonnebornBergerTieBreak([options.CutTieBreakOption(1)])
+        tie_break_ = tie_breaks.SonnebornBergerTieBreak(
+            [options.CutterTieBreakOption(Cut1TieBreakCutter.static_id())]
+        )
         results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 8.5,
@@ -561,7 +564,7 @@ class SwissTieBreakTestCase(TieBreakTestCase):
 
     def test_aro_cut1(self):
         tie_break_ = tie_breaks.AverageRatingOpponentsTieBreak(
-            [options.CutBottomTieBreakOption(1)]
+            [options.CutterWithMedianTieBreakOption(Cut1TieBreakCutter().id)]
         )
         results = self.get_tie_break_player_values(tie_break_)
         expected = {
@@ -843,7 +846,9 @@ class RoundRobinTieBreakTestCase(TieBreakTestCase):
         self.assertEqual(results, expected)
 
     def test_sb_cut1_round_robin(self):
-        tie_break_ = tie_breaks.SonnebornBergerTieBreak([options.CutTieBreakOption(1)])
+        tie_break_ = tie_breaks.SonnebornBergerTieBreak(
+            [options.CutterTieBreakOption(Cut1TieBreakCutter.static_id())]
+        )
         results = self.get_tie_break_player_values(tie_break_)
         expected = {1: 9.25, 2: 4.75, 3: 4.75, 4: 4.25, 5: 3.25, 6: 1.5}
         self.assertEqual(results, expected)

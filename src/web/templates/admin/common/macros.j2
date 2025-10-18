@@ -243,7 +243,7 @@
                 width: '100%',
                 placeholder: $(this).data('placeholder'),
                 minimumResultsForSearch: Infinity,
-                closeOnSelect: false,
+                closeOnSelect: {% if multiple_select %}false{% else %}true{% endif %},
                 templateResult: function (data) {
                     if (data.id === '__divider__') {
                         const $div = $('<span style="pointer-events: none; border-bottom: 1px solid #ccc; display: block; margin: 4px 0;"></span>');

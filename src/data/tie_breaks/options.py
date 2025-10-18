@@ -1,10 +1,14 @@
-from abc import ABC
+from abc import ABC, abstractmethod
+from functools import cached_property
 from types import UnionType
-from typing import Any, override
+from typing import Any, TYPE_CHECKING
 
 from common.exception import OptionError
-from common.i18n import _
+from data.tie_breaks.cutters import NoCutTieBreakCutter, TieBreakCutter
 from utils.option import Option
+
+if TYPE_CHECKING:
+    from web.utils import SelectOption
 
 
 class TieBreakOption(Option, ABC):
@@ -12,42 +16,73 @@ class TieBreakOption(Option, ABC):
 
     @property
     def template_name(self) -> str:
-        # TODO Implement templates for tie-break options
-        return ''
+        return f'/admin/tournaments/tie_break_options/{self.template_file_stem}.html'
+
+    @property
+    @abstractmethod
+    def template_file_stem(self) -> str:
+        """Stem of the file of the template."""
 
 
-class AbstractCutTieBreakOption(TieBreakOption, ABC):
+class BaseCutterTieBreakOption(TieBreakOption, ABC):
+    @property
+    @abstractmethod
+    def include_median(self) -> bool:
+        """Defines if the median cuts are included in the select."""
+
     @property
     def type(self) -> type | UnionType:
-        return int
+        return str
 
     @property
     def default_value(self) -> Any:
-        return 0
+        return NoCutTieBreakCutter.static_id()
 
-    @override
+    @property
+    def cutter_options(self) -> dict[str, 'SelectOption']:
+        from data.tie_breaks.managers import TieBreakCutterManager
+        from web.utils import SelectOption
+
+        return {
+            cutter.id: SelectOption(cutter.name, tooltip=cutter.tooltip)
+            for cutter in TieBreakCutterManager(self.include_median).objects()
+        }
+
+    @cached_property
+    def cutter(self) -> TieBreakCutter:
+        from data.tie_breaks.managers import TieBreakCutterManager
+
+        return TieBreakCutterManager(self.include_median).get_object(self.value)
+
     def validate(self):
-        super().validate()
-        if self.value < 0:
-            raise OptionError(_('A positive integer is expected.'), self)
+        try:
+            _cutter = self.cutter
+        except KeyError:
+            raise OptionError(f'Unknown cutter: {self.value}', self)
+
+    @property
+    def template_file_stem(self) -> str:
+        return 'cutter'
 
 
-class CutTieBreakOption(AbstractCutTieBreakOption):
+class CutterTieBreakOption(BaseCutterTieBreakOption):
     @staticmethod
     def static_id() -> str:
-        return 'CUT'
+        return 'CUTTER'
+
+    @property
+    def include_median(self) -> bool:
+        return False
 
 
-class CutTopTieBreakOption(AbstractCutTieBreakOption):
+class CutterWithMedianTieBreakOption(BaseCutterTieBreakOption):
     @staticmethod
     def static_id() -> str:
-        return 'CUT_TOP'
+        return 'CUTTER_WITH_MEDIAN'
 
-
-class CutBottomTieBreakOption(AbstractCutTieBreakOption):
-    @staticmethod
-    def static_id() -> str:
-        return 'CUT_BOTTOM'
+    @property
+    def include_median(self) -> bool:
+        return True
 
 
 class PlayedModifierTieBreakOption(TieBreakOption):
@@ -63,6 +98,10 @@ class PlayedModifierTieBreakOption(TieBreakOption):
     def default_value(self) -> Any:
         return False
 
+    @property
+    def template_file_stem(self) -> str:
+        return 'played_modifier'
+
 
 class ForeModifierTieBreakOption(TieBreakOption):
     @staticmethod
@@ -77,16 +116,24 @@ class ForeModifierTieBreakOption(TieBreakOption):
     def default_value(self) -> Any:
         return False
 
+    @property
+    def template_file_stem(self) -> str:
+        return 'fore_modifier'
 
-class LimitTieBreakOption(TieBreakOption):
+
+class KoyaLimitTieBreakOption(TieBreakOption):
     @staticmethod
     def static_id() -> str:
-        return 'LIMIT'
+        return 'KOYA_LIMIT'
 
     @property
     def type(self) -> type | UnionType:
-        return float | None
+        return int | None
 
     @property
     def default_value(self) -> Any:
         return None
+
+    @property
+    def template_file_stem(self) -> str:
+        return 'koya_limit'

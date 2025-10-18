@@ -86,6 +86,15 @@ class StoredTournamentCriterion:
 
 
 @dataclass
+class StoredTieBreak:
+    id: int | None
+    tournament_id: int
+    type: str
+    options: dict[str, Any]
+    index: int
+
+
+@dataclass
 class StoredPairing:
     tournament_id: int
     player_id: int
@@ -156,7 +165,6 @@ class StoredTournament:
     paired_bye_result: int | None = None
     max_byes: int | None = None
     last_rounds_no_byes: int | None = None
-    tie_breaks: list[dict[str, Any]] = field(default_factory=list[dict[str, Any]])
     location: str | None = None
     start: float | None = None
     stop: float | None = None
@@ -173,6 +181,9 @@ class StoredTournament:
     three_points_for_a_win: bool | None = False
     pab_value: int | None = None
     override_unrated_rapid_blitz: bool | None = None
+    stored_tie_breaks: list[StoredTieBreak] = field(
+        default_factory=list[StoredTieBreak]
+    )
     stored_criteria: list[StoredTournamentCriterion] = field(
         default_factory=list[StoredTournamentCriterion]
     )
