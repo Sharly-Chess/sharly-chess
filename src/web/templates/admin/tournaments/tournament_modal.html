@@ -24,15 +24,6 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-
-                {% if previous_tournament %}
-                    {% with type='success', auto_remove=true, message=_(
-                        'Tournament [%(tournament)s] has been created.',
-                        tournament=previous_tournament.uniq_id
-                    )  %}
-                        {% include '/common/alert.html' %}
-                    {% endwith %}
-                {% endif %}
                 <h4>
                     {{ _('Properties') }}
                 </h4>
@@ -408,9 +399,8 @@
                     options={
                         'create': _('Create'),
                         'add_screens': _('Create with default screens'),
-                        'add_other': _('Create and add another')
                     },
-                    active_option='add_other' if add_other_active else 'create'
+                    active_option='create'
                 ) }}
             {% endif %}
         </div>

@@ -747,10 +747,10 @@ class FfePlugin(Plugin):
         return '/ffe_tournament_card_action_menu_items.html'
 
     @hookimpl
-    def get_tournament_tie_break_warning_message(
-        self, tournament: 'Tournament', tie_break: 'TieBreak'
+    def get_tournament_tie_breaks_warning_message(
+        self, tournament: 'Tournament'
     ) -> str | None:
-        return PapiConverter.check_tiebreak_warning(tie_break)
+        return PapiConverter.check_tiebreaks_warning(tournament.tie_breaks)
 
     @hookimpl
     def signal_tournament_set(

@@ -9,6 +9,12 @@
             </h2>
         </div>
         <div class="modal-body">
+            {% if success_message %}
+                {% with type='success', message=success_message %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
+
             <h4 class="mb-3">
                 {{ _('%(string)s:', string=_('Tournament')) }}
                 {{ admin_tournament.name }}
@@ -31,7 +37,7 @@
                     <ol>
                         {% for tie_break in admin_tournament.pairing_system.recommended_tie_breaks %}
                             <li>
-                                {{ tie_break.name }}
+                                {{ tie_break.full_name }}
                                 <i
                                     class="bi-info-circle-fill ps-2"
                                     {{ macros.tooltip_attributes('', tie_break.help_text, 'top') }}

@@ -608,12 +608,7 @@ class PapiConverter:
         return None
 
     @classmethod
-    def check_tiebreak_warning(cls, tie_break: TieBreak) -> str | None:
-        if tie_break not in PapiTieBreak.core_objects():
-            return _(
-                'Tie-break [{tie_break}] is not compatible with Papi, '
-                'it will not appear in the Papi results.'
-            ).format(tie_break=tie_break.acronym)
+    def check_tiebreaks_warning(cls, tie_breaks: list[TieBreak]) -> str | None:
         return None
 
     @classmethod
@@ -649,9 +644,8 @@ class PapiConverter:
 
     @classmethod
     def papi_export_warning(cls, tournament: Tournament) -> str | None:
-        for tie_break in tournament.tie_breaks:
-            if warning := cls.check_tiebreak_warning(tie_break):
-                return warning
+        if warning := cls.check_tiebreaks_warning(tournament.tie_breaks):
+            return warning
         if warning := cls.check_pairing_variation_warning(tournament.pairing_variation):
             return warning
         return None

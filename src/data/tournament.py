@@ -393,11 +393,11 @@ class Tournament:
             ).format(pairing_system=self.pairing_system.name)
         return None
 
-    def tie_break_warning_message(self, tie_break: TieBreak) -> str | None:
-        """Get a message explaining why a tie-break is invalid, or None if it is valid."""
+    @property
+    def tie_breaks_warning_message(self) -> str | None:
         plugin_warning = plugin_manager.hook_for_event(
-            self.event, 'get_tournament_tie_break_warning_message'
-        )(tournament=self, tie_break=tie_break)
+            self.event, 'get_tournament_tie_breaks_warning_message'
+        )(tournament=self)
         if plugin_warning:
             return plugin_warning
         return None

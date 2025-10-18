@@ -411,14 +411,6 @@ class TournamentAdminController(BaseEventAdminController):
             'pairing_systems': pairing_systems,
             'pairing_system_options': PairingSystemManager(admin_event).options(),
             'plugin_form_fields_templates': plugin_form_fields_templates,
-            'previous_tournament': (
-                web_context.admin_tournament if action == 'create' else None
-            ),
-            'add_other_active': (
-                SessionHandler.get_session_admin_tournament_add_other_active(
-                    web_context.request
-                )
-            ),
             'admin_tournament': None
             if action == 'clone'
             else web_context.admin_tournament,
@@ -669,11 +661,6 @@ class TournamentAdminController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(request, tournament_id=tournament_id)
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
-        add_other = 'add_other' in data
-        if action == FormAction.CREATE:
-            SessionHandler.set_session_admin_tournament_add_other_active(
-                request, add_other
-            )
 
         stored_tournament, errors = self._admin_get_validated_tournament_data(
             action, web_context, data
@@ -785,23 +772,16 @@ class TournamentAdminController(BaseEventAdminController):
 
                 tournament_id = stored_tournament.id
 
-        if add_other:
-            web_context = TournamentAdminWebContext(
-                request, tournament_id, reload_event=True
-            )
-            template_context = self._prepare_tournament_modal_data(
-                FormAction.CREATE, web_context
-            )
-            return self._admin_event_tournaments_render(
-                web_context=web_context,
-                template_context=template_context,
-            )
-        Message.success(request, success_message)
-
         web_context = TournamentAdminWebContext(
             request, tournament_id, reload_event=True
         )
-        return self._admin_event_tournaments_render(web_context)
+        return self._admin_base_event_render(
+            web_context.template_context
+            | {
+                'modal': 'tie_breaks',
+                'success_message': success_message,
+            }
+        )
 
     @post(
         path='/tournament-create/{event_uniq_id:str}',
