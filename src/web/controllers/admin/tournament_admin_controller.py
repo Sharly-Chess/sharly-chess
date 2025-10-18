@@ -1,5 +1,6 @@
 import random
 import time
+from collections import defaultdict
 from datetime import datetime
 from functools import partial
 from tempfile import NamedTemporaryFile
@@ -56,7 +57,7 @@ from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard
 from web.messages import Message
 from web.session import SessionHandler
-
+from web.utils import SelectOption
 
 logger = get_logger()
 
@@ -1081,27 +1082,29 @@ class TournamentAdminController(BaseEventAdminController):
 
     @staticmethod
     def _tie_break_form_modal_context(
-        request: HTMXRequest,
-        event: Event,
+        web_context: TournamentAdminWebContext,
         data: dict[str, str],
         action: FormAction,
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
+        event = web_context.get_admin_event()
+        tournament = web_context.get_admin_tournament()
         default_data = {
             option.id: WebContext.value_to_form_data(option.default_value)
             for option in TieBreakOptionManager().objects()
         } | {'type': ''}
-        tie_break_options = {'': '-'} | {
-            type_.static_id(): type_.static_name()
-            for type_ in sorted(
-                TieBreakManager(event).entity_types(),
-                key=lambda tie_break: tie_break.static_name(),
+
+        tie_break_select_options: dict[str, dict[str, SelectOption]] = defaultdict(dict)
+        for tie_break in TieBreakManager(event).objects():
+            if tournament.pairing_system in tie_break.forbidden_pairing_systems:
+                continue
+            tie_break_select_options[tie_break.category.name][tie_break.id] = (
+                SelectOption(tie_break.name, tie_break.help_text)
             )
-        }
         return {
             'modal': 'tie_break_form',
             'action': action,
-            'tie_break_select_options': tie_break_options,
+            'tie_break_select_options': {'': '-'} | tie_break_select_options,
             'tie_break_options': TieBreakOptionManager().objects(),
             'containers_by_type': {
                 tie_break.id: [
@@ -1111,11 +1114,31 @@ class TournamentAdminController(BaseEventAdminController):
             }
             | {'': []},
             'add_other_active': (
-                SessionHandler.get_session_admin_tie_break_add_other_active(request)
+                SessionHandler.get_session_admin_tie_break_add_other_active(
+                    web_context.request
+                )
             ),
             'data': default_data | data,
             'errors': errors or {},
         }
+
+    @post(
+        path='/tournaments/create-default-tie-breaks/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-create-default-tie-breaks',
+        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+    )
+    async def htmx_admin_create_default_tie_breaks(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        tournament = web_context.get_admin_tournament()
+        for tie_break in tournament.pairing_system.recommended_tie_breaks:
+            tournament.add_tie_break(tie_break)
+        return self._admin_base_event_render(
+            web_context.template_context | {'modal': 'tie_breaks'}
+        )
 
     @post(
         path='/tournaments/tie-break/create/{event_uniq_id:str}/{tournament_id:int}',
@@ -1142,14 +1165,14 @@ class TournamentAdminController(BaseEventAdminController):
             return self._admin_base_event_render(
                 web_context.template_context
                 | self._tie_break_form_modal_context(
-                    request, event, data, FormAction.CREATE, errors
+                    web_context, data, FormAction.CREATE, errors
                 )
             )
         tie_break = self._tie_break_from_data(event, data)
         tournament.add_tie_break(tie_break)
         if add_other:
             template_context = self._tie_break_form_modal_context(
-                request, event, {}, FormAction.CREATE, errors
+                web_context, {}, FormAction.CREATE, errors
             ) | {'previous_tie_break': tie_break}
         else:
             template_context = {'modal': 'tie_breaks'}
@@ -1188,7 +1211,7 @@ class TournamentAdminController(BaseEventAdminController):
             self._admin_base_event_render(
                 web_context.template_context
                 | self._tie_break_form_modal_context(
-                    request, event, data, FormAction.UPDATE, errors
+                    web_context, data, FormAction.UPDATE, errors
                 )
             )
         tie_break = self._tie_break_from_data(event, data)
@@ -1266,10 +1289,9 @@ class TournamentAdminController(BaseEventAdminController):
         tournament_id: int,
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
-        event = web_context.get_admin_event()
         return self._admin_base_event_render(
             web_context.template_context
-            | self._tie_break_form_modal_context(request, event, {}, FormAction.CREATE)
+            | self._tie_break_form_modal_context(web_context, {}, FormAction.CREATE)
         )
 
     @get(
@@ -1288,7 +1310,6 @@ class TournamentAdminController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(
             request, tournament_id, tie_break_id=tie_break_id
         )
-        event = web_context.get_admin_event()
         tie_break = web_context.get_admin_tie_break()
         data = {'type': tie_break.id} | {
             option.id: WebContext.value_to_form_data(option.value)
@@ -1296,9 +1317,7 @@ class TournamentAdminController(BaseEventAdminController):
         }
         return self._admin_base_event_render(
             web_context.template_context
-            | self._tie_break_form_modal_context(
-                request, event, data, FormAction.UPDATE
-            )
+            | self._tie_break_form_modal_context(web_context, data, FormAction.UPDATE)
         )
 
     # -------------------------------------------------------------------------

@@ -513,6 +513,9 @@ msgstr ""
 msgid "Affects the rating that will be chosen for each player."
 msgstr ""
 
+msgid "After the last round, reorder manually the tied players from the [Pairings] tab."
+msgstr ""
+
 msgid "Age"
 msgstr ""
 
@@ -848,7 +851,10 @@ msgstr "Bu."
 msgid "Buchholz"
 msgstr ""
 
-msgid "Buchholz cut bottom"
+msgid "Buchholz cut"
+msgstr ""
+
+msgid "Buchholz score calculated as if all paired games for the final round had ended in draws."
 msgstr ""
 
 msgid "By board"
@@ -2445,6 +2451,9 @@ msgstr ""
 msgid "Grand Master"
 msgstr ""
 
+msgid "Grant 4 tie-break points for a win, 2 for a draw, 1 for a loss, and 0 for an unplayed game."
+msgstr ""
+
 msgid "Group"
 msgstr ""
 
@@ -3004,9 +3013,6 @@ msgstr ""
 msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
 msgstr "Me."
 
-msgid "Me. Buchholz *** SHORT NAME FOR PAPI MEDIAN BUCHHOLZ"
-msgstr "Me. Buchholz"
-
 msgid "Median Buchholz"
 msgstr ""
 
@@ -3479,6 +3485,9 @@ msgstr ""
 msgid "Only one age category is expected with options including other categories."
 msgstr ""
 
+msgid "Only played games are taken into account."
+msgstr ""
+
 msgid "Only take played games into account"
 msgstr ""
 
@@ -3511,6 +3520,12 @@ msgid "Opponent Elo [Pts]"
 msgstr ""
 
 msgid "Opponents"
+msgstr ""
+
+msgid "Opponents' ratings"
+msgstr ""
+
+msgid "Opponents' records"
 msgstr ""
 
 msgid "Organization"
@@ -3822,6 +3837,9 @@ msgstr ""
 
 #, python-format
 msgid "Player sets of screen [%(screen_uniq_id)s]"
+msgstr ""
+
+msgid "Player's record"
 msgstr ""
 
 msgid "Player:"
@@ -4473,6 +4491,9 @@ msgstr ""
 msgid "Score *** PERF IND. FOR TABULAR DISPLAY"
 msgstr "Score"
 
+msgid "Score computed by adding, for each round, a value given by multiplying the score of the opponent by the points scored against them."
+msgstr ""
+
 msgid "Screen"
 msgstr ""
 
@@ -4589,9 +4610,6 @@ msgid "Set special results"
 msgstr ""
 
 msgid "Set the current round"
-msgstr ""
-
-msgid "Set the recommended tie-breaks"
 msgstr ""
 
 msgid "Settings"
@@ -4805,9 +4823,6 @@ msgstr ""
 msgid "Sum of Fore Buchholz"
 msgstr ""
 
-msgid "Support for all FIDE recognised tie-break (including ones that are not compatible with Papi)"
-msgstr ""
-
 msgid "Support for the ChessEvent platform used for organising tournaments in France."
 msgstr ""
 
@@ -4894,6 +4909,9 @@ msgstr ""
 msgid "The URL or the path of the image (relative to the 'custom' folder) to display."
 msgstr ""
 
+msgid "The [{tie_break}] tie-break as implemented in Papi."
+msgstr ""
+
 msgid "The account matching all the users not logged in to any account."
 msgstr ""
 
@@ -4901,6 +4919,12 @@ msgid "The account of the user accessing Sharly Chess directly from the server."
 msgstr ""
 
 msgid "The administrator has all the permissions."
+msgstr ""
+
+msgid "The average of the [{tie_break}] scores of the opponents played over the board."
+msgstr ""
+
+msgid "The average of the ratings of the opponents played over the board."
 msgstr ""
 
 msgid "The background colour is used when the image does not fill the whole screen."
@@ -4952,6 +4976,11 @@ msgstr ""
 msgid "The federation that organizes the event. Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr ""
 
+msgid "The first round is ignored."
+msgid_plural "The first {rounds} rounds are ignored."
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "The first tournament of the screen."
 msgstr ""
 
@@ -4972,6 +5001,9 @@ msgid "The location of the tournament (defaults to [%(location)s])."
 msgstr ""
 
 msgid "The location of the tournament."
+msgstr ""
+
+msgid "The lowest rating that a player should have for their expected score to be greater than or equal to their score."
 msgstr ""
 
 msgid "The mail addresses."
@@ -5054,13 +5086,32 @@ msgstr ""
 msgid "The number of final rounds in which byes are not permitted."
 msgstr ""
 
+msgid "The number of games played over the board with the black pieces."
+msgstr ""
+
+msgid "The number of games won over the board with the black pieces."
+msgstr ""
+
+msgid "The number of games won over the board."
+msgstr ""
+
 msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
+msgstr ""
+
+#, python-format
+msgid "The number of points achieved against all participants who have scored at least {percent}%% of the maximum possible tournament score."
 msgstr ""
 
 msgid "The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player."
 msgstr ""
 
+msgid "The number of rounds in which a player did not receive a HPB, a ZPB or a forfeit loss."
+msgstr ""
+
 msgid "The number of rounds of the tournament."
+msgstr ""
+
+msgid "The number of rounds where a player obtains, with or without playing, as many points as awarded for a win."
 msgstr ""
 
 msgid "The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards)."
@@ -5155,6 +5206,15 @@ msgstr ""
 
 #, python-format
 msgid "The start time of the tournament (defaults to %(datetime)s)."
+msgstr ""
+
+msgid "The sum of the [{tie_break}] scores of the opponents played over the board."
+msgstr ""
+
+msgid "The sum of the score of the player at the end of each round."
+msgstr ""
+
+msgid "The sum of the scores of each of the opponents of the player."
 msgstr ""
 
 msgid "The system used to generate the pairings."
@@ -5350,17 +5410,16 @@ msgid "Three points for a win (3-1-0)"
 msgstr ""
 
 #, python-format
-msgid "Tie-break #%(index)d:"
+msgid "Tie-break [%(tie_break)s] successfully created!"
 msgstr ""
 
 msgid "Tie-break [{tie_break}] is not compatible with Papi, it will not appear in the Papi results."
 msgstr ""
 
-#, python-format
-msgid "Tie-break [%(tie_break)s] successfully created!"
+msgid "Tie-break based on the opponents' ratings and the player's score (consult the FIDE Handbook for more details)."
 msgstr ""
 
-msgid "Tie-break [{tie_break}] is not compatible with the PAPI format."
+msgid "Tie-break favoring players which have won against the players they are tied with (consult the FIDE handbook for more details)."
 msgstr ""
 
 msgid "Tie-breaks"
@@ -5570,9 +5629,6 @@ msgstr ""
 
 msgid "Tr. *** ACRONYM FOR PAPI BUCHHOLZ CUT BOTTOM"
 msgstr "Tr."
-
-msgid "Tr. Buchholz *** SHORT NAME FOR PAPI BUCHHOLZ CUT BOTTOM"
-msgstr "Tr. Buchholz"
 
 msgid "Trophy"
 msgstr ""

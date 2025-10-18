@@ -206,11 +206,7 @@ class SharlyChessConfig(metaclass=Singleton):
 
     @property
     def experimental_features(self) -> list[str]:
-        return [
-            _(
-                'Support for all FIDE recognised tie-break (including ones that are not compatible with Papi)'
-            ),
-        ]
+        return []
 
     @property
     def launch_browser(self) -> bool:

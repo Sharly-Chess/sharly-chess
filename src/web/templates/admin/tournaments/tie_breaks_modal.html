@@ -14,7 +14,48 @@
                 {{ admin_tournament.name }}
             </h4>
             {% if not admin_tournament.tie_breaks_by_id %}
-                <div class="text-danger">{{ _('No tie-breaks') }}</div>
+                <h5 class="text-center mb-3">{{ _('No tie-breaks') }}</h5>
+                <div style="max-width: 450px">
+                    <p>
+                        {{ _(
+                            'Tie-breaks determine the rankings for players '
+                            'that are tied with the same number of points.'
+                        ) }}
+                    </p>
+                    <div>
+                        {{ _(
+                            'FIDE recommended tie-breaks for [%(pairing_system)s] tournaments:',
+                            pairing_system=admin_tournament.pairing_system.name
+                        ) }}
+                    </div>
+                    <ol>
+                        {% for tie_break in admin_tournament.pairing_system.recommended_tie_breaks %}
+                            <li>
+                                {{ tie_break.name }}
+                                <i
+                                    class="bi-info-circle-fill ps-2"
+                                    {{ macros.tooltip_attributes('', tie_break.help_text, 'top') }}
+                                ></i>
+                            </li>
+                        {% endfor %}
+                    </ol>
+                    <div class="text-center">
+                        <button
+                            class="btn btn-primary text-nowrap text-center"
+                            hx-post="{{ url_for(
+                                'admin-create-default-tie-breaks',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                            ) }}"
+                            hx-indicator="#please-wait"
+                        >
+                            <i class="bi-plus-square-fill pe-1"></i>
+                            {{ _('Add the recommended tie-breaks') }}
+                        </button>
+                    </div>
+                </div>
+
+
             {% else %}
                 <form
                     class="sortable d-flex flex-column gap-2"
@@ -35,8 +76,17 @@
                                 {% if reorder_enabled %}
                                     <i class="bi-grip-horizontal"></i>
                                 {% endif %}
-                                <div class="text-start flex-grow-1">
+                                <div
+                                    class="text-start"
+                                >
                                     {{ tie_break.full_name }} (<b>{{ tie_break.acronym }}</b>)
+                                    <i
+                                        class="bi-info-fill ps-1"
+                                        {{ macros.tooltip_attributes('', tie_break.help_text, 'top') }}
+                                    ></i>
+                                </div>
+                                <div class="flex-grow-1">
+
                                 </div>
                                 <div class="flex-shrink-0 d-flex gap-2 align-items-center">
                                     {% set invalid_message = admin_tournament.tie_break_invalid_message(tie_break) %}

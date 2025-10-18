@@ -25,7 +25,7 @@ from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.criteria.player_filter_options import PlayerFilterOption
 from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
 from data.print_documents.qrcode_types import QRCodeType
-from data.tie_breaks import TieBreak
+from data.tie_breaks import TieBreak, tie_breaks
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
@@ -899,14 +899,29 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def insert_tie_break_types(self, tie_break_types: list[type[TieBreak]]):
-        tie_break_types += [
-            ffe_tie_breaks.PapiStandardBuchholzTieBreak,
-            ffe_tie_breaks.PapiBuchholzCutBottomTieBreak,
-            ffe_tie_breaks.PapiMedianBuchholzTieBreak,
-            ffe_tie_breaks.PapiPerformanceTieBreak,
-            ffe_tie_breaks.PapiSumOfBuchholzTieBreak,
-            ffe_tie_breaks.PapiKashdanTieBreak,
-        ]
+        buchholz: type[TieBreak] = tie_breaks.StandardBuchholzTieBreak
+        papi_buchholz: type[TieBreak] = ffe_tie_breaks.PapiStandardBuchholzTieBreak
+        PluginUtils.insert_on_equals(tie_break_types, papi_buchholz, buchholz)
+
+        papi_buchholz_cut: type[TieBreak] = ffe_tie_breaks.PapiBuchholzCutBottomTieBreak
+        PluginUtils.insert_on_equals(tie_break_types, papi_buchholz_cut, papi_buchholz)
+
+        papi_buchholz_median: type[TieBreak] = ffe_tie_breaks.PapiMedianBuchholzTieBreak
+        PluginUtils.insert_on_equals(
+            tie_break_types, papi_buchholz_median, papi_buchholz_cut
+        )
+
+        sob: type[TieBreak] = tie_breaks.SumOfBuchholzTieBreak
+        papi_sob: type[TieBreak] = ffe_tie_breaks.PapiSumOfBuchholzTieBreak
+        PluginUtils.insert_on_equals(tie_break_types, papi_sob, sob)
+
+        tpr: type[TieBreak] = tie_breaks.TournamentPerformanceRatingTieBreak
+        papi_performance: type[TieBreak] = ffe_tie_breaks.PapiPerformanceTieBreak
+        PluginUtils.insert_on_equals(tie_break_types, papi_performance, tpr)
+
+        kashdan: type[TieBreak] = tie_breaks.KashdanTieBreak
+        papi_kashdan: type[TieBreak] = ffe_tie_breaks.PapiKashdanTieBreak
+        PluginUtils.insert_on_equals(tie_break_types, papi_kashdan, kashdan)
 
     # ---------------------------------------------------------------------------------
     # Pairings

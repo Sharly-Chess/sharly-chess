@@ -9,7 +9,11 @@ from data.pairing import Pairing
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
 from data.player import Player
 from data.tie_breaks import TieBreak
-from data.tie_breaks.tie_breaks import BuchholzTieBreak, PerformanceTieBreak
+from data.tie_breaks.tie_breaks import (
+    BuchholzTieBreak,
+    OpponentRatingTieBreak,
+    PlayerRecordTieBreak,
+)
 from plugins.ffe import PLUGIN_NAME
 from utils import StaticUtils
 from utils.enum import Result
@@ -55,6 +59,12 @@ class FfeTieBreak(TieBreak, ABC):
     @abstractmethod
     def sub_name() -> str:
         pass
+
+    @property
+    def help_text(self) -> str:
+        return _('The [{tie_break}] tie-break as implemented in Papi.').format(
+            tie_break=self.sub_name()
+        )
 
 
 class PapiBuchholzTieBreak(FfeTieBreak, BuchholzTieBreak, ABC):
@@ -203,10 +213,6 @@ class PapiStandardBuchholzTieBreak(PapiBuchholzTieBreak):
     def acronym(self) -> str:
         return _('Bu. *** ACRONYM FOR PAPI BUCHHOLZ')
 
-    @property
-    def short_name(self) -> str:
-        return _('Buchholz')
-
     def compute_player_value(self, player: 'Player', *, after_round: int) -> float:
         return self.compute_papi_buchholz_player_value(player, after_round=after_round)
 
@@ -214,7 +220,7 @@ class PapiStandardBuchholzTieBreak(PapiBuchholzTieBreak):
 class PapiBuchholzCutBottomTieBreak(PapiBuchholzTieBreak):
     @staticmethod
     def sub_name() -> str:
-        return _('Buchholz cut bottom')
+        return _('Buchholz cut')
 
     @staticmethod
     def sub_id() -> str:
@@ -223,10 +229,6 @@ class PapiBuchholzCutBottomTieBreak(PapiBuchholzTieBreak):
     @property
     def acronym(self) -> str:
         return _('Tr. *** ACRONYM FOR PAPI BUCHHOLZ CUT BOTTOM')
-
-    @property
-    def short_name(self) -> str:
-        return _('Tr. Buchholz *** SHORT NAME FOR PAPI BUCHHOLZ CUT BOTTOM')
 
     def compute_player_value(self, player: 'Player', *, after_round: int) -> float:
         return self.compute_papi_buchholz_player_value(
@@ -247,10 +249,6 @@ class PapiMedianBuchholzTieBreak(PapiBuchholzTieBreak):
     def acronym(self) -> str:
         return _('Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ')
 
-    @property
-    def short_name(self) -> str:
-        return _('Me. Buchholz *** SHORT NAME FOR PAPI MEDIAN BUCHHOLZ')
-
     def compute_player_value(self, player: 'Player', *, after_round: int) -> float:
         return self.compute_papi_buchholz_player_value(
             player,
@@ -260,7 +258,7 @@ class PapiMedianBuchholzTieBreak(PapiBuchholzTieBreak):
         )
 
 
-class PapiPerformanceTieBreak(FfeTieBreak, PerformanceTieBreak):
+class PapiPerformanceTieBreak(FfeTieBreak, OpponentRatingTieBreak):
     @staticmethod
     def sub_name() -> str:
         return _('Performance')
@@ -272,10 +270,6 @@ class PapiPerformanceTieBreak(FfeTieBreak, PerformanceTieBreak):
     @property
     def acronym(self) -> str:
         return _('Perf *** ACRONYM FOR PAPI PERFORMANCE')
-
-    @property
-    def short_name(self) -> str:
-        return _('Performance')
 
     def compute_player_value(self, player: 'Player', *, after_round: int) -> float:
         tournament: 'Tournament' = player.tournament
@@ -333,7 +327,7 @@ class PapiSumOfBuchholzTieBreak(PapiBuchholzTieBreak):
         )
 
 
-class PapiKashdanTieBreak(FfeTieBreak):
+class PapiKashdanTieBreak(FfeTieBreak, PlayerRecordTieBreak):
     @staticmethod
     def sub_name() -> str:
         return _('Kashdan')
