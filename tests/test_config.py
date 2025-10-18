@@ -214,7 +214,6 @@ class TestUtils:
             'paired_bye_result': None,
             'max_byes': None,
             'last_rounds_no_byes': None,
-            'tie_breaks': None,
             'location': None,
             'start': None,
             'stop': None,
