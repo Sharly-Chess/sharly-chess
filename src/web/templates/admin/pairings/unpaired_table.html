@@ -50,7 +50,7 @@
                                 {% endif %}
                             ></i>
                         {% endif %}
-                            <span>{{ player.full_name }}</span>
+                        {% include '/admin/player_link.html' %}
                         </div>
                     </td>
                     <td class="{{ class }} text-end">{{ player.get_rating_and_type(admin_tournament.rating, admin_tournament.player_rating_type) }}</td>

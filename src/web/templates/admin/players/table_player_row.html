@@ -104,7 +104,7 @@
         class="text-nowrap position-sticky px-3"
         style="border-right: 2px solid #454748; left: var(--side-bar-width);"
     >
-        {{ player.last_name }} {{ player.first_name }}
+        {% include '/admin/player_link.html' %}
         {% if not player.tournament.player_matches_criteria(player) %}
             <i
                 class="bi-exclamation-triangle-fill text-warning ps-2"

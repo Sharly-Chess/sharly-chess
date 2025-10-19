@@ -29,6 +29,21 @@
     position: absolute;
 }
 
+.player-link {
+    color: var(--bs-body-color);
+    text-decoration: none;
+}
+
+.player-link:hover {
+    color: var(--bs-link-hover-color);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.highlight .player-link, .highlight .player-link:hover {
+    color: black;
+}
+
 .pairing-modal .result-button {
     border: 3px white solid;
     display: flex;

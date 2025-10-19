@@ -247,6 +247,10 @@
         }
 
         function rowClickHandler(e) {
+            if ($(e.target).closest('a').length) {
+                return;
+            }
+
             var $this = $(this);
             highlightBoard($this.parent().data("board-id"), false);
         };

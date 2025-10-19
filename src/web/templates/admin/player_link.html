@@ -1,0 +1,16 @@
+<span>
+    {% if client.can_update_players_history(player.tournament.id)%}
+        <a
+            class="player-link"
+            hx-get="{{ url_for('admin-record-modal', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        >
+            {{ player.full_name }} {% if display_rating %}({{ player.rating_str }}){% endif %}
+        </a>
+    {% else %}
+        {{ player.full_name }} {% if display_rating %}({{ player.rating_str }}){% endif %}
+    {% endif %}
+</span>

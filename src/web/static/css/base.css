@@ -683,12 +683,12 @@ body[data-bs-theme=light] .btn-primary {
 
 [data-bs-theme=dark] table.prominent tr.highlight td {
     background-color: rgba(var(--bs-primary-rgb), 0.70);
-    color: var(--pw-contrast-text);
+    color: black;
 }
 
 [data-bs-theme=dark] table.prominent tr.highlight-warning td {
     background-color: var(--bs-form-invalid-color);
-    color: var(--pw-contrast-text);
+    color: black;
 }
 
 [data-bs-theme=dark] table.prominent tr.highlight td .btn-outline-primary {
