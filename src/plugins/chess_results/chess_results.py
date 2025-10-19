@@ -205,18 +205,6 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
             return None
         return '/chess_results_tournament_card_connexion.html'
 
-    @hookimpl
-    def get_tournament_tie_breaks_warning_message(
-        self, tournament: Tournament
-    ) -> str | None:
-        if len(tournament.tie_breaks) > 5:
-            return _(
-                'Only 5 tie-breaks can be exported to Chess-Results.com. '
-                'The last one will contain the player rank to ensure '
-                'the rankings remain the same.'
-            )
-        return None
-
     # ---------------------------------------------------------------------------------
     # Upload
     # ---------------------------------------------------------------------------------
