@@ -150,16 +150,22 @@ class EventLoader:
         if public_only:
             conditions.append(lambda event: event.public)
         now = time.time()
+        sort_order = 1
         match status:
             case 'passed':
                 conditions.append(lambda event: event.stop < now)
+                sort_order = -1
             case 'current':
                 conditions.append(lambda event: event.start <= now <= event.stop)
             case 'coming':
                 conditions.append(lambda event: now < event.start)
         return sorted(
             cls._filter_events_metadata(conditions),
-            key=lambda event: (-event.stop, -event.start, normalized_key('name')),
+            key=lambda event: (
+                event.stop * sort_order,
+                event.start * sort_order,
+                normalized_key('name'),
+            ),
         )
 
     @classmethod
