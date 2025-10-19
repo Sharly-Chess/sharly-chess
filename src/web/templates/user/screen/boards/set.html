@@ -58,7 +58,7 @@
                                         >
                                         <th
                                             scope="row gy-2 gx-3"
-                                            class="board-number bg-transparent text-end"
+                                            class="board-number bg-transparent text-end text-nowrap"
                                             {% if editable %}
                                                 hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
                                                 hx-target="body"
@@ -66,7 +66,7 @@
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#modal-wrapper"
                                             {% endif %}
-                                        >{{ board.number }}.{% if board.number != board.id %} ({{ board.id }}.){% endif %}</th>
+                                        >{% if board.number != board.id %}({{ board.id }}.) {% endif %}{{ board.number }}.</th>
                                         <td
                                             class="points bg-transparent text-center"
                                             {% if editable %}
