@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from common.i18n import _
+from common.i18n import _, ngettext
 from utils.entity import IdentifiableEntity
 
 
@@ -89,15 +89,19 @@ class CutTieBreakCutter(TieBreakCutter, ABC):
             value=self.cut_value()
         )
 
+    @property
+    def tooltip(self) -> str | None:
+        return ngettext(
+            'The least significant value is removed.',
+            'The {count} least significant values are removed.',
+            self.cut_value(),
+        ).format(count=self.cut_value())
+
 
 class Cut1TieBreakCutter(CutTieBreakCutter):
     @staticmethod
     def cut_value() -> int:
         return 1
-
-    @property
-    def tooltip(self) -> str | None:
-        return _('Cut the least significant value.')
 
 
 class Cut2TieBreakCutter(CutTieBreakCutter):
@@ -105,9 +109,11 @@ class Cut2TieBreakCutter(CutTieBreakCutter):
     def cut_value() -> int:
         return 2
 
-    @property
-    def tooltip(self) -> str | None:
-        return _('Cut the two least significant values.')
+
+class Cut3TieBreakCutter(CutTieBreakCutter):
+    @staticmethod
+    def cut_value() -> int:
+        return 3
 
 
 class MedianTieBreakCutter(TieBreakCutter, ABC):
@@ -138,15 +144,19 @@ class MedianTieBreakCutter(TieBreakCutter, ABC):
             value=self.cut_value()
         )
 
+    @property
+    def tooltip(self) -> str | None:
+        return ngettext(
+            'The least and the most significant values are removed.',
+            'The {count} least and the {count} most significant values are removed.',
+            self.cut_value(),
+        ).format(count=self.cut_value())
+
 
 class Median1TieBreakCutter(MedianTieBreakCutter):
     @staticmethod
     def cut_value() -> int:
         return 1
-
-    @property
-    def tooltip(self) -> str | None:
-        return _('Cut the least and the most significant values.')
 
 
 class Median2TieBreakCutter(MedianTieBreakCutter):
@@ -154,6 +164,8 @@ class Median2TieBreakCutter(MedianTieBreakCutter):
     def cut_value() -> int:
         return 2
 
-    @property
-    def tooltip(self) -> str | None:
-        return _('Cut the two least and the two most significant values.')
+
+class Median3TieBreakCutter(MedianTieBreakCutter):
+    @staticmethod
+    def cut_value() -> int:
+        return 2

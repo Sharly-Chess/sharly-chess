@@ -186,7 +186,7 @@
                             {{ macros.tooltip_attributes('warning', invalid_message, 'top') }}
                         ></i>
                     {% endif %}
-                    {% if not loop.last %}|{% endif %}
+                    {% if not loop.last %}/{% endif %}
                 {% endfor %}
             {% else %}
                 <span class="text-secondary">

@@ -160,7 +160,7 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         if cutter and cutter.acronym_suffix:
             acronym += '-' + cutter.acronym_suffix
         if played_modifier:
-            acronym += f' ({_("GP *** ACRONYM FOR GAMES PLAYED")})'
+            acronym += f'|{_("P *** ACRONYM FOR PLAYED")}'
         return acronym
 
     @staticmethod
@@ -173,7 +173,7 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         if cutter and cutter.name_suffix:
             name += ' - ' + cutter.name_suffix
         if played_modifier:
-            name += f' ({_("games played")})'
+            name += f' ({_("forfeits played")})'
         return name
 
     @staticmethod
@@ -186,7 +186,7 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         if cutter and cutter.tooltip:
             help_text += '<br/>' + cutter.tooltip
         if played_modifier:
-            help_text += '<br/>' + _('Only played games are taken into account.')
+            help_text += '<br/>' + _('Forfeited games are considered as played.')
         return help_text
 
 
@@ -260,7 +260,7 @@ class GamesWonTieBreak(PlayerRecordTieBreak):
 
 
 class GamesPlayedWithBlackTieBreak(PlayerRecordTieBreak):
-    """The number of games played over the board with the black pieces.
+    """The number of games played over the board with the Black pieces.
     See FIDE Handbook C.07.7.3"""
 
     @staticmethod
@@ -277,7 +277,7 @@ class GamesPlayedWithBlackTieBreak(PlayerRecordTieBreak):
 
     @property
     def help_text(self) -> str:
-        return _('The number of games played over the board with the black pieces.')
+        return _('The number of games played over the board with the Black pieces.')
 
     def compute_player_value(self, player: Player, *, after_round: int) -> int:
         return sum(
@@ -288,7 +288,7 @@ class GamesPlayedWithBlackTieBreak(PlayerRecordTieBreak):
 
 
 class GamesWonWithBlackTieBreak(PlayerRecordTieBreak):
-    """The number of games won over the board with the black pieces.
+    """The number of games won over the board with the Black pieces.
     See FIDE Handbook C.07.7.4"""
 
     @staticmethod
@@ -305,7 +305,7 @@ class GamesWonWithBlackTieBreak(PlayerRecordTieBreak):
 
     @property
     def help_text(self) -> str:
-        return _('The number of games won over the board with the black pieces.')
+        return _('The number of games won over the board with the Black pieces.')
 
     def compute_player_value(self, player: Player, *, after_round: int) -> int:
         return sum(
@@ -698,6 +698,7 @@ class ForeBuchholzTieBreak(BuchholzTieBreak):
                     Result.ZERO_POINT_BYE,
                     Result.FULL_POINT_BYE,
                     Result.PAIRING_ALLOCATED_BYE,
+                    Result.REST_GAME,
                 )
             )
             if should_add_dummy:
@@ -1011,13 +1012,13 @@ class SonnebornBergerTieBreak(OpponentRecordTieBreak):
 
 
 class KoyaTieBreak(OpponentRecordTieBreak):
-    """The number of points achieved against all participants
+    """The number of points achieved against all players
     who have scored at 50% of the maximum possible score.
     This is only used in Round-Robin tournaments, but is still
     defined for Swiss tournaments.
     Options:
-      - KOYA_LIMIT: Modify the percentage of opponent scores
-      required to be considered.
+      - KOYA_LIMIT: Number of half-points above / below the 50% limit
+      required for opponents to be considered.
     See FIDE Handbook C.07.9.2."""
 
     @staticmethod
@@ -1040,22 +1041,31 @@ class KoyaTieBreak(OpponentRecordTieBreak):
     def acronym(self) -> str:
         acronym = _('KS *** ACRONYM FOR KOYA SYSTEM')
         if self.limit:
-            acronym += f'-{self.limit}'
+            operator = '-' if self.limit < 0 else '+'
+            acronym += f'{operator}{abs(self.limit)}'
         return acronym
 
     @property
     def full_name(self) -> str:
-        name = self.name
-        if self.limit:
-            name += f' - {self.limit}%'
-        return name
+        return self.name + self.equation_suffix
+
+    @property
+    def equation_suffix(self) -> str:
+        if not self.limit:
+            return ''
+        member = ngettext(
+            '{count} half-point', '{count} half-points', abs(self.limit)
+        ).format(count=abs(self.limit))
+        operator = '-' if self.limit < 0 else '+'
+        return f' {operator} {member}'
 
     @property
     def help_text(self) -> str:
+        equation = _('50%% of the maximum possible score').replace('%%', '%')
         return _(
-            'The number of points achieved against all participants who have '
-            'scored at least {percent}%% of the maximum possible tournament score.'
-        ).format(percent=self.limit or 50)
+            'The number of points achieved against all players '
+            'who have scored at least L points (L = {equation}).'
+        ).format(equation=equation + self.equation_suffix)
 
     @staticmethod
     def available_options() -> list[type[TieBreakOption]]:
@@ -1063,11 +1073,11 @@ class KoyaTieBreak(OpponentRecordTieBreak):
 
     def compute_player_value(self, player: Player, *, after_round: int) -> float:
         tournament: 'Tournament' = player.tournament
-        percent_limit = self.limit
-        if percent_limit is None:
-            percent_limit = 50
         win_points = Result.WIN.points(tournament.point_values)
-        score_limit = (percent_limit / 100) * win_points * (after_round - 1)
+        score_limit = 0.5 * win_points * (after_round - 1)
+        if self.limit:
+            draw_points = Result.DRAW.points(tournament.point_values)
+            score_limit += draw_points * self.limit
         pairings: dict[int, Pairing] = {
             round_index: pairing
             for round_index, pairing in player.pairings.items()
@@ -1713,7 +1723,7 @@ class ManualTieBreak(TieBreak):
     def help_text(self) -> str:
         return _(
             'After the last round, reorder manually '
-            'the tied players from the [Pairings] tab.'
+            'the tied players from the Pairings tab.'
         )
 
     @property

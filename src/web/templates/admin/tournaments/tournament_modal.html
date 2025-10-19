@@ -271,7 +271,6 @@
                             label=_('%(string)s:', string=_('Pairing system')),
                             help_text=_('The system used to generate the pairings.'),
                             select_options=pairing_system_options,
-                            onchange='updateTieBreaksHelp()',
                             disabled=admin_tournament.started,
                             data=data, errors=errors
                         ) }}
@@ -311,7 +310,7 @@
                         $('#pairing-system').change(function() {
                             let elements = '';
                             {% for pairing_system in pairing_systems %}
-                                elements = $('#{{ pairing_system.variation_container_id }}');                                );
+                                elements = $('#{{ pairing_system.variation_container_id }}');
                                 if ($(this).val() === '{{ pairing_system.id }}') {
                                     elements.show();
                                 } else {

@@ -235,6 +235,10 @@ msgstr ""
 msgid "404 - Page Not Found"
 msgstr ""
 
+#, python-format
+msgid "50%% of the maximum possible score"
+msgstr ""
+
 msgid "50+"
 msgstr ""
 
@@ -501,6 +505,9 @@ msgstr ""
 msgid "Add screens"
 msgstr ""
 
+msgid "Add the recommended tie-breaks"
+msgstr ""
+
 msgid "Add tournaments"
 msgstr ""
 
@@ -513,7 +520,7 @@ msgstr ""
 msgid "Affects the rating that will be chosen for each player."
 msgstr ""
 
-msgid "After the last round, reorder manually the tied players from the [Pairings] tab."
+msgid "After the last round, reorder manually the tied players from the Pairings tab."
 msgstr ""
 
 msgid "Age"
@@ -1212,6 +1219,12 @@ msgstr ""
 msgid "Connection to the server failed: {error}."
 msgstr ""
 
+msgid "Consider all paired games for the final round as draws."
+msgstr ""
+
+msgid "Consider forfeited games, either wins or losses, as played games against the scheduled opponent."
+msgstr ""
+
 msgid "Console logging level: {console_log_level}"
 msgstr ""
 
@@ -1397,18 +1410,6 @@ msgid "Currently displaying screen [{uniq_id}]"
 msgstr ""
 
 msgid "Cut modifier"
-msgstr ""
-
-msgid "Cut the least and the most significant values."
-msgstr ""
-
-msgid "Cut the least significant value."
-msgstr ""
-
-msgid "Cut the two least and the two most significant values."
-msgstr ""
-
-msgid "Cut the two least significant values."
 msgstr ""
 
 msgid "Cut {value} *** CUT TIE BREAK NAME"
@@ -2197,10 +2198,8 @@ msgstr ""
 msgid "FIDE database"
 msgstr ""
 
-msgid "FIDE recommended tie-breaks for round-robin tournaments:"
-msgstr ""
-
-msgid "FIDE recommended tie-breaks for swiss tournaments:"
+#, python-format
+msgid "FIDE recommended tie-breaks for [%(pairing_system)s] tournaments:"
 msgstr ""
 
 msgid "FM *** SHORT NAME FOR Fide Master"
@@ -2367,6 +2366,15 @@ msgstr ""
 msgid "Forfeit Win"
 msgstr ""
 
+msgid "Forfeited games are always considered as played in Round-Robin tournaments."
+msgstr ""
+
+msgid "Forfeited games are considered as played."
+msgstr ""
+
+msgid "Forfeited games played"
+msgstr ""
+
 msgid "French Chess Federation"
 msgstr ""
 
@@ -2387,9 +2395,6 @@ msgstr ""
 
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GM"
-
-msgid "GP *** ACRONYM FOR GAMES PLAYED"
-msgstr "GP"
 
 msgid "Games played with black"
 msgstr ""
@@ -2526,6 +2531,9 @@ msgid "How to sort the players."
 msgstr ""
 
 msgid "How to split the results."
+msgstr ""
+
+msgid "However, the order of the results of the last round will remain the same as the ones in Sharly Chess."
 msgstr ""
 
 msgid "I confirm that I have read and acknowledged the warning"
@@ -2758,6 +2766,9 @@ msgstr ""
 msgid "Invalid value [{value}]."
 msgstr ""
 
+msgid "It is highly recommended to set at least one tie-break."
+msgstr ""
+
 msgid "JSON file (papi-converter format)"
 msgstr ""
 
@@ -2774,10 +2785,6 @@ msgid "Kashdan"
 msgstr ""
 
 msgid "Keyboard shortcuts:"
-msgstr ""
-
-#, python-format
-msgid "Koya System (the number of points achieved against all opponents who have achieved 50 %% or more)"
 msgstr ""
 
 msgid "Koya system"
@@ -2855,8 +2862,7 @@ msgstr ""
 msgid "Licence:"
 msgstr ""
 
-#, python-format
-msgid "Limit (%%)"
+msgid "Limit"
 msgstr ""
 
 msgid "Link to a board not involving the player."
@@ -3353,6 +3359,9 @@ msgstr ""
 msgid "None *** FFE licence"
 msgstr "None"
 
+msgid "None of the tie-breaks can be exported to Papi."
+msgstr ""
+
 msgid "Norm Report"
 msgstr ""
 
@@ -3401,6 +3410,10 @@ msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_bye
 msgstr ""
 
 msgid "Number of games won"
+msgstr ""
+
+#, python-format
+msgid "Number of half-points above or below 50%% required for opponents to be taken into account."
 msgstr ""
 
 msgid "Number of players"
@@ -3485,11 +3498,10 @@ msgstr ""
 msgid "Only one age category is expected with options including other categories."
 msgstr ""
 
-msgid "Only played games are taken into account."
-msgstr ""
-
-msgid "Only take played games into account"
-msgstr ""
+msgid "Only the first tie-break can be exported to Papi."
+msgid_plural "Only the first {count} tie-breaks can be exported to Papi."
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Open Admin Interface"
 msgstr ""
@@ -3537,9 +3549,6 @@ msgstr ""
 msgid "Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold."
 msgstr ""
 
-msgid "Other tie-breaks should not be used unless you really know what you do."
-msgstr ""
-
 msgid "Others"
 msgstr ""
 
@@ -3566,6 +3575,9 @@ msgstr "Owed/paid"
 
 msgid "Owed:"
 msgstr ""
+
+msgid "P *** ACRONYM FOR PLAYED"
+msgstr "P"
 
 msgid "PAB is already assigned"
 msgstr ""
@@ -3725,9 +3737,6 @@ msgid "Penalty (handicap, seconds):"
 msgstr ""
 
 msgid "Pending"
-msgstr ""
-
-msgid "Percentage of the maximum possible score for opponents to have scored to be considered."
 msgstr ""
 
 msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
@@ -4699,9 +4708,6 @@ msgstr ""
 msgid "Sonneborn-Berger"
 msgstr ""
 
-msgid "Sonneborn-Berger (the sum of the scores of the opponents a player has defeated and half the scores of the players with whom he has drawn)."
-msgstr ""
-
 msgid "Sorry, an unexpected error has occurred."
 msgstr ""
 
@@ -4882,12 +4888,6 @@ msgstr ""
 msgid "The Baku acceleration system is not compatible with Papi, there may be differences in the Papi pairings display."
 msgstr ""
 
-msgid "The Buchholz Cut 1 (the sum of the scores of each of the opponents of a player reduced by the lowest score of the opponents)"
-msgstr ""
-
-msgid "The Buchholz System (the sum of the scores of each of the opponents of a player)"
-msgstr ""
-
 msgid "The FFE ID is a positive integer."
 msgstr ""
 
@@ -4987,11 +4987,17 @@ msgstr ""
 msgid "The following categories will also be deleted:"
 msgstr ""
 
-msgid "The greater number of wins"
-msgstr ""
+#, fuzzy
+msgid "The least and the most significant values are removed."
+msgid_plural "The {count} least and the {count} most significant values are removed."
+msgstr[0] ""
+msgstr[1] ""
 
-msgid "The greater number of wins with Black (unplayed games are counted as played with White)"
-msgstr ""
+#, fuzzy
+msgid "The least significant value is removed."
+msgid_plural "The {count} least significant values are removed."
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "The location of the event."
 msgstr ""
@@ -5086,10 +5092,10 @@ msgstr ""
 msgid "The number of final rounds in which byes are not permitted."
 msgstr ""
 
-msgid "The number of games played over the board with the black pieces."
+msgid "The number of games played over the board with the Black pieces."
 msgstr ""
 
-msgid "The number of games won over the board with the black pieces."
+msgid "The number of games won over the board with the Black pieces."
 msgstr ""
 
 msgid "The number of games won over the board."
@@ -5098,8 +5104,7 @@ msgstr ""
 msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
 msgstr ""
 
-#, python-format
-msgid "The number of points achieved against all participants who have scored at least {percent}%% of the maximum possible tournament score."
+msgid "The number of points achieved against all players who have scored at least L points (L = {equation})."
 msgstr ""
 
 msgid "The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player."
@@ -5277,7 +5282,13 @@ msgstr ""
 msgid "The values have to be higher than the sharing threshold of the category ({threshold})."
 msgstr ""
 
+msgid "The values of the other tie-breaks will not appear in the results on the FFE website."
+msgstr ""
+
 msgid "The values to take into account when computing the tie-break."
+msgstr ""
+
+msgid "The values will not appear in the results on the FFE website."
 msgstr ""
 
 msgid "The variation of the pairing system."
@@ -5413,9 +5424,6 @@ msgstr ""
 msgid "Tie-break [%(tie_break)s] successfully created!"
 msgstr ""
 
-msgid "Tie-break [{tie_break}] is not compatible with Papi, it will not appear in the Papi results."
-msgstr ""
-
 msgid "Tie-break based on the opponents' ratings and the player's score (consult the FIDE Handbook for more details)."
 msgstr ""
 
@@ -5423,6 +5431,9 @@ msgid "Tie-break favoring players which have won against the players they are ti
 msgstr ""
 
 msgid "Tie-breaks"
+msgstr ""
+
+msgid "Tie-breaks determine the rankings for players that are tied with the same number of points."
 msgstr ""
 
 msgid "Time control"
@@ -5508,10 +5519,6 @@ msgstr "Tournament"
 
 msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
 msgstr "Tournament"
-
-#, python-format
-msgid "Tournament [%(tournament)s] has been created."
-msgstr ""
 
 #, python-format
 msgid "Tournament [%(tournament)s] is finished."
@@ -6310,10 +6317,10 @@ msgstr ""
 msgid "event"
 msgstr ""
 
-msgid "from move 1"
+msgid "forfeits played"
 msgstr ""
 
-msgid "games played"
+msgid "from move 1"
 msgstr ""
 
 msgid "last"
@@ -6456,6 +6463,11 @@ msgstr[1] ""
 
 msgid "{count} federation represented"
 msgid_plural "{count} federations represented"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{count} half-point"
+msgid_plural "{count} half-points"
 msgstr[0] ""
 msgstr[1] ""
 

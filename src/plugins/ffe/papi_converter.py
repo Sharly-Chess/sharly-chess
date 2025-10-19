@@ -629,7 +629,7 @@ class PapiConverter:
         if not exportable:
             message_parts += [
                 _('None of the tie-breaks can be exported to Papi.'),
-                _('The values will not appear in the results of the FFE upload.'),
+                _('The values will not appear in the results on the FFE website.'),
             ]
         else:
             message_parts += [
@@ -640,7 +640,7 @@ class PapiConverter:
                 ).format(count=exportable),
                 _(
                     'The values of the other tie-breaks will not '
-                    'appear in the results of the FFE upload.'
+                    'appear in the results on the FFE website.'
                 ),
             ]
         message_parts.append(

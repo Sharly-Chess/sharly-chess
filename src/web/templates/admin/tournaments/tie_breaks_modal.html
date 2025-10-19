@@ -68,11 +68,10 @@
                         </button>
                     </div>
                 </div>
-
-
             {% else %}
+                {% set reorder_enabled = admin_tournament.tie_breaks_by_id|length > 1 %}
                 <form
-                    class="sortable d-flex flex-column gap-2"
+                    class="{% if reorder_enabled %}sortable{% endif %} d-flex flex-column gap-2"
                     hx-patch="{{ url_for(
                         'admin-tournament-reorder-tie-breaks',
                         event_uniq_id=admin_event.uniq_id,
@@ -82,7 +81,6 @@
                     hx-trigger="end"
                     hx-indicator="#please-wait"
                 >
-                    {% set reorder_enabled = admin_tournament.tie_breaks_by_id|length > 1 %}
                     {% for stored_id, tie_break in admin_tournament.tie_breaks_by_id.items() %}
                         <div class="border border-secondary bg-body-tertiary {% if reorder_enabled %}cursor-grab{% endif %}">
                             <input type="hidden" name="tie_break_ids" value="{{ stored_id }}"/>
@@ -99,7 +97,7 @@
                                 </div>
                                 <div class="flex-shrink-0 d-flex gap-2 align-items-center">
                                     <i
-                                        class="bi-info-circle-fill ps-1"
+                                        class="bi-info-circle-fill ps-1 pt-1"
                                         {{ macros.tooltip_attributes('', tie_break.help_text, 'top') }}
                                     ></i>
                                     {% set invalid_message = admin_tournament.tie_break_invalid_message(tie_break) %}

@@ -59,10 +59,12 @@ class TieBreakCutterManager(EntityManager[TieBreakCutter]):
             cutters.NoCutTieBreakCutter,
             cutters.Cut1TieBreakCutter,
             cutters.Cut2TieBreakCutter,
+            cutters.Cut3TieBreakCutter,
         ]
         if self.include_median:
             cutter_types += [
                 cutters.Median1TieBreakCutter,
                 cutters.Median2TieBreakCutter,
+                cutters.Median3TieBreakCutter,
             ]
         return cutter_types

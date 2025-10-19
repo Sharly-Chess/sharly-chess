@@ -1,9 +1,31 @@
+{% set is_rr = admin_tournament.pairing_system.id == 'ROUND_ROBIN' %}
 <div class="col-12">
-    {{ admin_macros.switch_input(
-        name=option.id,
-        label='',
-        placeholder=_('Only take played games into account'),
-        help_text='',
-        data=data, errors=errors
-    ) }}
+    <span
+        class="d-inline-block"
+        {% if is_rr %}
+            {{ macros.tooltip_attributes(
+                'info',
+                _('Forfeited games are always considered as played in Round-Robin tournaments.'),
+                'top',
+            ) }}
+        {% endif %}
+    >
+        {{ admin_macros.switch_input(
+            name=option.id,
+            label='',
+            placeholder=_('Forfeited games played'),
+            info=_(
+                'Consider forfeited games, either wins or losses, '
+                'as played games against the scheduled opponent.'
+            ),
+            help_text='',
+            disabled=is_rr,
+            data=data, errors=errors
+        ) }}
+    </span>
 </div>
+{% if is_rr %}
+    <script>
+        $('#{{ option.id|replace('_', '-') }}').prop('checked', true);
+    </script>
+{% endif %}
