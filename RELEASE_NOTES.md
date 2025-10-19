@@ -5,6 +5,7 @@ English version below
 
 - Plug-ins spécifiques à une fédération (3.2.0)
 - Mise en ligne sur Chess-Results.com (3.2.0)
+- Disponibilité des tous les départages _FIDE_ standards (3.2.0)
 
 ## Joueur·euses
 
@@ -29,6 +30,7 @@ English version below
 
 - Federation-specific plugins (3.2.0)
 - Uploading to Chess-Results.com (3.2.0)
+- Availability of all standard _FIDE_ tie-breaks (3.2.0)
 
 ## Players
 

@@ -1035,8 +1035,8 @@ class TournamentAdminController(BaseEventAdminController):
             errors[field] = message
         else:
             existing_tie_breaks = [
-                tie_break
-                for object_id, tie_break in tournament.tie_breaks_by_id.items()
+                tie_break_
+                for object_id, tie_break_ in tournament.tie_breaks_by_id.items()
                 if (
                     action != FormAction.UPDATE
                     or object_id != web_context.admin_tie_break_id
@@ -1193,7 +1193,7 @@ class TournamentAdminController(BaseEventAdminController):
         if errors := self._validate_tie_break_form_data(
             web_context, FormAction.UPDATE, data
         ):
-            self._admin_base_event_render(
+            return self._admin_base_event_render(
                 web_context.template_context
                 | self._tie_break_form_modal_context(
                     web_context, data, FormAction.UPDATE, errors
