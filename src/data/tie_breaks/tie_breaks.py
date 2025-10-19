@@ -16,7 +16,6 @@ from data.player import Player
 from data.tie_breaks.categories import (
     TieBreakCategory,
     PlayerRecordCategory,
-    BuchholzCategory,
     OpponentRecordCategory,
     OpponentRatingCategory,
     OtherCategory,
@@ -462,16 +461,18 @@ class KashdanTieBreak(PlayerRecordTieBreak):
         )
 
 
-class BuchholzTieBreak(TieBreak, ABC):
-    @property
-    def forbidden_pairing_systems(self) -> list[PairingSystem]:
-        """Buchholz depending on which ooponents were played,
-        it gives the same results to all players in a RR tournament."""
-        return [RoundRobinPairingSystem()]
-
+class OpponentRecordTieBreak(TieBreak, ABC):
     @property
     def category(self) -> TieBreakCategory:
-        return BuchholzCategory()
+        return OpponentRecordCategory()
+
+
+class BuchholzTieBreak(OpponentRecordTieBreak, ABC):
+    @property
+    def forbidden_pairing_systems(self) -> list[PairingSystem]:
+        """Buchholz depending on which opponents were played,
+        it gives the same results to all players in a RR tournament."""
+        return [RoundRobinPairingSystem()]
 
     @staticmethod
     def dummy_score(
@@ -584,6 +585,7 @@ class StandardBuchholzTieBreak(BuchholzTieBreak):
                         Result.ZERO_POINT_BYE,
                         Result.FULL_POINT_BYE,
                         Result.PAIRING_ALLOCATED_BYE,
+                        Result.REST_GAME,
                     )
                 )
             )
@@ -855,12 +857,6 @@ class AverageOfBuchholzTieBreak(BuchholzTieBreak):
             for opponent in opponents
             if opponent is not None
         ) / len(opponents)
-
-
-class OpponentRecordTieBreak(TieBreak, ABC):
-    @property
-    def category(self) -> TieBreakCategory:
-        return OpponentRecordCategory()
 
 
 class SonnebornBergerTieBreak(OpponentRecordTieBreak):

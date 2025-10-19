@@ -10,7 +10,7 @@ import glob
 import sqlite3
 
 from common.exception import SharlyChessException, DictReaderException
-from common.i18n import _
+from common.i18n import _, ngettext
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from common.tool_installer import PapiConverterInstaller
@@ -609,7 +609,48 @@ class PapiConverter:
 
     @classmethod
     def check_tiebreaks_warning(cls, tie_breaks: list[TieBreak]) -> str | None:
-        return None
+        manual_index: int | None = None
+        use_manual: bool = False
+        exportable = 0
+        for index, tiebreak in enumerate(tie_breaks):
+            if tiebreak == ManualTieBreak():
+                manual_index = index
+            if index > 2 or not PapiTieBreak.get_outer_value(tiebreak):
+                use_manual = True
+                break
+            exportable += 1
+        if not use_manual:
+            return None
+        if manual_index is not None:
+            exportable = manual_index + 1
+        else:
+            exportable = min(exportable, 2)
+        message_parts: list[str] = []
+        if not exportable:
+            message_parts += [
+                _('None of the tie-breaks can be exported to Papi.'),
+                _('The values will not appear in the results of the FFE upload.'),
+            ]
+        else:
+            message_parts += [
+                ngettext(
+                    'Only the first tie-break can be exported to Papi.',
+                    'Only the first {count} tie-breaks can be exported to Papi.',
+                    exportable,
+                ).format(count=exportable),
+                _(
+                    'The values of the other tie-breaks will not '
+                    'appear in the results of the FFE upload.'
+                ),
+            ]
+        message_parts.append(
+            _(
+                'However, the order of the results of the last round '
+                'will remain the same as the ones in Sharly Chess.'
+            )
+        )
+
+        return '<br/>'.join(message_parts)
 
     @classmethod
     def check_result(cls, result: Result, tournament: Tournament) -> str | None:

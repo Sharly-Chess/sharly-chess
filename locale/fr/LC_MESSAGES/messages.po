@@ -1403,7 +1403,7 @@ msgid "Cut the least and the most significant values."
 msgstr "Couper la valeur la plus significative et la valeur la moins significative."
 
 msgid "Cut the least significant value."
-msgstr "Couper la la valeur la moins significative."
+msgstr "Couper la valeur la moins significative."
 
 msgid "Cut the two least and the two most significant values."
 msgstr "Couper les deux valeurs les plus significatives et les deux valeurs les moins significatives."

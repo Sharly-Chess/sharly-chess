@@ -16,12 +16,6 @@ class PlayerRecordCategory(TieBreakCategory):
         return _("Player's record")
 
 
-class BuchholzCategory(TieBreakCategory):
-    @property
-    def name(self) -> str:
-        return _('Buchholz')
-
-
 class OpponentRecordCategory(TieBreakCategory):
     @property
     def name(self) -> str:

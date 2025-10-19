@@ -775,6 +775,9 @@ class TournamentAdminController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(
             request, tournament_id, reload_event=True
         )
+        if action == FormAction.UPDATE:
+            Message.success(request, success_message)
+            return self._admin_event_tournaments_render(web_context)
         return self._admin_base_event_render(
             web_context.template_context
             | {

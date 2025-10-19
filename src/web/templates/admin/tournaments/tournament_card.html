@@ -164,7 +164,11 @@
             <span class="card-block-button pt-1">
                 <i
                     class="bi-exclamation-triangle-fill text-warning"
-                    {{ macros.tooltip_attributes('warning', warning_message, 'top') }}
+                    {{ macros.tooltip_attributes(
+                        'warning' if not tournament.tie_breaks_with_invalid else '',
+                        warning_message,
+                        'top',
+                    ) }}
                 ></i>
             </span>
         {% endif %}
