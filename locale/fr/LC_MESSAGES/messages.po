@@ -501,6 +501,9 @@ msgstr "Ajouter des joueur·euses"
 msgid "Add screens"
 msgstr "Ajouter des écrans"
 
+msgid "Add the recommended tie-breaks"
+msgstr "Ajouter les départages recommandés"
+
 msgid "Add tournaments"
 msgstr "Ajouter des tournois"
 
@@ -2197,11 +2200,9 @@ msgstr "Titre FIDE :"
 msgid "FIDE database"
 msgstr "Base de données FIDE"
 
-msgid "FIDE recommended tie-breaks for round-robin tournaments:"
-msgstr "Départages recommandés par la FIDE pour les tournois toutes rondes :"
-
-msgid "FIDE recommended tie-breaks for swiss tournaments:"
-msgstr "Départages recommandés par la FIDE pour les tournois suisses :"
+#, python-format
+msgid "FIDE recommended tie-breaks for [%(pairing_system)s] tournaments:"
+msgstr "Départages recommandés par la FIDE pour les tournois [%(pairing_system)s] :"
 
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "MF"
@@ -2758,6 +2759,9 @@ msgstr "Valeur invalide [{value}] pour le champ [{field}] (attendu : l’une de
 msgid "Invalid value [{value}]."
 msgstr "Valeur [{value}] non valide."
 
+msgid "It is highly recommended to set at least one tie-break."
+msgstr "Il est très fortement recommandé de définir au moins un départage."
+
 msgid "JSON file (papi-converter format)"
 msgstr "Fichier JSON (format papi-converter)"
 
@@ -2775,10 +2779,6 @@ msgstr "Kashdan"
 
 msgid "Keyboard shortcuts:"
 msgstr "Raccourcis clavier :"
-
-#, python-format
-msgid "Koya System (the number of points achieved against all opponents who have achieved 50 %% or more)"
-msgstr "Koya (le nombre de points réalisé scontre des adversaires ayant réalisé 50 %% des points ou plus)"
 
 msgid "Koya system"
 msgstr "Système Koya"
@@ -3536,9 +3536,6 @@ msgstr "Organisez vos prix en groupes pour gérer leur attribution. Un·e joueur
 
 msgid "Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold."
 msgstr "Les autres joueur·euses de ce groupe de points n'entrent pas dans les prix (prix inférieur au seuil minimum)."
-
-msgid "Other tie-breaks should not be used unless you really know what you do."
-msgstr "Les autres départages ne devraient pas être utilisés à moins que vous ne sachiez réellement ce que vous faites."
 
 msgid "Others"
 msgstr "Autres"
@@ -4699,9 +4696,6 @@ msgstr "Une erreur est survenue. Veuillez demander à votre administrateur⋅ice
 msgid "Sonneborn-Berger"
 msgstr "Sonneborn-Berger"
 
-msgid "Sonneborn-Berger (the sum of the scores of the opponents a player has defeated and half the scores of the players with whom he has drawn)."
-msgstr "Sonneborn-Berger (la somme des scores des adversaires que le·la joueur·euse a vaincu·es et la moitié des scores des adversaires contre qui le·la joueur·euse a annulé)."
-
 msgid "Sorry, an unexpected error has occurred."
 msgstr "Désolé, une erreur inattendue s'est produite."
 
@@ -4882,12 +4876,6 @@ msgstr "Merci :-)"
 msgid "The Baku acceleration system is not compatible with Papi, there may be differences in the Papi pairings display."
 msgstr "Le système d'accélération de Bakou n'est pas compatible avec Papi, il peut y avoir des différences dans l'affichage des appariements Papi."
 
-msgid "The Buchholz Cut 1 (the sum of the scores of each of the opponents of a player reduced by the lowest score of the opponents)"
-msgstr "Buchholz tronqué (la somme des scores des adversaires du·de la joueur·euse diminué du plus faible score des adversaires)"
-
-msgid "The Buchholz System (the sum of the scores of each of the opponents of a player)"
-msgstr "Buchholz (la somme des scores des adversaires du·de la joueur·euse)"
-
 msgid "The FFE ID is a positive integer."
 msgstr "L'identifiant FFE est un entier positif."
 
@@ -4978,20 +4966,14 @@ msgstr "La fédération qui organise l’évènement. Sharly Chess peut proposer
 
 msgid "The first round is ignored."
 msgid_plural "The first {rounds} rounds are ignored."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "La première ronde est ignorée."
+msgstr[1] "Les {rounds} premières rondes sont ignorées."
 
 msgid "The first tournament of the screen."
 msgstr "Le premier tournoi de l'écran."
 
 msgid "The following categories will also be deleted:"
 msgstr "Les catégories suivantes vont aussi être supprimées :"
-
-msgid "The greater number of wins"
-msgstr "Le plus grand nombre de victoires"
-
-msgid "The greater number of wins with Black (unplayed games are counted as played with White)"
-msgstr "Le plus grand nombre de victoires avec les Noirs"
 
 msgid "The location of the event."
 msgstr "Le lieu de l'évènement."
@@ -5413,9 +5395,6 @@ msgstr "Victoire à trois points (3-1-0)"
 msgid "Tie-break [%(tie_break)s] successfully created!"
 msgstr "Le départage [%(tie_break)s] a été créé avec succès !"
 
-msgid "Tie-break [{tie_break}] is not compatible with Papi, it will not appear in the Papi results."
-msgstr "Le départage [{tie_break}] n'est pas compatible avec Papi, il n'apparaitra pas dans les résultats Papi."
-
 msgid "Tie-break based on the opponents' ratings and the player's score (consult the FIDE Handbook for more details)."
 msgstr "Départage basé sur le classement des adversaires et le score du·de la joueur·euse (consulter le règlement FIDE pour plus d'informations)."
 
@@ -5424,6 +5403,9 @@ msgstr "Départage favorisant les joueur·euses ayant gagné contre les joueur·
 
 msgid "Tie-breaks"
 msgstr "Départages"
+
+msgid "Tie-breaks determine the rankings for players that are tied with the same number of points."
+msgstr "Les départages déterminent le classement des joueur·euses à égalité en nombre de points."
 
 msgid "Time control"
 msgstr "Cadence"
@@ -5508,10 +5490,6 @@ msgstr "Tournoi"
 
 msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
 msgstr "Tournoi"
-
-#, python-format
-msgid "Tournament [%(tournament)s] has been created."
-msgstr "Le tournoi [%(tournament)s] a été créé."
 
 #, python-format
 msgid "Tournament [%(tournament)s] is finished."
