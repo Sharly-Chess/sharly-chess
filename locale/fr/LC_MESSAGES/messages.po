@@ -334,21 +334,6 @@ msgstr "Une valeur est attendue."
 msgid "ADM"
 msgstr "ADM"
 
-msgid "AOB *** ACRONYM FOR AVERAGE OF BUCHHOLZ"
-msgstr "MBA"
-
-msgid "AOFB *** ACRONYM FOR AVERAGE OF FORE BUCHHOLZ"
-msgstr "MFBA"
-
-msgid "APPO *** ACRONYM FOR AVERAGE PERFECT PERFORMANCE OF OPPONENTS"
-msgstr "MPPA"
-
-msgid "APRO *** ACRONYM FROM AVERAGE PERFORMANCE RATING OF OPPONENTS"
-msgstr "MPA"
-
-msgid "ARO *** ACRONYM FOR AVERAGE RATING OPPONENTS"
-msgstr "MCA"
-
 msgid "Absent"
 msgstr "Absent·e"
 
@@ -719,9 +704,6 @@ msgstr "Moyenne"
 msgid "Average of opponents Buchholz"
 msgstr "Moyenne du Buchholz des adversaires"
 
-msgid "Average of opponents Fore Buchholz"
-msgstr "Moyenne du Fore Buchholz des adversaires"
-
 msgid "Average perfect performance of opponents"
 msgstr "Moyenne des performances parfaites des adversaires"
 
@@ -740,17 +722,8 @@ msgstr "N"
 msgid "B - Leisure *** FFE licence"
 msgstr "B - Loisir"
 
-msgid "BH *** ACRONYM FOR BUCHHOLZ"
-msgstr "BH"
-
 msgid "BLACK WINS"
 msgstr "VICTOIRE NOIRS"
-
-msgid "BPG *** ACRONYM FOR BLACK PLAYED GAMES"
-msgstr "PJN"
-
-msgid "BWG *** ACRONYM FOR BLACK WON GAMES"
-msgstr "PGN"
 
 msgid "BY FORFEIT"
 msgstr "PAR FORFAIT"
@@ -851,9 +824,6 @@ msgstr "échiquiers du n°%(first)d au n°%(last)d"
 
 msgid "Boards screens show pairings by board number."
 msgstr "Les écrans d'affichage des échiquiers présentent les appariements par échiquier."
-
-msgid "Bu. *** ACRONYM FOR PAPI BUCHHOLZ"
-msgstr "Bu."
 
 msgid "Buchholz"
 msgstr "Buchholz"
@@ -1192,6 +1162,9 @@ msgstr "Configuration"
 msgid "Configure the ChessEvent settings of this tournament."
 msgstr "Configurer les paramètres ChessEvent de ce tournoi."
 
+msgid "Configure the tie-breaks of the tournament."
+msgstr "Configurer les départages du tournoi."
+
 msgid "Connect to the Sharly Chess network via {type},<br />then scan to access the Sharly Chess server."
 msgstr "Connectez-vous au réseau Sharly Chess via {type},<br />puis scannez pour accéder au serveur Sharly Chess."
 
@@ -1409,20 +1382,17 @@ msgstr "Affiche actuellement l'écran rotatif [{uniq_id}]"
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr "Affiche actuellement l'écran [{uniq_id}]"
 
-msgid "Cut modifier"
-msgstr "Modificateur de coupe"
+msgid "Cut *** TIE BREAK VARIATION"
+msgstr "Tronqué"
+
+msgid "Cut values"
+msgstr "Élaguer des valeurs"
 
 msgid "Cut {value} *** CUT TIE BREAK NAME"
 msgstr "Tronqué {value}"
 
-msgid "C{value} *** CUT TIE BREAK ACRONYM SUFFIX"
-msgstr "T{value}"
-
 msgid "DCA"
 msgstr "ADJ"
-
-msgid "DE *** ACRONYM FOR DIRECT ENCOUNTER"
-msgstr "CD"
 
 msgid "DOUBLE"
 msgstr "DOUBLE"
@@ -2095,9 +2065,6 @@ msgstr "F"
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
 
-msgid "FB *** ACRONYM FOR FORE BUCHHOLZ"
-msgstr "FB"
-
 msgid "FFE"
 msgstr "FFE"
 
@@ -2357,6 +2324,9 @@ msgstr "Pour les joueur·euses qui ne se sont pas pointé·es :"
 msgid "For these reasons, it is strongly discouraged to unpair a round. It is instead recommended to use manual pairings to handle unusual situations."
 msgstr "Pour ces raisons, il est fortement déconseillé de désapparier une ronde. Il est à la place recommandé d'utiliser les appariements manuels pour gérer les situations inhabituelles."
 
+msgid "Fore"
+msgstr "Fore"
+
 msgid "Fore Buchholz"
 msgstr "Fore Buchholz"
 
@@ -2372,7 +2342,7 @@ msgstr "Les parties gagnées ou perdues par forfait sont toujours considérées 
 msgid "Forfeited games are considered as played."
 msgstr "Les parties gagnées ou perdues par forfait sont considérées comme jouées."
 
-msgid "Forfeited games played"
+msgid "Forfeits played"
 msgstr "Forfaits joués"
 
 msgid "French Chess Federation"
@@ -2772,15 +2742,6 @@ msgstr "Il est fortement recommandé de définir au moins un départage."
 msgid "JSON file (papi-converter format)"
 msgstr "Fichier JSON (format papi-converter)"
 
-msgid "KA *** ACRONYM FOR KASHDAN"
-msgstr "KA"
-
-msgid "KS *** ACRONYM FOR KOYA SYSTEM"
-msgstr "SK"
-
-msgid "Ka. *** ACRONYM FOR PAPI KASHDAN"
-msgstr "Ka."
-
 msgid "Kashdan"
 msgstr "Kashdan"
 
@@ -2862,8 +2823,13 @@ msgstr "Types de licence"
 msgid "Licence:"
 msgstr "Licence :"
 
-msgid "Limit"
-msgstr "Limite"
+msgid "Limit adjustment"
+msgstr "Ajustement de la limite"
+
+msgid "Limit {operator} {count} half-point"
+msgid_plural "Limit {operator} {count} half-points"
+msgstr[0] "Limite {operator} {count} demi-point"
+msgstr[1] "Limite {operator} {count} demi-points"
 
 msgid "Link to a board not involving the player."
 msgstr "Lien à un échiquier n'impliquant pas le·la joueur·euse."
@@ -2907,9 +2873,6 @@ msgstr "Défaite"
 
 msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr "M"
-
-msgid "MAN *** ACRONYM FOR MANUAL TIEBREAK"
-msgstr "MAN"
 
 msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
 msgstr "Mél"
@@ -3016,8 +2979,8 @@ msgstr "Peut être remplacé au niveau de chaque tournoi."
 msgid "May be used for per-round prize giveaways etc."
 msgstr "Peut être utilisé pour des tirages au sort de prix par ronde, etc."
 
-msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
-msgstr "Me."
+msgid "Median"
+msgstr "Médian"
 
 msgid "Median Buchholz"
 msgstr "Buchholz médian"
@@ -3099,9 +3062,6 @@ msgstr "Mon écran rotatif"
 
 msgid "My timer"
 msgstr "Mon chronomètre"
-
-msgid "M{value} *** MEDIAN TIE BREAK ACRONYM SUFFIX"
-msgstr "M{value}"
 
 msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
 msgstr "N"
@@ -3359,9 +3319,6 @@ msgstr "Aucun"
 msgid "None *** FFE licence"
 msgstr "Aucune"
 
-msgid "None of the tie-breaks can be exported to Papi."
-msgstr "Aucun des départages ne peut être exporté vers Papi."
-
 msgid "Norm Report"
 msgstr "Rapport de norme"
 
@@ -3413,7 +3370,7 @@ msgid "Number of games won"
 msgstr "Nombre de parties gagnées"
 
 #, python-format
-msgid "Number of half-points above or below 50%% required for opponents to be taken into account."
+msgid "Number of half-points above or below the 50%% limit required for opponents to be taken into account."
 msgstr "Le nombre de demi-points au-dessus ou en dessous des 50%% de points requis pour que les adversaires soient pris en compte."
 
 msgid "Number of players"
@@ -3498,11 +3455,6 @@ msgstr "Inclure uniquement les joueur·euses ayant l’un des types de licence s
 msgid "Only one age category is expected with options including other categories."
 msgstr "Une seule catégorie d'age est attendue avec les options incluant d'autres catégories."
 
-msgid "Only the first tie-break can be exported to Papi."
-msgid_plural "Only the first {count} tie-breaks can be exported to Papi."
-msgstr[0] "Seuls le premier départage peut-être exporté vers Papi."
-msgstr[1] "Seuls les premiers {count} départages peuvent-être exportés vers Papi."
-
 msgid "Open Admin Interface"
 msgstr "Ouvrir l'interface d'administration"
 
@@ -3576,9 +3528,6 @@ msgstr "Du/payé"
 msgid "Owed:"
 msgstr "Dû :"
 
-msgid "P *** ACRONYM FOR PLAYED"
-msgstr "J"
-
 msgid "PAB is already assigned"
 msgstr "il y a déjà un·e joueur·euse exempt·e"
 
@@ -3596,12 +3545,6 @@ msgstr "PERMUTER BLANCS/NOIRS"
 
 msgid "PGN"
 msgstr "PGN"
-
-msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
-msgstr "CU"
-
-msgid "PTP *** ACRONYM FOR PERFECT TOURNAMENT PERFORMANCE"
-msgstr "PP"
 
 msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Payé"
@@ -3739,14 +3682,8 @@ msgstr "Pénalité (handicap, en secondes) :"
 msgid "Pending"
 msgstr "À venir"
 
-msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
-msgstr "Perf"
-
 msgid "Perfect tournament performance"
 msgstr "Performance parfaite"
-
-msgid "Performance"
-msgstr "Performance"
 
 msgid "Performance indicators for round #{round}"
 msgstr "Indicateurs de performance pour la ronde n°{round}"
@@ -4096,7 +4033,7 @@ msgid "Progressive accelerated system"
 msgstr "Système accéléré dégressif (SAD)"
 
 msgid "Progressive scores"
-msgstr "Cumulatif"
+msgstr "Scores cumulés"
 
 msgid "Properties"
 msgstr "Propriétés"
@@ -4140,9 +4077,6 @@ msgstr "Type de QR Code :"
 #, python-format
 msgid "R %(round)d *** ROUND FOR TABLE HEADER"
 msgstr "R %(round)d"
-
-msgid "REP *** ACRONYM FOR ROUNDS ONE ELECTED TO PLAY"
-msgstr "RJ"
 
 msgid "RES"
 msgstr "RÉS"
@@ -4419,7 +4353,7 @@ msgid "Round {} started for %s"
 msgstr "Ronde {} commencée depuis %s"
 
 msgid "Round-Robin"
-msgstr "Toutes rondes"
+msgstr "Toutes rondes"
 
 msgid "Round:"
 msgstr "Ronde :"
@@ -4435,7 +4369,7 @@ msgid "Rounds"
 msgstr "Rondes"
 
 msgid "Rounds one Elected to Play"
-msgstr "Rondes jouées"
+msgstr "Rondes désigné comme jouant"
 
 msgid "Rounds {min_round}-{max_round}"
 msgstr "Rondes {min_round}-{max_round}"
@@ -4458,23 +4392,11 @@ msgstr "Lien de mise en ligne du règlement non trouvé, vérifier que le tourno
 msgid "Rules uploaded"
 msgstr "Règlement téléversé"
 
-msgid "SB *** ACRONYM FOR SONNEBORN BERGER"
-msgstr "SB"
-
-msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
-msgstr "SBh"
-
 msgid "SCR"
 msgstr "ÉCR"
 
 msgid "SEC"
 msgstr "SEC"
-
-msgid "SOB *** ACRONYM FOR SUM OF BUCHHOLZ"
-msgstr "SDB"
-
-msgid "SOFB *** ACRONYM FOR SUM OF FORE BUCHHOLZ"
-msgstr "SDFB"
 
 msgid "SPE"
 msgstr "SPE"
@@ -4702,6 +4624,9 @@ msgstr "Système de Haley dégressif"
 msgid "Some accounts can have very high access levels, making them dangerous in the hands of an unaware or malicious users."
 msgstr "Certains comptes peuvent avoir des niveaux d'accès très élevés, les rendant dangereux dans les mains de personnes non-informées ou malveillantes."
 
+msgid "Some of the tie-break values will not appear in the results on the FFE website."
+msgstr "Certaines des valeurs des départages n'apparaîtront pas dans les résultats sur le site de la FFE."
+
 msgid "Something went wrong. Please ask your administrator to recreate your account."
 msgstr "Une erreur est survenue. Veuillez demander à votre administrateur⋅ice de recréer votre compte."
 
@@ -4826,9 +4751,6 @@ msgstr "Succès"
 msgid "Sum of Buchholz"
 msgstr "Somme des Buchholz"
 
-msgid "Sum of Fore Buchholz"
-msgstr "Somme des Fore Buchholz"
-
 msgid "Support for the ChessEvent platform used for organising tournaments in France."
 msgstr "Support pour la plateforme ChessEvent utilsée pour l'organisation de tournois en France."
 
@@ -4857,9 +4779,6 @@ msgstr "Synchroniser les tournois avec ChessEvent"
 
 msgid "Synchronize with ChessEvent"
 msgstr "Synchroniser avec ChessEvent"
-
-msgid "TPR *** ACRONYM FOR TOURNAMENT PERFORMANCE RATING"
-msgstr "PER"
 
 msgid "TRF file"
 msgstr "Fichier TRF"
@@ -4998,6 +4917,9 @@ msgid "The least significant value is removed."
 msgid_plural "The {count} least significant values are removed."
 msgstr[0] "La valeur la moins élevée est retirée."
 msgstr[1] "Les {count} valeurs les moins élevées sont retirées."
+
+msgid "The limit can only be adjusted by {count} half-points."
+msgstr "La limite ne peut être ajustée que de {count} demi-points."
 
 msgid "The location of the event."
 msgstr "Le lieu de l'évènement."
@@ -5282,14 +5204,8 @@ msgstr "La valeur doit être supérieure au seuil de partage de la catégorie ({
 msgid "The values have to be higher than the sharing threshold of the category ({threshold})."
 msgstr "Les valeurs doivent être supérieures au seuil de partage de la catégorie ({threshold})."
 
-msgid "The values of the other tie-breaks will not appear in the results on the FFE website."
-msgstr "Les valeurs des autres départages n'apparaîtront pas dans les résultats sur le site de la FFE."
-
 msgid "The values to take into account when computing the tie-break."
 msgstr "Les valeurs à prendre en compte lors du calcul du départage."
-
-msgid "The values will not appear in the results on the FFE website."
-msgstr "Les valeurs n'apparaîtront pas dans les résultats sur le site de la FFE."
 
 msgid "The variation of the pairing system."
 msgstr "La variante du système d'appariements."
@@ -5633,9 +5549,6 @@ msgstr "Tournois :"
 #, python-format
 msgid "Tournaments: %(num)d"
 msgstr "Tournois : %(num)d"
-
-msgid "Tr. *** ACRONYM FOR PAPI BUCHHOLZ CUT BOTTOM"
-msgstr "Tr."
 
 msgid "Trophy"
 msgstr "Trophée"
@@ -6008,12 +5921,6 @@ msgstr "VICTOIRE BLANCS"
 
 msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr "MIF"
-
-msgid "WIN *** ACRONYM FOR NUMBER OF WINS"
-msgstr "NV"
-
-msgid "WON *** ACRONYM FOR NUMBER OF GAMES WON"
-msgstr "NPG"
 
 msgid "Warning: closing this window will stop Sharly Chess."
 msgstr "Avertissement : la fermeture de cette fenêtre arrête Sharly Chess."

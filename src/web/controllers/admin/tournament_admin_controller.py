@@ -1074,7 +1074,7 @@ class TournamentAdminController(BaseEventAdminController):
         tournament = web_context.get_admin_tournament()
         default_data = {
             option.id: WebContext.value_to_form_data(option.default_value)
-            for option in TieBreakOptionManager().objects()
+            for option in TieBreakOptionManager(event).objects()
         } | {'type': ''}
 
         tie_break_select_options: dict[str, dict[str, SelectOption]] = defaultdict(dict)
@@ -1082,13 +1082,15 @@ class TournamentAdminController(BaseEventAdminController):
             if tournament.pairing_system in tie_break.forbidden_pairing_systems:
                 continue
             tie_break_select_options[tie_break.category.name][tie_break.id] = (
-                SelectOption(tie_break.name, tie_break.help_text)
+                SelectOption(
+                    f'{tie_break.acronym} - {tie_break.name}', tie_break.help_text
+                )
             )
         return {
             'modal': 'tie_break_form',
             'action': action,
             'tie_break_select_options': {'': '-'} | tie_break_select_options,
-            'tie_break_options': TieBreakOptionManager().objects(),
+            'tie_break_options': TieBreakOptionManager(event).objects(),
             'containers_by_type': {
                 tie_break.id: [
                     option.container_id for option in tie_break.default_options()

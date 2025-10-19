@@ -348,9 +348,10 @@ class Tournament:
             )
             return None
         options: list[TieBreakOption] = []
+        manager = TieBreakOptionManager(self.event)
         for option_id, option_value in stored_tie_break.options.items():
             try:
-                option_type = TieBreakOptionManager().get_type(option_id)
+                option_type = manager.get_type(option_id)
                 options.append(option_type(option_value))
             except KeyError:
                 logger.warning(

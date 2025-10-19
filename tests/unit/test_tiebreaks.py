@@ -12,6 +12,12 @@ from data.tie_breaks.cutters import Cut1TieBreakCutter
 from data.tournament import Tournament
 from data.player import Player
 from plugins.ffe import ffe_tie_breaks
+from plugins.ffe.ffe_tie_breaks import (
+    PapiBuchholzTypeOption,
+    StandardPapiBuchholzType,
+    CutPapiBuchholzType,
+    MedianPapiBuchholzType,
+)
 from tests.test_config import TestUtils
 
 EVENT_ID = 'test-tiebreaks-event'
@@ -398,7 +404,9 @@ class SwissTieBreakTestCase(TieBreakTestCase):
         self.assertEqual(results, expected)
 
     def test_buchholz_legacy(self):
-        tie_break_ = ffe_tie_breaks.PapiStandardBuchholzTieBreak()
+        tie_break_ = ffe_tie_breaks.PapiBuchholzTieBreak(
+            [PapiBuchholzTypeOption(StandardPapiBuchholzType().id)]
+        )
         results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 13.0,
@@ -421,7 +429,9 @@ class SwissTieBreakTestCase(TieBreakTestCase):
         self.assertEqual(results, expected)
 
     def test_buchholz_cut_legacy(self):
-        tie_break_ = ffe_tie_breaks.PapiBuchholzCutBottomTieBreak()
+        tie_break_ = ffe_tie_breaks.PapiBuchholzTieBreak(
+            [PapiBuchholzTypeOption(CutPapiBuchholzType().id)]
+        )
         results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 12.0,
@@ -444,7 +454,9 @@ class SwissTieBreakTestCase(TieBreakTestCase):
         self.assertEqual(results, expected)
 
     def test_buchholz_median_legacy(self):
-        tie_break_ = ffe_tie_breaks.PapiMedianBuchholzTieBreak()
+        tie_break_ = ffe_tie_breaks.PapiBuchholzTieBreak(
+            [PapiBuchholzTypeOption(MedianPapiBuchholzType().id)]
+        )
         results = self.get_tie_break_player_values(tie_break_)
         expected = {
             2: 8.5,

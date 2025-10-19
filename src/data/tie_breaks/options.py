@@ -4,6 +4,7 @@ from types import UnionType
 from typing import Any, TYPE_CHECKING
 
 from common.exception import OptionError
+from common.i18n import _, ngettext
 from data.tie_breaks.cutters import NoCutTieBreakCutter, TieBreakCutter
 from utils.option import Option
 
@@ -22,6 +23,28 @@ class TieBreakOption(Option, ABC):
     @abstractmethod
     def template_file_stem(self) -> str:
         """Stem of the file of the template."""
+
+    @property
+    def is_variation(self) -> bool:
+        """Defines if the option value is the default for the tie-break or if it is a variation."""
+        return self.value != self.default_value
+
+    @property
+    @abstractmethod
+    def variation_acronym(self) -> str:
+        """Represents the variation in the tie-break acronym
+        Example: BH/C1."""
+
+    @property
+    @abstractmethod
+    def variation_name(self) -> str:
+        """Represent the variation in the tie-break full name
+        Example: Buchholz (Cut 1)."""
+
+    @property
+    @abstractmethod
+    def variation_help_text(self) -> str:
+        """Represent the variation in the tie-break help text."""
 
 
 class BaseCutterTieBreakOption(TieBreakOption, ABC):
@@ -44,7 +67,7 @@ class BaseCutterTieBreakOption(TieBreakOption, ABC):
         from web.utils import SelectOption
 
         return {
-            cutter.id: SelectOption(cutter.name, tooltip=cutter.tooltip)
+            cutter.id: SelectOption(cutter.name, tooltip=cutter.help_text)
             for cutter in TieBreakCutterManager(self.include_median).objects()
         }
 
@@ -55,14 +78,27 @@ class BaseCutterTieBreakOption(TieBreakOption, ABC):
         return TieBreakCutterManager(self.include_median).get_object(self.value)
 
     def validate(self):
+        super().validate()
         try:
-            _cutter = self.cutter
+            __ = self.cutter
         except KeyError:
             raise OptionError(f'Unknown cutter: {self.value}', self)
 
     @property
     def template_file_stem(self) -> str:
         return 'cutter'
+
+    @property
+    def variation_acronym(self) -> str:
+        return self.cutter.acronym
+
+    @property
+    def variation_name(self) -> str:
+        return self.cutter.name
+
+    @property
+    def variation_help_text(self) -> str:
+        return self.cutter.help_text
 
 
 class CutterTieBreakOption(BaseCutterTieBreakOption):
@@ -102,6 +138,18 @@ class PlayedModifierTieBreakOption(TieBreakOption):
     def template_file_stem(self) -> str:
         return 'played_modifier'
 
+    @property
+    def variation_acronym(self) -> str:
+        return 'P'
+
+    @property
+    def variation_name(self) -> str:
+        return _('forfeits played')
+
+    @property
+    def variation_help_text(self) -> str:
+        return _('Forfeited games are considered as played.')
+
 
 class ForeModifierTieBreakOption(TieBreakOption):
     @staticmethod
@@ -120,8 +168,23 @@ class ForeModifierTieBreakOption(TieBreakOption):
     def template_file_stem(self) -> str:
         return 'fore_modifier'
 
+    @property
+    def variation_acronym(self) -> str:
+        return 'F'
+
+    @property
+    def variation_name(self) -> str:
+        return _('Fore')
+
+    @property
+    def variation_help_text(self) -> str:
+        """`Buchholz` replaced by `Fore Buchholz` in the help text."""
+        return ''
+
 
 class KoyaLimitTieBreakOption(TieBreakOption):
+    MAX_VALUE = 5
+
     @staticmethod
     def static_id() -> str:
         return 'KOYA_LIMIT'
@@ -135,5 +198,40 @@ class KoyaLimitTieBreakOption(TieBreakOption):
         return None
 
     @property
+    def operator(self) -> str:
+        return '+' if self.value > 0 else '-'
+
+    @property
+    def is_variation(self) -> bool:
+        return bool(self.value)
+
+    @property
+    def variation_acronym(self) -> str:
+        return f'L{self.value}'
+
+    @property
+    def variation_name(self) -> str:
+        return ngettext(
+            'Limit {operator} {count} half-point',
+            'Limit {operator} {count} half-points',
+            abs(self.value),
+        ).format(operator=self.operator)
+
+    @property
+    def variation_help_text(self) -> str:
+        """Included as an equation."""
+        return ''
+
+    @property
     def template_file_stem(self) -> str:
         return 'koya_limit'
+
+    def validate(self):
+        super().validate()
+        if self.value and abs(self.value) > self.MAX_VALUE:
+            raise OptionError(
+                _('The limit can only be adjusted by {count} half-points.').format(
+                    count=self.MAX_VALUE
+                ),
+                self,
+            )

@@ -20,6 +20,20 @@ class Migration(BaseMigration):
         )
         self.database.execute('SELECT `id`, `tie_breaks` FROM `tournament`')
         removed_option_ids = ['CUT', 'CUT_TOP', 'CUT_BOTTOM', 'LIMIT']
+        replaced_tie_breaks: dict[str, tuple[str, dict[str, Any]]] = {
+            'ffe-PAPI_BUCHHOLZ': (
+                'ffe-PAPI_BUCHHOLZ',
+                {'ffe-PAPI_BUCHHOLZ_TYPE': 'STANDARD'},
+            ),
+            'ffe-PAPI_BUCHHOLZ_CUT_BOTTOM': (
+                'ffe-PAPI_BUCHHOLZ',
+                {'ffe-PAPI_BUCHHOLZ_TYPE': 'CUT'},
+            ),
+            'ffe-PAPI_MEDIAN_BUCHHOLZ': (
+                'ffe-PAPI_BUCHHOLZ',
+                {'ffe-PAPI_BUCHHOLZ_TYPE': 'MEDIAN'},
+            ),
+        }
         for row in self.database.fetchall():
             tie_breaks = json.loads(row['tie_breaks'] or '[]')
             for index, tie_break in enumerate(tie_breaks):
@@ -28,9 +42,12 @@ class Migration(BaseMigration):
                     # Only default options were added, no need to convert the options.
                     if option_id in options:
                         del options[option_id]
+                type_ = tie_break['type']
+                if type_ in replaced_tie_breaks:
+                    type_, options = replaced_tie_breaks[type_]
                 fields = {
                     'tournament_id': row['id'],
-                    'type': tie_break['type'],
+                    'type': type_,
                     'options': json.dumps(options),
                     'index': index,
                 }

@@ -1,0 +1,9 @@
+<div class="col-12">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('%(string)s:', string=_('Variation')),
+        help_text='',
+        select_options=option.buchholz_type_options,
+        data=data, errors=errors
+    ) }}
+</div>

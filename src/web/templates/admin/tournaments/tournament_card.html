@@ -49,28 +49,6 @@
         </div>
     {% endif %}
     <div class="card-block">
-        <div
-            class="card-block-button"
-            {% if client.can_update_tournaments %}
-                {{ macros.tooltip_attributes('info', _('Edit the properties of the tournament.'), 'top') }}
-            {% else %}
-                {{ macros.tooltip_attributes('warning', _('You are not allowed to update the tournament.'), 'top') }}
-            {% endif %}
-        >
-            <button
-                class="btn btn-sm btn-outline-primary text-nowrap"
-                hx-get="{{ url_for('admin-tournament-modal', action='update', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
-                {% if not client.can_update_tournaments %}
-                    disabled
-                {% endif %}
-            >
-                <i class="bi-pencil-fill"></i>
-            </button>
-        </div>
         <div class="card-block-content">
             <div class="text-start">
                 {{ tournament.rating }} ({{ tournament.player_rating_type.name }})
@@ -133,7 +111,9 @@
     <div class="card-block">
         <span
             class="card-block-button"
-            {% if not client.can_update_tournaments %}
+            {% if client.can_update_tournaments %}
+                {{ macros.tooltip_attributes('info', _('Configure the tie-breaks of the tournament.'), 'top') }}
+            {% else %}
                 {{ macros.tooltip_attributes('warning', _('You are not allowed to update the tournament.'), 'top') }}
             {% endif %}
         >
@@ -186,7 +166,7 @@
                             {{ macros.tooltip_attributes('warning', invalid_message, 'top') }}
                         ></i>
                     {% endif %}
-                    {% if not loop.last %}/{% endif %}
+                    {% if not loop.last %}-{% endif %}
                 {% endfor %}
             {% else %}
                 <span class="text-secondary">
@@ -245,6 +225,7 @@
             </div>
         </div>
     </div>
+    <div></div>
 {% endblock %}
 
 {% block card_buttons_left %}
@@ -404,6 +385,27 @@
 {% endblock %}
 
 {% block card_buttons_right %}
+    <span
+        {% if client.can_update_tournaments %}
+            {{ macros.tooltip_attributes('info', _('Edit the properties of the tournament.'), 'top') }}
+        {% else %}
+            {{ macros.tooltip_attributes('warning', _('You are not allowed to update the tournament.'), 'top') }}
+        {% endif %}
+    >
+        <button
+            class="btn btn-sm btn-outline-primary text-nowrap"
+            hx-get="{{ url_for('admin-tournament-modal', action='update', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+            {% if not client.can_update_tournaments %}
+                disabled
+            {% endif %}
+        >
+            <i class="bi-pencil-fill"></i>
+        </button>
+    </span>
     <span
         {% if client.can_add_tournament %}
             {{ macros.tooltip_attributes('info', _('Duplicate the tournament.'), 'top') }}

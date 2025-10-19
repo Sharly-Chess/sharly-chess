@@ -38,16 +38,20 @@ class TieBreakManager(EventBoundEntityManager[TieBreak]):
         return tie_break_types
 
 
-class TieBreakOptionManager(EntityManager[TieBreakOption]):
+class TieBreakOptionManager(EventBoundEntityManager[TieBreakOption]):
     @override
     def entity_types(self) -> list[type[TieBreakOption]]:
-        return [
+        tie_break_option_types = [
             options.CutterTieBreakOption,
             options.CutterWithMedianTieBreakOption,
             options.PlayedModifierTieBreakOption,
             options.ForeModifierTieBreakOption,
             options.KoyaLimitTieBreakOption,
         ]
+        plugin_manager.hook_for_event(self.event, 'insert_tie_break_option_types')(
+            tie_break_option_types=tie_break_option_types
+        )
+        return tie_break_option_types
 
 
 class TieBreakCutterManager(EntityManager[TieBreakCutter]):
@@ -59,12 +63,10 @@ class TieBreakCutterManager(EntityManager[TieBreakCutter]):
             cutters.NoCutTieBreakCutter,
             cutters.Cut1TieBreakCutter,
             cutters.Cut2TieBreakCutter,
-            cutters.Cut3TieBreakCutter,
         ]
         if self.include_median:
             cutter_types += [
                 cutters.Median1TieBreakCutter,
                 cutters.Median2TieBreakCutter,
-                cutters.Median3TieBreakCutter,
             ]
         return cutter_types

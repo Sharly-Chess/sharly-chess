@@ -334,21 +334,6 @@ msgstr ""
 msgid "ADM"
 msgstr ""
 
-msgid "AOB *** ACRONYM FOR AVERAGE OF BUCHHOLZ"
-msgstr "AOB"
-
-msgid "AOFB *** ACRONYM FOR AVERAGE OF FORE BUCHHOLZ"
-msgstr "AOFB"
-
-msgid "APPO *** ACRONYM FOR AVERAGE PERFECT PERFORMANCE OF OPPONENTS"
-msgstr "APPO"
-
-msgid "APRO *** ACRONYM FROM AVERAGE PERFORMANCE RATING OF OPPONENTS"
-msgstr "APRO"
-
-msgid "ARO *** ACRONYM FOR AVERAGE RATING OPPONENTS"
-msgstr "ARO"
-
 msgid "Absent"
 msgstr ""
 
@@ -719,9 +704,6 @@ msgstr ""
 msgid "Average of opponents Buchholz"
 msgstr ""
 
-msgid "Average of opponents Fore Buchholz"
-msgstr ""
-
 msgid "Average perfect performance of opponents"
 msgstr ""
 
@@ -740,17 +722,8 @@ msgstr "B"
 msgid "B - Leisure *** FFE licence"
 msgstr "B - Leisure"
 
-msgid "BH *** ACRONYM FOR BUCHHOLZ"
-msgstr "BH"
-
 msgid "BLACK WINS"
 msgstr ""
-
-msgid "BPG *** ACRONYM FOR BLACK PLAYED GAMES"
-msgstr "BPG"
-
-msgid "BWG *** ACRONYM FOR BLACK WON GAMES"
-msgstr "BWG"
 
 msgid "BY FORFEIT"
 msgstr ""
@@ -851,9 +824,6 @@ msgstr ""
 
 msgid "Boards screens show pairings by board number."
 msgstr ""
-
-msgid "Bu. *** ACRONYM FOR PAPI BUCHHOLZ"
-msgstr "Bu."
 
 msgid "Buchholz"
 msgstr ""
@@ -1192,6 +1162,9 @@ msgstr ""
 msgid "Configure the ChessEvent settings of this tournament."
 msgstr ""
 
+msgid "Configure the tie-breaks of the tournament."
+msgstr ""
+
 msgid "Connect to the Sharly Chess network via {type},<br />then scan to access the Sharly Chess server."
 msgstr ""
 
@@ -1409,20 +1382,17 @@ msgstr ""
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr ""
 
-msgid "Cut modifier"
+msgid "Cut *** TIE BREAK VARIATION"
+msgstr "Cut"
+
+msgid "Cut values"
 msgstr ""
 
 msgid "Cut {value} *** CUT TIE BREAK NAME"
 msgstr "Cut {value}"
 
-msgid "C{value} *** CUT TIE BREAK ACRONYM SUFFIX"
-msgstr "C{value}"
-
 msgid "DCA"
 msgstr ""
-
-msgid "DE *** ACRONYM FOR DIRECT ENCOUNTER"
-msgstr "DE"
 
 msgid "DOUBLE"
 msgstr ""
@@ -2095,9 +2065,6 @@ msgstr "F"
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
 
-msgid "FB *** ACRONYM FOR FORE BUCHHOLZ"
-msgstr "FB"
-
 msgid "FFE"
 msgstr ""
 
@@ -2357,6 +2324,9 @@ msgstr ""
 msgid "For these reasons, it is strongly discouraged to unpair a round. It is instead recommended to use manual pairings to handle unusual situations."
 msgstr ""
 
+msgid "Fore"
+msgstr ""
+
 msgid "Fore Buchholz"
 msgstr ""
 
@@ -2372,7 +2342,7 @@ msgstr ""
 msgid "Forfeited games are considered as played."
 msgstr ""
 
-msgid "Forfeited games played"
+msgid "Forfeits played"
 msgstr ""
 
 msgid "French Chess Federation"
@@ -2772,15 +2742,6 @@ msgstr ""
 msgid "JSON file (papi-converter format)"
 msgstr ""
 
-msgid "KA *** ACRONYM FOR KASHDAN"
-msgstr "KA"
-
-msgid "KS *** ACRONYM FOR KOYA SYSTEM"
-msgstr "KS"
-
-msgid "Ka. *** ACRONYM FOR PAPI KASHDAN"
-msgstr "Ka."
-
 msgid "Kashdan"
 msgstr ""
 
@@ -2862,8 +2823,13 @@ msgstr ""
 msgid "Licence:"
 msgstr ""
 
-msgid "Limit"
+msgid "Limit adjustment"
 msgstr ""
+
+msgid "Limit {operator} {count} half-point"
+msgid_plural "Limit {operator} {count} half-points"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Link to a board not involving the player."
 msgstr ""
@@ -2907,9 +2873,6 @@ msgstr ""
 
 msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr "M"
-
-msgid "MAN *** ACRONYM FOR MANUAL TIEBREAK"
-msgstr "MAN"
 
 msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
 msgstr "Mail"
@@ -3016,8 +2979,8 @@ msgstr ""
 msgid "May be used for per-round prize giveaways etc."
 msgstr ""
 
-msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
-msgstr "Me."
+msgid "Median"
+msgstr ""
 
 msgid "Median Buchholz"
 msgstr ""
@@ -3099,9 +3062,6 @@ msgstr ""
 
 msgid "My timer"
 msgstr ""
-
-msgid "M{value} *** MEDIAN TIE BREAK ACRONYM SUFFIX"
-msgstr "M{value}"
 
 msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
 msgstr "N"
@@ -3359,9 +3319,6 @@ msgstr ""
 msgid "None *** FFE licence"
 msgstr "None"
 
-msgid "None of the tie-breaks can be exported to Papi."
-msgstr ""
-
 msgid "Norm Report"
 msgstr ""
 
@@ -3413,7 +3370,7 @@ msgid "Number of games won"
 msgstr ""
 
 #, python-format
-msgid "Number of half-points above or below 50%% required for opponents to be taken into account."
+msgid "Number of half-points above or below the 50%% limit required for opponents to be taken into account."
 msgstr ""
 
 msgid "Number of players"
@@ -3498,11 +3455,6 @@ msgstr ""
 msgid "Only one age category is expected with options including other categories."
 msgstr ""
 
-msgid "Only the first tie-break can be exported to Papi."
-msgid_plural "Only the first {count} tie-breaks can be exported to Papi."
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "Open Admin Interface"
 msgstr ""
 
@@ -3576,9 +3528,6 @@ msgstr "Owed/paid"
 msgid "Owed:"
 msgstr ""
 
-msgid "P *** ACRONYM FOR PLAYED"
-msgstr "P"
-
 msgid "PAB is already assigned"
 msgstr ""
 
@@ -3596,12 +3545,6 @@ msgstr ""
 
 msgid "PGN"
 msgstr ""
-
-msgid "PS *** ACRONYM FOR PROGRESSIVE SCORE"
-msgstr "PS"
-
-msgid "PTP *** ACRONYM FOR PERFECT TOURNAMENT PERFORMANCE"
-msgstr "PTP"
 
 msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Paid"
@@ -3739,13 +3682,7 @@ msgstr ""
 msgid "Pending"
 msgstr ""
 
-msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
-msgstr "Perf."
-
 msgid "Perfect tournament performance"
-msgstr ""
-
-msgid "Performance"
 msgstr ""
 
 msgid "Performance indicators for round #{round}"
@@ -4141,9 +4078,6 @@ msgstr ""
 msgid "R %(round)d *** ROUND FOR TABLE HEADER"
 msgstr "R %(round)d"
 
-msgid "REP *** ACRONYM FOR ROUNDS ONE ELECTED TO PLAY"
-msgstr "REP"
-
 msgid "RES"
 msgstr ""
 
@@ -4458,23 +4392,11 @@ msgstr ""
 msgid "Rules uploaded"
 msgstr ""
 
-msgid "SB *** ACRONYM FOR SONNEBORN BERGER"
-msgstr "SB"
-
-msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
-msgstr "SBh"
-
 msgid "SCR"
 msgstr ""
 
 msgid "SEC"
 msgstr ""
-
-msgid "SOB *** ACRONYM FOR SUM OF BUCHHOLZ"
-msgstr "SOB"
-
-msgid "SOFB *** ACRONYM FOR SUM OF FORE BUCHHOLZ"
-msgstr "SOFB"
 
 msgid "SPE"
 msgstr ""
@@ -4702,6 +4624,9 @@ msgstr ""
 msgid "Some accounts can have very high access levels, making them dangerous in the hands of an unaware or malicious users."
 msgstr ""
 
+msgid "Some of the tie-break values will not appear in the results on the FFE website."
+msgstr ""
+
 msgid "Something went wrong. Please ask your administrator to recreate your account."
 msgstr ""
 
@@ -4826,9 +4751,6 @@ msgstr ""
 msgid "Sum of Buchholz"
 msgstr ""
 
-msgid "Sum of Fore Buchholz"
-msgstr ""
-
 msgid "Support for the ChessEvent platform used for organising tournaments in France."
 msgstr ""
 
@@ -4857,9 +4779,6 @@ msgstr ""
 
 msgid "Synchronize with ChessEvent"
 msgstr ""
-
-msgid "TPR *** ACRONYM FOR TOURNAMENT PERFORMANCE RATING"
-msgstr "TPR"
 
 msgid "TRF file"
 msgstr ""
@@ -4998,6 +4917,9 @@ msgid "The least significant value is removed."
 msgid_plural "The {count} least significant values are removed."
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "The limit can only be adjusted by {count} half-points."
+msgstr ""
 
 msgid "The location of the event."
 msgstr ""
@@ -5282,13 +5204,7 @@ msgstr ""
 msgid "The values have to be higher than the sharing threshold of the category ({threshold})."
 msgstr ""
 
-msgid "The values of the other tie-breaks will not appear in the results on the FFE website."
-msgstr ""
-
 msgid "The values to take into account when computing the tie-break."
-msgstr ""
-
-msgid "The values will not appear in the results on the FFE website."
 msgstr ""
 
 msgid "The variation of the pairing system."
@@ -5633,9 +5549,6 @@ msgstr ""
 #, python-format
 msgid "Tournaments: %(num)d"
 msgstr ""
-
-msgid "Tr. *** ACRONYM FOR PAPI BUCHHOLZ CUT BOTTOM"
-msgstr "Tr."
 
 msgid "Trophy"
 msgstr ""
@@ -6008,12 +5921,6 @@ msgstr ""
 
 msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr "WIM"
-
-msgid "WIN *** ACRONYM FOR NUMBER OF WINS"
-msgstr "WIN"
-
-msgid "WON *** ACRONYM FOR NUMBER OF GAMES WON"
-msgstr "WON"
 
 msgid "Warning: closing this window will stop Sharly Chess."
 msgstr ""

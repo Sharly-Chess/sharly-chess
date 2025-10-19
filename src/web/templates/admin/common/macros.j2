@@ -183,13 +183,14 @@
     selected=[],
     disabled=false,
     multiple=false,
+    searchable=false,
     multiple_placeholder='NO PLACEHOLDER',
     multiple_select_all=false,
     error=false,
     tooltip_select=false,
     onchange=''
 ) %}
-    {% set use_select2 = not disabled and (multiple or tooltip_select) %}
+    {% set use_select2 = not disabled and (multiple or tooltip_select or searchable) %}
     <select
         name="{{ name }}"
         id="{{ id }}"
@@ -198,7 +199,7 @@
             {% if error %}
                 is-invalid
             {% endif %}
-            {% if multiple %}
+            {% if use_select2 %}
                 sharly-chess-select2
             {% endif %}"
         aria-describedby="{{ id }}-help {{ id }}-error"
@@ -238,11 +239,15 @@
     </select>
     {% if use_select2 %}
         <script>
+            {% if searchable and tooltip_select %}
+                var oldParams = '';
+            {% endif %}
             $('#{{ id }}').select2({
                 theme: 'bootstrap-5',
                 width: '100%',
                 placeholder: $(this).data('placeholder'),
-                minimumResultsForSearch: Infinity,
+                minimumResultsForSearch: {% if searchable %}1{% else %}Infinity{% endif %},
+                dropdownParent: $('#modal-wrapper'),
                 closeOnSelect: {% if multiple_select %}false{% else %}true{% endif %},
                 templateResult: function (data) {
                     if (data.id === '__divider__') {
@@ -256,6 +261,17 @@
                     if (optionClass) $result.addClass(optionClass);
                     return $result;
                 },
+                {% if searchable %}
+                    matcher: function(params, data) {
+                        {% if tooltip_select %}
+                            if(params !== oldParams) {
+                                $('[role="tooltip"]').remove();
+                                oldParams = params;
+                            }
+                        {% endif %}
+                        return $.fn.select2.defaults.defaults.matcher(params, data);
+                    },
+                {% endif %}
             });
             // Width changes dynamically on load, needs to be reset to display the placeholder nicely
             $('.select2-search__field').css('width', '100%');
@@ -282,7 +298,6 @@
                 $('#{{ id }}').on('select2:close', function(e) {
                     $('[role="tooltip"]').remove();
                 });
-
                 $('body').tooltip({
                     selector: '[data-bs-toggle="tooltip"],.select2-results__option',
                     title: function() {
@@ -364,6 +379,7 @@ with_indicator: display a loading indicator, optional
     onchange='',
     multiple_select=false,
     tooltip_select=false,
+    searchable_select=false,
     select_all=false,
     file_accept='',
     number_min='',
@@ -448,6 +464,7 @@ with_indicator: display a loading indicator, optional
                         multiple=multiple_select,
                         multiple_placeholder=placeholder,
                         multiple_select_all=select_all,
+                        searchable=searchable_select,
                         error=error or (name in errors),
                         tooltip_select=tooltip_select,
                         onchange=onchange,
@@ -484,7 +501,7 @@ with_indicator: display a loading indicator, optional
                     {% if info %}
                         <i
                             class="bi bi-info-circle-fill"
-                            {{ macros.tooltip_attributes('info', info, 'top') }}
+                            {{ macros.tooltip_attributes('', info, 'top') }}
                         ></i>
                     {% endif %}
                 {% elif input_type == 'integer-range' %}
@@ -923,6 +940,7 @@ with_indicator: display a loading indicator, optional
     onchange='',
     multiple_select=false,
     tooltip_select=false,
+    searchable_select=false,
     select_all=false,
     placeholder='',
     disabled=false
@@ -941,6 +959,7 @@ with_indicator: display a loading indicator, optional
         onchange=onchange,
         multiple_select=multiple_select,
         tooltip_select=tooltip_select,
+        searchable_select=searchable_select,
         select_all=select_all,
         placeholder=placeholder,
         disabled=disabled,

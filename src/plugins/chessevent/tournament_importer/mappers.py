@@ -4,6 +4,12 @@ from data.pairings.variations import StandardSwissVariation, BergerRoundRobinVar
 from data.tie_breaks import TieBreak, tie_breaks
 from plugins.ffe import ffe_tie_breaks
 from plugins.ffe.ffe_entity import NicoisSwissVariation
+from plugins.ffe.ffe_tie_breaks import (
+    PapiBuchholzTypeOption,
+    StandardPapiBuchholzType,
+    CutPapiBuchholzType,
+    MedianPapiBuchholzType,
+)
 from plugins.ffe.utils import PlayerFFELicence
 from plugins.pairing_acceleration.pairing_variations import (
     HaleySwissVariation,
@@ -40,9 +46,15 @@ class ChessEventTieBreak(CoreMapper[int, TieBreak]):
     @staticmethod
     def _core_object_by_outer_value() -> dict[int, TieBreak]:
         return {
-            1: ffe_tie_breaks.PapiStandardBuchholzTieBreak(),
-            2: ffe_tie_breaks.PapiBuchholzCutBottomTieBreak(),
-            3: ffe_tie_breaks.PapiMedianBuchholzTieBreak(),
+            1: ffe_tie_breaks.PapiBuchholzTieBreak(
+                [PapiBuchholzTypeOption(StandardPapiBuchholzType().id)]
+            ),
+            2: ffe_tie_breaks.PapiBuchholzTieBreak(
+                [PapiBuchholzTypeOption(CutPapiBuchholzType().id)]
+            ),
+            3: ffe_tie_breaks.PapiBuchholzTieBreak(
+                [PapiBuchholzTypeOption(MedianPapiBuchholzType().id)]
+            ),
             4: tie_breaks.ProgressiveScoresTieBreak(),
             5: ffe_tie_breaks.PapiPerformanceTieBreak(),
             6: ffe_tie_breaks.PapiSumOfBuchholzTieBreak(),

@@ -12,6 +12,12 @@ from data.pairings.systems import (
 )
 from data.tie_breaks import tie_breaks, TieBreak
 from plugins.ffe import ffe_tie_breaks
+from plugins.ffe.ffe_tie_breaks import (
+    PapiBuchholzTypeOption,
+    StandardPapiBuchholzType,
+    CutPapiBuchholzType,
+    MedianPapiBuchholzType,
+)
 from plugins.ffe.utils import PlayerFFELicence
 from plugins.pairing_acceleration import pairing_variations as accelerations
 from utils import CoreMapper
@@ -67,9 +73,15 @@ class PapiTieBreak(CoreMapper[str, TieBreak]):
     @classmethod
     def _core_object_by_outer_value(cls) -> dict[str, TieBreak]:
         return {
-            'Solkoff': ffe_tie_breaks.PapiStandardBuchholzTieBreak(),
-            'Brésilien': ffe_tie_breaks.PapiBuchholzCutBottomTieBreak(),
-            'Harkness': ffe_tie_breaks.PapiMedianBuchholzTieBreak(),
+            'Solkoff': ffe_tie_breaks.PapiBuchholzTieBreak(
+                [PapiBuchholzTypeOption(StandardPapiBuchholzType().id)]
+            ),
+            'Brésilien': ffe_tie_breaks.PapiBuchholzTieBreak(
+                [PapiBuchholzTypeOption(CutPapiBuchholzType().id)]
+            ),
+            'Harkness': ffe_tie_breaks.PapiBuchholzTieBreak(
+                [PapiBuchholzTypeOption(MedianPapiBuchholzType().id)]
+            ),
             'Cumulatif': tie_breaks.ProgressiveScoresTieBreak(),
             'Performance': ffe_tie_breaks.PapiPerformanceTieBreak(),
             'SommeDesBuchholz': ffe_tie_breaks.PapiSumOfBuchholzTieBreak(),

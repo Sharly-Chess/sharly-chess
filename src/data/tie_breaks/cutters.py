@@ -17,18 +17,13 @@ class TieBreakCutter(IdentifiableEntity, ABC):
 
     @property
     @abstractmethod
-    def tooltip(self) -> str | None:
+    def help_text(self) -> str:
         """Tooltip to display on the option of the cutter."""
 
     @property
     @abstractmethod
-    def acronym_suffix(self) -> str | None:
+    def acronym(self) -> str:
         """Represents the cutter in the tie-break acronym as a suffix (ex: BH-C1)."""
-
-    @property
-    def name_suffix(self) -> str | None:
-        """Represents the cutter in the tie-break name as a suffix (ex: Buchholz - Cut 1)."""
-        return self.name
 
 
 class NoCutTieBreakCutter(TieBreakCutter):
@@ -49,16 +44,12 @@ class NoCutTieBreakCutter(TieBreakCutter):
         return 0
 
     @property
-    def tooltip(self) -> str | None:
-        return None
+    def help_text(self) -> str:
+        return ''
 
     @property
-    def acronym_suffix(self) -> str | None:
-        return None
-
-    @property
-    def name_suffix(self) -> str | None:
-        return None
+    def acronym(self) -> str:
+        return ''
 
 
 class CutTieBreakCutter(TieBreakCutter, ABC):
@@ -84,13 +75,11 @@ class CutTieBreakCutter(TieBreakCutter, ABC):
         return self.cut_value()
 
     @property
-    def acronym_suffix(self) -> str | None:
-        return _('C{value} *** CUT TIE BREAK ACRONYM SUFFIX').format(
-            value=self.cut_value()
-        )
+    def acronym(self) -> str:
+        return f'C{self.cut_value()}'
 
     @property
-    def tooltip(self) -> str | None:
+    def help_text(self) -> str:
         return ngettext(
             'The least significant value is removed.',
             'The {count} least significant values are removed.',
@@ -108,12 +97,6 @@ class Cut2TieBreakCutter(CutTieBreakCutter):
     @staticmethod
     def cut_value() -> int:
         return 2
-
-
-class Cut3TieBreakCutter(CutTieBreakCutter):
-    @staticmethod
-    def cut_value() -> int:
-        return 3
 
 
 class MedianTieBreakCutter(TieBreakCutter, ABC):
@@ -139,13 +122,11 @@ class MedianTieBreakCutter(TieBreakCutter, ABC):
         return self.cut_value()
 
     @property
-    def acronym_suffix(self) -> str | None:
-        return _('M{value} *** MEDIAN TIE BREAK ACRONYM SUFFIX').format(
-            value=self.cut_value()
-        )
+    def acronym(self) -> str:
+        return f'M{self.cut_value()}'
 
     @property
-    def tooltip(self) -> str | None:
+    def help_text(self) -> str:
         return ngettext(
             'The least and the most significant values are removed.',
             'The {count} least and the {count} most significant values are removed.',
@@ -160,12 +141,6 @@ class Median1TieBreakCutter(MedianTieBreakCutter):
 
 
 class Median2TieBreakCutter(MedianTieBreakCutter):
-    @staticmethod
-    def cut_value() -> int:
-        return 2
-
-
-class Median3TieBreakCutter(MedianTieBreakCutter):
     @staticmethod
     def cut_value() -> int:
         return 2

@@ -13,8 +13,8 @@
         {{ admin_macros.switch_input(
             name=option.id,
             label='',
-            placeholder=_('Forfeited games played'),
-            info=_(
+            placeholder=_('Forfeits played'),
+            info='' if is_rr else _(
                 'Consider forfeited games, either wins or losses, '
                 'as played games against the scheduled opponent.'
             ),
