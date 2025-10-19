@@ -4,10 +4,11 @@
     tournament.record_illegal_moves
 %}
     <td class="
-        illegal-moves-cell bg-transparent text-nowrap compact-col
+        bg-transparent
         {% if screen.type == 'input' and last_illegal_move_updated and last_illegal_move_updated.expiration > now and last_illegal_move_updated.tournament_id == tournament.id and last_illegal_move_updated.player_id == player.id %}
             last_illegal_move_updated
         {% endif %}"
+        style="width: {{ illegal_moves_width }}%; {{ common_style }}"
     >
         {% if player %}
             {% for _ in range([illegal_moves, tournament.record_illegal_moves]|min) %}
