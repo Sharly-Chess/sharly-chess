@@ -973,6 +973,9 @@ msgstr ""
 msgid "Chess-Results.com"
 msgstr ""
 
+msgid "Chess-Results.com only displays 3 tie-breaks. However, the rankings remain the same as in Sharly Chess."
+msgstr ""
+
 msgid "ChessEvent"
 msgstr ""
 
@@ -2162,10 +2165,6 @@ msgstr ""
 msgid "FIDE database"
 msgstr ""
 
-#, python-format
-msgid "FIDE recommended tie-breaks for [%(pairing_system)s] tournaments:"
-msgstr ""
-
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "FM"
 
@@ -2311,6 +2310,16 @@ msgstr ""
 
 msgid "Font size adjustment for the screen."
 msgstr ""
+
+msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
+msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "For a tournament with {rounds} rounds, the least significant value is removed."
+msgid_plural "For a tournament with {rounds} rounds, the {count} least significant values are removed."
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "For non-monetary prizes, the value is used for reward priority."
 msgstr ""
@@ -4157,6 +4166,10 @@ msgid "Rating:"
 msgstr ""
 
 msgid "Ratings"
+msgstr ""
+
+#, python-format
+msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
 msgstr ""
 
 msgid "Record"
@@ -6438,4 +6451,7 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "FIDE recommended tie-breaks for [%(pairing_system)s] tournaments:"
+#~ msgstr ""
 

@@ -973,6 +973,9 @@ msgstr "Échecs"
 msgid "Chess-Results.com"
 msgstr "Chess-Results.com"
 
+msgid "Chess-Results.com only displays 3 tie-breaks. However, the rankings remain the same as in Sharly Chess."
+msgstr "Chess-Results.com n'affiche que 3 départages. Cependant, le classement reste le même  que dans Sharly Chess."
+
 msgid "ChessEvent"
 msgstr "ChessEvent"
 
@@ -2162,10 +2165,6 @@ msgstr "Titre FIDE :"
 msgid "FIDE database"
 msgstr "Base de données FIDE"
 
-#, python-format
-msgid "FIDE recommended tie-breaks for [%(pairing_system)s] tournaments:"
-msgstr "Départages recommandés par la FIDE pour les tournois [%(pairing_system)s] :"
-
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "MF"
 
@@ -2311,6 +2310,16 @@ msgstr "Ajustement de la taille de police (%%) :"
 
 msgid "Font size adjustment for the screen."
 msgstr "Ajustement de la taille de police pour l'écran."
+
+msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
+msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
+msgstr[0] "Pour un tournoi de {rounds} rondes, la valeur la moins significative et la valeur la plus significative sont retirées."
+msgstr[1] "Pour un tournoi de {rounds} rondes, les {count} valeurs les moins significatives et les {count} valeurs les plus significatives sont retirées."
+
+msgid "For a tournament with {rounds} rounds, the least significant value is removed."
+msgid_plural "For a tournament with {rounds} rounds, the {count} least significant values are removed."
+msgstr[0] "Pour un tournoi de {rounds} rondes, la valeur la moins significative est retirée."
+msgstr[1] "Pour un tournoi de {rounds} rondes, les {count} valeurs les moins significatives sont retirées."
 
 msgid "For non-monetary prizes, the value is used for reward priority."
 msgstr "Pour les prix non-monétaires, la valeur est utiliée pour prioriser les récompenses."
@@ -4159,6 +4168,10 @@ msgstr "Classement :"
 msgid "Ratings"
 msgstr "Classements"
 
+#, python-format
+msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
+msgstr "Départages recommandés pour un tournoi [%(pairing_system)s] :"
+
 msgid "Record"
 msgstr "Historique"
 
@@ -4895,7 +4908,7 @@ msgstr "La fédération qui organise l’évènement. Sharly Chess peut proposer
 msgid "The first round is ignored."
 msgid_plural "The first {rounds} rounds are ignored."
 msgstr[0] "La première ronde est ingorée."
-msgstr[1] "Les {count} premières rondes sont ignorées."
+msgstr[1] "Les {rounds} premières rondes sont ignorées."
 
 msgid "The first tournament of the screen."
 msgstr "Le premier tournoi de l'écran."
@@ -6438,4 +6451,7 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "FIDE recommended tie-breaks for [%(pairing_system)s] tournaments:"
+#~ msgstr "Départages recommandés par la FIDE pour les tournois [%(pairing_system)s] :"
 
