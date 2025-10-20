@@ -311,7 +311,6 @@ class BaseAccessLevelTest:
         self.auth_page.goto(
             f'/view/screen/{PUBLIC_EVENT_ID}/{self.unpaired_screen.uniq_id}'
         )
-        TestUtils.take_screenshot(self.auth_page, 'unpaired_screen')
         rows = self.auth_page.locator('div.player-row')
 
         expect(rows).to_have_count(16)
