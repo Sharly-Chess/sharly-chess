@@ -13,6 +13,7 @@ English version below
 - Possibilité d'enregistrer à la fois des classements nationaux et _FIDE_ (3.2.0)
 - Les rapports de norme peuvent désormais être générés (via l’option d’impression) (3.2.0)
 - Accès à la fiche du joueur depuis l’onglet Appariements (3.2.0)
+- Correction de l'affichage du score de la ronde courante sur l'historique des joueur·euses (3.2.0)
 
 ## Appariements
 
@@ -40,6 +41,7 @@ English version below
 - Possibility to store both national and _FIDE_ ratings (3.2.0)
 - Norm reports may now be generated (via the print option) (3.2.0)
 - Access to the player record from the Pairings tab (3.2.0)
+- Fixed the display of the score of the current round on the player's history modal (3.2.0)
 
 ## Pairings
 
