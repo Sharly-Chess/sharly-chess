@@ -12,43 +12,78 @@
         <div class="row gy-2 gx-3 screen-set-row mx-0 w-100">
             {% for players in screen_set.players_by_name_lists %}
                 <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %}">
-                    <table class="table table-striped table-sm bg-light">
-                        <thead class="table-dark">
-                            <tr>
-                                <th scope="col" class="player w-50 text-nowrap text-start">{% if tournament.current_round %}{{ _('Player Elo [Pts]') }}{% else %}{{ _('Player Elo') }}{% endif %}</th>
-                                <th scope="col" class="pairing text-nowrap text-start">{{ _('Board & color') }}</th>
+                    <div
+                        class="d-grid grid-striped"
+                        style="
+                            grid-template-columns:
+                                1fr            /* player */
+                                auto           /* pairing */
                                 {% if screen_set.players_show_opponent %}
-                                    <th scope="col" class="opponent w-50 text-nowrap text-start">{% if tournament.current_round %}{{ _('Opponent Elo [Pts]') }}{% else %}{{ _('Opponent Elo') }}{% endif %}</th>
+                                    1fr            /* opponent */
                                 {% endif %}
-                            </tr>
-                        </thead>
-                        <tbody>
+                        "
+                    >
+                        <div
+                                class="grid-header text-nowrap"
+                        >
+                            {% if tournament.current_round %}{{ _('Player Elo [Pts]') }}{% else %}{{ _('Player Elo') }}{% endif %}
+                        </div>
+                        <div class="grid-header">
+                            {{ _('Board & color') }}
+                        </div>
+                        {% if screen_set.players_show_opponent %}
+                            <div
+                                    class="grid-header text-nowrap"
+                                    style="text-overflow: ellipsis;"
+                            >
+                                {% if tournament.current_round %}{{ _('Opponent Elo [Pts]') }}{% else %}{{ _('Opponent Elo') }}{% endif %}
+                            </div>
+                        {% endif %}
                         {% for player in players %}
                             {% if tournament.current_round %}
                                 {% with pairing=player.pairings[tournament.current_round] %}
                                 {% with opponent_id=pairing.opponent_id %}
-                                    <tr class="player-row {% if not opponent_id %}not-paired fs-italic{% else %}paired fw-bold{% endif %}">
-                                        <td  class="player bg-transparent text-nowrap {% if opponent_id and not pairing.exempt %}{% if player.color == 'W' %}white{%else %}black{%endif %}{%endif %}">
+                                    <div class="player-row {% if not opponent_id %}not-paired fs-italic{% else %}paired fw-bold{% endif %}">
+                                        <div
+                                                class="player overflow-hidden text-nowrap"
+                                                style="text-overflow: ellipsis;"
+                                        >
                                             {% if player.title.short_name %}{{ player.title.short_name }}&nbsp;{% endif %}{{ player.full_name }} {{ player.rating_str }} [{{ player.vpoints_str }}]
-                                        </td>
-                                        {% if pairing.exempt %}
-                                            <td colspan="2" class="bg-transparent text-nowrap">{{ player.exempt_str }}</td>
-                                        {% elif not opponent_id %}
-                                            <td colspan="2" class="bg-transparent text-nowrap">{{ player.not_paired_str }}</td>
-                                        {% else %}
-                                            {% with opponent=tournament.players_by_id[opponent_id] %}
-                                                <td class="pairing bg-transparent text-nowrap {% if player.color == 'W' %}white{%else %}black{%endif %}">{{ _('Board #%(board_number)d with %(color)s', board_number=player.board_number, color=player.color_str) }}</td>
-                                                {% if screen_set.players_show_opponent %}
-                                                    <td class="opponent bg-transparent text-nowrap {% if player.color == 'W' %}white{%else %}black{%endif %}">{{ _('vs') }} {% if opponent.title.short_name %}{{ opponent.title.short_name }}&nbsp;{% endif %}{{ opponent.full_name }} {{ opponent.rating_str }} [{{ opponent.vpoints_str }}]</td>
+                                        </div>
+                                        <div class="pairing text-nowrap">
+                                            {% if pairing.exempt %}
+                                                {{ player.exempt_str }}
+                                            {% elif not opponent_id %}
+                                                {{ player.not_paired_str }}
+                                            {% else %}
+                                                {% with opponent=tournament.players_by_id[opponent_id] %}
+                                                    {{ _('Board #%(board_number)d with %(color)s', board_number=player.board_number, color=player.color_str) }}
+                                                {% endwith %}
+                                            {% endif %}
+                                        </div>
+                                        {% if screen_set.players_show_opponent %}
+                                            <div
+                                                    class="opponent overflow-hidden text-nowrap"
+                                                    style="text-overflow: ellipsis;"
+                                            ></div>
+                                                {% if pairing.exempt %}
+                                                {% elif not opponent_id %}
+                                                {% else %}
+                                                    {% with opponent=tournament.players_by_id[opponent_id] %}
+                                                        {{ _('vs') }} {% if opponent.title.short_name %}{{ opponent.title.short_name }}&nbsp;{% endif %}{{ opponent.full_name }} {{ opponent.rating_str }} [{{ opponent.vpoints_str }}]
+                                                    {% endwith %}
                                                 {% endif %}
-                                            {% endwith %}
+                                            </div>
                                         {% endif %}
-                                    </tr>
+                                    </div>
                                 {% endwith %}
                                 {% endwith %}
                             {% else %}
-                                <tr class="player-row not-paired fs-italic">
-                                    <td class="player bg-transparent">
+                                <div class="player-row not-paired fs-italic">
+                                    <div
+                                            class="player overflow-hidden text-nowrap"
+                                            style="text-overflow: ellipsis;"
+                                    >
                                         <i class="
                                             {% if player.check_in %}
                                                 bi-check-square-fill player-check-out
@@ -57,13 +92,18 @@
                                             {% endif %}
                                             player-{{ tournament.id }}-{{ player.id }}"></i>
                                         {% if player.title.short_name %}{{ player.title.short_name }}&nbsp;{% endif %}{{ player.full_name }} {{ player.rating_str }}
-                                    </td>
-                                    <td colspan="2" class="bg-transparent"><span class="fst-italic">{{ player.not_paired_str }}</span></td>
-                                </tr>
+                                    </div>
+                                    <div class="pairing text-nowrap">
+                                        {{ player.not_paired_str }}
+                                    </div>
+                                    {% if screen_set.players_show_opponent %}
+                                        <div class="opponent text-nowrap">
+                                        </div>
+                                    {% endif %}
+                                </div>
                             {% endif %}
                         {% endfor %}
-                        </tbody>
-                    </table>
+                    </div>
                 </div>
             {% endfor %}
         </div>

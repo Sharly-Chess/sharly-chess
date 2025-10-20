@@ -83,7 +83,7 @@ class TestSingleScreensFunctionality:
             {'init_set_tournament_id': unpaired_tournament.id},
         )
         lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
-        rows = lan_page.locator('table tbody tr')
+        rows = lan_page.locator('div.player-row')
         expect(rows).to_have_count(16)
 
         # Should not be checked in
@@ -103,10 +103,10 @@ class TestSingleScreensFunctionality:
         lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
 
         # Try to open the modal again
-        rows = lan_page.locator('table tbody tr')
+        rows = lan_page.locator('div.player-row')
         expect(rows).to_have_count(16)
         row = rows.filter(has_text='AMOS')
-        expect(row.locator('td:nth-child(1)')).to_have_attribute(
+        expect(row.locator('div:nth-child(1)')).to_have_attribute(
             'hx-get', re.compile(r'.*checkin-modal.*')
         )
         row.click()
@@ -161,12 +161,12 @@ class TestSingleScreensFunctionality:
             {'init_set_tournament_id': paired_tournament.id},
         )
         lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
-        rows = lan_page.locator('table tbody tr')
+        rows = lan_page.locator('div.board-row')
         expect(rows).to_have_count(8)
 
         another_lan_page = lan_context.new_page()
         another_lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
-        other_page_rows = another_lan_page.locator('table tbody tr')
+        other_page_rows = another_lan_page.locator('div.board-row')
 
         # Test the primary result button
 
@@ -178,7 +178,7 @@ class TestSingleScreensFunctionality:
 
         for i, player in enumerate(players):
             row = rows.filter(has_text=player['name'])
-            expect(row.locator('td.score')).to_contain_text(f'#{i + 1}')
+            expect(row.locator('div.score')).to_contain_text(f'#{i + 1}')
 
             row.click()
             modal = lan_page.locator('.modal-dialog')
@@ -187,11 +187,13 @@ class TestSingleScreensFunctionality:
             expect(modal).not_to_be_visible()
 
             # Test that the page is updated
-            expect(row.locator('td.score')).to_contain_text(str(player['result']))
+            expect(row.locator('div.score')).to_contain_text(str(player['result']))
 
             # That the other page is refreshed
             other_row = other_page_rows.filter(has_text=player['name'])
-            expect(other_row.locator('td.score')).to_contain_text(str(player['result']))
+            expect(other_row.locator('div.score')).to_contain_text(
+                str(player['result'])
+            )
 
         TestUtils.delete_screen(api_request_context, EVENT_ID, stored_screen.id)
 
@@ -209,11 +211,11 @@ class TestSingleScreensFunctionality:
             {'init_set_tournament_id': paired_tournament.id},
         )
         lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
-        rows = lan_page.locator('table tbody tr')
+        rows = lan_page.locator('div.board-row')
         expect(rows).to_have_count(8)
 
         row = rows.filter(has_text='ALYX')
-        expect(row.locator('td.score')).to_contain_text('#1')
+        expect(row.locator('div.score')).to_contain_text('#1')
 
         # Update the first row for some possible results, and check that the result is updated on the screen
         for r in [Result.LOSS, Result.DRAW, Result.WIN]:
@@ -221,7 +223,7 @@ class TestSingleScreensFunctionality:
                 f'/pairing/set-result/{EVENT_ID}/{paired_tournament.id}/1/1/{r.value}'
             )
             assert set_result.ok
-            expect(row.locator('td.score')).to_contain_text(str(r))
+            expect(row.locator('div.score')).to_contain_text(str(r))
 
     def test_players_screen(
         self,
@@ -237,7 +239,7 @@ class TestSingleScreensFunctionality:
             {'init_set_tournament_id': paired_tournament.id},
         )
         lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
-        rows = lan_page.locator('table tbody tr')
+        rows = lan_page.locator('div.player-row')
         expect(rows).to_have_count(16)
 
         first_row = rows.first
