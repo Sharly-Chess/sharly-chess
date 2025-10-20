@@ -1,3 +1,4 @@
+import re
 from contextlib import suppress
 from logging import Logger
 from pathlib import Path
@@ -5,6 +6,7 @@ from typing import Any
 
 from common.exception import SharlyChessException
 from common.i18n import _
+from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.player import PlayerRating
@@ -193,7 +195,9 @@ class FFESqlServer(SqlServer):
                     fide_id,
                 ]
             )
-        tokens: list[str] = string.split(' ')
+        tokens: list[str] = [
+            unicode_normalize(token) for token in re.split(r'\s+', string)
+        ]
         str_fields: tuple[tuple[str, str, str], ...] = (
             ('joueur.Nom', '%', '%'),
             ('joueur.Prenom', '%', '%'),

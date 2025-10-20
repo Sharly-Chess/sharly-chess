@@ -30,6 +30,7 @@ English version below
 - Ajout de l’année de naissance aux résultats de recherche (3.1.1)
 - Amélioration de la recherche des joueur·euses (3.1.2)
 - Correction de l'affichage des joueur·euses sans prénom (3.1.5)
+- Autorisation de la recherche des joueur·euses avec des tabulations (3.1.7)
 
 ## Écrans
 
@@ -90,6 +91,7 @@ English version below
 - Added year of birth to search results (3.1.1)
 - Improved player search (3.1.2)
 - Fixed the display of players with no first name (3.1.5)
+- Allow player search with any whitespace (3.1.7)
 
 ## Screens
 
