@@ -1,0 +1,10 @@
+<div class="col-12">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('%(string)s:', string=_('Cut values')),
+        help_text=_('The values to take into account when computing the tie-break.'),
+        select_options=option.cutter_options,
+        tooltip_select=true,
+        data=data, errors=errors
+    ) }}
+</div>

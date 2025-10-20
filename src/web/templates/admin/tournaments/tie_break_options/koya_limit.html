@@ -1,0 +1,13 @@
+<div class="col-12">
+    {{ admin_macros.number_input(
+        name=option.id,
+        label=_('%(string)s:', string=_('Limit adjustment')),
+        help_text=_(
+            'Number of half-points above or below the 50%% limit '
+            'required for opponents to be taken into account.'
+        ),
+        placeholder=_('Default: %(string)s', string='0'),
+        step=1,
+        data=data, errors=errors
+    ) }}
+</div>

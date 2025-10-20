@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     from data.print_documents import PrintDocument, PlayerSplitter, QRCodeType
     from data.criteria.player_filter_options import PlayerFilterOption
     from data.criteria.player_filters import PlayerFilter
-    from data.tie_breaks import TieBreak
+    from data.tie_breaks import TieBreak, TieBreakOption
     from data.tournament import Tournament
     from data.event import Event
     from database.sqlite.event.event_store import StoredPlayer
@@ -267,6 +267,12 @@ class AppHookSpecs:
     def get_tournament_tab_action_menu_items_template(self) -> str:
         """Path to the template to be added to the 'Actions' menu of the tournament tab."""
 
+    @hookspec(firstresult=True)
+    def get_tournament_tie_breaks_warning_message(
+        self, tournament: 'Tournament'
+    ) -> str | None:
+        """Warning message for the tie-breaks of a tournament."""
+
     @hookspec
     def signal_tournament_set(
         self, event: 'Event', stored_tournament: 'StoredTournament'
@@ -331,7 +337,13 @@ class AppHookSpecs:
 
     @hookspec
     def insert_tie_break_types(self, tie_break_types: list[type['TieBreak']]):
-        """Provide extra tournament tie breaks."""
+        """Provide extra tournament tie-breaks."""
+
+    @hookspec
+    def insert_tie_break_option_types(
+        self, tie_break_option_types: list[type['TieBreakOption']]
+    ):
+        """Provide extra tournament tie-break options."""
 
     # ---------------------------------------------------------------------------------
     # Pairings

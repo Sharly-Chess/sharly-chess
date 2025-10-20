@@ -24,15 +24,6 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-
-                {% if previous_tournament %}
-                    {% with type='success', auto_remove=true, message=_(
-                        'Tournament [%(tournament)s] has been created.',
-                        tournament=previous_tournament.uniq_id
-                    )  %}
-                        {% include '/common/alert.html' %}
-                    {% endwith %}
-                {% endif %}
                 <h4>
                     {{ _('Properties') }}
                 </h4>
@@ -280,7 +271,6 @@
                             label=_('%(string)s:', string=_('Pairing system')),
                             help_text=_('The system used to generate the pairings.'),
                             select_options=pairing_system_options,
-                            onchange='updateTieBreaksHelp()',
                             disabled=admin_tournament.started,
                             data=data, errors=errors
                         ) }}
@@ -320,10 +310,7 @@
                         $('#pairing-system').change(function() {
                             let elements = '';
                             {% for pairing_system in pairing_systems %}
-                                elements = $(
-                                    '#{{ pairing_system.variation_container_id }}, ' +
-                                    '#{{ pairing_system.tie_break_help_container_id }}'
-                                );
+                                elements = $('#{{ pairing_system.variation_container_id }}');
                                 if ($(this).val() === '{{ pairing_system.id }}') {
                                     elements.show();
                                 } else {
@@ -386,50 +373,6 @@
                         ) }}
                     </div>
                 </div>
-
-                <h4>
-                    {{ _('Tie-breaks') }}
-                </h4>
-                {% for pairing_system in pairing_systems %}
-                    <div
-                        id="{{ pairing_system.tie_break_help_container_id }}"
-                        class="row gy-2 gx-3"
-                        {% if pairing_system.id != data['pairing_system'] %}
-                            style="display:none"
-                        {% endif %}
-                    >
-                        <div class="col-12 col-md-6 form-text">
-                            {{ pairing_system.tie_break_help_html_content|safe }}
-                        </div>
-                        <div class="col-12 col-md-6 form-text">
-                            <div>{{ _('Other tie-breaks should not be used unless you really know what you do.') }}</div>
-                            <button
-                                type="button"
-                                class="text-nowrap btn btn-outline-primary form-text"
-                                onclick="
-                                    {% for tie_break in pairing_system.default_tie_breaks %}
-                                        $('#tie-break-{{ loop.index }}').val('{{ tie_break.id }}');
-                                    {% endfor %}
-                                "
-                            >
-                                {{ _('Set the recommended tie-breaks') }}
-                            </button>
-                        </div>
-                    </div>
-                {% endfor %}
-                <div class="row gy-2 gx-3">
-                    {% for index in [1, 2, 3] %}
-                        <div class="col-12 col-md-4">
-                            {{ admin_macros.select_input(
-                                name='tie_break_' ~ index|string,
-                                label=_('Tie-break #%(index)d:', index=index),
-                                select_options=tie_break_options,
-                                help_text='',
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                    {% endfor %}
-                </div>
             </form>
         </div>
         <div class="modal-footer">
@@ -455,9 +398,8 @@
                     options={
                         'create': _('Create'),
                         'add_screens': _('Create with default screens'),
-                        'add_other': _('Create and add another')
                     },
-                    active_option='add_other' if add_other_active else 'create'
+                    active_option='create'
                 ) }}
             {% endif %}
         </div>

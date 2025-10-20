@@ -1,0 +1,172 @@
+<div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered"
+    style="--bs-modal-width: fit-content; min-width: min(90vw, 450px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Tie-breaks') }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            {% if success_message %}
+                {% with type='success', message=success_message %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
+
+            <h4 class="mb-3">
+                {{ _('%(string)s:', string=_('Tournament')) }}
+                {{ admin_tournament.name }}
+                {% set warning_message = admin_tournament.tie_breaks_warning_message %}
+                {% if warning_message %}
+                    <i
+                        class="bi-exclamation-triangle-fill text-warning ps-2"
+                        {{ macros.tooltip_attributes('', warning_message, 'top') }}
+                    ></i>
+                {% endif %}
+            </h4>
+            {% if not admin_tournament.tie_breaks_by_id %}
+                <h5 class="text-center mb-3">{{ _('No tie-breaks') }}</h5>
+                <div style="max-width: 450px">
+                    <p>
+                        {{ _(
+                            'Tie-breaks determine the rankings for players '
+                            'that are tied with the same number of points.'
+                        ) }}
+                    </p>
+                    <div>
+                        {{ _(
+                            'Recommended tie-breaks for a [%(pairing_system)s] tournament:',
+                            pairing_system=admin_tournament.pairing_system.name
+                        ) }}
+                    </div>
+                    <ol>
+                        {% for tie_break in admin_tournament.pairing_system.recommended_tie_breaks %}
+                            <li>
+                                {{ tie_break.full_name }}
+                                <i
+                                    class="bi-info-circle-fill ps-2"
+                                    style="font-size: 90%"
+                                    {{ macros.tooltip_attributes('', tie_break.help_text, 'top') }}
+                                ></i>
+                            </li>
+                        {% endfor %}
+                    </ol>
+                    <div class="text-center">
+                        <button
+                            class="btn btn-primary text-nowrap text-center"
+                            hx-post="{{ url_for(
+                                'admin-create-default-tie-breaks',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                            ) }}"
+                            hx-indicator="#please-wait"
+                        >
+                            {{ _('Use the recommended tie-breaks') }}
+                        </button>
+                    </div>
+                </div>
+            {% else %}
+                {% set reorder_enabled = admin_tournament.tie_breaks_by_id|length > 1 %}
+                <form
+                    class="{% if reorder_enabled %}sortable{% endif %} d-flex flex-column gap-2"
+                    hx-patch="{{ url_for(
+                        'admin-tournament-reorder-tie-breaks',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id
+                    ) }}"
+                    hx-target="body"
+                    hx-trigger="end"
+                    hx-indicator="#please-wait"
+                >
+                    {% for stored_id, tie_break in admin_tournament.tie_breaks_by_id.items() %}
+                        <div
+                            class="tie-break-row border border-secondary bg-body-tertiary
+                                {% if reorder_enabled %}cursor-grab{% endif %}"
+                        >
+                            <input type="hidden" name="tie_break_ids" value="{{ stored_id }}"/>
+                            <div class="p-2 d-flex align-items-center gap-4">
+                                {% if reorder_enabled %}
+                                    <i class="bi-grip-horizontal"></i>
+                                {% endif %}
+                                <div class="text-start">
+                                    <b>{{ tie_break.acronym }}</b> - {{ tie_break.full_name }}
+
+                                </div>
+                                <div class="flex-grow-1">
+
+                                </div>
+                                <div class="flex-shrink-0 d-flex gap-2 align-items-center">
+                                    <i
+                                        class="bi-info-circle-fill ps-1 pt-1"
+                                        {{ macros.tooltip_attributes('', tie_break.help_text, 'top') }}
+                                    ></i>
+                                    {% set invalid_message = admin_tournament.tie_break_invalid_message(tie_break) %}
+                                    {% if invalid_message %}
+                                        <i
+                                            class="bi-exclamation-triangle-fill text-danger"
+                                            {{ macros.tooltip_attributes('warning', invalid_message, 'top') }}
+                                        ></i>
+                                    {% endif %}
+                                    <button
+                                        class="btn btn-sm btn-outline-primary text-nowrap"
+                                        hx-get="{{ url_for(
+                                            'admin-tie-break-update-modal',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=admin_tournament.id,
+                                            tie_break_id=stored_id,
+                                        ) }}"
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                        data-bs-target="#modal-wrapper"
+                                    >
+                                        <i class="bi-pencil-fill"></i>
+                                    </button>
+                                    <button
+                                        class="btn btn-sm btn-outline-danger text-nowrap"
+                                        hx-delete="{{ url_for(
+                                            'admin-tie-break-delete',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=admin_tournament.id,
+                                            tie_break_id=stored_id,
+                                        ) }}"
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                        data-bs-target="#modal-wrapper"
+                                    >
+                                        <i class="bi-trash-fill"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </form>
+            {% endif %}
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Close') }}
+            </button>
+            <button
+                class="btn btn-primary text-nowrap"
+                hx-get="{{ url_for(
+                    'admin-tie-break-create-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                ) }}"
+                hx-indicator="#please-wait"
+            >
+                <i class="bi-plus-square-fill pe-1"></i>
+                {{ _('Add') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>requestRefresh()</script>

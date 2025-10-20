@@ -148,6 +148,11 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
                 tournament_id, stored_tournament.pairing_settings
             )
         database.set_tournament_check_in(tournament_id, stored_tournament.check_in_open)
+        database.delete_all_tournament_stored_tie_breaks(tournament_id)
+        for index, stored_tie_break in enumerate(stored_tournament.stored_tie_breaks):
+            stored_tie_break.tournament_id = tournament_id
+            stored_tie_break.index = index
+            database.add_stored_tie_break(stored_tie_break)
 
         # Players
         player_id_by_external_id: dict[int, int] = {}

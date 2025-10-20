@@ -100,3 +100,11 @@ class OptionHandler[T: Option](IdentifiableEntity, ABC):
             self._get_option(option_type).value
             for option_type in self.available_options()
         ]
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, OptionHandler):
+            return NotImplemented
+        return (
+            self.id == other.id
+            and self.get_option_values() == other.get_option_values()
+        )
