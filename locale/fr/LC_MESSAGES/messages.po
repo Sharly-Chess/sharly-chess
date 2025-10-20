@@ -490,9 +490,6 @@ msgstr "Ajouter des joueur·euses"
 msgid "Add screens"
 msgstr "Ajouter des écrans"
 
-msgid "Add the recommended tie-breaks"
-msgstr "Ajouter les départages recommandés"
-
 msgid "Add tournaments"
 msgstr "Ajouter des tournois"
 
@@ -5828,6 +5825,9 @@ msgstr "Utiliser les Elos standard"
 
 msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system. May be overridden on a per-tournament basis."
 msgstr "Utiliser le système de points 3/1/0 au lieu du système standard 1/0,5/0. Peut être remplacé au niveau de chaque tournoi."
+
+msgid "Use the recommended tie-breaks"
+msgstr "Utiliser les départages recommandés"
 
 msgid "Using colors helps in finding quickly important information on the console."
 msgstr "Utiliser les couleurs peut permettre de trouver facilement les informations importantes sur la console."

@@ -62,8 +62,7 @@
                             ) }}"
                             hx-indicator="#please-wait"
                         >
-                            <i class="bi-plus-square-fill pe-1"></i>
-                            {{ _('Add the recommended tie-breaks') }}
+                            {{ _('Use the recommended tie-breaks') }}
                         </button>
                     </div>
                 </div>
@@ -81,7 +80,10 @@
                     hx-indicator="#please-wait"
                 >
                     {% for stored_id, tie_break in admin_tournament.tie_breaks_by_id.items() %}
-                        <div class="border border-secondary bg-body-tertiary {% if reorder_enabled %}cursor-grab{% endif %}">
+                        <div
+                            class="tie-break-row border border-secondary bg-body-tertiary
+                                {% if reorder_enabled %}cursor-grab{% endif %}"
+                        >
                             <input type="hidden" name="tie_break_ids" value="{{ stored_id }}"/>
                             <div class="p-2 d-flex align-items-center gap-4">
                                 {% if reorder_enabled %}

@@ -490,9 +490,6 @@ msgstr ""
 msgid "Add screens"
 msgstr ""
 
-msgid "Add the recommended tie-breaks"
-msgstr ""
-
 msgid "Add tournaments"
 msgstr ""
 
@@ -5827,6 +5824,9 @@ msgid "Use standard ratings"
 msgstr ""
 
 msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system. May be overridden on a per-tournament basis."
+msgstr ""
+
+msgid "Use the recommended tie-breaks"
 msgstr ""
 
 msgid "Using colors helps in finding quickly important information on the console."
