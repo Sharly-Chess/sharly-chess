@@ -23,89 +23,61 @@
                 <div class="row gy-2 gx-3 screen-set-row mx-0">
                     {% for boards in screen_set.boards_lists %}
                         <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %}">
-                            {% set board_number_width=9 if screen_set.has_fixed_boards else 5 %}
-                            {% set real_points_width=9 if tournament.print_real_points(current_round) else 0 %}
-                            {% set points_width=7 %}
-                            {% set score_width=7 %}
-                            {% set illegal_moves_width=2 * tournament.record_illegal_moves if screen.type == 'input' else 0 %}
-                            {% set player_width=((100 - board_number_width - score_width - 2 * (real_points_width + points_width + illegal_moves_width)) / 2) | int %}
-                            {% set common_style='white-space: nowrap; overflow: hidden; text-overflow: hidden;' %}
-                            <table class="table table-striped table-sm bg-light" style="table-layout: fixed">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th
-                                                scope="col"
-                                                class="board-number"
-                                                style="width: {{ board_number_width }}%; {{ common_style }}"
-                                        >
-                                            Ech
-                                        </th>
-                                        <th
-                                                scope="col"
-                                                class="points"
-                                                style="width: {{ points_width }}%; {{ common_style }}"
-                                        >
-                                            Pts
-                                        </th>
+                            <div
+                                class="d-grid grid-striped"
+                                style="
+                                    grid-template-columns:
+                                        auto           /* board number */
+                                        auto           /* points */
                                         {% if tournament.print_real_points(current_round) %}
-                                            <th
-                                                    scope="col"
-                                                    class="points"
-                                                    style="width: {{ real_points_width }}%; {{ common_style }}"
-                                            ></th>
+                                            auto       /* real points */
                                         {% endif %}
                                         {% if screen.type == 'input' and tournament.record_illegal_moves %}
-                                            <th
-                                                    scope="col"
-                                                    class="player"
-                                                    style="width: {{ illegal_moves_width }}%; {{ common_style }}"
-                                            ></th>
+                                            auto         /* illegal moves */
                                         {% endif %}
-                                        <th
-                                                scope="col"
-                                                class="player"
-                                                style="width: {{ player_width }}%; {{ common_style }}"
-                                        >
-                                            {{ _('White') }}{% if tournament.handicap %} ({{ _('time control') }}){% endif %}
-                                        </th>
-                                        <th
-                                                scope="col"
-                                                class="score text-center"
-                                                style="width: {{ score_width }}%; {{ common_style }}"
-                                        >
-                                            Score
-                                        </th>
+                                        1fr            /* white player */
+                                        auto           /* score */
                                         {% if screen.type == 'input' and tournament.record_illegal_moves %}
-                                            <th
-                                                    scope="col"
-                                                    class="player"
-                                                    style="width: {{ illegal_moves_width }}%; {{ common_style }}"
-                                            ></th>
+                                            auto         /* illegal moves */
                                         {% endif %}
-                                        <th
-                                                scope="col"
-                                                class="player"
-                                                style="width: {{ player_width }}%; {{ common_style }}"
-                                        >
-                                            {{ _('Black') }}{% if tournament.handicap %} ({{ _('time control') }}){% endif %}
-                                        </th>
+                                        1fr            /* black player */
                                         {% if tournament.print_real_points(current_round) %}
-                                            <th
-                                                    scope="col"
-                                                    class="points"
-                                                    style="width: {{ real_points_width }}%; {{ common_style }}"
-                                            ></th>
+                                            auto       /* real points */
                                         {% endif %}
-                                        <th
-                                                scope="col"
-                                                class="points"
-                                                style="width: {{ points_width }}%; {{ common_style }}"
-                                        >
-                                            Pts
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                                        auto;          /* points */
+                                "
+                            >
+                                <div class="grid-header">
+                                    {{ _('Bd. *** BOARD NUMBER FOR TABLE HEADER')}}
+                                </div>
+                                <div class="grid-header">
+                                    {{ _('Pts *** POINTS FOR TABLE HEADER')}}
+                                </div>
+                                {% if tournament.print_real_points(current_round) %}
+                                    <div class="grid-header"></div>
+                                {% endif %}
+                                {% if screen.type == 'input' and tournament.record_illegal_moves %}
+                                    <div class="grid-header"></div>
+                                {% endif %}
+                                <div class="grid-header">
+                                    {{ _('White') }}{% if tournament.handicap %} ({{ _('time control') }}){% endif %}
+                                </div>
+                                <div class="grid-header">
+                                    {{ _('Res. ** RESULT FOR TABLE HEADER') }}
+                                </div>
+                                {% if screen.type == 'input' and tournament.record_illegal_moves %}
+                                    <div class="grid-header"></div>
+                                {% endif %}
+                                <div class="grid-header">
+                                    {{ _('Black') }}{% if tournament.handicap %} ({{ _('time control') }}){% endif %}
+                                </div>
+                                {% if tournament.print_real_points(current_round) %}
+                                    <div class="grid-header"></div>
+                                {% endif %}
+                                <div class="grid-header">
+                                    {{ _('Pts *** POINTS FOR TABLE HEADER')}}
+                                </div>
+
                                 {% for board in boards %}
                                     {% with wp=board.white_player, bp=board.black_player %}
                                     {% set editable =
@@ -116,7 +88,7 @@
                                             (not board.result_str and client.can_enter_results(tournament.id))
                                         )
                                     %}
-                                    <tr
+                                    <div
                                         id="tournament-{{ tournament.id }}-board-{{ board.id }}-row"
                                         class="
                                             board-row
@@ -125,10 +97,7 @@
                                             {% if board.result_str %}result-set{% else %}result-not-set fw-bold{% endif %}
                                             {% if last_result_updated and last_result_updated.expiration > now and last_result_updated.tournament_id == tournament.id and last_result_updated.round == tournament.current_round and last_result_updated.board_id == board.id %}last_result_updated{% endif %}"
                                         >
-                                        <th
-                                            scope="row gy-2 gx-3"
-                                            class="board-number bg-transparent text-end text-nowrap"
-                                            style="width: {{ board_number_width }}%; {{ common_style }}"
+                                        <div class="board-number text-end text-nowrap"
                                             {% if editable %}
                                                 hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
                                                 hx-target="body"
@@ -136,10 +105,11 @@
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#modal-wrapper"
                                             {% endif %}
-                                        >{% if board.number != board.id %}({{ board.id }}.) {% endif %}{{ board.number }}.</th>
-                                        <td
-                                            class="points bg-transparent text-center text-nowrap"
-                                            style="width: {{ points_width }}%; {{ common_style }}"
+                                        >
+                                            {% if board.number != board.id %}({{ board.id }}.) {% endif %}{{ board.number }}.
+                                        </div>
+                                        <div
+                                            class="points text-center text-nowrap"
                                             {% if editable %}
                                                 hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
                                                 hx-target="body"
@@ -149,11 +119,10 @@
                                             {% endif %}
                                         >
                                             {{ wp.vpoints_str }}
-                                        </td>
+                                        </div>
                                         {% if tournament.print_real_points(current_round) %}
-                                            <td
-                                                class="points bg-transparent text-center text-nowrap"
-                                                style="width: {{ real_points_width }}%; {{ common_style }}"
+                                            <div
+                                                class="points text-center text-nowrap"
                                                 {% if editable %}
                                                     hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
                                                     hx-target="body"
@@ -163,7 +132,7 @@
                                                 {% endif %}
                                             >
                                                 [{{ wp.points_str }}]
-                                            </td>
+                                            </div>
                                         {% endif %}
                                         {% if screen.type == 'input' and tournament.record_illegal_moves %}
                                             {% with player=wp, illegal_moves=board.white_pairing.illegal_moves %}
@@ -173,9 +142,8 @@
                                         {% with player=wp, opponent=bp %}
                                             {% include 'board_row_player_cell.html' %}
                                         {% endwith %}
-                                        <td
-                                            class="score bg-transparent text-center text-nowrap"
-                                            style="width: {{ score_width }}%; {{ common_style }}"
+                                        <div
+                                            class="score text-center text-nowrap"
                                             data-testid="board-score"
                                             {% if editable %}
                                                 hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
@@ -186,7 +154,7 @@
                                             {% endif %}
                                         >
                                             {% if board.result_str %}{{ board.result_str }}{% else %}{{ _('#%(board_number)d', board_number=board.number) }}{% endif %}
-                                        </td>
+                                        </div>
                                         {% if screen.type == 'input' and tournament.record_illegal_moves %}
                                             {% with player=bp, illegal_moves=board.black_pairing.illegal_moves %}
                                                 {% include 'board_row_illegal_moves_cell.html' %}
@@ -196,9 +164,8 @@
                                             {% include 'board_row_player_cell.html' %}
                                         {% endwith %}
                                         {% if tournament.print_real_points(current_round) %}
-                                            <td
-                                                class="points bg-transparent text-center"
-                                                style="width: {{ real_points_width }}%; {{ common_style }}"
+                                            <div
+                                                class="points text-center"
                                                 {% if editable %}
                                                     hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
                                                     hx-target="body"
@@ -210,11 +177,10 @@
                                                 {% if bp %}
                                                     [{{ bp.points_str }}]
                                                 {% endif %}
-                                            </td>
+                                            </div>
                                         {% endif %}
-                                        <td
-                                            class="points bg-transparent text-center"
-                                            style="width: {{ points_width }}%; {{ common_style }}"
+                                        <div
+                                            class="points text-center"
                                             {% if editable %}
                                                 hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
                                                 hx-target="body"
@@ -226,12 +192,11 @@
                                             {% if bp %}
                                                 {{ bp.vpoints_str }}
                                             {% endif %}
-                                        </td>
-                                    </tr>
+                                        </div>
+                                    </div>
                                     {% endwith %}
                                 {% endfor %}
-                                </tbody>
-                            </table>
+                            </div>
                         </div>
                     {% endfor %}
                 </div>

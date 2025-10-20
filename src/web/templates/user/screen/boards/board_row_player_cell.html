@@ -1,10 +1,10 @@
-<td
+<div
     class="
-        player-cell bg-transparent
+        player-cell
         {% if screen.type == 'input' and last_illegal_move_updated and last_illegal_move_updated.expiration > now and last_illegal_move_updated.tournament_id == tournament.id and last_illegal_move_updated.player_id == player.id %}
             last_illegal_move_updated
         {% endif %}"
-    style="width: {{ player_width }}%; {{ common_style }} text-overflow: ellipsis;"
+    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
     {% if editable %}
         hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
         hx-target="body"
@@ -18,4 +18,4 @@
     {% else %}{% if player.title.short_name %}{{ player.title.short_name }}&nbsp;{% endif %}{{ player.full_name }} {{ player.rating_str }}
     {% if tournament.handicap and opponent.id != 1 %}(<span class="{%if player.time_control_modified %}time-control-modified{% else %}time-control-unchanged{% endif %}">{%if player.time_control_initial_time_minutes %}<span class="minutes">{{ player.time_control_initial_time_minutes }}'</span>{% endif %}{%if player.time_control_initial_time_seconds %}<span class="seconds">{{ player.time_control_initial_time_seconds }}"</span>{% endif -%}
     {% if tournament.time_control_increment %} + {{ tournament.time_control_increment }}"{{ _('/move') }}{% endif %}</span>){% endif %}{% endif %}
-</td>
+</div>
