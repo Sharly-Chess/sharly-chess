@@ -321,6 +321,7 @@ class SharlyChessServerToga(toga.App):
         self.browser_btn = toga.Button(
             text=_('Open Admin Interface'), on_press=self._open_browser
         )
+        self.browser_btn.enabled = False
         self.network_btn = toga.Button(
             text=_('See Networks'), on_press=self._toggle_networks_view
         )
@@ -422,6 +423,7 @@ class SharlyChessServerToga(toga.App):
         return button
 
     def on_server_ready(self):
+        self.browser_btn.enabled = True
         config = SharlyChessConfig()
         network_interfaces = config.lan_ifaces
         if network_interfaces := network_interfaces:
