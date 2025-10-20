@@ -63,7 +63,7 @@
                             {% set rating='' %}
                             {% set color='' %}
                         {% endif %}
-                        {% if zero_point_bye_allowed or pairing.playing %}
+                        {% if zero_point_bye_allowed or not pairing.result %}
                             {% set score='' %}
                         {% else %}
                             {% set score=pairing.points_str %}
