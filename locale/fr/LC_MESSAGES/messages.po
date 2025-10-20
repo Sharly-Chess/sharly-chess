@@ -468,9 +468,6 @@ msgstr "Ajouter un compte à l'évènement."
 msgid "Add families"
 msgstr "Ajouter des familles"
 
-msgid "Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!"
-msgstr "Ajouter ici toutes les informations que vous pensez nécessaires, et si vous n'êtes pas connu·e des développeur·euses, présentez-vous !"
-
 msgid "Add manual estimated ratings"
 msgstr "Ajouter des classement estimés manuels"
 
@@ -1047,9 +1044,6 @@ msgstr "Choisissez au moins un type de classement."
 msgid "Choose families to add"
 msgstr "Choisir des familles à ajouter"
 
-msgid "Choose from images in the 'custom' folder"
-msgstr "Choisir parmi les images du dossier 'custom'"
-
 msgid "Choose one, many or no tournaments."
 msgstr "Choisissez aucun, un ou plusieurs tournois."
 
@@ -1622,9 +1616,6 @@ msgstr "Voulez-vous installer des bases d'évènement d'exemple"
 msgid "Do you want to recover the data of release [{version}]"
 msgstr "Voulez-vous récupérer les données de la version [{version}]"
 
-msgid "Do you want to send these custom files to the Sharly Chess developers to enhance futures releases"
-msgstr "Voulez-vous envoyer ces fichiers aux développeur·euses de Sharly Chess pour améliorer les futures versions"
-
 msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
 msgstr "Voulez-vous faire la mise à jour de [{old_version}] à [{new_version}]"
 
@@ -1639,9 +1630,6 @@ msgstr "Télécharger les droits d'homologation"
 
 msgid "Download the fees that the organizer should pay to the FFE."
 msgstr "Télécharger les droits d'homologation que l'organisateur·ice doit payer à la FFE."
-
-msgid "Download the files (ZIP archive)"
-msgstr "Télécharger les fichiers (archive ZIP)"
 
 msgid "Download the information of the selected players (CSV format)."
 msgstr "Télécharger les informations des joueur·euses (format CSV)."
@@ -2273,9 +2261,6 @@ msgstr "Numéro du premier échiquier : %(board_number)d"
 msgid "First board:"
 msgstr "Premier échiquier :"
 
-msgid "First name LAST NAME"
-msgstr "Prénom NOM"
-
 msgid "First name:"
 msgstr "Prénom :"
 
@@ -2444,9 +2429,6 @@ msgstr "Gestion des joueur·euses sans classement rapide/blitz. Pour le calcul d
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
 msgstr "Avoir un nombre de joueur·euses et de prix proches représente un risque qu'un prix ne soit pas attribué."
 
-msgid "Hello,"
-msgstr "Bonjour,"
-
 msgid "Hide"
 msgstr "Cacher"
 
@@ -2497,9 +2479,6 @@ msgstr "Je confirme vouloir supprimer ce tournoi."
 
 msgid "I confirm that I want to overwrite the player data of this tournament."
 msgstr "Je confirme vouloir écraser les données des joueur·euses de ce tournoi."
-
-msgid "I would like the following custom files to be added to a future release of Sharly Chess:"
-msgstr "J'aimerais que les fichiers de personnalisation suivants soient ajoutés dans une future version de Sharly Chess :"
 
 msgid "IM *** SHORT NAME FOR International Master"
 msgstr "MI"
@@ -3857,9 +3836,6 @@ msgstr "Veuillez choisir le tournoi."
 msgid "Please close the time control editor before saving."
 msgstr "Veuillez fermer l'éditeur de cadence avant d'enregistrer."
 
-msgid "Please enter a URL or select an image on the right hand side."
-msgstr "Veuillez entrer une URL ou choisir une image à droite."
-
 msgid "Please enter a date after the start date."
 msgstr "Veuillez entrer une date postérieure à la date de début."
 
@@ -4803,9 +4779,6 @@ msgstr "Couleur du texte :"
 msgid "Texts before and after the hour below are optional for round numbers, mandatory otherwise."
 msgstr "Les textes avant et après l'horaire ci-dessous sont facultatifs pour les numéros de rondes, obligatoires sinon."
 
-msgid "Thanks :-)"
-msgstr "Merci :-)"
-
 msgid "The Baku acceleration system, not handled by FFE, may cause differences in the pairings display for Papi exports and FFE upload."
 msgstr "Le système d'accélération de Bakou, non pris en charge par la FFE, peut provoquer des différences dans l'affichage des appariements lors de l'export Papi et de la mise en ligne FFE."
 
@@ -4830,9 +4803,6 @@ msgstr "Le format PAPI ne supporte pas {rounds} rounds (maximum : {max})."
 msgid "The URL of the image to display."
 msgstr "L'URL de l'image à afficher."
 
-msgid "The URL or the path of the image (relative to the 'custom' folder) to display."
-msgstr "L'URL ou le chemin de l'image (relatif au dossier 'custom') à afficher."
-
 msgid "The account matching all the users not logged in to any account."
 msgstr "Le compte correspondant aux utilisateur·ices non-connecté·es."
 
@@ -4842,8 +4812,8 @@ msgstr "Le compte de l'utilisateur·ice accédant à Sharly Chess directement de
 msgid "The administrator has all the permissions."
 msgstr "L'administrateur·ice a toutes les permissions."
 
-msgid "The background colour is used when the image does not fill the whole screen."
-msgstr "La couleur de fond est utilisée lorsque l'image ne remplit pas complètement l'écran."
+msgid "The background colour for Screens."
+msgstr ""
 
 msgid "The background colour of the alert messages."
 msgstr "La couleur de fond des messages d'alerte."
@@ -5842,9 +5812,6 @@ msgstr "Voir les écrans publics"
 msgid "View the Tournaments tab"
 msgstr "Voir l'onglet Tournois"
 
-msgid "View the files on filebin.net"
-msgstr "Voir les fichiers sur filebin.net"
-
 msgid "Virtual points"
 msgstr "Points virtuels"
 
@@ -6119,9 +6086,6 @@ msgstr "Absent·e"
 
 msgid "Zero-Point Bye attributed to player [{player}]."
 msgstr "Le·la joueur·euse [{player}] a été marqué·e absent·e."
-
-msgid "[Sharly Chess {version}] Request for the integration of custom files"
-msgstr "[Sharly Chess {version}] Demande d'intégration de fichiers de personnalisation"
 
 msgid "[{value}] is not a positive value."
 msgstr "[{value}] n'est pas une valeur positive."

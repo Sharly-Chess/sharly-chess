@@ -468,9 +468,6 @@ msgstr ""
 msgid "Add families"
 msgstr ""
 
-msgid "Add here all the information you deem necessary, and if you are not known by the developers, introduce yourself!"
-msgstr ""
-
 msgid "Add manual estimated ratings"
 msgstr ""
 
@@ -1047,9 +1044,6 @@ msgstr ""
 msgid "Choose families to add"
 msgstr ""
 
-msgid "Choose from images in the 'custom' folder"
-msgstr ""
-
 msgid "Choose one, many or no tournaments."
 msgstr ""
 
@@ -1622,9 +1616,6 @@ msgstr ""
 msgid "Do you want to recover the data of release [{version}]"
 msgstr ""
 
-msgid "Do you want to send these custom files to the Sharly Chess developers to enhance futures releases"
-msgstr ""
-
 msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
 msgstr ""
 
@@ -1638,9 +1629,6 @@ msgid "Download fees"
 msgstr ""
 
 msgid "Download the fees that the organizer should pay to the FFE."
-msgstr ""
-
-msgid "Download the files (ZIP archive)"
 msgstr ""
 
 msgid "Download the information of the selected players (CSV format)."
@@ -2273,9 +2261,6 @@ msgstr ""
 msgid "First board:"
 msgstr ""
 
-msgid "First name LAST NAME"
-msgstr ""
-
 msgid "First name:"
 msgstr ""
 
@@ -2444,9 +2429,6 @@ msgstr ""
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
 msgstr ""
 
-msgid "Hello,"
-msgstr ""
-
 msgid "Hide"
 msgstr ""
 
@@ -2496,9 +2478,6 @@ msgid "I confirm that I want to delete this tournament."
 msgstr ""
 
 msgid "I confirm that I want to overwrite the player data of this tournament."
-msgstr ""
-
-msgid "I would like the following custom files to be added to a future release of Sharly Chess:"
 msgstr ""
 
 msgid "IM *** SHORT NAME FOR International Master"
@@ -3857,9 +3836,6 @@ msgstr ""
 msgid "Please close the time control editor before saving."
 msgstr ""
 
-msgid "Please enter a URL or select an image on the right hand side."
-msgstr ""
-
 msgid "Please enter a date after the start date."
 msgstr ""
 
@@ -4803,9 +4779,6 @@ msgstr ""
 msgid "Texts before and after the hour below are optional for round numbers, mandatory otherwise."
 msgstr ""
 
-msgid "Thanks :-)"
-msgstr ""
-
 msgid "The Baku acceleration system, not handled by FFE, may cause differences in the pairings display for Papi exports and FFE upload."
 msgstr ""
 
@@ -4830,9 +4803,6 @@ msgstr ""
 msgid "The URL of the image to display."
 msgstr ""
 
-msgid "The URL or the path of the image (relative to the 'custom' folder) to display."
-msgstr ""
-
 msgid "The account matching all the users not logged in to any account."
 msgstr ""
 
@@ -4842,7 +4812,7 @@ msgstr ""
 msgid "The administrator has all the permissions."
 msgstr ""
 
-msgid "The background colour is used when the image does not fill the whole screen."
+msgid "The background colour for Screens."
 msgstr ""
 
 msgid "The background colour of the alert messages."
@@ -5842,9 +5812,6 @@ msgstr ""
 msgid "View the Tournaments tab"
 msgstr ""
 
-msgid "View the files on filebin.net"
-msgstr ""
-
 msgid "Virtual points"
 msgstr ""
 
@@ -6118,9 +6085,6 @@ msgid "Zero-Point Bye"
 msgstr ""
 
 msgid "Zero-Point Bye attributed to player [{player}]."
-msgstr ""
-
-msgid "[Sharly Chess {version}] Request for the integration of custom files"
 msgstr ""
 
 msgid "[{value}] is not a positive value."
