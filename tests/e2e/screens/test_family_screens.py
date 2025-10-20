@@ -67,7 +67,7 @@ class TestFamilyScreensFunctionality:
             {'parts': 2},
         )
         lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:001')
-        rows = lan_page.locator('table tbody tr')
+        rows = lan_page.locator('div.board-row')
         expect(rows).to_have_count(4)
 
         first_row = rows.first
@@ -76,7 +76,7 @@ class TestFamilyScreensFunctionality:
         expect(last_row).to_contain_text('DAVID')
 
         lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:002')
-        rows = lan_page.locator('table tbody tr')
+        rows = lan_page.locator('div.board-row')
         expect(rows).to_have_count(4)
 
         first_row = rows.first
@@ -90,7 +90,7 @@ class TestFamilyScreensFunctionality:
         modal.locator('button:has-text("IRINA")').click()
 
         # Test that the page is updated
-        expect(last_row.locator('td.score')).to_contain_text(str(Result.LOSS))
+        expect(last_row.locator('div.score')).to_contain_text(str(Result.LOSS))
 
         TestUtils.delete_family(api_request_context, EVENT_ID, stored_family.id)
 
@@ -109,7 +109,7 @@ class TestFamilyScreensFunctionality:
             {'number': 2},
         )
         lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:001')
-        rows = lan_page.locator('table tbody tr')
+        rows = lan_page.locator('div.board-row')
         expect(rows).to_have_count(2)
 
         first_row = rows.first
@@ -118,7 +118,7 @@ class TestFamilyScreensFunctionality:
         expect(last_row).to_contain_text('BRUNO')
 
         lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:004')
-        rows = lan_page.locator('table tbody tr')
+        rows = lan_page.locator('div.board-row')
         expect(rows).to_have_count(2)
 
         first_row = rows.first
@@ -143,7 +143,7 @@ class TestFamilyScreensFunctionality:
             {'parts': 2},
         )
         lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:001')
-        rows = lan_page.locator('table tbody tr')
+        rows = lan_page.locator('div.board-row')
         expect(rows).to_have_count(4)
 
         first_row = rows.first
@@ -152,7 +152,7 @@ class TestFamilyScreensFunctionality:
         expect(last_row).to_contain_text('DAVID')
 
         lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:002')
-        rows = lan_page.locator('table tbody tr')
+        rows = lan_page.locator('div.board-row')
         expect(rows).to_have_count(4)
 
         first_row = rows.first
@@ -177,7 +177,7 @@ class TestFamilyScreensFunctionality:
             {'number': 2},
         )
         lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:001')
-        rows = lan_page.locator('table tbody tr')
+        rows = lan_page.locator('div.board-row')
         expect(rows).to_have_count(2)
 
         first_row = rows.first
@@ -186,7 +186,7 @@ class TestFamilyScreensFunctionality:
         expect(last_row).to_contain_text('BRUNO')
 
         lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:004')
-        rows = lan_page.locator('table tbody tr')
+        rows = lan_page.locator('div.board-row')
         expect(rows).to_have_count(2)
 
         first_row = rows.first
@@ -211,7 +211,7 @@ class TestFamilyScreensFunctionality:
             {'parts': 2},
         )
         lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:001')
-        rows = lan_page.locator('table tbody tr')
+        rows = lan_page.locator('div.player-row')
         expect(rows).to_have_count(8)
 
         first_row = rows.first
@@ -220,7 +220,7 @@ class TestFamilyScreensFunctionality:
         expect(last_row).to_contain_text('IRINA')
 
         lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:002')
-        rows = lan_page.locator('table tbody tr')
+        rows = lan_page.locator('div.player-row')
         expect(rows).to_have_count(8)
 
         first_row = rows.first
@@ -245,7 +245,7 @@ class TestFamilyScreensFunctionality:
             {'number': 2},
         )
         lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:001')
-        rows = lan_page.locator('table tbody tr')
+        rows = lan_page.locator('div.player-row')
         expect(rows).to_have_count(2)
 
         first_row = rows.first
@@ -254,7 +254,7 @@ class TestFamilyScreensFunctionality:
         expect(last_row).to_contain_text('BRUNO')
 
         lan_page.goto(f'/view/screen/{EVENT_ID}/{FAMILY_ID}:008')
-        rows = lan_page.locator('table tbody tr')
+        rows = lan_page.locator('div.player-row')
         expect(rows).to_have_count(2)
 
         first_row = rows.first
