@@ -50,7 +50,7 @@
                                         >
                                             {% if player.title.short_name %}{{ player.title.short_name }}&nbsp;{% endif %}{{ player.full_name }} {{ player.rating_str }} [{{ player.vpoints_str }}]
                                         </div>
-                                        <div class="pairing overflow-hidden text-nowrap">
+                                        <div class="pairing text-nowrap">
                                             {% if pairing.exempt %}
                                                 {{ player.exempt_str }}
                                             {% elif not opponent_id %}
