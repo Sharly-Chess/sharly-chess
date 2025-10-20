@@ -441,17 +441,17 @@ class ScreenSet:
             match (self.first, self.last):
                 case (0, 0):
                     return _('all the boards')
-                case (first, 0) if first != 0:
+                case (first, 0) if first:
                     return _('boards from #{first} to end').format(
                         first=first + self.tournament.first_board_number - 1,
                     )
-                case (first, last) if first is not None and last is not None:
-                    return _('boards from #{first} to #{last}').format(
-                        first=first + self.tournament.first_board_number - 1,
+                case (0, last) if last:
+                    return _('boards from start to #{last}').format(
                         last=last + self.tournament.first_board_number - 1,
                     )
-                case (0, last) if last != 0:
-                    return _('boards from start to #{last}').format(
+                case (first, last):
+                    return _('boards from #{first} to #{last}').format(
+                        first=first + self.tournament.first_board_number - 1,
                         last=last + self.tournament.first_board_number - 1,
                     )
                 case _:
@@ -460,28 +460,28 @@ class ScreenSet:
             match (self.first, self.last):
                 case (0, 0):
                     return _('all the players')
-                case (first, 0) if first != 0:
+                case (first, 0) if first:
                     return _('players from #{first} to end').format(first=first)
-                case (first, last) if first != 0 and last != 0:
+                case (0, last) if last:
+                    return _('players from start to #{last}').format(last=last)
+                case (first, last) if first and last:
                     return _('players from #{first} to #{last}').format(
                         first=first, last=last
                     )
-                case (0, last) if last != 0:
-                    return _('players from start to #{last}').format(last=last)
                 case _:
                     raise ValueError(f'first={self.first}, last={self.last}')
         else:
             match (self.first, self.last):
                 case (0, 0):
                     return _('the whole ranking')
-                case (first, 0) if first != 0:
+                case (first, 0) if first:
                     return _('ranking from #{first} to end').format(first=first)
-                case (first, last) if first != 0 and last != 0:
+                case (0, last) if last:
+                    return _('ranking from start to #{last}').format(last=last)
+                case (first, last) if first and last:
                     return _('ranking from #{first} to #{last}').format(
                         first=first, last=last
                     )
-                case (0, last) if last != 0:
-                    return _('ranking from start to #{last}').format(last=last)
                 case _:
                     raise ValueError(f'first={self.first}, last={self.last}')
 

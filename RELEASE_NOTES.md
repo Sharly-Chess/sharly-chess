@@ -36,6 +36,8 @@ English version below
 
 - Réorganisation des écrans composant les écrans rotatifs (3.1.0)
 - Correction de la mise à jour de l'identifiant unique des écrans (3.1.2)
+- Correction de la selection des images de fond personnalisées (3.1.7)
+- Correction de l'affichage numéros des échiquiers sur les cartes des écrans (3.1.7)
 - Correction de l'affichage des numéros des échiquiers fixes (3.1.7)
 - Amélioration de l'affichage des noms longs sur les écrans (3.1.7)
 
@@ -99,6 +101,8 @@ English version below
 
 - Rotator screens reordering (3.1.0)
 - Fixed screen uniq ID update (3.1.2)
+- Fixed custom image picker (3.1.7)
+- Fixed the display of board numbers on screen cards (3.1.7)
 - Fixed the display of fixed board numbers (3.1.7)
 - Improved the display of player long names on screens (3.1.7)
 
