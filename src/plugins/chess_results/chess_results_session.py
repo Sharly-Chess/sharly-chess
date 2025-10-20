@@ -105,13 +105,9 @@ class ChessResultsSession(Session):
 
         # Get up to 5 tiebreak keys (pad with zeros if fewer)
         tb_details: list[tuple[str, str]] = []
-        for tb in tournament.tie_breaks[:5]:
-            tb_data = ChessResultsTieBreak.data_for_tiebreak(tb)
-            if tb_data:
-                params_str = ','.join(v for v in tb_data[1:] if v)
-                tb_details.append((tb_data[0], params_str))
-            else:
-                tb_details.append(('0', ''))
+        for tie_break in tournament.tie_breaks[:5]:
+            cr_tie_break = ChessResultsTieBreak.from_tie_break(tournament, tie_break)
+            tb_details.append((str(cr_tie_break.number), cr_tie_break.params_str))
         while len(tb_details) < 5:
             # TODO (Molrn) if more than 5 tie-breaks are provided, use the rank as 5th tie-break
             tb_details.append(('0', ''))

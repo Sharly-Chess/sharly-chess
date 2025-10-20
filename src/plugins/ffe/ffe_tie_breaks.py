@@ -6,7 +6,7 @@ from types import UnionType
 from typing import TYPE_CHECKING, Any
 
 from common.exception import OptionError
-from common.i18n import _
+from common.i18n import _, ngettext
 from data.pairing import Pairing
 from data.pairings import PairingSystem
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
@@ -22,6 +22,7 @@ from plugins.ffe import PLUGIN_NAME
 from utils import StaticUtils
 from utils.entity import IdentifiableEntity, EntityManager
 from utils.enum import Result
+from web.utils import SelectOption
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
@@ -169,6 +170,11 @@ class PapiBuchholzType(IdentifiableEntity, ABC):
     def acronym(self) -> str:
         """Acronym of the tie-break in Papi."""
 
+    @staticmethod
+    def get_tooltip(tournament_rounds: int) -> str | None:
+        """Tooltip to display on the select."""
+        return None
+
     @property
     @abstractmethod
     def use_bottom_cut(self) -> bool:
@@ -223,6 +229,17 @@ class CutPapiBuchholzType(PapiBuchholzType):
     def acronym(self) -> str:
         return 'Tr.'
 
+    @staticmethod
+    def get_tooltip(tournament_rounds: int) -> str | None:
+        cut = PapiBuchholzTieBreak.papi_buchholz_cut(tournament_rounds)
+        return ngettext(
+            'For a tournament with {rounds} rounds, '
+            'the least significant value is removed.',
+            'For a tournament with {rounds} rounds, '
+            'the {count} least significant values are removed.',
+            cut,
+        ).format(rounds=tournament_rounds, count=cut)
+
     @property
     def use_bottom_cut(self) -> bool:
         return True
@@ -244,6 +261,17 @@ class MedianPapiBuchholzType(PapiBuchholzType):
     @property
     def full_name(self) -> str:
         return _('Median Buchholz')
+
+    @staticmethod
+    def get_tooltip(tournament_rounds: int) -> str | None:
+        cut = PapiBuchholzTieBreak.papi_buchholz_cut(tournament_rounds)
+        return ngettext(
+            'For a tournament with {rounds} rounds, '
+            'the least and the most significant values are removed.',
+            'For a tournament with {rounds} rounds, the {count} '
+            'least and the {count} most significant values are removed.',
+            cut,
+        ).format(rounds=tournament_rounds, count=cut)
 
     @property
     def acronym(self) -> str:
@@ -300,10 +328,11 @@ class PapiBuchholzTypeOption(TieBreakOption):
     def default_value(self) -> Any:
         return StandardPapiBuchholzType.static_id()
 
-    @property
-    def buchholz_type_options(self) -> dict[str, str]:
+    def buchholz_type_options(self, tournament_rounds: int) -> dict[str, SelectOption]:
         return {
-            buchholz_type.id: buchholz_type.name
+            buchholz_type.id: SelectOption(
+                buchholz_type.name, buchholz_type.get_tooltip(tournament_rounds)
+            )
             for buchholz_type in PapiBuchholzTypeManager().objects()
         }
 
@@ -406,7 +435,7 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
 
     @staticmethod
     @cache
-    def _papi_buchholz_cut(tournament_rounds: int) -> int:
+    def papi_buchholz_cut(tournament_rounds: int) -> int:
         if tournament_rounds <= 7:
             return 1
         elif tournament_rounds <= 12:
@@ -415,7 +444,7 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
 
     def compute_player_value(self, player: Player, *, after_round: int) -> float:
         tournament: 'Tournament' = player.tournament
-        cut = self._papi_buchholz_cut(tournament.rounds)
+        cut = self.papi_buchholz_cut(tournament.rounds)
         cut_top = cut if self.type.use_top_cut else 0
         cut_btm = cut if self.type.use_bottom_cut else 0
         if cut_top + cut_btm >= after_round:
