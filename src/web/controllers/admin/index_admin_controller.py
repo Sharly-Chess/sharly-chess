@@ -1,17 +1,13 @@
 from datetime import datetime
 from itertools import groupby
 from logging import Logger
-from pathlib import Path
 import time
 from typing import Annotated, Any, cast
 
-import requests
-import validators
 from litestar.exceptions import ClientException, NotFoundException
 
 from common import (
     BASE_DIR,
-    REQUEST_TIMEOUT,
     format_timestamp_date,
     format_timestamp_time,
 )
@@ -355,7 +351,6 @@ class IndexAdminController(BaseAdminController):
                 )
             case _:
                 raise ValueError(f'action=[{action}]')
-        background_image: str | None = None
         background_color: str | None = None
         location: str | None = None
         player_rating_type: int
@@ -375,8 +370,6 @@ class IndexAdminController(BaseAdminController):
                 stored_event = admin_event.stored_event
                 public = stored_event.public
                 federation = stored_event.federation
-                hide_background_image = stored_event.hide_background_image
-                background_image = stored_event.background_image
                 background_color = stored_event.background_color
                 location = stored_event.location
                 player_rating_type = stored_event.player_rating_type
@@ -404,9 +397,6 @@ class IndexAdminController(BaseAdminController):
                     else ''
                 )
                 player_rating_type = PlayerRatingType.FIDE.value
-                hide_background_image = (
-                    sharly_chess_config.default_hide_background_image
-                )
                 override_unrated_rapid_blitz = True
                 three_points_for_a_win = False
                 pab_value = Result.WIN.value
@@ -430,10 +420,6 @@ class IndexAdminController(BaseAdminController):
             'start': WebContext.value_to_datetime_form_data(start),
             'stop': WebContext.value_to_datetime_form_data(stop),
             'player_rating_type': WebContext.value_to_form_data(player_rating_type),
-            'background_image_checkbox': WebContext.value_to_form_data(
-                hide_background_image
-            ),
-            'background_image': WebContext.value_to_form_data(background_image),
             'background_color': WebContext.value_to_form_data(background_color),
             'location': WebContext.value_to_form_data(location),
             'record_illegal_moves': WebContext.value_to_form_data(record_illegal_moves),
@@ -468,7 +454,6 @@ class IndexAdminController(BaseAdminController):
         start: float | None = None
         stop: float | None = None
 
-        background_image: str | None = None
         message_color: str | None = None
         message_background_color: str | None = None
 
@@ -516,43 +501,7 @@ class IndexAdminController(BaseAdminController):
             WebContext.form_data_to_int(data, 'player_rating_type')
             or PlayerRatingType.FIDE.value
         )
-        field = 'background_image'
-        hide_background_image = WebContext.form_data_to_bool(data, field + '_checkbox')
-        if not hide_background_image:
-            if background_image := WebContext.form_data_to_str(data, field, ''):
-                if validators.url(background_image):
-                    try:
-                        response = requests.get(
-                            background_image, timeout=REQUEST_TIMEOUT
-                        )
-                        if response.status_code != 200:
-                            errors[field] = _(
-                                'URL [{url}] responded code [{code}].'
-                            ).format(url=background_image, code=response.status_code)
-                    except requests.ConnectionError as ce:
-                        errors[field] = _(
-                            'URL [{url}] did not respond (error: [{error}]).'
-                        ).format(url=background_image, error=str(ce))
-                elif Path(background_image).exists():
-                    errors[field] = _(
-                        'Please enter a URL or select an image on the right hand side.'
-                    )
-                else:
-                    background_image = background_image.strip('/')
-                    if background_image.find('..') != -1:
-                        errors[field] = _('Incorrect path [{path}].').format(
-                            path=background_image
-                        )
-                        data[field] = ''
-                    elif (
-                        not (SharlyChessConfig.custom_path / background_image).exists()
-                        and not (
-                            SharlyChessConfig.embedded_custom_path / background_image
-                        ).exists()
-                    ):
-                        errors[field] = _('File [{file}] not found.').format(
-                            file=background_image
-                        )
+
         background_color = cls._admin_validate_background_color_update_data(
             data, errors
         )
@@ -626,8 +575,6 @@ class IndexAdminController(BaseAdminController):
             public=bool(public),
             location=location,
             player_rating_type=player_rating_type,
-            hide_background_image=bool(hide_background_image),
-            background_image=background_image,
             background_color=background_color,
             record_illegal_moves=record_illegal_moves,
             rules=rules,
@@ -672,16 +619,6 @@ class IndexAdminController(BaseAdminController):
             'timer_color_texts': self._get_timer_color_texts(
                 SharlyChessConfig.default_timer_delays
             ),
-            'background_images_jstree_data': self.background_images_jstree_data(
-                data['background_image']
-            )
-            if action
-            in [
-                FormAction.UPDATE,
-                FormAction.CLONE,
-            ]
-            and 'background_image' in data
-            else {},
             'modal': 'event',
             'event_uniq_ids': list(EventLoader().event_uniq_ids),
             'plugin_form_fields_templates': plugin_form_fields_templates,

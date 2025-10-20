@@ -2,25 +2,21 @@ import filecmp
 import json
 import re
 import shutil
-import time
-import webbrowser
 import zipfile
 import platform
 import subprocess
-from datetime import datetime
 from json import JSONDecodeError
 from pathlib import Path
 from typing import Any
 
 from packaging.version import Version
-from requests import Response, get, request
-from requests.exceptions import ConnectionError, Timeout, RequestException, HTTPError  # pylint: disable=redefined-builtin
+from requests import Response, get
+from requests.exceptions import RequestException  # pylint: disable=redefined-builtin
 
 from common import (
     SHARLY_CHESS_VERSION,
     TEST_ENV,
     TMP_DIR,
-    REQUEST_TIMEOUT,
     EVENTS_FOLDER,
     DEVEL_ENV,
     EVENTS_DIR,
@@ -319,176 +315,6 @@ class Engine:
             )
             for custom_file in custom_files:
                 logger.info('- %s', str(custom_file).replace(str(custom_dir), ''))
-            if input_interactive_yn(
-                _(
-                    'Do you want to send these custom files to the Sharly Chess developers to enhance futures releases'
-                ),
-                yes_is_default=True,
-            ):
-                cls._send_custom_files(
-                    {
-                        str(custom_file)
-                        .replace(str(custom_dir), '')
-                        .replace('\\', '/')
-                        .lstrip('/'): custom_file
-                        for custom_file in custom_files
-                    }
-                )
-
-    @classmethod
-    def _filebin_url(cls, path: str) -> str:
-        """Returns a URL on filebin.net."""
-        return f'https://filebin.net/{path}'
-
-    @classmethod
-    def _bin_url(cls, bin_name: str) -> str:
-        """Returns the URL of a bin on filebin.net."""
-        return cls._filebin_url(bin_name)
-
-    @classmethod
-    def _bin_zip_url(cls, bin_name: str) -> str:
-        """Returns the URL to download a bin as a zip file from filebin.net."""
-        return cls._filebin_url(f'archive/{bin_name}/zip')
-
-    @classmethod
-    def _bin_request(
-        cls,
-        method: str,
-        path: str,
-        data: dict[str, str] | None,
-        file: Path | None,
-    ) -> bool:
-        """Do a request on filebin.net with optional payload and attached files."""
-        url: str = cls._filebin_url(path)
-        handlers: dict[str, Any] = {}
-        debug: bool = DEVEL_ENV
-        try:
-            if debug:
-                logger.debug('_bin_request(method=%s, url=%s)', method, url)
-                if data:
-                    logger.info('- data:')
-                    for field_id, field in data.items():
-                        logger.info(
-                            '  - %s: [%s]',
-                            field_id,
-                            field[:64] + ('...' if len(field) > 64 else '')
-                            if field
-                            else 'None',
-                        )
-            if not data and not file:
-                response: Response = request(
-                    method=method, url=url, timeout=REQUEST_TIMEOUT
-                )
-            elif not file:
-                response: Response = request(
-                    method=method, url=url, data=data, timeout=REQUEST_TIMEOUT
-                )
-            else:
-                with open(file, 'rb') as f:
-                    response: Response = request(
-                        method=method,
-                        url=url,
-                        data=f,
-                        headers={'Content-Type': 'application/octet-stream'},
-                        timeout=REQUEST_TIMEOUT,
-                    )
-            response.raise_for_status()
-            content: str = response.content.decode()
-            if debug:
-                logger.debug('content=%s', content)
-            return True
-        except ConnectionError as ex:
-            logger.error('Failed to read [%s] (connection error): [%s].', url, ex)
-        except Timeout as ex:
-            logger.error('Failed to read [%s] (timeout): [%s].', url, ex)
-        except HTTPError as ex:
-            logger.error(
-                'Failed to read [%s] (error code [%d]): [%s].',
-                url,
-                ex.errno,
-                ex.strerror,
-            )
-        except RequestException as ex:
-            logger.error('Failed to read [%s]: [%s].', url, ex)
-        for handler in handlers.values():
-            handler.close()
-        return False
-
-    @classmethod
-    def _upload_bin_files(cls, bin_name: str, files: dict[str, Path]) -> bool:
-        """Upload a dict of files to filebin.net."""
-        for filename, file in files.items():
-            if not cls._bin_request(
-                method='POST',
-                path=f'{bin_name}/{filename}',
-                data=None,
-                file=file,
-            ):
-                return False
-        return True
-
-    @classmethod
-    def _send_custom_files(cls, custom_files: dict[str, Path]):
-        """Sends the custom files to filebin.net and proposes to email the developers."""
-        logger.info('Sending the files to a server...')
-        datetime_str: str = datetime.strftime(
-            datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S'
-        )
-        bin_name: str = f'sharly-chess-custom-files-{datetime_str}'
-        if cls._upload_bin_files(bin_name, custom_files):
-            bin_url: str = cls._bin_url(bin_name)
-            bin_zip_url: str = cls._bin_zip_url(bin_name)
-            logger.info('Files have been sent to bin [%s].', bin_name)
-            logger.info('- View the files on filebin.net: [%s]', bin_url)
-            logger.info('- Download the files (ZIP archive): [%s]', bin_zip_url)
-            subject: str = _(
-                '[Sharly Chess {version}] Request for the integration of custom files'
-            ).format(version=SHARLY_CHESS_VERSION)
-            body: str = '<p>' + _('Hello,') + '</p>'
-            body += (
-                '<p>'
-                + _(
-                    'I would like the following custom files to be added to a future release of Sharly Chess:'
-                )
-                + '</p>'
-            )
-            body += '<ul>'
-            for filename in custom_files:
-                body += f'<li>{filename}</li>'
-            body += '</ul>'
-            body += '<p>' + _('Thanks :-)') + '</p>'
-            body += '<ul>'
-            body += (
-                f'<li><a href="{bin_url}">'
-                + _('View the files on filebin.net')
-                + '</a></li>'
-            )
-            body += (
-                f'<li><a href="{bin_zip_url}">'
-                + _('Download the files (ZIP archive)')
-                + '</a></li>'
-            )
-            body += '</ul>'
-            body += (
-                '<p>'
-                + _(
-                    'Add here all the information you deem necessary, and if '
-                    'you are not known by the developers, introduce yourself!'
-                )
-                + '</p>'
-            )
-            body += '<p>' + _('First name LAST NAME') + '</p>'
-            mail_url: str = (
-                f'mailto:{SharlyChessConfig.mail}?subject={subject}&html-body={body}'
-            )
-            logger.info(
-                'A window will open to send an email to the Sharly Chess project; '
-                'If the window does not open, please click on the link below '
-                'or manually send an email to [%s].',
-                SharlyChessConfig.mail,
-            )
-            logger.info(mail_url)
-            webbrowser.open(mail_url, 0)
 
     @classmethod
     def _check_version(cls) -> tuple[Version | None, str | None]:

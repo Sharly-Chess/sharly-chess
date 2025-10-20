@@ -23,9 +23,6 @@
             {# https://github.com/SortableJS/Sortable #}
             <script src="{{ url_for('static', file_path='/lib/Sortable/Sortable-' ~ sharly_chess_config.sortable_version ~ '/Sortable.min.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/htmx/sortable.js') }}?version={{ sharly_chess_config.version }}"></script>
-            {# https://github.com/vakata/jstree #}
-            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/jstree/jstree-' ~ sharly_chess_config.jstree_version ~ '/dist/themes/default-dark/style.min.css') }}" type="text/css" />
-            <script src="{{ url_for('static', file_path='/lib/jstree/jstree-' ~ sharly_chess_config.jstree_version ~ '/dist/jstree.min.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/morphdom/morphdom-' ~ sharly_chess_config.morphdom_version ~ '/dist/morphdom-umd.min.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/htmx/morphdom-swap.js') }}?version={{ sharly_chess_config.version }}"></script>
             <script src="{{ url_for('static', file_path='/lib/polyglot/polyglot.js') }}?version={{ sharly_chess_config.version }}"></script>

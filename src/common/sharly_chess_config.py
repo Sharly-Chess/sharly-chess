@@ -329,7 +329,6 @@ class SharlyChessConfig(metaclass=Singleton):
     htmx_ws_version: Version = Version('2.0.3')
     jquery_version: Version = Version('3.7.1')
     sortable_version: Version = Version('1.15.6')
-    jstree_version: Version = Version('3.3.17')
     morphdom_version: Version = Version('2.7.4')
     select2_version: Version = Version('4.0.13')
     select2_bootstrap_theme_version: Version = Version('1.3.0')
@@ -434,12 +433,6 @@ class SharlyChessConfig(metaclass=Singleton):
 
     # The default number of columns.
     default_columns: int = 4
-
-    # True to hide the background images by default.
-    default_hide_background_image: bool = False
-
-    # The default event background image.
-    default_background_image: str = ''
 
     # The error background image.
     error_background_image: str = '/static/images/sharly-chess-error.png'

@@ -709,8 +709,7 @@ class Screen:
     def background_image(self) -> str:
         if self.stored_screen and self.stored_screen.background_image:
             return self.stored_screen.background_image
-        else:
-            return self.event.background_image
+        return ''
 
     @cached_property
     def background_url(self) -> str:

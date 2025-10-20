@@ -57,22 +57,6 @@ class InstallationChecker:
             licence_type='MIT',
         ),
         WebLibArchiveInstaller(
-            'jsTree',
-            SharlyChessConfig.jstree_version,
-            'jstree',
-            'jstree-{version}',
-            {
-                'dist/jstree.min.js',
-                'dist/themes/default-dark/style.min.css',
-                'dist/themes/default-dark/32px.png',
-                'dist/themes/default-dark/40px.png',
-                'dist/themes/default-dark/throbber.gif',
-            },
-            'https://github.com/vakata/jstree/archive/refs/tags/{version}.zip',
-            'jstree-{version}.zip',
-            licence_type='MIT',
-        ),
-        WebLibArchiveInstaller(
             'MorphDom',
             SharlyChessConfig.morphdom_version,
             'morphdom',

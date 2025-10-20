@@ -51,10 +51,6 @@ class AdminWebContext(WebContext):
             )
 
     @property
-    def background_image(self) -> str | None:
-        return None
-
-    @property
     def background_color(self) -> str:
         return SharlyChessConfig.admin_background_color
 
@@ -235,65 +231,3 @@ class BaseAdminController(BaseController):
                     'Invalid color [{color}] ([#RRGGBB] expected).'
                 ).format(color={data[field]})
         return background_color
-
-    @staticmethod
-    def background_images_jstree_data(background_image: str) -> list[dict[str, Any]]:
-        dirs: list[str] = []
-        files: list[str] = []
-        for custom_path in [
-            SharlyChessConfig.embedded_custom_path,
-            SharlyChessConfig.custom_path,
-        ]:
-            for item in custom_path.rglob('*'):
-                item_str = (
-                    str(item)
-                    .replace(str(custom_path), '')
-                    .replace('\\', '/')
-                    .lstrip('/')
-                )
-                if item.is_dir():
-                    if item_str not in dirs:
-                        dirs.append(item_str)
-                else:
-                    if item_str not in files:
-                        files.append(item_str)
-        dir_nodes: list[dict[str, Any]] = [
-            {
-                'id': d or '#',
-                'parent': '/'.join(d.split('/')[:-1]) or '#',
-                'text': f' {d.split("/")[-1]}',
-                'state': {},
-                'icon': 'bi-folder',
-            }
-            for d in dirs
-        ]
-        file_nodes: list[dict[str, Any]] = [
-            {
-                'id': f or '#',
-                'parent': '/'.join(f.split('/')[:-1]) or '#',
-                'text': f.split('/')[-1],
-                'state': {
-                    'selected': background_image == f,
-                },
-                'icon': 'bi-card-image',
-                'a_attr': {
-                    'onclick': f'$("#background-image").val("{f}"); '
-                    f'$.ajax({{'
-                    f'    url: "/background",'
-                    f'    type: "GET",'
-                    f'    data: {{ "image": "{f}", "color": $("#background-color").val() }},'
-                    f'    success: function(data) {{'
-                    f'        $("#background-image-test").css("background-image", data["url"]);'
-                    f'    }},'
-                    f'    error: function(jqXHR, exception) {{'
-                    f'        console.log('
-                    f'            "Changing background failed: status_code=" + jqXHR.status '
-                    f'            + ", exception=" + exception + ", response=" + jqXHR.responseText'
-                    f'        );'
-                    f'    }},'
-                    f'}});',
-                },
-            }
-            for f in files
-        ]
-        return file_nodes + dir_nodes

@@ -303,13 +303,6 @@ class EventDatabase(MigrationDatabase):
             stop=row['stop'],
             public=self.load_bool_from_database_field(row['public']),
             location=row['location'],
-            hide_background_image=self.load_bool_from_database_field(
-                row.get(
-                    'hide_background_image',
-                    SharlyChessConfig.default_hide_background_image,
-                )
-            ),
-            background_image=row['background_image'],
             background_color=row['background_color'],
             record_illegal_moves=row['record_illegal_moves'],
             rules=row['rules'],
@@ -379,8 +372,6 @@ class EventDatabase(MigrationDatabase):
                 'federation',
                 'location',
                 'player_rating_type',
-                'hide_background_image',
-                'background_image',
                 'background_color',
                 'record_illegal_moves',
                 'rules',
