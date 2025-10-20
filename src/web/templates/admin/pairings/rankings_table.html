@@ -55,7 +55,7 @@
             <td class="rank text-end">{{ player.rank }}</td>
             <td class="title text-end">{{ player.title.short_name }}</td>
             <td class="name text-start{{ "fw-bold" if not pairings_list}}">
-                {{ player.full_name }}
+                {% include '/admin/player_link.html' %}
                 <button
                     type="button"
                     class="btn player-info p-1"

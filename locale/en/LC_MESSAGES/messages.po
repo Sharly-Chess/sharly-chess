@@ -1840,6 +1840,9 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
+msgid "Edit Player"
+msgstr ""
+
 msgid "Edit account"
 msgstr ""
 
@@ -6386,3 +6389,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
