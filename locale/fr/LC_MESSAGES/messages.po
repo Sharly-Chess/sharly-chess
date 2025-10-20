@@ -4813,7 +4813,7 @@ msgid "The administrator has all the permissions."
 msgstr "L'administrateur·ice a toutes les permissions."
 
 msgid "The background colour for Screens."
-msgstr "La couleur de fond des Écrans."
+msgstr "La couleur de fond des écrans."
 
 msgid "The background colour of the alert messages."
 msgstr "La couleur de fond des messages d'alerte."
