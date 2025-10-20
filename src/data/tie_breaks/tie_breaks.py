@@ -797,6 +797,8 @@ class AverageOfBuchholzTieBreak(BuchholzTieBreak):
             and pairing.opponent_id is not None
             and pairing.played
         ]
+        if not opponents:
+            return 0
         return sum(
             float(
                 self.sub_tie_break.compute_player_value(
@@ -1191,7 +1193,8 @@ class AveragePerformanceRatingOpponentsTieBreak(OpponentRatingTieBreak):
                 opponent, after_round=after_round
             )
             performance_ratings.append(opponent_tpr)
-
+        if not performance_ratings:
+            return 0
         average = sum(performance_ratings) / len(performance_ratings)
         return StaticUtils.round_ranking(average)
 
@@ -1258,6 +1261,8 @@ class PerfectTournamentPerformanceTieBreak(OpponentRatingTieBreak):
         )
         if isclose(first_expected_score, actual_score, abs_tol=0.01):
             return StaticUtils.round_ranking(first_estimation)
+        if not first_expected_score:
+            return 0
         second_estimation = StaticUtils.round_ranking(
             first_estimation * actual_score / first_expected_score
         )
@@ -1279,8 +1284,12 @@ class PerfectTournamentPerformanceTieBreak(OpponentRatingTieBreak):
             abs_tol=0.01,
         ):
             if mid_score >= actual_score:
+                if high == mid:
+                    break
                 high = mid
             else:
+                if low == mid:
+                    break
                 low = mid
         while (
             self._expected_score(mid, ratings, tournament.point_values) >= actual_score
