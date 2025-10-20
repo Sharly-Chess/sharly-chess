@@ -1,6 +1,5 @@
 import json
 import tempfile
-from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from pathlib import Path
@@ -673,7 +672,7 @@ class PapiConverter:
         """Write the tournament data to a papi file.
         Converts a Tournament to JSON format that can be sent to papi-converter.
         Returns True if successful, raises SharlyChessException if conversion fails."""
-        papi_data = self._tournament_to_papi_data(tournament)
+        papi_data = self.tournament_to_papi_data(tournament)
         papi_data_dict = {
             'variables': {
                 key: value or '' for key, value in papi_data.variables.__dict__.items()
@@ -712,7 +711,7 @@ class PapiConverter:
             finally:
                 return target_file.exists()
 
-    def _tournament_to_papi_data(self, tournament: Tournament) -> PapiData:
+    def tournament_to_papi_data(self, tournament: Tournament) -> PapiData:
         """Convert a Tournament object to PapiData."""
         papi_tiebreaks, manual_tiebreak_by_player_id = (
             self._tiebreaks_to_papi_tiebreaks(tournament)
@@ -786,29 +785,19 @@ class PapiConverter:
             papi_tiebreaks.append(papi_tiebreak)
         if use_manual:
             # Replace the final Papi tie-break by a manual tie-break representing the SC ranking
-            tournament.compute_player_ranks()
+            # This way, at least the last round is correct
             if manual_index is not None:
                 papi_tiebreaks = papi_tiebreaks[: manual_index + 1]
             else:
                 papi_tiebreaks = papi_tiebreaks[:2]
                 papi_tiebreaks.append(PapiTieBreak.get_outer_value(ManualTieBreak()))
-            players_by_rank_group: dict[tuple, list[Player]] = defaultdict(list)
-            papi_tiebreak_count = len(papi_tiebreaks) - 1
+            tournament.compute_player_ranks()
+            player_count = tournament.player_count
             for player in tournament.players:
-                rank_group = player.rank_sort_key_with_first_tie_breaks(
-                    papi_tiebreak_count
-                )
-                players_by_rank_group[rank_group].append(player)
-            for player_group in players_by_rank_group.values():
-                player_group_count = len(player_group)
-                if player_group_count <= 1:
-                    continue
-                for index, player in enumerate(
-                    sorted(player_group, key=lambda p: p.rank)
-                ):
-                    manual_tiebreak_by_player_id[player.id] = player_group_count - index
+                manual_tiebreak_by_player_id[player.id] = player_count - player.rank + 1
         elif len(papi_tiebreaks) < 3 and not manual_index:
             # If a spot is available, add a manual tie-break representing the start rank
+            # This way, the rankings are the same on all rounds
             papi_tiebreaks.append(PapiTieBreak.get_outer_value(ManualTieBreak()))
             player_count = tournament.player_count
             for index, player in enumerate(

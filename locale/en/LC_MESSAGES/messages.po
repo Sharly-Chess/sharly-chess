@@ -2165,10 +2165,6 @@ msgstr ""
 msgid "FIDE database"
 msgstr ""
 
-#, python-format
-msgid "FIDE recommended tie-breaks for [%(pairing_system)s] tournaments:"
-msgstr ""
-
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "FM"
 
@@ -4170,6 +4166,10 @@ msgid "Rating:"
 msgstr ""
 
 msgid "Ratings"
+msgstr ""
+
+#, python-format
+msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
 msgstr ""
 
 msgid "Record"
@@ -6451,4 +6451,7 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "FIDE recommended tie-breaks for [%(pairing_system)s] tournaments:"
+#~ msgstr ""
 

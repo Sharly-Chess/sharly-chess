@@ -37,7 +37,7 @@
                     </p>
                     <div>
                         {{ _(
-                            'FIDE recommended tie-breaks for [%(pairing_system)s] tournaments:',
+                            'Recommended tie-breaks for a [%(pairing_system)s] tournament:',
                             pairing_system=admin_tournament.pairing_system.name
                         ) }}
                     </div>
@@ -47,6 +47,7 @@
                                 {{ tie_break.full_name }}
                                 <i
                                     class="bi-info-circle-fill ps-2"
+                                    style="font-size: 90%"
                                     {{ macros.tooltip_attributes('', tie_break.help_text, 'top') }}
                                 ></i>
                             </li>
