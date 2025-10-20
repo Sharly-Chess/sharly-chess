@@ -17,6 +17,7 @@ from data.tie_breaks.tie_breaks import (
     TournamentPerformanceRatingTieBreak,
     KashdanTieBreak,
     StandardBuchholzTieBreak,
+    SumOfBuchholzTieBreak,
 )
 from plugins.ffe import PLUGIN_NAME
 from utils import StaticUtils
@@ -59,7 +60,12 @@ class BasePapiTieBreak(TieBreak, ABC):
 
     @classmethod
     def static_id(cls) -> str:
-        return f'{PLUGIN_NAME}-PAPI_{cls.base_tie_break_type().static_id()}'
+        return f'{PLUGIN_NAME}-PAPI_{cls.sub_id()}'
+
+    @staticmethod
+    @abstractmethod
+    def sub_id() -> str:
+        """Id unique amongst the Papi tie-breaks."""
 
     @classmethod
     def static_name(cls) -> str:
@@ -90,6 +96,10 @@ class BasePapiTieBreak(TieBreak, ABC):
 
 
 class PapiPerformanceTieBreak(BasePapiTieBreak):
+    @staticmethod
+    def sub_id() -> str:
+        return 'PERFORMANCE'
+
     @staticmethod
     def base_tie_break_type() -> type[TieBreak]:
         return TournamentPerformanceRatingTieBreak
@@ -127,6 +137,10 @@ class PapiPerformanceTieBreak(BasePapiTieBreak):
 
 
 class PapiKashdanTieBreak(BasePapiTieBreak):
+    @staticmethod
+    def sub_id() -> str:
+        return 'KASHDAN'
+
     @staticmethod
     def base_tie_break_type() -> type[TieBreak]:
         return KashdanTieBreak
@@ -350,6 +364,10 @@ class PapiBuchholzTypeOption(TieBreakOption):
 
 class PapiBuchholzTieBreak(BasePapiTieBreak):
     @staticmethod
+    def sub_id() -> str:
+        return 'BUCHHOLZ'
+
+    @staticmethod
     def base_tie_break_type() -> type[TieBreak]:
         return StandardBuchholzTieBreak
 
@@ -494,9 +512,17 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
         return sum(scores[cut_btm:])
 
 
-class PapiSumOfBuchholzTieBreak(PapiBuchholzTieBreak):
+class PapiSumOfBuchholzTieBreak(BasePapiTieBreak):
+    @staticmethod
+    def sub_id() -> str:
+        return 'BUCHHOLZ_SUM'
+
+    @staticmethod
+    def base_tie_break_type() -> type[TieBreak]:
+        return SumOfBuchholzTieBreak
+
     @property
-    def acronym(self) -> str:
+    def base_acronym(self) -> str:
         return 'SBh'
 
     def compute_player_value(self, player: 'Player', *, after_round: int) -> float:
