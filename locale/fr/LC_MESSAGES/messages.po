@@ -1828,6 +1828,9 @@ msgstr "Chaque groupe doit contenir une ou plusieurs catégories (par exemple :
 msgid "Edit"
 msgstr "Modifier"
 
+msgid "Edit Player"
+msgstr "Modifier joueur·euse"
+
 msgid "Edit account"
 msgstr "Modifier le compte"
 

@@ -10,7 +10,7 @@
                 <div class="modal-title fs-4 fw-bold">{{ _('%(player)s - Round %(num)s', player=player.full_name, num=admin_round) }}</div>
             </div>
             <div class="modal-body">
-                <div class="d-flex flex-column align-items-center justify-content-center gap-4">
+                <div class="d-flex flex-column align-items-center justify-content-center gap-2">
                     {% set action = 'BYE_UPDATE' %}
                     {% if not pairing.zero_point_bye %}
                         {% set action_route = url_for(
@@ -21,6 +21,7 @@
                             player_id=player.id,
                         ) %}
                         <span
+                            class="w-100"
                             {% if not client.can_set_zero_point_bye(admin_tournament.id) %}
                                 {{ macros.tooltip_attributes('warning', _('You are not allowed to set/unset Zero-Point Byes.'), 'right') }}
                             {% endif %}
@@ -58,6 +59,7 @@
                             player_id=player.id,
                         ) %}
                         <span
+                            class="w-100"
                             {% if not client.can_set_zero_point_bye(admin_tournament.id) %}
                                 {{ macros.tooltip_attributes('warning', _('You are not allowed to set/unset Zero-Point Byes.'), 'right') }}
                             {% endif %}
@@ -96,6 +98,7 @@
                             player_id=player.id,
                         ) %}
                         <span
+                            class="w-100"
                             {% if not client.can_set_zero_point_bye(admin_tournament.id) %}
                                 {{ macros.tooltip_attributes('warning', _('You are not allowed to set/unset Zero-Point Byes.'), 'right') }}
                             {% endif %}
@@ -139,6 +142,7 @@
                             player_id=player.id,
                         ) %}
                         <span
+                            class="w-100"
                             {% if not client.can_set_half_point_bye(admin_tournament.id) %}
                                 {{ macros.tooltip_attributes('warning', _('You are not allowed to set/unset Half-Point Byes.'), 'right') }}
                             {% endif %}

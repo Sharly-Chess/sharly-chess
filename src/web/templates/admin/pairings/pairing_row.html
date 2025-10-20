@@ -15,7 +15,11 @@
     {% if admin_tournament.record_illegal_moves %}
         {% with player=wp, illegal_moves=board.white_pairing.illegal_moves %}{% include 'illegal_moves_cell.html' %}{% endwith %}
     {% endif %}
-    <td>{{ wp.full_name }} ({{ wp.rating_str }})</td>
+    <td>
+        {% with player=wp, display_rating=true %}
+            {% include '/admin/player_link.html' %}
+        {% endwith %}
+    </td>
     <td class="text-center" style="width: 4.5rem;">
         <span
             {% if not client.can_enter_results(admin_tournament.id) %}
@@ -50,7 +54,11 @@
         {% if admin_tournament.record_illegal_moves %}
             {% with player=bp, illegal_moves=board.black_pairing.illegal_moves if bp else 0 %}{% include 'illegal_moves_cell.html' %}{% endwith %}
         {% endif %}
-        <td>{{ bp.full_name }} ({{ bp.rating_str }})</td>
+        <td>
+            {% with player=bp, display_rating=true %}
+                {% include '/admin/player_link.html' %}
+            {% endwith %}
+        </td>
         {% if admin_tournament.print_real_points(admin_round) %}
             <td class="text-end">[{{ bp.points_str }}]</td>
         {% endif %}

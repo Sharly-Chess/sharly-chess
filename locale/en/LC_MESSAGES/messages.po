@@ -1828,6 +1828,9 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
+msgid "Edit Player"
+msgstr ""
+
 msgid "Edit account"
 msgstr ""
 
