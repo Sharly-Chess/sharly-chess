@@ -10,7 +10,7 @@ English version below
 
 - Possibilité d'enregistrer à la fois des classements nationaux et FIDE (3.2.0)
 - Les rapports de norme peuvent désormais être générés (via l’option d’impression) (3.2.0)
-- Accès à la fiche du joueur depuis l’onglet des appariements (3.2.0)
+- Accès à la fiche du joueur depuis l’onglet Appariements (3.2.0)
 
 ## Appariements
 
@@ -26,7 +26,7 @@ English version below
 
 - Federation-specific plugins (3.2.0)
 - Uploading to Chess-Results.com (3.2.0)
-- Access to the player record from the pairings tab (3.2.0)
+- Access to the player record from the Pairings tab (3.2.0)
 
 ## Players
 

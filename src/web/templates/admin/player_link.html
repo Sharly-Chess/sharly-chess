@@ -1,4 +1,5 @@
 <span>
+    {% set full_name = player.last_name ~ ' ' ~ player.first_name if last_name_first else player.full_name %}
     {% if client.can_update_players_history(player.tournament.id)%}
         <a
             class="player-link"
@@ -8,9 +9,9 @@
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
         >
-            {{ player.full_name }} {% if display_rating %}({{ player.rating_str }}){% endif %}
+            {{ full_name }} {% if display_rating %}({{ player.rating_str }}){% endif %}
         </a>
     {% else %}
-        {{ player.full_name }} {% if display_rating %}({{ player.rating_str }}){% endif %}
+        {{ full_name }} {% if display_rating %}({{ player.rating_str }}){% endif %}
     {% endif %}
 </span>
