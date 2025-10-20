@@ -137,29 +137,34 @@ class TestUtils:
         overrides: Optional[dict] = None,
     ):
         overrides = overrides or {}
-
-        now = datetime.now()
-        start_ts = now.strftime('%Y-%m-%dT%H:%M')
-        stop_ts = (now + timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M')
+        start_time = datetime.now()
+        stop_time = datetime.now() + timedelta(hours=1)
+        start: str | float
+        stop: str | float
+        if via_api_request_context:
+            start = start_time.strftime('%Y-%m-%dT%H:%M')
+            stop = stop_time.strftime('%Y-%m-%dT%H:%M')
+        else:
+            start = start_time.timestamp()
+            stop = stop_time.timestamp()
 
         # Provide defaults
         defaults = {
             **cls.event_defaults,
             'uniq_id': uniq_id,
             'name': uniq_id,
-            'start': start_ts,
-            'stop': stop_ts,
+            'start': start,
+            'stop': stop,
         }
 
         # Merge overrides
         data = {**defaults, **overrides}
 
-        form_data = cls.prepare_form_data(data)
-
         database = EventDatabase(uniq_id)
         database.file.unlink(missing_ok=True)
 
         if via_api_request_context:
+            form_data = cls.prepare_form_data(data)
             res = via_api_request_context.post(
                 '/home/create-event',
                 headers={'Content-Type': 'application/x-www-form-urlencoded'},
@@ -212,7 +217,6 @@ class TestUtils:
             'paired_bye_result': None,
             'max_byes': None,
             'last_rounds_no_byes': None,
-            'tie_breaks': None,
             'location': None,
             'start': None,
             'stop': None,

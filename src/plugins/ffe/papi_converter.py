@@ -1,6 +1,5 @@
 import json
 import tempfile
-from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from pathlib import Path
@@ -31,6 +30,7 @@ from database.sqlite.event.event_store import (
     StoredBoard,
     StoredTournamentPlayer,
     StoredPairing,
+    StoredTieBreak,
 )
 from plugins.ffe import TMP_DIR, PLUGIN_NAME
 from plugins.ffe.utils import FFEUtils
@@ -263,8 +263,8 @@ class PapiConverter:
             stored_tournament.pairing = DoubleBergerRoundRobinVariation.static_id()
 
         has_manual_tiebreak = any(
-            tiebreak.get('type') is ManualTieBreak.static_id()
-            for tiebreak in stored_tournament.tie_breaks
+            stored_tie_break.type == ManualTieBreak.static_id()
+            for stored_tie_break in stored_tournament.stored_tie_breaks
         )
 
         next_board_id = 1
@@ -379,19 +379,22 @@ class PapiConverter:
             except KeyError:
                 raise_unknown_value('ratingClass', variables.ratingClass)
         stored_tournament.rating = rating.value
-        tie_breaks: list[dict[str, Any]] = []
+        tie_breaks: list[StoredTieBreak] = []
         for index, papi_tie_break in enumerate(
-            (variables.tiebreak1, variables.tiebreak2, variables.tiebreak3)
+            (
+                variables.tiebreak1,
+                variables.tiebreak2,
+                variables.tiebreak3,
+            )
         ):
             if not papi_tie_break:
                 continue
             try:
-                tie_breaks.append(
-                    PapiTieBreak.get_core_object(papi_tie_break).to_dict()
-                )
+                tie_break = PapiTieBreak.get_core_object(papi_tie_break)
+                tie_breaks.append(tie_break.to_stored_value())
             except KeyError:
                 raise_unknown_value(f'tiebreak{index + 1}', papi_tie_break)
-        stored_tournament.tie_breaks = tie_breaks
+        stored_tournament.stored_tie_breaks = tie_breaks
         three_points_for_a_win = False
         if variables.pointSystem:
             try:
@@ -604,13 +607,23 @@ class PapiConverter:
         return None
 
     @classmethod
-    def check_tiebreak_warning(cls, tie_break: TieBreak) -> str | None:
-        if tie_break not in PapiTieBreak.core_objects():
-            return _(
-                'Tie-break [{tie_break}] is not compatible with Papi, '
-                'it will not appear in the Papi results.'
-            ).format(tie_break=tie_break.name)
-        return None
+    def check_tiebreaks_warning(cls, tie_breaks: list[TieBreak]) -> str | None:
+        if len(tie_breaks) <= 3 and all(
+            PapiTieBreak.get_outer_value(tie_break) for tie_break in tie_breaks
+        ):
+            return None
+        return '<br/>'.join(
+            (
+                _(
+                    'Some of the tie-break values will not '
+                    'appear in the results on the FFE website.'
+                ),
+                _(
+                    'However, the order of the results of the last round '
+                    'will remain the same as the ones in Sharly Chess.'
+                ),
+            )
+        )
 
     @classmethod
     def check_result(cls, result: Result, tournament: Tournament) -> str | None:
@@ -645,9 +658,8 @@ class PapiConverter:
 
     @classmethod
     def papi_export_warning(cls, tournament: Tournament) -> str | None:
-        for tie_break in tournament.tie_breaks:
-            if warning := cls.check_tiebreak_warning(tie_break):
-                return warning
+        if warning := cls.check_tiebreaks_warning(tournament.tie_breaks):
+            return warning
         if warning := cls.check_pairing_variation_warning(tournament.pairing_variation):
             return warning
         return None
@@ -660,7 +672,7 @@ class PapiConverter:
         """Write the tournament data to a papi file.
         Converts a Tournament to JSON format that can be sent to papi-converter.
         Returns True if successful, raises SharlyChessException if conversion fails."""
-        papi_data = self._tournament_to_papi_data(tournament)
+        papi_data = self.tournament_to_papi_data(tournament)
         papi_data_dict = {
             'variables': {
                 key: value or '' for key, value in papi_data.variables.__dict__.items()
@@ -699,7 +711,7 @@ class PapiConverter:
             finally:
                 return target_file.exists()
 
-    def _tournament_to_papi_data(self, tournament: Tournament) -> PapiData:
+    def tournament_to_papi_data(self, tournament: Tournament) -> PapiData:
         """Convert a Tournament object to PapiData."""
         papi_tiebreaks, manual_tiebreak_by_player_id = (
             self._tiebreaks_to_papi_tiebreaks(tournament)
@@ -773,29 +785,19 @@ class PapiConverter:
             papi_tiebreaks.append(papi_tiebreak)
         if use_manual:
             # Replace the final Papi tie-break by a manual tie-break representing the SC ranking
-            tournament.compute_player_ranks()
+            # This way, at least the last round is correct
             if manual_index is not None:
                 papi_tiebreaks = papi_tiebreaks[: manual_index + 1]
             else:
                 papi_tiebreaks = papi_tiebreaks[:2]
                 papi_tiebreaks.append(PapiTieBreak.get_outer_value(ManualTieBreak()))
-            players_by_rank_group: dict[tuple, list[Player]] = defaultdict(list)
-            papi_tiebreak_count = len(papi_tiebreaks) - 1
+            tournament.compute_player_ranks()
+            player_count = tournament.player_count
             for player in tournament.players:
-                rank_group = player.rank_sort_key_with_first_tie_breaks(
-                    papi_tiebreak_count
-                )
-                players_by_rank_group[rank_group].append(player)
-            for player_group in players_by_rank_group.values():
-                player_group_count = len(player_group)
-                if player_group_count <= 1:
-                    continue
-                for index, player in enumerate(
-                    sorted(player_group, key=lambda p: p.rank)
-                ):
-                    manual_tiebreak_by_player_id[player.id] = player_group_count - index
+                manual_tiebreak_by_player_id[player.id] = player_count - player.rank + 1
         elif len(papi_tiebreaks) < 3 and not manual_index:
             # If a spot is available, add a manual tie-break representing the start rank
+            # This way, the rankings are the same on all rounds
             papi_tiebreaks.append(PapiTieBreak.get_outer_value(ManualTieBreak()))
             player_count = tournament.player_count
             for index, player in enumerate(

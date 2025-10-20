@@ -1,0 +1,113 @@
+<div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered"
+    style="--bs-modal-width: min(90vw, 500px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {% if action == 'update' %}
+                    {{ _('Edit tie-break') }}
+                {% else %}
+                     {{ _('Create tie-break') }}
+                {% endif %}
+            </h2>
+        </div>
+        <div class="modal-body">
+            {% if previous_tie_break %}
+                {% with type='success', message=_(
+                    'Tie-break [%(tie_break)s] successfully created!',
+                    tie_break=previous_tie_break.acronym
+                ) %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
+
+            <form
+                id="modal-form"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                {% if action == 'update' %}
+                    hx-patch="{{ url_for(
+                        'admin-tie-break-update',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        tie_break_id=admin_tie_break_id,
+                    ) }}"
+                {% else %}
+                    hx-post="{{ url_for(
+                        'admin-tie-break-create',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                    ) }}"
+                {% endif %}
+            >
+                <div class="row gy-2 gx-3">
+                    {{ admin_macros.select_input(
+                        name='type',
+                        label=_('%(string)s:', string=_('Type')),
+                        help_text='',
+                        select_options=tie_break_select_options,
+                        tooltip_select=true,
+                        searchable_select=true,
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                {% for option in tie_break_options %}
+                    <div
+                        class="row gy-3 gx-3"
+                        id="{{ option.container_id }}"
+                        {% if option.container_id not in containers_by_type[data['type']] %}
+                            style="display:none"
+                        {% endif %}
+                    >
+                        {% include option.template_name %}
+                    </div>
+                {% endfor %}
+                <script>
+                    $('#type').change(function() {
+                        const type_containers = {{ containers_by_type|tojson }}[$(this).val()];
+                        let container_id = '';
+                        {% for option in tie_break_options %}
+                            container_id = '{{ option.container_id }}';
+                            $('#' + container_id).css(
+                                'display', type_containers.includes(container_id) ? 'block' : 'none'
+                            );
+                        {% endfor %}
+                    });
+                </script>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                hx-get="{{ url_for(
+                    'admin-tie-breaks-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+
+            >
+                <i class="bi-arrow-left-circle-fill pe-1"></i>
+                {{ _('Back') }}
+            </button>
+            {% if action == 'update' %}
+                <button
+                    type="submit"
+                    form="modal-form"
+                    class="text-nowrap white btn btn-primary"
+                >
+                    <i class="bi bi-floppy-fill pe-1"></i>
+                    {{ _('Save') }}
+                </button>
+            {% else %}
+                {{ admin_macros.create_with_add_other_split_buttons(add_other_active) }}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>requestRefresh()</script>

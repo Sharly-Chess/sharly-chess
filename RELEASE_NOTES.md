@@ -5,6 +5,7 @@ English version below
 
 - Plug-ins spécifiques à une fédération (3.2.0)
 - Mise en ligne sur Chess-Results.com (3.2.0)
+- Disponibilité des tous les départages _FIDE_ standards (3.2.0)
 - Suppression de l’option d’image de fond des écrans (3.2.0)
 
 ## Joueur·euses
@@ -31,13 +32,14 @@ English version below
 
 - Federation-specific plugins (3.2.0)
 - Uploading to Chess-Results.com (3.2.0)
+- Availability of all standard _FIDE_ tie-breaks (3.2.0)
 - Removed the background image option for Screens (3.2.0)
-- Access to the player record from the Pairings tab (3.2.0)
 
 ## Players
 
 - Possibility to store both national and FIDE ratings (3.2.0)
 - Norm reports may now be generated (via the print option) (3.2.0)
+- Access to the player record from the Pairings tab (3.2.0)
 
 ## Pairings
 

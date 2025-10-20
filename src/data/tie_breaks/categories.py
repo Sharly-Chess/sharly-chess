@@ -1,0 +1,34 @@
+from abc import ABC, abstractmethod
+
+from common.i18n import _
+
+
+class TieBreakCategory(ABC):
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        """Name of the category. Used to group the tie-breaks in the select."""
+
+
+class PlayerRecordCategory(TieBreakCategory):
+    @property
+    def name(self) -> str:
+        return _("Player's record")
+
+
+class OpponentRecordCategory(TieBreakCategory):
+    @property
+    def name(self) -> str:
+        return _("Opponents' records")
+
+
+class OpponentRatingCategory(TieBreakCategory):
+    @property
+    def name(self) -> str:
+        return _("Opponents' ratings")
+
+
+class OtherCategory(TieBreakCategory):
+    @property
+    def name(self) -> str:
+        return _('Others')

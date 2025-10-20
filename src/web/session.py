@@ -219,6 +219,18 @@ class SessionHandler:
             cls.ADMIN_TOURNAMENT_CRITERION_ADD_OTHER_ACTIVE_KEY, False
         )
 
+    ADMIN_TIE_BREAK_ADD_OTHER_ACTIVE_KEY = 'admin_tie_break_add_other_active'
+
+    @classmethod
+    def set_session_admin_tie_break_add_other_active(
+        cls, request: HTMXRequest, b: bool
+    ):
+        request.session[cls.ADMIN_TIE_BREAK_ADD_OTHER_ACTIVE_KEY] = b
+
+    @classmethod
+    def get_session_admin_tie_break_add_other_active(cls, request: HTMXRequest) -> bool:
+        return request.session.get(cls.ADMIN_TIE_BREAK_ADD_OTHER_ACTIVE_KEY, False)
+
     ADMIN_EVENTS_SHOW_DETAILS_KEY: str = 'admin_events_show_details'
 
     @classmethod
@@ -512,20 +524,6 @@ class SessionHandler:
         ):
             return PageIdentifier.from_json(page_identifier)
         return None
-
-    ADMIN_TOURNAMENT_ADD_OTHER_ACTIVE_KEY: str = 'admin_tournament_add_other_active'
-
-    @classmethod
-    def set_session_admin_tournament_add_other_active(
-        cls, request: HTMXRequest, b: bool
-    ):
-        request.session[cls.ADMIN_TOURNAMENT_ADD_OTHER_ACTIVE_KEY] = b
-
-    @classmethod
-    def get_session_admin_tournament_add_other_active(
-        cls, request: HTMXRequest
-    ) -> bool:
-        return request.session.get(cls.ADMIN_TOURNAMENT_ADD_OTHER_ACTIVE_KEY, False)
 
     ADMIN_PLAYER_ADD_OTHER_ACTIVE_KEY: str = 'admin_player_add_other_active'
 

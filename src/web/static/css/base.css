@@ -335,20 +335,22 @@ body[data-bs-theme="dark"] .htmx-indicator {
 .card-title:empty {
     display: none;
 }
-.card-block {
-    position: relative;
-    padding-top: 0.7rem;
-    border-top: 1px solid var(--bs-secondary);
+.card-block:not(:last-child) {
     padding-bottom: 0.7rem;
     border-bottom: 1px solid var(--bs-secondary);
+}
+.card-block:not(:first-child) {
+    padding-top: 0.7rem;
+    border-top: 1px solid var(--bs-secondary);
 }
 .card-block + .card-block {
     border-top: none;
 }
 .card-block-button {
     float: right;
+    margin-top: -0.2rem;
     margin-left: 0.5rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.2rem;
 }
 .card-block-content > * + * {
     margin-top: 0.25rem;

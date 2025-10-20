@@ -99,13 +99,8 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
 
     @property
     @abstractmethod
-    def tie_break_help_html_content(self) -> str:
-        """The HTML content of the tie-break help of the pairing system."""
-
-    @property
-    @abstractmethod
-    def default_tie_breaks(self) -> tuple['TieBreak', 'TieBreak', 'TieBreak']:
-        """List of tie-breaks to set as default in the tournament modal."""
+    def recommended_tie_breaks(self) -> list['TieBreak']:
+        """List of tie-breaks recommended by the FIDE."""
 
 
 class SwissPairingSystem(PairingSystem['SwissVariation']):
@@ -188,46 +183,19 @@ class SwissPairingSystem(PairingSystem['SwissVariation']):
         return tournament.last_paired_round
 
     @property
-    def tie_break_help_html_content(self) -> str:
-        return f"""
-            <div>{_('FIDE recommended tie-breaks for swiss tournaments:')}</div>
-            <ol>
-                <li>{
-            _(
-                'The Buchholz Cut 1 (the sum of the scores of '
-                'each of the opponents of a player reduced by '
-                'the lowest score of the opponents)'
-            )
-        }</li>
-                <li>{
-            _(
-                'The Buchholz System (the sum of the scores of '
-                'each of the opponents of a player)'
-            )
-        }</li>
-                <li>{_('The greater number of wins')}</li>
-                <li>{
-            _(
-                'The greater number of wins with Black '
-                '(unplayed games are counted as played with White)'
-            )
-        }</li>
-            </ol>
-        """
+    def recommended_tie_breaks(self) -> list['TieBreak']:
+        from data.tie_breaks import tie_breaks
+        from data.tie_breaks.options import CutterWithMedianTieBreakOption
+        from data.tie_breaks.cutters import Cut1TieBreakCutter
 
-    @property
-    def default_tie_breaks(self) -> tuple['TieBreak', 'TieBreak', 'TieBreak']:
-        from data.tie_breaks.tie_breaks import WinsTieBreak
-        from plugins.ffe.ffe_tie_breaks import (
-            PapiBuchholzCutBottomTieBreak,
-            PapiStandardBuchholzTieBreak,
-        )
-
-        return (
-            PapiBuchholzCutBottomTieBreak(),
-            PapiStandardBuchholzTieBreak(),
-            WinsTieBreak(),
-        )
+        return [
+            tie_breaks.DirectEncounterTieBreak(),
+            tie_breaks.WinsTieBreak(),
+            tie_breaks.StandardBuchholzTieBreak(
+                [CutterWithMedianTieBreakOption(Cut1TieBreakCutter().id)]
+            ),
+            tie_breaks.ProgressiveScoresTieBreak(),
+        ]
 
 
 class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
@@ -309,39 +277,12 @@ class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
         )
 
     @property
-    def tie_break_help_html_content(self) -> str:
-        return f"""
-            <div>{_('FIDE recommended tie-breaks for round-robin tournaments:')}</div>
-            <ol>
-                <li>{_('The greater number of wins')}</li>
-                <li>{
-            _(
-                'Sonneborn-Berger (the sum of the scores of '
-                'the opponents a player has defeated and half '
-                'the scores of the players with whom he has drawn).'
-            )
-        }</li>
-                <li>{
-            _(
-                'Koya System (the number of points achieved against '
-                'all opponents who have achieved 50 %% or more)'
-            )
-        }</li>
-                <li>{
-            _(
-                'The greater number of wins with Black '
-                '(unplayed games are counted as played with White)'
-            )
-        }</li>
-            </ol>
-        """
+    def recommended_tie_breaks(self) -> list['TieBreak']:
+        from data.tie_breaks import tie_breaks
 
-    @property
-    def default_tie_breaks(self) -> tuple['TieBreak', 'TieBreak', 'TieBreak']:
-        from data.tie_breaks.tie_breaks import (
-            WinsTieBreak,
-            SonnebornBergerTieBreak,
-            KoyaTieBreak,
-        )
-
-        return WinsTieBreak(), SonnebornBergerTieBreak(), KoyaTieBreak()
+        return [
+            tie_breaks.DirectEncounterTieBreak(),
+            tie_breaks.WinsTieBreak(),
+            tie_breaks.SonnebornBergerTieBreak(),
+            tie_breaks.KoyaTieBreak(),
+        ]

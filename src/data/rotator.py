@@ -187,7 +187,7 @@ class Rotator:
         for rotating_screen in self.rotating_screens_by_id.values():
             if rotating_screen.id not in ordered_ids:
                 raise ValueError(
-                    f'Rotating_screen {rotating_screen.id} missing for rotator {self.id}'
+                    f'Rotating screen {rotating_screen.id} missing for rotator {self.id}'
                 )
         with EventDatabase(self.event.uniq_id, True) as database:
             self._set_rotating_screens_indexes(database, ordered_ids)
