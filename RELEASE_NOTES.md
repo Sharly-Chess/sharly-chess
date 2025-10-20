@@ -10,7 +10,7 @@ English version below
 
 ## Joueur·euses
 
-- Possibilité d'enregistrer à la fois des classements nationaux et FIDE (3.2.0)
+- Possibilité d'enregistrer à la fois des classements nationaux et _FIDE_ (3.2.0)
 - Les rapports de norme peuvent désormais être générés (via l’option d’impression) (3.2.0)
 - Accès à la fiche du joueur depuis l’onglet Appariements (3.2.0)
 
@@ -22,7 +22,7 @@ English version below
 
 ## FFE
 
-- Support des départages non-compatibles avec Papi lors de l'export Papi et de l'upload FFE (3.2.0)
+- Support des départages non-compatibles avec _Papi_ lors de l'export _Papi_ et du téléversement _FFE_ (3.2.0)
 
 ---
 
@@ -37,7 +37,7 @@ English version below
 
 ## Players
 
-- Possibility to store both national and FIDE ratings (3.2.0)
+- Possibility to store both national and _FIDE_ ratings (3.2.0)
 - Norm reports may now be generated (via the print option) (3.2.0)
 - Access to the player record from the Pairings tab (3.2.0)
 
@@ -49,4 +49,4 @@ English version below
 
 ## FFE
 
-- Papi incompatible tie-breaks are now supported in the Papi export and the FFE upload (3.2.0)
+- _Papi_ incompatible tie-breaks are now supported in the _Papi_ export and the _FFE_ upload (3.2.0)
