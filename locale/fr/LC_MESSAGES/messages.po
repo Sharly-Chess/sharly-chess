@@ -4895,7 +4895,7 @@ msgstr "La fédération qui organise l’évènement. Sharly Chess peut proposer
 msgid "The first round is ignored."
 msgid_plural "The first {rounds} rounds are ignored."
 msgstr[0] "La première ronde est ingorée."
-msgstr[1] "Les {count} premières rondes sont ignorées."
+msgstr[1] "Les {rounds} premières rondes sont ignorées."
 
 msgid "The first tournament of the screen."
 msgstr "Le premier tournoi de l'écran."
