@@ -5,7 +5,7 @@ English version below
 
 - Plug-ins spécifiques à une fédération (3.2.0)
 - Mise en ligne sur Chess-Results.com (3.2.0)
-- Suppression de l’option d’image de fond pour les Écrans (3.2.0)
+- Suppression de l’option d’image de fond des écrans (3.2.0)
 
 ## Joueur·euses
 
