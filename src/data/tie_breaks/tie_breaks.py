@@ -5,23 +5,31 @@ from collections.abc import Iterable
 from contextlib import suppress
 from dataclasses import dataclass
 from decimal import Decimal
+from functools import cached_property
 from math import isclose
 from typing import TYPE_CHECKING, SupportsFloat
-from common.exception import OptionError
-from common.i18n import _
+from common.i18n import _, ngettext
 from data.pairing import Pairing
 from data.pairings import PairingSystem
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
 from data.player import Player
+from data.tie_breaks.categories import (
+    TieBreakCategory,
+    PlayerRecordCategory,
+    OpponentRecordCategory,
+    OpponentRatingCategory,
+    OtherCategory,
+)
+from data.tie_breaks.cutters import TieBreakCutter
 from data.tie_breaks.options import (
     TieBreakOption,
-    CutTieBreakOption,
-    CutTopTieBreakOption,
-    CutBottomTieBreakOption,
     PlayedModifierTieBreakOption,
     ForeModifierTieBreakOption,
-    LimitTieBreakOption,
+    KoyaLimitTieBreakOption,
+    CutterTieBreakOption,
+    CutterWithMedianTieBreakOption,
 )
+from database.sqlite.event.event_store import StoredTieBreak
 from utils import StaticUtils
 from utils.enum import BoardColor, Result
 from utils.option import OptionHandler
@@ -34,14 +42,51 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
     """Abstract class representing a tie-break"""
 
     @property
-    @abstractmethod
-    def acronym(self) -> str:
-        """Represents the tie-break in rankings documents and screens."""
+    def full_name(self) -> str:
+        """the full representation of the tie-break including the modifiers."""
+        variation_names: list[str] = []
+        for option_type in self.available_options():
+            option = self._get_option(option_type)
+            if option.is_variation and option.variation_name:
+                variation_names.append(option.variation_name)
+        if not variation_names:
+            return self.name
+        return f'{self.name} ({", ".join(variation_names)})'
 
     @property
     @abstractmethod
-    def short_name(self) -> str:
-        """Represents the tie-break on tournament cards."""
+    def base_acronym(self) -> str:
+        """Represents the tie-break in rankings documents, screens and tournament cards."""
+
+    @property
+    def acronym(self) -> str:
+        """Acronym built from the base acronym and the options."""
+        acronym_parts: list[str] = [self.base_acronym]
+        for option_type in self.available_options():
+            option = self._get_option(option_type)
+            if option.is_variation and option.variation_acronym:
+                acronym_parts.append(option.variation_acronym)
+        return '/'.join(acronym_parts)
+
+    @property
+    @abstractmethod
+    def base_help_text(self) -> str:
+        """Short explanation of how the tie-break values are computed."""
+
+    @property
+    def help_text(self) -> str:
+        """Help text built from the base help text and the options."""
+        help_text_parts: list[str] = [self.base_help_text]
+        for option_type in self.available_options():
+            option = self._get_option(option_type)
+            if option.is_variation and option.variation_help_text:
+                help_text_parts.append(option.variation_help_text)
+        return '<br/>'.join(help_text_parts)
+
+    @property
+    @abstractmethod
+    def category(self) -> TieBreakCategory:
+        """Category of the tie-break. Used to organize them in the select."""
 
     @abstractmethod
     def compute_player_value(
@@ -82,11 +127,14 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         By default, tie-breaks can be used for all pairing systems."""
         return []
 
-    def to_dict(self) -> dict:
-        return {
-            'type': self.id,
-            'options': {option.id: option.value for option in self.options},
-        }
+    def to_stored_value(self) -> StoredTieBreak:
+        return StoredTieBreak(
+            id=None,
+            tournament_id=0,
+            type=self.id,
+            options={option.id: option.value for option in self.options},
+            index=0,
+        )
 
     @staticmethod
     def adjusted_score(
@@ -130,7 +178,15 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         return score
 
 
-class WinsTieBreak(TieBreak):
+class PlayerRecordTieBreak(TieBreak, ABC):
+    """Base class of the tie-breaks based on the player's record."""
+
+    @property
+    def category(self) -> TieBreakCategory:
+        return PlayerRecordCategory()
+
+
+class WinsTieBreak(PlayerRecordTieBreak):
     """The number of rounds where a participant obtains,
     with or without playing, as many points as awarded for a win.
     See FIDE Handbook C.07.7.1"""
@@ -144,13 +200,15 @@ class WinsTieBreak(TieBreak):
         return _('Number of wins')
 
     @property
-    def acronym(self) -> str:
-        # FIDE acronym: 'WIN'
-        return _('NW *** ACRONYM FOR PAPI NUMBER OF WINS')
+    def base_acronym(self) -> str:
+        return 'WIN'
 
     @property
-    def short_name(self) -> str:
-        return _('Wins')
+    def base_help_text(self) -> str:
+        return _(
+            'The number of rounds where a player obtains, with or '
+            'without playing, as many points as awarded for a win.'
+        )
 
     def compute_player_value(self, player: Player, *, after_round: int) -> int:
         point_values = player.tournament.point_values
@@ -161,7 +219,7 @@ class WinsTieBreak(TieBreak):
         )
 
 
-class GamesWonTieBreak(TieBreak):
+class GamesWonTieBreak(PlayerRecordTieBreak):
     """The number of games a participant won 'over the board'.
     See FIDE Handbook C.07.7.2"""
 
@@ -174,12 +232,12 @@ class GamesWonTieBreak(TieBreak):
         return _('Number of games won')
 
     @property
-    def acronym(self) -> str:
+    def base_acronym(self) -> str:
         return 'WON'
 
     @property
-    def short_name(self) -> str:
-        return _('Games won')
+    def base_help_text(self) -> str:
+        return _('The number of games won over the board.')
 
     def compute_player_value(self, player: Player, *, after_round: int) -> int:
         return sum(
@@ -189,8 +247,8 @@ class GamesWonTieBreak(TieBreak):
         )
 
 
-class GamesPlayedWithBlackTieBreak(TieBreak):
-    """The number of games played over the board with the black pieces.
+class GamesPlayedWithBlackTieBreak(PlayerRecordTieBreak):
+    """The number of games played over the board with the Black pieces.
     See FIDE Handbook C.07.7.3"""
 
     @staticmethod
@@ -202,12 +260,12 @@ class GamesPlayedWithBlackTieBreak(TieBreak):
         return _('Games played with black')
 
     @property
-    def acronym(self) -> str:
+    def base_acronym(self) -> str:
         return 'BPG'
 
     @property
-    def short_name(self) -> str:
-        return _('Black games')
+    def base_help_text(self) -> str:
+        return _('The number of games played over the board with the Black pieces.')
 
     def compute_player_value(self, player: Player, *, after_round: int) -> int:
         return sum(
@@ -217,8 +275,8 @@ class GamesPlayedWithBlackTieBreak(TieBreak):
         )
 
 
-class GamesWonWithBlackTieBreak(TieBreak):
-    """The number of games won over the board with the black pieces.
+class GamesWonWithBlackTieBreak(PlayerRecordTieBreak):
+    """The number of games won over the board with the Black pieces.
     See FIDE Handbook C.07.7.4"""
 
     @staticmethod
@@ -230,12 +288,12 @@ class GamesWonWithBlackTieBreak(TieBreak):
         return _('Games won with Black')
 
     @property
-    def acronym(self) -> str:
+    def base_acronym(self) -> str:
         return 'BWG'
 
     @property
-    def short_name(self) -> str:
-        return _('Black Wins')
+    def base_help_text(self) -> str:
+        return _('The number of games won over the board with the Black pieces.')
 
     def compute_player_value(self, player: Player, *, after_round: int) -> int:
         return sum(
@@ -245,12 +303,12 @@ class GamesWonWithBlackTieBreak(TieBreak):
         )
 
 
-class ProgressiveScoresTieBreak(TieBreak):
+class ProgressiveScoresTieBreak(PlayerRecordTieBreak):
     """The sum of progressive scores.
     After each round, a participant has a certain tournament score.
     This tie-break is calculated adding the score of the participant at the end of each round.
     Options:
-      - CUT: exclude the score achieved after the first *CUT* rounds
+      - CUTTER: Exclude the first *n* rounds
     See FIDE Handbook C.07.7.5 and C.07.14.1"""
 
     @staticmethod
@@ -261,25 +319,42 @@ class ProgressiveScoresTieBreak(TieBreak):
     def static_name() -> str:
         return _('Progressive scores')
 
-    @property
-    def acronym(self) -> str:
-        # FIDE Acronym: 'PS'
-        return _('PS *** ACRONYM FOR PAPI PROGRESSIVE SCORE')
-
-    @property
-    def short_name(self) -> str:
-        return _('Progressive')
-
     @staticmethod
     def available_options() -> list[type[TieBreakOption]]:
-        return [CutTieBreakOption]
+        return [CutterTieBreakOption]
+
+    @cached_property
+    def cutter(self) -> TieBreakCutter:
+        return self._get_option(CutterTieBreakOption).cutter
+
+    @property
+    def base_acronym(self) -> str:
+        return 'PS'
+
+    @property
+    def base_help_text(self) -> str:
+        return _('The sum of the score of the player at the end of each round.')
+
+    @property
+    def help_text(self) -> str:
+        help_text = self.base_help_text
+        rounds_ignored = self.cutter.bottom_cut
+        if rounds_ignored:
+            help_text += '<br/>' + ngettext(
+                'The first round is ignored.',
+                'The first {rounds} rounds are ignored.',
+                rounds_ignored,
+            ).format(rounds=rounds_ignored)
+        return help_text
 
     def compute_player_value(self, player: Player, *, after_round: int) -> float:
-        (cut,) = self.get_option_values()
-        return sum(player.points_after(r) for r in range(1 + cut, after_round + 1))
+        return sum(
+            player.points_after(r)
+            for r in range(1 + self.cutter.bottom_cut, after_round + 1)
+        )
 
 
-class RoundsElectedToPlayTieBreak(TieBreak):
+class RoundsElectedToPlayTieBreak(PlayerRecordTieBreak):
     """The number of rounds one elected to play, i.e. the rounds where a player
     did not lose by forfeit, nor elected to take a bye (ZPB, HPB, or FPB)
     See FIDE Handbook C.07.7.6"""
@@ -293,12 +368,15 @@ class RoundsElectedToPlayTieBreak(TieBreak):
         return _('Rounds one Elected to Play')
 
     @property
-    def acronym(self) -> str:
+    def base_acronym(self) -> str:
         return 'REP'
 
     @property
-    def short_name(self) -> str:
-        return _('Games played')
+    def base_help_text(self) -> str:
+        return _(
+            'The number of rounds in which a player '
+            'did not receive a HPB, a ZPB or a forfeit loss.'
+        )
 
     def compute_player_value(self, player: Player, *, after_round: int) -> int:
         return sum(
@@ -308,16 +386,78 @@ class RoundsElectedToPlayTieBreak(TieBreak):
                 Result.DOUBLE_FORFEIT,
                 Result.ZERO_POINT_BYE,
                 Result.HALF_POINT_BYE,
-                Result.FULL_POINT_BYE,
             )
             for round_index, pairing in player.pairings.items()
             if round_index <= after_round
         )
 
 
-class BuchholzTieBreak(TieBreak, ABC):
+class KashdanTieBreak(PlayerRecordTieBreak):
+    """Grant 4 tie-break points for a win, 2 for a draw, 1 for a loss,
+    and 0 for an unplayed game.
+    See USCF Handbook section 34E7."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'KASHDAN'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Kashdan')
+
+    @property
+    def base_acronym(self) -> str:
+        return 'KA'
+
+    @property
+    def base_help_text(self) -> str:
+        return _(
+            'Grant 4 tie-break points for a win, 2 for a draw, '
+            '1 for a loss, and 0 for an unplayed game.'
+        )
+
+    def compute_player_value(self, player: Player, *, after_round: int) -> float:
+        pairings: list[Pairing] = [
+            pairing
+            for round_index, pairing in player.pairings.items()
+            if round_index <= after_round
+        ]
+        score_by_result: dict[Result, float] = {
+            Result.WIN: 4,
+            Result.UNRATED_WIN: 4,
+            Result.DRAW: 2,
+            Result.UNRATED_DRAW: 2,
+            Result.PENALTY_DL: 2,
+            Result.UNRATED_PENALTY_DL: 2,
+            Result.LOSS: 1,
+            Result.UNRATED_LOSS: 1,
+            Result.PENALTY_LL: 1,
+            Result.UNRATED_PENALTY_LL: 1,
+            Result.FORFEIT_WIN: 0,
+            Result.PAIRING_ALLOCATED_BYE: 0,
+            Result.FULL_POINT_BYE: 0,
+            Result.HALF_POINT_BYE: 0,
+            Result.NO_RESULT: 0,
+            Result.ZERO_POINT_BYE: 0,
+            Result.FORFEIT_LOSS: 0,
+            Result.DOUBLE_FORFEIT: 0,
+        }
+        return float(
+            sum(pairing.result.points(score_by_result) for pairing in pairings)
+        )
+
+
+class OpponentRecordTieBreak(TieBreak, ABC):
+    @property
+    def category(self) -> TieBreakCategory:
+        return OpponentRecordCategory()
+
+
+class BuchholzTieBreak(OpponentRecordTieBreak, ABC):
     @property
     def forbidden_pairing_systems(self) -> list[PairingSystem]:
+        """Buchholz depending on which opponents were played,
+        it gives the same results to all players in a RR tournament."""
         return [RoundRobinPairingSystem()]
 
     @staticmethod
@@ -347,8 +487,7 @@ class BuchholzTieBreak(TieBreak, ABC):
 class StandardBuchholzTieBreak(BuchholzTieBreak):
     """The sum of the scores of each of the opponents of a participant.
     Options:
-      - CUT_TOP: removes the *cut_top* highest contributions.
-      - CUT_BOTTOM: removes the *cut_bottom* the lowest contributions.
+      - CUTTER_WITH_MEDIAN: Remove the bottom *n* and the top *m* contributions.
     When cutting the lowest contributions, all Voluntary Unplayed Rounds
     (requested byes and forfeit losses) are cut before any other round is cut.
     Both values must be non-negative.
@@ -365,34 +504,33 @@ class StandardBuchholzTieBreak(BuchholzTieBreak):
     def static_name() -> str:
         return _('Buchholz')
 
-    @property
-    def acronym(self) -> str:
-        return 'BH'
-
-    @property
-    def short_name(self) -> str:
-        return _('Buchholz')
-
     @staticmethod
     def available_options() -> list[type[TieBreakOption]]:
         return [
-            CutTopTieBreakOption,
-            CutBottomTieBreakOption,
+            CutterWithMedianTieBreakOption,
             PlayedModifierTieBreakOption,
         ]
 
-    def validate_options(self):
-        super().validate_options()
-        cut_top, cut_bottom, _played = self.get_option_values()
-        if cut_top and cut_top < cut_bottom:
-            raise OptionError(
-                _('Top cut must be at most equal to bottom cut.'),
-                self._get_option(CutTopTieBreakOption),
-            )
+    @cached_property
+    def cutter(self) -> TieBreakCutter:
+        return self._get_option(CutterWithMedianTieBreakOption).cutter
+
+    @cached_property
+    def played_modifier(self) -> bool:
+        return self.get_option_values()[1]
+
+    @property
+    def base_acronym(self) -> str:
+        return 'BH'
+
+    @property
+    def base_help_text(self) -> str:
+        return _('The sum of the scores of each of the opponents of the player.')
 
     def compute_player_value(self, player: Player, *, after_round: int) -> float:
-        cut_top, cut_btm, played_modifier = self.get_option_values()
-        if cut_top + cut_btm >= after_round:
+        top_cut = self.cutter.top_cut
+        bottom_cut = self.cutter.bottom_cut
+        if top_cut + bottom_cut >= after_round:
             return 0
         tournament: 'Tournament' = player.tournament
         pairings: dict[int, Pairing] = {
@@ -414,15 +552,16 @@ class StandardBuchholzTieBreak(BuchholzTieBreak):
         voluntary_unplayed: list[float] = []
         for round_index, pairing in pairings.items():
             should_add_dummy = pairing_system == SwissPairingSystem() and (
-                (pairing.unplayed and not played_modifier)
+                (pairing.unplayed and not self.played_modifier)
                 or (
-                    played_modifier
+                    self.played_modifier
                     and pairing.result
                     in (
                         Result.HALF_POINT_BYE,
                         Result.ZERO_POINT_BYE,
                         Result.FULL_POINT_BYE,
                         Result.PAIRING_ALLOCATED_BYE,
+                        Result.REST_GAME,
                     )
                 )
             )
@@ -448,16 +587,15 @@ class StandardBuchholzTieBreak(BuchholzTieBreak):
         scores = sorted(scores)
         scores = voluntary_unplayed + scores
 
-        if cut_top:
-            return sum(scores[cut_btm:-cut_top])
-        return sum(scores[cut_btm:])
+        if top_cut:
+            return sum(scores[bottom_cut:-top_cut])
+        return sum(scores[bottom_cut:])
 
 
 class ForeBuchholzTieBreak(BuchholzTieBreak):
     """the Buchholz score as if all paired games for the final round had ended in draws.
     Options:
-      - CUT_TOP: removes the *cut_top* highest contributions.
-      - CUT_BOTTOM: removes the *cut_bottom* the lowest contributions.
+        - CUTTER_WITH_MEDIAN: Remove the *n* lowest and the *m* highest contributions.
     When cutting the lowest contributions, all Voluntary Unplayed Rounds
     (requested byes and forfeit losses) are cut before any other round is cut.
     Both values must be non-negative.
@@ -474,34 +612,36 @@ class ForeBuchholzTieBreak(BuchholzTieBreak):
     def static_name() -> str:
         return _('Fore Buchholz')
 
-    @property
-    def acronym(self) -> str:
-        return 'FB'
-
-    @property
-    def short_name(self) -> str:
-        return _('Fore Bu. *** SHORT NAME FOR FORE BUCHHOLZ')
-
     @staticmethod
     def available_options() -> list[type[TieBreakOption]]:
         return [
-            CutTopTieBreakOption,
-            CutBottomTieBreakOption,
+            CutterWithMedianTieBreakOption,
             PlayedModifierTieBreakOption,
         ]
 
-    def validate_options(self):
-        super().validate_options()
-        cut_top, cut_bottom, _played = self.get_option_values()
-        if cut_top and cut_top < cut_bottom:
-            raise OptionError(
-                _('Top cut must be at most equal to bottom cut.'),
-                self._get_option(CutTopTieBreakOption),
-            )
+    @cached_property
+    def cutter(self) -> TieBreakCutter:
+        return self._get_option(CutterWithMedianTieBreakOption).cutter
+
+    @cached_property
+    def played_modifier(self) -> bool:
+        return self.get_option_values()[1]
+
+    @property
+    def base_acronym(self) -> str:
+        return 'FB'
+
+    @property
+    def base_help_text(self) -> str:
+        return _(
+            'Buchholz score calculated as if all paired games '
+            'for the final round had ended in draws.'
+        )
 
     def compute_player_value(self, player: Player, *, after_round: int) -> float:
-        cut_top, cut_btm, played_modifier = self.get_option_values()
-        if cut_top + cut_btm >= after_round:
+        top_cut = self.cutter.top_cut
+        bottom_cut = self.cutter.bottom_cut
+        if top_cut + bottom_cut >= after_round:
             return 0
         pairings: dict[int, Pairing] = {
             round_index: pairing
@@ -516,14 +656,15 @@ class ForeBuchholzTieBreak(BuchholzTieBreak):
         assert player.tournament is not None
         tournament: 'Tournament' = player.tournament
         for pairing in pairings.values():
-            should_add_dummy = (pairing.unplayed and not played_modifier) or (
-                played_modifier
+            should_add_dummy = (pairing.unplayed and not self.played_modifier) or (
+                self.played_modifier
                 and pairing.result
                 in (
                     Result.HALF_POINT_BYE,
                     Result.ZERO_POINT_BYE,
                     Result.FULL_POINT_BYE,
                     Result.PAIRING_ALLOCATED_BYE,
+                    Result.REST_GAME,
                 )
             )
             if should_add_dummy:
@@ -544,9 +685,9 @@ class ForeBuchholzTieBreak(BuchholzTieBreak):
         scores = sorted(scores)
         scores = voluntary_unplayed + scores
 
-        if cut_top:
-            return sum(scores[cut_btm:-cut_top])
-        return sum(scores[cut_btm:])
+        if top_cut:
+            return sum(scores[bottom_cut:-top_cut])
+        return sum(scores[bottom_cut:])
 
 
 class SumOfBuchholzTieBreak(BuchholzTieBreak):
@@ -563,21 +704,33 @@ class SumOfBuchholzTieBreak(BuchholzTieBreak):
     def static_name() -> str:
         return _('Sum of Buchholz')
 
-    @property
-    def acronym(self) -> str:
-        return 'SOB'
-
-    @property
-    def short_name(self) -> str:
-        return _('Bu. sum *** SHORT NAME FOR SUM OF BUCHHOLZ')
-
     @staticmethod
     def available_options() -> list[type[TieBreakOption]]:
         return [ForeModifierTieBreakOption]
 
+    @cached_property
+    def fore_modifier(self) -> bool:
+        return self.get_option_values()[0]
+
+    @cached_property
+    def sub_tie_break(self) -> TieBreak:
+        return (
+            ForeBuchholzTieBreak() if self.fore_modifier else StandardBuchholzTieBreak()
+        )
+
+    @property
+    def base_acronym(self) -> str:
+        return 'SOB'
+
+    @property
+    def base_help_text(self) -> str:
+        return _(
+            'The sum of the [{tie_break}] scores of '
+            'the opponents played over the board.'
+        ).format(tie_break=_('Fore Buchholz') if self.fore_modifier else _('Buchholz'))
+
     def compute_player_value(self, player: Player, *, after_round: int) -> float:
         tournament: 'Tournament' = player.tournament
-        (fore_modifier,) = self.get_option_values()
         opponents: list[Player | None] = [
             tournament.players_by_id.get(pairing.opponent_id)
             if pairing.opponent_id
@@ -585,11 +738,12 @@ class SumOfBuchholzTieBreak(BuchholzTieBreak):
             for round_index, pairing in player.pairings.items()
             if round_index <= after_round and pairing.opponent_id is not None
         ]
-        tie_break = (
-            ForeBuchholzTieBreak() if fore_modifier else StandardBuchholzTieBreak()
-        )
         return sum(
-            tie_break.compute_player_value(opponent, after_round=after_round)
+            float(
+                self.sub_tie_break.compute_player_value(
+                    opponent, after_round=after_round
+                )
+            )
             for opponent in opponents
             if opponent is not None
         )
@@ -609,13 +763,26 @@ class AverageOfBuchholzTieBreak(BuchholzTieBreak):
     def static_name() -> str:
         return _('Average of opponents Buchholz')
 
+    @cached_property
+    def fore_modifier(self) -> bool:
+        return self.get_option_values()[0]
+
+    @cached_property
+    def sub_tie_break(self) -> TieBreak:
+        return (
+            ForeBuchholzTieBreak() if self.fore_modifier else StandardBuchholzTieBreak()
+        )
+
     @property
-    def acronym(self) -> str:
+    def base_acronym(self) -> str:
         return 'AOB'
 
     @property
-    def short_name(self) -> str:
-        return _('Average Bu. *** SHORT NAME FOR AVERAGE OF BUCHHOLZ')
+    def base_help_text(self) -> str:
+        return _(
+            'The average of the [{tie_break}] scores of '
+            'the opponents played over the board.'
+        ).format(tie_break=_('Fore Buchholz') if self.fore_modifier else _('Buchholz'))
 
     @staticmethod
     def available_options() -> list[type[TieBreakOption]]:
@@ -623,7 +790,6 @@ class AverageOfBuchholzTieBreak(BuchholzTieBreak):
 
     def compute_player_value(self, player: Player, *, after_round: int) -> float:
         tournament: 'Tournament' = player.tournament
-        (fore_modifier,) = self.get_option_values()
         opponents: list[Player] = [
             tournament.players_by_id[pairing.opponent_id]
             for round_index, pairing in player.pairings.items()
@@ -631,22 +797,25 @@ class AverageOfBuchholzTieBreak(BuchholzTieBreak):
             and pairing.opponent_id is not None
             and pairing.played
         ]
-        tie_break = (
-            ForeBuchholzTieBreak() if fore_modifier else StandardBuchholzTieBreak()
-        )
+        if not opponents:
+            return 0
         return sum(
-            tie_break.compute_player_value(opponent, after_round=after_round)
+            float(
+                self.sub_tie_break.compute_player_value(
+                    opponent, after_round=after_round
+                )
+            )
             for opponent in opponents
             if opponent is not None
         ) / len(opponents)
 
 
-class SonnebornBergerTieBreak(TieBreak):
+class SonnebornBergerTieBreak(OpponentRecordTieBreak):
     """Score computed by adding, for each round,
     a value given by multiplying their score of the opponent by
     the points scored against them.
     Options:
-      - CUT: If *cut* is more than zero, will cut the *cut* lowest contributions.
+      - CUTTER: Remove the *n* lowest contributions.
       - PLAYED_MODIFIER: When True, forfeit wins and losses will be counted
     as played games (only relevant in Swiss tournaments).
     See FIDE Handbook C.07.9.1."""
@@ -659,28 +828,42 @@ class SonnebornBergerTieBreak(TieBreak):
     def static_name() -> str:
         return _('Sonneborn-Berger')
 
-    @property
-    def acronym(self) -> str:
-        return 'SB'
-
-    @property
-    def short_name(self) -> str:
-        return _('S-Berger *** SHORT NAME FOR SONNEBORN-BERGER')
-
     @staticmethod
     def available_options() -> list[type[TieBreakOption]]:
         return [
-            CutTieBreakOption,
+            CutterTieBreakOption,
             PlayedModifierTieBreakOption,
         ]
 
+    @cached_property
+    def cutter(self) -> TieBreakCutter:
+        return self._get_option(CutterTieBreakOption).cutter
+
+    @cached_property
+    def played_modifier(self) -> bool:
+        return self.get_option_values()[1]
+
+    @property
+    def base_acronym(self) -> str:
+        return 'SB'
+
+    @property
+    def base_help_text(self) -> str:
+        return _(
+            'Score computed by adding, for each round, '
+            'a value given by multiplying the score of '
+            'the opponent by the points scored against them.'
+        )
+
     def compute_player_value(self, player: Player, *, after_round: int) -> float:
         tournament: 'Tournament' = player.tournament
-        cut, played_modifier = self.get_option_values()
+        cut = self.cutter.bottom_cut
         if cut >= after_round:
             return 0
-        if tournament.pairing_system == RoundRobinPairingSystem():
-            played_modifier = True
+        played_modifier = (
+            self.played_modifier
+            or tournament.pairing_system == RoundRobinPairingSystem()
+        )
         pairings: dict[int, Pairing] = {
             round_index: pairing
             for round_index, pairing in player.pairings.items()
@@ -768,14 +951,14 @@ class SonnebornBergerTieBreak(TieBreak):
                 return dummy, pairing.result
 
 
-class KoyaTieBreak(TieBreak):
-    """The number of points achieved against all participants
+class KoyaTieBreak(OpponentRecordTieBreak):
+    """The number of points achieved against all players
     who have scored at 50% of the maximum possible score.
     This is only used in Round-Robin tournaments, but is still
     defined for Swiss tournaments.
     Options:
-      - LIMIT: if set, this function will compute the points obtained
-    against opponents who have at least *limit* points.
+      - KOYA_LIMIT: Number of half-points above / below the 50% limit
+      required for opponents to be considered.
     See FIDE Handbook C.07.9.2."""
 
     @staticmethod
@@ -786,28 +969,47 @@ class KoyaTieBreak(TieBreak):
     def static_name() -> str:
         return _('Koya system')
 
+    @staticmethod
+    def available_options() -> list[type[TieBreakOption]]:
+        return [KoyaLimitTieBreakOption]
+
+    @cached_property
+    def limit(self) -> int | None:
+        return self.get_option_values()[0]
+
     @property
     def forbidden_pairing_systems(self) -> list[PairingSystem]:
         return [SwissPairingSystem()]
 
     @property
-    def acronym(self) -> str:
-        # FIDE Acronym: 'KS'
-        return _('Ko. *** ACRONYM FOR PAPI KOYA')
+    def base_acronym(self) -> str:
+        return 'KS'
 
     @property
-    def short_name(self) -> str:
-        return _('Koya')
+    def equation_suffix(self) -> str:
+        if not self.limit:
+            return ''
+        member = ngettext(
+            '{count} half-point', '{count} half-points', abs(self.limit)
+        ).format(count=abs(self.limit))
+        operator = '-' if self.limit < 0 else '+'
+        return f' {operator} {member}'
 
-    @staticmethod
-    def available_options() -> list[type[TieBreakOption]]:
-        return [LimitTieBreakOption]
+    @property
+    def base_help_text(self) -> str:
+        equation = _('50%% of the maximum possible score').replace('%%', '%')
+        return _(
+            'The number of points achieved against all players '
+            'who have scored at least L points (L = {equation}).'
+        ).format(equation=equation + self.equation_suffix)
 
     def compute_player_value(self, player: Player, *, after_round: int) -> float:
         tournament: 'Tournament' = player.tournament
-        (limit,) = self.get_option_values()
-        if limit is None:
-            limit = 0.5 * Result.WIN.points(tournament.point_values) * (after_round - 1)
+        win_points = Result.WIN.points(tournament.point_values)
+        score_limit = 0.5 * win_points * (after_round - 1)
+        if self.limit:
+            draw_points = Result.DRAW.points(tournament.point_values)
+            score_limit += draw_points * self.limit
         pairings: dict[int, Pairing] = {
             round_index: pairing
             for round_index, pairing in player.pairings.items()
@@ -819,71 +1021,30 @@ class KoyaTieBreak(TieBreak):
                 continue
             opponent = tournament.players_by_id[pairing.opponent_id]
             opponent_score = opponent.points_before(after_round)
-            if opponent_score >= limit:
+            if opponent_score >= score_limit:
                 score += pairing.result.points(tournament.point_values)
         return score
 
 
-class KashdanTieBreak(TieBreak):
-    """Grant 4 tiebreak points for a win, 2 for a draw, 1 for a loss,
-    and 0 for an unplayed game.
-    See USCF Handbook section 34E7."""
-
-    @staticmethod
-    def static_id() -> str:
-        return 'KASHDAN'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('Kashdan')
+class OpponentRatingTieBreak(TieBreak, ABC):
+    @property
+    def forbidden_pairing_systems(self) -> list[PairingSystem]:
+        """All the players having played against everyone in a RR,
+        those tie-breaks give the same values for all players."""
+        return [RoundRobinPairingSystem()]
 
     @property
-    def acronym(self) -> str:
-        return 'KA'
-
-    @property
-    def short_name(self) -> str:
-        return _('Kashdan')
-
-    def compute_player_value(self, player: Player, *, after_round: int) -> float:
-        pairings: list[Pairing] = [
-            pairing
-            for round_index, pairing in player.pairings.items()
-            if round_index <= after_round
-        ]
-        score_by_result: dict[Result, float] = {
-            Result.WIN: 4,
-            Result.UNRATED_WIN: 4,
-            Result.DRAW: 2,
-            Result.UNRATED_DRAW: 2,
-            Result.PENALTY_DL: 2,
-            Result.UNRATED_PENALTY_DL: 2,
-            Result.LOSS: 1,
-            Result.UNRATED_LOSS: 1,
-            Result.PENALTY_LL: 1,
-            Result.UNRATED_PENALTY_LL: 1,
-            Result.FORFEIT_WIN: 0,
-            Result.PAIRING_ALLOCATED_BYE: 0,
-            Result.FULL_POINT_BYE: 0,
-            Result.HALF_POINT_BYE: 0,
-            Result.NO_RESULT: 0,
-            Result.ZERO_POINT_BYE: 0,
-            Result.FORFEIT_LOSS: 0,
-            Result.DOUBLE_FORFEIT: 0,
-        }
-        return float(
-            sum(pairing.result.points(score_by_result) for pairing in pairings)
-        )
+    def category(self) -> TieBreakCategory:
+        return OpponentRatingCategory()
 
 
-class AverageRatingOpponentsTieBreak(TieBreak):
+class AverageRatingOpponentsTieBreak(OpponentRatingTieBreak):
     """The average rating of opponents.
     Only opponents met over the board will be counted.
     WARNING: This assumes everyone has a rating; if an opponent does not have
     a rating, they will be removed from consideration.
     Options:
-      - CUT_TOP: remove the highest *cut_top* ratings.
-      - CUT_BOTTOM: remove the lowest *cut_bottom* ratings.
+      - CUTTER_WITH_MEDIAN: Remove the *n* lowest and the *m* highest ratings.
     See FIDE Handbook C.07.10.1"""
 
     @staticmethod
@@ -894,38 +1055,29 @@ class AverageRatingOpponentsTieBreak(TieBreak):
     def static_name() -> str:
         return _('Average rating of opponents')
 
-    @property
-    def acronym(self) -> str:
-        return 'ARO'
-
-    @property
-    def short_name(self) -> str:
-        return _('Average rating')
-
-    @property
-    def forbidden_pairing_systems(self) -> list[PairingSystem]:
-        return [RoundRobinPairingSystem()]
-
     @staticmethod
     def available_options() -> list[type[TieBreakOption]]:
         return [
-            CutTopTieBreakOption,
-            CutBottomTieBreakOption,
+            CutterWithMedianTieBreakOption,
         ]
 
-    def validate_options(self):
-        super().validate_options()
-        cut_top, cut_bottom = self.get_option_values()
-        if cut_top and cut_top < cut_bottom:
-            raise OptionError(
-                _('Top cut must be at most equal to bottom cut.'),
-                self._get_option(CutTopTieBreakOption),
-            )
+    @cached_property
+    def cutter(self) -> TieBreakCutter:
+        return self._get_option(CutterWithMedianTieBreakOption).cutter
+
+    @property
+    def base_acronym(self) -> str:
+        return 'ARO'
+
+    @property
+    def base_help_text(self) -> str:
+        return _('The average of the ratings of the opponents played over the board.')
 
     def compute_player_value(self, player: Player, *, after_round: int) -> int:
         tournament: 'Tournament' = player.tournament
-        cut_top, cut_btm = self.get_option_values()
-        if cut_top + cut_btm >= after_round:
+        top_cut = self.cutter.top_cut
+        bottom_cut = self.cutter.bottom_cut
+        if top_cut + bottom_cut >= after_round:
             return 0
         pairings: list[Pairing] = [
             pairing
@@ -941,24 +1093,17 @@ class AverageRatingOpponentsTieBreak(TieBreak):
             with suppress(KeyError):
                 ratings.append(opponent.estimation)
         ratings = sorted(ratings)
-        if cut_top:
-            ratings = ratings[cut_btm:-cut_top]
+        if top_cut:
+            ratings = ratings[bottom_cut:-top_cut]
         else:
-            ratings = ratings[cut_btm:]
+            ratings = ratings[bottom_cut:]
         if not ratings:
             return 0
         average = sum(ratings) / len(ratings)
         return StaticUtils.round_ranking(average)
 
 
-class PerformanceTieBreak(TieBreak, ABC):
-    @property
-    def forbidden_pairing_systems(self) -> list[PairingSystem]:
-        # TODO (Molrn) Forbid for Round-Robin after big-move
-        return []
-
-
-class TournamentPerformanceRatingTieBreak(PerformanceTieBreak):
+class TournamentPerformanceRatingTieBreak(OpponentRatingTieBreak):
     """The Average Rating of the Opponents, added
     to a number resulting from the conversion of the fractional score
     into RD (see FIDE Rating Regulations for the Conversion Table).
@@ -973,12 +1118,15 @@ class TournamentPerformanceRatingTieBreak(PerformanceTieBreak):
         return _('Tournament performance rating')
 
     @property
-    def acronym(self) -> str:
+    def base_acronym(self) -> str:
         return 'TPR'
 
     @property
-    def short_name(self) -> str:
-        return _('Performance')
+    def base_help_text(self) -> str:
+        return _(
+            "Tie-break based on the opponents' ratings and the player's "
+            'score (consult the FIDE Handbook for more details).'
+        )
 
     def compute_player_value(self, player: Player, *, after_round: int) -> int:
         tournament: 'Tournament' = player.tournament
@@ -1005,7 +1153,7 @@ class TournamentPerformanceRatingTieBreak(PerformanceTieBreak):
         return StaticUtils.round_ranking(average + bonus)
 
 
-class AveragePerformanceRatingOpponentsTieBreak(PerformanceTieBreak):
+class AveragePerformanceRatingOpponentsTieBreak(OpponentRatingTieBreak):
     """The average of the tournament performance rating of the
     opponents, only taking played games into account.
     See FIDE Handbook C.07.10.4."""
@@ -1019,14 +1167,15 @@ class AveragePerformanceRatingOpponentsTieBreak(PerformanceTieBreak):
         return _('Average performance rating of opponents')
 
     @property
-    def acronym(self) -> str:
+    def base_acronym(self) -> str:
         return 'APRO'
 
     @property
-    def short_name(self) -> str:
+    def base_help_text(self) -> str:
         return _(
-            'Average perf. *** SHORT NAME FOR AVERAGE PERFORMANCE RATING OPPONENTS'
-        )
+            'The average of the [{tie_break}] scores of '
+            'the opponents played over the board.'
+        ).format(tie_break=_('Tournament performance rating'))
 
     def compute_player_value(self, player: Player, *, after_round: int) -> int:
         tournament: 'Tournament' = player.tournament
@@ -1044,12 +1193,13 @@ class AveragePerformanceRatingOpponentsTieBreak(PerformanceTieBreak):
                 opponent, after_round=after_round
             )
             performance_ratings.append(opponent_tpr)
-
+        if not performance_ratings:
+            return 0
         average = sum(performance_ratings) / len(performance_ratings)
         return StaticUtils.round_ranking(average)
 
 
-class PerfectTournamentPerformanceTieBreak(PerformanceTieBreak):
+class PerfectTournamentPerformanceTieBreak(OpponentRatingTieBreak):
     """The lowest rating that a participant should have for their
     expected score to be greater than or equal to their tournament score.
     This assumes that all players are rated, or at least have an estimation.
@@ -1064,12 +1214,15 @@ class PerfectTournamentPerformanceTieBreak(PerformanceTieBreak):
         return _('Perfect tournament performance')
 
     @property
-    def acronym(self) -> str:
+    def base_acronym(self) -> str:
         return 'PTP'
 
     @property
-    def short_name(self) -> str:
-        return _('Perfect perf. *** SHORT NAME FOR PERFECT TOURNAMENT PERFORMANCE')
+    def base_help_text(self) -> str:
+        return _(
+            'The lowest rating that a player should have for their '
+            'expected score to be greater than or equal to their score.'
+        )
 
     def compute_player_value(self, player: Player, *, after_round: int) -> int:
         played_rounds: list[Pairing] = [
@@ -1108,6 +1261,8 @@ class PerfectTournamentPerformanceTieBreak(PerformanceTieBreak):
         )
         if isclose(first_expected_score, actual_score, abs_tol=0.01):
             return StaticUtils.round_ranking(first_estimation)
+        if not first_expected_score:
+            return 0
         second_estimation = StaticUtils.round_ranking(
             first_estimation * actual_score / first_expected_score
         )
@@ -1129,8 +1284,12 @@ class PerfectTournamentPerformanceTieBreak(PerformanceTieBreak):
             abs_tol=0.01,
         ):
             if mid_score >= actual_score:
+                if high == mid:
+                    break
                 high = mid
             else:
+                if low == mid:
+                    break
                 low = mid
         while (
             self._expected_score(mid, ratings, tournament.point_values) >= actual_score
@@ -1228,7 +1387,7 @@ class PerfectTournamentPerformanceTieBreak(PerformanceTieBreak):
             return low, high
 
 
-class AveragePerfectPerformanceTieBreak(PerformanceTieBreak):
+class AveragePerfectPerformanceTieBreak(OpponentRatingTieBreak):
     """The average of the Perfect Tournament Performances
     of the opponents (only those who played).
     See FIDE Hand book C.07.10.5."""
@@ -1242,12 +1401,15 @@ class AveragePerfectPerformanceTieBreak(PerformanceTieBreak):
         return _('Average perfect performance of opponents')
 
     @property
-    def acronym(self) -> str:
+    def base_acronym(self) -> str:
         return 'APPO'
 
     @property
-    def short_name(self) -> str:
-        return _('Avg. Perfect Perf. *** SHORT NAME FOR AVERAGE PERFECT PERFORMANCE')
+    def base_help_text(self) -> str:
+        return _(
+            'The average of the [{tie_break}] scores of '
+            'the opponents played over the board.'
+        ).format(tie_break=_('Perfect tournament performance'))
 
     def compute_player_value(self, player: Player, *, after_round: int) -> int:
         pairings: list[Pairing] = [
@@ -1296,19 +1458,31 @@ class DirectEncounterTieBreak(TieBreak):
     def static_name(cls) -> str:
         return _('Direct encounter')
 
-    @property
-    def acronym(self) -> str:
-        return 'DE'
-
-    @property
-    def short_name(self) -> str:
-        return _('Direct encounter')
-
     @staticmethod
     def available_options() -> list[type[TieBreakOption]]:
         return [
             PlayedModifierTieBreakOption,
         ]
+
+    @cached_property
+    def played_modifier(self) -> bool:
+        return self.get_option_values()[0]
+
+    @property
+    def base_acronym(self) -> str:
+        return 'DE'
+
+    @property
+    def base_help_text(self) -> str:
+        return _(
+            'Tie-break favoring players which have won '
+            'against the players they are tied with '
+            '(consult the FIDE handbook for more details).'
+        )
+
+    @property
+    def category(self) -> TieBreakCategory:
+        return OtherCategory()
 
     @property
     def display_rank_delta(self) -> bool:
@@ -1329,8 +1503,6 @@ class DirectEncounterTieBreak(TieBreak):
         attribute (if possible) an integer value from 0 to len(group).
         """
 
-        (played_modifier,) = self.get_option_values()
-
         # Group players by the rank sort key before the tie-break
         players_by_rank_group: dict[tuple, list[Player]] = defaultdict(list)
         for player in tournament.players:
@@ -1339,7 +1511,10 @@ class DirectEncounterTieBreak(TieBreak):
 
         values_by_player_id: dict[int, int] = {}
         point_values = tournament.point_values
-        if tournament.pairing_system == SwissPairingSystem() and not played_modifier:
+        if (
+            tournament.pairing_system == SwissPairingSystem()
+            and not self.played_modifier
+        ):
             point_values |= {
                 Result.FORFEIT_WIN: 0,
                 Result.DOUBLE_FORFEIT: 0,
@@ -1460,12 +1635,19 @@ class ManualTieBreak(TieBreak):
         return _('Manual')
 
     @property
-    def acronym(self) -> str:
-        return _('Man. *** ACRONYM FOR MANUAL TIEBREAK')
+    def base_acronym(self) -> str:
+        return 'MAN'
 
     @property
-    def short_name(self) -> str:
-        return _('Manual')
+    def base_help_text(self) -> str:
+        return _(
+            'After the last round, reorder manually '
+            'the tied players from the Pairings tab.'
+        )
+
+    @property
+    def category(self) -> TieBreakCategory:
+        return OtherCategory()
 
     @property
     def display_rank_delta(self) -> bool:

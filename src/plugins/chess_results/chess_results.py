@@ -205,6 +205,20 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
             return None
         return '/chess_results_tournament_card_connexion.html'
 
+    @hookimpl
+    def get_tournament_tie_breaks_warning_message(
+        self, tournament: 'Tournament'
+    ) -> str | None:
+        if (
+            ChessResultsUtils.get_tournament_plugin_data(tournament).tnr
+            and len(tournament.tie_breaks) > 3
+        ):
+            return _(
+                'Chess-Results.com only displays 3 tie-breaks. '
+                'However, the rankings remain the same as in Sharly Chess.'
+            )
+        return None
+
     # ---------------------------------------------------------------------------------
     # Upload
     # ---------------------------------------------------------------------------------

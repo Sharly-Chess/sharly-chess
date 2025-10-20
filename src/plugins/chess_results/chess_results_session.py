@@ -9,6 +9,7 @@ from requests import Session
 
 from common.i18n import _
 from common.logger import get_logger
+from data.tie_breaks.tie_breaks import ManualTieBreak
 from data.tournament import Tournament
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.event.event_database import EventDatabase
@@ -16,6 +17,7 @@ from plugins.chess_results import PLUGIN_NAME
 from plugins.chess_results.chess_results_mappers import (
     ChessResultsPlayerGender,
     ChessResultsTieBreak,
+    ChessResultPairingSystem,
 )
 from plugins.chess_results.utils import ChessResultsUtils
 from plugins.utils import PluginUtils
@@ -95,7 +97,7 @@ class ChessResultsSession(Session):
         self, tournament: Tournament, sid: str, tnr: str, creator_id: str
     ) -> str:
         """
-        Build Chess-Results upload XML from a Sharly Chess Rournament.
+        Build Chess-Results upload XML from a Sharly Chess Tournament.
         """
 
         root = ET.Element('chessresults')
@@ -105,22 +107,24 @@ class ChessResultsSession(Session):
 
         # Get up to 5 tiebreak keys (pad with zeros if fewer)
         tb_details: list[tuple[str, str]] = []
-        for tb in tournament.tie_breaks[:5]:
-            tb_data = ChessResultsTieBreak.data_for_tiebreak(tb)
-            if tb_data:
-                params_str = ','.join(v for v in tb_data[1:] if v)
-                tb_details.append((tb_data[0], params_str))
-            else:
-                tb_details.append(('0', ''))
-        while len(tb_details) < 5:
+        for tie_break in tournament.tie_breaks[:4]:
+            cr_tie_break = ChessResultsTieBreak.from_tie_break(tournament, tie_break)
+            tb_details.append((str(cr_tie_break.number), cr_tie_break.params_str))
+        while len(tb_details) < 4:
             tb_details.append(('0', ''))
+        # Always add a final tie-break representing the SC rankings (never displayed, only the first 3)
+        manual = ChessResultsTieBreak.from_tie_break(tournament, ManualTieBreak())
+        tb_details.append((str(manual.number), manual.params_str))
 
         ET.SubElement(
             tdata,
             'tournament',
             {
                 'key': str(tnr),
-                'type': '0',  # 0=Swiss, 1=Round robin, etc.
+                'type': ChessResultPairingSystem.get_outer_value(
+                    tournament.pairing_system
+                )
+                or '',
                 'name': tournament.full_name,
                 'fideeventid': '',
                 'remark': f'#{ChessResultsUtils.resolve_remark(tournament)}'[:599],
@@ -190,11 +194,12 @@ class ChessResultsSession(Session):
         for p in tournament.players_by_pairing_number.values():
             # Get up to 5 tiebreak keys (pad with zeros if fewer)
             tb_values: list[str] = []
-            for tbv in p.tie_break_values[:5]:
+            for tbv in p.tie_break_values[:4]:
                 value = str(tbv.value)
                 tb_values.append(str(value))
-            while len(tb_values) < 5:
+            while len(tb_values) < 4:
                 tb_values.append('')
+            tb_values.append(str(tournament.player_count - p.rank))
 
             same_as_previous = (
                 tb_values == prev_tb_values if prev_tb_values is not None else False

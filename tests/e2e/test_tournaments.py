@@ -21,6 +21,13 @@ class TestTournamentFunctionality:
         modal.get_by_role('textbox', name='Name:').fill(name)
         modal.get_by_role('button', name='Create', exact=True).click()
 
+        # Redirection to Tie-breaks
+        success_alert = modal.locator(f"div.alert:has-text('{name}')")
+        expect(success_alert).to_be_visible()
+        TestUtils.button_by_text(modal, 'Use the recommended tie-breaks').click()
+        expect(modal.locator('.tie-break-row')).to_have_count(4)
+        TestUtils.button_by_text(modal, 'Close').click()
+
         card = page.locator(f"div.card:has-text('{name}')")
         expect(card).to_be_visible()
 

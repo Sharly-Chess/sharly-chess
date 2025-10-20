@@ -39,6 +39,7 @@ from database.sqlite.event.event_store import (
     StoredTournamentCriterion,
     StoredTournamentPlayer,
     StoredPairing,
+    StoredTieBreak,
 )
 from plugins.utils import PluginData
 from plugins.manager import plugin_manager
@@ -79,7 +80,12 @@ class Tournament:
         self.prize_groups_by_id = self._get_prize_groups_by_id()
         self._players_by_rank: dict[int, Player] | None = None
         self.criteria_by_id = self._get_criteria_by_id()
+        self.tie_breaks_by_id = self._get_tie_breaks_by_id()
         self.plugin_data = self._get_plugin_data()
+
+    # -------------------------------------------------------------------------
+    # Plugin
+    # -------------------------------------------------------------------------
 
     @staticmethod
     def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
@@ -87,6 +93,18 @@ class Tournament:
             plugin_id: plugin_data_class
             for plugin_id, plugin_data_class in plugin_manager.hook.get_tournament_plugin_data_class()
         }
+
+    def _get_plugin_data(self) -> dict[str, PluginData]:
+        return {
+            plugin_id: plugin_data_class.from_stored_value(
+                self.stored_tournament.plugin_data.get(plugin_id, {})
+            )
+            for plugin_id, plugin_data_class in self.plugin_data_class_by_plugin_id().items()
+        }
+
+    # -------------------------------------------------------------------------
+    # Stored properties
+    # -------------------------------------------------------------------------
 
     @property
     def event(self) -> 'Event':
@@ -215,13 +233,233 @@ class Tournament:
         else:
             return self.stored_tournament.last_rounds_no_byes
 
-    def _get_plugin_data(self) -> dict[str, PluginData]:
+    @property
+    def last_update(self) -> float:
+        return self.stored_tournament.last_update
+
+    @property
+    def last_player_update(self) -> float:
+        return self.stored_tournament.last_player_update
+
+    @property
+    def last_pairing_update(self) -> float:
+        return self.stored_tournament.last_pairing_update
+
+    @property
+    def handicap(self) -> bool:
+        return bool(self.time_control_handicap_penalty_value)
+
+    @property
+    def rounds(self) -> int:
+        return self.stored_tournament.rounds
+
+    @property
+    def pairing_variation(self) -> 'PairingVariation':
+        from data.pairings import PairingVariationManager
+
+        return PairingVariationManager(self.event).get_object(
+            self.stored_tournament.pairing
+        )
+
+    @property
+    def pairing_system(self) -> 'PairingSystem':
+        return self.pairing_variation.system()
+
+    @cached_property
+    def rating(self) -> TournamentRating:
+        return TournamentRating(self.stored_tournament.rating)
+
+    @cached_property
+    def player_rating_type(self) -> PlayerRatingType:
+        return (
+            PlayerRatingType(self.stored_tournament.player_rating_type)
+            if self.stored_tournament.player_rating_type is not None
+            else self.event.player_rating_type
+        )
+
+    @property
+    def override_unrated_rapid_blitz(self) -> bool:
+        if self.stored_tournament.override_unrated_rapid_blitz is not None:
+            return self.stored_tournament.override_unrated_rapid_blitz
+        return self.event.override_unrated_rapid_blitz
+
+    @property
+    def three_points_for_a_win(self) -> bool:
+        if self.stored_tournament.three_points_for_a_win is not None:
+            return self.stored_tournament.three_points_for_a_win
+        return self.event.three_points_for_a_win
+
+    @property
+    def pab_value(self) -> Result:
+        if self.stored_tournament.pab_value is not None:
+            return Result(self.stored_tournament.pab_value)
+        return self.event.pab_value
+
+    # -------------------------------------------------------------------------
+    # Pairing settings
+    # -------------------------------------------------------------------------
+
+    @property
+    def stored_pairing_settings(self) -> dict[str, Any]:
+        return self.stored_tournament.pairing_settings
+
+    @cached_property
+    def pairing_settings(self) -> dict[str, Any]:
         return {
-            plugin_id: plugin_data_class.from_stored_value(
-                self.stored_tournament.plugin_data.get(plugin_id, {})
-            )
-            for plugin_id, plugin_data_class in self.plugin_data_class_by_plugin_id().items()
+            setting.id: setting.get_value(self)
+            for setting in self.pairing_variation.settings
         }
+
+    def set_valid_pairing_settings(self):
+        modified_settings: dict[str, Any] = {}
+        for setting in self.pairing_variation.settings:
+            if setting.is_valid(self):
+                continue
+            modified_settings[setting.id] = setting.to_stored_value(
+                setting.default_value(self)
+            )
+        if modified_settings:
+            self.update_pairing_settings(
+                self.stored_pairing_settings | modified_settings
+            )
+
+    def update_pairing_settings(self, pairing_settings: dict[str, Any]):
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            database.set_tournament_pairing_settings(self.id, pairing_settings)
+        self.stored_tournament.pairing_settings = pairing_settings
+        property_name = 'pairing_settings'
+        if property_name in self.__dict__:
+            del self.__dict__[property_name]
+
+    # -------------------------------------------------------------------------
+    # Tie-breaks
+    # -------------------------------------------------------------------------
+
+    def _tie_break_from_stored_tie_break(
+        self, stored_tie_break: StoredTieBreak
+    ) -> TieBreak | None:
+        try:
+            tie_break_type = TieBreakManager(self.event).get_type(stored_tie_break.type)
+        except KeyError:
+            logger.warning(
+                'Tie-break [%s] not found for tournament [%s].',
+                stored_tie_break.type,
+                self.name,
+            )
+            return None
+        options: list[TieBreakOption] = []
+        manager = TieBreakOptionManager(self.event)
+        for option_id, option_value in stored_tie_break.options.items():
+            try:
+                option_type = manager.get_type(option_id)
+                options.append(option_type(option_value))
+            except KeyError:
+                logger.warning(
+                    'Unknown tie-break option [%s] for tie-break [%d].',
+                    option_id,
+                    stored_tie_break.id,
+                )
+        return tie_break_type(options)
+
+    def _get_tie_breaks_by_id(self) -> dict[int, TieBreak]:
+        tie_breaks_by_id: dict[int, TieBreak] = {}
+        for stored_tie_break in self.stored_tournament.stored_tie_breaks:
+            if not (
+                tie_break := (self._tie_break_from_stored_tie_break(stored_tie_break))
+            ):
+                continue
+            id_ = stored_tie_break.id
+            assert id_ is not None
+            tie_breaks_by_id[id_] = tie_break
+        return tie_breaks_by_id
+
+    @property
+    def tie_breaks(self) -> list[TieBreak]:
+        return [
+            tie_break
+            for tie_break in self.tie_breaks_with_invalid
+            if not self.tie_break_invalid_message(tie_break)
+        ]
+
+    @property
+    def tie_breaks_with_invalid(self) -> Collection[TieBreak]:
+        return self.tie_breaks_by_id.values()
+
+    def tie_break_invalid_message(self, tie_break: TieBreak) -> str | None:
+        """Get a message explaining why a tie-break is invalid, or None if it is valid."""
+        if self.pairing_system in tie_break.forbidden_pairing_systems:
+            return _(
+                'This tie-break is not compatible with '
+                'the pairing system [{pairing_system}] (ignored).'
+            ).format(pairing_system=self.pairing_system.name)
+        return None
+
+    @property
+    def tie_breaks_warning_message(self) -> str | None:
+        plugin_warning = plugin_manager.hook_for_event(
+            self.event, 'get_tournament_tie_breaks_warning_message'
+        )(tournament=self)
+        if plugin_warning:
+            return plugin_warning
+        return None
+
+    def reorder_tie_breaks(self, ordered_ids: list[int]):
+        if len(ordered_ids) != len(self.tie_breaks_by_id):
+            raise ValueError(f'{ordered_ids=}')
+        for object_id, tie_break in self.tie_breaks_by_id.items():
+            if object_id not in ordered_ids:
+                raise ValueError(
+                    f'Tie break [{object_id}] not part of tournament [{self.name}].'
+                )
+        with EventDatabase(self.event.uniq_id, True) as database:
+            self._set_tie_break_indexes(database, ordered_ids)
+        self.tie_breaks_by_id = {
+            object_id: self.tie_breaks_by_id[object_id] for object_id in ordered_ids
+        }
+
+    def _set_tie_break_indexes(self, database: EventDatabase, ordered_ids: list[int]):
+        for index, object_id in enumerate(ordered_ids):
+            stored_tie_break = self.tie_breaks_by_id[object_id].to_stored_value()
+            stored_tie_break.id = object_id
+            stored_tie_break.tournament_id = self.id
+            stored_tie_break.index = index
+            database.update_stored_tie_break(stored_tie_break)
+
+    def add_tie_break(self, tie_break: TieBreak):
+        stored_tie_break = tie_break.to_stored_value()
+        stored_tie_break.tournament_id = self.id
+        stored_tie_break.index = len(self.tie_breaks_by_id)
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            object_id = database.add_stored_tie_break(stored_tie_break)
+        self.tie_breaks_by_id[object_id] = tie_break
+        return tie_break
+
+    def update_tie_break(self, tie_break_id: int, new_tie_break: TieBreak):
+        if tie_break_id not in self.tie_breaks_by_id:
+            raise ValueError(
+                f'Tie-break [{tie_break_id}] not part of tournament [{self.name}].'
+            )
+        stored_tie_break = new_tie_break.to_stored_value()
+        stored_tie_break.id = tie_break_id
+        stored_tie_break.tournament_id = self.id
+        stored_tie_break.index = list(self.tie_breaks_by_id).index(tie_break_id)
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            database.update_stored_tie_break(stored_tie_break)
+        self.tie_breaks_by_id[tie_break_id] = new_tie_break
+
+    def delete_tie_break(self, tie_break_id: int):
+        if tie_break_id not in self.tie_breaks_by_id:
+            raise ValueError(
+                f'Tie-break [{tie_break_id}] not part of tournament [{self.name}].'
+            )
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.delete_stored_tie_break(tie_break_id)
+            del self.tie_breaks_by_id[tie_break_id]
+            self._set_tie_break_indexes(database, list(self.tie_breaks_by_id))
+
+    # -------------------------------------------------------------------------
+    # Criteria
+    # -------------------------------------------------------------------------
 
     def _get_criteria_by_id(self) -> dict[int, TournamentCriterion]:
         criteria_by_id = {}
@@ -301,156 +539,9 @@ class Tournament:
         if criterion_id in self.criteria_by_id:
             del self.criteria_by_id[criterion_id]
 
-    @cached_property
-    def players_by_check_in_status(self) -> dict[bool | None, list[Player]]:
-        if self.finished or self.playing or not self.check_in_open:
-            return {
-                None: list(self.players),
-                True: [],
-                False: [],
-            }
-        else:
-            result: dict[bool | None, list[Player]] = {
-                None: [],
-                True: [],
-                False: [],
-            }
-            for player in self.players:
-                if not player.can_check_in_out:
-                    result[None].append(player)
-                else:
-                    result[player.check_in].append(player)
-            return result
-
-    @cached_property
-    def check_in_counts(self) -> Counter[bool | None]:
-        counter: Counter[bool | None] = Counter[bool | None]()
-        if self.finished or self.playing or not self.check_in_open:
-            counter[None] = len(self.players_by_id)
-            counter[True] = 0
-            counter[False] = 0
-        else:
-            for player in self.players:
-                if not player.can_check_in_out:
-                    counter[None] += 1
-                else:
-                    counter[player.check_in] += 1
-        return counter
-
-    @property
-    def last_update(self) -> float:
-        return self.stored_tournament.last_update
-
-    @property
-    def last_player_update(self) -> float:
-        return self.stored_tournament.last_player_update
-
-    @property
-    def last_pairing_update(self) -> float:
-        return self.stored_tournament.last_pairing_update
-
-    @property
-    def handicap(self) -> bool:
-        return bool(self.time_control_handicap_penalty_value)
-
-    @property
-    def rounds(self) -> int:
-        return self.stored_tournament.rounds
-
-    @property
-    def pairing_variation(self) -> 'PairingVariation':
-        from data.pairings import PairingVariationManager
-
-        return PairingVariationManager(self.event).get_object(
-            self.stored_tournament.pairing
-        )
-
-    @property
-    def pairing_system(self) -> 'PairingSystem':
-        return self.pairing_variation.system()
-
-    @property
-    def stored_pairing_settings(self) -> dict[str, Any]:
-        return self.stored_tournament.pairing_settings
-
-    @cached_property
-    def pairing_settings(self) -> dict[str, Any]:
-        return {
-            setting.id: setting.get_value(self)
-            for setting in self.pairing_variation.settings
-        }
-
-    def set_valid_pairing_settings(self):
-        modified_settings: dict[str, Any] = {}
-        for setting in self.pairing_variation.settings:
-            if setting.is_valid(self):
-                continue
-            modified_settings[setting.id] = setting.to_stored_value(
-                setting.default_value(self)
-            )
-        if modified_settings:
-            self.update_pairing_settings(
-                self.stored_pairing_settings | modified_settings
-            )
-
-    def update_pairing_settings(self, pairing_settings: dict[str, Any]):
-        with EventDatabase(self.event.uniq_id, write=True) as database:
-            database.set_tournament_pairing_settings(self.id, pairing_settings)
-        self.stored_tournament.pairing_settings = pairing_settings
-        property_name = 'pairing_settings'
-        if property_name in self.__dict__:
-            del self.__dict__[property_name]
-
-    @cached_property
-    def rating(self) -> TournamentRating:
-        return TournamentRating(self.stored_tournament.rating)
-
-    @cached_property
-    def player_rating_type(self) -> PlayerRatingType:
-        return (
-            PlayerRatingType(self.stored_tournament.player_rating_type)
-            if self.stored_tournament.player_rating_type is not None
-            else self.event.player_rating_type
-        )
-
-    @property
-    def override_unrated_rapid_blitz(self) -> bool:
-        if self.stored_tournament.override_unrated_rapid_blitz is not None:
-            return self.stored_tournament.override_unrated_rapid_blitz
-        return self.event.override_unrated_rapid_blitz
-
-    @property
-    def three_points_for_a_win(self) -> bool:
-        if self.stored_tournament.three_points_for_a_win is not None:
-            return self.stored_tournament.three_points_for_a_win
-        return self.event.three_points_for_a_win
-
-    @property
-    def pab_value(self) -> Result:
-        if self.stored_tournament.pab_value is not None:
-            return Result(self.stored_tournament.pab_value)
-        return self.event.pab_value
-
-    @cached_property
-    def tie_breaks(self) -> list[TieBreak]:
-        tie_breaks: list[TieBreak] = []
-        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager(
-            self.event
-        ).type_by_id()
-        option_type_by_id: dict[str, type[TieBreakOption]] = (
-            TieBreakOptionManager().type_by_id()
-        )
-        for tie_break_dict in self.stored_tournament.tie_breaks:
-            assert isinstance(tie_break_dict['type'], str)
-            assert isinstance(tie_break_dict['options'], dict)
-            tie_break_id = tie_break_dict['type']
-            options: list[TieBreakOption] = []
-            for option_id, value in tie_break_dict['options'].items():
-                if option_type := option_type_by_id.get(option_id, None):
-                    options.append(option_type(value))
-            if tie_break_type := tie_break_type_by_id.get(tie_break_id, None):
-                tie_breaks.append(tie_break_type(options))
-        return tie_breaks
+    # -------------------------------------------------------------------------
+    # Prize groups
+    # -------------------------------------------------------------------------
 
     @property
     def prize_groups(self) -> Collection[PrizeGroup]:
@@ -508,6 +599,10 @@ class Tournament:
             (group.name for group in self.prize_groups),
         )
 
+    # -------------------------------------------------------------------------
+    # Players
+    # -------------------------------------------------------------------------
+
     @property
     def players(self) -> Collection[Player]:
         return self.players_by_id.values()
@@ -552,6 +647,27 @@ class Tournament:
             key=by('last_name', 'first_name'),
         )
 
+    @cached_property
+    def players_by_check_in_status(self) -> dict[bool | None, list[Player]]:
+        if self.finished or self.playing or not self.check_in_open:
+            return {
+                None: list(self.players),
+                True: [],
+                False: [],
+            }
+        else:
+            result: dict[bool | None, list[Player]] = {
+                None: [],
+                True: [],
+                False: [],
+            }
+            for player in self.players:
+                if not player.can_check_in_out:
+                    result[None].append(player)
+                else:
+                    result[player.check_in].append(player)
+            return result
+
     @property
     def min_player_rating(self) -> int | None:
         if not self.players:
@@ -569,6 +685,10 @@ class Tournament:
         if not self.players:
             return 0
         return sum(player.rating for player in self.players) / len(self.players)
+
+    # -------------------------------------------------------------------------
+    # Counters
+    # -------------------------------------------------------------------------
 
     @cached_property
     def gender_counts(self) -> Counter[PlayerGender]:
@@ -608,6 +728,25 @@ class Tournament:
         for player in self.players:
             counter[player.rating_type] += 1
         return counter
+
+    @cached_property
+    def check_in_counts(self) -> Counter[bool | None]:
+        counter: Counter[bool | None] = Counter[bool | None]()
+        if self.finished or self.playing or not self.check_in_open:
+            counter[None] = len(self.players_by_id)
+            counter[True] = 0
+            counter[False] = 0
+        else:
+            for player in self.players:
+                if not player.can_check_in_out:
+                    counter[None] += 1
+                else:
+                    counter[player.check_in] += 1
+        return counter
+
+    # -------------------------------------------------------------------------
+    # Misc
+    # -------------------------------------------------------------------------
 
     @property
     def max_ranking_round(self) -> int:

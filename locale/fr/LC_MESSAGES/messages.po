@@ -235,6 +235,10 @@ msgstr "403 - Accès non-autorisé"
 msgid "404 - Page Not Found"
 msgstr "404 - Page non trouvée"
 
+#, python-format
+msgid "50%% of the maximum possible score"
+msgstr "50%% du score maximal possible"
+
 msgid "50+"
 msgstr "50+"
 
@@ -495,6 +499,9 @@ msgstr "Administrateur·ice"
 msgid "Affects the rating that will be chosen for each player."
 msgstr "Influe sur le classement qui sera choisi pour chaque joueur·euse."
 
+msgid "After the last round, reorder manually the tied players from the Pairings tab."
+msgstr "Après la dernière ronde, réorganiser manuellement les joueur·euses ex aequo depuis l'onglet Appariements."
+
 msgid "Age"
 msgstr "Age"
 
@@ -688,32 +695,20 @@ msgstr "Automatique"
 msgid "Average"
 msgstr "Moyenne"
 
-msgid "Average Bu. *** SHORT NAME FOR AVERAGE OF BUCHHOLZ"
-msgstr "Bu. moyen"
-
 msgid "Average of opponents Buchholz"
 msgstr "Moyenne du Buchholz des adversaires"
 
-msgid "Average perf. *** SHORT NAME FOR AVERAGE PERFORMANCE RATING OPPONENTS"
-msgstr "Perf. moyenne"
-
 msgid "Average perfect performance of opponents"
-msgstr "Moyenne des performances ELO parfaites des adversaires"
+msgstr "Moyenne des performances parfaites des adversaires"
 
 msgid "Average performance rating of opponents"
-msgstr "Moyenne des performances ELO des adversaires"
-
-msgid "Average rating"
-msgstr "ELO moyen"
+msgstr "Moyenne des performances des adversaires"
 
 msgid "Average rating of opponents"
-msgstr "Classement ELO moyen des adversaires"
+msgstr "Moyenne des classements des adversaires"
 
 msgid "Average rating: {rating}"
 msgstr "Classement moyen : {rating}"
-
-msgid "Avg. Perfect Perf. *** SHORT NAME FOR AVERAGE PERFECT PERFORMANCE"
-msgstr "Perf. parfaite moyenne"
 
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
 msgstr "N"
@@ -760,12 +755,6 @@ msgstr "Grille Berger"
 
 msgid "Black"
 msgstr "Noirs"
-
-msgid "Black Wins"
-msgstr "Victoires avec les Noirs"
-
-msgid "Black games"
-msgstr "Parties Noirs"
 
 msgid "Black pairings are supposed to have an opponent"
 msgstr "Les appariements avec les Noirs sont censés avoir un·e adversaire."
@@ -830,17 +819,14 @@ msgstr "échiquiers du n°%(first)d au n°%(last)d"
 msgid "Boards screens show pairings by board number."
 msgstr "Les écrans d'affichage des échiquiers présentent les appariements par échiquier."
 
-msgid "Bu. *** ACRONYM FOR PAPI BUCHHOLZ"
-msgstr "Bu."
-
-msgid "Bu. sum *** SHORT NAME FOR SUM OF BUCHHOLZ"
-msgstr "Somme des Bu."
-
 msgid "Buchholz"
 msgstr "Buchholz"
 
-msgid "Buchholz cut bottom"
+msgid "Buchholz cut"
 msgstr "Buchholz tronqué"
+
+msgid "Buchholz score calculated as if all paired games for the final round had ended in draws."
+msgstr "Score Buchholz calculé comme si toutes les parties appariées pour la dernière ronde s'étaient terminées en match nul."
 
 msgid "By board"
 msgstr "Par échiquier"
@@ -983,6 +969,9 @@ msgstr "Échecs"
 
 msgid "Chess-Results.com"
 msgstr "Chess-Results.com"
+
+msgid "Chess-Results.com only displays 3 tie-breaks. However, the rankings remain the same as in Sharly Chess."
+msgstr "Chess-Results.com n'affiche que 3 départages. Cependant, le classement reste le même  que dans Sharly Chess."
 
 msgid "ChessEvent"
 msgstr "ChessEvent"
@@ -1167,6 +1156,9 @@ msgstr "Configuration"
 msgid "Configure the ChessEvent settings of this tournament."
 msgstr "Configurer les paramètres ChessEvent de ce tournoi."
 
+msgid "Configure the tie-breaks of the tournament."
+msgstr "Configurer les départages du tournoi."
+
 msgid "Connect to the Sharly Chess network via {type},<br />then scan to access the Sharly Chess server."
 msgstr "Connectez-vous au réseau Sharly Chess via {type},<br />puis scannez pour accéder au serveur Sharly Chess."
 
@@ -1193,6 +1185,12 @@ msgstr "La connexion au serveur a échoué."
 
 msgid "Connection to the server failed: {error}."
 msgstr "La connexion au serveur a échoué : {error}."
+
+msgid "Consider all paired games for the final round as draws."
+msgstr "Considérer toutes les parties appariées pour la dernière ronde comme nulles."
+
+msgid "Consider forfeited games, either wins or losses, as played games against the scheduled opponent."
+msgstr "Considérer les parties gagnées ou perdues par forfait comme des parties jouées contre l'adversaire prévu."
 
 msgid "Console logging level: {console_log_level}"
 msgstr "Niveau de log sur la console : {console_log_level}"
@@ -1317,6 +1315,9 @@ msgstr "Créer un écran"
 msgid "Create screen family"
 msgstr "Créer une famille d'écrans"
 
+msgid "Create tie-break"
+msgstr "Créer un départage"
+
 msgid "Create timer"
 msgstr "Créer un chronomètre"
 
@@ -1374,6 +1375,15 @@ msgstr "Affiche actuellement l'écran rotatif [{uniq_id}]"
 
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr "Affiche actuellement l'écran [{uniq_id}]"
+
+msgid "Cut *** TIE BREAK VARIATION"
+msgstr "Tronqué"
+
+msgid "Cut values"
+msgstr "Élaguer des valeurs"
+
+msgid "Cut {value} *** CUT TIE BREAK NAME"
+msgstr "Tronqué {value}"
 
 msgid "DCA"
 msgstr "ADJ"
@@ -1813,7 +1823,7 @@ msgid "E.g.: my_password"
 msgstr "Exemple : mon_mot_de_passe"
 
 msgid "E.g.: €1000 in prizes, FIDE rated, 2 byes 1/2 possible."
-msgstr "Par ex. : 1000 € de prix, homologué FIDE, 2 exemptions à 0,5 point possibles."
+msgstr "Exemple : 1000 € de prix, homologué FIDE, 2 exemptions à 0,5 point possibles."
 
 msgid "EXEMPT"
 msgstr "EXEMPT·E"
@@ -1914,6 +1924,9 @@ msgstr "Modifier les ensembles de joueur·euses affichés sur l'écran."
 
 msgid "Edit the unique ID."
 msgstr "Éditer l'identifiant unique."
+
+msgid "Edit tie-break"
+msgstr "Modifier le départage"
 
 msgid "Edit timer"
 msgstr "Modifier le chronomètre"
@@ -2143,12 +2156,6 @@ msgstr "Titre FIDE :"
 msgid "FIDE database"
 msgstr "Base de données FIDE"
 
-msgid "FIDE recommended tie-breaks for round-robin tournaments:"
-msgstr "Départages recommandés par la FIDE pour les tournois toutes rondes :"
-
-msgid "FIDE recommended tie-breaks for swiss tournaments:"
-msgstr "Départages recommandés par la FIDE pour les tournois suisses :"
-
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "MF"
 
@@ -2292,6 +2299,16 @@ msgstr "Ajustement de la taille de police (%%) :"
 msgid "Font size adjustment for the screen."
 msgstr "Ajustement de la taille de police pour l'écran."
 
+msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
+msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
+msgstr[0] "Pour un tournoi de {rounds} rondes, la valeur la moins significative et la valeur la plus significative sont retirées."
+msgstr[1] "Pour un tournoi de {rounds} rondes, les {count} valeurs les moins significatives et les {count} valeurs les plus significatives sont retirées."
+
+msgid "For a tournament with {rounds} rounds, the least significant value is removed."
+msgid_plural "For a tournament with {rounds} rounds, the {count} least significant values are removed."
+msgstr[0] "Pour un tournoi de {rounds} rondes, la valeur la moins significative est retirée."
+msgstr[1] "Pour un tournoi de {rounds} rondes, les {count} valeurs les moins significatives sont retirées."
+
 msgid "For non-monetary prizes, the value is used for reward priority."
 msgstr "Pour les prix non-monétaires, la valeur est utiliée pour prioriser les récompenses."
 
@@ -2301,8 +2318,8 @@ msgstr "Pour les joueur·euses qui ne se sont pas pointé·es :"
 msgid "For these reasons, it is strongly discouraged to unpair a round. It is instead recommended to use manual pairings to handle unusual situations."
 msgstr "Pour ces raisons, il est fortement déconseillé de désapparier une ronde. Il est à la place recommandé d'utiliser les appariements manuels pour gérer les situations inhabituelles."
 
-msgid "Fore Bu. *** SHORT NAME FOR FORE BUCHHOLZ"
-msgstr "Fore Bu."
+msgid "Fore"
+msgstr "Fore"
 
 msgid "Fore Buchholz"
 msgstr "Fore Buchholz"
@@ -2312,6 +2329,15 @@ msgstr "Défaite par forfait"
 
 msgid "Forfeit Win"
 msgstr "Victoire par forfait"
+
+msgid "Forfeited games are always considered as played in Round-Robin tournaments."
+msgstr "Les parties gagnées ou perdues par forfait sont toujours considérées comme jouées dans les tournois Toutes-Rondes."
+
+msgid "Forfeited games are considered as played."
+msgstr "Les parties gagnées ou perdues par forfait sont considérées comme jouées."
+
+msgid "Forfeits played"
+msgstr "Forfaits joués"
 
 msgid "French Chess Federation"
 msgstr "Fédération Française des Échecs"
@@ -2334,14 +2360,8 @@ msgstr "Fédération Française des Échecs"
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GMI"
 
-msgid "Games played"
-msgstr "Parties jouées"
-
 msgid "Games played with black"
 msgstr "Nombre de parties jouées avec les Noirs"
-
-msgid "Games won"
-msgstr "Parties gagnées"
 
 msgid "Games won with Black"
 msgstr "Nombre de parties gagnées avec les Noirs"
@@ -2399,6 +2419,9 @@ msgstr "Aller à l'écran."
 
 msgid "Grand Master"
 msgstr "Grand Maître International"
+
+msgid "Grant 4 tie-break points for a win, 2 for a draw, 1 for a loss, and 0 for an unplayed game."
+msgstr "Attribuer 4 points de score pour une victoire, 2  pour un match nul, 1 pour une défaite et 0 pour une partie non jouée."
 
 msgid "Group"
 msgstr "Groupe"
@@ -2470,6 +2493,9 @@ msgstr "Comment trier les joueur·euses."
 
 msgid "How to split the results."
 msgstr "Comment regrouper les résultats."
+
+msgid "However, the order of the results of the last round will remain the same as the ones in Sharly Chess."
+msgstr "Cependant, l'ordre des résultats de la dernière rondes restera le même que ceux de Sharly Chess."
 
 msgid "I confirm that I have read and acknowledged the warning"
 msgstr "Je confirme avoir pris connaissance de l'avertissement"
@@ -2698,27 +2724,17 @@ msgstr "Valeur invalide [{value}] pour le champ [{field}] (attendu : l’une de
 msgid "Invalid value [{value}]."
 msgstr "Valeur [{value}] non valide."
 
+msgid "It is highly recommended to set at least one tie-break."
+msgstr "Il est fortement recommandé de définir au moins un départage."
+
 msgid "JSON file (papi-converter format)"
 msgstr "Fichier JSON (format papi-converter)"
-
-msgid "Ka. *** ACRONYM FOR PAPI KASHDAN"
-msgstr "Ka."
 
 msgid "Kashdan"
 msgstr "Kashdan"
 
 msgid "Keyboard shortcuts:"
 msgstr "Raccourcis clavier :"
-
-msgid "Ko. *** ACRONYM FOR PAPI KOYA"
-msgstr "Ko."
-
-msgid "Koya"
-msgstr "Koya"
-
-#, python-format
-msgid "Koya System (the number of points achieved against all opponents who have achieved 50 %% or more)"
-msgstr "Koya (le nombre de points réalisé scontre des adversaires ayant réalisé 50 %% des points ou plus)"
 
 msgid "Koya system"
 msgstr "Système Koya"
@@ -2795,6 +2811,14 @@ msgstr "Types de licence"
 msgid "Licence:"
 msgstr "Licence :"
 
+msgid "Limit adjustment"
+msgstr "Ajustement de la limite"
+
+msgid "Limit {operator} {count} half-point"
+msgid_plural "Limit {operator} {count} half-points"
+msgstr[0] "Limite {operator} {count} demi-point"
+msgstr[1] "Limite {operator} {count} demi-points"
+
 msgid "Link to a board not involving the player."
 msgstr "Lien à un échiquier n'impliquant pas le·la joueur·euse."
 
@@ -2856,9 +2880,6 @@ msgstr "Rendre visible sur le site de la FFE"
 
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Homme"
-
-msgid "Man. *** ACRONYM FOR MANUAL TIEBREAK"
-msgstr "Man."
 
 msgid "Manage"
 msgstr "Gérer"
@@ -2946,14 +2967,14 @@ msgstr "Peut être remplacé au niveau de chaque tournoi."
 msgid "May be used for per-round prize giveaways etc."
 msgstr "Peut être utilisé pour des tirages au sort de prix par ronde, etc."
 
-msgid "Me. *** ACRONYM FOR PAPI MEDIAN BUCHHOLZ"
-msgstr "Me."
-
-msgid "Me. Buchholz *** SHORT NAME FOR PAPI MEDIAN BUCHHOLZ"
-msgstr "Bu. médian"
+msgid "Median"
+msgstr "Médian"
 
 msgid "Median Buchholz"
 msgstr "Buchholz médian"
+
+msgid "Median {value}"
+msgstr "Médian {value}"
 
 msgid "Menu link label:"
 msgstr "Étiquette de menu :"
@@ -3035,9 +3056,6 @@ msgstr "N"
 
 msgid "N *** THE LETTER TO ANSWER NO"
 msgstr "N"
-
-msgid "NW *** ACRONYM FOR PAPI NUMBER OF WINS"
-msgstr "NV"
 
 msgid "Name"
 msgstr "Nom"
@@ -3253,6 +3271,9 @@ msgstr "Aucun écran."
 msgid "No such screens."
 msgstr "Aucun écran de ce type."
 
+msgid "No tie-breaks"
+msgstr "Aucun départage"
+
 msgid "No timers"
 msgstr "Aucun chronomètre"
 
@@ -3335,6 +3356,10 @@ msgstr "Dernières rondes sans joker (bye) : %(last_rounds_no_byes)d"
 
 msgid "Number of games won"
 msgstr "Nombre de parties gagnées"
+
+#, python-format
+msgid "Number of half-points above or below the 50%% limit required for opponents to be taken into account."
+msgstr "Le nombre de demi-points au-dessus ou en dessous des 50%% de points requis pour que les adversaires soient pris en compte."
 
 msgid "Number of players"
 msgstr "Nombre de joueur·euses"
@@ -3449,6 +3474,12 @@ msgstr "Adversaire Elo [Pts]"
 msgid "Opponents"
 msgstr "Adversaires"
 
+msgid "Opponents' ratings"
+msgstr "Classement des adversaires"
+
+msgid "Opponents' records"
+msgstr "Historique des adversaires"
+
 msgid "Organization"
 msgstr "Organisation"
 
@@ -3457,9 +3488,6 @@ msgstr "Organisez vos prix en groupes pour gérer leur attribution. Un·e joueur
 
 msgid "Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold."
 msgstr "Les autres joueur·euses de ce groupe de points n'entrent pas dans les prix (prix inférieur au seuil minimum)."
-
-msgid "Other tie-breaks should not be used unless you really know what you do."
-msgstr "Les autres départages ne devraient pas être utilisés à moins que vous ne sachiez réellement ce que vous faites."
 
 msgid "Others"
 msgstr "Autres"
@@ -3505,9 +3533,6 @@ msgstr "PERMUTER BLANCS/NOIRS"
 
 msgid "PGN"
 msgstr "PGN"
-
-msgid "PS *** ACRONYM FOR PAPI PROGRESSIVE SCORE"
-msgstr "Cu."
 
 msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Payé"
@@ -3645,17 +3670,8 @@ msgstr "Pénalité (handicap, en secondes) :"
 msgid "Pending"
 msgstr "À venir"
 
-msgid "Perf *** ACRONYM FOR PAPI PERFORMANCE"
-msgstr "Perf"
-
-msgid "Perfect perf. *** SHORT NAME FOR PERFECT TOURNAMENT PERFORMANCE"
-msgstr "Pref. parfaite"
-
 msgid "Perfect tournament performance"
-msgstr "Performance ELO parfaite"
-
-msgid "Performance"
-msgstr "Performance"
+msgstr "Performance parfaite"
 
 msgid "Performance indicators for round #{round}"
 msgstr "Indicateurs de performance pour la ronde n°{round}"
@@ -3756,6 +3772,9 @@ msgstr "Sélection des joueur·euses (par classement)"
 #, python-format
 msgid "Player sets of screen [%(screen_uniq_id)s]"
 msgstr "Ensembles de joueur·euses de l'écran [%(screen_uniq_id)s]"
+
+msgid "Player's record"
+msgstr "Historique du·de la joueur·euse"
 
 msgid "Player:"
 msgstr "Joueur·euse :"
@@ -3995,14 +4014,11 @@ msgstr "Continuer"
 msgid "Profile"
 msgstr "Profil"
 
-msgid "Progressive"
-msgstr "Cumulatif"
-
 msgid "Progressive accelerated system"
 msgstr "Système accéléré dégressif (SAD)"
 
 msgid "Progressive scores"
-msgstr "Cumulatif"
+msgstr "Scores cumulés"
 
 msgid "Properties"
 msgstr "Propriétés"
@@ -4131,6 +4147,10 @@ msgstr "Classement :"
 msgid "Ratings"
 msgstr "Classements"
 
+#, python-format
+msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
+msgstr "Départages recommandés pour un tournoi [%(pairing_system)s] :"
+
 msgid "Record"
 msgstr "Historique"
 
@@ -4211,9 +4231,6 @@ msgstr "Le résultat [{result}] ne peut être utilisé sans adversaire."
 
 msgid "Result [{result}] is incompatible with the opponent's result [{opponent_result}]."
 msgstr "Le résultat [{result}] est incompatible avec le résultat de l'adversaire [{opponent_result}]."
-
-msgid "Result [{result}] is not compatible with the PAPI format."
-msgstr "Le résultat [{result}] n’est pas compatible avec le format PAPI."
 
 msgid "Results"
 msgstr "Résultats"
@@ -4325,7 +4342,7 @@ msgid "Round {} started for %s"
 msgstr "Ronde {} commencée depuis %s"
 
 msgid "Round-Robin"
-msgstr "Toutes rondes"
+msgstr "Toutes rondes"
 
 msgid "Round:"
 msgstr "Ronde :"
@@ -4341,7 +4358,7 @@ msgid "Rounds"
 msgstr "Rondes"
 
 msgid "Rounds one Elected to Play"
-msgstr "Rondes jouées"
+msgstr "Rondes désigné comme jouant"
 
 msgid "Rounds {min_round}-{max_round}"
 msgstr "Rondes {min_round}-{max_round}"
@@ -4363,12 +4380,6 @@ msgstr "Lien de mise en ligne du règlement non trouvé, vérifier que le tourno
 
 msgid "Rules uploaded"
 msgstr "Règlement téléversé"
-
-msgid "S-Berger *** SHORT NAME FOR SONNEBORN-BERGER"
-msgstr "S-Berger"
-
-msgid "SBh *** ACRONYM FOR PAPI SUM OF BUCHHOLZ"
-msgstr "SBh"
 
 msgid "SCR"
 msgstr "ÉCR"
@@ -4399,6 +4410,9 @@ msgstr "Score"
 
 msgid "Score *** PERF IND. FOR TABULAR DISPLAY"
 msgstr "Score"
+
+msgid "Score computed by adding, for each round, a value given by multiplying the score of the opponent by the points scored against them."
+msgstr "Score calculé en ajoutant, pour chaque ronde, la valeur obtenue en multipliant le score de l'adversaire par le nombre de points obtenus."
 
 msgid "Screen"
 msgstr "Écran"
@@ -4518,9 +4532,6 @@ msgstr "Noter des résultats spéciaux"
 msgid "Set the current round"
 msgstr "Changer la ronde courante"
 
-msgid "Set the recommended tie-breaks"
-msgstr "Utiliser les départages recommandés"
-
 msgid "Settings"
 msgstr "Paramètres"
 
@@ -4602,14 +4613,14 @@ msgstr "Système de Haley dégressif"
 msgid "Some accounts can have very high access levels, making them dangerous in the hands of an unaware or malicious users."
 msgstr "Certains comptes peuvent avoir des niveaux d'accès très élevés, les rendant dangereux dans les mains de personnes non-informées ou malveillantes."
 
+msgid "Some of the tie-break values will not appear in the results on the FFE website."
+msgstr "Certaines des valeurs des départages n'apparaîtront pas dans les résultats sur le site de la FFE."
+
 msgid "Something went wrong. Please ask your administrator to recreate your account."
 msgstr "Une erreur est survenue. Veuillez demander à votre administrateur⋅ice de recréer votre compte."
 
 msgid "Sonneborn-Berger"
 msgstr "Sonneborn-Berger"
-
-msgid "Sonneborn-Berger (the sum of the scores of the opponents a player has defeated and half the scores of the players with whom he has drawn)."
-msgstr "Sonneborn-Berger (la somme des scores des adversaires que le·la joueur·euse a vaincu·es et la moitié des scores des adversaires contre qui le·la joueur·euse a annulé)."
 
 msgid "Sorry, an unexpected error has occurred."
 msgstr "Désolé, une erreur inattendue s'est produite."
@@ -4729,9 +4740,6 @@ msgstr "Succès"
 msgid "Sum of Buchholz"
 msgstr "Somme des Buchholz"
 
-msgid "Support for all FIDE recognised tie-break (including ones that are not compatible with Papi)"
-msgstr "Tous les départages reconnus par la FIDE (y compris ceux non compatibles avec Papi)"
-
 msgid "Support for the ChessEvent platform used for organising tournaments in France."
 msgstr "Support pour la plateforme ChessEvent utilsée pour l'organisation de tournois en France."
 
@@ -4782,14 +4790,8 @@ msgstr "Couleur du texte :"
 msgid "Texts before and after the hour below are optional for round numbers, mandatory otherwise."
 msgstr "Les textes avant et après l'horaire ci-dessous sont facultatifs pour les numéros de rondes, obligatoires sinon."
 
-msgid "The Baku acceleration system, not handled by FFE, may cause differences in the pairings display for Papi exports and FFE upload."
-msgstr "Le système d'accélération de Bakou, non pris en charge par la FFE, peut provoquer des différences dans l'affichage des appariements lors de l'export Papi et de la mise en ligne FFE."
-
-msgid "The Buchholz Cut 1 (the sum of the scores of each of the opponents of a player reduced by the lowest score of the opponents)"
-msgstr "Buchholz tronqué (la somme des scores des adversaires du·de la joueur·euse diminué du plus faible score des adversaires)"
-
-msgid "The Buchholz System (the sum of the scores of each of the opponents of a player)"
-msgstr "Buchholz (la somme des scores des adversaires du·de la joueur·euse)"
+msgid "The Baku acceleration system is not compatible with Papi, there may be differences in the Papi pairings display."
+msgstr "Le système d'accélération de Bakou n'est pas compatible avec Papi, il peut y avoir des différences dans l'affichage des appariements Papi."
 
 msgid "The FFE ID is a positive integer."
 msgstr "L'identifiant FFE est un entier positif."
@@ -4803,8 +4805,14 @@ msgstr "Le règlement FIDE indique que seuls les appariements de la ronde <b>pr�
 msgid "The PAPI format does not support {rounds} rounds (maximum: {max})."
 msgstr "Le format PAPI ne supporte pas {rounds} rounds (maximum : {max})."
 
+msgid "The Papi format does not support result [{result}]."
+msgstr "Le format Papi ne supporte pas le résultat [{result}]."
+
 msgid "The URL of the image to display."
 msgstr "L'URL de l'image à afficher."
+
+msgid "The [{tie_break}] tie-break as implemented in Papi."
+msgstr "Le départage [{tie_break}] tel qu'implémenté dans Papi."
 
 msgid "The account matching all the users not logged in to any account."
 msgstr "Le compte correspondant aux utilisateur·ices non-connecté·es."
@@ -4814,6 +4822,12 @@ msgstr "Le compte de l'utilisateur·ice accédant à Sharly Chess directement de
 
 msgid "The administrator has all the permissions."
 msgstr "L'administrateur·ice a toutes les permissions."
+
+msgid "The average of the [{tie_break}] scores of the opponents played over the board."
+msgstr "La moyenne du score [{tie_break}] des adversaires joué·es sur l'échiquier."
+
+msgid "The average of the ratings of the opponents played over the board."
+msgstr "La moyenne des classements des adversaires joué·es sur l'échiquier."
 
 msgid "The background colour for Screens."
 msgstr "La couleur de fond des écrans."
@@ -4864,17 +4878,31 @@ msgstr "L'évènement [{event_id}] n'est pas accessible via l'identifiant [{user
 msgid "The federation that organizes the event. Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr "La fédération qui organise l’évènement. Sharly Chess peut proposer des fonctionnalités spécifiques à la fédération choisie pour chaque évènement."
 
+msgid "The first round is ignored."
+msgid_plural "The first {rounds} rounds are ignored."
+msgstr[0] "La première ronde est ingorée."
+msgstr[1] "Les {rounds} premières rondes sont ignorées."
+
 msgid "The first tournament of the screen."
 msgstr "Le premier tournoi de l'écran."
 
 msgid "The following categories will also be deleted:"
 msgstr "Les catégories suivantes vont aussi être supprimées :"
 
-msgid "The greater number of wins"
-msgstr "Le plus grand nombre de victoires"
+#, fuzzy
+msgid "The least and the most significant values are removed."
+msgid_plural "The {count} least and the {count} most significant values are removed."
+msgstr[0] "La valeur la moins élevée et la valeur la plus élevée sont retirées."
+msgstr[1] "Les {count} valeurs les moins élevées et les {count} valeurs les plus élevées sont retirées."
 
-msgid "The greater number of wins with Black (unplayed games are counted as played with White)"
-msgstr "Le plus grand nombre de victoires avec les Noirs"
+#, fuzzy
+msgid "The least significant value is removed."
+msgid_plural "The {count} least significant values are removed."
+msgstr[0] "La valeur la moins élevée est retirée."
+msgstr[1] "Les {count} valeurs les moins élevées sont retirées."
+
+msgid "The limit can only be adjusted by {count} half-points."
+msgstr "La limite ne peut être ajustée que de {count} demi-points."
 
 msgid "The location of the event."
 msgstr "Le lieu de l'évènement."
@@ -4885,6 +4913,9 @@ msgstr "Le lieu du tournoi (par défaut [%(location)s])."
 
 msgid "The location of the tournament."
 msgstr "Le lieu du tournoi."
+
+msgid "The lowest rating that a player should have for their expected score to be greater than or equal to their score."
+msgstr "Le classement le plus bas qu'un·e joueur·euse doit avoir pour que son score attendu soit supérieur ou égal à son score réel."
 
 msgid "The mail addresses."
 msgstr "Les adresses mél."
@@ -4966,14 +4997,32 @@ msgstr "Le nombre de colonnes utilisé pour afficher les données."
 msgid "The number of final rounds in which byes are not permitted."
 msgstr "Le nombre de rondes finales pour lesquelles les joueur·euses ne peuvent prendre de bye."
 
+msgid "The number of games played over the board with the Black pieces."
+msgstr "Le nombre de parties jouées sur l'échiquier avec les Noirs."
+
+msgid "The number of games won over the board with the Black pieces."
+msgstr "Le nombre de parties gagnées sur l'échiquier avec les Noirs."
+
+msgid "The number of games won over the board."
+msgstr "Le nombre de parties gagnées sur l'échiquier."
+
 msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
 msgstr "Le nombre de joueur·euses par écran, facultatif (le nombre d'écrans s'adapte au nombre de joueur·euses)."
+
+msgid "The number of points achieved against all players who have scored at least L points (L = {equation})."
+msgstr "Le nombre de points obtenus contre tou·tes les joueur·euses ayant atteint au moins L points (L = {equation})."
 
 msgid "The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player."
 msgstr "Le nombre de points de différence entre le classement des joueur·euses utilisé pour calculer le nombre de pénalités appliqué au·à la joueur·euse le·la mieux classé·e."
 
+msgid "The number of rounds in which a player did not receive a HPB, a ZPB or a forfeit loss."
+msgstr "Le nombre de rondes dans lesquelles un·e joueur·euse n'a pas reçu de point joker ou une défaite par forfait."
+
 msgid "The number of rounds of the tournament."
 msgstr "Le nombre de rondes du tournoi."
+
+msgid "The number of rounds where a player obtains, with or without playing, as many points as awarded for a win."
+msgstr "Le nombre de rondes lors desquelles un·e joueur·euse obtient, en jouant ou non, autant de points que lors d'une victoire."
 
 msgid "The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards)."
 msgstr "Le nombre d'écrans sur lesquels les échiquiers seront répartis, facultatif (le nombre d'écrans reste toujours le même et le nombre d'échiquiers par écran s'adapte)."
@@ -5069,6 +5118,15 @@ msgstr "La date et l'heure de début de l'évènement."
 msgid "The start time of the tournament (defaults to %(datetime)s)."
 msgstr "L'horaire de début du tournoi (par défaut %(datetime)s)."
 
+msgid "The sum of the [{tie_break}] scores of the opponents played over the board."
+msgstr "La somme des scores [{tie_break}] des adversaires joué·es sur l'échiquier."
+
+msgid "The sum of the score of the player at the end of each round."
+msgstr "La somme du score du·de la joueur·euse à la fin de chaque ronde."
+
+msgid "The sum of the scores of each of the opponents of the player."
+msgstr "La somme du score de chaque adversaire du·de la joueur·euse."
+
 msgid "The system used to generate the pairings."
 msgstr "Le système utilisé pour générer les appariements."
 
@@ -5128,6 +5186,9 @@ msgstr "La valeur doit être supérieure au seuil de partage de la catégorie ({
 
 msgid "The values have to be higher than the sharing threshold of the category ({threshold})."
 msgstr "Les valeurs doivent être supérieures au seuil de partage de la catégorie ({threshold})."
+
+msgid "The values to take into account when computing the tie-break."
+msgstr "Les valeurs à prendre en compte lors du calcul du départage."
 
 msgid "The variation of the pairing system."
 msgstr "La variante du système d'appariements."
@@ -5240,6 +5301,15 @@ msgstr "Cet écran est privé (non visible des spectateur·ices)."
 msgid "This screen is public (visible by the spectators)."
 msgstr "Cet écran est public (visible des spectateur·ices)."
 
+msgid "This tie-break is already used with the same modifiers."
+msgstr "Ce départage est déjà utilisé avec les mêmes modificateurs."
+
+msgid "This tie-break is already used."
+msgstr "Ce départage est déjà utilisé."
+
+msgid "This tie-break is not compatible with the pairing system [{pairing_system}] (ignored)."
+msgstr "Ce départage n'est pas compatible avec le système d'appariements [{pairing_system}] (ignoré)."
+
 msgid "This unique ID is already used."
 msgstr "Cet identifiant unique est déjà utilisé."
 
@@ -5250,20 +5320,20 @@ msgid "Three points for a win (3-1-0)"
 msgstr "Victoire à trois points (3-1-0)"
 
 #, python-format
-msgid "Tie-break #%(index)d:"
-msgstr "Départage n°%(index)d :"
+msgid "Tie-break [%(tie_break)s] successfully created!"
+msgstr "Le départage [%(tie_break)s] a été créé avec succès !"
 
-msgid "Tie-break [{tie_break}] is not compatible with the PAPI format."
-msgstr "Le départage [{tie_break}] n’est pas compatible avec le format PAPI."
+msgid "Tie-break based on the opponents' ratings and the player's score (consult the FIDE Handbook for more details)."
+msgstr "Départage basé sur le classement des adversaires et le score du·de la joueur·euse (consulter le règlement FIDE pour plus d'informations)."
 
-msgid "Tie-break already in use."
-msgstr "Départage déjà utilisé."
-
-msgid "Tie-break incompatible with the \"{system}\" pairing system."
-msgstr "Départage incompatible avec le système d'appariements \"{system}\"."
+msgid "Tie-break favoring players which have won against the players they are tied with (consult the FIDE handbook for more details)."
+msgstr "Départage favorisant les joueur·euses ayant gagné contre les joueur·euses ex aequo (consulter le règlement FIDE pour plus d'informations)."
 
 msgid "Tie-breaks"
 msgstr "Départages"
+
+msgid "Tie-breaks determine the rankings for players that are tied with the same number of points."
+msgstr "Les départages déterminent le classement des joueur·euses ayant le même nombre de points."
 
 msgid "Time control"
 msgstr "Cadence"
@@ -5337,9 +5407,6 @@ msgstr "Trop de points joker pour le joueur [{player_name}]."
 msgid "Too much information to display on a single projector?"
 msgstr "Trop d’informations à afficher sur un seul projecteur ?"
 
-msgid "Top cut must be at most equal to bottom cut."
-msgstr "La troncature haute doit au moins être égale à la troncature basse."
-
 msgid "Total prize value"
 msgstr "Valeur totale des prix"
 
@@ -5351,10 +5418,6 @@ msgstr "Tournoi"
 
 msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
 msgstr "Tournoi"
-
-#, python-format
-msgid "Tournament [%(tournament)s] has been created."
-msgstr "Le tournoi [%(tournament)s] a été créé."
 
 #, python-format
 msgid "Tournament [%(tournament)s] is finished."
@@ -5420,7 +5483,7 @@ msgid "Tournament on the FFE site"
 msgstr "Tournoi sur le site de la FFE"
 
 msgid "Tournament performance rating"
-msgstr "Performance sur le tournoi"
+msgstr "Performance"
 
 msgid "Tournament previously uploaded."
 msgstr "Tournoi mis en ligne précédemment."
@@ -5469,12 +5532,6 @@ msgstr "Tournois :"
 #, python-format
 msgid "Tournaments: %(num)d"
 msgstr "Tournois : %(num)d"
-
-msgid "Tr. *** ACRONYM FOR PAPI BUCHHOLZ CUT BOTTOM"
-msgstr "Tr."
-
-msgid "Tr. Buchholz *** SHORT NAME FOR PAPI BUCHHOLZ CUT BOTTOM"
-msgstr "Bu. tronqué"
 
 msgid "Trophy"
 msgstr "Trophée"
@@ -5740,6 +5797,9 @@ msgstr "Mise en ligne en cours…"
 msgid "Use Event's default - {option}"
 msgstr "Défaut de l’événement – {option}"
 
+msgid "Use Fore Buchholz"
+msgstr "Utiliser le Fore Buchholz"
+
 msgid "Use log-level specific colors"
 msgstr "Utiliser des couleurs spécifiques au niveau de log"
 
@@ -5751,6 +5811,9 @@ msgstr "Utiliser les Elos standard"
 
 msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system. May be overridden on a per-tournament basis."
 msgstr "Utiliser le système de points 3/1/0 au lieu du système standard 1/0,5/0. Peut être remplacé au niveau de chaque tournoi."
+
+msgid "Use the recommended tie-breaks"
+msgstr "Utiliser les départages recommandés"
 
 msgid "Using colors helps in finding quickly important information on the console."
 msgstr "Utiliser les couleurs peut permettre de trouver facilement les informations importantes sur la console."
@@ -5903,9 +5966,6 @@ msgstr "Victoire Blancs"
 
 msgid "Win"
 msgstr "Victoire"
-
-msgid "Wins"
-msgstr "Victoires"
 
 msgid "With less players than prizes, some prizes will not be attributed."
 msgstr "Avec moins de joueur·euses que de prix, certains prix vont ne pas être attribués."
@@ -6144,6 +6204,9 @@ msgstr "classements estimés"
 msgid "event"
 msgstr "évènement"
 
+msgid "forfeits played"
+msgstr "forfaits joués"
+
 msgid "from move 1"
 msgstr "dès le 1er coup"
 
@@ -6290,6 +6353,11 @@ msgid_plural "{count} federations represented"
 msgstr[0] "{count} fédération représentée"
 msgstr[1] "{count} fédérations représentées"
 
+msgid "{count} half-point"
+msgid_plural "{count} half-points"
+msgstr[0] "{count} demi-point"
+msgstr[1] "{count} demi-points"
+
 msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
 msgstr[0] "{count} ligue représentée"
@@ -6345,12 +6413,12 @@ msgstr "{status_code} - Erreur inconnue"
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
 
-msgid "{tie_break} (Papi compatible)"
-msgstr "{tie_break} (compatible Papi)"
-
 msgid "½ - 0 (U)"
 msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "FIDE recommended tie-breaks for [%(pairing_system)s] tournaments:"
+#~ msgstr "Départages recommandés par la FIDE pour les tournois [%(pairing_system)s] :"
 

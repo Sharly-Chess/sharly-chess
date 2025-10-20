@@ -25,9 +25,7 @@ from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.criteria.player_filter_options import PlayerFilterOption
 from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
 from data.print_documents.qrcode_types import QRCodeType
-from data.tie_breaks import TieBreak
-from data.tie_breaks.managers import TieBreakManager, TieBreakOptionManager
-from data.tie_breaks.options import TieBreakOption
+from data.tie_breaks import TieBreak, TieBreakOption
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
@@ -75,7 +73,11 @@ from plugins.ffe.ffe_entity import (
 )
 from plugins.ffe.ffe_event_controller import FfeAdminEventController
 from plugins.ffe.ffe_session_handler import FFESessionHandler
-from plugins.ffe.ffe_tie_breaks import papi_performance_bonus
+from plugins.ffe.ffe_tie_breaks import (
+    papi_performance_bonus,
+    BasePapiTieBreak,
+    PapiBuchholzTypeOption,
+)
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from plugins.hookspec import ExtraAdminColumn, hookimpl, ExtraColumn
 from plugins.migration import PluginMigrationManager
@@ -749,30 +751,19 @@ class FfePlugin(Plugin):
         return '/ffe_tournament_card_action_menu_items.html'
 
     @hookimpl
+    def get_tournament_tie_breaks_warning_message(
+        self, tournament: 'Tournament'
+    ) -> str | None:
+        if not FFEUtils.get_tournament_plugin_data(tournament).ffe_id:
+            return None
+        return PapiConverter.check_tiebreaks_warning(tournament.tie_breaks)
+
+    @hookimpl
     def signal_tournament_set(
         self, event: 'Event', stored_tournament: 'StoredTournament'
     ) -> str | None:
         if blocker := PapiConverter.check_rounds(stored_tournament.rounds):
             return blocker
-
-        tie_break_type_by_id: dict[str, type[TieBreak]] = TieBreakManager(
-            event
-        ).type_by_id()
-        option_type_by_id: dict[str, type[TieBreakOption]] = (
-            TieBreakOptionManager().type_by_id()
-        )
-        for tie_break_dict in stored_tournament.tie_breaks:
-            assert isinstance(tie_break_dict['type'], str)
-            assert isinstance(tie_break_dict['options'], dict)
-            tie_break_id = tie_break_dict['type']
-            options: list[TieBreakOption] = []
-            for option_id, value in tie_break_dict['options'].items():
-                if option_type := option_type_by_id.get(option_id, None):
-                    options.append(option_type(value))
-            if tie_break_type := tie_break_type_by_id.get(tie_break_id, None):
-                tie_break = tie_break_type(options)
-                if blocker := PapiConverter.check_tiebreak(tie_break):
-                    return blocker
         pairing_variation = PairingVariationManager(event).get_object(
             stored_tournament.pairing
         )
@@ -914,14 +905,22 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def insert_tie_break_types(self, tie_break_types: list[type[TieBreak]]):
-        tie_break_types += [
-            ffe_tie_breaks.PapiStandardBuchholzTieBreak,
-            ffe_tie_breaks.PapiBuchholzCutBottomTieBreak,
-            ffe_tie_breaks.PapiMedianBuchholzTieBreak,
+        ffe_tie_break_types: list[type[BasePapiTieBreak]] = [
+            ffe_tie_breaks.PapiBuchholzTieBreak,
             ffe_tie_breaks.PapiPerformanceTieBreak,
             ffe_tie_breaks.PapiSumOfBuchholzTieBreak,
             ffe_tie_breaks.PapiKashdanTieBreak,
         ]
+        for tie_break_type in ffe_tie_break_types:
+            PluginUtils.insert_on_equals(
+                tie_break_types, tie_break_type, tie_break_type.base_tie_break_type()
+            )
+
+    @hookimpl
+    def insert_tie_break_option_types(
+        self, tie_break_option_types: list[type[TieBreakOption]]
+    ):
+        tie_break_option_types.append(PapiBuchholzTypeOption)
 
     # ---------------------------------------------------------------------------------
     # Pairings
