@@ -69,12 +69,12 @@
     color: white;
     font-weight: bold;
 }
-.board-row,
-.player-row {
+.grid-striped .board-row,
+.grid-striped .player-row {
     display: contents;
 }
-.board-row > div,
-.player-row > div {
+.grid-striped .board-row > div,
+.grid-striped .player-row > div {
     padding: 0.25rem 0.25rem;
     border-bottom: 1px solid var(--bs-border-color);
 }
