@@ -46,12 +46,7 @@ class ScreenEntityUserWebContext(EventUserWebContext, ABC):
     def background_image(self) -> str | None:
         if self.screen:
             return self.screen.background_image
-        elif self.rotator:
-            return self.rotator.event.background_image
-        elif self.display_controller:
-            return self.display_controller.event.background_image
-        else:
-            return SharlyChessConfig.default_background_image
+        return None
 
     @property
     def background_color(self) -> str:

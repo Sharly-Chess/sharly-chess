@@ -13,7 +13,6 @@ from common import (
     format_timestamp_date,
     format_timestamp_time,
 )
-from common.background import inline_image_url
 from common.i18n import _
 from common.i18n.utils import by
 from common.logger import get_logger
@@ -147,19 +146,6 @@ class Event:
     @property
     def location(self) -> str | None:
         return self.stored_event.location
-
-    @property
-    def background_image(self) -> str:
-        if self.stored_event.hide_background_image:
-            return ''
-        return (
-            self.stored_event.background_image
-            or SharlyChessConfig.default_background_image
-        )
-
-    @property
-    def background_url(self) -> str:
-        return inline_image_url(self.background_image)
 
     @property
     def background_color(self) -> str:

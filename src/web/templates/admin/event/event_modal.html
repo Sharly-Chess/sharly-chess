@@ -199,81 +199,10 @@
                 </h4>
                 <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6">
-                        <div>
-                            {{ admin_macros.text_input(
-                                name='background_image',
-                                label=_('Background image:'),
-                                help_text=_("The URL or the path of the image (relative to the 'custom' folder) to display."),
-                                default_checkbox=true,
-                                default_checkbox_text=_('no background image'),
-                                disabled=not client.can_update_event,
-                                data=data, errors=errors
-                            ) }}
-                            <script>
-                                $('#background-image-checkbox').click(function() {
-                                    if ($(this).is(':checked')) {
-                                        $('#background-image-picker-wrapper').css('display', 'none');
-                                        $('#background-image-test').css('display', 'none');
-                                    } else {
-                                        $('#background-image-test').css('display', 'block');
-                                        $('#background-image-picker-wrapper').css('display', 'block');
-                                    }
-                                });
-                            </script>
-                        </div>
-
-                        <div
-                            id="background-image-picker-wrapper"
-                            style="display: {% if data['background_image_checkbox'] == 'on' %}none{% else %}block{% endif %}"
-                        >
-                            <div class="row gy-2 gx-3">
-                                <div class="col-12 text-nowrap d-inline-flex align-items-center gap-4 my-2">
-                                    <button
-                                        type="button"
-                                        class="collapse-button collapsed text-body"
-                                        data-bs-toggle="collapse"
-                                        data-bs-target="#custom-tree"
-                                        disabled=not client.can_update_event,
-                                    >
-                                        <span
-                                            class="d-inline-flex align-items-center gap-2"
-                                        >
-                                            <i class="bi bi-chevron-down"></i>
-                                            {{ _("Choose from images in the 'custom' folder") }}
-                                        </span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="collapse" id="custom-tree">
-                                <div
-                                    id="background-image-picker"
-                                >
-                                </div>
-                            </div>
-                            <script>
-                                $('#background-image-picker')
-                                .jstree(
-                                    {
-                                        'core': {
-                                            'multiple': false,
-                                            'data': {{ background_images_jstree_data | tojson }},
-                                            'themes': {
-                                                'name': 'default-dark'
-                                            }
-                                        }
-                                    }
-                                );
-                                $('#background-image-picker').on("changed.jstree", function (e, data) {
-                                });
-                            </script>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-6">
                         {{ admin_macros.color_input(
                             name='background_color',
                             label=_('Background colour:'),
-                            help_text=_('The background colour is used when the image does not fill the whole screen.'),
+                            help_text=_('The background colour for Screens.'),
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -284,28 +213,7 @@
                                 } else {
                                 }
                             });
-                            $('#background-color').change(function() {
-                                $('#background-image-test').css('background-color', $(this).val());
-                            });
                         </script>
-                    </div>
-                </div>
-                <div class="row gy-2 gx-3">
-                    <div class="col-12">
-                        <div
-                            id="background-image-test"
-                            style="
-                                margin: 0 auto;
-                                width: 320px;
-                                height: 180px;
-                                background-image: url('{{ admin_event.background_url if admin_event else sharly_chess_config.default_background_image }}');
-                                background-color: {{ admin_event.background_color if admin_event else sharly_chess_config.default_background_color }};
-                                background-repeat: no-repeat;
-                                background-size: contain;
-                                background-position: center center;
-                                display: {% if data['background_image_checkbox'] == 'on' %}none{% else %}block{% endif %};"
-                        >
-                        </div>
                     </div>
                 </div>
 

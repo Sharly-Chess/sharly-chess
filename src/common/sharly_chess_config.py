@@ -435,12 +435,6 @@ class SharlyChessConfig(metaclass=Singleton):
     # The default number of columns.
     default_columns: int = 4
 
-    # True to hide the background images by default.
-    default_hide_background_image: bool = False
-
-    # The default event background image.
-    default_background_image: str = ''
-
     # The error background image.
     error_background_image: str = '/static/images/sharly-chess-error.png'
 

@@ -57,7 +57,7 @@ class WebContext:
         Override this method to make the background image different from the default.
         :return:
         """
-        return SharlyChessConfig.default_background_image
+        return None
 
     @property
     def background_color(self) -> str:

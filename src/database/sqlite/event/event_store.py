@@ -332,10 +332,8 @@ class BaseStoredEvent:
     player_rating_type: int
     start: float
     stop: float
-    hide_background_image: bool
     public: bool = False
     location: str | None = None
-    background_image: str | None = None
     background_color: str | None = None
     record_illegal_moves: int | None = None
     rules: str | None = None
