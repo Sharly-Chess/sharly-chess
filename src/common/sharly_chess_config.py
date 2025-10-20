@@ -329,7 +329,6 @@ class SharlyChessConfig(metaclass=Singleton):
     htmx_ws_version: Version = Version('2.0.3')
     jquery_version: Version = Version('3.7.1')
     sortable_version: Version = Version('1.15.6')
-    jstree_version: Version = Version('3.3.17')
     morphdom_version: Version = Version('2.7.4')
     select2_version: Version = Version('4.0.13')
     select2_bootstrap_theme_version: Version = Version('1.3.0')
