@@ -973,6 +973,9 @@ msgstr ""
 msgid "Chess-Results.com"
 msgstr ""
 
+msgid "Chess-Results.com only displays 3 tie-breaks. However, the rankings remain the same as in Sharly Chess."
+msgstr ""
+
 msgid "ChessEvent"
 msgstr ""
 
@@ -2311,6 +2314,16 @@ msgstr ""
 
 msgid "Font size adjustment for the screen."
 msgstr ""
+
+msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
+msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "For a tournament with {rounds} rounds, the least significant value is removed."
+msgid_plural "For a tournament with {rounds} rounds, the {count} least significant values are removed."
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "For non-monetary prizes, the value is used for reward priority."
 msgstr ""

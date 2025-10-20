@@ -754,6 +754,8 @@ class FfePlugin(Plugin):
     def get_tournament_tie_breaks_warning_message(
         self, tournament: 'Tournament'
     ) -> str | None:
+        if not FFEUtils.get_tournament_plugin_data(tournament).ffe_id:
+            return None
         return PapiConverter.check_tiebreaks_warning(tournament.tie_breaks)
 
     @hookimpl

@@ -973,6 +973,9 @@ msgstr "Échecs"
 msgid "Chess-Results.com"
 msgstr "Chess-Results.com"
 
+msgid "Chess-Results.com only displays 3 tie-breaks. However, the rankings remain the same as in Sharly Chess."
+msgstr "Chess-Results.com n'affiche que 3 départages. Cependant, le classement reste le même  que dans Sharly Chess."
+
 msgid "ChessEvent"
 msgstr "ChessEvent"
 
@@ -2311,6 +2314,16 @@ msgstr "Ajustement de la taille de police (%%) :"
 
 msgid "Font size adjustment for the screen."
 msgstr "Ajustement de la taille de police pour l'écran."
+
+msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
+msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
+msgstr[0] "Pour un tournoi de {rounds} rondes, la valeur la moins significative et la valeur la plus significative sont retirées."
+msgstr[1] "Pour un tournoi de {rounds} rondes, les {count} valeurs les moins significatives et les {count} valeurs les plus significatives sont retirées."
+
+msgid "For a tournament with {rounds} rounds, the least significant value is removed."
+msgid_plural "For a tournament with {rounds} rounds, the {count} least significant values are removed."
+msgstr[0] "Pour un tournoi de {rounds} rondes, la valeur la moins significative est retirée."
+msgstr[1] "Pour un tournoi de {rounds} rondes, les {count} valeurs les moins significatives sont retirées."
 
 msgid "For non-monetary prizes, the value is used for reward priority."
 msgstr "Pour les prix non-monétaires, la valeur est utiliée pour prioriser les récompenses."

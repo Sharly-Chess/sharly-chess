@@ -209,11 +209,13 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
     def get_tournament_tie_breaks_warning_message(
         self, tournament: 'Tournament'
     ) -> str | None:
-        if len(tournament.tie_breaks) > 5:
+        if (
+            ChessResultsUtils.get_tournament_plugin_data(tournament).tnr
+            and len(tournament.tie_breaks) > 3
+        ):
             return _(
-                'Only 5 tie-breaks can be exported to Chess-Results.com. '
-                'The last one will contain the player rank to ensure '
-                'the rankings remain the same.'
+                'Chess-Results.com only displays 3 tie-breaks. '
+                'However, the rankings remain the same as in Sharly Chess.'
             )
         return None
 
