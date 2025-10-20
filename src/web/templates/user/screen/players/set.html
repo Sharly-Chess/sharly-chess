@@ -24,7 +24,7 @@
                         "
                     >
                         <div
-                                class="grid-header overflow-hidden text-nowrap"
+                                class="grid-header text-nowrap"
                         >
                             {% if tournament.current_round %}{{ _('Player Elo [Pts]') }}{% else %}{{ _('Player Elo') }}{% endif %}
                         </div>
@@ -33,7 +33,7 @@
                         </div>
                         {% if screen_set.players_show_opponent %}
                             <div
-                                    class="grid-header overflow-hidden text-nowrap"
+                                    class="grid-header text-nowrap"
                                     style="text-overflow: ellipsis;"
                             >
                                 {% if tournament.current_round %}{{ _('Opponent Elo [Pts]') }}{% else %}{{ _('Opponent Elo') }}{% endif %}
