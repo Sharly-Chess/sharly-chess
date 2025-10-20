@@ -91,8 +91,8 @@ class Player:
         return self.stored_player.last_name
 
     @property
-    def first_name(self) -> str:
-        return self.stored_player.first_name or ''
+    def first_name(self) -> str | None:
+        return self.stored_player.first_name
 
     @staticmethod
     def player_full_name(
@@ -101,7 +101,7 @@ class Player:
     ) -> str:
         if first_name:
             return _('{first_name} {last_name}').format(
-                first_name=first_name or '', last_name=last_name
+                first_name=first_name, last_name=last_name
             )
         return last_name
 
