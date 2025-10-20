@@ -16,6 +16,7 @@ from plugins.chess_results import PLUGIN_NAME
 from plugins.chess_results.chess_results_mappers import (
     ChessResultsPlayerGender,
     ChessResultsTieBreak,
+    ChessResultPairingSystem,
 )
 from plugins.chess_results.utils import ChessResultsUtils
 from plugins.utils import PluginUtils
@@ -117,7 +118,10 @@ class ChessResultsSession(Session):
             'tournament',
             {
                 'key': str(tnr),
-                'type': '0',  # 0=Swiss, 1=Round robin, etc.
+                'type': ChessResultPairingSystem.get_outer_value(
+                    tournament.pairing_system
+                )
+                or '',
                 'name': tournament.full_name,
                 'fideeventid': '',
                 'remark': f'#{ChessResultsUtils.resolve_remark(tournament)}'[:599],
