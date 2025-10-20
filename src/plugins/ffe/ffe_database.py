@@ -1,4 +1,5 @@
 import os.path
+import re
 import sqlite3
 import zipfile
 from contextlib import suppress
@@ -191,7 +192,9 @@ class FfeDatabase(LocalSourceDatabase):
         page: int = 0,
         limit: int | None = None,
     ) -> list[StoredPlayer]:
-        tokens: list[str] = [unicode_normalize(token) for token in string.split(' ')]
+        tokens: list[str] = [
+            unicode_normalize(token) for token in re.split(r'\s+', string)
+        ]
         str_fields: tuple[tuple[str, str, str], ...] = (
             ('last_name', '%', '%'),
             ('first_name', '%', '%'),

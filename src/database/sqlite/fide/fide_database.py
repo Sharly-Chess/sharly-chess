@@ -1,4 +1,5 @@
 import os.path
+import re
 from xml.etree import ElementTree
 import zipfile
 from contextlib import suppress
@@ -13,6 +14,7 @@ from requests.exceptions import ConnectionError
 
 from common import TMP_DIR
 from common.i18n import _
+from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.player import PlayerRating
@@ -239,7 +241,9 @@ class FideDatabase(LocalSourceDatabase):
         page: int = 0,
         limit: int | None = None,
     ) -> list[StoredPlayer]:
-        tokens: list[str] = string.split(' ')
+        tokens: list[str] = [
+            unicode_normalize(token) for token in re.split(r'\s+', string)
+        ]
         str_fields: tuple[tuple[str, str, str], ...] = (
             ('last_name', '%', '%'),
             ('first_name', '%', '%'),
