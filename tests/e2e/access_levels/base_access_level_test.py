@@ -291,7 +291,7 @@ class BaseAccessLevelTest:
         if can_access:
             # Test access to the input screen
             page.goto(f'/view/screen/{PUBLIC_EVENT_ID}/{screen.uniq_id}')
-            rows = page.locator('table tbody tr')
+            rows = page.locator('div.board-row')
             expect(rows).to_have_count(8)
         else:
             # Test no access to the input screen, should redirect to the 403 page
@@ -311,14 +311,14 @@ class BaseAccessLevelTest:
         self.auth_page.goto(
             f'/view/screen/{PUBLIC_EVENT_ID}/{self.unpaired_screen.uniq_id}'
         )
-        rows = self.auth_page.locator('table tbody tr')
+        rows = self.auth_page.locator('div.player-row')
 
         expect(rows).to_have_count(16)
         row = rows.filter(has_text='AMOS')
 
         if can_access:
             # Try to open the modal
-            expect(row.locator('td:nth-child(1)')).to_have_attribute(
+            expect(row.locator('div:nth-child(1)')).to_have_attribute(
                 'hx-get', re.compile(r'.*checkin-modal.*')
             )
             row.click()
@@ -332,7 +332,7 @@ class BaseAccessLevelTest:
             # Test that the page is updated
             expect(row.locator('i.bi-check-square-fill')).to_be_visible()
         else:
-            expect(row.locator('td:nth-child(1)')).not_to_have_attribute(
+            expect(row.locator('div:nth-child(1)')).not_to_have_attribute(
                 'hx-get', re.compile(r'.*checkin-modal.*')
             )
 
@@ -345,7 +345,7 @@ class BaseAccessLevelTest:
         self.auth_page.goto(
             f'/view/screen/{PUBLIC_EVENT_ID}/{self.paired_screen.uniq_id}'
         )
-        rows = self.auth_page.locator('table tbody tr')
+        rows = self.auth_page.locator('div.board-row')
 
         expect(rows).to_have_count(8)
         row = rows.filter(has_text='ALYX')
@@ -406,7 +406,7 @@ class BaseAccessLevelTest:
         self.auth_page.goto(
             f'/view/screen/{PUBLIC_EVENT_ID}/{self.paired_screen.uniq_id}'
         )
-        rows = self.auth_page.locator('table tbody tr')
+        rows = self.auth_page.locator('div.board-row')
 
         row = rows.filter(has_text='ALYX')
         illegal_move_button = row.get_by_test_id('add-illegal-move-button-W')

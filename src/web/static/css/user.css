@@ -59,19 +59,42 @@
 # BOARDS/INPUT SCREENS - BOARD/PLAYER ROWS
 ###########################################################
 */
+.grid-striped {
+    display: grid;
+    background-color: white;
+}
+.grid-header {
+    padding: 0.25rem 0.5rem;
+    background-color: #212529;
+    color: white;
+    font-weight: bold;
+}
+.grid-striped .board-row,
+.grid-striped .player-row {
+    display: contents;
+}
+.grid-striped .board-row > div,
+.grid-striped .player-row > div {
+    padding: 0.25rem 0.25rem;
+    border-bottom: 1px solid var(--bs-border-color);
+}
+.grid-striped > .board-row:nth-of-type(odd) > * {
+    color: var(--bs-table-striped-color);
+    background-color: rgba(0, 0, 0, 0.05);
+}
 .input-screen .board-row.editable {
     cursor: pointer;
 }
-.input-screen .board-row.result-not-set:hover {
+.input-screen .board-row.result-not-set:hover, .input-screen .grid-striped>.board-row.result-not-set:hover > div {
     background-color: yellow;
 }
-.input-screen .board-row.result-set:hover {
+.input-screen .board-row.result-set:hover, .input-screen .grid-striped>.board-row.result-set:hover > div {
     background-color: #ffffcc;
 }
-.input-screen .board-row.special-results-allowed.result-not-set:hover {
+.input-screen .board-row.special-results-allowed.result-not-set:hover, .input-screen .grid-striped>.board-row.special-results-allowed.result-not-set:hover > div {
     background-color: #ffc500;
 }
-.input-screen .board-row.special-results-allowed.result-set:hover {
+.input-screen .board-row.special-results-allowed.result-set:hover .input-screen .grid-striped>.board-row.special-results-allowed.result-set:hover > div {
     background-color: #fff2cd;
 }
 .time-control-modified .minutes,
