@@ -432,14 +432,6 @@ class ScreenSet:
         return format_timestamp_date_time(self.last_update)
 
     @property
-    def has_fixed_boards(self) -> bool:
-        """Returns True if at least one fixed board, False otherwise."""
-        return any(
-            any(board.number != board.id for board in boards)
-            for boards in self.boards_lists
-        )
-
-    @property
     def numbers_str(self) -> str:
         if self.fixed_board_numbers:
             return _('boards {board_numbers}').format(
