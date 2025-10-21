@@ -5301,6 +5301,12 @@ msgstr ""
 msgid "This screen is public (visible by the spectators)."
 msgstr ""
 
+msgid "This tie-break can be used multiple times."
+msgstr ""
+
+msgid "This tie-break can't be used twice in a row (ignored)."
+msgstr ""
+
 msgid "This tie-break is already used with the same modifiers."
 msgstr ""
 
