@@ -238,6 +238,7 @@
         {% endfor %}
     </select>
     {% if use_select2 %}
+        {% set keep_open_on_select = multiple %}
         <script>
             {% if searchable and tooltip_select %}
                 var oldParams = '';
@@ -248,7 +249,7 @@
                 placeholder: $(this).data('placeholder'),
                 minimumResultsForSearch: {% if searchable %}1{% else %}Infinity{% endif %},
                 dropdownParent: $('#modal-wrapper'),
-                closeOnSelect: {% if multiple_select %}false{% else %}true{% endif %},
+                closeOnSelect: {% if keep_open_on_select %}false{% else %}true{% endif %},
                 templateResult: function (data) {
                     if (data.id === '__divider__') {
                         const $div = $('<span style="pointer-events: none; border-bottom: 1px solid #ccc; display: block; margin: 4px 0;"></span>');
@@ -307,6 +308,23 @@
                     container: "body",
                     html: true,
                     zIndex: 10010,
+                });
+            {% endif %}
+            {% if keep_open_on_select %}
+                // Prevent closing the dropdown when an option is deselected
+                $('#{{ id }}').on('select2:unselecting', function(e) {
+                    e.preventDefault();
+
+                    const unselectedData = e.params.args.data;
+                    const $select = $(this);
+                    const selectedValues = $select.val() || [];
+                    const updatedValues = selectedValues.filter(val => val !== unselectedData.id);
+
+                    $select.val(updatedValues).trigger('change');
+
+                    $dropdownOption = $(`.select2-results__option[aria-selected="true"]:contains("${unselectedData.text}")`);
+                    $dropdownOption.attr('aria-selected', 'false');
+                    $dropdownOption.removeClass('select2-results__option--highlighted');
                 });
             {% endif %}
         </script>
