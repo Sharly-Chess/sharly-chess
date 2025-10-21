@@ -1492,10 +1492,11 @@ class PairingsAdminController(BaseEventAdminController):
         player_data = data['player']
         submitted_ids: list[int] = player_data if isinstance(player_data, list) else []
 
+        manual_index = tournament.tie_breaks.index(ManualTieBreak())
         # 'Natural' sort order without tiebreaks
         players_by_rank_without_manual_tiebreaks = sorted(
             tournament.players,
-            key=lambda p: p.rank_sort_key_without_tie_break(ManualTieBreak),
+            key=lambda p: p.rank_sort_key_without_tie_break(manual_index),
         )
 
         # Group players by manual_rank_key, preserving current order

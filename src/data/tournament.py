@@ -375,18 +375,45 @@ class Tournament:
 
     @property
     def tie_breaks(self) -> list[TieBreak]:
+        invalid_tie_break_ids = self.tie_breaks_invalid_messages.keys()
         return [
             tie_break
-            for tie_break in self.tie_breaks_with_invalid
-            if not self.tie_break_invalid_message(tie_break)
+            for stored_id, tie_break in self.tie_breaks_by_id.items()
+            if stored_id not in invalid_tie_break_ids
         ]
 
     @property
     def tie_breaks_with_invalid(self) -> Collection[TieBreak]:
         return self.tie_breaks_by_id.values()
 
+    @property
+    def tie_breaks_invalid_messages(self) -> dict[int, str]:
+        """Get all the messages invalidating the tie-breaks, including the order errors."""
+        invalid_messages_by_id: dict[int, str] = {}
+        valid_tie_breaks: list[TieBreak] = []
+        for stored_id, tie_break in self.tie_breaks_by_id.items():
+            if message := self.tie_break_invalid_message(tie_break):
+                invalid_messages_by_id[stored_id] = message
+            elif not tie_break.allow_multiple and tie_break in valid_tie_breaks:
+                # Untranslated, should not happen
+                invalid_messages_by_id[stored_id] = (
+                    'This tie-break is already used with the same modifiers'
+                )
+            elif (
+                valid_tie_breaks
+                and tie_break.allow_multiple
+                and tie_break.id == valid_tie_breaks[-1].id
+            ):
+                invalid_messages_by_id[stored_id] = _(
+                    "This tie-break can't be used twice in a row (ignored)."
+                )
+            else:
+                valid_tie_breaks.append(tie_break)
+        return invalid_messages_by_id
+
     def tie_break_invalid_message(self, tie_break: TieBreak) -> str | None:
-        """Get a message explaining why a tie-break is invalid, or None if it is valid."""
+        """Get a message explaining why a tie-break is invalid in the context of the tournament.
+        Return or None if it is valid."""
         if self.pairing_system in tie_break.forbidden_pairing_systems:
             return _(
                 'This tie-break is not compatible with '
@@ -1268,7 +1295,7 @@ class Tournament:
             if tie_break.is_computed_per_player:
                 continue
             value_by_player_id = tie_break.compute_all_player_values(
-                self, after_round=after_round
+                self, tie_break_index=index, after_round=after_round
             )
             for player_id, tie_break_value in value_by_player_id.items():
                 player = self.players_by_id[player_id]
@@ -1285,7 +1312,7 @@ class Tournament:
                 continue
             players_ranked_without_tie_break = sorted(
                 self.players,
-                key=lambda p: p.rank_sort_key_without_tie_break(type(tie_break)),
+                key=lambda p: p.rank_sort_key_without_tie_break(tie_break_index),
             )
             for rank_without_tie_break, player in enumerate(
                 players_ranked_without_tie_break, start=1

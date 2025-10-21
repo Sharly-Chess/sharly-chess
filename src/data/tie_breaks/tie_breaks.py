@@ -103,7 +103,7 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         return True
 
     def compute_all_player_values(
-        self, tournament: 'Tournament', *, after_round: int
+        self, tournament: 'Tournament', tie_break_index: int, *, after_round: int
     ) -> dict[int, int]:
         """Computes the values of all the players in a dict[player_id, value] format."""
         raise NotImplementedError(
@@ -119,6 +119,11 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
     @property
     def is_manual(self) -> bool:
         """Defines if the tie-break is the manual one"""
+        return False
+
+    @property
+    def allow_multiple(self) -> bool:
+        """Defines if the tie-break can be added multiple time with the same options."""
         return False
 
     @property
@@ -1488,6 +1493,10 @@ class DirectEncounterTieBreak(TieBreak):
     def display_rank_delta(self) -> bool:
         return True
 
+    @property
+    def allow_multiple(self) -> bool:
+        return True
+
     def compute_player_value(self, player: Player, *, after_round: int) -> int:
         """The value is computed all the players at once (see `compute_all_player_values`)."""
         return 0
@@ -1497,7 +1506,7 @@ class DirectEncounterTieBreak(TieBreak):
         return False
 
     def compute_all_player_values(
-        self, tournament: 'Tournament', *, after_round: int
+        self, tournament: 'Tournament', tie_break_index: int, *, after_round: int
     ) -> dict[int, int]:
         """Form groups of tied players. Amongst each group,
         attribute (if possible) an integer value from 0 to len(group).
@@ -1506,7 +1515,7 @@ class DirectEncounterTieBreak(TieBreak):
         # Group players by the rank sort key before the tie-break
         players_by_rank_group: dict[tuple, list[Player]] = defaultdict(list)
         for player in tournament.players:
-            rank_group = player.rank_sort_key_before_tie_break(DirectEncounterTieBreak)
+            rank_group = player.rank_sort_key_before_tie_break(tie_break_index)
             players_by_rank_group[rank_group].append(player)
 
         values_by_player_id: dict[int, int] = {}
