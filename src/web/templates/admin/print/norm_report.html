@@ -384,17 +384,17 @@
                             <label>Number of federations:</label>
                             <input value="{{ norm.all_federations_count if applying_143d }}"  />
                         </div>
-                        <div class="item {{ 'error' if applying_143d and norm.not_enough_all_title_holders else '' }}">
+                        <div class="item {{ 'error' if applying_143d and norm.not_enough_foreign_players else '' }}">
                             <div class="error-info">
-                                {{ norm.not_enough_all_title_holders | safe }}
+                                {{ norm.not_enough_foreign_players | safe }}
                             </div>
                             <label>Number of rated players not from host federation:</label>
                             <input value="{{ norm.eligible_players_count if applying_143d }}"  />
                         </div>
                     </div>
-                    <div class="item {{ 'error' if applying_143d and norm.not_enough_foreign_players else '' }}">
+                    <div class="item {{ 'error' if applying_143d and norm.not_enough_all_title_holders else '' }}">
                         <div class="error-info">
-                            {{ norm.not_enough_foreign_players | safe }}
+                            {{ norm.not_enough_all_title_holders | safe }}
                         </div>
                         <label>Number of players not from host federation holding GM, IM, WGM, WIM titles:</label>
                         <input value="{{ norm.eligible_players_title_count if applying_143d }}"  />
