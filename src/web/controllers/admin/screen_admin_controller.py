@@ -752,7 +752,7 @@ class ScreenAdminController(BaseEventAdminController):
                     if results_tournament_ids:
                         data |= {
                             f'results_tournament_{tournament_id}': WebContext.value_to_form_data(
-                                tournament_id
+                                True
                             )
                             for tournament_id in results_tournament_ids
                         }
