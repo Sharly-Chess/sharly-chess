@@ -153,27 +153,16 @@
                                         data=data, errors=errors
                                     ) }}
                                 </div>
-                                <div class="col-12">
-                                    <label class="form-label">{{ _('Tournaments displayed:') }}</label>
-                                    <div class="d-flex flex-wrap gap-3">
-                                        {% for tournament in admin_event.tournaments_by_uniq_id.values() %}
-                                            {% with id='results-tournament-' ~ tournament.id, name='results_tournament_' ~ tournament.id %}
-                                                <span class="text-nowrap">
-                                                    <input
-                                                        name="{{ name }}"
-                                                        type="checkbox" id="{{ id }}"
-                                                        class=""
-                                                        {% if data[name] == 'on' %}checked{% endif %} />
-                                                    <label for="{{ id }}" class="form-label ms-1">
-                                                        {{ tournament.name }}
-                                                    </label>
-                                                </span>
-                                            {% endwith %}
-                                        {% endfor %}
-                                    </div>
-                                    <div id="" class="form-text">
-                                        {{ _('When not tournament is selected, the results of all the tournaments are displayed.') }}
-                                    </div>
+                                <div class="col-12 col-md-6">
+                                    {{ admin_macros.select_input(
+                                        name='results_tournament_ids',
+                                        label=_('Tournaments displayed:'),
+                                        placeholder=_('All the tournaments'),
+                                        help_text='',
+                                        multiple_select=true,
+                                        select_options=tournament_options,
+                                        data=data, errors=errors
+                                    ) }}
                                 </div>
                             {% endif %}
                         </div>

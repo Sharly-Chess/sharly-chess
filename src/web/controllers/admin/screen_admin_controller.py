@@ -211,11 +211,13 @@ class ScreenAdminController(BaseEventAdminController):
                             results_max_age = WebContext.form_data_to_int(data, field)
                         except ValueError:
                             errors[field] = _('A positive integer is expected.')
-                        results_tournament_ids = []
-                        for tournament_id in event.tournaments_by_id:
-                            field = f'results_tournament_{tournament_id}'
-                            if WebContext.form_data_to_bool(data, field):
-                                results_tournament_ids.append(tournament_id)
+                        results_tournament_ids = [
+                            tournament_id
+                            for tournament_id in WebContext.form_data_to_list_int(
+                                data, 'results_tournament_ids'
+                            )
+                            if tournament_id in event.tournaments_by_id
+                        ]
                     case ScreenType.RANKING:
                         ranking_crosstable = WebContext.form_data_to_bool(
                             data, field := 'ranking_crosstable'
@@ -700,62 +702,34 @@ class ScreenAdminController(BaseEventAdminController):
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
-                    data = {
-                        'public': WebContext.value_to_form_data(public),
-                        'name': WebContext.value_to_form_data(name),
-                        'columns': WebContext.value_to_form_data(columns),
-                        'font_size': WebContext.value_to_form_data(font_size),
-                        'menu_link': WebContext.value_to_form_data(menu_link),
-                        'menu_text': WebContext.value_to_form_data(menu_text),
-                        'menu': WebContext.value_to_form_data(menu),
-                        'timer_id': WebContext.value_to_form_data(timer_id),
-                        'input_exit_button': WebContext.value_to_form_data(
-                            input_exit_button
-                        ),
-                        'players_show_unpaired': WebContext.value_to_form_data(
-                            players_show_unpaired
-                        ),
-                        'players_show_opponent': WebContext.value_to_form_data(
-                            players_show_opponent
-                        ),
-                        'results_limit': WebContext.value_to_form_data(results_limit),
-                        'results_max_age': WebContext.value_to_form_data(
-                            results_max_age
-                        ),
-                        'ranking_crosstable': WebContext.value_to_form_data(
-                            ranking_crosstable
-                        ),
-                        'ranking_round': WebContext.value_to_form_data(ranking_round),
-                        'ranking_min_points': WebContext.value_to_form_data(
-                            ranking_min_points
-                        ),
-                        'ranking_max_points': WebContext.value_to_form_data(
-                            ranking_max_points
-                        ),
-                        'background_image': WebContext.value_to_form_data(
-                            background_image
-                        ),
-                        'background_color': WebContext.value_to_form_data(
-                            background_color
-                        ),
-                        'background_color_checkbox': WebContext.value_to_form_data(
-                            background_color is None
-                        ),
-                        'message_text_checkbox': WebContext.value_to_form_data(
-                            message_default
-                        ),
-                        'message_text': WebContext.value_to_form_data(message_text),
-                        'init_set_tournament_id': WebContext.value_to_form_data(
-                            init_set_tournament_id
-                        ),
-                    }
-                    if results_tournament_ids:
-                        data |= {
-                            f'results_tournament_{tournament_id}': WebContext.value_to_form_data(
-                                tournament_id
-                            )
-                            for tournament_id in results_tournament_ids
+                    data = WebContext.values_dict_to_form_data(
+                        {
+                            'public': public,
+                            'name': name,
+                            'columns': columns,
+                            'font_size': font_size,
+                            'menu_link': menu_link,
+                            'menu_text': menu_text,
+                            'menu': menu,
+                            'timer_id': timer_id,
+                            'input_exit_button': input_exit_button,
+                            'players_show_unpaired': players_show_unpaired,
+                            'players_show_opponent': players_show_opponent,
+                            'results_limit': results_limit,
+                            'results_max_age': results_max_age,
+                            'ranking_crosstable': ranking_crosstable,
+                            'ranking_round': ranking_round,
+                            'ranking_min_points': ranking_min_points,
+                            'ranking_max_points': ranking_max_points,
+                            'background_image': background_image,
+                            'background_color': background_color,
+                            'background_color_checkbox': background_color is None,
+                            'message_text_checkbox': message_default,
+                            'message_text': message_text,
+                            'init_set_tournament_id': init_set_tournament_id,
+                            'results_tournament_ids': results_tournament_ids,
                         }
+                    )
                 stored_screen = cls._admin_validate_screen_update_data(
                     action, web_context, data
                 )
@@ -1033,7 +1007,7 @@ class ScreenAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         screen_type: str,
@@ -1043,7 +1017,7 @@ class ScreenAdminController(BaseEventAdminController):
             action='create',
             screen_id=None,
             screen_type=screen_type,
-            data=data,
+            data=WebContext.flatten_list_data(data),
         )
 
     @post(
@@ -1055,7 +1029,7 @@ class ScreenAdminController(BaseEventAdminController):
         request: HTMXRequest,
         screen_id: int,
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template | Redirect:
@@ -1064,7 +1038,7 @@ class ScreenAdminController(BaseEventAdminController):
             action='clone',
             screen_id=screen_id,
             screen_type=None,
-            data=data,
+            data=WebContext.flatten_list_data(data),
         )
 
     @patch(
@@ -1076,7 +1050,7 @@ class ScreenAdminController(BaseEventAdminController):
         request: HTMXRequest,
         screen_id: int,
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template | Redirect:
@@ -1085,7 +1059,7 @@ class ScreenAdminController(BaseEventAdminController):
             action='update',
             screen_id=screen_id,
             screen_type=None,
-            data=data,
+            data=WebContext.flatten_list_data(data),
         )
 
     @patch(

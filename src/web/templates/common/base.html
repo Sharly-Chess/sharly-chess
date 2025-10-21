@@ -169,17 +169,6 @@
                 // Allow the tooltip content to have a style attribute
                 bootstrap.Tooltip.Default.allowList['*'].push('style')
             }
-
-            $(document).on('select2:close', '.sharly-chess-select2', function (e) {
-                var evt = "scroll.select2";
-                $(e.target).parents().off(evt);
-                $(window).off(evt);
-            });
-
-            // Prevent the dropdown from blinking when deselecting multiple options
-            $(document).on('select2:unselect', '.sharly-chess-select2', function (e) {
-                $(this).select2('close');
-            });
         </script>
     {% endif %}
     {% if messages %}
