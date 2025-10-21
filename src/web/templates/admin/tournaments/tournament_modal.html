@@ -128,7 +128,6 @@
                 <script>
                     $('#rating').change(function() {
                         if ($(this).val() === "1") {
-                            console.log('hide');
                             $('.estimated-ratings').hide();
                         } else {
                             $('.estimated-ratings').show();
@@ -138,6 +137,104 @@
                         $('.estimated-ratings').hide();
                     }
                 </script>
+
+                <h4>
+                    {{ _('Pairings') }}
+                </h4>
+                <div class="row gy-2 gx-3">
+                    <div
+                        class="col-12 col-md-6"
+                        {% if admin_tournament.started %}
+                            {{ macros.tooltip_attributes(
+                                'info',
+                                _('This field can\'t be modified once the tournament has started.'),
+                                'top'
+                            ) }}
+                        {% endif %}
+                    >
+                        {{ admin_macros.select_input(
+                            name='pairing_system',
+                            label=_('%(string)s:', string=_('Pairing system')),
+                            help_text=_('The system used to generate the pairings.'),
+                            select_options=pairing_system_options,
+                            disabled=admin_tournament.started,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    {% if admin_tournament.started %}
+                        <input type="hidden" name="pairing_system" value="{{ data['pairing_system'] }}" />
+                    {% endif %}
+                    {% for pairing_system in pairing_systems %}
+                        <div
+                            class="col-12 col-md-6"
+                            id="{{ pairing_system.variation_container_id }}"
+                            {% if pairing_system.id != data['pairing_system'] %}
+                                style="display:none"
+                            {% endif %}
+                            {% if admin_tournament.started %}
+                                {{ macros.tooltip_attributes(
+                                    'info',
+                                    _('This field can\'t be modified once the tournament has started.'),
+                                    'top'
+                                ) }}
+                            {% endif %}
+                        >
+                            {{ admin_macros.select_input(
+                                name=pairing_system.variation_field_id,
+                                label=_('%(string)s:', string=_('Variation')),
+                                select_options=pairing_system.variation_manager(admin_event).options(),
+                                help_text=_('The variation of the pairing system.'),
+                                disabled=admin_tournament.started,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        {% if admin_tournament.started %}
+                            <input type="hidden" name="{{ pairing_system.variation_field_id }}" value="{{ data[pairing_system.variation_field_id] }}" />
+                        {% endif %}
+                    {% endfor %}
+                    <script>
+                        $('#pairing-system').change(function() {
+                            let elements = '';
+                            {% for pairing_system in pairing_systems %}
+                                elements = $('#{{ pairing_system.variation_container_id }}');
+                                if ($(this).val() === '{{ pairing_system.id }}') {
+                                    elements.show();
+                                } else {
+                                    elements.hide();
+                                }
+                            {% endfor %}
+                        });
+                    </script>
+                </div>
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.number_input(
+                            name='first_board_number',
+                            label=_('First board number:'),
+                            placeholder=_('Default: %(string)s', string=sharly_chess_config.default_first_board_number),
+                            help_text=_('The number of the first board of the tournament.'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.number_input(
+                            name='max_byes',
+                            label=_('Max byes:'),
+                            placeholder=_('Default: %(string)s', string=sharly_chess_config.default_max_byes),
+                            help_text=_('The maximum number of byes a player can pretend to.'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.number_input(
+                            name='last_rounds_no_byes',
+                            label=_('No. final rounds without byes:'),
+                            placeholder=_('Default: %(string)s', string=sharly_chess_config.default_last_rounds_no_byes),
+                            help_text=_('The number of final rounds in which byes are not permitted.'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
 
                 {% for form_fields_template in plugin_form_fields_templates %}
                     {% include form_fields_template %}
@@ -250,105 +347,6 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                </div>
-
-                <h4>
-                    {{ _('Pairings') }}
-                </h4>
-                <div class="row gy-2 gx-3">
-                    <div
-                        class="col-12 col-md-6"
-                        {% if admin_tournament.started %}
-                            {{ macros.tooltip_attributes(
-                                'info',
-                                _('This field can\'t be modified once the tournament has started.'),
-                                'top'
-                            ) }}
-                        {% endif %}
-                    >
-                        {{ admin_macros.select_input(
-                            name='pairing_system',
-                            label=_('%(string)s:', string=_('Pairing system')),
-                            help_text=_('The system used to generate the pairings.'),
-                            select_options=pairing_system_options,
-                            disabled=admin_tournament.started,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    {% if admin_tournament.started %}
-                        <input type="hidden" name="pairing_system" value="{{ data['pairing_system'] }}" />
-                    {% endif %}
-                    {% for pairing_system in pairing_systems %}
-                        <div
-                            class="col-12 col-md-6"
-                            id="{{ pairing_system.variation_container_id }}"
-                            {% if pairing_system.id != data['pairing_system'] %}
-                                style="display:none"
-                            {% endif %}
-                            {% if admin_tournament.started %}
-                                {{ macros.tooltip_attributes(
-                                    'info',
-                                    _('This field can\'t be modified once the tournament has started.'),
-                                    'top'
-                                ) }}
-                            {% endif %}
-                        >
-                            {{ admin_macros.select_input(
-                                name=pairing_system.variation_field_id,
-                                label=_('%(string)s:', string=_('Variation')),
-                                select_options=pairing_system.variation_manager(admin_event).options(),
-                                help_text=_('The variation of the pairing system.'),
-                                disabled=admin_tournament.started,
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        {% if admin_tournament.started %}
-                            <input type="hidden" name="{{ pairing_system.variation_field_id }}" value="{{ data[pairing_system.variation_field_id] }}" />
-                        {% endif %}
-                    {% endfor %}
-                    <script>
-                        $('#pairing-system').change(function() {
-                            let elements = '';
-                            {% for pairing_system in pairing_systems %}
-                                elements = $('#{{ pairing_system.variation_container_id }}');
-                                if ($(this).val() === '{{ pairing_system.id }}') {
-                                    elements.show();
-                                } else {
-                                    elements.hide();
-                                }
-                            {% endfor %}
-                        });
-                    </script>
-                </div>
-                <div class="row gy-2 gx-3">
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.number_input(
-                            name='first_board_number',
-                            label=_('First board number:'),
-                            placeholder=_('Default: %(string)s', string=sharly_chess_config.default_first_board_number),
-                            help_text=_('The number of the first board of the tournament.'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.number_input(
-                            name='max_byes',
-                            label=_('Max byes:'),
-                            placeholder=_('Default: %(string)s', string=sharly_chess_config.default_max_byes),
-                            help_text=_('The maximum number of byes a player can pretend to.'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.number_input(
-                            name='last_rounds_no_byes',
-                            label=_('No. final rounds without byes:'),
-                            placeholder=_('Default: %(string)s', string=sharly_chess_config.default_last_rounds_no_byes),
-                            help_text=_('The number of final rounds in which byes are not permitted.'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-
                 </div>
                 <h4>
                     {{ _('Points') }}
