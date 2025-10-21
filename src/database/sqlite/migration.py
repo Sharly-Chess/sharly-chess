@@ -304,9 +304,10 @@ class MigrationManager[T: MigrationDatabase](ABC):
             ) as database:
                 migration_object = migration_class(database)
                 migration_object.backward()
-                migration = self._previous_migration(migration)
-                self.set_migration(migration, database)
+                previous_migration = self._previous_migration(migration)
+                self.set_migration(previous_migration, database)
             logger.debug(self.log_prefix + f'\t{migration} rolled back')
+            migration = previous_migration
         with self.get_database(True) as database:
             self.set_migration(target_migration, database)
 
