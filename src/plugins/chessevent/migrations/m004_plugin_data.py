@@ -99,12 +99,11 @@ class Migration(BasePluginMigration):
             SET chessevent_user_id = ?,
                 chessevent_password = ?,
                 chessevent_event_id = ?
-            WHERE id = ?
             """,
             (
-                chessevent_data.get('user'),
-                chessevent_data.get('password'),
-                chessevent_data.get('event_id'),
+                chessevent_data.get('user', None),
+                chessevent_data.get('password', None),
+                chessevent_data.get('event_id', None),
             ),
         )
 
@@ -142,11 +141,12 @@ class Migration(BasePluginMigration):
                 WHERE id = ?
                 """,
                 (
-                    chessevent_data.get('user'),
-                    chessevent_data.get('password'),
-                    chessevent_data.get('event_id'),
-                    chessevent_data.get('tournament_name'),
-                    chessevent_data.get('last_sync'),
+                    chessevent_data.get('user', None),
+                    chessevent_data.get('password', None),
+                    chessevent_data.get('event_id', None),
+                    chessevent_data.get('tournament_name', None),
+                    chessevent_data.get('status', None),
+                    chessevent_data.get('last_sync', None),
                     tournament_id,
                 ),
             )

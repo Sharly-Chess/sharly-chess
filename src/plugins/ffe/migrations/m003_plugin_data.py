@@ -84,12 +84,11 @@ class Migration(BasePluginMigration):
             """
             UPDATE info
             SET ffe_auto_upload = ?,
-                ffe_auto_upload_delay = ?,
-            WHERE id = ?
+                ffe_auto_upload_delay = ?
             """,
             (
-                ffe_data.get('auto_upload'),
-                ffe_data.get('auto_upload_delay'),
+                ffe_data.get('auto_upload', None),
+                ffe_data.get('auto_upload_delay', None),
             ),
         )
 
@@ -125,11 +124,11 @@ class Migration(BasePluginMigration):
                 WHERE id = ?
                 """,
                 (
-                    ffe_data.get('id'),
-                    ffe_data.get('password'),
-                    ffe_data.get('last_upload'),
-                    ffe_data.get('last_rules_upload'),
-                    ffe_data.get('auto_upload'),
+                    ffe_data.get('id', None),
+                    ffe_data.get('password', None),
+                    ffe_data.get('last_upload', None),
+                    ffe_data.get('last_rules_upload', None),
+                    ffe_data.get('auto_upload', None),
                     tournament_id,
                 ),
             )
