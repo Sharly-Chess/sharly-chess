@@ -140,6 +140,9 @@ class PapiConverter:
     """Wrapper on the Papi converter
     (see https://github.com/Sharly-Chess/papi-converter)"""
 
+    # Used to input unique FFE IDs, preventing breaking the UNIQUE clause on this column
+    MOCK_FFE_ID_DELTA = int((datetime.now() - FFE_EPOCH).total_seconds())
+
     @property
     def executable_path(self) -> Path:
         return PapiConverterInstaller().executable_path
@@ -668,10 +671,10 @@ class PapiConverter:
         self,
         tournament: Tournament,
         target_file: Path,
-    ) -> bool:
+    ):
         """Write the tournament data to a papi file.
         Converts a Tournament to JSON format that can be sent to papi-converter.
-        Returns True if successful, raises SharlyChessException if conversion fails."""
+        Raises a SharlyChessException if the conversion fails."""
         papi_data = self.tournament_to_papi_data(tournament)
         papi_data_dict = {
             'variables': {
@@ -686,30 +689,33 @@ class PapiConverter:
         with tempfile.TemporaryDirectory() as tmpdir:
             tmp_path: Path = Path(tmpdir)
             temp_json_file = tmp_path / 'papi-converter-input.json'
-            try:
-                with open(temp_json_file, 'w', encoding='utf-8') as file:
-                    json.dump(papi_data_dict, file, ensure_ascii=False, indent=2)
+            with open(temp_json_file, 'w', encoding='utf-8') as file:
+                json.dump(papi_data_dict, file, ensure_ascii=False, indent=2)
 
-                # Use papi-converter to convert JSON to PAPI format
-                result = StaticUtils.run_process(
-                    [
-                        self.executable_path,
-                        temp_json_file,
-                        target_file,
-                    ],
-                    capture_output=True,
-                    encoding='utf-8',
+            # Use papi-converter to convert JSON to PAPI format
+            result = StaticUtils.run_process(
+                [
+                    self.executable_path,
+                    temp_json_file,
+                    target_file,
+                ],
+                capture_output=True,
+                encoding='utf-8',
+            )
+
+            if result.returncode != 0 or not target_file.exists():
+                raise SharlyChessException(
+                    'JSON to Papi file conversion failed.'
+                    f'PapiConverter failed with status {result.returncode}.\n'
+                    f'stdout: {result.stdout}\nstderr: {result.stderr}'
                 )
-
-                if result.returncode != 0 or not target_file.exists():
-                    raise SharlyChessException(
-                        f'JSON to Papi file conversion failed.'
-                        f'PapiConverter failed with status {result.returncode}.\n'
-                        f'stdout: {result.stdout}\nstderr: {result.stderr}'
-                    )
-
-            finally:
-                return target_file.exists()
+            else:
+                logger.debug(
+                    'JSON to Papi conversion successful for tournament [%s]. '
+                    'PapiConverter output:\n%s',
+                    tournament.name,
+                    result.stdout,
+                )
 
     def tournament_to_papi_data(self, tournament: Tournament) -> PapiData:
         """Convert a Tournament object to PapiData."""
@@ -865,8 +871,7 @@ class PapiConverter:
             blitzElo=self._get_papi_elo(player, TournamentRating.BLITZ),
             fideBlitzElo=self._get_papi_elo_type(player, TournamentRating.BLITZ),
             licenceType=PapiPlayerFFELicence.get_outer_value(plugin_data.ffe_licence),
-            refFFE=plugin_data.ffe_id
-            or (int((datetime.now() - FFE_EPOCH).total_seconds()) + player.id),
+            refFFE=plugin_data.ffe_id or (self.MOCK_FFE_ID_DELTA + player.id),
             nrFFE=plugin_data.ffe_licence_number,
             league=plugin_data.league,
         )
