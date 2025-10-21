@@ -189,12 +189,15 @@ class SwissPairingSystem(PairingSystem['SwissVariation']):
         from data.tie_breaks.cutters import Cut1TieBreakCutter
 
         return [
-            tie_breaks.DirectEncounterTieBreak(),
-            tie_breaks.WinsTieBreak(),
             tie_breaks.StandardBuchholzTieBreak(
                 [CutterWithMedianTieBreakOption(Cut1TieBreakCutter().id)]
             ),
+            tie_breaks.StandardBuchholzTieBreak(),
+            tie_breaks.SonnebornBergerTieBreak(),
             tie_breaks.ProgressiveScoresTieBreak(),
+            tie_breaks.DirectEncounterTieBreak(),
+            tie_breaks.WinsTieBreak(),
+            tie_breaks.GamesWonWithBlackTieBreak(),
         ]
 
 
