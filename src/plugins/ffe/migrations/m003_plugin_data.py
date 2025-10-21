@@ -124,10 +124,10 @@ class Migration(BasePluginMigration):
                 WHERE id = ?
                 """,
                 (
-                    ffe_data.get('id', None),
+                    ffe_data.get('ffe_id', None),
                     ffe_data.get('password', None),
-                    ffe_data.get('last_upload', None),
-                    ffe_data.get('last_rules_upload', None),
+                    ffe_data.get('last_upload', 0),
+                    ffe_data.get('last_rules_upload', 0),
                     ffe_data.get('auto_upload', None),
                     tournament_id,
                 ),
