@@ -2,6 +2,7 @@ import logging
 import sys
 from argparse import ArgumentParser
 
+from plugins.manager import plugin_manager
 from utils.scripts import init_script
 
 arguments = init_script()
@@ -43,6 +44,14 @@ if __name__ == '__main__':
         help='Migrate the configuration database (.scc).',
     )
     parser.add_argument(
+        '--plugin',
+        type=str,
+        help=(
+            'When migrating event databases, choose to migrate from the '
+            'timeline of a plugin instead of the main timeline.'
+        ),
+    )
+    parser.add_argument(
         '-m',
         '--migration',
         type=str,
@@ -66,21 +75,24 @@ if __name__ == '__main__':
             '"--events", "--all-events", "--config".'
         )
         sys.exit(1)
-    if args.config and (args.events or args.all_events):
-        print_interactive_error(
-            "config and event databases can't be migrated at the same time."
-        )
-        sys.exit(1)
-    if args.events and args.all_events:
-        print_interactive_error(
-            'Options "--events" and "--all-events" can\'t be used at the same time.'
-        )
-        sys.exit(1)
-    if args.migration and args.validate:
-        print_interactive_error(
-            'Options "--migration" and "--validate" can\'t be used at the same time.'
-        )
-        sys.exit(1)
+
+    def incompatible_options_error(option1: str, option2: str):
+        if getattr(args, option1.replace('-', '_')) and getattr(
+            args, option2.replace('-', '_')
+        ):
+            print_interactive_error(
+                f'Options [--{option1}] and [--{option2}] '
+                "can't be used at the same time."
+            )
+            sys.exit(1)
+
+    incompatible_options_error('config', 'plugin')
+    incompatible_options_error('config', 'events')
+    incompatible_options_error('config', 'all-events')
+    incompatible_options_error('events', 'all-events')
+    incompatible_options_error('validate', 'migration')
+    incompatible_options_error('validate', 'plugin')
+
     databases: list[MigrationDatabase] = []
     if args.config:
         databases.append(ConfigDatabase(not args.validate))
@@ -107,9 +119,31 @@ if __name__ == '__main__':
                 print_interactive_error(f'NOK\n\t{e}')
         sys.exit(0)
 
+    def get_migration_manager(database_: MigrationDatabase):
+        if not args.plugin:
+            return database_.migration_managers[0]
+        plugin = next(
+            (
+                plugin
+                for plugin in plugin_manager.all_plugins
+                if plugin.id == args.plugin
+            ),
+            None,
+        )
+        if not plugin:
+            print_interactive_error(f'Plugin [{args.plugin}] not found.')
+            sys.exit(1)
+        if not plugin.base_migration_module:
+            print_interactive_error(
+                f'Plugin [{args.plugin}] does not support migrations.'
+            )
+            sys.exit(1)
+        assert isinstance(database_, EventDatabase)
+        return plugin.get_migration_manager(database_)
+
     migration: str | None = None
     if args.migration:
-        migration_manager = databases[0].migration_managers[0]
+        migration_manager = get_migration_manager(databases[0])
         if args.migration in ['0', 'zero']:
             migration = migration_manager.MIGRATION_ZERO
         elif str(args.migration).isdigit():
@@ -126,8 +160,4 @@ if __name__ == '__main__':
 
     set_logging_config(console_log_level=logging.DEBUG)
     for database in databases:
-        try:
-            database.migration_managers[0].migrate(migration)
-        except SharlyChessException as e:
-            print_interactive_error(str(e))
-            raise e
+        get_migration_manager(database).migrate(migration)

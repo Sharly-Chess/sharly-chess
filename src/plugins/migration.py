@@ -60,7 +60,7 @@ class PluginMigrationManager(MigrationManager[EventDatabase]):
 
     @property
     def log_prefix(self) -> str:
-        return super().log_prefix + f'Plugin [{self.plugin.name}] - '
+        return super().log_prefix + f'Plugin [{self.plugin.id}] - '
 
     def get_migration_from_legacy_version(self, database: EventDatabase) -> str | None:
         try:
