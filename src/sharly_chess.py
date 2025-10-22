@@ -4,8 +4,6 @@ from pathvalidate import validate_filepath, ValidationError
 import platform
 import sys
 
-from data.pairings.engines import BbpPairings
-
 # Nuclear option: Override warnings.warn to block specific messages
 # warnings.filterwarnings simply would not work
 _original_warn = warnings.warn
@@ -185,6 +183,8 @@ try:
                 )
                 sys.exit(1)
             trf_input_file_path = Path(args.input_file)
+        from data.pairings.engines import BbpPairings
+
         bbp_pairings: BbpPairings = BbpPairings()
         if args.generate_tournament:
             bbp_pairings.generate_tournament(
