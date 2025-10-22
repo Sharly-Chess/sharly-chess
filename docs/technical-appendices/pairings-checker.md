@@ -16,7 +16,7 @@ Generate a random TRF file ``test.trf`` using a random seed (to easily reproduce
 
 ``sharly-chess-<version>.exe --generate-tournament --output-file=test.trf --random-seed=12345678``<br/>
 or<br/>
-``sharly-chess-<version>.exe -g -o test.trf -s=12345678``
+``sharly-chess-<version>.exe -g -o test.trf -s 12345678``
 
 ## Check tournament pairings
 
