@@ -480,6 +480,14 @@ class Tournament:
                 f'Tie-break [{tie_break_id}] not part of tournament [{self.name}].'
             )
         with EventDatabase(self.event.uniq_id, True) as database:
+            if self.tie_breaks_by_id[tie_break_id].is_manual:
+                # Delete all the values of the manual tie-break
+                manual_updates: dict[int, int | None] = {}
+                for player in self.players:
+                    if player.manual_tiebreak is not None:
+                        player.stored_tournament_player.manual_tiebreak = None
+                        manual_updates[player.id] = None
+                database.set_tournament_players_manual_tiebreak(self.id, manual_updates)
             database.delete_stored_tie_break(tie_break_id)
             del self.tie_breaks_by_id[tie_break_id]
             self._set_tie_break_indexes(database, list(self.tie_breaks_by_id))

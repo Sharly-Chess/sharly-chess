@@ -1,3 +1,5 @@
+from operator import attrgetter
+
 from litestar.exceptions import NotFoundException, ClientException
 
 from common import experimental_features_enabled
@@ -30,7 +32,6 @@ from data.print_documents.documents import (
     PlayerRankingPrintDocument,
 )
 from data.safety_mode import RoundStatus, SafetyMode, PairingAction
-from data.tie_breaks.tie_breaks import ManualTieBreak
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from utils.enum import Result
@@ -1490,18 +1491,13 @@ class PairingsAdminController(BaseEventAdminController):
         tournament = web_context.get_admin_tournament()
 
         player_data = data['player']
-        submitted_ids: list[int] = player_data if isinstance(player_data, list) else []
-
-        manual_index = tournament.tie_breaks.index(ManualTieBreak())
-        # 'Natural' sort order without tiebreaks
-        players_by_rank_without_manual_tiebreaks = sorted(
-            tournament.players,
-            key=lambda p: p.rank_sort_key_without_tie_break(manual_index),
+        ordered_player_ids: list[int] = (
+            player_data if isinstance(player_data, list) else []
         )
 
         # Group players by manual_rank_key, preserving current order
         by_rank: dict[object, list[Player]] = defaultdict(list)
-        for player in players_by_rank_without_manual_tiebreaks:
+        for player in sorted(tournament.players, key=attrgetter('rank'), reverse=True):
             by_rank[player.before_manual_rank_key].append(player)
 
         players_to_update: dict[int, int | None] = {}
@@ -1510,26 +1506,24 @@ class PairingsAdminController(BaseEventAdminController):
         for group in by_rank.values():
             # Singletons never need manual tiebreak
             if len(group) <= 1:
-                for p in group:
-                    if p.manual_tiebreak is not None:
-                        players_to_update[p.id] = None
+                for player in group:
+                    if player.manual_tiebreak is not None:
+                        players_to_update[player.id] = None
                 continue
 
             # Current order (by manual_rank_key) and submitted order (restricted to this group)
-            current_ids = [p.id for p in group]
-            submitted_ids_in_group = [
-                pid for pid in submitted_ids if pid in current_ids
+            current_group_ids = [player.id for player in group]
+            new_group_ids = [
+                pid for pid in ordered_player_ids if pid in current_group_ids
             ]
 
-            # If group order identical, clear all manual tiebreaks
-            if submitted_ids_in_group == current_ids:
-                for p in group:
-                    if p.manual_tiebreak is not None:
-                        players_to_update[p.id] = None
-            else:
-                # Maps of index within the group
-                for i, pid in enumerate(submitted_ids_in_group):
-                    players_to_update[pid] = -i
+            # Ignore groups that have not been modified
+            if current_group_ids == new_group_ids:
+                continue
+
+            # Maps of index within the group
+            for index, player_id in enumerate(new_group_ids):
+                players_to_update[player_id] = len(group) - index
 
         if players_to_update:
             with EventDatabase(tournament.event.uniq_id, True) as database:
