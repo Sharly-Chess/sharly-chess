@@ -161,6 +161,9 @@ class NormCheckResult:
     not_enough_foreign_players: str | None = None
     not_enough_all_title_holders: str | None = None
 
+    # 1.5.6a
+    requirement_156a_met: bool = False
+
     @property
     def is_143d_met(self) -> bool:
         return (

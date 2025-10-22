@@ -4,7 +4,26 @@
     hx-trigger="end"
     hx-indicator="#please-wait"
 >
-    <h4>{{ _('Ranking') }}</h4>
+    <div class="d-flex">
+        <h4>{{ _('Ranking') }}</h4>
+        <div class="flex-grow-1"></div>
+        {% if admin_tournament.has_manual_tie_break_values %}
+            <button
+                class="btn btn-outline-primary text-nowrap mb-3"
+                hx-post="{{ url_for(
+                    'admin-manual-tiebreak-reset',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+
+            >
+                <i class="bi bi-arrow-clockwise pe-1"></i>
+                {{ _('Reset manual tie-break') }}
+            </button>
+        {% endif %}
+    </div>
     <table
         id="rankings-table"
         class="rankings-table table prominent table-sm table-hover w-100 bg-light"
@@ -95,7 +114,7 @@
                         {{ tie_break_value }}
                     </span>
                     {% if tie_break_value.tie_break.is_manual and sortable %}
-                        <i class="bi-grip-horizontal ps-2 handle"></i>
+                        <i class="bi-grip-horizontal ps-2 handle {% if player.manual_tiebreak %}text-warning{% endif %}"></i>
                     {% endif %}
                 </td>
             {% endfor %}

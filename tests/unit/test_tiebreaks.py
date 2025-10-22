@@ -83,7 +83,7 @@ class TieBreakTestCase(TestCase, ABC):
         self.tournament.compute_player_ranks()
         tie_break_ = tie_breaks.DirectEncounterTieBreak()
         return tie_break_.compute_all_player_values(
-            self.tournament, after_round=self.tournament.rounds
+            self.tournament, 0, after_round=self.tournament.rounds
         )
 
 

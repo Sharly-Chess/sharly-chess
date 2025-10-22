@@ -1,3 +1,5 @@
+from operator import attrgetter
+
 from litestar.exceptions import NotFoundException, ClientException
 
 from common import experimental_features_enabled
@@ -30,7 +32,6 @@ from data.print_documents.documents import (
     PlayerRankingPrintDocument,
 )
 from data.safety_mode import RoundStatus, SafetyMode, PairingAction
-from data.tie_breaks.tie_breaks import ManualTieBreak
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from utils.enum import Result
@@ -646,7 +647,6 @@ class PairingsAdminController(BaseEventAdminController):
         web_context: PairingsAdminWebContext,
         result: Result,
         *,
-        all_remaining_rounds: bool = False,
         success_message: str | None = None,
     ) -> Template:
         tournament = web_context.get_admin_tournament()
@@ -655,30 +655,18 @@ class PairingsAdminController(BaseEventAdminController):
         # If there aren't any pairings, then the round for the bye is the first round
         round_for_participation = web_context.admin_round or 1
         new_byes: dict[int, Result] = {}
-        if all_remaining_rounds:
-            new_byes = {
-                round_: result
-                for round_ in range(
-                    round_for_participation,
-                    tournament.rounds + 1,
-                )
-                if player.pairings[round_].unplayed
-            }
-        else:
-            new_byes[round_for_participation] = result
+        new_byes[round_for_participation] = result
         tournament.set_player_byes(player, new_byes)
         if success_message:
             Message.success(web_context.request, success_message)
 
-        web_context = PairingsAdminWebContext(
-            web_context.request,
-            tournament_id=tournament.id,
-            round_=web_context.admin_round,
-            player_id=player.id,
-            reload_event=True,
+        return HTMXTemplate(
+            template_name='common/empty_modal_and_messages.html',
+            context={'messages': Message.messages(web_context.request)},
+            re_target='#modal-wrapper',
+            trigger_event='close_modal',
+            after='receive',
         )
-
-        return cls._admin_event_pairings_render(web_context)
 
     @patch(
         path=(
@@ -759,13 +747,13 @@ class PairingsAdminController(BaseEventAdminController):
 
     @patch(
         path=(
-            '/pairings/withdraw-player/{event_uniq_id:str}/'
+            '/pairings/cancel-bye/{event_uniq_id:str}/'
             '{tournament_id:int}/{player_id:int}/{round:int}'
         ),
-        name='admin-pairings-withdraw-player',
+        name='admin-pairings-cancel-bye',
         guards=[TournamentActionGuard(AuthAction.SET_ZPB)],
     )
-    async def htmx_admin_withdraw_player(
+    async def htmx_admin_cancel_bye(
         self,
         request: HTMXRequest,
         tournament_id: int,
@@ -780,56 +768,14 @@ class PairingsAdminController(BaseEventAdminController):
             action=PairingAction.BYE_UPDATE,
         )
         player = web_context.get_admin_player()
-        message = _('Player [{player}] withdrawn from the tournament.').format(
+
+        message = _('Player [{player}] has returned for this round.').format(
             player=player.full_name
         )
-        return self._set_player_participation(
-            web_context,
-            Result.ZERO_POINT_BYE,
-            all_remaining_rounds=True,
-            success_message=message,
-        )
-
-    @patch(
-        path=(
-            '/pairings/return-player/{event_uniq_id:str}/'
-            '{tournament_id:int}/{player_id:int}/{round:int}'
-        ),
-        name='admin-pairings-return-player',
-        guards=[TournamentActionGuard(AuthAction.SET_ZPB)],
-    )
-    async def htmx_admin_return_player(
-        self,
-        request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        player_id: int,
-    ) -> Template:
-        web_context = PairingsAdminWebContext(
-            request,
-            tournament_id=tournament_id,
-            round_=round,
-            player_id=player_id,
-            action=PairingAction.BYE_UPDATE,
-        )
-        tournament = web_context.get_admin_tournament()
-        player = web_context.get_admin_player()
-
-        if web_context.admin_round < tournament.current_round:
-            message = _('Player [{player}] has returned for this round.').format(
-                player=player.full_name
-            )
-            all_remaining_rounds = False
-        else:
-            message = _(
-                'Player [{player}] has returned for all the remaining rounds.'
-            ).format(player=player.full_name)
-            all_remaining_rounds = True
 
         return self._set_player_participation(
             web_context,
             Result.NO_RESULT,
-            all_remaining_rounds=all_remaining_rounds,
             success_message=message,
         )
 
@@ -948,7 +894,7 @@ class PairingsAdminController(BaseEventAdminController):
         round_ = web_context.admin_round
         tournament.pairing_variation.engine.generate_pairings(tournament, round_, True)
         unpaired_count = sum(
-            player.pairings[round_].not_paired for player in tournament.players
+            player.pairings[round_].needs_pairing for player in tournament.players
         )
         if unpaired_count:
             if unpaired_count == 1:
@@ -1473,7 +1419,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/manual-tiebreak-update/{event_uniq_id:str}/{tournament_id:int}',
+        path='/manual-tiebreak/update/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-manual-tiebreak-update',
     )
     async def htmx_admin_manual_tiebreak_update(
@@ -1490,17 +1436,13 @@ class PairingsAdminController(BaseEventAdminController):
         tournament = web_context.get_admin_tournament()
 
         player_data = data['player']
-        submitted_ids: list[int] = player_data if isinstance(player_data, list) else []
-
-        # 'Natural' sort order without tiebreaks
-        players_by_rank_without_manual_tiebreaks = sorted(
-            tournament.players,
-            key=lambda p: p.rank_sort_key_without_tie_break(ManualTieBreak),
+        ordered_player_ids: list[int] = (
+            player_data if isinstance(player_data, list) else []
         )
 
         # Group players by manual_rank_key, preserving current order
         by_rank: dict[object, list[Player]] = defaultdict(list)
-        for player in players_by_rank_without_manual_tiebreaks:
+        for player in sorted(tournament.players, key=attrgetter('rank'), reverse=True):
             by_rank[player.before_manual_rank_key].append(player)
 
         players_to_update: dict[int, int | None] = {}
@@ -1509,26 +1451,24 @@ class PairingsAdminController(BaseEventAdminController):
         for group in by_rank.values():
             # Singletons never need manual tiebreak
             if len(group) <= 1:
-                for p in group:
-                    if p.manual_tiebreak is not None:
-                        players_to_update[p.id] = None
+                for player in group:
+                    if player.manual_tiebreak is not None:
+                        players_to_update[player.id] = None
                 continue
 
             # Current order (by manual_rank_key) and submitted order (restricted to this group)
-            current_ids = [p.id for p in group]
-            submitted_ids_in_group = [
-                pid for pid in submitted_ids if pid in current_ids
-            ]
+            current_group_ids = [player.id for player in group][::-1]
 
-            # If group order identical, clear all manual tiebreaks
-            if submitted_ids_in_group == current_ids:
-                for p in group:
-                    if p.manual_tiebreak is not None:
-                        players_to_update[p.id] = None
-            else:
-                # Maps of index within the group
-                for i, pid in enumerate(submitted_ids_in_group):
-                    players_to_update[pid] = -i
+            new_group_ids = [
+                pid for pid in ordered_player_ids if pid in current_group_ids
+            ]
+            # Ignore groups that have not been modified
+            if current_group_ids == new_group_ids:
+                continue
+
+            # Maps of index within the group
+            for index, player_id in enumerate(new_group_ids):
+                players_to_update[player_id] = len(group) - index
 
         if players_to_update:
             with EventDatabase(tournament.event.uniq_id, True) as database:
@@ -1541,4 +1481,23 @@ class PairingsAdminController(BaseEventAdminController):
         )
 
         # Re-render the admin pairings view
+        return self._admin_event_pairings_render(web_context)
+
+    @post(
+        path='/manual-tiebreak/reset/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-manual-tiebreak-reset',
+    )
+    async def htmx_admin_manual_tiebreak_reset(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id=tournament_id)
+        tournament = web_context.get_admin_tournament()
+        with EventDatabase(event_uniq_id, True) as database:
+            tournament.delete_manual_tie_break_values(database)
+        web_context = PairingsAdminWebContext(
+            request, tournament_id=tournament_id, reload_event=True
+        )
         return self._admin_event_pairings_render(web_context)

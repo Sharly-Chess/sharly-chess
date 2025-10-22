@@ -37,7 +37,6 @@ if TYPE_CHECKING:
     from _weakref import ReferenceType
     from data.event import Event
     from data.tournament import Tournament
-    from data.tie_breaks.tie_breaks import TieBreak
 
 
 @total_ordering
@@ -490,7 +489,7 @@ class Player:
             elif round_nb == after_round + 1:
                 if include_next_round_bye and pairing.next_round_bye:
                     games.append(trf_game)
-                elif next_round_pairings_as_zpb and not pairing.not_paired:
+                elif next_round_pairings_as_zpb and not pairing.needs_pairing:
                     games.append(
                         TrfGame(
                             startrank=0,
@@ -755,6 +754,10 @@ class Player:
         # - from at least 3 different federations,
         #  -at least 10 of whom hold GM, IM, WGM or WIM titles.
         # For this purpose, players will be counted only if they miss at most one round (excluding pairing allocated byes)
+        #
+        # 1.5.6a
+        #
+        # Check if the average rating of the top 40 eligiable players is at least 2000 in every round
 
         eligible_players: list[Player] = []
 
@@ -783,6 +786,7 @@ class Player:
         worst_players: float = float('inf')
         worst_federations: float = float('inf')
         worst_titled: float = float('inf')
+        meets_156 = True
 
         for rnd in range(1, self.tournament.rounds + 1):
             present: list[Player] = []
@@ -809,6 +813,18 @@ class Player:
             worst_players = min(worst_players, n_players)
             worst_federations = min(worst_federations, n_feds)
             worst_titled = min(worst_titled, n_titled)
+
+            # 1.5.6a
+            # Check if the average rating of the top 40 eligiable players is at least 2000 in every round
+            if n_players < 40:
+                meets_156 = False
+            else:
+                top_rated = sorted([p.rating for p in present], reverse=True)[:40]
+                avg: float = sum(top_rated) / len(top_rated) if top_rated else 0
+                if avg < 2000:
+                    meets_156 = False
+
+        res.requirement_156a_met = meets_156
 
         # Handle case of zero rounds gracefully
         if worst_players is float('inf'):
@@ -845,6 +861,23 @@ class Player:
             if pairing.opponent_id is not None or pairing.exempt:
                 return True
         return False
+
+    @property
+    def has_withdrawn(self) -> bool:
+        """Returns True if the player has withdrawn from the tournament."""
+        if (
+            self.tournament.current_round == self.tournament.rounds
+            and self.tournament.playing
+        ):
+            return self.pairings_by_round[self.tournament.current_round].zero_point_bye
+        for round in range(self.tournament.current_round, self.tournament.rounds + 1):
+            if (
+                self.pairings_by_round[round].paired
+                or self.pairings_by_round[round].zero_point_bye
+            ):
+                continue
+            return False
+        return True
 
     @property
     def first_pab_round(self) -> int | None:
@@ -976,17 +1009,10 @@ class Player:
     def before_manual_rank_key(self) -> tuple:
         from data.tie_breaks.tie_breaks import ManualTieBreak
 
-        return self.rank_sort_key_before_tie_break(ManualTieBreak)
-
-    def rank_sort_key_before_tie_break(self, tie_break_type: type['TieBreak']) -> tuple:
-        """Returns a rank sort key up to the tie-break of type *tie_break_type*.
-        If the tie-break is not found, return no tie-break in the key.
-        Usage: grouping values players by tie-break value (ex: manual tie-break sorting)."""
-
         tie_break_sort_key: list = []
         tie_break_found = False
         for tie_break_value in self.tie_break_values:
-            if isinstance(tie_break_value.tie_break, tie_break_type):
+            if isinstance(tie_break_value.tie_break, ManualTieBreak):
                 tie_break_found = True
                 break
             tie_break_sort_key.append(-float(tie_break_value.value))
@@ -994,22 +1020,20 @@ class Player:
             tie_break_sort_key = []
         return (-(self.points or 0.0),) + tuple(tie_break_sort_key)
 
-    def rank_sort_key_with_first_tie_breaks(self, tie_break_count: int) -> tuple:
-        """Returns a rank sort key up to the first *tie_break_count* tie breaks."""
+    def rank_sort_key_before_tie_break(self, tie_break_index: int) -> tuple:
+        """Returns a rank sort key up to the tie-break of index *tie_break_index*."""
         tie_break_sort_key: list = []
-        for tie_break_value in self.tie_break_values[:tie_break_count]:
+        for tie_break_value in self.tie_break_values[:tie_break_index]:
             tie_break_sort_key.append(-float(tie_break_value.value))
         return (-(self.points or 0.0),) + tuple(tie_break_sort_key)
 
-    def rank_sort_key_without_tie_break(
-        self, tie_break_type: type['TieBreak']
-    ) -> tuple:
+    def rank_sort_key_without_tie_break(self, tie_break_index: int) -> tuple:
         """Returns a rank sort key as if the tie-break of type *tie_break_type* was not set."""
 
         tie_break_sort_key = tuple(
             -float(tie_break_value.value)
-            for tie_break_value in self.tie_break_values
-            if not isinstance(tie_break_value.tie_break, tie_break_type)
+            for index, tie_break_value in enumerate(self.tie_break_values)
+            if index != tie_break_index
         )
 
         return (-(self.points or 0.0),) + tie_break_sort_key + (self.pairing_number,)
