@@ -302,7 +302,7 @@ class BbpPairings(PairingEngine):
             return True
         trf_file_path.parent.mkdir(parents=True, exist_ok=True)
         cmd: list[str] = [
-            self.executable_path,
+            str(self.executable_path),
             # dutch pairing
             '--dutch',
             # generate
