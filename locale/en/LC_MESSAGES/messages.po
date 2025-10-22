@@ -4211,6 +4211,9 @@ msgstr ""
 msgid "Res. ** RESULT FOR TABLE HEADER"
 msgstr "Res."
 
+msgid "Reset manual tie-break"
+msgstr ""
+
 msgid "Restore"
 msgstr ""
 

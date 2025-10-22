@@ -4211,6 +4211,9 @@ msgstr "La requête à la base de données a échoué : {error}."
 msgid "Res. ** RESULT FOR TABLE HEADER"
 msgstr "Rés."
 
+msgid "Reset manual tie-break"
+msgstr "Réinitialiser le départage manuel"
+
 msgid "Restore"
 msgstr "Restaurer"
 

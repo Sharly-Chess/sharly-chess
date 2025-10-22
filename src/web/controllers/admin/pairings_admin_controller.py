@@ -1474,7 +1474,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/manual-tiebreak-update/{event_uniq_id:str}/{tournament_id:int}',
+        path='/manual-tiebreak/update/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-manual-tiebreak-update',
     )
     async def htmx_admin_manual_tiebreak_update(
@@ -1512,11 +1512,11 @@ class PairingsAdminController(BaseEventAdminController):
                 continue
 
             # Current order (by manual_rank_key) and submitted order (restricted to this group)
-            current_group_ids = [player.id for player in group]
+            current_group_ids = [player.id for player in group][::-1]
+
             new_group_ids = [
                 pid for pid in ordered_player_ids if pid in current_group_ids
             ]
-
             # Ignore groups that have not been modified
             if current_group_ids == new_group_ids:
                 continue
@@ -1536,4 +1536,23 @@ class PairingsAdminController(BaseEventAdminController):
         )
 
         # Re-render the admin pairings view
+        return self._admin_event_pairings_render(web_context)
+
+    @post(
+        path='/manual-tiebreak/reset/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-manual-tiebreak-reset',
+    )
+    async def htmx_admin_manual_tiebreak_reset(
+        self,
+        request: HTMXRequest,
+        event_uniq_id: str,
+        tournament_id: int,
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id=tournament_id)
+        tournament = web_context.get_admin_tournament()
+        with EventDatabase(event_uniq_id, True) as database:
+            tournament.delete_manual_tie_break_values(database)
+        web_context = PairingsAdminWebContext(
+            request, tournament_id=tournament_id, reload_event=True
+        )
         return self._admin_event_pairings_render(web_context)

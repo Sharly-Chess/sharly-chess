@@ -481,16 +481,24 @@ class Tournament:
             )
         with EventDatabase(self.event.uniq_id, True) as database:
             if self.tie_breaks_by_id[tie_break_id].is_manual:
-                # Delete all the values of the manual tie-break
-                manual_updates: dict[int, int | None] = {}
-                for player in self.players:
-                    if player.manual_tiebreak is not None:
-                        player.stored_tournament_player.manual_tiebreak = None
-                        manual_updates[player.id] = None
-                database.set_tournament_players_manual_tiebreak(self.id, manual_updates)
+                self.delete_manual_tie_break_values(database)
             database.delete_stored_tie_break(tie_break_id)
             del self.tie_breaks_by_id[tie_break_id]
             self._set_tie_break_indexes(database, list(self.tie_breaks_by_id))
+
+    def delete_manual_tie_break_values(self, database: EventDatabase):
+        manual_updates: dict[int, int | None] = {}
+        for player in self.players:
+            if player.manual_tiebreak is not None:
+                player.stored_tournament_player.manual_tiebreak = None
+                manual_updates[player.id] = None
+        database.set_tournament_players_manual_tiebreak(self.id, manual_updates)
+
+    @property
+    def has_manual_tie_break_values(self) -> bool:
+        return any(tie_break.is_manual for tie_break in self.tie_breaks) and any(
+            player.manual_tiebreak is not None for player in self.players
+        )
 
     # -------------------------------------------------------------------------
     # Criteria
