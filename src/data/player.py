@@ -37,7 +37,6 @@ if TYPE_CHECKING:
     from _weakref import ReferenceType
     from data.event import Event
     from data.tournament import Tournament
-    from data.tie_breaks.tie_breaks import TieBreak
 
 
 @total_ordering
@@ -976,17 +975,10 @@ class Player:
     def before_manual_rank_key(self) -> tuple:
         from data.tie_breaks.tie_breaks import ManualTieBreak
 
-        return self.rank_sort_key_before_tie_break(ManualTieBreak)
-
-    def rank_sort_key_before_tie_break(self, tie_break_type: type['TieBreak']) -> tuple:
-        """Returns a rank sort key up to the tie-break of type *tie_break_type*.
-        If the tie-break is not found, return no tie-break in the key.
-        Usage: grouping values players by tie-break value (ex: manual tie-break sorting)."""
-
         tie_break_sort_key: list = []
         tie_break_found = False
         for tie_break_value in self.tie_break_values:
-            if isinstance(tie_break_value.tie_break, tie_break_type):
+            if isinstance(tie_break_value.tie_break, ManualTieBreak):
                 tie_break_found = True
                 break
             tie_break_sort_key.append(-float(tie_break_value.value))
@@ -994,22 +986,20 @@ class Player:
             tie_break_sort_key = []
         return (-(self.points or 0.0),) + tuple(tie_break_sort_key)
 
-    def rank_sort_key_with_first_tie_breaks(self, tie_break_count: int) -> tuple:
-        """Returns a rank sort key up to the first *tie_break_count* tie breaks."""
+    def rank_sort_key_before_tie_break(self, tie_break_index: int) -> tuple:
+        """Returns a rank sort key up to the tie-break of index *tie_break_index*."""
         tie_break_sort_key: list = []
-        for tie_break_value in self.tie_break_values[:tie_break_count]:
+        for tie_break_value in self.tie_break_values[:tie_break_index]:
             tie_break_sort_key.append(-float(tie_break_value.value))
         return (-(self.points or 0.0),) + tuple(tie_break_sort_key)
 
-    def rank_sort_key_without_tie_break(
-        self, tie_break_type: type['TieBreak']
-    ) -> tuple:
+    def rank_sort_key_without_tie_break(self, tie_break_index: int) -> tuple:
         """Returns a rank sort key as if the tie-break of type *tie_break_type* was not set."""
 
         tie_break_sort_key = tuple(
             -float(tie_break_value.value)
-            for tie_break_value in self.tie_break_values
-            if not isinstance(tie_break_value.tie_break, tie_break_type)
+            for index, tie_break_value in enumerate(self.tie_break_values)
+            if index != tie_break_index
         )
 
         return (-(self.points or 0.0),) + tie_break_sort_key + (self.pairing_number,)

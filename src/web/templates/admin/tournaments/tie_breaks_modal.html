@@ -80,6 +80,7 @@
                     hx-trigger="end"
                     hx-indicator="#please-wait"
                 >
+                    {% set invalid_messages_by_id = admin_tournament.tie_breaks_invalid_messages %}
                     {% for stored_id, tie_break in admin_tournament.tie_breaks_by_id.items() %}
                         <div
                             class="tie-break-row border border-secondary bg-body-tertiary
@@ -102,12 +103,29 @@
                                         class="bi-info-circle-fill ps-1 pt-1"
                                         {{ macros.tooltip_attributes('', tie_break.help_text, 'top') }}
                                     ></i>
-                                    {% set invalid_message = admin_tournament.tie_break_invalid_message(tie_break) %}
-                                    {% if invalid_message %}
+                                    {% if stored_id in invalid_messages_by_id %}
                                         <i
-                                            class="bi-exclamation-triangle-fill text-danger"
-                                            {{ macros.tooltip_attributes('warning', invalid_message, 'top') }}
+                                            class="bi-exclamation-triangle-fill text-danger pt-1"
+                                            {{ macros.tooltip_attributes('warning', invalid_messages_by_id[stored_id], 'top') }}
                                         ></i>
+                                    {% endif %}
+                                    {% if tie_break.allow_multiple %}
+                                         <button
+                                            class="btn btn-sm btn-outline-primary"
+                                            hx-post="{{ url_for(
+                                                'admin-tie-break-duplicate',
+                                                event_uniq_id=admin_event.uniq_id,
+                                                tournament_id=admin_tournament.id,
+                                                tie_break_id=stored_id,
+                                            ) }}"
+                                            hx-target="body"
+                                            hx-indicator="#please-wait"
+                                            {{ macros.tooltip_attributes(
+                                                'info', _('This tie-break can be used multiple times.'), 'top'
+                                            ) }}
+                                        >
+                                            <i class="bi-copy"></i>
+                                        </button>
                                     {% endif %}
                                     <button
                                         class="btn btn-sm btn-outline-primary text-nowrap"

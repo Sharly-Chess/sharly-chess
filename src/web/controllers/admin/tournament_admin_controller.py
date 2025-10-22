@@ -7,7 +7,7 @@ from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
 
 from litestar import post, get, patch, delete
-from litestar.exceptions import NotFoundException, ClientException
+from litestar.exceptions import NotFoundException, ClientException, ValidationException
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
@@ -1055,7 +1055,7 @@ class TournamentAdminController(BaseEventAdminController):
                     or object_id != web_context.admin_tie_break_id
                 )
             ]
-            if tie_break in existing_tie_breaks:
+            if tie_break in existing_tie_breaks and not tie_break.allow_multiple:
                 errors[field] = (
                     _('This tie-break is already used with the same modifiers.')
                     if tie_break.available_options()
@@ -1176,6 +1176,34 @@ class TournamentAdminController(BaseEventAdminController):
             template_context = {'modal': 'tie_breaks'}
         return self._admin_base_event_render(
             web_context.template_context | template_context
+        )
+
+    @post(
+        path=(
+            '/tournaments/tie-break/duplicate/{event_uniq_id:str}'
+            '/{tournament_id:int}/{tie_break_id:int}'
+        ),
+        name='admin-tie-break-duplicate',
+        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+    )
+    async def htmx_admin_tie_break_duplicate(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        tie_break_id: int,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(
+            request, tournament_id, tie_break_id=tie_break_id
+        )
+        tournament = web_context.get_admin_tournament()
+        tie_break = web_context.get_admin_tie_break()
+        if not tie_break.allow_multiple:
+            raise ValidationException(
+                f"Tie-breaks of type [{tie_break.id}] can't be duplicated."
+            )
+        tournament.add_tie_break(tie_break)
+        return self._admin_base_event_render(
+            web_context.template_context | {'modal': 'tie_breaks'}
         )
 
     @patch(

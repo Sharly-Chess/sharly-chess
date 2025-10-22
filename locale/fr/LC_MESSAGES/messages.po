@@ -4211,6 +4211,9 @@ msgstr "La requête à la base de données a échoué : {error}."
 msgid "Res. ** RESULT FOR TABLE HEADER"
 msgstr "Rés."
 
+msgid "Reset manual tie-break"
+msgstr "Réinitialiser le départage manuel"
+
 msgid "Restore"
 msgstr "Restaurer"
 
@@ -5300,6 +5303,12 @@ msgstr "Cet écran est privé (non visible des spectateur·ices)."
 
 msgid "This screen is public (visible by the spectators)."
 msgstr "Cet écran est public (visible des spectateur·ices)."
+
+msgid "This tie-break can be used multiple times."
+msgstr "Ce départage peut-être utilisé plusieurs fois."
+
+msgid "This tie-break can't be used twice in a row (ignored)."
+msgstr "Ce départage ne peut être utilisé deux fois de suite (ignoré)."
 
 msgid "This tie-break is already used with the same modifiers."
 msgstr "Ce départage est déjà utilisé avec les mêmes modificateurs."
