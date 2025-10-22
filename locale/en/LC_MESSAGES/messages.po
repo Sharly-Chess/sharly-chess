@@ -3742,13 +3742,7 @@ msgstr ""
 msgid "Player [{player}] has pairings in tournament [{tournament}]."
 msgstr ""
 
-msgid "Player [{player}] has returned for all the remaining rounds."
-msgstr ""
-
 msgid "Player [{player}] has returned for this round."
-msgstr ""
-
-msgid "Player [{player}] withdrawn from the tournament."
 msgstr ""
 
 msgid "Player does not match tournament criteria: {names}"
@@ -6427,10 +6421,3 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "FIDE recommended tie-breaks for [%(pairing_system)s] tournaments:"
-#~ msgstr ""
-
-#~ msgid "When not tournament is selected, the results of all the tournaments are displayed."
-#~ msgstr ""
-

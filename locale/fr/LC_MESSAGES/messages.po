@@ -3742,14 +3742,8 @@ msgstr "Le·la joueur·euse [{player}] a été apparié·e contre [{opponent}] �
 msgid "Player [{player}] has pairings in tournament [{tournament}]."
 msgstr "Le·la joueur·euse [{player}] a déjà été apparié·e dans le tournoi [{tournament}]."
 
-msgid "Player [{player}] has returned for all the remaining rounds."
-msgstr "Le·la joueur·euse [{player}] est de retour pour toutes les rondes restantes."
-
 msgid "Player [{player}] has returned for this round."
 msgstr "Le·la joueur·euse [{player}] est de retour pour cette ronde."
-
-msgid "Player [{player}] withdrawn from the tournament."
-msgstr "Le·la joueur·euse [{player}] a été retiré·e du tournoi."
 
 msgid "Player does not match tournament criteria: {names}"
 msgstr "Le·la joueur·euse ne correspond pas aux critères du tournoi : {names}"
@@ -6427,10 +6421,3 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
-#~ msgid "FIDE recommended tie-breaks for [%(pairing_system)s] tournaments:"
-#~ msgstr "Départages recommandés par la FIDE pour les tournois [%(pairing_system)s] :"
-
-#~ msgid "When not tournament is selected, the results of all the tournaments are displayed."
-#~ msgstr "Si aucun tournoi n'est sélectionné, les résultats de tous les tournois sont affichés."
-
