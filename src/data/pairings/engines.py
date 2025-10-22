@@ -309,7 +309,7 @@ class BbpPairings(PairingEngine):
             '-g',
             # output file
             '-o',
-            trf_file_path,
+            str(trf_file_path),
         ]
         if random_seed:
             cmd += [
@@ -351,12 +351,12 @@ class BbpPairings(PairingEngine):
                 # dutch pairing
                 '--dutch',
                 # input file
-                input_file_path,
+                str(input_file_path),
                 # check
                 '-c',
                 # check-list file
                 '-l',
-                check_list_file_path,
+                str(check_list_file_path),
             ],
             capture_output=True,
             encoding='utf-8',
