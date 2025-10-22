@@ -114,6 +114,7 @@ class AppHookSpecs:
         self,
         action: str,
         tournament: 'Tournament',
+        player: 'Player',
         data: dict[str, str],
         errors: dict[str, str],
     ):

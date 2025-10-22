@@ -168,6 +168,7 @@ class PlayerAdminController(BaseEventAdminController):
             tournament = web_context.admin_event.tournaments_by_id[tournament_id]
         except (ValueError, KeyError):
             errors[field] = _('Please choose the tournament.')
+        player: Player | None = None
         if action in ['update', 'replace'] and tournament is not None:
             player = web_context.get_admin_player()
             if tournament.id != player.tournament.id:
@@ -236,7 +237,7 @@ class PlayerAdminController(BaseEventAdminController):
 
         plugin_manager.hook_for_event(
             web_context.get_admin_event(), 'validate_player_form_fields'
-        )(action=action, tournament=tournament, data=data, errors=errors)
+        )(action=action, tournament=tournament, player=player, data=data, errors=errors)
         return errors
 
     @classmethod

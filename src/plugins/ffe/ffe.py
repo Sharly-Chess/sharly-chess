@@ -293,6 +293,7 @@ class FfePlugin(Plugin):
         self,
         action: str,
         tournament: 'Tournament',
+        player: 'Player',
         data: dict[str, str],
         errors: dict[str, str],
     ):
@@ -306,11 +307,12 @@ class FfePlugin(Plugin):
             try:
                 ffe_id = WebContext.form_data_to_int(data, field := 'ffe_id', minimum=1)
                 ffe_ids = [
-                    FFEUtils.get_player_plugin_data(player).ffe_id
-                    for player in tournament.players_by_id.values()
+                    FFEUtils.get_player_plugin_data(p).ffe_id
+                    for p in tournament.players_by_id.values()
+                    if not player or p.id != player.id
                 ]
 
-                if action == 'create' and ffe_id and ffe_id in ffe_ids:
+                if ffe_id and ffe_id in ffe_ids:
                     errors[field] = _(
                         'The player with FFE ID [{ffe_id}] already '
                         'plays tournament [{tournament}].'
@@ -336,10 +338,11 @@ class FfePlugin(Plugin):
             elif tournament:
                 # When adding a player, the tournament may not be chosen (in this case do not test)
                 ffe_licence_numbers = [
-                    FFEUtils.get_player_plugin_data(player).ffe_licence_number
-                    for player in tournament.players_by_id.values()
+                    FFEUtils.get_player_plugin_data(p).ffe_licence_number
+                    for p in tournament.players_by_id.values()
+                    if not player or p.id != player.id
                 ]
-                if action == 'create' and ffe_licence_number in ffe_licence_numbers:
+                if ffe_licence_number in ffe_licence_numbers:
                     errors[field] = _(
                         'The player with FFE licence number '
                         '[{ffe_licence_number}] already plays '
