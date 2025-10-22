@@ -888,7 +888,7 @@ msgid "Cancel Half-Point Bye"
 msgstr "Annuler le demi-point joker"
 
 msgid "Cancel Zero-Point Bye"
-msgstr "Supprimer l'absence"
+msgstr "Annuler l'absence"
 
 msgid "Candidate Master"
 msgstr "Candidat Maître"

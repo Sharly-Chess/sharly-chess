@@ -7,7 +7,8 @@
                     {{admin_player.title.short_name}} {{ admin_player.full_name }}
                 </h2>
                 <div>{{ admin_player.club }}</div>
-                <div>{{ admin_player.federation }}, {{ admin_player.rating_str }}, {{ admin_player.category.short_name }}</div>
+                {% set category = admin_player.category.short_name %}
+                <div>{{ admin_player.federation }}, {{ admin_player.rating_str }}{% if category %}, {{ category }}{% endif %}</div>
             </div>
             <div>
                 {% if admin_player.has_withdrawn %}
