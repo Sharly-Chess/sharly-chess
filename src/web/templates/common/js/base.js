@@ -243,3 +243,30 @@ function init_sidebar() {
         }
     }
 }
+
+// Select2
+
+var select2OpenCloseDisabled = false;
+
+$(document).on('select2:opening', '.sharly-chess-select2', function (e) {
+    if (select2OpenCloseDisabled) {
+        e.preventDefault();
+    };
+});
+$(document).on('select2:close', '.sharly-chess-select2', function (e) {
+    if (select2OpenCloseDisabled) {
+        e.preventDefault();
+    } else {
+        var evt = "scroll.select2";
+        $(e.target).parents().off(evt);
+        $(window).off(evt);
+    }
+});
+
+// Prevent the dropdown from blinking when deselecting multiple options
+$(document).on('select2:unselect', '.sharly-chess-select2', function (e) {
+    select2OpenCloseDisabled = true;
+    setTimeout(function(){
+        select2OpenCloseDisabled = false;
+    }, 100);
+});

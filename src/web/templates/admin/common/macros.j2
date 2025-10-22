@@ -320,11 +320,12 @@
                     const selectedValues = $select.val() || [];
                     const updatedValues = selectedValues.filter(val => val !== unselectedData.id);
 
-                    $select.val(updatedValues).trigger('change');
-
                     $dropdownOption = $(`.select2-results__option[aria-selected="true"]:contains("${unselectedData.text}")`);
                     $dropdownOption.attr('aria-selected', 'false');
                     $dropdownOption.removeClass('select2-results__option--highlighted');
+
+                    $select.val(updatedValues).trigger('change');
+                    $select.trigger('select2:unselect');
                 });
             {% endif %}
         </script>
