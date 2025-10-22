@@ -51,47 +51,9 @@
                                 {{ _('Zero-Point Bye') }}
                             </button>
                         </span>
-                        {% set action_route = url_for(
-                            'admin-pairings-withdraw-player',
-                            event_uniq_id=admin_event.uniq_id,
-                            tournament_id=admin_tournament.id,
-                            round=admin_round,
-                            player_id=player.id,
-                        ) %}
-                        <span
-                            class="w-100"
-                            {% if not client.can_set_zero_point_bye(admin_tournament.id) %}
-                                {{ macros.tooltip_attributes('warning', _('You are not allowed to set/unset Zero-Point Byes.'), 'right') }}
-                            {% endif %}
-                        >
-                            <button
-                                class="btn btn-outline-primary w-100"
-                                {% if not client.can_set_zero_point_bye(admin_tournament.id) %}
-                                    disabled
-                                {% else %}
-                                    {% if action in allowed_actions %}
-                                        hx-patch="{{ action_route }}"
-                                    {% else %}
-                                        hx-get="{{ url_for(
-                                            'admin-pairings-safety-mode-modal',
-                                            event_uniq_id=admin_event.uniq_id,
-                                            tournament_id=admin_tournament.id,
-                                            round=admin_round,
-                                            action=action,
-                                            redirect_method='PATCH',
-                                            redirect_route=action_route,
-                                        ) }}"
-                                    {% endif %}
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                {% endif %}
-                            >
-                                {{ _('Withdraw from tournament') }}
-                            </button>
-                        </span>
                     {% else %}
                         {% set action_route = url_for(
-                            'admin-pairings-return-player',
+                            'admin-pairings-cancel-bye',
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             round=admin_round,
@@ -125,17 +87,13 @@
                                     hx-indicator="#please-wait"
                                 {% endif %}
                             >
-                                {% if admin_round < admin_tournament.current_round %}
-                                    {{ _('Cancel Zero-Point Bye') }}
-                                {% else %}
-                                    {{ _('Return to tournament') }}
-                                {% endif %}
+                                {{ _('Cancel Zero-Point Bye') }}
                             </button>
                         </span>
                     {% endif %}
                     {% if pairing.half_point_bye %}
                         {% set action_route = url_for(
-                            'admin-pairings-return-player',
+                            'admin-pairings-cancel-bye',
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             round=admin_round,
@@ -294,3 +252,5 @@
         </div>
     </div>
 {% endwith %}
+
+<script>requestRefresh()</script>

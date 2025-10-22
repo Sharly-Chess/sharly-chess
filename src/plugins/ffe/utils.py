@@ -124,7 +124,7 @@ class FfeEventPluginData(PluginData):
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         return cls(
-            auto_upload=stored_value.get('auto_upload') or False,
+            auto_upload=bool(stored_value.get('auto_upload') or False),
             auto_upload_delay=stored_value.get(
                 'auto_upload_delay', FFE_DEFAULT_UPLOAD_DELAY
             ),

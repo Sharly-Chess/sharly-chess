@@ -154,16 +154,17 @@
         {% endif %}
         <div class="card-block-content">
             {{ _('%(string)s:', string=_('Tie-breaks')) }}
-            {% if tournament.tie_breaks_with_invalid %}
-                {% for tie_break in tournament.tie_breaks_with_invalid %}
+            {% if tournament.tie_breaks_by_id %}
+                {% set invalid_messages_by_id = tournament.tie_breaks_invalid_messages %}
+                {% for stored_id, tie_break in tournament.tie_breaks_by_id.items() %}
                     <span {{ macros.tooltip_attributes('', tie_break.full_name, 'top') }}>
                         {{ tie_break.acronym }}
                     </span>
-                    {% set invalid_message = tournament.tie_break_invalid_message(tie_break) %}
-                    {% if invalid_message %}
+
+                    {% if stored_id in invalid_messages_by_id %}
                         <i
                             class="bi-exclamation-triangle-fill text-danger"
-                            {{ macros.tooltip_attributes('warning', invalid_message, 'top') }}
+                            {{ macros.tooltip_attributes('warning', invalid_messages_by_id[stored_id], 'top') }}
                         ></i>
                     {% endif %}
                     {% if not loop.last %}-{% endif %}
@@ -329,25 +330,20 @@
                             {% set warning_message = exporter.warning_message(tournament) %}
                             <li
                                 class="dropdown-item text-start cursor-pointer"
-                                onclick="$('#export-form-{{ tournament.id }}-{{ exporter.id }}').submit()"
+                                data-export-url="{{ url_for(
+                                    'admin-tournament-export',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=tournament.id,
+                                    exporter_id=exporter.id
+                                ) }}"
                                 {% if warning_message %}
                                     {{ macros.tooltip_attributes('warning', warning_message, 'right') }}
                                 {% else %}
                                     {{ macros.tooltip_attributes('info', exporter.tooltip, 'right') }}
                                 {% endif %}
+                                onclick="downloadFile(this)"
                             >
-                                <form
-                                    id="export-form-{{ tournament.id }}-{{ exporter.id }}"
-                                    action="{{ url_for(
-                                        'admin-tournament-export',
-                                        event_uniq_id=admin_event.uniq_id,
-                                        tournament_id=tournament.id,
-                                        exporter_id=exporter.id
-                                    ) }}"
-                                    hx-indicator="#please-wait"
-                                >
-                                    {{ exporter.name }}
-                                </form>
+                                {{ exporter.name }}
                             </li>
                         {% endif %}
                     {% endfor %}
