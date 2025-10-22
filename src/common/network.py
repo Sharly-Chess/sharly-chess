@@ -447,11 +447,6 @@ class NetworkMonitor:
         connection_checker.start()
 
     @classmethod
-    def set_connected(cls, status: bool):
-        """Sets the connected status from the main thread"""
-        cls.connected_status = status
-
-    @classmethod
     def connected(cls, use_cached=True) -> bool:
         """Checks if the program is connected to the internet.
         This relies on a background thread checking every few seconds,

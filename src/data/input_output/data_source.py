@@ -453,7 +453,7 @@ class OnlineDataSource(DataSource, ABC):
         cls._connection_last_checked_at = time.time()
         if not NetworkMonitor.connected():
             cls.connection_status = None
-            raise SharlyChessException(_('Not connected to internet'))
+            raise SharlyChessException(_('No internet connection'))
         try:
             players = await self._search_player(string, federation, page, limit)
             cls.connection_status = True
