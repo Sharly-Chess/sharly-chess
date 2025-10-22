@@ -879,7 +879,7 @@ class TournamentAdminController(BaseEventAdminController):
         request: HTMXRequest,
         tournament_id: int,
         exporter_id: str,
-    ) -> File:
+    ) -> File | Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         event = web_context.get_admin_event()
         tournament = web_context.get_admin_tournament()
@@ -890,12 +890,17 @@ class TournamentAdminController(BaseEventAdminController):
             suffix=f'.{exporter.file_extension}',
             encoding=exporter.file_encoding,
         )
-        with temp_file:
-            exporter.dump_to_file(temp_file, tournament)
-        return File(
-            path=temp_file.name,
-            filename=f'{exporter.file_name(tournament)}.{exporter.file_extension}',
-        )
+        try:
+            with temp_file:
+                exporter.dump_to_file(temp_file, tournament)
+            return File(
+                path=temp_file.name,
+                filename=f'{exporter.file_name(tournament)}.{exporter.file_extension}',
+            )
+        except Exception as e:
+            temp_file.close()
+            Message.error(request, str(e))
+            return self.render_messages(request)
 
     @staticmethod
     def _tournament_import_modal_context(
