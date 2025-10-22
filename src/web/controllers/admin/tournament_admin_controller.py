@@ -897,9 +897,17 @@ class TournamentAdminController(BaseEventAdminController):
                 path=temp_file.name,
                 filename=f'{exporter.file_name(tournament)}.{exporter.file_extension}',
             )
-        except Exception as e:
+        except Exception as exception:
             temp_file.close()
-            Message.error(request, str(e))
+            logger.error(
+                'Error when exporting tournament [%s] using exporter [%s]:\n%s',
+                tournament.name,
+                exporter.id,
+                exception,
+            )
+            Message.error(
+                request, _('An error occurred. Consult the logs for more details.')
+            )
             return self.render_messages(request)
 
     @staticmethod
