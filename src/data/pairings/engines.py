@@ -20,6 +20,7 @@ from common.logger import (
 from common.tool_installer import BbpPairingsInstaller
 from data.board import Board
 from data.pairings.settings import BergerNumbersSetting
+from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredBoard
 from utils import StaticUtils
 from utils.enum import TrfType, Result
@@ -334,43 +335,72 @@ class BbpPairings(PairingEngine):
         )
         return True
 
+    @classmethod
+    def _diff_display(
+        cls, pairing_diff: list[tuple[Board | None, Board | None]]
+    ) -> str:
+        message = f'Real boards{"":<19}Expected boards\n'
+        for real_board, expected_board in pairing_diff:
+            message += f'{cls._board_display(real_board)}   {cls._board_display(expected_board)}\n'
+        return message
+
+    @staticmethod
+    def _board_display(board: Board | None) -> str:
+        if not board:
+            return f'{"":<14} - {"":<10}'
+        return (
+            f'{board.index:>2}. {board.white_player.full_name:<10}'
+            f' - {getattr(board.black_player, "full_name", ""):<10}'
+        )
+
     def check_tournament(
         self,
-        input_file_path: Path,
-        check_list_file_path: Path,
+        trf_input_file_path: Path,
         overwrite: bool = True,
     ) -> bool:
         """Checks a tournament."""
-        if not overwrite and check_list_file_path.exists():
-            print_interactive_info(f'File {check_list_file_path} previously generated.')
-            return True
-        check_list_file_path.parent.mkdir(parents=True, exist_ok=True)
-        result = StaticUtils.run_process(
+        result_file_path = trf_input_file_path.with_suffix('.txt')
+        if result_file_path.exists():
+            if not overwrite:
+                print_interactive_info(
+                    f'Result file {result_file_path} previously generated.'
+                )
+                with open(result_file_path, 'r') as f:
+                    result = f.read()
+                if result:
+                    print_interactive_error(result)
+                    return False
+                else:
+                    return True
+            result_file_path.unlink()
+
+        from data.input_output.tournament_importer_options import FileOption
+        from data.input_output.tournament_importers import TrfTournamentImporter
+        from data.loader import EventLoader
+
+        event_uniq_id: str = 'dummy'
+        EventDatabase(event_uniq_id).create()
+        event = EventLoader().load_event(event_uniq_id)
+        tournament = TrfTournamentImporter(
             [
-                self.executable_path,
-                # dutch pairing
-                '--dutch',
-                # input file
-                str(input_file_path),
-                # check
-                '-c',
-                # check-list file
-                '-l',
-                str(check_list_file_path),
-            ],
-            capture_output=True,
-            encoding='utf-8',
+                FileOption(trf_input_file_path),
+            ]
+        ).load_tournament(event)
+        for round_ in range(1, tournament.rounds + 1):
+            if diff := tournament.pairing_variation.engine.pairings_diff(
+                tournament,
+                round_,
+                ignore_order=True,
+            ):
+                result = f'Round {round_}: {len(diff)} differences\n\n{self._diff_display(diff)}'
+                print_interactive_error(result)
+                with open(result_file_path, 'w') as f:
+                    f.write(result)
+                return False
+        print_interactive_error(
+            f'Pairings are correct for the {tournament.rounds} rounds.'
         )
-        if result.returncode:
-            print_interactive_error(
-                f'BbpPairings checker failed with status {result.returncode}.'
-            )
-            print_interactive_error(f'stdout: {result.stdout}')
-            print_interactive_error(f'stderr: {result.stderr}')
-            return False
-        print_interactive_success(
-            f'BbpPairings checker created check-list file {check_list_file_path}.'
-        )
+        result_file_path.touch()
         return True
 
 

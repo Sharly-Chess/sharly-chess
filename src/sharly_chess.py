@@ -136,11 +136,6 @@ try:
         nargs='?',
     )
     parser.add_argument(
-        '--check-list-file',
-        type=str,
-        help='the check-list file',
-    )
-    parser.add_argument(
         '-o',
         '--output-file',
         type=str,
@@ -197,25 +192,8 @@ try:
                     f'TRF input file [{trf_input_file_path}] not found, exiting.'
                 )
                 sys.exit(1)
-            check_list_file_path: Path
-            if args.check_list_file:
-                check_list_file_path = Path(args.check_list_file)
-                try:
-                    validate_filepath(args.check_list_file)
-                except ValidationError:
-                    print_interactive_error(
-                        f'Invalid check-list file [{args.check_list_file}], exiting.'
-                    )
-                    sys.exit(1)
-            else:
-                check_list_file_path = trf_input_file_path.with_suffix('.list')
-                print_interactive_warning(
-                    f'Check-list file not set, using default [{check_list_file_path}].'
-                )
-            bbp_pairings: BbpPairings = BbpPairings()
             bbp_pairings.check_tournament(
                 trf_input_file_path,
-                check_list_file_path,
             )
         sys.exit(0)
 
