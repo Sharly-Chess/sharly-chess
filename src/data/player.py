@@ -754,6 +754,10 @@ class Player:
         # - from at least 3 different federations,
         #  -at least 10 of whom hold GM, IM, WGM or WIM titles.
         # For this purpose, players will be counted only if they miss at most one round (excluding pairing allocated byes)
+        #
+        # 1.5.6a
+        #
+        # Check if the average rating of the top 40 eligiable players is at least 2000 in every round
 
         eligible_players: list[Player] = []
 
@@ -782,6 +786,7 @@ class Player:
         worst_players: float = float('inf')
         worst_federations: float = float('inf')
         worst_titled: float = float('inf')
+        meets_156 = True
 
         for rnd in range(1, self.tournament.rounds + 1):
             present: list[Player] = []
@@ -808,6 +813,18 @@ class Player:
             worst_players = min(worst_players, n_players)
             worst_federations = min(worst_federations, n_feds)
             worst_titled = min(worst_titled, n_titled)
+
+            # 1.5.6a
+            # Check if the average rating of the top 40 eligiable players is at least 2000 in every round
+            if n_players < 40:
+                meets_156 = False
+            else:
+                top_rated = sorted([p.rating for p in present], reverse=True)[:40]
+                avg: float = sum(top_rated) / len(top_rated) if top_rated else 0
+                if avg < 2000:
+                    meets_156 = False
+
+        res.requirement_156a_met = meets_156
 
         # Handle case of zero rounds gracefully
         if worst_players is float('inf'):
