@@ -248,7 +248,7 @@ rsync -a "$APP_BUNDLE" "$STAGING_DIR/sharly-chess-${VERSION}/"
 # Copy other files and folders except _internal, and the executable
 for item in "$PROJECT_DIR"/*; do
     item_name=$(basename "$item")
-    if [[ "$item_name" != "_internal" && "$item_name" != "$EXECUTABLE_NAME" && "$item_name" != "SharlyChess.app" ]]; then
+    if [[ "$item_name" != "_internal" && "$item_name" != "tools" && "$item_name" != "$EXECUTABLE_NAME" && "$item_name" != "SharlyChess.app" ]]; then
         rsync -a "$item" "$STAGING_DIR/sharly-chess-${VERSION}/"
     fi
 done
