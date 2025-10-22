@@ -2157,6 +2157,9 @@ msgstr ""
 msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
 msgstr "Fed."
 
+msgid "Federation [{federation}] of player [{player}] is unknown. Recreate it in ChessEvent then try again."
+msgstr ""
+
 msgid "Federation:"
 msgstr ""
 

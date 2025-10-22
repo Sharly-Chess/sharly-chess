@@ -56,6 +56,7 @@ English version below
 
 - Import de tournois ChessEvent depuis l'interface web (remplace le script `tools/chessevent.bat`) (3.1.0)
 - Correction de l'activation du plugin (3.1.5)
+- Clarification du message d'erreur en cas de fédération inconnue (3.1.8)
 
 ## FFE
 
@@ -121,6 +122,7 @@ English version below
 
 - Import ChessEvent tournament from the web interface (3.1.0)
 - Fixed the plugin activation (3.1.5)
+- Clarify the error message in case of unknown federation (3.1.8)
 
 ## FFE
 
