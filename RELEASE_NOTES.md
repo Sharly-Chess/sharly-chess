@@ -14,6 +14,7 @@ English version below
 - Les rapports de norme peuvent désormais être générés (via l’option d’impression) (3.2.0)
 - Accès à la fiche du joueur depuis l’onglet Appariements (3.2.0)
 - Correction de l'affichage du score de la ronde courante sur l'historique des joueur·euses (3.2.0)
+- Correction d’un problème de validation qui permettait d’ajouter deux joueurs avec le même numéro de licence FFE dans un même tournoi (3.2.0)
 
 ## Appariements
 
@@ -42,6 +43,7 @@ English version below
 - Norm reports may now be generated (via the print option) (3.2.0)
 - Access to the player record from the Pairings tab (3.2.0)
 - Fixed the display of the score of the current round on the player's history modal (3.2.0)
+- Fixed a validation issue which allowed to players with the same FFE licence number to be added to the same tournament (3.2.0)
 
 ## Pairings
 
