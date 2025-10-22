@@ -1,7 +1,10 @@
 import os
 import warnings
+from pathvalidate import validate_filepath, ValidationError
 import platform
 import sys
+
+from data.pairings.engines import BbpPairings
 
 # Nuclear option: Override warnings.warn to block specific messages
 # warnings.filterwarnings simply would not work
@@ -78,10 +81,10 @@ try:
     arguments = init_script()
 
     from common import DEVEL_ENV, TEST_ENV
-    from common.i18n import _
     from common.logger import (
         get_logger,
         print_interactive_warning,
+        print_interactive_error,
     )
     from gui.server_gui_toga import SharlyChessServerToga
     from web.server_engine import ServerEngine
@@ -110,10 +113,111 @@ try:
             action='store_true',
             help='Force console/CLI mode (default is GUI for bundled apps)',
         )
+    parser.add_argument(
+        '-g',
+        '--generate-tournament',
+        action='store_true',
+        help='generate a random tournament',
+    )
+    parser.add_argument(
+        '-s',
+        '--random-seed',
+        type=int,
+        help='the random seed to use (to reproduce tournament generation)',
+    )
+    parser.add_argument(
+        '-c',
+        '--check-tournament',
+        action='store_true',
+        help='generate a random tournament',
+    )
+    parser.add_argument(
+        'input_file',
+        type=str,
+        help='the input file',
+        nargs='?',
+    )
+    parser.add_argument(
+        '--check-list-file',
+        type=str,
+        help='the check-list file',
+    )
+    parser.add_argument(
+        '-o',
+        '--output-file',
+        type=str,
+        help='the output file',
+    )
+
     args = parser.parse_args(arguments)
 
     if args.server:
-        print_interactive_warning(_('Argument --server is deprecated, ignored.'))
+        print_interactive_warning('Argument --server is deprecated, ignored.')
+
+    if args.generate_tournament or args.check_tournament:
+        trf_input_file_path: Path
+        if args.generate_tournament:
+            if not args.output_file:
+                print_interactive_error('Argument --output-file is needed, exiting.')
+                sys.exit(1)
+            try:
+                validate_filepath(args.output_file)
+            except ValidationError:
+                print_interactive_error(
+                    f'Invalid output file [{args.output_file}], exiting.'
+                )
+                sys.exit(1)
+            trf_input_file_path = Path(args.output_file)
+            if args.check_tournament:
+                if args.input_file:
+                    print_interactive_error(
+                        'Input file not needed with argument --generate-tournament, ignored.'
+                    )
+        else:
+            if not args.input_file:
+                print_interactive_error('Input file is required, exiting.')
+                sys.exit(1)
+            try:
+                validate_filepath(args.input_file)
+            except ValidationError:
+                print_interactive_error(
+                    f'Invalid input file [{args.input_file}], exiting.'
+                )
+                sys.exit(1)
+            trf_input_file_path = Path(args.input_file)
+        bbp_pairings: BbpPairings = BbpPairings()
+        if args.generate_tournament:
+            bbp_pairings.generate_tournament(
+                trf_input_file_path,
+                args.random_seed,
+            )
+        if args.check_tournament:
+            if not trf_input_file_path.exists():
+                print_interactive_error(
+                    f'TRF input file [{trf_input_file_path}] not found, exiting.'
+                )
+                sys.exit(1)
+            check_list_file_path: Path
+            if args.check_list_file:
+                check_list_file_path = Path(args.check_list_file)
+                try:
+                    validate_filepath(args.check_list_file)
+                except ValidationError:
+                    print_interactive_error(
+                        f'Invalid check-list file [{args.check_list_file}], exiting.'
+                    )
+                    sys.exit(1)
+            else:
+                check_list_file_path = trf_input_file_path.with_suffix('.list')
+                print_interactive_warning(
+                    f'Check-list file not set, using default [{check_list_file_path}].'
+                )
+            bbp_pairings: BbpPairings = BbpPairings()
+            bbp_pairings.check_tournament(
+                trf_input_file_path,
+                check_list_file_path,
+            )
+        sys.exit(0)
 
     port = args.port or None
     debug = args.debug if DEVEL_ENV else False

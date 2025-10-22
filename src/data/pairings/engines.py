@@ -11,7 +11,12 @@ from typing_extensions import override
 from common import TMP_DIR
 from common.exception import SharlyChessException
 from common.i18n import _
-from common.logger import get_logger
+from common.logger import (
+    get_logger,
+    print_interactive_info,
+    print_interactive_error,
+    print_interactive_success,
+)
 from common.tool_installer import BbpPairingsInstaller
 from data.board import Board
 from data.pairings.settings import BergerNumbersSetting
@@ -283,7 +288,90 @@ class BbpPairings(PairingEngine):
         with open(pairings_file_path, encoding='utf-8') as pairing_file:
             boards = self._boards_from_file(pairing_file, tournament, round_, False)
 
-        return (history_data, boards)
+        return history_data, boards
+
+    def generate_tournament(
+        self,
+        trf_file_path: Path,
+        random_seed: int | None = None,
+        overwrite: bool = True,
+    ) -> bool:
+        """Generates a random tournament."""
+        if not overwrite and trf_file_path.exists():
+            print_interactive_info(f'TRF file {trf_file_path} previously generated.')
+            return True
+        trf_file_path.parent.mkdir(parents=True, exist_ok=True)
+        cmd: list[str] = [
+            self.executable_path,
+            # dutch pairing
+            '--dutch',
+            # generate
+            '-g',
+            # output file
+            '-o',
+            trf_file_path,
+        ]
+        if random_seed:
+            cmd += [
+                # random seed
+                '-s',
+                str(random_seed),
+            ]
+        result = StaticUtils.run_process(
+            cmd,
+            capture_output=True,
+            encoding='utf-8',
+        )
+        if result.returncode:
+            print_interactive_error(
+                f'BbpPairings random tournament generator failed with status {result.returncode}.'
+            )
+            print_interactive_error(f'stdout: {result.stdout}')
+            print_interactive_error(f'stderr: {result.stderr}')
+            return False
+        print_interactive_success(
+            f'BbpPairings random tournament generator created TRF file {trf_file_path}.'
+        )
+        return True
+
+    def check_tournament(
+        self,
+        input_file_path: Path,
+        check_list_file_path: Path,
+        overwrite: bool = True,
+    ) -> bool:
+        """Checks a tournament."""
+        if not overwrite and check_list_file_path.exists():
+            print_interactive_info(f'File {check_list_file_path} previously generated.')
+            return True
+        check_list_file_path.parent.mkdir(parents=True, exist_ok=True)
+        result = StaticUtils.run_process(
+            [
+                self.executable_path,
+                # dutch pairing
+                '--dutch',
+                # input file
+                input_file_path,
+                # check
+                '-c',
+                # check-list file
+                '-l',
+                check_list_file_path,
+            ],
+            capture_output=True,
+            encoding='utf-8',
+        )
+        if result.returncode:
+            print_interactive_error(
+                f'BbpPairings checker failed with status {result.returncode}.'
+            )
+            print_interactive_error(f'stdout: {result.stdout}')
+            print_interactive_error(f'stderr: {result.stderr}')
+            return False
+        print_interactive_success(
+            f'BbpPairings checker created check-list file {check_list_file_path}.'
+        )
+        return True
 
 
 class RoundRobinPairingEngine(PairingEngine, ABC):
