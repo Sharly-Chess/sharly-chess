@@ -1286,6 +1286,79 @@ class PlayerAdminController(BaseEventAdminController):
             reload_event=True,
         )
 
+    def _set_player_participation(
+        self,
+        web_context: PlayerAdminWebContext,
+        result: Result,
+    ) -> Template:
+        tournament = web_context.get_admin_tournament()
+        player = web_context.get_admin_player()
+
+        # If there aren't any pairings, then the round for the bye is the first round
+        round_for_participation = tournament.current_round or 1
+        new_byes: dict[int, Result] = {}
+        new_byes = {
+            round_: result
+            for round_ in range(
+                round_for_participation,
+                tournament.rounds + 1,
+            )
+            if player.pairings[round_].unplayed
+        }
+        tournament.set_player_byes(player, new_byes)
+
+        return self._admin_event_players_render(
+            web_context.request,
+            modal='record',
+            player_id=player.id,
+        )
+
+    @patch(
+        path=(
+            '/withdraw-player/{event_uniq_id:str}/'
+            '{tournament_id:int}/{player_id:int}/{round:int}'
+        ),
+        name='admin-player-withdraw-player',
+        guards=[TournamentActionGuard(AuthAction.SET_ZPB)],
+    )
+    async def htmx_admin_withdraw_player(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        player_id: int,
+    ) -> Template:
+        web_context = PlayerAdminWebContext(
+            request,
+            tournament_id=tournament_id,
+            player_id=player_id,
+        )
+        return self._set_player_participation(
+            web_context,
+            Result.ZERO_POINT_BYE,
+        )
+
+    @patch(
+        path=('/return-player/{event_uniq_id:str}/{tournament_id:int}/{player_id:int}'),
+        name='admin-player-return-player',
+        guards=[TournamentActionGuard(AuthAction.SET_ZPB)],
+    )
+    async def htmx_admin_return_player(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        player_id: int,
+    ) -> Template:
+        web_context = PlayerAdminWebContext(
+            request,
+            tournament_id=tournament_id,
+            player_id=player_id,
+        )
+
+        return self._set_player_participation(
+            web_context,
+            Result.NO_RESULT,
+        )
+
     @patch(
         path='/player-move/{event_uniq_id:str}/{player_id:int}/{tournament_id:int}',
         name='admin-player-move',

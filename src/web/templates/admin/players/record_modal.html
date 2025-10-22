@@ -1,20 +1,64 @@
 {% set bye_definition_allowed=admin_player.tournament.pairing_system.allow_bye_definition %}
 <div id="player-record-modal" class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-record-edit-modal">
     <div class="modal-content">
-        <div class="modal-header flex flex-column gap-0 align-items-start">
-            <h2 class="modal-title">
-                {{admin_player.title.short_name}} {{ admin_player.full_name }}
-            </h2>
-            <div>{{ admin_player.club }}</div>
-            <div>{{ admin_player.federation }}, {{ admin_player.rating_str }}, {{ admin_player.category.short_name }}</div>
+        <div class="modal-header d-flex justify-content-between align-items-end">
+            <div class="flex flex-column gap-0 align-items-start">
+                <h2 class="modal-title">
+                    {{admin_player.title.short_name}} {{ admin_player.full_name }}
+                </h2>
+                <div>{{ admin_player.club }}</div>
+                {% set category = admin_player.category.short_name %}
+                <div>{{ admin_player.federation }}, {{ admin_player.rating_str }}{% if category %}, {{ category }}{% endif %}</div>
+            </div>
+            <div>
+                {% if admin_player.has_withdrawn %}
+                    <button
+                        class="btn btn-sm btn-outline-primary w-100"
+                        {% if not client.can_set_zero_point_bye(admin_player.tournament.id) %}
+                            disabled
+                        {% else %}
+                            hx-patch="{{ url_for(
+                                'admin-player-return-player',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_player.tournament.id,
+                                round=admin_player.tournament.current_round,
+                                player_id=admin_player.id,
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        {% endif %}
+                    >
+                        {{ _('Return to tournament') }}
+                    </button>
+                {% elif admin_player.tournament.current_round < admin_player.tournament.rounds or admin_player.pairings_by_round[admin_player.tournament.current_round].needs_pairing_or_has_bye %}
+                    <button
+                        class="btn btn-sm btn-outline-primary w-100"
+                        {% if not client.can_set_zero_point_bye(admin_player.tournament.id) %}
+                            disabled
+                        {% else %}
+                            hx-patch="{{ url_for(
+                                'admin-player-withdraw-player',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_player.tournament.id,
+                                round=admin_player.tournament.current_round,
+                                player_id=admin_player.id,
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        {% endif %}
+                    >
+                        {{ _('Withdraw from tournament') }}
+                    </button>
+                {% endif %}
+            </div>
         </div>
         <div class="modal-body">
-            <h4>
+             <h4>
                 {{ _('Tournament record') }}
             </h4>
             <table
                 id="record-table"
-                class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center"
+                class="table prominent table-striped table-sm w-100 bg-light mx-auto justify-content-center mt-2"
             >
                 <thead
                     id="record-table-header"
@@ -50,7 +94,7 @@
                     {% for round, pairing in admin_player.pairings.items() %}
                         {% set name='round_' ~ round ~ '_result' %}
                         {% set id=name|replace('_', '-') %}
-                        {% set zero_point_bye_allowed = round >= admin_player.tournament.current_round and not pairing.board %}
+                        {% set bye_modifiable_for_round = round >= admin_player.tournament.current_round and not pairing.board %}
                         {% if pairing.opponent_id %}
                             {% set opponent_player=admin_player.tournament.players_by_id[pairing.opponent_id] %}
                             {% set opponent = opponent_player.title.short_name ~ ' ' ~ opponent_player.full_name %}
@@ -63,7 +107,7 @@
                             {% set rating='' %}
                             {% set color='' %}
                         {% endif %}
-                        {% if zero_point_bye_allowed or not pairing.result %}
+                        {% if bye_modifiable_for_round or not pairing.result %}
                             {% set score='' %}
                         {% else %}
                             {% set score=pairing.points_str %}
@@ -74,7 +118,7 @@
                         {% if pairing.zero_point_bye %}
                             {% set text=_('Round skipped') %}
                             {% set zero_point_bye = true %}
-                        {% elif pairing.not_paired %}
+                        {% elif pairing.needs_pairing %}
                             {% set text = '' %}
                         {% elif pairing.paired_no_result %}
                             {% if admin_player.tournament.current_round == round %}
@@ -109,14 +153,14 @@
                         {% else %}
                             {% set text='???' %}
                         {% endif %}
-                        <tr id="round-{{ round }}">
+                        <tr id="round-{{ round }}" class="{{ 'highlight' if round == admin_player.tournament.current_round and admin_player.tournament.playing else '' }}">
                             <th scope="row gy-2 gx-3" class="text-nowrap text-center">
                                 {{ round }}
                             </th>
                             <td class="text-nowrap text-center">
                                 {{ score }}
                             </td>
-                            {% if zero_point_bye_allowed %}
+                            {% if bye_modifiable_for_round %}
                                 <td colspan="5" class="text-nowrap text-start">
                                     {% if bye_definition_allowed %}
                                         <span
@@ -212,6 +256,9 @@
                     ) }}
                 ></i>
             </div>
+            <span class="fst-italic">
+                {{ _('To modify previous rounds, return to that round in the Pairings tab;<br />byes can then be changed using the buttons next to the player\'s name.') }}
+            </span>
         </div>
         <div class="modal-footer">
             {% if client.can_update_players %}

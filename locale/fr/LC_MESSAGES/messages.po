@@ -888,7 +888,7 @@ msgid "Cancel Half-Point Bye"
 msgstr "Annuler le demi-point joker"
 
 msgid "Cancel Zero-Point Bye"
-msgstr "Supprimer l'absence"
+msgstr "Annuler l'absence"
 
 msgid "Candidate Master"
 msgstr "Candidat Maître"
@@ -3742,14 +3742,8 @@ msgstr "Le·la joueur·euse [{player}] a été apparié·e contre [{opponent}] �
 msgid "Player [{player}] has pairings in tournament [{tournament}]."
 msgstr "Le·la joueur·euse [{player}] a déjà été apparié·e dans le tournoi [{tournament}]."
 
-msgid "Player [{player}] has returned for all the remaining rounds."
-msgstr "Le·la joueur·euse [{player}] est de retour pour toutes les rondes restantes."
-
 msgid "Player [{player}] has returned for this round."
 msgstr "Le·la joueur·euse [{player}] est de retour pour cette ronde."
-
-msgid "Player [{player}] withdrawn from the tournament."
-msgstr "Le·la joueur·euse [{player}] a été retiré·e du tournoi."
 
 msgid "Player does not match tournament criteria: {names}"
 msgstr "Le·la joueur·euse ne correspond pas aux critères du tournoi : {names}"
@@ -5404,6 +5398,9 @@ msgstr "Joueur·euses titré·es"
 msgid "To learn how to control your network, consult <a href=\"%(link)s\" target=\"_blank\">our documentation</a>."
 msgstr "Pour apprendre à contrôler votre réseau, consultez <a href=\"%(link)s\" target=\"_blank\">notre documentation</a>."
 
+msgid "To modify previous rounds, return to that round in the Pairings tab;<br />byes can then be changed using the buttons next to the player's name."
+msgstr "Pour modifier les rondes précédentes, retourne sur la ronde concernée dans l’onglet Appariements ;<br />les exemptions peuvent ensuite être modifiées à l’aide des boutons situés à côté du nom du·de la joueur·euse."
+
 msgid "Today"
 msgstr "Aujourd'hui"
 
@@ -5958,9 +5955,6 @@ msgstr "Lorsque l'on n'affiche pas le bouton de sortie, les utilisateur·ices ne
 msgid "When not displaying the players' opponent (color and board numbers only), less screens are needed (with several columns)."
 msgstr "Lorsque les adversaires ne sont pas affiché·es, moins d'écrans sont nécessaires pour afficher l'ensemble des joueur·euses (nulti-colonnes)."
 
-msgid "When not tournament is selected, the results of all the tournaments are displayed."
-msgstr "Si aucun tournoi n'est sélectionné, les résultats de tous les tournois sont affichés."
-
 msgid "When two or more players with the same points are eligible for prizes, share their prizes."
 msgstr "Quand plusieurs joueur·euses avec le même nombre de points sont éligibles pour un prix, partager leurs prix."
 
@@ -6427,7 +6421,3 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
-#~ msgid "FIDE recommended tie-breaks for [%(pairing_system)s] tournaments:"
-#~ msgstr "Départages recommandés par la FIDE pour les tournois [%(pairing_system)s] :"
-

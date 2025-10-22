@@ -3742,13 +3742,7 @@ msgstr ""
 msgid "Player [{player}] has pairings in tournament [{tournament}]."
 msgstr ""
 
-msgid "Player [{player}] has returned for all the remaining rounds."
-msgstr ""
-
 msgid "Player [{player}] has returned for this round."
-msgstr ""
-
-msgid "Player [{player}] withdrawn from the tournament."
 msgstr ""
 
 msgid "Player does not match tournament criteria: {names}"
@@ -5404,6 +5398,9 @@ msgstr ""
 msgid "To learn how to control your network, consult <a href=\"%(link)s\" target=\"_blank\">our documentation</a>."
 msgstr ""
 
+msgid "To modify previous rounds, return to that round in the Pairings tab;<br />byes can then be changed using the buttons next to the player's name."
+msgstr ""
+
 msgid "Today"
 msgstr ""
 
@@ -5958,9 +5955,6 @@ msgstr ""
 msgid "When not displaying the players' opponent (color and board numbers only), less screens are needed (with several columns)."
 msgstr ""
 
-msgid "When not tournament is selected, the results of all the tournaments are displayed."
-msgstr ""
-
 msgid "When two or more players with the same points are eligible for prizes, share their prizes."
 msgstr ""
 
@@ -6427,7 +6421,3 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "FIDE recommended tie-breaks for [%(pairing_system)s] tournaments:"
-#~ msgstr ""
-

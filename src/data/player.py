@@ -489,7 +489,7 @@ class Player:
             elif round_nb == after_round + 1:
                 if include_next_round_bye and pairing.next_round_bye:
                     games.append(trf_game)
-                elif next_round_pairings_as_zpb and not pairing.not_paired:
+                elif next_round_pairings_as_zpb and not pairing.needs_pairing:
                     games.append(
                         TrfGame(
                             startrank=0,
@@ -844,6 +844,23 @@ class Player:
             if pairing.opponent_id is not None or pairing.exempt:
                 return True
         return False
+
+    @property
+    def has_withdrawn(self) -> bool:
+        """Returns True if the player has withdrawn from the tournament."""
+        if (
+            self.tournament.current_round == self.tournament.rounds
+            and self.tournament.playing
+        ):
+            return self.pairings_by_round[self.tournament.current_round].zero_point_bye
+        for round in range(self.tournament.current_round, self.tournament.rounds + 1):
+            if (
+                self.pairings_by_round[round].paired
+                or self.pairings_by_round[round].zero_point_bye
+            ):
+                continue
+            return False
+        return True
 
     @property
     def first_pab_round(self) -> int | None:
