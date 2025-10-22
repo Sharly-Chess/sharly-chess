@@ -103,8 +103,16 @@ class Pairing:
         return self.result == Result.ZERO_POINT_BYE
 
     @property
-    def not_paired(self) -> bool:
+    def needs_pairing(self) -> bool:
         return (self.result == Result.NO_RESULT) and (self.opponent_id is None)
+
+    @property
+    def needs_pairing_or_has_bye(self) -> bool:
+        return self.opponent_id is None
+
+    @property
+    def paired(self) -> bool:
+        return not self.needs_pairing_or_has_bye
 
     @property
     def paired_no_result(self) -> bool:

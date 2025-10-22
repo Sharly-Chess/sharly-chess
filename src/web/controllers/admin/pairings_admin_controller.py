@@ -671,15 +671,13 @@ class PairingsAdminController(BaseEventAdminController):
         if success_message:
             Message.success(web_context.request, success_message)
 
-        web_context = PairingsAdminWebContext(
-            web_context.request,
-            tournament_id=tournament.id,
-            round_=web_context.admin_round,
-            player_id=player.id,
-            reload_event=True,
+        return HTMXTemplate(
+            template_name='common/empty_modal_and_messages.html',
+            context={'messages': Message.messages(web_context.request)},
+            re_target='#modal-wrapper',
+            trigger_event='close_modal',
+            after='receive',
         )
-
-        return cls._admin_event_pairings_render(web_context)
 
     @patch(
         path=(
@@ -949,7 +947,7 @@ class PairingsAdminController(BaseEventAdminController):
         round_ = web_context.admin_round
         tournament.pairing_variation.engine.generate_pairings(tournament, round_, True)
         unpaired_count = sum(
-            player.pairings[round_].not_paired for player in tournament.players
+            player.pairings[round_].needs_pairing for player in tournament.players
         )
         if unpaired_count:
             if unpaired_count == 1:
