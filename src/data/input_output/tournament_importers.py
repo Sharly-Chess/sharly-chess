@@ -104,9 +104,10 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
         self,
         event: Event,
         tournament: Tournament | None = None,
-    ) -> Tournament:
+    ) -> int:
         """Load a tournament into an event.
         If tournament is provided, update this tournament, otherwise create a new one.
+        Returns the ID of the tournament.
         Raises if the tournament already has players."""
         stored_tournament, stored_players = self.load_stored_tournament(
             event, tournament.stored_tournament if tournament else None
@@ -127,7 +128,7 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
         tournament.set_players_pairing_numbers()
         for task in self.post_import_task:
             task(tournament)
-        return tournament
+        return tournament.id
 
     @staticmethod
     def _write_stored_tournament(

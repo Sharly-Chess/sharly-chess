@@ -381,11 +381,13 @@ class BbpPairings(PairingEngine):
         event_uniq_id: str = 'dummy'
         EventDatabase(event_uniq_id).create()
         event = EventLoader().load_event(event_uniq_id)
-        tournament = TrfTournamentImporter(
+        tournament_id = TrfTournamentImporter(
             [
                 FileOption(trf_input_file_path),
             ]
         ).load_tournament(event)
+        event = EventLoader().load_event(event_uniq_id)
+        tournament = event.tournaments_by_id[tournament_id]
         for round_ in range(1, tournament.rounds + 1):
             if diff := tournament.pairing_variation.engine.pairings_diff(
                 tournament,
