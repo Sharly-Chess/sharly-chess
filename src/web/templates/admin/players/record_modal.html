@@ -17,7 +17,7 @@
                             disabled
                         {% else %}
                             hx-patch="{{ url_for(
-                                'admin-pairings-return-player',
+                                'admin-player-return-player',
                                 event_uniq_id=admin_event.uniq_id,
                                 tournament_id=admin_player.tournament.id,
                                 round=admin_player.tournament.current_round,
@@ -36,7 +36,7 @@
                             disabled
                         {% else %}
                             hx-patch="{{ url_for(
-                                'admin-pairings-withdraw-player',
+                                'admin-player-withdraw-player',
                                 event_uniq_id=admin_event.uniq_id,
                                 tournament_id=admin_player.tournament.id,
                                 round=admin_player.tournament.current_round,
