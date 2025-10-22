@@ -270,3 +270,40 @@ $(document).on('select2:unselect', '.sharly-chess-select2', function (e) {
         select2OpenCloseDisabled = false;
     }, 100);
 });
+
+async function downloadFile(el) {
+    const url = el.dataset.exportUrl;
+
+    try {
+        const response = await fetch(url, { headers: { 'HX-Request': 'true' } });
+        const contentType = response.headers.get('content-type') || '';
+
+        // If server returned a file
+        if (contentType.startsWith('application/') || response.headers.get('content-disposition')) {
+            // Turn it into a blob for download
+            const blob = await response.blob();
+            const a = document.createElement('a');
+            const downloadUrl = URL.createObjectURL(blob);
+            const filename = response.headers
+                .get('content-disposition')
+                ?.split('filename=')[1]
+                ?.replaceAll('"', '') || 'download';
+            a.href = downloadUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(downloadUrl);
+            return;
+        }
+
+        // Allow errors to be displayed
+        const html = await response.text();
+        const target = response.headers.get('HX-Retarget') || 'body';
+        const swapStyle = response.headers.get('HX-Reswap') || 'innerHTML';
+        htmx.swap(target, html, { swapStyle });
+    } catch (err) {
+        console.error('Export failed', err);
+        alert('Export failed: ' + err.message);
+    }
+}

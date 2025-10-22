@@ -329,25 +329,20 @@
                             {% set warning_message = exporter.warning_message(tournament) %}
                             <li
                                 class="dropdown-item text-start cursor-pointer"
-                                onclick="$('#export-form-{{ tournament.id }}-{{ exporter.id }}').submit()"
+                                data-export-url="{{ url_for(
+                                    'admin-tournament-export',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=tournament.id,
+                                    exporter_id=exporter.id
+                                ) }}"
                                 {% if warning_message %}
                                     {{ macros.tooltip_attributes('warning', warning_message, 'right') }}
                                 {% else %}
                                     {{ macros.tooltip_attributes('info', exporter.tooltip, 'right') }}
                                 {% endif %}
+                                onclick="downloadFile(this)"
                             >
-                                <form
-                                    id="export-form-{{ tournament.id }}-{{ exporter.id }}"
-                                    action="{{ url_for(
-                                        'admin-tournament-export',
-                                        event_uniq_id=admin_event.uniq_id,
-                                        tournament_id=tournament.id,
-                                        exporter_id=exporter.id
-                                    ) }}"
-                                    hx-indicator="#please-wait"
-                                >
-                                    {{ exporter.name }}
-                                </form>
+                                {{ exporter.name }}
                             </li>
                         {% endif %}
                     {% endfor %}
