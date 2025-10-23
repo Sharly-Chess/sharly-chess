@@ -1,7 +1,7 @@
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Self
+from typing import Optional
 
 from common.logger import (
     get_logger,
@@ -31,26 +31,34 @@ class CheckerPlayer:
     def from_object(
         cls,
         player: Player,
-    ) -> Self:
-        return CheckerPlayer(
-            player.id,
-            player.last_name,
-            player.first_name,
-            player.rating,
-            player.points,
+    ) -> Optional['CheckerPlayer']:
+        return (
+            CheckerPlayer(
+                player.id,
+                player.last_name,
+                player.first_name,
+                player.rating,
+                player.points or 0.0,
+            )
+            if player
+            else None
         )
 
     @classmethod
     def from_dict(
         cls,
         d: dict,
-    ) -> Self:
-        return CheckerPlayer(
-            d['id'],
-            d['last_name'],
-            d['first_name'],
-            d['rating'],
-            d['points'],
+    ) -> Optional['CheckerPlayer']:
+        return (
+            CheckerPlayer(
+                d['id'],
+                d['last_name'],
+                d['first_name'],
+                d['rating'],
+                d['points'],
+            )
+            if d
+            else None
         )
 
     @property
@@ -69,65 +77,77 @@ class CheckerPlayer:
 
 @dataclass
 class CheckerBoard:
-    id: int | None
+    id: int
     white: CheckerPlayer | None
     black: CheckerPlayer | None
 
     @classmethod
     def from_object(
         cls,
-        board: Board,
-    ) -> Self:
-        return CheckerBoard(
-            board.id,
-            CheckerPlayer.from_object(board.white_player),
-            CheckerPlayer.from_object(board.black_player),
+        board: Board | None,
+    ) -> Optional['CheckerBoard']:
+        return (
+            CheckerBoard(
+                board.id,
+                CheckerPlayer.from_object(board.white_player)
+                if board.white_player
+                else None,
+                CheckerPlayer.from_object(board.black_player)
+                if board.black_player
+                else None,
+            )
+            if board
+            else None
         )
 
     @classmethod
     def from_dict(
         cls,
         d: dict,
-    ) -> Self:
-        return CheckerBoard(
-            d['id'],
-            CheckerPlayer.from_dict(d['white']),
-            CheckerPlayer.from_dict(d['black']),
+    ) -> Optional['CheckerBoard']:
+        return (
+            CheckerBoard(
+                d['id'],
+                CheckerPlayer.from_dict(d['white']),
+                CheckerPlayer.from_dict(d['black']),
+            )
+            if d
+            else None
         )
 
     @property
     def to_dict(self) -> dict:
         return {
             'id': self.id,
-            'white': self.white.to_dict,
-            'black': self.black.to_dict,
+            'white': self.white.to_dict if self.white else None,
+            'black': self.black.to_dict if self.black else None,
         }
 
     def __str__(self):
-        return f'{self.id:03d}. {self.white} vs {self.black}'
+        return f'{self.id:03d}. {self.white if self.white else "-"} vs {self.black if self.black else "-"}'
 
 
 @dataclass
 class BoardDiff:
-    read_board: CheckerBoard
-    expected_board: CheckerBoard
+    read_board: CheckerBoard | None
+    expected_board: CheckerBoard | None
 
     @classmethod
     def from_objects(
         cls,
-        read_board: Board,
-        expected_board: Board,
-    ) -> Self:
+        read_board: Board | None,
+        expected_board: Board | None,
+    ) -> 'BoardDiff':
         return BoardDiff(
-            CheckerBoard.from_object(read_board),
-            CheckerBoard.from_object(expected_board),
+            CheckerBoard.from_object(read_board) if read_board else None,
+            CheckerBoard.from_object(expected_board) if expected_board else None,
         )
 
     @classmethod
     def from_dict(
         cls,
         d: dict,
-    ) -> Self:
+    ) -> 'BoardDiff':
         return BoardDiff(
             CheckerBoard.from_dict(d['read_board']),
             CheckerBoard.from_dict(d['expected_board']),
@@ -136,27 +156,10 @@ class BoardDiff:
     @property
     def to_dict(self) -> dict:
         return {
-            'read_board': self.read_board.to_dict,
-            'expected_board': self.expected_board.to_dict,
-        }
-
-
-class TournamentDiff(dict[int, list[BoardDiff]]):
-    @classmethod
-    def from_dict(
-        cls,
-        d: dict,
-    ) -> Self:
-        return {
-            round_: [BoardDiff.from_dict(board) for board in round_board_diffs]
-            for round_, round_board_diffs in d.items()
-        }
-
-    @property
-    def to_dict(self) -> dict:
-        return {
-            round_: [round_board_diff.to_dict for round_board_diff in round_board_diffs]
-            for round_, round_board_diffs in self.items()
+            'read_board': self.read_board.to_dict if self.read_board else None,
+            'expected_board': self.expected_board.to_dict
+            if self.expected_board
+            else None,
         }
 
 
@@ -165,37 +168,42 @@ class TournamentCheck:
     name: str
     player_count: int
     rounds: int
-    diff: TournamentDiff
+    diff: dict[int, list[BoardDiff]]
 
     @classmethod
     def from_object(
         cls,
         tournament: Tournament,
-    ) -> Self:
+    ) -> 'TournamentCheck':
         return TournamentCheck(
             tournament.name,
             tournament.player_count,
             tournament.rounds,
-            TournamentDiff(),
+            {},
         )
 
     @classmethod
     def from_dict(
         cls,
         d: dict,
-    ) -> Self:
+    ) -> 'TournamentCheck':
         return TournamentCheck(
             d['name'],
             d['player_count'],
             d['rounds'],
-            TournamentDiff.from_dict(d['diff']),
+            {
+                round_: [
+                    BoardDiff.from_dict(board_diff) for board_diff in round_board_diffs
+                ]
+                for round_, round_board_diffs in d['diff'].items()
+            },
         )
 
     @classmethod
     def load_from_file(
         cls,
         input_file: Path,
-    ) -> Self:
+    ) -> 'TournamentCheck':
         with open(input_file, 'r', encoding='utf-8') as file:
             return TournamentCheck.from_dict(json.load(file))
 
@@ -205,7 +213,12 @@ class TournamentCheck:
             'name': self.name,
             'player_count': self.player_count,
             'rounds': self.rounds,
-            'diff': self.diff.to_dict,
+            'diff': {
+                round_: [
+                    round_board_diff.to_dict for round_board_diff in round_board_diffs
+                ]
+                for round_, round_board_diffs in self.diff.items()
+            },
         }
 
     def dump_to_file(
