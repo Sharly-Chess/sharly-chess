@@ -541,6 +541,12 @@ msgstr "Toutes les valeurs peuvent être modifiées par l’arbitre si nécessai
 msgid "Allow"
 msgstr "Autoriser"
 
+msgid "Allow the usage of this tie-break even with estimated players in the tournament (not recommended)."
+msgstr "Autoriser l'usage de ce départage même losque le tournoi contient des joueur·euses estimé·es (non-recommandé)."
+
+msgid "Allow with estimated players"
+msgstr "Autoriser avec des joueur·euses estimé·es"
+
 msgid "Allows access to Screens marked as public"
 msgstr "Autorise l'accès aux écrans publics"
 
@@ -830,6 +836,9 @@ msgstr "Par échiquier"
 
 msgid "By default, other devices can only interact with public screens. This tab allows you to configure this behavior."
 msgstr "Par défaut, les autres appareils ne peuvent qu'interagir avec les écrans publics. Cet onglet vous permet de configurer ce comportement."
+
+msgid "By default, this tie-break is disabled when there are estimated players ({count} in the tournament)."
+msgstr "Par défaut, ce départage est désactivé lorsqu'il y a des joueur·euses estimé·es ({count} dans le tournoi)."
 
 msgid "By default, tournaments are not visible on the FFE site."
 msgstr "Par défaut, les tournois ne sont pas visibles sur le site de la FFE."
@@ -5310,6 +5319,12 @@ msgstr "Ce départage est déjà utilisé."
 msgid "This tie-break is not compatible with the pairing system [{pairing_system}] (ignored)."
 msgstr "Ce départage n'est pas compatible avec le système d'appariements [{pairing_system}] (ignoré)."
 
+msgid "This tie-break is not compatible with unrated players ({count} in the tournament)."
+msgstr "Ce départage n'est pas compatible avec des joueur·euses non-classé·es ({count} dans le tournoi)."
+
+msgid "This tie-break is not recommended with estimated players ({count} in the tournament)."
+msgstr "Ce départage n'est pas compatible avec des joueur·euses estimé·es ({count} dans le tournoi)."
+
 msgid "This unique ID is already used."
 msgstr "Cet identifiant unique est déjà utilisé."
 
@@ -6418,3 +6433,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+

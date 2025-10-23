@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from contextlib import suppress
 from functools import cache, lru_cache, cached_property
+from itertools import groupby
 from math import floor
 from types import UnionType
 from typing import TYPE_CHECKING, Any
@@ -20,29 +20,13 @@ from data.tie_breaks.tie_breaks import (
     SumOfBuchholzTieBreak,
 )
 from plugins.ffe import PLUGIN_NAME
-from utils import StaticUtils
+from utils import Utils
 from utils.entity import IdentifiableEntity, EntityManager
 from utils.enum import Result
 from web.utils import SelectOption
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
-
-
-@lru_cache(maxsize=32)
-def papi_performance_bonus(fractional_score: float) -> int | float:
-    performance_table = StaticUtils.PERFORMANCE_TABLE[:-1] + [677, 677]
-    percent = 100 * fractional_score
-    index = floor(abs(50 - percent))
-    percent_int = floor(percent)
-    bonus = float(performance_table[index])
-    smaller_difference = percent - percent_int
-    if smaller_difference > 0:
-        smaller_difference *= performance_table[index + 1] - bonus
-    bonus += smaller_difference
-    if fractional_score < 0.5:
-        bonus *= -1
-    return bonus
 
 
 class BasePapiTieBreak(TieBreak, ABC):
@@ -108,6 +92,133 @@ class PapiPerformanceTieBreak(BasePapiTieBreak):
     def base_acronym(self) -> str:
         return 'Perf'
 
+    @property
+    def estimated_players_warning(self) -> bool:
+        return True
+
+    @staticmethod
+    def _points_after(player: Player, after_round: int):
+        # NOTE(Amaras): Because EM did not take into account HPB in his code,
+        # this function must be used instead of Player.points_after
+        return sum(
+            pairing.result.points(player.point_values)
+            for round_index, pairing in player.pairings.items()
+            if round_index <= after_round
+            and (
+                pairing.played
+                or pairing.result in (Result.HALF_POINT_BYE, Result.FULL_POINT_BYE)
+            )
+        )
+
+    @staticmethod
+    @lru_cache(maxsize=32)
+    def _performance_bonus(fractional_score: float) -> int | float:
+        performance_table = Utils.PERFORMANCE_TABLE[:-1] + [677, 677]
+        percent = 100 * fractional_score
+        index = floor(abs(50 - percent))
+        percent_int = floor(percent)
+        bonus = float(performance_table[index])
+        smaller_difference = percent - percent_int
+        if smaller_difference > 0:
+            smaller_difference *= performance_table[index + 1] - bonus
+        bonus += smaller_difference
+        if fractional_score < 0.5:
+            bonus *= -1
+        return bonus
+
+    def get_player_variables(
+        self, tournament: 'Tournament', after_round: int
+    ) -> dict[int, Any]:
+        """Add the papi estimation as a variable."""
+        if after_round <= 1 or not any(
+            player.estimated for player in tournament.players
+        ):
+            return {}
+
+        max_possible_points = tournament.win_points * after_round
+
+        # NOTE(Amaras): only points from played games should be counted
+        players = sorted(
+            tournament.players,
+            key=lambda player: self._points_after(player, after_round),
+        )
+        players_by_points: dict[float, list[Player]] = {
+            points: list(group)
+            for points, group in groupby(
+                players,
+                key=lambda player: self._points_after(player, after_round),
+            )
+        }
+
+        point_keys: list[float] = [0]
+        while (current_points := point_keys[-1]) < max_possible_points:
+            current_points += tournament.draw_points
+            point_keys.append(current_points)
+        level_estimations = {points: 0 for points in point_keys}
+
+        # NOTE(Amaras): if there are rated players in the score group,
+        # use the average of their ratings as the level's estimation.
+        for points, test_group in players_by_points.items():
+            group_ratings = [
+                player.rating for player in test_group if not player.estimated
+            ]
+            if group_ratings:
+                average_rating = round(sum(group_ratings) / len(group_ratings))
+                level_estimations[points] = average_rating
+
+        # NOTE(Amaras): If there are no players with a rating, use the
+        # estimation of the higher level, added with the difference
+        # between the score group's performance bonus and the previous
+        # group's performance bonus.
+        previous_estimation = previous_bonus = 0
+        for points in reversed(point_keys):
+            estimation = level_estimations[points]
+            if estimation > 0:
+                # No need to touch a group's estimation if it already has one
+                previous_bonus = round(
+                    self._performance_bonus(points / max_possible_points)
+                )
+                previous_estimation = estimation
+            elif previous_estimation > 0:
+                bonus = round(self._performance_bonus(points / max_possible_points))
+                level_estimations[points] = previous_estimation - previous_bonus + bonus
+                previous_estimation = level_estimations[points]
+                previous_bonus = bonus
+
+        # NOTE(Amaras): There may be additional levels with no estimation
+        # (usually the best score groups but might be all but the last),
+        # in which case, travel the groups upwards and estimate them
+        for points in point_keys:
+            estimation = level_estimations[points]
+            if estimation > 0:
+                previous_bonus = round(
+                    self._performance_bonus(points / max_possible_points)
+                )
+                previous_estimation = estimation
+            elif previous_estimation > 0:
+                bonus = round(self._performance_bonus(points / max_possible_points))
+                level_estimations[points] = previous_estimation - previous_bonus + bonus
+                previous_estimation = level_estimations[points]
+                previous_bonus = bonus
+
+        # NOTE(Amaras): There may be a single case where all players
+        # have no estimation (*estimation == 0*), which is if no
+        # player is rated in the tournament.
+        # In this case, obviously, no rating-based tie-break
+        # should be used.
+        # This includes ARO, TPR, PTP, APRO, APPO and their variants
+        estimation_by_player_id: dict[int, int] = {}
+        for points, test_group in players_by_points.items():
+            estimation = level_estimations[points]
+            for player in test_group:
+                estimation_by_player_id[player.id] = estimation
+        return estimation_by_player_id
+
+    def _get_player_estimation(self, player: 'Player') -> int:
+        if not player.estimated:
+            return player.rating
+        return player.tie_break_variables[self.id]
+
     def compute_player_value(self, player: 'Player', *, after_round: int) -> float:
         tournament: 'Tournament' = player.tournament
         pairings: list[Pairing] = [
@@ -120,19 +231,21 @@ class PapiPerformanceTieBreak(BasePapiTieBreak):
         for pairing in pairings:
             assert pairing.opponent_id is not None
             opponent = tournament.players_by_id[pairing.opponent_id]
-            with suppress(KeyError):
-                rating = min(
-                    player.estimation + 400,
-                    max(player.estimation - 400, opponent.estimation),
-                )
-                ratings.append(rating)
-                score += pairing.result.points(tournament.point_values)
+
+            player_estimation = self._get_player_estimation(player)
+            opponent_estimation = self._get_player_estimation(opponent)
+            rating = min(
+                player_estimation + 400,
+                max(player_estimation - 400, opponent_estimation),
+            )
+            ratings.append(rating)
+            score += pairing.result.points(tournament.point_values)
         if not ratings:
             return 0
         max_score = len(ratings) * Result.WIN.points(tournament.point_values)
         average = sum(ratings) / len(ratings)
         fractional_score = score / max_score
-        bonus = papi_performance_bonus(fractional_score)
+        bonus = self._performance_bonus(fractional_score)
         return round(average + bonus)
 
 

@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 from functools import cached_property
 from math import isclose
-from typing import TYPE_CHECKING, SupportsFloat
+from typing import TYPE_CHECKING, SupportsFloat, Any
 from common.i18n import _, ngettext
 from data.pairing import Pairing
 from data.pairings import PairingSystem
@@ -28,9 +28,10 @@ from data.tie_breaks.options import (
     KoyaLimitTieBreakOption,
     CutterTieBreakOption,
     CutterWithMedianTieBreakOption,
+    EstimatedRatingsTieBreakOption,
 )
 from database.sqlite.event.event_store import StoredTieBreak
-from utils import StaticUtils
+from utils import Utils
 from utils.enum import BoardColor, Result
 from utils.option import OptionHandler
 
@@ -110,6 +111,14 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
             'If `is_computed_by_player` is False this method needs to be implemented.'
         )
 
+    def get_player_variables(
+        self, tournament: 'Tournament', after_round: int
+    ) -> dict[int, Any]:
+        """Get variables to store into the player objects for this tie-break.
+        Returns a dict in format dict[player_id, variable].
+        These variables are stored in Player.tie_break_variable[TieBreak.id]."""
+        return {}
+
     @property
     def display_rank_delta(self) -> bool:
         """Defines if the rank delta should be displayed instead of the tie-break value.
@@ -124,6 +133,21 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
     @property
     def allow_multiple(self) -> bool:
         """Defines if the tie-break can be added multiple time with the same options."""
+        return False
+
+    @property
+    def allow_unrated_players(self) -> bool:
+        """Defines if the tie-break can be used with players without any rating defined."""
+        return True
+
+    @property
+    def allow_estimated_players(self) -> bool:
+        """Defines if the tie-break can be used with estimated players."""
+        return True
+
+    @property
+    def estimated_players_warning(self) -> bool:
+        """Display a warning on the tournament if it has estimated players."""
         return False
 
     @property
@@ -1042,6 +1066,22 @@ class OpponentRatingTieBreak(TieBreak, ABC):
     def category(self) -> TieBreakCategory:
         return OpponentRatingCategory()
 
+    @staticmethod
+    def available_options() -> list[type[TieBreakOption]]:
+        return [EstimatedRatingsTieBreakOption]
+
+    @property
+    def allow_unrated_players(self) -> bool:
+        return False
+
+    @property
+    def allow_estimated_players(self) -> bool:
+        return self._get_option(EstimatedRatingsTieBreakOption).value
+
+    @property
+    def estimated_players_warning(self) -> bool:
+        return True
+
 
 class AverageRatingOpponentsTieBreak(OpponentRatingTieBreak):
     """The average rating of opponents.
@@ -1064,6 +1104,7 @@ class AverageRatingOpponentsTieBreak(OpponentRatingTieBreak):
     def available_options() -> list[type[TieBreakOption]]:
         return [
             CutterWithMedianTieBreakOption,
+            EstimatedRatingsTieBreakOption,
         ]
 
     @cached_property
@@ -1095,8 +1136,7 @@ class AverageRatingOpponentsTieBreak(OpponentRatingTieBreak):
                 continue
             assert pairing.opponent_id is not None
             opponent = tournament.players_by_id[pairing.opponent_id]
-            with suppress(KeyError):
-                ratings.append(opponent.estimation)
+            ratings.append(opponent.rating)
         ratings = sorted(ratings)
         if top_cut:
             ratings = ratings[bottom_cut:-top_cut]
@@ -1105,7 +1145,7 @@ class AverageRatingOpponentsTieBreak(OpponentRatingTieBreak):
         if not ratings:
             return 0
         average = sum(ratings) / len(ratings)
-        return StaticUtils.round_ranking(average)
+        return Utils.round_ranking(average)
 
 
 class TournamentPerformanceRatingTieBreak(OpponentRatingTieBreak):
@@ -1145,17 +1185,15 @@ class TournamentPerformanceRatingTieBreak(OpponentRatingTieBreak):
         for pairing in pairings:
             assert pairing.opponent_id is not None
             opponent = tournament.players_by_id[pairing.opponent_id]
-            with suppress(KeyError):
-                rating = opponent.estimation
-                ratings.append(rating)
-                score += pairing.result.points(tournament.point_values)
+            ratings.append(opponent.rating)
+            score += pairing.result.points(tournament.point_values)
         if not ratings:
             return 0
         max_score = len(ratings) * Result.WIN.points(tournament.point_values)
         average = sum(ratings) / len(ratings)
         fractional_score = round(score / max_score, 2)
-        bonus = StaticUtils.performance_bonus(fractional_score)
-        return StaticUtils.round_ranking(average + bonus)
+        bonus = Utils.performance_bonus(fractional_score)
+        return Utils.round_ranking(average + bonus)
 
 
 class AveragePerformanceRatingOpponentsTieBreak(OpponentRatingTieBreak):
@@ -1201,7 +1239,7 @@ class AveragePerformanceRatingOpponentsTieBreak(OpponentRatingTieBreak):
         if not performance_ratings:
             return 0
         average = sum(performance_ratings) / len(performance_ratings)
-        return StaticUtils.round_ranking(average)
+        return Utils.round_ranking(average)
 
 
 class PerfectTournamentPerformanceTieBreak(OpponentRatingTieBreak):
@@ -1248,12 +1286,12 @@ class PerfectTournamentPerformanceTieBreak(OpponentRatingTieBreak):
             tournament.point_values
         ):
             return -800 + min(
-                tournament.players_by_id[pairing.opponent_id].estimation
+                tournament.players_by_id[pairing.opponent_id].rating
                 for pairing in played_rounds
                 if pairing.opponent_id is not None
             )
         ratings: list[int] = [
-            tournament.players_by_id[pairing.opponent_id].estimation
+            tournament.players_by_id[pairing.opponent_id].rating
             for pairing in played_rounds
             if pairing.opponent_id is not None
         ]
@@ -1265,10 +1303,10 @@ class PerfectTournamentPerformanceTieBreak(OpponentRatingTieBreak):
             first_estimation, ratings, tournament.point_values
         )
         if isclose(first_expected_score, actual_score, abs_tol=0.01):
-            return StaticUtils.round_ranking(first_estimation)
+            return Utils.round_ranking(first_estimation)
         if not first_expected_score:
             return 0
-        second_estimation = StaticUtils.round_ranking(
+        second_estimation = Utils.round_ranking(
             first_estimation * actual_score / first_expected_score
         )
         second_expected_score = self._expected_score(
@@ -1282,7 +1320,7 @@ class PerfectTournamentPerformanceTieBreak(OpponentRatingTieBreak):
         while not isclose(
             actual_score,
             mid_score := self._expected_score(
-                (mid := StaticUtils.round_ranking((low + high) / 2)),
+                (mid := Utils.round_ranking((low + high) / 2)),
                 ratings,
                 tournament.point_values,
             ),
@@ -1435,7 +1473,7 @@ class AveragePerfectPerformanceTieBreak(OpponentRatingTieBreak):
 
         if not ptp:
             return 0
-        return StaticUtils.round_ranking(sum(ptp) / len(ptp))
+        return Utils.round_ranking(sum(ptp) / len(ptp))
 
 
 @dataclass

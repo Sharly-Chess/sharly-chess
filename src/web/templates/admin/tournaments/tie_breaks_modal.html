@@ -91,12 +91,8 @@
                                 {% if reorder_enabled %}
                                     <i class="bi-grip-horizontal"></i>
                                 {% endif %}
-                                <div class="text-start">
+                                <div class="text-start flex-grow-1">
                                     <b>{{ tie_break.acronym }}</b> - {{ tie_break.full_name }}
-
-                                </div>
-                                <div class="flex-grow-1">
-
                                 </div>
                                 <div class="flex-shrink-0 d-flex gap-2 align-items-center">
                                     <i
@@ -108,6 +104,14 @@
                                             class="bi-exclamation-triangle-fill text-danger pt-1"
                                             {{ macros.tooltip_attributes('warning', invalid_messages_by_id[stored_id], 'top') }}
                                         ></i>
+                                    {% else %}
+                                        {% set warning_message = admin_tournament.tie_break_warning_message(tie_break) %}
+                                        {% if warning_message %}
+                                            <i
+                                                class="bi-exclamation-triangle-fill text-warning pt-1"
+                                                {{ macros.tooltip_attributes('', warning_message, 'top') }}
+                                            ></i>
+                                        {% endif %}
                                     {% endif %}
                                     {% if tie_break.allow_multiple %}
                                          <button

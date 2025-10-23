@@ -166,6 +166,14 @@
                             class="bi-exclamation-triangle-fill text-danger"
                             {{ macros.tooltip_attributes('warning', invalid_messages_by_id[stored_id], 'top') }}
                         ></i>
+                    {% else %}
+                        {% set warning_message = tournament.tie_break_warning_message(tie_break) %}
+                        {% if warning_message %}
+                            <i
+                                class="bi-exclamation-triangle-fill text-warning"
+                                {{ macros.tooltip_attributes('', warning_message, 'top') }}
+                            ></i>
+                        {% endif %}
                     {% endif %}
                     {% if not loop.last %}-{% endif %}
                 {% endfor %}

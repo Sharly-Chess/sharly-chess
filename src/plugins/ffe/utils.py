@@ -221,6 +221,7 @@ class FfePlayerPluginData(PluginData):
     ffe_licence: PlayerFFELicence
     ffe_licence_number: str | None
     league: str | None
+    performance_estimation: int | None = None
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:

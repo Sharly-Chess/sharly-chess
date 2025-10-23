@@ -29,7 +29,7 @@ from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from plugins.manager import plugin_manager
 from plugins.utils import PluginData
-from utils import StaticUtils
+from utils import Utils
 from utils.enum import (
     Result,
     ScreenType,
@@ -99,7 +99,7 @@ class Event:
     def prize_currency(self) -> str:
         if stored := self.stored_event.prize_currency:
             return stored
-        if federation := StaticUtils.get_country_currency(self.federation):
+        if federation := Utils.get_country_currency(self.federation):
             return federation
         if plugin := plugin_manager.hook_for_event(
             self, 'get_default_prize_currency'
@@ -271,7 +271,7 @@ class Event:
     def get_unused_timer_name(self, base_name: str | None = None) -> str:
         """Returns the first unused timer name looking like base_name:
         base_name, or base_name (2), or base_name (n+1)..."""
-        return StaticUtils.get_unused_item_name(
+        return Utils.get_unused_item_name(
             base_name or _('New timer'), self.timers_by_uniq_id
         )
 
@@ -431,7 +431,7 @@ class Event:
     ) -> str:
         """Returns the first unused tournament name looking like base_name:
         base_name, or base_name (2), or base_name (n+1)..."""
-        return StaticUtils.get_unused_item_name(
+        return Utils.get_unused_item_name(
             base_name or _('New tournament'),
             [tournament.name for tournament in self.tournaments_by_id.values()],
         )
@@ -484,7 +484,7 @@ class Event:
                 screen_type=screen_type.value
             )
 
-        return StaticUtils.get_unused_item_uniq_id(
+        return Utils.get_unused_item_uniq_id(
             screen_uniq_id,
             self.basic_screens_by_uniq_id,
         )
@@ -497,7 +497,7 @@ class Event:
         """Returns the first unused screen name looking like base_name:
         base_name, or base_name (2), or base_name (n+1)...
         screen_type is used when the given name is empty to set a default name that corresponds to the screen type."""
-        return StaticUtils.get_unused_item_name(
+        return Utils.get_unused_item_name(
             base_name or screen_type.name,
             [
                 str(screen.name)
@@ -570,7 +570,7 @@ class Event:
             family_uniq_id = _('{family_type}-screen').format(
                 family_type=family_type.value
             )
-        return StaticUtils.get_unused_item_uniq_id(
+        return Utils.get_unused_item_uniq_id(
             family_uniq_id,
             self.families_by_uniq_id,
         )
@@ -583,7 +583,7 @@ class Event:
         """Returns the first unused family name looking like base_name:
         base_name, or base_name (2), or base_name (n+1)...
         family_type is used when the given name is empty to set a name that corresponds to the family type."""
-        return StaticUtils.get_unused_item_name(
+        return Utils.get_unused_item_name(
             base_name or family_type.name,
             [screen.name for screen in self.families_by_id.values()],
         )
@@ -618,7 +618,7 @@ class Event:
     def get_unused_rotator_name(self, base_name: str | None = None) -> str:
         """Returns the first unused rotator name looking like base_name:
         base_name, or base_name (2), or base_name (n+1)..."""
-        return StaticUtils.get_unused_item_name(
+        return Utils.get_unused_item_name(
             base_name or _('New rotator'), self.rotators_by_uniq_id
         )
 
@@ -686,7 +686,7 @@ class Event:
     ) -> str:
         """Returns the first unused display controller name looking like base_name:
         base_name, or base_name (2), or base_name (n+1)..."""
-        return StaticUtils.get_unused_item_name(
+        return Utils.get_unused_item_name(
             base_name or _('New display controller'),
             [
                 display_controller.name

@@ -541,6 +541,12 @@ msgstr ""
 msgid "Allow"
 msgstr ""
 
+msgid "Allow the usage of this tie-break even with estimated players in the tournament (not recommended)."
+msgstr ""
+
+msgid "Allow with estimated players"
+msgstr ""
+
 msgid "Allows access to Screens marked as public"
 msgstr ""
 
@@ -829,6 +835,9 @@ msgid "By board"
 msgstr ""
 
 msgid "By default, other devices can only interact with public screens. This tab allows you to configure this behavior."
+msgstr ""
+
+msgid "By default, this tie-break is disabled when there are estimated players ({count} in the tournament)."
 msgstr ""
 
 msgid "By default, tournaments are not visible on the FFE site."
@@ -5310,6 +5319,12 @@ msgstr ""
 msgid "This tie-break is not compatible with the pairing system [{pairing_system}] (ignored)."
 msgstr ""
 
+msgid "This tie-break is not compatible with unrated players ({count} in the tournament)."
+msgstr ""
+
+msgid "This tie-break is not recommended with estimated players ({count} in the tournament)."
+msgstr ""
+
 msgid "This unique ID is already used."
 msgstr ""
 
@@ -6418,3 +6433,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+

@@ -3,7 +3,7 @@ import weakref
 from collections import Counter
 from datetime import date
 from functools import total_ordering, cached_property
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from trf import Player as TrfPlayer
 from trf.Player import Game as TrfGame
 
@@ -13,7 +13,7 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPlayer, StoredPairing
 from plugins.manager import plugin_manager
 from plugins.utils import PluginData
-from utils import StaticUtils
+from utils import Utils
 from utils.enum import (
     PlayerGender,
     PlayerTitle,
@@ -57,7 +57,6 @@ class Player:
 
         # TournamentPlayer
         self.pairings_by_round = self._get_pairings_by_round()
-        self._estimation: int | None = None
         self.points: float | None = None
         self.vpoints: float | None = None
         self.board_id: int | None = None
@@ -67,6 +66,7 @@ class Player:
         self._rank: int | None = None
         self.time_control_trf25: str | None = None
         self.time_control_modified: bool | None = None
+        self.tie_break_variables: dict[str, Any] = {}
 
     @staticmethod
     def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
@@ -305,19 +305,6 @@ class Player:
         self.pairings_by_round[round_] = self._get_default_pairing(round_)
 
     @property
-    def estimation(self) -> int:
-        if not self.estimated:
-            return self.rating
-        return self._estimation or 0
-
-    @estimation.setter
-    def estimation(self, value: int):
-        if not self.estimated:
-            self._estimation = self.rating
-        else:
-            self._estimation = value
-
-    @property
     def estimated(self) -> bool:
         return self.rating_type == PlayerRatingType.ESTIMATED
 
@@ -451,7 +438,7 @@ class Player:
 
     @property
     def points_str(self) -> str:
-        return StaticUtils.points_str(self.points)
+        return Utils.points_str(self.points)
 
     def add_vpoints(self, vpoints: float):
         """If `self.vpoints` is set, add `vpoints` to it.
@@ -461,7 +448,7 @@ class Player:
 
     @property
     def vpoints_str(self) -> str:
-        return StaticUtils.points_str(self.vpoints)
+        return Utils.points_str(self.vpoints)
 
     @property
     def byes_count(self) -> int:
@@ -704,7 +691,7 @@ class Player:
             )
 
             values = [r.value for r in rating_list]
-            avg = StaticUtils.round_ranking(sum(values) / len(values)) if values else 0
+            avg = Utils.round_ranking(sum(values) / len(values)) if values else 0
             if avg < tn.minimum_average:
                 res.average_too_low = _(
                     '<b>1.4.8a</b> The minimum average rating of the opponents for this norm is {min}.'
@@ -713,7 +700,7 @@ class Player:
             res.average_rating = avg
 
             max_score = Result.WIN.points() * len(results_list)
-            bonus = StaticUtils.performance_bonus(score / max_score) if max_score else 0
+            bonus = Utils.performance_bonus(score / max_score) if max_score else 0
             performance = avg + bonus
             res.performance = performance
             if performance < tn.minimum_performance:
@@ -725,7 +712,7 @@ class Player:
                 while new_score < max_score:
                     new_score += draw_points
                     new_bonus = (
-                        StaticUtils.performance_bonus(new_score / max_score)
+                        Utils.performance_bonus(new_score / max_score)
                         if max_score
                         else 0
                     )
@@ -738,7 +725,7 @@ class Player:
                 while new_score > 0:
                     new_score -= draw_points
                     new_bonus = (
-                        StaticUtils.performance_bonus(new_score / max_score)
+                        Utils.performance_bonus(new_score / max_score)
                         if max_score
                         else 0
                     )

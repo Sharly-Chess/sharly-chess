@@ -680,7 +680,7 @@ with_indicator: display a loading indicator, optional
             {% if info and input_type != 'radio' %}
                 <i
                     class="bi bi-info-circle-fill"
-                    {{ macros.tooltip_attributes('info', info, 'top') }}
+                    {{ macros.tooltip_attributes('', info, 'top') }}
                 ></i>
             {% endif %}
             {% if help_text %}
