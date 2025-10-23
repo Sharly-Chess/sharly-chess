@@ -1,8 +1,31 @@
-# _Sharly Chess_ - Checking the pairings
+# _Sharly Chess_ - _FIDE_ endorsement
 
-Checking the pairings is needed for the FIDE certification.
+## Useful links
 
-Pairings and checks entirely rely on the BbpPairings pairing engine.
+### GitHub issue
+
+- ["_FIDE_ endorsement"](https://github.com/Sharly-Chess/sharly-chess/issues/937)
+
+### FIDE Handbook
+
+- [Handbook C.04.A Appendix: Endorsement of a software program](https://handbook.fide.com/chapter/C04A)
+  - Application for Swiss Pairing Program _FIDE_ Endorsement
+  - Tournament Report File Format (version 2006)
+  - Tournament Report File Format (version 2016)
+  - List of _FIDE_ Endorsed Programs
+  - Verification check-list
+  - [Application for Swiss Pairing Program FIDE Endorsement (form)](https://www.fide.com/FIDE/handbook/C04Annex1_FE1.pdf)
+
+### Pairing engines
+
+- [_BbpPairings_](https://github.com/BieremaBoyzProgramming/bbpPairings)
+- [_JaVaFo_](https://www.rrweb.org/javafo/aum/JaVaFo2_AUM.htm)
+
+## Checking the _Sharly Chess_ pairings
+
+Checking the pairings is needed for the _FIDE_ endorsement.
+
+Pairings and checks entirely rely on the _BbpPairings_ pairing engine.
 
 ## Generate tournament pairings
 

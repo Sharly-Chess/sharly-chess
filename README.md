@@ -17,7 +17,7 @@ _Sharly Chess - © Sharly Chess project 2013-2025_
 - [Description of the databases](docs/technical-appendices/databases.md)
 - [Internationalization](docs/technical-appendices/i18n.md)
 - [Network](docs/technical-appendices/network.md)
-- [Checking the pairings](docs/technical-appendices/pairings-checker.md)
+- [FIDE endorsement](docs/technical-appendices/fide-endorsement.md)
 
 ### Sandbox
 
