@@ -29,6 +29,9 @@ class BbpPairingsGenerator(BbpPairings):
                     return True
             else:
                 trf_file_path.unlink(missing_ok=True)
+            print_interactive_info(
+                f'Generating random tournament to TRF file {trf_file_path.name}...'
+            )
             trf_file_path.parent.mkdir(parents=True, exist_ok=True)
             result = StaticUtils.run_process(
                 [
