@@ -15,7 +15,7 @@ English version below
 - Accès à la fiche du joueur depuis l’onglet Appariements (3.2.0)
 - Correction de l'affichage du score de la ronde courante sur l'historique des joueur·euses (3.2.0)
 - Correction d’un problème de validation qui permettait d’ajouter deux joueurs avec le même numéro de licence FFE dans un même tournoi (3.2.0)
-- Les joueur·euse·s peuvent désormais être retiré·e·s du tournoi depuis la fenêtre de fiche joueur·euse (3.2.0)
+- Possibilité de noter l'abandon/le retour d'un·e joueur·euse depuis la modale d'historique des joueur·eses (3.2.0)
 
 ## Appariements
 
@@ -45,7 +45,7 @@ English version below
 - Access to the player record from the Pairings tab (3.2.0)
 - Fixed the display of the score of the current round on the player's history modal (3.2.0)
 - Fixed a validation issue which allowed to players with the same FFE licence number to be added to the same tournament (3.2.0)
-- Player can now be withdran from the tournament via the player's record dialog (3.2.0)
+- Ability to note a player's withdraw/re-entry from the player record modal (3.2.0)
 
 ## Pairings
 
@@ -55,4 +55,4 @@ English version below
 
 ## FFE
 
-- _Papi_ incompatible tie-breaks are now supported in the _Papi_ export and the _FFE_ upload (3.2.0)
+- Support for _Papi_ incompatible tie-breaks in the _Papi_ export and the _FFE_ upload (3.2.0)
