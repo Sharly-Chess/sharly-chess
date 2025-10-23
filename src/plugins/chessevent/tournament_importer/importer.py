@@ -156,7 +156,7 @@ class ChessEventTournamentImporter(TournamentImporter):
         self,
         event: Event,
         tournament: Tournament | None = None,
-    ) -> Tournament:
+    ) -> int:
         try:
             return super().load_tournament(event, tournament)
         except ChessEventStatusError as error:
