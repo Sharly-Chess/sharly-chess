@@ -970,7 +970,7 @@ msgstr ""
 msgid "Chess-Results.com"
 msgstr ""
 
-msgid "Chess-Results.com only displays 3 tie-breaks. However, the rankings remain the same as in Sharly Chess."
+msgid "Chess-Results.com only displays {max} tie-breaks. However, the rankings remain the same as in Sharly Chess."
 msgstr ""
 
 msgid "ChessEvent"
