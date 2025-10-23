@@ -44,6 +44,9 @@ class BaseEventAdminWebContext(AdminWebContext):
     def default_tournament_for_print_modal(
         self, tournament_id: int | None
     ) -> list[int] | None:
+        if tournament_id:
+            return [tournament_id]
+
         tournament_ids: list[int] | None = None
         if (
             tournament_id is None
