@@ -1180,11 +1180,11 @@ msgstr "Connection au serveur ChessEvent échouée."
 msgid "Connection to the data source [{data_source}] failed. Consult the logs for more details."
 msgstr "Connexion à la source de données [{data_source}] échouée. Consulter les logs pour plus de détails."
 
+msgid "Connection to the server failed (timeout)."
+msgstr "La connexion au serveur a échoué (délai expiré)."
+
 msgid "Connection to the server failed."
 msgstr "La connexion au serveur a échoué."
-
-msgid "Connection to the server failed: {error}."
-msgstr "La connexion au serveur a échoué : {error}."
 
 msgid "Consider all paired games for the final round as draws."
 msgstr "Considérer toutes les parties appariées pour la dernière ronde comme nulles."
@@ -3319,9 +3319,6 @@ msgstr "Pas encore point·ée"
 msgid "Not configured"
 msgstr "Non configuré"
 
-msgid "Not connected to internet"
-msgstr "Aucune connection à internet"
-
 msgid "Not enough byes available to set a Full-Point Bye (required: 2)."
 msgstr "Il n'y a pas assez de demi-points joker disponibles pour attribuer un point joker entier (requis : 2)."
 
@@ -4196,11 +4193,11 @@ msgstr "Remplace la catégorie [%(category)s] et supprime tous les critères de 
 msgid "Replaces category [%(category)s]."
 msgstr "Remplace la catégorie [%(category)s]."
 
+msgid "Request to the database failed (timeout)."
+msgstr "La requête à la base de données a échoué (délai expiré)."
+
 msgid "Request to the database failed."
 msgstr "La requête à la base de données a échoué."
-
-msgid "Request to the database failed: {error}."
-msgstr "La requête à la base de données a échoué : {error}."
 
 msgid "Res. ** RESULT FOR TABLE HEADER"
 msgstr "Rés."

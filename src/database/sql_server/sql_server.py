@@ -5,7 +5,6 @@ from typing import Self, Any, NoReturn
 from pathlib import Path
 from logging import Logger
 from collections.abc import AsyncIterator
-from common.network import NetworkMonitor
 import pytds
 
 from common import DEVEL_ENV
@@ -34,7 +33,8 @@ class SqlServerCredentials:
         except FileNotFoundError as e:
             if DEVEL_ENV:
                 raise SharlyChessException(
-                    f'Could not read SQL server credentials ({e}), please run generate_xxx_sql_server_credentials.py.'
+                    f'Could not read SQL server credentials ({e}), '
+                    'please run generate_xxx_sql_server_credentials.py.'
                 ) from e
             else:
                 raise SharlyChessException(
@@ -97,26 +97,17 @@ class SqlServer:
             if self.database is not None:
                 self.cursor = self.database.cursor()
                 logger.debug('Successfully connected using python-tds')
-        except (pytds.Error, TimeoutError) as e:
-            NetworkMonitor.set_connected(False)
-            if DEVEL_ENV:
-                error_msg = _('Connection to the server failed: {error}.').format(
-                    error=str(e)
-                )
+        except Exception as exception:
+            if isinstance(exception, TimeoutError):
+                message = _('Connection to the server failed (timeout).')
             else:
-                error_msg = _('Connection to the server failed.')
-            logger.error(error_msg)
-            raise SharlyChessException(error_msg) from e
-        except Exception as e:
-            NetworkMonitor.set_connected(False)
-            if DEVEL_ENV:
-                error_msg = _('Connection to the server failed: {error}.').format(
-                    error=str(e)
-                )
-            else:
-                error_msg = _('Connection to the server failed.')
-            logger.error(error_msg)
-            raise SharlyChessException(error_msg) from e
+                message = _('Connection to the server failed.')
+            logger.error(
+                'Connection to the server [%s] failed: %s',
+                self.__class__.__name__,
+                exception,
+            )
+            raise SharlyChessException(message) from exception
         return self
 
     async def __aexit__(self, exc_type, exc_value, tb):
@@ -133,17 +124,18 @@ class SqlServer:
         if not self.cursor:
             raise RuntimeError('Database connection not established')
 
-    def _handle_database_error(self, e: Exception) -> NoReturn:
+    def _handle_database_error(self, exception: Exception) -> NoReturn:
         """Handle database errors consistently."""
-        NetworkMonitor.set_connected(False)
-        if DEVEL_ENV:
-            error_msg = _('Request to the database failed: {error}.').format(
-                error=str(e)
-            )
+        if isinstance(exception, TimeoutError):
+            message = _('Request to the database failed (timeout).')
         else:
-            error_msg = _('Request to the database failed.')
-        logger.error(error_msg)
-        raise SharlyChessException(error_msg) from e
+            message = _('Request to the database failed.')
+        logger.error(
+            'Request to the database [%s] failed: %s',
+            self.__class__.__name__,
+            exception,
+        )
+        raise SharlyChessException(message) from exception
 
     async def execute(self, query: str, params: tuple = ()) -> None:
         """Executes the prepared query with the given parameters."""

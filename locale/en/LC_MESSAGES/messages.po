@@ -1180,10 +1180,10 @@ msgstr ""
 msgid "Connection to the data source [{data_source}] failed. Consult the logs for more details."
 msgstr ""
 
-msgid "Connection to the server failed."
+msgid "Connection to the server failed (timeout)."
 msgstr ""
 
-msgid "Connection to the server failed: {error}."
+msgid "Connection to the server failed."
 msgstr ""
 
 msgid "Consider all paired games for the final round as draws."
@@ -3319,9 +3319,6 @@ msgstr ""
 msgid "Not configured"
 msgstr ""
 
-msgid "Not connected to internet"
-msgstr ""
-
 msgid "Not enough byes available to set a Full-Point Bye (required: 2)."
 msgstr ""
 
@@ -4196,10 +4193,10 @@ msgstr ""
 msgid "Replaces category [%(category)s]."
 msgstr ""
 
-msgid "Request to the database failed."
+msgid "Request to the database failed (timeout)."
 msgstr ""
 
-msgid "Request to the database failed: {error}."
+msgid "Request to the database failed."
 msgstr ""
 
 msgid "Res. ** RESULT FOR TABLE HEADER"
