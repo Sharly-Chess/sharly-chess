@@ -5,8 +5,6 @@ English version below
 
 - Plug-ins spécifiques à une fédération (3.2.0)
 - Mise en ligne sur Chess-Results.com (3.2.0)
-- Disponibilité des tous les départages _FIDE_ standards (3.2.0)
-- Suppression de l’option d’image de fond des écrans (3.2.0)
 
 ## Joueur·euses
 
@@ -22,10 +20,19 @@ English version below
 - Définition de la valeur des points attribués en cas d’exemption (3.2.0)
 - Définition des groupes d'accélération par les numéros d'appariements en remplacement des seuils Elo (3.2.0)
 - Ajout du système d'accélération de Bakou (3.2.0)
+- Disponibilité des tous les départages _FIDE_ standards (3.2.0)
 
-## FFE
+## Écrans
+
+- Suppression de l’option d’image de fond des écrans (3.2.0)
+
+## _FFE_
 
 - Support des départages non-compatibles avec _Papi_ lors de l'export _Papi_ et du téléversement _FFE_ (3.2.0)
+
+## _ChessEvent_
+
+- Clarification du message d'erreur en cas de fédération inconnue (3.2.0)
 
 ---
 
@@ -35,8 +42,6 @@ English version below
 
 - Federation-specific plugins (3.2.0)
 - Uploading to Chess-Results.com (3.2.0)
-- Availability of all standard _FIDE_ tie-breaks (3.2.0)
-- Removed the background image option for Screens (3.2.0)
 
 ## Players
 
@@ -52,7 +57,16 @@ English version below
 - Definition of the value of the Pairing Allocated Bye (3.2.0)
 - Definition of the acceleration pairing groups via pairing numbers replacing rating thresholds (3.2.0)
 - Baku acceleration system added (3.2.0)
+- Availability of all standard _FIDE_ tie-breaks (3.2.0)
 
-## FFE
+## Screens
+
+- Removed the background image option for Screens (3.2.0)
+
+## _FFE_
 
 - Support for _Papi_ incompatible tie-breaks in the _Papi_ export and the _FFE_ upload (3.2.0)
+
+## _ChessEvent_
+
+- Clarify the error message in case of unknown federation (3.2.0)
