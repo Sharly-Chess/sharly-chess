@@ -13,14 +13,10 @@ from common.exception import SharlyChessException
 from common.i18n import _
 from common.logger import (
     get_logger,
-    print_interactive_info,
-    print_interactive_error,
-    print_interactive_success,
 )
 from common.tool_installer import BbpPairingsInstaller
 from data.board import Board
 from data.pairings.settings import BergerNumbersSetting
-from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredBoard
 from utils import StaticUtils
 from utils.enum import TrfType, Result
@@ -290,120 +286,6 @@ class BbpPairings(PairingEngine):
             boards = self._boards_from_file(pairing_file, tournament, round_, False)
 
         return history_data, boards
-
-    def generate_tournament(
-        self,
-        trf_file_path: Path,
-        random_seed: int | None = None,
-        overwrite: bool = True,
-    ) -> bool:
-        """Generates a random tournament."""
-        if not overwrite and trf_file_path.exists():
-            print_interactive_info(f'TRF file {trf_file_path} previously generated.')
-            return True
-        trf_file_path.parent.mkdir(parents=True, exist_ok=True)
-        cmd: list[str] = [
-            str(self.executable_path),
-            # dutch pairing
-            '--dutch',
-            # generate
-            '-g',
-            # output file
-            '-o',
-            str(trf_file_path),
-        ]
-        if random_seed:
-            cmd += [
-                # random seed
-                '-s',
-                str(random_seed),
-            ]
-        result = StaticUtils.run_process(
-            cmd,
-            capture_output=True,
-            encoding='utf-8',
-        )
-        if result.returncode:
-            print_interactive_error(
-                f'BbpPairings random tournament generator failed with status {result.returncode}.'
-            )
-            print_interactive_error(f'stdout: {result.stdout}')
-            print_interactive_error(f'stderr: {result.stderr}')
-            return False
-        print_interactive_success(
-            f'BbpPairings random tournament generator created TRF file {trf_file_path}.'
-        )
-        return True
-
-    @classmethod
-    def _diff_display(
-        cls, pairing_diff: list[tuple[Board | None, Board | None]]
-    ) -> str:
-        message = f'Real boards{"":<19}Expected boards\n'
-        for real_board, expected_board in pairing_diff:
-            message += f'{cls._board_display(real_board)}   {cls._board_display(expected_board)}\n'
-        return message
-
-    @staticmethod
-    def _board_display(board: Board | None) -> str:
-        if not board:
-            return f'{"":<14} - {"":<10}'
-        return (
-            f'{board.index:>2}. {board.white_player.full_name:<10}'
-            f' - {getattr(board.black_player, "full_name", ""):<10}'
-        )
-
-    def check_tournament(
-        self,
-        trf_input_file_path: Path,
-        overwrite: bool = True,
-    ) -> bool:
-        """Checks a tournament."""
-        result_file_path = trf_input_file_path.with_suffix('.txt')
-        if result_file_path.exists():
-            if not overwrite:
-                print_interactive_info(
-                    f'Result file {result_file_path} previously generated.'
-                )
-                with open(result_file_path, 'r') as f:
-                    result = f.read()
-                if result:
-                    print_interactive_error(result)
-                    return False
-                else:
-                    return True
-            result_file_path.unlink()
-
-        from data.input_output.tournament_importer_options import FileOption
-        from data.input_output.tournament_importers import TrfTournamentImporter
-        from data.loader import EventLoader
-
-        event_uniq_id: str = 'dummy'
-        EventDatabase(event_uniq_id).create()
-        event = EventLoader().load_event(event_uniq_id)
-        tournament_id = TrfTournamentImporter(
-            [
-                FileOption(trf_input_file_path),
-            ]
-        ).load_tournament(event)
-        event = EventLoader().load_event(event_uniq_id)
-        tournament = event.tournaments_by_id[tournament_id]
-        for round_ in range(1, tournament.rounds + 1):
-            if diff := tournament.pairing_variation.engine.pairings_diff(
-                tournament,
-                round_,
-                ignore_order=True,
-            ):
-                result = f'Round {round_}: {len(diff)} differences\n\n{self._diff_display(diff)}'
-                print_interactive_error(result)
-                with open(result_file_path, 'w') as f:
-                    f.write(result)
-                return False
-        print_interactive_error(
-            f'Pairings are correct for the {tournament.rounds} rounds.'
-        )
-        result_file_path.touch()
-        return True
 
 
 class RoundRobinPairingEngine(PairingEngine, ABC):
