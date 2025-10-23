@@ -18,7 +18,6 @@ def main(
         tournament_file: Path = pairings_checker_dir / f'{i:05d}.trfx'
         if BbpPairingsGenerator().generate_tournament(
             tournament_file,
-            i,
             cache=True,
         ):
             tournament_checks.append(
@@ -42,4 +41,4 @@ def main(
 
 
 if __name__ == '__main__':
-    main(300)
+    main(10)

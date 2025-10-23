@@ -16,7 +16,6 @@ class BbpPairingsGenerator(BbpPairings):
     def generate_tournament(
         self,
         trf_file_path: Path,
-        random_seed: int | None = None,
         cache: bool = False,
     ) -> bool:
         """Generates a random tournament and dumps to file
@@ -31,24 +30,17 @@ class BbpPairingsGenerator(BbpPairings):
             else:
                 trf_file_path.unlink(missing_ok=True)
             trf_file_path.parent.mkdir(parents=True, exist_ok=True)
-            cmd: list[str] = [
-                str(self.executable_path),
-                # dutch pairing
-                '--dutch',
-                # generate
-                '-g',
-                # output file
-                '-o',
-                str(trf_file_path),
-            ]
-            if random_seed:
-                cmd += [
-                    # random seed
-                    '-s',
-                    str(random_seed),
-                ]
             result = StaticUtils.run_process(
-                cmd,
+                [
+                    str(self.executable_path),
+                    # dutch pairing
+                    '--dutch',
+                    # generate
+                    '-g',
+                    # output file
+                    '-o',
+                    str(trf_file_path),
+                ],
                 capture_output=True,
                 encoding='utf-8',
             )
