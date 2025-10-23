@@ -2201,6 +2201,9 @@ msgstr "Fédération"
 msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
 msgstr "Féd."
 
+msgid "Federation [{federation}] of player [{player}] is unknown. Recreate it in ChessEvent then try again."
+msgstr "La fédération [{federation}] du·de la joueur·euse [{player}] est inconnue. Recréez le·la dans ChessEvent puis réessayez."
+
 msgid "Federation plugins"
 msgstr "Plug-ins de fédération"
 

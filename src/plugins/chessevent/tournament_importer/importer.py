@@ -18,7 +18,7 @@ from data.event import Event
 from data.input_output import TournamentImporter
 from data.input_output.dict_reader import dict_to_dataclass
 from data.input_output.tournament_importer_options import TournamentImporterOption
-from data.player import PlayerRating
+from data.player import PlayerRating, Player
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
@@ -248,7 +248,16 @@ class ChessEventTournamentImporter(TournamentImporter):
         except KeyError:
             raise unknown_exception('title')
         if player.federation not in SharlyChessConfig.federations:
-            raise unknown_exception('federation')
+            # Error raised in the form as it's the only field manually input by the user
+            raise ImporterError(
+                _(
+                    'Federation [{federation}] of player [{player}] is unknown. '
+                    'Recreate it in ChessEvent then try again.'
+                ).format(
+                    federation=player.federation,
+                    player=Player.player_full_name(player.first_name, player.last_name),
+                )
+            )
         try:
             standard_rating_type = ChessEventRatingType.get_core_object(
                 player.standard_rating_type

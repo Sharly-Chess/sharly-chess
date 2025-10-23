@@ -27,6 +27,11 @@ English version below
 
 - Support des départages non-compatibles avec _Papi_ lors de l'export _Papi_ et du téléversement _FFE_ (3.2.0)
 
+## ChessEvent
+
+- Clarification du message d'erreur en cas de fédération inconnue (3.2.0)
+
+
 ---
 
 # English
@@ -56,3 +61,7 @@ English version below
 ## FFE
 
 - Support for _Papi_ incompatible tie-breaks in the _Papi_ export and the _FFE_ upload (3.2.0)
+
+## ChessEvent
+
+- Clarify the error message in case of unknown federation (3.2.0)
