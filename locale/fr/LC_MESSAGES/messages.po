@@ -607,9 +607,6 @@ msgstr "Évènement archivé"
 msgid "Archived events"
 msgstr "Évènements archivés"
 
-msgid "Argument --server is deprecated, ignored."
-msgstr "L'option --server est obsolète, ignorée."
-
 msgid "Assign a screen to the controller."
 msgstr "Attribuer un écran au pilote."
 
@@ -2200,6 +2197,9 @@ msgstr "Fédération"
 
 msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
 msgstr "Féd."
+
+msgid "Federation [{federation}] of player [{player}] is unknown. Recreate it in ChessEvent then try again."
+msgstr "La fédération [{federation}] du·de la joueur·euse [{player}] est inconnue. Recréez le·la dans ChessEvent puis réessayez."
 
 msgid "Federation plugins"
 msgstr "Plug-ins de fédération"

@@ -607,9 +607,6 @@ msgstr ""
 msgid "Archived events"
 msgstr ""
 
-msgid "Argument --server is deprecated, ignored."
-msgstr ""
-
 msgid "Assign a screen to the controller."
 msgstr ""
 
@@ -2200,6 +2197,9 @@ msgstr ""
 
 msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
 msgstr "Fed."
+
+msgid "Federation [{federation}] of player [{player}] is unknown. Recreate it in ChessEvent then try again."
+msgstr ""
 
 msgid "Federation plugins"
 msgstr ""
