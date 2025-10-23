@@ -17,7 +17,7 @@ from plugins.chess_results.utils import (
     ChessResultsTournamentPluginData,
     ChessResultsUtils,
 )
-from plugins.chess_results import PLUGIN_NAME
+from plugins.chess_results import MAX_TIE_BREAKS, PLUGIN_NAME
 from plugins.chess_results.chess_results_event_controller import (
     ChessResultsAdminEventController,
 )
@@ -211,12 +211,12 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
     ) -> str | None:
         if (
             ChessResultsUtils.get_tournament_plugin_data(tournament).tnr
-            and len(tournament.tie_breaks) > 3
+            and len(tournament.tie_breaks) > MAX_TIE_BREAKS
         ):
             return _(
-                'Chess-Results.com only displays 3 tie-breaks. '
+                'Chess-Results.com only displays {max} tie-breaks. '
                 'However, the rankings remain the same as in Sharly Chess.'
-            )
+            ).format(max=MAX_TIE_BREAKS)
         return None
 
     # ---------------------------------------------------------------------------------

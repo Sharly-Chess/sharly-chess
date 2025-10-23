@@ -9,11 +9,10 @@ from requests import Session
 
 from common.i18n import _
 from common.logger import get_logger
-from data.tie_breaks.tie_breaks import ManualTieBreak
 from data.tournament import Tournament
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.event.event_database import EventDatabase
-from plugins.chess_results import PLUGIN_NAME
+from plugins.chess_results import PLUGIN_NAME, MAX_TIE_BREAKS
 from plugins.chess_results.chess_results_mappers import (
     ChessResultsPlayerGender,
     ChessResultsTieBreak,
@@ -105,16 +104,13 @@ class ChessResultsSession(Session):
         # --- Tournament section ---
         tdata = ET.SubElement(root, 'tournamentdata')
 
-        # Get up to 5 tiebreak keys (pad with zeros if fewer)
+        # Get up to `MAX_TIE_BREAKS`` tiebreak keys (pad with zeros if fewer)
         tb_details: list[tuple[str, str]] = []
-        for tie_break in tournament.tie_breaks[:4]:
+        for tie_break in tournament.tie_breaks[:MAX_TIE_BREAKS]:
             cr_tie_break = ChessResultsTieBreak.from_tie_break(tournament, tie_break)
             tb_details.append((str(cr_tie_break.number), cr_tie_break.params_str))
-        while len(tb_details) < 4:
+        while len(tb_details) < MAX_TIE_BREAKS:
             tb_details.append(('0', ''))
-        # Always add a final tie-break representing the SC rankings (never displayed, only the first 3)
-        manual = ChessResultsTieBreak.from_tie_break(tournament, ManualTieBreak())
-        tb_details.append((str(manual.number), manual.params_str))
 
         ET.SubElement(
             tdata,
@@ -147,11 +143,6 @@ class ChessResultsSession(Session):
                 'to': tournament.stop_datetime.strftime('%Y%m%d'),
                 'ratedfide': '-',
                 'ratednational': '-',
-                'tb1no': tb_details[0][0],
-                'tb2no': tb_details[1][0],
-                'tb3no': tb_details[2][0],
-                'tb4no': tb_details[3][0],
-                'tb5no': tb_details[4][0],
                 'replay': '1',
                 'timecontrol': tournament.time_control_trf25 or '',
                 'homecolor': '',
@@ -160,17 +151,17 @@ class ChessResultsSession(Session):
                 'category': '0',
                 'ratingavg': str(round(tournament.average_player_rating)),
                 'endstatus': 'N',
-                'tb1_detail': tb_details[0][1],
-                'tb2_detail': tb_details[1][1],
-                'tb3_detail': tb_details[2][1],
-                'tb4_detail': tb_details[3][1],
-                'tb5_detail': tb_details[4][1],
                 'chiefarbiter': '',
                 'deputyarbiter': '',
                 'homepageorganiser': '',
                 'mail': '',
                 'federation': tournament.event.federation or 'FID',
                 'creator': creator_id,
+            }
+            | {f'tb{i + 1}no': tb_details[i][0] for i in range(MAX_TIE_BREAKS)}
+            | {
+                f'tb{i + 1}_detail': tb_details[i][1]
+                for i in range(min(MAX_TIE_BREAKS, len(tb_details)))
             },
         )
 
@@ -192,14 +183,15 @@ class ChessResultsSession(Session):
         prev_tb_values: list[str] | None = None
 
         for p in tournament.players_by_pairing_number.values():
-            # Get up to 5 tiebreak keys (pad with zeros if fewer)
+            # Get up to `MAX_TIE_BREAKS` tiebreak keys (pad with zeros if fewer)
             tb_values: list[str] = []
-            for tbv in p.tie_break_values[:4]:
+            for tbv in p.tie_break_values[:MAX_TIE_BREAKS]:
                 value = str(tbv.value)
+                if tbv.tie_break.is_manual:
+                    value = str(1000 - float(tbv.value))
                 tb_values.append(str(value))
-            while len(tb_values) < 4:
+            while len(tb_values) < MAX_TIE_BREAKS:
                 tb_values.append('')
-            tb_values.append(str(tournament.player_count - p.rank))
 
             same_as_previous = (
                 tb_values == prev_tb_values if prev_tb_values is not None else False
@@ -232,15 +224,11 @@ class ChessResultsSession(Session):
                     'typ': p.category.short_name,
                     'rank': str(p.rank),
                     'pts': str(p.points or 0),
-                    'tb1': tb_values[0],
-                    'tb2': tb_values[1],
-                    'tb3': tb_values[2],
-                    'tb4': tb_values[3],
-                    'tb5': tb_values[4],
                     'equal': 'J' if same_as_previous else 'N',
                     'kfaktor': '',
                     'state': '',
-                },
+                }
+                | {f'tb{i + 1}': tb_values[i] for i in range(MAX_TIE_BREAKS)},
             )
 
         # --- Pairings / Results ---
