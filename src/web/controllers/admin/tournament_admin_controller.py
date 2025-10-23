@@ -990,15 +990,17 @@ class TournamentAdminController(BaseEventAdminController):
         importer = importer_type(importer_options)
         try:
             importer.validate_options(event)
-            tournament = importer.load_tournament(event, web_context.admin_tournament)
-            Message.success(
-                request,
-                _('Tournament [{tournament}] successfully imported.').format(
-                    tournament=tournament.uniq_id
-                ),
+            tournament_id = importer.load_tournament(
+                event, web_context.admin_tournament
             )
             web_context = TournamentAdminWebContext(
                 request, tournament_id, reload_event=True
+            )
+            Message.success(
+                request,
+                _('Tournament [{tournament}] successfully imported.').format(
+                    tournament=web_context.get_admin_tournament().name
+                ),
             )
             return self._admin_event_tournaments_render(web_context)
         except OptionError as error:

@@ -35,7 +35,8 @@ dependencies = [
   "Jinja2 ~= 3.1.5",
   "litestar ~= 2.16.0",
   "packaging ~= 25.0",
-  # downgrading pefile from 2024.8.26 to 2023.2.7, cf https://github.com/pyinstaller/pyinstaller/issues/8762
+  "pathvalidate ~= 3.3.1",
+    # downgrading pefile from 2024.8.26 to 2023.2.7, cf https://github.com/pyinstaller/pyinstaller/issues/8762
   "pefile == 2023.2.7",
   "pluggy ~= 1.5.0",
   "psutil ~= 7.0.0",

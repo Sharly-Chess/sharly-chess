@@ -7,6 +7,7 @@ class TrfPlayerGender(CoreMapper[str, PlayerGender]):
     def _core_object_by_outer_value() -> dict[str, PlayerGender]:
         return {
             '': PlayerGender.NONE,
+            ' ': PlayerGender.NONE,
             'm': PlayerGender.MALE,
             'w': PlayerGender.FEMALE,
         }

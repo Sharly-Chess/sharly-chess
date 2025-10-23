@@ -11,7 +11,9 @@ from typing_extensions import override
 from common import TMP_DIR
 from common.exception import SharlyChessException
 from common.i18n import _
-from common.logger import get_logger
+from common.logger import (
+    get_logger,
+)
 from common.tool_installer import BbpPairingsInstaller
 from data.board import Board
 from data.pairings.settings import BergerNumbersSetting
@@ -283,7 +285,7 @@ class BbpPairings(PairingEngine):
         with open(pairings_file_path, encoding='utf-8') as pairing_file:
             boards = self._boards_from_file(pairing_file, tournament, round_, False)
 
-        return (history_data, boards)
+        return history_data, boards
 
 
 class RoundRobinPairingEngine(PairingEngine, ABC):
