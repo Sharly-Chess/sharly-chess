@@ -14,8 +14,8 @@ from babel.numbers import format_currency, format_decimal, get_decimal_symbol
 from text_unidecode import unidecode
 
 
-class StaticUtils:
-    """Class containing the static utils functions"""
+class Utils:
+    """Class containing the utils functions"""
 
     PERFORMANCE_TABLE: list[int] = [
         0,
@@ -219,35 +219,6 @@ class StaticUtils:
     @staticmethod
     def concat_dicts[K, V](dict_list: list[dict[K, V]]) -> dict[K, V]:
         return {key: value for dict_ in dict_list for key, value in dict_.items()}
-
-
-class SharedUtils:
-    """Class containing the shared utils functions,
-    i.e. utils functions which can be overwritten by plugins"""
-
-    @staticmethod
-    def _get_function(
-        plugin_function_name: str, default_function: Callable
-    ) -> Callable:
-        from plugins.manager import plugin_manager
-
-        return getattr(plugin_manager.hook, plugin_function_name)() or default_function
-
-    @classmethod
-    def performance_bonus(cls, fractional_score: float) -> int | float:
-        return cls._get_function(
-            'get_performance_bonus_function', StaticUtils.performance_bonus
-        )(fractional_score)
-
-    @classmethod
-    def rounded_performance_bonus(cls, fractional_score: float) -> int:
-        return cls.round_ranking(cls.performance_bonus(fractional_score))
-
-    @classmethod
-    def round_ranking(cls, num: float | Decimal) -> int:
-        return cls._get_function(
-            'get_round_ranking_function', StaticUtils.round_ranking
-        )(num)
 
 
 class SupportsEquals(Protocol):

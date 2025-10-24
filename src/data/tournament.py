@@ -5,10 +5,9 @@ from common.i18n import get_locale
 from collections import Counter
 from collections.abc import Collection
 from functools import cached_property
-from itertools import groupby
 from logging import Logger
 from operator import attrgetter
-from typing import TYPE_CHECKING, Any, Iterable
+from typing import TYPE_CHECKING, Any
 from _weakref import ReferenceType
 
 from common.i18n.utils import by
@@ -43,7 +42,7 @@ from database.sqlite.event.event_store import (
 )
 from plugins.utils import PluginData
 from plugins.manager import plugin_manager
-from utils import SharedUtils, StaticUtils
+from utils import Utils
 from utils.enum import (
     BoardColor,
     PlayerGender,
@@ -129,7 +128,7 @@ class Tournament:
 
     @property
     def sanitized_name(self) -> str:
-        return StaticUtils.name_to_uniq_id(self.name)
+        return Utils.name_to_uniq_id(self.name)
 
     @property
     def full_name(self) -> str:
@@ -419,10 +418,23 @@ class Tournament:
                 'This tie-break is not compatible with '
                 'the pairing system [{pairing_system}] (ignored).'
             ).format(pairing_system=self.pairing_system.name)
+        if not tie_break.allow_unrated_players and self.unrated_count:
+            return _(
+                'This tie-break is disabled when there are unrated players '
+                'without estimated ratings ({count} in the tournament).'
+            ).format(count=self.unrated_count)
+        if not tie_break.allow_estimated_players and self.estimated_count:
+            return _(
+                'By default, this tie-break is disabled when there '
+                'are unrated players ({count} in the tournament). '
+                'You must specify that the player estimation is explained '
+                'in the rules.'
+            ).format(count=self.estimated_count)
         return None
 
     @property
     def tie_breaks_warning_message(self) -> str | None:
+        """Warning to display at global tie-break level."""
         plugin_warning = plugin_manager.hook_for_event(
             self.event, 'get_tournament_tie_breaks_warning_message'
         )(tournament=self)
@@ -637,7 +649,7 @@ class Tournament:
             del self.prize_groups_by_id[prize_group_id]
 
     def get_unused_prize_group_name(self, base_name: str | None = None) -> str:
-        return StaticUtils.get_unused_item_name(
+        return Utils.get_unused_item_name(
             base_name or _('New group'),
             (group.name for group in self.prize_groups),
         )
@@ -787,6 +799,14 @@ class Tournament:
                     counter[player.check_in] += 1
         return counter
 
+    @cached_property
+    def unrated_count(self) -> int:
+        return sum(player.rating == 0 for player in self.players)
+
+    @cached_property
+    def estimated_count(self) -> int:
+        return sum(player.estimated for player in self.players)
+
     # -------------------------------------------------------------------------
     # Misc
     # -------------------------------------------------------------------------
@@ -895,6 +915,18 @@ class Tournament:
 
         values[Result.PAIRING_ALLOCATED_BYE] = values[self.pab_value]
         return values
+
+    @cached_property
+    def win_points(self) -> float:
+        return Result.WIN.points(self.point_values)
+
+    @cached_property
+    def draw_points(self) -> float:
+        return Result.DRAW.points(self.point_values)
+
+    @cached_property
+    def loss_points(self) -> float:
+        return Result.LOSS.points(self.point_values)
 
     @cached_property
     def current_round(self) -> int:
@@ -1020,7 +1052,6 @@ class Tournament:
             round_ = self.current_round
         for player in self.players:
             self.set_player_points(player, before_round=round_)
-        self._estimate_players(self.players, after_round=round_)
         if self.handicap:
             self._set_handicap(round_)
         for board in self.get_round_boards(round_):
@@ -1172,109 +1203,6 @@ class Tournament:
             self.set_players_pairing_numbers()
         return self.pairing_variation.compute_virtual_points(self, player, at_round)
 
-    def _estimate_players(self, players: Iterable[Player], *, after_round: int):
-        """Estimate the players after round *after_round*."""
-        if after_round <= 1:
-            return
-        if not any(player.estimated for player in players):
-            return
-
-        # NOTE(Amaras): Because EM did not take into account HPB in his code,
-        # this function must be used instead of Player.points_after
-        def papi_points_after(player: Player) -> float:
-            return sum(
-                pairing.result.points(self.point_values)
-                for round_index, pairing in player.pairings.items()
-                if round_index <= after_round
-                and (
-                    pairing.played
-                    or pairing.result in (Result.HALF_POINT_BYE, Result.FULL_POINT_BYE)
-                )
-            )
-
-        max_possible_points = Result.WIN.points(self.point_values) * after_round
-
-        # NOTE(Amaras): only points from played games should be counted
-        players = sorted(
-            players,
-            key=lambda player: papi_points_after(player),
-        )
-        players_by_points: dict[float, list[Player]] = {
-            points: list(group)
-            for points, group in groupby(
-                players,
-                key=lambda player: papi_points_after(player),
-            )
-        }
-
-        point_keys: list[float] = [0]
-        while (current_points := point_keys[-1]) < max_possible_points:
-            current_points += Result.DRAW.points(self.point_values)
-            point_keys.append(current_points)
-        level_estimations = {points: 0 for points in point_keys}
-
-        # NOTE(Amaras): if there are rated players in the score group,
-        # use the average of their ratings as the level's estimation.
-        for points, test_group in players_by_points.items():
-            group_ratings = [
-                player.estimation for player in test_group if not player.estimated
-            ]
-            if group_ratings:
-                average_rating = SharedUtils.round_ranking(
-                    sum(group_ratings) / len(group_ratings)
-                )
-                level_estimations[points] = average_rating
-
-        # NOTE(Amaras): If there are no players with a rating, use the
-        # estimation of the higher level, added with the difference
-        # between the score group's performance bonus and the previous
-        # group's performance bonus.
-        previous_estimation = previous_bonus = 0
-        for points in reversed(point_keys):
-            estimation = level_estimations[points]
-            if estimation > 0:
-                # No need to touch a group's estimation if it already has one
-                previous_bonus = SharedUtils.rounded_performance_bonus(
-                    points / max_possible_points
-                )
-                previous_estimation = estimation
-            elif previous_estimation > 0:
-                bonus = SharedUtils.rounded_performance_bonus(
-                    points / max_possible_points
-                )
-                level_estimations[points] = previous_estimation - previous_bonus + bonus
-                previous_estimation = level_estimations[points]
-                previous_bonus = bonus
-
-        # NOTE(Amaras): There may be additional levels with no estimation
-        # (usually the best score groups but might be all but the last),
-        # in which case, travel the groups upwards and estimate them
-        for points in point_keys:
-            estimation = level_estimations[points]
-            if estimation > 0:
-                previous_bonus = SharedUtils.rounded_performance_bonus(
-                    points / max_possible_points
-                )
-                previous_estimation = estimation
-            elif previous_estimation > 0:
-                bonus = SharedUtils.rounded_performance_bonus(
-                    points / max_possible_points
-                )
-                level_estimations[points] = previous_estimation - previous_bonus + bonus
-                previous_estimation = level_estimations[points]
-                previous_bonus = bonus
-
-        # NOTE(Amaras): There may be a single case where all players
-        # have no estimation (*estimation == 0*), which is if no
-        # player is rated in the tournament.
-        # In this case, obviously, no rating-based tie-break
-        # should be used.
-        # This includes ARO, TPR, PTP, APRO, APPO and their variants
-        for points, test_group in players_by_points.items():
-            estimation = level_estimations[points]
-            for player in test_group:
-                player.estimation = estimation
-
     def store_illegal_move(self, player: Player):
         """Store an illegal move for the given `player`, for the current
         round."""
@@ -1302,7 +1230,12 @@ class Tournament:
             after_round = self.max_ranking_round
 
         self.set_players_pairing_numbers()
-        self._estimate_players(self.players, after_round=after_round)
+        for tie_break in self.tie_breaks:
+            for player_id, variable in tie_break.get_player_variables(
+                self, after_round
+            ).items():
+                player = self.players_by_id[player_id]
+                player.tie_break_variables[tie_break.id] = variable
         for player in self.players:
             player.points = player.points_after(after_round)
             player.compute_tie_break_values(after_round=after_round)

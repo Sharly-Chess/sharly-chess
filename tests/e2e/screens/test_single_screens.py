@@ -55,7 +55,7 @@ class TestSingleScreensFunctionality:
         expect(modal).to_be_visible()
         name = 'Test Screen'
         expected_uniq_id = 'test_screen'
-        modal.get_by_role('textbox', name='Name:').fill(name)
+        modal.get_by_test_id('name').fill(name)
         modal.locator('button[type=submit]').click()
 
         page.get_by_test_id('accordion-screen-type-input').click()

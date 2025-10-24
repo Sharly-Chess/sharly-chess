@@ -13,7 +13,7 @@ from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
 from data.family import Family
-from utils import StaticUtils
+from utils import Utils
 from utils.enum import ScreenType
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredFamily
@@ -238,7 +238,7 @@ class FamilyAdminController(BaseEventAdminController):
                 else:
                     uniq_id = event.get_unused_family_uniq_id(
                         ScreenType(type_),
-                        StaticUtils.name_to_uniq_id(name) if name else None,
+                        Utils.name_to_uniq_id(name) if name else None,
                     )
             case 'delete':
                 uniq_id = ''

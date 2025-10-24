@@ -39,7 +39,7 @@ from data.criteria.managers import (
 from data.tie_breaks import TieBreakManager, TieBreak, TieBreakOptionManager
 from data.tournament import Tournament
 from data.tournament_criterion import TournamentCriterion
-from utils import StaticUtils
+from utils import Utils
 from utils.enum import FormAction, Result, TournamentRating
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
@@ -136,7 +136,7 @@ class TournamentAdminController(BaseEventAdminController):
         template_context: dict[str, Any] | None = None,
     ) -> Template:
         event = web_context.get_admin_event()
-        plugin_context = StaticUtils.concat_dicts(
+        plugin_context = Utils.concat_dicts(
             plugin_manager.hook_for_event(
                 event, 'get_tournament_page_template_context'
             )()
@@ -731,7 +731,7 @@ class TournamentAdminController(BaseEventAdminController):
                             StoredScreen(
                                 id=None,
                                 uniq_id=web_context.admin_event.get_unused_screen_uniq_id(
-                                    base_uniq_id=StaticUtils.name_to_uniq_id(
+                                    base_uniq_id=Utils.name_to_uniq_id(
                                         f'{stored_tournament.name}-{type_}'
                                     )
                                 ),
@@ -1058,9 +1058,12 @@ class TournamentAdminController(BaseEventAdminController):
                 )
             ]
             if tie_break in existing_tie_breaks and not tie_break.allow_multiple:
+                has_modifiers = any(
+                    option.include_in_equals for option in tie_break.default_options()
+                )
                 errors[field] = (
                     _('This tie-break is already used with the same modifiers.')
-                    if tie_break.available_options()
+                    if has_modifiers
                     else _('This tie-break is already used.')
                 )
         try:

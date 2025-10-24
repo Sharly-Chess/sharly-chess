@@ -17,7 +17,7 @@ from database.sqlite.event.event_store import (
     StoredPrize,
     StoredPrizeCriterion,
 )
-from utils import StaticUtils
+from utils import Utils
 
 if TYPE_CHECKING:
     from data.prize.prize_group import PrizeGroup
@@ -118,7 +118,7 @@ class PrizeCategory:
         threshold_str = ''
         if self.sharing_threshold:
             threshold_str = ', ' + _('minimum: {value}').format(
-                value=StaticUtils.currency_value_str(self.sharing_threshold, currency)
+                value=Utils.currency_value_str(self.sharing_threshold, currency)
             )
         return f'{_("Shared prizes")} ({self.prize_sharing.name}{threshold_str})'
 
@@ -161,7 +161,7 @@ class PrizeCategory:
         if self.has_non_monetary_prizes:
             value = self.total_prize_value
             return str(int(value)) if value.is_integer() else f'{value:.2f}'
-        return StaticUtils.currency_value_str(self.total_prize_value, currency)
+        return Utils.currency_value_str(self.total_prize_value, currency)
 
     def get_event_database(self) -> EventDatabase:
         return self.prize_group.get_event_database()

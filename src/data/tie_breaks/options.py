@@ -235,3 +235,37 @@ class KoyaLimitTieBreakOption(TieBreakOption):
                 ),
                 self,
             )
+
+
+class EstimatedRatingsTieBreakOption(TieBreakOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'ESTIMATED_RATINGS'
+
+    @property
+    def template_file_stem(self) -> str:
+        return 'estimated_ratings'
+
+    @property
+    def variation_acronym(self) -> str:
+        return ''
+
+    @property
+    def variation_name(self) -> str:
+        return ''
+
+    @property
+    def variation_help_text(self) -> str:
+        return ''
+
+    @property
+    def type(self) -> type | UnionType:
+        return bool
+
+    @property
+    def default_value(self) -> Any:
+        return False
+
+    @property
+    def include_in_equals(self) -> bool:
+        return False
