@@ -509,7 +509,7 @@ class PapiConverter:
             try:
                 fide_id = int(papi_player.fideCode.replace("'", '').strip())
             except ValueError:
-                logger.warning('Invalid FIDE ID [%s], ignored.')
+                logger.warning('Invalid FIDE ID [%s], ignored.', papi_player.fideCode)
 
         ffe_licence = PlayerFFELicence.NONE
         if papi_player.licenceType:
