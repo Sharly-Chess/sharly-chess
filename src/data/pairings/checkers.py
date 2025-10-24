@@ -238,6 +238,39 @@ class TournamentCheck:
         """Returns the number of boards with errors."""
         return sum(len(round_board_diffs) for round_board_diffs in self.diff.values())
 
+    def print(self):
+        if self.diff:
+            print_interactive_error(
+                f'Tournament [{self.name}]: {self.board_error_count} error(s) found on {self.round_error_count} round(s) (players: {self.player_count}).'
+            )
+            for round_, round_diff in self.diff.items():
+                read_board_strings: list[str] = []
+                expected_board_strings: list[str] = []
+                for board_diff in round_diff:
+                    read_board_strings.append(
+                        str(board_diff.read_board) if board_diff.read_board else '-'
+                    )
+                    expected_board_strings.append(
+                        str(board_diff.expected_board)
+                        if board_diff.expected_board
+                        else '-'
+                    )
+                read_boards_len = max(len(s) for s in read_board_strings)
+                expected_boards_len = max(len(s) for s in expected_board_strings)
+                print_interactive_warning(
+                    f'Round | {"Read".ljust(read_boards_len)} | Expected'
+                )
+                for read_board_string, expected_board_string in zip(
+                    read_board_strings, expected_board_strings
+                ):
+                    print_interactive_warning(
+                        f'{str(round_).rjust(2, "0").rjust(5)} | {read_board_string.ljust(read_boards_len)} | {expected_board_string.ljust(expected_boards_len)}'
+                    )
+        else:
+            print_interactive_success(
+                f'Tournament [{self.name}]: no errors (rounds: {self.rounds}, players: {self.player_count}).'
+            )
+
 
 class BbpPairingsChecker(BbpPairings):
     @staticmethod
@@ -300,37 +333,8 @@ class BbpPairingsChecker(BbpPairings):
                 EventDatabase(event_uniq_id).file.unlink()
                 if cache:
                     tournament_check.dump_to_file(check_file_path)
-            if tournament_check.diff:
-                print_interactive_error(
-                    f'Tournament [{tournament_check.name}]: {tournament_check.board_error_count} error(s) found on {tournament_check.round_error_count} round(s) (players: {tournament_check.player_count}).'
-                )
-                for round_, round_diff in tournament_check.diff.items():
-                    read_board_strings: list[str] = []
-                    expected_board_strings: list[str] = []
-                    for board_diff in round_diff:
-                        read_board_strings.append(
-                            str(board_diff.read_board) if board_diff.read_board else '-'
-                        )
-                        expected_board_strings.append(
-                            str(board_diff.expected_board)
-                            if board_diff.expected_board
-                            else '-'
-                        )
-                    read_boards_len = max(len(s) for s in read_board_strings)
-                    expected_boards_len = max(len(s) for s in expected_board_strings)
-                    print_interactive_warning(
-                        f'Round | {"Read".ljust(read_boards_len)} | Expected'
-                    )
-                    for read_board_string, expected_board_string in zip(
-                        read_board_strings, expected_board_strings
-                    ):
-                        print_interactive_warning(
-                            f'{str(round_).rjust(2, "0").rjust(5)} | {read_board_string.ljust(read_boards_len)} | {expected_board_string.ljust(expected_boards_len)}'
-                        )
-            else:
-                print_interactive_success(
-                    f'Tournament [{tournament_check.name}]: no errors (rounds: {tournament_check.rounds}, players: {tournament_check.player_count}).'
-                )
+
+            tournament_check.print()
 
             return tournament_check
         except BaseException as be:
