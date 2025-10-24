@@ -337,8 +337,8 @@ class Player:
         if not self.tournament.override_unrated_rapid_blitz:
             return False
 
-        if player_rating_type == PlayerRatingType.FIDE:
-            # We only override FIDE ratings
+        if player_rating_type != PlayerRatingType.FIDE:
+            # We never override FIDE ratings
             return False
 
         ratings = self.ratings.get(tournament_rating, None)

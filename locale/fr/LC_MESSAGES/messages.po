@@ -5323,7 +5323,7 @@ msgid "This tie-break is not compatible with unrated players ({count} in the tou
 msgstr "Ce départage n'est pas compatible avec des joueur·euses non-classé·es ({count} dans le tournoi)."
 
 msgid "This tie-break is not recommended with estimated players ({count} in the tournament)."
-msgstr "Ce départage n'est pas compatible avec des joueur·euses estimé·es ({count} dans le tournoi)."
+msgstr "Ce départage n'est pas recommandé avec des joueur·euses estimé·es ({count} dans le tournoi)."
 
 msgid "This unique ID is already used."
 msgstr "Cet identifiant unique est déjà utilisé."
