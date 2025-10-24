@@ -4599,7 +4599,7 @@ msgid "Showing the date and time on the console may help in identifying slow ope
 msgstr "Montrer la date et l'heure sur la console peut permettre d'identifier les opérations lentes sur la console (la date et l'heure sont toujours écrites dans les fichiers de log)."
 
 msgid "Since ratings are used in the tie-break calculation, it is important for them to be representative of the player's level. For this reason this tie-break is not recommended with unrated players."
-msgstr "Les classements étant utilisés pour le calcul des départages, il est important qu'ils soient représentatifs du niveau des joueur·euses. Pour cette raison ce départages des déconseillé avec des joueur·euses non-classé·es."
+msgstr "Les classements étant utilisés pour le calcul des départages, il est important qu'ils soient représentatifs du niveau des joueur·euses. Pour cette raison ce départage est déconseillé avec des joueur·euses non-classé·es."
 
 msgid "Single Screens"
 msgstr "Écrans simples"
