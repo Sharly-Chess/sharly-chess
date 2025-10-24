@@ -434,20 +434,25 @@ with_indicator: display a loading indicator, optional
         {% endif %}
         <div class="input-block position-relative">
             <div class="d-flex align-items-center">
-                {% if label %}
-                    <label
+                {%- if label -%}
+                    <span
                         for="{{ id }}"
                         class="form-check-label flex-grow-1 mb-1"
                     >
-                        {{ label }}{% if doc_icon %}<span >{{ macros.doc_icon(doc_icon, 'ms-2') }}</span>{% endif %}
-                        {% if tooltip_text %}
-                            <i
-                                class="bi bi-info-circle-fill ms-2"
-                                {{ macros.tooltip_attributes('', tooltip_text, 'top') }}
-                            ></i>
-                        {% endif %}
+                        {{- label -}}
+                        {%- if doc_icon -%}
+                            <span class="text-nowrap">{{ macros.doc_icon(doc_icon, 'ms-2') }}</span>
+                        {%- endif -%}
+                        {%- if tooltip_text -%}
+                            <span class="text-nowrap"></span>
+                                <i
+                                    class="bi bi-info-circle-fill ms-2"
+                                    {{ macros.tooltip_attributes('', tooltip_text, 'top') }}
+                                ></i>
+                            </span>
+                        {%- endif -%}
                     </label>
-                {% endif %}
+                {%- endif -%}
                 {% if default_checkbox %}
                     {{ default_checkbox_text or _('by default') }}
                     <input
