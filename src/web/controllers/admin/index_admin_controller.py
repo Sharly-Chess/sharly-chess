@@ -55,7 +55,7 @@ from database.sqlite.local_source_database.delays import (
     OutdatedDelay,
 )
 from plugins.manager import plugin_manager
-from utils import StaticUtils
+from utils import Utils
 from utils.enum import FormAction, Result
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
@@ -465,7 +465,7 @@ class IndexAdminController(BaseAdminController):
             uniq_id = admin_event.uniq_id
         else:
             uniq_id = EventLoader().get_unused_event_uniq_id(
-                StaticUtils.name_to_uniq_id(name)
+                Utils.name_to_uniq_id(name)
             )
 
         federation = WebContext.form_data_to_str(data, field := 'federation', '') or ''

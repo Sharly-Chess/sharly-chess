@@ -7,7 +7,7 @@ from common.logger import (
     print_interactive_success,
 )
 from data.pairings.engines import BbpPairings
-from utils import StaticUtils
+from utils import Utils
 
 logger = get_logger()
 
@@ -33,7 +33,7 @@ class BbpPairingsGenerator(BbpPairings):
                 f'Generating random tournament to TRF file {trf_file_path.name}...'
             )
             trf_file_path.parent.mkdir(parents=True, exist_ok=True)
-            result = StaticUtils.run_process(
+            result = Utils.run_process(
                 [
                     str(self.executable_path),
                     # dutch pairing

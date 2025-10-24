@@ -18,7 +18,7 @@ class TestTournamentFunctionality:
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
         name = 'Test Tournament'
-        modal.get_by_role('textbox', name='Name:').fill(name)
+        modal.get_by_test_id('name').fill(name)
         modal.get_by_role('button', name='Create', exact=True).click()
 
         # Redirection to Tie-breaks

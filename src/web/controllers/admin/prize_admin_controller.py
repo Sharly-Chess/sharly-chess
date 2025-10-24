@@ -34,7 +34,7 @@ from database.sqlite.event.event_store import (
     StoredPrize,
     StoredPrizeCriterion,
 )
-from utils import StaticUtils
+from utils import Utils
 from utils.enum import FormAction
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
@@ -135,9 +135,9 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
             'admin_prize_category': self.admin_prize_category,
             'admin_prize_criterion': self.admin_prize_criterion,
             'admin_prize': self.admin_prize,
-            'ordinal_integer': StaticUtils.ordinal_integer,
+            'ordinal_integer': Utils.ordinal_integer,
             'format_prize_value': partial(
-                StaticUtils.currency_value_str,
+                Utils.currency_value_str,
                 currency=prize_currency,
             ),
             'prize_currency': prize_currency,

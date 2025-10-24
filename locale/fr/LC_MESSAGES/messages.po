@@ -831,6 +831,9 @@ msgstr "Par échiquier"
 msgid "By default, other devices can only interact with public screens. This tab allows you to configure this behavior."
 msgstr "Par défaut, les autres appareils ne peuvent qu'interagir avec les écrans publics. Cet onglet vous permet de configurer ce comportement."
 
+msgid "By default, this tie-break is disabled when there are unrated players ({count} in the tournament). You must specify that the player estimation is explained in the rules."
+msgstr "Par défaut, ce départage est désactivé lorsqu'il y a des joueur·euses non-classé·es ({count} dans le tournoi). Vous devez spécifier que l'estimation des joueur·euses est expliquée dans le règlement."
+
 msgid "By default, tournaments are not visible on the FFE site."
 msgstr "Par défaut, les tournois ne sont pas visibles sur le site de la FFE."
 
@@ -2318,6 +2321,9 @@ msgstr "Pour les joueur·euses qui ne se sont pas pointé·es :"
 msgid "For these reasons, it is strongly discouraged to unpair a round. It is instead recommended to use manual pairings to handle unusual situations."
 msgstr "Pour ces raisons, il est fortement déconseillé de désapparier une ronde. Il est à la place recommandé d'utiliser les appariements manuels pour gérer les situations inhabituelles."
 
+msgid "For unrated players, a representative rating is calculated."
+msgstr "Pour les joueur·euses estimé·es, un classement représentatif est calculé."
+
 msgid "Fore"
 msgstr "Fore"
 
@@ -3745,6 +3751,9 @@ msgstr "Le·la joueur·euse [{player}] est de retour pour cette ronde."
 msgid "Player does not match tournament criteria: {names}"
 msgstr "Le·la joueur·euse ne correspond pas aux critères du tournoi : {names}"
 
+msgid "Player estimation explained in the rules"
+msgstr "Estimation expliquée dans le règlement"
+
 msgid "Player pairings"
 msgstr "Appariements par joueur·euse"
 
@@ -4592,6 +4601,9 @@ msgstr "Montrer/cacher les écrans créés à partir de familles d'écrans."
 msgid "Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to the log files)."
 msgstr "Montrer la date et l'heure sur la console peut permettre d'identifier les opérations lentes sur la console (la date et l'heure sont toujours écrites dans les fichiers de log)."
 
+msgid "Since ratings are used in the tie-break calculation, it is important for them to be representative of the player's level. For this reason this tie-break is not recommended with unrated players."
+msgstr "Les classements étant utilisés pour le calcul des départages, il est important qu'ils soient représentatifs du niveau des joueur·euses. Pour cette raison ce départage est déconseillé avec des joueur·euses non-classé·es."
+
 msgid "Single Screens"
 msgstr "Écrans simples"
 
@@ -5307,8 +5319,14 @@ msgstr "Ce départage est déjà utilisé avec les mêmes modificateurs."
 msgid "This tie-break is already used."
 msgstr "Ce départage est déjà utilisé."
 
+msgid "This tie-break is disabled when there are unrated players without estimated ratings ({count} in the tournament)."
+msgstr "Ce départage est désactivé lorsqu'il y a des joueur·euses non-classé·es sans classement estimé ({count} dans le tournoi)."
+
 msgid "This tie-break is not compatible with the pairing system [{pairing_system}] (ignored)."
 msgstr "Ce départage n'est pas compatible avec le système d'appariements [{pairing_system}] (ignoré)."
+
+msgid "This tie-break is not recommended with estimated players ({count} in the tournament)."
+msgstr "Ce départage n'est pas recommandé avec des joueur·euses estimé·es ({count} dans le tournoi)."
 
 msgid "This unique ID is already used."
 msgstr "Cet identifiant unique est déjà utilisé."
@@ -5952,6 +5970,9 @@ msgstr "Lorsque l'on n'affiche pas le bouton de sortie, les utilisateur·ices ne
 msgid "When not displaying the players' opponent (color and board numbers only), less screens are needed (with several columns)."
 msgstr "Lorsque les adversaires ne sont pas affiché·es, moins d'écrans sont nécessaires pour afficher l'ensemble des joueur·euses (nulti-colonnes)."
 
+msgid "When there are unrated players, FIDE rules stipulate that rating-based tie-breaks can only be used if the tournament rules explains how the estimations are decided."
+msgstr "Lorsqu'il y a des joueur·euses non-classées, le règlement FIDE stipule que les départages basés sur le classement ne peuvent être utilisés que si le règlement du tournoi explique comment les classements estimés sont attribués."
+
 msgid "When two or more players with the same points are eligible for prizes, share their prizes."
 msgstr "Quand plusieurs joueur·euses avec le même nombre de points sont éligibles pour un prix, partager leurs prix."
 
@@ -6418,3 +6439,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+

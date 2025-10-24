@@ -13,8 +13,8 @@ class TestEventFunctionality:
         TestUtils.button_by_text(page, 'Create an event').click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
-        modal.get_by_label('Federation:').select_option('FRA')
-        modal.get_by_role('textbox', name='Name:').fill(EVENT_ID)
+        modal.get_by_test_id('federation').select_option('FRA')
+        modal.get_by_test_id('name').fill(EVENT_ID)
         modal.locator('button[type=submit]').click()
         expect(page).to_have_url(f'/event/{EVENT_ID}/tournaments')
 

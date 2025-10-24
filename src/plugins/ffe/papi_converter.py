@@ -50,7 +50,7 @@ from plugins.ffe.papi_mappers import (
 )
 from plugins.ffe.utils import FfePlayerPluginData, PlayerFFELicence, FFE_EPOCH
 from plugins.pairing_acceleration.pairing_variations import BakuSwissVariation
-from utils import StaticUtils
+from utils import Utils
 from utils.enum import (
     TournamentRating,
     PlayerGender,
@@ -174,7 +174,7 @@ class PapiConverter:
 
         try:
             # First, create the SQL dump
-            StaticUtils.run_process(
+            Utils.run_process(
                 [
                     self.executable_path,
                     '--playerdb',
@@ -224,7 +224,7 @@ class PapiConverter:
         Raises a SharlyChessException if the conversion fails."""
         target_file = TMP_DIR / 'papi-converter-output.json'
         target_file.unlink(missing_ok=True)
-        result = StaticUtils.run_process(
+        result = Utils.run_process(
             [
                 self.executable_path,
                 source_file,
@@ -694,7 +694,7 @@ class PapiConverter:
                 json.dump(papi_data_dict, file, ensure_ascii=False, indent=2)
 
             # Use papi-converter to convert JSON to PAPI format
-            result = StaticUtils.run_process(
+            result = Utils.run_process(
                 [
                     self.executable_path,
                     temp_json_file,

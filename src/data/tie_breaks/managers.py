@@ -47,6 +47,7 @@ class TieBreakOptionManager(EventBoundEntityManager[TieBreakOption]):
             options.PlayedModifierTieBreakOption,
             options.ForeModifierTieBreakOption,
             options.KoyaLimitTieBreakOption,
+            options.EstimatedRatingsTieBreakOption,
         ]
         plugin_manager.hook_for_event(self.event, 'insert_tie_break_option_types')(
             tie_break_option_types=tie_break_option_types

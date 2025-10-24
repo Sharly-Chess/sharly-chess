@@ -30,7 +30,7 @@ from data.print_documents.options import (
     TournamentsPrintOption,
 )
 from data.tournament import Tournament
-from utils import StaticUtils
+from utils import Utils
 from utils.enum import Result
 from utils.types import PlayerTitle
 from utils.option import Option, OptionHandler
@@ -627,7 +627,7 @@ class BergerGridPrintDocument(PrintDocument):
         }
 
     def grid_results_points(self, results: list[list[Result | None]]) -> str:
-        return StaticUtils.points_str(
+        return Utils.points_str(
             sum(
                 result.points(self.tournament.point_values)
                 for result in itertools.chain.from_iterable(results)
@@ -719,10 +719,10 @@ class PrizeListPrintDocument(PrintDocument):
         prize_currency = self.event.prize_currency
         return {
             'tournaments': self.tournaments,
-            'ordinal_integer': StaticUtils.ordinal_integer,
+            'ordinal_integer': Utils.ordinal_integer,
             'prize_currency': prize_currency,
             'format_prize_value': partial(
-                StaticUtils.currency_value_str,
+                Utils.currency_value_str,
                 currency=prize_currency,
             ),
         }
@@ -756,10 +756,10 @@ class PrizeAssignmentPrintDocument(PrintDocument):
         return {
             'tournaments': self.tournaments,
             'show_warnings': self.get_option_values()[0],
-            'ordinal_integer': StaticUtils.ordinal_integer,
+            'ordinal_integer': Utils.ordinal_integer,
             'prize_currency': prize_currency,
             'format_prize_value': partial(
-                StaticUtils.currency_value_str,
+                Utils.currency_value_str,
                 currency=prize_currency,
             ),
         }

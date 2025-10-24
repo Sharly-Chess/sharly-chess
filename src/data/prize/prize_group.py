@@ -11,7 +11,7 @@ from data.prize.prize import Prize
 from data.prize.prize_category import PrizeCategory
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPrizeGroup, StoredPrizeCategory
-from utils import StaticUtils
+from utils import Utils
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
@@ -68,7 +68,7 @@ class PrizeGroup:
         )
 
     def get_unused_category_name(self, base_name: str | None = None) -> str:
-        return StaticUtils.get_unused_item_name(
+        return Utils.get_unused_item_name(
             base_name or _('New category'),
             (category.name for category in self.categories),
         )
@@ -318,14 +318,14 @@ class PrizeGroup:
                             'worth {new_share}.'
                         ).format(
                             player=player,
-                            previous_value=StaticUtils.currency_value_str(
+                            previous_value=Utils.currency_value_str(
                                 current.value, currency
                             ),
-                            next_value=StaticUtils.currency_value_str(
+                            next_value=Utils.currency_value_str(
                                 next_prize.value, currency
                             ),
                             cat_name=next_prize.prize_category.name,
-                            new_share=StaticUtils.currency_value_str(
+                            new_share=Utils.currency_value_str(
                                 prize_with_same_place.value, currency
                             ),
                         )

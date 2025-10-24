@@ -17,7 +17,7 @@ from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
 from data.screen import Screen
 from data.screen_set import ScreenSet
-from utils import StaticUtils
+from utils import Utils
 from utils.enum import ScreenType
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredScreen, StoredScreenSet
@@ -290,7 +290,7 @@ class ScreenAdminController(BaseEventAdminController):
                 else:
                     uniq_id = event.get_unused_screen_uniq_id(
                         ScreenType(type_),
-                        StaticUtils.name_to_uniq_id(name) if name else None,
+                        Utils.name_to_uniq_id(name) if name else None,
                     )
             case 'delete':
                 uniq_id = ''

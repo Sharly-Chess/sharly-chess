@@ -38,6 +38,12 @@ class Option(IdentifiableEntity, ABC):
         """
 
     @property
+    def include_in_equals(self) -> bool:
+        """Defines if the option is included in the equals function of the option handler.
+        If False, two option handlers that have different values for this option can still be equal."""
+        return True
+
+    @property
     def container_id(self) -> str:
         """ID of the HTML element containing the template."""
         return f'{self.id}_container'
@@ -104,7 +110,13 @@ class OptionHandler[T: Option](IdentifiableEntity, ABC):
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, OptionHandler):
             return NotImplemented
-        return (
-            self.id == other.id
-            and self.get_option_values() == other.get_option_values()
-        )
+        if self.id != other.id:
+            return False
+        for option_type in self.available_options():
+            option = self._get_option(option_type)
+            if not option.include_in_equals:
+                continue
+            other_option = other._get_option(option_type)
+            if option.value != other_option.value:
+                return False
+        return True

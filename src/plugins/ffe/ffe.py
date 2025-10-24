@@ -5,7 +5,6 @@ import re
 from collections import Counter
 from collections.abc import Callable
 
-from decimal import Decimal
 from types import ModuleType
 from typing import Any, TYPE_CHECKING, Iterable, Optional, override
 
@@ -74,7 +73,6 @@ from plugins.ffe.ffe_entity import (
 from plugins.ffe.ffe_event_controller import FfeAdminEventController
 from plugins.ffe.ffe_session_handler import FFESessionHandler
 from plugins.ffe.ffe_tie_breaks import (
-    papi_performance_bonus,
     BasePapiTieBreak,
     PapiBuchholzTypeOption,
 )
@@ -934,18 +932,6 @@ class FfePlugin(Plugin):
         self, variation_types: list[type[SwissVariation]]
     ):
         variation_types.append(NicoisSwissVariation)
-
-    # ---------------------------------------------------------------------------------
-    # Shared utils
-    # ---------------------------------------------------------------------------------
-
-    @hookimpl
-    def get_performance_bonus_function(self) -> Callable[[float], int | float]:
-        return papi_performance_bonus
-
-    @hookimpl
-    def get_round_ranking_function(self) -> Callable[[float | Decimal], int]:
-        return round
 
     # ---------------------------------------------------------------------------------
     # Prizes

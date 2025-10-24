@@ -48,7 +48,12 @@
                     <strong>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</strong>
                 </th>
                 {% for tie_break in admin_tournament.tie_breaks %}
-                    <th class="tie-break text-center">{{ tie_break.acronym }}</th>
+                    <th
+                        class="tie-break text-center"
+                        {{ macros.tooltip_attributes('info', tie_break.full_name, 'top') }}
+                    >
+                        {{ tie_break.acronym }}
+                    </th>
                 {% endfor %}
             </tr>
         </thead>
