@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from common.i18n import _
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPrize
-from utils import StaticUtils
+from utils import Utils
 
 if TYPE_CHECKING:
     from data.prize.prize_category import PrizeCategory
@@ -50,10 +50,8 @@ class Prize:
         if not self.value and not self.is_monetary:
             return self.description
         if self.is_monetary:
-            return StaticUtils.currency_value_str(self.value, currency)
-        value_str = _('value: {value}').format(
-            value=StaticUtils.localized_number(self.value)
-        )
+            return Utils.currency_value_str(self.value, currency)
+        value_str = _('value: {value}').format(value=Utils.localized_number(self.value))
         return f'{self.description} ({value_str})'
 
     def get_event_database(self) -> EventDatabase:

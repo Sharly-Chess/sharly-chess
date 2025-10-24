@@ -18,7 +18,7 @@ from plugins.pairing_acceleration.pairing_settings import (
     GroupB3GroupsSetting,
     GroupC3GroupsSetting,
 )
-from utils import StaticUtils
+from utils import Utils
 from utils.enum import Result
 
 
@@ -71,7 +71,7 @@ class AccelerationSwissVariation(SwissVariation, ABC):
             + ''.join(
                 f'<div class="text-start text-nowrap">{prefix}</div>'
                 f'<div class="text-start text-nowrap ps-1">'
-                f'  {"→ " + StaticUtils.points_str(points) if points is not None else ""}'
+                f'  {"→ " + Utils.points_str(points) if points is not None else ""}'
                 f'</div>'
                 for prefix, points in tooltip_lines
             )
@@ -233,8 +233,8 @@ class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
         max_points: float | None = None,
     ) -> str:
         points_name = _('points')
-        min_str = StaticUtils.points_str(min_points)
-        max_str = StaticUtils.points_str(max_points)
+        min_str = Utils.points_str(min_points)
+        max_str = Utils.points_str(max_points)
         if not min_points:
             inequality = f'{points_name} < {max_str}'
         elif not max_points:

@@ -1,6 +1,5 @@
 from collections.abc import Callable
 from datetime import date
-from decimal import Decimal
 from collections.abc import Iterable
 from typing import Any, TYPE_CHECKING, Optional
 
@@ -355,18 +354,6 @@ class AppHookSpecs:
         self, variation_types: list[type['SwissVariation']]
     ):
         """Provide extra swiss pairing variations."""
-
-    # ---------------------------------------------------------------------------------
-    # Shared utils
-    # ---------------------------------------------------------------------------------
-
-    @hookspec(firstresult=True)
-    def get_performance_bonus_function(self) -> Callable[[float], int | float]:
-        """Provide a function to compute the performance bonus"""
-
-    @hookspec(firstresult=True)
-    def get_round_ranking_function(self) -> Callable[[float | Decimal], int]:
-        """Provide a function to round a ranking to an integer"""
 
     # ---------------------------------------------------------------------------------
     # Prizes

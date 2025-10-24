@@ -1,0 +1,18 @@
+<div class="col-12">
+    {{ admin_macros.switch_input(
+        name=option.id,
+        label='',
+        placeholder=_('Player estimation explained in the rules'),
+        info=_(
+            'When there are unrated players, FIDE rules stipulate that '
+            'rating-based tie-breaks can only be used if the tournament '
+            'rules explains how the estimations are decided.'
+        ),
+        help_text=_(
+            'Since ratings are used in the tie-break calculation, it is important '
+            'for them to be representative of the player\'s level. For this reason '
+            'this tie-break is not recommended with unrated players.'
+        ),
+        data=data, errors=errors
+    ) }}
+</div>

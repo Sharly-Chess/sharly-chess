@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from functools import total_ordering, cached_property
 from typing import Optional, Self, SupportsFloat, TYPE_CHECKING
 
-from utils import StaticUtils
+from utils import Utils
 from utils.enum import (
     PlayerTitle,
     TitleNorm,
@@ -206,4 +206,4 @@ class TieBreakValue:
             if self.rank_progress < 0:
                 return f'▼ {-self.rank_progress}'
             return ''
-        return StaticUtils.points_str(float(self.value))
+        return Utils.points_str(float(self.value))

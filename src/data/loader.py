@@ -23,7 +23,7 @@ from common.logger import get_logger
 from data.event import Event
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import EventMetadata
-from utils import StaticUtils
+from utils import Utils
 
 logger: Logger = get_logger()
 
@@ -110,10 +110,10 @@ class EventLoader:
         return ids
 
     def get_unused_event_uniq_id(self, base_uniq_id: str) -> str:
-        return StaticUtils.get_unused_item_uniq_id(base_uniq_id, self.all_event_ids())
+        return Utils.get_unused_item_uniq_id(base_uniq_id, self.all_event_ids())
 
     def get_unused_event_name(self, base_name: str) -> str:
-        return StaticUtils.get_unused_item_name(
+        return Utils.get_unused_item_name(
             base_name, [event.name for event in self.get_events_metadata()]
         )
 
