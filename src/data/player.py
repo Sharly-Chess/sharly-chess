@@ -338,7 +338,7 @@ class Player:
             return False
 
         if player_rating_type != PlayerRatingType.FIDE:
-            # We never override FIDE ratings
+            # We only override for tournament that are using the FIDE ratings
             return False
 
         ratings = self.ratings.get(tournament_rating, None)
