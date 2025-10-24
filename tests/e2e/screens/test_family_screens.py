@@ -39,7 +39,7 @@ class TestFamilyScreensFunctionality:
 
         name = 'Test family'
         expected_uniq_id = 'test_family'
-        modal.get_by_role('textbox', name='Name:').fill(name)
+        modal.get_by_test_id('name').fill(name)
         modal.locator('button[type=submit]').click()
         card = page.locator(f"div.card:has-text('{name}')")
         expect(card).to_be_visible()
