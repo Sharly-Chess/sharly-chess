@@ -420,13 +420,15 @@ class Tournament:
             ).format(pairing_system=self.pairing_system.name)
         if not tie_break.allow_unrated_players and self.unrated_count:
             return _(
-                'This tie-break is not compatible with '
-                'unrated players ({count} in the tournament).'
+                'This tie-break is disabled when there are unrated players '
+                'without estimated ratings ({count} in the tournament).'
             ).format(count=self.unrated_count)
         if not tie_break.allow_estimated_players and self.estimated_count:
             return _(
                 'By default, this tie-break is disabled when there '
-                'are estimated players ({count} in the tournament).'
+                'are unrated players ({count} in the tournament). '
+                'You must specify that the player estimation is explained '
+                'in the rules.'
             ).format(count=self.estimated_count)
         return None
 
