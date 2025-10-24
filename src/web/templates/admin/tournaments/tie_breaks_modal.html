@@ -105,7 +105,7 @@
                                             {{ macros.tooltip_attributes('warning', invalid_messages_by_id[stored_id], 'top') }}
                                         ></i>
                                     {% else %}
-                                        {% set warning_message = admin_tournament.tie_break_warning_message(tie_break) %}
+                                        {% set warning_message = tie_break.get_warning_for_tournament(admin_tournament) %}
                                         {% if warning_message %}
                                             <i
                                                 class="bi-exclamation-triangle-fill text-warning pt-1"

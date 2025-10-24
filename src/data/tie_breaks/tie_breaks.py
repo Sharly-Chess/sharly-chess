@@ -145,10 +145,9 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         """Defines if the tie-break can be used with estimated players."""
         return True
 
-    @property
-    def estimated_players_warning(self) -> bool:
-        """Display a warning on the tournament if it has estimated players."""
-        return False
+    def get_warning_for_tournament(self, tournament: 'Tournament') -> str | None:
+        """Get a warning to display on the tie-break row."""
+        return None
 
     @property
     def forbidden_pairing_systems(self) -> list[PairingSystem]:
@@ -1078,9 +1077,13 @@ class OpponentRatingTieBreak(TieBreak, ABC):
     def allow_estimated_players(self) -> bool:
         return self._get_option(EstimatedRatingsTieBreakOption).value
 
-    @property
-    def estimated_players_warning(self) -> bool:
-        return True
+    def get_warning_for_tournament(self, tournament: 'Tournament') -> str | None:
+        if tournament.estimated_count:
+            return _(
+                'This tie-break is not recommended with '
+                'estimated players ({count} in the tournament).'
+            ).format(count=tournament.estimated_count)
+        return None
 
 
 class AverageRatingOpponentsTieBreak(OpponentRatingTieBreak):

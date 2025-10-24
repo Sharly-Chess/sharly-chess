@@ -2321,6 +2321,9 @@ msgstr "Pour les joueur·euses qui ne se sont pas pointé·es :"
 msgid "For these reasons, it is strongly discouraged to unpair a round. It is instead recommended to use manual pairings to handle unusual situations."
 msgstr "Pour ces raisons, il est fortement déconseillé de désapparier une ronde. Il est à la place recommandé d'utiliser les appariements manuels pour gérer les situations inhabituelles."
 
+msgid "For unrated players, a representative rating is calculated."
+msgstr "Pour les joueur·euses estimé·es, un classement représentatif est calculé."
+
 msgid "Fore"
 msgstr "Fore"
 

@@ -93,8 +93,12 @@ class PapiPerformanceTieBreak(BasePapiTieBreak):
         return 'Perf'
 
     @property
-    def estimated_players_warning(self) -> bool:
-        return True
+    def base_help_text(self) -> str:
+        return (
+            super().base_help_text
+            + '<br/>'
+            + _('For unrated players, a representative rating is calculated.')
+        )
 
     @staticmethod
     def _points_after(player: Player, after_round: int):

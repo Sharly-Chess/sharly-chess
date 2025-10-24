@@ -2321,6 +2321,9 @@ msgstr ""
 msgid "For these reasons, it is strongly discouraged to unpair a round. It is instead recommended to use manual pairings to handle unusual situations."
 msgstr ""
 
+msgid "For unrated players, a representative rating is calculated."
+msgstr ""
+
 msgid "Fore"
 msgstr ""
 
