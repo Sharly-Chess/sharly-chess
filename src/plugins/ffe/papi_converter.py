@@ -506,10 +506,10 @@ class PapiConverter:
 
         fide_id: int | None = None
         if papi_player.fideCode:
-            fide_code = papi_player.fideCode.replace("'", '').strip()
-            if not fide_code.isdigit():
-                raise_exception('fideCode', _('A positive integer is expected.'))
-            fide_id = int(fide_code)
+            try:
+                fide_id = int(papi_player.fideCode.replace("'", '').strip())
+            except ValueError:
+                logger.warning('Invalid FIDE ID [%s], ignored.')
 
         ffe_licence = PlayerFFELicence.NONE
         if papi_player.licenceType:
