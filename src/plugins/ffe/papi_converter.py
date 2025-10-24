@@ -114,7 +114,7 @@ class PapiPlayer:
     checkedIn: bool = False
 
     # Unused
-    nr: str | None = None
+    nr: int | None = None
     address: str | None = None
     postalCode: str | None = None
 
@@ -506,9 +506,10 @@ class PapiConverter:
 
         fide_id: int | None = None
         if papi_player.fideCode:
-            if not papi_player.fideCode.strip().isdigit():
+            fide_code = papi_player.fideCode.replace("'", '').strip()
+            if not fide_code.isdigit():
                 raise_exception('fideCode', _('A positive integer is expected.'))
-            fide_id = int(papi_player.fideCode.strip())
+            fide_id = int(fide_code)
 
         ffe_licence = PlayerFFELicence.NONE
         if papi_player.licenceType:
