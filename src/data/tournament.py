@@ -442,15 +442,6 @@ class Tournament:
             return plugin_warning
         return None
 
-    def tie_break_warning_message(self, tie_break: TieBreak) -> str | None:
-        """Get a message about a tie-break for the tournament."""
-        if tie_break.estimated_players_warning and self.estimated_count:
-            return _(
-                'This tie-break is not recommended with '
-                'estimated players ({count} in the tournament).'
-            ).format(count=self.estimated_count)
-        return None
-
     def reorder_tie_breaks(self, ordered_ids: list[int]):
         if len(ordered_ids) != len(self.tie_breaks_by_id):
             raise ValueError(f'{ordered_ids=}')
