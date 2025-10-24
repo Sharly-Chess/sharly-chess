@@ -123,9 +123,6 @@ class CheckerBoard:
             'black': self.black.to_dict if self.black else None,
         }
 
-    def __str__(self):
-        return f'{self.id:03d}. {self.white if self.white else "-"} vs {self.black if self.black else "-"}'
-
 
 @dataclass
 class BoardDiff:
@@ -192,7 +189,7 @@ class TournamentCheck:
             d['player_count'],
             d['rounds'],
             {
-                round_: [
+                int(round_): [
                     BoardDiff.from_dict(board_diff) for board_diff in round_board_diffs
                 ]
                 for round_, round_board_diffs in d['diff'].items()
@@ -241,31 +238,57 @@ class TournamentCheck:
     def print(self):
         if self.diff:
             print_interactive_error(
-                f'Tournament [{self.name}]: {self.board_error_count} error(s) found on {self.round_error_count} round(s) (players: {self.player_count}).'
+                f'Tournament [{self.name}]: {self.board_error_count} error(s) found on {self.round_error_count} round(s) (rounds: {self.rounds}, players: {self.player_count}).'
             )
+            player_len: int = 0
             for round_, round_diff in self.diff.items():
-                read_board_strings: list[str] = []
-                expected_board_strings: list[str] = []
                 for board_diff in round_diff:
-                    read_board_strings.append(
-                        str(board_diff.read_board) if board_diff.read_board else '-'
+                    for board in (board_diff.read_board, board_diff.expected_board):
+                        if board:
+                            for player in (board.white, board.black):
+                                if player:
+                                    player_len = max(player_len, len(str(player)))
+            print_interactive_warning(
+                f'Rd.Brd | {"Read".ljust(2 * player_len + 4)} | {"Expected".ljust(2 * player_len + 4)} |'
+            )
+            last_round: int = 0
+            for round_, round_diff in self.diff.items():
+                for board_diff in round_diff:
+                    round_string = (
+                        f'{round_:02d}.' if round_ != last_round else ''.ljust(3)
                     )
-                    expected_board_strings.append(
-                        str(board_diff.expected_board)
+                    board_id = (
+                        board_diff.read_board.id
+                        if board_diff.read_board
+                        else board_diff.expected_board.id
                         if board_diff.expected_board
-                        else '-'
+                        else 0
                     )
-                read_boards_len = max(len(s) for s in read_board_strings)
-                expected_boards_len = max(len(s) for s in expected_board_strings)
-                print_interactive_warning(
-                    f'Round | {"Read".ljust(read_boards_len)} | Expected'
-                )
-                for read_board_string, expected_board_string in zip(
-                    read_board_strings, expected_board_strings
-                ):
+                    board_string = f'{board_id:03d}'
+                    read_white_string: str = (
+                        str(board_diff.read_board.white)
+                        if board_diff.read_board and board_diff.read_board.white
+                        else ''
+                    ).ljust(player_len)
+                    read_black_string: str = (
+                        str(board_diff.read_board.black)
+                        if board_diff.read_board and board_diff.read_board.black
+                        else ''
+                    ).ljust(player_len)
+                    expected_white_string: str = (
+                        str(board_diff.expected_board.white)
+                        if board_diff.expected_board and board_diff.expected_board.white
+                        else ''
+                    ).ljust(player_len)
+                    expected_black_string: str = (
+                        str(board_diff.expected_board.black)
+                        if board_diff.expected_board and board_diff.expected_board.black
+                        else ''
+                    ).ljust(player_len)
                     print_interactive_warning(
-                        f'{str(round_).rjust(2, "0").rjust(5)} | {read_board_string.ljust(read_boards_len)} | {expected_board_string.ljust(expected_boards_len)}'
+                        f'{round_string}{board_string} | {read_white_string} vs {read_black_string} | {expected_white_string} vs {expected_black_string} |'
                     )
+                    last_round = round_
         else:
             print_interactive_success(
                 f'Tournament [{self.name}]: no errors (rounds: {self.rounds}, players: {self.player_count}).'
