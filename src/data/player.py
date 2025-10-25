@@ -756,6 +756,7 @@ class Player:
             missed_rounds = 0
             for r, pairing in p.pairings_by_round.items():
                 if pairing.unplayed and pairing.result not in [
+                    Result.FORFEIT_WIN,
                     Result.PAIRING_ALLOCATED_BYE,
                     Result.REST_GAME,
                 ]:
@@ -840,6 +841,7 @@ class Player:
             missed_rounds = 0
             for r, pairing in p.pairings_by_round.items():
                 if pairing.unplayed and pairing.result not in [
+                    Result.FORFEIT_WIN,
                     Result.PAIRING_ALLOCATED_BYE,
                     Result.REST_GAME,
                 ]:
