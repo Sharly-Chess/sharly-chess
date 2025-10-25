@@ -741,10 +741,6 @@ class Player:
         # - from at least 3 different federations,
         #  -at least 10 of whom hold GM, IM, WGM or WIM titles.
         # For this purpose, players will be counted only if they miss at most one round (excluding pairing allocated byes)
-        #
-        # 1.5.6a
-        #
-        # Check if the average rating of the top 40 eligiable players is at least 2000 in every round
 
         eligible_players: list[Player] = []
 
@@ -801,18 +797,6 @@ class Player:
             worst_federations = min(worst_federations, n_feds)
             worst_titled = min(worst_titled, n_titled)
 
-            # 1.5.6a
-            # Check if the average rating of the top 40 eligiable players is at least 2000 in every round
-            if n_players < 40:
-                meets_156 = False
-            else:
-                top_rated = sorted([p.rating for p in present], reverse=True)[:40]
-                avg: float = sum(top_rated) / len(top_rated) if top_rated else 0
-                if avg < 2000:
-                    meets_156 = False
-
-        res.requirement_156a_met = meets_156
-
         # Handle case of zero rounds gracefully
         if worst_players is float('inf'):
             worst_players = 0
@@ -837,6 +821,62 @@ class Player:
             res.not_enough_foreign_players = (
                 msg if res.eligible_players_count < 20 else None
             )
+
+        # 1.5.6a
+        #
+        # Check if the average rating of the top 40 eligible players is at least 2000 in every round
+
+        eligible_players: list[Player] = []
+
+        # Build a list of eligible players
+        for p in self.tournament.players_by_id.values():
+            if p.rating_type != PlayerRatingType.FIDE:
+                continue
+            if (
+                p.federation == 'NON'  # 1.4.2a
+            ):
+                continue
+
+            missed_rounds = 0
+            for r, pairing in p.pairings_by_round.items():
+                if pairing.unplayed and pairing.result not in [
+                    Result.PAIRING_ALLOCATED_BYE,
+                    Result.REST_GAME,
+                ]:
+                    missed_rounds += 1
+            if missed_rounds > 1:
+                continue
+
+            eligible_players.append(p)
+
+        for rnd in range(1, self.tournament.rounds + 1):
+            present: list[Player] = []
+            for p in eligible_players:
+                pairing: Pairing | None = p.pairings_by_round.get(rnd)
+                if pairing and (
+                    pairing.played
+                    or pairing.result
+                    in [
+                        Result.PAIRING_ALLOCATED_BYE,
+                        Result.REST_GAME,
+                    ]
+                ):
+                    present.append(p)
+
+            n_players = len(present)
+
+            # 1.5.6a
+            # Check if the average rating of the top 40 eligible players is at least 2000 in every round
+            if n_players < 40:
+                meets_156 = False
+            else:
+                top_rated = sorted([p.rating for p in present], reverse=True)[:40]
+                avg: float = sum(top_rated) / len(top_rated) if top_rated else 0
+                if avg < 2000:
+                    meets_156 = False
+
+        for tn, res in results.items():
+            res.requirement_156a_met = meets_156
 
         return results
 
