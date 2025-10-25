@@ -184,6 +184,8 @@ This section is the one that allows the platform to authenticate the request.
 | Clubname | The name of the club, place or city (up to 40 characters) | ? |
 | Fideid | FIDE-id | M for FIDE-rated tournaments if available and empty otherwise, O for non-FIDE rated events |
 | Club | Club number, not used outside Austria | O |
+| Typ | Usually the player's category (U08, U10, S50, …). Can also be used for something else (up to 4 characters) | O |
+| Group | Can be used for something (up to 4 characters) | O |
 | Rank | The player's ranking, computed based on "rankinground" | M |
 | tb1 | Tie-break 1, computed based on "rankinground" | M |
 | tb2 | Tie-break 2, computed based on "rankinground" | M |
