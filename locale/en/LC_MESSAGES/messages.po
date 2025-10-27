@@ -789,6 +789,9 @@ msgstr ""
 msgid "Board (%(remaining)d)"
 msgstr ""
 
+msgid "Board Cards"
+msgstr ""
+
 msgid "Board Pairings"
 msgstr ""
 
@@ -3708,6 +3711,9 @@ msgid "Player"
 msgstr ""
 
 msgid "Player / Elo"
+msgstr ""
+
+msgid "Player Cards"
 msgstr ""
 
 msgid "Player Elo"

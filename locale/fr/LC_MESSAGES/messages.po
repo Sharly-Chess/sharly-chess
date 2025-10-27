@@ -789,6 +789,9 @@ msgstr "Échiquier & couleur"
 msgid "Board (%(remaining)d)"
 msgstr "Éch. (%(remaining)d)"
 
+msgid "Board Cards"
+msgstr "Chevalets des échiquiers"
+
 msgid "Board Pairings"
 msgstr "Appariements par échiquier"
 
@@ -3709,6 +3712,9 @@ msgstr "Joueur·euse"
 
 msgid "Player / Elo"
 msgstr "Joueur·euse / Elo"
+
+msgid "Player Cards"
+msgstr "Chevalets des joueur·euses"
 
 msgid "Player Elo"
 msgstr "Joueur·euse Elo"

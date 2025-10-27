@@ -1,0 +1,100 @@
+{% extends '/admin/print/cards.html' %}
+
+{###########################################################################}
+{# THE UNIT USED FOR THE SIZES OF THE CARD AND THE CARD ITEMS              #}
+{###########################################################################}
+{% set unit = 'mm' %}
+
+{###########################################################################}
+{# THE WIDTH AND WEIGHT OF THE CARD                                        #}
+{###########################################################################}
+{% set width = 116 %}
+{% set height = 36 %}
+
+{###########################################################################}
+{# THE PADDING OF THE CARDS                                                #}
+{# (also used for the cutting marks, if cutting_marks is set to 'corners') #}
+{###########################################################################}
+{% set padding = 2 %}
+
+{###########################################################################}
+{# THE CUTTING MARKS ('border', 'corners' or 'none')                       #}
+{###########################################################################}
+{% set cutting_marks = 'corners' %}
+
+{###########################################################################}
+{# ITEM STYLING PROPERTIES:                                                #}
+{# - font_size: integer (unit: pt)                                         #}
+{# - font_weight: 'normal' or 'bold' ('normal' by default)                 #}
+{# - font_style: 'normal' or 'italic' ('normal' by default)                #}
+{# - hor_align: 'left', 'center' or 'right' ('left' by default)            #}
+{# - ver_align: 'top', 'middle' or 'bottom' ('top' by default)             #}
+{# - hor_pos, ver_pos: integer (unit: the unit of the document)            #}
+{###########################################################################}
+
+{###########################################################################}
+{# DEFAULT ITEM STYLING                                                    #}
+{###########################################################################}
+{% set default_styling = {
+    'font_size': 14,
+    'font_weight': 'normal',
+    'font_style': 'normal',
+    'hor_align': 'left',
+    'hor_pos': 0,
+    'ver_align': 'top',
+    'ver_pos': 0,
+} %}
+
+{###########################################################################}
+{# NUMBER STYLING                                                          #}
+{###########################################################################}
+{% set number_styling = {
+    'font_size': 48,
+    'font_weight': 'bold',
+    'hor_align': 'right',
+    'ver_align': 'bottom',
+} %}
+
+{###########################################################################}
+{# TOURNAMENT STYLING                                                      #}
+{###########################################################################}
+{% set tournament_styling = {
+    'font_style': 'italic',
+    'ver_align': 'top',
+} %}
+
+{% block card_css %}
+    .card-content {
+        background-position: left bottom;
+    }
+    .number, .number * { {{ item_styling(number_styling, default_styling) }} }
+    .tournament, .tournament * { {{ item_styling(tournament_styling, default_styling) }} }
+{% endblock %}
+
+{% block card_js %}
+{% endblock %}
+
+{% block card_content %}
+    {% for board in boards %}
+        <div class="card-wrapper">
+            <div class="card">
+                <div class="card-cell top left"></div>
+                <div class="card-cell top center"></div>
+                <div class="card-cell top right"></div>
+                <div class="card-cell middle left"></div>
+                <div class="card-content">
+                    <div class="card-item number">
+                        {{ _('Table %(number)s', number=board.number) }}
+                    </div>
+                    <div class="card-item tournament">
+                        {{ tournament.name }}
+                    </div>
+                </div>
+                <div class="card-cell middle right"></div>
+                <div class="card-cell bottom left"></div>
+                <div class="card-cell bottom center"></div>
+                <div class="card-cell bottom right"></div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

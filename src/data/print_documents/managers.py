@@ -34,6 +34,8 @@ class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
             documents.StatisticsPrintDocument,
             documents.NormReportPrintDocument,
             documents.QRCodePrintDocument,
+            documents.PlayerCardsPrintDocument,
+            documents.BoardCardsPrintDocument,
         ]
 
     @override
