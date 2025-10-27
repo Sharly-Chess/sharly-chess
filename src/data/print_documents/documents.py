@@ -1002,7 +1002,7 @@ class StatisticsPrintDocument(PrintDocument):
 class NormReportPrintDocument(PrintDocument):
     @staticmethod
     def static_id() -> str:
-        return 'norm_report'
+        return 'norm-report'
 
     @staticmethod
     def static_name() -> str:

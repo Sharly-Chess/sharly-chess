@@ -134,7 +134,7 @@ class PapiPerformanceTieBreak(BasePapiTieBreak):
         self, tournament: 'Tournament', after_round: int
     ) -> dict[int, Any]:
         """Add the papi estimation as a variable."""
-        if after_round <= 1 or not any(
+        if after_round < 1 or not any(
             player.estimated for player in tournament.players
         ):
             return {}
