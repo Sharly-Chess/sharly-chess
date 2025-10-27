@@ -61,7 +61,7 @@
                     {{ admin_macros.number_input(
                         name='delay',
                         label=_('Delay (seconds):'),
-                        placeholder=_('Default: %(string)s', string=sharly_chess_config.default_rotator_delay),
+                        placeholder=sharly_chess_config.default_rotator_delay,
                         help_text=_('The rotating delay between two screens.'),
                         data=data, errors=errors,
                         min=1

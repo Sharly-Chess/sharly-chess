@@ -2,7 +2,7 @@
     name='message_text',
     label=_('Alert message:'),
     placeholder=(
-        _('Default: %(string)s', string=admin_event.message_text)
+        admin_event.message_text
         if admin_event.message_text else
         _('E.g.: Please keep quiet until the end of the round!')
     ),

@@ -674,13 +674,7 @@ msgstr ""
 msgid "Auto-upload results to Chess-Results.com"
 msgstr ""
 
-msgid "Auto-upload results to Chess-Results.com when a tournament is updated."
-msgstr ""
-
 msgid "Auto-upload results to FFE site"
-msgstr ""
-
-msgid "Auto-upload results to FFE site when a tournament is updated. You must enter the tournament certification number and password for this to take effect."
 msgstr ""
 
 msgid "Auto-upload:"
@@ -1428,7 +1422,7 @@ msgstr ""
 msgid "Default credentials used to import tournaments from the ChessEvent platform."
 msgstr ""
 
-msgid "Default handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. If checked, this rating will also be used for seeding and pairings. If unchecked, they will be treated as unrated and require an estimated rating."
+msgid "Default handling of players without a FIDE rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. If checked, this rating will also be used for seeding and pairings. If unchecked, they will be treated as unrated and require an estimated rating."
 msgstr ""
 
 msgid "Default timer configuration"
@@ -1436,6 +1430,10 @@ msgstr ""
 
 #, python-format
 msgid "Default: %(string)s"
+msgstr ""
+
+#, python-format
+msgid "Defaults to %(datetime)s"
 msgstr ""
 
 msgid "Define as main category"
@@ -1983,9 +1981,6 @@ msgstr ""
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr "Estimated"
 
-msgid "Estimated ratings"
-msgstr ""
-
 msgid "Event"
 msgstr ""
 
@@ -2455,7 +2450,10 @@ msgstr ""
 msgid "Half-Point Bye attributed to player [{player}]."
 msgstr ""
 
-msgid "Handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. You may also choose to use this rating for seeding and pairings."
+msgid "Handicap games"
+msgstr ""
+
+msgid "Handling of players without a FIDE rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating."
 msgstr ""
 
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
@@ -4556,6 +4554,9 @@ msgstr ""
 msgid "Sharly Chess can automatically launch a web browser when starting the web server."
 msgstr ""
 
+msgid "Sharly Chess may provide functionality specific to the federation chosen for each event."
+msgstr ""
+
 msgid "Sharly Chess offers a powerful and flexible prize management system to handle a wide variety of tournament prize structures."
 msgstr ""
 
@@ -4871,17 +4872,7 @@ msgstr ""
 msgid "The delay must be at least {min_delay} minutes to avoid overloading the FFE server."
 msgstr ""
 
-msgid "The end date and time of the event."
-msgstr ""
-
-#, python-format
-msgid "The end time of the tournament (defaults to %(datetime)s)."
-msgstr ""
-
 msgid "The event [{event_id}] is not accessible to the user [{user_id}]."
-msgstr ""
-
-msgid "The federation that organizes the event. Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr ""
 
 msgid "The first round is ignored."
@@ -4908,16 +4899,6 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "The limit can only be adjusted by {count} half-points."
-msgstr ""
-
-msgid "The location of the event."
-msgstr ""
-
-#, python-format
-msgid "The location of the tournament (defaults to [%(location)s])."
-msgstr ""
-
-msgid "The location of the tournament."
 msgstr ""
 
 msgid "The lowest rating that a player should have for their expected score to be greater than or equal to their score."
@@ -4951,12 +4932,6 @@ msgstr ""
 msgid "The message displayed on the scrolling banner at the bottom of the screen."
 msgstr ""
 
-msgid "The minimum delay between auto-uploads to Chess-Results.com."
-msgstr ""
-
-msgid "The minimum delay between auto-uploads to the FFE server."
-msgstr ""
-
 msgid "The minimum level of logs that will be printed on the console (all the detailed logs are always printed to the log files)."
 msgstr ""
 
@@ -4972,9 +4947,6 @@ msgstr ""
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
 msgstr ""
 
-msgid "The name of the event, used for display and reports."
-msgstr ""
-
 #, python-format
 msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
 msgstr ""
@@ -4986,9 +4958,6 @@ msgid "The name of the screen, displayed on event screens."
 msgstr ""
 
 msgid "The name of the timer."
-msgstr ""
-
-msgid "The name of the tournament, used for display."
 msgstr ""
 
 msgid "The network on which the devices are connected."
@@ -5024,9 +4993,6 @@ msgstr ""
 msgid "The number of rounds in which a player did not receive a HPB, a ZPB or a forfeit loss."
 msgstr ""
 
-msgid "The number of rounds of the tournament."
-msgstr ""
-
 msgid "The number of rounds where a player obtains, with or without playing, as many points as awarded for a win."
 msgstr ""
 
@@ -5034,9 +5000,6 @@ msgid "The number of screens on which the boards will be distributed, optional (
 msgstr ""
 
 msgid "The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players."
-msgstr ""
-
-msgid "The number of the first board of the tournament."
 msgstr ""
 
 msgid "The number of the first board to select."
@@ -5055,9 +5018,6 @@ msgid "The pairing number can't be greater than the player count."
 msgstr ""
 
 msgid "The pairing number is already attributed."
-msgstr ""
-
-msgid "The password is made of 10 uppercase letters, it is used to connect to the FFE website."
 msgstr ""
 
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
@@ -5079,9 +5039,6 @@ msgid "The player with FFE licence number [{ffe_licence_number}] already plays t
 msgstr ""
 
 msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
-msgstr ""
-
-msgid "The qualification number given by the French Federation is an integer, it is used to connect to the FFE website."
 msgstr ""
 
 msgid "The rank of the first player to select."
@@ -5117,13 +5074,6 @@ msgstr ""
 msgid "The screens displayed by the display controller are controlled by the screen managers."
 msgstr ""
 
-msgid "The start date and time of the event."
-msgstr ""
-
-#, python-format
-msgid "The start time of the tournament (defaults to %(datetime)s)."
-msgstr ""
-
 msgid "The sum of the [{tie_break}] scores of the opponents played over the board."
 msgstr ""
 
@@ -5131,9 +5081,6 @@ msgid "The sum of the score of the player at the end of each round."
 msgstr ""
 
 msgid "The sum of the scores of each of the opponents of the player."
-msgstr ""
-
-msgid "The system used to generate the pairings."
 msgstr ""
 
 msgid "The text colour of the alert messages."
@@ -5181,9 +5128,6 @@ msgstr ""
 msgid "The type of document to print."
 msgstr ""
 
-msgid "The type of rating to use for the tournament."
-msgstr ""
-
 msgid "The username / password provided are not allowed to access this ChessEvent event."
 msgstr ""
 
@@ -5194,9 +5138,6 @@ msgid "The values have to be higher than the sharing threshold of the category (
 msgstr ""
 
 msgid "The values to take into account when computing the tie-break."
-msgstr ""
-
-msgid "The variation of the pairing system."
 msgstr ""
 
 msgid "The way to share the prizes between players with the same points."
@@ -6162,9 +6103,6 @@ msgstr ""
 msgid "You must create a tournament before creating these screens."
 msgstr ""
 
-msgid "You must enter the tournament certification number and password in each tournament's settings."
-msgstr ""
-
 msgid "Zero-Point Bye"
 msgstr ""
 
@@ -6439,4 +6377,13 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "Defaults to %(datetime)s."
+#~ msgstr ""
+
+#~ msgid "defaults to %(datetime)s."
+#~ msgstr ""
+
+#~ msgid "defaults to %(datetime)s"
+#~ msgstr ""
 

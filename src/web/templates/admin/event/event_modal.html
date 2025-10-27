@@ -47,7 +47,7 @@
                         {{ admin_macros.select_input(
                             name='federation',
                             label=_('Federation:'),
-                            help_text=_('The federation that organizes the event. Sharly Chess may provide functionality specific to the federation chosen for each event.'),
+                            help_text=_('Sharly Chess may provide functionality specific to the federation chosen for each event.'),
                             select_options=federation_options,
                             disabled=not client.can_update_event,
                             data=data, errors=errors
@@ -58,7 +58,7 @@
                             name='name',
                             label=_('Name:'),
                             placeholder=_('E.g.: World championship'),
-                            help_text=_('The name of the event, used for display and reports.'),
+                            help_text='',
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -69,7 +69,7 @@
                         {{ admin_macros.datetime_input(
                             name='start',
                             label=_('Start:'),
-                            help_text=_('The start date and time of the event.'),
+                            help_text='',
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -78,7 +78,7 @@
                         {{ admin_macros.datetime_input(
                             name='stop',
                             label=_('End:'),
-                            help_text=_('The end date and time of the event.'),
+                            help_text='',
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -101,7 +101,7 @@
                             name='location',
                             label=_('%(string)s:', string=_('Location')),
                             placeholder=_('E.g.: Paris'),
-                            help_text=_('The location of the event.'),
+                            help_text='',
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -124,7 +124,7 @@
                 {% endfor %}
 
                 <h4>
-                    {{ _('Estimated ratings') }}
+                    {{ _('Unrated players') }}
                 </h4>
                 <div class="row gy-2 gx-3">
                     {{ admin_macros.switch_input(
@@ -132,7 +132,7 @@
                         label='',
                         placeholder=_('In rapid/blitz tournaments, use the standard rating for unrated players'),
                         doc_icon='standard-rating',
-                        help_text=_('Default handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. If checked, this rating will also be used for seeding and pairings. If unchecked, they will be treated as unrated and require an estimated rating.'),
+                        help_text=_('Default handling of players without a FIDE rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. If checked, this rating will also be used for seeding and pairings. If unchecked, they will be treated as unrated and require an estimated rating.'),
                         disabled=not client.can_update_event,
                         data=data, errors=errors
                     ) }}
@@ -182,7 +182,7 @@
                         {{ admin_macros.number_input(
                             name='record_illegal_moves',
                             label=_('Illegal moves recording:'),
-                            placeholder=_('Default: %(string)s', string=sharly_chess_config.default_record_illegal_moves_number),
+                            placeholder=sharly_chess_config.default_record_illegal_moves_number,
                             min=0,
                             max=3,
                             help_text=_(
