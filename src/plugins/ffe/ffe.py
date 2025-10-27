@@ -6,7 +6,7 @@ from collections import Counter
 from collections.abc import Callable
 
 from types import ModuleType
-from typing import Any, TYPE_CHECKING, Iterable, Optional
+from typing import Any, TYPE_CHECKING, Iterable, Optional, override
 
 from litestar.plugins.htmx import HTMXRequest
 from packaging.version import Version
@@ -48,7 +48,6 @@ from plugins.ffe.utils import (
     FfeTournamentPluginData,
 )
 from plugins.ffe.ffe_tournament_controller import FfeAdminTournamentController
-from plugins.pairing_acceleration.pairing_acceleration import PairingAccelerationPlugin
 from utils.enum import (
     PlayerCategory,
     PlayerRatingType,
@@ -109,10 +108,6 @@ class FfePlugin(Plugin):
         return _('Fédération Française des Échecs')
 
     @property
-    def dependencies(self) -> list[type[Plugin]]:
-        return [PairingAccelerationPlugin]
-
-    @property
     def description(self) -> str:
         return _(
             'French Federation specific features (player search, results uploading, leagues, Papi import/export...)'
@@ -122,14 +117,21 @@ class FfePlugin(Plugin):
     def version(self) -> Version:
         return Version('0.1.1')
 
+    @override
     @property
-    def default_is_default_enabled(self) -> bool:
+    def default_is_enabled(self) -> bool:
         return True
 
+    @override
+    def is_enabled_for_event(self, event: Optional['Event']) -> bool:
+        return event is not None and event.federation == 'FRA'
+
+    @override
     @property
     def federation(self) -> str | None:
         return 'FRA'
 
+    @override
     @property
     def base_migration_module(self) -> ModuleType:
         return migrations

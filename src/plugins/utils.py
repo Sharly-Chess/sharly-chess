@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
 from types import ModuleType
-from typing import TYPE_CHECKING, Any, NamedTuple, Self
+from typing import TYPE_CHECKING, Any, NamedTuple, Self, Optional
 
 from packaging.version import Version
 
@@ -13,9 +13,9 @@ from plugins import PLUGINS_DIR
 
 if TYPE_CHECKING:
     from database.sqlite.event.event_database import EventDatabase
-    from database.sqlite.event.event_store import StoredEvent
     from plugins.migration import PluginMigrationManager
     from web.controllers.base_controller import BaseController
+    from data.event import Event
 
 
 class PluginUtils:
@@ -87,8 +87,7 @@ class PluginContext:
         if not stored_plugin:
             with ConfigDatabase(True) as database:
                 stored_plugin = StoredPlugin(
-                    name=plugin.id,
-                    is_default_enabled=plugin.default_is_default_enabled,
+                    name=plugin.id, is_enabled=plugin.default_is_enabled
                 )
                 database.insert_stored_plugin(stored_plugin)
         self.stored_plugin = stored_plugin
@@ -129,22 +128,6 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
         self.context: PluginContext = PluginContext(self)
 
     @property
-    def dependencies(self) -> list[type['Plugin']]:
-        """ID of the plugins that need to be enabled for this plugin to be enabled."""
-        return []
-
-    @property
-    def dependent_plugins(self) -> list['Plugin']:
-        """List of all the plugins that have this plugin as dependency."""
-        from plugins.manager import plugin_manager
-
-        return [
-            plugin
-            for plugin in plugin_manager.all_plugins
-            if self.__class__ in plugin.dependencies
-        ]
-
-    @property
     @abstractmethod
     def description(self) -> str:
         """Briefly describes the features of the plugin."""
@@ -161,23 +144,29 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
         return None
 
     @property
-    def default_is_default_enabled(self) -> bool:
-        """Defines if the default `is_default_enabled` value of the plugin."""
+    def default_is_enabled(self) -> bool:
+        """Defines if the plugin is enabled by default."""
         return False
 
     @property
+    def is_state_editable(self) -> bool:
+        """Defines if the state of the plugin
+        (enabled / disabled) is editable"""
+        return True
+
+    @property
     def federation(self) -> str | None:
-        """The federation for which the plugin can be enabled, or None for all"""
+        """Returns the federation for which the plugin is enabled,, or None for all"""
         return None
 
     @property
-    def is_default_enabled(self) -> bool:
-        """Defines if the plugin should be enabled by default on new events."""
+    def is_enabled(self) -> bool:
         assert self.context.stored_plugin is not None
-        return self.context.stored_plugin.is_default_enabled
+        return self.context.stored_plugin.is_enabled
 
-    def can_be_enabled_for_event(self, stored_event: 'StoredEvent') -> bool:
-        return not self.federation or self.federation == stored_event.federation
+    def is_enabled_for_event(self, event: Optional['Event']) -> bool:
+        """Determines if the plugin is enabled for the given event"""
+        return True
 
     @property
     def form_key(self) -> str:

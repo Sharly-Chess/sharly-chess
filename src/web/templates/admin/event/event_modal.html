@@ -257,23 +257,6 @@
         </div>
 
         <div class="modal-footer">
-            {% if client.can_update_event and action == 'update' %}
-                <button
-                    class="btn btn-outline-primary"
-                    hx-get="{{ url_for(
-                        'admin-event-plugins-modal',
-                        event_uniq_id=admin_event.uniq_id,
-                    ) }}"
-                    hx-indicator="#please-wait"
-                >
-                    <img
-                        src="{{ url_for('static', file_path='/images/puzzle-piece-icon.svg') }}?version={{ sharly_chess_config.version }}"
-                        style="height: 1.1em"
-                        class="p-0 mb-1"
-                    /> {{ _('Plugins') }}
-                </button>
-            {% endif %}
-            <div class="flex-grow-1"></div>
             <button
                 type="button"
                 class="btn btn-secondary text-nowrap"

@@ -1,4 +1,4 @@
-from typing import Any, TYPE_CHECKING, Iterable
+from typing import Any, TYPE_CHECKING, Iterable, override
 
 from packaging.version import Version
 
@@ -56,6 +56,16 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
     @property
     def version(self) -> Version:
         return Version('1.0.0')
+
+    @override
+    @property
+    def default_is_enabled(self) -> bool:
+        return False
+
+    @override
+    @property
+    def is_state_editable(self) -> bool:
+        return True
 
     # ---------------------------------------------------------------------------------
     # Initialisation and configuration

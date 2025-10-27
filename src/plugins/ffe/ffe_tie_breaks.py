@@ -232,10 +232,11 @@ class PapiPerformanceTieBreak(BasePapiTieBreak):
         ]
         ratings = []
         score = 0.0
-        player_estimation = self._get_player_estimation(player)
         for pairing in pairings:
             assert pairing.opponent_id is not None
             opponent = tournament.players_by_id[pairing.opponent_id]
+
+            player_estimation = self._get_player_estimation(player)
             opponent_estimation = self._get_player_estimation(opponent)
             rating = min(
                 player_estimation + 400,

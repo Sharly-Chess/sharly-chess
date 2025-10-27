@@ -135,9 +135,7 @@ class ConfigDatabase(MigrationDatabase):
     def _row_to_stored_plugin(self, row: dict[str, Any]) -> StoredPlugin:
         return StoredPlugin(
             name=row['name'],
-            is_default_enabled=self.load_bool_from_database_field(
-                row['is_default_enabled']
-            ),
+            is_enabled=self.load_bool_from_database_field(row['is_enabled']),
             plugin_data=self.load_json_from_database_field(row['plugin_data'], {}),
         )
 
@@ -152,9 +150,9 @@ class ConfigDatabase(MigrationDatabase):
 
     def update_stored_plugin(self, stored_plugin: StoredPlugin) -> StoredPlugin | None:
         self.execute(
-            'UPDATE `plugin` SET `is_default_enabled` = ?, `plugin_data` = ? WHERE `name` = ?',
+            'UPDATE `plugin` SET `is_enabled` = ?, `plugin_data` = ? WHERE `name` = ?',
             (
-                stored_plugin.is_default_enabled,
+                stored_plugin.is_enabled,
                 self.dump_to_json_database_field(stored_plugin.plugin_data),
                 stored_plugin.name,
             ),
@@ -162,17 +160,21 @@ class ConfigDatabase(MigrationDatabase):
         return self.load_stored_plugin(stored_plugin.name)
 
     def insert_stored_plugin(self, stored_plugin: StoredPlugin):
-        fields = self._get_fields_dict(stored_plugin, ['name', 'is_default_enabled'])
-        fields |= {
-            'plugin_data': self.dump_to_json_database_field(
-                stored_plugin.plugin_data, {}
-            )
-        }
+        fields: list[str] = [
+            'name',
+            'is_enabled',
+            'plugin_data',
+        ]
+        params = (
+            stored_plugin.name,
+            stored_plugin.is_enabled,
+            self.dump_to_json_database_field(stored_plugin.plugin_data or {}),
+        )
         fields_str = ', '.join(f'`{field}`' for field in fields)
         self.execute(
             f'INSERT INTO `plugin` ({fields_str}) '
-            f'VALUES ({", ".join(["?"] * len(fields))})',
-            tuple(fields.values()),
+            f'VALUES ({", ".join("?" for _ in params)})',
+            params,
         )
 
     # ---------------------------------------------------------------------------------

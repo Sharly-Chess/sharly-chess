@@ -121,12 +121,14 @@ class IndexAdminController(BaseAdminController):
             data = {}
         stored_plugins: list[StoredPlugin] = []
         for plugin in plugin_manager.all_plugins:
+            if not plugin.is_state_editable:
+                continue
+            errors: dict[str, str] = {}
             stored_plugins.append(
                 StoredPlugin(
                     name=plugin.id,
-                    is_default_enabled=WebContext.form_data_to_bool(
-                        data, plugin.form_key
-                    ),
+                    is_enabled=WebContext.form_data_to_bool(data, plugin.form_key),
+                    errors=errors,
                 )
             )
         return stored_plugins
@@ -592,11 +594,8 @@ class IndexAdminController(BaseAdminController):
         event = web_context.admin_event
         plugin_form_fields_templates = (
             plugin_manager.hook_for_event(event, 'get_event_form_fields_template')()
-            if event
-            else plugin_manager.hook_for_default_plugins(
-                'get_event_form_fields_template'
-            )()
-        ) or []
+            or []
+        )
         template_context = {
             'federation_options': self._get_federation_options(),
             'timer_color_texts': self._get_timer_color_texts(
@@ -650,36 +649,6 @@ class IndexAdminController(BaseAdminController):
             template_context=template_context,
         )
 
-    @get(
-        path=[
-            '/event-plugins-modal/{event_uniq_id:str}',
-        ],
-        name='admin-event-plugins-modal',
-        guards=[ActionGuard(AuthAction.UPDATE_EVENT)],
-    )
-    async def htmx_admin_event_plugins_modal(self, request: HTMXRequest) -> Template:
-        web_context = AdminWebContext(request)
-        event = web_context.get_admin_event()
-        enabled_plugins = event.enabled_plugins
-        plugins = [
-            plugin
-            for plugin in plugin_manager.all_plugins
-            if plugin.can_be_enabled_for_event(event.stored_event)
-        ]
-        template_context = {
-            'modal': 'event-plugins',
-            'plugins': plugins,
-            'data': WebContext.values_dict_to_form_data(
-                {
-                    plugin.form_key: plugin in enabled_plugins
-                    for plugin in plugin_manager.all_plugins
-                }
-            ),
-        }
-        return self._admin_render(
-            web_context, web_context.template_context | template_context
-        )
-
     @post(
         path='/{admin_tab:str}/create-event',
         name='admin-tab-create-event',
@@ -709,19 +678,8 @@ class IndexAdminController(BaseAdminController):
 
         uniq_id: str = stored_event.uniq_id
         EventDatabase(uniq_id).create()
-        plugins = plugin_manager.get_plugins_with_dependencies(
-            [
-                plugin
-                for plugin in plugin_manager.all_plugins
-                if plugin.is_default_enabled
-                and plugin.can_be_enabled_for_event(stored_event)
-            ]
-        )
-        with EventDatabase(uniq_id, write=True) as database:
-            database.update_stored_event(stored_event)
-            database.update_stored_event_enabled_plugins(
-                [plugin.id for plugin in plugins]
-            )
+        with EventDatabase(uniq_id, write=True) as event_database:
+            event_database.update_stored_event(stored_event)
         Message.success(
             request, _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id)
         )
@@ -792,19 +750,11 @@ class IndexAdminController(BaseAdminController):
         uniq_id: str = stored_event.uniq_id
         event = web_context.get_admin_event()
         EventDatabase(event.uniq_id).clone(new_uniq_id=uniq_id)
-        enablable_plugins = plugin_manager.get_event_enablable_plugins(stored_event)
-        with EventDatabase(uniq_id, write=True) as database:
-            database.update_stored_event(stored_event)
-            database.update_stored_event_enabled_plugins(
-                [
-                    plugin.id
-                    for plugin in event.enabled_plugins
-                    if plugin in enablable_plugins
-                ]
-            )
+        with EventDatabase(uniq_id, write=True) as event_database:
+            event_database.update_stored_event(stored_event)
             if 'with_players' not in data:
-                database.delete_all_stored_players()
-            plugin_manager.hook.on_event_duplicated(event_database=database)
+                event_database.delete_all_stored_players()
+            plugin_manager.hook.on_event_duplicated(event_database=event_database)
 
         Message.success(
             request,
@@ -842,36 +792,35 @@ class IndexAdminController(BaseAdminController):
                 template_context=template_context,
             )
 
-        enabled_plugins = web_context.get_admin_event().enabled_plugins
-        enablable_plugins = plugin_manager.get_event_enablable_plugins(stored_event)
-        disabled_plugins = [
-            plugin for plugin in enabled_plugins if plugin not in enablable_plugins
+        all_plugins = plugin_manager.enabled_plugins or []
+        enabled_before = [
+            p for p in all_plugins if p.is_enabled_for_event(web_context.admin_event)
         ]
+
         uniq_id = stored_event.uniq_id
-        with EventDatabase(uniq_id, write=True) as database:
-            database.update_stored_event(stored_event)
-            if disabled_plugins:
-                database.update_stored_event_enabled_plugins(
-                    [
-                        plugin.id
-                        for plugin in enabled_plugins
-                        if plugin in enablable_plugins
-                    ]
-                )
+        with EventDatabase(uniq_id, write=True) as event_database:
+            event_database.update_stored_event(stored_event)
+
+        web_context = AdminWebContext(request, admin_tab=admin_tab, reload_event=True)
+        enabled_after = [
+            p for p in all_plugins if p.is_enabled_for_event(web_context.admin_event)
+        ]
+        disabled_plugins = [p for p in enabled_before if p not in enabled_after]
 
         if disabled_plugins:
             message = (
                 _(
-                    'Due to the federation change, the following plugins '
-                    'have been disabled for this event: <b>{plugins}</b>.'
-                ).format(plugins=', '.join(plugin.name for plugin in disabled_plugins))
+                    'Due to the federation change, the following plugins have been disabled for this event: <b>{plugins}</b>.'
+                ).format(plugins=', '.join(p.name for p in disabled_plugins))
                 if len(disabled_plugins) > 1
                 else _(
-                    'Due to the federation change, the following plugin '
-                    'has been disabled for this event: <b>{plugin}</b>.'
+                    'Due to the federation change, the following plugin has been disabled for this event: <b>{plugin}</b>.'
                 ).format(plugin=disabled_plugins[0].name)
             )
-            Message.warning(request, message)
+            Message.warning(
+                request,
+                message,
+            )
         else:
             Message.success(
                 request,
@@ -928,37 +877,6 @@ class IndexAdminController(BaseAdminController):
                 ),
             )
         return ClientRedirect(redirect_to=admin_event_url(request, new_uniq_id))
-
-    @patch(
-        path='/event-plugins-update/{event_uniq_id:str}',
-        name='admin-event-plugins-update',
-        guards=[ActionGuard(AuthAction.UPDATE_EVENT)],
-    )
-    async def htmx_admin_event_plugins_update(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-    ) -> HTMXTemplate:
-        web_context = AdminWebContext(request)
-        event = web_context.get_admin_event()
-        with EventDatabase(event.uniq_id, True) as database:
-            database.update_stored_event_enabled_plugins(
-                [
-                    plugin.id
-                    for plugin in plugin_manager.all_plugins
-                    if WebContext.form_data_to_bool(data, plugin.form_key)
-                ]
-            )
-        return HTMXTemplate(
-            template_name='common/empty_modal_and_messages.html',
-            context={'messages': Message.messages(request)},
-            re_target='#modal-wrapper',
-            trigger_event='close_modal',
-            after='settle',
-        )
 
     @post(
         path='/restore-archive/{archive_name:str}',
@@ -1022,9 +940,7 @@ class IndexAdminController(BaseAdminController):
 
         for plugin in plugin_manager.all_plugins:
             if plugin.form_key not in data:
-                data[plugin.form_key] = WebContext.value_to_form_data(
-                    plugin.is_default_enabled
-                )
+                data[plugin.form_key] = WebContext.value_to_form_data(plugin.is_enabled)
 
         if errors is None:
             errors = {}
@@ -1105,6 +1021,8 @@ class IndexAdminController(BaseAdminController):
             data
         )
         errors = stored_config.errors
+        for plugin in stored_plugins:
+            errors |= plugin.errors
         if errors:
             template_context = self._config_modal_context(data, errors)
             sharly_chess_config: SharlyChessConfig = SharlyChessConfig()

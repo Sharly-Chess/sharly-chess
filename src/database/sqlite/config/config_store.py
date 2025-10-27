@@ -23,10 +23,11 @@ class StoredConfig:
 @dataclass
 class StoredPlugin:
     name: str
-    is_default_enabled: bool
+    is_enabled: bool
     plugin_data: dict[str, dict[str, dict[str, Any]]] = field(
         default_factory=dict[str, dict[str, dict[str, Any]]]
     )
+    errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
 @dataclass
