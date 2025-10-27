@@ -175,6 +175,8 @@ class PapiPlayerRatingType(CoreMapper[str | None, PlayerRatingType]):
             'E': PlayerRatingType.ESTIMATED,
             'N': PlayerRatingType.NATIONAL,
             'F': PlayerRatingType.FIDE,
+            'A': PlayerRatingType.ESTIMATED,
+            'R': PlayerRatingType.ESTIMATED,
         }
 
     @classmethod
