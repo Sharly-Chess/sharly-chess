@@ -782,6 +782,10 @@ msgstr ""
 msgid "Board %(board_number)s"
 msgstr ""
 
+#, python-format
+msgid "Board %(number)s"
+msgstr ""
+
 msgid "Board & color"
 msgstr ""
 
