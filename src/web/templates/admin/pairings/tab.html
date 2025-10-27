@@ -285,12 +285,18 @@
         }
 
         function handleShortCutKey(code) {
+            // Do not process keys if a Bootstrap modal is open
+            if ($('.modal.show').length > 0) {
+                return;
+            }
+
+            // If there is a warning, do not process the key
             if (hasErrorRow()) {
-                // If there is a warning, do not process the key
                 keyQueue = [];
                 $("tr.highlight").removeClass("highlight");
                 return;
             }
+
             keyQueue.push({ code, pairing_board_id });
             $('#pairing-row-' + pairing_board_id + ' td').addClass('text-secondary')
             nextBoardId = $(`[data-board-id="${pairing_board_id}"]`).next().data("board-id")
