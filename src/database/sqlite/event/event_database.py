@@ -325,6 +325,9 @@ class EventDatabase(MigrationDatabase):
             ),
             pab_value=row['pab_value'],
             plugin_data=self.load_json_from_database_field(row['plugin_data'], {}),
+            enabled_plugins=self.load_json_from_database_field(
+                row['enabled_plugins'], []
+            ),
         )
 
         return cast(T, stored_event)
@@ -399,6 +402,12 @@ class EventDatabase(MigrationDatabase):
         field_sets = (f'`{f}` = ?' for f in fields.keys())
         self.execute(
             f'UPDATE `info` SET {", ".join(field_sets)}', tuple(fields.values())
+        )
+
+    def update_stored_event_enabled_plugins(self, enabled_plugins: list[str]):
+        self.execute(
+            'UPDATE `info` SET `enabled_plugins` = ?',
+            (self.dump_to_json_database_field(enabled_plugins),),
         )
 
     # ---------------------------------------------------------------------------------

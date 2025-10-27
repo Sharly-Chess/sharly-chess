@@ -1,0 +1,57 @@
+<div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered"
+    style="--bs-modal-width: fit-content;"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Plugins') }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                hx-patch="{{ url_for(
+                    'admin-event-plugins-update',
+                    event_uniq_id=admin_event.uniq_id
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                <div class="row gx-3 d-fex flex-column gap-2">
+                    {% for plugin in plugins %}
+                        {{ admin_macros.switch_input(
+                            name=plugin.form_key,
+                            label='',
+                            placeholder=plugin.name,
+                            help_text='',
+                            info=plugin.description,
+                            data=data,
+                        ) }}
+                    {% endfor %}
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn btn-primary"
+            >
+                <i class="bi-floppy-fill pe-1"></i>
+                {{ _('Save') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>requestRefresh()</script>

@@ -28,7 +28,7 @@ from data.timer import Timer
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from plugins.manager import plugin_manager
-from plugins.utils import PluginData
+from plugins.utils import PluginData, Plugin
 from utils import Utils
 from utils.enum import (
     Result,
@@ -118,6 +118,22 @@ class Event:
     @property
     def pab_value(self) -> Result:
         return Result(self.stored_event.pab_value) or Result.WIN
+
+    @property
+    def enabled_plugins(self) -> list[Plugin]:
+        return [
+            plugin
+            for plugin in plugin_manager.all_plugins
+            if plugin.id in self.stored_event.enabled_plugins
+        ]
+
+    @property
+    def disabled_plugins(self) -> list[Plugin]:
+        return [
+            plugin
+            for plugin in plugin_manager.all_plugins
+            if plugin.id not in self.stored_event.enabled_plugins
+        ]
 
     @property
     def formatted_start_date_time(self) -> str:

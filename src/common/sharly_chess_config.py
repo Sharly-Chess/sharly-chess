@@ -30,7 +30,6 @@ from common.i18n import (
 from common.logger import set_logging_config, get_logger
 from common.network import find_lan_interfaces, LOCALHOST_IP
 from common.singleton import Singleton
-from plugins.manager import plugin_manager
 from utils.enum import Result
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredConfig
@@ -166,7 +165,6 @@ class SharlyChessConfig(metaclass=Singleton):
             console_show_level=stored_config.console_show_level,
         )
         enable_experimental_features(stored_config.experimental)
-        plugin_manager.reload_register()
         self._stored_config = stored_config
 
     @property

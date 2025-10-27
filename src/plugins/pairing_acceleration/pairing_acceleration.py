@@ -35,17 +35,6 @@ class PairingAccelerationPlugin(Plugin):
         return Version('0.1.0')
 
     @property
-    def default_is_enabled(self) -> bool:
-        # TODO (Molrn) switch to False once Papi-dependency has been removed
-        return True
-
-    @property
-    def is_state_editable(self) -> bool:
-        # FFE plugin is dependent from acceleration for Papi compatibility
-        # Until FFE plugin can be disabled, this one should remain not editable
-        return False
-
-    @property
     def base_migration_module(self) -> ModuleType:
         return migrations
 
