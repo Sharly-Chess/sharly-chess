@@ -1,5 +1,5 @@
 from types import ModuleType
-from typing import Any, TYPE_CHECKING, Optional, override
+from typing import Any, TYPE_CHECKING
 
 from packaging.version import Version
 
@@ -15,6 +15,7 @@ from plugins.chessevent.utils import (
     ChessEventTournamentPluginData,
     ChessEventUtils,
 )
+from plugins.ffe.ffe import FfePlugin
 from plugins.hookspec import hookimpl
 from plugins.migration import PluginMigrationManager
 from plugins.utils import Plugin, PluginData
@@ -35,6 +36,10 @@ class ChessEventPlugin(Plugin):
         return _('ChessEvent')
 
     @property
+    def dependencies(self) -> list[type[Plugin]]:
+        return [FfePlugin]
+
+    @property
     def description(self) -> str:
         return _(
             'Support for the ChessEvent platform used '
@@ -45,24 +50,21 @@ class ChessEventPlugin(Plugin):
     def version(self) -> Version:
         return Version('0.1.0')
 
-    @override
-    @property
-    def default_is_enabled(self) -> bool:
-        return False
-
-    @override
-    def is_enabled_for_event(self, event: Optional['Event']) -> bool:
-        return event is not None and event.federation == 'FRA'
-
-    @override
     @property
     def federation(self) -> str | None:
         return 'FRA'
 
-    @override
     @property
     def base_migration_module(self) -> ModuleType:
         return migrations
+
+    @property
+    def event_form_fields_template(self) -> str:
+        return '/chessevent_event_form_fields.html'
+
+    def used_by_tournament(self, tournament: 'Tournament') -> bool:
+        ce_data = ChessEventUtils.get_tournament_plugin_data(tournament)
+        return ce_data.tournament_name is not None
 
     # ---------------------------------------------------------------------------------
     # Initialisation and configuration
@@ -110,10 +112,6 @@ class ChessEventPlugin(Plugin):
     @hookimpl
     def get_event_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         return self.id, ChessEventEventPluginData
-
-    @hookimpl
-    def get_event_form_fields_template(self) -> str:
-        return '/chessevent_event_form_fields.html'
 
     @hookimpl
     def validate_event_form_fields(

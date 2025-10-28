@@ -358,10 +358,11 @@ class BaseStoredEvent:
     three_points_for_a_win: bool = False
     pab_value: int = Result.WIN.value
 
-    # Plugins can add their own tournament data
+    # Plugins can add their own event data
     plugin_data: dict[str, dict[str, Any]] = field(
         default_factory=dict[str, dict[str, Any]]
     )
+    enabled_plugins: list[str] = field(default_factory=list[str])
 
 
 @dataclass

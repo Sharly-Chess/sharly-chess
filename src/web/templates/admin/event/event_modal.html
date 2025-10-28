@@ -44,14 +44,31 @@
                 </div>
                 <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6">
-                        {{ admin_macros.select_input(
-                            name='federation',
-                            label=_('Federation:'),
-                            help_text=_('Sharly Chess may provide functionality specific to the federation chosen for each event.'),
-                            select_options=federation_options,
-                            disabled=not client.can_update_event,
-                            data=data, errors=errors
-                        ) }}
+                        <span
+                            {% if federation_plugin_used %}
+                                {{ macros.tooltip_attributes(
+                                    'warning',
+                                    _('A plugin specific to this federation is used, it can no longer be modified.'),
+                                    'top'
+                                ) }}
+                            {% endif %}
+                        >
+                            {{ admin_macros.select_input(
+                                name='federation',
+                                label=_('Federation:'),
+                                help_text=_(
+                                    'Sharly Chess may provide functionality specific '
+                                    'to the federation chosen for each event.'
+                                ),
+                                select_options=federation_options,
+                                disabled=not client.can_update_event or federation_plugin_used,
+                                data=data, errors=errors
+                            ) }}
+                            {% if federation_plugin_used %}
+                                <input type="hidden" name="federation" value="{{ data['federation'] }}">
+                            {% endif %}
+                        </span>
+
                     </div>
                     <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
@@ -119,9 +136,61 @@
                         ) }}
                     </div>
                 </div>
-                {% for form_fields_template in plugin_form_fields_templates %}
-                    {% include form_fields_template %}
-                {% endfor %}
+                <span id="plugins-container">
+                    <h4 class="mt-4">
+                        {{ _('Plugins') }}
+                    </h4>
+                    <div class="d-flex flex-column gap-3">
+                        {% for plugin in plugins %}
+                            <span
+                                class="plugin-container
+                                    {% if plugin.federation %}
+                                        federation-plugin federation-plugin-{{ plugin.federation }}
+                                    {% endif %}"
+                            >
+                                {% set used_by_tournaments_count = plugin.used_by_tournaments_count(admin_event) if admin_event else 0 %}
+                                <span class="fw-bold">
+                                    {{ admin_macros.plugin_switch_input(
+                                        plugin,
+                                        data,
+                                        used_message=ngettext(
+                                            'Used by %(num)d tournament.',
+                                            'Used by %(num)d tournaments.',
+                                            used_by_tournaments_count,
+                                        ) if used_by_tournaments_count else '',
+                                        disabled=not client.can_update_event,
+                                        uncheck_on_dependencies_disabled=not plugin.default_event_is_enabled
+                                    ) }}
+                                </span>
+                                {% if plugin.event_form_fields_template %}
+                                    <div id="{{ plugin.form_key }}-fields-container" class="mt-2">
+                                        {% include plugin.event_form_fields_template %}
+                                    </div>
+                                    <script>
+                                        $('#{{ plugin.form_key }}').change(function () {
+                                            $('#{{ plugin.form_key }}-fields-container').toggle(this.checked);
+                                        });
+                                    </script>
+                                {% endif %}
+
+                            </span>
+                        {% endfor %}
+                    </div>
+                    <script>
+                        $('.plugin-switch-input').trigger('change');
+                        $('#federation').change(function () {
+                            const federation = $(this).val();
+                            const pluginsToHide = $('.federation-plugin:not(.federation-plugin-' + federation + ')');
+                            pluginsToHide.hide();
+                            const pluginSwitch = pluginsToHide.find('.plugin-switch-input');
+                            pluginSwitch.prop('checked', false);
+                            pluginSwitch.trigger('change');
+                            $('.federation-plugin-' + federation).show();
+                            $('#plugins-container').show();
+                            $('#plugins-container').toggle($('.plugin-container:visible').length > 0);
+                        });
+                    </script>
+                </span>
 
                 <h4>
                     {{ _('Unrated players') }}

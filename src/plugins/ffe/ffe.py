@@ -6,7 +6,7 @@ from collections import Counter
 from collections.abc import Callable
 
 from types import ModuleType
-from typing import Any, TYPE_CHECKING, Iterable, Optional, override
+from typing import Any, TYPE_CHECKING, Iterable, Optional
 
 from litestar.plugins.htmx import HTMXRequest
 from packaging.version import Version
@@ -48,6 +48,7 @@ from plugins.ffe.utils import (
     FfeTournamentPluginData,
 )
 from plugins.ffe.ffe_tournament_controller import FfeAdminTournamentController
+from plugins.pairing_acceleration.pairing_acceleration import PairingAccelerationPlugin
 from utils.enum import (
     PlayerCategory,
     PlayerRatingType,
@@ -108,6 +109,10 @@ class FfePlugin(Plugin):
         return _('Fédération Française des Échecs')
 
     @property
+    def dependencies(self) -> list[type[Plugin]]:
+        return [PairingAccelerationPlugin]
+
+    @property
     def description(self) -> str:
         return _(
             'French Federation specific features (player search, results uploading, leagues, Papi import/export...)'
@@ -117,24 +122,37 @@ class FfePlugin(Plugin):
     def version(self) -> Version:
         return Version('0.1.1')
 
-    @override
     @property
     def default_is_enabled(self) -> bool:
         return True
 
-    @override
-    def is_enabled_for_event(self, event: Optional['Event']) -> bool:
-        return event is not None and event.federation == 'FRA'
+    @property
+    def default_event_is_enabled(self) -> bool:
+        return True
 
-    @override
     @property
     def federation(self) -> str | None:
         return 'FRA'
 
-    @override
     @property
     def base_migration_module(self) -> ModuleType:
         return migrations
+
+    @property
+    def event_form_fields_template(self) -> str:
+        return '/ffe_event_form_fields.html'
+
+    def used_by_tournament(self, tournament: 'Tournament') -> bool:
+        ffe_data = FFEUtils.get_tournament_plugin_data(tournament)
+        if ffe_data.ffe_id:
+            return True
+        for tie_break in tournament.tie_breaks:
+            if any(
+                isinstance(tie_break, tie_break_type)
+                for tie_break_type in self._tie_break_types
+            ):
+                return True
+        return isinstance(tournament.pairing_variation, NicoisSwissVariation)
 
     # The FFE league names.
     FFE_LEAGUES: dict[str, str] = {
@@ -642,10 +660,6 @@ class FfePlugin(Plugin):
         return self.id, FfeEventPluginData
 
     @hookimpl
-    def get_event_form_fields_template(self) -> str:
-        return '/ffe_event_form_fields.html'
-
-    @hookimpl
     def validate_event_form_fields(
         self,
         action: str,
@@ -904,15 +918,18 @@ class FfePlugin(Plugin):
     # Tie breaks
     # ---------------------------------------------------------------------------------
 
-    @hookimpl
-    def insert_tie_break_types(self, tie_break_types: list[type[TieBreak]]):
-        ffe_tie_break_types: list[type[BasePapiTieBreak]] = [
+    @property
+    def _tie_break_types(self) -> list[type[BasePapiTieBreak]]:
+        return [
             ffe_tie_breaks.PapiBuchholzTieBreak,
             ffe_tie_breaks.PapiPerformanceTieBreak,
             ffe_tie_breaks.PapiSumOfBuchholzTieBreak,
             ffe_tie_breaks.PapiKashdanTieBreak,
         ]
-        for tie_break_type in ffe_tie_break_types:
+
+    @hookimpl
+    def insert_tie_break_types(self, tie_break_types: list[type[TieBreak]]):
+        for tie_break_type in self._tie_break_types:
             PluginUtils.insert_on_equals(
                 tie_break_types, tie_break_type, tie_break_type.base_tie_break_type()
             )

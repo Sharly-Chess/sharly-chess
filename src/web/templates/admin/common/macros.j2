@@ -1477,3 +1477,88 @@ with_indicator: display a loading indicator, optional
         active_option='add_other' if is_add_other_active else 'create'
     )}}
 {% endmacro %}
+
+{% macro plugin_switch_input(
+    plugin,
+    data,
+    used_message='',
+    disabled=false,
+    uncheck_on_dependencies_disabled=false
+) %}
+    <div class="input-block position-relative">
+        <div
+            class="pw-input-group form-check form-switch d-inline-block pe-3"
+            {% if used_message %}
+                {{ macros.tooltip_attributes('info', used_message, 'top') }}
+            {% endif %}
+        >
+            <input
+                id="{{ plugin.form_key }}"
+                name="{{ plugin.form_key }}"
+                data-testid="{{ plugin.form_key }}"
+                type="checkbox"
+                class="form-check-input plugin-switch-input"
+                value="on"
+                data-dependencies="{{ ';'.join(plugin.dependency_form_keys) }}"
+                data-used="{{ 'true' if used_message else 'false' }}"
+                data-uncheck-on-dependencies-disabled="{{ 'true' if uncheck_on_dependencies_disabled else 'false' }}"
+                {% if used_message or data[plugin.form_key] == 'on' %}
+                    checked
+                {% endif %}
+                {% if used_message or disabled %}
+                    disabled
+                {% endif %}
+            >
+            {% if used_message %}
+                <input
+                    name="{{ plugin.form_key }}"
+                    type="hidden"
+                    value="on"
+                >
+            {% endif %}
+            {{ plugin.name }}
+        </div>
+        <i
+            class="bi bi-info-circle-fill"
+            {{ macros.tooltip_attributes('', plugin.description, 'top') }}
+        ></i>
+        {% for required_by_plugin in plugin.required_by_plugins %}
+            <i
+                id="{{ plugin.form_key }}-{{ required_by_plugin.form_key }}-dependency"
+                class="bi-lock-fill text-primary {{ plugin.form_key }}-dependency"
+                {{ macros.tooltip_attributes(
+                    '', _('Required by plugin <b>%(plugin)s</b>.', plugin=required_by_plugin.name), 'top'
+                ) }}
+                style="display:none"
+            ></i>
+        {% endfor %}
+        <script>
+            $('#{{ plugin.form_key }}').change(function () {
+                const used = this.dataset.used == 'true';
+                this.dataset.dependencies.split(';').forEach((dependency) => {
+                    if (!dependency) return;
+                    const dependencyElement = $('#' + dependency);
+                    if(this.checked) {
+                        $('#' + dependency + '-{{ plugin.form_key }}-dependency').show();
+                        $('#' + dependency + '-hidden').prop('disabled', false);
+                        dependencyElement.prop('checked', true);
+                        dependencyElement.prop('disabled', true);
+                        dependencyElement.trigger('change');
+                    } else {
+                        $('#' + dependency + '-{{ plugin.form_key }}-dependency').hide();
+                        if (
+                            dependencyElement.attr('data-used') !== 'true'
+                            && !$('.' + dependency + '-dependency:visible').length
+                        ) {
+                            dependencyElement.prop('disabled', false);
+                            if (dependencyElement.attr('data-uncheck-on-dependencies-disabled') === 'true') {
+                                dependencyElement.prop('checked', false);
+                                dependencyElement.trigger('change');
+                            }
+                        }
+                    }
+                });
+            });
+        </script>
+    </div>
+{% endmacro %}

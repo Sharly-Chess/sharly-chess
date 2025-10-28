@@ -82,14 +82,16 @@
                 </h4>
                 <div class="row gx-3 d-fex flex-column gap-2">
                     {% for plugin in global_plugins %}
-                        {{ admin_macros.switch_input(
-                            name=plugin.form_key,
-                            label='',
-                            placeholder=plugin.name,
-                            disabled=not plugin.is_state_editable,
-                            help_text='',
-                            info=plugin.description,
-                            data=data, errors=errors
+                        {% set used_by_events_count = plugin.used_by_events_count(events_metadata) %}
+                        {{ admin_macros.plugin_switch_input(
+                            plugin,
+                            data,
+                            used_message=ngettext(
+                                'Used by %(num)d event.',
+                                'Used by %(num)d events.',
+                                used_by_events_count,
+                            ) if used_by_events_count else '',
+                            uncheck_on_dependencies_disabled=not plugin.default_is_enabled
                         ) }}
                     {% endfor %}
                 </div>
@@ -109,19 +111,24 @@
                         </div>
                         <div class="row gx-3 d-fex flex-column gap-2">
                             {% for plugin in plugins %}
-                                {{ admin_macros.switch_input(
-                                    name=plugin.form_key,
-                                    label='',
-                                    placeholder=plugin.name,
-                                    disabled=not plugin.is_state_editable,
-                                    help_text='',
-                                    info=plugin.description,
-                                    data=data, errors=errors
+                                {% set used_by_events_count = plugin.used_by_events_count(events_metadata) %}
+                                {{ admin_macros.plugin_switch_input(
+                                    plugin,
+                                    data,
+                                    used_message=ngettext(
+                                        'Used by %(num)d event.',
+                                        'Used by %(num)d events.',
+                                        used_by_events_count,
+                                    ) if used_by_events_count else '',
+                                    uncheck_on_dependencies_disabled=not plugin.default_is_enabled
                                 ) }}
                             {% endfor %}
                         </div>
                     </div>
                 {% endfor %}
+                <script>
+                    $('.plugin-switch-input').trigger('change');
+                </script>
             </form>
         </div>
 

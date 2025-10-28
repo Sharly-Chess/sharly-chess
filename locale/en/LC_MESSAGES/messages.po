@@ -322,6 +322,9 @@ msgstr ""
 msgid "A non-empty string is expected"
 msgstr ""
 
+msgid "A plugin specific to this federation is used, it can no longer be modified."
+msgstr ""
+
 msgid "A positive integer is expected."
 msgstr ""
 
@@ -983,9 +986,6 @@ msgid "ChessEvent password not defined."
 msgstr ""
 
 msgid "ChessEvent password:"
-msgstr ""
-
-msgid "ChessEvent settings"
 msgstr ""
 
 msgid "ChessEvent tournament"
@@ -1663,12 +1663,6 @@ msgstr ""
 msgid "Draw"
 msgstr ""
 
-msgid "Due to the federation change, the following plugin has been disabled for this event: <b>{plugin}</b>."
-msgstr ""
-
-msgid "Due to the federation change, the following plugins have been disabled for this event: <b>{plugins}</b>."
-msgstr ""
-
 msgid "Duplicate the account."
 msgstr ""
 
@@ -2112,9 +2106,6 @@ msgid "FFE password not defined."
 msgstr ""
 
 msgid "FFE password:"
-msgstr ""
-
-msgid "FFE settings"
 msgstr ""
 
 msgid "FFE site"
@@ -3907,6 +3898,9 @@ msgstr ""
 msgid "Please wait…"
 msgstr ""
 
+msgid "Plugins"
+msgstr ""
+
 msgid "Point counting"
 msgstr ""
 
@@ -4198,6 +4192,10 @@ msgid "Request to the database failed (timeout)."
 msgstr ""
 
 msgid "Request to the database failed."
+msgstr ""
+
+#, python-format
+msgid "Required by plugin <b>%(plugin)s</b>."
 msgstr ""
 
 msgid "Res. ** RESULT FOR TABLE HEADER"
@@ -5758,6 +5756,18 @@ msgstr ""
 
 msgid "Use the recommended tie-breaks"
 msgstr ""
+
+#, python-format
+msgid "Used by %(num)d event."
+msgid_plural "Used by %(num)d events."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "Used by %(num)d tournament."
+msgid_plural "Used by %(num)d tournaments."
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Utility Plugins"
 msgstr ""
