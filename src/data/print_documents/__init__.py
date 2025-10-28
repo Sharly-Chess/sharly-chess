@@ -10,4 +10,5 @@ from .managers import (  # Noqa F401
     PrintPlayerSorterManager,
     PrintPairingStyleManager,
     PrintQRCodeTypeManager,
+    PrintPlaceCardTypeManager,
 )

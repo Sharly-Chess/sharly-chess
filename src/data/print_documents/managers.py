@@ -6,10 +6,12 @@ from data.print_documents import (
     player_sorters,
     pairing_styles,
     qrcode_types,
+    place_card_types,
 )
 from data.print_documents.documents import PrintDocument
 from data.print_documents.options import PrintOption
 from data.print_documents.pairing_styles import PairingStyle
+from data.print_documents.place_card_types import PlaceCardType
 from data.print_documents.player_sorters import PlayerSorter
 from data.print_documents.player_splitters import PlayerSplitter
 from data.print_documents.qrcode_types import QRCodeType
@@ -34,8 +36,7 @@ class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
             documents.StatisticsPrintDocument,
             documents.NormReportPrintDocument,
             documents.QRCodePrintDocument,
-            documents.PlayerCardsPrintDocument,
-            documents.BoardCardsPrintDocument,
+            documents.PlaceCardPrintDocument,
         ]
 
     @override
@@ -48,6 +49,8 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
     def entity_types(self) -> list[type[options.PrintOption]]:
         return [
             options.QRCodePrintOption,
+            options.PlaceCardPrintOption,
+            options.PlaceCardTemplatePrintOption,
             options.TournamentPrintOption,
             options.TournamentsPrintOption,
             options.PlayerPrintOption,
@@ -109,4 +112,15 @@ class PrintQRCodeTypeManager(EventBoundEntityManager[QRCodeType]):
         plugin_manager.hook_for_event(self.event, 'insert_print_qrcode_types')(
             qrcode_types=types
         )
+        return types
+
+
+class PrintPlaceCardTypeManager(EventBoundEntityManager[PlaceCardType]):
+    @override
+    def entity_types(self) -> list[type[PlaceCardType]]:
+        types: list[type[PlaceCardType]] = [
+            place_card_types.PlayerCardType,
+            place_card_types.BoardCardType,
+            place_card_types.PairingCardType,
+        ]
         return types

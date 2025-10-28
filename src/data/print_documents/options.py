@@ -7,6 +7,7 @@ from common.exception import OptionError
 from common.i18n import _
 from data.event import SharlyChessConfig
 from data.print_documents.pairing_styles import BoardsPairingStyle, PairingStyle
+from data.print_documents.place_card_types import PlayerCardType, PlaceCardType
 from data.print_documents.player_sorters import (
     PlayerSorter,
     NamePlayerSorter,
@@ -358,3 +359,78 @@ class QRCodeNetworkPrintOption(PrintOption):
     @property
     def template_name(self) -> str:
         return '/admin/event/print_options/qrcode_network.html'
+
+
+class PlaceCardPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'place-card-type'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str | None
+
+    @property
+    def default_value(self) -> Any:
+        return PlayerCardType.static_id()
+
+    @property
+    def place_card_print_document_id(self) -> str:
+        from data.print_documents.documents import PlaceCardPrintDocument
+
+        return PlaceCardPrintDocument.static_id()
+
+    @property
+    def place_card_type_options(self) -> dict[str, str]:
+        from data.print_documents import PrintPlaceCardTypeManager
+
+        return PrintPlaceCardTypeManager(self.event).options()
+
+    @cached_property
+    def place_card_type(self) -> PlaceCardType:
+        from data.print_documents import PrintPlaceCardTypeManager
+
+        return PrintPlaceCardTypeManager(self.event).get_object(self.value)
+
+    @property
+    def valid_options_per_type(self) -> dict[str, list[str]]:
+        from data.print_documents import PrintPlaceCardTypeManager
+
+        type_options = PrintPlaceCardTypeManager(self.event).type_by_id()
+        return {
+            type_id: type_options[type_id].get_valid_options()
+            for type_id in type_options
+        }
+
+    @override
+    def validate(self):
+        try:
+            _style = self.place_card_type
+        except KeyError:
+            # Untranslated, should not happen
+            raise OptionError(f'Unknown Place Card type: {self.value}', self)
+
+
+class PlaceCardTemplatePrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'place-card-template'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str | None
+
+    @property
+    def default_value(self) -> Any:
+        # This is managed by the print controller
+        return None
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/event/print_options/place_card_template.html'
+
+    @override
+    def validate(self):
+        super().validate()
+        if self.value is None:
+            raise OptionError(_('Please choose the template.'), self)

@@ -1,5 +1,3 @@
-{% extends '/admin/print/cards.html' %}
-
 {###########################################################################}
 {# THE UNIT USED FOR THE SIZES OF THE CARD AND THE CARD ITEMS              #}
 {###########################################################################}
@@ -46,61 +44,38 @@
 } %}
 
 {###########################################################################}
-{# NAME STYLING                                                            #}
+{# NUMBER STYLING                                                          #}
 {###########################################################################}
-{% set name_styling = {
-    'font_size': 18,
-    'font_weight': 'bold',
-    'max_width': 92,
-} %}
-
-{###########################################################################}
-{# RATING STYLING                                                          #}
-{###########################################################################}
-{% set rating_styling = {
-    'font_size': 18,
+{% set number_styling = {
+    'font_size': 48,
     'font_weight': 'bold',
     'hor_align': 'right',
-} %}
-
-{###########################################################################}
-{# CATEGORY STYLING                                                        #}
-{###########################################################################}
-{% set category_styling = {
-    'ver_pos': 8,
-} %}
-
-{###########################################################################}
-{# CLUB STYLING                                                            #}
-{###########################################################################}
-{% set club_styling = {
-    'ver_pos': 16,
-} %}
-
-{###########################################################################}
-{# EVENT STYLING                                                            #}
-{###########################################################################}
-{% set event_styling = {
-    'font_style': 'italic',
     'ver_align': 'bottom',
 } %}
 
+{###########################################################################}
+{# TOURNAMENT STYLING                                                      #}
+{###########################################################################}
+{% set tournament_styling = {
+    'font_style': 'italic',
+    'ver_align': 'top',
+} %}
+
+{% extends '/admin/print/place_cards/simple.html' %}
+
 {% block card_css %}
     .card-content {
-        background-position: right bottom;
+        background-position: left bottom;
     }
-    .name, .name * { {{ item_styling(name_styling, default_styling) }} }
-    .rating, .rating * { {{ item_styling(rating_styling, default_styling) }} }
-    .category, .category * { {{ item_styling(category_styling, default_styling) }} }
-    .club, .club * { {{ item_styling(club_styling, default_styling) }} }
-    .event, .event * { {{ item_styling(event_styling, default_styling) }} }
+    .number, .number * { {{ item_styling(number_styling, default_styling) }} }
+    .tournament, .tournament * { {{ item_styling(tournament_styling, default_styling) }} }
 {% endblock %}
 
 {% block card_js %}
 {% endblock %}
 
 {% block card_content %}
-    {% for player in players %}
+    {% for board in boards %}
         <div class="card-wrapper">
             <div class="card">
                 <div class="card-cell top left"></div>
@@ -108,23 +83,11 @@
                 <div class="card-cell top right"></div>
                 <div class="card-cell middle left"></div>
                 <div class="card-content">
-                    <div class="card-item name">
-                        {{ federation_flag(player) }}
-                        {{ player.full_name }}
+                    <div class="card-item number">
+                        {{ _('Board %(number)s', number=board.number) }}
                     </div>
-                    <div class="card-item rating">
-                        {{ player.rating }}{{ player.rating_type }}
-                    </div>
-                    <div class="card-item category">
-                        {{ player.category }}
-                    </div>
-                    <div class="card-item club">
-                        {{ player.federation }}
-                        {% if player.league %}- {{ player.league }}{% endif %}
-                        {% if player.club %}- {{ player.club }}{% endif %}
-                    </div>
-                    <div class="card-item event">
-                        {{ event.name }}
+                    <div class="card-item tournament">
+                        {{ tournament.name }}
                     </div>
                 </div>
                 <div class="card-cell middle right"></div>

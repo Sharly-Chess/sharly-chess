@@ -1,19 +1,15 @@
-import base64
 from datetime import datetime
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from functools import cached_property, partial
 import itertools
-from pathlib import Path
 from typing import Any, Callable, override
 from collections import Counter
 
-from common import format_timestamp, BASE_DIR
+from common import format_timestamp
 from common.exception import SharlyChessException, OptionError
 from common.i18n import _, ngettext
 from common.i18n.utils import unicode_normalize
-from common.sharly_chess_config import SharlyChessConfig
-from database.sqlite.event.event_store import StoredBoard
 from plugins.manager import plugin_manager
 from data.board import Board
 from data.pairings.engines import RoundRobinPairingEngine
@@ -33,6 +29,8 @@ from data.print_documents.options import (
     ClubThresholdPrintOption,
     TournamentPrintOption,
     TournamentsPrintOption,
+    PlaceCardPrintOption,
+    PlaceCardTemplatePrintOption,
 )
 from data.tournament import Tournament
 from utils import Utils
@@ -1171,80 +1169,33 @@ class PrintCardEvent:
         self.stop: PrintCardDate = PrintCardDate(event.stop)
 
 
-class CardsPrintDocument(PrintDocument, ABC):
+class PlaceCardPrintDocument(PrintDocument):
+    @staticmethod
+    def static_id() -> str:
+        return 'place-card'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Place Cards')
+
     @property
     def title(self) -> str:
         return ''
 
     @staticmethod
-    def base654_encode_file(
-        file: Path,
-    ) -> str:
-        with open(file, 'rb') as f:
-            data: bytes = f.read()
-        return base64.b64encode(data).decode('utf-8')
+    def available_options() -> list[type[PrintOption]]:
+        return [
+            PlaceCardPrintOption,
+            PlaceCardTemplatePrintOption,
+            TournamentPrintOption,
+            RoundPrintOption,
+        ]
 
-    @classmethod
-    def ttf_inline_url(
-        cls,
-    ) -> str:
-        """Returns the inline URL for a TTF file (this method is used to build self-contained files)."""
-        font_file: Path = (
-            BASE_DIR / 'src/web/static/fonts/AtkinsonHyperlegibleNextVF-Variable.ttf'
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return self._get_option(PlaceCardPrintOption).place_card_type.template_context(
+            self
         )
-        encoded_data = cls.base654_encode_file(font_file)
-        return f'data:font/truetype;charset=utf-8;base64,{encoded_data}'
-
-    @classmethod
-    def svg_file_inline_url(
-        cls,
-        file: Path,
-    ) -> str:
-        """Returns the inline URL for a SVG file (this method is used to build self-contained files)."""
-        encoded_data = cls.base654_encode_file(file)
-        image_type = file.suffix.lower().replace('.', '').replace('\\n', '')
-        return f'data:image/{image_type}+xml;base64,{encoded_data}'
-
-    def flag_inline_urls_by_federation(
-        self,
-        federation_names: set[str],
-    ) -> dict[str, str]:
-        """Returns a dict with the inline URLs of the federations passed."""
-        return {
-            federation_name: self.svg_file_inline_url(
-                BASE_DIR / f'src/web/static/images/federations/{federation_name}.svg'
-            )
-            for federation_name in federation_names
-        }
-
-    @property
-    def template_context(self) -> dict[str, Any]:
-        assert self.event is not None
-        return {
-            'sharly_chess_config': SharlyChessConfig(),
-            'sharly_chess_font_inline_url': self.ttf_inline_url(),
-            'sharly_chess_logo_inline_url': self.svg_file_inline_url(
-                BASE_DIR / 'src/web/static/images/sharly-chess-logo.svg'
-            ),
-            'event': PrintCardEvent(self.event),
-            'tournament': PrintCardTournament(self.tournament),
-        }
-
-
-class PlayerCardsPrintDocument(CardsPrintDocument):
-    @staticmethod
-    def static_id() -> str:
-        return 'player-cards'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('Player Cards')
-
-    @staticmethod
-    def available_options() -> list[type[PrintOption]]:
-        return [
-            TournamentPrintOption,
-        ]
 
     @staticmethod
     def validate_for_tournament(tournament: Tournament) -> str | None:
@@ -1252,68 +1203,4 @@ class PlayerCardsPrintDocument(CardsPrintDocument):
 
     @property
     def template_name(self) -> str:
-        return '/admin/print/player_cards.html'
-
-    @property
-    def template_context(self) -> dict[str, Any]:
-        players = self.tournament.players_by_starting_rank.values()
-        federation_names = set(player.federation.name for player in players)
-        return super().template_context | {
-            'players': (PrintCardPlayer(player) for player in players),
-            'flag_inline_urls_by_federation': self.flag_inline_urls_by_federation(
-                federation_names
-            ),
-        }
-
-
-class BoardCardsPrintDocument(CardsPrintDocument):
-    @staticmethod
-    def static_id() -> str:
-        return 'board-cards'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('Board Cards')
-
-    @staticmethod
-    def available_options() -> list[type[PrintOption]]:
-        return [
-            TournamentPrintOption,
-        ]
-
-    @staticmethod
-    def validate_for_tournament(tournament: Tournament) -> str | None:
-        return None
-
-    @property
-    def template_name(self) -> str:
-        return '/admin/print/board_cards.html'
-
-    @property
-    def template_context(self) -> dict[str, Any]:
-        players = self.tournament.players_by_id.values()
-        board_numbers = [
-            self.tournament.first_board_number - 1 + number
-            for number in range(self.tournament.player_count // 2)
-        ] + [player.fixed for player in players if player.fixed]
-        first_player_id: int = list(self.tournament.players_by_id.keys())[0]
-        boards = [
-            Board(
-                self.tournament,
-                1,
-                StoredBoard(
-                    board_number,
-                    first_player_id,
-                    None,
-                    board_number,
-                ),
-            )
-            for board_number in board_numbers
-        ]
-        federation_names = set(player.federation.name for player in players)
-        return super().template_context | {
-            'boards': (PrintCardBoard(board) for board in boards),
-            'flag_inline_urls_by_federation': self.flag_inline_urls_by_federation(
-                federation_names
-            ),
-        }
+        return self._get_option(PlaceCardPrintOption).place_card_type.template_name()

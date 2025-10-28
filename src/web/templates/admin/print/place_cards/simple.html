@@ -1,6 +1,6 @@
 {% extends '/admin/print/base.html' %}
 
-{% macro federation_flag(player)%}
+{% macro federation_flag(player) %}
     <img class="federation-flag {{ player.federation }}" />
 {% endmacro %}
 
@@ -67,7 +67,6 @@
         height: {{ height }}{{ unit }};
         grid-template-columns: {{ padding }}{{ unit }} auto {{ padding }}{{ unit }};
         grid-auto-flow: row;
-        font-size: {{ default_styling.font_size }}px;
         page-break-inside: avoid;
     }
     .card-cell.top, .card-cell.bottom {
@@ -140,7 +139,7 @@
 {% endblock %}
 
 {% block js %}
-    {% include '../../../static/lib/jquery/jquery-' ~ sharly_chess_config.jquery_version ~'.min.js' %}
+    {% include '/lib/jquery/jquery-' ~ sharly_chess_config.jquery_version ~'.min.js' %}
     $(document).ready(function() {
         {% for federation, url in flag_inline_urls_by_federation.items() %}
             $(".federation-flag.{{ federation }}").attr('src', "{{ url }}");
