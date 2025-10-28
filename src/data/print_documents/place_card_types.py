@@ -18,13 +18,14 @@ if TYPE_CHECKING:
         PrintCardEvent,
         PrintCardBoard,
     )
-    from data.print_documents.options import TournamentPrintOption, RoundPrintOption
 
 
 class PlaceCardType(IdentifiableEntity, ABC):
     @staticmethod
     def get_valid_options() -> list[str]:
         """Returns a list of valid options for the place card type."""
+        from data.print_documents.options import TournamentPrintOption
+
         return [
             TournamentPrintOption.static_id(),
         ]
@@ -178,6 +179,8 @@ class PairingCardType(PlaceCardType):
 
     @staticmethod
     def get_valid_options() -> list[str]:
+        from data.print_documents.options import RoundPrintOption
+
         return PlaceCardType.get_valid_options() + [
             RoundPrintOption.static_id(),
         ]
