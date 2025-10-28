@@ -1402,7 +1402,7 @@ msgid "Database [{database}] successfully updated."
 msgstr "Base de données [{database}] mise à jour avec succès."
 
 msgid "Date and time"
-msgstr "Date et l'heure"
+msgstr "Date et heure"
 
 msgid "Date of birth"
 msgstr "Date de naissance"
