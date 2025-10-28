@@ -108,7 +108,7 @@
                             {{ admin_macros.number_input(
                                 name='first',
                                 label=_('First board:') if family_type in ['boards', 'input'] else _('First player:'),
-                                placeholder=_('Default: %(string)s', string=1),
+                                placeholder=1,
                                 help_text=help_text,
                                 data=data, errors=errors,
                                 min=1
@@ -125,7 +125,7 @@
                             {{ admin_macros.number_input(
                                 name='last',
                                 label=_('Last board:') if family_type in ['boards', 'input'] else _('Last player:'),
-                                placeholder=_('Default: %(string)s', string=_('last')),
+                                placeholder=_('last'),
                                 help_text=help_text,
                                 data=data, errors=errors,
                                 min=1
@@ -207,7 +207,7 @@
                             {{ admin_macros.number_input(
                                 name='font_size',
                                 label=_('Font size adjustment (%%):'),
-                                placeholder=_('Default: %(string)s', string='100%'),
+                                placeholder=100,
                                 help_text=_('Font size adjustment for the screen.'),
                                 data=data, errors=errors
                             ) }}

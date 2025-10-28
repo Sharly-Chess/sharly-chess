@@ -36,7 +36,7 @@
                             name='name',
                             label=_('Name:'),
                             placeholder=_('E.g.: Main tournament'),
-                            help_text=_('The name of the tournament, used for display.'),
+                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -45,7 +45,7 @@
                         {{ admin_macros.number_input(
                             name='rounds',
                             label=_('%(string)s:', string=_('Rounds')),
-                            help_text=_('The number of rounds of the tournament.'),
+                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -55,7 +55,7 @@
                         {{ admin_macros.select_input(
                             name='rating',
                             label=_('Rating:'),
-                            help_text=_('The type of rating to use for the tournament.'),
+                            help_text='',
                             select_options=rating_options,
                             data=data, errors=errors
                         ) }}
@@ -66,7 +66,6 @@
                             label=_('Player ratings to use:'),
                             help_text=_(
                                 'Affects the rating that will be chosen for each player.',
-                                default=admin_event.player_rating_type
                             ),
                             select_options=player_rating_type_options,
                             data=data, errors=errors
@@ -78,7 +77,7 @@
                         {{ admin_macros.datetime_input(
                             name='start',
                             label=_('Start:'),
-                            help_text=_('The start time of the tournament (defaults to %(datetime)s).', datetime=admin_event.formatted_start_date_time),
+                            help_text=_('Defaults to %(datetime)s', datetime=admin_event.formatted_start_date_time),
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -86,7 +85,7 @@
                         {{ admin_macros.datetime_input(
                             name='stop',
                             label=_('End:'),
-                            help_text=_('The end time of the tournament (defaults to %(datetime)s).', datetime=admin_event.formatted_stop_date_time),
+                            help_text=_('Defaults to %(datetime)s', datetime=admin_event.formatted_stop_date_time),
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -94,29 +93,24 @@
                         {{ admin_macros.text_input(
                             name='location',
                             label=_('%(string)s:', string=_('Location')),
-                            placeholder=_('E.g.: Paris'),
-                            help_text=(
-                                _(
-                                    'The location of the tournament (defaults to [%(location)s]).',
-                                    location=admin_event.location
-                                ) if admin_event.location else _('The location of the tournament.')
-                            ),
+                            placeholder=admin_event.location or _('E.g.: Paris'),
+                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
                 </div>
 
                 <h4 class="estimated-ratings">
-                    {{ _('Estimated ratings') }}
+                    {{ _('Unrated players') }}
                 </h4>
 
                 <div class="row gy-2 gx-3 estimated-ratings">
-                    <div class="col-12 col-md-6">
+                    <div class="col-12">
                         {{ admin_macros.select_input(
                             name='override_unrated_rapid_blitz',
                             label=_('Seeding of unrated rapid/blitz'),
                             help_text=_(
-                                'Handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. You may also choose to use this rating for seeding and pairings.',
+                                'Handling of players without a FIDE rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating.',
                             ),
                             doc_icon='standard-rating',
                             select_options=override_unrated_rapid_blitz_options,
@@ -155,7 +149,7 @@
                         {{ admin_macros.select_input(
                             name='pairing_system',
                             label=_('%(string)s:', string=_('Pairing system')),
-                            help_text=_('The system used to generate the pairings.'),
+                            help_text='',
                             select_options=pairing_system_options,
                             disabled=admin_tournament.started,
                             data=data, errors=errors
@@ -183,7 +177,7 @@
                                 name=pairing_system.variation_field_id,
                                 label=_('%(string)s:', string=_('Variation')),
                                 select_options=pairing_system.variation_manager(admin_event).options(),
-                                help_text=_('The variation of the pairing system.'),
+                                help_text='',
                                 disabled=admin_tournament.started,
                                 data=data, errors=errors
                             ) }}
@@ -211,8 +205,8 @@
                         {{ admin_macros.number_input(
                             name='first_board_number',
                             label=_('First board number:'),
-                            placeholder=_('Default: %(string)s', string=sharly_chess_config.default_first_board_number),
-                            help_text=_('The number of the first board of the tournament.'),
+                            placeholder=sharly_chess_config.default_first_board_number,
+                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -220,7 +214,7 @@
                         {{ admin_macros.number_input(
                             name='max_byes',
                             label=_('Max byes:'),
-                            placeholder=_('Default: %(string)s', string=sharly_chess_config.default_max_byes),
+                            placeholder=sharly_chess_config.default_max_byes,
                             help_text=_('The maximum number of byes a player can pretend to.'),
                             data=data, errors=errors
                         ) }}
@@ -229,7 +223,7 @@
                         {{ admin_macros.number_input(
                             name='last_rounds_no_byes',
                             label=_('No. final rounds without byes:'),
-                            placeholder=_('Default: %(string)s', string=sharly_chess_config.default_last_rounds_no_byes),
+                            placeholder=sharly_chess_config.default_last_rounds_no_byes,
                             help_text=_('The number of final rounds in which byes are not permitted.'),
                             data=data, errors=errors
                         ) }}
@@ -286,36 +280,6 @@
                     </div>
                 </div>
 
-                <div class="row gy-2 gx-3">
-                    <div class="col-12 col-md-4">
-                        {{ admin_macros.number_input(
-                            name='time_control_handicap_penalty_value',
-                            label=_('Penalty (handicap, seconds):'),
-                            placeholder=_('E.g.: %(seconds)d (seconds)', seconds=30),
-                            help_text=_('The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players).'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-md-4">
-                        {{ admin_macros.number_input(
-                            name='time_control_handicap_penalty_step',
-                            label=_('Elo step (handicap):'),
-                            placeholder=_('E.g.: 50 (Elo)'),
-                            help_text=_('The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player.'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-md-4">
-                        {{ admin_macros.number_input(
-                            name='time_control_handicap_min_time',
-                            label=_('Minimal time (handicap, seconds):'),
-                            placeholder=_('E.g.: %(seconds)d (seconds)', seconds=60),
-                            help_text=_('The minimum time, whatever the ranking difference between the two players.'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                </div>
-
                 <h4>
                     {{ _('Rules') }}
                 </h4>
@@ -325,7 +289,7 @@
                             name='rules',
                             label=_('Rules file location:'),
                             placeholder=(
-                                _('Default: %(string)s', string=admin_event.rules)
+                                admin_event.rules
                                 if admin_event.rules else
                                 _('E.g.: c:\\chess\\tournaments\\main\\rules.pdf')
                             ),
@@ -337,7 +301,7 @@
                         {{ admin_macros.number_input(
                             name='record_illegal_moves',
                             label=_('Illegal moves recording:'),
-                            placeholder=_('Default: %(string)s', string=admin_event.record_illegal_moves),
+                            placeholder=admin_event.record_illegal_moves,
                             min=0,
                             max=3,
                             help_text=_(
@@ -367,6 +331,48 @@
                             label=_('%(string)s:', string=_('Point counting')),
                             help_text='',
                             select_options=three_points_for_a_win_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+                <button
+                    type="button"
+                    class="collapse-button collapsed"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#handicap-settings"
+                >
+                    <h4
+                        class="form-check-label d-inline-flex align-items-center gap-2"
+                    >
+                        <i class="bi bi-chevron-down"></i>
+                         {{ _('Handicap games') }}
+                    </h4>
+                </button>
+                <div id="handicap-settings" class="collapse row gy-2 gx-3">
+                    <div class="col-12 col-md-4">
+                        {{ admin_macros.number_input(
+                            name='time_control_handicap_penalty_value',
+                            label=_('Penalty (handicap, seconds):'),
+                            placeholder=_('E.g.: %(seconds)d (seconds)', seconds=30),
+                            help_text=_('The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players).'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-4">
+                        {{ admin_macros.number_input(
+                            name='time_control_handicap_penalty_step',
+                            label=_('Elo step (handicap):'),
+                            placeholder=_('E.g.: 50 (Elo)'),
+                            help_text=_('The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player.'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-4">
+                        {{ admin_macros.number_input(
+                            name='time_control_handicap_min_time',
+                            label=_('Minimal time (handicap, seconds):'),
+                            placeholder=_('E.g.: %(seconds)d (seconds)', seconds=60),
+                            help_text=_('The minimum time, whatever the ranking difference between the two players.'),
                             data=data, errors=errors
                         ) }}
                     </div>

@@ -7,10 +7,7 @@
         {{ admin_macros.select_input(
             name='ffe_auto_upload',
             label=_('Auto-upload:'),
-            help_text=_(
-                'Auto-upload results to FFE site when a tournament is updated. You must enter the tournament certification number and password for this to take effect.',
-                default=admin_event.plugin_data.ffe.ffe_auto_upload
-            ),
+            help_text='',
             select_options=ffe_auto_upload_options,
             data=data, errors=errors
         ) }}

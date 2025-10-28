@@ -55,49 +55,6 @@
                     {% endif %}
                 </div>
                 <h4>
-                    {{ _('Console logs') }}
-                </h4>
-                <div class="row gy-2 gx-3">
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.select_input(
-                            name='console_log_level',
-                            label=_('%(string)s:', string=_('Logging level')),
-                            help_text=_('The minimum level of logs that will be printed on the console (all the detailed logs are always printed to the log files).'),
-                            select_options=console_log_level_options,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-md-6 mt-2 d-flex flex-column gap-2">
-                        {{ admin_macros.switch_input(
-                            name='console_color',
-                            label='',
-                            help_text='',
-                            placeholder=_('Use log-level specific colors'),
-                            info=_('Using colors helps in finding quickly important information on the console.'),
-                            data=data, errors=errors
-                        ) }}
-                        {{ admin_macros.switch_input(
-                            name='console_show_level',
-                            label='',
-                            placeholder=_('Show the logging level'),
-                            help_text='',
-                            info=_('Colorblind people can print the logging level to distinguish important information on the console.'),
-                            data=data, errors=errors
-                        ) }}
-                        {{ admin_macros.switch_input(
-                            name='console_show_date',
-                            label='',
-                            help_text='',
-                            placeholder=_('Show the date and time'),
-                            info=_(
-                                'Showing the date and time on the console may help in identifying slow '
-                                'operations on the console (the date and time are always printed to the log files).'
-                            ),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                </div>
-                <h4>
                     {{ _('Internationalization') }}
                 </h4>
                 <div class="row gy-2 gx-3">
@@ -165,6 +122,59 @@
                         </div>
                     </div>
                 {% endfor %}
+                <button
+                    type="button"
+                    class="collapse-button collapsed"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#log-settings"
+                >
+                    <h4
+                        class="form-check-label d-inline-flex align-items-center gap-2"
+                    >
+                        <i class="bi bi-chevron-down"></i>
+                         {{ _('Console logs') }}
+                    </h4>
+                </button>
+                <div id="log-settings" class="collapse row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.select_input(
+                            name='console_log_level',
+                            label=_('%(string)s:', string=_('Logging level')),
+                            help_text=_('The minimum level of logs that will be printed on the console (all the detailed logs are always printed to the log files).'),
+                            select_options=console_log_level_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6 mt-2 d-flex flex-column gap-2">
+                        {{ admin_macros.switch_input(
+                            name='console_color',
+                            label='',
+                            help_text='',
+                            placeholder=_('Use log-level specific colors'),
+                            info=_('Using colors helps in finding quickly important information on the console.'),
+                            data=data, errors=errors
+                        ) }}
+                        {{ admin_macros.switch_input(
+                            name='console_show_level',
+                            label='',
+                            placeholder=_('Show the logging level'),
+                            help_text='',
+                            info=_('Colorblind people can print the logging level to distinguish important information on the console.'),
+                            data=data, errors=errors
+                        ) }}
+                        {{ admin_macros.switch_input(
+                            name='console_show_date',
+                            label='',
+                            help_text='',
+                            placeholder=_('Show the date and time'),
+                            info=_(
+                                'Showing the date and time on the console may help in identifying slow '
+                                'operations on the console (the date and time are always printed to the log files).'
+                            ),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
             </form>
         </div>
 

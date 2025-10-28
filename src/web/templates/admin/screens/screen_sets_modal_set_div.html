@@ -48,7 +48,7 @@
                             {{ admin_macros.number_input(
                                 name='first',
                                 label=_('First board:') if admin_screen.type in ['boards', 'input'] else _('First player:'),
-                                placeholder=_('Default: %(string)s', string=1),
+                                placeholder=1,
                                 help_text=help_text,
                                 data=data, errors=errors,
                                 min=1
@@ -65,7 +65,7 @@
                             {{ admin_macros.number_input(
                                 name='last',
                                 label=_('Last board:') if admin_screen.type in ['boards', 'input'] else _('Last player:'),
-                                placeholder=_('Default: %(string)s', string=_('last')),
+                                placeholder=_('last'),
                                 help_text=help_text,
                                 data=data, errors=errors,
                                 min=1
