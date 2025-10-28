@@ -3373,7 +3373,7 @@ msgid "Number of prizes"
 msgstr "Nombre de prix"
 
 msgid "Number of screen families"
-msgstr "Nombre de famille d'écrans"
+msgstr "Nombre de familles d'écrans"
 
 msgid "Number of screens"
 msgstr "Nombre d'écrans"
