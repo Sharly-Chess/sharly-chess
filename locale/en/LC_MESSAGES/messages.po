@@ -6378,12 +6378,3 @@ msgstr ""
 msgid "½ - ½ (U)"
 msgstr ""
 
-#~ msgid "Defaults to %(datetime)s."
-#~ msgstr ""
-
-#~ msgid "defaults to %(datetime)s."
-#~ msgstr ""
-
-#~ msgid "defaults to %(datetime)s"
-#~ msgstr ""
-
