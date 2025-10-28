@@ -80,24 +80,6 @@ class IndexAdminController(BaseAdminController):
         if data is None:
             data = {}
         errors: dict[str, str] = {}
-        console_log_level: int | None = WebContext.form_data_to_int(
-            data, field := 'console_log_level'
-        )
-        if (
-            console_log_level
-            and console_log_level not in sharly_chess_config.console_log_levels
-        ):
-            errors[field] = _(
-                'Invalid console logging level [{console_log_level}].'
-            ).format(log_level=console_log_level)
-            data[field] = ''
-        console_color: bool = WebContext.form_data_to_bool(data, 'console_color')
-        console_show_date: bool = WebContext.form_data_to_bool(
-            data, 'console_show_date'
-        )
-        console_show_level: bool = WebContext.form_data_to_bool(
-            data, 'console_show_level'
-        )
         experimental: bool = WebContext.form_data_to_bool(data, 'experimental')
         launch_browser: bool = WebContext.form_data_to_bool(data, 'launch_browser')
         federation_name: str | None = WebContext.form_data_to_str(
@@ -120,10 +102,10 @@ class IndexAdminController(BaseAdminController):
             data[field] = ''
         return StoredConfig(
             force_edit=False,
-            console_log_level=console_log_level,
-            console_color=console_color,
-            console_show_date=console_show_date,
-            console_show_level=console_show_level,
+            console_log_level=sharly_chess_config.console_log_level,
+            console_color=sharly_chess_config.console_color,
+            console_show_date=sharly_chess_config.console_show_date,
+            console_show_level=sharly_chess_config.console_show_level,
             experimental=experimental,
             launch_browser=launch_browser,
             federation=federation.name if federation else None,
@@ -962,10 +944,7 @@ class IndexAdminController(BaseAdminController):
 
         if errors is None:
             errors = {}
-        console_log_level_options: dict[str, str] = {
-            str(console_log_level): console_log_level_str
-            for console_log_level, console_log_level_str in config.console_log_levels.items()
-        }
+
         locale_options: dict[str, str] = {
             locale: locale_localized_name(locale) for locale in locales
         }
@@ -994,7 +973,6 @@ class IndexAdminController(BaseAdminController):
         }
 
         template_context = {
-            'console_log_level_options': console_log_level_options,
             'locale_options': locale_options,
             'global_plugins': global_plugins,
             'federation_plugins': plugins_by_federation,
