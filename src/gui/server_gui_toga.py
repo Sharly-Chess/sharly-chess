@@ -27,6 +27,7 @@ import qrcode
 
 from common import BASE_DIR, SHARLY_CHESS_VERSION
 from common.i18n import _
+from database.sqlite.config.config_database import ConfigDatabase
 from gui.gui_logger import GUILogHandler
 from web.server_engine import ServerEngine
 from common.sharly_chess_config import SharlyChessConfig
@@ -301,7 +302,12 @@ class SharlyChessServerToga(toga.App):
         self.website_btn: toga.Button
         self.clear_btn: toga.Button
         self.toggle_log_btn: toga.Button
-        self.log_view: toga.WebView
+        self.log_view: toga.Box
+        self.html_view: toga.WebView
+        self.log_level_select: toga.Selection
+        self.color_switch: toga.Switch
+        self.show_level_switch: toga.Switch
+        self.show_time_switch: toga.Switch
         self.info_view: toga.Box
         self.main_buttons_section: toga.Box
         self.networks_section: toga.Box
@@ -309,6 +315,8 @@ class SharlyChessServerToga(toga.App):
     # --- Toga lifecycle ---
     def startup(self):
         SharlyChessConfig().load_and_set_env()
+        config = SharlyChessConfig()
+
         # Delete unused menus
         for cmd in list(self.commands):
             grp = getattr(cmd, 'group', None)
@@ -349,9 +357,46 @@ class SharlyChessServerToga(toga.App):
         btn_row.add(self.clear_btn)
 
         # Log view: WebView with HTML for ANSI color support
-        self.log_view = toga.WebView(
+        self.html_view = toga.WebView(
             style=Pack(flex=1), on_webview_load=self._on_logview_load
         )
+        self.log_view = toga.Box(style=Pack(direction=COLUMN, flex=1))
+        controls = toga.Box(style=Pack(direction=ROW, margin_bottom=10, gap=10))
+
+        log_level_options = [
+            {'level': console_log_level, 'text': console_log_level_str}
+            for console_log_level, console_log_level_str in config.console_log_levels.items()
+        ]
+        self.log_level_select = toga.Selection(
+            items=log_level_options,
+            accessor='text',
+            on_change=self._on_level_change,
+        )
+        self.log_level_select.value = self.log_level_select.items.find(
+            data={'level': config.console_log_level}
+        )
+        controls.add(self.log_level_select)
+        self.color_switch = toga.Switch(
+            text=_('Log-level specific colors'),
+            value=config.console_color,
+            on_change=self._on_color_switch_change,
+        )
+        controls.add(self.color_switch)
+        self.show_level_switch = toga.Switch(
+            text=_('Show logging level'),
+            value=config.console_show_level,
+            on_change=self._on_show_level_switch_change,
+        )
+        controls.add(self.show_level_switch)
+        self.show_time_switch = toga.Switch(
+            text=_('Date and time'),
+            value=config.console_show_date,
+            on_change=self._on_show_date_switch_change,
+        )
+        controls.add(self.show_time_switch)
+
+        self.log_view.add(controls)
+        self.log_view.add(self.html_view)
 
         self.info_view = toga.Box(
             style=Pack(direction=COLUMN, margin=10, align_items='center')
@@ -408,7 +453,7 @@ class SharlyChessServerToga(toga.App):
 
     def on_running(self):
         # Logging handler
-        self.log_view.set_content('about:blank', LOG_HTML)
+        self.html_view.set_content('about:blank', LOG_HTML)
         self.gui_handler = GUILogHandler(self)
         self.gui_handler.setLevel(logging.DEBUG)
 
@@ -595,7 +640,7 @@ class SharlyChessServerToga(toga.App):
         # Show/hide log view
         self.log_view.style.visibility = 'visible' if self.log_visible else 'hidden'
         self.clear_btn.style.visibility = 'visible' if self.log_visible else 'hidden'
-        self.log_view.refresh()
+        self.html_view.refresh()
 
         # Update button label
         self.toggle_log_btn.text = _('Hide Log') if self.log_visible else _('Show Log')
@@ -632,6 +677,25 @@ class SharlyChessServerToga(toga.App):
             }})();"""
 
         self._eval_or_buffer_js(js)
+
+    def _update_config(self, field: str, value):
+        stored_config = SharlyChessConfig().stored_config
+        setattr(stored_config, field, value)
+        with ConfigDatabase(write=True) as config_database:
+            config_database.update_stored_config(stored_config)
+        SharlyChessConfig().load_and_set_env()
+
+    def _on_level_change(self, widget: toga.Selection, **kwargs):
+        self._update_config('console_log_level', widget.value.level)
+
+    def _on_color_switch_change(self, widget: toga.Switch, **kwargs):
+        self._update_config('console_color', widget.value)
+
+    def _on_show_level_switch_change(self, widget: toga.Switch, **kwargs):
+        self._update_config('console_show_level', widget.value)
+
+    def _on_show_date_switch_change(self, widget: toga.Switch, **kwargs):
+        self._update_config('console_show_date', widget.value)
 
     # --- Interactive prompts ---
     def handle_interactive_yn(self, question: str, yes_is_default: bool) -> bool:
@@ -732,7 +796,7 @@ class SharlyChessServerToga(toga.App):
                 # Flush safely; ignore individual eval errors
                 for js in self._pending_js:
                     try:
-                        self.log_view.evaluate_javascript(js)
+                        self.html_view.evaluate_javascript(js)
                     except Exception:
                         pass
                 self._pending_js.clear()
@@ -742,7 +806,7 @@ class SharlyChessServerToga(toga.App):
     def _eval_or_buffer_js(self, js: str):
         if self._logview_ready:
             try:
-                self.log_view.evaluate_javascript(js)
+                self.html_view.evaluate_javascript(js)
             except Exception as e:
                 print(e)
                 pass
