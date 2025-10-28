@@ -6,10 +6,7 @@
         {{ admin_macros.select_input(
             name='auto_upload',
             label=_('Auto-upload:'),
-            help_text=_(
-                'Auto-upload results to Chess-Results.com when a tournament is updated.',
-                default=admin_event.plugin_data.chess_results.auto_upload
-            ),
+            help_text='',
             select_options=auto_upload_options,
             data=data, errors=errors
         ) }}
@@ -20,7 +17,7 @@
             label=_('Remark:'),
             help_text='',
             placeholder=(
-                _('Default: %(string)s', string=admin_event.plugin_data.chess_results.remark)
+                admin_event.plugin_data.chess_results.remark
                 if admin_event.plugin_data.chess_results.remark else
                 _('E.g.: €1000 in prizes, FIDE rated, 2 byes 1/2 possible.')
             ),

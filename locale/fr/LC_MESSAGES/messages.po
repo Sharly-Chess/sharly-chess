@@ -674,14 +674,8 @@ msgstr "Mise en ligne automatique activée"
 msgid "Auto-upload results to Chess-Results.com"
 msgstr "Mise en ligne automatique des résultats sur Chess-Results.com"
 
-msgid "Auto-upload results to Chess-Results.com when a tournament is updated."
-msgstr "Mise en ligne automatique des résultats sur Chess-Results.com lorsqu’un tournoi est mis à jour."
-
 msgid "Auto-upload results to FFE site"
 msgstr "Envoi automatique des résultats sur le site de la FFE"
-
-msgid "Auto-upload results to FFE site when a tournament is updated. You must enter the tournament certification number and password for this to take effect."
-msgstr "Mise en ligne automatique des résultats vers le site de la FFE. Vous devez saisir l’identifiant et le mot de passe du tournoi pour que cela fonctionne."
 
 msgid "Auto-upload:"
 msgstr "Mise en ligne automatique :"
@@ -1435,15 +1429,18 @@ msgstr "Les comptes par défault ont été créés."
 msgid "Default credentials used to import tournaments from the ChessEvent platform."
 msgstr "Identifiants par défaut utilisés pour importer des tournois depuis la plateforme ChessEvent."
 
-msgid "Default handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. If checked, this rating will also be used for seeding and pairings. If unchecked, they will be treated as unrated and require an estimated rating."
-msgstr "Gestion par défaut des joueur·euses sans classement rapide/blitz. Pour le calcul des classements FIDE, ces joueur·euses sont considérées comme classé·es avec leur classement FIDE standard. Lorsque cette case est cochée (par défaut), ce classement sera également utilisé pour le classement initial et les appariements. Lorsque non cochée, les joueur·euses seront traité·es comme non classé·es et nécessiteront une estimation."
-
+msgid "Default handling of players without a FIDE rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. If checked, this rating will also be used for seeding and pairings. If unchecked, they will be treated as unrated and require an estimated rating."
+msgstr "Gestion par défaut des joueur·euses sans classement FIDE rapide/blitz. Pour le calcul des classements FIDE, ces joueur·euses sont considérées comme classé·es avec leur classement FIDE standard. Lorsque cette case est cochée (par défaut), ce classement sera également utilisé pour le classement initial et les appariements. Lorsque non cochée, les joueur·euses seront traité·es comme non classé·es et nécessiteront une estimation."
 msgid "Default timer configuration"
 msgstr "Configuration par défaut des chronomètres"
 
 #, python-format
 msgid "Default: %(string)s"
 msgstr "Par défaut : %(string)s"
+
+#, python-format
+msgid "Defaults to %(datetime)s"
+msgstr "Par défaut : %(datetime)s"
 
 msgid "Define as main category"
 msgstr "Définir comme catégorie générale"
@@ -1990,9 +1987,6 @@ msgstr "Erreur lors de la mise à jour de la base de données [{database}]."
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr "Estimé"
 
-msgid "Estimated ratings"
-msgstr "Classements estimés"
-
 msgid "Event"
 msgstr "Évènement"
 
@@ -2462,8 +2456,11 @@ msgstr "Demi-point joker (bye)"
 msgid "Half-Point Bye attributed to player [{player}]."
 msgstr "Un demi-point joker a été attribué au·à la joueur·euse [{player}]."
 
-msgid "Handling of players without a rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. You may also choose to use this rating for seeding and pairings."
-msgstr "Gestion des joueur·euses sans classement rapide/blitz. Pour le calcul des classements FIDE, ces joueur·euses sont considéré·es comme classé·es avec leur classement FIDE standard. Vous pouvez également choisir d’utiliser ce classement pour le classement initial et les appariements."
+msgid "Handicap games"
+msgstr "Parties à handicap"
+
+msgid "Handling of players without a FIDE rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating."
+msgstr "Gestion des joueur·euses sans classement FIDE rapide/blitz. Pour le calcul des classements FIDE, ces joueur·euses sont considéré·es comme classé·es avec leur classement FIDE standard."
 
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
 msgstr "Avoir un nombre de joueur·euses et de prix proches représente un risque qu'un prix ne soit pas attribué."
@@ -3382,7 +3379,7 @@ msgid "Number of prizes"
 msgstr "Nombre de prix"
 
 msgid "Number of screen families"
-msgstr "Nombre de famille d'écrans"
+msgstr "Nombre de familles d'écrans"
 
 msgid "Number of screens"
 msgstr "Nombre d'écrans"
@@ -4566,6 +4563,9 @@ msgstr "Serveur Sharly Chess"
 msgid "Sharly Chess can automatically launch a web browser when starting the web server."
 msgstr "Sharly Chess peut automatiquement lancer la navigateur au démarrage du serveur web."
 
+msgid "Sharly Chess may provide functionality specific to the federation chosen for each event."
+msgstr "Sharly Chess peut proposer des fonctionnalités spécifiques à la fédération choisie pour chaque évènement."
+
 msgid "Sharly Chess offers a powerful and flexible prize management system to handle a wide variety of tournament prize structures."
 msgstr "Sharly Chess propose un système de gestion des prix puissant et flexible, capable de s’adapter à une grande variété de structures de récompenses en tournoi."
 
@@ -4881,18 +4881,8 @@ msgstr "Le délai doit au moins être de {min_delay} minutes pour éviter de sur
 msgid "The delay must be at least {min_delay} minutes to avoid overloading the FFE server."
 msgstr "Le délai doit au moins être de {min_delay} minutes pour éviter de surcharger le serveur FFE."
 
-msgid "The end date and time of the event."
-msgstr "La date et l'heure de fin de l'évènement."
-
-#, python-format
-msgid "The end time of the tournament (defaults to %(datetime)s)."
-msgstr "L'horaire de fin du tournoi (par défaut %(datetime)s)."
-
 msgid "The event [{event_id}] is not accessible to the user [{user_id}]."
 msgstr "L'évènement [{event_id}] n'est pas accessible via l'identifiant [{user_id}]."
-
-msgid "The federation that organizes the event. Sharly Chess may provide functionality specific to the federation chosen for each event."
-msgstr "La fédération qui organise l’évènement. Sharly Chess peut proposer des fonctionnalités spécifiques à la fédération choisie pour chaque évènement."
 
 msgid "The first round is ignored."
 msgid_plural "The first {rounds} rounds are ignored."
@@ -4919,16 +4909,6 @@ msgstr[1] "Les {count} valeurs les moins élevées sont retirées."
 
 msgid "The limit can only be adjusted by {count} half-points."
 msgstr "La limite ne peut être ajustée que de {count} demi-points."
-
-msgid "The location of the event."
-msgstr "Le lieu de l'évènement."
-
-#, python-format
-msgid "The location of the tournament (defaults to [%(location)s])."
-msgstr "Le lieu du tournoi (par défaut [%(location)s])."
-
-msgid "The location of the tournament."
-msgstr "Le lieu du tournoi."
 
 msgid "The lowest rating that a player should have for their expected score to be greater than or equal to their score."
 msgstr "Le classement le plus bas qu'un·e joueur·euse doit avoir pour que son score attendu soit supérieur ou égal à son score réel."
@@ -4961,12 +4941,6 @@ msgstr "Le Elo maximum doit au moins être égal au Elo minimum."
 msgid "The message displayed on the scrolling banner at the bottom of the screen."
 msgstr "Le message affiché sur le bandeau déroulant en bas de l'écran."
 
-msgid "The minimum delay between auto-uploads to Chess-Results.com."
-msgstr "Le délai minimum entre deux envois automatiques vers Chess-Results.com."
-
-msgid "The minimum delay between auto-uploads to the FFE server."
-msgstr "Le délai minimum entre deux envois automatiques vers le serveur de la FFE."
-
 msgid "The minimum level of logs that will be printed on the console (all the detailed logs are always printed to the log files)."
 msgstr "Le niveau minimum des log affichés sur la console (tous les logs détaillés sont toujours écrits dans les fichiers de log)."
 
@@ -4982,9 +4956,6 @@ msgstr "La temps minimal, quelle que soit la différence de classement entre les
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
 msgstr "La valeur minimale d'un prix partagé dans cette catégorie (pas de seuil par défaut)."
 
-msgid "The name of the event, used for display and reports."
-msgstr "Le nom de l'évènement, utilisé pour l'affichage et dans les rapports."
-
 #, python-format
 msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
 msgstr "Le nom de la famille d' écrans, facultatif. Les mots-clés suivants sont remplacés automatiquement par les numéros des échiquiers ou les noms des joueur·euses : %%f=first (premier), %%l=last (dernier), %%t=tournament (tournoi)."
@@ -4997,9 +4968,6 @@ msgstr "Le nom de l'écran, affiché sur les écrans des évènements."
 
 msgid "The name of the timer."
 msgstr "Le nom du chronomètre."
-
-msgid "The name of the tournament, used for display."
-msgstr "Le nom du tournoi, utilisé pour l'affichage."
 
 msgid "The network on which the devices are connected."
 msgstr "Le réseau auquel les appareils sont connectés."
@@ -5034,9 +5002,6 @@ msgstr "Le nombre de points de différence entre le classement des joueur·euses
 msgid "The number of rounds in which a player did not receive a HPB, a ZPB or a forfeit loss."
 msgstr "Le nombre de rondes dans lesquelles un·e joueur·euse n'a pas reçu de point joker ou une défaite par forfait."
 
-msgid "The number of rounds of the tournament."
-msgstr "Le nombre de rondes du tournoi."
-
 msgid "The number of rounds where a player obtains, with or without playing, as many points as awarded for a win."
 msgstr "Le nombre de rondes lors desquelles un·e joueur·euse obtient, en jouant ou non, autant de points que lors d'une victoire."
 
@@ -5045,9 +5010,6 @@ msgstr "Le nombre d'écrans sur lesquels les échiquiers seront répartis, facul
 
 msgid "The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players."
 msgstr "Le nombre d'écrans sur lesquels les joueur·euses seront réparti·es, facultatif (le nombre d'écrans reste toujours le même et le nombre de joueur·euses par écran s'adapte)."
-
-msgid "The number of the first board of the tournament."
-msgstr "Le numéro du premier échiquier du tournoi."
 
 msgid "The number of the first board to select."
 msgstr "Le numéro du premier échiquier à prendre en compte."
@@ -5066,9 +5028,6 @@ msgstr "Le numéro d'appariement ne peut pas être supérieur au nombre de joueu
 
 msgid "The pairing number is already attributed."
 msgstr "Le numéro d'appariement est déjà attribué."
-
-msgid "The password is made of 10 uppercase letters, it is used to connect to the FFE website."
-msgstr "La mot de passe est composé de 10 caractères majuscules, il est utilisé pour la connexion au site web de la FFE."
 
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "Le mot de passe du tournoi sur le site FFE doit être composé de 10 lettres majuscules."
@@ -5090,9 +5049,6 @@ msgstr "Le·la joueur·euse avec la licence FFE [{ffe_licence_number}] joue déj
 
 msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
 msgstr "Le·la joueur·euse avec l'identifiant FIDE [{fide_id}] joue déjà le tournoi [{tournament}]."
-
-msgid "The qualification number given by the French Federation is an integer, it is used to connect to the FFE website."
-msgstr "Le numéro d'homologation donné par la Fédération Française est un entier, il est utilisé pour la connexion au site web de la FFE."
 
 msgid "The rank of the first player to select."
 msgstr "Le classement du·de la premier·e joueur·euse."
@@ -5127,13 +5083,6 @@ msgstr "La ronde pour laquelle le document est imprimé (par défaut la dernièr
 msgid "The screens displayed by the display controller are controlled by the screen managers."
 msgstr "Les écrans utilisés par le pilote d'afficheurs sont désignés par l'administrateur·ice."
 
-msgid "The start date and time of the event."
-msgstr "La date et l'heure de début de l'évènement."
-
-#, python-format
-msgid "The start time of the tournament (defaults to %(datetime)s)."
-msgstr "L'horaire de début du tournoi (par défaut %(datetime)s)."
-
 msgid "The sum of the [{tie_break}] scores of the opponents played over the board."
 msgstr "La somme des scores [{tie_break}] des adversaires joué·es sur l'échiquier."
 
@@ -5142,9 +5091,6 @@ msgstr "La somme du score du·de la joueur·euse à la fin de chaque ronde."
 
 msgid "The sum of the scores of each of the opponents of the player."
 msgstr "La somme du score de chaque adversaire du·de la joueur·euse."
-
-msgid "The system used to generate the pairings."
-msgstr "Le système utilisé pour générer les appariements."
 
 msgid "The text colour of the alert messages."
 msgstr "La couleur du texte des messages d'alerte."
@@ -5191,9 +5137,6 @@ msgstr "Le type de critère utilisé pour filtrer les joueur·euses."
 msgid "The type of document to print."
 msgstr "Le type de document à imprimer."
 
-msgid "The type of rating to use for the tournament."
-msgstr "Le type de classement utilsé."
-
 msgid "The username / password provided are not allowed to access this ChessEvent event."
 msgstr "L'identifiant et le mot de passe fournis ne permettent pas d'accéder à cet évènement ChessEvent."
 
@@ -5205,9 +5148,6 @@ msgstr "Les valeurs doivent être supérieures au seuil de partage de la catégo
 
 msgid "The values to take into account when computing the tie-break."
 msgstr "Les valeurs à prendre en compte lors du calcul du départage."
-
-msgid "The variation of the pairing system."
-msgstr "La variante du système d'appariements."
 
 msgid "The way to share the prizes between players with the same points."
 msgstr "La manière de partages les prix entre les joueurs ayant le même nombre de points."
@@ -6172,9 +6112,6 @@ msgstr "Vous devez créer un tournoi avant de pouvoir créer des familles d'écr
 msgid "You must create a tournament before creating these screens."
 msgstr "Vous devez créer un tournoi avant de pouvoir créer ces écrans."
 
-msgid "You must enter the tournament certification number and password in each tournament's settings."
-msgstr "Vous devez saisir le numéro d’homologation et le mot de passe dans les paramètres de chaque tournoi."
-
 msgid "Zero-Point Bye"
 msgstr "Absent·e"
 
@@ -6449,4 +6386,3 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
