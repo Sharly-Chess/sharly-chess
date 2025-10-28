@@ -1102,9 +1102,6 @@ msgstr ""
 msgid "Color [{color}] can't be used without an opponent."
 msgstr ""
 
-msgid "Colorblind people can print the logging level to distinguish important information on the console."
-msgstr ""
-
 msgid "Colors and delays"
 msgstr ""
 
@@ -1194,9 +1191,6 @@ msgid "Consider forfeited games, either wins or losses, as played games against 
 msgstr ""
 
 msgid "Console logging level: {console_log_level}"
-msgstr ""
-
-msgid "Console logs"
 msgstr ""
 
 msgid "Consult the logs for more details."
@@ -1412,6 +1406,9 @@ msgid "Database"
 msgstr ""
 
 msgid "Database [{database}] successfully updated."
+msgstr ""
+
+msgid "Date and time"
 msgstr ""
 
 msgid "Date of birth"
@@ -2678,9 +2675,6 @@ msgstr ""
 msgid "Invalid color [{color}] ([#RRGGBB] expected)."
 msgstr ""
 
-msgid "Invalid console logging level [{console_log_level}]."
-msgstr ""
-
 msgid "Invalid date [{date_str}]."
 msgstr ""
 
@@ -2860,11 +2854,11 @@ msgstr ""
 msgid "Log out"
 msgstr ""
 
-#, python-format
-msgid "Logged in as [%(account_name)s]"
+msgid "Log-level specific colors"
 msgstr ""
 
-msgid "Logging level"
+#, python-format
+msgid "Logged in as [%(account_name)s]"
 msgstr ""
 
 msgid "Loss"
@@ -4597,19 +4591,13 @@ msgstr ""
 msgid "Show all the players"
 msgstr ""
 
-msgid "Show the date and time"
-msgstr ""
-
-msgid "Show the logging level"
+msgid "Show logging level"
 msgstr ""
 
 msgid "Show warnings"
 msgstr ""
 
 msgid "Show/hide the screens created from screen families."
-msgstr ""
-
-msgid "Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to the log files)."
 msgstr ""
 
 msgid "Since ratings are used in the tie-break calculation, it is important for them to be representative of the player's level. For this reason this tie-break is not recommended with unrated players."
@@ -4940,9 +4928,6 @@ msgid "The maximum rating must be at most equal to the minimum rating."
 msgstr ""
 
 msgid "The message displayed on the scrolling banner at the bottom of the screen."
-msgstr ""
-
-msgid "The minimum level of logs that will be printed on the console (all the detailed logs are always printed to the log files)."
 msgstr ""
 
 msgid "The minimum number of players needed for a club to be displayed."
@@ -5772,9 +5757,6 @@ msgstr ""
 msgid "Use Fore Buchholz"
 msgstr ""
 
-msgid "Use log-level specific colors"
-msgstr ""
-
 msgid "Use pairing engines"
 msgstr ""
 
@@ -5785,9 +5767,6 @@ msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system. May b
 msgstr ""
 
 msgid "Use the recommended tie-breaks"
-msgstr ""
-
-msgid "Using colors helps in finding quickly important information on the console."
 msgstr ""
 
 msgid "Utility Plugins"

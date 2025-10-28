@@ -1102,9 +1102,6 @@ msgstr "La couleur [{color}] ne peut être utilisée avec un adversaire."
 msgid "Color [{color}] can't be used without an opponent."
 msgstr "La couleur [{color}] ne peut être utilisée sans adversaire"
 
-msgid "Colorblind people can print the logging level to distinguish important information on the console."
-msgstr "Les personnes percevant mal les couleurs peuvent imprimer le niveau de log pour distinguer les différents niveaux d'information sur la console."
-
 msgid "Colors and delays"
 msgstr "Couleurs et délais"
 
@@ -1195,9 +1192,6 @@ msgstr "Considérer les parties gagnées ou perdues par forfait comme des partie
 
 msgid "Console logging level: {console_log_level}"
 msgstr "Niveau de log sur la console : {console_log_level}"
-
-msgid "Console logs"
-msgstr "Logs de la console"
 
 msgid "Consult the logs for more details."
 msgstr "Consultez les logs pour plus d'informations."
@@ -1414,6 +1408,9 @@ msgstr "Base de données"
 msgid "Database [{database}] successfully updated."
 msgstr "Base de données [{database}] mise à jour avec succès."
 
+msgid "Date and time"
+msgstr "Date et heure"
+
 msgid "Date of birth"
 msgstr "Date de naissance"
 
@@ -1431,6 +1428,7 @@ msgstr "Identifiants par défaut utilisés pour importer des tournois depuis la 
 
 msgid "Default handling of players without a FIDE rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. If checked, this rating will also be used for seeding and pairings. If unchecked, they will be treated as unrated and require an estimated rating."
 msgstr "Gestion par défaut des joueur·euses sans classement FIDE rapide/blitz. Pour le calcul des classements FIDE, ces joueur·euses sont considérées comme classé·es avec leur classement FIDE standard. Lorsque cette case est cochée (par défaut), ce classement sera également utilisé pour le classement initial et les appariements. Lorsque non cochée, les joueur·euses seront traité·es comme non classé·es et nécessiteront une estimation."
+
 msgid "Default timer configuration"
 msgstr "Configuration par défaut des chronomètres"
 
@@ -2677,9 +2675,6 @@ msgstr "Numéro d'échiquier non valide [{fixed_board_str}]."
 msgid "Invalid color [{color}] ([#RRGGBB] expected)."
 msgstr "Couleur non valide [{color}] ([#RRGGBB] attendu)."
 
-msgid "Invalid console logging level [{console_log_level}]."
-msgstr "Niveau de log console non valide [{console_log_level}]."
-
 msgid "Invalid date [{date_str}]."
 msgstr "Date non valide [{date_str}]."
 
@@ -2859,12 +2854,12 @@ msgstr "Connexion"
 msgid "Log out"
 msgstr "Déconnexion"
 
+msgid "Log-level specific colors"
+msgstr "Couleurs spécifiques au niveau de log"
+
 #, python-format
 msgid "Logged in as [%(account_name)s]"
 msgstr "Connecté en tant que [%(account_name)s]"
-
-msgid "Logging level"
-msgstr "Niveau de log"
 
 msgid "Loss"
 msgstr "Défaite"
@@ -4596,10 +4591,7 @@ msgstr "Montrer les logs"
 msgid "Show all the players"
 msgstr "Afficher tou·tes les joueur·euses"
 
-msgid "Show the date and time"
-msgstr "Afficher la date et l'heure"
-
-msgid "Show the logging level"
+msgid "Show logging level"
 msgstr "Afficher le niveau de log"
 
 msgid "Show warnings"
@@ -4607,9 +4599,6 @@ msgstr "Afficher les avertissements"
 
 msgid "Show/hide the screens created from screen families."
 msgstr "Montrer/cacher les écrans créés à partir de familles d'écrans."
-
-msgid "Showing the date and time on the console may help in identifying slow operations on the console (the date and time are always printed to the log files)."
-msgstr "Montrer la date et l'heure sur la console peut permettre d'identifier les opérations lentes sur la console (la date et l'heure sont toujours écrites dans les fichiers de log)."
 
 msgid "Since ratings are used in the tie-break calculation, it is important for them to be representative of the player's level. For this reason this tie-break is not recommended with unrated players."
 msgstr "Les classements étant utilisés pour le calcul des départages, il est important qu'ils soient représentatifs du niveau des joueur·euses. Pour cette raison ce départage est déconseillé avec des joueur·euses non-classé·es."
@@ -4940,9 +4929,6 @@ msgstr "Le Elo maximum doit au moins être égal au Elo minimum."
 
 msgid "The message displayed on the scrolling banner at the bottom of the screen."
 msgstr "Le message affiché sur le bandeau déroulant en bas de l'écran."
-
-msgid "The minimum level of logs that will be printed on the console (all the detailed logs are always printed to the log files)."
-msgstr "Le niveau minimum des log affichés sur la console (tous les logs détaillés sont toujours écrits dans les fichiers de log)."
 
 msgid "The minimum number of players needed for a club to be displayed."
 msgstr "Nombre minimum de joueurs requis pour qu’un club soit affiché."
@@ -5771,9 +5757,6 @@ msgstr "Défaut de l’événement – {option}"
 msgid "Use Fore Buchholz"
 msgstr "Utiliser le Fore Buchholz"
 
-msgid "Use log-level specific colors"
-msgstr "Utiliser des couleurs spécifiques au niveau de log"
-
 msgid "Use pairing engines"
 msgstr "Utiliser les moteurs d'appariement"
 
@@ -5785,9 +5768,6 @@ msgstr "Utiliser le système de points 3/1/0 au lieu du système standard 1/0,5/
 
 msgid "Use the recommended tie-breaks"
 msgstr "Utiliser les départages recommandés"
-
-msgid "Using colors helps in finding quickly important information on the console."
-msgstr "Utiliser les couleurs peut permettre de trouver facilement les informations importantes sur la console."
 
 msgid "Utility Plugins"
 msgstr "Plug-ins utilitaires"
@@ -6386,3 +6366,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
