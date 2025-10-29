@@ -3,9 +3,13 @@ English version below
 
 ## Fonctionnement
 
-- Plug-ins spécifiques à une fédération (3.2.0)
 - Mise en ligne sur Chess-Results.com (3.2.0)
+- Activation/désactivation des plugins par évènement (3.2.0)
+
+## Interface
+
 - Simplification des interface de gestion de l'application et des évènements (3.2.0)
+- Déplacement des options de logs sur la console (3.2.0)
 
 ## Joueur·euses
 
@@ -42,9 +46,13 @@ English version below
 
 ## Usage
 
-- Federation-specific plugins (3.2.0)
 - Uploading to Chess-Results.com (3.2.0)
+- Enable/disable plugins per event (3.2.0)
+
+## Interface
+
 - Simplified application/event management UI (3.2.0)
+- Moved the log options to the console (3.2.0)
 
 ## Players
 

@@ -120,15 +120,18 @@ class IndexAdminController(BaseAdminController):
         if data is None:
             data = {}
         stored_plugins: list[StoredPlugin] = []
+        enabled_plugins = plugin_manager.get_plugins_with_dependencies(
+            [
+                plugin
+                for plugin in plugin_manager.all_plugins
+                if WebContext.form_data_to_bool(data, plugin.form_key)
+            ]
+        )
         for plugin in plugin_manager.all_plugins:
-            if not plugin.is_state_editable:
-                continue
-            errors: dict[str, str] = {}
             stored_plugins.append(
                 StoredPlugin(
                     name=plugin.id,
-                    is_enabled=WebContext.form_data_to_bool(data, plugin.form_key),
-                    errors=errors,
+                    is_enabled=plugin in enabled_plugins,
                 )
             )
         return stored_plugins
@@ -294,96 +297,65 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
         admin_event: Event | None,
     ) -> dict[str, Any]:
-        match action:
-            case 'update':
-                if admin_event is None:
-                    raise RuntimeError(f'{admin_event=} for [{action=}]')
-                name = admin_event.stored_event.name
-                uniq_id = admin_event.stored_event.uniq_id
-            case 'clone':
-                if admin_event is None:
-                    raise RuntimeError(f'{admin_event=} for [{action=}]')
-                name = EventLoader.get(request).get_unused_event_name(
-                    admin_event.stored_event.name
-                )
-                uniq_id = EventLoader.get(request).get_unused_event_uniq_id(
-                    admin_event.stored_event.uniq_id
-                )
-            case 'create':
-                name = EventLoader.get(request).get_unused_event_name(_('New event'))
-                uniq_id = EventLoader.get(request).get_unused_event_uniq_id(_('event'))
-            case _:
-                raise ValueError(f'action=[{action}]')
-        match action:
-            case 'update' | 'clone':
-                assert admin_event is not None
-                start = admin_event.stored_event.start
-                stop = admin_event.stored_event.stop
-            case 'create':
-                today_str: str = format_timestamp_date()
-                start = time.mktime(
-                    datetime.strptime(
-                        f'{today_str} 00:00', '%Y-%m-%d %H:%M'
-                    ).timetuple()
-                )
-                stop = time.mktime(
-                    datetime.strptime(
-                        f'{today_str} 23:59', '%Y-%m-%d %H:%M'
-                    ).timetuple()
-                )
-            case _:
-                raise ValueError(f'action=[{action}]')
-        background_color: str | None = None
-        location: str | None = None
-        player_rating_type: int
-        record_illegal_moves: int | None = None
-        three_points_for_a_win: bool
-        pab_value: int
-        rules: str | None = None
-        message_text: str | None = None
-        message_color: str | None = None
-        message_background_color: str | None = None
-        prize_currency: str | None = None
-        stored_plugin_data: dict[str, dict[str, Any]] = {}
-        match action:
-            case 'update' | 'clone':
-                if admin_event is None:
-                    raise RuntimeError(f'{admin_event=} for [{action=}]')
-                stored_event = admin_event.stored_event
-                public = stored_event.public
-                federation = stored_event.federation
-                background_color = stored_event.background_color
-                location = stored_event.location
-                player_rating_type = stored_event.player_rating_type
-                record_illegal_moves = stored_event.record_illegal_moves
-                rules = stored_event.rules
-                message_text = stored_event.message_text
-                message_color = admin_event.message_color
-                message_background_color = admin_event.message_background_color
-                prize_currency = stored_event.prize_currency
-                override_unrated_rapid_blitz = stored_event.override_unrated_rapid_blitz
-                three_points_for_a_win = stored_event.three_points_for_a_win
-                pab_value = stored_event.pab_value
-                stored_plugin_data = stored_event.plugin_data
-            case 'create':
-                sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
-                public = False
-                background_color = sharly_chess_config.default_background_color
-                message_background_color = (
-                    sharly_chess_config.default_message_background_color
-                )
-                message_color = sharly_chess_config.default_message_color
-                federation = (
-                    sharly_chess_config.federation.name
-                    if sharly_chess_config.federation
-                    else ''
-                )
-                player_rating_type = PlayerRatingType.FIDE.value
-                override_unrated_rapid_blitz = True
-                three_points_for_a_win = False
-                pab_value = Result.WIN.value
-            case _:
-                raise ValueError(f'action=[{action}]')
+        if action == 'create':
+            name = EventLoader.get(request).get_unused_event_name(_('New event'))
+            uniq_id = EventLoader.get(request).get_unused_event_uniq_id(_('event'))
+            public = False
+            today_str: str = format_timestamp_date()
+            start = time.mktime(
+                datetime.strptime(f'{today_str} 00:00', '%Y-%m-%d %H:%M').timetuple()
+            )
+            stop = time.mktime(
+                datetime.strptime(f'{today_str} 23:59', '%Y-%m-%d %H:%M').timetuple()
+            )
+            config = SharlyChessConfig()
+            federation = config.federation.name if config.federation else ''
+            player_rating_type = PlayerRatingType.FIDE.value
+            background_color: str | None = config.default_background_color
+            message_background_color = config.default_message_background_color
+            message_color = config.default_message_color
+            override_unrated_rapid_blitz = True
+            three_points_for_a_win = False
+            pab_value = Result.WIN.value
+            location: str | None = None
+            record_illegal_moves: int | None = None
+            rules: str | None = None
+            message_text: str | None = None
+            prize_currency: str | None = None
+            stored_plugin_data: dict[str, dict[str, Any]] = {}
+            event_enabled_plugins = [
+                plugin
+                for plugin in plugin_manager.enabled_plugins
+                if plugin.default_event_is_enabled
+            ]
+        else:
+            assert admin_event is not None
+            stored_event = admin_event.stored_event
+            if action == 'update':
+                name = stored_event.name
+                uniq_id = stored_event.uniq_id
+            else:
+                loader = EventLoader()
+                name = loader.get_unused_event_name(stored_event.name)
+                uniq_id = loader.get_unused_event_uniq_id(stored_event.uniq_id)
+            start = stored_event.start
+            stop = stored_event.stop
+            public = stored_event.public
+            federation = stored_event.federation
+            background_color = stored_event.background_color
+            location = stored_event.location
+            player_rating_type = stored_event.player_rating_type
+            record_illegal_moves = stored_event.record_illegal_moves
+            rules = stored_event.rules
+            message_text = stored_event.message_text
+            message_color = admin_event.message_color
+            message_background_color = admin_event.message_background_color
+            prize_currency = stored_event.prize_currency
+            override_unrated_rapid_blitz = admin_event.override_unrated_rapid_blitz
+            three_points_for_a_win = stored_event.three_points_for_a_win
+            pab_value = stored_event.pab_value
+            stored_plugin_data = stored_event.plugin_data
+            event_enabled_plugins = admin_event.enabled_plugins
 
         plugin_form_data: dict[str, str] = {}
         for (
@@ -393,33 +365,40 @@ class IndexAdminController(BaseAdminController):
             plugin_form_data |= plugin_data_class.from_stored_value(
                 stored_plugin_data.get(plugin_id, {})
             ).to_form_data(action=action)
+        plugin_form_data |= {
+            plugin.form_key: WebContext.value_to_form_data(
+                plugin in event_enabled_plugins
+            )
+            for plugin in plugin_manager.enabled_plugins
+        }
 
-        return {
-            'uniq_id': WebContext.value_to_form_data(uniq_id),
-            'name': WebContext.value_to_form_data(name),
-            'public': WebContext.value_to_form_data(public),
-            'federation': WebContext.value_to_form_data(federation),
-            'start': WebContext.value_to_datetime_form_data(start),
-            'stop': WebContext.value_to_datetime_form_data(stop),
-            'player_rating_type': WebContext.value_to_form_data(player_rating_type),
-            'background_color': WebContext.value_to_form_data(background_color),
-            'location': WebContext.value_to_form_data(location),
-            'record_illegal_moves': WebContext.value_to_form_data(record_illegal_moves),
-            'rules': WebContext.value_to_form_data(rules),
-            'message_text': WebContext.value_to_form_data(message_text),
-            'message_color': WebContext.value_to_form_data(message_color),
-            'message_background_color': WebContext.value_to_form_data(
-                message_background_color
-            ),
-            'prize_currency': WebContext.value_to_form_data(prize_currency),
-            'override_unrated_rapid_blitz': WebContext.value_to_form_data(
-                override_unrated_rapid_blitz
-            ),
-            'three_points_for_a_win': WebContext.value_to_form_data(
-                three_points_for_a_win
-            ),
-            'pab_value': WebContext.value_to_form_data(pab_value),
-        } | plugin_form_data
+        return (
+            WebContext.values_dict_to_form_data(
+                {
+                    'uniq_id': uniq_id,
+                    'name': name,
+                    'public': public,
+                    'federation': federation,
+                    'player_rating_type': player_rating_type,
+                    'background_color': background_color,
+                    'location': location,
+                    'record_illegal_moves': record_illegal_moves,
+                    'rules': rules,
+                    'message_text': message_text,
+                    'message_color': message_color,
+                    'message_background_color': message_background_color,
+                    'prize_currency': prize_currency,
+                    'override_unrated_rapid_blitz': override_unrated_rapid_blitz,
+                    'three_points_for_a_win': three_points_for_a_win,
+                    'pab_value': pab_value,
+                }
+            )
+            | {
+                'start': WebContext.value_to_datetime_form_data(start),
+                'stop': WebContext.value_to_datetime_form_data(stop),
+            }
+            | plugin_form_data
+        )
 
     @classmethod
     def _read_event_form_data(
@@ -518,7 +497,15 @@ class IndexAdminController(BaseAdminController):
         )
         pab_value = WebContext.form_data_to_int(data, 'pab_value') or Result.WIN.value
 
-        plugin_manager.hook.validate_event_form_fields(
+        enabled_plugins = plugin_manager.get_plugins_with_dependencies(
+            [
+                plugin
+                for plugin in plugin_manager.enabled_plugins
+                if WebContext.form_data_to_bool(data, plugin.form_key)
+            ]
+        )
+
+        plugin_manager.hook_for_plugins('validate_event_form_fields', enabled_plugins)(
             action=action, event=admin_event, data=data, errors=errors
         )
 
@@ -542,11 +529,11 @@ class IndexAdminController(BaseAdminController):
             for plugin_id, plugin_data_class in Event.plugin_data_class_by_plugin_id().items()
         }
 
-        assert start is not None
-        assert stop is not None
-
         if errors:
             return None, errors
+
+        assert start is not None
+        assert stop is not None
 
         stored_event = StoredEvent(
             uniq_id=uniq_id,
@@ -567,20 +554,11 @@ class IndexAdminController(BaseAdminController):
             override_unrated_rapid_blitz=override_unrated_rapid_blitz,
             three_points_for_a_win=three_points_for_a_win,
             pab_value=pab_value,
-            # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
-            timer_colors={
-                i: admin_event.timer_colors[i] if admin_event else None
-                for i in range(1, 4)
-            }
-            if admin_event
-            else None,
-            timer_delays={
-                i: admin_event.timer_delays[i] if admin_event else None
-                for i in range(1, 4)
-            }
-            if admin_event
-            else None,
             plugin_data=plugin_data,
+            enabled_plugins=[plugin.id for plugin in enabled_plugins],
+            # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
+            timer_colors=admin_event.stored_event.timer_colors if admin_event else None,
+            timer_delays=admin_event.stored_event.timer_delays if admin_event else None,
         )
         return stored_event, errors
 
@@ -591,19 +569,24 @@ class IndexAdminController(BaseAdminController):
         data: dict[str, str],
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
-        event = web_context.admin_event
-        plugin_form_fields_templates = (
-            plugin_manager.hook_for_event(event, 'get_event_form_fields_template')()
-            or []
-        )
-        template_context = {
+        federation_plugin_used = False
+        if action == FormAction.UPDATE:
+            event = web_context.get_admin_event()
+            for plugin in event.enabled_plugins:
+                if not plugin.federation:
+                    continue
+                if plugin.used_by_tournaments_count(event):
+                    federation_plugin_used = True
+                    break
+        return {
             'federation_options': self._get_federation_options(),
             'timer_color_texts': self._get_timer_color_texts(
                 SharlyChessConfig.default_timer_delays
             ),
             'modal': 'event',
             'event_uniq_ids': list(EventLoader().event_uniq_ids),
-            'plugin_form_fields_templates': plugin_form_fields_templates,
+            'plugins': plugin_manager.enabled_plugins,
+            'federation_plugin_used': federation_plugin_used,
             'player_rating_type_options': {
                 str(PlayerRatingType.FIDE.value): _('FIDE'),
                 str(PlayerRatingType.NATIONAL.value): _(
@@ -619,7 +602,6 @@ class IndexAdminController(BaseAdminController):
             'data': data,
             'errors': errors or {},
         }
-        return template_context
 
     @get(
         path=[
@@ -678,8 +660,8 @@ class IndexAdminController(BaseAdminController):
 
         uniq_id: str = stored_event.uniq_id
         EventDatabase(uniq_id).create()
-        with EventDatabase(uniq_id, write=True) as event_database:
-            event_database.update_stored_event(stored_event)
+        with EventDatabase(uniq_id, write=True) as database:
+            database.update_stored_event(stored_event)
         Message.success(
             request, _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id)
         )
@@ -750,11 +732,11 @@ class IndexAdminController(BaseAdminController):
         uniq_id: str = stored_event.uniq_id
         event = web_context.get_admin_event()
         EventDatabase(event.uniq_id).clone(new_uniq_id=uniq_id)
-        with EventDatabase(uniq_id, write=True) as event_database:
-            event_database.update_stored_event(stored_event)
+        with EventDatabase(uniq_id, write=True) as database:
+            database.update_stored_event(stored_event)
             if 'with_players' not in data:
-                event_database.delete_all_stored_players()
-            plugin_manager.hook.on_event_duplicated(event_database=event_database)
+                database.delete_all_stored_players()
+            plugin_manager.hook.on_event_duplicated(event_database=database)
 
         Message.success(
             request,
@@ -792,40 +774,14 @@ class IndexAdminController(BaseAdminController):
                 template_context=template_context,
             )
 
-        all_plugins = plugin_manager.enabled_plugins or []
-        enabled_before = [
-            p for p in all_plugins if p.is_enabled_for_event(web_context.admin_event)
-        ]
-
         uniq_id = stored_event.uniq_id
-        with EventDatabase(uniq_id, write=True) as event_database:
-            event_database.update_stored_event(stored_event)
+        with EventDatabase(uniq_id, write=True) as database:
+            database.update_stored_event(stored_event)
 
-        web_context = AdminWebContext(request, admin_tab=admin_tab, reload_event=True)
-        enabled_after = [
-            p for p in all_plugins if p.is_enabled_for_event(web_context.admin_event)
-        ]
-        disabled_plugins = [p for p in enabled_before if p not in enabled_after]
-
-        if disabled_plugins:
-            message = (
-                _(
-                    'Due to the federation change, the following plugins have been disabled for this event: <b>{plugins}</b>.'
-                ).format(plugins=', '.join(p.name for p in disabled_plugins))
-                if len(disabled_plugins) > 1
-                else _(
-                    'Due to the federation change, the following plugin has been disabled for this event: <b>{plugin}</b>.'
-                ).format(plugin=disabled_plugins[0].name)
-            )
-            Message.warning(
-                request,
-                message,
-            )
-        else:
-            Message.success(
-                request,
-                _('Event [{uniq_id}] has been updated.').format(uniq_id=uniq_id),
-            )
+        Message.success(
+            request,
+            _('Event [{uniq_id}] has been updated.').format(uniq_id=uniq_id),
+        )
 
         return HTMXTemplate(
             template_name='common/empty_modal_and_messages.html',
@@ -973,6 +929,7 @@ class IndexAdminController(BaseAdminController):
         }
 
         template_context = {
+            'events_metadata': EventLoader.get_events_metadata(),
             'locale_options': locale_options,
             'global_plugins': global_plugins,
             'federation_plugins': plugins_by_federation,
@@ -1021,8 +978,6 @@ class IndexAdminController(BaseAdminController):
             data
         )
         errors = stored_config.errors
-        for plugin in stored_plugins:
-            errors |= plugin.errors
         if errors:
             template_context = self._config_modal_context(data, errors)
             sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
