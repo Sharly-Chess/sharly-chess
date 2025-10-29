@@ -12,8 +12,6 @@ from pathlib import Path
 from typing import Callable, Dict, Optional, Any
 import re
 
-from database.sqlite.config.config_database import ConfigDatabase
-from database.sqlite.config.config_store import StoredPlugin
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredEvent,
@@ -22,7 +20,6 @@ from database.sqlite.event.event_store import (
 from playwright.sync_api import Page, Locator, APIRequestContext, APIResponse
 
 from plugins.ffe.ffe_tournament_importers import PapiJsonTournamentImporter
-from plugins.manager import plugin_manager
 from utils.enum import ScreenType
 
 
@@ -132,18 +129,6 @@ class TestUtils:
                 if attempt == retries - 1:
                     raise
                 time.sleep(delay_secs)
-
-    @classmethod
-    def update_enabled_plugins(cls, enabled_plugins: list[str]):
-        plugins = plugin_manager.all_plugins
-        with ConfigDatabase(True) as database:
-            for plugin in plugins:
-                database.update_stored_plugin(
-                    StoredPlugin(
-                        name=plugin.id, is_enabled=plugin.id in enabled_plugins
-                    )
-                )
-        plugin_manager.reload_register()
 
     @classmethod
     def create_event(

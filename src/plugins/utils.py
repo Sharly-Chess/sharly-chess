@@ -6,6 +6,7 @@ from pathlib import Path
 from types import ModuleType
 from typing import TYPE_CHECKING, Any, NamedTuple, Self
 
+from common import TEST_ENV
 from packaging.version import Version
 
 from utils.entity import IdentifiableEntity
@@ -89,7 +90,7 @@ class PluginContext:
             with ConfigDatabase(True) as database:
                 stored_plugin = StoredPlugin(
                     name=plugin.id,
-                    is_enabled=plugin.default_is_enabled,
+                    is_enabled=plugin.default_is_enabled or TEST_ENV,
                 )
                 database.insert_stored_plugin(stored_plugin)
         self.stored_plugin = stored_plugin
