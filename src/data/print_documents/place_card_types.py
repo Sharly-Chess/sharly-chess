@@ -13,10 +13,6 @@ from utils.entity import IdentifiableEntity
 if TYPE_CHECKING:
     from data.print_documents.documents import (
         PlaceCardPrintDocument,
-        PrintCardPlayer,
-        PrintCardTournament,
-        PrintCardEvent,
-        PrintCardBoard,
     )
 
 
@@ -24,9 +20,13 @@ class PlaceCardType(IdentifiableEntity, ABC):
     @staticmethod
     def get_valid_options() -> list[str]:
         """Returns a list of valid options for the place card type."""
-        from data.print_documents.options import TournamentPrintOption
+        from data.print_documents.options import (
+            TournamentPrintOption,
+            PlaceCardTemplatePrintOption,
+        )
 
         return [
+            PlaceCardTemplatePrintOption.static_id(),
             TournamentPrintOption.static_id(),
         ]
 
@@ -77,6 +77,11 @@ class PlaceCardType(IdentifiableEntity, ABC):
         cls,
         doc: 'PlaceCardPrintDocument',
     ) -> dict[str, Any]:
+        from data.print_documents.documents import (
+            PlaceCardTournament,
+            PlaceCardEvent,
+        )
+
         assert doc.event is not None
         return {
             'sharly_chess_config': SharlyChessConfig(),
@@ -84,13 +89,9 @@ class PlaceCardType(IdentifiableEntity, ABC):
             'sharly_chess_logo_inline_url': cls.svg_file_inline_url(
                 BASE_DIR / 'src/web/static/images/sharly-chess-logo.svg'
             ),
-            'event': PrintCardEvent(doc.event),
-            'tournament': PrintCardTournament(doc.tournament),
+            'event': PlaceCardEvent(doc.event),
+            'tournament': PlaceCardTournament(doc.tournament),
         }
-
-    @classmethod
-    def template_name(cls) -> str:
-        return f'/admin/print/place_cards/simple_{cls.static_id()}.html'
 
 
 class PlayerCardType(PlaceCardType):
@@ -116,10 +117,12 @@ class PlayerCardType(PlaceCardType):
         cls,
         doc: 'PlaceCardPrintDocument',
     ) -> dict[str, Any]:
+        from data.print_documents.documents import PlaceCardPlayer
+
         players = doc.tournament.players_by_starting_rank.values()
         federation_names = set(player.federation.name for player in players)
         return PlaceCardType.template_context(doc) | {
-            'players': (PrintCardPlayer(player) for player in players),
+            'players': (PlaceCardPlayer(player) for player in players),
             'flag_inline_urls_by_federation': cls.flag_inline_urls_by_federation(
                 federation_names
             ),
@@ -140,6 +143,8 @@ class BoardCardType(PlaceCardType):
         cls,
         doc: 'PlaceCardPrintDocument',
     ) -> dict[str, Any]:
+        from data.print_documents.documents import PlaceCardBoard
+
         players = doc.tournament.players_by_id.values()
         board_numbers = [
             doc.tournament.first_board_number - 1 + number
@@ -161,7 +166,7 @@ class BoardCardType(PlaceCardType):
         ]
         federation_names = set(player.federation.name for player in players)
         return PlaceCardType.template_context(doc) | {
-            'boards': (PrintCardBoard(board) for board in boards),
+            'boards': (PlaceCardBoard(board) for board in boards),
             'flag_inline_urls_by_federation': cls.flag_inline_urls_by_federation(
                 federation_names
             ),

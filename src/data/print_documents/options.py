@@ -383,20 +383,31 @@ class PlaceCardPrintOption(PrintOption):
     @property
     def place_card_type_options(self) -> dict[str, str]:
         from data.print_documents import PrintPlaceCardTypeManager
+        from data.print_documents.documents import (
+            PlaceCardPrintDocument,
+            PlaceCardTemplate,
+        )
 
-        return PrintPlaceCardTypeManager(self.event).options()
+        place_card_templates_by_type: dict[PlaceCardType, list[PlaceCardTemplate]] = (
+            PlaceCardPrintDocument.get_place_card_templates_by_type()
+        )
+        return {
+            place_card_type.static_id(): place_card_type.static_name()
+            for place_card_type in PrintPlaceCardTypeManager().objects()
+            if place_card_templates_by_type[place_card_type]
+        }
 
     @cached_property
     def place_card_type(self) -> PlaceCardType:
         from data.print_documents import PrintPlaceCardTypeManager
 
-        return PrintPlaceCardTypeManager(self.event).get_object(self.value)
+        return PrintPlaceCardTypeManager().get_object(self.value)
 
     @property
     def valid_options_per_type(self) -> dict[str, list[str]]:
         from data.print_documents import PrintPlaceCardTypeManager
 
-        type_options = PrintPlaceCardTypeManager(self.event).type_by_id()
+        type_options = PrintPlaceCardTypeManager().type_by_id()
         return {
             type_id: type_options[type_id].get_valid_options()
             for type_id in type_options
@@ -434,3 +445,18 @@ class PlaceCardTemplatePrintOption(PrintOption):
         super().validate()
         if self.value is None:
             raise OptionError(_('Please choose the template.'), self)
+
+    @property
+    def place_card_templates_per_type(self) -> dict[str, list[dict[str, Any]]]:
+        from data.print_documents.documents import PlaceCardPrintDocument
+
+        return {
+            place_card_type.static_id(): [
+                {
+                    'id': place_card_template.id,
+                    'name': place_card_template.name,
+                }
+                for place_card_template in place_card_templates
+            ]
+            for place_card_type, place_card_templates in PlaceCardPrintDocument.get_place_card_templates_by_type().items()
+        }

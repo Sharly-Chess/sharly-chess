@@ -311,6 +311,13 @@ class SharlyChessConfig(metaclass=Singleton):
 
     uniq_id_regex = re.compile(r'^[0-9a-zA-Z_\-]+$')
 
+    # The path of the place cards template files.
+    embedded_place_cards_path: Path = (
+        BASE_DIR / 'src/web/templates/admin/print/place_cards'
+    )
+
+    place_cards_template_ext: str = 'template'
+
     # The versions of the libraries for which the version can be easily extracted.
     litestar_version: Version = Version(litestar.__version__.formatted(short=True))
     jinja2_version: Version = Version(jinja2.__version__)

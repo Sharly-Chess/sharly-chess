@@ -1,0 +1,4 @@
+type = "player"
+name = "Default Player Cards"
+file = "simple_player.html"
+creator = "Sharly Chess"
