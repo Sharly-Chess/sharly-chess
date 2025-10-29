@@ -325,6 +325,9 @@ class EventDatabase(MigrationDatabase):
             ),
             pab_value=row['pab_value'],
             plugin_data=self.load_json_from_database_field(row['plugin_data'], {}),
+            enabled_plugins=self.load_json_from_database_field(
+                row['enabled_plugins'], []
+            ),
         )
 
         return cast(T, stored_event)
@@ -393,6 +396,9 @@ class EventDatabase(MigrationDatabase):
             ),
             'plugin_data': self.dump_to_json_database_field(
                 stored_event.plugin_data, {}
+            ),
+            'enabled_plugins': self.dump_to_json_database_field(
+                stored_event.enabled_plugins, []
             ),
         }
 

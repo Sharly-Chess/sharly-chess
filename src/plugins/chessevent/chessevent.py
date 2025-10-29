@@ -1,5 +1,5 @@
 from types import ModuleType
-from typing import Any, TYPE_CHECKING, Optional, override
+from typing import Any, TYPE_CHECKING
 
 from packaging.version import Version
 
@@ -7,6 +7,7 @@ from common.i18n import _
 from data.input_output import TournamentImporter
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_store import StoredTournament
 from plugins.chessevent import migrations, PLUGIN_NAME
 from plugins.chessevent.chessevent_controller import ChessEventController
 from plugins.chessevent.tournament_importer.importer import ChessEventTournamentImporter
@@ -15,6 +16,7 @@ from plugins.chessevent.utils import (
     ChessEventTournamentPluginData,
     ChessEventUtils,
 )
+from plugins.ffe.ffe import FfePlugin
 from plugins.hookspec import hookimpl
 from plugins.migration import PluginMigrationManager
 from plugins.utils import Plugin, PluginData
@@ -35,6 +37,10 @@ class ChessEventPlugin(Plugin):
         return _('ChessEvent')
 
     @property
+    def dependencies(self) -> list[type[Plugin]]:
+        return [FfePlugin]
+
+    @property
     def description(self) -> str:
         return _(
             'Support for the ChessEvent platform used '
@@ -45,24 +51,21 @@ class ChessEventPlugin(Plugin):
     def version(self) -> Version:
         return Version('0.1.0')
 
-    @override
-    @property
-    def default_is_enabled(self) -> bool:
-        return False
-
-    @override
-    def is_enabled_for_event(self, event: Optional['Event']) -> bool:
-        return event is not None and event.federation == 'FRA'
-
-    @override
     @property
     def federation(self) -> str | None:
         return 'FRA'
 
-    @override
     @property
     def base_migration_module(self) -> ModuleType:
         return migrations
+
+    @property
+    def event_form_fields_template(self) -> str:
+        return '/chessevent_event_form_fields.html'
+
+    def used_by_stored_tournament(self, stored_tournament: StoredTournament) -> bool:
+        ce_data = stored_tournament.plugin_data.get(PLUGIN_NAME, {})
+        return ce_data.get('tournament_name', None) is not None
 
     # ---------------------------------------------------------------------------------
     # Initialisation and configuration
@@ -110,10 +113,6 @@ class ChessEventPlugin(Plugin):
     @hookimpl
     def get_event_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         return self.id, ChessEventEventPluginData
-
-    @hookimpl
-    def get_event_form_fields_template(self) -> str:
-        return '/chessevent_event_form_fields.html'
 
     @hookimpl
     def validate_event_form_fields(

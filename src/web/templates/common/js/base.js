@@ -97,20 +97,17 @@ window.addEventListener("show.bs.dropdown", function(event) {
     closeTooltips();
 });
 
-const saveState = (id, isOpen) => {
+const saveState = (element, isOpen) => {
+    if (!element.id || element.classList.contains('collapse-state-not-saved')) return;
     const states = JSON.parse(localStorage.getItem('collapseStates') || '{}');
-    states[id] = isOpen;
+    states[element.id] = isOpen;
     localStorage.setItem('collapseStates', JSON.stringify(states));
 };
 
 // Listen globally for Bootstrap collapse show/hide
-window.addEventListener('show.bs.collapse', e => {
-    if (e.target.id) saveState(e.target.id, true);
-});
+window.addEventListener('show.bs.collapse', e => saveState(e.target, true));
 
-window.addEventListener('hide.bs.collapse', e => {
-    if (e.target.id) saveState(e.target.id, false);
-});
+window.addEventListener('hide.bs.collapse', e => saveState(e.target, false));
 
 const restoreState = () => {
   const states = JSON.parse(localStorage.getItem('collapseStates') || '{}');

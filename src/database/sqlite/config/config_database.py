@@ -160,21 +160,17 @@ class ConfigDatabase(MigrationDatabase):
         return self.load_stored_plugin(stored_plugin.name)
 
     def insert_stored_plugin(self, stored_plugin: StoredPlugin):
-        fields: list[str] = [
-            'name',
-            'is_enabled',
-            'plugin_data',
-        ]
-        params = (
-            stored_plugin.name,
-            stored_plugin.is_enabled,
-            self.dump_to_json_database_field(stored_plugin.plugin_data or {}),
-        )
+        fields = self._get_fields_dict(stored_plugin, ['name', 'is_enabled'])
+        fields |= {
+            'plugin_data': self.dump_to_json_database_field(
+                stored_plugin.plugin_data, {}
+            )
+        }
         fields_str = ', '.join(f'`{field}`' for field in fields)
         self.execute(
             f'INSERT INTO `plugin` ({fields_str}) '
-            f'VALUES ({", ".join("?" for _ in params)})',
-            params,
+            f'VALUES ({", ".join(["?"] * len(fields))})',
+            tuple(fields.values()),
         )
 
     # ---------------------------------------------------------------------------------
