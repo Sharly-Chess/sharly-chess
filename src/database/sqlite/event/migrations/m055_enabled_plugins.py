@@ -8,6 +8,11 @@ class Migration(BaseMigration):
         self.database.execute(
             "ALTER TABLE `info` ADD `enabled_plugins` TEXT DEFAULT '[]'"
         )
+        # Required for previous post-upgrade tasks (FFE import)
+        self.database.execute(
+            'UPDATE `info` SET `enabled_plugins` = ?',
+            (json.dumps(['ffe', 'pairing_acceleration']),),
+        )
         self.post_upgrade_tasks.append(PostUpgradeTask(self.set_enabled_plugins))
 
     def backward(self):
