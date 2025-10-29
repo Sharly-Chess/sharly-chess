@@ -2373,9 +2373,6 @@ msgstr "Genre :"
 msgid "Genders"
 msgstr "Genres"
 
-msgid "General"
-msgstr "Général"
-
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr "Générer les appariements pour toutes les rondes du tournoi."
 
@@ -2625,9 +2622,6 @@ msgstr "La bibliothèque [{lib}] a été installée."
 
 msgid "International Master"
 msgstr "Maître International"
-
-msgid "Internationalization"
-msgstr "Internationalisation"
 
 msgid "Invalid FFE ID [{ffe_id}]."
 msgstr "Identifiant FFE [{ffe_id}] non valide."
@@ -4543,9 +4537,6 @@ msgstr "Seuil de partage"
 msgid "Sharly Chess Server"
 msgstr "Serveur Sharly Chess"
 
-msgid "Sharly Chess can automatically launch a web browser when starting the web server."
-msgstr "Sharly Chess peut automatiquement lancer la navigateur au démarrage du serveur web."
-
 msgid "Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr "Sharly Chess peut proposer des fonctionnalités spécifiques à la fédération choisie pour chaque évènement."
 
@@ -4846,11 +4837,8 @@ msgstr "La monnaie utilisée pour représenter les prix (par défaut la monnaie 
 msgid "The date of the first hour is not defined (mandatory)."
 msgstr "La date du premier horaire n'est pas définie (obligatoire)."
 
-msgid "The default federation for your events. Sharly Chess may provide functionality specific to the federation chosen for each event."
-msgstr "La fédération par défaut pour vos évènements. Sharly Chess peut proposer des fonctionnalités spécifiques à la fédération choisie pour chaque évènement."
-
-msgid "The default language used."
-msgstr "La langue utilisée par défaut."
+msgid "The default federation for your events."
+msgstr "La fédération par défaut pour vos évènements."
 
 msgid "The delay must be at least {min_delay} minutes to avoid overloading the Chess-Results server."
 msgstr "Le délai doit au moins être de {min_delay} minutes pour éviter de surcharger le serveur Chess-Results."
@@ -5135,8 +5123,8 @@ msgstr "Il ne peut y avoir qu'une seule catégorie générale."
 msgid "There is no pairings for this round (last round with pairings: #{round})."
 msgstr "Il n'y a pas d'appariement pour cette ronde (dernière ronde appariée : n°{round})."
 
-msgid "These plugins enable features that are only active on events of the chosen federation.<br />You’ll be asked to select a federation when creating the event."
-msgstr "Ces plug-ins activent des fonctionnalités qui ne sont disponibles que pour les événements de la fédération sélectionnée.<br />Vous serez invité à choisir une fédération lors de la création de l’événement."
+msgid "These plugins can only be activated on events of their federation."
+msgstr "Ces plug-ins ne peuvent-être activés que pour les évènements de leur fédération."
 
 msgid "These tournaments are already included for this account by a higher access level."
 msgstr "Ces tournois sont déjà inclus pour ce compte par un niveau d'accès plus élevé."
@@ -5768,9 +5756,6 @@ msgid "Used by %(num)d tournament."
 msgid_plural "Used by %(num)d tournaments."
 msgstr[0] "Utilisé par %(num)d tournoi."
 msgstr[1] "Utilisé par %(num)d tournois."
-
-msgid "Utility Plugins"
-msgstr "Plug-ins utilitaires"
 
 msgid "Validate"
 msgstr "Valider"

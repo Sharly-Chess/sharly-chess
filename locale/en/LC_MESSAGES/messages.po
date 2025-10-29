@@ -2373,9 +2373,6 @@ msgstr ""
 msgid "Genders"
 msgstr ""
 
-msgid "General"
-msgstr ""
-
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr ""
 
@@ -2624,9 +2621,6 @@ msgid "Installed [{lib}]."
 msgstr ""
 
 msgid "International Master"
-msgstr ""
-
-msgid "Internationalization"
 msgstr ""
 
 msgid "Invalid FFE ID [{ffe_id}]."
@@ -4543,9 +4537,6 @@ msgstr ""
 msgid "Sharly Chess Server"
 msgstr ""
 
-msgid "Sharly Chess can automatically launch a web browser when starting the web server."
-msgstr ""
-
 msgid "Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr ""
 
@@ -4846,10 +4837,7 @@ msgstr ""
 msgid "The date of the first hour is not defined (mandatory)."
 msgstr ""
 
-msgid "The default federation for your events. Sharly Chess may provide functionality specific to the federation chosen for each event."
-msgstr ""
-
-msgid "The default language used."
+msgid "The default federation for your events."
 msgstr ""
 
 msgid "The delay must be at least {min_delay} minutes to avoid overloading the Chess-Results server."
@@ -5135,7 +5123,7 @@ msgstr ""
 msgid "There is no pairings for this round (last round with pairings: #{round})."
 msgstr ""
 
-msgid "These plugins enable features that are only active on events of the chosen federation.<br />You’ll be asked to select a federation when creating the event."
+msgid "These plugins can only be activated on events of their federation."
 msgstr ""
 
 msgid "These tournaments are already included for this account by a higher access level."
@@ -5768,9 +5756,6 @@ msgid "Used by %(num)d tournament."
 msgid_plural "Used by %(num)d tournaments."
 msgstr[0] ""
 msgstr[1] ""
-
-msgid "Utility Plugins"
-msgstr ""
 
 msgid "Validate"
 msgstr ""
