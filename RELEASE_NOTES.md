@@ -5,6 +5,7 @@ English version below
 
 - Plug-ins spécifiques à une fédération (3.2.0)
 - Mise en ligne sur Chess-Results.com (3.2.0)
+- Simplification des interface de gestion de l'application et des évènements (3.2.0)
 
 ## Joueur·euses
 
@@ -25,6 +26,7 @@ English version below
 ## Écrans
 
 - Suppression de l’option d’image de fond des écrans (3.2.0)
+- Correction des écrans de saisie avec enregistrement de coups illégaux (3.2.0)
 
 ## _FFE_
 
@@ -42,6 +44,7 @@ English version below
 
 - Federation-specific plugins (3.2.0)
 - Uploading to Chess-Results.com (3.2.0)
+- Simplified application/event management UI (3.2.0)
 
 ## Players
 
@@ -62,6 +65,7 @@ English version below
 ## Screens
 
 - Removed the background image option for Screens (3.2.0)
+- Fixed Result entry Screens with illegal moves recording (3.2.0)
 
 ## _FFE_
 
