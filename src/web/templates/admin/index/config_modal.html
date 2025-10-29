@@ -1,4 +1,7 @@
-<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-event-edit-modal">
+<div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered"
+    style="--bs-modal-width: min(90vw, 500px);"
+>
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
@@ -21,17 +24,27 @@
                         {{ _('Please validate the global configuration of the application.') }}
                     </h4>
                 {% endif %}
-                <h4>
-                    {{ _('General') }}
-
-                </h4>
-                <div class="d-flex flex-column gap-1">
+                <div class="d-flex flex-column gap-2">
+                    {{ admin_macros.select_input(
+                        name='locale',
+                        label=_('Language:'),
+                        help_text='',
+                        select_options=locale_options,
+                        data=data, errors=errors
+                    ) }}
+                    {{ admin_macros.select_input(
+                        name='federation',
+                        label=_('Federation:'),
+                        help_text=_('The default federation for your events.'),
+                        select_options=federation_options,
+                        data=data, errors=errors
+                    ) }}
                     {{ admin_macros.switch_input(
                         name='launch_browser',
                         label='',
                         placeholder=_('Launch a browser on startup'),
                         help_text='',
-                        info=_('Sharly Chess can automatically launch a web browser when starting the web server.'),
+                        info='',
                         data=data, errors=errors
                     ) }}
                     {% if sharly_chess_config.experimental_features %}
@@ -54,81 +67,79 @@
                         ) }}
                     {% endif %}
                 </div>
-                <h4>
-                    {{ _('Internationalization') }}
-                </h4>
-                <div class="row gy-2 gx-3">
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.select_input(
-                            name='federation',
-                            label=_('Federation:'),
-                            help_text=_('The default federation for your events. Sharly Chess may provide functionality specific to the federation chosen for each event.'),
-                            select_options=federation_options,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.select_input(
-                            name='locale',
-                            label=_('Language:'),
-                            help_text=_('The default language used.'),
-                            select_options=locale_options,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                </div>
-                <h4>
-                    {{ _('Utility Plugins') }}
-                </h4>
-                <div class="row gx-3 d-fex flex-column gap-2">
-                    {% for plugin in global_plugins %}
-                        {% set used_by_events_count = plugin.used_by_events_count(events_metadata) %}
-                        {{ admin_macros.plugin_switch_input(
-                            plugin,
-                            data,
-                            used_message=ngettext(
-                                'Used by %(num)d event.',
-                                'Used by %(num)d events.',
-                                used_by_events_count,
-                            ) if used_by_events_count else '',
-                            uncheck_on_dependencies_disabled=not plugin.default_is_enabled
-                        ) }}
-                    {% endfor %}
-                </div>
-
-                {% if federation_plugins %}
+                <button
+                    type="button"
+                    class="btn-toggle collapse-button collapsed mt-3"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#plugin-section"
+                    aria-expanded="false"
+                >
                     <h4>
-                        {{ _('Federation plugins') }}
+                        <i class="bi-chevron-down text-body"></i>
+                        {{ _('Plugins') }}
+                        <span class="ps-1" style="font-size:1.2rem">
+                            {{ macros.doc_icon('plugins') }}
+                        </span>
                     </h4>
-                    <div class="form-text mb-3">
-                        {{ _('These plugins enable features that are only active on events of the chosen federation.<br />You’ll be asked to select a federation when creating the event.') }}
+                </button>
+
+                <div id="plugin-section" class="collapse">
+                    <div class="row gx-3 d-fex flex-column gap-2">
+                        {% for plugin in global_plugins %}
+                            {% set used_by_events_count = plugin.used_by_events_count(events_metadata) %}
+                            {{ admin_macros.plugin_switch_input(
+                                plugin,
+                                data,
+                                used_message=ngettext(
+                                    'Used by %(num)d event.',
+                                    'Used by %(num)d events.',
+                                    used_by_events_count,
+                                ) if used_by_events_count else '',
+                                uncheck_on_dependencies_disabled=not plugin.default_is_enabled
+                            ) }}
+                        {% endfor %}
                     </div>
-                {% endif %}
-                {% for federation, plugins in federation_plugins.items() %}
-                    <div class="ms-4">
-                        <div class="text-body-secondary fw-bold text-uppercase pb-1">
-                            {{ federation }} ({{ plugins[0].federation }})
-                        </div>
-                        <div class="row gx-3 d-fex flex-column gap-2">
-                            {% for plugin in plugins %}
-                                {% set used_by_events_count = plugin.used_by_events_count(events_metadata) %}
-                                {{ admin_macros.plugin_switch_input(
-                                    plugin,
-                                    data,
-                                    used_message=ngettext(
-                                        'Used by %(num)d event.',
-                                        'Used by %(num)d events.',
-                                        used_by_events_count,
-                                    ) if used_by_events_count else '',
-                                    uncheck_on_dependencies_disabled=not plugin.default_is_enabled
+
+                    {% if federation_plugins %}
+                        <h5 class="mt-3">
+                            <span class="text-primary">
+                                {{ _('Federation plugins') }}
+                            </span>
+                            <i
+                                class="bi-info-circle-fill ps-1"
+                                style="font-size: 1rem"
+                                {{ macros.tooltip_attributes(
+                                    '', _('These plugins can only be activated on events of their federation.'), 'top'
                                 ) }}
-                            {% endfor %}
+                            ></i>
+                        </h5>
+                    {% endif %}
+                    {% for federation, plugins in federation_plugins.items() %}
+                        <div class="ms-4">
+                            <div class="text-body-secondary fw-bold text-uppercase pb-1">
+                                {{ federation }} ({{ plugins[0].federation }})
+                            </div>
+                            <div class="row gx-3 d-fex flex-column gap-2">
+                                {% for plugin in plugins %}
+                                    {% set used_by_events_count = plugin.used_by_events_count(events_metadata) %}
+                                    {{ admin_macros.plugin_switch_input(
+                                        plugin,
+                                        data,
+                                        used_message=ngettext(
+                                            'Used by %(num)d event.',
+                                            'Used by %(num)d events.',
+                                            used_by_events_count,
+                                        ) if used_by_events_count else '',
+                                        uncheck_on_dependencies_disabled=not plugin.default_is_enabled
+                                    ) }}
+                                {% endfor %}
+                            </div>
                         </div>
-                    </div>
-                {% endfor %}
-                <script>
-                    $('.plugin-switch-input').trigger('change');
-                </script>
+                    {% endfor %}
+                    <script>
+                        $('.plugin-switch-input').trigger('change');
+                    </script>
+                </div>
             </form>
         </div>
 
