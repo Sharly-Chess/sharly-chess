@@ -592,6 +592,9 @@ msgstr ""
 msgid "Archive"
 msgstr ""
 
+msgid "Archive [{archive}] could not be restored, consult the logs for more details."
+msgstr ""
+
 msgid "Archive [{archive}] successfully restored (see event [{event}])."
 msgstr ""
 
