@@ -22,6 +22,7 @@ class PairingTestCase(TestCase):
 
     def setUp(self):
         super().setUp()
+        TestUtils.update_enabled_plugins(['pairing_acceleration', 'ffe'])
         TestUtils.create_event(
             EVENT_ID,
             overrides={
@@ -31,6 +32,7 @@ class PairingTestCase(TestCase):
                 'stop': time.mktime(
                     datetime.strptime('2025-01-01 00:00', '%Y-%m-%d %H:%M').timetuple()
                 ),
+                'enabled_plugins': ['pairing_acceleration', 'ffe'],
             },
         )
         self.event = EventLoader().load_event(EVENT_ID)

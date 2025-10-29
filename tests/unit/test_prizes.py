@@ -70,6 +70,7 @@ class PrizesTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        TestUtils.update_enabled_plugins(['ffe'])
         TestUtils.create_event(
             'test-prizes-event',
             overrides={
@@ -79,6 +80,7 @@ class PrizesTestCase(TestCase):
                 'stop': time.mktime(
                     datetime.strptime('2025-01-01 00:00', '%Y-%m-%d %H:%M').timetuple()
                 ),
+                'enabled_plugins': ['ffe'],
             },
         )
         cls.event = EventLoader().load_event('test-prizes-event')
