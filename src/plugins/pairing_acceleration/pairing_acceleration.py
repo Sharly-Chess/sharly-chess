@@ -5,6 +5,7 @@ from packaging.version import Version
 from common.i18n import _
 from data.pairings.variations import SwissVariation, StandardSwissVariation
 from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_store import StoredTournament
 from plugins.hookspec import hookimpl
 from plugins.migration import PluginMigrationManager
 from plugins.pairing_acceleration import PLUGIN_NAME, migrations
@@ -35,19 +36,14 @@ class PairingAccelerationPlugin(Plugin):
         return Version('0.1.0')
 
     @property
-    def default_is_enabled(self) -> bool:
-        # TODO (Molrn) switch to False once Papi-dependency has been removed
-        return True
-
-    @property
-    def is_state_editable(self) -> bool:
-        # FFE plugin is dependent from acceleration for Papi compatibility
-        # Until FFE plugin can be disabled, this one should remain not editable
-        return False
-
-    @property
     def base_migration_module(self) -> ModuleType:
         return migrations
+
+    def used_by_stored_tournament(self, stored_tournament: StoredTournament) -> bool:
+        return any(
+            stored_tournament.pairing == variation_type.static_id()
+            for variation_type in self._pairing_variation_types
+        )
 
     @hookimpl
     def get_event_migration_manager(
@@ -55,16 +51,19 @@ class PairingAccelerationPlugin(Plugin):
     ) -> PluginMigrationManager:
         return self.get_migration_manager(event_database)
 
-    @hookimpl
-    def insert_swiss_pairing_variation_types(
-        self, variation_types: list[type[SwissVariation]]
-    ):
-        ordered_types: list[type[SwissVariation]] = [
+    @property
+    def _pairing_variation_types(self) -> list[type[SwissVariation]]:
+        return [
             BakuSwissVariation,
             HaleySwissVariation,
             HaleySoftSwissVariation,
             ProgressiveSwissVariation,
         ]
-        for variation_type in reversed(ordered_types):
+
+    @hookimpl
+    def insert_swiss_pairing_variation_types(
+        self, variation_types: list[type[SwissVariation]]
+    ):
+        for variation_type in reversed(self._pairing_variation_types):
             standard: type[SwissVariation] = StandardSwissVariation
             PluginUtils.insert_on_equals(variation_types, variation_type, standard)

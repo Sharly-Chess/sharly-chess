@@ -365,9 +365,7 @@ class TournamentAdminController(BaseEventAdminController):
             "Use Event's default - {option}"
         ).format(
             option=override_unrated_rapid_blitz_options[
-                WebContext.value_to_form_data(
-                    admin_event.override_unrated_rapid_blitz or False
-                )
+                WebContext.value_to_form_data(admin_event.override_unrated_rapid_blitz)
             ]
         )
 

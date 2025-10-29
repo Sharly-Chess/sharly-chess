@@ -21,6 +21,7 @@ from typing import Optional, Any
 from PIL import Image as PILImage
 
 import toga
+from toga.sources import ListSource
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
 import qrcode
@@ -372,6 +373,7 @@ class SharlyChessServerToga(toga.App):
             accessor='text',
             on_change=self._on_level_change,
         )
+        assert isinstance(self.log_level_select.items, ListSource)
         self.log_level_select.value = self.log_level_select.items.find(
             data={'level': config.console_log_level}
         )
@@ -686,7 +688,7 @@ class SharlyChessServerToga(toga.App):
         SharlyChessConfig().load_and_set_env()
 
     def _on_level_change(self, widget: toga.Selection, **kwargs):
-        self._update_config('console_log_level', widget.value.level)
+        self._update_config('console_log_level', getattr(widget.value, 'level'))
 
     def _on_color_switch_change(self, widget: toga.Switch, **kwargs):
         self._update_config('console_color', widget.value)
