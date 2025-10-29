@@ -374,7 +374,12 @@
                 </section>
 
                 <section>
-                    {% set applying_143d = is_swiss %}
+                    {% set applying_143d = is_swiss and (
+                            norm.not_enough_federations or
+                            norm.too_many_own_federation or
+                            norm.too_many_one_federation
+                        ) and norm.is_143d_met
+                    %}
                     <div style="font-size: 0.9rem; font-weight: bold;">Where applying 1.4.3d:</div>
                     <div class="grid" style="grid-template-columns: 3fr 5fr;">
                         <div class="item {{ 'error' if applying_143d and norm.not_enough_all_federations else '' }}">
