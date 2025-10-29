@@ -3,8 +3,12 @@ English version below
 
 ## Fonctionnement
 
-- Plug-ins spécifiques à une fédération (3.2.0)
 - Mise en ligne sur Chess-Results.com (3.2.0)
+- Activation / désactivation des plugins par évènement (3.2.0)
+
+## Interface
+
+- Déplacement des options de la console au dessus de la console (3.2.0)
 
 ## Joueur·euses
 
@@ -40,8 +44,12 @@ English version below
 
 ## Usage
 
-- Federation-specific plugins (3.2.0)
 - Uploading to Chess-Results.com (3.2.0)
+- Enable / disable plugins per event (3.2.0)
+
+## Interface
+
+- Moved the console options above the console (3.2.0)
 
 ## Players
 
