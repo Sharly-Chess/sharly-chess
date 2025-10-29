@@ -1,33 +1,29 @@
-from typing import TYPE_CHECKING, Any, Optional, override
+from typing import TYPE_CHECKING, override
 
 from packaging.version import Version
 
 from common.i18n import _
 from database.sqlite.local_source_database import LocalSourceDatabase
+from database.sqlite.event.event_store import StoredTournament
 from plugins import PLUGINS_DIR
 from plugins.fra.fra_schools import PLUGIN_NAME
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.fra.fra_schools.fra_schools_controller import FRASchoolsController
 from plugins.fra.fra_schools.fra_schools_database import FRASchoolsDatabase
 from plugins.fra.fra_schools.utils import FRASchoolsPlayerPluginData
+from plugins.ffe.ffe import FfePlugin
 from plugins.hookspec import hookimpl
 from plugins.manager import Path
 from plugins.utils import (
-    ExtraStatisticsSection,
     Plugin,
     PluginData,
     PluginUtils,
 )
-from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController
 
 if TYPE_CHECKING:
-    from data.event import Event
-    from database.sqlite.event.event_store import StoredEvent
-    from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredTournament
 
-from plugins.fra.fra_schools import PLUGIN_NAME
 
 class FRASchoolsPlugin(Plugin):
     @staticmethod
@@ -36,13 +32,15 @@ class FRASchoolsPlugin(Plugin):
 
     @staticmethod
     def static_name() -> str:
-        return _('French Schools Competitions')
+        return _('French School Competitions')
+
+    @property
+    def dependencies(self) -> list[type[Plugin]]:
+        return [FfePlugin]
 
     @property
     def description(self) -> str:
-        return _(
-            'Adds support for school competitions in France'
-        )
+        return _('Adds support for school competitions in France')
 
     @property
     def version(self) -> Version:
@@ -55,17 +53,12 @@ class FRASchoolsPlugin(Plugin):
 
     @override
     @property
-    def default_is_enabled(self) -> bool:
-        return False
-
-    @override
-    def is_enabled_for_event(self, event: Optional['Event']) -> bool:
-        return event is not None and event.federation == 'FRA'
-
-    @override
-    @property
     def federation(self) -> str | None:
         return 'FRA'
+
+    def used_by_stored_tournament(self, stored_tournament: StoredTournament) -> bool:
+        # TODO
+        return False
 
     # ---------------------------------------------------------------------------------
     # Initialisation and configuration
