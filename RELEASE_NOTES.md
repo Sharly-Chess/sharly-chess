@@ -65,7 +65,7 @@ English version below
 ## Screens
 
 - Removed the background image option for Screens (3.2.0)
-- Fixed Result entry Screens with illegal moves recording (3.2.0)
+- Fixed Result Entry Screens with illegal moves recording (3.2.0)
 
 ## _FFE_
 
