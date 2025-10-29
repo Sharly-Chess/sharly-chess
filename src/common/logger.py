@@ -2,6 +2,7 @@ import logging
 from logging import Logger, getLogger
 from logging.config import dictConfig
 import sys
+from pathlib import Path
 from typing import Any
 
 from colorama import Fore, Style
@@ -143,11 +144,13 @@ def get_logging_config() -> dict[str, Any]:
             },
         },
     }
+    log_file_path: Path = Path(LOG_FILE)
+    log_file_path.parent.mkdir(parents=True, exist_ok=True)
     logging_config['handlers']['file'] = {  # type: ignore
         'class': 'logging.handlers.RotatingFileHandler',
         'level': logging.DEBUG,
         'formatter': 'file_formatter',
-        'filename': str(LOG_FILE),
+        'filename': str(log_file_path),
         'maxBytes': 500 * 1024,
         'backupCount': 5,
         'encoding': 'UTF-8',
