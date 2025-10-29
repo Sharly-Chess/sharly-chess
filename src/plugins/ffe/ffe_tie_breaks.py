@@ -221,7 +221,7 @@ class PapiPerformanceTieBreak(BasePapiTieBreak):
     def _get_player_estimation(self, player: 'Player') -> int:
         if not player.estimated:
             return player.rating
-        return player.tie_break_variables[self.id]
+        return player.tie_break_variables.get(self.id, player.rating)
 
     def compute_player_value(self, player: 'Player', *, after_round: int) -> float:
         tournament: 'Tournament' = player.tournament
