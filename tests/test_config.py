@@ -63,7 +63,6 @@ class TestUtils:
         'timer_colors': {i: None for i in range(1, 4)},
         'timer_delays': {i: None for i in range(1, 4)},
         'plugin_data': {},
-        'enabled_plugins': [],
     }
 
     @staticmethod
@@ -154,25 +153,27 @@ class TestUtils:
         overrides: Optional[dict] = None,
     ):
         overrides = overrides or {}
-        start_time = datetime.now()
-        stop_time = datetime.now() + timedelta(hours=1)
-        start: str | float
-        stop: str | float
-        if via_api_request_context:
-            start = start_time.strftime('%Y-%m-%dT%H:%M')
-            stop = stop_time.strftime('%Y-%m-%dT%H:%M')
-        else:
-            start = start_time.timestamp()
-            stop = stop_time.timestamp()
 
         # Provide defaults
         defaults = {
             **cls.event_defaults,
             'uniq_id': uniq_id,
             'name': uniq_id,
-            'start': start,
-            'stop': stop,
         }
+        start_time = datetime.now()
+        stop_time = datetime.now() + timedelta(hours=1)
+        if via_api_request_context:
+            defaults |= {
+                'start': start_time.strftime('%Y-%m-%dT%H:%M'),
+                'stop': stop_time.strftime('%Y-%m-%dT%H:%M'),
+                'plugin_ffe': 'on',
+            }
+        else:
+            defaults |= {
+                'start': start_time.timestamp(),
+                'stop': stop_time.timestamp(),
+                'enabled_plugins': ['ffe', 'pairing_acceleration'],
+            }
 
         # Merge overrides
         data = {**defaults, **overrides}

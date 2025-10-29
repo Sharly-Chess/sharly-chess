@@ -69,21 +69,21 @@
                 </div>
                 <button
                     type="button"
-                    class="btn-toggle collapse-button collapsed mt-3"
+                    class="collapse-button collapsed mt-3"
                     data-bs-toggle="collapse"
                     data-bs-target="#plugin-section"
                     aria-expanded="false"
                 >
-                    <h4>
+                    <h4 class="form-check-label d-inline-flex align-items-center gap-2">
                         <i class="bi-chevron-down text-body"></i>
                         {{ _('Plugins') }}
-                        <span class="ps-1" style="font-size:1.2rem">
+                        <span style="font-size:1.2rem">
                             {{ macros.doc_icon('plugins') }}
                         </span>
                     </h4>
                 </button>
 
-                <div id="plugin-section" class="collapse">
+                <div id="plugin-section" class="collapse collapse-state-not-saved">
                     <div class="row gx-3 d-fex flex-column gap-2">
                         {% for plugin in global_plugins %}
                             {% set used_by_events_count = plugin.used_by_events_count(events_metadata) %}
