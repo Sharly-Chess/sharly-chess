@@ -73,7 +73,11 @@
 {% endblock %}
 
 {% block content %}
-    <div id="top-nav-wrapper" style="background-color: {{ screen.background_color }}">
+    <div id="top-nav-wrapper" class="pt-0" style="background-color: {{ screen.background_color }}">
+        {% if screen.timer and not screen.timer.error %}
+            <!-- timer.html -->
+            {% include 'screen/timer.html' %}
+        {% endif %}
         <div id="top-nav-content">
             {% if not rotator and not display_controller %}
                 {% set menu_screens = screen.admin_menu_screens if client.can_view_private_screens else screen.public_menu_screens %}
@@ -94,10 +98,6 @@
                 {% endif %}
             {% endif %}
         </div>
-        {% if screen.timer and not screen.timer.error %}
-            <!-- timer.html -->
-            {% include 'screen/timer.html' %}
-        {% endif %}
     </div>
     <div
         id="user-screen-content"
