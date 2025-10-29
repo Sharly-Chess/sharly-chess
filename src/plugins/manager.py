@@ -1,3 +1,4 @@
+import copy
 from functools import cached_property
 from pathlib import Path
 from typing import Any, Type, TypeVar, TYPE_CHECKING, Optional
@@ -96,6 +97,21 @@ class AppPluginManager(PluginManager):
             elif not is_enabled and was_enabled:
                 self.unregister(plugin, plugin.id)
 
+    def enable_dependencies(self):
+        from database.sqlite.config.config_database import ConfigDatabase
+
+        enabled_with_dependencies = self.get_plugins_with_dependencies(
+            self.enabled_plugins
+        )
+        with ConfigDatabase(True) as database:
+            for plugin in enabled_with_dependencies:
+                if plugin.is_enabled:
+                    continue
+                stored_plugin = copy.copy(plugin.context.stored_plugin)
+                stored_plugin.is_enabled = True
+                database.update_stored_plugin(stored_plugin)
+        self.reload_register()
+
     def hook_for_event(self, event: Optional['Event'], hook_name: str):
         remove_plugins = []
         if event:
@@ -124,6 +140,7 @@ def get_plugin_manager() -> AppPluginManager:
         _plugin_manager = AppPluginManager(APP_NAME)
         _plugin_manager.add_hookspecs(AppHookSpecs)
         _plugin_manager.load_register()
+        _plugin_manager.enable_dependencies()
     return _plugin_manager
 
 
