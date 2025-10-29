@@ -4,10 +4,11 @@ English version below
 ## Fonctionnement
 
 - Mise en ligne sur Chess-Results.com (3.2.0)
-- Activation / désactivation des plugins par évènement (3.2.0)
+- Activation/désactivation des plugins par évènement (3.2.0)
 
 ## Interface
 
+- Simplification des interface de gestion de l'application et des évènements (3.2.0)
 - Déplacement des options de logs sur la console (3.2.0)
 
 ## Joueur·euses
@@ -29,6 +30,7 @@ English version below
 ## Écrans
 
 - Suppression de l’option d’image de fond des écrans (3.2.0)
+- Correction des écrans de saisie avec enregistrement de coups illégaux (3.2.0)
 
 ## _FFE_
 
@@ -45,10 +47,11 @@ English version below
 ## Usage
 
 - Uploading to Chess-Results.com (3.2.0)
-- Enable / disable plugins per event (3.2.0)
+- Enable/disable plugins per event (3.2.0)
 
 ## Interface
 
+- Simplified application/event management UI (3.2.0)
 - Moved the log options to the console (3.2.0)
 
 ## Players
@@ -70,6 +73,7 @@ English version below
 ## Screens
 
 - Removed the background image option for Screens (3.2.0)
+- Fixed Result Entry Screens with illegal moves recording (3.2.0)
 
 ## _FFE_
 
