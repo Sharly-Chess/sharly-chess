@@ -22,6 +22,7 @@ class PairingTestCase(TestCase):
 
     def setUp(self):
         super().setUp()
+        TestUtils.update_enabled_plugins(['pairing_acceleration', 'ffe'])
         TestUtils.create_event(
             EVENT_ID,
             overrides={
