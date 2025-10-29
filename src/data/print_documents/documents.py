@@ -1311,6 +1311,16 @@ class PlaceCardPrintDocument(PrintDocument):
             ].html_file
         )
 
+    def validate_options(self):
+        super().validate_options()
+        template_option = self._get_option(PlaceCardTemplatePrintOption)
+        try:
+            self.get_place_card_templates_by_id()[template_option.value]
+        except KeyError:
+            raise OptionError(
+                f'Unknown template [{template_option.value}]', template_option
+            )
+
     @staticmethod
     @cache
     def get_place_card_templates_by_id() -> dict[str, PlaceCardTemplate]:
