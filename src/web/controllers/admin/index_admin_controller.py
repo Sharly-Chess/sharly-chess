@@ -575,10 +575,7 @@ class IndexAdminController(BaseAdminController):
             for plugin in event.enabled_plugins:
                 if not plugin.federation:
                     continue
-                if any(
-                    plugin.used_by_tournament(tournament)
-                    for tournament in event.tournaments
-                ):
+                if plugin.used_by_tournaments_count(event):
                     federation_plugin_used = True
                     break
         return {

@@ -8,7 +8,7 @@ English version below
 
 ## Interface
 
-- Déplacement des options de la console au dessus de la console (3.2.0)
+- Déplacement des options de logs sur la console (3.2.0)
 
 ## Joueur·euses
 
@@ -49,7 +49,7 @@ English version below
 
 ## Interface
 
-- Moved the console options above the console (3.2.0)
+- Moved the log options to the console (3.2.0)
 
 ## Players
 

@@ -13,9 +13,8 @@ from plugins import PLUGINS_DIR
 
 if TYPE_CHECKING:
     from data.event import Event
-    from data.tournament import Tournament
     from database.sqlite.event.event_database import EventDatabase
-    from database.sqlite.event.event_store import EventMetadata
+    from database.sqlite.event.event_store import EventMetadata, StoredTournament
     from plugins.migration import PluginMigrationManager
     from web.controllers.base_controller import BaseController
 
@@ -198,12 +197,15 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
         return sum([self.id in event.enabled_plugins for event in events_metadata])
 
     @abstractmethod
-    def used_by_tournament(self, tournament: 'Tournament') -> bool:
+    def used_by_stored_tournament(self, stored_tournament: 'StoredTournament') -> bool:
         """Determines if the tournament uses the plugin or not."""
 
     def used_by_tournaments_count(self, event: 'Event') -> int:
         return sum(
-            [self.used_by_tournament(tournament) for tournament in event.tournaments]
+            [
+                self.used_by_stored_tournament(tournament.stored_tournament)
+                for tournament in event.tournaments
+            ]
         )
 
     @property

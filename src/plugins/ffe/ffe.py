@@ -142,17 +142,19 @@ class FfePlugin(Plugin):
     def event_form_fields_template(self) -> str:
         return '/ffe_event_form_fields.html'
 
-    def used_by_tournament(self, tournament: 'Tournament') -> bool:
-        ffe_data = FFEUtils.get_tournament_plugin_data(tournament)
-        if ffe_data.ffe_id:
+    def used_by_stored_tournament(self, stored_tournament: 'StoredTournament') -> bool:
+        ffe_data = stored_tournament.plugin_data.get(PLUGIN_NAME, {})
+        if ffe_data.get('ffe_id', None):
             return True
-        for tie_break in tournament.tie_breaks:
+        for stored_tie_break in stored_tournament.stored_tie_breaks:
             if any(
-                isinstance(tie_break, tie_break_type)
+                stored_tie_break.type == tie_break_type.static_id()
                 for tie_break_type in self._tie_break_types
             ):
                 return True
-        return isinstance(tournament.pairing_variation, NicoisSwissVariation)
+        if stored_tournament.pairing == NicoisSwissVariation.static_id():
+            return True
+        return False
 
     # The FFE league names.
     FFE_LEAGUES: dict[str, str] = {
