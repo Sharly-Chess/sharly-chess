@@ -849,12 +849,21 @@ class IndexAdminController(BaseAdminController):
         if not archive:
             raise NotFoundException(f'Unknown archive [{archive_name}]')
         uniq_id = archive.restore()
-        Message.success(
-            request,
-            _(
-                'Archive [{archive}] successfully restored (see event [{event}]).'
-            ).format(archive=archive.name, event=uniq_id),
-        )
+        if uniq_id:
+            Message.success(
+                request,
+                _(
+                    'Archive [{archive}] successfully restored (see event [{event}]).'
+                ).format(archive=archive.name, event=uniq_id),
+            )
+        else:
+            Message.error(
+                request,
+                _(
+                    'Archive [{archive}] could not be restored, '
+                    'consult the logs for more details.'
+                ).format(archive=archive.name),
+            )
         return self._admin_render(web_context=web_context)
 
     @patch(
