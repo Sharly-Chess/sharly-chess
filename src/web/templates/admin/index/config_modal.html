@@ -95,7 +95,7 @@
                                     'Used by %(num)d events.',
                                     used_by_events_count,
                                 ) if used_by_events_count else '',
-                                uncheck_on_dependencies_disabled=not plugin.default_is_enabled
+                                default_state=plugin.default_is_enabled
                             ) }}
                         {% endfor %}
                     </div>
@@ -130,14 +130,14 @@
                                             'Used by %(num)d events.',
                                             used_by_events_count,
                                         ) if used_by_events_count else '',
-                                        uncheck_on_dependencies_disabled=not plugin.default_is_enabled
+                                        default_state=plugin.default_is_enabled
                                     ) }}
                                 {% endfor %}
                             </div>
                         </div>
                     {% endfor %}
                     <script>
-                        $('.plugin-switch-input').trigger('change');
+                        $('.plugin-switch-input').trigger('change', [false]);
                     </script>
                 </div>
             </form>
