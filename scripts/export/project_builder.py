@@ -13,6 +13,8 @@ from zipfile import ZipFile, ZIP_DEFLATED
 from PyInstaller.__main__ import run
 from packaging.version import Version, InvalidVersion
 
+import plugins.chess_results
+import plugins.ffe
 from common import BASE_DIR, EVENTS_FOLDER
 from common import SHARLY_CHESS_VERSION
 from common.installation_checker import (
@@ -625,7 +627,8 @@ class ProjectBuilder(ABC):
                 files += [file for file in installer_dir.glob('**/*') if file.is_file()]
 
         files += [
-            PLUGINS_DIR / 'ffe' / '.credentials',
+            plugins.chess_results.PLUGIN_DIR / '.credentials',
+            plugins.ffe.PLUGIN_DIR / '.credentials',
         ]
 
         # Add GUI resources
