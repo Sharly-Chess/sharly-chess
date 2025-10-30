@@ -616,6 +616,7 @@ class ProjectBuilder(ABC):
         custom_dir: Path = self.src_dir / 'custom'
         files += [file for file in custom_dir.glob('**/*') if file.is_file()]
         files += [file for file in self.locale_dir.glob('**/*.mo') if file.is_file()]
+        files += [BASE_DIR / '.env']
 
         # Add entire executable installer directories
         for executable_installer in InstallationChecker.executable_installers:
