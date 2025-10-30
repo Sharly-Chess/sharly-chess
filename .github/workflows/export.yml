@@ -44,18 +44,17 @@ jobs:
         shell: cmd  # pwsh is not found on Windows self-hosted runners (https://github.com/actions/runner/issues/3415)
         run: |
           pip install -e .[export]
-      - name: Create .env file
+      - name: Generate i18n files
+        shell: cmd
+        run: |
+          python scripts/i18n/i18n_update.py
+      - name: Generate Chess-Results credentials
         shell: powershell
         env:
           CHESS_RESULTS_AES_KEY: ${{ secrets.CHESS_RESULTS_AES_KEY }}
           CHESS_RESULTS_AES_IV: ${{ secrets.CHESS_RESULTS_AES_IV }}
         run: |
-          echo "CHESS_RESULTS_AES_KEY=$env:CHESS_RESULTS_AES_KEY" | Out-File -FilePath .env -Encoding utf8
-          echo "CHESS_RESULTS_AES_IV=$env:CHESS_RESULTS_AES_IV" | Out-File -FilePath .env -Append -Encoding utf8
-      - name: Generate i18n files
-        shell: cmd
-        run: |
-          python scripts/i18n/i18n_update.py
+          python scripts/ffe/generate_chess_results_credentials.py --key="$env:CHESS_RESULTS_AES_KEY" --iv="$env:CHESS_RESULTS_AES_KEY"
       - name: Generate FFE SQL credentials
         shell: powershell
         env:
