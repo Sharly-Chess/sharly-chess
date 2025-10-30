@@ -909,10 +909,12 @@ class Player:
             and self.tournament.playing
         ):
             return self.pairings_by_round[self.tournament.current_round].zero_point_bye
-        for round in range(self.tournament.current_round, self.tournament.rounds + 1):
+        for round_ in range(
+            max(self.tournament.current_round, 1), self.tournament.rounds + 1
+        ):
             if (
-                self.pairings_by_round[round].paired
-                or self.pairings_by_round[round].zero_point_bye
+                self.pairings_by_round[round_].paired
+                or self.pairings_by_round[round_].zero_point_bye
             ):
                 continue
             return False
