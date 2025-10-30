@@ -3,12 +3,14 @@ from typing import Any, TYPE_CHECKING, Iterable
 from packaging.version import Version
 
 from common.i18n import _
+from data.print_documents import QRCodeType
 from database.sqlite.event.event_database import EventDatabase
 from plugins.chess_results.chess_results_background_uploader import (
     ChessResultsUploadStatus,
     EventLoader,
     ChessResultsBackgroundUploader,
 )
+from plugins.chess_results.chess_results_qrcode import ChessResultsQRCodeType
 from plugins.chess_results.utils import (
     CHESS_RESULTS_DEFAULT_UPLOAD_DELAY,
     CHESS_RESULTS_MIN_UPLOAD_DELAY,
@@ -240,3 +242,11 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
                 has_upload_error=has_upload_error,
             )
         ]
+
+    # ---------------------------------------------------------------------------------
+    # QR code
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def insert_print_qrcode_types(self, qrcode_types: list[type[QRCodeType]]):
+        qrcode_types.append(ChessResultsQRCodeType)
