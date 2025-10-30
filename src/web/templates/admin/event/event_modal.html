@@ -187,7 +187,7 @@
                             pluginsToHide.hide();
                             const pluginSwitch = pluginsToHide.find('.plugin-switch-input');
                             pluginSwitch.prop('checked', false);
-                            pluginSwitch.trigger('change' [false]);
+                            pluginSwitch.trigger('change', [false]);
                             $('.federation-plugin-' + federation).show();
                             $('#plugins-container').show();
                             $('#plugins-container').toggle($('.plugin-container:visible').length > 0);
