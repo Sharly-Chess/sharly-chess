@@ -1,18 +1,29 @@
+import base64
+import json
 from dataclasses import dataclass
 from datetime import datetime
 from functools import partial
 import os
-from typing import Any, Self
+from io import StringIO
+from logging import Logger
+from pathlib import Path
+from typing import Any, Self, Optional
+
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
 from dotenv import load_dotenv
 
+from common import DEVEL_ENV, SharlyChessException
+from common.logger import get_logger
 from data.event import Event
 from data.tournament import Tournament
-from plugins.chess_results import PLUGIN_NAME
+from plugins.chess_results import PLUGIN_NAME, PLUGIN_DIR
 from plugins.utils import PluginData, PluginUtils
 from web.controllers.base_controller import WebContext
+
+
+logger: Logger = get_logger()
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
@@ -20,7 +31,60 @@ CHESS_RESULTS_MIN_UPLOAD_DELAY = 3
 CHESS_RESULTS_DEFAULT_UPLOAD_DELAY = 3
 CHESS_RESULTS_EPOCH = datetime(2000, 1, 1)
 
-load_dotenv()
+
+class ChessResultsCredentials:
+    def __init__(
+        self,
+        key: str,
+        iv: str,
+    ):
+        self.key: str = key
+        self.iv: str = iv
+
+    @classmethod
+    def load(
+        cls,
+        file: Path,
+    ) -> Optional[Self]:
+        """Reads credentials from the given file, raises SharlyChessException
+        on error (logs a warning and returns None on DEVEL_ENV)."""
+        try:
+            with open(file, 'r') as f:
+                (key, iv) = json.loads(
+                    base64.b64decode(f.read().encode('ascii')).decode('ascii')
+                )
+            return cls(key, iv)
+        except FileNotFoundError as e:
+            if DEVEL_ENV:
+                logger.warning(
+                    f'Could not read Chess-Results credentials ({e}), '
+                    'please run generate_chess_results_credentials.py.'
+                )
+                return None
+            else:
+                raise SharlyChessException(
+                    'Could not read Chess-Results credentials.'
+                ) from None
+
+    @staticmethod
+    def dump(
+        credentials_file: Path,
+        key: str,
+        iv: str,
+    ):
+        """Dumps credentials to the given file."""
+        credentials_file.parent.mkdir(exist_ok=True, parents=True)
+        with open(credentials_file, 'w') as f:
+            f.write(
+                base64.b64encode(
+                    json.dumps(
+                        (
+                            key,
+                            iv,
+                        )
+                    ).encode('ascii')
+                ).decode('ascii')
+            )
 
 
 class ChessResultsUtils:
@@ -97,6 +161,32 @@ class ChessResultsUtils:
             'tnr_sec': cls.encrypt(str(tnr)),
             'creator_id_sec': cls.encrypt(creator_id),
         }
+
+    CREDENTIALS_FILE: Path = PLUGIN_DIR / '.credentials'
+
+    @classmethod
+    def dump_credentials(
+        cls,
+        key: str,
+        iv: str,
+    ):
+        """Dumps the credentials to the module base64-encoded file."""
+        ChessResultsCredentials.dump(cls.CREDENTIALS_FILE, key, iv)
+
+    @classmethod
+    def load_credentials(
+        cls,
+    ):
+        """Dumps the credentials from the module base64-encoded file."""
+        if credentials := ChessResultsCredentials.load(cls.CREDENTIALS_FILE):
+            load_dotenv(
+                stream=StringIO(
+                    f'CHESS_RESULTS_AES_KEY={credentials.key}\nCHESS_RESULTS_AES_IV={credentials.iv}'
+                )
+            )
+
+
+ChessResultsUtils.load_credentials()
 
 
 @dataclass

@@ -3,12 +3,11 @@ English version below
 
 ## Fonctionnement
 
-- Mise en ligne sur Chess-Results.com (3.2.0)
 - Activation/désactivation des plugins par évènement (3.2.0)
 
 ## Interface
 
-- Simplification des interface de gestion de l'application et des évènements (3.2.0)
+- Simplification des interfaces de gestion de l'application et des évènements (3.2.0)
 - Déplacement des options de logs sur la console (3.2.0)
 
 ## Joueur·euses
@@ -19,6 +18,7 @@ English version below
 - Correction de l'affichage du score de la ronde courante sur l'historique des joueur·euses (3.2.0)
 - Correction d’un problème de validation qui permettait d’ajouter deux joueurs avec le même numéro de licence FFE dans un même tournoi (3.2.0)
 - Possibilité de noter l'abandon/le retour d'un·e joueur·euse depuis la modale d'historique des joueur·eses (3.2.0)
+- Correction de l'historique des joueur·euses avant la ronde 1 (3.2.1)
 
 ## Appariements
 
@@ -40,13 +40,17 @@ English version below
 
 - Clarification du message d'erreur en cas de fédération inconnue (3.2.0)
 
+## _Chess-Results_
+
+- Mise en ligne sur _Chess-Results.com_ (3.2.0)
+- Correction du téléversement (3.2.1)
+
 ---
 
 # English
 
 ## Usage
 
-- Uploading to Chess-Results.com (3.2.0)
 - Enable/disable plugins per event (3.2.0)
 
 ## Interface
@@ -62,6 +66,8 @@ English version below
 - Fixed the display of the score of the current round on the player's history modal (3.2.0)
 - Fixed a validation issue which allowed to players with the same FFE licence number to be added to the same tournament (3.2.0)
 - Ability to note a player's withdraw/re-entry from the player record modal (3.2.0)
+- Fixed the player history modal before round 1 (3.2.1)
+- Fix rounding issues in norm calculations (3.2.1)
 
 ## Pairings
 
@@ -82,3 +88,8 @@ English version below
 ## _ChessEvent_
 
 - Clarify the error message in case of unknown federation (3.2.0)
+
+## _Chess-Results_
+
+- Uploading to _Chess-Results.com_ (3.2.0)
+- Fix upload (3.2.1)
