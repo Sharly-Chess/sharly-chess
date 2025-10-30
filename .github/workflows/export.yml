@@ -54,7 +54,7 @@ jobs:
           CHESS_RESULTS_AES_KEY: ${{ secrets.CHESS_RESULTS_AES_KEY }}
           CHESS_RESULTS_AES_IV: ${{ secrets.CHESS_RESULTS_AES_IV }}
         run: |
-          python scripts/chess_results/generate_chess_results_credentials.py --key="$env:CHESS_RESULTS_AES_KEY" --iv="$env:CHESS_RESULTS_AES_KEY"
+          python scripts/chess_results/generate_chess_results_credentials.py --key="$env:CHESS_RESULTS_AES_KEY" --iv="$env:CHESS_RESULTS_AES_IV"
       - name: Generate FFE SQL credentials
         shell: powershell
         env:
@@ -118,7 +118,7 @@ jobs:
           CHESS_RESULTS_AES_KEY: ${{ secrets.CHESS_RESULTS_AES_KEY }}
           CHESS_RESULTS_AES_IV: ${{ secrets.CHESS_RESULTS_AES_IV }}
         run: |
-          python scripts/chess_results/generate_chess_results_credentials.py --key="$env:CHESS_RESULTS_AES_KEY" --iv="$env:CHESS_RESULTS_AES_KEY"
+          python scripts/chess_results/generate_chess_results_credentials.py --key="$env:CHESS_RESULTS_AES_KEY" --iv="$env:CHESS_RESULTS_AES_IV"
       - name: Generate FFE SQL credentials
         shell: bash
         env:
