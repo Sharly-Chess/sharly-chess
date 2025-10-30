@@ -162,7 +162,7 @@
                                             used_by_tournaments_count,
                                         ) if used_by_tournaments_count else '',
                                         disabled=not client.can_update_event,
-                                        uncheck_on_dependencies_disabled=not plugin.default_event_is_enabled
+                                        default_state=plugin.default_event_is_enabled
                                     ) }}
                                 </span>
                                 {% if plugin.event_form_fields_template %}
@@ -180,14 +180,14 @@
                         {% endfor %}
                     </div>
                     <script>
-                        $('.plugin-switch-input').trigger('change');
+                        $('.plugin-switch-input').trigger('change', [false]);
                         $('#federation').change(function () {
                             const federation = $(this).val();
                             const pluginsToHide = $('.federation-plugin:not(.federation-plugin-' + federation + ')');
                             pluginsToHide.hide();
                             const pluginSwitch = pluginsToHide.find('.plugin-switch-input');
                             pluginSwitch.prop('checked', false);
-                            pluginSwitch.trigger('change');
+                            pluginSwitch.trigger('change', [false]);
                             $('.federation-plugin-' + federation).show();
                             $('#plugins-container').show();
                             $('#plugins-container').toggle($('.plugin-container:visible').length > 0);
