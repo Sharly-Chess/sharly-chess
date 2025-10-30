@@ -38,16 +38,16 @@ class ChessResultsCredentials:
         key: str,
         iv: str,
     ):
-        """Reads credentials from the given file, raises SharlyChessException on error."""
         self.key: str = key
         self.iv: str = iv
 
     @classmethod
-    def load_credentials(
+    def load(
         cls,
         file: Path,
     ) -> Optional[Self]:
-        """Reads credentials from the given file, raises SharlyChessException on error."""
+        """Reads credentials from the given file, raises SharlyChessException
+        on error (logs a warning and returns None on DEVEL_ENV)."""
         try:
             with open(file, 'r') as f:
                 (key, iv) = json.loads(
@@ -72,8 +72,7 @@ class ChessResultsCredentials:
         key: str,
         iv: str,
     ):
-        """Dumps credentials to the given file.
-        The credentials can be read by `creds = ChessResultsCredentials(file)`."""
+        """Dumps credentials to the given file."""
         credentials_file.parent.mkdir(exist_ok=True, parents=True)
         with open(credentials_file, 'w') as f:
             f.write(
@@ -171,15 +170,15 @@ class ChessResultsUtils:
         key: str,
         iv: str,
     ):
+        """Dumps the credentials to the module base64-encoded file."""
         ChessResultsCredentials.dump(cls.CREDENTIALS_FILE, key, iv)
 
     @classmethod
     def load_credentials(
         cls,
     ):
-        if credentials := ChessResultsCredentials.load_credentials(
-            cls.CREDENTIALS_FILE
-        ):
+        """Dumps the credentials from the module base64-encoded file."""
+        if credentials := ChessResultsCredentials.load(cls.CREDENTIALS_FILE):
             load_dotenv(
                 stream=StringIO(
                     f'CHESS_RESULTS_AES_KEY={credentials.key}\nCHESS_RESULTS_AES_IV={credentials.iv}'
