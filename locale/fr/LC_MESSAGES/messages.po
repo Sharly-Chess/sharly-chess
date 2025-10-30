@@ -3119,6 +3119,9 @@ msgstr "Ronde suivante"
 msgid "Next tournament"
 msgstr "Tournoi suivant"
 
+msgid "No Chess-Results ID defined for tournament [{tournament}]."
+msgstr "Pas d'identifiant Chess-Results défini pour le tournoi [{tournament}]."
+
 msgid "No FFE ID defined for tournament [{tournament}]."
 msgstr "Aucun identifiant FFE défini pour le tournoi [{tournament}]."
 
@@ -4389,6 +4392,9 @@ msgstr "Enregistrez l'horaire ou annulez."
 msgid "Save the set or cancel."
 msgstr "Enregistrez l'ensemble ou annulez."
 
+msgid "Scan to access the tournament on Chess-Results.com."
+msgstr "Scannez pour accéder au tournoi sur le site Chess-Results.com."
+
 msgid "Scan to access the tournament on the FFE site."
 msgstr "Scannez pour accéder au tournoi sur le site de la FFE."
 
@@ -5414,6 +5420,9 @@ msgstr "Tournoi pas encore mis en ligne."
 #, python-format
 msgid "Tournament number: %(tnr)s"
 msgstr "Numéro de tournoi : %(tnr)s"
+
+msgid "Tournament on Chess-results.com"
+msgstr "Tournoi sur le site Chess-Results.com"
 
 msgid "Tournament on the FFE site"
 msgstr "Tournoi sur le site de la FFE"

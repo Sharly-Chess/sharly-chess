@@ -3119,6 +3119,9 @@ msgstr ""
 msgid "Next tournament"
 msgstr ""
 
+msgid "No Chess-Results ID defined for tournament [{tournament}]."
+msgstr ""
+
 msgid "No FFE ID defined for tournament [{tournament}]."
 msgstr ""
 
@@ -4389,6 +4392,9 @@ msgstr ""
 msgid "Save the set or cancel."
 msgstr ""
 
+msgid "Scan to access the tournament on Chess-Results.com."
+msgstr ""
+
 msgid "Scan to access the tournament on the FFE site."
 msgstr ""
 
@@ -5413,6 +5419,9 @@ msgstr ""
 
 #, python-format
 msgid "Tournament number: %(tnr)s"
+msgstr ""
+
+msgid "Tournament on Chess-results.com"
 msgstr ""
 
 msgid "Tournament on the FFE site"
