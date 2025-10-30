@@ -60,6 +60,7 @@ class ChessResultsCredentials:
                     f'Could not read Chess-Results credentials ({e}), '
                     'please run generate_chess_results_credentials.py.'
                 )
+                return None
             else:
                 raise SharlyChessException(
                     'Could not read Chess-Results credentials.'
