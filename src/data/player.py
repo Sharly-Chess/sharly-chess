@@ -700,7 +700,13 @@ class Player:
             res.average_rating = avg
 
             max_score = Result.WIN.points() * len(results_list)
-            bonus = Utils.performance_bonus(score / max_score) if max_score else 0
+            bonus = (
+                Utils.performance_bonus(
+                    Utils.round_ranking(100 * score / max_score) / 100
+                )
+                if max_score
+                else 0
+            )
             performance = avg + bonus
             res.performance = performance
             if performance < tn.minimum_performance:
@@ -712,7 +718,9 @@ class Player:
                 while new_score < max_score:
                     new_score += draw_points
                     new_bonus = (
-                        Utils.performance_bonus(new_score / max_score)
+                        Utils.performance_bonus(
+                            Utils.round_ranking(100 * new_score / max_score) / 100
+                        )
                         if max_score
                         else 0
                     )
@@ -725,7 +733,9 @@ class Player:
                 while new_score > 0:
                     new_score -= draw_points
                     new_bonus = (
-                        Utils.performance_bonus(new_score / max_score)
+                        Utils.performance_bonus(
+                            Utils.round_ranking(100 * new_score / max_score) / 100
+                        )
                         if max_score
                         else 0
                     )
