@@ -92,4 +92,4 @@ English version below
 ## _Chess-Results_
 
 - Uploading to _Chess-Results.com_ (3.2.0)
-- Fix upload (3.2.1)
+- Fix upload (3.2.2)
