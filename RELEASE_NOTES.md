@@ -19,6 +19,7 @@ English version below
 - Correction de l'affichage du score de la ronde courante sur l'historique des joueur·euses (3.2.0)
 - Correction d’un problème de validation qui permettait d’ajouter deux joueurs avec le même numéro de licence FFE dans un même tournoi (3.2.0)
 - Possibilité de noter l'abandon/le retour d'un·e joueur·euse depuis la modale d'historique des joueur·eses (3.2.0)
+- Correction de l'historique des joueur·euses avant la ronde 1 (3.2.1)
 
 ## Appariements
 
@@ -62,6 +63,7 @@ English version below
 - Fixed the display of the score of the current round on the player's history modal (3.2.0)
 - Fixed a validation issue which allowed to players with the same FFE licence number to be added to the same tournament (3.2.0)
 - Ability to note a player's withdraw/re-entry from the player record modal (3.2.0)
+- Fixed the player history modal before round 1 (3.2.1)
 
 ## Pairings
 
