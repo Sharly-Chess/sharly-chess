@@ -1483,7 +1483,7 @@ with_indicator: display a loading indicator, optional
     data,
     used_message='',
     disabled=false,
-    uncheck_on_dependencies_disabled=false
+    default_state=false
 ) %}
     <div class="input-block position-relative">
         <div
@@ -1501,7 +1501,8 @@ with_indicator: display a loading indicator, optional
                 value="on"
                 data-dependencies="{{ ';'.join(plugin.dependency_form_keys) }}"
                 data-used="{{ 'true' if used_message else 'false' }}"
-                data-uncheck-on-dependencies-disabled="{{ 'true' if uncheck_on_dependencies_disabled else 'false' }}"
+                data-user-state="undefined"
+                data-default-state="{{ 'true' if default_state else 'false' }}"
                 {% if used_message or data[plugin.form_key] == 'on' %}
                     checked
                 {% endif %}
@@ -1533,17 +1534,16 @@ with_indicator: display a loading indicator, optional
             ></i>
         {% endfor %}
         <script>
-            $('#{{ plugin.form_key }}').change(function () {
-                const used = this.dataset.used == 'true';
+            $('#{{ plugin.form_key }}').change(function (event, save_user_state=true) {
+                if (save_user_state) $(this).attr('data-user-state', this.checked);
                 this.dataset.dependencies.split(';').forEach((dependency) => {
                     if (!dependency) return;
                     const dependencyElement = $('#' + dependency);
                     if(this.checked) {
                         $('#' + dependency + '-{{ plugin.form_key }}-dependency').show();
-                        $('#' + dependency + '-hidden').prop('disabled', false);
                         dependencyElement.prop('checked', true);
                         dependencyElement.prop('disabled', true);
-                        dependencyElement.trigger('change');
+                        dependencyElement.trigger('change', [false]);
                     } else {
                         $('#' + dependency + '-{{ plugin.form_key }}-dependency').hide();
                         if (
@@ -1551,9 +1551,13 @@ with_indicator: display a loading indicator, optional
                             && !$('.' + dependency + '-dependency:visible').length
                         ) {
                             dependencyElement.prop('disabled', false);
-                            if (dependencyElement.attr('data-uncheck-on-dependencies-disabled') === 'true') {
+                            const userState = dependencyElement.attr('data-user-state');
+                            const defaultState = dependencyElement.attr('data-default-state');
+                            if (userState === 'false' || (
+                                userState === 'undefined' && defaultState === 'false'
+                            )) {
                                 dependencyElement.prop('checked', false);
-                                dependencyElement.trigger('change');
+                                dependencyElement.trigger('change', [false]);
                             }
                         }
                     }
