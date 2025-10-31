@@ -42,6 +42,9 @@ from web.controllers.admin.player_admin_controller import PlayerAdminController
 from web.controllers.admin.prize_admin_controller import PrizeAdminController
 from web.controllers.profile_controller import ProfileController
 from web.controllers.admin.rotator_admin_controller import RotatorAdminController
+from web.controllers.admin.screen_config_admin_controller import (
+    ScreenConfigAdminController,
+)
 from web.controllers.admin.screen_admin_controller import ScreenAdminController
 from web.controllers.admin.pairings_admin_controller import PairingsAdminController
 from web.controllers.admin.timer_admin_controller import TimerAdminController
@@ -86,6 +89,7 @@ route_handlers: Sequence[ControllerRouterHandler] = [
     TournamentAdminController,
     PairingsAdminController,
     PrizeAdminController,
+    ScreenConfigAdminController,
     ScreenAdminController,
     TimerAdminController,
     FamilyAdminController,
