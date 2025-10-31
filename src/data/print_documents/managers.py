@@ -61,7 +61,6 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.ShowWarningsPrintOption,
             options.ClubThresholdPrintOption,
             options.QRCodeNetworkPrintOption,
-            options.PlaceCardTemplatePrintOption,
         ]
 
     @override
