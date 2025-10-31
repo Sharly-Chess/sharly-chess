@@ -81,7 +81,6 @@ class IndexAdminController(BaseAdminController):
             data = {}
         errors: dict[str, str] = {}
         experimental: bool = WebContext.form_data_to_bool(data, 'experimental')
-        launch_browser: bool = WebContext.form_data_to_bool(data, 'launch_browser')
         federation_name: str | None = WebContext.form_data_to_str(
             data, field := 'federation'
         )
@@ -106,8 +105,8 @@ class IndexAdminController(BaseAdminController):
             console_color=sharly_chess_config.console_color,
             console_show_date=sharly_chess_config.console_show_date,
             console_show_level=sharly_chess_config.console_show_level,
+            launch_browser=sharly_chess_config.launch_browser,
             experimental=experimental,
-            launch_browser=launch_browser,
             federation=federation.name if federation else None,
             locale=locale,
             errors=errors,
@@ -311,16 +310,12 @@ class IndexAdminController(BaseAdminController):
             config = SharlyChessConfig()
             federation = config.federation.name if config.federation else ''
             player_rating_type = PlayerRatingType.FIDE.value
-            background_color: str | None = config.default_background_color
-            message_background_color = config.default_message_background_color
-            message_color = config.default_message_color
             override_unrated_rapid_blitz = True
             three_points_for_a_win = False
             pab_value = Result.WIN.value
             location: str | None = None
             record_illegal_moves: int | None = None
             rules: str | None = None
-            message_text: str | None = None
             prize_currency: str | None = None
             stored_plugin_data: dict[str, dict[str, Any]] = {}
             event_enabled_plugins = [
@@ -342,14 +337,10 @@ class IndexAdminController(BaseAdminController):
             stop = stored_event.stop
             public = stored_event.public
             federation = stored_event.federation
-            background_color = stored_event.background_color
             location = stored_event.location
             player_rating_type = stored_event.player_rating_type
             record_illegal_moves = stored_event.record_illegal_moves
             rules = stored_event.rules
-            message_text = stored_event.message_text
-            message_color = admin_event.message_color
-            message_background_color = admin_event.message_background_color
             prize_currency = stored_event.prize_currency
             override_unrated_rapid_blitz = admin_event.override_unrated_rapid_blitz
             three_points_for_a_win = stored_event.three_points_for_a_win
@@ -380,13 +371,9 @@ class IndexAdminController(BaseAdminController):
                     'public': public,
                     'federation': federation,
                     'player_rating_type': player_rating_type,
-                    'background_color': background_color,
                     'location': location,
                     'record_illegal_moves': record_illegal_moves,
                     'rules': rules,
-                    'message_text': message_text,
-                    'message_color': message_color,
-                    'message_background_color': message_background_color,
                     'prize_currency': prize_currency,
                     'override_unrated_rapid_blitz': override_unrated_rapid_blitz,
                     'three_points_for_a_win': three_points_for_a_win,
@@ -412,11 +399,9 @@ class IndexAdminController(BaseAdminController):
             data = {}
         uniq_id: str | None
         errors: dict[str, str] = {}
+        config = SharlyChessConfig()
         start: float | None = None
         stop: float | None = None
-
-        message_color: str | None = None
-        message_background_color: str | None = None
 
         name = WebContext.form_data_to_str(data, field := 'name') or ''
         if not name:
@@ -463,31 +448,10 @@ class IndexAdminController(BaseAdminController):
             or PlayerRatingType.FIDE.value
         )
 
-        background_color = cls._admin_validate_background_color_update_data(
-            data, errors
-        )
         record_illegal_moves = cls._admin_validate_record_illegal_moves_update_data(
             data, errors
         )
         rules = cls._admin_validate_rules_update_data(data, errors)
-        field = 'message_text'
-        message_text = WebContext.form_data_to_str(data, field)
-        field = 'message_color'
-        if not WebContext.form_data_to_bool(data, field + '_checkbox'):
-            try:
-                message_color = WebContext.form_data_to_rgb(data, field)
-            except ValueError:
-                errors[field] = _(
-                    'Invalid color [{color}] ([#RRGGBB] expected).'
-                ).format(color={data[field]})
-        field = 'message_background_color'
-        if not WebContext.form_data_to_bool(data, field + '_checkbox'):
-            try:
-                message_background_color = WebContext.form_data_to_rgb(data, field)
-            except ValueError:
-                errors[field] = _(
-                    'Invalid color [{color}] ([#RRGGBB] expected).'
-                ).format(color={data[field]})
         prize_currency = WebContext.form_data_to_str(data, 'prize_currency')
         override_unrated_rapid_blitz = WebContext.form_data_to_bool(
             data, 'override_unrated_rapid_blitz'
@@ -544,21 +508,27 @@ class IndexAdminController(BaseAdminController):
             public=bool(public),
             location=location,
             player_rating_type=player_rating_type,
-            background_color=background_color,
             record_illegal_moves=record_illegal_moves,
             rules=rules,
-            message_text=message_text,
-            message_color=message_color,
-            message_background_color=message_background_color,
             prize_currency=prize_currency,
             override_unrated_rapid_blitz=override_unrated_rapid_blitz,
             three_points_for_a_win=three_points_for_a_win,
             pab_value=pab_value,
             plugin_data=plugin_data,
             enabled_plugins=[plugin.id for plugin in enabled_plugins],
-            # Timer defaults are edited in the timers tab.  We copy the values from the admin_event if it exists.
+            # The following defaults are edited in other tabs.  We copy the values from the admin_event if it exists.
             timer_colors=admin_event.stored_event.timer_colors if admin_event else None,
             timer_delays=admin_event.stored_event.timer_delays if admin_event else None,
+            background_color=admin_event.stored_event.background_color
+            if admin_event
+            else config.default_background_color,
+            message_background_color=admin_event.message_background_color
+            if admin_event
+            else config.default_message_background_color,
+            message_color=admin_event.message_color
+            if admin_event
+            else config.default_message_color,
+            message_text=admin_event.message_text if admin_event else None,
         )
         return stored_event, errors
 
@@ -897,7 +867,6 @@ class IndexAdminController(BaseAdminController):
                     'console_show_date': config.console_show_date,
                     'console_show_level': config.console_show_level,
                     'experimental': config.experimental,
-                    'launch_browser': config.launch_browser,
                     'federation': config.stored_config.federation,
                     'locale': config.locale,
                 }

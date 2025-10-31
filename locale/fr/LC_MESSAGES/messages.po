@@ -4428,12 +4428,18 @@ msgstr "L'écran [{screen_uniq_id}] a été supprimé."
 msgid "Screen [{screen_uniq_id}] has been updated."
 msgstr "L'écran [{screen_uniq_id}] a été modifié."
 
+msgid "Screen configuration has been updated."
+msgstr "La configuration des écrans a été mise à jour."
+
 msgid "Screen families:"
 msgstr "Familles d'écrans :"
 
 #, python-format
 msgid "Screen families: %(num)d"
 msgstr "Familles d'écrans : %(num)d"
+
+msgid "Screen settings"
+msgstr "Paramètres des écrans"
 
 msgid "Screen type"
 msgstr "Type d'écran"
