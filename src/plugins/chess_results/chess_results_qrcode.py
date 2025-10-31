@@ -10,7 +10,7 @@ from plugins.chess_results.utils import ChessResultsUtils
 class ChessResultsQRCodeType(QRCodeType):
     @staticmethod
     def static_id() -> str:
-        return f'{PLUGIN_NAME}-ffe_site'
+        return f'{PLUGIN_NAME}-cr_site'
 
     @staticmethod
     def static_name() -> str:
