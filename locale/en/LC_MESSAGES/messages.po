@@ -3558,6 +3558,9 @@ msgstr ""
 msgid "Pairing Allocated Bye"
 msgstr ""
 
+msgid "Pairing Cards"
+msgstr ""
+
 #, python-format
 msgid "Pairing information for round %(round)d"
 msgstr ""
@@ -3692,6 +3695,12 @@ msgstr ""
 
 #, python-format
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
+msgstr ""
+
+msgid "Place Cards"
+msgstr ""
+
+msgid "Place card type:"
 msgstr ""
 
 msgid "Player"
@@ -3843,6 +3852,9 @@ msgid "Please choose the document."
 msgstr ""
 
 msgid "Please choose the release to recover: "
+msgstr ""
+
+msgid "Please choose the template."
 msgstr ""
 
 msgid "Please choose the tournament."
@@ -4510,6 +4522,9 @@ msgstr ""
 msgid "Select player"
 msgstr ""
 
+msgid "Select template"
+msgstr ""
+
 msgid "Select the players and the data to update:"
 msgstr ""
 
@@ -4787,6 +4802,9 @@ msgstr ""
 msgid "TRF16"
 msgstr ""
 
+msgid "Template:"
+msgstr ""
+
 msgid "Text after the hour:"
 msgstr ""
 
@@ -4815,6 +4833,9 @@ msgid "The PAPI format does not support {rounds} rounds (maximum: {max})."
 msgstr ""
 
 msgid "The Papi format does not support result [{result}]."
+msgstr ""
+
+msgid "The Place Card template to use."
 msgstr ""
 
 msgid "The URL of the image to display."
@@ -5113,6 +5134,9 @@ msgid "The tournaments on which the permission is applied (by default, the permi
 msgstr ""
 
 msgid "The tournaments to print."
+msgstr ""
+
+msgid "The type of Place Card to print."
 msgstr ""
 
 msgid "The type of QR code to print."
@@ -5598,6 +5622,9 @@ msgstr ""
 
 #, python-format
 msgid "Unique ID: [%(uniq_id)s]"
+msgstr ""
+
+msgid "Unknown"
 msgstr ""
 
 #, python-format

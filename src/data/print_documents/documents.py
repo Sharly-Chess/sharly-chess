@@ -1099,16 +1099,17 @@ class PlaceCardTemplate:
 
     def __init__(
         self,
-        id: str,
+        toml_file: Path,
     ):
         from data.print_documents import PrintPlaceCardTypeManager
 
-        self.id: str = id
-        self.toml_file: Path = (
-            SharlyChessConfig.embedded_place_cards_path
-            / f'{self.id}.{SharlyChessConfig.place_cards_template_ext}'
+        sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
+        self.embedded: bool = (
+            toml_file.parent == SharlyChessConfig.embedded_place_cards_path
         )
-        template_data = toml.load(self.toml_file)
+        self.id: str = toml_file.stem
+        template_data = toml.load(toml_file)
+        # -------------------- type
         field = 'type'
         self.type: PlaceCardType = PlayerCardType()
         try:
@@ -1118,7 +1119,7 @@ class PlaceCardTemplate:
             except KeyError:
                 logger.debug(
                     '[%s]: invalid value [%s] for property [%s], defaults to [%s].',
-                    self.toml_file.name,
+                    toml_file.name,
                     type_str,
                     field,
                     self.type.static_id(),
@@ -1126,54 +1127,85 @@ class PlaceCardTemplate:
         except KeyError:
             logger.debug(
                 '[%s]: property [%s] not set, defaults to [%s].',
-                self.toml_file.name,
+                toml_file.name,
                 field,
                 self.type.static_id(),
             )
-        self.html_file: Path = self.toml_file.with_suffix('.html')
+        # -------------------- file
         field = 'file'
+        file_str: str
         try:
-            file_str: str = str(template_data[field])
-            if file_str.find('..') != -1:
-                logger.warning(
-                    '[%s]: invalid value [%s] for property [%s], defaults to [%s].',
-                    self.toml_file.name,
-                    file_str,
-                    field,
-                    self.html_file,
-                )
-            else:
-                self.html_file = self.toml_file.parent / file_str
+            file_str = str(template_data[field])
         except KeyError:
+            file_str = f'{toml_file.stem}.html'
             logger.debug(
                 '[%s]: property [%s] not set, defaults to [%s].',
-                self.toml_file.name,
+                toml_file.name,
                 field,
-                self.html_file.name,
+                file_str,
             )
-        if not self.html_file.is_file():
-            default_html_file: Path = (
-                SharlyChessConfig.embedded_place_cards_path
-                / f'default_{self.type}.html'
-            )
+        default_file_str: str = f'{toml_file.stem}.html'
+        if file_str.find('/') != -1:
             logger.warning(
-                '[%s]: HTML file [%s] not found, defaults to [%s].',
-                self.toml_file.name,
-                self.html_file,
-                default_html_file.name,
+                '[%s]: invalid value [%s] for property [%s] (path not allowed), defaults to [%s].',
+                toml_file.name,
+                file_str,
+                field,
+                default_file_str,
             )
-            self.html_file = default_html_file
+            file_str = default_file_str
+        if not sharly_chess_config.uniq_id_regex.match(Path(file_str).stem):
+            logger.warning(
+                '[%s]: invalid value [%s] for property [%s] (invalid characters found), defaults to [%s].',
+                toml_file.name,
+                file_str,
+                field,
+                default_file_str,
+            )
+            file_str = default_file_str
+        # The path of the HTML template file
+        self.template_file: Path = toml_file.parent / file_str
+        if not self.template_file.is_file():
+            if self.embedded:
+                # Custom TOML file, try to find the template file in the custom path
+                logger.debug(
+                    '[%s]: file [%s] not found in folder [%s], looking in folder [%s].',
+                    toml_file.name,
+                    file_str,
+                    sharly_chess_config.custom_place_cards_path,
+                    sharly_chess_config.embedded_place_cards_path,
+                )
+                self.template_file = (
+                    SharlyChessConfig.embedded_place_cards_path / file_str
+                )
+            if not self.template_file.is_file():
+                self.template_file: Path = (
+                    SharlyChessConfig.embedded_place_cards_path
+                    / f'_{self.type.static_id()}.html'
+                )
+                logger.debug(
+                    '[%s]: file [%s] not found in folder [%s], defaults to [%s].',
+                    toml_file.name,
+                    file_str,
+                    sharly_chess_config.custom_place_cards_path,
+                    self.template_file.name,
+                )
+                # We do not test here, assuming that the embedded default template file exists for all the place cards types
+        # The template name passed to Jinja (e.g. '/admin/print/place_cards/test.html')
+        self.template_name: str = f'{"/admin/print/place_cards/" if self.template_file.parent == sharly_chess_config.embedded_place_cards_path else "/place_cards_templates/"}{self.template_file.name}'
+        # -------------------- name
         field = 'name'
-        self.name: str = self.toml_file.stem
+        self.name: str = toml_file.stem
         try:
             self.name = template_data[field]
         except KeyError:
             logger.debug(
                 '[%s]: property [%s] not set, defaults to [%s].',
-                self.toml_file.name,
+                toml_file.name,
                 field,
                 self.name,
             )
+        # -------------------- creator
         field = 'creator'
         self.creator: str = _('Unknown')
         try:
@@ -1181,10 +1213,13 @@ class PlaceCardTemplate:
         except KeyError:
             logger.debug(
                 '[%s]: property [%s] not set, defaults to [%s].',
-                self.toml_file.name,
+                toml_file.name,
                 field,
                 self.creator,
             )
+
+    def __str__(self) -> str:
+        return f'{self.__class__.__name__}({self.id=}, {self.embedded=}, {self.template_name=}, {self.creator=})'
 
 
 class PlaceCardPlayer:
@@ -1308,7 +1343,7 @@ class PlaceCardPrintDocument(PrintDocument):
         return str(
             self.get_place_card_templates_by_id()[
                 self._get_option(PlaceCardTemplatePrintOption).value
-            ].html_file
+            ].template_name
         )
 
     def validate_options(self):
@@ -1325,12 +1360,19 @@ class PlaceCardPrintDocument(PrintDocument):
     @cache
     def get_place_card_templates_by_id() -> dict[str, PlaceCardTemplate]:
         """Returns a dict of all the place cards templates."""
-        return {
-            template_file.stem: PlaceCardTemplate(template_file.stem)
-            for template_file in SharlyChessConfig.embedded_place_cards_path.glob(
-                f'*.{SharlyChessConfig.place_cards_template_ext}'
-            )
-        }
+        place_card_templates_by_id: dict[str, PlaceCardTemplate] = {}
+        for template_dir in [
+            SharlyChessConfig.embedded_place_cards_path,
+            SharlyChessConfig.custom_place_cards_path,
+        ]:
+            for template_file in template_dir.glob(
+                f'*.{SharlyChessConfig.place_card_template_ext}'
+            ):
+                place_card_template: PlaceCardTemplate = PlaceCardTemplate(
+                    template_file
+                )
+                place_card_templates_by_id[place_card_template.id] = place_card_template
+        return place_card_templates_by_id
 
     @classmethod
     @cache
@@ -1340,14 +1382,17 @@ class PlaceCardPrintDocument(PrintDocument):
         """Returns a dict of all the place cards templates for each type."""
         from data.print_documents import PrintPlaceCardTypeManager
 
+        place_card_templates: list[PlaceCardTemplate] = list(
+            cls.get_place_card_templates_by_id().values()
+        )
         return {
             place_card_type: sorted(
                 (
                     place_card_template
-                    for place_card_template in cls.get_place_card_templates_by_id().values()
+                    for place_card_template in place_card_templates
                     if place_card_template.type == place_card_type
                 ),
-                key=lambda template: template.name,
+                key=lambda template: (template.embedded, template.name),
             )
             for place_card_type in PrintPlaceCardTypeManager().objects()
         }

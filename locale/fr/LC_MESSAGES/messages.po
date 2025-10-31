@@ -3558,6 +3558,9 @@ msgstr "Appariement"
 msgid "Pairing Allocated Bye"
 msgstr "Exempt·e"
 
+msgid "Pairing Cards"
+msgstr "Chevalets d'appariement"
+
 #, python-format
 msgid "Pairing information for round %(round)d"
 msgstr "Informations d’appariement pour la ronde %(round)d"
@@ -3693,6 +3696,12 @@ msgstr "Numéro de téléphone :"
 #, python-format
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr "Téléphone : %(phone)s (cliquer pour copier dans le presse-papier)."
+
+msgid "Place Cards"
+msgstr "Chevalets"
+
+msgid "Place card type:"
+msgstr "Type de chevalet :"
 
 msgid "Player"
 msgstr "Joueur·euse"
@@ -3844,6 +3853,9 @@ msgstr "Veuillez choisir le document."
 
 msgid "Please choose the release to recover: "
 msgstr "Veuillez choisir la version à restaurer : "
+
+msgid "Please choose the template."
+msgstr "Veuillez choisir le modèle."
 
 msgid "Please choose the tournament."
 msgstr "Veuillez choisir le tournoi."
@@ -4510,6 +4522,9 @@ msgstr "Tout sélectionner"
 msgid "Select player"
 msgstr "Sélectionner un·e joueur·euse"
 
+msgid "Select template"
+msgstr "Choisir le modèle"
+
 msgid "Select the players and the data to update:"
 msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"
 
@@ -4787,6 +4802,9 @@ msgstr "TRF(bx)"
 msgid "TRF16"
 msgstr "TRF16"
 
+msgid "Template:"
+msgstr "Modèle :"
+
 msgid "Text after the hour:"
 msgstr "Texte après l'horaire :"
 
@@ -4816,6 +4834,9 @@ msgstr "Le format PAPI ne supporte pas {rounds} rounds (maximum : {max})."
 
 msgid "The Papi format does not support result [{result}]."
 msgstr "Le format Papi ne supporte pas le résultat [{result}]."
+
+msgid "The Place Card template to use."
+msgstr "Me modèle de chevalet à utiliser."
 
 msgid "The URL of the image to display."
 msgstr "L'URL de l'image à afficher."
@@ -5114,6 +5135,9 @@ msgstr "Les tournois sur lesquels la permission s'applique (par défaut, la perm
 
 msgid "The tournaments to print."
 msgstr "Les tournois à imprimer."
+
+msgid "The type of Place Card to print."
+msgstr "Le type de chevalet à imprimer."
 
 msgid "The type of QR code to print."
 msgstr "Le type de QR Code à imprimer."
@@ -5599,6 +5623,9 @@ msgstr "Identifiant unique : %(uniq_id)s"
 #, python-format
 msgid "Unique ID: [%(uniq_id)s]"
 msgstr "Identifiant unique : [%(uniq_id)s]"
+
+msgid "Unknown"
+msgstr "Inconnu·e"
 
 #, python-format
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."

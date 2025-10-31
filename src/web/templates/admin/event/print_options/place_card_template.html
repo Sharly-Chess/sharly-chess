@@ -21,13 +21,6 @@
 
             placeCardTemplateSelect.empty();
 
-            placeCardTemplateSelect.append(
-                $('<option>', {
-                    value: '',
-                    text: '-- {{ _("Select template") }} --',
-                })
-            );
-
             // Add templates
             placeCardTemplates.forEach(placeCardTemplate => {
                 placeCardTemplateSelect.append(
