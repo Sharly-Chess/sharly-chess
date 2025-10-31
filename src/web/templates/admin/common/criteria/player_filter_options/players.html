@@ -1,0 +1,11 @@
+<div class="col-12">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('%(string)s:', string=_('Players')),
+        help_text=_('Only include those players.'),
+        select_options=option.select_options(admin_tournament),
+        multiple_select=true,
+        placeholder=_('Choose at least one player.'),
+        data=data, errors=errors
+    ) }}
+</div>

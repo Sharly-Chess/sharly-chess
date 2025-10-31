@@ -3,7 +3,7 @@ from _weakref import ReferenceType
 from typing import TYPE_CHECKING
 
 
-from data.criteria.managers import PlayerFilter, PlayerFilterManager
+from data.criteria.managers import PlayerFilter, TournamentPlayerFilterManager
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournamentCriterion
 
@@ -22,7 +22,7 @@ class TournamentCriterion:
         self.player_filter = self._get_player_filter()
 
     def _get_player_filter(self) -> PlayerFilter:
-        filter_type = PlayerFilterManager(self.tournament.event).get_type(
+        filter_type = TournamentPlayerFilterManager(self.tournament.event).get_type(
             self.stored_tournament_criterion.type
         )
         options = []
@@ -36,7 +36,7 @@ class TournamentCriterion:
     @property
     def tournament(self) -> 'Tournament':
         if (tournament := self._tournament_ref()) is None:
-            raise RuntimeError('Tournameent has been garbage collected')
+            raise RuntimeError('Tournament has been garbage collected')
         return tournament
 
     @property
@@ -46,7 +46,7 @@ class TournamentCriterion:
 
     @property
     def name(self) -> str:
-        return str(self.player_filter)
+        return self.player_filter.full_name(self.tournament)
 
     def update(self):
         with EventDatabase(self.tournament.event.uniq_id, write=True) as database:

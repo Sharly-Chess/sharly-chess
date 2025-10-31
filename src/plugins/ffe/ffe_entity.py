@@ -467,7 +467,7 @@ class FfeLeaguePlayerFilter(PlayerFilter):
         leagues = self.get_option_values()[0]
         return lambda player: FFEUtils.get_player_plugin_data(player).league in leagues
 
-    def __str__(self) -> str:
+    def full_name(self, tournament: 'Tournament') -> str:
         return f'{self.name} ({", ".join(self.get_option_values()[0])})'
 
 
@@ -537,7 +537,7 @@ class FfeLicencePlayerFilter(PlayerFilter):
             in licences
         )
 
-    def __str__(self) -> str:
+    def full_name(self, tournament: 'Tournament') -> str:
         option_values = self.get_option_values()[0]
         licence_types = [
             PlayerFFELicence(value).compact_name for value in option_values

@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from functools import cached_property
 
+from typing_extensions import TYPE_CHECKING
+
 from common.exception import OptionError
 from common.i18n import _
 from data.player import Player, Club, Federation
@@ -16,22 +18,26 @@ from data.criteria.player_filter_options import (
     ClubsFilterOption,
     FederationsFilterOption,
     RatingTypesFilterOption,
+    PlayersPlayerFilterOption,
 )
 from utils.enum import PlayerGender, PlayerCategory, PlayerRatingType
 from utils.option import OptionHandler
+
+if TYPE_CHECKING:
+    from data.tournament import Tournament
 
 
 class PlayerFilter(OptionHandler[PlayerFilterOption], ABC):
     """Abstract class representing ways to filter the players."""
 
     @abstractmethod
+    def full_name(self, tournament: 'Tournament') -> str:
+        """Full name of the filter, including the options."""
+
+    @abstractmethod
     @cached_property
     def is_player_included_function(self) -> Callable[[Player], bool]:
         """Return a function checking if a player is included in the filter or not."""
-
-    @abstractmethod
-    def __str__(self) -> str:
-        """String representation of the filter."""
 
 
 class GenderPlayerFilter(PlayerFilter):
@@ -55,7 +61,7 @@ class GenderPlayerFilter(PlayerFilter):
         gender = self.get_gender()
         return lambda player: player.gender == gender
 
-    def __str__(self) -> str:
+    def full_name(self, tournament: 'Tournament') -> str:
         return _('Gender ({gender})').format(gender=self.get_gender().short_name)
 
 
@@ -81,7 +87,7 @@ class RatingPlayerFilter(PlayerFilter):
             return lambda player: player.rating >= min_rating
         return lambda player: min_rating <= player.rating <= max_rating
 
-    def __str__(self) -> str:
+    def full_name(self, tournament: 'Tournament') -> str:
         min_rating, max_rating = self.get_option_values()
         if not min_rating:
             return f'{self.name} ≤ {max_rating}'
@@ -131,7 +137,7 @@ class AgePlayerFilter(PlayerFilter):
             return lambda player: player.category >= category
         return lambda player: player.category in categories
 
-    def __str__(self) -> str:
+    def full_name(self, tournament: 'Tournament') -> str:
         age_categories, lower, greater = self.get_option_values()
         categories = [
             PlayerCategory(category).short_name for category in age_categories
@@ -182,7 +188,7 @@ class RatingTypePlayerFilter(PlayerFilter):
         rating_types = self.get_rating_types()
         return lambda player: player.rating_type in rating_types
 
-    def __str__(self) -> str:
+    def full_name(self, tournament: 'Tournament') -> str:
         option_str = ', '.join(
             rating_type.short_name for rating_type in self.get_rating_types()
         )
@@ -213,7 +219,7 @@ class ClubPlayerFilter(PlayerFilter):
         clubs = self.get_clubs()
         return lambda player: player.club in clubs
 
-    def __str__(self) -> str:
+    def full_name(self, tournament: 'Tournament') -> str:
         option_str = ', '.join(club.name for club in self.get_clubs())
         return f'{self.name} ({option_str})'
 
@@ -242,6 +248,36 @@ class FederationPlayerFilter(PlayerFilter):
         federations = self.get_federations()
         return lambda player: player.federation in federations
 
-    def __str__(self) -> str:
+    def full_name(self, tournament: 'Tournament') -> str:
         option_str = ', '.join(federation.name for federation in self.get_federations())
+        return f'{self.name} ({option_str})'
+
+
+class PlayerIdPlayerFilter(PlayerFilter):
+    @staticmethod
+    def static_id() -> str:
+        return 'PLAYER'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Players')
+
+    @staticmethod
+    def available_options() -> list[type[PlayerFilterOption]]:
+        return [PlayersPlayerFilterOption]
+
+    def get_player_ids(self) -> list[int]:
+        return self.get_option_values()[0]
+
+    @cached_property
+    def is_player_included_function(self) -> Callable[[Player], bool]:
+        player_ids = self.get_player_ids()
+        return lambda player: player.id in player_ids
+
+    def full_name(self, tournament: 'Tournament') -> str:
+        player_ids = self.get_player_ids()
+        player_names = [
+            player.full_name for player in tournament.players if player.id in player_ids
+        ]
+        option_str = ', '.join(sorted(player_names))
         return f'{self.name} ({option_str})'

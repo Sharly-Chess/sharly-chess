@@ -33,7 +33,7 @@ from data.pairings.systems import SwissPairingSystem
 from data.player import Player
 from data.criteria.managers import (
     PlayerFilter,
-    PlayerFilterManager,
+    TournamentPlayerFilterManager,
     PlayerFilterOptionManager,
 )
 from data.tie_breaks import TieBreakManager, TieBreak, TieBreakOptionManager
@@ -1361,7 +1361,7 @@ class TournamentAdminController(BaseEventAdminController):
         field = 'type'
         player_filter_id = data.get(field, '')
         try:
-            PlayerFilterManager(event).get_type(player_filter_id)
+            TournamentPlayerFilterManager(event).get_type(player_filter_id)
         except KeyError:
             errors[field] = _('Please select a type of criterion.')
             return errors
@@ -1374,7 +1374,7 @@ class TournamentAdminController(BaseEventAdminController):
 
     @staticmethod
     def player_filter_from_data(event: Event, data: dict[str, str]) -> PlayerFilter:
-        player_filter_type = PlayerFilterManager(event).get_type(data['type'])
+        player_filter_type = TournamentPlayerFilterManager(event).get_type(data['type'])
         options = []
         for option in player_filter_type().default_options():
             value = WebContext.form_data_to_value(data, option.id, option.type)
@@ -1397,13 +1397,13 @@ class TournamentAdminController(BaseEventAdminController):
             'modal': 'tournament_criterion_form',
             'action': action,
             'player_filter_select_options': {'': '-'}
-            | PlayerFilterManager(event).options(),
+            | TournamentPlayerFilterManager(event).options(),
             'player_filter_options': PlayerFilterOptionManager(event).objects(),
             'containers_by_type': {
                 player_filter.id: [
                     option.container_id for option in player_filter.default_options()
                 ]
-                for player_filter in PlayerFilterManager(event).objects()
+                for player_filter in TournamentPlayerFilterManager(event).objects()
             }
             | {'': []},
             'add_other_active': (
