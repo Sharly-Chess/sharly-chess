@@ -4422,11 +4422,17 @@ msgstr ""
 msgid "Screen [{screen_uniq_id}] has been updated."
 msgstr ""
 
+msgid "Screen configuration has been updated."
+msgstr ""
+
 msgid "Screen families:"
 msgstr ""
 
 #, python-format
 msgid "Screen families: %(num)d"
+msgstr ""
+
+msgid "Screen settings"
 msgstr ""
 
 msgid "Screen type"
