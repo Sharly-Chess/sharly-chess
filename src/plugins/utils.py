@@ -4,18 +4,20 @@ from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
 from types import ModuleType
-from typing import TYPE_CHECKING, Any, NamedTuple, Self, Optional
+from typing import TYPE_CHECKING, Any, NamedTuple, Self
 
+from common import TEST_ENV
 from packaging.version import Version
 
 from utils.entity import IdentifiableEntity
 from plugins import PLUGINS_DIR
 
 if TYPE_CHECKING:
+    from data.event import Event
     from database.sqlite.event.event_database import EventDatabase
+    from database.sqlite.event.event_store import EventMetadata, StoredTournament
     from plugins.migration import PluginMigrationManager
     from web.controllers.base_controller import BaseController
-    from data.event import Event
 
 
 class PluginUtils:
@@ -87,7 +89,8 @@ class PluginContext:
         if not stored_plugin:
             with ConfigDatabase(True) as database:
                 stored_plugin = StoredPlugin(
-                    name=plugin.id, is_enabled=plugin.default_is_enabled
+                    name=plugin.id,
+                    is_enabled=plugin.default_is_enabled or TEST_ENV,
                 )
                 database.insert_stored_plugin(stored_plugin)
         self.stored_plugin = stored_plugin
@@ -128,6 +131,11 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
         self.context: PluginContext = PluginContext(self)
 
     @property
+    def dependencies(self) -> list[type['Plugin']]:
+        """Types of the plugins that need to be enabled for this plugin to be enabled."""
+        return []
+
+    @property
     @abstractmethod
     def description(self) -> str:
         """Briefly describes the features of the plugin."""
@@ -149,28 +157,71 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
         return False
 
     @property
-    def is_state_editable(self) -> bool:
-        """Defines if the state of the plugin
-        (enabled / disabled) is editable"""
-        return True
+    def default_event_is_enabled(self) -> bool:
+        """Defines if the plugin is enabled by default at event level."""
+        return False
 
     @property
     def federation(self) -> str | None:
-        """Returns the federation for which the plugin is enabled,, or None for all"""
+        """The federation for which the plugin can be enabled, or None for all"""
         return None
+
+    def can_be_enabled_for_event(self, federation: str) -> bool:
+        return not self.federation or self.federation == federation
+
+    @property
+    def depends_on_plugins(self) -> list['Plugin']:
+        """Lists of the dependencies as plugins."""
+        from plugins.manager import plugin_manager
+
+        return [
+            plugin_manager.get_plugin_by_class(plugin_type)
+            for plugin_type in self.dependencies
+        ]
+
+    @property
+    def dependency_form_keys(self) -> list[str]:
+        return [plugin.form_key for plugin in self.depends_on_plugins]
+
+    @property
+    def required_by_plugins(self) -> list['Plugin']:
+        """List of all the plugins that have this plugin as dependency."""
+        from plugins.manager import plugin_manager
+
+        return [
+            plugin
+            for plugin in plugin_manager.all_plugins
+            if self.__class__ in plugin.dependencies
+        ]
+
+    def used_by_events_count(self, events_metadata: list['EventMetadata']) -> int:
+        return sum([self.id in event.enabled_plugins for event in events_metadata])
+
+    @abstractmethod
+    def used_by_stored_tournament(self, stored_tournament: 'StoredTournament') -> bool:
+        """Determines if the tournament uses the plugin or not."""
+
+    def used_by_tournaments_count(self, event: 'Event') -> int:
+        return sum(
+            [
+                self.used_by_stored_tournament(tournament.stored_tournament)
+                for tournament in event.tournaments
+            ]
+        )
 
     @property
     def is_enabled(self) -> bool:
         assert self.context.stored_plugin is not None
         return self.context.stored_plugin.is_enabled
 
-    def is_enabled_for_event(self, event: Optional['Event']) -> bool:
-        """Determines if the plugin is enabled for the given event"""
-        return True
-
     @property
     def form_key(self) -> str:
         return f'plugin_{self.id}'
+
+    @property
+    def event_form_fields_template(self) -> str | None:
+        """Template of the form containing the fields of the plugin at event level."""
+        return None
 
     @property
     def templates_path(self) -> Path:

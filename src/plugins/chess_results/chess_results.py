@@ -1,14 +1,16 @@
-from typing import Any, TYPE_CHECKING, Iterable, override
+from typing import Any, TYPE_CHECKING, Iterable
 
 from packaging.version import Version
 
 from common.i18n import _
+from data.print_documents import QRCodeType
 from database.sqlite.event.event_database import EventDatabase
 from plugins.chess_results.chess_results_background_uploader import (
     ChessResultsUploadStatus,
     EventLoader,
     ChessResultsBackgroundUploader,
 )
+from plugins.chess_results.chess_results_qrcode import ChessResultsQRCodeType
 from plugins.chess_results.utils import (
     CHESS_RESULTS_DEFAULT_UPLOAD_DELAY,
     CHESS_RESULTS_MIN_UPLOAD_DELAY,
@@ -57,15 +59,13 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
     def version(self) -> Version:
         return Version('1.0.0')
 
-    @override
     @property
-    def default_is_enabled(self) -> bool:
-        return False
+    def event_form_fields_template(self) -> str:
+        return '/chess_results_event_form_fields.html'
 
-    @override
-    @property
-    def is_state_editable(self) -> bool:
-        return True
+    def used_by_stored_tournament(self, stored_tournament: 'StoredTournament') -> bool:
+        cr_data = stored_tournament.plugin_data.get(PLUGIN_NAME, {})
+        return cr_data.get('tnr', None) is not None
 
     # ---------------------------------------------------------------------------------
     # Initialisation and configuration
@@ -127,10 +127,6 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
             'chess_results_auto_upload': int(self.get_data(td, 'auto_upload') or False),
             'chess_results_auto_upload_delay': self.get_data(td, 'auto_upload_delay'),
         }
-
-    @hookimpl
-    def get_event_form_fields_template(self) -> str:
-        return '/chess_results_event_form_fields.html'
 
     @hookimpl
     def validate_event_form_fields(
@@ -246,3 +242,11 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
                 has_upload_error=has_upload_error,
             )
         ]
+
+    # ---------------------------------------------------------------------------------
+    # QR code
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def insert_print_qrcode_types(self, qrcode_types: list[type[QRCodeType]]):
+        qrcode_types.append(ChessResultsQRCodeType)

@@ -1,0 +1,100 @@
+<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-event-edit-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Screen settings') }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                hx-patch="{{ url_for('admin-screen-update-config', event_uniq_id=admin_event.uniq_id or '') }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                <h4>
+                    {{ _('Display') }}
+                </h4>
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.color_input(
+                            name='background_color',
+                            label=_('Background colour:'),
+                            help_text=_('The background colour for Screens.'),
+                            disabled=not client.can_update_event,
+                            data=data, errors=errors
+                        ) }}
+                        <script>
+                            $('#background-color-checkbox').click(function() {
+                                if ($(this).is(':checked')) {
+                                    $('#background-image-test').css('background-color', '{{ sharly_chess_config.default_background_color }}');
+                                } else {
+                                }
+                            });
+                        </script>
+                    </div>
+                </div>
+
+                <h4>
+                    {{ _('Alert message') }}
+                </h4>
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6 col-xl-3">
+                        {{ admin_macros.color_input(
+                            name='message_background_color',
+                            label=_('Background colour:'),
+                            help_text=_('The background colour of the alert messages.'),
+                            disabled=not client.can_update_event,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-3">
+                        {{ admin_macros.color_input(
+                            name='message_color',
+                            label=_('Text colour:'),
+                            help_text=_('The text colour of the alert messages.'),
+                            disabled=not client.can_update_event,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-xl-6">
+                        {{ admin_macros.text_input(
+                            name='message_text',
+                            label=_('Alert message:'),
+                            placeholder=_('E.g.: Please keep quiet until the end of the round!'),
+                            help_text=_(
+                                'When defined, the alert message is displayed in a '
+                                'scrolling banner at the bottom of the screens.'
+                            ),
+                            disabled=not client.can_update_event,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill"></i>
+                {{ _('Cancel') if client.can_update_event else _('Close') }}
+            </button>
+            {% if client.can_update_event %}
+                <button
+                    type="submit"
+                    form="modal-form"
+                    class="text-nowrap white btn btn-primary"
+                >
+                    <i class="bi-floppy-fill pe-1"></i>
+                    {{ _('Save') }}
+                </button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>requestRefresh()</script>

@@ -374,8 +374,13 @@
                 </section>
 
                 <section>
-                    {% set applying_143d = is_swiss %}
-                    <div style="font-size: 0.9rem; font-weight: bold;">Where applying 1.43d:</div>
+                    {% set applying_143d = is_swiss and (
+                            norm.not_enough_federations or
+                            norm.too_many_own_federation or
+                            norm.too_many_one_federation
+                        ) and norm.is_143d_met
+                    %}
+                    <div style="font-size: 0.9rem; font-weight: bold;">Where applying 1.4.3d:</div>
                     <div class="grid" style="grid-template-columns: 3fr 5fr;">
                         <div class="item {{ 'error' if applying_143d and norm.not_enough_all_federations else '' }}">
                             <div class="error-info">
@@ -412,7 +417,7 @@
                         <col style="width: 15ch;">   <!-- FIDE ID -->
                         <col style="width: 7ch;">    <!-- FED -->
                         <col style="width: 10ch;">   <!-- Rating -->
-                        <col style="width: 10ch;">   <!-- 1.46c -->
+                        <col style="width: 10ch;">   <!-- 1.4.6c -->
                         <col style="width: 4ch;">    <!-- Title -->
                         <col style="width: 8ch;">    <!-- Score -->
                     </colgroup>
@@ -423,7 +428,7 @@
                             <th>ID</th>
                             <th>Fed</th>
                             <th>Rating</th>
-                            <th>Rat. 1.46c</th>
+                            <th>Rat. 1.4.6c</th>
                             <th>Title</th>
                             <th>Score</th>
                         </tr>
@@ -469,7 +474,7 @@
                         <div class="error-info">
                             {{ norm.average_too_low | safe }}
                         </div>
-                        <label>Rating average (1.46b):</label>
+                        <label>Rating average (1.4.6b):</label>
                         <input value="{{ norm.average_rating }}" />
                     </div>
                     <div class="item">
@@ -525,7 +530,7 @@
                 </div>
 
                 <div class="footnote">
-                    Note: Unrated = 1000, but see 1.46b. Score = 1, ½ or 0.5, 0 for played games or +, =, - for unplayed games.
+                    Note: Unrated = 1400, but see 1.4.6b. Score = 1, ½ or 0.5, 0 for played games or +, =, - for unplayed games.
                     <br />
                     The organizer must provide this certificate to: each player who has achieved a title result,
                     <br />

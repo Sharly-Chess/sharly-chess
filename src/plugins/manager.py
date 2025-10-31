@@ -1,3 +1,4 @@
+import copy
 from functools import cached_property
 from pathlib import Path
 from typing import Any, Type, TypeVar, TYPE_CHECKING, Optional
@@ -25,7 +26,9 @@ class AppPluginManager(PluginManager):
         from plugins.chess_results.chess_results import ChessResultsPlugin
         from plugins.chessevent.chessevent import ChessEventPlugin
         from plugins.ffe.ffe import FfePlugin
-        from plugins.pairing_acceleration.plugin import PairingAccelerationPlugin
+        from plugins.pairing_acceleration.pairing_acceleration import (
+            PairingAccelerationPlugin,
+        )
 
         return [
             PairingAccelerationPlugin(),
@@ -34,20 +37,37 @@ class AppPluginManager(PluginManager):
             ChessEventPlugin(),
         ]
 
+    @property
+    def enabled_plugins(self) -> list[Plugin]:
+        return [plugin for plugin in self.all_plugins if plugin.is_enabled]
+
     def get_plugin_by_class(self, plugin_cls: Type[TPlugin]) -> TPlugin:
         for plugin in self.all_plugins:
             if isinstance(plugin, plugin_cls):
                 return plugin
         raise ValueError(f'Plugin {plugin_cls.__name__} not found')
 
-    @property
-    def enabled_plugins(self) -> list[Plugin]:
-        return [plugin for plugin in self.all_plugins if plugin.is_enabled]
+    def get_plugins_with_dependencies(self, plugins: list[Plugin]) -> list[Plugin]:
+        plugins_with_dependencies: list[Plugin] = []
+        while plugins:
+            plugin = plugins.pop()
+            if plugin in plugins_with_dependencies:
+                continue
+            plugins_with_dependencies.append(plugin)
+            for dependency in plugin.depends_on_plugins:
+                if dependency not in plugins_with_dependencies:
+                    plugins.append(dependency)
+        return plugins_with_dependencies
+
+    def get_event_enablable_plugins(self, federation: str) -> list[Plugin]:
+        return [
+            plugin
+            for plugin in self.enabled_plugins
+            if plugin.can_be_enabled_for_event(federation)
+        ]
 
     @property
     def templates_paths(self) -> list[Path]:
-        """Template paths of all plugins (even disabled ones)
-        need to be added to the jinja engine."""
         return [
             plugin.templates_path
             for plugin in self.all_plugins
@@ -56,8 +76,6 @@ class AppPluginManager(PluginManager):
 
     @property
     def static_paths(self) -> list[Path]:
-        """Static paths of all plugins (even disabled ones)
-        need to be added to the jinja engine."""
         return [
             plugin.static_path
             for plugin in self.all_plugins
@@ -79,17 +97,38 @@ class AppPluginManager(PluginManager):
             elif not is_enabled and was_enabled:
                 self.unregister(plugin, plugin.id)
 
-    def hook_for_event(self, event: Optional['Event'], hook_name: str):
-        disabled_plugins = (
-            [
-                plugin
-                for plugin in plugin_manager.enabled_plugins
-                if not plugin.is_enabled_for_event(event)
-            ]
-            if event
-            else []
+    def enable_dependencies(self):
+        from database.sqlite.config.config_database import ConfigDatabase
+
+        enabled_with_dependencies = self.get_plugins_with_dependencies(
+            self.enabled_plugins
         )
-        return self.subset_hook_caller(hook_name, remove_plugins=disabled_plugins)
+        with ConfigDatabase(True) as database:
+            for plugin in enabled_with_dependencies:
+                if plugin.is_enabled:
+                    continue
+                stored_plugin = copy.copy(plugin.context.stored_plugin)
+                stored_plugin.is_enabled = True
+                database.update_stored_plugin(stored_plugin)
+        self.reload_register()
+
+    def hook_for_event(self, event: Optional['Event'], hook_name: str):
+        remove_plugins = []
+        if event:
+            remove_plugins = [
+                plugin
+                for plugin in self.enabled_plugins
+                if plugin.id not in event.stored_event.enabled_plugins
+            ]
+        return self.subset_hook_caller(hook_name, remove_plugins)
+
+    def hook_for_plugins(self, hook_name: str, plugins: list['Plugin']):
+        return self.subset_hook_caller(
+            hook_name,
+            remove_plugins=[
+                plugin for plugin in self.enabled_plugins if plugin not in plugins
+            ],
+        )
 
 
 _plugin_manager = None
@@ -101,6 +140,7 @@ def get_plugin_manager() -> AppPluginManager:
         _plugin_manager = AppPluginManager(APP_NAME)
         _plugin_manager.add_hookspecs(AppHookSpecs)
         _plugin_manager.load_register()
+        _plugin_manager.enable_dependencies()
     return _plugin_manager
 
 

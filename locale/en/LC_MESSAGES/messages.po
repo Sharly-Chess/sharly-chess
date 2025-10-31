@@ -322,6 +322,9 @@ msgstr ""
 msgid "A non-empty string is expected"
 msgstr ""
 
+msgid "A plugin specific to this federation is used, it can no longer be modified."
+msgstr ""
+
 msgid "A positive integer is expected."
 msgstr ""
 
@@ -587,6 +590,9 @@ msgid "Application"
 msgstr ""
 
 msgid "Archive"
+msgstr ""
+
+msgid "Archive [{archive}] could not be restored, consult the logs for more details."
 msgstr ""
 
 msgid "Archive [{archive}] successfully restored (see event [{event}])."
@@ -990,9 +996,6 @@ msgid "ChessEvent password not defined."
 msgstr ""
 
 msgid "ChessEvent password:"
-msgstr ""
-
-msgid "ChessEvent settings"
 msgstr ""
 
 msgid "ChessEvent tournament"
@@ -1670,12 +1673,6 @@ msgstr ""
 msgid "Draw"
 msgstr ""
 
-msgid "Due to the federation change, the following plugin has been disabled for this event: <b>{plugin}</b>."
-msgstr ""
-
-msgid "Due to the federation change, the following plugins have been disabled for this event: <b>{plugins}</b>."
-msgstr ""
-
 msgid "Duplicate the account."
 msgstr ""
 
@@ -2121,9 +2118,6 @@ msgstr ""
 msgid "FFE password:"
 msgstr ""
 
-msgid "FFE settings"
-msgstr ""
-
 msgid "FFE site"
 msgstr ""
 
@@ -2389,9 +2383,6 @@ msgstr ""
 msgid "Genders"
 msgstr ""
 
-msgid "General"
-msgstr ""
-
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr ""
 
@@ -2640,9 +2631,6 @@ msgid "Installed [{lib}]."
 msgstr ""
 
 msgid "International Master"
-msgstr ""
-
-msgid "Internationalization"
 msgstr ""
 
 msgid "Invalid FFE ID [{ffe_id}]."
@@ -3136,6 +3124,9 @@ msgid "Next round"
 msgstr ""
 
 msgid "Next tournament"
+msgstr ""
+
+msgid "No Chess-Results ID defined for tournament [{tournament}]."
 msgstr ""
 
 msgid "No FFE ID defined for tournament [{tournament}]."
@@ -3917,6 +3908,9 @@ msgstr ""
 msgid "Please wait…"
 msgstr ""
 
+msgid "Plugins"
+msgstr ""
+
 msgid "Point counting"
 msgstr ""
 
@@ -4210,6 +4204,10 @@ msgstr ""
 msgid "Request to the database failed."
 msgstr ""
 
+#, python-format
+msgid "Required by plugin <b>%(plugin)s</b>."
+msgstr ""
+
 msgid "Res. ** RESULT FOR TABLE HEADER"
 msgstr "Res."
 
@@ -4404,6 +4402,9 @@ msgstr ""
 msgid "Save the set or cancel."
 msgstr ""
 
+msgid "Scan to access the tournament on Chess-Results.com."
+msgstr ""
+
 msgid "Scan to access the tournament on the FFE site."
 msgstr ""
 
@@ -4437,11 +4438,17 @@ msgstr ""
 msgid "Screen [{screen_uniq_id}] has been updated."
 msgstr ""
 
+msgid "Screen configuration has been updated."
+msgstr ""
+
 msgid "Screen families:"
 msgstr ""
 
 #, python-format
 msgid "Screen families: %(num)d"
+msgstr ""
+
+msgid "Screen settings"
 msgstr ""
 
 msgid "Screen type"
@@ -4553,9 +4560,6 @@ msgid "Sharing threshold"
 msgstr ""
 
 msgid "Sharly Chess Server"
-msgstr ""
-
-msgid "Sharly Chess can automatically launch a web browser when starting the web server."
 msgstr ""
 
 msgid "Sharly Chess may provide functionality specific to the federation chosen for each event."
@@ -4858,10 +4862,7 @@ msgstr ""
 msgid "The date of the first hour is not defined (mandatory)."
 msgstr ""
 
-msgid "The default federation for your events. Sharly Chess may provide functionality specific to the federation chosen for each event."
-msgstr ""
-
-msgid "The default language used."
+msgid "The default federation for your events."
 msgstr ""
 
 msgid "The delay must be at least {min_delay} minutes to avoid overloading the Chess-Results server."
@@ -5147,7 +5148,7 @@ msgstr ""
 msgid "There is no pairings for this round (last round with pairings: #{round})."
 msgstr ""
 
-msgid "These plugins enable features that are only active on events of the chosen federation.<br />You’ll be asked to select a federation when creating the event."
+msgid "These plugins can only be activated on events of their federation."
 msgstr ""
 
 msgid "These tournaments are already included for this account by a higher access level."
@@ -5434,6 +5435,9 @@ msgstr ""
 
 #, python-format
 msgid "Tournament number: %(tnr)s"
+msgstr ""
+
+msgid "Tournament on Chess-results.com"
 msgstr ""
 
 msgid "Tournament on the FFE site"
@@ -5769,8 +5773,17 @@ msgstr ""
 msgid "Use the recommended tie-breaks"
 msgstr ""
 
-msgid "Utility Plugins"
-msgstr ""
+#, python-format
+msgid "Used by %(num)d event."
+msgid_plural "Used by %(num)d events."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "Used by %(num)d tournament."
+msgid_plural "Used by %(num)d tournaments."
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Validate"
 msgstr ""

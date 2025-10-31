@@ -23,6 +23,7 @@ from common.logger import get_logger
 from data.event import Event
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import EventMetadata
+from plugins.manager import plugin_manager
 from utils import Utils
 
 logger: Logger = get_logger()
@@ -56,13 +57,38 @@ class EventLoader:
             if event_id in known_event_ids:
                 continue
             try:
-                database = EventDatabase(event_id)
-                if not database.check_status():
-                    database.upgrade()
+                cls.check_event_database(event_id)
                 cls._valid_event_ids.add(event_id)
             except SharlyChessException as e:
                 logger.error(e)
                 cls._invalid_uniq_ids.add(event_id)
+
+    @classmethod
+    def check_event_database(cls, event_uniq_id: str):
+        """Check the validity of an event database, raises a SharlyChessError if it is not."""
+        database = EventDatabase(event_uniq_id)
+        if not database.check_status():
+            database.upgrade()
+        with EventDatabase(event_uniq_id) as database:
+            stored_event = database.load_stored_event_metadata()
+        for plugin_id in stored_event.enabled_plugins:
+            plugin = next(
+                (
+                    plugin
+                    for plugin in plugin_manager.all_plugins
+                    if plugin.id == plugin_id
+                ),
+                None,
+            )
+            if not plugin:
+                raise SharlyChessException(
+                    f'Event database [{event_uniq_id}] - Unknown plugin [{plugin_id}]'
+                )
+            elif not plugin.is_enabled:
+                raise SharlyChessException(
+                    f'Event database [{event_uniq_id}] - '
+                    f'Plugin [{plugin.id}] expected, currently disabled.'
+                )
 
     @classmethod
     def _clean_not_existing_event_database_files(cls, event_uniq_ids: set[str]):
@@ -195,10 +221,18 @@ class Archive:
     def date_str(self):
         return format_timestamp_date_time(self.date)
 
-    def restore(self) -> str:
+    def restore(self) -> str | None:
         event_uniq_id = EventLoader().get_unused_event_uniq_id(self.name.split('#')[0])
-        self.file.rename(EventDatabase.event_database_path(event_uniq_id))
-        return event_uniq_id
+        new_path = EventDatabase.event_database_path(event_uniq_id)
+        shutil.copy(self.file, new_path)
+        try:
+            EventLoader.check_event_database(event_uniq_id)
+            self.file.unlink()
+            return event_uniq_id
+        except SharlyChessException as exception:
+            logger.error(exception)
+            new_path.unlink()
+            return None
 
 
 class ArchiveLoader:

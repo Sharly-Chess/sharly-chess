@@ -5,6 +5,7 @@ from functools import partial, cached_property, cache
 from types import UnionType
 from typing import override, Any
 
+from common import BASE_DIR
 from common.exception import SharlyChessException, OptionError
 from common.i18n import _
 from common.i18n.utils import unicode_normalize
@@ -328,7 +329,10 @@ class FFESiteQRCodeType(QRCodeType):
 
     @staticmethod
     def get_qr_code(url) -> str:
-        return QRCodeType.generate_qr_code(url=url, logo=False)
+        return QRCodeType.generate_qr_code(
+            url=url,
+            logo=BASE_DIR / 'src' / 'web' / 'static' / 'images' / 'ffe-qr-logo.jpg',
+        )
 
 
 class NicoisSwissVariation(Acceleration3GroupsSwissVariation):

@@ -322,6 +322,9 @@ msgstr "Un fichier est attendu."
 msgid "A non-empty string is expected"
 msgstr "Une chaîne de caractères non vide est attendue"
 
+msgid "A plugin specific to this federation is used, it can no longer be modified."
+msgstr "Un plug-in spécifique à cette fédération est utilisé, elle ne peut plus être modifiée."
+
 msgid "A positive integer is expected."
 msgstr "Un entier positif est attendu."
 
@@ -589,8 +592,11 @@ msgstr "Application"
 msgid "Archive"
 msgstr "Archiver"
 
+msgid "Archive [{archive}] could not be restored, consult the logs for more details."
+msgstr "L'archive [{archive}] n'a pas pu être restaurée, consultez les logs pour plus d'informations."
+
 msgid "Archive [{archive}] successfully restored (see event [{event}])."
-msgstr "'archive [{archive}] restaurée avec succès (voir l'évènement [{event}])"
+msgstr "L'archive [{archive}] a été restaurée avec succès (voir l'évènement [{event}])."
 
 msgid "Archive event"
 msgstr "Archiver un évènement"
@@ -991,9 +997,6 @@ msgstr "Le mot de passe ChessEvent n'est pas défini."
 
 msgid "ChessEvent password:"
 msgstr "Mot de passe ChessEvent :"
-
-msgid "ChessEvent settings"
-msgstr "Paramètres ChessEvent"
 
 msgid "ChessEvent tournament"
 msgstr "Tournoi ChessEvent"
@@ -1670,12 +1673,6 @@ msgstr "Faites glisser les ensembles pour les ordonner."
 msgid "Draw"
 msgstr "Nulle"
 
-msgid "Due to the federation change, the following plugin has been disabled for this event: <b>{plugin}</b>."
-msgstr "En raison du changement de fédération, le plug-in suivant a été désactivé pour cet événement : <b>{plugin}</b>."
-
-msgid "Due to the federation change, the following plugins have been disabled for this event: <b>{plugins}</b>."
-msgstr "En raison du changement de fédération, les plug-ins suivants ont été désactivés pour cet événement : <b>{plugins}</b>."
-
 msgid "Duplicate the account."
 msgstr "Dupliquer le compte."
 
@@ -2121,9 +2118,6 @@ msgstr "Mot de passe FFE non-défini."
 msgid "FFE password:"
 msgstr "Mot de passe FFE :"
 
-msgid "FFE settings"
-msgstr "Paramètres FFE"
-
 msgid "FFE site"
 msgstr "Site de la FFE"
 
@@ -2389,9 +2383,6 @@ msgstr "Genre :"
 msgid "Genders"
 msgstr "Genres"
 
-msgid "General"
-msgstr "Général"
-
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr "Générer les appariements pour toutes les rondes du tournoi."
 
@@ -2641,9 +2632,6 @@ msgstr "La bibliothèque [{lib}] a été installée."
 
 msgid "International Master"
 msgstr "Maître International"
-
-msgid "Internationalization"
-msgstr "Internationalisation"
 
 msgid "Invalid FFE ID [{ffe_id}]."
 msgstr "Identifiant FFE [{ffe_id}] non valide."
@@ -3137,6 +3125,9 @@ msgstr "Ronde suivante"
 
 msgid "Next tournament"
 msgstr "Tournoi suivant"
+
+msgid "No Chess-Results ID defined for tournament [{tournament}]."
+msgstr "Pas d'identifiant Chess-Results défini pour le tournoi [{tournament}]."
 
 msgid "No FFE ID defined for tournament [{tournament}]."
 msgstr "Aucun identifiant FFE défini pour le tournoi [{tournament}]."
@@ -3917,6 +3908,9 @@ msgstr "La configuration est en cours sur le serveur, veuillez patienter…"
 msgid "Please wait…"
 msgstr "Veuillez patienter…"
 
+msgid "Plugins"
+msgstr "Plug-ins"
+
 msgid "Point counting"
 msgstr "Comptage des points"
 
@@ -4210,6 +4204,10 @@ msgstr "La requête à la base de données a échoué (délai expiré)."
 msgid "Request to the database failed."
 msgstr "La requête à la base de données a échoué."
 
+#, python-format
+msgid "Required by plugin <b>%(plugin)s</b>."
+msgstr "Requis par le plug-in <b>%(plugin)s</b>."
+
 msgid "Res. ** RESULT FOR TABLE HEADER"
 msgstr "Rés."
 
@@ -4404,6 +4402,9 @@ msgstr "Enregistrez l'horaire ou annulez."
 msgid "Save the set or cancel."
 msgstr "Enregistrez l'ensemble ou annulez."
 
+msgid "Scan to access the tournament on Chess-Results.com."
+msgstr "Scannez pour accéder au tournoi sur le site Chess-Results.com."
+
 msgid "Scan to access the tournament on the FFE site."
 msgstr "Scannez pour accéder au tournoi sur le site de la FFE."
 
@@ -4437,12 +4438,18 @@ msgstr "L'écran [{screen_uniq_id}] a été supprimé."
 msgid "Screen [{screen_uniq_id}] has been updated."
 msgstr "L'écran [{screen_uniq_id}] a été modifié."
 
+msgid "Screen configuration has been updated."
+msgstr "La configuration des écrans a été mise à jour."
+
 msgid "Screen families:"
 msgstr "Familles d'écrans :"
 
 #, python-format
 msgid "Screen families: %(num)d"
 msgstr "Familles d'écrans : %(num)d"
+
+msgid "Screen settings"
+msgstr "Paramètres des écrans"
 
 msgid "Screen type"
 msgstr "Type d'écran"
@@ -4554,9 +4561,6 @@ msgstr "Seuil de partage"
 
 msgid "Sharly Chess Server"
 msgstr "Serveur Sharly Chess"
-
-msgid "Sharly Chess can automatically launch a web browser when starting the web server."
-msgstr "Sharly Chess peut automatiquement lancer la navigateur au démarrage du serveur web."
 
 msgid "Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr "Sharly Chess peut proposer des fonctionnalités spécifiques à la fédération choisie pour chaque évènement."
@@ -4858,11 +4862,8 @@ msgstr "La monnaie utilisée pour représenter les prix (par défaut la monnaie 
 msgid "The date of the first hour is not defined (mandatory)."
 msgstr "La date du premier horaire n'est pas définie (obligatoire)."
 
-msgid "The default federation for your events. Sharly Chess may provide functionality specific to the federation chosen for each event."
-msgstr "La fédération par défaut pour vos évènements. Sharly Chess peut proposer des fonctionnalités spécifiques à la fédération choisie pour chaque évènement."
-
-msgid "The default language used."
-msgstr "La langue utilisée par défaut."
+msgid "The default federation for your events."
+msgstr "La fédération par défaut pour vos évènements."
 
 msgid "The delay must be at least {min_delay} minutes to avoid overloading the Chess-Results server."
 msgstr "Le délai doit au moins être de {min_delay} minutes pour éviter de surcharger le serveur Chess-Results."
@@ -5147,8 +5148,8 @@ msgstr "Il ne peut y avoir qu'une seule catégorie générale."
 msgid "There is no pairings for this round (last round with pairings: #{round})."
 msgstr "Il n'y a pas d'appariement pour cette ronde (dernière ronde appariée : n°{round})."
 
-msgid "These plugins enable features that are only active on events of the chosen federation.<br />You’ll be asked to select a federation when creating the event."
-msgstr "Ces plug-ins activent des fonctionnalités qui ne sont disponibles que pour les événements de la fédération sélectionnée.<br />Vous serez invité à choisir une fédération lors de la création de l’événement."
+msgid "These plugins can only be activated on events of their federation."
+msgstr "Ces plug-ins ne peuvent-être activés que pour les évènements de leur fédération."
 
 msgid "These tournaments are already included for this account by a higher access level."
 msgstr "Ces tournois sont déjà inclus pour ce compte par un niveau d'accès plus élevé."
@@ -5435,6 +5436,9 @@ msgstr "Tournoi pas encore mis en ligne."
 #, python-format
 msgid "Tournament number: %(tnr)s"
 msgstr "Numéro de tournoi : %(tnr)s"
+
+msgid "Tournament on Chess-results.com"
+msgstr "Tournoi sur le site Chess-Results.com"
 
 msgid "Tournament on the FFE site"
 msgstr "Tournoi sur le site de la FFE"
@@ -5769,8 +5773,17 @@ msgstr "Utiliser le système de points 3/1/0 au lieu du système standard 1/0,5/
 msgid "Use the recommended tie-breaks"
 msgstr "Utiliser les départages recommandés"
 
-msgid "Utility Plugins"
-msgstr "Plug-ins utilitaires"
+#, python-format
+msgid "Used by %(num)d event."
+msgid_plural "Used by %(num)d events."
+msgstr[0] "Utilisé par %(num)d évènement."
+msgstr[1] "Utilisé par %(num)d évènements."
+
+#, python-format
+msgid "Used by %(num)d tournament."
+msgid_plural "Used by %(num)d tournaments."
+msgstr[0] "Utilisé par %(num)d tournoi."
+msgstr[1] "Utilisé par %(num)d tournois."
 
 msgid "Validate"
 msgstr "Valider"
