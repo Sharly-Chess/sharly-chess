@@ -6370,6 +6370,3 @@ msgstr ""
 msgid "½ - ½ (U)"
 msgstr ""
 
-#~ msgid "Default timer configuration"
-#~ msgstr ""
-
