@@ -26,6 +26,7 @@ English version below
 - Définition des groupes d'accélération par les numéros d'appariements en remplacement des seuils Elo (3.2.0)
 - Ajout du système d'accélération de Bakou (3.2.0)
 - Disponibilité des tous les départages _FIDE_ standards (3.2.0)
+- Correction du retour au tournoi des forfaits définitifs lors de l'ajout de rondes (3.2.3)
 
 ## Écrans
 
@@ -75,6 +76,7 @@ English version below
 - Definition of the acceleration pairing groups via pairing numbers replacing rating thresholds (3.2.0)
 - Baku acceleration system added (3.2.0)
 - Availability of all standard _FIDE_ tie-breaks (3.2.0)
+- Fix return to tournament of withdrawn players when rounds are added (3.2.3)
 
 ## Screens
 
