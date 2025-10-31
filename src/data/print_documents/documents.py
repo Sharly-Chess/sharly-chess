@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from functools import cached_property, partial, cache
+from functools import cached_property, partial
 import itertools
 from pathlib import Path
 from typing import Any, Callable, override
@@ -1357,7 +1357,6 @@ class PlaceCardPrintDocument(PrintDocument):
             )
 
     @staticmethod
-    @cache
     def get_place_card_templates_by_id() -> dict[str, PlaceCardTemplate]:
         """Returns a dict of all the place cards templates."""
         place_card_templates_by_id: dict[str, PlaceCardTemplate] = {}
@@ -1375,7 +1374,6 @@ class PlaceCardPrintDocument(PrintDocument):
         return place_card_templates_by_id
 
     @classmethod
-    @cache
     def get_place_card_templates_by_type(
         cls,
     ) -> dict[PlaceCardType, list[PlaceCardTemplate]]:
