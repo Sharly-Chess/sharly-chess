@@ -81,7 +81,6 @@ class IndexAdminController(BaseAdminController):
             data = {}
         errors: dict[str, str] = {}
         experimental: bool = WebContext.form_data_to_bool(data, 'experimental')
-        launch_browser: bool = WebContext.form_data_to_bool(data, 'launch_browser')
         federation_name: str | None = WebContext.form_data_to_str(
             data, field := 'federation'
         )
@@ -106,8 +105,8 @@ class IndexAdminController(BaseAdminController):
             console_color=sharly_chess_config.console_color,
             console_show_date=sharly_chess_config.console_show_date,
             console_show_level=sharly_chess_config.console_show_level,
+            launch_browser=sharly_chess_config.launch_browser,
             experimental=experimental,
-            launch_browser=launch_browser,
             federation=federation.name if federation else None,
             locale=locale,
             errors=errors,
@@ -868,7 +867,6 @@ class IndexAdminController(BaseAdminController):
                     'console_show_date': config.console_show_date,
                     'console_show_level': config.console_show_level,
                     'experimental': config.experimental,
-                    'launch_browser': config.launch_browser,
                     'federation': config.stored_config.federation,
                     'locale': config.locale,
                 }
