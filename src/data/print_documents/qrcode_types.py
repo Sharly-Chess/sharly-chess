@@ -22,7 +22,10 @@ class QRCodeType(IdentifiableEntity, ABC):
         """Returns a dict of valid options for the QR code type."""
 
     @staticmethod
-    def generate_qr_code(url: str, logo: bool = False) -> str:
+    def generate_qr_code(
+        url: str,
+        logo: Path | None = None,
+    ) -> str:
         qr = qrcode.QRCode(
             box_size=40 if logo else 10,
             border=2 if logo else 0,
@@ -31,19 +34,12 @@ class QRCodeType(IdentifiableEntity, ABC):
         qr.add_data(url)
         qr.make()
         img = qr.make_image(
-            fill_color='black',
-            back_color='white',
+            # use tuples instead of 'black'/'white' to allow colored logos
+            fill_color=(0, 0, 0),
+            back_color=(255, 255, 255),
         )
         if logo:
-            logo_file: Path = (
-                BASE_DIR
-                / 'src'
-                / 'web'
-                / 'static'
-                / 'images'
-                / 'sharly-chess-qr-logo.jpg'
-            )
-            logo_img = PIL.Image.open(logo_file)
+            logo_img = PIL.Image.open(logo)
             base_width: int = 360
             width_percent: float = base_width / float(logo_img.size[0])
             height_size = int((float(logo_img.size[1]) * float(width_percent)))
@@ -133,4 +129,12 @@ class NetworkQRCodeType(QRCodeType):
 
     @staticmethod
     def get_qr_code(url: str) -> str:
-        return QRCodeType.generate_qr_code(url=url, logo=True)
+        return QRCodeType.generate_qr_code(
+            url=url,
+            logo=BASE_DIR
+            / 'src'
+            / 'web'
+            / 'static'
+            / 'images'
+            / 'sharly-chess-qr-logo.jpg',
+        )
