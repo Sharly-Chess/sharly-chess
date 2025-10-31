@@ -1,9 +1,8 @@
-from common import BASE_DIR
 from common.i18n import _
 from data.print_documents import QRCodeType
 from data.print_documents.documents import QRCodePrintDocument
 from data.print_documents.options import TournamentPrintOption
-from plugins.chess_results import PLUGIN_NAME
+from plugins.chess_results import PLUGIN_NAME, PLUGIN_DIR
 from plugins.chess_results.utils import ChessResultsUtils
 
 
@@ -45,10 +44,5 @@ class ChessResultsQRCodeType(QRCodeType):
     def get_qr_code(url) -> str:
         return QRCodeType.generate_qr_code(
             url=url,
-            logo=BASE_DIR
-            / 'src'
-            / 'web'
-            / 'static'
-            / 'images'
-            / 'chess-results-qr-logo.jpg',
+            logo=PLUGIN_DIR / 'static' / 'images' / 'chess-results-qr-logo.jpg',
         )
