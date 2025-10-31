@@ -39,14 +39,6 @@
                         select_options=federation_options,
                         data=data, errors=errors
                     ) }}
-                    {{ admin_macros.switch_input(
-                        name='launch_browser',
-                        label='',
-                        placeholder=_('Launch a browser on startup'),
-                        help_text='',
-                        info='',
-                        data=data, errors=errors
-                    ) }}
                     {% if sharly_chess_config.experimental_features %}
                         {% set ns = namespace(
                             experimental_features_help=_(

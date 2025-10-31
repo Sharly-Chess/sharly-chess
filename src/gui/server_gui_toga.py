@@ -306,6 +306,7 @@ class SharlyChessServerToga(toga.App):
         self.log_view: toga.Box
         self.html_view: toga.WebView
         self.log_level_select: toga.Selection
+        self.launch_browser_switch: toga.Switch
         self.color_switch: toga.Switch
         self.show_level_switch: toga.Switch
         self.show_time_switch: toga.Switch
@@ -418,6 +419,12 @@ class SharlyChessServerToga(toga.App):
                 style=Pack(margin_bottom=7),
             )
         )
+        self.launch_browser_switch = toga.Switch(
+            text=_('Launch a browser on startup'),
+            value=config.launch_browser,
+            on_change=self._on_launch_browser_switch_change,
+        )
+        self.info_view.add(self.launch_browser_switch)
 
         main_buttons_wrapper = toga.Box(style=Pack(direction=ROW, align_items='center'))
         self.main_buttons_section = toga.Box(
@@ -698,6 +705,9 @@ class SharlyChessServerToga(toga.App):
 
     def _on_show_date_switch_change(self, widget: toga.Switch, **kwargs):
         self._update_config('console_show_date', widget.value)
+
+    def _on_launch_browser_switch_change(self, widget: toga.Switch, **kwargs):
+        self._update_config('launch_browser', widget.value)
 
     # --- Interactive prompts ---
     def handle_interactive_yn(self, question: str, yes_is_default: bool) -> bool:
