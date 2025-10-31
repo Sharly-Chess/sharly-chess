@@ -18,6 +18,7 @@ from common.i18n import (
 
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
+from plugins.manager import plugin_manager
 from utils.enum import PlayerRatingType, Result
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
@@ -98,6 +99,7 @@ class TournamentConfigAdminController(BaseEventAdminController):
 
     def _modal_context(
         self,
+        event: Event,
         data: dict[str, str],
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
@@ -115,6 +117,9 @@ class TournamentConfigAdminController(BaseEventAdminController):
                 str(Result.DRAW.value): _('Draw'),
                 str(Result.LOSS.value): _('Loss'),
             },
+            'plugin_templates': plugin_manager.hook_for_event(
+                event, 'get_tournament_config_template'
+            )(),
             'errors': errors or {},
         }
 
@@ -127,11 +132,9 @@ class TournamentConfigAdminController(BaseEventAdminController):
         request: HTMXRequest,
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
+        event = web_context.get_admin_event()
         data = self._prepare_modal_data(request, web_context.get_admin_event())
-        template_context = self._modal_context(
-            data,
-        )
-        print(template_context)
+        template_context = self._modal_context(event, data)
 
         return self._admin_base_event_render(
             web_context.template_context | template_context,
@@ -151,9 +154,10 @@ class TournamentConfigAdminController(BaseEventAdminController):
         ],
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
+        event = web_context.get_admin_event()
         stored_event, errors = self._read_form_data(web_context.get_admin_event(), data)
         if not stored_event:
-            template_context = self._modal_context(data, errors=errors)
+            template_context = self._modal_context(event, data, errors=errors)
             return self._admin_base_event_render(
                 web_context.template_context | template_context,
             )
