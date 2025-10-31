@@ -81,6 +81,7 @@ class IndexAdminController(BaseAdminController):
             data = {}
         errors: dict[str, str] = {}
         experimental: bool = WebContext.form_data_to_bool(data, 'experimental')
+        launch_browser: bool = WebContext.form_data_to_bool(data, 'launch_browser')
         federation_name: str | None = WebContext.form_data_to_str(
             data, field := 'federation'
         )
@@ -105,8 +106,8 @@ class IndexAdminController(BaseAdminController):
             console_color=sharly_chess_config.console_color,
             console_show_date=sharly_chess_config.console_show_date,
             console_show_level=sharly_chess_config.console_show_level,
-            launch_browser=sharly_chess_config.launch_browser,
             experimental=experimental,
+            launch_browser=launch_browser,
             federation=federation.name if federation else None,
             locale=locale,
             errors=errors,
@@ -310,12 +311,7 @@ class IndexAdminController(BaseAdminController):
             config = SharlyChessConfig()
             federation = config.federation.name if config.federation else ''
             player_rating_type = PlayerRatingType.FIDE.value
-            override_unrated_rapid_blitz = True
-            three_points_for_a_win = False
-            pab_value = Result.WIN.value
             location: str | None = None
-            record_illegal_moves: int | None = None
-            rules: str | None = None
             prize_currency: str | None = None
             stored_plugin_data: dict[str, dict[str, Any]] = {}
             event_enabled_plugins = [
@@ -339,12 +335,7 @@ class IndexAdminController(BaseAdminController):
             federation = stored_event.federation
             location = stored_event.location
             player_rating_type = stored_event.player_rating_type
-            record_illegal_moves = stored_event.record_illegal_moves
-            rules = stored_event.rules
             prize_currency = stored_event.prize_currency
-            override_unrated_rapid_blitz = admin_event.override_unrated_rapid_blitz
-            three_points_for_a_win = stored_event.three_points_for_a_win
-            pab_value = stored_event.pab_value
             stored_plugin_data = stored_event.plugin_data
             event_enabled_plugins = admin_event.enabled_plugins
 
@@ -372,12 +363,7 @@ class IndexAdminController(BaseAdminController):
                     'federation': federation,
                     'player_rating_type': player_rating_type,
                     'location': location,
-                    'record_illegal_moves': record_illegal_moves,
-                    'rules': rules,
                     'prize_currency': prize_currency,
-                    'override_unrated_rapid_blitz': override_unrated_rapid_blitz,
-                    'three_points_for_a_win': three_points_for_a_win,
-                    'pab_value': pab_value,
                 }
             )
             | {
@@ -448,18 +434,7 @@ class IndexAdminController(BaseAdminController):
             or PlayerRatingType.FIDE.value
         )
 
-        record_illegal_moves = cls._admin_validate_record_illegal_moves_update_data(
-            data, errors
-        )
-        rules = cls._admin_validate_rules_update_data(data, errors)
         prize_currency = WebContext.form_data_to_str(data, 'prize_currency')
-        override_unrated_rapid_blitz = WebContext.form_data_to_bool(
-            data, 'override_unrated_rapid_blitz'
-        )
-        three_points_for_a_win = WebContext.form_data_to_bool(
-            data, 'three_points_for_a_win'
-        )
-        pab_value = WebContext.form_data_to_int(data, 'pab_value') or Result.WIN.value
 
         enabled_plugins = plugin_manager.get_plugins_with_dependencies(
             [
@@ -508,12 +483,7 @@ class IndexAdminController(BaseAdminController):
             public=bool(public),
             location=location,
             player_rating_type=player_rating_type,
-            record_illegal_moves=record_illegal_moves,
-            rules=rules,
             prize_currency=prize_currency,
-            override_unrated_rapid_blitz=override_unrated_rapid_blitz,
-            three_points_for_a_win=three_points_for_a_win,
-            pab_value=pab_value,
             plugin_data=plugin_data,
             enabled_plugins=[plugin.id for plugin in enabled_plugins],
             # The following defaults are edited in other tabs.  We copy the values from the admin_event if it exists.
@@ -529,6 +499,19 @@ class IndexAdminController(BaseAdminController):
             if admin_event
             else config.default_message_color,
             message_text=admin_event.message_text if admin_event else None,
+            record_illegal_moves=admin_event.stored_event.record_illegal_moves
+            if admin_event
+            else None,
+            rules=admin_event.stored_event.rules if admin_event else None,
+            override_unrated_rapid_blitz=admin_event.stored_event.override_unrated_rapid_blitz
+            if admin_event
+            else True,
+            three_points_for_a_win=admin_event.stored_event.three_points_for_a_win
+            if admin_event
+            else False,
+            pab_value=admin_event.stored_event.pab_value
+            if admin_event
+            else Result.WIN.value,
         )
         return stored_event, errors
 
@@ -562,11 +545,6 @@ class IndexAdminController(BaseAdminController):
                 str(PlayerRatingType.NATIONAL.value): _(
                     'National *** NAME FOR RATING TYPE NATIONAL'
                 ),
-            },
-            'three_points_for_a_win_options': {
-                str(Result.WIN.value): _('Win'),
-                str(Result.DRAW.value): _('Draw'),
-                str(Result.LOSS.value): _('Loss'),
             },
             'action': action,
             'data': data,
@@ -867,6 +845,7 @@ class IndexAdminController(BaseAdminController):
                     'console_show_date': config.console_show_date,
                     'console_show_level': config.console_show_level,
                     'experimental': config.experimental,
+                    'launch_browser': config.launch_browser,
                     'federation': config.stored_config.federation,
                     'locale': config.locale,
                 }
