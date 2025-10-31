@@ -53,7 +53,8 @@ class PlayerFilterOptionManager(EventBoundEntityManager[PlayerFilterOption]):
             options.RatingTypesFilterOption,
             options.ClubsFilterOption,
             options.FederationsFilterOption,
-            options.PlayersPlayerFilterOption,
+            options.PlayersFilterOption,
+            options.ExcludeFilterOption,
         ]
         plugin_manager.hook_for_event(self.event, 'insert_player_filter_option_types')(
             player_filter_option_types=filter_options

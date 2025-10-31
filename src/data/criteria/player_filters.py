@@ -18,7 +18,8 @@ from data.criteria.player_filter_options import (
     ClubsFilterOption,
     FederationsFilterOption,
     RatingTypesFilterOption,
-    PlayersPlayerFilterOption,
+    PlayersFilterOption,
+    ExcludeFilterOption,
 )
 from utils.enum import PlayerGender, PlayerCategory, PlayerRatingType
 from utils.option import OptionHandler
@@ -206,21 +207,30 @@ class ClubPlayerFilter(PlayerFilter):
 
     @staticmethod
     def available_options() -> list[type[PlayerFilterOption]]:
-        return [ClubsFilterOption]
-
-    def get_clubs(self) -> list[Club]:
         return [
-            Club.from_query_param(query_param)
-            for query_param in self.get_option_values()[0]
+            ClubsFilterOption,
+            ExcludeFilterOption,
         ]
+
+    @staticmethod
+    def get_clubs(query_params: list[str]) -> list[Club]:
+        return [Club.from_query_param(query_param) for query_param in query_params]
 
     @cached_property
     def is_player_included_function(self) -> Callable[[Player], bool]:
-        clubs = self.get_clubs()
-        return lambda player: player.club in clubs
+        club_query_params, exclude = self.get_option_values()
+        clubs = self.get_clubs(club_query_params)
+        if exclude:
+            return lambda player: player.club not in clubs
+        else:
+            return lambda player: player.club in clubs
 
     def full_name(self, tournament: 'Tournament') -> str:
-        option_str = ', '.join(club.name for club in self.get_clubs())
+        club_query_params, exclude = self.get_option_values()
+        clubs = self.get_clubs(club_query_params)
+        option_str = ', '.join(club.name for club in clubs)
+        if exclude:
+            option_str = _('Exclude: {values}').format(values=option_str)
         return f'{self.name} ({option_str})'
 
 
@@ -235,21 +245,32 @@ class FederationPlayerFilter(PlayerFilter):
 
     @staticmethod
     def available_options() -> list[type[PlayerFilterOption]]:
-        return [FederationsFilterOption]
-
-    def get_federations(self) -> list[Federation]:
         return [
-            Federation.from_query_param(query_param)
-            for query_param in self.get_option_values()[0]
+            FederationsFilterOption,
+            ExcludeFilterOption,
+        ]
+
+    @staticmethod
+    def get_federations(query_params: list[str]) -> list[Federation]:
+        return [
+            Federation.from_query_param(query_param) for query_param in query_params
         ]
 
     @cached_property
     def is_player_included_function(self) -> Callable[[Player], bool]:
-        federations = self.get_federations()
-        return lambda player: player.federation in federations
+        federation_query_params, exclude = self.get_option_values()
+        federations = self.get_federations(federation_query_params)
+        if exclude:
+            return lambda player: player.federation not in federations
+        else:
+            return lambda player: player.federation in federations
 
     def full_name(self, tournament: 'Tournament') -> str:
-        option_str = ', '.join(federation.name for federation in self.get_federations())
+        federation_query_params, exclude = self.get_option_values()
+        federations = self.get_federations(federation_query_params)
+        option_str = ', '.join(federation.name for federation in federations)
+        if exclude:
+            option_str = _('Exclude: {values}').format(values=option_str)
         return f'{self.name} ({option_str})'
 
 
@@ -264,20 +285,25 @@ class PlayerIdPlayerFilter(PlayerFilter):
 
     @staticmethod
     def available_options() -> list[type[PlayerFilterOption]]:
-        return [PlayersPlayerFilterOption]
-
-    def get_player_ids(self) -> list[int]:
-        return self.get_option_values()[0]
+        return [
+            PlayersFilterOption,
+            ExcludeFilterOption,
+        ]
 
     @cached_property
     def is_player_included_function(self) -> Callable[[Player], bool]:
-        player_ids = self.get_player_ids()
-        return lambda player: player.id in player_ids
+        player_ids, exclude = self.get_option_values()
+        if exclude:
+            return lambda player: player.id not in player_ids
+        else:
+            return lambda player: player.id in player_ids
 
     def full_name(self, tournament: 'Tournament') -> str:
-        player_ids = self.get_player_ids()
+        player_ids, exclude = self.get_option_values()
         player_names = [
             player.full_name for player in tournament.players if player.id in player_ids
         ]
         option_str = ', '.join(sorted(player_names))
+        if exclude:
+            option_str = _('Exclude: {values}').format(values=option_str)
         return f'{self.name} ({option_str})'

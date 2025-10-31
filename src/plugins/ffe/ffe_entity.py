@@ -22,6 +22,7 @@ from data.print_documents import PlayerSplitter
 from data.criteria.player_filter_options import (
     PlayerFilterOption,
     SelectPlayerFilterOption,
+    ExcludeFilterOption,
 )
 from data.criteria.player_filters import PlayerFilter
 from data.print_documents.documents import QRCodePrintDocument, TournamentPrintOption
@@ -460,15 +461,30 @@ class FfeLeaguePlayerFilter(PlayerFilter):
 
     @staticmethod
     def available_options() -> list[type[PlayerFilterOption]]:
-        return [FfeLeaguesFilterOption]
+        return [
+            FfeLeaguesFilterOption,
+            ExcludeFilterOption,
+        ]
 
     @cached_property
     def is_player_included_function(self) -> Callable[[Player], bool]:
-        leagues = self.get_option_values()[0]
-        return lambda player: FFEUtils.get_player_plugin_data(player).league in leagues
+        leagues, exclude = self.get_option_values()
+        if exclude:
+            return (
+                lambda player: FFEUtils.get_player_plugin_data(player).league
+                not in leagues
+            )
+        else:
+            return (
+                lambda player: FFEUtils.get_player_plugin_data(player).league in leagues
+            )
 
     def full_name(self, tournament: 'Tournament') -> str:
-        return f'{self.name} ({", ".join(self.get_option_values()[0])})'
+        leagues, exclude = self.get_option_values()
+        option_str = ', '.join(leagues)
+        if exclude:
+            option_str = _('Exclude: {values}').format(values=option_str)
+        return f'{self.name} ({option_str})'
 
 
 class FfeLeaguesFilterOption(SelectPlayerFilterOption[str]):

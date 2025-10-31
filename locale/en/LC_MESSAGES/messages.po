@@ -647,6 +647,9 @@ msgstr ""
 msgid "At least one licence type is expected."
 msgstr ""
 
+msgid "At least one player is expected."
+msgstr ""
+
 msgid "At least one rating type is expected."
 msgstr ""
 
@@ -1022,6 +1025,9 @@ msgid "Choose at least one league."
 msgstr ""
 
 msgid "Choose at least one licence type."
+msgstr ""
+
+msgid "Choose at least one player."
 msgstr ""
 
 msgid "Choose at least one rating type."
@@ -2002,6 +2008,15 @@ msgstr ""
 msgid "Events ({num})"
 msgstr ""
 
+msgid "Exclude"
+msgstr ""
+
+msgid "Exclude the players matching the criterion instead of including them."
+msgstr ""
+
+msgid "Exclude: {values}"
+msgstr ""
+
 msgid "Exempt *** FEMALE"
 msgstr "Exempt"
 
@@ -2579,12 +2594,6 @@ msgid "Include greater categories"
 msgstr ""
 
 msgid "Include lower categories"
-msgstr ""
-
-msgid "Include players of these categories."
-msgstr ""
-
-msgid "Include players of these rating types."
 msgstr ""
 
 msgid "Includes all other access levels and grants full access to the application. This access level is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network)."
@@ -3409,21 +3418,6 @@ msgid "Only allowed users can view private rotators."
 msgstr ""
 
 msgid "Only current and future events that have been declared as <b>public</b> by the administrator are visible via the network."
-msgstr ""
-
-msgid "Only include players of these clubs."
-msgstr ""
-
-msgid "Only include players of these federations."
-msgstr ""
-
-msgid "Only include players of these leagues."
-msgstr ""
-
-msgid "Only include players of this gender."
-msgstr ""
-
-msgid "Only include players with one of the selected licence types."
 msgstr ""
 
 msgid "Only one age category is expected with options including other categories."

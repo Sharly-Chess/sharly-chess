@@ -28,6 +28,20 @@ class PlayerFilterOption(Option, ABC):
         return self.id.lower()
 
 
+class ExcludeFilterOption(PlayerFilterOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'EXCLUDE'
+
+    @property
+    def type(self) -> type | UnionType:
+        return bool
+
+    @property
+    def default_value(self) -> Any:
+        return False
+
+
 class SelectPlayerFilterOption[T](PlayerFilterOption):
     @abstractmethod
     def get_all_known_values(self, tournament: 'Tournament') -> list[T]:
@@ -354,7 +368,7 @@ class FederationsFilterOption(SelectPlayerFilterOption[Federation]):
             raise OptionError(_('At least one federation is expected.'), self)
 
 
-class PlayersPlayerFilterOption(SelectPlayerFilterOption[Player]):
+class PlayersFilterOption(SelectPlayerFilterOption[Player]):
     @staticmethod
     def static_id() -> str:
         return 'PLAYERS'
