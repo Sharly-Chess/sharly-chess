@@ -20,4 +20,23 @@
             min=1
         ) }}
     </div>
+    <input id="player-rating-type-hidden" type="hidden" name="player_rating_type" value="3">
+    <script>
+        var ratingTypeTooltip = null;
+        $('#{{ plugin.form_key }}').change(function () {
+            if (this.checked) {
+                $('#player-rating-type').val('3');
+                const ratingTypeContainer = document.getElementById('player-rating-type-container');
+                ratingTypeTooltip = new bootstrap.Tooltip(ratingTypeContainer, {
+                    title: '{{ _('The FFE always uses the FIDE rating when available.') }}',
+                    placement: 'top',
+                });
+            } else if (ratingTypeTooltip) {
+                ratingTypeTooltip.dispose();
+                ratingTypeTooltip = null;
+            }
+            $('#player-rating-type').prop('disabled', this.checked);
+            $('#player-rating-type-hidden').prop('disabled', !this.checked);
+        });
+    </script>
 </div>

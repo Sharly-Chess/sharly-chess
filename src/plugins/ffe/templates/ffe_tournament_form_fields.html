@@ -13,9 +13,14 @@
         ) }}
     </div>
 </div>
+<input type="hidden" name="player_rating_type" value="3">
 
 <script>
     $('#player-rating-type').val('3');
+    const ratingTypeContainer = document.getElementById('player-rating-type-container');
+    new bootstrap.Tooltip(ratingTypeContainer, {
+        title: '{{ _('The FFE always uses the FIDE rating when available.') }}',
+        placement: 'top',
+    });
     $('#player-rating-type').prop('disabled', true);
-    $('#player-rating-type-help').text('{{ _('The FFE always uses the FIDE rating when available.') }}');
 </script>
