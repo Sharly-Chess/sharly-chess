@@ -1,24 +1,24 @@
 {###########################################################################}
 {# THE UNIT USED FOR THE SIZES OF THE CARD AND THE CARD ITEMS              #}
 {###########################################################################}
-{% set unit = 'mm' %}
+{% set unit = custom.get_str('unit', default='mm', values=['mm', 'in']) %}
 
 {###########################################################################}
 {# THE WIDTH AND WEIGHT OF THE CARD                                        #}
 {###########################################################################}
-{% set width = 116 %}
-{% set height = 36 %}
+{% set width = custom.get_float('width', default=116) %}
+{% set height = custom.get_float('height', default=36) %}
 
 {###########################################################################}
 {# THE PADDING OF THE CARDS                                                #}
 {# (also used for the cutting marks, if cutting_marks is set to 'corners') #}
 {###########################################################################}
-{% set padding = 2 %}
+{% set padding = custom.get_float('padding', default=2) %}
 
 {###########################################################################}
 {# THE CUTTING MARKS ('border', 'corners' or 'none')                       #}
 {###########################################################################}
-{% set cutting_marks = 'corners' %}
+{% set cutting_marks = custom.get_str('cutting_marks', default='corners', values=['border', 'corners', 'none']) %}
 
 {###########################################################################}
 {# ITEM STYLING PROPERTIES:                                                #}
@@ -33,55 +33,107 @@
 {###########################################################################}
 {# DEFAULT ITEM STYLING                                                    #}
 {###########################################################################}
+
 {% set default_styling = {
-    'font_size': 14,
-    'font_weight': 'normal',
-    'font_style': 'normal',
-    'hor_align': 'left',
-    'hor_pos': 0,
-    'ver_align': 'top',
-    'ver_pos': 0,
+    'font_size': custom.get_font_size(default=14),
+    'font_weight': custom.get_font_weight(default='normal'),
+    'font_style': custom.get_font_style(default='normal'),
+    'hor_align': custom.get_hor_align(default='left'),
+    'hor_pos': custom.get_float(property='hor_pos', default=0.0),
+    'ver_align': custom.get_ver_align(default='top'),
+    'ver_pos': custom.get_float(property='ver_pos', default=0.0),
 } %}
 
 {###########################################################################}
-{# NAME STYLING                                                            #}
+{# ITEMS STYLING                                                           #}
 {###########################################################################}
-{% set name_styling = {
-    'font_size': 18,
-    'font_weight': 'bold',
-    'max_width': 92,
+{% set items = [
+    'player_name',
+    'player_rating',
+    'player_category',
+    'player_club',
+    'event',
+] %}
+{% set local_items_styling = {
+    'player_name': {
+        'font_size': 18,
+        'font_weight': 'bold',
+        'max_width': 92,
+    },
+    'player_rating': {
+        'font_size': 18,
+        'font_weight': 'bold',
+        'hor_align': 'right',
+    },
+    'player_category': {
+        'ver_pos': 8,
+    },
+    'player_club': {
+        'ver_pos': 16,
+    },
+    'event': {
+        'font_style': 'italic',
+        'ver_align': 'bottom',
+    },
 } %}
+{% set default_items_styling = {} %}
+{% for item in items %}
+    {% set default_item_styling = {} %}
+    {% for property in [
+        'font_size',
+        'font_weight',
+        'font_style',
+        'hor_align',
+        'hor_pos',
+        'ver_align',
+        'ver_pos',
+    ] %}
+        {% do default_item_styling.update(
+            {
+                property: local_items_styling[item][property]
+                    if property in local_items_styling[item]
+                    else default_styling[property],
+            }
+        ) %}
+    {% endfor %}
+    {% do default_items_styling.update(
+        {
+            item: default_item_styling,
+        }
+    ) %}
+{% endfor %}
+{% set styling = {} %}
+{% for item in items %}
+    {% do styling.update(
+        {
+            item: {
+                'font_size':   custom.get_font_size(
+                    section=item, default=default_items_styling[item]['font_size']
+                ),
+                'font_weight': custom.get_font_weight(
+                    section=item, default=default_items_styling[item]['font_weight']
+                ),
+                'font_style':  custom.get_font_style(
+                    section=item, default=default_items_styling[item]['font_style']
+                ),
+                'hor_align':   custom.get_hor_align(
+                    section=item, default=default_items_styling[item]['hor_align']
+                ),
+                'hor_pos':     custom.get_float(
+                    section=item, property='hor_pos', default=default_items_styling[item]['hor_pos']
+                ),
+                'ver_align':   custom.get_ver_align(
+                    section=item, default=default_items_styling[item]['ver_align']
+                ),
+                'ver_pos':     custom.get_float(
+                    section=item, property='ver_pos', default=default_items_styling[item]['ver_pos']
+                ),
+            }
+        }
+    ) %}
+{% endfor %}
 
-{###########################################################################}
-{# RATING STYLING                                                          #}
-{###########################################################################}
-{% set rating_styling = {
-    'font_size': 18,
-    'font_weight': 'bold',
-    'hor_align': 'right',
-} %}
-
-{###########################################################################}
-{# CATEGORY STYLING                                                        #}
-{###########################################################################}
-{% set category_styling = {
-    'ver_pos': 8,
-} %}
-
-{###########################################################################}
-{# CLUB STYLING                                                            #}
-{###########################################################################}
-{% set club_styling = {
-    'ver_pos': 16,
-} %}
-
-{###########################################################################}
-{# EVENT STYLING                                                            #}
-{###########################################################################}
-{% set event_styling = {
-    'font_style': 'italic',
-    'ver_align': 'bottom',
-} %}
+<div>styling={{styling}}</div>
 
 {% extends '/admin/print/place_cards/_.html' %}
 
@@ -89,11 +141,11 @@
     .card-content {
         background-position: right bottom;
     }
-    .name, .name * { {{ item_styling(name_styling, default_styling) }} }
-    .rating, .rating * { {{ item_styling(rating_styling, default_styling) }} }
-    .category, .category * { {{ item_styling(category_styling, default_styling) }} }
-    .club, .club * { {{ item_styling(club_styling, default_styling) }} }
-    .event, .event * { {{ item_styling(event_styling, default_styling) }} }
+    .player-name, .player-name * { {{ item_styling(styling['player_name']) }} }
+    .player-rating, .player-rating * { {{ item_styling(styling['player_rating']) }} }
+    .player-category, .player-category * { {{ item_styling(styling['player_category']) }} }
+    .player-club, .player-club * { {{ item_styling(styling['player_club']) }} }
+    .event, .event * { {{ item_styling(styling['event']) }} }
 {% endblock %}
 
 {% block card_js %}
@@ -108,17 +160,17 @@
                 <div class="card-cell top right"></div>
                 <div class="card-cell middle left"></div>
                 <div class="card-content">
-                    <div class="card-item name">
+                    <div class="card-item player-name">
                         {{ federation_flag(player) }}
                         {{ player.full_name }}
                     </div>
-                    <div class="card-item rating">
+                    <div class="card-item player-rating">
                         {{ player.rating }}{{ player.rating_type }}
                     </div>
-                    <div class="card-item category">
+                    <div class="card-item player-category">
                         {{ player.category }}
                     </div>
-                    <div class="card-item club">
+                    <div class="card-item player-club">
                         {{ player.federation }}
                         {% if player.league %}- {{ player.league }}{% endif %}
                         {% if player.club %}- {{ player.club }}{% endif %}

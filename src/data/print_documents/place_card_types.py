@@ -1,14 +1,12 @@
-import base64
 from abc import ABC
-from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from common import BASE_DIR
 from common.i18n import _
-from common.sharly_chess_config import SharlyChessConfig
 from data.board import Board
 from database.sqlite.event.event_store import StoredBoard
 from utils.entity import IdentifiableEntity
+from utils.file import image_file_inline_url
 
 if TYPE_CHECKING:
     from data.print_documents.documents import (
@@ -30,35 +28,6 @@ class PlaceCardType(IdentifiableEntity, ABC):
             TournamentPrintOption.static_id(),
         ]
 
-    @staticmethod
-    def base654_encode_file(
-        file: Path,
-    ) -> str:
-        with open(file, 'rb') as f:
-            data: bytes = f.read()
-        return base64.b64encode(data).decode('utf-8')
-
-    @classmethod
-    def ttf_inline_url(
-        cls,
-    ) -> str:
-        """Returns the inline URL for a TTF file (this method is used to build self-contained files)."""
-        font_file: Path = (
-            BASE_DIR / 'src/web/static/fonts/AtkinsonHyperlegibleNextVF-Variable.ttf'
-        )
-        encoded_data = cls.base654_encode_file(font_file)
-        return f'data:font/truetype;charset=utf-8;base64,{encoded_data}'
-
-    @classmethod
-    def svg_file_inline_url(
-        cls,
-        file: Path,
-    ) -> str:
-        """Returns the inline URL for a SVG file (this method is used to build self-contained files)."""
-        encoded_data = cls.base654_encode_file(file)
-        image_type = file.suffix.lower().replace('.', '').replace('\\n', '')
-        return f'data:image/{image_type}+xml;base64,{encoded_data}'
-
     @classmethod
     def flag_inline_urls_by_federation(
         cls,
@@ -66,32 +35,17 @@ class PlaceCardType(IdentifiableEntity, ABC):
     ) -> dict[str, str]:
         """Returns a dict with the inline URLs of the federations passed."""
         return {
-            federation_name: cls.svg_file_inline_url(
+            federation_name: image_file_inline_url(
                 BASE_DIR / f'src/web/static/images/federations/{federation_name}.svg'
             )
             for federation_name in federation_names
         }
 
-    @classmethod
     def template_context(
-        cls,
+        self,
         doc: 'PlaceCardPrintDocument',
     ) -> dict[str, Any]:
-        from data.print_documents.documents import (
-            PlaceCardTournament,
-            PlaceCardEvent,
-        )
-
-        assert doc.event is not None
-        return {
-            'sharly_chess_config': SharlyChessConfig(),
-            'sharly_chess_font_inline_url': cls.ttf_inline_url(),
-            'sharly_chess_logo_inline_url': cls.svg_file_inline_url(
-                BASE_DIR / 'src/web/static/images/sharly-chess-logo.svg'
-            ),
-            'event': PlaceCardEvent(doc.event),
-            'tournament': PlaceCardTournament(doc.tournament),
-        }
+        return {}
 
 
 class PlayerCardType(PlaceCardType):
@@ -112,18 +66,17 @@ class PlayerCardType(PlaceCardType):
             ]
         )
 
-    @classmethod
     def template_context(
-        cls,
+        self,
         doc: 'PlaceCardPrintDocument',
     ) -> dict[str, Any]:
         from data.print_documents.documents import PlaceCardPlayer
 
         players = doc.tournament.players_by_starting_rank.values()
         federation_names = set(player.federation.name for player in players)
-        return PlaceCardType.template_context(doc) | {
+        return {
             'players': (PlaceCardPlayer(player) for player in players),
-            'flag_inline_urls_by_federation': cls.flag_inline_urls_by_federation(
+            'flag_inline_urls_by_federation': self.flag_inline_urls_by_federation(
                 federation_names
             ),
         }
@@ -138,9 +91,8 @@ class BoardCardType(PlaceCardType):
     def static_name() -> str:
         return _('Board Cards')
 
-    @classmethod
     def template_context(
-        cls,
+        self,
         doc: 'PlaceCardPrintDocument',
     ) -> dict[str, Any]:
         from data.print_documents.documents import PlaceCardBoard
@@ -165,9 +117,9 @@ class BoardCardType(PlaceCardType):
             for board_number in board_numbers
         ]
         federation_names = set(player.federation.name for player in players)
-        return PlaceCardType.template_context(doc) | {
+        return {
             'boards': (PlaceCardBoard(board) for board in boards),
-            'flag_inline_urls_by_federation': cls.flag_inline_urls_by_federation(
+            'flag_inline_urls_by_federation': self.flag_inline_urls_by_federation(
                 federation_names
             ),
         }

@@ -1,3 +1,4 @@
+import base64
 import hashlib
 from pathlib import Path
 
@@ -63,3 +64,53 @@ def shutil_delete_onerror(func, path, exc_info):
 
     os.chmod(path, stat.S_IWUSR)
     func(path)
+
+
+def base654_encode_file(
+    file: Path,
+) -> str:
+    with open(file, 'rb') as f:
+        data: bytes = f.read()
+    return base64.b64encode(data).decode('utf-8')
+
+
+def file_inline_url(
+    file: Path,
+    mime_type: str,
+    charset: str | None = None,
+) -> str:
+    """Returns the inline URL for a file."""
+    return ';'.join(
+        [
+            f'data:{mime_type}',
+        ]
+        + (
+            [
+                f'charset={charset}',
+            ]
+            if charset
+            else []
+        )
+        + [
+            f'base64,{base654_encode_file(file)}',
+        ]
+    )
+
+
+def image_file_inline_url(
+    file: Path,
+) -> str:
+    """Returns the inline URL for a SVG file."""
+    image_type: str = file.suffix.lower().replace('.', '').replace('\\n', '')
+    image_type_suffix: str = '+xml' if image_type == 'svg' else ''
+    return file_inline_url(
+        file,
+        f'image/{image_type}{image_type_suffix}',
+    )
+
+
+def ttf_file_inline_url(
+    font_file: Path,
+) -> str:
+    """Returns the inline URL for a TTF file."""
+    return file_inline_url(font_file, 'font/truetype', charset='utf-8')

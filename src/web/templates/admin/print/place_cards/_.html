@@ -5,37 +5,29 @@
 {% endmacro %}
 
 {% macro item_styling(
-    item_styling,
-    default_styling
+    item_styling
 )%}
-    {% set font_size = item_styling.font_size or default_styling.font_size %}
-    {% set font_weight = item_styling.font_weight or default_styling.font_weight %}
-    {% set font_style = item_styling.font_style or default_styling.font_style %}
-    {% set hor_align = item_styling.hor_align or default_styling.hor_align %}
-    {% set hor_pos = item_styling.hor_pos or default_styling.hor_pos %}
-    {% set ver_align = item_styling.ver_align or default_styling.ver_align %}
-    {% set ver_pos = item_styling.ver_pos or default_styling.ver_pos %}
-    font-size: {{ font_size }}pt;
-    font-weight: {{ font_weight }};
-    font-style: {{ font_style }};
-    {% if hor_align == 'left' %}
-        left: {{ hor_pos }}{{ unit }};
+    font-size: {{ item_styling['font_size'] }}pt;
+    font-weight: {{ item_styling['font_weight'] }};
+    font-style: {{ item_styling.font_style }};
+    {% if item_styling.hor_align == 'left' %}
+        left: {{ item_styling.hor_pos }}{{ unit }};
         text-align: left;
-    {% elif hor_align == 'center' %}
+    {% elif item_styling.hor_align == 'center' %}
         width: 100%;
         text-align: center;
-    {% elif hor_align == 'right' %}
-        right: {{ hor_pos }}{{ unit }};
+    {% elif item_styling.hor_align == 'right' %}
+        right: {{ item_styling.hor_pos }}{{ unit }};
         text-align: right;
     {% endif %}
-    {% if ver_align == 'top' %}
-        top: {{ ver_pos }}{{ unit }};
-    {% elif ver_align == 'middle' %}
+    {% if item_styling.ver_align == 'top' %}
+        top: {{ item_styling.ver_pos }}{{ unit }};
+    {% elif item_styling.ver_align == 'middle' %}
         top: 50%;
         -ms-transform: translateY(-50%);
         transform: translateY(-50%);
-    {% elif ver_align == 'bottom' %}
-        bottom: {{ ver_pos }}{{ unit }};
+    {% elif item_styling.ver_align == 'bottom' %}
+        bottom: {{ item_styling.ver_pos }}{{ unit }};
     {% endif %}
     {% if item_styling.max_width %}
         max-width: {{ item_styling.max_width }}{{ unit }};
@@ -150,6 +142,12 @@
 {% endblock %}
 
 {% block content %}
-    {% block card_content %}
-    {% endblock %}
+    {% if custom.error %}
+        <div class="error">
+            {{ custom.error }}
+        </div>
+    {% else %}
+        {% block card_content %}
+        {% endblock %}
+    {% endif %}
 {% endblock %}

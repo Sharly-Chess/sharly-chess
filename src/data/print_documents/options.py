@@ -18,6 +18,7 @@ from utils.option import Option
 
 if TYPE_CHECKING:
     from data.event import Event
+    from data.print_documents.documents import PlaceCardTemplate
 
 
 class PrintOption(Option, ABC):
@@ -445,6 +446,12 @@ class PlaceCardTemplatePrintOption(PrintOption):
         super().validate()
         if self.value is None:
             raise OptionError(_('Please choose the template.'), self)
+
+    @cached_property
+    def place_card_template(self) -> 'PlaceCardTemplate':
+        from data.print_documents.documents import PlaceCardPrintDocument
+
+        return PlaceCardPrintDocument.get_place_card_templates_by_id()[self.value]
 
     @property
     def place_card_templates_per_type(self) -> dict[str, list[dict[str, Any]]]:

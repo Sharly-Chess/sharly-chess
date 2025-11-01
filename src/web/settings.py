@@ -185,6 +185,7 @@ class SharlyChessEnvironment(Environment):
             trim_blocks=True,
         )
         self.add_extension('jinja2.ext.i18n')
+        self.add_extension('jinja2.ext.do')
         self.install_gettext_callables(  # type: ignore
             gettext=gettext, ngettext=ngettext, newstyle=True
         )
