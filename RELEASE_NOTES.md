@@ -26,12 +26,14 @@ English version below
 - Définition des groupes d'accélération par les numéros d'appariements en remplacement des seuils Elo (3.2.0)
 - Ajout du système d'accélération de Bakou (3.2.0)
 - Disponibilité des tous les départages _FIDE_ standards (3.2.0)
-- Correction du retour au tournoi des forfaits définitifs lors de l'ajout de rondes (3.2.3)
+- Utilisation des classement _FIDE_ pour les évènements _FFE_ (3.2.3)
+- Lors de l'ajout de rondes supplémentaires, ajout de forfaits aux joueur·euses ayant quitté le tournoi pour ces nouvelles rondes (3.2.3)
 
 ## Écrans
 
 - Suppression de l’option d’image de fond des écrans (3.2.0)
 - Correction des écrans de saisie avec enregistrement de coups illégaux (3.2.0)
+- Correction de l'affichage des appariements par ordre alphabétique (3.2.3)
 
 ## _FFE_
 
@@ -76,12 +78,14 @@ English version below
 - Definition of the acceleration pairing groups via pairing numbers replacing rating thresholds (3.2.0)
 - Baku acceleration system added (3.2.0)
 - Availability of all standard _FIDE_ tie-breaks (3.2.0)
-- Fix return to tournament of withdrawn players when rounds are added (3.2.3)
+- Force _FIDE_ rating for _FFE_ events (3.2.3)
+- When adding rounds, Add ZPBs to withdraw players for these new rounds (3.2.3)
 
 ## Screens
 
 - Removed the background image option for Screens (3.2.0)
 - Fixed Result Entry Screens with illegal moves recording (3.2.0)
+- Fixed alphabetical screens display (3.2.3)
 
 ## _FFE_
 
