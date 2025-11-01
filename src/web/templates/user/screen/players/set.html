@@ -1,6 +1,6 @@
 {% with tournament=screen_set.tournament %}
     <div
-            class="players-screen-set"
+        class="players-screen-set"
     >
         <h2 class="set-title text-center">
             {% if tournament.current_round %}
@@ -24,7 +24,7 @@
                         "
                     >
                         <div
-                                class="grid-header text-nowrap"
+                            class="grid-header text-nowrap"
                         >
                             {% if tournament.current_round %}{{ _('Player Elo [Pts]') }}{% else %}{{ _('Player Elo') }}{% endif %}
                         </div>
@@ -33,8 +33,8 @@
                         </div>
                         {% if screen_set.players_show_opponent %}
                             <div
-                                    class="grid-header text-nowrap"
-                                    style="text-overflow: ellipsis;"
+                                class="grid-header text-nowrap"
+                                style="text-overflow: ellipsis;"
                             >
                                 {% if tournament.current_round %}{{ _('Opponent Elo [Pts]') }}{% else %}{{ _('Opponent Elo') }}{% endif %}
                             </div>
@@ -45,8 +45,8 @@
                                 {% with opponent_id=pairing.opponent_id %}
                                     <div class="player-row {% if not opponent_id %}not-paired fs-italic{% else %}paired fw-bold{% endif %}">
                                         <div
-                                                class="player overflow-hidden text-nowrap"
-                                                style="text-overflow: ellipsis;"
+                                            class="player overflow-hidden text-nowrap"
+                                            style="text-overflow: ellipsis;"
                                         >
                                             {% if player.title.short_name %}{{ player.title.short_name }}&nbsp;{% endif %}{{ player.full_name }} {{ player.rating_str }} [{{ player.vpoints_str }}]
                                         </div>
@@ -63,9 +63,9 @@
                                         </div>
                                         {% if screen_set.players_show_opponent %}
                                             <div
-                                                    class="opponent overflow-hidden text-nowrap"
-                                                    style="text-overflow: ellipsis;"
-                                            ></div>
+                                                class="opponent overflow-hidden text-nowrap"
+                                                style="text-overflow: ellipsis;"
+                                            >
                                                 {% if pairing.exempt %}
                                                 {% elif not opponent_id %}
                                                 {% else %}
@@ -81,8 +81,8 @@
                             {% else %}
                                 <div class="player-row not-paired fs-italic">
                                     <div
-                                            class="player overflow-hidden text-nowrap"
-                                            style="text-overflow: ellipsis;"
+                                        class="player overflow-hidden text-nowrap"
+                                        style="text-overflow: ellipsis;"
                                     >
                                         <i class="
                                             {% if player.check_in %}
