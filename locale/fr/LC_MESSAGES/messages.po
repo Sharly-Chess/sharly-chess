@@ -5402,6 +5402,15 @@ msgstr "Le tournoi [{tournament}] a été importé avec succès."
 msgid "Tournament [{tournament}] successfully synchronized."
 msgstr "Le tournoi [{tournament}] a été synchronisé avec succès."
 
+msgid "Tournament default settings"
+msgstr "Paramètres par défaut des tournois"
+
+msgid "Tournament defaults"
+msgstr "Paramètres par défaut"
+
+msgid "Tournament defaults have been updated."
+msgstr "Les paramètres par défaut du tournoi ont été mis à jour."
+
 msgid "Tournament exempt from registration fees."
 msgstr "Tournoi exempt de droits d'homologation."
 

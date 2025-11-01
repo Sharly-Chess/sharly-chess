@@ -5402,6 +5402,15 @@ msgstr ""
 msgid "Tournament [{tournament}] successfully synchronized."
 msgstr ""
 
+msgid "Tournament default settings"
+msgstr ""
+
+msgid "Tournament defaults"
+msgstr ""
+
+msgid "Tournament defaults have been updated."
+msgstr ""
+
 msgid "Tournament exempt from registration fees."
 msgstr ""
 
