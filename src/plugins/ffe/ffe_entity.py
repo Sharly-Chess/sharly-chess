@@ -5,7 +5,6 @@ from functools import partial, cached_property, cache
 from types import UnionType
 from typing import override, Any
 
-from common import BASE_DIR
 from common.exception import SharlyChessException, OptionError
 from common.i18n import _
 from common.i18n.utils import unicode_normalize
@@ -29,7 +28,7 @@ from data.print_documents.qrcode_types import QRCodeType
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourceDatabase
-from plugins.ffe import PLUGIN_NAME
+from plugins.ffe import PLUGIN_NAME, PLUGIN_DIR
 from plugins.ffe.ffe_database import FfeDatabase, PlayerFFELicence
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.utils import FFEUtils
@@ -331,7 +330,7 @@ class FFESiteQRCodeType(QRCodeType):
     def get_qr_code(url) -> str:
         return QRCodeType.generate_qr_code(
             url=url,
-            logo=BASE_DIR / 'src' / 'web' / 'static' / 'images' / 'ffe-qr-logo.jpg',
+            logo=PLUGIN_DIR / 'static' / 'images' / 'ffe-qr-logo.jpg',
         )
 
 
