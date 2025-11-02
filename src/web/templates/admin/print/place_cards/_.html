@@ -1,39 +1,5 @@
 {% extends '/admin/print/base.html' %}
 
-{% macro federation_flag(player) %}
-    <img class="federation-flag {{ player.federation }}" />
-{% endmacro %}
-
-{% macro item_styling(
-    item_styling
-)%}
-    font-size: {{ item_styling['font_size'] }}pt;
-    font-weight: {{ item_styling['font_weight'] }};
-    font-style: {{ item_styling.font_style }};
-    {% if item_styling.hor_align == 'left' %}
-        left: {{ item_styling.hor_pos }}{{ unit }};
-        text-align: left;
-    {% elif item_styling.hor_align == 'center' %}
-        width: 100%;
-        text-align: center;
-    {% elif item_styling.hor_align == 'right' %}
-        right: {{ item_styling.hor_pos }}{{ unit }};
-        text-align: right;
-    {% endif %}
-    {% if item_styling.ver_align == 'top' %}
-        top: {{ item_styling.ver_pos }}{{ unit }};
-    {% elif item_styling.ver_align == 'middle' %}
-        top: 50%;
-        -ms-transform: translateY(-50%);
-        transform: translateY(-50%);
-    {% elif item_styling.ver_align == 'bottom' %}
-        bottom: {{ item_styling.ver_pos }}{{ unit }};
-    {% endif %}
-    {% if item_styling.max_width %}
-        max-width: {{ item_styling.max_width }}{{ unit }};
-    {% endif %}
-{% endmacro %}
-
 {% block css %}
     @font-face {
         font-family: "AtkinsonHyperlegibleNextVF";
@@ -51,6 +17,11 @@
             -ms-print-color-adjust: exact;
             print-color-adjust: exact;
         }
+    }
+    .card-item.error {
+        color: rgb(255, 0, 0);
+        background-color: rgb(255, 220, 220);
+        opacity: 1.0;
     }
     .card {
         float: left;
@@ -109,11 +80,7 @@
     {% endif %}
     .card-content {
         position: relative;
-        background-image: url("{{ sharly_chess_logo_inline_url }}");
-        background-repeat: no-repeat;
-        background-size: 30{{ unit }};
-        background-color: rgba(255, 255, 255, 0.7);
-        background-blend-mode: lighten;
+        background-color: rgba(255, 255, 255, 0.6);
     }
     .card-item {
         position: absolute;
@@ -126,6 +93,9 @@
     .federation-flag {
         height: 0.75em;
     }
+    {% for item in items %}
+        {{ item.render_css(unit) | safe  }}
+    {% endfor %}
     {% block card_css %}
     {% endblock %}
 {% endblock %}
@@ -137,14 +107,17 @@
             $(".federation-flag.{{ federation }}").attr('src', "{{ url }}");
         {% endfor %}
     });
+    {% for item in items %}
+        {{ item.render_js() | safe }}
+    {% endfor %}
     {% block card_js %}
     {% endblock %}
 {% endblock %}
 
 {% block content %}
-    {% if custom.error %}
+    {% if error %}
         <div class="error">
-            {{ custom.error }}
+            {{ error }}
         </div>
     {% else %}
         {% block card_content %}

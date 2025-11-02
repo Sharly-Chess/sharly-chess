@@ -4,6 +4,8 @@ from abc import ABC, abstractmethod
 from collections import Counter
 from dataclasses import dataclass
 from functools import cached_property, partial
+from itertools import chain
+from pathlib import Path
 from typing import Any, Callable, override
 
 from common import format_timestamp, BASE_DIR
@@ -33,12 +35,14 @@ from data.print_documents.options import (
     PlaceCardPrintOption,
     PlaceCardTemplatePrintOption,
 )
-from data.print_documents.place_card_entities import (
+from data.print_documents.place_cards.place_card_data import (
     PlaceCardEvent,
     PlaceCardTournament,
+)
+from data.print_documents.place_cards.place_card_entities import (
     PlaceCardTemplate,
 )
-from data.print_documents.place_card_types import PlaceCardType
+from data.print_documents.place_cards.place_card_types import PlaceCardType
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from utils import Utils
@@ -1148,36 +1152,54 @@ class PlaceCardPrintDocument(PrintDocument):
     @property
     def template_name(self) -> str:
         return str(
-            self.get_place_card_templates_by_id()[
+            self.load_place_card_template(
                 self._get_option(PlaceCardTemplatePrintOption).value
-            ].template_name
+            ).template_name
         )
 
     def validate_options(self):
         super().validate_options()
         template_option = self._get_option(PlaceCardTemplatePrintOption)
         try:
-            self.get_place_card_templates_by_id()[template_option.value]
+            self.load_place_card_template(template_option.value)
         except KeyError:
             raise OptionError(
                 f'Unknown template [{template_option.value}]', template_option
             )
 
     @staticmethod
-    def get_place_card_templates_by_id() -> dict[str, PlaceCardTemplate]:
-        """Returns a dict of all the place cards templates."""
-        place_card_templates_by_id: dict[str, PlaceCardTemplate] = {}
+    def load_place_card_template(
+        id: str,
+    ) -> PlaceCardTemplate:
+        """Loads a place card template."""
         for template_dir in [
             SharlyChessConfig.embedded_place_cards_path,
             SharlyChessConfig.custom_place_cards_path,
         ]:
-            for template_file in template_dir.glob(
+            template_file: Path = (
+                template_dir / f'{id}.{SharlyChessConfig.place_card_template_ext}'
+            )
+            if template_file.exists():
+                return PlaceCardTemplate(template_file)
+        # Should never happen
+        raise SharlyChessException('')
+
+    @classmethod
+    def get_place_card_templates_by_id(cls) -> dict[str, PlaceCardTemplate]:
+        """Returns a dict of all the place card templates."""
+        place_card_templates_by_id: dict[str, PlaceCardTemplate] = {}
+        # custom templates override embedded ones
+        for template_file in chain(
+            SharlyChessConfig.embedded_place_cards_path.glob(
                 f'*.{SharlyChessConfig.place_card_template_ext}'
-            ):
-                place_card_template: PlaceCardTemplate = PlaceCardTemplate(
-                    template_file
-                )
-                place_card_templates_by_id[place_card_template.id] = place_card_template
+            ),
+            SharlyChessConfig.custom_place_cards_path.glob(
+                f'*.{SharlyChessConfig.place_card_template_ext}'
+            ),
+        ):
+            place_card_templates_by_id[template_file.stem] = (
+                cls.load_place_card_template(template_file.stem)
+            )
         return place_card_templates_by_id
 
     @classmethod

@@ -6,12 +6,12 @@ from data.print_documents import (
     player_sorters,
     pairing_styles,
     qrcode_types,
-    place_card_types,
 )
+from data.print_documents.place_cards import place_card_types
 from data.print_documents.documents import PrintDocument
 from data.print_documents.options import PrintOption
 from data.print_documents.pairing_styles import PairingStyle
-from data.print_documents.place_card_types import PlaceCardType
+from data.print_documents.place_cards.place_card_types import PlaceCardType
 from data.print_documents.player_sorters import PlayerSorter
 from data.print_documents.player_splitters import PlayerSplitter
 from data.print_documents.qrcode_types import QRCodeType

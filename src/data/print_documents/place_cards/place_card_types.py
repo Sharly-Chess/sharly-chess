@@ -4,7 +4,10 @@ from typing import TYPE_CHECKING, Any
 from common import BASE_DIR
 from common.i18n import _
 from data.board import Board
-from data.print_documents.place_card_entities import PlaceCardBoard, PlaceCardPlayer
+from data.print_documents.place_cards.place_card_data import (
+    PlaceCardBoard,
+    PlaceCardPlayer,
+)
 from database.sqlite.event.event_store import StoredBoard
 from utils.entity import IdentifiableEntity
 from utils.file import image_file_inline_url

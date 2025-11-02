@@ -1,4 +1,0 @@
-type = "board"
-name = "Default Board Cards"
-file = "simple_board.html"
-creator = "Sharly Chess"

@@ -7,7 +7,10 @@ from common.exception import OptionError
 from common.i18n import _
 from data.event import SharlyChessConfig
 from data.print_documents.pairing_styles import BoardsPairingStyle, PairingStyle
-from data.print_documents.place_card_types import PlayerCardType, PlaceCardType
+from data.print_documents.place_cards.place_card_types import (
+    PlayerCardType,
+    PlaceCardType,
+)
 from data.print_documents.player_sorters import (
     PlayerSorter,
     NamePlayerSorter,
@@ -451,7 +454,7 @@ class PlaceCardTemplatePrintOption(PrintOption):
     def place_card_template(self) -> 'PlaceCardTemplate':
         from data.print_documents.documents import PlaceCardPrintDocument
 
-        return PlaceCardPrintDocument.get_place_card_templates_by_id()[self.value]
+        return PlaceCardPrintDocument.load_place_card_template(self.value)
 
     @property
     def place_card_templates_per_type(self) -> dict[str, list[dict[str, Any]]]:

@@ -1,0 +1,130 @@
+###########################################################################
+# GENERAL PROPERTIES
+
+# THE TEMPLATE TYPE (SHOULD NOT BE MODIFIED)
+type = "player"
+
+# THE TEMPLATE NAME
+# The template name is used to select the template.
+# Defaults to the filename of the template.
+#name = "Default Player Cards"
+
+# THE CREATOR
+# The creator is used for the description of the template.
+#creator = "Sharly Chess <support@sharly-chess.com>"
+
+# THE UNIT USED FOR THE SIZES OF THE CARD AND THE CARD ITEMS
+# "mm" or "in", defaults to "mm"
+#unit = "mm"
+
+# THE WIDTH AND WEIGHT OF THE CARD
+#width = 116
+#height = 36
+
+# THE PADDING OF THE CARDS
+# (also used for the cutting marks, if cutting_marks is set to "corners")
+#padding = 2
+
+# THE CUTTING MARKS
+# Accepted values are "border" (default value), "corners" and "none"
+#cutting_marks = "corners"
+
+###########################################################################
+# ITEM STYLING PROPERTIES:
+# - font_size: integer (unit: pt)
+# - font_weight: "normal" or "bold" ("normal" by default)
+# - font_style: "normal" or "italic" ("normal" by default)
+# - h_align: "left", "center" or "right" ("left" by default)
+# - v_align: "top", "middle" or "bottom" ("top" by default)
+# - h_pos: the horizontal position of the item (by default: 0.0, unit: the unit of the document)
+# - v_pos: the vertical position of the item (by default: 0.0, unit: the unit of the document)
+
+[default]
+
+font_size = 14.0
+bold = false
+italic = false
+h_align = "left"
+v_align = "top"
+h_pos = 0.0
+v_pos = 0.0
+
+###########################################################################
+# ITEMS PROPERTIES
+# Styling properties listed above can be used for the items to override
+# default styling and additional properties are available.
+# - display: bool, false to hide the item (defaults to true)
+#
+# - image: the name of a file that is expected to be found in custom/place_cards/images.
+# if property image is set then one of these two properties must also be set:
+# - width: the width of the image (unit: the unit of the document)
+# - height: the height of the image (unit: the unit of the document)
+# The following property can also be used:
+# - opacity: the opaciuty of the image (from 0.0 to 1.0)
+#
+# When property image is not set, the item is a text item with the following properties:
+# - text: the text to display.
+# The text can include Jinja tags and use the following objects:
+# - event: the current event
+#   - event.name: the name of the event
+# - tournament: the current tournament
+#   - tournament.name: the name of the tournament
+# - player: the current player (available only for type 'player')
+#   - player.full_name: the player's full name (i18n dependent)
+#   - player.first_name: the player's first name
+#   - player.last_name: the player's last name
+#   - player.rating: the player's rating used for the tournament
+#   - player.rating_type: the player's rating type for the tournament, as a single letter ('F'=FIDE, 'N'=National, 'E'=Estimated)
+#   - player.year_of_birth: the player's year of birth, as a string
+#   - player.gender: the player's gender, as a single letter
+#   - player.title: the player's FIDE title, if any
+#   - player.federation: the player's federation, as a three-ketter string
+#   - player.federation_flag: the player's federation, as an <img> tag.
+#   - player.club: the player's club, if any
+#   - player.category: the player's catégory, as a string
+# - board: the current board (available only for types 'board' and 'pairing')
+#   - board.number: the board's number
+#   - board.white_player: the White player
+#   - board.black_player: the Black player
+#
+# Notes:
+# - board.white_player and board.black_player are objects with the same properties as player.
+# - plugins may add properties to core objects.
+
+[player_name]
+
+content = "{{ player.federation_flag | safe }} {{ player.full_name }}"
+font_size = 18.0
+bold = true
+max_width = 92.0
+
+[player_rating]
+
+content = "{{ player.rating }}{{ player.rating_type }}"
+font_size = 18.0
+bold = true
+h_align = "right"
+
+[player_category_club]
+
+content = "{{ player.category }} {{ player.federation }} {% if player.club %}- {{ player.club }}{% endif %}"
+v_pos = 8.0
+
+[tournament]
+
+content = "{{ tournament.name }}"
+v_pos = 20.0
+
+[event]
+
+content = "{{ event.name }}"
+italic = true
+v_align = "bottom"
+
+[logo]
+
+image = "sharly-chess-logo.svg"
+width = 30
+opacity = 0.4
+h_align = "right"
+v_align = "bottom"
