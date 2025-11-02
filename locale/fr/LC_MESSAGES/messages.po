@@ -2015,7 +2015,7 @@ msgid "Exclude the players matching the criterion instead of including them."
 msgstr "Exclure les joueur·euses correspondant au critère au lieu de les inclure."
 
 msgid "Exclude: {values}"
-msgstr "Exclure: {values}"
+msgstr "Exclure : {values}"
 
 msgid "Exempt *** FEMALE"
 msgstr "Exempte"
