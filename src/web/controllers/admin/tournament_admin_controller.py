@@ -46,6 +46,7 @@ from database.sqlite.event.event_store import (
     StoredTournament,
     StoredScreen,
     StoredTournamentCriterion,
+    StoredPairing,
 )
 from plugins.manager import plugin_manager
 from utils.time_control import parse_time_control_trf25
@@ -677,20 +678,37 @@ class TournamentAdminController(BaseEventAdminController):
         )(event=web_context.admin_event, stored_tournament=stored_tournament):
             Message.warning(request, message)
 
-        with EventDatabase(
-            web_context.admin_event.uniq_id, write=True
-        ) as event_database:
+        with EventDatabase(web_context.admin_event.uniq_id, write=True) as database:
             if action == FormAction.UPDATE:
-                stored_tournament = event_database.update_stored_tournament(
-                    stored_tournament
-                )
+                tournament = web_context.get_admin_tournament()
+                if tournament.rounds < stored_tournament.rounds:
+                    database.delete_stored_pairings_after_round(
+                        tournament.id, tournament.rounds
+                    )
+                    for player in tournament.players:
+                        if not player.pairings_by_round[
+                            tournament.rounds
+                        ].zero_point_bye:
+                            continue
+                        for round_ in range(
+                            tournament.rounds + 1, stored_tournament.rounds + 1
+                        ):
+                            database.add_stored_pairing(
+                                StoredPairing(
+                                    tournament_id=tournament.id,
+                                    player_id=player.id,
+                                    round_=round_,
+                                    result=Result.ZERO_POINT_BYE.value,
+                                    board_id=None,
+                                )
+                            )
+
+                stored_tournament = database.update_stored_tournament(stored_tournament)
                 success_message = _(
                     'Tournament [{tournament}] has been updated.'
                 ).format(tournament=stored_tournament.name)
             else:
-                stored_tournament = event_database.add_stored_tournament(
-                    stored_tournament
-                )
+                stored_tournament = database.add_stored_tournament(stored_tournament)
                 if 'add_screens' in data:
                     timer_id: int | None = None
                     if len(web_context.admin_event.timers_by_id) == 1:
@@ -725,7 +743,7 @@ class TournamentAdminController(BaseEventAdminController):
                             ),
                         ),
                     ]:
-                        stored_screen: StoredScreen = event_database.add_stored_screen(
+                        stored_screen: StoredScreen = database.add_stored_screen(
                             StoredScreen(
                                 id=None,
                                 uniq_id=web_context.admin_event.get_unused_screen_uniq_id(
@@ -756,7 +774,7 @@ class TournamentAdminController(BaseEventAdminController):
                         )
                         assert stored_screen.id is not None
                         assert stored_tournament.id is not None
-                        event_database.add_stored_screen_set(
+                        database.add_stored_screen_set(
                             stored_screen.id, stored_tournament.id
                         )
                     success_message = _(
