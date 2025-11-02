@@ -1,12 +1,13 @@
 from abc import ABC, abstractmethod
 from collections import Counter
+from operator import attrgetter
 from types import UnionType
 from typing import Any, TYPE_CHECKING
 
 from common.exception import OptionError
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
-from data.player import Club, Federation
+from data.player import Club, Federation, Player
 from utils.enum import PlayerGender, PlayerCategory, PlayerRatingType
 from utils.option import Option
 
@@ -25,6 +26,20 @@ class PlayerFilterOption(Option, ABC):
     def template_file_name(self) -> str:
         """Name of the file of the template representing the option."""
         return self.id.lower()
+
+
+class ExcludeFilterOption(PlayerFilterOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'EXCLUDE'
+
+    @property
+    def type(self) -> type | UnionType:
+        return bool
+
+    @property
+    def default_value(self) -> Any:
+        return False
 
 
 class SelectPlayerFilterOption[T](PlayerFilterOption):
@@ -351,3 +366,34 @@ class FederationsFilterOption(SelectPlayerFilterOption[Federation]):
         self._validate_list_type(str)
         if not self.value:
             raise OptionError(_('At least one federation is expected.'), self)
+
+
+class PlayersFilterOption(SelectPlayerFilterOption[Player]):
+    @staticmethod
+    def static_id() -> str:
+        return 'PLAYERS'
+
+    @property
+    def type(self) -> type | UnionType:
+        return list[int]
+
+    @property
+    def default_value(self) -> Any:
+        return []
+
+    def get_all_known_values(self, tournament: 'Tournament') -> list[Player]:
+        return sorted(tournament.players, key=attrgetter('full_name'))
+
+    def get_player_counter(self, tournament: 'Tournament') -> Counter[Player]:
+        return Counter[Player]()
+
+    def get_key(self, object_: Player) -> str:
+        return str(object_.id)
+
+    def get_name(self, object_: Player) -> str:
+        return object_.full_name
+
+    def validate(self):
+        self._validate_list_type(int)
+        if not self.value:
+            raise OptionError(_('At least one player is expected.'), self)

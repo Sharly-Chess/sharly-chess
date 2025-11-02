@@ -1,0 +1,10 @@
+<div class="col-12">
+    {{ admin_macros.switch_input(
+        name=option.id,
+        label='',
+        placeholder=_('Exclude'),
+        info=_('Exclude the players matching the criterion instead of including them.'),
+        help_text='',
+        data=data, errors=errors
+    ) }}
+</div>

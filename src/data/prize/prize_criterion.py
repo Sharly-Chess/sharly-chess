@@ -2,13 +2,14 @@ import weakref
 from _weakref import ReferenceType
 from typing import TYPE_CHECKING
 
-from data.criteria.managers import PlayerFilterManager
+from data.criteria.managers import PrizePlayerFilterManager
 from data.criteria.player_filters import PlayerFilter
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPrizeCriterion
 
 if TYPE_CHECKING:
     from data.prize.prize_category import PrizeCategory
+    from data.tournament import Tournament
 
 
 class PrizeCriterion:
@@ -24,9 +25,9 @@ class PrizeCriterion:
         self.player_filter = self._get_player_filter()
 
     def _get_player_filter(self) -> PlayerFilter:
-        filter_type = PlayerFilterManager(
-            self.prize_category.prize_group.tournament.event
-        ).get_type(self.stored_prize_criterion.type)
+        filter_type = PrizePlayerFilterManager(self.tournament.event).get_type(
+            self.stored_prize_criterion.type
+        )
         options = []
         for option in filter_type().default_options():
             value = self.stored_prize_criterion.options.get(
@@ -42,13 +43,17 @@ class PrizeCriterion:
         return prize_category
 
     @property
+    def tournament(self) -> 'Tournament':
+        return self.prize_category.prize_group.tournament
+
+    @property
     def id(self) -> int:
         assert self.stored_prize_criterion.id is not None
         return self.stored_prize_criterion.id
 
     @property
     def name(self) -> str:
-        return str(self.player_filter)
+        return self.player_filter.full_name(self.tournament)
 
     def get_event_database(self) -> EventDatabase:
         return self.prize_category.get_event_database()

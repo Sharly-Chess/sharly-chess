@@ -647,6 +647,9 @@ msgstr "Au moins une ligue est attendue."
 msgid "At least one licence type is expected."
 msgstr "Au moins un type de licence est attendu."
 
+msgid "At least one player is expected."
+msgstr "Au moins un·e joueur·euse doit être sélectionné·e."
+
 msgid "At least one rating type is expected."
 msgstr "Au moins un type de classement est attendu."
 
@@ -1023,6 +1026,9 @@ msgstr "Choisir au moins une ligue."
 
 msgid "Choose at least one licence type."
 msgstr "Choisissez au moins un type de licence."
+
+msgid "Choose at least one player."
+msgstr "Choisissez au moins un·e joueur·euse."
 
 msgid "Choose at least one rating type."
 msgstr "Choisissez au moins un type de classement."
@@ -2002,6 +2008,15 @@ msgstr "Évènements"
 msgid "Events ({num})"
 msgstr "Évènements ({num})"
 
+msgid "Exclude"
+msgstr "Exclure"
+
+msgid "Exclude the players matching the criterion instead of including them."
+msgstr "Exclure les joueur·euses correspondant au critère au lieu de les inclure."
+
+msgid "Exclude: {values}"
+msgstr "Exclure : {values}"
+
 msgid "Exempt *** FEMALE"
 msgstr "Exempte"
 
@@ -2580,12 +2595,6 @@ msgstr "Inclure les catégories supérieures"
 
 msgid "Include lower categories"
 msgstr "Inclure les catégories inférieures"
-
-msgid "Include players of these categories."
-msgstr "Inclure les joueur·euses de ces catégories."
-
-msgid "Include players of these rating types."
-msgstr "Inclure les joueur·euses de ces types de classement."
 
 msgid "Includes all other access levels and grants full access to the application. This access level is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network)."
 msgstr "Inclut tous les autres rôles et donne un accès complet à l'application ; ce niveau d'accès est donné seulement en accédant à Sharly Chess sur l'ordinateur sur lequel est lancé le serveur (à aucun autre appareil du réseau)."
@@ -3410,21 +3419,6 @@ msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les écrans ro
 
 msgid "Only current and future events that have been declared as <b>public</b> by the administrator are visible via the network."
 msgstr "Seuls les événements actuels et à venir déclarés comme <b>publics</b> par l’administrateur·ice sont visibles via le réseau."
-
-msgid "Only include players of these clubs."
-msgstr "N'inclure que les joueur·euses de ces clubs."
-
-msgid "Only include players of these federations."
-msgstr "N'inclure que les joueur·euses de ces fédérations."
-
-msgid "Only include players of these leagues."
-msgstr "N'inclure que les joueur·euses de ces ligues."
-
-msgid "Only include players of this gender."
-msgstr "N'inclure que les joueur·euses de ce genre."
-
-msgid "Only include players with one of the selected licence types."
-msgstr "Inclure uniquement les joueur·euses ayant l’un des types de licence sélectionnés."
 
 msgid "Only one age category is expected with options including other categories."
 msgstr "Une seule catégorie d'age est attendue avec les options incluant d'autres catégories."
