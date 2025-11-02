@@ -202,33 +202,17 @@ class Rotator:
             stored_rotating_screen.index = index
             database.update_stored_rotating_screen(stored_rotating_screen)
 
-    def add_rotating_screens(self, screen_ids: list[int], family_ids: list[int]):
-        stored_rotating_screens: list[StoredRotatingScreen] = []
-        for screen_id in screen_ids:
-            if screen_id not in self.event.basic_screens_by_id:
-                raise ValueError(f'Unknown screen ID [{screen_id}]')
-            stored_rotating_screens.append(
-                StoredRotatingScreen(
-                    id=None,
-                    rotator_id=self.id,
-                    screen_id=screen_id,
-                )
-            )
-        for family_id in family_ids:
-            if family_id not in self.event.families_by_id:
-                raise ValueError(f'Unknown family ID [{family_id}]')
-            stored_rotating_screens.append(
-                StoredRotatingScreen(
-                    id=None,
-                    rotator_id=self.id,
-                    family_id=family_id,
-                )
-            )
+    def add_rotating_screen(self, object_id: int, is_family: bool):
+        stored_rotating_screen = StoredRotatingScreen(
+            id=None,
+            rotator_id=self.id,
+            screen_id=object_id if not is_family else None,
+            family_id=object_id if is_family else None,
+            index=len(self.stored_rotating_screens),
+        )
         with EventDatabase(self.event.uniq_id, True) as database:
-            for stored_rotating_screen in stored_rotating_screens:
-                stored_rotating_screen.index = len(self.rotating_screens_by_id)
-                new_id = database.add_stored_rotating_screen(stored_rotating_screen)
-                stored_rotating_screen.id = new_id
-                self.rotating_screens_by_id[new_id] = RotatingScreen(
-                    self.event, stored_rotating_screen
-                )
+            new_id = database.add_stored_rotating_screen(stored_rotating_screen)
+            stored_rotating_screen.id = new_id
+            self.rotating_screens_by_id[new_id] = RotatingScreen(
+                self.event, stored_rotating_screen
+            )
