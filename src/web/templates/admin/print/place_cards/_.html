@@ -96,8 +96,7 @@
     {% for item in items %}
         {{ item.render_css(unit) | safe  }}
     {% endfor %}
-    {% block card_css %}
-    {% endblock %}
+    {{ template_css | safe }}
 {% endblock %}
 
 {% block js %}
@@ -110,8 +109,7 @@
     {% for item in items %}
         {{ item.render_js() | safe }}
     {% endfor %}
-    {% block card_js %}
-    {% endblock %}
+    {{ template_js | safe }}
 {% endblock %}
 
 {% block content %}
@@ -120,7 +118,7 @@
             {{ error }}
         </div>
     {% else %}
-        {% block card_content %}
+        {% block cards %}
         {% endblock %}
     {% endif %}
 {% endblock %}

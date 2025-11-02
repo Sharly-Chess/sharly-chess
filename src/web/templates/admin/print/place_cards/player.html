@@ -1,12 +1,6 @@
 {% extends '/admin/print/place_cards/_.html' %}
 
-{% block card_css %}
-{% endblock %}
-
-{% block card_js %}
-{% endblock %}
-
-{% block card_content %}
+{% block cards %}
     {% for player in players %}
         <div class="card-wrapper">
             <div class="card">

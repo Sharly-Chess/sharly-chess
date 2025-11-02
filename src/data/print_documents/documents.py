@@ -47,7 +47,7 @@ from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from utils import Utils
 from utils.enum import Result
-from utils.file import ttf_file_inline_url, image_file_inline_url
+from utils.file import ttf_file_inline_url
 from utils.option import Option, OptionHandler
 from utils.types import PlayerTitle
 
@@ -1126,13 +1126,9 @@ class PlaceCardPrintDocument(PrintDocument):
     def template_context(self) -> dict[str, Any]:
         assert self.event is not None
         document_context: dict[str, Any] = {
-            'sharly_chess_config': SharlyChessConfig(),
             'sharly_chess_font_inline_url': ttf_file_inline_url(
                 BASE_DIR
                 / 'src/web/static/fonts/AtkinsonHyperlegibleNextVF-Variable.ttf'
-            ),
-            'sharly_chess_logo_inline_url': image_file_inline_url(
-                BASE_DIR / 'src/web/static/images/sharly-chess-logo.svg'
             ),
             'event': PlaceCardEvent(self.event),
             'tournament': PlaceCardTournament(self.tournament),

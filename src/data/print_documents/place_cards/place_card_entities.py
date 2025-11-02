@@ -685,6 +685,8 @@ class PlaceCardTemplate:
                     | 'height'
                     | 'padding'
                     | 'cutting_marks'
+                    | 'css'
+                    | 'js'
                 ):
                     pass
                 case _:
@@ -715,6 +717,8 @@ class PlaceCardTemplate:
         self.cutting_marks: str = custom_data.get_str(
             'cutting_marks', default='corners', values=['border', 'corners', 'none']
         )
+        self.css: str = custom_data.get_str('css', default='')
+        self.js: str = custom_data.get_str('js', default='')
         default_item_style: PlaceCardItemStyle = PlaceCardItemStyle(
             custom_data, section='default'
         )
@@ -754,6 +758,8 @@ class PlaceCardTemplate:
             'height': self.height,
             'padding': self.padding,
             'cutting_marks': self.cutting_marks,
+            'template_css': self.css,
+            'template_js': self.js,
             'items': self.items,
         }
 

@@ -29,6 +29,14 @@ type = "player"
 # Accepted values are "border" (default value), "corners" and "none"
 #cutting_marks = "corners"
 
+# CSS
+# Use the css property for any additional CSS
+#css = ""
+
+# JAVASCRIPT
+# Use the js property for any additional JS code
+#js = ""
+
 ###########################################################################
 # ITEM STYLING PROPERTIES:
 # - font_size: integer (unit: pt)
@@ -93,31 +101,31 @@ v_pos = 0.0
 
 [player_name]
 
-content = "{{ player.federation_flag | safe }} {{ player.full_name }}"
+text = "{{ player.federation_flag | safe }} {{ player.full_name }}"
 font_size = 18.0
 bold = true
 max_width = 92.0
 
 [player_rating]
 
-content = "{{ player.rating }}{{ player.rating_type }}"
+text = "{{ player.rating }}{{ player.rating_type }}"
 font_size = 18.0
 bold = true
 h_align = "right"
 
 [player_category_club]
 
-content = "{{ player.category }} {{ player.federation }} {% if player.club %}- {{ player.club }}{% endif %}"
+text = "{{ player.category }} {{ player.federation }} {% if player.club %}- {{ player.club }}{% endif %}"
 v_pos = 8.0
 
 [tournament]
 
-content = "{{ tournament.name }}"
+text = "{{ tournament.name }}"
 v_pos = 20.0
 
 [event]
 
-content = "{{ event.name }}"
+text = "{{ event.name }}"
 italic = true
 v_align = "bottom"
 

@@ -51,12 +51,9 @@
                 <div class="card-cell top right"></div>
                 <div class="card-cell middle left"></div>
                 <div class="card-content">
-                    <div class="card-item number">
-                        {{ _('Board %(number)s', number=board.number) }}
-                    </div>
-                    <div class="card-item tournament">
-                        {{ tournament.name }}
-                    </div>
+                    {% for item in items %}
+                        {{ item.render_html(event=event, tournament=tournament, board=none, player=player) | safe }}
+                    {% endfor %}
                 </div>
                 <div class="card-cell middle right"></div>
                 <div class="card-cell bottom left"></div>
