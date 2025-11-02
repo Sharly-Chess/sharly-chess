@@ -3970,6 +3970,9 @@ msgstr ""
 msgid "Prize currency"
 msgstr ""
 
+msgid "Prize defaults have been updated."
+msgstr ""
+
 msgid "Prize group [{prize_group}] successfully created."
 msgstr ""
 
@@ -3977,6 +3980,9 @@ msgid "Prize groups"
 msgstr ""
 
 msgid "Prize list"
+msgstr ""
+
+msgid "Prize settings"
 msgstr ""
 
 msgid "Prize sharing"
@@ -6378,3 +6384,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+

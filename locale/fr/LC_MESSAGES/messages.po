@@ -3970,6 +3970,9 @@ msgstr "La catégorie de prix [{prize_category}] a été mise à jour avec succ�
 msgid "Prize currency"
 msgstr "Monnaie des prix"
 
+msgid "Prize defaults have been updated."
+msgstr "Les paramètres par défaut des prix ont été mis à jour."
+
 msgid "Prize group [{prize_group}] successfully created."
 msgstr "Le groupe de prix [{prize_group}] a été créé avec succès."
 
@@ -3978,6 +3981,9 @@ msgstr "Groupes de prix"
 
 msgid "Prize list"
 msgstr "Liste des prix"
+
+msgid "Prize settings"
+msgstr "Paramètres des prix"
 
 msgid "Prize sharing"
 msgstr "Partage des prix"
@@ -5406,7 +5412,7 @@ msgid "Tournament default settings"
 msgstr "Paramètres par défaut des tournois"
 
 msgid "Tournament defaults"
-msgstr "Paramètres par défaut"
+msgstr "Paramètres par défaut des tournois"
 
 msgid "Tournament defaults have been updated."
 msgstr "Les paramètres par défaut du tournoi ont été mis à jour."

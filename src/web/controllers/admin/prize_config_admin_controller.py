@@ -18,8 +18,6 @@ from common.i18n import (
 
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
-from plugins.manager import plugin_manager
-from utils.enum import PlayerRatingType, Result
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
@@ -31,8 +29,8 @@ from web.messages import Message
 logger: Logger = get_logger()
 
 
-class TournamentConfigAdminController(BaseEventAdminController):
-    guards = [EventGuard(), ActionGuard(AuthAction.MANAGE_EVENTS)]
+class PrizeConfigAdminController(BaseEventAdminController):
+    guards = [EventGuard(), ActionGuard(AuthAction.MANAGE_PRIZES)]
 
     @classmethod
     def _prepare_modal_data(
@@ -44,13 +42,7 @@ class TournamentConfigAdminController(BaseEventAdminController):
 
         return WebContext.values_dict_to_form_data(
             {
-                'player_rating_type': stored_event.player_rating_type,
-                'location': stored_event.location,
-                'record_illegal_moves': stored_event.record_illegal_moves,
-                'rules': stored_event.rules,
-                'override_unrated_rapid_blitz': stored_event.override_unrated_rapid_blitz,
-                'three_points_for_a_win': stored_event.three_points_for_a_win,
-                'pab_value': stored_event.pab_value,
+                'prize_currency': stored_event.prize_currency,
             }
         )
 
@@ -64,36 +56,14 @@ class TournamentConfigAdminController(BaseEventAdminController):
             data = {}
         errors: dict[str, str] = {}
 
-        location = WebContext.form_data_to_str(data, 'location')
-        player_rating_type: int = (
-            WebContext.form_data_to_int(data, 'player_rating_type')
-            or PlayerRatingType.FIDE.value
-        )
-
-        record_illegal_moves = cls._admin_validate_record_illegal_moves_update_data(
-            data, errors
-        )
-        rules = cls._admin_validate_rules_update_data(data, errors)
-        override_unrated_rapid_blitz = WebContext.form_data_to_bool(
-            data, 'override_unrated_rapid_blitz'
-        )
-        three_points_for_a_win = WebContext.form_data_to_bool(
-            data, 'three_points_for_a_win'
-        )
-        pab_value = WebContext.form_data_to_int(data, 'pab_value') or Result.WIN.value
+        prize_currency = WebContext.form_data_to_str(data, 'prize_currency')
 
         if errors:
             return None, errors
 
         stored_event = replace(
             admin_event.stored_event,
-            location=location,
-            player_rating_type=player_rating_type,
-            record_illegal_moves=record_illegal_moves,
-            rules=rules,
-            override_unrated_rapid_blitz=override_unrated_rapid_blitz,
-            three_points_for_a_win=three_points_for_a_win,
-            pab_value=pab_value,
+            prize_currency=prize_currency,
         )
         return stored_event, errors
 
@@ -104,30 +74,16 @@ class TournamentConfigAdminController(BaseEventAdminController):
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         return {
-            'modal': 'tournaments_config',
+            'modal': 'prizes_config',
             'data': data,
-            'player_rating_type_options': {
-                str(PlayerRatingType.FIDE.value): _('FIDE'),
-                str(PlayerRatingType.NATIONAL.value): _(
-                    'National *** NAME FOR RATING TYPE NATIONAL'
-                ),
-            },
-            'three_points_for_a_win_options': {
-                str(Result.WIN.value): _('Win'),
-                str(Result.DRAW.value): _('Draw'),
-                str(Result.LOSS.value): _('Loss'),
-            },
-            'plugin_templates': plugin_manager.hook_for_event(
-                event, 'get_tournament_config_template'
-            )(),
             'errors': errors or {},
         }
 
     @get(
-        path='/tournament-config-modal/{event_uniq_id:str}',
-        name='admin-tournament-config-modal',
+        path='/prize-config-modal/{event_uniq_id:str}',
+        name='admin-prize-config-modal',
     )
-    async def htmx_admin_tournament_config_modal(
+    async def htmx_admin_prize_config_modal(
         self,
         request: HTMXRequest,
     ) -> Template:
@@ -141,11 +97,11 @@ class TournamentConfigAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/tournament-update-config/{event_uniq_id:str}',
-        name='admin-tournament-update-config',
+        path='/prize-update-config/{event_uniq_id:str}',
+        name='admin-prize-update-config',
         guards=[ActionGuard(AuthAction.UPDATE_EVENT)],
     )
-    async def htmx_admin_tournament_update_update(
+    async def htmx_admin_prize_config_update(
         self,
         request: HTMXRequest,
         data: Annotated[
@@ -168,7 +124,7 @@ class TournamentConfigAdminController(BaseEventAdminController):
 
         Message.success(
             request,
-            _('Tournament defaults have been updated.').format(uniq_id=uniq_id),
+            _('Prize defaults have been updated.').format(uniq_id=uniq_id),
         )
 
         return HTMXTemplate(

@@ -312,7 +312,6 @@ class IndexAdminController(BaseAdminController):
             federation = config.federation.name if config.federation else ''
             player_rating_type = PlayerRatingType.FIDE.value
             location: str | None = None
-            prize_currency: str | None = None
             stored_plugin_data: dict[str, dict[str, Any]] = {}
             event_enabled_plugins = [
                 plugin
@@ -335,7 +334,6 @@ class IndexAdminController(BaseAdminController):
             federation = stored_event.federation
             location = stored_event.location
             player_rating_type = stored_event.player_rating_type
-            prize_currency = stored_event.prize_currency
             stored_plugin_data = stored_event.plugin_data
             event_enabled_plugins = admin_event.enabled_plugins
 
@@ -363,7 +361,6 @@ class IndexAdminController(BaseAdminController):
                     'federation': federation,
                     'player_rating_type': player_rating_type,
                     'location': location,
-                    'prize_currency': prize_currency,
                 }
             )
             | {
@@ -434,8 +431,6 @@ class IndexAdminController(BaseAdminController):
             or PlayerRatingType.FIDE.value
         )
 
-        prize_currency = WebContext.form_data_to_str(data, 'prize_currency')
-
         enabled_plugins = plugin_manager.get_plugins_with_dependencies(
             [
                 plugin
@@ -483,7 +478,6 @@ class IndexAdminController(BaseAdminController):
             public=bool(public),
             location=location,
             player_rating_type=player_rating_type,
-            prize_currency=prize_currency,
             plugin_data=plugin_data,
             enabled_plugins=[plugin.id for plugin in enabled_plugins],
             # The following defaults are edited in other tabs.  We copy the values from the admin_event if it exists.
@@ -512,6 +506,9 @@ class IndexAdminController(BaseAdminController):
             pab_value=admin_event.stored_event.pab_value
             if admin_event
             else Result.WIN.value,
+            prize_currency=admin_event.stored_event.prize_currency
+            if admin_event
+            else None,
         )
         return stored_event, errors
 
