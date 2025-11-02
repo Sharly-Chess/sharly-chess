@@ -317,7 +317,7 @@ class SharlyChessConfig(metaclass=Singleton):
     )
 
     # The path of the custom place cards template files.
-    custom_place_cards_path: Path = custom_path / 'place_card_templates'
+    custom_place_cards_path: Path = custom_path / 'place_cards'
 
     place_card_template_ext: str = 'template'
 
