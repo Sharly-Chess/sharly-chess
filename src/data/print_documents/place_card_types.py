@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any
 from common import BASE_DIR
 from common.i18n import _
 from data.board import Board
+from data.print_documents.place_card_entities import PlaceCardBoard, PlaceCardPlayer
 from database.sqlite.event.event_store import StoredBoard
 from utils.entity import IdentifiableEntity
 from utils.file import image_file_inline_url
@@ -70,8 +71,6 @@ class PlayerCardType(PlaceCardType):
         self,
         doc: 'PlaceCardPrintDocument',
     ) -> dict[str, Any]:
-        from data.print_documents.documents import PlaceCardPlayer
-
         players = doc.tournament.players_by_starting_rank.values()
         federation_names = set(player.federation.name for player in players)
         return {
@@ -95,8 +94,6 @@ class BoardCardType(PlaceCardType):
         self,
         doc: 'PlaceCardPrintDocument',
     ) -> dict[str, Any]:
-        from data.print_documents.documents import PlaceCardBoard
-
         players = doc.tournament.players_by_id.values()
         board_numbers = [
             doc.tournament.first_board_number - 1 + number
