@@ -1839,9 +1839,6 @@ msgstr "Modifier le compte"
 msgid "Edit criterion"
 msgstr "Modifier le critère"
 
-msgid "Edit default timers"
-msgstr "Modifier les chronomètres par défaut"
-
 msgid "Edit display controller"
 msgstr "Modifier le pilote d'afficheurs"
 
@@ -5307,6 +5304,9 @@ msgstr "Le chronomètre [{timer}] a été supprimé."
 msgid "Timer [{timer}] has been updated."
 msgstr "Le chronomètre [{timer}] a été modifié."
 
+msgid "Timer defaults"
+msgstr "Paramètres par défaut des chronomètres"
+
 msgid "Timer hours"
 msgstr "Horaires du chronomètre"
 
@@ -6378,4 +6378,3 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-

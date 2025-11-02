@@ -1839,9 +1839,6 @@ msgstr ""
 msgid "Edit criterion"
 msgstr ""
 
-msgid "Edit default timers"
-msgstr ""
-
 msgid "Edit display controller"
 msgstr ""
 
@@ -5307,6 +5304,9 @@ msgstr ""
 msgid "Timer [{timer}] has been updated."
 msgstr ""
 
+msgid "Timer defaults"
+msgstr ""
+
 msgid "Timer hours"
 msgstr ""
 
@@ -6378,4 +6378,3 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
