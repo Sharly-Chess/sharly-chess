@@ -648,7 +648,7 @@ msgid "At least one licence type is expected."
 msgstr "Au moins un type de licence est attendu."
 
 msgid "At least one player is expected."
-msgstr "Au moins un·e joueur·euse est attendu·e."
+msgstr "Au moins un·e joueur·euse doit être sélectionné·e."
 
 msgid "At least one rating type is expected."
 msgstr "Au moins un type de classement est attendu."
