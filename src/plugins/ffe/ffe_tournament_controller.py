@@ -131,10 +131,6 @@ class FfeAdminTournamentController(BaseEventAdminController):
         if not NetworkMonitor.connected():
             result = FfeUploadResult(FfeUploadStatus.ERROR, _('No internet connection'))
 
-        def report(status: FfeUploadStatus, message: str) -> None:
-            nonlocal result
-            result = FfeUploadResult(status, message)
-
         if not result or (
             result.status != FfeUploadStatus.SETTINGS_ERROR
             and result.status != FfeUploadStatus.ERROR

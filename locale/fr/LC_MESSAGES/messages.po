@@ -5546,6 +5546,9 @@ msgstr "Impossible de définir la visibilité du tournoi."
 msgid "Unable to upload tournament rules."
 msgstr "Impossible de mettre en ligne le règlement du tournoi."
 
+msgid "Unable to upload tournament."
+msgstr "Impossible de mettre en ligne le tournoi."
+
 msgid "Unauthorized access"
 msgstr "Accès non-autorisé"
 
@@ -5717,6 +5720,12 @@ msgstr "Lien de mise en ligne introuvable, vérifiez que le tournoi n’est pas 
 
 msgid "Upload rules"
 msgstr "Mettre en ligne le règlement"
+
+msgid "Upload to Chess-Results.com"
+msgstr "Mettre en ligne sur Chess-Results.com"
+
+msgid "Upload to the FFE site"
+msgstr "Mettre en ligne sur le site de la FFE"
 
 msgid "Upload tournaments now"
 msgstr "Mettre en ligne les tournois maintenant"
