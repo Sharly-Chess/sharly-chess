@@ -4366,7 +4366,7 @@ msgid "Rules upload link not found, check that the tournament is not marked as f
 msgstr "Lien de mise en ligne du règlement non trouvé, vérifier que le tournoi n'est pas terminé sur le site web FFE."
 
 msgid "Rules uploaded"
-msgstr "Règlement téléversé"
+msgstr "Règlement mis en ligne"
 
 msgid "SCR"
 msgstr "ÉCR"
@@ -5544,7 +5544,7 @@ msgid "Unable to set tournament visibility."
 msgstr "Impossible de définir la visibilité du tournoi."
 
 msgid "Unable to upload tournament rules."
-msgstr "Impossible de téléverser le règlement du tournoi."
+msgstr "Impossible de mettre en ligne le règlement du tournoi."
 
 msgid "Unauthorized access"
 msgstr "Accès non-autorisé"
@@ -5716,7 +5716,7 @@ msgid "Upload link not found, check that the tournament is not marked as finishe
 msgstr "Lien de mise en ligne introuvable, vérifiez que le tournoi n’est pas marqué comme terminé sur le site de la FFE."
 
 msgid "Upload rules"
-msgstr "Téléverser le règlement"
+msgstr "Mettre en ligne le règlement"
 
 msgid "Upload tournaments now"
 msgstr "Mettre en ligne les tournois maintenant"
@@ -6363,4 +6363,3 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
