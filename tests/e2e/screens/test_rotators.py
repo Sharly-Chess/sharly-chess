@@ -149,7 +149,7 @@ class TestRotator:
         option = page.locator('.select2-results__option', has_text=SCREEN_ID).last
         expect(option).to_be_visible()
         option.click()
-        modal.get_by_test_id('screens-submit-button').click()
+        modal.get_by_test_id('screens-cancel-button').click()
         row = modal.locator(f".rotating-screen-row:has-text('{SCREEN_ID}')")
         expect(row).to_be_visible()
         row.locator('button[hx-delete*="delete"]').click()

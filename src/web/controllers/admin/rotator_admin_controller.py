@@ -9,6 +9,7 @@ from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
+from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
 from data.access_levels.actions import AuthAction
@@ -439,27 +440,46 @@ class RotatorAdminController(BaseEventAdminController):
             web_context, self._rotator_screens_modal_context(web_context)
         )
 
+    @staticmethod
+    def _create_rotating_screen(
+        request: HTMXRequest, data: dict[str, str], is_family: bool
+    ):
+        web_context = RotatorAdminWebContext(request)
+        rotator = web_context.get_admin_rotator()
+        object_id = (
+            WebContext.form_data_to_int(data, 'family_id' if is_family else 'screen_id')
+            or 0
+        )
+        rotator.add_rotating_screen(object_id, is_family)
+        return HTMXTemplate(
+            template_name='/admin/rotators/rotator_screens_form.html',
+            context=web_context.template_context,
+        )
+
     @post(
-        path='/rotating-screens-create/{event_uniq_id:str}/{rotator_id:int}',
-        name='admin-rotating-screens-create',
+        path='/rotating-screens/create-screen/{event_uniq_id:str}/{rotator_id:int}',
+        name='admin-rotating-screens-create-screen',
     )
-    async def htmx_admin_rotating_screens_create(
+    async def htmx_admin_rotating_screens_create_screen(
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str | list[str]],
+            dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
-        web_context = RotatorAdminWebContext(request)
-        rotator = web_context.get_admin_rotator()
-        flat_data = WebContext.flatten_list_data(data)
-        screen_ids = WebContext.form_data_to_list_int(flat_data, 'screen_ids', [])
-        family_ids = WebContext.form_data_to_list_int(flat_data, 'family_ids', [])
-        try:
-            rotator.add_rotating_screens(screen_ids, family_ids)
-        except ValueError as error:
-            raise ClientException(error)
-        return self._admin_event_rotator_render(
-            web_context, self._rotator_screens_modal_context(web_context)
-        )
+        return self._create_rotating_screen(request, data, False)
+
+    @post(
+        path='/rotating-screens/create-family/{event_uniq_id:str}/{rotator_id:int}',
+        name='admin-rotating-screens-create-family',
+    )
+    async def htmx_admin_rotating_screens_create_family(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        return self._create_rotating_screen(request, data, True)

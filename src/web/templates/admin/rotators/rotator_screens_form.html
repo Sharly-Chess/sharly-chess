@@ -1,0 +1,64 @@
+{% import '/common/macros.j2' as macros with context %}
+
+<div id="screen-list-container">
+    {% set rotating_screens = admin_rotator.sorted_rotating_screens %}
+    {% if not rotating_screens %}
+        <div class="text-danger">{{ _('No screens.') }}</div>
+    {% else %}
+        <form
+            class="sortable d-flex flex-column gap-2"
+            hx-patch="{{ url_for(
+                'admin-rotator-reorder-screens',
+                event_uniq_id=admin_event.uniq_id,
+                rotator_id=admin_rotator.id
+            ) }}"
+            hx-target="body"
+            hx-trigger="end"
+            hx-indicator="#please-wait"
+        >
+            {% set reorder_screens = rotating_screens|length > 1 %}
+            {% for rotating_screen in rotating_screens %}
+                {% set screen = rotating_screen.screen %}
+                {% set family = rotating_screen.family %}
+                <div class="border border-secondary bg-body-tertiary {% if reorder_screens %}cursor-grab{% endif %}">
+                    <input type="hidden" name="rotating_screen_ids" value="{{ rotating_screen.id }}"/>
+                    <div class="p-2 d-flex align-items-center gap-4 rotating-screen-row">
+                        {% if reorder_screens %}
+                            <i class="bi-grip-horizontal"></i>
+                        {% endif %}
+                        <div class="text-start flex-grow-1">
+                            {% if screen %}
+                                <span class="pe-1">
+                                    {{ macros.screen_type_icon(screen.type, true) }}
+                                </span>
+                                {{ screen.name }}
+                            {% elif family %}
+                                <span class="pe-1">
+                                    {{ macros.screen_type_icon(family.type, true) }}
+                                </span>
+                                {{ family.name }}
+                                <i class="ps-1">{{ _('(family)') }}</i>
+                            {% endif %}
+                        </div>
+                        <div class="flex-shrink-0 d-flex gap-2 align-items-center">
+                            <button
+                                class="btn btn-sm btn-outline-danger text-nowrap"
+                                hx-delete="{{ url_for(
+                                    'admin-rotator-screen-delete',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    rotator_id=admin_rotator.id,
+                                    rotating_screen_id=rotating_screen.id,
+                                ) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                data-bs-target="#modal-wrapper"
+                            >
+                                <i class="bi-trash-fill"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </form>
+    {% endif %}
+</div>
