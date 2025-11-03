@@ -346,9 +346,9 @@ class RoleKind(StrEnum):
     def __str__(self):
         match self:
             case RoleKind.CHIEF_ARBITER:
-                return _('Chief Arbiter')
+                return _('Chief arbiter')
             case RoleKind.DEPUTY_ARBITER:
-                return _('Deputy Arbiter')
+                return _('Deputy arbiter')
             case RoleKind.ORGANISER:
                 return _('Organiser')
             case _:
