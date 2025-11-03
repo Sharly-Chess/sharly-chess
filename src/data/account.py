@@ -136,8 +136,18 @@ class Account:
         return self.stored_account.last_name
 
     @property
+    def fide_id(self) -> int | None:
+        """Returns the fide id of the account."""
+        return self.stored_account.fide_id
+
+    @property
     def full_name(self) -> str:
         return Player.player_full_name(self.first_name, self.last_name)
+
+    @property
+    def full_name_and_id(self) -> str:
+        full_name = Player.player_full_name(self.first_name, self.last_name)
+        return f'{full_name} {self.fide_id}' if self.fide_id else full_name
 
     @property
     def password_hash(self) -> str | None:

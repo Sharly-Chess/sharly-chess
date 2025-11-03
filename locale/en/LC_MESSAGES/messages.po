@@ -46,6 +46,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d arbiter"
+msgid_plural "%(num)d arbiters"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(num)d criterion"
 msgid_plural "%(num)d criteria"
 msgstr[0] ""
@@ -586,6 +592,9 @@ msgstr ""
 msgid "Application"
 msgstr ""
 
+msgid "Arbiter"
+msgstr ""
+
 msgid "Archive"
 msgstr ""
 
@@ -893,6 +902,9 @@ msgstr ""
 msgid "Candidate Master"
 msgstr ""
 
+msgid "Cannot be both chief and deputy on the same tournament."
+msgstr ""
+
 msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
 msgstr "Cat"
 
@@ -1004,6 +1016,9 @@ msgid "ChessEvent user not defined."
 msgstr ""
 
 msgid "Chief Arbitration"
+msgstr ""
+
+msgid "Chief arbiter"
 msgstr ""
 
 msgid "Choose a player at random"
@@ -1169,6 +1184,9 @@ msgid "Connection established"
 msgstr ""
 
 msgid "Connection failed"
+msgstr ""
+
+msgid "Connection parameters"
 msgstr ""
 
 msgid "Connection to the ChessEvent server failed."
@@ -1534,6 +1552,12 @@ msgid "Deletion date"
 msgstr ""
 
 msgid "Deputy Chief Arbitration"
+msgstr ""
+
+msgid "Deputy arbiter"
+msgstr ""
+
+msgid "Deputy arbiters"
 msgstr ""
 
 msgid "Description"
@@ -1906,6 +1930,9 @@ msgid "Edit the properties of the timer."
 msgstr ""
 
 msgid "Edit the properties of the tournament."
+msgstr ""
+
+msgid "Edit the roles of the account."
 msgstr ""
 
 msgid "Edit the sets of boards displayed on the screen."
@@ -3242,6 +3269,9 @@ msgstr ""
 msgid "No results."
 msgstr ""
 
+msgid "No roles defined."
+msgstr ""
+
 msgid "No rotators"
 msgstr ""
 
@@ -3417,6 +3447,9 @@ msgstr ""
 msgid "Only one age category is expected with options including other categories."
 msgstr ""
 
+msgid "Only required for users that need to connect to the server."
+msgstr ""
+
 msgid "Open Admin Interface"
 msgstr ""
 
@@ -3452,6 +3485,9 @@ msgid "Opponents' ratings"
 msgstr ""
 
 msgid "Opponents' records"
+msgstr ""
+
+msgid "Organiser"
 msgstr ""
 
 msgid "Organization"
@@ -3807,6 +3843,9 @@ msgstr ""
 #, python-format
 msgid "Plays %(board)d *** BOARD STRING FOR PAIRINGS PRINT"
 msgstr "Plays on board %(board)d"
+
+msgid "Please ask your administrator to set a password."
+msgstr ""
 
 msgid "Please choose a federation"
 msgstr ""
@@ -4258,6 +4297,9 @@ msgstr "Rk. O."
 msgid "Rnd.Boa"
 msgstr ""
 
+msgid "Roles"
+msgstr ""
+
 #, python-format
 msgid "Rotation delay: %(seconds)d sec."
 msgstr ""
@@ -4684,6 +4726,12 @@ msgstr ""
 msgid "Staff default configuration"
 msgstr ""
 
+msgid "Staff information"
+msgstr ""
+
+msgid "Staff member roles"
+msgstr ""
+
 msgid "Standard"
 msgstr ""
 
@@ -5042,6 +5090,9 @@ msgstr ""
 msgid "The related objects will also be deleted:"
 msgstr ""
 
+msgid "The roles of this account can not be updated."
+msgstr ""
+
 msgid "The rotating delay between two screens."
 msgstr ""
 
@@ -5094,6 +5145,12 @@ msgid "The tournament of which you want to show the pairings."
 msgstr ""
 
 msgid "The tournament to print."
+msgstr ""
+
+msgid "The tournaments for which the staff member is a deputy arbiter."
+msgstr ""
+
+msgid "The tournaments for which the staff member is the chief arbiter."
 msgstr ""
 
 msgid "The tournaments on which the permission is applied (by default, the permission is applied to all the tournaments)."
@@ -5570,6 +5627,9 @@ msgstr ""
 msgid "Undefined *** PLURAL"
 msgstr "Undefined"
 
+msgid "Undefined *** SINGULAR"
+msgstr "Undefined"
+
 msgid "Under 10"
 msgstr ""
 
@@ -5776,6 +5836,9 @@ msgid "Use standard ratings"
 msgstr ""
 
 msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system. May be overridden on a per-tournament basis."
+msgstr ""
+
+msgid "Use the Staff tab to declare arbiters."
 msgstr ""
 
 msgid "Use the recommended tie-breaks"
@@ -6060,6 +6123,9 @@ msgid "You are not allowed to update the permissions of this account."
 msgstr ""
 
 msgid "You are not allowed to update the players' information from an external data source."
+msgstr ""
+
+msgid "You are not allowed to update the roles of this account."
 msgstr ""
 
 msgid "You are not allowed to update the tournament."
