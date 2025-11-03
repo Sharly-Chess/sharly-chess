@@ -17,7 +17,12 @@ from data.access_levels.manager import AccessLevelManager
 from data.account import Account, Permission
 from data.input_output.managers import DataSourceManager
 from data.player import Player
-from database.sqlite.event.event_store import StoredAccount, StoredPermission
+from database.sqlite.event.event_store import (
+    RoleKind,
+    StoredAccount,
+    StoredPermission,
+    StoredRole,
+)
 from utils.enum import FormAction
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
@@ -31,8 +36,8 @@ from web.utils import RequestUtils, SelectOption
 
 
 class AccountAdminWebContext(BaseEventAdminWebContext):
-    def __init__(self, request: HTMXRequest):
-        super().__init__(request)
+    def __init__(self, request: HTMXRequest, reload_event: bool = False):
+        super().__init__(request, reload_event=reload_event)
         assert self.admin_event is not None
         self.admin_account: Account | None = RequestUtils.get_optional_account(request)
         self.admin_permission: Permission | None = None
@@ -672,4 +677,117 @@ class AccountAdminController(BaseEventAdminController):
         web_context.admin_permission = None
         return self.admin_event_account_render(
             web_context, self._permissions_modal_context(web_context)
+        )
+
+    @classmethod
+    def _roles_modal_context(
+        cls,
+        web_context: AccountAdminWebContext,
+        data: dict[str, str] | None = None,
+        errors: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        account = web_context.get_admin_account()
+
+        chief_role = account.get_role(RoleKind.CHIEF_ARBITER)
+        deputy_role = account.get_role(RoleKind.DEPUTY_ARBITER)
+
+        default_data = WebContext.values_dict_to_form_data(
+            {
+                'chief_tournament_ids': chief_role.tournament_ids or [],
+                'deputy_tournament_ids': deputy_role.tournament_ids or [],
+            }
+        )
+        return {
+            'modal': 'account_roles',
+            'tournament_options': web_context.get_tournament_options(),
+            'data': default_data | (data or {}),
+            'errors': errors or {},
+        }
+
+    @classmethod
+    def _validate_roles_form_data(
+        cls, web_context: AccountAdminWebContext, data: dict[str, str]
+    ) -> dict[str, str]:
+        errors: dict[str, str] = {}
+        chief_tournament_ids = WebContext.form_data_to_list_int(
+            data, field := 'chief_tournament_ids'
+        )
+
+        event = web_context.get_admin_event()
+        for tournament_id in chief_tournament_ids:
+            if tournament_id not in event.tournaments_by_id:
+                errors[field] = (
+                    f'Invalid tournament ID [{tournament_id}] '
+                    f'for event in [{event.uniq_id}].'
+                )
+
+        deputy_tournament_ids = WebContext.form_data_to_list_int(
+            data, field := 'deputy_tournament_ids'
+        )
+        event = web_context.get_admin_event()
+        for tournament_id in deputy_tournament_ids:
+            if tournament_id not in event.tournaments_by_id:
+                errors[field] = (
+                    f'Invalid tournament ID [{tournament_id}] '
+                    f'for event in [{event.uniq_id}].'
+                )
+            if tournament_id in chief_tournament_ids:
+                errors[field] = _(
+                    'Cannot be both chief and deputy on the same tournament.'
+                )
+
+        return errors
+
+    @get(
+        path='/account-roles-modal/{event_uniq_id:str}/{account_id:int}',
+        name='admin-account-roles-modal',
+    )
+    async def htmx_admin_account_roles_modal(self, request: HTMXRequest) -> Template:
+        web_context = AccountAdminWebContext(request)
+        return self.admin_event_account_render(
+            web_context, self._roles_modal_context(web_context)
+        )
+
+    @patch(
+        path=('/account-roles-update/{event_uniq_id:str}/{account_id:int}'),
+        name='admin-account-roles-update',
+    )
+    async def htmx_admin_account_roles_update(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        web_context = AccountAdminWebContext(request)
+        event = web_context.get_admin_event()
+        account = web_context.get_admin_account()
+        flat_data = WebContext.flatten_list_data(data)
+        if errors := self._validate_roles_form_data(web_context, flat_data):
+            template_context = self._roles_modal_context(web_context, flat_data, errors)
+            return self.admin_event_account_render(web_context, template_context)
+
+        deputy_tournament_ids = WebContext.form_data_to_list_int(
+            flat_data, 'deputy_tournament_ids'
+        )
+        stored_deputy_role = StoredRole(
+            account_id=account.id,
+            role=RoleKind.DEPUTY_ARBITER.value,
+            tournament_ids=deputy_tournament_ids,
+        )
+        event.update_account_role(stored_deputy_role)
+
+        chief_tournament_ids = WebContext.form_data_to_list_int(
+            flat_data, 'chief_tournament_ids'
+        )
+        stored_chief_role = StoredRole(
+            account_id=account.id,
+            role=RoleKind.CHIEF_ARBITER.value,
+            tournament_ids=chief_tournament_ids,
+        )
+        event.update_account_role(stored_chief_role)
+
+        return self.admin_event_account_render(
+            AccountAdminWebContext(request, reload_event=True)
         )

@@ -5,7 +5,12 @@ from typing import TYPE_CHECKING
 from common.i18n import _
 from data.access_levels.manager import AccessLevelManager
 from data.player import Player
-from database.sqlite.event.event_store import StoredAccount, StoredPermission
+from database.sqlite.event.event_store import (
+    RoleKind,
+    StoredAccount,
+    StoredPermission,
+    StoredRole,
+)
 from data.access_levels.access_levels import (
     AccessLevel,
     AdministrationAccessLevel,
@@ -15,6 +20,34 @@ from data.access_levels.access_levels import (
 
 if TYPE_CHECKING:
     from data.event import Event
+
+
+@dataclass
+class Role:
+    stored_role: StoredRole
+
+    @property
+    def role_kind(self) -> RoleKind:
+        return RoleKind(self.stored_role.role)
+
+    @property
+    def tournament_ids(self) -> set[int] | None:
+        stored_tournament_ids = self.stored_role.tournament_ids
+        return set(stored_tournament_ids) if stored_tournament_ids else None
+
+    def tournaments_tooltip_message(self, event: 'Event') -> str:
+        return ''.join(
+            f'<div class="text-center text-nowrap">{name}</div>'
+            for name in self.tournament_names(event)
+        )
+
+    def tournament_names(self, event: 'Event') -> list[str]:
+        if not self.tournament_ids:
+            return []
+        return sorted(
+            event.tournaments_by_id[tournament_id].name
+            for tournament_id in self.tournament_ids
+        )
 
 
 @dataclass
@@ -113,6 +146,23 @@ class Account:
 
     def update_password(self, new_hash: str):
         self.stored_account.password_hash = new_hash
+
+    @property
+    def roles(self) -> list[Role]:
+        return sorted(
+            (Role(stored_role) for stored_role in self.stored_account.stored_roles),
+            key=lambda r: RoleKind(r.stored_role.role).sort_order,
+        )
+
+    def get_role(self, role_kind: RoleKind) -> Role:
+        for stored_role in self.stored_account.stored_roles:
+            if stored_role.role == role_kind.value:
+                return Role(stored_role)
+        return Role(
+            StoredRole(
+                self.id, role_kind.value, [] if role_kind.is_tournament_bound else None
+            )
+        )
 
     @property
     def active(self) -> bool:
@@ -233,6 +283,7 @@ class Account:
                         cls.ADMINISTRATOR_ID, AdministrationAccessLevel.static_id()
                     ),
                 ],
+                stored_roles=[],
             )
         )
 
@@ -252,5 +303,6 @@ class Account:
                         cls.ANONYMOUS_ID, ResultsEntryAccessLevel.static_id()
                     ),
                 ],
+                stored_roles=[],
             )
         )
