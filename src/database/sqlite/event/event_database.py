@@ -2431,6 +2431,7 @@ class EventDatabase(MigrationDatabase):
             active=cls.load_bool_from_database_field(row['active']),
             first_name=row['first_name'],
             last_name=row['last_name'],
+            fide_id=row['fide_id'],
             password_hash=row['password_hash'],
         )
 
@@ -2458,7 +2459,8 @@ class EventDatabase(MigrationDatabase):
 
     def add_stored_account(self, stored_account: StoredAccount) -> int:
         fields = self._get_fields_dict(
-            stored_account, ['active', 'first_name', 'last_name', 'password_hash']
+            stored_account,
+            ['active', 'first_name', 'last_name', 'fide_id', 'password_hash'],
         )
         if stored_account.id:
             fields |= {'id': stored_account.id}
@@ -2475,7 +2477,8 @@ class EventDatabase(MigrationDatabase):
 
     def update_stored_account(self, stored_account: StoredAccount) -> StoredAccount:
         fields = self._get_fields_dict(
-            stored_account, ['active', 'first_name', 'last_name', 'password_hash']
+            stored_account,
+            ['active', 'first_name', 'last_name', 'fide_id', 'password_hash'],
         )
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         assert stored_account.id is not None

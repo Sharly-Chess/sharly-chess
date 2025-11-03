@@ -226,6 +226,7 @@ class Account:
                 active=True,
                 first_name=None,
                 last_name=None,
+                fide_id=None,
                 password_hash=None,
                 stored_permissions=[
                     StoredPermission(
@@ -243,6 +244,7 @@ class Account:
                 active=True,
                 first_name=None,
                 last_name=None,
+                fide_id=None,
                 password_hash=None,
                 stored_permissions=[
                     StoredPermission(cls.ANONYMOUS_ID, CheckInAccessLevel.static_id()),
