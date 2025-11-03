@@ -4574,6 +4574,9 @@ msgstr ""
 msgid "Sharly Chess Board Cards"
 msgstr ""
 
+msgid "Sharly Chess Pairing Cards"
+msgstr ""
+
 msgid "Sharly Chess Player Cards"
 msgstr ""
 

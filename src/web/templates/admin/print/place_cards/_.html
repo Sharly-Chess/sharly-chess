@@ -69,12 +69,18 @@
             border-left: {{ border_value }};
         }
     {% endif %}
+    /*
     .card-content {
         position: relative;
         background-color: rgba(255, 255, 255, 0.6);
     }
-    .card-item {
+    .card-item-wrapper {
         position: absolute;
+        background-color: transparent;
+        width: {{ width - 2 * padding }}{{ unit }};
+        height: {{ height - 2 * padding }}{{ unit }};
+    }
+    .card-item {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
@@ -84,6 +90,7 @@
     .federation-flag {
         height: 0.75em;
     }
+    */
     {{ template_css | safe }}
     {% for item in items %}
         {{ item.render_css(unit) | safe  }}

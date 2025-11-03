@@ -141,3 +141,24 @@ class PairingCardType(PlaceCardType):
         return PlaceCardType.get_valid_options() + [
             RoundPrintOption.static_id(),
         ]
+
+    def template_context(
+        self,
+        doc: 'PlaceCardPrintDocument',
+    ) -> dict[str, Any]:
+        boards: list[Board] = doc.tournament.get_round_boards(doc.at_round)
+        federation_names = set(
+            board.white_player.federation.name for board in boards if board.black_player
+        ).union(
+            set(
+                board.black_player.federation.name
+                for board in boards
+                if board.black_player
+            )
+        )
+        return {
+            'boards': (PlaceCardBoard(board) for board in boards if board.black_player),
+            'flag_inline_urls_by_federation': self.flag_inline_urls_by_federation(
+                federation_names
+            ),
+        }

@@ -1,0 +1,121 @@
+type = "pairing"
+name = "{{ _('Sharly Chess Pairing Cards') }}"
+creator = "Sharly Chess <support@sharly-chess.com>"
+
+width = 148.5
+height = 50.0
+
+[default]
+font_size = 14.0
+bold = false
+italic = false
+text_align = "center"
+v_align = "top"
+
+[number]
+text = "{{ board.number }}"
+font_size = 70.0
+bold = true
+h_align = "center"
+v_align = "middle"
+
+[event]
+font_size = 12.0
+text = "{{ event.name }}"
+italic = true
+h_align = "center"
+v_align = "bottom"
+v_pos = 0.0
+
+[logo]
+image = "sharly-chess-logo.svg"
+width = 50
+opacity = 0.15
+h_align = "center"
+v_align = "middle"
+
+[white_federation_flag]
+text = """
+{% with player = board.white_player %}
+    {{ player.federation_flag | safe }}
+{% endwith %}
+"""
+width = 60
+font_size=24
+h_align = "left"
+v_align = "top"
+text_align = "center"
+v_pos = 0.0
+
+[white_name]
+text = """
+{% with player = board.white_player %}
+    {{ player.last_name }}<br/>
+    {{ player.first_name }}<br/>
+    {{ player.title }} {{ player.rating }}{{ player.rating_type }}
+{% endwith %}
+"""
+width = 60.0
+bold = true
+h_align = "left"
+v_align = "top"
+text_align = "center"
+v_pos = 10.0
+
+[white_info]
+text = """
+{% with player = board.white_player %}
+    {% if player.club %}
+        {{ player.club }}
+    {% endif %}<br/>
+    {{ player.federation | safe }}
+{% endwith %}
+"""
+width = 60.0
+h_align = "left"
+v_align = "bottom"
+text_align = "center"
+v_pos = 6.0
+
+[black_federation_flag]
+text = """
+{% with player = board.black_player %}
+    {{ player.federation_flag | safe }}
+{% endwith %}
+"""
+width = 60
+font_size=24
+h_align = "right"
+v_align = "top"
+text_align = "center"
+v_pos = 0.0
+
+[black_name]
+text = """
+{% with player = board.black_player %}
+    {{ player.last_name }}<br/>
+    {{ player.first_name }}<br/>
+    {{ player.title }} {{ player.rating }}{{ player.rating_type }}
+{% endwith %}
+"""
+width = 60.0
+bold = true
+h_align = "right"
+v_align = "top"
+text_align = "center"
+v_pos = 10.0
+
+[black_info]
+text = """
+{% with player = board.black_player %}
+    {% if player.club %}
+        {{ player.club }}
+    {% endif %}<br/>
+    {{ player.federation | safe }}
+{% endwith %}
+"""
+width = 60.0
+h_align = "right"
+v_align = "bottom"
+text_align = "center"
+v_pos = 6.0

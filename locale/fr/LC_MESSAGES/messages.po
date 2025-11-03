@@ -4574,6 +4574,9 @@ msgstr "Seuil de partage"
 msgid "Sharly Chess Board Cards"
 msgstr "Chevalets des échiquiers « Sharly Chess »"
 
+msgid "Sharly Chess Pairing Cards"
+msgstr ""
+
 msgid "Sharly Chess Player Cards"
 msgstr "Chevalets des joueur·euses « Sharly Chess »"
 

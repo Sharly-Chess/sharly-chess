@@ -8,7 +8,7 @@ from itertools import chain
 from pathlib import Path
 from typing import Any, Callable, override
 
-from common import format_timestamp, BASE_DIR
+from common import format_timestamp
 from common.exception import SharlyChessException, OptionError
 from common.i18n import _, ngettext
 from common.i18n.utils import unicode_normalize
@@ -47,7 +47,6 @@ from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from utils import Utils
 from utils.enum import Result
-from utils.file import ttf_file_inline_url
 from utils.option import Option, OptionHandler
 from utils.types import PlayerTitle
 
@@ -1113,6 +1112,10 @@ class PlaceCardPrintDocument(PrintDocument):
     def title(self) -> str:
         return ''
 
+    @property
+    def at_round(self) -> int:
+        return self._get_option(RoundPrintOption).value or self.tournament.current_round
+
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
         return [
@@ -1126,12 +1129,9 @@ class PlaceCardPrintDocument(PrintDocument):
     def template_context(self) -> dict[str, Any]:
         assert self.event is not None
         document_context: dict[str, Any] = {
-            'sharly_chess_font_inline_url': ttf_file_inline_url(
-                BASE_DIR
-                / 'src/web/static/fonts/AtkinsonHyperlegibleNextVF-Variable.ttf'
-            ),
             'event': PlaceCardEvent(self.event),
             'tournament': PlaceCardTournament(self.tournament),
+            'round': self.at_round,
         }
         card_type_context: dict[str, Any] = self._get_option(
             PlaceCardPrintOption
@@ -1178,7 +1178,7 @@ class PlaceCardPrintDocument(PrintDocument):
             if template_file.exists():
                 return PlaceCardTemplate(template_file)
         # Should never happen
-        raise SharlyChessException('')
+        raise SharlyChessException(f'Could not load place card template [{id}].')
 
     @classmethod
     def get_place_card_templates_by_id(cls) -> dict[str, PlaceCardTemplate]:

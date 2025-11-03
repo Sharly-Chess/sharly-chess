@@ -147,6 +147,31 @@ class PlaceCardTemplate:
     font-family: {file.stem}, sans-serif;
 }}
 """
+        content_css: dict[str, str] = {
+            'position': 'relative',
+            'background-color': 'rgba(255, 255, 255, 0.6)',
+        }
+        wrapper_css: dict[str, str] = {
+            'position': 'absolute',
+            'top': '0.0',
+            'left': '0.0',
+            'overflow': 'hidden',
+            'white-space': 'nowrap',
+            'text-overflow': 'ellipsis',
+            'background-color': 'transparent',
+            'width': f'{self.width - 2 * self.padding}{self.unit}',
+            'height': f'{self.height - 2 * self.padding}{self.unit}',
+        }
+        item_css: dict[str, str] = {
+            'overflow': 'hidden',
+            'white-space': 'nowrap',
+            'text-overflow': 'ellipsis',
+            'background-color': 'transparent',
+            'max-width': f'{self.width - 2 * self.padding}{self.unit}',
+        }
+        federation_flag_css: dict[str, str] = {
+            'height': '0.75em',
+        }
         return {
             'error': self.error,
             'unit': self.unit,
@@ -155,7 +180,15 @@ class PlaceCardTemplate:
             'height': self.height,
             'padding': self.padding,
             'cutting_marks': self.cutting_marks,
-            'template_css': font_css + self.css,
+            'template_css': (
+                font_css
+                + f'.card-content {{\n{"\n".join(f"\t{key}: {value};" for key, value in content_css.items())}\n}}\n'
+                + f'.card-item-wrapper {{\n{";\n".join(f"\t{key}: {value};" for key, value in wrapper_css.items())}\n}}\n'
+                + f'.card-item {{\n{"\n".join(f"\t{key}: {value};" for key, value in item_css.items())}\n}}\n'
+                + f'.card-content {{\n{"\n".join(f"\t{key}: {value};" for key, value in content_css.items())}\n}}\n'
+                + f'.federation-flag {{\n{"\n".join(f"\t{key}: {value};" for key, value in federation_flag_css.items())}\n}}\n'
+                + self.css
+            ),
             'template_js': self.js,
             'items': self.items,
         }

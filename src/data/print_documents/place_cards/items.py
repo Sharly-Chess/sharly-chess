@@ -31,16 +31,9 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
         super().__init__(
             data,
             section,
-            default_font_size=default_style.font_size,
-            default_bold=default_style.bold,
-            default_italic=default_style.italic,
-            default_h_align=default_style.h_align,
-            default_v_align=default_style.v_align,
-            default_h_pos=default_style.h_pos,
-            default_v_pos=default_style.v_pos,
-            default_opacity=default_style.opacity,
+            default_style,
         )
-        self.css_class: str = self.id.replace('_', '-')
+        self.css_class: str = f'item-{self.id.replace("_", "-")}'
         self.display: bool = data.get_bool(
             section=section, property='display', default=True
         )
@@ -89,7 +82,6 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
     ) -> str:
         return f'<i class="bi bi-bug-fill"></i> {self.id}: {message}'
 
-    @abstractmethod
     def render_html(
         self,
         event: PlaceCardEvent,
@@ -98,64 +90,81 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
         player: PlaceCardPlayer | None = None,
     ) -> str:
         """Returns the HTML to output for the item."""
+        return f'<div class="card-item-wrapper {self.css_class}">{self.inner_html(event, tournament, board, player)}</div>'
+
+    @abstractmethod
+    def inner_html(
+        self,
+        event: PlaceCardEvent,
+        tournament: PlaceCardTournament,
+        board: PlaceCardBoard | None = None,
+        player: PlaceCardPlayer | None = None,
+    ) -> str:
+        """Returns the inner HTML of the item."""
         pass
+
+    def wrapper_css(
+        self,
+        unit: str,
+    ) -> dict[str, str]:
+        """Returns the CSS for the wrapper of the item."""
+        wrapper_css: dict[str, str] = {}
+        wrapper_css['display'] = 'flex'
+        match self.h_align:
+            case 'center':
+                wrapper_css['justify-content'] = 'center'
+        match self.v_align:
+            case 'middle':
+                wrapper_css['align-items'] = 'center'
+        return wrapper_css
+
+    def item_css(
+        self,
+        unit: str,
+    ) -> dict[str, str]:
+        """Returns the CSS for the item."""
+        item_css: dict[str, str] = {}
+        item_css['opacity'] = f'{self.opacity}'
+        # font-size must apply to subitems (for federation flags)
+        if self.width:
+            item_css['width'] = f'{self.width}{unit}'
+        if self.height:
+            item_css['height'] = f'{self.height}{unit}'
+        match self.h_align:
+            case 'left':
+                item_css['left'] = f'{self.h_pos}{unit}'
+                item_css['margin-right'] = 'auto'
+            case 'center':
+                item_css['margin-left'] = 'auto'
+                item_css['margin-right'] = 'auto'
+            case 'right':
+                item_css['right'] = f'{self.h_pos}{unit}'
+                item_css['margin-left'] = 'auto'
+        match self.v_align:
+            case 'top' | 'bottom':
+                item_css['position'] = 'absolute'
+                item_css[self.v_align] = f'{self.v_pos}{unit}'
+        if self.max_width is not None:
+            item_css['max-width'] = f'{self.max_width}{unit}'
+        return item_css
+
+    def inner_css(
+        self,
+        unit: str,
+    ) -> dict[str, str]:
+        """Returns the CSS for the children of the item."""
+        inner_css: dict[str, str] = {}
+        return inner_css
 
     def render_css(
         self,
         unit: str,
     ) -> str:
-        """Returns the CSS for the item."""
-        div_css: list[str] = [
-            f'font-size: {self.font_size}pt',
-            f'font-weight: {"bold" if self.bold else "normal"}',
-            f'font-style: {"italic" if self.italic else "normal"}',
-            f'opacity: {self.opacity}',
-        ]
-        inner_css: list[str] = [
-            # the font style must be set to inner elements to apply to the federation flags.
-            f'font-size: {self.font_size}pt',
-            f'font-weight: {"bold" if self.bold else "normal"}',
-            f'font-style: {"italic" if self.italic else "normal"}',
-        ]
-        if self.width:
-            div_css += [f'width: {self.width}{unit}']
-        if self.height:
-            div_css += [f'height: {self.height}{unit}']
-        match self.h_align:
-            case 'left':
-                div_css += [
-                    f'left: {self.h_pos}{unit}',
-                    'text-align: left',
-                ]
-            case 'center':
-                div_css += [
-                    'width: 100%',
-                    'text-align: center',
-                ]
-            case 'right':
-                div_css += [
-                    f'right: {self.h_pos}{unit}',
-                    'text-align: right',
-                ]
-        match self.v_align:
-            case 'top':
-                div_css += [
-                    f'top: {self.v_pos}{unit}',
-                ]
-            case 'middle':
-                div_css += [
-                    'width: 100%',
-                    'text-align: center',
-                ]
-            case 'bottom':
-                div_css += [
-                    f'bottom: {self.v_pos}{unit}',
-                ]
-        if self.max_width is not None:
-            div_css += [f'max-width: {self.max_width}{unit}']
+        """Returns the CSS to print for the item."""
         return (
-            f'.{self.css_class} {{\n{"\n".join(f"{css_entry};" for css_entry in div_css)}\n}}\n'
-            + f'.{self.css_class} * {{\n{"\n".join(f"{css_entry};" for css_entry in inner_css)}\n}}\n'
+            f'.card-item-wrapper.{self.css_class} {{\n{";\n".join(f"{key}: {value};" for key, value in self.wrapper_css(unit).items())}\n}}\n'
+            + f'.card-item.{self.css_class} {{\n{";\n".join(f"{key}: {value};" for key, value in self.item_css(unit).items())}\n}}\n'
+            + f'.card-item.{self.css_class} * {{\n{";\n".join(f"{key}: {value};" for key, value in self.inner_css(unit).items())}\n}}\n'
             + f'.{self.css_class} {{\n{self.css}\n}}\n'
         )
 
@@ -191,7 +200,7 @@ class PlaceCardText(PlaceCardItem):
             'text',
         ]
 
-    def render_html(
+    def inner_html(
         self,
         event: PlaceCardEvent,
         tournament: PlaceCardTournament,
@@ -215,6 +224,28 @@ class PlaceCardText(PlaceCardItem):
             if self.display
             else ''
         )
+
+    def item_css(
+        self,
+        unit: str,
+    ) -> dict[str, str]:
+        item_css: dict[str, str] = {}
+        match self.text_align:
+            case 'left' | 'center' | 'right' | 'auto':
+                item_css['text-align'] = self.text_align
+        item_css['font-size'] = f'{self.font_size}pt'
+        item_css['font-weight'] = 'bold' if self.bold else 'normal'
+        item_css['font-style'] = 'italic' if self.italic else 'normal'
+        return super().item_css(unit) | item_css
+
+    def inner_css(
+        self,
+        unit: str,
+    ) -> dict[str, str]:
+        inner_css: dict[str, str] = {}
+        # the font style must be set to inner elements to apply to the federation flags.
+        inner_css['font-size'] = f'{self.font_size}pt'
+        return super().inner_css(unit) | inner_css
 
 
 class PlaceCardImage(PlaceCardItem):
@@ -252,7 +283,7 @@ class PlaceCardImage(PlaceCardItem):
             'image',
         ]
 
-    def render_html(
+    def inner_html(
         self,
         event: PlaceCardEvent,
         tournament: PlaceCardTournament,
