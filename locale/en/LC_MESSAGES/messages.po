@@ -5546,6 +5546,9 @@ msgstr ""
 msgid "Unable to upload tournament rules."
 msgstr ""
 
+msgid "Unable to upload tournament."
+msgstr ""
+
 msgid "Unauthorized access"
 msgstr ""
 
@@ -5716,6 +5719,12 @@ msgid "Upload link not found, check that the tournament is not marked as finishe
 msgstr ""
 
 msgid "Upload rules"
+msgstr ""
+
+msgid "Upload to Chess-Results.com"
+msgstr ""
+
+msgid "Upload to the FFE site"
 msgstr ""
 
 msgid "Upload tournaments now"
