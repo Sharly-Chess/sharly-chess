@@ -272,6 +272,11 @@ class SelectOption:
 
 class Column[T](ABC):
     @property
+    def grid_column_template(self) -> str:
+        """The width definition of the content as used by grid-template-columns"""
+        return 'max-content'
+
+    @property
     def header_content(self) -> str:
         """The content of the header as a string.
         A template can be used for more complex headers."""

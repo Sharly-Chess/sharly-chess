@@ -40,6 +40,10 @@ class TitleColumn(PlayerColumn):
 
 class NameColumn(PlayerColumn):
     @property
+    def grid_column_template(self) -> str:
+        return '1fr'
+
+    @property
     def header_content(self) -> str:
         return _('Name *** NAME FOR TABLE HEADER')
 
