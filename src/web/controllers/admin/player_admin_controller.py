@@ -1840,6 +1840,7 @@ class PlayerAdminController(BaseEventAdminController):
         player_id: int | None,
         search: str,
         page: int = 0,
+        results_template: str | None = None,
     ) -> Template:
         web_context = PlayerAdminWebContext(
             request, player_id, data_source_id=data_source_id
@@ -1869,7 +1870,7 @@ class PlayerAdminController(BaseEventAdminController):
                 request, data_source.id
             )
         return HTMXTemplate(
-            template_name='admin/players/search_results.html',
+            template_name=results_template or 'admin/players/search_results.html',
             context=web_context.template_context
             | {
                 'search': search,

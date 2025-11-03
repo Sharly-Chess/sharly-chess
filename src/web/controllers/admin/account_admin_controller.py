@@ -15,6 +15,7 @@ from data.access_levels.access_levels import AccessLevel, AccessLevelScope
 from data.access_levels.actions import AuthAction
 from data.access_levels.manager import AccessLevelManager
 from data.account import Account, Permission
+from data.input_output.managers import DataSourceManager
 from data.player import Player
 from database.sqlite.event.event_store import StoredAccount, StoredPermission
 from utils.enum import FormAction
@@ -69,6 +70,10 @@ class AccountAdminWebContext(BaseEventAdminWebContext):
             ),
             'admin_account': self.admin_account,
             'admin_permission': self.admin_permission,
+            'data_sources': DataSourceManager().objects(),
+            'selected_data_source': SessionHandler.get_session_admin_players_active_data_source(
+                self.request
+            ),
         }
 
 
@@ -119,6 +124,7 @@ class AccountAdminController(BaseEventAdminController):
             {
                 'first_name': '',
                 'last_name': '',
+                'fide_id': '',
                 'password': '',
                 'active': True,
                 'access_levels': [],
@@ -141,6 +147,7 @@ class AccountAdminController(BaseEventAdminController):
                 'first_name': stored_account.first_name,
                 'last_name': stored_account.last_name,
                 'active': stored_account.active,
+                'fide_id': stored_account.fide_id,
             }
         )
 
@@ -211,6 +218,8 @@ class AccountAdminController(BaseEventAdminController):
         account = web_context.admin_account
         first_name = WebContext.form_data_to_str(data, 'first_name') or ''
         last_name = WebContext.form_data_to_str(data, field := 'last_name') or ''
+        fide_id = WebContext.form_data_to_int(data, 'fide_id')
+        print(data)
         if not last_name:
             errors[field] = _('This field is required.')
         if 'first_name' not in errors and 'last_name' not in errors:
@@ -235,7 +244,7 @@ class AccountAdminController(BaseEventAdminController):
                 assert account is not None
                 password_hash = account.password_hash
             else:
-                errors[field] = _('This field is required.')
+                password_hash = None
         else:
             password_hash = PasswordHasher().hash(password)
 
@@ -246,6 +255,7 @@ class AccountAdminController(BaseEventAdminController):
             active=WebContext.form_data_to_bool(data, 'active'),
             last_name=last_name,
             first_name=first_name,
+            fide_id=fide_id,
             password_hash=password_hash,
         )
         return stored_account, errors
@@ -304,6 +314,7 @@ class AccountAdminController(BaseEventAdminController):
         stored_account = account.stored_account
         stored_account.last_name = new_stored_account.last_name
         stored_account.first_name = new_stored_account.first_name
+        stored_account.fide_id = new_stored_account.fide_id
         stored_account.active = new_stored_account.active
         stored_account.password_hash = new_stored_account.password_hash
         event.update_account(stored_account)
