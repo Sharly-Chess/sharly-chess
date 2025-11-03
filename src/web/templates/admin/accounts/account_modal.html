@@ -1,6 +1,5 @@
 <div
     class="modal-dialog modal-dialog-scrollable admin-account-edit-modal"
-    style="--bs-modal-width: min(90vw, 450px);"
 >
     <div class="modal-content">
         <div class="modal-header">
@@ -34,48 +33,107 @@
                 {# These inputs are a trick to avoid autocomplete #}
                 <input type="text" style="display:none">
                 <input type="password" style="display:none">
+
+                <h4>
+                    {{ _('Staff information') }}
+                </h4>
+
+                {% with results_template='admin/accounts/account_search_results.html' %}
+                    {% include '/admin/common/player_search.html' %}
+                {% endwith %}
+
                 <div class="row gy-2 gx-3">
-                    {{ admin_macros.switch_input(
-                        name='active',
-                        label='',
-                        help_text='',
-                        placeholder=_('Enable this account'),
-                        info=_(
-                            'You can temporarily invalidate accounts by turning this switch off.'
-                        ),
-                        data=data, errors=errors
-                    ) }}
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.text_input(
+                            name='last_name',
+                            label=_('Last name:'),
+                            placeholder=_('E.g.: DOE'),
+                            help_text='',
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.text_input(
+                            name='first_name',
+                            label=_('First name:'),
+                            placeholder=_('E.g.: John'),
+                            help_text='',
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.number_input(
+                            name='fide_id',
+                            label=_('FIDE ID:'),
+                            help_text='',
+                            disabled=true,
+                            min=1,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
                 </div>
+
+                <h4>
+                    {{ _('Staff member roles') }}
+                </h4>
                 <div class="row gy-2 gx-3">
-                    {{ admin_macros.text_input(
-                        name='last_name',
-                        label=_('Last name:'),
-                        placeholder=_('E.g.: DOE'),
-                        help_text='',
-                        data=data, errors=errors
-                    ) }}
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.select_input(
+                            name='chief_tournament_ids',
+                            label=_('%(string)s:', string=_('Chief arbiter')),
+                            help_text=_('The tournaments for which the staff member is the chief arbiter.'),
+                            select_all=true,
+                            select_options=tournament_options,
+                            multiple_select=true,
+                            placeholder=_('Choose one, many or no tournaments.'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.select_input(
+                            name='deputy_tournament_ids',
+                            label=_('%(string)s:', string=_('Deputy arbiter')),
+                            help_text=_('The tournaments for which the staff member is a deputy arbiter.'),
+                            select_all=true,
+                            select_options=tournament_options,
+                            multiple_select=true,
+                            placeholder=_('Choose one, many or no tournaments.'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
                 </div>
-                <div class="row gy-2 gx-3">
-                    {{ admin_macros.text_input(
-                        name='first_name',
-                        label=_('First name:'),
-                        placeholder=_('E.g.: John'),
-                        help_text='',
-                        data=data, errors=errors
-                    ) }}
-                </div>
-                <div class="row gy-2 gx-3">
-                    <input type="password" name="fake_password" style="display:none" autocomplete="current-password">
-                    {{ admin_macros.password_input(
-                        name='password',
-                        label=_('Password:'),
-                        autocomplete='new-password',
-                        help_text=(
-                            _('New password. Leave blank for no change.')
-                            if action == 'update' else ''
-                        ),
-                        data=data, errors=errors
-                    ) }}
+
+                <h4>
+                    {{ _('Connection parameters') }}
+                </h4>
+
+               <div class="row gy-2 gx-3">
+                    <div class="col-12">
+                        {{ admin_macros.switch_input(
+                            name='active',
+                            label='',
+                            help_text='',
+                            placeholder=_('Enable this account'),
+                            info=_(
+                                'You can temporarily invalidate accounts by turning this switch off.'
+                            ),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <input type="password" name="fake_password" style="display:none" autocomplete="current-password">
+                        {{ admin_macros.password_input(
+                            name='password',
+                            label=_('Password:'),
+                            autocomplete='new-password',
+                            help_text=(
+                                _('New password. Leave blank for no change.')
+                                if action == 'update' else _('Only required for users that need to connect to the server.')
+                            ),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
                 </div>
             </form>
         </div>
@@ -103,3 +161,15 @@
         </div>
     </div>
 </div>
+<script>
+    function selectPlayer(last_name, first_name, fide_id) {
+        $('#last-name').val(last_name);
+        $('#first-name').val(first_name ?? '')
+        if (fide_id) {
+            $('input[type="hidden"]#fide-id').val(fide_id);
+            $('#fide-id.form-control').val(fide_id);
+        }
+
+        $('#search-results').hide();
+    }
+</script>

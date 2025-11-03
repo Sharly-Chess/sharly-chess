@@ -15,9 +15,14 @@ from data.access_levels.access_levels import AccessLevel, AccessLevelScope
 from data.access_levels.actions import AuthAction
 from data.access_levels.manager import AccessLevelManager
 from data.account import Account, Permission
+from data.input_output.managers import DataSourceManager
 from data.player import Player
-from database.sqlite.event.event_store import StoredAccount, StoredPermission
-from utils.enum import FormAction
+from database.sqlite.event.event_store import (
+    StoredAccount,
+    StoredPermission,
+    StoredRole,
+)
+from utils.enum import FormAction, RoleType
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -30,8 +35,8 @@ from web.utils import RequestUtils, SelectOption
 
 
 class AccountAdminWebContext(BaseEventAdminWebContext):
-    def __init__(self, request: HTMXRequest):
-        super().__init__(request)
+    def __init__(self, request: HTMXRequest, reload_event: bool = False):
+        super().__init__(request, reload_event=reload_event)
         assert self.admin_event is not None
         self.admin_account: Account | None = RequestUtils.get_optional_account(request)
         self.admin_permission: Permission | None = None
@@ -69,6 +74,10 @@ class AccountAdminWebContext(BaseEventAdminWebContext):
             ),
             'admin_account': self.admin_account,
             'admin_permission': self.admin_permission,
+            'data_sources': DataSourceManager().objects(),
+            'selected_data_source': SessionHandler.get_session_admin_players_active_data_source(
+                self.request
+            ),
         }
 
 
@@ -111,6 +120,7 @@ class AccountAdminController(BaseEventAdminController):
     @classmethod
     def _account_form_modal_context(
         cls,
+        web_context: AccountAdminWebContext,
         action: FormAction,
         data: dict[str, str],
         errors: dict[str, str] | None = None,
@@ -119,28 +129,39 @@ class AccountAdminController(BaseEventAdminController):
             {
                 'first_name': '',
                 'last_name': '',
+                'fide_id': '',
                 'password': '',
                 'active': True,
                 'access_levels': [],
                 'tournament_ids': [],
+                'chief_tournament_ids': [],
+                'deputy_tournament_ids': [],
             }
         )
-        data = default_data | data
+        form_data = default_data | data
         return {
             'modal': 'account',
             'action': action,
-            'data': data,
+            'tournament_options': web_context.get_tournament_options(),
+            'data': form_data,
             'errors': errors or {},
         }
 
     @staticmethod
     def _account_form_data_from_account(account: Account) -> dict[str, str]:
         stored_account = account.stored_account
+
+        chief_role = account.get_role(RoleType.CHIEF_ARBITER)
+        deputy_role = account.get_role(RoleType.DEPUTY_ARBITER)
+
         return WebContext.values_dict_to_form_data(
             {
                 'first_name': stored_account.first_name,
                 'last_name': stored_account.last_name,
                 'active': stored_account.active,
+                'fide_id': stored_account.fide_id,
+                'chief_tournament_ids': chief_role.tournament_ids or [],
+                'deputy_tournament_ids': deputy_role.tournament_ids or [],
             }
         )
 
@@ -150,7 +171,9 @@ class AccountAdminController(BaseEventAdminController):
     )
     async def htmx_admin_account_create_modal(self, request: HTMXRequest) -> Template:
         web_context = AccountAdminWebContext(request)
-        template_context = self._account_form_modal_context(FormAction.CREATE, {})
+        template_context = self._account_form_modal_context(
+            web_context, FormAction.CREATE, {}
+        )
         return self.admin_event_account_render(web_context, template_context)
 
     @get(
@@ -160,6 +183,7 @@ class AccountAdminController(BaseEventAdminController):
     async def htmx_admin_account_update_modal(self, request: HTMXRequest) -> Template:
         web_context = AccountAdminWebContext(request)
         template_context = self._account_form_modal_context(
+            web_context,
             FormAction.UPDATE,
             self._account_form_data_from_account(web_context.get_admin_account()),
         )
@@ -173,8 +197,10 @@ class AccountAdminController(BaseEventAdminController):
         web_context = AccountAdminWebContext(request)
         account = web_context.get_admin_account()
         template_context = self._account_form_modal_context(
+            web_context,
             FormAction.CLONE,
-            self._account_form_data_from_account(account),
+            self._account_form_data_from_account(account)
+            | {'chief_tournament_ids': ''},
         )
         return self.admin_event_account_render(web_context, template_context)
 
@@ -202,15 +228,20 @@ class AccountAdminController(BaseEventAdminController):
 
     @staticmethod
     def _read_account_form_data(
-        data: dict[str, str],
+        data: dict[str, str | list[str]],
         web_context: AccountAdminWebContext,
         action: FormAction,
     ) -> tuple[StoredAccount | None, dict[str, str]]:
         errors: dict[str, str] = {}
         event = web_context.get_admin_event()
         account = web_context.admin_account
-        first_name = WebContext.form_data_to_str(data, 'first_name') or ''
-        last_name = WebContext.form_data_to_str(data, field := 'last_name') or ''
+
+        flat_data = WebContext.flatten_list_data(data)
+
+        first_name = WebContext.form_data_to_str(flat_data, 'first_name') or ''
+        last_name = WebContext.form_data_to_str(flat_data, field := 'last_name') or ''
+        fide_id = WebContext.form_data_to_int(flat_data, 'fide_id')
+
         if not last_name:
             errors[field] = _('This field is required.')
         if 'first_name' not in errors and 'last_name' not in errors:
@@ -228,25 +259,58 @@ class AccountAdminController(BaseEventAdminController):
                 errors[field] = _('Account [{account_name}] already exists.').format(
                     account_name=full_name
                 )
-        password = WebContext.form_data_to_str(data, field := 'password')
+
+        password = WebContext.form_data_to_str(flat_data, field := 'password')
         password_hash: str | None = None
         if not password:
             if action == FormAction.UPDATE:
                 assert account is not None
                 password_hash = account.password_hash
             else:
-                errors[field] = _('This field is required.')
+                password_hash = None
         else:
             password_hash = PasswordHasher().hash(password)
 
+        chief_tournament_ids = WebContext.form_data_to_list_int(
+            flat_data, field := 'chief_tournament_ids'
+        )
+        deputy_tournament_ids = WebContext.form_data_to_list_int(
+            flat_data, field := 'deputy_tournament_ids'
+        )
+        event = web_context.get_admin_event()
+        for tournament_id in deputy_tournament_ids:
+            if tournament_id not in event.tournaments_by_id:
+                errors[field] = (
+                    f'Invalid tournament ID [{tournament_id}] '
+                    f'for event in [{event.uniq_id}].'
+                )
+            if tournament_id in chief_tournament_ids:
+                errors[field] = _(
+                    'Cannot be both chief and deputy on the same tournament.'
+                )
+
         if errors:
             return None, errors
+
         stored_account = StoredAccount(
-            id=None,
-            active=WebContext.form_data_to_bool(data, 'active'),
+            id=account.id if account else None,
+            active=WebContext.form_data_to_bool(flat_data, 'active'),
             last_name=last_name,
             first_name=first_name,
+            fide_id=fide_id,
             password_hash=password_hash,
+            stored_roles=[
+                StoredRole(
+                    account_id=None,
+                    role=RoleType.CHIEF_ARBITER.value,
+                    tournament_ids=chief_tournament_ids,
+                ),
+                StoredRole(
+                    account_id=None,
+                    role=RoleType.DEPUTY_ARBITER.value,
+                    tournament_ids=deputy_tournament_ids,
+                ),
+            ],
         )
         return stored_account, errors
 
@@ -255,7 +319,7 @@ class AccountAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
@@ -266,16 +330,23 @@ class AccountAdminController(BaseEventAdminController):
         if not stored_account:
             return self.admin_event_account_render(
                 web_context,
-                self._account_form_modal_context(FormAction.CREATE, data, errors),
+                self._account_form_modal_context(
+                    web_context,
+                    FormAction.CREATE,
+                    WebContext.values_dict_to_form_data(data),
+                    errors,
+                ),
             )
         event = web_context.get_admin_event()
         account = event.create_account(stored_account)
+
         Message.success(
             request,
             _('Account [{account_name}] has been created.').format(
                 account_name=account.full_name
             ),
         )
+        web_context = AccountAdminWebContext(request, reload_event=True)
         return self.admin_event_account_render(web_context)
 
     @patch(
@@ -286,7 +357,7 @@ class AccountAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
@@ -297,15 +368,22 @@ class AccountAdminController(BaseEventAdminController):
         if not new_stored_account:
             return self.admin_event_account_render(
                 web_context,
-                self._account_form_modal_context(FormAction.UPDATE, data, errors),
+                self._account_form_modal_context(
+                    web_context,
+                    FormAction.UPDATE,
+                    WebContext.values_dict_to_form_data(data),
+                    errors,
+                ),
             )
         event = web_context.get_admin_event()
         account = web_context.get_admin_account()
         stored_account = account.stored_account
         stored_account.last_name = new_stored_account.last_name
         stored_account.first_name = new_stored_account.first_name
+        stored_account.fide_id = new_stored_account.fide_id
         stored_account.active = new_stored_account.active
         stored_account.password_hash = new_stored_account.password_hash
+        stored_account.stored_roles = new_stored_account.stored_roles
         event.update_account(stored_account)
         Message.success(
             request,
@@ -313,6 +391,7 @@ class AccountAdminController(BaseEventAdminController):
                 account_name=account.full_name
             ),
         )
+        web_context = AccountAdminWebContext(request, reload_event=True)
         return self.admin_event_account_render(web_context)
 
     @post(
@@ -323,7 +402,7 @@ class AccountAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
@@ -334,7 +413,12 @@ class AccountAdminController(BaseEventAdminController):
         if not stored_account:
             return self.admin_event_account_render(
                 web_context,
-                self._account_form_modal_context(FormAction.CLONE, data, errors),
+                self._account_form_modal_context(
+                    web_context,
+                    FormAction.CLONE,
+                    WebContext.values_dict_to_form_data(data),
+                    errors,
+                ),
             )
         event = web_context.get_admin_event()
         cloned_account = web_context.get_admin_account()
@@ -348,6 +432,7 @@ class AccountAdminController(BaseEventAdminController):
                 account_name=account.full_name
             ),
         )
+        web_context = AccountAdminWebContext(request, reload_event=True)
         return self.admin_event_account_render(web_context)
 
     @delete(
@@ -366,6 +451,7 @@ class AccountAdminController(BaseEventAdminController):
                 account_name=account.full_name
             ),
         )
+        web_context = AccountAdminWebContext(request, reload_event=True)
         return self.admin_event_account_render(web_context)
 
     # --------------------------------------------------------------------------

@@ -324,15 +324,24 @@ class StoredPermission:
 
 
 @dataclass
+class StoredRole:
+    account_id: int | None
+    role: str
+    tournament_ids: list[int] | None = None
+
+
+@dataclass
 class StoredAccount:
     id: int | None
     active: bool
     first_name: str | None
     last_name: str | None
+    fide_id: int | None
     password_hash: str | None
     stored_permissions: list[StoredPermission] = field(
         default_factory=list[StoredPermission]
     )
+    stored_roles: list[StoredRole] = field(default_factory=list[StoredRole])
 
 
 @dataclass

@@ -46,6 +46,12 @@ msgstr[0] "Groupe de %(num).1f point -"
 msgstr[1] "Groupe de %(num).1f points -"
 
 #, python-format
+msgid "%(num)d arbiter"
+msgid_plural "%(num)d arbiters"
+msgstr[0] "%(num)d arbitre"
+msgstr[1] "%(num)d arbitres"
+
+#, python-format
 msgid "%(num)d criterion"
 msgid_plural "%(num)d criteria"
 msgstr[0] "%(num)d critère"
@@ -586,6 +592,9 @@ msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs affi
 msgid "Application"
 msgstr "Application"
 
+msgid "Arbiter"
+msgstr "Arbitre"
+
 msgid "Archive"
 msgstr "Archiver"
 
@@ -893,6 +902,9 @@ msgstr "Annuler l'absence"
 msgid "Candidate Master"
 msgstr "Candidat Maître"
 
+msgid "Cannot be both chief and deputy on the same tournament."
+msgstr "Impossible d’être à la fois arbitre principal·e et arbitre adjoint·e sur le même tournoi."
+
 msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
 msgstr "Cat"
 
@@ -1005,6 +1017,9 @@ msgstr "L'identifiant ChessEvent n'est pas défini."
 
 msgid "Chief Arbitration"
 msgstr "Arbitrage en chef·fe"
+
+msgid "Chief arbiter"
+msgstr "Arbitre principal·e"
 
 msgid "Choose a player at random"
 msgstr "Choisir un·e joueur·euse au hasard"
@@ -1170,6 +1185,9 @@ msgstr "Connexion établie"
 
 msgid "Connection failed"
 msgstr "Connexion échouée"
+
+msgid "Connection parameters"
+msgstr "Paramètres de connexion"
 
 msgid "Connection to the ChessEvent server failed."
 msgstr "Connection au serveur ChessEvent échouée."
@@ -1535,6 +1553,12 @@ msgstr "Date de suppression"
 
 msgid "Deputy Chief Arbitration"
 msgstr "Arbitrage adjoint"
+
+msgid "Deputy arbiter"
+msgstr "Arbitre adjoint·e"
+
+msgid "Deputy arbiters"
+msgstr "Arbitres adjoint·es"
 
 msgid "Description"
 msgstr "Description"
@@ -3242,6 +3266,9 @@ msgstr "Pas de résultat"
 msgid "No results."
 msgstr "Aucun résultat."
 
+msgid "No roles defined."
+msgstr "Aucun rôle défini."
+
 msgid "No rotators"
 msgstr "Aucun écran rotatif"
 
@@ -3417,6 +3444,9 @@ msgstr "Seuls les événements actuels et à venir déclarés comme <b>publics</
 msgid "Only one age category is expected with options including other categories."
 msgstr "Une seule catégorie d'age est attendue avec les options incluant d'autres catégories."
 
+msgid "Only required for users that need to connect to the server."
+msgstr "Uniquement requis pour les utilisateurs·trices devant se connecter au serveur."
+
 msgid "Open Admin Interface"
 msgstr "Ouvrir l'interface d'administration"
 
@@ -3453,6 +3483,9 @@ msgstr "Classement des adversaires"
 
 msgid "Opponents' records"
 msgstr "Historique des adversaires"
+
+msgid "Organiser"
+msgstr "Organisateur·trice"
 
 msgid "Organization"
 msgstr "Organisation"
@@ -3807,6 +3840,9 @@ msgstr "Participe au tournoi [%(uniq_id)s]"
 #, python-format
 msgid "Plays %(board)d *** BOARD STRING FOR PAIRINGS PRINT"
 msgstr "Table %(board)d"
+
+msgid "Please ask your administrator to set a password."
+msgstr "Veuillez demander à votre administrateur·trice de définir un mot de passe."
 
 msgid "Please choose a federation"
 msgstr "Veuillez choisir une fédération"
@@ -4684,6 +4720,12 @@ msgstr "Staff ({num})"
 msgid "Staff default configuration"
 msgstr "Staff configuré par défaut"
 
+msgid "Staff information"
+msgstr "Information"
+
+msgid "Staff member roles"
+msgstr "Rôles"
+
 msgid "Standard"
 msgstr "Standard"
 
@@ -5095,6 +5137,12 @@ msgstr "Le tournoi dont on souhaite afficher les appariements"
 
 msgid "The tournament to print."
 msgstr "Le tournoi à imprimer."
+
+msgid "The tournaments for which the staff member is a deputy arbiter."
+msgstr "Les tournois pour lesquels le membre du staff est arbitre adjoint·e."
+
+msgid "The tournaments for which the staff member is the chief arbiter."
+msgstr "Les tournois pour lesquels le membre du staff est arbitre principal·e."
 
 msgid "The tournaments on which the permission is applied (by default, the permission is applied to all the tournaments)."
 msgstr "Les tournois sur lesquels la permission s'applique (par défaut, la permission s'applique à tous les tournois)."
@@ -5570,6 +5618,9 @@ msgstr "Accès non-autorisé"
 msgid "Undefined *** PLURAL"
 msgstr "Non définis"
 
+msgid "Undefined *** SINGULAR"
+msgstr "Non défini"
+
 msgid "Under 10"
 msgstr "Moins de 10"
 
@@ -5777,6 +5828,9 @@ msgstr "Utiliser les Elos standard"
 
 msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system. May be overridden on a per-tournament basis."
 msgstr "Utiliser le système de points 3/1/0 au lieu du système standard 1/0,5/0. Peut être remplacé au niveau de chaque tournoi."
+
+msgid "Use the Staff tab to declare arbiters."
+msgstr "Utilisez l’onglet Staff pour déclarer les arbitres."
 
 msgid "Use the recommended tie-breaks"
 msgstr "Utiliser les départages recommandés"

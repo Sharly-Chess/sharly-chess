@@ -6,7 +6,7 @@ from contextlib import suppress
 from functools import cached_property
 from logging import Logger
 from pathlib import Path
-from typing import Any, TYPE_CHECKING, override, cast
+from typing import Any, TYPE_CHECKING, Sequence, override, cast
 
 from packaging.version import Version
 
@@ -41,6 +41,7 @@ from database.sqlite.event.event_store import (
     StoredAccount,
     StoredRotatingScreen,
     StoredPermission,
+    StoredRole,
     StoredTieBreak,
 )
 from database.sqlite.event import migrations
@@ -2431,6 +2432,7 @@ class EventDatabase(MigrationDatabase):
             active=cls.load_bool_from_database_field(row['active']),
             first_name=row['first_name'],
             last_name=row['last_name'],
+            fide_id=row['fide_id'],
             password_hash=row['password_hash'],
         )
 
@@ -2453,12 +2455,16 @@ class EventDatabase(MigrationDatabase):
             stored_account.stored_permissions = self.load_account_stored_permissions(
                 stored_account.id
             )
+            stored_account.stored_roles = self.load_account_stored_roles(
+                stored_account.id
+            )
             stored_accounts.append(stored_account)
         return stored_accounts
 
     def add_stored_account(self, stored_account: StoredAccount) -> int:
         fields = self._get_fields_dict(
-            stored_account, ['active', 'first_name', 'last_name', 'password_hash']
+            stored_account,
+            ['active', 'first_name', 'last_name', 'fide_id', 'password_hash'],
         )
         if stored_account.id:
             fields |= {'id': stored_account.id}
@@ -2475,7 +2481,8 @@ class EventDatabase(MigrationDatabase):
 
     def update_stored_account(self, stored_account: StoredAccount) -> StoredAccount:
         fields = self._get_fields_dict(
-            stored_account, ['active', 'first_name', 'last_name', 'password_hash']
+            stored_account,
+            ['active', 'first_name', 'last_name', 'fide_id', 'password_hash'],
         )
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         assert stored_account.id is not None
@@ -2490,6 +2497,75 @@ class EventDatabase(MigrationDatabase):
 
     def delete_stored_account(self, account_id: int):
         self.execute('DELETE FROM `account` WHERE `id` = ?;', (account_id,))
+
+    # ---------------------------------------------------------------------------------
+    # StoredRole
+    # ---------------------------------------------------------------------------------
+
+    def load_account_stored_roles(self, account_id: int) -> list[StoredRole]:
+        self.execute(
+            'SELECT * from `account_role` WHERE `account_id` = ?',
+            (account_id,),
+        )
+        tournament_ids_by_role: dict[str, list[int]] = defaultdict(list)
+        for row in self.fetchall():
+            role = row['role']
+            tournament_id = row['tournament_id']
+            tournament_ids_by_role[role].append(tournament_id)
+        return [
+            StoredRole(account_id, role, tournament_ids or None)
+            for role, tournament_ids in tournament_ids_by_role.items()
+        ]
+
+    def delete_stored_roles(
+        self,
+        account_id: int | None = None,
+        role: str | None = None,
+        tournament_ids: list[int] | None = None,
+    ) -> None:
+        """Delete stored roles, optionally filtered by account, role, and/or tournaments."""
+        conditions: list[str] = []
+        params: list = []
+
+        if account_id is not None:
+            conditions.append('`account_id` = ?')
+            params.append(account_id)
+
+        if role is not None:
+            conditions.append('`role` = ?')
+            params.append(role)
+
+        if tournament_ids:
+            placeholders = ', '.join('?' for _ in tournament_ids)
+            conditions.append(f'`tournament_id` IN ({placeholders})')
+            params.extend(tournament_ids)
+
+        # Don’t allow deleting everything by mistake
+        if not conditions:
+            raise ValueError('At least one condition must be provided to delete roles.')
+
+        sql = f'DELETE FROM `account_role` WHERE {" AND ".join(conditions)}'
+        self.execute(sql, tuple(params))
+
+    def add_stored_roles(
+        self,
+        account_id: int,
+        role: str,
+        tournament_ids: Sequence[int] | None = None,
+    ) -> None:
+        # For roles that aren't bound to a tournament
+        ids: Sequence[int | None]
+        if tournament_ids is None:
+            ids = [None]
+        else:
+            ids = tournament_ids
+
+        rows = [(account_id, role, tid) for tid in ids]
+        self.executemany(
+            'INSERT INTO `account_role` (`account_id`, `role`, `tournament_id`) '
+            'VALUES (?, ?, ?)',
+            rows,
+        )
 
     # ---------------------------------------------------------------------------------
     # StoredPermission

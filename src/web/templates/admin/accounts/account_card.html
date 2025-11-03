@@ -42,6 +42,47 @@
 
 {% block card_text %}
     <div class="d-flex flex-column gap-1">
+        {% if not account.roles and account.user_account %}
+            <div class="text-warning">
+                {{ _('No roles defined.') }}
+            </div>
+        {% else %}
+            {% for role in account.roles %}
+                <div>
+                    {{ _('%(string)s:', string=role.role_type) }}
+                    <span>
+                        {% if role.role_type.is_tournament_bound %}
+                            {% if admin_accounts_show_details %}
+                                <ul>
+                                    {% for tournament_name in role.tournament_names(admin_event) %}
+                                        <li>{{ tournament_name }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <i class="text-secondary">
+                                    ({{ ngettext(
+                                        '%(num)d tournament',
+                                        '%(num)d tournaments',
+                                        role.tournament_ids|length if role.tournament_ids else 0
+                                    ) }})
+                                </i>
+                                <i
+                                    class="bi-info-circle-fill ps-1"
+                                    {{ macros.tooltip_attributes(
+                                        '', role.tournaments_tooltip_message(admin_event), 'right'
+                                    ) }}
+                                ></i>
+                            {% endif %}
+                        {% else %}
+                            <i class="text-secondary">
+                                ({{ _('all the tournaments') }})
+                            </i>
+                        {% endif %}
+                    </span>
+                </div>
+            {% endfor %}
+        {% endif %}
+
         {% if account.administrator %}
             {{ _('The administrator has all the permissions.') }}
         {% elif not account.permissions %}

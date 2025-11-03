@@ -5,16 +5,49 @@ from typing import TYPE_CHECKING
 from common.i18n import _
 from data.access_levels.manager import AccessLevelManager
 from data.player import Player
-from database.sqlite.event.event_store import StoredAccount, StoredPermission
+from database.sqlite.event.event_store import (
+    StoredAccount,
+    StoredPermission,
+    StoredRole,
+)
 from data.access_levels.access_levels import (
     AccessLevel,
     AdministrationAccessLevel,
     CheckInAccessLevel,
     ResultsEntryAccessLevel,
 )
+from utils.enum import RoleType
 
 if TYPE_CHECKING:
     from data.event import Event
+
+
+@dataclass
+class Role:
+    stored_role: StoredRole
+
+    @property
+    def role_type(self) -> RoleType:
+        return RoleType(self.stored_role.role)
+
+    @property
+    def tournament_ids(self) -> set[int] | None:
+        stored_tournament_ids = self.stored_role.tournament_ids
+        return set(stored_tournament_ids) if stored_tournament_ids else None
+
+    def tournaments_tooltip_message(self, event: 'Event') -> str:
+        return ''.join(
+            f'<div class="text-center text-nowrap">{name}</div>'
+            for name in self.tournament_names(event)
+        )
+
+    def tournament_names(self, event: 'Event') -> list[str]:
+        if not self.tournament_ids:
+            return []
+        return sorted(
+            event.tournaments_by_id[tournament_id].name
+            for tournament_id in self.tournament_ids
+        )
 
 
 @dataclass
@@ -103,8 +136,18 @@ class Account:
         return self.stored_account.last_name
 
     @property
+    def fide_id(self) -> int | None:
+        """Returns the fide id of the account."""
+        return self.stored_account.fide_id
+
+    @property
     def full_name(self) -> str:
         return Player.player_full_name(self.first_name, self.last_name)
+
+    @property
+    def full_name_and_id(self) -> str:
+        full_name = Player.player_full_name(self.first_name, self.last_name)
+        return f'{full_name} {self.fide_id}' if self.fide_id else full_name
 
     @property
     def password_hash(self) -> str | None:
@@ -113,6 +156,23 @@ class Account:
 
     def update_password(self, new_hash: str):
         self.stored_account.password_hash = new_hash
+
+    @property
+    def roles(self) -> list[Role]:
+        return sorted(
+            (Role(stored_role) for stored_role in self.stored_account.stored_roles),
+            key=lambda r: RoleType(r.stored_role.role).sort_order,
+        )
+
+    def get_role(self, role_type: RoleType) -> Role:
+        for stored_role in self.stored_account.stored_roles:
+            if stored_role.role == role_type.value:
+                return Role(stored_role)
+        return Role(
+            StoredRole(
+                self.id, role_type.value, [] if role_type.is_tournament_bound else None
+            )
+        )
 
     @property
     def active(self) -> bool:
@@ -226,12 +286,14 @@ class Account:
                 active=True,
                 first_name=None,
                 last_name=None,
+                fide_id=None,
                 password_hash=None,
                 stored_permissions=[
                     StoredPermission(
                         cls.ADMINISTRATOR_ID, AdministrationAccessLevel.static_id()
                     ),
                 ],
+                stored_roles=[],
             )
         )
 
@@ -243,6 +305,7 @@ class Account:
                 active=True,
                 first_name=None,
                 last_name=None,
+                fide_id=None,
                 password_hash=None,
                 stored_permissions=[
                     StoredPermission(cls.ANONYMOUS_ID, CheckInAccessLevel.static_id()),
@@ -250,5 +313,6 @@ class Account:
                         cls.ANONYMOUS_ID, ResultsEntryAccessLevel.static_id()
                     ),
                 ],
+                stored_roles=[],
             )
         )

@@ -18,6 +18,7 @@ from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
 
+from data.account import Account
 from data.board import Board
 from data.criteria.managers import PlayerFilter
 from data.family import Family
@@ -52,6 +53,7 @@ from utils.enum import (
     PlayerCategory,
     PlayerRatingType,
     ScreenType,
+    RoleType,
 )
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredPrizeGroup
@@ -812,6 +814,26 @@ class Tournament:
     # -------------------------------------------------------------------------
 
     @property
+    def chief_arbiter(self) -> Account | None:
+        for account in self.event.accounts_by_id.values():
+            role = account.get_role(RoleType.CHIEF_ARBITER)
+            if role and role.tournament_ids and self.id in role.tournament_ids:
+                return account
+        return None
+
+    @property
+    def deputy_arbiters(self) -> list[Account]:
+        return [
+            account
+            for account in self.event.accounts_by_id.values()
+            if (
+                (role := account.get_role(RoleType.DEPUTY_ARBITER))
+                and role.tournament_ids
+                and self.id in role.tournament_ids
+            )
+        ]
+
+    @property
     def max_ranking_round(self) -> int:
         if not self.started:
             return 0
@@ -1120,7 +1142,9 @@ class Tournament:
             startdate=format_timestamp(self.start_timestamp, '%Y/%m/%d'),
             enddate=format_timestamp(self.stop_timestamp, '%Y/%m/%d'),
             numplayers=len(self.players_by_id),
-            chiefarbiter='',
+            chiefarbiter=self.chief_arbiter.full_name_and_id
+            if self.chief_arbiter
+            else '',
             players=[
                 player.to_trf(
                     after_round,

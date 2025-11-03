@@ -105,6 +105,46 @@
                 <div class="text-start {% if not tournament.stored_tournament.last_rounds_no_byes is none %}text-secondary{% endif %}">
                     {{ _('Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d', last_rounds_no_byes=tournament.last_rounds_no_byes) }}
                 </div>
+                <div>
+                    {{ _('%(string)s:', string=_('Arbiter')) }}
+                    {% if tournament.chief_arbiter %}
+                        {{ tournament.chief_arbiter.full_name }}
+                    {% else %}
+                        <span
+                            class="text-secondary"
+                            {{ macros.tooltip_attributes(
+                                'info', _('Use the Staff tab to declare arbiters.'), 'right'
+                            ) }}
+                        >
+                            <i>{{ _('Undefined *** SINGULAR') }}</i>
+                        </span>
+                    {% endif %}
+                </div>
+                <div>
+                    {{ _('%(string)s:', string=_('Deputy arbiters')) }}
+                    {% if not tournament.deputy_arbiters %}
+                        <span
+                            class="text-secondary"
+                            {{ macros.tooltip_attributes(
+                                'info', _('Use the Staff tab to declare arbiters.'), 'right'
+                            ) }}
+                        >
+                            <i>{{ _('None') }}</i>
+                        </span>
+                    {% else %}
+                        <ul>
+                            {% for account in tournament.deputy_arbiters %}
+                                <li>{{ account.full_name }}</li>
+                            {% endfor %}
+                        </ul>
+                        <i
+                            class="bi-info-circle-fill ps-1"
+                            {{ macros.tooltip_attributes(
+                                '', tournament.deputy_arbiters | map(attribute='full_name') | join(', '), 'right'
+                            ) }}
+                        ></i>
+                    {% endif %}
+                </div>
             {% endif %}
         </div>
     </div>

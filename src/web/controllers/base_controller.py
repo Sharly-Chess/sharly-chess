@@ -285,7 +285,7 @@ class WebContext:
             return str(value)
         if isinstance(value, Club):
             return str(value)
-        if isinstance(value, list):
+        if isinstance(value, list) or isinstance(value, set):
             return ';'.join(str(element) for element in value)
         raise ValueError(f'unknown type for value [{value}]')
 
