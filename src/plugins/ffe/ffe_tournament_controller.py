@@ -108,6 +108,67 @@ class FfeAdminTournamentController(BaseEventAdminController):
         return self.render_messages(request)
 
     @post(
+        path='/ffe/upload-tournament/{event_uniq_id:str}/{tournament_id:int}',
+        name='ffe-upload-single-tournament',
+        guards=[TournamentActionGuard(AuthAction.PUBLISH_RULES)],
+    )
+    async def htmx_ffe_upload_tournament(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
+
+        admin_event = web_context.admin_event
+        assert admin_event is not None
+        tournament = web_context.admin_tournament
+        assert tournament is not None
+
+        result: FfeUploadResult | None = (
+            FfeBackgroundUploader.get_updated_tournament_upload_result(tournament)
+        )
+
+        if not NetworkMonitor.connected():
+            result = FfeUploadResult(FfeUploadStatus.ERROR, _('No internet connection'))
+
+        def report(status: FfeUploadStatus, message: str) -> None:
+            nonlocal result
+            result = FfeUploadResult(status, message)
+
+        if not result or (
+            result.status != FfeUploadStatus.SETTINGS_ERROR
+            and result.status != FfeUploadStatus.ERROR
+        ):
+            result = FfeBackgroundUploader.upload_tournament(
+                tournament.event.uniq_id, tournament.id, force=True
+            )
+
+        if result:
+            match result.status:
+                case FfeUploadStatus.ERROR:
+                    Message.error(
+                        request,
+                        result.message,
+                    )
+                case FfeUploadStatus.INFO:
+                    Message.info(
+                        request,
+                        result.message,
+                    )
+                case FfeUploadStatus.SUCCESS | FfeUploadStatus.SETTINGS_ERROR:
+                    Message.success(
+                        request,
+                        result.message,
+                    )
+        else:
+            Message.error(
+                request,
+                _('Unable to upload tournament.'),
+            )
+
+        return self.render_messages(request)
+
+    @post(
         path='/ffe/upload-rules/{event_uniq_id:str}/{tournament_id:int}',
         name='ffe-upload-rules',
         guards=[TournamentActionGuard(AuthAction.PUBLISH_RULES)],
