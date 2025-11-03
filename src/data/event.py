@@ -41,6 +41,7 @@ from database.sqlite.event.event_store import (
     StoredAccount,
     StoredRotator,
     StoredPermission,
+    StoredRole,
 )
 
 logger: Logger = get_logger()
@@ -766,6 +767,13 @@ class Event:
             self.stored_event.stored_accounts.remove(account.stored_account)
         if account.id in self.accounts_by_id:
             del self.accounts_by_id[account.id]
+
+    def update_account_role(
+        self,
+        stored_role: StoredRole,
+    ):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.update_stored_role(stored_role)
 
     @staticmethod
     def _delete_redundant_account_permissions(

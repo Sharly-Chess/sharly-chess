@@ -18,6 +18,7 @@ from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
 
+from data.account import Account
 from data.board import Board
 from data.criteria.managers import PlayerFilter
 from data.family import Family
@@ -33,6 +34,7 @@ from data.tie_breaks import (
 )
 from data.tournament_criterion import TournamentCriterion
 from database.sqlite.event.event_store import (
+    RoleKind,
     StoredPlayer,
     StoredBoard,
     StoredTournamentCriterion,
@@ -810,6 +812,26 @@ class Tournament:
     # -------------------------------------------------------------------------
     # Misc
     # -------------------------------------------------------------------------
+
+    @property
+    def chief_arbiter(self) -> Account | None:
+        for account in self.event.accounts_by_id.values():
+            role = account.get_role(RoleKind.CHIEF_ARBITER)
+            if role and role.tournament_ids and self.id in role.tournament_ids:
+                return account
+        return None
+
+    @property
+    def deputy_arbiters(self) -> list[Account]:
+        return [
+            account
+            for account in self.event.accounts_by_id.values()
+            if (
+                (role := account.get_role(RoleKind.DEPUTY_ARBITER))
+                and role.tournament_ids
+                and self.id in role.tournament_ids
+            )
+        ]
 
     @property
     def max_ranking_round(self) -> int:

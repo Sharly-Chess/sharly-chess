@@ -6,8 +6,9 @@ from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
 
+from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
-from utils.enum import Result
+from utils.enum import Result, StrEnum
 
 
 @dataclass
@@ -323,6 +324,44 @@ class StoredPermission:
     tournament_ids: list[int] | None = None
 
 
+class RoleKind(StrEnum):
+    CHIEF_ARBITER = 'chief_arbiter'
+    DEPUTY_ARBITER = 'deputy_arbiter'
+    ORGANISER = 'organiser'
+
+    @property
+    def is_tournament_bound(self) -> bool:
+        return self is not RoleKind.ORGANISER
+
+    @property
+    def sort_order(self) -> int:
+        """Defines display / logical order for roles."""
+        order_map = {
+            RoleKind.CHIEF_ARBITER: 0,
+            RoleKind.DEPUTY_ARBITER: 1,
+            RoleKind.ORGANISER: 2,
+        }
+        return order_map[self]
+
+    def __str__(self):
+        match self:
+            case RoleKind.CHIEF_ARBITER:
+                return _('Chief Arbiter')
+            case RoleKind.DEPUTY_ARBITER:
+                return _('Deputy Arbiter')
+            case RoleKind.ORGANISER:
+                return _('Organiser')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+
+@dataclass
+class StoredRole:
+    account_id: int
+    role: str
+    tournament_ids: list[int] | None = None
+
+
 @dataclass
 class StoredAccount:
     id: int | None
@@ -334,6 +373,7 @@ class StoredAccount:
     stored_permissions: list[StoredPermission] = field(
         default_factory=list[StoredPermission]
     )
+    stored_roles: list[StoredRole] = field(default_factory=list[StoredRole])
 
 
 @dataclass
