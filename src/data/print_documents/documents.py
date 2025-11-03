@@ -35,14 +35,14 @@ from data.print_documents.options import (
     PlaceCardPrintOption,
     PlaceCardTemplatePrintOption,
 )
-from data.print_documents.place_cards.place_card_data import (
+from data.print_documents.place_cards.data import (
     PlaceCardEvent,
     PlaceCardTournament,
 )
-from data.print_documents.place_cards.place_card_entities import (
+from data.print_documents.place_cards.template import (
     PlaceCardTemplate,
 )
-from data.print_documents.place_cards.place_card_types import PlaceCardType
+from data.print_documents.place_cards.types import PlaceCardType
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from utils import Utils

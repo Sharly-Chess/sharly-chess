@@ -7,7 +7,7 @@ from common.exception import OptionError
 from common.i18n import _
 from data.event import SharlyChessConfig
 from data.print_documents.pairing_styles import BoardsPairingStyle, PairingStyle
-from data.print_documents.place_cards.place_card_types import (
+from data.print_documents.place_cards.types import (
     PlayerCardType,
     PlaceCardType,
 )

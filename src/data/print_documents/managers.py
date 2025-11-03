@@ -7,11 +7,15 @@ from data.print_documents import (
     pairing_styles,
     qrcode_types,
 )
-from data.print_documents.place_cards import place_card_types
 from data.print_documents.documents import PrintDocument
 from data.print_documents.options import PrintOption
 from data.print_documents.pairing_styles import PairingStyle
-from data.print_documents.place_cards.place_card_types import PlaceCardType
+from data.print_documents.place_cards.types import (
+    PlaceCardType,
+    PlayerCardType,
+    BoardCardType,
+    PairingCardType,
+)
 from data.print_documents.player_sorters import PlayerSorter
 from data.print_documents.player_splitters import PlayerSplitter
 from data.print_documents.qrcode_types import QRCodeType
@@ -119,7 +123,7 @@ class PrintPlaceCardTypeManager(EntityManager[PlaceCardType]):
     @override
     def entity_types(self) -> list[type[PlaceCardType]]:
         return [
-            place_card_types.PlayerCardType,
-            place_card_types.BoardCardType,
-            place_card_types.PairingCardType,
+            PlayerCardType,
+            BoardCardType,
+            PairingCardType,
         ]

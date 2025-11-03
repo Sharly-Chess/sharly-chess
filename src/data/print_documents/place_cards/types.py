@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any
 from common import BASE_DIR
 from common.i18n import _
 from data.board import Board
-from data.print_documents.place_cards.place_card_data import (
+from data.print_documents.place_cards.data import (
     PlaceCardBoard,
     PlaceCardPlayer,
 )
