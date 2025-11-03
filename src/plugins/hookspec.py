@@ -36,6 +36,7 @@ if TYPE_CHECKING:
     from database.sqlite.local_source_database.databases import LocalSourceDatabase
     from plugins.migration import PluginMigrationManager
     from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
+    from web.utils import PlayerColumn
 
 hookspec = pluggy.HookspecMarker(APP_NAME)
 hookimpl = pluggy.HookimplMarker(APP_NAME)
@@ -296,6 +297,10 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
     # Printing
     # ---------------------------------------------------------------------------------
+
+    @hookspec
+    def alter_print_document_player_columns(self, player_columns: list['PlayerColumn']):
+        """Alter the player columns of a print document."""
 
     @hookspec
     def insert_print_player_splitter_types(

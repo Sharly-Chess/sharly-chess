@@ -19,6 +19,7 @@ from data.input_output.data_source import FideDataSource
 from data.pairings.managers import PairingVariationManager
 from data.pairings.variations import SwissVariation
 from data.print_documents import PlayerSplitter, PrintDocument
+from data.print_documents.columns import FederationColumn
 from data.print_documents.documents import PlayerPrintDocument, StatisticsPrintDocument
 from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.criteria.player_filter_options import PlayerFilterOption, ClubsFilterOption
@@ -70,6 +71,7 @@ from plugins.ffe.ffe_entity import (
     FfeLicenceFilterOption,
     FfeOnlineDataSource,
     FfeLeaguesFilterOption,
+    FfeLeagueColumn,
 )
 from plugins.ffe.ffe_event_controller import FfeAdminEventController
 from plugins.ffe.ffe_session_handler import FFESessionHandler
@@ -90,7 +92,7 @@ from plugins.utils import (
 
 from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController, WebContext
-
+from web.utils import PlayerColumn
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -829,6 +831,19 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
     # Printing
     # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def alter_print_document_player_columns(self, player_columns: list['PlayerColumn']):
+        index = next(
+            (
+                i
+                for i, column in enumerate(player_columns)
+                if isinstance(column, FederationColumn)
+            ),
+            None,
+        )
+        if index is not None:
+            player_columns.insert(index + 1, FfeLeagueColumn())
 
     @hookimpl
     def insert_print_player_splitter_types(

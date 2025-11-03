@@ -9,6 +9,7 @@ from common import format_timestamp
 from common.exception import SharlyChessException, OptionError
 from common.i18n import _, ngettext
 from common.i18n.utils import unicode_normalize
+from data.print_documents import columns
 from plugins.manager import plugin_manager
 from data.board import Board
 from data.pairings.engines import RoundRobinPairingEngine
@@ -34,6 +35,7 @@ from utils import Utils
 from utils.enum import Result
 from utils.types import PlayerTitle
 from utils.option import Option, OptionHandler
+from web.utils import PlayerColumn
 
 
 class PrintDocument(OptionHandler[PrintOption], ABC):
@@ -762,7 +764,26 @@ class PrizeAssignmentPrintDocument(PrintDocument):
                 Utils.currency_value_str,
                 currency=prize_currency,
             ),
+            'player_columns': self.player_columns,
         }
+
+    @property
+    def player_columns(self) -> list[PlayerColumn]:
+        player_columns: list[PlayerColumn] = [
+            columns.RankColumn(),
+            columns.TitleColumn(),
+            columns.NameColumn(),
+            columns.RatingColumn(),
+            columns.CategoryColumn(),
+            columns.GenderColumn(),
+            columns.FederationColumn(),
+            columns.ClubColumn(),
+            columns.PointsColumn(),
+        ]
+        plugin_manager.hook_for_event(
+            self.event, 'alter_print_document_player_columns'
+        )(player_columns=player_columns)
+        return player_columns
 
 
 @dataclass

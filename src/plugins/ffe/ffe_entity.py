@@ -39,6 +39,7 @@ from plugins.pairing_acceleration.pairing_variations import (
 )
 from plugins.utils import PluginUtils
 from utils.enum import Result
+from web.utils import PlayerColumn
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
@@ -603,3 +604,12 @@ class FfeLicenceFilterOption(SelectPlayerFilterOption[int]):
         self._validate_list_type(int)
         if not self.value:
             raise OptionError(_('At least one licence type is expected.'), self)
+
+
+class FfeLeagueColumn(PlayerColumn):
+    @property
+    def header_content(self) -> str:
+        return _('League *** LEAGUE FOR TABLE HEADER')
+
+    def get_cell_content(self, player: Player) -> str:
+        return FFEUtils.get_player_plugin_data(player).league or ''
