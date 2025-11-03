@@ -1,48 +1,6 @@
-{###########################################################################}
-{# DEFAULT ITEM STYLING                                                    #}
-{###########################################################################}
-{% set default_styling = {
-    'font_size': 14,
-    'font_weight': 'normal',
-    'font_style': 'normal',
-    'h_align': 'left',
-    'h_pos': 0,
-    'v_align': 'top',
-    'v_pos': 0,
-} %}
-
-{###########################################################################}
-{# NUMBER STYLING                                                          #}
-{###########################################################################}
-{% set number_styling = {
-    'font_size': 48,
-    'font_weight': 'bold',
-    'h_align': 'right',
-    'v_align': 'bottom',
-} %}
-
-{###########################################################################}
-{# TOURNAMENT STYLING                                                      #}
-{###########################################################################}
-{% set tournament_styling = {
-    'font_style': 'italic',
-    'v_align': 'top',
-} %}
-
 {% extends '/admin/print/place_cards/_.html' %}
 
-{% block card_css %}
-    .card-content {
-        background-position: left bottom;
-    }
-    .number, .number * { {{ item_styling(number_styling, default_styling) }} }
-    .tournament, .tournament * { {{ item_styling(tournament_styling, default_styling) }} }
-{% endblock %}
-
-{% block card_js %}
-{% endblock %}
-
-{% block card_content %}
+{% block cards %}
     {% for board in boards %}
         <div class="card-wrapper">
             <div class="card">
@@ -52,7 +10,7 @@
                 <div class="card-cell middle left"></div>
                 <div class="card-content">
                     {% for item in items %}
-                        {{ item.render_html(event=event, tournament=tournament, board=none, player=player) | safe }}
+                        {{ item.render_html(event=event, tournament=tournament, board=board, player=none) | safe }}
                     {% endfor %}
                 </div>
                 <div class="card-cell middle right"></div>

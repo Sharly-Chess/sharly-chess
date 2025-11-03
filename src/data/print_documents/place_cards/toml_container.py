@@ -100,7 +100,7 @@ class TOMLContainer:
                 logger.warning(
                     '[%s]: value [%s] not accepted for custom property [%s] of section [%s] (accepted values: [%s]), defaults to  [%s].',
                     self.toml_file.name,
-                    self.data[property],
+                    value,
                     property,
                     section,
                     ', '.join(values),
@@ -110,7 +110,7 @@ class TOMLContainer:
                 logger.warning(
                     '[%s]: value [%s] not accepted for custom property [%s] (accepted values: [%s]), defaults to  [%s].',
                     self.toml_file.name,
-                    self.data[property],
+                    value,
                     property,
                     ', '.join(values),
                     default,

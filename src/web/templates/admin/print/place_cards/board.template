@@ -1,3 +1,34 @@
 type = "board"
-name = "Default Board Cards"
+name = "{{ _('Sharly Chess Board Cards') }}"
 creator = "Sharly Chess <support@sharly-chess.com>"
+
+[default]
+font_size = 14.0
+bold = false
+italic = false
+h_align = "left"
+v_align = "top"
+h_pos = 0.0
+v_pos = 0.0
+
+[number]
+text = "{{ _('Board %(number)s', number=board.number) }}"
+font_size = 56.0
+bold = true
+h_align = "right"
+v_align = "bottom"
+h_pos = 5
+v_pos = -7.5
+
+[tournament]
+italic = true
+text = "{{ tournament.name }}"
+h_align = "center"
+v_align = "top"
+
+[logo]
+image = "sharly-chess-logo.svg"
+width = 25
+opacity = 0.25
+h_align = "left"
+v_align = "bottom"
