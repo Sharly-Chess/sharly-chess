@@ -782,10 +782,6 @@ msgstr "Échiquier n°%(board_number)d avec les %(color)s"
 msgid "Board %(board_number)s"
 msgstr "Échiquier %(board_number)s"
 
-#, python-format
-msgid "Board %(number)s"
-msgstr "Table %(number)s"
-
 msgid "Board & color"
 msgstr "Échiquier & couleur"
 
@@ -4522,9 +4518,6 @@ msgstr "Tout sélectionner"
 msgid "Select player"
 msgstr "Sélectionner un·e joueur·euse"
 
-msgid "Select template"
-msgstr "Choisir le modèle"
-
 msgid "Select the players and the data to update:"
 msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"
 
@@ -4573,6 +4566,9 @@ msgstr "Prix partagés"
 
 msgid "Sharing threshold"
 msgstr "Seuil de partage"
+
+msgid "Sharly Chess Player Cards"
+msgstr "Chevalets des joueur·euses « Sharly Chess »"
 
 msgid "Sharly Chess Server"
 msgstr "Serveur Sharly Chess"

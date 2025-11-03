@@ -782,10 +782,6 @@ msgstr ""
 msgid "Board %(board_number)s"
 msgstr ""
 
-#, python-format
-msgid "Board %(number)s"
-msgstr ""
-
 msgid "Board & color"
 msgstr ""
 
@@ -4522,9 +4518,6 @@ msgstr ""
 msgid "Select player"
 msgstr ""
 
-msgid "Select template"
-msgstr ""
-
 msgid "Select the players and the data to update:"
 msgstr ""
 
@@ -4572,6 +4565,9 @@ msgid "Shared prizes"
 msgstr ""
 
 msgid "Sharing threshold"
+msgstr ""
+
+msgid "Sharly Chess Player Cards"
 msgstr ""
 
 msgid "Sharly Chess Server"

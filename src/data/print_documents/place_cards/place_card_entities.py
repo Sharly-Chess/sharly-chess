@@ -5,11 +5,11 @@ from pathlib import Path
 from typing import Any, Optional
 
 import toml
-from jinja2 import TemplateSyntaxError, UndefinedError
 from toml import TomlDecodeError
 
 from common import BASE_DIR
 from common.i18n import _
+from common.i18n.utils import parse_jinja_string
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.print_documents.place_cards.place_card_data import (
@@ -18,7 +18,7 @@ from data.print_documents.place_cards.place_card_data import (
     PlaceCardPlayer,
     PlaceCardBoard,
 )
-from utils.file import image_file_inline_url
+from utils.file import image_file_inline_url, ttf_file_inline_url
 
 logger: logging.Logger = get_logger()
 
@@ -321,13 +321,6 @@ class PlaceCardItemStyle:
         for property in data.get_section_properties(section):
             if property not in self.allowed_properties:
                 logger.warning('Unknown property [%s], ignored.', property)
-        self.raw_content: str = (
-            ''
-            if default_style is None
-            else data.get_str(
-                section=section, property='content', default=_('No content.')
-            )
-        )
         self.font_size: float = data.get_float(
             section=section,
             property='font_size',
@@ -365,10 +358,10 @@ class PlaceCardItemStyle:
             property='v_pos',
             default=default_style.v_pos if default_style else 0.0,
         )
-        self.max_width: float | None = data.get_opt_float(
+        self.opacity: float = data.get_float(
             section=section,
-            property='max_width',
-            default=default_style.max_width if default_style else None,
+            property='opacity',
+            default=1.0,
         )
 
     @property
@@ -383,11 +376,11 @@ class PlaceCardItemStyle:
             'v_align',
             'h_pos',
             'v_pos',
-            'max_width',
+            'opacity',
         ]
 
     def __str__(self) -> str:
-        return f'{self.__class__.__name__}({self.font_size=}, {self.bold=}, {self.italic=}, {self.h_align=}, {self.h_pos=}, {self.v_align=}, {self.v_pos=}, {self.max_width=})'
+        return f'{self.__class__.__name__}({self.font_size=}, {self.bold=}, {self.italic=}, {self.h_align=}, {self.h_pos=}, {self.v_align=}, {self.v_pos=}, {self.opacity=})'
 
 
 class PlaceCardItem(PlaceCardItemStyle, ABC):
@@ -405,6 +398,26 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
         self.display: bool = data.get_bool(
             section=section, property='display', default=True
         )
+        self.width: float = data.get_float(
+            section=section,
+            property='width',
+            default=None,
+        )
+        self.height: float = data.get_float(
+            section=section,
+            property='height',
+            default=None,
+        )
+        self.max_width: float | None = data.get_opt_float(
+            section=section,
+            property='max_width',
+            default=None,
+        )
+        self.css: str = data.get_str(
+            section=section,
+            property='css',
+            default='',
+        )
 
     @property
     @abstractmethod
@@ -418,6 +431,10 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
     ) -> list[str]:
         return super().allowed_properties + [
             'display',
+            'width',
+            'height',
+            'max_width',
+            'css',
         ]
 
     def render_error(
@@ -426,6 +443,7 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
     ) -> str:
         return f'<i class="bi bi-bug-fill"></i> {self.id}: {message}'
 
+    @abstractmethod
     def render_html(
         self,
         event: PlaceCardEvent,
@@ -433,64 +451,67 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
         board: PlaceCardBoard | None = None,
         player: PlaceCardPlayer | None = None,
     ) -> str:
-        return (
-            f'<div class="card-item {self.css_class}">{self.render_inner_html(event, tournament, board, player)}</div>'
-            if self.display
-            else ''
-        )
-
-    @abstractmethod
-    def render_inner_html(
-        self,
-        event: PlaceCardEvent,
-        tournament: PlaceCardTournament,
-        board: PlaceCardBoard | None = None,
-        player: PlaceCardPlayer | None = None,
-    ) -> str:
+        """Returns the HTML to output for the item."""
         pass
 
     def render_css(
         self,
         unit: str,
     ) -> str:
-        css: list[str] = [
+        """Returns the CSS for the item."""
+        div_css: list[str] = [
+            f'font-size: {self.font_size}pt',
+            f'font-weight: {"bold" if self.bold else "normal"}',
+            f'font-style: {"italic" if self.italic else "normal"}',
+            f'opacity: {self.opacity}',
+        ]
+        inner_css: list[str] = [
+            # the font style must be set to inner elements to apply to the federation flags.
             f'font-size: {self.font_size}pt',
             f'font-weight: {"bold" if self.bold else "normal"}',
             f'font-style: {"italic" if self.italic else "normal"}',
         ]
+        if self.width:
+            div_css += [f'width: {self.width}{unit}']
+        if self.height:
+            div_css += [f'height: {self.height}{unit}']
         match self.h_align:
             case 'left':
-                css += [
+                div_css += [
                     f'left: {self.h_pos}{unit}',
                     'text-align: left',
                 ]
             case 'center':
-                css += [
+                div_css += [
                     'width: 100%',
                     'text-align: center',
                 ]
             case 'right':
-                css += [
+                div_css += [
                     f'right: {self.h_pos}{unit}',
                     'text-align: right',
                 ]
         match self.v_align:
             case 'top':
-                css += [
+                div_css += [
                     f'top: {self.v_pos}{unit}',
                 ]
             case 'middle':
-                css += [
+                div_css += [
                     'width: 100%',
                     'text-align: center',
                 ]
             case 'bottom':
-                css += [
+                div_css += [
                     f'bottom: {self.v_pos}{unit}',
                 ]
         if self.max_width is not None:
-            css += [f'max-width: {self.max_width}{unit}']
-        return f'.{self.css_class}, .{self.css_class} * {{\n{"\n".join(f"{css_entry};" for css_entry in css)}\n}}\n'
+            div_css += [f'max-width: {self.max_width}{unit}']
+        return (
+            f'.{self.css_class} {{\n{"\n".join(f"{css_entry};" for css_entry in div_css)}\n}}\n'
+            + f'.{self.css_class} * {{\n{"\n".join(f"{css_entry};" for css_entry in inner_css)}\n}}\n'
+            + f'.{self.css_class} {{\n{self.css}\n}}\n'
+        )
 
     def render_js(
         self,
@@ -508,8 +529,8 @@ class PlaceCardText(PlaceCardItem):
         default_style: PlaceCardItemStyle,
     ):
         super().__init__(data, section, default_style)
-        self.raw_content: str = data.get_str(
-            section=section, property='content', default=_(f'[{self.id}]: No content.')
+        self.raw_text: str = data.get_str(
+            section=section, property='text', default=_(f'[{self.id}]: No text.')
         )
 
     @property
@@ -521,47 +542,32 @@ class PlaceCardText(PlaceCardItem):
         self,
     ) -> list[str]:
         return super().allowed_properties + [
-            'content',
+            'text',
         ]
 
-    def render_inner_html(
+    def render_html(
         self,
         event: PlaceCardEvent,
         tournament: PlaceCardTournament,
         board: PlaceCardBoard | None = None,
         player: PlaceCardPlayer | None = None,
     ) -> str:
-        from web.settings import template_engine
-
-        try:
-            return template_engine.render_string(
-                template_string=self.raw_content,
-                context={
-                    'event': event,
-                    'tournament': tournament,
-                    'board': board,
-                    'player': player,
-                },
-            )
-        except TemplateSyntaxError as tse:
-            logger.warning(
-                'Syntax error while parsing [%s]: [%s]', self.raw_content, tse
-            )
-            return self.render_error('Syntax error')
-        except UndefinedError as ue:
-            logger.warning(
-                'Undefined error while parsing [%s]: [%s]', self.raw_content, ue
-            )
-            return self.render_error('Undefined error')
-
-    def render_css(
-        self,
-        unit: str,
-    ) -> str:
-        css: dict[str, str] = {}
+        if not self.display:
+            return ''
+        content: str = parse_jinja_string(
+            template_string=self.raw_text,
+            context={
+                'event': event,
+                'tournament': tournament,
+                'board': board,
+                'player': player,
+            },
+            on_error=self.render_error('Jinja error'),
+        )
         return (
-            super().render_css(unit)
-            + f'.{self.css_class}, .{self.css_class} * {{\n{"\n".join(f"{css_entry};" for css_entry in css)}\n}}\n'
+            f'<div class="card-item {self.css_class}">{content}</div>'
+            if self.display
+            else ''
         )
 
 
@@ -574,14 +580,12 @@ class PlaceCardImage(PlaceCardItem):
         section: str,
         default_style: PlaceCardItemStyle,
         image_path: Path,
+        unit: str,
     ):
         super().__init__(data, section, default_style)
         self.image: str = data.get_str(section=section, property='image')
-        self.width: float = data.get_float(section=section, property='width')
-        self.height: float = data.get_float(section=section, property='height')
-        self.opacity: float = data.get_float(section=section, property='opacity')
         if not self.width and not self.height:
-            # self.width = self.height = 100.0
+            self.width = self.height = 30.0 if unit == 'mm' else 1.0
             logger.warning(
                 'Use [width] or [height] in section [%s] to size the image (defaults to %sx%s).',
                 section,
@@ -600,9 +604,66 @@ class PlaceCardImage(PlaceCardItem):
     ) -> list[str]:
         return super().allowed_properties + [
             'image',
-            'height',
-            'width',
-            'opacity',
+        ]
+
+    def render_html(
+        self,
+        event: PlaceCardEvent,
+        tournament: PlaceCardTournament,
+        board: PlaceCardBoard | None = None,
+        player: PlaceCardPlayer | None = None,
+    ) -> str:
+        return f'<img class="card-item image {self.css_class}" />'
+
+    def render_js(
+        self,
+    ) -> str:
+        file: Path = self.image_path / self.image
+        error: bool = False
+        if not file.parent.samefile(self.image_path):
+            logger.warning('Invalid image filename [%s].', self.image)
+            error = True
+        elif not file.is_file():
+            logger.warning('Image file [%s] not found.', file)
+            error = True
+        if error:
+            return f"""
+            $(document).ready(function() {{
+                $(".card-item.{self.css_class}").addClass("error");
+            }});
+            """
+        else:
+            return f"""
+            $(document).ready(function() {{
+                $(".card-item.{self.css_class}").attr("src", "{image_file_inline_url(file)}");
+            }});
+            """
+
+
+class PlaceCardTrueTypeFont(PlaceCardItem):
+    """A class to store a font item of a place card."""
+
+    def __init__(
+        self,
+        data: PlaceCardCustomDataContainer,
+        section: str,
+        default_style: PlaceCardItemStyle,
+        font_path: Path,
+    ):
+        super().__init__(data, section, default_style)
+        self.font: str = data.get_str(section=section, property='font')
+        self.font_path: Path = font_path
+
+    @property
+    def type(self) -> str:
+        return 'font'
+
+    @property
+    def allowed_properties(
+        self,
+    ) -> list[str]:
+        return [
+            'font',
         ]
 
     def render_inner_html(
@@ -612,48 +673,27 @@ class PlaceCardImage(PlaceCardItem):
         board: PlaceCardBoard | None = None,
         player: PlaceCardPlayer | None = None,
     ) -> str:
-        return f'<img class="image {self.css_class}" />'
+        return ''
 
-    def render_css(
+    def render_inner_css(
         self,
         unit: str,
     ) -> str:
-        css: list[str] = []
-        if self.width:
-            css += [f'width: {self.width}{unit}']
-        if self.height:
-            css += [f'height: {self.height}{unit}']
-        if self.opacity:
-            css += [f'opacity: {self.opacity}']
-        return (
-            super().render_css(unit)
-            + f'.{self.css_class}, .{self.css_class} * {{\n{"\n".join(f"{css_entry};" for css_entry in css)}\n}}\n'
-        )
-
-    def render_js(
-        self,
-    ) -> str:
-        file: Path = self.image_path / self.image
-        error: str = ''
-        if not file.parent.samefile(self.image_path):
-            logger.warning('Invalid image filename [%s].', self.image)
-            error = 'Invalid filename'
+        file: Path = self.font_path / self.font
+        if not file.parent.samefile(self.font_path):
+            logger.warning('Invalid font filename [%s].', self.font)
         elif not file.is_file():
-            logger.warning('Image file [%s] not found.', file)
-            error = 'File not found'
-        if error:
-            return f"""
-            $(document).ready(function() {{
-                $(".card-item.{self.css_class}").html("{self.render_error(error).replace('"', '\\"')}");
-                $(".card-item.{self.css_class}").addClass("error");
-            }});
-            """
-        else:
-            return f"""
-            $(document).ready(function() {{
-                $(".card-item.{self.css_class} img").attr("src", "{image_file_inline_url(file)}");
-            }});
-            """
+            logger.warning('Font file [%s] not found.', file)
+        return f"""
+@font-face {{
+    font-family: "{self.id}";
+    src: url("{ttf_file_inline_url(file)}") format("truetype");
+    /* font-weight: 400 900; */
+}}
+* {{
+    font-family: {self.id}, sans-serif;
+}}
+"""
 
 
 class PlaceCardTemplate:
@@ -687,6 +727,7 @@ class PlaceCardTemplate:
                     | 'cutting_marks'
                     | 'css'
                     | 'js'
+                    | 'font'
                 ):
                     pass
                 case _:
@@ -701,7 +742,10 @@ class PlaceCardTemplate:
         self.template_name: str = (
             f'/admin/print/place_cards/{self.type.static_id()}.html'
         )
-        self.name: str = custom_data.get_str('name', default=toml_file.stem)
+        self.name: str = (
+            parse_jinja_string(template_string=custom_data.get_str('name', default=''))
+            or toml_file.stem
+        )
         self.creator: str = custom_data.get_str('creator', default=_('Unknown'))
         self.unit: str = custom_data.get_str(
             'unit',
@@ -719,6 +763,7 @@ class PlaceCardTemplate:
         )
         self.css: str = custom_data.get_str('css', default='')
         self.js: str = custom_data.get_str('js', default='')
+        self.font: str = custom_data.get_str('font', default='')
         default_item_style: PlaceCardItemStyle = PlaceCardItemStyle(
             custom_data, section='default'
         )
@@ -735,6 +780,7 @@ class PlaceCardTemplate:
                         image_path=BASE_DIR / 'src/web/static/images'
                         if self.embedded
                         else SharlyChessConfig.custom_place_cards_path / 'images',
+                        unit=self.unit,
                     )
                 )
             else:
@@ -749,7 +795,35 @@ class PlaceCardTemplate:
         self.error = custom_data.error
 
     @property
+    def font_file(self) -> Path:
+        default_file: Path = (
+            BASE_DIR / 'src/web/static/fonts/AtkinsonHyperlegibleNextVF-Variable.ttf'
+        )
+        if not self.font:
+            return default_file
+        font_path: Path = SharlyChessConfig.custom_place_cards_path / 'fonts'
+        file: Path = font_path / self.font
+        if not file.parent.samefile(font_path):
+            logger.warning('Invalid font filename [%s].', self.font)
+            return default_file
+        if not file.is_file():
+            logger.warning('Font file [%s] not found.', file)
+            return default_file
+        return file
+
+    @property
     def template_context(self) -> dict[str, Any]:
+        file: Path = self.font_file
+        font_css: str = f"""
+@font-face {{
+    font-family: "{file.stem}";
+    src: url("{ttf_file_inline_url(file)}") format("truetype");
+    /* font-weight: 400 900; */
+}}
+* {{
+    font-family: {file.stem}, sans-serif;
+}}
+"""
         return {
             'error': self.error,
             'unit': self.unit,
@@ -758,7 +832,7 @@ class PlaceCardTemplate:
             'height': self.height,
             'padding': self.padding,
             'cutting_marks': self.cutting_marks,
-            'template_css': self.css,
+            'template_css': font_css + self.css,
             'template_js': self.js,
             'items': self.items,
         }

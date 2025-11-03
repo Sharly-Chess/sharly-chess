@@ -1,15 +1,6 @@
 {% extends '/admin/print/base.html' %}
 
 {% block css %}
-    @font-face {
-        font-family: "AtkinsonHyperlegibleNextVF";
-        src: url("{{ sharly_chess_font_inline_url }}") format("truetype");
-        font-weight: 400 900;
-        font-style: normal;
-    }
-    * {
-        font-family: AtkinsonHyperlegibleNextVF, sans-serif;
-    }
     @media print {
         body {
             -webkit-print-color-adjust: exact;
@@ -93,10 +84,10 @@
     .federation-flag {
         height: 0.75em;
     }
+    {{ template_css | safe }}
     {% for item in items %}
         {{ item.render_css(unit) | safe  }}
     {% endfor %}
-    {{ template_css | safe }}
 {% endblock %}
 
 {% block js %}
