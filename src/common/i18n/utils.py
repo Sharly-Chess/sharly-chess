@@ -5,6 +5,8 @@ from string import capwords
 from babel import Locale
 from typing import Any
 
+from jinja2 import TemplateError
+
 
 def locale_flag_url(locale: str):
     """Returns the uri of a locale to the image of its flag."""
@@ -39,3 +41,19 @@ def by(*attrs: str) -> Callable[[Any], tuple[str, ...]]:
     """Return a normalized sort key function for one or more string attributes."""
     getters = [attrgetter(a) for a in attrs]
     return lambda obj: tuple(normalized_key(g(obj)) for g in getters)
+
+
+def parse_jinja_string(
+    template_string: str,
+    context: dict[str, Any] | None = None,
+    on_error: str | None = None,
+) -> str:
+    from web.settings import template_engine
+
+    try:
+        return template_engine.render_string(
+            template_string=template_string,
+            context=context or {},
+        )
+    except TemplateError as te:
+        return on_error or str(te)
