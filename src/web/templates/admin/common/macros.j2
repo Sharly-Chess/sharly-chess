@@ -1324,11 +1324,9 @@ with_indicator: display a loading indicator, optional
                 }
                 $option.text(newText);
 
-                e.preventDefault();
-            });
+                $('#{{ id }}-select + .select2 input').focus();
 
-            $('#{{ id }}-select').focus(function() {
-                $('#{{ id }}-select-container').addClass('focus');
+                e.preventDefault();
             });
         </script>
         <button
