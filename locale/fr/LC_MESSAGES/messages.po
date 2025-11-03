@@ -4572,10 +4572,10 @@ msgid "Sharing threshold"
 msgstr "Seuil de partage"
 
 msgid "Sharly Chess Board Cards"
-msgstr "Chevalets des échiquiers « Sharly Chess »"
+msgstr "Chevalets d'échiquier « Sharly Chess »"
 
 msgid "Sharly Chess Pairing Cards"
-msgstr ""
+msgstr "Chevalets d'appariement « Sharly Chess »"
 
 msgid "Sharly Chess Player Cards"
 msgstr "Chevalets des joueur·euses « Sharly Chess »"
