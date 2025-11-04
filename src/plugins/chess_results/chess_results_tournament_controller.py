@@ -35,7 +35,7 @@ class ChessResultsAdminTournamentController(BaseEventAdminController):
     @post(
         path='/chess-results/upload-tournament/{event_uniq_id:str}/{tournament_id:int}',
         name='chess-results-upload-single-tournament',
-        guards=[TournamentActionGuard(AuthAction.PUBLISH_RULES)],
+        guards=[TournamentActionGuard(AuthAction.PUBLISH_RESULTS)],
     )
     async def htmx_chess_results_upload_tournament(
         self,
@@ -43,11 +43,7 @@ class ChessResultsAdminTournamentController(BaseEventAdminController):
         tournament_id: int,
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
-
-        admin_event = web_context.admin_event
-        assert admin_event is not None
-        tournament = web_context.admin_tournament
-        assert tournament is not None
+        tournament = web_context.get_admin_tournament()
 
         result: ChessResultsUploadResult | None = (
             ChessResultsBackgroundUploader.get_updated_tournament_upload_result(
@@ -71,27 +67,15 @@ class ChessResultsAdminTournamentController(BaseEventAdminController):
         if result:
             match result.status:
                 case ChessResultsUploadStatus.ERROR:
-                    Message.error(
-                        request,
-                        result.message,
-                    )
+                    Message.error(request, result.message)
                 case ChessResultsUploadStatus.INFO:
-                    Message.info(
-                        request,
-                        result.message,
-                    )
+                    Message.info(request, result.message)
                 case (
                     ChessResultsUploadStatus.SUCCESS
                     | ChessResultsUploadStatus.SETTINGS_ERROR
                 ):
-                    Message.success(
-                        request,
-                        result.message,
-                    )
+                    Message.success(request, result.message)
         else:
-            Message.error(
-                request,
-                _('Unable to upload tournament.'),
-            )
+            Message.error(request, _('Unable to upload tournament.'))
 
         return self.render_messages(request)
