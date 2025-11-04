@@ -21,6 +21,7 @@ from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
 from data.player import Player, TournamentRating
 from data.print_documents.options import (
     PairingStylePrintOption,
+    PlaceCardFoldablePrintOption,
     PlayerPrintOption,
     PlayerSplitPrintOption,
     PrintOption,
@@ -1120,6 +1121,7 @@ class PlaceCardPrintDocument(PrintDocument):
             PlaceCardTemplatePrintOption,
             TournamentPrintOption,
             RoundPrintOption,
+            PlaceCardFoldablePrintOption,
         ]
 
     @property
@@ -1132,6 +1134,7 @@ class PlaceCardPrintDocument(PrintDocument):
             ),
             'event': PlaceCardEvent(self.event),
             'tournament': PlaceCardTournament(self.tournament),
+            'foldable': self.get_option_values()[4],
         }
         card_type_context: dict[str, Any] = self._get_option(
             PlaceCardPrintOption

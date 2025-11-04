@@ -9,13 +9,31 @@
             print-color-adjust: exact;
         }
     }
+    body > div {
+        display: contents;
+    }
+    body > div > * {
+        float: left;
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+    .foldable-sheet {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+    .foldable-sheet .card-fold-line {
+        align-self: stretch;
+        height: 0;
+        border-top: 1px dashed #ccc;
+        margin: 0;
+    }
     .card-item.error {
         color: rgb(255, 0, 0);
         background-color: rgb(255, 220, 220);
         opacity: 1.0;
     }
     .card {
-        float: left;
         display: grid;
         width: {{ width }}{{ unit }};
         height: {{ height }}{{ unit }};
@@ -68,10 +86,20 @@
         .card-cell.top.left, .card-cell.bottom.left {
             border-left: {{ border_value }};
         }
+        .mirrored .card-cell.bottom.left,
+        .mirrored .card-cell.bottom.right,
+        .card-fold-line + .card-wrapper .card-cell.top.left,
+        .card-fold-line + .card-wrapper .card-cell.top.right {
+            border: 0;
+        }
     {% endif %}
     .card-content {
         position: relative;
         background-color: rgba(255, 255, 255, 0.6);
+    }
+    .mirrored .card-content {
+        transform: rotate(180deg);
+        transform-origin: center center;
     }
     .card-item {
         position: absolute;

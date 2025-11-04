@@ -25,11 +25,13 @@ class PlaceCardType(IdentifiableEntity, ABC):
         from data.print_documents.options import (
             TournamentPrintOption,
             PlaceCardTemplatePrintOption,
+            PlaceCardFoldablePrintOption,
         )
 
         return [
             PlaceCardTemplatePrintOption.static_id(),
             TournamentPrintOption.static_id(),
+            PlaceCardFoldablePrintOption.static_id(),
         ]
 
     @classmethod
