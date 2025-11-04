@@ -34,6 +34,7 @@ from data.print_documents.options import (
     TournamentsPrintOption,
     PlaceCardPrintOption,
     PlaceCardTemplatePrintOption,
+    PlaceCardMirrorPrintOption,
 )
 from data.print_documents.place_cards.data import (
     PlaceCardEvent,
@@ -1123,6 +1124,7 @@ class PlaceCardPrintDocument(PrintDocument):
             PlaceCardTemplatePrintOption,
             TournamentPrintOption,
             RoundPrintOption,
+            PlaceCardMirrorPrintOption,
         ]
 
     @property
@@ -1133,13 +1135,15 @@ class PlaceCardPrintDocument(PrintDocument):
             'tournament': PlaceCardTournament(self.tournament),
             'round': self.at_round,
         }
-        card_type_context: dict[str, Any] = self._get_option(
-            PlaceCardPrintOption
-        ).place_card_type.template_context(self)
         card_template_context: dict[str, Any] = self._get_option(
             PlaceCardTemplatePrintOption
-        ).place_card_template.template_context
-        return document_context | card_type_context | card_template_context
+        ).place_card_template.template_context(
+            tournament=self.tournament,
+            round_=self.at_round,
+            place_card_type=self._get_option(PlaceCardPrintOption).place_card_type,
+            mirror=self.get_option_values()[4],
+        )
+        return document_context | card_template_context
 
     @staticmethod
     def validate_for_tournament(tournament: Tournament) -> str | None:

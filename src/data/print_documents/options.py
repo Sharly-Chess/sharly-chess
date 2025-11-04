@@ -470,3 +470,17 @@ class PlaceCardTemplatePrintOption(PrintOption):
             ]
             for place_card_type, place_card_templates in PlaceCardPrintDocument.get_place_card_templates_by_type().items()
         }
+
+
+class PlaceCardMirrorPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'place-card-mirror'
+
+    @property
+    def type(self) -> type | UnionType:
+        return bool
+
+    @property
+    def default_value(self) -> Any:
+        return False

@@ -7,6 +7,9 @@ from common.i18n import _
 from common.i18n.utils import parse_jinja_string
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
+from data.board import Board
+from data.player import Player
+from data.print_documents.place_cards.data import PlaceCardBoard, PlaceCardPlayer
 from data.print_documents.place_cards.item_style import PlaceCardItemStyle
 from data.print_documents.place_cards.items import (
     PlaceCardItem,
@@ -14,7 +17,9 @@ from data.print_documents.place_cards.items import (
     PlaceCardText,
 )
 from data.print_documents.place_cards.toml_container import TOMLContainer
-from utils.file import ttf_file_inline_url
+from data.print_documents.place_cards.types import PlaceCardType
+from data.tournament import Tournament
+from utils.file import ttf_file_inline_url, image_file_inline_url
 
 logger: logging.Logger = get_logger()
 
@@ -134,61 +139,163 @@ class PlaceCardTemplate:
             return default_file
         return file
 
-    @property
-    def template_context(self) -> dict[str, Any]:
+    def template_context(
+        self,
+        tournament: Tournament,
+        round_: int,
+        place_card_type: PlaceCardType,
+        mirror: bool,
+    ) -> dict[str, Any]:
         file: Path = self.font_file
-        font_css: str = f"""
-@font-face {{
-    font-family: "{file.stem}";
-    src: url("{ttf_file_inline_url(file)}") format("truetype");
-}}
-* {{
-    font-family: {file.stem}, sans-serif;
-}}
+        border_value = '1px solid black'
+        css: dict[str, dict[str, str]] = {
+            '@font-face': {
+                'font-family': f'"{file.stem}"',
+                'src': f'url("{ttf_file_inline_url(file)}") format("truetype")',
+            },
+            '*': {
+                'font-family': f'{file.stem}, sans-serif',
+            },
+            '.card-wrapper': {
+                'float': 'left',
+                'width': f'{self.width}{self.unit}',
+                'height': f'{(2 if mirror else 1) * self.height}{self.unit}',
+                'page-break-inside': 'avoid',
+                'position': 'relative',
+            },
+            '.card': {
+                'display': 'grid',
+                'width': f'{self.width}{self.unit}',
+                'height': f'{self.height}{self.unit}',
+                'top': f'{self.height if mirror else 0.0}{self.unit}',
+                'grid-template-columns': f'{self.padding}{self.unit} auto {self.padding}{self.unit}',
+                'grid-auto-flow': 'row',
+                'position': 'absolute',
+            },
+            '.card.disposition-original': {},
+            '.card.disposition-mirrored-up': {
+                'transform': 'rotate(180deg)',
+                'transform-origin': 'top center',
+            },
+            '.card-cell.top, .card-cell.bottom': {
+                'height': f'{self.padding}{self.unit}',
+            },
+            '.card-cell.middle, .card-content': {
+                'height': f'{self.height - 2 * self.padding}{self.unit}',
+            },
+            '.card-cell.left, .card-cell.right': {
+                'width': f'{self.padding}{self.unit}',
+            },
+            '.card-cell.center, .card-content': {
+                'width': f'{self.width - 2 * self.padding}{self.unit}',
+            },
+        }
+        match self.cutting_marks:
+            case 'border':
+                css['.card-cell.top'] = {
+                    'border-top': border_value,
+                }
+                css['.card-cell.right'] = {
+                    'border-right': border_value,
+                }
+                css['.card-cell.bottom'] = {
+                    'border-bottom': border_value,
+                }
+                css['.card-cell.left'] = {
+                    'border-left': border_value,
+                }
+            case 'corners':
+                css['.card-cell.top.left, .card-cell.top.right'] = {
+                    'border-top': border_value,
+                }
+                css['.card-cell.top.right, .card-cell.bottom.right'] = {
+                    'border-right': border_value,
+                }
+                css['.card-cell.bottom.left, .card-cell.bottom.right'] = {
+                    'border-bottom': border_value,
+                }
+                css['.card-cell.top.left, .card-cell.bottom.left'] = {
+                    'border-left': border_value,
+                }
+            case 'none':
+                pass
+        css |= {
+            '.card-content': {
+                'position': 'relative',
+                'background-color': 'rgba(255, 255, 255, 0.6)',
+            },
+            '.card-item-wrapper': {
+                'position': 'absolute',
+                'top': '0.0',
+                'left': '0.0',
+                'overflow': 'hidden',
+                'white-space': 'nowrap',
+                'text-overflow': 'ellipsis',
+                'background-color': 'transparent',
+                'width': f'{self.width - 2 * self.padding}{self.unit}',
+                'height': f'{self.height - 2 * self.padding}{self.unit}',
+            },
+            '.card-item': {
+                'overflow': 'hidden',
+                'white-space': 'nowrap',
+                'text-overflow': 'ellipsis',
+                'background-color': 'transparent',
+                'max-width': f'{self.width - 2 * self.padding}{self.unit}',
+            },
+            '.federation-flag': {
+                'height': '0.75em',
+            },
+            '.card-item.error': {
+                'color': 'rgb(255, 0, 0)',
+                'background-color': 'rgb(255, 220, 220)',
+                'opacity': '1.0',
+            },
+        }
+        players: list[Player] = place_card_type.players(tournament)
+        boards: list[Board] = place_card_type.boards(tournament, round_)
+        federation_names = (
+            set(
+                board.white_player.federation.name
+                for board in boards
+                if board.black_player
+            )
+            .union(
+                set(
+                    board.black_player.federation.name
+                    for board in boards
+                    if board.black_player
+                )
+            )
+            .union(set(player.federation.name for player in players))
+        )
+        federation_flag_urls: dict[str, str] = {
+            name: image_file_inline_url(
+                BASE_DIR / f'src/web/static/images/federations/{name}.svg'
+            )
+            for name in federation_names
+        }
+        js = f"""
+    $(document).ready(function() {{
+        {'\n'.join(f'$(".federation-flag.{name}").attr("src", "{url}");\n' for name, url in federation_flag_urls.items())}
+    }});
 """
-        content_css: dict[str, str] = {
-            'position': 'relative',
-            'background-color': 'rgba(255, 255, 255, 0.6)',
-        }
-        wrapper_css: dict[str, str] = {
-            'position': 'absolute',
-            'top': '0.0',
-            'left': '0.0',
-            'overflow': 'hidden',
-            'white-space': 'nowrap',
-            'text-overflow': 'ellipsis',
-            'background-color': 'transparent',
-            'width': f'{self.width - 2 * self.padding}{self.unit}',
-            'height': f'{self.height - 2 * self.padding}{self.unit}',
-        }
-        item_css: dict[str, str] = {
-            'overflow': 'hidden',
-            'white-space': 'nowrap',
-            'text-overflow': 'ellipsis',
-            'background-color': 'transparent',
-            'max-width': f'{self.width - 2 * self.padding}{self.unit}',
-        }
-        federation_flag_css: dict[str, str] = {
-            'height': '0.75em',
-        }
         return {
             'error': self.error,
+            'mirror': mirror,
             'unit': self.unit,
             'creator': self.creator,
             'width': self.width,
             'height': self.height,
             'padding': self.padding,
             'cutting_marks': self.cutting_marks,
-            'template_css': (
-                font_css
-                + f'.card-content {{\n{"\n".join(f"\t{key}: {value};" for key, value in content_css.items())}\n}}\n'
-                + f'.card-item-wrapper {{\n{";\n".join(f"\t{key}: {value};" for key, value in wrapper_css.items())}\n}}\n'
-                + f'.card-item {{\n{"\n".join(f"\t{key}: {value};" for key, value in item_css.items())}\n}}\n'
-                + f'.card-content {{\n{"\n".join(f"\t{key}: {value};" for key, value in content_css.items())}\n}}\n'
-                + f'.federation-flag {{\n{"\n".join(f"\t{key}: {value};" for key, value in federation_flag_css.items())}\n}}\n'
-                + self.css
-            ),
-            'template_js': self.js,
+            'template_css': '\n'.join(
+                f'{target} {{\n{"\n".join(f"\t{key}: {value};" for key, value in entries.items())}\n}}'
+                for target, entries in css.items()
+            )
+            + self.css,
+            'template_js': js + self.js,
+            'players': (PlaceCardPlayer(player) for player in players),
+            'boards': (PlaceCardBoard(board) for board in boards),
             'items': self.items,
         }
 

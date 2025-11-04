@@ -2,22 +2,6 @@
 
 {% block cards %}
     {% for board in boards %}
-        <div class="card-wrapper">
-            <div class="card">
-                <div class="card-cell top left"></div>
-                <div class="card-cell top center"></div>
-                <div class="card-cell top right"></div>
-                <div class="card-cell middle left"></div>
-                <div class="card-content">
-                    {% for item in items %}
-                        {{ item.render_html(event=event, tournament=tournament, board=board, player=none) | safe }}
-                    {% endfor %}
-                </div>
-                <div class="card-cell middle right"></div>
-                <div class="card-cell bottom left"></div>
-                <div class="card-cell bottom center"></div>
-                <div class="card-cell bottom right"></div>
-            </div>
-        </div>
+        {{ render_card(board=board, player=none) }}
     {% endfor %}
 {% endblock %}

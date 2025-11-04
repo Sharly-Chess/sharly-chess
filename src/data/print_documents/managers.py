@@ -55,6 +55,7 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.QRCodePrintOption,
             options.PlaceCardPrintOption,
             options.PlaceCardTemplatePrintOption,
+            options.PlaceCardMirrorPrintOption,
             options.TournamentPrintOption,
             options.TournamentsPrintOption,
             options.PlayerPrintOption,

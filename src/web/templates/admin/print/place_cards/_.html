@@ -1,5 +1,28 @@
 {% extends '/admin/print/base.html' %}
 
+{% macro render_card(board, player) %}
+    {% set dispositions=['original', 'mirrored-up'] if mirror else ['single'] %}
+    <div class="card-wrapper">
+        {% for disposition in dispositions %}
+            <div class="card disposition-{{disposition}}">
+                <div class="card-cell top left"></div>
+                <div class="card-cell top center"></div>
+                <div class="card-cell top right"></div>
+                <div class="card-cell middle left"></div>
+                <div class="card-content">
+                    {% for item in items %}
+                        {{ item.render_html(event=event, tournament=tournament, board=board, player=player) | safe }}
+                    {% endfor %}
+                </div>
+                <div class="card-cell middle right"></div>
+                <div class="card-cell bottom left"></div>
+                <div class="card-cell bottom center"></div>
+                <div class="card-cell bottom right"></div>
+            </div>
+        {% endfor %}
+    </div>
+{% endmacro %}
+
 {% block css %}
     @media print {
         body {
@@ -9,66 +32,6 @@
             print-color-adjust: exact;
         }
     }
-    .card-item.error {
-        color: rgb(255, 0, 0);
-        background-color: rgb(255, 220, 220);
-        opacity: 1.0;
-    }
-    .card {
-        float: left;
-        display: grid;
-        width: {{ width }}{{ unit }};
-        height: {{ height }}{{ unit }};
-        grid-template-columns: {{ padding }}{{ unit }} auto {{ padding }}{{ unit }};
-        grid-auto-flow: row;
-        page-break-inside: avoid;
-    }
-    .card-cell.top, .card-cell.bottom {
-        height: {{ padding }}{{ unit }};
-    }
-    .card-cell.middle, .card-content {
-        height: {{ height - 2 * padding }}{{ unit }};
-    }
-    .card-cell.left, .card-cell.right {
-        width: {{ padding }}{{ unit }};
-    }
-    .card-cell.center, .card-content {
-        width: {{ width - 2 * padding }}{{ unit }};
-    }
-    .card-cell.top, .card-cell.bottom {
-        height: {{ padding }}{{ unit }};
-    }
-    .card-cell.left, .card-cell.right {
-        width: {{ padding }}{{ unit }};
-    }
-    {% set border_value = '1px solid black' %}
-    {% if cutting_marks == 'border' %}
-        .card-cell.top {
-            border-top: {{ border_value }};
-        }
-        .card-cell.right {
-            border-right: {{ border_value }};
-        }
-        .card-cell.bottom {
-            border-bottom: {{ border_value }};
-        }
-        .card-cell.left {
-            border-left: {{ border_value }};
-        }
-    {% elif cutting_marks == 'corners' %}
-        .card-cell.top.left, .card-cell.top.right {
-            border-top: {{ border_value }};
-        }
-        .card-cell.top.right, .card-cell.bottom.right {
-            border-right: {{ border_value }};
-        }
-        .card-cell.bottom.left, .card-cell.bottom.right {
-            border-bottom: {{ border_value }};
-        }
-        .card-cell.top.left, .card-cell.bottom.left {
-            border-left: {{ border_value }};
-        }
-    {% endif %}
     {{ template_css | safe }}
     {% for item in items %}
         {{ item.render_css(unit) | safe  }}
@@ -77,11 +40,6 @@
 
 {% block js %}
     {% include '/lib/jquery/jquery-' ~ sharly_chess_config.jquery_version ~'.min.js' %}
-    $(document).ready(function() {
-        {% for federation, url in flag_inline_urls_by_federation.items() %}
-            $(".federation-flag.{{ federation }}").attr('src', "{{ url }}");
-        {% endfor %}
-    });
     {% for item in items %}
         {{ item.render_js() | safe }}
     {% endfor %}
