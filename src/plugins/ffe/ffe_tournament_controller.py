@@ -46,11 +46,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
         tournament_id: int,
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
-
-        admin_event = web_context.admin_event
-        assert admin_event is not None
-        tournament = web_context.admin_tournament
-        assert tournament is not None
+        tournament = web_context.get_admin_tournament()
 
         result: FfeUploadResult | None = (
             FfeBackgroundUploader.get_updated_tournament_upload_result(tournament)
@@ -85,20 +81,11 @@ class FfeAdminTournamentController(BaseEventAdminController):
         if result:
             match result.status:
                 case FfeUploadStatus.ERROR:
-                    Message.error(
-                        request,
-                        result.message,
-                    )
+                    Message.error(request, result.message)
                 case FfeUploadStatus.INFO:
-                    Message.info(
-                        request,
-                        result.message,
-                    )
+                    Message.info(request, result.message)
                 case FfeUploadStatus.SUCCESS | FfeUploadStatus.SETTINGS_ERROR:
-                    Message.success(
-                        request,
-                        result.message,
-                    )
+                    Message.success(request, result.message)
         else:
             Message.error(
                 request,
@@ -110,7 +97,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
     @post(
         path='/ffe/upload-tournament/{event_uniq_id:str}/{tournament_id:int}',
         name='ffe-upload-single-tournament',
-        guards=[TournamentActionGuard(AuthAction.PUBLISH_RULES)],
+        guards=[TournamentActionGuard(AuthAction.PUBLISH_RESULTS)],
     )
     async def htmx_ffe_upload_tournament(
         self,
@@ -118,11 +105,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
         tournament_id: int,
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
-
-        admin_event = web_context.admin_event
-        assert admin_event is not None
-        tournament = web_context.admin_tournament
-        assert tournament is not None
+        tournament = web_context.get_admin_tournament()
 
         result: FfeUploadResult | None = (
             FfeBackgroundUploader.get_updated_tournament_upload_result(tournament)
@@ -142,25 +125,13 @@ class FfeAdminTournamentController(BaseEventAdminController):
         if result:
             match result.status:
                 case FfeUploadStatus.ERROR:
-                    Message.error(
-                        request,
-                        result.message,
-                    )
+                    Message.error(request, result.message)
                 case FfeUploadStatus.INFO:
-                    Message.info(
-                        request,
-                        result.message,
-                    )
+                    Message.info(request, result.message)
                 case FfeUploadStatus.SUCCESS | FfeUploadStatus.SETTINGS_ERROR:
-                    Message.success(
-                        request,
-                        result.message,
-                    )
+                    Message.success(request, result.message)
         else:
-            Message.error(
-                request,
-                _('Unable to upload tournament.'),
-            )
+            Message.error(request, _('Unable to upload tournament.'))
 
         return self.render_messages(request)
 
@@ -175,11 +146,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
         tournament_id: int,
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
-
-        admin_event = web_context.admin_event
-        assert admin_event is not None
-        tournament = web_context.admin_tournament
-        assert tournament is not None
+        tournament = web_context.get_admin_tournament()
 
         result: FfeUploadResult | None = (
             FfeBackgroundUploader.get_updated_tournament_upload_result(tournament)
@@ -219,25 +186,13 @@ class FfeAdminTournamentController(BaseEventAdminController):
         if result:
             match result.status:
                 case FfeUploadStatus.ERROR:
-                    Message.error(
-                        request,
-                        result.message,
-                    )
+                    Message.error(request, result.message)
                 case FfeUploadStatus.INFO:
-                    Message.info(
-                        request,
-                        result.message,
-                    )
+                    Message.info(request, result.message)
                 case FfeUploadStatus.SUCCESS | FfeUploadStatus.SETTINGS_ERROR:
-                    Message.success(
-                        request,
-                        result.message,
-                    )
+                    Message.success(request, result.message)
         else:
-            Message.error(
-                request,
-                _('Unable to upload tournament rules.'),
-            )
+            Message.error(request, _('Unable to upload tournament rules.'))
 
         return self.render_messages(request)
 
@@ -265,10 +220,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
     ) -> Template | ClientRedirect:
         web_context = TournamentAdminWebContext(request, tournament_id)
 
-        admin_event = web_context.admin_event
-        assert admin_event is not None
-        tournament = web_context.admin_tournament
-        assert tournament is not None
+        tournament = web_context.get_admin_tournament()
 
         result: FfeUploadResult | None = (
             FfeBackgroundUploader.get_updated_tournament_upload_result(tournament)
@@ -319,25 +271,13 @@ class FfeAdminTournamentController(BaseEventAdminController):
         if result:
             match result.status:
                 case FfeUploadStatus.ERROR:
-                    Message.error(
-                        request,
-                        result.message,
-                    )
+                    Message.error(request, result.message)
                 case FfeUploadStatus.INFO:
-                    Message.info(
-                        request,
-                        result.message,
-                    )
+                    Message.info(request, result.message)
                 case FfeUploadStatus.SUCCESS | FfeUploadStatus.SETTINGS_ERROR:
-                    Message.success(
-                        request,
-                        result.message,
-                    )
+                    Message.success(request, result.message)
         else:
-            Message.error(
-                request,
-                _('Unable to download tournament fees.'),
-            )
+            Message.error(request, _('Unable to download tournament fees.'))
 
         return self.render_messages(request)
 
@@ -353,12 +293,7 @@ class FfeAdminTournamentController(BaseEventAdminController):
         tournament_id: int,
     ) -> Template | File:
         web_context = TournamentAdminWebContext(request, tournament_id)
-
-        admin_event = web_context.admin_event
-        assert admin_event is not None
-        tournament = web_context.admin_tournament
-        assert tournament is not None
-
+        tournament = web_context.get_admin_tournament()
         file: Path = self.tournament_fees_file(tournament)
         return File(
             path=file,
