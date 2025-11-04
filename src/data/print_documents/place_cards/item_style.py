@@ -61,6 +61,16 @@ class PlaceCardItemStyle:
             property='opacity',
             default=default_style.opacity if default_style else 1.0,
         )
+        self._color: str = data.get_str(
+            section=section,
+            property='color',
+            default=default_style.color if default_style else '',
+        )
+        self._background_color: str = data.get_str(
+            section=section,
+            property='background_color',
+            default=default_style.background_color if default_style else '',
+        )
         self._text_align: str = data.get_str(
             section=section,
             property='text_align',
@@ -105,6 +115,14 @@ class PlaceCardItemStyle:
         return self._text_align
 
     @property
+    def color(self) -> str:
+        return self._color
+
+    @property
+    def background_color(self) -> str:
+        return self._background_color
+
+    @property
     def allowed_properties(
         self,
     ) -> list[str]:
@@ -117,6 +135,8 @@ class PlaceCardItemStyle:
             'h_pos',
             'v_pos',
             'opacity',
+            'color',
+            'background_color',
             'text_align',
         ]
 

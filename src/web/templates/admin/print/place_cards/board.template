@@ -18,7 +18,7 @@ bold = true
 h_align = "right"
 v_align = "bottom"
 h_pos = 5
-v_pos = -7.5
+v_pos = -5.0
 
 [tournament]
 italic = true
