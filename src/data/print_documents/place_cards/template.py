@@ -141,7 +141,6 @@ class PlaceCardTemplate:
 @font-face {{
     font-family: "{file.stem}";
     src: url("{ttf_file_inline_url(file)}") format("truetype");
-    /* font-weight: 400 900; */
 }}
 * {{
     font-family: {file.stem}, sans-serif;
