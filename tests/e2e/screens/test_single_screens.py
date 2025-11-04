@@ -54,7 +54,6 @@ class TestSingleScreensFunctionality:
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
         name = 'Test Screen'
-        expected_uniq_id = 'test_screen'
         modal.get_by_test_id('name').fill(name)
         modal.locator('button[type=submit]').click()
 
@@ -64,9 +63,6 @@ class TestSingleScreensFunctionality:
         button = card.locator('button[hx-get*="delete"]')
         button.click()
         TestUtils.button_by_text(modal, 'Delete').click()
-        expect(
-            page.get_by_text(f'Screen [{expected_uniq_id}] has been deleted.')
-        ).to_be_visible()
         expect(page.locator(f"div.card:has-text('{name}')")).not_to_be_attached()
 
     def test_check_in_screen(

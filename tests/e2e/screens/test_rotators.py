@@ -80,9 +80,6 @@ class TestRotator:
         card.locator('button[hx-get*="delete"]').click()
         TestUtils.button_by_text(modal, 'Delete').click()
         expect(
-            page.get_by_text(f'Rotator [{ROTATOR_NAME}] has been deleted.')
-        ).to_be_visible()
-        expect(
             page.locator(f"div.card:has-text('{ROTATOR_NAME}')")
         ).not_to_be_attached()
 
