@@ -5,21 +5,30 @@
 {% endblock %}
 
 {% block content %}
-    {% set n = [1] %}
     {% for split_by in players.keys() %}
         <div class="section-title">
             {{ split_by }}
         </div>
         <table class="player-table">
             <thead>
-                {% include '/common/print/player_header.html' %}
+                <tr class="player-header">
+                    {% for column in player_columns %}
+                        <th class="header {{ column.header_classes }}">
+                            {{ macros.column_header(column) }}
+                        </th>
+                    {% endfor %}
+                </tr>
             </thead>
             <tbody>
                 {% for player in players[split_by] %}
-                    {% with row_class='even' if loop.index is even else 'odd' %}
-                        {% include '/common/print/player_row.html' %}
-                    {% endwith %}
-                    {% set __ = n.append(1) %}
+                    <tr id="player-{{ player.id }}" class="player-row {{ 'even' if loop.index is even else 'odd' }}">
+                        {% for column in player_columns %}
+                            <td class="{{ column.cell_classes }}">
+                                {{ macros.column_cell(column, player) }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    {% set __ = row_count.append(1) %}
                 {% endfor %}
             </tbody>
         </table>

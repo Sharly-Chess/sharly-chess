@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from collections.abc import Callable
-from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
 from types import ModuleType
@@ -278,14 +277,6 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
         default: Any = None,
     ) -> Any:
         return PluginUtils.get_plugin_data(self.id, plugin_data, field, default)
-
-
-@dataclass
-class ExtraColumn:
-    at: str
-    title: str
-    value: Callable[[Any], str]
-    classes: str = ''
 
 
 class ExtraAdminColumn(NamedTuple):

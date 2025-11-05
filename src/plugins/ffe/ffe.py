@@ -14,13 +14,14 @@ from packaging.version import Version
 from common import TEST_ENV, DEVEL_ENV
 from common.exception import SharlyChessException
 from common.i18n import _, ngettext
+from data.columns.player_datasheet import DatasheetColumn
 from data.input_output import DataSource, TournamentExporter, TournamentImporter
 from data.input_output.data_source import FideDataSource
 from data.pairings.managers import PairingVariationManager
 from data.pairings.variations import SwissVariation
 from data.print_documents import PlayerSplitter, PrintDocument
-from data.print_documents.columns import FederationColumn
-from data.print_documents.documents import PlayerPrintDocument, StatisticsPrintDocument
+from data.columns import player_table, player_datasheet
+from data.print_documents.documents import StatisticsPrintDocument
 from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.criteria.player_filter_options import PlayerFilterOption, ClubsFilterOption
 from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
@@ -54,7 +55,6 @@ from utils.enum import (
     PlayerCategory,
     PlayerRatingType,
     Result,
-    ScreenType,
     TournamentRating,
 )
 from data.player import Player, PlayerRating, PlayerRatingAndType
@@ -71,7 +71,11 @@ from plugins.ffe.ffe_entity import (
     FfeLicenceFilterOption,
     FfeOnlineDataSource,
     FfeLeaguesFilterOption,
-    FfeLeagueColumn,
+    FfeLeagueTableColumn,
+    FfeIdDatasheetColumn,
+    FfeLicenceNumberDatasheetColumn,
+    FfeLicenceDatasheetColumn,
+    FfeLeagueDatasheetColumn,
 )
 from plugins.ffe.ffe_event_controller import FfeAdminEventController
 from plugins.ffe.ffe_session_handler import FFESessionHandler
@@ -80,7 +84,7 @@ from plugins.ffe.ffe_tie_breaks import (
     PapiBuchholzTypeOption,
 )
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
-from plugins.hookspec import ExtraAdminColumn, hookimpl, ExtraColumn
+from plugins.hookspec import ExtraAdminColumn, hookimpl
 from plugins.migration import PluginMigrationManager
 from plugins.utils import (
     ExtraStatisticsSection,
@@ -579,37 +583,21 @@ class FfePlugin(Plugin):
         )
 
     @hookimpl
-    def get_extra_players_datasheet_columns(self) -> Iterable[ExtraColumn]:
-        return [
-            ExtraColumn(
-                at='tournament',
-                title='ffe_id',
-                value=lambda player: str(
-                    FFEUtils.get_player_plugin_data(player).ffe_id or ''
-                ),
-            ),
-            ExtraColumn(
-                at='tournament',
-                title='ffe_licence_number',
-                value=lambda player: (
-                    FFEUtils.get_player_plugin_data(player).ffe_licence_number or ''
-                ),
-            ),
-            ExtraColumn(
-                at='tournament',
-                title='ffe_licence',
-                value=lambda player: (
-                    FFEUtils.get_player_plugin_data(player).ffe_licence.short_name
-                ),
-            ),
-            ExtraColumn(
-                at='club',
-                title='league',
-                value=lambda player: (
-                    FFEUtils.get_player_plugin_data(player).league or ''
-                ),
-            ),
+    def insert_player_datasheet_columns(self, datasheet_columns: list[DatasheetColumn]):
+        tournament: type[DatasheetColumn] = player_datasheet.TournamentColumn
+        ffe_columns: list[DatasheetColumn] = [
+            FfeIdDatasheetColumn(),
+            FfeLicenceNumberDatasheetColumn(),
+            FfeLicenceDatasheetColumn(),
         ]
+        for column in ffe_columns:
+            PluginUtils.insert_on_isinstance(
+                datasheet_columns, column, tournament, after=False
+            )
+        federation: type[DatasheetColumn] = player_datasheet.FederationColumn
+        PluginUtils.insert_on_isinstance(
+            datasheet_columns, FfeLeagueDatasheetColumn(), federation
+        )
 
     @hookimpl
     def get_extra_players_update_columns(self) -> Iterable[ExtraAdminColumn]:
@@ -838,12 +826,12 @@ class FfePlugin(Plugin):
             (
                 i
                 for i, column in enumerate(player_columns)
-                if isinstance(column, FederationColumn)
+                if isinstance(column, player_table.FederationColumn)
             ),
             None,
         )
         if index is not None:
-            player_columns.insert(index + 1, FfeLeagueColumn())
+            player_columns.insert(index + 1, FfeLeagueTableColumn())
 
     @hookimpl
     def insert_print_player_splitter_types(
@@ -856,29 +844,6 @@ class FfePlugin(Plugin):
     @hookimpl
     def insert_print_qrcode_types(self, qrcode_types: list[type[QRCodeType]]):
         qrcode_types.append(FFESiteQRCodeType)
-
-    @hookimpl
-    def get_extra_print_view_columns(
-        self, document: PrintDocument
-    ) -> Iterable[ExtraColumn]:
-        if isinstance(document, PlayerPrintDocument):
-            return [
-                ExtraColumn(
-                    at='first-round' if document.is_crosstable else 'club',
-                    title=_('League *** LEAGUE FOR TABLE HEADER'),
-                    classes='league',
-                    value=lambda player: (
-                        FFEUtils.get_player_plugin_data(player).league or ''
-                    ),
-                )
-            ]
-        return []
-
-    @hookimpl
-    def get_extra_print_view_css(self, document: PrintDocument) -> str:
-        if isinstance(document, PlayerPrintDocument):
-            return '.player-table .league { text-align: center; }'
-        return ''
 
     @hookimpl
     def get_extra_statistics_sections(
@@ -912,28 +877,6 @@ class FfePlugin(Plugin):
                 )
             ]
         return []
-
-    # ---------------------------------------------------------------------------------
-    # User screens
-    # ---------------------------------------------------------------------------------
-
-    @hookimpl
-    def get_extra_screen_columns(self, screen: ScreenType) -> Iterable[ExtraColumn]:
-        match screen:
-            case ScreenType.RANKING:
-                return [
-                    ExtraColumn(
-                        at='club',
-                        title=_('League *** LEAGUE FOR TABLE HEADER'),
-                        classes='center',
-                        value=lambda player: (
-                            FFEUtils.get_player_plugin_data(player).league or ''
-                        ),
-                    )
-                ]
-
-            case _:
-                return []
 
     # ---------------------------------------------------------------------------------
     # Tie breaks

@@ -15,7 +15,7 @@
     {{ macros.extra_column_data("title", player, extra_columns)}}
     <td class="title">{{ player.title.short_name }}</td>
     {{ macros.extra_column_data("name", player, extra_columns)}}
-    <td class="name{{ "fw-bold" if not pairings_list}}">{{ player.full_name }}</td>
+    <td class="name">{{ player.full_name }}</td>
     {{ macros.extra_column_data("elo", player, extra_columns)}}
     <td class="rating text-{{ "start" if pairings_list else "end"}}">{{ player.rating_str }}</td>
     {% if pairings_list %}
@@ -24,7 +24,7 @@
         {{ macros.extra_column_data("board", player, extra_columns)}}
         {% with opponent_id=player.pairings[pairings_round].opponent_id %}
             {% if not opponent_id %}
-                <td colspan="5" class="playsboard_number fw-bold">{{ _('Pairing Allocated Bye')}}<td>
+                <td colspan="5" class="plays fw-bold">{{ _('Pairing Allocated Bye')}}<td>
                 {{ macros.extra_column_data("title", player, extra_columns) }}
                 {{ macros.extra_column_data("name", player, extra_columns) }}
                 {{ macros.extra_column_data("elo", player, extra_columns) }}
@@ -34,7 +34,7 @@
                 {% set color=player.color %}
                 <td class="board_number fw-bold">{{ _('Plays %(board)d *** BOARD STRING FOR PAIRINGS PRINT', board=player.board_number) }}
                 {{ macros.extra_column_data("color", player, extra_columns) }}
-                <td class="colorboard_number fw-bold">{{ _('%(color)s *** COLOR FOR PAIRINGS PRINT', color=color)}}
+                <td class="color fw-bold">{{ _('%(color)s *** COLOR FOR PAIRINGS PRINT', color=color)}}
                 {{ macros.extra_column_data("title", opponent, extra_columns)}}
                 <td class="title">{{ opponent.title.short_name }}</td>
                 {{ macros.extra_column_data("name", opponent, extra_columns)}}
@@ -47,7 +47,7 @@
         {% endwith %}
     {% else %}
         {{ macros.extra_column_data("category", player, extra_columns)}}
-        <td class="category board_number">{{ player.category.short_name }}</td>
+        <td class="category">{{ player.category.short_name }}</td>
         {{ macros.extra_column_data("gender", player, extra_columns)}}
         <td class="gender board_number">{{ player.gender.short_name }}</td>
         {{ macros.extra_column_data("federation", player, extra_columns)}}
@@ -63,7 +63,7 @@
         {% endif %}
         {{ macros.extra_column_header("tournament", extra_columns)}}
         {% if multiple_tournaments %}
-            <td class="tournament ">{{ player.tournament.name }}</td>
+            <td class="tournament">{{ player.tournament.name }}</td>
         {% endif %}
         {% if checkin_list %}
             {{ macros.extra_column_header("paid", extra_columns)}}
@@ -74,9 +74,9 @@
             <td class="commentsboard_number">{{ player.comment or '' }}</td>
         {% endif %}
         {% if ranking or crosstable %}
-            <td class="pointsboard_number fw-bold">{{ player.points_str }}</td>
+            <td class="points board_number fw-bold">{{ player.points_str }}</td>
             {% for tie_break_value in player.tie_break_values %}
-                <td class="tie-breakboard_number">
+                <td class="tie-break board_number">
                     {{ tie_break_value }}
                 </td>
             {% endfor %}

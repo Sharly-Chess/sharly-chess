@@ -92,6 +92,14 @@ class PlayerRating:
             case _:
                 raise ValueError(f'{rating_type=}')
 
+    def get_type_value(self, rating_type: PlayerRatingType):
+        if rating_type == PlayerRatingType.FIDE:
+            return self.fide
+        if rating_type == PlayerRatingType.NATIONAL:
+            return self.national
+        else:
+            return self.estimated
+
     @property
     def stored_value(self) -> dict[str, int | None]:
         return {

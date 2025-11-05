@@ -295,9 +295,6 @@ msgstr ""
 msgid "<smart_count> hour |||| <smart_count> hours"
 msgstr ""
 
-msgid "<smart_count> item selected |||| <smart_count> items selected"
-msgstr ""
-
 msgid "<smart_count> minute |||| <smart_count> minutes"
 msgstr ""
 
@@ -4046,6 +4043,9 @@ msgstr ""
 msgid "R %(round)d *** ROUND FOR TABLE HEADER"
 msgstr "R %(round)d"
 
+msgid "R {round} *** ROUND FOR TABLE HEADER"
+msgstr "R {round}"
+
 msgid "RES"
 msgstr ""
 
@@ -6387,4 +6387,7 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "<smart_count> item selected |||| <smart_count> items selected"
+#~ msgstr ""
 

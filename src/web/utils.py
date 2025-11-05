@@ -301,9 +301,9 @@ class Column[T](ABC):
     @property
     def header_classes(self) -> str:
         """CSS classes to use for the header."""
-        return ''
+        return self.shared_classes
 
-    def get_cell_content(self, object_: T) -> str:
+    def get_cell_content(self, object_: T) -> Any:
         """Get the content of a cell as a string from an object of the table.
         A template can be used for more complex cell contents."""
         raise NotImplementedError(
@@ -326,6 +326,11 @@ class Column[T](ABC):
     @property
     def cell_classes(self) -> str:
         """CSS classes to use for the cells."""
+        return self.shared_classes
+
+    @property
+    def shared_classes(self) -> str:
+        """Classes shared between the cells and the header."""
         return ''
 
 

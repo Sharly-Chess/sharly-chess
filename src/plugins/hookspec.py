@@ -10,14 +10,14 @@ from common import APP_NAME
 
 from plugins.utils import (
     ExtraAdminColumn,
-    ExtraColumn,
     ExtraStatisticsSection,
     NavUploadItem,
     PluginData,
 )
-from utils.enum import Result, ScreenType, TournamentRating
+from utils.enum import Result, TournamentRating
 
 if TYPE_CHECKING:
+    from data.columns.player_datasheet import DatasheetColumn
     from data.input_output import DataSource, TournamentExporter, TournamentImporter
     from data.pairings.variations import SwissVariation
     from data.player import Player, PlayerRatingAndType, PlayerRatingType
@@ -166,7 +166,9 @@ class AppHookSpecs:
         """Returns a sort key for sorting the admin player list by club"""
 
     @hookspec
-    def get_extra_players_datasheet_columns(self) -> Iterable[ExtraColumn]:
+    def insert_player_datasheet_columns(
+        self, datasheet_columns: list['DatasheetColumn']
+    ):
         """Provide extra columns for the player download datasheets"""
 
     @hookspec
@@ -313,28 +315,10 @@ class AppHookSpecs:
         """Provide QR Code options"""
 
     @hookspec
-    def get_extra_print_view_columns(
-        self, document: 'PrintDocument'
-    ) -> Iterable[ExtraColumn]:
-        """Provide extra columns for the print view"""
-
-    @hookspec
-    def get_extra_print_view_css(self, document: 'PrintDocument') -> str:
-        """Provide extra CSS for the print view"""
-
-    @hookspec
     def get_extra_statistics_sections(
         self, document: 'PrintDocument', tournaments: list['Tournament']
     ) -> Iterable[ExtraStatisticsSection]:
         """Provide extra sections for the statistics print view"""
-
-    # ---------------------------------------------------------------------------------
-    # User screens
-    # ---------------------------------------------------------------------------------
-
-    @hookspec
-    def get_extra_screen_columns(self, screen: 'ScreenType') -> Iterable[ExtraColumn]:
-        """Provide extra columns for the print view"""
 
     # ---------------------------------------------------------------------------------
     # Tie breaks

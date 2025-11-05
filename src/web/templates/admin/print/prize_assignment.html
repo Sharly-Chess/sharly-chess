@@ -46,7 +46,7 @@
                         <div class="header">{{ _('Prize *** PRIZE FOR TABLE HEADER') }}</div>
                         {% for assigned_prize in assigned_prizes_by_category_id[prize_category.id] %}
                             {% set player=assigned_prize.assigned_to %}
-                            <div class="cell place">
+                            <div class="cell fw-bold">
                                 {{ ordinal_integer(loop.index)|safe }}
                             </div>
                             {% if player %}
@@ -71,7 +71,7 @@
                                     <div class="cell"></div>
                                 {% endfor %}
                             {% endif %}
-                            <div class="cell prize">
+                            <div class="cell fw-bold">
                                 {% if assigned_prize.prize.is_monetary %}
                                     {{ format_prize_value(assigned_prize.value) }}
                                 {% else %}
