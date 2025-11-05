@@ -2,6 +2,9 @@ import logging
 from datetime import datetime
 
 from common.logger import get_logger
+
+from plugins.manager import plugin_manager
+
 from data.board import Board
 from data.event import Event
 from data.player import Player
@@ -44,6 +47,9 @@ class PlaceCardPlayer:
             self.federation_flag = f'<img class="federation-flag {self.federation}" />'
             self.club = player.club.name
             self.category = player.category.short_name
+            plugin_manager.ahook.augment_player_after_search(
+                player=player, place_card_player=self
+            )
 
 
 class PlaceCardBoard:
