@@ -1852,9 +1852,6 @@ msgstr ""
 msgid "Edit criterion"
 msgstr ""
 
-msgid "Edit default timers"
-msgstr ""
-
 msgid "Edit display controller"
 msgstr ""
 
@@ -3989,6 +3986,9 @@ msgstr ""
 msgid "Prize currency"
 msgstr ""
 
+msgid "Prize defaults have been updated."
+msgstr ""
+
 msgid "Prize group [{prize_group}] successfully created."
 msgstr ""
 
@@ -3996,6 +3996,9 @@ msgid "Prize groups"
 msgstr ""
 
 msgid "Prize list"
+msgstr ""
+
+msgid "Prize settings"
 msgstr ""
 
 msgid "Prize sharing"
@@ -5341,6 +5344,9 @@ msgstr ""
 msgid "Timer [{timer}] has been updated."
 msgstr ""
 
+msgid "Timer defaults"
+msgstr ""
+
 msgid "Timer hours"
 msgstr ""
 
@@ -5434,6 +5440,15 @@ msgid "Tournament [{tournament}] successfully imported."
 msgstr ""
 
 msgid "Tournament [{tournament}] successfully synchronized."
+msgstr ""
+
+msgid "Tournament default settings"
+msgstr ""
+
+msgid "Tournament defaults"
+msgstr ""
+
+msgid "Tournament defaults have been updated."
 msgstr ""
 
 msgid "Tournament exempt from registration fees."

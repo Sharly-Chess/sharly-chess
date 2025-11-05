@@ -734,6 +734,10 @@ class FfePlugin(Plugin):
         )
 
     @hookimpl
+    def get_tournament_config_template(self) -> str:
+        return '/ffe_tournament_config.html'
+
+    @hookimpl
     def validate_tournament_form_fields(
         self,
         action: str,

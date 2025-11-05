@@ -1852,9 +1852,6 @@ msgstr "Modifier le compte"
 msgid "Edit criterion"
 msgstr "Modifier le critère"
 
-msgid "Edit default timers"
-msgstr "Modifier les chronomètres par défaut"
-
 msgid "Edit display controller"
 msgstr "Modifier le pilote d'afficheurs"
 
@@ -3989,6 +3986,9 @@ msgstr "La catégorie de prix [{prize_category}] a été mise à jour avec succ�
 msgid "Prize currency"
 msgstr "Monnaie des prix"
 
+msgid "Prize defaults have been updated."
+msgstr "Les paramètres par défaut des prix ont été mis à jour."
+
 msgid "Prize group [{prize_group}] successfully created."
 msgstr "Le groupe de prix [{prize_group}] a été créé avec succès."
 
@@ -3997,6 +3997,9 @@ msgstr "Groupes de prix"
 
 msgid "Prize list"
 msgstr "Liste des prix"
+
+msgid "Prize settings"
+msgstr "Paramètres des prix"
 
 msgid "Prize sharing"
 msgstr "Partage des prix"
@@ -5341,6 +5344,9 @@ msgstr "Le chronomètre [{timer}] a été supprimé."
 msgid "Timer [{timer}] has been updated."
 msgstr "Le chronomètre [{timer}] a été modifié."
 
+msgid "Timer defaults"
+msgstr "Paramètres par défaut des chronomètres"
+
 msgid "Timer hours"
 msgstr "Horaires du chronomètre"
 
@@ -5435,6 +5441,15 @@ msgstr "Le tournoi [{tournament}] a été importé avec succès."
 
 msgid "Tournament [{tournament}] successfully synchronized."
 msgstr "Le tournoi [{tournament}] a été synchronisé avec succès."
+
+msgid "Tournament default settings"
+msgstr "Paramètres par défaut des tournois"
+
+msgid "Tournament defaults"
+msgstr "Paramètres par défaut des tournois"
+
+msgid "Tournament defaults have been updated."
+msgstr "Les paramètres par défaut du tournoi ont été mis à jour."
 
 msgid "Tournament exempt from registration fees."
 msgstr "Tournoi exempt de droits d'homologation."
