@@ -295,9 +295,6 @@ msgstr "<smart_count> jour |||| <smart_count> jours"
 msgid "<smart_count> hour |||| <smart_count> hours"
 msgstr "<smart_count> heure |||| <smart_count> heures"
 
-msgid "<smart_count> item selected |||| <smart_count> items selected"
-msgstr "<smart_count> élément sélectionné |||| <smart_count> éléments sélectionnés"
-
 msgid "<smart_count> minute |||| <smart_count> minutes"
 msgstr "<smart_count> minute |||| <smart_count> minutes"
 
@@ -737,6 +734,9 @@ msgstr "Image de fond :"
 
 msgid "Baku acceleration system"
 msgstr "Système d'accélération de Bakou"
+
+msgid "Basic"
+msgstr "Basique"
 
 msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
 msgstr "Ech."
@@ -3007,6 +3007,9 @@ msgstr "Nombre minimum de points (inclus) :"
 msgid "Minimum rating"
 msgstr "Elo minimum"
 
+msgid "Mirror cards"
+msgstr "Mettre en miroir"
+
 msgid "Missing required field [{field}]."
 msgstr "Champ requis manquant [{field}]."
 
@@ -4567,15 +4570,6 @@ msgstr "Prix partagés"
 
 msgid "Sharing threshold"
 msgstr "Seuil de partage"
-
-msgid "Sharly Chess Board Cards"
-msgstr "Chevalets d'échiquier « Sharly Chess »"
-
-msgid "Sharly Chess Pairing Cards"
-msgstr "Chevalets d'appariement « Sharly Chess »"
-
-msgid "Sharly Chess Player Cards"
-msgstr "Chevalets des joueur·euses « Sharly Chess »"
 
 msgid "Sharly Chess Server"
 msgstr "Serveur Sharly Chess"
@@ -6430,3 +6424,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+

@@ -76,9 +76,6 @@ class PlaceCardTemplate:
                 values=PrintPlaceCardTypeManager().ids(),
             )
         )
-        self.template_name: str = (
-            f'/admin/print/place_cards/{self.type.static_id()}.html'
-        )
         self.name: str = (
             parse_jinja_string(template_string=custom_data.get_str('name', default=''))
             or toml_file.stem
@@ -128,6 +125,10 @@ class PlaceCardTemplate:
             item for item in items if item.type != 'image'
         ]
         self.error = custom_data.error
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/place_cards/template.html'
 
     @property
     def font_file(self) -> Path:
@@ -203,7 +204,7 @@ class PlaceCardTemplate:
         }
         match self.cutting_marks:
             case 'border':
-                css[('.side-back .card-cell.top, .side-single .card-cell.top')] = {
+                css['.side-back .card-cell.top, .side-single .card-cell.top'] = {
                     'border-top': border_value,
                 }
 
@@ -211,9 +212,7 @@ class PlaceCardTemplate:
                     'border-right': border_value,
                 }
 
-                css[
-                    ('.side-front .card-cell.bottom, .side-single .card-cell.bottom')
-                ] = {
+                css['.side-front .card-cell.bottom, .side-single .card-cell.bottom'] = {
                     'border-bottom': border_value,
                 }
 

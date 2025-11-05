@@ -54,7 +54,11 @@
             {{ error }}
         </div>
     {% else %}
-        {% block cards %}
-        {% endblock %}
+        {% for player in players %}
+            {{ render_card(board=none, player=player) }}
+        {% endfor %}
+        {% for board in boards %}
+            {{ render_card(board=board, player=none) }}
+        {% endfor %}
     {% endif %}
 {% endblock %}

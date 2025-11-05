@@ -1,7 +1,0 @@
-{% extends '/admin/print/place_cards/_.html' %}
-
-{% block cards %}
-    {% for board in boards %}
-        {{ render_card(board=board, player=none) }}
-    {% endfor %}
-{% endblock %}

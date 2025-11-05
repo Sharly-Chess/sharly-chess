@@ -295,9 +295,6 @@ msgstr ""
 msgid "<smart_count> hour |||| <smart_count> hours"
 msgstr ""
 
-msgid "<smart_count> item selected |||| <smart_count> items selected"
-msgstr ""
-
 msgid "<smart_count> minute |||| <smart_count> minutes"
 msgstr ""
 
@@ -736,6 +733,9 @@ msgid "Background image:"
 msgstr ""
 
 msgid "Baku acceleration system"
+msgstr ""
+
+msgid "Basic"
 msgstr ""
 
 msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
@@ -3007,6 +3007,9 @@ msgstr ""
 msgid "Minimum rating"
 msgstr ""
 
+msgid "Mirror cards"
+msgstr ""
+
 msgid "Missing required field [{field}]."
 msgstr ""
 
@@ -4566,15 +4569,6 @@ msgid "Shared prizes"
 msgstr ""
 
 msgid "Sharing threshold"
-msgstr ""
-
-msgid "Sharly Chess Board Cards"
-msgstr ""
-
-msgid "Sharly Chess Pairing Cards"
-msgstr ""
-
-msgid "Sharly Chess Player Cards"
 msgstr ""
 
 msgid "Sharly Chess Server"
