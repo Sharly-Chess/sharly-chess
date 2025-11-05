@@ -27,7 +27,7 @@ class Role:
     stored_role: StoredRole
 
     @property
-    def role_kind(self) -> RoleType:
+    def role_type(self) -> RoleType:
         return RoleType(self.stored_role.role)
 
     @property
@@ -164,13 +164,13 @@ class Account:
             key=lambda r: RoleType(r.stored_role.role).sort_order,
         )
 
-    def get_role(self, role_kind: RoleType) -> Role:
+    def get_role(self, role_type: RoleType) -> Role:
         for stored_role in self.stored_account.stored_roles:
-            if stored_role.role == role_kind.value:
+            if stored_role.role == role_type.value:
                 return Role(stored_role)
         return Role(
             StoredRole(
-                self.id, role_kind.value, [] if role_kind.is_tournament_bound else None
+                self.id, role_type.value, [] if role_type.is_tournament_bound else None
             )
         )
 

@@ -49,9 +49,9 @@
         {% else %}
             {% for role in account.roles %}
                 <div>
-                    {{ _('%(string)s:', string=role.role_kind) }}
+                    {{ _('%(string)s:', string=role.role_type) }}
                     <span>
-                        {% if role.role_kind.is_tournament_bound %}
+                        {% if role.role_type.is_tournament_bound %}
                             {% if admin_accounts_show_details %}
                                 <ul>
                                     {% for tournament_name in role.tournament_names(admin_event) %}
