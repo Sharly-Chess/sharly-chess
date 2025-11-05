@@ -1609,7 +1609,7 @@ class PlayerAdminController(BaseEventAdminController):
         tournament = web_context.get_admin_tournament()
         action = WebContext.form_data_to_str(data, 'action') or ''
         tournament.close_check_in(
-            action == 'zpd-next-round', action == 'zpd-tournament'
+            action == 'zpb-next-round', action == 'zpb-tournament', action == 'delete'
         )
         Message.success(
             request,
@@ -1617,12 +1617,7 @@ class PlayerAdminController(BaseEventAdminController):
                 tournament=tournament.name
             ),
         )
-        return HTMXTemplate(
-            template_name='common/empty.html',
-            re_swap='none',
-            trigger_event='request_refresh',
-            after='receive',
-        )
+        return self._admin_event_players_render(request, reload_event=True)
 
     def _admin_player_check_in_out(
         self,

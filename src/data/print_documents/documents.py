@@ -577,10 +577,6 @@ class ResultPrintDocument(BoardPrintDocument):
     def title(self) -> str:
         return _('Results for round #{round}').format(round=self.at_round)
 
-    @staticmethod
-    def available_options() -> list[type[PrintOption]]:
-        return [TournamentPrintOption]
-
     @override
     @property
     def show_results(self) -> bool:
@@ -687,6 +683,8 @@ class BergerGridPrintDocument(PrintDocument):
     def template_context(self) -> dict[str, Any]:
         self.tournament.compute_player_ranks()
         return {
+            'document': self,
+            'tournament': self.tournament,
             'result_grid': self.build_result_grid(),
             'grid_id_by_player_id': self.grid_id_by_player_id,
         }
