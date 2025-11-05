@@ -10,7 +10,6 @@ import urllib
 from common.exception import OptionError
 from common.i18n import _
 from data.access_levels.actions import AuthAction
-from data.player import plugin_manager
 from data.print_documents import (
     PrintDocument,
     PrintDocumentManager,
@@ -22,7 +21,6 @@ from data.print_documents.documents import (
     TournamentsPrintOption,
 )
 from data.print_documents.options import TournamentPrintOption
-from plugins.hookspec import ExtraColumn
 from web.controllers.base_controller import WebContext
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
@@ -239,25 +237,10 @@ class EventPrintController(BaseEventAdminController):
             print_options.append(type(print_option)(event, value))
         print_document = document_type(web_context.get_admin_event(), print_options)
 
-        per_plugin_columns = plugin_manager.hook_for_event(
-            event, 'get_extra_print_view_columns'
-        )(document=print_document)
-        extra_columns: dict[str, list[ExtraColumn]] = {}
-        for plugin_columns in per_plugin_columns:
-            for extra_column in plugin_columns:
-                c = extra_columns.setdefault(extra_column.at, [])
-                c.append(extra_column)
-        per_plugin_css: list[str] = plugin_manager.hook_for_event(
-            event, 'get_extra_print_view_css'
-        )(document=print_document)
-        extra_css: str = '\n'.join(per_plugin_css)
-
         template_context = (
             web_context.template_context
             | {
                 'document': print_document,
-                'extra_columns': extra_columns,
-                'extra_css': extra_css,
             }
             | print_document.template_context
         )

@@ -9,6 +9,7 @@ from common import format_timestamp
 from common.exception import SharlyChessException, OptionError
 from common.i18n import _, ngettext
 from common.i18n.utils import unicode_normalize
+from data.columns import player_table as columns
 from plugins.manager import plugin_manager
 from data.board import Board
 from data.pairings.engines import RoundRobinPairingEngine
@@ -34,6 +35,7 @@ from utils import Utils
 from utils.enum import Result
 from utils.types import PlayerTitle
 from utils.option import Option, OptionHandler
+from web.utils import PlayerColumn
 
 
 class PrintDocument(OptionHandler[PrintOption], ABC):
@@ -139,34 +141,6 @@ class PlayerPrintDocument(PrintDocument, ABC):
     def multiple_tournaments(self) -> bool:
         return True
 
-    @property
-    def is_crosstable(self) -> bool:
-        return False
-
-    @property
-    def is_ranking(self) -> bool:
-        return False
-
-    @property
-    def is_pairings_list(self) -> bool:
-        return False
-
-    @property
-    def at_round(self) -> int | None:
-        return None
-
-    @property
-    def is_player_list(self) -> bool:
-        return False
-
-    @property
-    def is_player_checkin_list(self) -> bool:
-        return False
-
-    @property
-    def ranking_round(self) -> int | None:
-        return None
-
     @override
     @property
     def subtitle(self) -> str:
@@ -176,26 +150,39 @@ class PlayerPrintDocument(PrintDocument, ABC):
         )
 
     @property
+    @abstractmethod
+    def base_player_columns(self) -> list[PlayerColumn]:
+        """List of columns to display in the tables of the document."""
+
+    @property
+    def player_columns(self) -> list[PlayerColumn]:
+        """List of all the columns to display in the tables of the document."""
+        player_columns = self.base_player_columns
+        if self.multiple_tournaments and len(self.tournaments) > 1:
+            club_index = next(
+                (
+                    i
+                    for i, column in enumerate(player_columns)
+                    if isinstance(column, columns.ClubColumn)
+                ),
+                None,
+            )
+            if club_index is not None:
+                player_columns.insert(club_index + 1, columns.TournamentColumn())
+        plugin_manager.hook_for_event(
+            self.event, 'alter_print_document_player_columns'
+        )(player_columns=player_columns)
+        return player_columns
+
+    @property
     def template_context(self) -> dict[str, Any]:
-        # As 'players.html' template is shared with player screens,
-        # template context is maintained as is.
-        # For future documents, template explicit variables should be
-        # favored to document identifying variables
-        # ex: show_{var} instead of is_{document}
         return {
             'tournament': self.tournament,
             'tournaments': self.tournaments,
-            'multiple_tournaments': self.multiple_tournaments
-            and len(self.tournaments) > 1,
             'subtitle': self.subtitle,
             'players': self.ordered_split_players,
-            'crosstable': self.is_crosstable,
-            'ranking': self.is_ranking,
-            'player_list': self.is_player_list,
-            'pairings_list': self.is_pairings_list,
-            'pairings_round': self.at_round,
-            'checkin_list': self.is_player_checkin_list,
-            'ranking_round': self.ranking_round,
+            'player_columns': self.player_columns,
+            'row_count': [1],
         }
 
 
@@ -222,10 +209,18 @@ class PlayerListPrintDocument(PlayerPrintDocument):
             if player.tournament.id in tournament_ids
         ]
 
-    @override
     @property
-    def is_player_list(self) -> bool:
-        return True
+    def base_player_columns(self) -> list[PlayerColumn]:
+        return [
+            columns.NumberColumn(),
+            columns.TitleColumn(),
+            columns.NameColumn(),
+            columns.RatingColumn(),
+            columns.CategoryColumn(),
+            columns.GenderColumn(),
+            columns.FederationColumn(),
+            columns.ClubColumn(),
+        ]
 
 
 class PlayerCheckinListPrintDocument(PlayerPrintDocument):
@@ -251,14 +246,24 @@ class PlayerCheckinListPrintDocument(PlayerPrintDocument):
             if player.tournament.id in tournament_ids
         ]
 
-    @override
     @property
-    def is_player_checkin_list(self) -> bool:
-        return True
+    def base_player_columns(self) -> list[PlayerColumn]:
+        return [
+            columns.CheckinColumn(),
+            columns.TitleColumn(),
+            columns.NameColumn(),
+            columns.RatingColumn(),
+            columns.CategoryColumn(),
+            columns.GenderColumn(),
+            columns.FederationColumn(),
+            columns.ClubColumn(),
+            columns.PaidColumn(),
+            columns.OwedColumn(),
+            columns.CommentsColumn(),
+        ]
 
 
 class AbstractPlayerRankingPrintDocument(PlayerPrintDocument, ABC):
-    @override
     @property
     def ranking_round(self) -> int:
         return (
@@ -320,10 +325,23 @@ class PlayerRankingPrintDocument(AbstractPlayerRankingPrintDocument):
             return _('Ranking before the first round')
         return _('Ranking after round #{round}').format(round=self.ranking_round)
 
-    @override
     @property
-    def is_ranking(self) -> bool:
-        return True
+    def base_player_columns(self) -> list[PlayerColumn]:
+        tournament = self.tournament
+        return [
+            columns.RankColumn(),
+            columns.TitleColumn(),
+            columns.NameColumn(),
+            columns.RatingColumn(),
+            columns.CategoryColumn(),
+            columns.GenderColumn(),
+            columns.FederationColumn(),
+            columns.ClubColumn(),
+            columns.PointsColumn(),
+        ] + [
+            columns.TieBreakColumn(tournament, index)
+            for index in range(len(tournament.tie_breaks))
+        ]
 
 
 class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument):
@@ -341,10 +359,31 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument):
             return _('Crosstable before the first round')
         return _('Crosstable after round #{round}').format(round=self.ranking_round)
 
-    @override
     @property
-    def is_crosstable(self) -> bool:
-        return True
+    def base_player_columns(self) -> list[PlayerColumn]:
+        tournament = self.tournament
+        return (
+            [
+                columns.RankColumn(),
+                columns.TitleColumn(),
+                columns.NameColumn(),
+                columns.RatingColumn(),
+                columns.CategoryColumn(),
+                columns.GenderColumn(),
+                columns.FederationColumn(),
+            ]
+            + [
+                columns.RoundColumn(round_)
+                for round_ in range(1, self.ranking_round + 1)
+            ]
+            + [
+                columns.PointsColumn(),
+            ]
+            + [
+                columns.TieBreakColumn(tournament, index)
+                for index in range(len(tournament.tie_breaks))
+            ]
+        )
 
 
 class PlayerRoundPerformanceIndicatorPrintDocument(PrintDocument):
@@ -556,12 +595,24 @@ class PlayerPairingPrintDocument(PlayerPrintDocument):
     @property
     def ordered_players(self) -> list[Player]:
         self.tournament.set_for_round(self.at_round)
-        return self.tournament.players_by_name_without_unpaired
+        return self.tournament.players_by_name_with_unpaired
 
-    @override
     @property
-    def is_pairings_list(self) -> bool:
-        return True
+    def base_player_columns(self) -> list[PlayerColumn]:
+        return [
+            columns.TitleColumn(),
+            columns.NameColumn(),
+            columns.RatingColumn(),
+            columns.PairingPointsColumn(),
+        ]
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/pairings_by_player.html'
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return super().template_context | {'pairings_round': self.at_round}
 
 
 class ResultPrintDocument(BoardPrintDocument):
@@ -762,7 +813,26 @@ class PrizeAssignmentPrintDocument(PrintDocument):
                 Utils.currency_value_str,
                 currency=prize_currency,
             ),
+            'player_columns': self.player_columns,
         }
+
+    @property
+    def player_columns(self) -> list[PlayerColumn]:
+        player_columns: list[PlayerColumn] = [
+            columns.RankOverallColumn(),
+            columns.TitleColumn(),
+            columns.NameColumn(),
+            columns.RatingColumn(),
+            columns.CategoryColumn(),
+            columns.GenderColumn(),
+            columns.FederationColumn(),
+            columns.ClubColumn(),
+            columns.PointsColumn(),
+        ]
+        plugin_manager.hook_for_event(
+            self.event, 'alter_print_document_player_columns'
+        )(player_columns=player_columns)
+        return player_columns
 
 
 @dataclass

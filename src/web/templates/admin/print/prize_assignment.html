@@ -16,7 +16,10 @@
                 <div class="short-separator"></div>
             {% endif %}
             <div class="centered">
-                <div class="prize-table">
+                <div
+                    class="prize-table"
+                    style="grid-template-columns: max-content {% for column in player_columns %}{{ column.grid_column_template }} {% endfor %} max-content;"
+                >
                     {% set assigned_prizes_by_category_id=prize_group.get_assigned_prizes_by_category_id() %}
                     {% for prize_category in prize_group.sorted_categories %}
                         <div class="section-title">
@@ -26,42 +29,49 @@
                             {{ prize_category.format_shared_prizes(prize_currency) }}
                         </div>
                         <div class="header">{{ _('Rk. *** RANK FOR TABLE HEADER') }}</div>
-                        <div class="header">{{ _('Rk. O. *** RANK OVERALL FOR TABLE HEADER') }}</div>
-                        <div class="header">&nbsp;</div> {# Title #}
-                        <div class="header">{{ _('Name *** NAME FOR TABLE HEADER') }}</div>
-                        <div class="header">{{ tournament.rating.print_view_header }}</div>
-                        <div class="header">{{ _("Cat *** CATEGORY FOR TABLE HEADER") }}</div>
-                        <div class="header">{{ _('Gen *** GENDER FOR TABLE HEADER') }}</div>
-                        <div class="header">{{ _('Fed *** FEDERATION FOR TABLE HEADER') }}</div>
-                        <div class="header">{{ _('Club *** CLUB FOR TABLE HEADER') }}</div>
-                        <div class="header">{{ _('Pts *** POINTS FOR TABLE HEADER') }}</div>
+                        {% for column in player_columns %}
+                            <div class="header {{ column.header_classes }}">
+                                {% if column.header_template %}
+                                    {% include column.header_template %}
+                                {% else %}
+                                    {% set content = column.header_content %}
+                                    {% if column.is_header_content_safe %}
+                                        {{ content|safe }}
+                                    {% else %}
+                                        {{ content }}
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        {% endfor %}
                         <div class="header">{{ _('Prize *** PRIZE FOR TABLE HEADER') }}</div>
                         {% for assigned_prize in assigned_prizes_by_category_id[prize_category.id] %}
                             {% set player=assigned_prize.assigned_to %}
-                            <div class="cell place">
+                            <div class="cell fw-bold">
                                 {{ ordinal_integer(loop.index)|safe }}
                             </div>
                             {% if player %}
-                                <div class="cell place">({{ ordinal_integer(player.rank)|safe }})</div>
-                                <div class="cell title">{{ player.title.short_name }}</div>
-                                <div class="cell name">{{ player.full_name }}</div>
-                                <div class="cell">{{ player.rating_str }}</div>
-                                <div class="cell">{{ player.category.short_name }}</div>
-                                <div class="cell">{{ player.gender.short_name }}</div>
-                                <div class="cell">{{ player.federation }}</div>
-                                <div class="cell club">{{ player.club }}</div>
-                                <div class="cell">{{ player.points_str }}</div>
+                                {% for column in player_columns %}
+                                    <div class="cell {{ column.cell_classes }}">
+                                        {% if column.cell_template %}
+                                            {% include column.cell_template %}
+                                        {% else %}
+                                            {% set content = column.get_cell_content(player) %}
+                                            {% if column.is_cell_content_safe %}
+                                                {{ content|safe }}
+                                            {% else %}
+                                                {{ content }}
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
                             {% else %}
                                 <div class="cell"></div>
                                 <div class="cell"><i>{{ _('Not assigned') }}</i></div>
-                                <div class="cell"></div>
-                                <div class="cell"></div>
-                                <div class="cell"></div>
-                                <div class="cell"></div>
-                                <div class="cell"></div>
-                                <div class="cell"></div>
+                                {% for i in range(player_columns|length - 2) %}
+                                    <div class="cell"></div>
+                                {% endfor %}
                             {% endif %}
-                            <div class="cell prize">
+                            <div class="cell fw-bold">
                                 {% if assigned_prize.prize.is_monetary %}
                                     {{ format_prize_value(assigned_prize.value) }}
                                 {% else %}

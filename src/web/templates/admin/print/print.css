@@ -29,12 +29,29 @@ tr td, tr th {
 .error { font-size: 20pt; font-weight: bold; margin: 40pt auto;}
 .section-title { font-size: 18px; }
 .section-sub-title { font-size: 15px; }
+
 {# ========== FONT WEIGHT ========== #}
 .page-title,
 .page-subtitle,
 .section-title,
 .section-sub-title,
-.important-cell { font-weight: bold; }
+.important-cell,
+.fw-bold { font-weight: bold; }
+
+{# ========== TEXT ALIGN ========== #}
+.text-start {
+    text-align: left;
+    justify-self: start;
+}
+.text-center {
+    text-align: center;
+    justify-self: center;
+}
+.text-end {
+    text-align: right;
+    justify-self: end;
+}
+
 {# ========== CELLS ========== #}
 .checkin {
     font-size: 18px;
