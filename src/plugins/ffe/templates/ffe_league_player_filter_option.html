@@ -2,7 +2,7 @@
     {{ admin_macros.select_input(
         name=option.id,
         label=_('%(string)s:', string=_('Leagues')),
-        help_text=_('Only include players of these leagues.'),
+        help_text='',
         select_options=option.select_options(admin_tournament),
         multiple_select=true,
         placeholder=_('Choose at least one league.'),

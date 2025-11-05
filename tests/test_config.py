@@ -467,15 +467,19 @@ class TestUtils:
         stored_rotator = next(r for r in stored_rotators if r.name == name)
         assert stored_rotator.id is not None
 
-        if screen_ids or family_ids:
-            form_data = cls.prepare_form_data(
-                {
-                    'screen_ids': screen_ids,
-                    'family_ids': family_ids,
-                }
-            )
+        for screen_id in screen_ids or []:
+            form_data = cls.prepare_form_data({'screen_id': screen_id})
             res = api_request_context.post(
-                f'/rotating-screens-create/{event_uniq_id}/{stored_rotator.id}',
+                f'/rotating-screens/create-screen/{event_uniq_id}/{stored_rotator.id}',
+                headers={'Content-Type': 'application/x-www-form-urlencoded'},
+                data=form_data,
+            )
+            cls.check_api_response(res)
+
+        for family_id in family_ids or []:
+            form_data = cls.prepare_form_data({'family_id': family_id})
+            res = api_request_context.post(
+                f'/rotating-screens/create-family/{event_uniq_id}/{stored_rotator.id}',
                 headers={'Content-Type': 'application/x-www-form-urlencoded'},
                 data=form_data,
             )

@@ -54,6 +54,27 @@
             </li>
             <li>
                 <span
+                    {% if not client.can_publish_results %}
+                        {{ macros.tooltip_attributes('warning', _('You are not allowed to publish results.'), 'right') }}
+                    {% endif %}
+                >
+                    <button
+                        class="dropdown-item text-nowrap"
+                        {% if client.can_publish_results %}
+                            hx-post="{{ url_for('ffe-upload-single-tournament', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        {% else %}
+                            disabled
+                        {% endif %}
+                    >
+                        <i class="bi bi-cloud-arrow-up-fill pe-1"></i>
+                        {{ _('Upload to the FFE site') }}
+                    </button>
+                </span>
+            </li>
+            <li>
+                <span
                     {% if not client.can_publish_rules %}
                         {{ macros.tooltip_attributes('warning', _('You are not allowed to publish rules.'), 'right') }}
                     {% else %}

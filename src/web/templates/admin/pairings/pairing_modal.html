@@ -1,7 +1,7 @@
 {% import '/common/macros.j2' as macros with context %}
 
 {% with wp=board.white_player, bp=board.black_player %}
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered pairing-modal">
+    <div class="modal-dialog modal-dialog-scrollable pairing-modal">
         <div class="modal-content bg-secondary-subtle">
             <div class="modal-header">
                 <div class="modal-title fs-4 fw-bold">{{ _('Board %(board_number)s', board_number=board.number) }}</div>

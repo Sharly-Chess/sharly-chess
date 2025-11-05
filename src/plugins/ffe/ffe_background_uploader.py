@@ -152,7 +152,7 @@ class FfeBackgroundUploader:
         tournament_id: int,
         force: bool,
         make_visible: bool = False,
-    ) -> None:
+    ) -> FfeUploadResult | None:
         """Upload a tournament to FFE."""
 
         # Set the locale (called in a new thread)
@@ -162,18 +162,18 @@ class FfeBackgroundUploader:
         loader = EventLoader()
         if event_uniq_id not in loader.event_uniq_ids:
             # The event has been deleted
-            return
+            return None
         event = loader.load_event(event_uniq_id)
 
         tournament = event.tournaments_by_id.get(tournament_id, None)
         if not tournament:
             # The tournament has been deleted
-            return
+            return None
 
         current_result = cls.get_updated_tournament_upload_result(tournament)
         if current_result.status == FfeUploadStatus.SETTINGS_ERROR:
             # Skip this tournament if we now have a SETTINGS_ERROR
-            return
+            return current_result
 
         result_id = cls.result_id(tournament.event.uniq_id, tournament.id)
         if not force and not FFEUtils.resolve_auto_upload(tournament):
@@ -182,7 +182,7 @@ class FfeBackgroundUploader:
                 FfeUploadStatus.CHANGED,
                 _('Modified since last upload'),
             )
-            return
+            return cls.upload_status_messages[result_id]
 
         if not NetworkMonitor.connected():
             # The network is offline, we can't upload
@@ -191,7 +191,7 @@ class FfeBackgroundUploader:
                 _('Modified, but no internet connection'),
             )
             cls.publish_upload_event()
-            return
+            return cls.upload_status_messages[result_id]
 
         cls.upload_status_messages[result_id] = FfeUploadResult(
             FfeUploadStatus.IN_PROGRESS,
@@ -220,6 +220,8 @@ class FfeBackgroundUploader:
             )
         finally:
             cls.publish_upload_event()
+
+        return cls.upload_status_messages[result_id]
 
     @classmethod
     def upload_event(cls, admin_event: Event) -> None:

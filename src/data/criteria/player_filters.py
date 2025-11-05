@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from functools import cached_property
 
+from typing_extensions import TYPE_CHECKING
+
 from common.exception import OptionError
 from common.i18n import _
 from data.player import Player, Club, Federation
@@ -16,22 +18,27 @@ from data.criteria.player_filter_options import (
     ClubsFilterOption,
     FederationsFilterOption,
     RatingTypesFilterOption,
+    PlayersFilterOption,
+    ExcludeFilterOption,
 )
 from utils.enum import PlayerGender, PlayerCategory, PlayerRatingType
 from utils.option import OptionHandler
+
+if TYPE_CHECKING:
+    from data.tournament import Tournament
 
 
 class PlayerFilter(OptionHandler[PlayerFilterOption], ABC):
     """Abstract class representing ways to filter the players."""
 
     @abstractmethod
+    def full_name(self, tournament: 'Tournament') -> str:
+        """Full name of the filter, including the options."""
+
+    @abstractmethod
     @cached_property
     def is_player_included_function(self) -> Callable[[Player], bool]:
         """Return a function checking if a player is included in the filter or not."""
-
-    @abstractmethod
-    def __str__(self) -> str:
-        """String representation of the filter."""
 
 
 class GenderPlayerFilter(PlayerFilter):
@@ -55,7 +62,7 @@ class GenderPlayerFilter(PlayerFilter):
         gender = self.get_gender()
         return lambda player: player.gender == gender
 
-    def __str__(self) -> str:
+    def full_name(self, tournament: 'Tournament') -> str:
         return _('Gender ({gender})').format(gender=self.get_gender().short_name)
 
 
@@ -81,7 +88,7 @@ class RatingPlayerFilter(PlayerFilter):
             return lambda player: player.rating >= min_rating
         return lambda player: min_rating <= player.rating <= max_rating
 
-    def __str__(self) -> str:
+    def full_name(self, tournament: 'Tournament') -> str:
         min_rating, max_rating = self.get_option_values()
         if not min_rating:
             return f'{self.name} ≤ {max_rating}'
@@ -131,7 +138,7 @@ class AgePlayerFilter(PlayerFilter):
             return lambda player: player.category >= category
         return lambda player: player.category in categories
 
-    def __str__(self) -> str:
+    def full_name(self, tournament: 'Tournament') -> str:
         age_categories, lower, greater = self.get_option_values()
         categories = [
             PlayerCategory(category).short_name for category in age_categories
@@ -182,7 +189,7 @@ class RatingTypePlayerFilter(PlayerFilter):
         rating_types = self.get_rating_types()
         return lambda player: player.rating_type in rating_types
 
-    def __str__(self) -> str:
+    def full_name(self, tournament: 'Tournament') -> str:
         option_str = ', '.join(
             rating_type.short_name for rating_type in self.get_rating_types()
         )
@@ -200,21 +207,30 @@ class ClubPlayerFilter(PlayerFilter):
 
     @staticmethod
     def available_options() -> list[type[PlayerFilterOption]]:
-        return [ClubsFilterOption]
-
-    def get_clubs(self) -> list[Club]:
         return [
-            Club.from_query_param(query_param)
-            for query_param in self.get_option_values()[0]
+            ClubsFilterOption,
+            ExcludeFilterOption,
         ]
+
+    @staticmethod
+    def get_clubs(query_params: list[str]) -> list[Club]:
+        return [Club.from_query_param(query_param) for query_param in query_params]
 
     @cached_property
     def is_player_included_function(self) -> Callable[[Player], bool]:
-        clubs = self.get_clubs()
-        return lambda player: player.club in clubs
+        club_query_params, exclude = self.get_option_values()
+        clubs = self.get_clubs(club_query_params)
+        if exclude:
+            return lambda player: player.club not in clubs
+        else:
+            return lambda player: player.club in clubs
 
-    def __str__(self) -> str:
-        option_str = ', '.join(club.name for club in self.get_clubs())
+    def full_name(self, tournament: 'Tournament') -> str:
+        club_query_params, exclude = self.get_option_values()
+        clubs = self.get_clubs(club_query_params)
+        option_str = ', '.join(club.name for club in clubs)
+        if exclude:
+            option_str = _('Exclude: {values}').format(values=option_str)
         return f'{self.name} ({option_str})'
 
 
@@ -229,19 +245,65 @@ class FederationPlayerFilter(PlayerFilter):
 
     @staticmethod
     def available_options() -> list[type[PlayerFilterOption]]:
-        return [FederationsFilterOption]
-
-    def get_federations(self) -> list[Federation]:
         return [
-            Federation.from_query_param(query_param)
-            for query_param in self.get_option_values()[0]
+            FederationsFilterOption,
+            ExcludeFilterOption,
+        ]
+
+    @staticmethod
+    def get_federations(query_params: list[str]) -> list[Federation]:
+        return [
+            Federation.from_query_param(query_param) for query_param in query_params
         ]
 
     @cached_property
     def is_player_included_function(self) -> Callable[[Player], bool]:
-        federations = self.get_federations()
-        return lambda player: player.federation in federations
+        federation_query_params, exclude = self.get_option_values()
+        federations = self.get_federations(federation_query_params)
+        if exclude:
+            return lambda player: player.federation not in federations
+        else:
+            return lambda player: player.federation in federations
 
-    def __str__(self) -> str:
-        option_str = ', '.join(federation.name for federation in self.get_federations())
+    def full_name(self, tournament: 'Tournament') -> str:
+        federation_query_params, exclude = self.get_option_values()
+        federations = self.get_federations(federation_query_params)
+        option_str = ', '.join(federation.name for federation in federations)
+        if exclude:
+            option_str = _('Exclude: {values}').format(values=option_str)
+        return f'{self.name} ({option_str})'
+
+
+class PlayerIdPlayerFilter(PlayerFilter):
+    @staticmethod
+    def static_id() -> str:
+        return 'PLAYER'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Players')
+
+    @staticmethod
+    def available_options() -> list[type[PlayerFilterOption]]:
+        return [
+            PlayersFilterOption,
+            ExcludeFilterOption,
+        ]
+
+    @cached_property
+    def is_player_included_function(self) -> Callable[[Player], bool]:
+        player_ids, exclude = self.get_option_values()
+        if exclude:
+            return lambda player: player.id not in player_ids
+        else:
+            return lambda player: player.id in player_ids
+
+    def full_name(self, tournament: 'Tournament') -> str:
+        player_ids, exclude = self.get_option_values()
+        player_names = [
+            player.full_name for player in tournament.players if player.id in player_ids
+        ]
+        option_str = ', '.join(sorted(player_names))
+        if exclude:
+            option_str = _('Exclude: {values}').format(values=option_str)
         return f'{self.name} ({option_str})'

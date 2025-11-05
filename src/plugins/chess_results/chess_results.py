@@ -11,6 +11,9 @@ from plugins.chess_results.chess_results_background_uploader import (
     ChessResultsBackgroundUploader,
 )
 from plugins.chess_results.chess_results_qrcode import ChessResultsQRCodeType
+from plugins.chess_results.chess_results_tournament_controller import (
+    ChessResultsAdminTournamentController,
+)
 from plugins.chess_results.utils import (
     CHESS_RESULTS_DEFAULT_UPLOAD_DELAY,
     CHESS_RESULTS_MIN_UPLOAD_DELAY,
@@ -75,6 +78,7 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
     def controllers(self) -> list[type[BaseController]]:
         return [
             ChessResultsAdminEventController,
+            ChessResultsAdminTournamentController,
         ]
 
     @hookimpl
@@ -200,6 +204,10 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
         if not ChessResultsUtils.get_tournament_plugin_data(tournament).tnr:
             return None
         return '/chess_results_tournament_card_connexion.html'
+
+    @hookimpl
+    def get_tournament_card_action_menu_items_template(self) -> str:
+        return '/chess_results_tournament_card_action_menu_items.html'
 
     @hookimpl
     def get_tournament_tie_breaks_warning_message(

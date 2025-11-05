@@ -1283,77 +1283,62 @@ with_indicator: display a loading indicator, optional
     selected=[],
     placeholder='',
     post_url='',
-    patch_url=''
+    hx_target=''
 ) %}
     <form
-        id="{{ id }}-form"
-        class="input-group"
-        {% if post_url %}
-            hx-post="{{ post_url }}"
-        {% elif patch_url %}
-            hx-patch="{{ patch_url }}""
-        {% endif %}
-        hx-target="body"
+        hx-post="{{ post_url }}"
+        hx-target="{{ hx_target }}"
         hx-indicator="#please-wait"
-        style="flex-wrap: nowrap !important;"
+        hx-swap="outerHTML"
     >
+        <input id="{{ id }}-form-value" name="{{ name }}" type="hidden">
+        <button id="{{ id }}-form-submit" type="submit" style="display:none"></button>
+    </form>
+    <div id="{{ id }}-select-container" class="input-group" style="flex-wrap: nowrap !important;">
         {{ select_content(
             id=id ~ '-select',
-            name=name,
+            name='',
             options=options,
             selected=selected,
             multiple=true,
             multiple_placeholder=placeholder,
         ) }}
         <script>
-            var polyglot = new Polyglot({
-                locale: '{{ locale }}',
-                phrases: {'items': "{{ _('<smart_count> item selected |||| <smart_count> items selected') }}"},
-                interpolation: {prefix: '<', suffix: '>'},
-            });
+            $('#{{ id }}-select').on('select2:selecting', function(e) {
+                const selectedValue = e.params.args.data.id;
 
-            $('#{{ id }}-select').on('change', function() {
-                $('.select2-selection__choice').remove();
-                var items = $(this).val() ? $(this).val().length : 0;
-                var placeholderText = $(this).data('placeholder');
-                const searchField = $('#{{ id }}-form .select2-search__field');
-                searchField.prop(
-                    'placeholder',
-                    items > 0 ? polyglot.t('items', items) : "{{ placeholder }}",
-                );
-                searchField.css('width', '100%');
+                // Submit the form with the selected value
+                $('#{{ id }}-form-value').val(selectedValue);
+                $('#{{ id }}-form-submit').click();
+
+                // Increment the counter in the option text
+                const $option = $(`.select2-results__option[data-select2-id$=-${selectedValue}]`);
+                const selectedText = $option.text();
+                const counterMatch = selectedText.match(/\(x(\d+)\)/);
+                let newText = '';
+                if (counterMatch) {
+                    const counter = parseInt(counterMatch[1]) + 1;
+                    newText = selectedText.replace(/\(x\d+\)/, `(x${counter})`);
+                } else {
+                    newText = selectedText + ' (x1)';
+                }
+                $option.text(newText);
+
+                $('#{{ id }}-select + .select2 input').focus();
+
+                e.preventDefault();
             });
         </script>
-        <span
-            id="{{ id }}-submit-button-container"
-            {{ macros.tooltip_attributes('', _('Validate'), 'top') }}
-        >
-            <button
-                id="{{ id }}-submit-button"
-                data-testid="{{ id }}-submit-button"
-                class="btn btn-primary rounded-0"
-                type="submit"
-                style="outline-offset: 0px;"
-            >
-                <i class="bi-check"></i>
-            </button>
-        </span>
         <button
             id="{{ id }}-cancel-button"
             data-testid="{{ id }}-cancel-button"
             class="inline-form-cancel-button btn btn-secondary"
             type="button"
             style="outline-offset: 0px;"
-            {{ macros.tooltip_attributes('', _('Cancel'), 'top') }}
         >
             <i class="bi-x"></i>
         </button>
-    </form>
-    <script>
-        $('#{{ id }}-select').focus(function() {
-            $('#{{ id }}-form').addClass('focus');
-        });
-    </script>
+    </div>
 {% endmacro %}
 
 {% macro extra_admin_column_header(

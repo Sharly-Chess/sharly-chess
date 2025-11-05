@@ -4,7 +4,7 @@
     no_bye_possible = admin_round >= player.tournament.rounds - player.tournament.last_rounds_no_byes,
     pairing = player.pairings[admin_round]
 %}
-    <div style="--bs-modal-width: min(90vw, 400px);" class="modal-dialog modal-dialog-centered pairing-modal">
+    <div style="--bs-modal-width: min(90vw, 400px);" class="modal-dialog pairing-modal">
         <div class="modal-content bg-secondary-subtle">
             <div class="modal-header">
                 <div class="modal-title fs-4 fw-bold">{{ _('%(player)s - Round %(num)s', player=player.full_name, num=admin_round) }}</div>
