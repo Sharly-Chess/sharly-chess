@@ -1,3 +1,4 @@
+import copy
 import logging
 from pathlib import Path
 from typing import Any
@@ -151,6 +152,14 @@ class PlaceCardTemplate:
     ) -> dict[str, Any]:
         file: Path = self.font_file
         border_value = '1px solid black'
+        items: list[PlaceCardItem] = self.items
+        if mirror:
+            # duplicate all the items
+            back_items: list[PlaceCardItem] = copy.deepcopy(items)
+            for item in back_items:
+                item.back = not item.back
+            items += back_items
+        back_side: bool = any(item.back for item in items)
         css: dict[str, dict[str, str]] = {
             '@font-face': {
                 'font-family': f'"{file.stem}"',
@@ -164,7 +173,7 @@ class PlaceCardTemplate:
                 'display': 'flex',
                 'flex-direction': 'column',
                 'width': f'{self.width}{self.unit}',
-                'height': f'{(2 if mirror else 1) * self.height}{self.unit}',
+                'height': f'{(2 if back_side else 1) * self.height}{self.unit}',
                 'page-break-inside': 'avoid',
                 'position': 'relative',
             },
@@ -175,7 +184,7 @@ class PlaceCardTemplate:
                 'grid-template-columns': f'{self.padding}{self.unit} auto {self.padding}{self.unit}',
                 'grid-auto-flow': 'row',
             },
-            '.card.disposition-mirrored-up .card-content': {
+            '.card.side-back .card-content': {
                 'transform': 'rotate(180deg)',
                 'transform-origin': 'center center',
             },
@@ -194,12 +203,7 @@ class PlaceCardTemplate:
         }
         match self.cutting_marks:
             case 'border':
-                css[
-                    (
-                        '.disposition-mirrored-up .card-cell.top, '
-                        '.disposition-single .card-cell.top'
-                    )
-                ] = {
+                css[('.side-back .card-cell.top, .side-single .card-cell.top')] = {
                     'border-top': border_value,
                 }
 
@@ -208,10 +212,7 @@ class PlaceCardTemplate:
                 }
 
                 css[
-                    (
-                        '.disposition-original .card-cell.bottom, '
-                        '.disposition-single .card-cell.bottom'
-                    )
+                    ('.side-front .card-cell.bottom, .side-single .card-cell.bottom')
                 ] = {
                     'border-bottom': border_value,
                 }
@@ -222,10 +223,10 @@ class PlaceCardTemplate:
             case 'corners':
                 css[
                     (
-                        '.disposition-mirrored-up .card-cell.top.left, '
-                        '.disposition-mirrored-up .card-cell.top.right, '
-                        '.disposition-single .card-cell.top.left, '
-                        '.disposition-single .card-cell.top.right'
+                        '.side-back .card-cell.top.left, '
+                        '.side-back .card-cell.top.right, '
+                        '.side-single .card-cell.top.left, '
+                        '.side-single .card-cell.top.right'
                     )
                 ] = {
                     'border-top': border_value,
@@ -233,10 +234,10 @@ class PlaceCardTemplate:
 
                 css[
                     (
-                        '.disposition-mirrored-up .card-cell.top.right, '
-                        '.disposition-original .card-cell.bottom.right, '
-                        '.disposition-single .card-cell.top.right, '
-                        '.disposition-single .card-cell.bottom.right'
+                        '.side-back .card-cell.top.right, '
+                        '.side-front .card-cell.bottom.right, '
+                        '.side-single .card-cell.top.right, '
+                        '.side-single .card-cell.bottom.right'
                     )
                 ] = {
                     'border-right': border_value,
@@ -244,10 +245,10 @@ class PlaceCardTemplate:
 
                 css[
                     (
-                        '.disposition-original .card-cell.bottom.left, '
-                        '.disposition-original .card-cell.bottom.right, '
-                        '.disposition-single .card-cell.bottom.left, '
-                        '.disposition-single .card-cell.bottom.right'
+                        '.side-front .card-cell.bottom.left, '
+                        '.side-front .card-cell.bottom.right, '
+                        '.side-single .card-cell.bottom.left, '
+                        '.side-single .card-cell.bottom.right'
                     )
                 ] = {
                     'border-bottom': border_value,
@@ -255,10 +256,10 @@ class PlaceCardTemplate:
 
                 css[
                     (
-                        '.disposition-mirrored-up .card-cell.top.left, '
-                        '.disposition-single .card-cell.top.left, '
-                        '.disposition-original .card-cell.bottom.left, '
-                        '.disposition-single .card-cell.bottom.left'
+                        '.side-back .card-cell.top.left, '
+                        '.side-single .card-cell.top.left, '
+                        '.side-front .card-cell.bottom.left, '
+                        '.side-single .card-cell.bottom.left'
                     )
                 ] = {
                     'border-left': border_value,
@@ -327,7 +328,7 @@ class PlaceCardTemplate:
 """
         return {
             'error': self.error,
-            'mirror': mirror,
+            'back_side': back_side,
             'unit': self.unit,
             'creator': self.creator,
             'width': self.width,

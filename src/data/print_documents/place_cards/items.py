@@ -57,6 +57,18 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
             property='css',
             default='',
         )
+        self.back: bool = (
+            data.get_str(
+                section=section,
+                property='side',
+                default='front',
+                values=[
+                    'front',
+                    'back',
+                ],
+            )
+            == 'back'
+        )
 
     @property
     @abstractmethod
@@ -73,6 +85,7 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
             'width',
             'height',
             'max_width',
+            'back',
         ]
 
     def render_error(
@@ -250,6 +263,9 @@ class PlaceCardText(PlaceCardItem):
         }
         return super().inner_css(unit) | inner_css
 
+    def __str__(self) -> str:
+        return f'{self.__class__.__name__}({self.raw_text=}, {self.back=})'
+
 
 class PlaceCardImage(PlaceCardItem):
     """A class to store an image item of a place card."""
@@ -318,3 +334,6 @@ class PlaceCardImage(PlaceCardItem):
                 $(".card-item.{self.css_class}").attr("src", "{image_file_inline_url(file)}");
             }});
             """
+
+    def __str__(self) -> str:
+        return f'{self.__class__.__name__}({self.image=}, {self.back=})'

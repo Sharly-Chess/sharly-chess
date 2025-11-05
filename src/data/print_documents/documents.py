@@ -1113,8 +1113,16 @@ class PlaceCardPrintDocument(PrintDocument):
         return ''
 
     @property
+    def place_card_type(self) -> PlaceCardType:
+        return self._get_option(PlaceCardPrintOption).place_card_type
+
+    @property
     def at_round(self) -> int:
         return self._get_option(RoundPrintOption).value or self.tournament.current_round
+
+    @property
+    def mirror(self) -> bool:
+        return self.get_option_values()[4]
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
@@ -1139,8 +1147,8 @@ class PlaceCardPrintDocument(PrintDocument):
         ).place_card_template.template_context(
             tournament=self.tournament,
             round_=self.at_round,
-            place_card_type=self._get_option(PlaceCardPrintOption).place_card_type,
-            mirror=self.get_option_values()[4],
+            place_card_type=self.place_card_type,
+            mirror=self.mirror,
         )
         return document_context | card_template_context
 

@@ -1,17 +1,19 @@
 {% extends '/admin/print/base.html' %}
 
 {% macro render_card(board, player) %}
-    {% set dispositions=['mirrored-up', 'original'] if mirror else ['single'] %}
+    {% set sides={'back': true, 'front': false} if back_side else {'single': false} %}
     <div class="card-wrapper">
-        {% for disposition in dispositions %}
-            <div class="card disposition-{{disposition}}">
+        {% for side_name, side_back in sides.items() %}
+            <div class="card side-{{side_name}}">
                 <div class="card-cell top left"></div>
                 <div class="card-cell top center"></div>
                 <div class="card-cell top right"></div>
                 <div class="card-cell middle left"></div>
                 <div class="card-content">
                     {% for item in items %}
-                        {{ item.render_html(event=event, tournament=tournament, board=board, player=player) | safe }}
+                        {% if item.back == side_back %}
+                            {{ item.render_html(event=event, tournament=tournament, board=board, player=player) | safe }}
+                        {% endif %}
                     {% endfor %}
                 </div>
                 <div class="card-cell middle right"></div>
