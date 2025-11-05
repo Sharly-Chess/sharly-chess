@@ -10,13 +10,9 @@ class Migration(BaseMigration):
             'CREATE TABLE `account_role` ('
             '   `account_id` INTEGER NOT NULL,'
             '   `tournament_id` INTEGER,'  # NULL for organisers
-            '   `role` TEXT NOT NULL CHECK (`role` IN ("chief_arbiter", "deputy_arbiter", "organiser")),'
+            '   `role` TEXT NOT NULL,'
             '   FOREIGN KEY (`account_id`) REFERENCES `account`(`id`) ON DELETE CASCADE,'
-            '   FOREIGN KEY (`tournament_id`) REFERENCES `tournament`(`id`) ON DELETE CASCADE,'
-            '   CHECK ('
-            '       (`role` = "organiser" AND `tournament_id` IS NULL) OR '
-            '       (`role` IN ("chief_arbiter", "deputy_arbiter") AND `tournament_id` IS NOT NULL)'
-            '   )'
+            '   FOREIGN KEY (`tournament_id`) REFERENCES `tournament`(`id`) ON DELETE CASCADE'
             ')'
         )
 

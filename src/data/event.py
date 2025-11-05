@@ -32,6 +32,7 @@ from plugins.utils import PluginData, Plugin
 from utils import Utils
 from utils.enum import (
     Result,
+    RoleType,
     ScreenType,
     PlayerGender,
 )
@@ -773,7 +774,25 @@ class Event:
         stored_role: StoredRole,
     ):
         with EventDatabase(self.uniq_id, True) as database:
-            database.update_stored_role(stored_role)
+            if stored_role.tournament_ids:
+                # Always replace this user's existing tournaments for this role
+                database.delete_stored_roles(
+                    stored_role.account_id, None, stored_role.tournament_ids
+                )
+
+                if stored_role.role == RoleType.CHIEF_ARBITER.value:
+                    # Delete any previous chief arbiter roles for these tournaments
+                    database.delete_stored_roles(
+                        None, RoleType.CHIEF_ARBITER.value, stored_role.tournament_ids
+                    )
+
+            if (
+                not RoleType(stored_role.role).is_tournament_bound
+                or stored_role.tournament_ids
+            ):
+                database.add_stored_roles(
+                    stored_role.account_id, stored_role.role, stored_role.tournament_ids
+                )
 
     @staticmethod
     def _delete_redundant_account_permissions(
