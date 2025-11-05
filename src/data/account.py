@@ -6,7 +6,6 @@ from common.i18n import _
 from data.access_levels.manager import AccessLevelManager
 from data.player import Player
 from database.sqlite.event.event_store import (
-    RoleKind,
     StoredAccount,
     StoredPermission,
     StoredRole,
@@ -17,6 +16,7 @@ from data.access_levels.access_levels import (
     CheckInAccessLevel,
     ResultsEntryAccessLevel,
 )
+from utils.enum import RoleType
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -27,8 +27,8 @@ class Role:
     stored_role: StoredRole
 
     @property
-    def role_kind(self) -> RoleKind:
-        return RoleKind(self.stored_role.role)
+    def role_kind(self) -> RoleType:
+        return RoleType(self.stored_role.role)
 
     @property
     def tournament_ids(self) -> set[int] | None:
@@ -161,10 +161,10 @@ class Account:
     def roles(self) -> list[Role]:
         return sorted(
             (Role(stored_role) for stored_role in self.stored_account.stored_roles),
-            key=lambda r: RoleKind(r.stored_role.role).sort_order,
+            key=lambda r: RoleType(r.stored_role.role).sort_order,
         )
 
-    def get_role(self, role_kind: RoleKind) -> Role:
+    def get_role(self, role_kind: RoleType) -> Role:
         for stored_role in self.stored_account.stored_roles:
             if stored_role.role == role_kind.value:
                 return Role(stored_role)

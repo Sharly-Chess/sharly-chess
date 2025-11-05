@@ -34,7 +34,6 @@ from data.tie_breaks import (
 )
 from data.tournament_criterion import TournamentCriterion
 from database.sqlite.event.event_store import (
-    RoleKind,
     StoredPlayer,
     StoredBoard,
     StoredTournamentCriterion,
@@ -54,6 +53,7 @@ from utils.enum import (
     PlayerCategory,
     PlayerRatingType,
     ScreenType,
+    RoleType,
 )
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredPrizeGroup
@@ -816,7 +816,7 @@ class Tournament:
     @property
     def chief_arbiter(self) -> Account | None:
         for account in self.event.accounts_by_id.values():
-            role = account.get_role(RoleKind.CHIEF_ARBITER)
+            role = account.get_role(RoleType.CHIEF_ARBITER)
             if role and role.tournament_ids and self.id in role.tournament_ids:
                 return account
         return None
@@ -827,7 +827,7 @@ class Tournament:
             account
             for account in self.event.accounts_by_id.values()
             if (
-                (role := account.get_role(RoleKind.DEPUTY_ARBITER))
+                (role := account.get_role(RoleType.DEPUTY_ARBITER))
                 and role.tournament_ids
                 and self.id in role.tournament_ids
             )

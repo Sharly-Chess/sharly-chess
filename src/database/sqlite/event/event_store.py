@@ -6,9 +6,8 @@ from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
 
-from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
-from utils.enum import Result, StrEnum
+from utils.enum import Result
 
 
 @dataclass
@@ -322,37 +321,6 @@ class StoredPermission:
     account_id: int
     access_level: str
     tournament_ids: list[int] | None = None
-
-
-class RoleKind(StrEnum):
-    CHIEF_ARBITER = 'chief_arbiter'
-    DEPUTY_ARBITER = 'deputy_arbiter'
-    ORGANISER = 'organiser'
-
-    @property
-    def is_tournament_bound(self) -> bool:
-        return self is not RoleKind.ORGANISER
-
-    @property
-    def sort_order(self) -> int:
-        """Defines display / logical order for roles."""
-        order_map = {
-            RoleKind.CHIEF_ARBITER: 0,
-            RoleKind.DEPUTY_ARBITER: 1,
-            RoleKind.ORGANISER: 2,
-        }
-        return order_map[self]
-
-    def __str__(self):
-        match self:
-            case RoleKind.CHIEF_ARBITER:
-                return _('Chief arbiter')
-            case RoleKind.DEPUTY_ARBITER:
-                return _('Deputy arbiter')
-            case RoleKind.ORGANISER:
-                return _('Organiser')
-            case _:
-                raise ValueError(f'Unknown value: {self}')
 
 
 @dataclass

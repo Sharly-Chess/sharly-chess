@@ -6,7 +6,7 @@ from contextlib import suppress
 from functools import cached_property
 from logging import Logger
 from pathlib import Path
-from typing import Any, TYPE_CHECKING, override, cast
+from typing import Any, TYPE_CHECKING, Sequence, override, cast
 
 from packaging.version import Version
 
@@ -19,7 +19,6 @@ from common import (
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from database.sqlite.event.event_store import (
-    RoleKind,
     StoredDisplayController,
     StoredTournament,
     StoredEvent,
@@ -2518,57 +2517,55 @@ class EventDatabase(MigrationDatabase):
             for role, tournament_ids in tournament_ids_by_role.items()
         ]
 
-    def update_stored_role(self, stored_role: StoredRole):
-        # Build desired tournament list (organiser => single NULL row)
-        if stored_role.tournament_ids:
-            tournament_ids: list[int | None] = list(
-                dict.fromkeys(stored_role.tournament_ids)
-            )
-        elif not RoleKind(stored_role.role).is_tournament_bound:
-            tournament_ids = [None]
-        else:
-            tournament_ids = []
+    def delete_stored_roles(
+        self,
+        account_id: int | None = None,
+        role: str | None = None,
+        tournament_ids: list[int] | None = None,
+    ) -> None:
+        """Delete stored roles, optionally filtered by account, role, and/or tournaments."""
+        conditions: list[str] = []
+        params: list = []
 
-        # Always replace this user's existing rows for this role
-        self.execute(
-            'DELETE FROM `account_role` WHERE `account_id` = ? AND `role` = ?',
-            (stored_role.account_id, stored_role.role),
+        if account_id is not None:
+            conditions.append('`account_id` = ?')
+            params.append(account_id)
+
+        if role is not None:
+            conditions.append('`role` = ?')
+            params.append(role)
+
+        if tournament_ids:
+            placeholders = ', '.join('?' for _ in tournament_ids)
+            conditions.append(f'`tournament_id` IN ({placeholders})')
+            params.extend(tournament_ids)
+
+        # Don’t allow deleting everything by mistake
+        if not conditions:
+            raise ValueError('At least one condition must be provided to delete roles.')
+
+        sql = f'DELETE FROM `account_role` WHERE {" AND ".join(conditions)}'
+        self.execute(sql, tuple(params))
+
+    def add_stored_roles(
+        self,
+        account_id: int,
+        role: str,
+        tournament_ids: Sequence[int] | None = None,
+    ) -> None:
+        # For roles that aren't bound to a tournament
+        ids: Sequence[int | None]
+        if tournament_ids is None:
+            ids = [None]
+        else:
+            ids = tournament_ids
+
+        rows = [(account_id, role, tid) for tid in ids]
+        self.executemany(
+            'INSERT INTO `account_role` (`account_id`, `role`, `tournament_id`) '
+            'VALUES (?, ?, ?)',
+            rows,
         )
-
-        if stored_role.role == RoleKind.CHIEF_ARBITER.value:
-            if any(tid is None for tid in tournament_ids):
-                raise ValueError('chief_arbiter requires a concrete tournament_id')
-
-            # If the user is currently a deputy on any of these tournaments, remove those rows first
-            if tournament_ids:
-                placeholders = ','.join('?' for _ in tournament_ids)
-                self.execute(
-                    f'DELETE FROM `account_role` '
-                    f'WHERE `account_id` = ? AND `role` = "{RoleKind.DEPUTY_ARBITER.value}" '
-                    f'AND `tournament_id` IN ({placeholders})',
-                    (stored_role.account_id, *tournament_ids),
-                )
-
-            # UPSERT chief arbiter: replaces any existing chief for those tournaments
-            for tid in tournament_ids:
-                self.execute(
-                    'INSERT INTO `account_role` (`account_id`, `role`, `tournament_id`) '
-                    'VALUES (?, ?, ?) '
-                    f'ON CONFLICT(`role`, `tournament_id`)  WHERE `role` = "{RoleKind.CHIEF_ARBITER.value}" '
-                    'DO UPDATE SET '
-                    '  `account_id` = excluded.`account_id`',
-                    (stored_role.account_id, RoleKind.CHIEF_ARBITER.value, tid),
-                )
-        else:
-            rows = [
-                (stored_role.account_id, stored_role.role, tid)
-                for tid in tournament_ids
-            ]
-            self.executemany(
-                'INSERT INTO `account_role` (`account_id`, `role`, `tournament_id`) '
-                'VALUES (?, ?, ?)',
-                rows,
-            )
 
     # ---------------------------------------------------------------------------------
     # StoredPermission

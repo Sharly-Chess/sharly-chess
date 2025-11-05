@@ -858,6 +858,37 @@ class PlayerTitle(IntEnum):
         return self.short_name
 
 
+class RoleType(StrEnum):
+    CHIEF_ARBITER = 'chief_arbiter'
+    DEPUTY_ARBITER = 'deputy_arbiter'
+    ORGANISER = 'organiser'
+
+    @property
+    def is_tournament_bound(self) -> bool:
+        return self is not RoleType.ORGANISER
+
+    @property
+    def sort_order(self) -> int:
+        """Defines display / logical order for roles."""
+        order_map = {
+            RoleType.CHIEF_ARBITER: 0,
+            RoleType.DEPUTY_ARBITER: 1,
+            RoleType.ORGANISER: 2,
+        }
+        return order_map[self]
+
+    def __str__(self):
+        match self:
+            case RoleType.CHIEF_ARBITER:
+                return _('Chief arbiter')
+            case RoleType.DEPUTY_ARBITER:
+                return _('Deputy arbiter')
+            case RoleType.ORGANISER:
+                return _('Organiser')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+
 class TitleNorm(Enum):
     WIM = auto()
     WGM = auto()

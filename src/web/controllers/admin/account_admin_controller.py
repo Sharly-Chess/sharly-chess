@@ -18,12 +18,11 @@ from data.account import Account, Permission
 from data.input_output.managers import DataSourceManager
 from data.player import Player
 from database.sqlite.event.event_store import (
-    RoleKind,
     StoredAccount,
     StoredPermission,
     StoredRole,
 )
-from utils.enum import FormAction
+from utils.enum import FormAction, RoleType
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -224,7 +223,7 @@ class AccountAdminController(BaseEventAdminController):
         first_name = WebContext.form_data_to_str(data, 'first_name') or ''
         last_name = WebContext.form_data_to_str(data, field := 'last_name') or ''
         fide_id = WebContext.form_data_to_int(data, 'fide_id')
-        print(data)
+
         if not last_name:
             errors[field] = _('This field is required.')
         if 'first_name' not in errors and 'last_name' not in errors:
@@ -688,8 +687,8 @@ class AccountAdminController(BaseEventAdminController):
     ) -> dict[str, Any]:
         account = web_context.get_admin_account()
 
-        chief_role = account.get_role(RoleKind.CHIEF_ARBITER)
-        deputy_role = account.get_role(RoleKind.DEPUTY_ARBITER)
+        chief_role = account.get_role(RoleType.CHIEF_ARBITER)
+        deputy_role = account.get_role(RoleType.DEPUTY_ARBITER)
 
         default_data = WebContext.values_dict_to_form_data(
             {
@@ -773,7 +772,7 @@ class AccountAdminController(BaseEventAdminController):
         )
         stored_deputy_role = StoredRole(
             account_id=account.id,
-            role=RoleKind.DEPUTY_ARBITER.value,
+            role=RoleType.DEPUTY_ARBITER.value,
             tournament_ids=deputy_tournament_ids,
         )
         event.update_account_role(stored_deputy_role)
@@ -783,7 +782,7 @@ class AccountAdminController(BaseEventAdminController):
         )
         stored_chief_role = StoredRole(
             account_id=account.id,
-            role=RoleKind.CHIEF_ARBITER.value,
+            role=RoleType.CHIEF_ARBITER.value,
             tournament_ids=chief_tournament_ids,
         )
         event.update_account_role(stored_chief_role)
