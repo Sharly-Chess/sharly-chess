@@ -161,6 +161,8 @@ class PlaceCardTemplate:
             },
             '.card-wrapper': {
                 'float': 'left',
+                'display': 'flex',
+                'flex-direction': 'column',
                 'width': f'{self.width}{self.unit}',
                 'height': f'{(2 if mirror else 1) * self.height}{self.unit}',
                 'page-break-inside': 'avoid',
@@ -170,15 +172,12 @@ class PlaceCardTemplate:
                 'display': 'grid',
                 'width': f'{self.width}{self.unit}',
                 'height': f'{self.height}{self.unit}',
-                'top': f'{self.height if mirror else 0.0}{self.unit}',
                 'grid-template-columns': f'{self.padding}{self.unit} auto {self.padding}{self.unit}',
                 'grid-auto-flow': 'row',
-                'position': 'absolute',
             },
-            '.card.disposition-original': {},
-            '.card.disposition-mirrored-up': {
+            '.card.disposition-mirrored-up .card-content': {
                 'transform': 'rotate(180deg)',
-                'transform-origin': 'top center',
+                'transform-origin': 'center center',
             },
             '.card-cell.top, .card-cell.bottom': {
                 'height': f'{self.padding}{self.unit}',
@@ -195,29 +194,73 @@ class PlaceCardTemplate:
         }
         match self.cutting_marks:
             case 'border':
-                css['.card-cell.top'] = {
+                css[
+                    (
+                        '.disposition-mirrored-up .card-cell.top, '
+                        '.disposition-single .card-cell.top'
+                    )
+                ] = {
                     'border-top': border_value,
                 }
+
                 css['.card-cell.right'] = {
                     'border-right': border_value,
                 }
-                css['.card-cell.bottom'] = {
+
+                css[
+                    (
+                        '.disposition-original .card-cell.bottom, '
+                        '.disposition-single .card-cell.bottom'
+                    )
+                ] = {
                     'border-bottom': border_value,
                 }
+
                 css['.card-cell.left'] = {
                     'border-left': border_value,
                 }
             case 'corners':
-                css['.card-cell.top.left, .card-cell.top.right'] = {
+                css[
+                    (
+                        '.disposition-mirrored-up .card-cell.top.left, '
+                        '.disposition-mirrored-up .card-cell.top.right, '
+                        '.disposition-single .card-cell.top.left, '
+                        '.disposition-single .card-cell.top.right'
+                    )
+                ] = {
                     'border-top': border_value,
                 }
-                css['.card-cell.top.right, .card-cell.bottom.right'] = {
+
+                css[
+                    (
+                        '.disposition-mirrored-up .card-cell.top.right, '
+                        '.disposition-original .card-cell.bottom.right, '
+                        '.disposition-single .card-cell.top.right, '
+                        '.disposition-single .card-cell.bottom.right'
+                    )
+                ] = {
                     'border-right': border_value,
                 }
-                css['.card-cell.bottom.left, .card-cell.bottom.right'] = {
+
+                css[
+                    (
+                        '.disposition-original .card-cell.bottom.left, '
+                        '.disposition-original .card-cell.bottom.right, '
+                        '.disposition-single .card-cell.bottom.left, '
+                        '.disposition-single .card-cell.bottom.right'
+                    )
+                ] = {
                     'border-bottom': border_value,
                 }
-                css['.card-cell.top.left, .card-cell.bottom.left'] = {
+
+                css[
+                    (
+                        '.disposition-mirrored-up .card-cell.top.left, '
+                        '.disposition-original .card-cell.bottom.left, '
+                        '.disposition-single .card-cell.top.left, '
+                        '.disposition-single .card-cell.bottom.left'
+                    )
+                ] = {
                     'border-left': border_value,
                 }
             case 'none':

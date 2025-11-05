@@ -1,7 +1,7 @@
 {% extends '/admin/print/base.html' %}
 
 {% macro render_card(board, player) %}
-    {% set dispositions=['original', 'mirrored-up'] if mirror else ['single'] %}
+    {% set dispositions=['mirrored-up', 'original'] if mirror else ['single'] %}
     <div class="card-wrapper">
         {% for disposition in dispositions %}
             <div class="card disposition-{{disposition}}">
