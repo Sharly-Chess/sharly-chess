@@ -5120,14 +5120,14 @@ msgstr "Les valeurs à prendre en compte lors du calcul du départage."
 msgid "The way to share the prizes between players with the same points."
 msgstr "La manière de partages les prix entre les joueurs ayant le même nombre de points."
 
+msgid "There are no pairings for this round (last round with pairings: #{round})."
+msgstr "Il n'y a pas d'appariement pour cette ronde (dernière ronde appariée : n°{round})."
+
 msgid "There are no public screens available for this event."
 msgstr "Aucun écran public n’est disponible pour cet évènement."
 
 msgid "There can only be one main category."
 msgstr "Il ne peut y avoir qu'une seule catégorie générale."
-
-msgid "There is no pairings for this round (last round with pairings: #{round})."
-msgstr "Il n'y a pas d'appariement pour cette ronde (dernière ronde appariée : n°{round})."
 
 msgid "These plugins can only be activated on events of their federation."
 msgstr "Ces plug-ins ne peuvent-être activés que pour les évènements de leur fédération."
@@ -5206,6 +5206,9 @@ msgstr "Cet écran rotatif est privé (non visible des spectateur·ices)."
 
 msgid "This rotator is public (visible by the spectators)."
 msgstr "Cet écran rotatif est public (visible des spectateur·ices)."
+
+msgid "This round hasn't started (current round: #{round})."
+msgstr "Cette ronde n’a pas encore commencé (ronde actuelle : #{round})."
 
 msgid "This round is not finished (last finished: #{round})."
 msgstr "Cette ronde n'est pas terminée (dernière ronde terminée : n°{round})."
@@ -6357,3 +6360,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+

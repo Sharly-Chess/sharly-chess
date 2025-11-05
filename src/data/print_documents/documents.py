@@ -476,12 +476,20 @@ class BoardPrintDocument(PrintDocument, ABC):
                 at_round,
             )
         if at_round.value > self.tournament.current_round:
-            raise OptionError(
-                _(
-                    'There is no pairings for this round (last round with pairings: #{round}).'
-                ).format(round=self.tournament.current_round),
-                at_round,
-            )
+            if self.tournament.pairing_system == SwissPairingSystem():
+                raise OptionError(
+                    _(
+                        'There are no pairings for this round (last round with pairings: #{round}).'
+                    ).format(round=self.tournament.current_round),
+                    at_round,
+                )
+            else:
+                raise OptionError(
+                    _("This round hasn't started (current round: #{round}).").format(
+                        round=self.tournament.current_round
+                    ),
+                    at_round,
+                )
 
 
 class PairingPrintDocument(PrintDocument):

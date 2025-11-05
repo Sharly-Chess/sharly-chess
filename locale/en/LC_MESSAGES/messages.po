@@ -5120,13 +5120,13 @@ msgstr ""
 msgid "The way to share the prizes between players with the same points."
 msgstr ""
 
+msgid "There are no pairings for this round (last round with pairings: #{round})."
+msgstr ""
+
 msgid "There are no public screens available for this event."
 msgstr ""
 
 msgid "There can only be one main category."
-msgstr ""
-
-msgid "There is no pairings for this round (last round with pairings: #{round})."
 msgstr ""
 
 msgid "These plugins can only be activated on events of their federation."
@@ -5205,6 +5205,9 @@ msgid "This rotator is private (not visible by the spectators)."
 msgstr ""
 
 msgid "This rotator is public (visible by the spectators)."
+msgstr ""
+
+msgid "This round hasn't started (current round: #{round})."
 msgstr ""
 
 msgid "This round is not finished (last finished: #{round})."
