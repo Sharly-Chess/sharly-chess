@@ -1296,7 +1296,6 @@ class PlayerAdminController(BaseEventAdminController):
 
         # If there aren't any pairings, then the round for the bye is the first round
         round_for_participation = tournament.current_round or 1
-        new_byes: dict[int, Result] = {}
         new_byes = {
             round_: result
             for round_ in range(
