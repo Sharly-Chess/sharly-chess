@@ -1,15 +1,6 @@
 type = "player"
-name = "{{ _('Sharly Chess Player Cards') }}"
+name = "Sharly Chess"
 creator = "Sharly Chess <support@sharly-chess.com>"
-
-[default]
-font_size = 14.0
-bold = false
-italic = false
-h_align = "left"
-v_align = "top"
-h_pos = 0.0
-v_pos = 0.0
 
 [player_name]
 text = "{{ player.federation_flag | safe }} {{ player.full_name }}"
@@ -40,6 +31,6 @@ v_align = "bottom"
 [logo]
 image = "sharly-chess-logo.svg"
 width = 30
-opacity = 0.4
+opacity = 0.25
 h_align = "right"
 v_align = "bottom"

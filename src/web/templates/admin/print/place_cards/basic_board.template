@@ -1,0 +1,10 @@
+type = "board"
+name = "{{ _('Basic') }}"
+creator = "Sharly Chess <support@sharly-chess.com>"
+
+[number]
+text = "{{ board.number }}"
+font_size = 56.0
+bold = true
+h_align = "center"
+v_align = "middle"

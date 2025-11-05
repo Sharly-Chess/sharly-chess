@@ -1,5 +1,5 @@
 type = "board"
-name = "{{ _('Sharly Chess Board Cards') }}"
+name = "Sharly Chess"
 creator = "Sharly Chess <support@sharly-chess.com>"
 
 [default]
@@ -19,12 +19,6 @@ h_align = "right"
 v_align = "bottom"
 h_pos = 5
 v_pos = -5.0
-
-[tournament]
-italic = true
-text = "{{ tournament.name }}"
-h_align = "center"
-v_align = "top"
 
 [logo]
 image = "sharly-chess-logo.svg"

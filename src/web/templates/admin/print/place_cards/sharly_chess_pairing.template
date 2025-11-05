@@ -1,12 +1,12 @@
 type = "pairing"
-name = "{{ _('Sharly Chess Pairing Cards') }}"
+name = "Sharly Chess"
 creator = "Sharly Chess <support@sharly-chess.com>"
 
 width = 148.5
 height = 50.0
 
 [default]
-font_size = 14.0
+font_size = 12.0
 bold = false
 italic = false
 text_align = "center"
@@ -14,13 +14,13 @@ v_align = "top"
 
 [number]
 text = "{{ board.number }}"
-font_size = 70.0
+font_size = 60.0
 bold = true
 h_align = "center"
 v_align = "middle"
 
 [event]
-font_size = 12.0
+font_size = 10.0
 text = "{{ event.name }}"
 italic = true
 h_align = "center"
@@ -71,6 +71,7 @@ text = """
     {{ player.federation | safe }}
 {% endwith %}
 """
+font_size = 11.0
 width = 60.0
 h_align = "left"
 v_align = "bottom"
@@ -114,6 +115,7 @@ text = """
     {{ player.federation | safe }}
 {% endwith %}
 """
+font_size = 11.0
 width = 60.0
 h_align = "right"
 v_align = "bottom"
