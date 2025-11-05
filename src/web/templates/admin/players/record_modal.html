@@ -11,7 +11,7 @@
                 <div>{{ admin_player.federation }}, {{ admin_player.rating_str }}{% if category %}, {{ category }}{% endif %}</div>
             </div>
             <div>
-                {% if admin_player.tournament.playing %}
+                {% if not admin_player.tournament.finished %}
                     {% if admin_player.has_withdrawn %}
                         <button
                             class="btn btn-sm btn-outline-primary w-100"
