@@ -1,4 +1,4 @@
-<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered admin-tournament-edit-modal">
+<div class="modal-dialog modal-dialog-scrollable admin-tournament-edit-modal">
     <div class="modal-content">
         <div class="modal-header">
              <h2 class="modal-title">
@@ -61,15 +61,17 @@
                         ) }}
                     </div>
                     <div class="col-12 col-md-6">
-                        {{ admin_macros.select_input(
-                            name='player_rating_type',
-                            label=_('Player ratings to use:'),
-                            help_text=_(
-                                'Affects the rating that will be chosen for each player.',
-                            ),
-                            select_options=player_rating_type_options,
-                            data=data, errors=errors
-                        ) }}
+                        <span id="player-rating-type-container">
+                            {{ admin_macros.select_input(
+                                name='player_rating_type',
+                                label=_('Player ratings to use:'),
+                                help_text=_(
+                                    'Affects the rating that will be chosen for each player.',
+                                ),
+                                select_options=player_rating_type_options,
+                                data=data, errors=errors
+                            ) }}
+                        </span>
                     </div>
                 </div>
                 <div class="row gy-2 gx-3">

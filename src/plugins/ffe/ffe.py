@@ -21,7 +21,7 @@ from data.pairings.variations import SwissVariation
 from data.print_documents import PlayerSplitter, PrintDocument
 from data.print_documents.documents import PlayerPrintDocument, StatisticsPrintDocument
 from data.print_documents.player_splitters import ClubPlayerSplitter
-from data.criteria.player_filter_options import PlayerFilterOption
+from data.criteria.player_filter_options import PlayerFilterOption, ClubsFilterOption
 from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
 from data.print_documents.qrcode_types import QRCodeType
 from data.tie_breaks import TieBreak, TieBreakOption
@@ -971,5 +971,6 @@ class FfePlugin(Plugin):
     ):
         licence: type[PlayerFilterOption] = FfeLicenceFilterOption
         league: type[PlayerFilterOption] = FfeLeaguesFilterOption
+        club: type[PlayerFilterOption] = ClubsFilterOption
+        PluginUtils.insert_on_equals(player_filter_option_types, league, club)
         player_filter_option_types.append(licence)
-        player_filter_option_types.append(league)

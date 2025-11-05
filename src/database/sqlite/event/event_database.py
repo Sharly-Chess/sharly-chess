@@ -1324,6 +1324,12 @@ class EventDatabase(MigrationDatabase):
             ),
         )
 
+    def delete_stored_pairings_after_round(self, tournament_id: int, round_: int):
+        self.execute(
+            'DELETE FROM `pairing` WHERE `tournament_id` = ? and `round` > ?',
+            (tournament_id, round_),
+        )
+
     # ---------------------------------------------------------------------------------
     # StoredBoard
     # ---------------------------------------------------------------------------------

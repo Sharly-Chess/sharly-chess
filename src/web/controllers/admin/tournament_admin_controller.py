@@ -33,7 +33,7 @@ from data.pairings.systems import SwissPairingSystem
 from data.player import Player
 from data.criteria.managers import (
     PlayerFilter,
-    PlayerFilterManager,
+    TournamentPlayerFilterManager,
     PlayerFilterOptionManager,
 )
 from data.tie_breaks import TieBreakManager, TieBreak, TieBreakOptionManager
@@ -46,6 +46,7 @@ from database.sqlite.event.event_store import (
     StoredTournament,
     StoredScreen,
     StoredTournamentCriterion,
+    StoredPairing,
 )
 from plugins.manager import plugin_manager
 from utils.time_control import parse_time_control_trf25
@@ -677,20 +678,37 @@ class TournamentAdminController(BaseEventAdminController):
         )(event=web_context.admin_event, stored_tournament=stored_tournament):
             Message.warning(request, message)
 
-        with EventDatabase(
-            web_context.admin_event.uniq_id, write=True
-        ) as event_database:
+        with EventDatabase(web_context.admin_event.uniq_id, write=True) as database:
             if action == FormAction.UPDATE:
-                stored_tournament = event_database.update_stored_tournament(
-                    stored_tournament
-                )
+                tournament = web_context.get_admin_tournament()
+                if tournament.rounds < stored_tournament.rounds:
+                    database.delete_stored_pairings_after_round(
+                        tournament.id, tournament.rounds
+                    )
+                    for player in tournament.players:
+                        if not player.pairings_by_round[
+                            tournament.rounds
+                        ].zero_point_bye:
+                            continue
+                        for round_ in range(
+                            tournament.rounds + 1, stored_tournament.rounds + 1
+                        ):
+                            database.add_stored_pairing(
+                                StoredPairing(
+                                    tournament_id=tournament.id,
+                                    player_id=player.id,
+                                    round_=round_,
+                                    result=Result.ZERO_POINT_BYE.value,
+                                    board_id=None,
+                                )
+                            )
+
+                stored_tournament = database.update_stored_tournament(stored_tournament)
                 success_message = _(
                     'Tournament [{tournament}] has been updated.'
                 ).format(tournament=stored_tournament.name)
             else:
-                stored_tournament = event_database.add_stored_tournament(
-                    stored_tournament
-                )
+                stored_tournament = database.add_stored_tournament(stored_tournament)
                 if 'add_screens' in data:
                     timer_id: int | None = None
                     if len(web_context.admin_event.timers_by_id) == 1:
@@ -725,7 +743,7 @@ class TournamentAdminController(BaseEventAdminController):
                             ),
                         ),
                     ]:
-                        stored_screen: StoredScreen = event_database.add_stored_screen(
+                        stored_screen: StoredScreen = database.add_stored_screen(
                             StoredScreen(
                                 id=None,
                                 uniq_id=web_context.admin_event.get_unused_screen_uniq_id(
@@ -756,7 +774,7 @@ class TournamentAdminController(BaseEventAdminController):
                         )
                         assert stored_screen.id is not None
                         assert stored_tournament.id is not None
-                        event_database.add_stored_screen_set(
+                        database.add_stored_screen_set(
                             stored_screen.id, stored_tournament.id
                         )
                     success_message = _(
@@ -1361,7 +1379,7 @@ class TournamentAdminController(BaseEventAdminController):
         field = 'type'
         player_filter_id = data.get(field, '')
         try:
-            PlayerFilterManager(event).get_type(player_filter_id)
+            TournamentPlayerFilterManager(event).get_type(player_filter_id)
         except KeyError:
             errors[field] = _('Please select a type of criterion.')
             return errors
@@ -1374,7 +1392,7 @@ class TournamentAdminController(BaseEventAdminController):
 
     @staticmethod
     def player_filter_from_data(event: Event, data: dict[str, str]) -> PlayerFilter:
-        player_filter_type = PlayerFilterManager(event).get_type(data['type'])
+        player_filter_type = TournamentPlayerFilterManager(event).get_type(data['type'])
         options = []
         for option in player_filter_type().default_options():
             value = WebContext.form_data_to_value(data, option.id, option.type)
@@ -1397,13 +1415,13 @@ class TournamentAdminController(BaseEventAdminController):
             'modal': 'tournament_criterion_form',
             'action': action,
             'player_filter_select_options': {'': '-'}
-            | PlayerFilterManager(event).options(),
+            | TournamentPlayerFilterManager(event).options(),
             'player_filter_options': PlayerFilterOptionManager(event).objects(),
             'containers_by_type': {
                 player_filter.id: [
                     option.container_id for option in player_filter.default_options()
                 ]
-                for player_filter in PlayerFilterManager(event).objects()
+                for player_filter in TournamentPlayerFilterManager(event).objects()
             }
             | {'': []},
             'add_other_active': (

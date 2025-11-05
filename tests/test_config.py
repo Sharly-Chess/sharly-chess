@@ -17,7 +17,7 @@ from database.sqlite.event.event_store import (
     StoredEvent,
     StoredTournament,
 )
-from playwright.sync_api import Page, Locator, APIRequestContext, APIResponse
+from playwright.sync_api import Page, Locator, APIRequestContext, APIResponse, expect
 
 from plugins.ffe.ffe_tournament_importers import PapiJsonTournamentImporter
 from utils.enum import ScreenType
@@ -30,6 +30,11 @@ class TestConfig:
     TEST_HOST = '127.0.0.1'  # Use IP instead of localhost
     TEST_PORT = 9000
     TEST_TIMEOUT = 30  # seconds to wait for server startup
+
+    # Global timeout for all global expect calls.
+    # NOTE(Amaras): I set to 10s = 10_000 ms because we often had false-positive failures.
+    # Hopefully 10s is long enough to ensure all failures are real failure cases.
+    expect.set_options(timeout=10_000)
 
     # Test data configuration
     TEST_DATA_DIR = Path(__file__).parent / 'tmp'
@@ -462,15 +467,19 @@ class TestUtils:
         stored_rotator = next(r for r in stored_rotators if r.name == name)
         assert stored_rotator.id is not None
 
-        if screen_ids or family_ids:
-            form_data = cls.prepare_form_data(
-                {
-                    'screen_ids': screen_ids,
-                    'family_ids': family_ids,
-                }
-            )
+        for screen_id in screen_ids or []:
+            form_data = cls.prepare_form_data({'screen_id': screen_id})
             res = api_request_context.post(
-                f'/rotating-screens-create/{event_uniq_id}/{stored_rotator.id}',
+                f'/rotating-screens/create-screen/{event_uniq_id}/{stored_rotator.id}',
+                headers={'Content-Type': 'application/x-www-form-urlencoded'},
+                data=form_data,
+            )
+            cls.check_api_response(res)
+
+        for family_id in family_ids or []:
+            form_data = cls.prepare_form_data({'family_id': family_id})
+            res = api_request_context.post(
+                f'/rotating-screens/create-family/{event_uniq_id}/{stored_rotator.id}',
                 headers={'Content-Type': 'application/x-www-form-urlencoded'},
                 data=form_data,
             )
