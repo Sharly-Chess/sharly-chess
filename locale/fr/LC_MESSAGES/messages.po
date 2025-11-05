@@ -1932,9 +1932,6 @@ msgstr "Modifier les propriétés du chronomètre."
 msgid "Edit the properties of the tournament."
 msgstr "Modifier les propriétés du tournoi."
 
-msgid "Edit the roles of the account."
-msgstr "Modifier les rôles du compte."
-
 msgid "Edit the sets of boards displayed on the screen."
 msgstr "Modifier les ensembles d'échiquiers affichés sur l'écran."
 
@@ -4297,9 +4294,6 @@ msgstr "Pl. Gén."
 msgid "Rnd.Boa"
 msgstr "Rde.Ech"
 
-msgid "Roles"
-msgstr "Rôles"
-
 #, python-format
 msgid "Rotation delay: %(seconds)d sec."
 msgstr "Délai de rotation : %(seconds)d sec."
@@ -4727,7 +4721,7 @@ msgid "Staff default configuration"
 msgstr "Staff configuré par défaut"
 
 msgid "Staff information"
-msgstr "information"
+msgstr "Information"
 
 msgid "Staff member roles"
 msgstr "Rôles"
@@ -5089,9 +5083,6 @@ msgstr "Le classement utilisé lorsque la cadence est supérieure à 10 minutes 
 
 msgid "The related objects will also be deleted:"
 msgstr "Les objets liés vont également être supprimés :"
-
-msgid "The roles of this account can not be updated."
-msgstr "Les rôles de ce compte ne peuvent pas être modifiés."
 
 msgid "The rotating delay between two screens."
 msgstr "Le délai de rotation entre deux écrans."
@@ -6124,9 +6115,6 @@ msgstr "Vous n'êtes pas autorisé à modifier les permissions de ce compte."
 
 msgid "You are not allowed to update the players' information from an external data source."
 msgstr "Vous n'êtes pas autorisé·e à modifier les informations de joueur·euses à partir d'une sources de données externe."
-
-msgid "You are not allowed to update the roles of this account."
-msgstr "Vous n’êtes pas autorisé·e à modifier les rôles de ce compte."
 
 msgid "You are not allowed to update the tournament."
 msgstr "Vous n'êtes pas autorisé·e à modifier le tournoi."

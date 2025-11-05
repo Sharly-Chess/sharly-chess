@@ -74,23 +74,53 @@
                 </div>
 
                 <h4>
+                    {{ _('Staff member roles') }}
+                </h4>
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.select_input(
+                            name='chief_tournament_ids',
+                            label=_('%(string)s:', string=_('Chief arbiter')),
+                            help_text=_('The tournaments for which the staff member is the chief arbiter.'),
+                            select_all=true,
+                            select_options=tournament_options,
+                            multiple_select=true,
+                            placeholder=_('Choose one, many or no tournaments.'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.select_input(
+                            name='deputy_tournament_ids',
+                            label=_('%(string)s:', string=_('Deputy arbiter')),
+                            help_text=_('The tournaments for which the staff member is a deputy arbiter.'),
+                            select_all=true,
+                            select_options=tournament_options,
+                            multiple_select=true,
+                            placeholder=_('Choose one, many or no tournaments.'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+
+                <h4>
                     {{ _('Connection parameters') }}
                 </h4>
 
                <div class="row gy-2 gx-3">
-                    {{ admin_macros.switch_input(
-                        name='active',
-                        label='',
-                        help_text='',
-                        placeholder=_('Enable this account'),
-                        info=_(
-                            'You can temporarily invalidate accounts by turning this switch off.'
-                        ),
-                        data=data, errors=errors
-                    ) }}
-                </div>
+                    <div class="col-12">
+                        {{ admin_macros.switch_input(
+                            name='active',
+                            label='',
+                            help_text='',
+                            placeholder=_('Enable this account'),
+                            info=_(
+                                'You can temporarily invalidate accounts by turning this switch off.'
+                            ),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
 
-                <div class="row gy-2 gx-3 password-row">
                     <div class="col-12 col-md-6">
                         <input type="password" name="fake_password" style="display:none" autocomplete="current-password">
                         {{ admin_macros.password_input(
