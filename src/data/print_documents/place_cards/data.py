@@ -47,7 +47,7 @@ class PlaceCardPlayer:
             self.federation_flag = f'<img class="federation-flag {self.federation}" />'
             self.club = player.club.name
             self.category = player.category.short_name
-            plugin_manager.ahook.augment_player_after_search(
+            plugin_manager.hook_for_event(player.event, 'augment_place_card_player')(
                 player=player, place_card_player=self
             )
 

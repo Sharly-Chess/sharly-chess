@@ -1182,6 +1182,7 @@ class PlaceCardPrintDocument(PrintDocument):
                 SharlyChessConfig.custom_place_cards_path
                 / f'{template_id}.{SharlyChessConfig.place_card_template_ext}'
             )
+
         if template_file.exists():
             return PlaceCardTemplate(embedded, template_file)
         # Should never happen

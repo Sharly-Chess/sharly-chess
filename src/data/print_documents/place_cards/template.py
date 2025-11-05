@@ -256,8 +256,8 @@ class PlaceCardTemplate:
                 css[
                     (
                         '.disposition-mirrored-up .card-cell.top.left, '
-                        '.disposition-original .card-cell.bottom.left, '
                         '.disposition-single .card-cell.top.left, '
+                        '.disposition-original .card-cell.bottom.left, '
                         '.disposition-single .card-cell.bottom.left'
                     )
                 ] = {
