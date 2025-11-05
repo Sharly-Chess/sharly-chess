@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from collections import Counter
 from dataclasses import dataclass
 from functools import cached_property, partial
-from itertools import chain
 from pathlib import Path
 from typing import Any, Callable, override
 
@@ -1169,36 +1168,45 @@ class PlaceCardPrintDocument(PrintDocument):
 
     @staticmethod
     def load_place_card_template(
-        id: str,
+        template_id: str,
     ) -> PlaceCardTemplate:
         """Loads a place card template."""
-        for template_dir in [
-            SharlyChessConfig.embedded_place_cards_path,
-            SharlyChessConfig.custom_place_cards_path,
-        ]:
-            template_file: Path = (
-                template_dir / f'{id}.{SharlyChessConfig.place_card_template_ext}'
+        template_file: Path
+        if embedded := ('/' not in template_id):
+            template_file = (
+                SharlyChessConfig.embedded_place_cards_path
+                / f'{template_id}.{SharlyChessConfig.place_card_template_ext}'
             )
-            if template_file.exists():
-                return PlaceCardTemplate(template_file)
+        else:
+            template_file = (
+                SharlyChessConfig.custom_place_cards_path
+                / f'{template_id}.{SharlyChessConfig.place_card_template_ext}'
+            )
+        if template_file.exists():
+            return PlaceCardTemplate(embedded, template_file)
         # Should never happen
-        raise SharlyChessException(f'Could not load place card template [{id}].')
+        raise SharlyChessException(
+            f'Could not load place card template file [{template_file}].'
+        )
 
     @classmethod
     def get_place_card_templates_by_id(cls) -> dict[str, PlaceCardTemplate]:
         """Returns a dict of all the place card templates."""
         place_card_templates_by_id: dict[str, PlaceCardTemplate] = {}
         # custom templates override embedded ones
-        for template_file in chain(
-            SharlyChessConfig.embedded_place_cards_path.glob(
-                f'*.{SharlyChessConfig.place_card_template_ext}'
-            ),
-            SharlyChessConfig.custom_place_cards_path.glob(
-                f'*.{SharlyChessConfig.place_card_template_ext}'
-            ),
+        for template_file in SharlyChessConfig.embedded_place_cards_path.glob(
+            f'*.{SharlyChessConfig.place_card_template_ext}'
         ):
-            place_card_templates_by_id[template_file.stem] = (
-                cls.load_place_card_template(template_file.stem)
+            template_id: str = template_file.stem
+            place_card_templates_by_id[template_id] = cls.load_place_card_template(
+                template_id
+            )
+        for template_file in SharlyChessConfig.custom_place_cards_path.glob(
+            f'*/*.{SharlyChessConfig.place_card_template_ext}'
+        ):
+            template_id: str = f'{template_file.parent.name}/{template_file.stem}'
+            place_card_templates_by_id[template_id] = cls.load_place_card_template(
+                template_id
             )
         return place_card_templates_by_id
 

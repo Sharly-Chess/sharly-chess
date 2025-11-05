@@ -6,7 +6,6 @@ from common import BASE_DIR
 from common.i18n import _
 from common.i18n.utils import parse_jinja_string
 from common.logger import get_logger
-from common.sharly_chess_config import SharlyChessConfig
 from data.board import Board
 from data.player import Player
 from data.print_documents.place_cards.data import PlaceCardBoard, PlaceCardPlayer
@@ -29,6 +28,7 @@ class PlaceCardTemplate:
 
     def __init__(
         self,
+        embedded: bool,
         toml_file: Path,
     ):
         from data.print_documents import PrintPlaceCardTypeManager
@@ -37,10 +37,18 @@ class PlaceCardTemplate:
             PlayerCardType,
         )
 
-        self.embedded: bool = (
-            toml_file.parent == SharlyChessConfig.embedded_place_cards_path
-        )
-        self.id: str = toml_file.stem
+        self.embedded: bool = embedded
+        self.image_path: Path
+        self.font_path: Path
+        self.id: str
+        if self.embedded:
+            self.id = toml_file.stem
+            self.font_path = BASE_DIR / 'src/web/static/fonts'
+            self.image_path = BASE_DIR / 'src/web/static/images'
+        else:
+            self.id = f'{toml_file.parent}/{toml_file.stem}'
+            self.font_path = toml_file.parent / 'fonts'
+            self.image_path = toml_file.parent / 'images'
         custom_data = TOMLContainer(toml_file)
         for property in custom_data.get_section_properties(''):
             match property:
@@ -105,9 +113,7 @@ class PlaceCardTemplate:
                         custom_data,
                         section=section,
                         default_style=default_item_style,
-                        image_path=BASE_DIR / 'src/web/static/images'
-                        if self.embedded
-                        else SharlyChessConfig.custom_place_cards_path / 'images',
+                        image_path=self.image_path,
                         unit=self.unit,
                     )
                 )
@@ -124,14 +130,11 @@ class PlaceCardTemplate:
 
     @property
     def font_file(self) -> Path:
-        default_file: Path = (
-            BASE_DIR / 'src/web/static/fonts/AtkinsonHyperlegibleNextVF-Variable.ttf'
-        )
+        default_file: Path = self.font_path / 'AtkinsonHyperlegibleNextVF-Variable.ttf'
         if not self.font:
             return default_file
-        font_path: Path = SharlyChessConfig.custom_place_cards_path / 'fonts'
-        file: Path = font_path / self.font
-        if not file.parent.samefile(font_path):
+        file: Path = self.font_path / self.font
+        if not file.parent.samefile(self.font_path):
             logger.warning('Invalid font filename [%s].', self.font)
             return default_file
         if not file.is_file():
