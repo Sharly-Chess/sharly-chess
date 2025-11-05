@@ -63,7 +63,7 @@
                                     ({{ ngettext(
                                         '%(num)d tournament',
                                         '%(num)d tournaments',
-                                        role.tournament_ids|length
+                                        role.tournament_ids|length if role.tournament_ids else 0
                                     ) }})
                                 </i>
                                 <i
@@ -136,35 +136,6 @@
 
 {% block card_buttons_left %}
     {% set client_can_manage_account=client.can_manage_account(account.id) %}
-    <span
-        {% if not account.edit_properties %}
-            {{ macros.tooltip_attributes('warning', _('The roles of this account can not be updated.'), 'top') }}
-        {% elif not client_can_manage_account %}
-            {{ macros.tooltip_attributes('warning', _('You are not allowed to update the roles of this account.'), 'top') }}
-        {% else %}
-            {{ macros.tooltip_attributes('info', _('Edit the roles of the account.'), 'top') }}
-        {% endif %}
-    >
-        <button
-            class="btn btn-sm btn-outline-primary"
-            {% if account.edit_properties and client_can_manage_account %}
-                hx-get="{{ url_for(
-                    'admin-account-roles-modal',
-                    event_uniq_id=admin_event.uniq_id,
-                    account_id=account.id
-                ) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
-            {% else %}
-                disabled
-            {% endif %}
-        >
-            <i class="bi-person-badge-fill pe-1"></i>
-            {{ _('Roles') }}
-        </button>
-    </span>
     <span
         {% if not account.edit_permissions %}
             {{ macros.tooltip_attributes('warning', _('The permissions of this account can not be updated.'), 'top') }}

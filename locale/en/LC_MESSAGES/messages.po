@@ -1932,9 +1932,6 @@ msgstr ""
 msgid "Edit the properties of the tournament."
 msgstr ""
 
-msgid "Edit the roles of the account."
-msgstr ""
-
 msgid "Edit the sets of boards displayed on the screen."
 msgstr ""
 
@@ -4297,9 +4294,6 @@ msgstr "Rk. O."
 msgid "Rnd.Boa"
 msgstr ""
 
-msgid "Roles"
-msgstr ""
-
 #, python-format
 msgid "Rotation delay: %(seconds)d sec."
 msgstr ""
@@ -5088,9 +5082,6 @@ msgid "The rating used when the time control is more than 10 minutes and less th
 msgstr ""
 
 msgid "The related objects will also be deleted:"
-msgstr ""
-
-msgid "The roles of this account can not be updated."
 msgstr ""
 
 msgid "The rotating delay between two screens."
@@ -6125,9 +6116,6 @@ msgstr ""
 msgid "You are not allowed to update the players' information from an external data source."
 msgstr ""
 
-msgid "You are not allowed to update the roles of this account."
-msgstr ""
-
 msgid "You are not allowed to update the tournament."
 msgstr ""
 
@@ -6453,7 +6441,3 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "<smart_count> item selected |||| <smart_count> items selected"
-#~ msgstr ""
-

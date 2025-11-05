@@ -325,7 +325,7 @@ class StoredPermission:
 
 @dataclass
 class StoredRole:
-    account_id: int
+    account_id: int | None
     role: str
     tournament_ids: list[int] | None = None
 
