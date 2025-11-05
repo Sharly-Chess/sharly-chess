@@ -29,12 +29,18 @@ English version below
 - Disponibilité des tous les départages _FIDE_ standards (3.2.0)
 - Utilisation des classement _FIDE_ pour les évènements _FFE_ (3.2.3)
 - Lors de l'ajout de rondes supplémentaires, ajout de forfaits aux joueur·euses ayant quitté le tournoi pour ces nouvelles rondes (3.2.3)
+- Correction de problèmes divers sur les tournois Toutes-Rondes (3.2.4)
 
 ## Écrans
 
 - Suppression de l’option d’image de fond des écrans (3.2.0)
 - Correction des écrans de saisie avec enregistrement de coups illégaux (3.2.0)
 - Correction de l'affichage des appariements par ordre alphabétique (3.2.3)
+
+## Documents
+
+- Ajout de l'option _Ronde_ pour le document de résultats (3.2.4)
+- Correction du document _Grille Berger_ (3.2.4)
 
 ## _FFE_
 
@@ -82,12 +88,18 @@ English version below
 - Availability of all standard _FIDE_ tie-breaks (3.2.0)
 - Force _FIDE_ rating for _FFE_ events (3.2.3)
 - When adding rounds, Add ZPBs to withdraw players for these new rounds (3.2.3)
+- Fixed various issues regarding the Round-Robin tournaments (3.2.4)
 
 ## Screens
 
 - Removed the background image option for Screens (3.2.0)
 - Fixed Result Entry Screens with illegal moves recording (3.2.0)
 - Fixed alphabetical screens display (3.2.3)
+
+## Documents
+
+- Add _Round_ option for the results document (3.2.4)
+- Fixed the Berger grid document (3.2.4)
 
 ## _FFE_
 

@@ -277,6 +277,9 @@ msgstr "<b>1.4.8a</b> La moyenne minimale des classements des adversaires requis
 msgid "<b>1.4.8b</b> The minimum score is 35%% for all norms."
 msgstr "<b>1.4.8b</b> Le score minimum requis pour toutes les normes est de 35 %%."
 
+msgid "<b>Delete</b> from the tournament"
+msgstr "<b>Supprimer</b> du tournoi"
+
 msgid "<first> and <second>"
 msgstr "<first> et <second>"
 
@@ -1609,14 +1612,14 @@ msgstr "Afficher les adversaires"
 msgid "Displayed round: %(round)d"
 msgstr "Ronde affichée : %(round)d"
 
-msgid "Do not assign zero-point bye (players will be eligible for pairing)"
-msgstr "Ne pas marquer forfait (les joueur·euses seront apparié·es) "
-
 msgid "Do not edit this table manually, use script {script_name} instead."
 msgstr "Ne pas éditer ce tableau manuellement, utiliser plutôt le script {script_name}."
 
 msgid "Do not recover"
 msgstr "Ne pas restaurer"
+
+msgid "Do nothing (players will be eligible for pairing)"
+msgstr "Ne rien faire (les joueur·euses seront apparié·es)"
 
 msgid "Do you want to install example event databases"
 msgstr "Voulez-vous installer des bases d'évènement d'exemple"
