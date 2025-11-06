@@ -955,6 +955,10 @@ msgstr "Le pointage est fermé pour le tournoi [%(tournament)s]."
 msgid "Check-in is closed for tournament [{tournament}]."
 msgstr "Le pointage est fermé pour le tournoi [{tournament}]."
 
+#, python-format
+msgid "Check-in is not allowed after the tournament has started for the [%(pairing_system)s] pairing system."
+msgstr "Le pointage n'est pas autorisé après le début du tournoi pour le système d'appariements [%(pairing_system)s]."
+
 msgid "Check-in is open for tournament [{tournament}]."
 msgstr "Le pointage est ouvert pour le tournoi [{tournament}]."
 
