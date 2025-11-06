@@ -46,9 +46,11 @@
                         </h5>
                     {% endif %}
                 {% endif %}
-                {% for option in importer.default_options() %}
-                    {% include option.template_name %}
-                {% endfor %}
+                <div class="row gy-2 gx-3">
+                    {% for option in importer.default_options() %}
+                        {% include option.template_name %}
+                    {% endfor %}
+                </div>
                 {% if admin_tournament and admin_tournament.players %}
                     <div class="mt-2">
                         {{ admin_macros.checkbox_input(

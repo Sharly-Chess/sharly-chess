@@ -1,8 +1,6 @@
-<div class="row gy-2 gx-3">
-    {{ admin_macros.file_input(
-        name=option.id,
-        label=_('%(string)s:', string=_('File')),
-        file_accept=', '.join(importer.accepted_file_suffixes),
-        data=data, errors=errors
-    ) }}
-</div>
+{{ admin_macros.file_input(
+    name=option.id,
+    label=_('%(string)s:', string=_('File')),
+    file_accept=', '.join(importer.accepted_file_suffixes),
+    data=data, errors=errors
+) }}

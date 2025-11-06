@@ -3727,7 +3727,7 @@ msgid "Player pairings"
 msgstr "Appariements par joueur·euse"
 
 msgid "Player ratings to use by default:"
-msgstr "Classements des joueur·euses à utiliser par défaut :"
+msgstr "Classements à utiliser par défaut :"
 
 msgid "Player selection (by alphabetical order)"
 msgstr "Sélection des joueur·euses (par ordre alphabétique)"
@@ -6378,4 +6378,3 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
