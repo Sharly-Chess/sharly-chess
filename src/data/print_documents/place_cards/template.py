@@ -43,6 +43,9 @@ class PlaceCardTemplate:
         self.image_path: Path
         self.font_path: Path
         self.id: str
+        self.default_font_file = (
+            BASE_DIR / 'src/web/static/fonts/AtkinsonHyperlegibleNextVF-Variable.ttf'
+        )
         if self.embedded:
             self.id = toml_file.stem
             self.font_path = BASE_DIR / 'src/web/static/fonts'
@@ -127,16 +130,15 @@ class PlaceCardTemplate:
 
     @property
     def font_file(self) -> Path:
-        default_file: Path = self.font_path / 'AtkinsonHyperlegibleNextVF-Variable.ttf'
         if not self.font:
-            return default_file
+            return self.default_font_file
         file: Path = self.font_path / self.font
         if not file.parent.samefile(self.font_path):
             logger.warning('Invalid font filename [%s].', self.font)
-            return default_file
+            return self.default_font_file
         if not file.is_file():
             logger.warning('Font file [%s] not found.', file)
-            return default_file
+            return self.default_font_file
         return file
 
     def template_context(

@@ -524,7 +524,7 @@ msgid "All Events"
 msgstr "Évènements"
 
 msgid "All the boards"
-msgstr "Tous les échaiquiers"
+msgstr "Tous les échiquiers"
 
 msgid "All the candidate ports [{ports}] are already in use, can not start Sharly Chess server."
 msgstr "Tous les ports candidats [{ports}] sont déjà utilisés, impossible de démarrer le serveur web."

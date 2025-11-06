@@ -62,8 +62,6 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.QRCodePrintOption,
             options.PlaceCardPrintOption,
             options.PlaceCardTemplatePrintOption,
-            options.PlaceCardMirrorPrintOption,
-            options.PlaceCardCropMarksPrintOption,
             options.TournamentPrintOption,
             options.TournamentsPrintOption,
             options.PlayerPrintOption,
@@ -74,6 +72,9 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.ShowWarningsPrintOption,
             options.ClubThresholdPrintOption,
             options.QRCodeNetworkPrintOption,
+            options.PlaceCardBoardNumbersPrintOption,
+            options.PlaceCardMirrorPrintOption,
+            options.PlaceCardCropMarksPrintOption,
         ]
 
     @override

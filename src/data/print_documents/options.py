@@ -528,7 +528,7 @@ class PlaceCardCropMarksPrintOption(PrintOption):
 class PlaceCardBoardNumbersPrintOption(PrintOption):
     @staticmethod
     def static_id() -> str:
-        return 'board-number'
+        return 'place-card-board-numbers'
 
     @property
     def type(self) -> type | UnionType:
@@ -540,20 +540,23 @@ class PlaceCardBoardNumbersPrintOption(PrintOption):
 
     @property
     def template_name(self) -> str:
-        return '/admin/event/print_options/board_number.html'
+        return '/admin/event/print_options/place_card_board_numbers.html'
 
     @cached_property
     def board_numbers(self) -> set[int]:
         board_numbers: set[int] = set()
         if self.value:
-            for part in self.value.replace(' ', '').split(',;'):
+            self.value = re.sub(r'\s*-\s*', '-', self.value)
+            self.value = re.sub(r'[\s,;]+', ' ', self.value)
+            for part in re.split(' ', self.value):
                 if re.match(r'^(\d*)$', part):
                     board_numbers.add(int(part))
                 elif matches := re.match(r'^(\d*)-(\d*)$', part):
                     board_numbers.update(range(int(matches[1]), int(matches[2]) + 1))
                 else:
                     raise OptionError(
-                        _('Invalid expression [{expression}]').format(part), self
+                        _('Invalid expression [{expression}]').format(expression=part),
+                        self,
                     )
         return board_numbers
 
