@@ -91,7 +91,7 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
             'height',
             'max_width',
             'rotate',
-            'back',
+            'side',
         ]
 
     def render_error(
