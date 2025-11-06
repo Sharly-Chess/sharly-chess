@@ -38,10 +38,10 @@ English version below
 - Correction des écrans de saisie avec enregistrement de coups illégaux (3.2.0)
 - Correction de l'affichage des appariements par ordre alphabétique (3.2.3)
 
-## Documents
+## Impressions
 
-- Ajout de l'option _Ronde_ pour le document de résultats (3.2.4)
-- Correction du document _Grille Berger_ (3.2.4)
+- Ajout de l'option _Ronde_ pour l'impression des résultats (3.2.4)
+- Correction de l'impression des grilles _Berger_ (3.2.4)
 
 ## _FFE_
 
@@ -98,10 +98,10 @@ English version below
 - Fixed Result Entry Screens with illegal moves recording (3.2.0)
 - Fixed alphabetical screens display (3.2.3)
 
-## Documents
+## Print views
 
-- Add _Round_ option for the results document (3.2.4)
-- Fixed the Berger grid document (3.2.4)
+- Add _Round_ option for the results print view (3.2.4)
+- Fixed the Berger grid print view (3.2.4)
 
 ## _FFE_
 
