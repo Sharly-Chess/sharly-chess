@@ -2,7 +2,7 @@
     <div class="col-12 col-md-6">
         {{ admin_macros.switch_input(
             name='auto_upload',
-            label=_('Upload:'),
+            label='',
             placeholder=_('Auto-upload results to Chess-Results.com'),
             disabled=not client.can_update_event,
             data=data, errors=errors
