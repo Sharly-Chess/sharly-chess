@@ -4934,9 +4934,6 @@ msgstr ""
 msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
 msgstr ""
 
-msgid "The name of the screen, displayed on event screens."
-msgstr ""
-
 msgid "The network on which the devices are connected."
 msgstr ""
 
@@ -5736,9 +5733,6 @@ msgstr ""
 msgid "Upload tournaments to the FFE"
 msgstr ""
 
-msgid "Upload:"
-msgstr ""
-
 msgid "Uploading of tournaments to Chess-Results.com."
 msgstr ""
 
@@ -5749,6 +5743,9 @@ msgid "Uploading tournament…"
 msgstr ""
 
 msgid "Use Fore Buchholz"
+msgstr ""
+
+msgid "Use default"
 msgstr ""
 
 msgid "Use default - {option}"
@@ -6284,9 +6281,6 @@ msgstr ""
 msgid "time control"
 msgstr ""
 
-msgid "use default"
-msgstr ""
-
 msgid "value: {value}"
 msgstr ""
 
@@ -6375,3 +6369,13 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "The name of the screen, displayed on event screens."
+#~ msgstr ""
+
+#~ msgid "Upload:"
+#~ msgstr ""
+
+#~ msgid "use default"
+#~ msgstr ""
+

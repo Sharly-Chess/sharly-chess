@@ -4934,9 +4934,6 @@ msgstr "La valeur minimale d'un prix partagé dans cette catégorie (pas de seui
 msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
 msgstr "Le nom de la famille d' écrans, facultatif. Les mots-clés suivants sont remplacés automatiquement par les numéros des échiquiers ou les noms des joueur·euses : %%f=first (premier), %%l=last (dernier), %%t=tournament (tournoi)."
 
-msgid "The name of the screen, displayed on event screens."
-msgstr "Le nom de l'écran, affiché sur les écrans des évènements."
-
 msgid "The network on which the devices are connected."
 msgstr "Le réseau auquel les appareils sont connectés."
 
@@ -5736,9 +5733,6 @@ msgstr "Mettre en ligne les tournois sur Chess-Results.com"
 msgid "Upload tournaments to the FFE"
 msgstr "Mettre en ligne les tournois vers la FFE"
 
-msgid "Upload:"
-msgstr "Mise en ligne :"
-
 msgid "Uploading of tournaments to Chess-Results.com."
 msgstr "Mise en ligne des tournois sur Chess-Results.com."
 
@@ -5750,6 +5744,9 @@ msgstr "Mise en ligne en cours…"
 
 msgid "Use Fore Buchholz"
 msgstr "Utiliser le Fore Buchholz"
+
+msgid "Use default"
+msgstr "Par défaut"
 
 msgid "Use default - {option}"
 msgstr "Par défaut – {option}"
@@ -6284,9 +6281,6 @@ msgstr "puis"
 msgid "time control"
 msgstr "temps"
 
-msgid "use default"
-msgstr "par défaut"
-
 msgid "value: {value}"
 msgstr "valeur : {value}"
 
@@ -6375,3 +6369,13 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "The name of the screen, displayed on event screens."
+#~ msgstr "Le nom de l'écran, affiché sur les écrans des évènements."
+
+#~ msgid "Upload:"
+#~ msgstr "Mise en ligne :"
+
+#~ msgid "use default"
+#~ msgstr "par défaut"
+
