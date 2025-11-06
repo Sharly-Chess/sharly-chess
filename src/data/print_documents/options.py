@@ -7,6 +7,10 @@ from common.exception import OptionError
 from common.i18n import _
 from data.event import SharlyChessConfig
 from data.print_documents.pairing_styles import BoardsPairingStyle, PairingStyle
+from data.print_documents.place_cards.cuttings import (
+    CornersPlaceCardCutting,
+    PlaceCardCutting,
+)
 from data.print_documents.place_cards.types import (
     PlayerCardType,
     PlaceCardType,
@@ -484,3 +488,37 @@ class PlaceCardMirrorPrintOption(PrintOption):
     @property
     def default_value(self) -> Any:
         return False
+
+
+class PlaceCardCuttingPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'place-card-cutting'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str
+
+    @property
+    def default_value(self) -> Any:
+        return CornersPlaceCardCutting.static_id()
+
+    @property
+    def place_card_cutting_options(self) -> dict[str, str]:
+        from data.print_documents import PrintPlaceCardCuttingManager
+
+        return PrintPlaceCardCuttingManager().options()
+
+    @cached_property
+    def place_card_cutting(self) -> PlaceCardCutting:
+        from data.print_documents.managers import PrintPlaceCardCuttingManager
+
+        return PrintPlaceCardCuttingManager().get_object(self.value)
+
+    @override
+    def validate(self):
+        try:
+            _cutting = self.place_card_cutting
+        except KeyError:
+            # Untranslated, should not happen
+            raise OptionError(f'Unknown place card cutting: {self.value}', self)

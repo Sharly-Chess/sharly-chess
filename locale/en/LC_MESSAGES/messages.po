@@ -826,6 +826,9 @@ msgstr ""
 msgid "Boards screens show pairings by board number."
 msgstr ""
 
+msgid "Border"
+msgstr ""
+
 msgid "Buchholz"
 msgstr ""
 
@@ -1220,6 +1223,9 @@ msgstr ""
 msgid "Copying to tmp .sce file failed."
 msgstr ""
 
+msgid "Corners"
+msgstr ""
+
 msgid "Could not connect to data source [{data_source}]."
 msgstr ""
 
@@ -1399,6 +1405,9 @@ msgid "DRAW"
 msgstr ""
 
 msgid "Daily"
+msgstr ""
+
+msgid "Dashed border"
 msgstr ""
 
 msgid "Data is already displayed on the FFE website."
@@ -3193,6 +3202,9 @@ msgid "No internet connection"
 msgstr ""
 
 msgid "No mail defined."
+msgstr ""
+
+msgid "No marks"
 msgstr ""
 
 msgid "No pairing found for this player in the current round."

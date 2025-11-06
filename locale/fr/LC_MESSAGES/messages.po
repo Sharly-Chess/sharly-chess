@@ -826,6 +826,9 @@ msgstr "échiquiers du n°%(first)d au n°%(last)d"
 msgid "Boards screens show pairings by board number."
 msgstr "Les écrans d'affichage des échiquiers présentent les appariements par échiquier."
 
+msgid "Border"
+msgstr "Bordure"
+
 msgid "Buchholz"
 msgstr "Buchholz"
 
@@ -1220,6 +1223,9 @@ msgstr "La conversion au format Papi a échoué."
 msgid "Copying to tmp .sce file failed."
 msgstr "La copie vers le fichier .sce temporaire a échoué."
 
+msgid "Corners"
+msgstr "Coins"
+
 msgid "Could not connect to data source [{data_source}]."
 msgstr "Impossible de se connecter à la source de données [{data_source}]."
 
@@ -1400,6 +1406,9 @@ msgstr "NULLE"
 
 msgid "Daily"
 msgstr "Un jour"
+
+msgid "Dashed border"
+msgstr "Bordure pointillée"
 
 msgid "Data is already displayed on the FFE website."
 msgstr "Les données sont déjà affichées sur le site web FFE."
@@ -3194,6 +3203,9 @@ msgstr "Aucune connexion à internet"
 
 msgid "No mail defined."
 msgstr "Mél non défini."
+
+msgid "No marks"
+msgstr "Aucune marque"
 
 msgid "No pairing found for this player in the current round."
 msgstr "Aucun appariement pour ce·tte joueur·euse pour la ronde courante."

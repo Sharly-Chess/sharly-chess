@@ -10,6 +10,13 @@ from data.print_documents import (
 from data.print_documents.documents import PrintDocument
 from data.print_documents.options import PrintOption
 from data.print_documents.pairing_styles import PairingStyle
+from data.print_documents.place_cards.cuttings import (
+    PlaceCardCutting,
+    CornersPlaceCardCutting,
+    SolidBorderPlaceCardCutting,
+    DashedBorderPlaceCardCutting,
+    NonePlaceCardCutting,
+)
 from data.print_documents.place_cards.types import (
     PlaceCardType,
     PlayerCardType,
@@ -56,6 +63,7 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.PlaceCardPrintOption,
             options.PlaceCardTemplatePrintOption,
             options.PlaceCardMirrorPrintOption,
+            options.PlaceCardCuttingPrintOption,
             options.TournamentPrintOption,
             options.TournamentsPrintOption,
             options.PlayerPrintOption,
@@ -127,4 +135,15 @@ class PrintPlaceCardTypeManager(EntityManager[PlaceCardType]):
             PlayerCardType,
             BoardCardType,
             PairingCardType,
+        ]
+
+
+class PrintPlaceCardCuttingManager(EntityManager[PlaceCardCutting]):
+    @override
+    def entity_types(self) -> list[type[PlaceCardCutting]]:
+        return [
+            CornersPlaceCardCutting,
+            NonePlaceCardCutting,
+            SolidBorderPlaceCardCutting,
+            DashedBorderPlaceCardCutting,
         ]

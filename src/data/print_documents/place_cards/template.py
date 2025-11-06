@@ -9,6 +9,7 @@ from common.i18n.utils import parse_jinja_string
 from common.logger import get_logger
 from data.board import Board
 from data.player import Player
+from data.print_documents.place_cards.cuttings import PlaceCardCutting
 from data.print_documents.place_cards.data import PlaceCardBoard, PlaceCardPlayer
 from data.print_documents.place_cards.item_style import PlaceCardItemStyle
 from data.print_documents.place_cards.items import (
@@ -61,9 +62,7 @@ class PlaceCardTemplate:
                     | 'width'
                     | 'height'
                     | 'padding'
-                    | 'cutting_marks'
                     | 'css'
-                    | 'js'
                     | 'font'
                 ):
                     pass
@@ -92,11 +91,7 @@ class PlaceCardTemplate:
         self.width: float = custom_data.get_float('width', default=116.0)
         self.height: float = custom_data.get_float('height', default=36.0)
         self.padding: float = custom_data.get_float('padding', default=2.0)
-        self.cutting_marks: str = custom_data.get_str(
-            'cutting_marks', default='corners', values=['border', 'corners', 'none']
-        )
         self.css: str = custom_data.get_str('css', default='')
-        self.js: str = custom_data.get_str('js', default='')
         self.font: str = custom_data.get_str('font', default='')
         default_item_style: PlaceCardItemStyle = PlaceCardItemStyle(
             custom_data, section='default'
@@ -150,9 +145,9 @@ class PlaceCardTemplate:
         round_: int,
         place_card_type: PlaceCardType,
         mirror: bool,
+        place_card_cutting: PlaceCardCutting,
     ) -> dict[str, Any]:
         file: Path = self.font_file
-        border_value = '1px solid black'
         items: list[PlaceCardItem] = self.items
         if mirror:
             # duplicate all the items
@@ -202,69 +197,7 @@ class PlaceCardTemplate:
                 'width': f'{self.width - 2 * self.padding}{self.unit}',
             },
         }
-        match self.cutting_marks:
-            case 'border':
-                css['.side-back .card-cell.top, .side-single .card-cell.top'] = {
-                    'border-top': border_value,
-                }
-
-                css['.card-cell.right'] = {
-                    'border-right': border_value,
-                }
-
-                css['.side-front .card-cell.bottom, .side-single .card-cell.bottom'] = {
-                    'border-bottom': border_value,
-                }
-
-                css['.card-cell.left'] = {
-                    'border-left': border_value,
-                }
-            case 'corners':
-                css[
-                    (
-                        '.side-back .card-cell.top.left, '
-                        '.side-back .card-cell.top.right, '
-                        '.side-single .card-cell.top.left, '
-                        '.side-single .card-cell.top.right'
-                    )
-                ] = {
-                    'border-top': border_value,
-                }
-
-                css[
-                    (
-                        '.side-back .card-cell.top.right, '
-                        '.side-front .card-cell.bottom.right, '
-                        '.side-single .card-cell.top.right, '
-                        '.side-single .card-cell.bottom.right'
-                    )
-                ] = {
-                    'border-right': border_value,
-                }
-
-                css[
-                    (
-                        '.side-front .card-cell.bottom.left, '
-                        '.side-front .card-cell.bottom.right, '
-                        '.side-single .card-cell.bottom.left, '
-                        '.side-single .card-cell.bottom.right'
-                    )
-                ] = {
-                    'border-bottom': border_value,
-                }
-
-                css[
-                    (
-                        '.side-back .card-cell.top.left, '
-                        '.side-single .card-cell.top.left, '
-                        '.side-front .card-cell.bottom.left, '
-                        '.side-single .card-cell.bottom.left'
-                    )
-                ] = {
-                    'border-left': border_value,
-                }
-            case 'none':
-                pass
+        css |= place_card_cutting.css
         css |= {
             '.card-content': {
                 'position': 'relative',
@@ -329,17 +262,12 @@ class PlaceCardTemplate:
             'error': self.error,
             'back_side': back_side,
             'unit': self.unit,
-            'creator': self.creator,
-            'width': self.width,
-            'height': self.height,
-            'padding': self.padding,
-            'cutting_marks': self.cutting_marks,
             'template_css': '\n'.join(
                 f'{target} {{\n{"\n".join(f"\t{key}: {value};" for key, value in entries.items())}\n}}'
                 for target, entries in css.items()
             )
             + self.css,
-            'template_js': js + self.js,
+            'template_js': js,
             'players': (PlaceCardPlayer(player) for player in players),
             'boards': (PlaceCardBoard(board) for board in boards),
             'items': self.items,
