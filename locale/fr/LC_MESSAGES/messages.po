@@ -2975,10 +2975,10 @@ msgid "Menus"
 msgstr "Menus"
 
 msgid "Minimal time (seconds):"
-msgstr "Temps minimal (en secondes) :"
+msgstr "Temps minimal (sec.) :"
 
 msgid "Minimum delay between uploads (minutes):"
-msgstr "Délai minimum entre deux envois (en minutes) :"
+msgstr "Délai minimum entre deux envois (min.) :"
 
 msgid "Minimum number of points (included):"
 msgstr "Nombre minimum de points (inclus) :"
@@ -3634,7 +3634,7 @@ msgid "Penalties require a time control with a single period."
 msgstr "Les pénalités nécessitent une cadence avec une seule période."
 
 msgid "Penalty (seconds):"
-msgstr "Pénalité (en secondes) :"
+msgstr "Pénalité (sec.) :"
 
 msgid "Pending"
 msgstr "À venir"
