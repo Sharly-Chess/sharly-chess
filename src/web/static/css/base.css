@@ -156,6 +156,10 @@ body[data-bs-theme="dark"] #sidebar-expander {
     padding: 12px 0;
 }
 
+#top-nav-wrapper .form-check {
+    margin-bottom: 0;
+}
+
 body[data-bs-theme="dark"] #top-nav-wrapper {
     background-color: rgba(var(--bs-body-bg-rgb), 1);
 }
