@@ -1,7 +1,7 @@
 import time
 from contextlib import suppress
 from logging import Logger
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from litestar.plugins.htmx import HTMXRequest
 
@@ -507,16 +507,16 @@ class SessionHandler:
 
     @classmethod
     def set_session_admin_pairings_page_identifier(
-        cls, request: HTMXRequest, page_identifier: 'PageIdentifier'
+        cls, request: HTMXRequest, page_identifier: Optional['PageIdentifier']
     ):
         request.session[cls.ADMIN_PAIRINGS_PAGE_IDENTIFIER_KEY] = (
-            page_identifier.to_json()
+            page_identifier.to_json() if page_identifier else None
         )
 
     @classmethod
     def get_session_admin_pairings_page_identifier(
         cls, request: HTMXRequest
-    ) -> 'PageIdentifier | None':
+    ) -> Optional['PageIdentifier']:
         from web.controllers.admin.pairings_admin_controller import PageIdentifier
 
         if page_identifier := request.session.get(

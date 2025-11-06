@@ -30,6 +30,7 @@ English version below
 - Utilisation des classement _FIDE_ pour les évènements _FFE_ (3.2.3)
 - Lors de l'ajout de rondes supplémentaires, ajout de forfaits aux joueur·euses ayant quitté le tournoi pour ces nouvelles rondes (3.2.3)
 - Correction de problèmes divers sur les tournois Toutes-Rondes (3.2.4)
+- Correction de l'affichage du mode non-sécurisé (3.2.4)
 
 ## Écrans
 
@@ -89,6 +90,7 @@ English version below
 - Force _FIDE_ rating for _FFE_ events (3.2.3)
 - When adding rounds, Add ZPBs to withdraw players for these new rounds (3.2.3)
 - Fixed various issues regarding the Round-Robin tournaments (3.2.4)
+- Fixed the display of the unsafe mode (3.2.4)
 
 ## Screens
 
