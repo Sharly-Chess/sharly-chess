@@ -83,6 +83,11 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         return True
 
     @property
+    def hide_pab_value_field(self) -> bool:
+        """Defines if the pab_value field should be displayed in the tournament form."""
+        return False
+
+    @property
     def variation_field_id(self) -> str:
         """ID of the form field selecting the variation of the system."""
         return f'{self.id}_pairing_variation'
@@ -241,6 +246,10 @@ class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
     @property
     def split_unpaired_and_bye_players(self) -> bool:
         return False
+
+    @property
+    def hide_pab_value_field(self) -> bool:
+        return True
 
     @property
     def pairing_buttons_template(self) -> str:

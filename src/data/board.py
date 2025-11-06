@@ -89,7 +89,7 @@ class Board:
 
     @property
     def result_str(self) -> str:
-        if self.exempt:
+        if self.result == Result.PAIRING_ALLOCATED_BYE:
             match self.tournament.pab_value:
                 case Result.WIN:
                     return str(Result.PAIRING_ALLOCATED_BYE)
