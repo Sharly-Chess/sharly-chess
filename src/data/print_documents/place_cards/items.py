@@ -37,12 +37,12 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
         self.display: bool = data.get_bool(
             section=section, property='display', default=True
         )
-        self.width: float = data.get_float(
+        self.width: float | None = data.get_float(
             section=section,
             property='width',
             default=None,
         )
-        self.height: float = data.get_float(
+        self.height: float | None = data.get_float(
             section=section,
             property='height',
             default=None,
@@ -56,6 +56,11 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
             section=section,
             property='css',
             default='',
+        )
+        self.rotate: float | None = data.get_float(
+            section=section,
+            property='rotate',
+            default=None,
         )
         self.back: bool = (
             data.get_str(
@@ -85,6 +90,7 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
             'width',
             'height',
             'max_width',
+            'rotate',
             'back',
         ]
 
@@ -160,6 +166,8 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
                 item_css[self.v_align] = f'{self.v_pos}{unit}'
         if self.max_width is not None:
             item_css['max-width'] = f'{self.max_width}{unit}'
+        if self.rotate:
+            item_css['transform'] = f'rotate({self.rotate}deg)'
         return item_css
 
     def inner_css(
