@@ -20,18 +20,3 @@
     .player-table .board,
     .player-table .color { font-weight: bold; }
 }
-{# ========== TEXT ALIGN ========== #}
-.player-table .name,
-.player-table .club,
-.player-table .tournament { text-align: left; }
-.player-table .rank,
-.player-table .title,
-.player-table .rating,
-.player-table .perf { text-align: right; }
-.player-table .category,
-.player-table .federation,
-.player-table .round,
-.player-table .points,
-.player-table .result,
-.player-table .gender,
-.player-table .tie-break { text-align: center; }

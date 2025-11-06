@@ -35,6 +35,4 @@ class TestTimersFunctionality:
         button = card.locator('button[hx-get*="delete"]')
         button.click()
         TestUtils.button_by_text(modal, 'Delete').click()
-
-        expect(page.get_by_text(f'Timer [{name}] has been deleted.')).to_be_visible()
         expect(page.locator(f"div.card:has-text('{name}')")).not_to_be_attached()

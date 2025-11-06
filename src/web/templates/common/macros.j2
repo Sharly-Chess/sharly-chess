@@ -212,28 +212,6 @@
     <!-- end copyright_script() -->
 {% endmacro %}
 
-
-{% macro extra_column_header(
-    index,
-    extra_columns = {}
-) %}
-    {% set columns=extra_columns[index] or [] %}
-    {% for column in columns %}
-        <th class="{{ column.classes }}">{{ column.title }}</th>
-    {% endfor %}
-{% endmacro %}
-
-{% macro extra_column_data(
-    index,
-    value,
-    extra_columns = {}
-) %}
-    {% set columns=extra_columns[index] or [] %}
-    {% for column in columns %}
-        <td class="{{ column.classes }}">{{ column.value(value) }}</td>
-    {% endfor %}
-{% endmacro %}
-
 {% macro experimental_warning(
     show
 ) %}
@@ -254,4 +232,30 @@
         'static',
         file_path='/images/federations/' ~ federation ~ '.svg'
     ) }}?version={{ sharly_chess_config.version }}
+{% endmacro %}
+
+{% macro column_header(column) %}
+    {% if column.header_template %}
+        {% include column.header_template %}
+    {% else %}
+        {% set content = column.header_content %}
+        {% if column.is_header_content_safe %}
+            {{ content|safe }}
+        {% else %}
+            {{ content }}
+        {% endif %}
+    {% endif %}
+{% endmacro %}
+
+{% macro column_cell(column, object) %}
+    {% if column.cell_template %}
+        {% include column.cell_template %}
+    {% else %}
+        {% set content = column.get_cell_content(object) %}
+        {% if column.is_cell_content_safe %}
+            {{ content|safe }}
+        {% else %}
+            {{ content }}
+        {% endif %}
+    {% endif %}
 {% endmacro %}

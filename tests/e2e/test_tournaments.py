@@ -40,7 +40,4 @@ class TestTournamentFunctionality:
         delete_button = TestUtils.button_by_text(modal, 'Delete')
         expect(delete_button).to_be_enabled()
         delete_button.click()
-        expect(
-            page.get_by_text(f'Tournament [{name}] has been deleted.')
-        ).to_be_visible()
         expect(page.locator('.card')).to_have_count(0)

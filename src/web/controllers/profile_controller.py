@@ -112,52 +112,58 @@ class ProfileController(BaseController):
             password: str = WebContext.form_data_to_str(data, field := 'password') or ''
             try:
                 account: Account = admin_event.active_user_accounts_by_id[account_id]
-                ph = PasswordHasher()
-                try:
-                    pw_hash = account.password_hash
-                    # NOTE(pascalaubry): pw_hash is None for the anonymous account
-                    assert pw_hash is not None
-                    # NOTE(Amaras): because of a peculiar design decision from
-                    # the author of argon2-cffi, the only return value is True,
-                    # all other outcomes result in an exception, and it is dangerous
-                    # to change that design decision now.
-                    # Therefore, if the verification does not error, then it has
-                    # succeeded.
-                    ph.verify(pw_hash, password)
-                    # NOTE(Amaras): hashing parameters might change, either through
-                    # our own choice, or when the default parameters are improved.
-                    # It is thus necessary to check if a re-hashing is needed as soon
-                    # as possible, and rehash the password (which we verified is correct)
-                    # if parameters changed.
-                    if ph.check_needs_rehash(pw_hash):
-                        account.update_password(ph.hash(password))
-                        # FIXME(Amaras): because there is no reference to a
-                        # database inside both Account and StoredAccount,
-                        # this is pretty much the only place to update it.
-                        # This lack of abstraction is alright for a POC, but
-                        # bad practice otherwise.
-                        with EventDatabase(event_uniq_id) as event_database:
-                            account.stored_account = (
-                                event_database.update_stored_account(
-                                    account.stored_account
-                                )
-                            )
-                except (VerifyMismatchError, VerificationError):
-                    errors[field] = _('Invalid password.')
-                    data[field] = ''
-                except InvalidHash:
+                pw_hash = account.password_hash
+                if pw_hash is None or pw_hash == '':
                     errors[field] = _(
-                        'Something went wrong. Please ask your administrator to recreate your account.'
+                        'Please ask your administrator to set a password.'
                     )
                 else:
-                    SessionHandler.store_user_account(
-                        request,
-                        admin_event,
-                        account,
-                    )
+                    ph = PasswordHasher()
+                    try:
+                        pw_hash = account.password_hash
+                        # NOTE(pascalaubry): pw_hash is None for the anonymous account
+                        assert pw_hash is not None
+                        # NOTE(Amaras): because of a peculiar design decision from
+                        # the author of argon2-cffi, the only return value is True,
+                        # all other outcomes result in an exception, and it is dangerous
+                        # to change that design decision now.
+                        # Therefore, if the verification does not error, then it has
+                        # succeeded.
+                        ph.verify(pw_hash, password)
+                        # NOTE(Amaras): hashing parameters might change, either through
+                        # our own choice, or when the default parameters are improved.
+                        # It is thus necessary to check if a re-hashing is needed as soon
+                        # as possible, and rehash the password (which we verified is correct)
+                        # if parameters changed.
+                        if ph.check_needs_rehash(pw_hash):
+                            account.update_password(ph.hash(password))
+                            # FIXME(Amaras): because there is no reference to a
+                            # database inside both Account and StoredAccount,
+                            # this is pretty much the only place to update it.
+                            # This lack of abstraction is alright for a POC, but
+                            # bad practice otherwise.
+                            with EventDatabase(event_uniq_id) as event_database:
+                                account.stored_account = (
+                                    event_database.update_stored_account(
+                                        account.stored_account
+                                    )
+                                )
+                    except (VerifyMismatchError, VerificationError):
+                        errors[field] = _('Invalid password.')
+                        data[field] = ''
+                    except InvalidHash:
+                        errors[field] = _(
+                            'Something went wrong. Please ask your administrator to recreate your account.'
+                        )
+                    else:
+                        SessionHandler.store_user_account(
+                            request,
+                            admin_event,
+                            account,
+                        )
 
-                    # Update the web context to reflect the login
-                    web_context = ProfileWebContext(request, reload_event=True)
+                        # Update the web context to reflect the login
+                        web_context = ProfileWebContext(request, reload_event=True)
             except KeyError:
                 errors['account_id'] = _('Invalid account.')
 

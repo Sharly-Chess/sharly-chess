@@ -151,8 +151,14 @@ class ChessResultsSession(Session):
                 'category': '0',
                 'ratingavg': str(round(tournament.average_player_rating)),
                 'endstatus': 'N',
-                'chiefarbiter': '',
-                'deputyarbiter': '',
+                'chiefarbiter': tournament.chief_arbiter.full_name_and_id
+                if tournament.chief_arbiter
+                else '',
+                'deputyarbiter': ', '.join(
+                    arbiter.full_name_and_id for arbiter in tournament.deputy_arbiters
+                )
+                if tournament.deputy_arbiters
+                else '',
                 'homepageorganiser': '',
                 'mail': '',
                 'federation': tournament.event.federation or 'FID',

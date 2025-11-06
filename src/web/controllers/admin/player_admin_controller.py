@@ -25,6 +25,8 @@ from common.exception import SharlyChessException
 from common.i18n import _, ngettext
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
+from data.columns import player_datasheet as ds_columns
+from data.columns.player_datasheet import DatasheetColumn
 from data.event import Event
 from data.access_levels.actions import AuthAction
 from data.access_levels.client import Client
@@ -47,7 +49,7 @@ from utils.enum import (
 )
 from plugins.ffe.utils import PlayerFFELicence
 from plugins.manager import plugin_manager
-from plugins.utils import ExtraAdminColumn, ExtraColumn
+from plugins.utils import ExtraAdminColumn
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -1838,6 +1840,7 @@ class PlayerAdminController(BaseEventAdminController):
         player_id: int | None,
         search: str,
         page: int = 0,
+        results_template: str | None = None,
     ) -> Template:
         web_context = PlayerAdminWebContext(
             request, player_id, data_source_id=data_source_id
@@ -1867,7 +1870,7 @@ class PlayerAdminController(BaseEventAdminController):
                 request, data_source.id
             )
         return HTMXTemplate(
-            template_name='admin/players/search_results.html',
+            template_name=results_template or 'admin/players/search_results.html',
             context=web_context.template_context
             | {
                 'search': search,
@@ -1914,112 +1917,46 @@ class PlayerAdminController(BaseEventAdminController):
             },
         )
 
-    DATASHEET_COLUMNS = [
-        'last_name',
-        'first_name',
-        'yob',
-        'mail',
-        'phone',
-        'gender',
-        'fide_id',
-        'tournament',
-        'federation',
-        'club',
-        'owed',
-        'paid',
-        'comment',
-        'St (F)',
-        'St (N)',
-        'St (E)',
-        'Ra (F)',
-        'Ra (N)',
-        'Ra (E)',
-        'Bl (F)',
-        'Bl (N)',
-        'Bl (E)',
-    ]
-
     @classmethod
-    def get_players_datasheet_extra_columns(
-        cls, event: Event
-    ) -> dict[int, list[ExtraColumn]]:
-        """Returns the extra data columns added by the plugins"""
-        per_plugin_columns: list[Iterable[ExtraColumn]] = plugin_manager.hook_for_event(
-            event, 'get_extra_players_datasheet_columns'
-        )()
-        extra_columns: dict[int, list[ExtraColumn]] = {}
-        for plugin_columns in per_plugin_columns:
-            for extra_column in plugin_columns:
-                try:
-                    index = cls.DATASHEET_COLUMNS.index(extra_column.at)
-                    c = extra_columns.setdefault(index, [])
-                    c.append(extra_column)
-                except ValueError:
-                    pass
-
-        # The dict has keys sorted from high to low so that we can insert them in that
-        # order without affecting lower indexes
-        return {key: extra_columns[key] for key in reversed(sorted(extra_columns))}
-
-    @classmethod
-    def get_players_datasheet_columns(cls, event: Event) -> list[str]:
+    def get_players_datasheet_column(cls, event: Event) -> list[DatasheetColumn]:
         """Returns the names of the columns used in the datasheets that can be downloaded."""
 
-        header_columns = cls.DATASHEET_COLUMNS[:]
-
-        # Add plugin columns
-        extra_columns = PlayerAdminController.get_players_datasheet_extra_columns(event)
-        for index, columns in extra_columns.items():
-            header_columns[index:index] = [column.title for column in columns]
-
-        return header_columns
+        datasheet_columns: list[DatasheetColumn] = [
+            ds_columns.LastNameColumn(),
+            ds_columns.FirstNameColumn(),
+            ds_columns.YearOfBirthColumn(),
+            ds_columns.MailColumn(),
+            ds_columns.PhoneColumn(),
+            ds_columns.GenderColumn(),
+            ds_columns.FideIDColumn(),
+            ds_columns.TournamentColumn(),
+            ds_columns.FederationColumn(),
+            ds_columns.ClubColumn(),
+            ds_columns.OwedColumn(),
+            ds_columns.PaidColumn(),
+            ds_columns.CommentColumn(),
+        ]
+        for tournament_type in TournamentRating:
+            for rating_type in PlayerRatingType:
+                datasheet_columns.append(
+                    ds_columns.RatingColumn(tournament_type, rating_type)
+                )
+        plugin_manager.hook_for_event(event, 'insert_player_datasheet_columns')(
+            datasheet_columns=datasheet_columns
+        )
+        return datasheet_columns
 
     @classmethod
-    def get_players_datasheet_data(
-        cls,
-        event: Event,
-        players: list[Player],
-    ) -> list[list[str | int | float]]:
-        """Returns the data of the datasheets that can be downloaded."""
-
-        extra_columns = cls.get_players_datasheet_extra_columns(event)
-
-        def augment_row(row, player):
-            for index, columns in extra_columns.items():
-                row[index:index] = [column.value(player) for column in columns]
-            return row
-
-        rows = [
-            augment_row(
-                [
-                    player.last_name,
-                    player.first_name,
-                    player.year_of_birth,
-                    player.mail or '',
-                    player.phone or '',
-                    player.gender.short_name,
-                    player.fide_id or '',
-                    player.tournament.uniq_id if player.tournament else '',
-                    player.federation.name,
-                    player.club.name if player.club else '',
-                    player.owed,
-                    player.paid,
-                    player.comment,
-                    player.ratings[TournamentRating.STANDARD].fide,
-                    player.ratings[TournamentRating.STANDARD].national,
-                    player.ratings[TournamentRating.STANDARD].estimated,
-                    player.ratings[TournamentRating.RAPID].fide,
-                    player.ratings[TournamentRating.RAPID].national,
-                    player.ratings[TournamentRating.RAPID].estimated,
-                    player.ratings[TournamentRating.BLITZ].fide,
-                    player.ratings[TournamentRating.BLITZ].national,
-                    player.ratings[TournamentRating.BLITZ].estimated,
-                ],
-                player,
-            )
+    def get_players_datasheet_header_and_data(
+        cls, event: Event, players: list[Player]
+    ) -> tuple[list[str], list[list[Any]]]:
+        columns = cls.get_players_datasheet_column(event)
+        header = [column.header_content for column in columns]
+        data = [
+            [column.get_cell_content(player) for column in columns]
             for player in players
         ]
-        return rows
+        return header, data
 
     @classmethod
     def download_players_as_xlsx(
@@ -2031,15 +1968,14 @@ class PlayerAdminController(BaseEventAdminController):
         temp_file = NamedTemporaryFile(delete=False, mode='wb', suffix='.xlsx')
         workbook = xlsxwriter.Workbook(temp_file)
         worksheet = workbook.add_worksheet()
-        columns = cls.get_players_datasheet_columns(event)
-        data = cls.get_players_datasheet_data(event, players)
+        header, data = cls.get_players_datasheet_header_and_data(event, players)
         worksheet.add_table(
             0,
             0,
             len(data),
-            len(columns) - 1,
+            len(header) - 1,
             options={
-                'columns': [{'header': column} for column in columns],
+                'columns': [{'header': header} for header in header],
                 'data': data,
             },
         )
@@ -2058,8 +1994,9 @@ class PlayerAdminController(BaseEventAdminController):
             delete=False, mode='w', suffix='.csv', newline=''
         )
         writer = csv.writer(temp_file)
-        writer.writerow(cls.get_players_datasheet_columns(event))
-        writer.writerows(cls.get_players_datasheet_data(event, players))
+        header, data = cls.get_players_datasheet_header_and_data(event, players)
+        writer.writerow(header)
+        writer.writerows(data)
         return File(path=temp_file.name, filename=f'{event.uniq_id}.csv')
 
     @classmethod
@@ -2070,11 +2007,8 @@ class PlayerAdminController(BaseEventAdminController):
     ) -> File:
         """Returns a file with all the information of the players in an ODS format."""
         temp_file = NamedTemporaryFile(delete=False, mode='w+b', suffix='.ods')
-        save_data(
-            temp_file,
-            [cls.get_players_datasheet_columns(event)]
-            + cls.get_players_datasheet_data(event, players),
-        )
+        header, data = cls.get_players_datasheet_header_and_data(event, players)
+        save_data(temp_file, [header] + data)
         return File(path=temp_file.name, filename=f'{event.uniq_id}.ods')
 
     @get(

@@ -1,3 +1,4 @@
+from abc import ABC
 from dataclasses import dataclass
 from typing import Any
 
@@ -267,3 +268,71 @@ class SelectOption:
     tooltip: str | None = None
     disabled: bool = False
     classes: str = ''
+
+
+class Column[T](ABC):
+    @property
+    def grid_column_template(self) -> str:
+        """The width definition of the content as used by grid-template-columns"""
+        return 'max-content'
+
+    @property
+    def header_content(self) -> str:
+        """The content of the header as a string.
+        A template can be used for more complex headers."""
+        raise NotImplementedError(
+            'The header content needs to be implemented '
+            'if a template for the header is not provided.'
+        )
+
+    @property
+    def is_header_content_safe(self) -> bool:
+        """Defines if the header content is safe to be displayed in Jinja.
+        User-input strings should not be declared as safe.
+        Useful to add light html formatting (ex: <b>last_name</b> first_name)"""
+        return False
+
+    @property
+    def header_template(self) -> str | None:
+        """The template to use for the header of the column.
+        If None, the header content is used."""
+        return None
+
+    @property
+    def header_classes(self) -> str:
+        """CSS classes to use for the header."""
+        return self.shared_classes
+
+    def get_cell_content(self, object_: T) -> Any:
+        """Get the content of a cell as a string from an object of the table.
+        A template can be used for more complex cell contents."""
+        raise NotImplementedError(
+            'The cell content needs to be implemented '
+            'if a template for the cell is not provided.'
+        )
+
+    @property
+    def is_cell_content_safe(self) -> bool:
+        """Defines if the cell content is safe to be displayed in Jinja.
+        User-input strings should not be declared as safe.
+        Useful to add light html formatting (ex: <b>last_name</b> first_name)"""
+        return False
+
+    @property
+    def cell_template(self) -> str | None:
+        """The template to use for the cells. If None, the cell content is used."""
+        return None
+
+    @property
+    def cell_classes(self) -> str:
+        """CSS classes to use for the cells."""
+        return self.shared_classes
+
+    @property
+    def shared_classes(self) -> str:
+        """Classes shared between the cells and the header."""
+        return ''
+
+
+class PlayerColumn(Column[Player], ABC):
+    """Base column class for player tables."""

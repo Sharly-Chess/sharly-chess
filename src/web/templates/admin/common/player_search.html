@@ -1,0 +1,62 @@
+<div class="row gy-2 gx-3">
+    <div class="col-12">
+          <div class="input-group">
+            {{ admin_macros.search_indicator('data-source-indicator') }}
+            <select name="data_source" id="data-source-select" class="form-select w-auto">
+                {% for data_source in data_sources %}
+                    <option
+                        value="{{ data_source.id }}"
+                        {% if selected_data_source == data_source.id %}selected{% endif %}
+                    >
+                        {{ data_source.name }}
+                    </option>
+                {% endfor %}
+            </select>
+            <input
+                id="search-input"
+                name="search"
+                class="dropdown form-control"
+                type="search"
+                hx-trigger="keyup changed delay:400ms, data_source_change"
+                hx-target="#search-results"
+                hx-get="{{ url_for('admin-search-player', event_uniq_id=admin_event.uniq_id) }}"
+                hx-vals='js:{
+                    results_template: "{{ results_template or '' }}",
+                    data_source_id: $("#data-source-select").val(),
+                    {% if admin_player %}player_id: {{ admin_player.id }}{% endif %}
+                }'
+                hx-on::before-request="$('#search-results').show();"
+                hx-on::after-request="$('#search-results').show();"
+                hx-sync="this:replace"
+                hx-indicator="#data-source-indicator"
+            />
+        </div>
+        <ul
+            id="search-results"
+            class="dropdown-menu position-absolute me-3 end-0 search-results-dropdown"
+        >
+        </ul>
+    </div>
+    <script>
+        $('#data-source-select').change(function () {
+            document.querySelector('#search-results').innerHTML = `
+                <li class="dropdown-item no-hover text-nowrap">
+                    <span class="fst-italic">{{ _('Searching…') }}</span>
+                </li>
+            `;
+            const searchInput = $('#search-input');
+            {% for data_source in data_sources %}
+                if ($(this).val() === '{{ data_source.id }}') {
+                    searchInput.prop(
+                        'placeholder',
+                        "{{ _('Search by: %(fields)s', fields=', '.join(data_source.search_fields)) }}",
+                    );
+                }
+            {% endfor %}
+            searchInput[0].dispatchEvent(
+                new CustomEvent('data_source_change', {bubbles: true, cancelable: true})
+            );
+        });
+        $('#data-source-select').trigger('change');
+    </script>
+</div>

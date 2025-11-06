@@ -8,6 +8,7 @@ from typing import override, Any
 from common.exception import SharlyChessException, OptionError
 from common.i18n import _
 from common.i18n.utils import unicode_normalize
+from data.columns.player_datasheet import DatasheetColumn
 from data.input_output.data_source import (
     FidePlayerComparator,
     PlayerComparator,
@@ -39,6 +40,7 @@ from plugins.pairing_acceleration.pairing_variations import (
 )
 from plugins.utils import PluginUtils
 from utils.enum import Result
+from web.utils import PlayerColumn
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
@@ -603,3 +605,52 @@ class FfeLicenceFilterOption(SelectPlayerFilterOption[int]):
         self._validate_list_type(int)
         if not self.value:
             raise OptionError(_('At least one licence type is expected.'), self)
+
+
+class FfeLeagueTableColumn(PlayerColumn):
+    @property
+    def header_content(self) -> str:
+        return _('League *** LEAGUE FOR TABLE HEADER')
+
+    def get_cell_content(self, player: Player) -> Any:
+        return FFEUtils.get_player_plugin_data(player).league or ''
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center'
+
+
+class FfeIdDatasheetColumn(DatasheetColumn):
+    @property
+    def header_content(self) -> str:
+        return 'ffe_id'
+
+    def get_cell_content(self, player: Player) -> Any:
+        return FFEUtils.get_player_plugin_data(player).ffe_id or ''
+
+
+class FfeLicenceNumberDatasheetColumn(DatasheetColumn):
+    @property
+    def header_content(self) -> str:
+        return 'ffe_licence_number'
+
+    def get_cell_content(self, player: Player) -> Any:
+        return FFEUtils.get_player_plugin_data(player).ffe_licence_number or ''
+
+
+class FfeLicenceDatasheetColumn(DatasheetColumn):
+    @property
+    def header_content(self) -> str:
+        return 'ffe_licence'
+
+    def get_cell_content(self, player: Player) -> Any:
+        return FFEUtils.get_player_plugin_data(player).ffe_licence.short_name
+
+
+class FfeLeagueDatasheetColumn(DatasheetColumn):
+    @property
+    def header_content(self) -> str:
+        return 'league'
+
+    def get_cell_content(self, player: Player) -> Any:
+        return FFEUtils.get_player_plugin_data(player).league or ''
