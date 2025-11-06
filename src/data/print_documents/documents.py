@@ -35,6 +35,7 @@ from data.print_documents.options import (
     PlaceCardTemplatePrintOption,
     PlaceCardMirrorPrintOption,
     PlaceCardCropMarksPrintOption,
+    PlaceCardBoardNumbersPrintOption,
 )
 from data.print_documents.place_cards.crop_marks import PlaceCardCropMarks
 from data.print_documents.place_cards.data import (
@@ -1127,6 +1128,10 @@ class PlaceCardPrintDocument(PrintDocument):
         return self.get_option_values()[4]
 
     @property
+    def board_numbers(self) -> set[int]:
+        return self._get_option(PlaceCardBoardNumbersPrintOption).board_numbers
+
+    @property
     def crop_marks(self) -> PlaceCardCropMarks:
         return self._get_option(PlaceCardCropMarksPrintOption).place_card_crop_marks
 
@@ -1139,6 +1144,7 @@ class PlaceCardPrintDocument(PrintDocument):
             RoundPrintOption,
             PlaceCardMirrorPrintOption,
             PlaceCardCropMarksPrintOption,
+            PlaceCardBoardNumbersPrintOption,
         ]
 
     @property
@@ -1157,6 +1163,7 @@ class PlaceCardPrintDocument(PrintDocument):
             place_card_type=self.place_card_type,
             mirror=self.mirror,
             place_card_crop_marks=self.crop_marks,
+            board_numbers=self.board_numbers,
         )
         return document_context | card_template_context
 

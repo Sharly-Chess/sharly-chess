@@ -17,6 +17,7 @@ class PlaceCardType(IdentifiableEntity, ABC):
             PlaceCardTemplatePrintOption,
             PlaceCardMirrorPrintOption,
             PlaceCardCropMarksPrintOption,
+            PlaceCardBoardNumbersPrintOption,
         )
 
         return [
@@ -24,6 +25,7 @@ class PlaceCardType(IdentifiableEntity, ABC):
             TournamentPrintOption.static_id(),
             PlaceCardMirrorPrintOption.static_id(),
             PlaceCardCropMarksPrintOption.static_id(),
+            PlaceCardBoardNumbersPrintOption.static_id(),
         ]
 
     @staticmethod
@@ -75,6 +77,18 @@ class BoardCardType(PlaceCardType):
         return _('Board Cards')
 
     @staticmethod
+    def get_valid_options() -> list[str]:
+        from data.print_documents.options import (
+            RoundPrintOption,
+            PlaceCardBoardNumbersPrintOption,
+        )
+
+        return PlaceCardType.get_valid_options() + [
+            RoundPrintOption.static_id(),
+            PlaceCardBoardNumbersPrintOption.static_id(),
+        ]
+
+    @staticmethod
     def boards(
         tournament: Tournament,
         round_: int,
@@ -111,10 +125,14 @@ class PairingCardType(PlaceCardType):
 
     @staticmethod
     def get_valid_options() -> list[str]:
-        from data.print_documents.options import RoundPrintOption
+        from data.print_documents.options import (
+            RoundPrintOption,
+            PlaceCardBoardNumbersPrintOption,
+        )
 
         return PlaceCardType.get_valid_options() + [
             RoundPrintOption.static_id(),
+            PlaceCardBoardNumbersPrintOption.static_id(),
         ]
 
     @staticmethod

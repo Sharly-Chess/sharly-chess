@@ -1,0 +1,9 @@
+<div class="col-12">
+    {{ admin_macros.text_input(
+        name=option.id,
+        label=_('Board numbers:'),
+        help_text=_('The numbers (or ranges of numbers) of the boards to print.'),
+        placeholder=_('All the boards'),
+        data=data, errors=errors
+    ) }}
+</div>

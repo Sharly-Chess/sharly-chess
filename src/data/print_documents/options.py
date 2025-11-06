@@ -1,3 +1,4 @@
+import re
 from abc import ABC
 from functools import cached_property
 from types import UnionType
@@ -522,3 +523,40 @@ class PlaceCardCropMarksPrintOption(PrintOption):
         except KeyError:
             # Untranslated, should not happen
             raise OptionError(f'Unknown place card crop marks: {self.value}', self)
+
+
+class PlaceCardBoardNumbersPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'board-number'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str
+
+    @property
+    def default_value(self) -> Any:
+        return None
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/event/print_options/board_number.html'
+
+    @cached_property
+    def board_numbers(self) -> set[int]:
+        board_numbers: set[int] = set()
+        if self.value:
+            for part in self.value.replace(' ', '').split(',;'):
+                if re.match(r'^(\d*)$', part):
+                    board_numbers.add(int(part))
+                elif matches := re.match(r'^(\d*)-(\d*)$', part):
+                    board_numbers.update(range(int(matches[1]), int(matches[2]) + 1))
+                else:
+                    raise OptionError(
+                        _('Invalid expression [{expression}]').format(part), self
+                    )
+        return board_numbers
+
+    @override
+    def validate(self):
+        _board_numbers = self.board_numbers

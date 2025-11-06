@@ -53,12 +53,11 @@
         <div class="error">
             {{ error }}
         </div>
-    {% else %}
-        {% for player in players %}
-            {{ render_card(board=none, player=player) }}
-        {% endfor %}
-        {% for board in boards %}
-            {{ render_card(board=board, player=none) }}
-        {% endfor %}
     {% endif %}
+    {% for player in players %}
+        {{ render_card(board=none, player=player) }}
+    {% endfor %}
+    {% for board in boards %}
+        {{ render_card(board=board, player=none) }}
+    {% endfor %}
 {% endblock %}

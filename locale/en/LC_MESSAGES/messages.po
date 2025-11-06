@@ -523,6 +523,9 @@ msgstr ""
 msgid "All Events"
 msgstr ""
 
+msgid "All the boards"
+msgstr ""
+
 msgid "All the candidate ports [{ports}] are already in use, can not start Sharly Chess server."
 msgstr ""
 
@@ -806,6 +809,9 @@ msgid "Board Pairings"
 msgstr ""
 
 msgid "Board is not the same as the opponent's."
+msgstr ""
+
+msgid "Board numbers:"
 msgstr ""
 
 msgid "Board selection (by number)"
@@ -2312,6 +2318,9 @@ msgstr ""
 msgid "Fixed boards:"
 msgstr ""
 
+msgid "Flippable cards"
+msgstr ""
+
 msgid "Floats"
 msgstr ""
 
@@ -2699,6 +2708,9 @@ msgstr ""
 msgid "Invalid display link text [{text}]"
 msgstr ""
 
+msgid "Invalid expression [{expression}]"
+msgstr ""
+
 msgid "Invalid federation [{federation}]."
 msgstr ""
 
@@ -3020,9 +3032,6 @@ msgid "Minimum number of points (included):"
 msgstr ""
 
 msgid "Minimum rating"
-msgstr ""
-
-msgid "Mirror cards"
 msgstr ""
 
 msgid "Missing required field [{field}]."
@@ -5049,6 +5058,9 @@ msgstr ""
 msgid "The number of the last player to select."
 msgstr ""
 
+msgid "The numbers (or ranges of numbers) of the boards to print."
+msgstr ""
+
 msgid "The pairing number can't be greater than the player count."
 msgstr ""
 
@@ -6445,4 +6457,7 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "Mirror cards"
+#~ msgstr ""
 

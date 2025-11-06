@@ -523,6 +523,9 @@ msgstr "Tous"
 msgid "All Events"
 msgstr "Évènements"
 
+msgid "All the boards"
+msgstr "Tous les échaiquiers"
+
 msgid "All the candidate ports [{ports}] are already in use, can not start Sharly Chess server."
 msgstr "Tous les ports candidats [{ports}] sont déjà utilisés, impossible de démarrer le serveur web."
 
@@ -807,6 +810,9 @@ msgstr "Appariements par échiquier"
 
 msgid "Board is not the same as the opponent's."
 msgstr "L'échiquier n'est pas le même que celui de l'adversaire."
+
+msgid "Board numbers:"
+msgstr "Numéros des échiquiers :"
 
 msgid "Board selection (by number)"
 msgstr "Sélection des échiquiers (par numéro)"
@@ -2312,6 +2318,9 @@ msgstr "Échiquier fixe :"
 msgid "Fixed boards:"
 msgstr "Échiquiers fixes :"
 
+msgid "Flippable cards"
+msgstr "Chevalets pliables"
+
 msgid "Floats"
 msgstr "Flotteurs"
 
@@ -2699,6 +2708,9 @@ msgstr "Délai non valide [{delay}] (entier positif attendu)."
 msgid "Invalid display link text [{text}]"
 msgstr "Text du lien d'affichage non valide [{text}]."
 
+msgid "Invalid expression [{expression}]"
+msgstr "Expression non valide [{expression}]"
+
 msgid "Invalid federation [{federation}]."
 msgstr "Fédération [{federation}] non valide."
 
@@ -3021,9 +3033,6 @@ msgstr "Nombre minimum de points (inclus) :"
 
 msgid "Minimum rating"
 msgstr "Elo minimum"
-
-msgid "Mirror cards"
-msgstr "Mettre en miroir"
 
 msgid "Missing required field [{field}]."
 msgstr "Champ requis manquant [{field}]."
@@ -5049,6 +5058,9 @@ msgstr "Le numéro du dernier échiquier à prendre en compte."
 msgid "The number of the last player to select."
 msgstr "Le numéro du·de la dernier·e joueur·euse."
 
+msgid "The numbers (or ranges of numbers) of the boards to print."
+msgstr "Les numéros (ou plages de numéros) des échiquiers à imprimer."
+
 msgid "The pairing number can't be greater than the player count."
 msgstr "Le numéro d'appariement ne peut pas être supérieur au nombre de joueur·euses."
 
@@ -6445,4 +6457,7 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "Mirror cards"
+#~ msgstr "Mettre en miroir"
 
