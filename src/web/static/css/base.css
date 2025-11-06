@@ -59,7 +59,9 @@ body[data-bs-theme="light"] #main-wrapper {
 }
 
 .sidebar button > i, .sidebar button > div > i {
-    padding-right: 0.25rem;
+    width: 1.25rem;
+    text-align: center;
+    margin-right: 0.35rem;
 }
 
 .sidebar-tooltip {
@@ -99,6 +101,7 @@ body[data-bs-theme="light"] #main-wrapper {
 .sidebar .nav-link {
     width: 100%;
     max-width: 100%;
+    display: flex;
 }
 
 .sidebar .nav-link:hover, .sidebar .btn-link:hover {
@@ -486,7 +489,7 @@ body[data-bs-theme=light] .btn-primary {
 }
 
 [data-bs-theme=dark] {
-    --side-bar-width: 220px;
+    --side-bar-width: 230px;
     --bs-primary: #d7c9aa;
     --bs-primary-rgb: 215, 201, 170;
     --pw-contrast-text: #212529;
