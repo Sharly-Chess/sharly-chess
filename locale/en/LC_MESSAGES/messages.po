@@ -956,7 +956,7 @@ msgid "Check-in is closed for tournament [{tournament}]."
 msgstr ""
 
 #, python-format
-msgid "Check-in is not allowed after the tournament has started for the pairing system [%(pairing_system)s]."
+msgid "Check-in is not allowed after the tournament has started for the [%(pairing_system)s] pairing system."
 msgstr ""
 
 msgid "Check-in is open for tournament [{tournament}]."

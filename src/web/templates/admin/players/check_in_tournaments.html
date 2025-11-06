@@ -24,7 +24,7 @@
                         class="dropdown-item text-nowrap my-0 d-inline-flex align-items-center gap-2"
                         {% if tournament.started and not tournament.pairing_system.allow_mid_tournament_check_in %}
                             {{ macros.tooltip_attributes('warning', _(
-                                'Check-in is not allowed after the tournament has started for the pairing system [%(pairing_system)s].',
+                                'Check-in is not allowed after the tournament has started for the [%(pairing_system)s] pairing system.',
                                 pairing_system=tournament.pairing_system.name
                             ), 'left') }}
                         {% elif tournament.finished %}
