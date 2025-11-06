@@ -693,7 +693,7 @@ msgid "Auto-upload results to FFE site"
 msgstr "Envoi automatique des résultats sur le site de la FFE"
 
 msgid "Auto-upload:"
-msgstr "Mise en ligne automatique :"
+msgstr "Mise en ligne :"
 
 msgid "Automatic"
 msgstr "Automatique"
@@ -1614,8 +1614,8 @@ msgstr "Les pilotes d'afficheurs vous permettent de contrôler les afficheurs de
 msgid "Display format for pairings."
 msgstr "Méthode d’affichage des appariements."
 
-msgid "Display of a screen exit button:"
-msgstr "Affichage d'un bouton de sortie d'écran :"
+msgid "Screen exit button:"
+msgstr "Bouton de sortie d'écran :"
 
 msgid "Display of unpaired players:"
 msgstr "Affichage des joueur·euses non apparié·es"
@@ -1720,11 +1720,11 @@ msgstr "Dupliquer avec les joueur·euses"
 msgid "Duplicate without players"
 msgstr "Dupliquer sans les joueur·euses"
 
-msgid "Duration (min)"
-msgstr "Durée (min)"
+msgid "Duration (min):"
+msgstr "Durée (min) :"
 
-msgid "Duration (sec)"
-msgstr "Durée (sec)"
+msgid "Duration (sec):"
+msgstr "Durée (sec) :"
 
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
 msgstr "E"
@@ -1956,8 +1956,8 @@ msgstr "Elo"
 msgid "Elo *** STD ELO FOR TABLE HEADER"
 msgstr "Elo"
 
-msgid "Elo step (handicap):"
-msgstr "Tranche Elo (handicap) :"
+msgid "Elo step:"
+msgstr "Tranche Elo :"
 
 msgid "Email:"
 msgstr "Mél :"
@@ -2099,8 +2099,8 @@ msgstr "Type de licence FFE"
 msgid "FFE Uniq ID:"
 msgstr "Identifiant unique FFE :"
 
-msgid "FFE certification number (optional):"
-msgstr "Numéro d'homologation FFE (facultatif) :"
+msgid "FFE certification number:"
+msgstr "Numéro d'homologation :"
 
 msgid "FFE certification number and password not defined."
 msgstr "Numéro d'homologation FFE et mot de passe non-définis."
@@ -2623,8 +2623,8 @@ msgstr "Installation incorrecte, abandon."
 msgid "Incorrect path [{path}]."
 msgstr "Chemin incorrect [{path}]."
 
-msgid "Increment (sec)"
-msgstr "Incrément (sec)"
+msgid "Increment (sec):"
+msgstr "Incrément (sec) :"
 
 msgid "Info"
 msgstr "Info"
@@ -3009,8 +3009,8 @@ msgstr "Menu : aucun"
 msgid "Menus"
 msgstr "Menus"
 
-msgid "Minimal time (handicap, seconds):"
-msgstr "Temps minimal (handicap, en secondes) :"
+msgid "Minimal time (seconds):"
+msgstr "Temps minimal (en secondes) :"
 
 msgid "Minimum delay between uploads (minutes):"
 msgstr "Délai minimum entre deux envois (en minutes) :"
@@ -3045,8 +3045,8 @@ msgid_plural "Moved up %(num)d places"
 msgstr[0] "Monté·e de %(num)d place"
 msgstr[1] "Monté·e de %(num)d places"
 
-msgid "Moves"
-msgstr "Coups"
+msgid "Moves:"
+msgstr "Coups :"
 
 #, python-format
 msgid "Moving on to round #%(round)d"
@@ -3671,8 +3671,8 @@ msgstr "Mot de passe :"
 msgid "Penalties require a time control with a single period."
 msgstr "Les pénalités nécessitent une cadence avec une seule période."
 
-msgid "Penalty (handicap, seconds):"
-msgstr "Pénalité (handicap, en secondes) :"
+msgid "Penalty (seconds):"
+msgstr "Pénalité (en secondes) :"
 
 msgid "Pending"
 msgstr "À venir"
@@ -3764,8 +3764,8 @@ msgstr "Appariements par joueur·euse"
 msgid "Player ratings to use by default:"
 msgstr "Classements des joueur·euses à utiliser par défaut :"
 
-msgid "Player ratings to use:"
-msgstr "Classements des joueur·euses à utiliser :"
+msgid "PRating to usee:"
+msgstr "Classement à utiliser :"
 
 msgid "Player selection (by alphabetical order)"
 msgstr "Sélection des joueur·euses (par ordre alphabétique)"
@@ -6441,4 +6441,3 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-

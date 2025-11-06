@@ -40,7 +40,6 @@
                     {{ admin_macros.select_input(
                         name='access_level',
                         label=_('%(string)s:', string=_('Access level')),
-                        help_text='',
                         select_options=access_level_options,
                         tooltip_select=true,
                         data=data, errors=errors
@@ -56,7 +55,7 @@
                     {{ admin_macros.select_input(
                         name='tournament_ids',
                         label=_('%(string)s:', string=_('Tournaments')),
-                        help_text=_('The tournaments on which the permission is applied (by default, the permission is applied to all the tournaments).'),
+                        tooltip_text=_('The tournaments on which the permission is applied (by default, the permission is applied to all the tournaments).'),
                         select_all=true,
                         select_options=tournament_options,
                         multiple_select=true,

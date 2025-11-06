@@ -53,7 +53,6 @@
                         name='name',
                         label=_('Name:'),
                         placeholder=_('E.g.: %(string)s', string=_('My category')),
-                        help_text='',
                         data=data, errors=errors
                     ) }}
                 </div>
@@ -79,7 +78,6 @@
                             name='is_main',
                             label='',
                             placeholder=_('Define as main category'),
-                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </span>
@@ -105,7 +103,6 @@
                             name='share_prizes',
                             label='',
                             placeholder=_('Share the prizes'),
-                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </span>
@@ -132,7 +129,7 @@
                         {{ admin_macros.select_input(
                             name='prize_sharing',
                             label=_('%(string)s:', string=_('Prize sharing')),
-                            help_text=_(
+                            tooltip_text=_(
                                 'The way to share the prizes between '
                                 'players with the same points.'
                             ),
@@ -144,7 +141,7 @@
                         {{ admin_macros.number_input(
                             name='sharing_threshold',
                             label=_('%(string)s:', string=_('Sharing threshold')),
-                            help_text=_(
+                            tooltip_text=_(
                                 'The minimum value of a shared prize in this category '
                                 '(by default: no threshold).'
                             ),

@@ -383,7 +383,7 @@ with_indicator: display a loading indicator, optional
     label='NO LABEL',
     placeholder='',
     doc_icon='',
-    help_text='NO HELP TEXT',
+    help_text='',
     tooltip_text='',
     data={},
     errors={},
@@ -437,7 +437,7 @@ with_indicator: display a loading indicator, optional
                 {%- if label -%}
                     <span
                         for="{{ id }}"
-                        class="form-check-label flex-grow-1 mb-1"
+                        class="form-check-label flex-grow-1"
                     >
                         {{- label -}}
                         {%- if doc_icon -%}
@@ -454,7 +454,7 @@ with_indicator: display a loading indicator, optional
                     </label>
                 {%- endif -%}
                 {% if default_checkbox %}
-                    {{ default_checkbox_text or _('by default') }}
+                    {{ default_checkbox_text or _('use default') }}
                     <input
                         data-testid="{{ default_checkbox_id }}"
                         id="{{ default_checkbox_id }}"
@@ -462,7 +462,7 @@ with_indicator: display a loading indicator, optional
                         type="checkbox"
                         aria-describedby="{{ id }}-help {{ id }}-error"
                         {% if data[default_checkbox_name] == 'on' %}checked{% endif %}
-                        class="ms-2"
+                        class="ms-2 me-3"
                     />
                 {% endif %}
             </div>
@@ -508,6 +508,14 @@ with_indicator: display a loading indicator, optional
                         {% endif %}
                     />
                     {{ placeholder }}{% if doc_icon %}<span >{{ macros.doc_icon(doc_icon, 'ms-2') }}</span>{% endif %}
+                    {%- if tooltip_text and not label -%}
+                        <span class="text-nowrap"></span>
+                            <i
+                                class="bi bi-info-circle-fill ms-2"
+                                {{ macros.tooltip_attributes('', tooltip_text, 'top') }}
+                            ></i>
+                        </span>
+                    {%- endif -%}
                 {% elif input_type == 'radio' %}
                     <input
                         id="{{ id }}"
@@ -722,7 +730,7 @@ with_indicator: display a loading indicator, optional
     name,
     label='NO LABEL',
     placeholder='',
-    help_text='NO HELP TEXT',
+    help_text='',
     tooltip_text='',
     input_type='text',
     data={},
@@ -782,7 +790,7 @@ with_indicator: display a loading indicator, optional
     name,
     label='NO LABEL',
     placeholder='',
-    help_text='NO HELP TEXT',
+    help_text='',
     tooltip_text='',
     data={},
     errors={},
@@ -844,7 +852,7 @@ with_indicator: display a loading indicator, optional
     name,
     label='NO LABEL',
     placeholder='',
-    help_text='NO HELP TEXT',
+    help_text='',
     tooltip_text='',
     data={},
     errors={},
@@ -899,7 +907,7 @@ with_indicator: display a loading indicator, optional
     name,
     label='NO LABEL',
     placeholder='',
-    help_text='NO HELP TEXT',
+    help_text='',
     file_accept='',
     data={},
     errors={},
@@ -924,7 +932,7 @@ with_indicator: display a loading indicator, optional
     name,
     label='NO LABEL',
     placeholder='',
-    help_text='NO HELP TEXT',
+    help_text='',
     tooltip_text='',
     data={},
     errors={},
@@ -954,7 +962,7 @@ with_indicator: display a loading indicator, optional
 {% macro select_input(
     name,
     label='NO LABEL',
-    help_text='NO HELP TEXT',
+    help_text='',
     tooltip_text='',
     doc_icon='',
     data={},
@@ -995,7 +1003,7 @@ with_indicator: display a loading indicator, optional
     label='NO LABEL',
     placeholder='NO PLACEHOLDER',
     doc_icon='',
-    help_text='NO HELP TEXT',
+    help_text='',
     tooltip_text='',
     info='',
     data={},
@@ -1023,7 +1031,7 @@ with_indicator: display a loading indicator, optional
     name,
     label='NO LABEL',
     placeholder='NO PLACEHOLDER',
-    help_text='NO HELP TEXT',
+    help_text='',
     tooltip_text='',
     info='',
     data={},
@@ -1050,7 +1058,7 @@ with_indicator: display a loading indicator, optional
     name,
     label='NO LABEL',
     placeholder='NO PLACEHOLDER',
-    help_text='NO HELP TEXT',
+    help_text='',
     tooltip_text='',
     info='',
     data={},
@@ -1078,7 +1086,7 @@ with_indicator: display a loading indicator, optional
 {% macro datetime_input(
     name,
     label='NO LABEL',
-    help_text='NO HELP TEXT',
+    help_text='',
     tooltip_text='',
     data={},
     errors={},
@@ -1102,7 +1110,7 @@ with_indicator: display a loading indicator, optional
 {% macro date_input(
     name,
     label='NO LABEL',
-    help_text='NO HELP TEXT',
+    help_text='',
     tooltip_text='',
     data={},
     errors={},
@@ -1126,7 +1134,7 @@ with_indicator: display a loading indicator, optional
 {% macro time_input(
     name,
     label='NO LABEL',
-    help_text='NO HELP TEXT',
+    help_text='',
     tooltip_text='',
     data={},
     errors={},
@@ -1503,21 +1511,21 @@ with_indicator: display a loading indicator, optional
                 >
             {% endif %}
             {{ plugin.name }}
-        </div>
-        <i
-            class="bi bi-info-circle-fill"
-            {{ macros.tooltip_attributes('', plugin.description, 'top') }}
-        ></i>
-        {% for required_by_plugin in plugin.required_by_plugins %}
             <i
-                id="{{ plugin.form_key }}-{{ required_by_plugin.form_key }}-dependency"
-                class="bi-lock-fill text-primary {{ plugin.form_key }}-dependency"
-                {{ macros.tooltip_attributes(
-                    '', _('Required by plugin <b>%(plugin)s</b>.', plugin=required_by_plugin.name), 'top'
-                ) }}
-                style="display:none"
+                class="bi bi-info-circle-fill ms-2"
+                {{ macros.tooltip_attributes('', plugin.description, 'top') }}
             ></i>
-        {% endfor %}
+            {% for required_by_plugin in plugin.required_by_plugins %}
+                <i
+                    id="{{ plugin.form_key }}-{{ required_by_plugin.form_key }}-dependency"
+                    class="bi-lock-fill text-primary {{ plugin.form_key }}-dependency"
+                    {{ macros.tooltip_attributes(
+                        '', _('Required by plugin <b>%(plugin)s</b>.', plugin=required_by_plugin.name), 'top'
+                    ) }}
+                    style="display:none"
+                ></i>
+            {% endfor %}
+        </div>
         <script>
             $('#{{ plugin.form_key }}').change(function (event, save_user_state=true) {
                 if (save_user_state) $(this).attr('data-user-state', this.checked);

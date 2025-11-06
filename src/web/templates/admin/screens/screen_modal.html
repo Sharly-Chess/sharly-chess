@@ -49,32 +49,31 @@
                     </h4>
                 {% else %}
                     <h4>{{ _('Properties') }}</h4>
-                    {% set col = 6 if action == 'create' and screen_type.value in ['input', 'boards', 'players', 'ranking', ] else 4 %}
                     <div class="row gy-2 gx-3">
-                        <div class="col-12 col-xl-{{col}}">
+                        <div class="col-12">
                             {{ admin_macros.switch_input(
                                 name='public',
-                                label=_('Visibility:'),
+                                label='',
                                 placeholder=_('Public screen'),
-                                help_text=_('Only allowed users can see private screens.'),
+                                tooltip_text=_('Only allowed users can see private screens.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6 col-xl-{{col}}">
+                        <div class="col-12 col-md-6">
                             {{ admin_macros.text_input(
                                 name='name',
                                 label=_('Name:'),
                                 placeholder=_('E.g.: My screen'),
-                                help_text=_('The name of the screen, displayed on event screens.'),
+                                tooltip_text=_('The name of the screen, displayed on event screens.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
                         {% if action == 'create' and screen_type.value in ['input', 'boards', 'players', 'ranking', ] %}
-                            <div class="col-12 col-xl-{{col}}">
+                            <div class="col-12 col-md-6">
                                 {{ admin_macros.select_input(
                                     name='init_set_tournament_id',
                                     label=_('Tournament:'),
-                                    help_text=_('The first tournament of the screen.'),
+                                    tooltip_text=_('The first tournament of the screen.'),
                                     select_options=tournament_options,
                                     data=data, errors=errors
                                 ) }}
@@ -94,7 +93,7 @@
                                     name='background_image',
                                     label=_('Background image:'),
                                     placeholder=_('E.g.: https://my.club.us/tournament.jpg'),
-                                    help_text=_('The URL of the image to display.'),
+                                    tooltip_text=_('The URL of the image to display.'),
                                     default_checkbox=true,
                                     default_checkbox_text=_('no background image'),
                                     data=data, errors=errors
@@ -104,7 +103,6 @@
                                 {{ admin_macros.color_input(
                                     name='background_color',
                                     label=_('Background colour:'),
-                                    help_text=_('The background colour for Screens.'),
                                     default_checkbox=true,
                                     default_color=admin_event.background_color,
                                     data=data, errors=errors
@@ -140,7 +138,7 @@
                                         name='results_limit',
                                         label=_('Maximum number of results displayed:'),
                                         placeholder=_('E.g.: %(num)d', num=30),
-                                        help_text=_('The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed).'),
+                                        tooltip_text=_('The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed).'),
                                         data=data, errors=errors
                                     ) }}
                                 </div>
@@ -149,7 +147,7 @@
                                         name='results_max_age',
                                         label=_('Maximum age of the results:'),
                                         placeholder=_('E.g.: %(minutes)d (minutes)', minutes=45),
-                                        help_text=_('The maximum age of the results, in minutes (by default %(minutes)d minutes).', minutes=sharly_chess_config.default_results_screen_max_age),
+                                        tooltip_text=_('The maximum age of the results, in minutes (by default %(minutes)d minutes).', minutes=sharly_chess_config.default_results_screen_max_age),
                                         data=data, errors=errors
                                     ) }}
                                 </div>
@@ -158,7 +156,6 @@
                                         name='results_tournament_ids',
                                         label=_('Tournaments displayed:'),
                                         placeholder=_('All the tournaments'),
-                                        help_text='',
                                         multiple_select=true,
                                         select_options=tournament_options,
                                         data=data, errors=errors
@@ -178,7 +175,7 @@
                                     {{ admin_macros.select_input(
                                         name='timer_id',
                                         label=_('Timer:'),
-                                        help_text=_('The timer displayed on the screen.'),
+                                        tooltip_text=_('The timer displayed on the screen.'),
                                         select_options=timer_options,
                                         data=data, errors=errors
                                     ) }}
@@ -189,7 +186,7 @@
                                     name='columns',
                                     label=_('Columns:'),
                                     placeholder=_('E.g.: %(num)d', num=2),
-                                    help_text=_('The number of columns used to display data.'),
+                                    tooltip_text=_('The number of columns used to display data.'),
                                     data=data, errors=errors
                                 ) }}
                             </div>
@@ -198,7 +195,6 @@
                                     name='font_size',
                                     label=_('Font size adjustment (%%):'),
                                     placeholder=100,
-                                    help_text=_('Font size adjustment for the screen.'),
                                     data=data, errors=errors
                                 ) }}
                             </div>
@@ -216,7 +212,7 @@
                             {{ _('Menus') }}
                         </h4>
                         <div class="row gy-2 gx-3">
-                            <div class="col-12 col-xl-5">
+                            <div class="col-12">
                                 {{ admin_macros.text_input(
                                     name='menu',
                                     label=_('Links displayed on the screen menu:'),
@@ -225,21 +221,21 @@
                                     data=data, errors=errors
                                 ) }}
                             </div>
-                            <div class="col-12 col-md-6 col-xl-3">
+                            <div class="col-12 col-md-6">
                                 {{ admin_macros.switch_input(
                                     name='menu_link',
                                     label=_('Links to this screen:'),
                                     placeholder=_('Allow'),
-                                    help_text=_('Check the box to allow other screens to display a link to this screen.'),
+                                    tooltip_text=_('Check the box to allow other screens to display a link to this screen.'),
                                     data=data, errors=errors
                                 ) }}
                             </div>
-                            <div class="col-12 col-md-6 col-xl-4">
+                            <div class="col-12 col-md-6">
                                 {{ admin_macros.text_input(
                                     name='menu_text',
                                     label=_('Menu link label:'),
                                     placeholder=_('E.g.: Link to my screen'),
-                                    help_text=_('This label will be used for the link to other screens to this screen. If left empty, a default label will be used.'),
+                                    tooltip_text=_('This label will be used for the link to other screens to this screen. If left empty, a default label will be used.'),
                                     data=data, errors=errors
                                 ) }}
                             </div>

@@ -2,7 +2,7 @@
     {{ admin_macros.number_input(
         name=option.id,
         label=_('%(string)s:', string=_('Minimum rating')),
-        help_text=_('Filter out players with a lower rating.'),
+        tooltip_text=_('Filter out players with a lower rating.'),
         data=data, errors=errors
     ) }}
 </div>

@@ -56,14 +56,13 @@
                             name='values',
                             label=_('%(string)s:', string=_('Values')),
                             placeholder=_('E.g.: %(string)s', string='1000 500,5 333.33'),
-                            help_text=_('Space-separated list of numbers. One prize is created per value in the list.'),
+                            tooltip_text=_('Space-separated list of numbers. One prize is created per value in the list.'),
                             data=data, errors=errors
                         ) }}
                     {% else %}
                         {{ admin_macros.number_input(
                             name='value',
                             label=_('%(string)s:', string=_('Value')),
-                            help_text='',
                             step=0.01,
                             data=data, errors=errors
                         ) }}
@@ -82,7 +81,6 @@
                             name='is_monetary',
                             label='',
                             placeholder=_('Define as monetary'),
-                            help_text='',
                             disabled=admin_prize_category.are_prizes_shared,
                             data=data, errors=errors
                         ) }}
@@ -108,7 +106,6 @@
                         name='description',
                         label=_('%(string)s:', string=_('Description')),
                         placeholder=_('E.g.: %(string)s', string=_('Trophy')),
-                        help_text='',
                         data=data, errors=errors
                     ) }}
                 </div>

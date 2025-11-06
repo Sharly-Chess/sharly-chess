@@ -1614,7 +1614,7 @@ msgstr ""
 msgid "Display format for pairings."
 msgstr ""
 
-msgid "Display of a screen exit button:"
+msgid "Screen exit button:"
 msgstr ""
 
 msgid "Display of unpaired players:"
@@ -1720,10 +1720,10 @@ msgstr ""
 msgid "Duplicate without players"
 msgstr ""
 
-msgid "Duration (min)"
+msgid "Duration (min):"
 msgstr ""
 
-msgid "Duration (sec)"
+msgid "Duration (sec):"
 msgstr ""
 
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
@@ -1956,7 +1956,7 @@ msgstr "Elo"
 msgid "Elo *** STD ELO FOR TABLE HEADER"
 msgstr "Elo"
 
-msgid "Elo step (handicap):"
+msgid "Elo step:"
 msgstr ""
 
 msgid "Email:"
@@ -2099,7 +2099,7 @@ msgstr ""
 msgid "FFE Uniq ID:"
 msgstr ""
 
-msgid "FFE certification number (optional):"
+msgid "FFE certification number:"
 msgstr ""
 
 msgid "FFE certification number and password not defined."
@@ -2623,7 +2623,7 @@ msgstr ""
 msgid "Incorrect path [{path}]."
 msgstr ""
 
-msgid "Increment (sec)"
+msgid "Increment (sec):"
 msgstr ""
 
 msgid "Info"
@@ -3009,7 +3009,7 @@ msgstr ""
 msgid "Menus"
 msgstr ""
 
-msgid "Minimal time (handicap, seconds):"
+msgid "Minimal time (seconds):"
 msgstr ""
 
 msgid "Minimum delay between uploads (minutes):"
@@ -3045,7 +3045,7 @@ msgid_plural "Moved up %(num)d places"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "Moves"
+msgid "Moves:"
 msgstr ""
 
 #, python-format
@@ -3671,7 +3671,7 @@ msgstr ""
 msgid "Penalties require a time control with a single period."
 msgstr ""
 
-msgid "Penalty (handicap, seconds):"
+msgid "Penalty (seconds):"
 msgstr ""
 
 msgid "Pending"
@@ -3764,7 +3764,7 @@ msgstr ""
 msgid "Player ratings to use by default:"
 msgstr ""
 
-msgid "Player ratings to use:"
+msgid "Rating to use:"
 msgstr ""
 
 msgid "Player selection (by alphabetical order)"

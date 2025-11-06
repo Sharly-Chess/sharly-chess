@@ -2,7 +2,6 @@
     {{ admin_macros.select_input(
         name=option.id,
         label=_('%(string)s:', string=_('Variation')),
-        help_text='',
         select_options=option.buchholz_type_options(admin_tournament.rounds),
         tooltip_select=true,
         data=data, errors=errors

@@ -20,7 +20,6 @@
                         {{ admin_macros.color_input(
                             name='background_color',
                             label=_('Background colour:'),
-                            help_text=_('The background colour for Screens.'),
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -43,7 +42,6 @@
                         {{ admin_macros.color_input(
                             name='message_background_color',
                             label=_('Background colour:'),
-                            help_text=_('The background colour of the alert messages.'),
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -52,7 +50,6 @@
                         {{ admin_macros.color_input(
                             name='message_color',
                             label=_('Text colour:'),
-                            help_text=_('The text colour of the alert messages.'),
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -62,7 +59,7 @@
                             name='message_text',
                             label=_('Alert message:'),
                             placeholder=_('E.g.: Please keep quiet until the end of the round!'),
-                            help_text=_(
+                            tooltip_text=_(
                                 'When defined, the alert message is displayed in a '
                                 'scrolling banner at the bottom of the screens.'
                             ),

@@ -28,14 +28,13 @@
                     {{ admin_macros.select_input(
                         name='locale',
                         label=_('Language:'),
-                        help_text='',
                         select_options=locale_options,
                         data=data, errors=errors
                     ) }}
                     {{ admin_macros.select_input(
                         name='federation',
                         label=_('Federation:'),
-                        help_text=_('The default federation for your events.'),
+                        tooltip_text=_('The default federation for your events.'),
                         select_options=federation_options,
                         data=data, errors=errors
                     ) }}
@@ -54,7 +53,7 @@
                             label='',
                             placeholder=_('Experimental features'),
                             help_text=ns.experimental_features_help,
-                            info=_('Benefit from the very last (experimental) features (USE AT YOUR OWN RISKS!).'),
+                            tooltip_text=_('Benefit from the very last (experimental) features (USE AT YOUR OWN RISKS!).'),
                             data=data, errors=errors
                         ) }}
                     {% endif %}

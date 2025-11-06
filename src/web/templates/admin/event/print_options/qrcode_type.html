@@ -2,7 +2,6 @@
     {{ admin_macros.select_input(
         name=option.id,
         label=_('QR Code type:'),
-        help_text=_('The type of QR code to print.'),
         select_options=option.qrcode_type_options,
         data=data, errors=errors
     ) }}
