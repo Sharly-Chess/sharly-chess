@@ -534,8 +534,8 @@ msgstr "Tous les tournois"
 msgid "All values may be modified by the arbiter if necessary."
 msgstr "Toutes les valeurs peuvent être modifiées par l’arbitre si nécessaire."
 
-msgid "Allow"
-msgstr "Autoriser"
+msgid "Allow links to this screen"
+msgstr "Autoriser les liens vers cet écran"
 
 msgid "Allows access to Screens marked as public"
 msgstr "Autorise l'accès aux écrans publics"
@@ -2805,9 +2805,6 @@ msgstr "Lien à un échiquier n'impliquant pas le·la joueur·euse."
 
 msgid "Links displayed on the screen menu:"
 msgstr "Liens affichés sur le menu de l'écran :"
-
-msgid "Links to this screen:"
-msgstr "Liens vers cet écran :"
 
 msgid "List of players"
 msgstr "Liste des participant·es"
@@ -5751,11 +5748,11 @@ msgstr "Envoyer le fichier PDF des règles sur le site de la FFE permet aux joue
 msgid "Uploading tournament…"
 msgstr "Mise en ligne en cours…"
 
-msgid "Use Event's default - {option}"
-msgstr "Défaut de l’événement – {option}"
-
 msgid "Use Fore Buchholz"
 msgstr "Utiliser le Fore Buchholz"
+
+msgid "Use default - {option}"
+msgstr "Par défaut – {option}"
 
 msgid "Use pairing engines"
 msgstr "Utiliser les moteurs d'appariement"

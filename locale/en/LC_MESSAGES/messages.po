@@ -534,7 +534,7 @@ msgstr ""
 msgid "All values may be modified by the arbiter if necessary."
 msgstr ""
 
-msgid "Allow"
+msgid "Allow links to this screen"
 msgstr ""
 
 msgid "Allows access to Screens marked as public"
@@ -2804,9 +2804,6 @@ msgid "Link to a board not involving the player."
 msgstr ""
 
 msgid "Links displayed on the screen menu:"
-msgstr ""
-
-msgid "Links to this screen:"
 msgstr ""
 
 msgid "List of players"
@@ -5751,10 +5748,10 @@ msgstr ""
 msgid "Uploading tournament…"
 msgstr ""
 
-msgid "Use Event's default - {option}"
+msgid "Use Fore Buchholz"
 msgstr ""
 
-msgid "Use Fore Buchholz"
+msgid "Use default - {option}"
 msgstr ""
 
 msgid "Use pairing engines"
@@ -6378,4 +6375,3 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-

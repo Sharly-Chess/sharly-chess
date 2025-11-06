@@ -362,9 +362,7 @@ class TournamentAdminController(BaseEventAdminController):
             WebContext.value_to_form_data(False): _('Fallback to estimated ratings'),
         }
 
-        override_unrated_rapid_blitz_options[''] = _(
-            "Use Event's default - {option}"
-        ).format(
+        override_unrated_rapid_blitz_options[''] = _('Use default - {option}').format(
             option=override_unrated_rapid_blitz_options[
                 WebContext.value_to_form_data(admin_event.override_unrated_rapid_blitz)
             ]
@@ -377,7 +375,7 @@ class TournamentAdminController(BaseEventAdminController):
                 'National *** NAME FOR RATING TYPE NATIONAL'
             ),
         }
-        player_rating_type_options[''] = _("Use Event's default - {option}").format(
+        player_rating_type_options[''] = _('Use default - {option}').format(
             option=player_rating_type_options[str(admin_event.player_rating_type.value)]
         )
 
@@ -386,7 +384,7 @@ class TournamentAdminController(BaseEventAdminController):
             WebContext.value_to_form_data(True): _('Three points for a win (3-1-0)'),
             WebContext.value_to_form_data(False): _('Standard points (1-0.5-0)'),
         }
-        three_points_for_a_win_options[''] = _("Use Event's default - {option}").format(
+        three_points_for_a_win_options[''] = _('Use default - {option}').format(
             option=three_points_for_a_win_options[
                 WebContext.value_to_form_data(
                     admin_event.three_points_for_a_win or False
@@ -400,7 +398,7 @@ class TournamentAdminController(BaseEventAdminController):
             str(Result.DRAW.value): _('Draw'),
             str(Result.LOSS.value): _('Loss'),
         }
-        pab_value_options[''] = _("Use Event's default - {option}").format(
+        pab_value_options[''] = _('Use default - {option}').format(
             option=pab_value_options[str(admin_event.pab_value.value)]
         )
 

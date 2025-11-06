@@ -710,7 +710,7 @@ class FfePlugin(Plugin):
             WebContext.value_to_form_data(True): _('Enabled'),
         }
         event_auto_upload = FFEUtils.get_event_plugin_data(event).auto_upload
-        ffe_auto_upload_options[''] = _("Use Event's default - {option}").format(
+        ffe_auto_upload_options[''] = _('Use default - {option}').format(
             option=ffe_auto_upload_options[
                 WebContext.value_to_form_data(event_auto_upload)
             ]
