@@ -2318,11 +2318,11 @@ msgstr "Échiquier fixe :"
 msgid "Fixed boards:"
 msgstr "Échiquiers fixes :"
 
-msgid "Flippable cards"
-msgstr "Chevalets pliables"
-
 msgid "Floats"
 msgstr "Flotteurs"
+
+msgid "Foldable place cards (mirrored top)"
+msgstr "Chevalets pliables (en miroir)"
 
 #, python-format
 msgid "Font size adjustment (%%):"

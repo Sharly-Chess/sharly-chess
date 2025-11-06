@@ -2318,10 +2318,10 @@ msgstr ""
 msgid "Fixed boards:"
 msgstr ""
 
-msgid "Flippable cards"
+msgid "Floats"
 msgstr ""
 
-msgid "Floats"
+msgid "Foldable place cards (mirrored top)"
 msgstr ""
 
 #, python-format
