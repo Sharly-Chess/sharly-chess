@@ -769,7 +769,7 @@ msgid "Black pairings are supposed to have an opponent"
 msgstr "Les appariements avec les Noirs sont censés avoir un·e adversaire."
 
 msgid "Black wins"
-msgstr "Victoires avec les Noirs"
+msgstr "Victoire Noirs"
 
 msgid "Blitz"
 msgstr "Blitz"
