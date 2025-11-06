@@ -13,7 +13,7 @@
                                 {{ admin_macros.date_input(
                                     name='date_str',
                                     label=_('Date:'),
-                                    help_text=_('Mandatory for the first hour, optional for next hours.'),
+                                    tooltip_text=_('Mandatory for the first hour, optional for next hours.'),
                                     data=data, errors=errors
                                 ) }}
                             </div>
@@ -21,7 +21,6 @@
                                 {{ admin_macros.time_input(
                                     name='time_str',
                                     label=_('Hour:'),
-                                    help_text='',
                                     disabled=action == 'delete',
                                     error=action == 'delete',
                                     data=data, errors=errors
@@ -32,7 +31,7 @@
                                     name='uniq_id',
                                     label=_('Round number or text:'),
                                     placeholder=_('E.g.: Start of check-in'),
-                                    help_text=_('Texts before and after the hour below are optional for round numbers, mandatory otherwise.'),
+                                    tooltip_text=_('Texts before and after the hour below are optional for round numbers, mandatory otherwise.'),
                                     data=data, errors=errors
                                 ) }}
                             </div>

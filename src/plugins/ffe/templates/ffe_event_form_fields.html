@@ -2,9 +2,8 @@
     <div class="col-12 col-md-6">
         {{ admin_macros.switch_input(
             name='ffe_auto_upload',
-            label=_('Upload:'),
+            label='',
             placeholder=_('Auto-upload results to FFE site'),
-            help_text='',
             disabled=not client.can_update_event,
             data=data, errors=errors
         ) }}
@@ -14,7 +13,6 @@
             name='ffe_auto_upload_delay',
             label=_('Minimum delay between uploads (minutes):'),
             placeholder=FFE_DEFAULT_UPLOAD_DELAY,
-            help_text='',
             disabled=not client.can_update_event,
             data=data, errors=errors,
             min=1

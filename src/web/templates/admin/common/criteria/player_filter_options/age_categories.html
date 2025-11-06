@@ -2,7 +2,6 @@
     {{ admin_macros.select_input(
         name=option.id,
         label=_('%(string)s:', string=_('Age categories')),
-        help_text='',
         select_options=option.select_options(admin_tournament, false, false),
         multiple_select=true,
         placeholder=_('Choose at least one category.'),

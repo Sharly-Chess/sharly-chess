@@ -50,12 +50,12 @@
                 {% else %}
                     <h4>{{ _('Properties') }}</h4>
                     <div class="row gy-2 gx-3">
-                        <div class="col-12 col-md-6">
+                        <div class="col-12">
                             {{ admin_macros.switch_input(
                                 name='public',
                                 label=_('Visibility:'),
                                 placeholder=_('Public family'),
-                                help_text=_('Only allowed users can see private screen families.'),
+                                tooltip_text=_('Only allowed users can see private screen families.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -72,7 +72,7 @@
                             {{ admin_macros.select_input(
                                 name='tournament_id',
                                 label=_('Tournament:'),
-                                help_text=_('The tournament of the screens of the family.'),
+                                tooltip_text=_('The tournament of the screens of the family.'),
                                 select_options=tournament_options,
                                 data=data, errors=errors
                             ) }}
@@ -99,34 +99,34 @@
                     <div class="row gy-2 gx-3">
                         <div class="col-12 col-md-6">
                             {% if family_type in ['boards', 'input'] %}
-                                {% set help_text=_('The number of the first board to select.') %}
+                                {% set tooltip_text=_('The number of the first board to select.') %}
                             {% elif family_type == 'players' %}
-                                {% set help_text=_('The number of the first player to select.') %}
+                                {% set tooltip_text=_('The number of the first player to select.') %}
                             {% else %}
-                                {% set help_text=_('The rank of the first player to select.') %}
+                                {% set tooltip_text=_('The rank of the first player to select.') %}
                             {% endif %}
                             {{ admin_macros.number_input(
                                 name='first',
                                 label=_('First board:') if family_type in ['boards', 'input'] else _('First player:'),
                                 placeholder=1,
-                                help_text=help_text,
+                                tooltip_text=tooltip_text,
                                 data=data, errors=errors,
                                 min=1
                             ) }}
                         </div>
                         <div class="col-12 col-md-6">
                             {% if family_type in ['boards', 'input'] %}
-                                {% set help_text=_('The number of the last board to select.') %}
+                                {% set tooltip_text=_('The number of the last board to select.') %}
                             {% elif family_type == 'players' %}
-                                {% set help_text=_('The number of the last player to select.') %}
+                                {% set tooltip_text=_('The number of the last player to select.') %}
                             {% else %}
-                                {% set help_text=_('The rank of the last player to select.') %}
+                                {% set tooltip_text=_('The rank of the last player to select.') %}
                             {% endif %}
                             {{ admin_macros.number_input(
                                 name='last',
                                 label=_('Last board:') if family_type in ['boards', 'input'] else _('Last player:'),
                                 placeholder=_('last'),
-                                help_text=help_text,
+                                tooltip_text=tooltip_text,
                                 data=data, errors=errors,
                                 min=1
                             ) }}
@@ -156,12 +156,12 @@
                         <div class="col-12 col-md-6">
                             {{ admin_macros.number_input(
                                 name='parts',
-                                label=_('On a given number of screens:'),
+                                label=_('Number of screens:'),
                                 placeholder=
-                                    _('E.g.: 4 (split the boards on 4 screens)')
+                                    _('E.g.: 4 (split boards over 4 screens)')
                                     if family_type in ['boards', 'input'] else
-                                    _('E.g.: 4 (split the players on 4 screens)'),
-                                help_text=
+                                    _('E.g.: 4 (split players over 4 screens)'),
+                                tooltip_text=
                                     _('The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards).')
                                     if family_type in ['boards', 'input'] else
                                     _('The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players.'),
@@ -171,12 +171,12 @@
                         <div class="col-12 col-md-6">
                             {{ admin_macros.number_input(
                                 name='number',
-                                label=_('On fixed size screens:'),
+                                label=_('Rows per screen:'),
                                 placeholder=
-                                    _('E.g.: 20 (place 20 boards on each screen)')
+                                    _('E.g.: 20 (boards per screen)')
                                     if family_type in ['boards', 'input'] else
-                                    _('E.g.: 20 (place 20 players on each screen)'),
-                                help_text=
+                                    _('E.g.: 20 (players per screen)'),
+                                tooltip_text=
                                     _('The number of boards per screen, optional (the number of screens adapts to the number of boards).')
                                     if family_type in ['boards', 'input'] else
                                     _('The number of players per screen, optional (the number of screens adapts to the number of players).'),
@@ -188,7 +188,7 @@
                                 {{ admin_macros.select_input(
                                     name='timer_id',
                                     label=_('Timer:'),
-                                    help_text=_('The timer displayed on the screens of the family.'),
+                                    tooltip_text=_('The timer displayed on the screens of the family.'),
                                     select_options=timer_options,
                                     data=data, errors=errors
                                 ) }}
@@ -199,7 +199,7 @@
                                 name='columns',
                                 label=_('Columns:'),
                                 placeholder=_('E.g.: %(num)d', num=2),
-                                help_text=_('The number of columns used to display data.'),
+                                tooltip_text=_('The number of columns used to display data.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -208,7 +208,6 @@
                                 name='font_size',
                                 label=_('Font size adjustment (%%):'),
                                 placeholder=100,
-                                help_text=_('Font size adjustment for the screen.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -226,7 +225,7 @@
                         {{ _('Menus') }}
                     </h4>
                     <div class="row gy-2 gx-3">
-                        <div class="col-12 col-xl-5">
+                        <div class="col-12">
                             {{ admin_macros.text_input(
                                 name='menu',
                                 label=_('Links displayed on the screen menu:'),
@@ -235,21 +234,21 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6 col-xl-3">
+                        <div class="col-12 col-md-6">
                             {{ admin_macros.switch_input(
                                 name='menu_link',
-                                label=_('Links to this screen:'),
-                                placeholder=_('Allow'),
-                                help_text=_('Check the box to allow other screens to display a link to the screen of this family.'),
+                                label='',
+                                placeholder=_('Allow links to this screen'),
+                                tooltip_text=_('Check the box to allow other screens to display a link to the screen of this family.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6 col-xl-4">
+                        <div class="col-12 col-md-6">
                             {{ admin_macros.text_input(
                                 name='menu_text',
                                 label=_('Menu link label:'),
                                 placeholder=_('E.g.: Boards %%f-%%l') if family_type in ['input', 'boards', ] else _('E.g.: Players %%f-%%l'),
-                                help_text=_('This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used.'),
+                                tooltip_text=_('This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used.'),
                                 data=data, errors=errors
                             ) }}
                         </div>

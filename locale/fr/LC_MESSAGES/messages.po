@@ -20,10 +20,6 @@ msgid "%%s is replaced by the time left before the hour."
 msgstr "%%s est remplacé par le temps restant avant l'horaire."
 
 #, python-format
-msgid "%(color)s *** COLOR FOR PAIRINGS PRINT"
-msgstr "avec les %(color)s"
-
-#, python-format
 msgid "%(count)d boards without result"
 msgstr "%(count)d échiquiers sans résultat"
 
@@ -44,12 +40,6 @@ msgid "%(num).1f point group -"
 msgid_plural "%(num).1f points group -"
 msgstr[0] "Groupe de %(num).1f point -"
 msgstr[1] "Groupe de %(num).1f points -"
-
-#, python-format
-msgid "%(num)d arbiter"
-msgid_plural "%(num)d arbiters"
-msgstr[0] "%(num)d arbitre"
-msgstr[1] "%(num)d arbitres"
 
 #, python-format
 msgid "%(num)d criterion"
@@ -544,8 +534,8 @@ msgstr "Tous les tournois"
 msgid "All values may be modified by the arbiter if necessary."
 msgstr "Toutes les valeurs peuvent être modifiées par l’arbitre si nécessaire."
 
-msgid "Allow"
-msgstr "Autoriser"
+msgid "Allow links to this screen"
+msgstr "Autoriser les liens vers cet écran"
 
 msgid "Allows access to Screens marked as public"
 msgstr "Autorise l'accès aux écrans publics"
@@ -693,7 +683,7 @@ msgid "Auto-upload results to FFE site"
 msgstr "Envoi automatique des résultats sur le site de la FFE"
 
 msgid "Auto-upload:"
-msgstr "Mise en ligne automatique :"
+msgstr "Envoi automatique :"
 
 msgid "Automatic"
 msgstr "Automatique"
@@ -1453,10 +1443,6 @@ msgstr "Paramètres par défaut des chronomètres"
 msgid "Default: %(string)s"
 msgstr "Par défaut : %(string)s"
 
-#, python-format
-msgid "Defaults to %(datetime)s"
-msgstr "Par défaut : %(datetime)s"
-
 msgid "Define as main category"
 msgstr "Définir comme catégorie générale"
 
@@ -1611,12 +1597,6 @@ msgstr "Pilotes d'afficheurs ({num})"
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device)."
 msgstr "Les pilotes d'afficheurs vous permettent de contrôler les afficheurs de votre évènement depuis le serveur (ou n'importe quel appareil autorisé)."
 
-msgid "Display format for pairings."
-msgstr "Méthode d’affichage des appariements."
-
-msgid "Display of a screen exit button:"
-msgstr "Affichage d'un bouton de sortie d'écran :"
-
 msgid "Display of unpaired players:"
 msgstr "Affichage des joueur·euses non apparié·es"
 
@@ -1720,11 +1700,11 @@ msgstr "Dupliquer avec les joueur·euses"
 msgid "Duplicate without players"
 msgstr "Dupliquer sans les joueur·euses"
 
-msgid "Duration (min)"
-msgstr "Durée (min)"
+msgid "Duration (min):"
+msgstr "Durée (min) :"
 
-msgid "Duration (sec)"
-msgstr "Durée (sec)"
+msgid "Duration (sec):"
+msgstr "Durée (sec) :"
 
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
 msgstr "E"
@@ -1738,27 +1718,24 @@ msgid "E.g.: %(num)d"
 msgstr "Exemple : %(num)d"
 
 #, python-format
-msgid "E.g.: %(seconds)d (seconds)"
-msgstr "Exemple : %(seconds)d (secondes)"
-
-#, python-format
 msgid "E.g.: %(string)s"
 msgstr "Exemple : %(string)s"
 
-msgid "E.g.: 20 (place 20 boards on each screen)"
-msgstr "Exemple : 20 (placer 20 échiquiers sur chaque écran)"
+#, python-format
+msgid "E.g.: %(val)d"
+msgstr "E.g. : %(val)d"
 
-msgid "E.g.: 20 (place 20 players on each screen)"
-msgstr "Exemple : 20 (placer 20 joueur·euses sur chaque écran)"
+msgid "E.g.: 20 (boards per screen)"
+msgstr "Ex. : 20 (échiquiers par écran)"
 
-msgid "E.g.: 4 (split the boards on 4 screens)"
-msgstr "Exemple : 4 (distribution des échiquiers sur 4 écrans)"
+msgid "E.g.: 20 (players per screen)"
+msgstr "Ex. : 20 (joueur·euses par écran)"
 
-msgid "E.g.: 4 (split the players on 4 screens)"
-msgstr "Exemple : 4 (distribution des joueur·euses sur 4 écrans)"
+msgid "E.g.: 4 (split boards over 4 screens)"
+msgstr "Ex. : 4 (échiquiers sur 4 écrans)"
 
-msgid "E.g.: 50 (Elo)"
-msgstr "Exemple : 50 (Elo)"
+msgid "E.g.: 4 (split players over 4 screens)"
+msgstr "Ex. : 4 (ur·euse sur 4 écrans)"
 
 msgid "E.g.: @boards, @family, another-screen"
 msgstr "Exemple : @boards, @family, un-autre-ecran"
@@ -1956,8 +1933,8 @@ msgstr "Elo"
 msgid "Elo *** STD ELO FOR TABLE HEADER"
 msgstr "Elo"
 
-msgid "Elo step (handicap):"
-msgstr "Tranche Elo (handicap) :"
+msgid "Elo step:"
+msgstr "Tranche Elo :"
 
 msgid "Email:"
 msgstr "Mél :"
@@ -2099,14 +2076,14 @@ msgstr "Type de licence FFE"
 msgid "FFE Uniq ID:"
 msgstr "Identifiant unique FFE :"
 
-msgid "FFE certification number (optional):"
-msgstr "Numéro d'homologation FFE (facultatif) :"
-
 msgid "FFE certification number and password not defined."
 msgstr "Numéro d'homologation FFE et mot de passe non-définis."
 
 msgid "FFE certification number not defined."
 msgstr "Numéro d'homologation FFE non-défini."
+
+msgid "FFE certification number:"
+msgstr "Numéro d'homologation :"
 
 #, python-format
 msgid "FFE certification number: %(ffe_id)d"
@@ -2318,9 +2295,6 @@ msgstr "Flotteurs"
 msgid "Font size adjustment (%%):"
 msgstr "Ajustement de la taille de police (%%) :"
 
-msgid "Font size adjustment for the screen."
-msgstr "Ajustement de la taille de police pour l'écran."
-
 msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
 msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
 msgstr[0] "Pour un tournoi de {rounds} rondes, la valeur la moins significative et la valeur la plus significative sont retirées."
@@ -2513,12 +2487,6 @@ msgstr "Horaire :"
 msgid "Hours"
 msgstr "Horaires"
 
-msgid "How to sort the players."
-msgstr "Comment trier les joueur·euses."
-
-msgid "How to split the results."
-msgstr "Comment regrouper les résultats."
-
 msgid "However, the order of the results of the last round will remain the same as the ones in Sharly Chess."
 msgstr "Cependant, l'ordre des résultats de la dernière rondes restera le même que ceux de Sharly Chess."
 
@@ -2623,8 +2591,8 @@ msgstr "Installation incorrecte, abandon."
 msgid "Incorrect path [{path}]."
 msgstr "Chemin incorrect [{path}]."
 
-msgid "Increment (sec)"
-msgstr "Incrément (sec)"
+msgid "Increment (sec):"
+msgstr "Incrément (sec) :"
 
 msgid "Info"
 msgstr "Info"
@@ -2838,9 +2806,6 @@ msgstr "Lien à un échiquier n'impliquant pas le·la joueur·euse."
 msgid "Links displayed on the screen menu:"
 msgstr "Liens affichés sur le menu de l'écran :"
 
-msgid "Links to this screen:"
-msgstr "Liens vers cet écran :"
-
 msgid "List of players"
 msgstr "Liste des participant·es"
 
@@ -3009,11 +2974,11 @@ msgstr "Menu : aucun"
 msgid "Menus"
 msgstr "Menus"
 
-msgid "Minimal time (handicap, seconds):"
-msgstr "Temps minimal (handicap, en secondes) :"
+msgid "Minimal time (seconds):"
+msgstr "Temps minimal (sec.) :"
 
 msgid "Minimum delay between uploads (minutes):"
-msgstr "Délai minimum entre deux envois (en minutes) :"
+msgstr "Délai minimum entre deux envois (min.) :"
 
 msgid "Minimum number of points (included):"
 msgstr "Nombre minimum de points (inclus) :"
@@ -3045,8 +3010,8 @@ msgid_plural "Moved up %(num)d places"
 msgstr[0] "Monté·e de %(num)d place"
 msgstr[1] "Monté·e de %(num)d places"
 
-msgid "Moves"
-msgstr "Coups"
+msgid "Moves:"
+msgstr "Coups :"
 
 #, python-format
 msgid "Moving on to round #%(round)d"
@@ -3393,6 +3358,9 @@ msgstr "Nombre de familles d'écrans"
 msgid "Number of screens"
 msgstr "Nombre d'écrans"
 
+msgid "Number of screens:"
+msgstr "Nombre d'écrans :"
+
 msgid "Number of wins"
 msgstr "Nombre de victoires"
 
@@ -3404,12 +3372,6 @@ msgstr "OK"
 
 msgid "ORG"
 msgstr "ORG"
-
-msgid "On a given number of screens:"
-msgstr "Sur un nombre fixe d'écrans"
-
-msgid "On fixed size screens:"
-msgstr "Sur des écrans de taille fixe :"
 
 msgid "Once created, you can select the timer to display in the settings of each screen, family or rotator."
 msgstr "Une fois créés, vous pouvez sélectionner le chronomètre à afficher dans les paramètres de chaque écran, famille d’écrans ou écran rotatif."
@@ -3671,8 +3633,8 @@ msgstr "Mot de passe :"
 msgid "Penalties require a time control with a single period."
 msgstr "Les pénalités nécessitent une cadence avec une seule période."
 
-msgid "Penalty (handicap, seconds):"
-msgstr "Pénalité (handicap, en secondes) :"
+msgid "Penalty (seconds):"
+msgstr "Pénalité (sec.) :"
 
 msgid "Pending"
 msgstr "À venir"
@@ -3762,10 +3724,7 @@ msgid "Player pairings"
 msgstr "Appariements par joueur·euse"
 
 msgid "Player ratings to use by default:"
-msgstr "Classements des joueur·euses à utiliser par défaut :"
-
-msgid "Player ratings to use:"
-msgstr "Classements des joueur·euses à utiliser :"
+msgstr "Classements à utiliser par défaut :"
 
 msgid "Player selection (by alphabetical order)"
 msgstr "Sélection des joueur·euses (par ordre alphabétique)"
@@ -3836,10 +3795,6 @@ msgstr "En cours"
 #, python-format
 msgid "Playing in tournament [%(uniq_id)s]"
 msgstr "Participe au tournoi [%(uniq_id)s]"
-
-#, python-format
-msgid "Plays %(board)d *** BOARD STRING FOR PAIRINGS PRINT"
-msgstr "Table %(board)d"
 
 msgid "Please ask your administrator to set a password."
 msgstr "Veuillez demander à votre administrateur·trice de définir un mot de passe."
@@ -4154,6 +4109,9 @@ msgstr "Classement"
 msgid "Rating ranges"
 msgstr "Tranches de classement"
 
+msgid "Rating to use:"
+msgstr "Classement à utiliser :"
+
 msgid "Rating type"
 msgstr "Type de classement"
 
@@ -4389,6 +4347,9 @@ msgstr "Rondes désigné comme jouant"
 msgid "Rounds {min_round}-{max_round}"
 msgstr "Rondes {min_round}-{max_round}"
 
+msgid "Rows per screen:"
+msgstr "Lignes par écran :"
+
 msgid "Rpd *** RAPID RATING ACRONYM"
 msgstr "Rpd"
 
@@ -4463,6 +4424,9 @@ msgstr "L'écran [{screen_uniq_id}] a été modifié."
 
 msgid "Screen configuration has been updated."
 msgstr "La configuration des écrans a été mise à jour."
+
+msgid "Screen exit button:"
+msgstr "Bouton de sortie d'écran :"
 
 msgid "Screen families:"
 msgstr "Familles d'écrans :"
@@ -4867,12 +4831,6 @@ msgstr "La moyenne du score [{tie_break}] des adversaires joué·es sur l'échiq
 msgid "The average of the ratings of the opponents played over the board."
 msgstr "La moyenne des classements des adversaires joué·es sur l'échiquier."
 
-msgid "The background colour for Screens."
-msgstr "La couleur de fond des écrans."
-
-msgid "The background colour of the alert messages."
-msgstr "La couleur de fond des messages d'alerte."
-
 msgid "The board number the player will always be assigned to (use it for disabled people)."
 msgstr "Le numéro de l'échiquier qui sera assigné au·à la joueur·euse (à utiliser pour les personnes handicapées)."
 
@@ -4975,15 +4933,6 @@ msgstr "La valeur minimale d'un prix partagé dans cette catégorie (pas de seui
 #, python-format
 msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
 msgstr "Le nom de la famille d' écrans, facultatif. Les mots-clés suivants sont remplacés automatiquement par les numéros des échiquiers ou les noms des joueur·euses : %%f=first (premier), %%l=last (dernier), %%t=tournament (tournoi)."
-
-msgid "The name of the screen set."
-msgstr "Le nom de l'ensemble."
-
-msgid "The name of the screen, displayed on event screens."
-msgstr "Le nom de l'écran, affiché sur les écrans des évènements."
-
-msgid "The name of the timer."
-msgstr "Le nom du chronomètre."
 
 msgid "The network on which the devices are connected."
 msgstr "Le réseau auquel les appareils sont connectés."
@@ -5108,9 +5057,6 @@ msgstr "La somme du score du·de la joueur·euse à la fin de chaque ronde."
 msgid "The sum of the scores of each of the opponents of the player."
 msgstr "La somme du score de chaque adversaire du·de la joueur·euse."
 
-msgid "The text colour of the alert messages."
-msgstr "La couleur du texte des messages d'alerte."
-
 msgid "The threshold can't be greater than the value of the last prize of the category ({value})."
 msgstr "Le seuil ne peut être supérieur à la valeur du dernier prix de la catégorie ({value})."
 
@@ -5132,12 +5078,6 @@ msgstr "Le tournoi est terminé."
 msgid "The tournament of the screens of the family."
 msgstr "Le tournoi des écrans de la famille."
 
-msgid "The tournament of which you want to show the pairings."
-msgstr "Le tournoi dont on souhaite afficher les appariements"
-
-msgid "The tournament to print."
-msgstr "Le tournoi à imprimer."
-
 msgid "The tournaments for which the staff member is a deputy arbiter."
 msgstr "Les tournois pour lesquels le membre du staff est arbitre adjoint·e."
 
@@ -5147,17 +5087,8 @@ msgstr "Les tournois pour lesquels le membre du staff est arbitre principal·e."
 msgid "The tournaments on which the permission is applied (by default, the permission is applied to all the tournaments)."
 msgstr "Les tournois sur lesquels la permission s'applique (par défaut, la permission s'applique à tous les tournois)."
 
-msgid "The tournaments to print."
-msgstr "Les tournois à imprimer."
-
-msgid "The type of QR code to print."
-msgstr "Le type de QR Code à imprimer."
-
 msgid "The type of criterion used to filter the players."
 msgstr "Le type de critère utilisé pour filtrer les joueur·euses."
-
-msgid "The type of document to print."
-msgstr "Le type de document à imprimer."
 
 msgid "The username / password provided are not allowed to access this ChessEvent event."
 msgstr "L'identifiant et le mot de passe fournis ne permettent pas d'accéder à cet évènement ChessEvent."
@@ -5802,9 +5733,6 @@ msgstr "Mettre en ligne les tournois sur Chess-Results.com"
 msgid "Upload tournaments to the FFE"
 msgstr "Mettre en ligne les tournois vers la FFE"
 
-msgid "Upload:"
-msgstr "Mise en ligne :"
-
 msgid "Uploading of tournaments to Chess-Results.com."
 msgstr "Mise en ligne des tournois sur Chess-Results.com."
 
@@ -5814,11 +5742,14 @@ msgstr "Envoyer le fichier PDF des règles sur le site de la FFE permet aux joue
 msgid "Uploading tournament…"
 msgstr "Mise en ligne en cours…"
 
-msgid "Use Event's default - {option}"
-msgstr "Défaut de l’événement – {option}"
-
 msgid "Use Fore Buchholz"
 msgstr "Utiliser le Fore Buchholz"
+
+msgid "Use default"
+msgstr "Par défaut"
+
+msgid "Use default - {option}"
+msgstr "Par défaut – {option}"
 
 msgid "Use pairing engines"
 msgstr "Utiliser les moteurs d'appariement"
@@ -5826,8 +5757,8 @@ msgstr "Utiliser les moteurs d'appariement"
 msgid "Use standard ratings"
 msgstr "Utiliser les Elos standard"
 
-msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system. May be overridden on a per-tournament basis."
-msgstr "Utiliser le système de points 3/1/0 au lieu du système standard 1/0,5/0. Peut être remplacé au niveau de chaque tournoi."
+msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system."
+msgstr "Utiliser le système de points 3/1/0 au lieu du système standard 1/0,5/0."
 
 msgid "Use the Staff tab to declare arbiters."
 msgstr "Utilisez l’onglet Staff pour déclarer les arbitres."
@@ -6212,9 +6143,6 @@ msgstr "échiquiers sur {parts} écrans"
 msgid "boards {board_numbers}"
 msgstr "échiquiers {board_numbers}"
 
-msgid "by default"
-msgstr "par défaut"
-
 msgid "defined in the event"
 msgstr "défini dans l'évènement"
 
@@ -6441,4 +6369,13 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "The name of the screen, displayed on event screens."
+#~ msgstr "Le nom de l'écran, affiché sur les écrans des évènements."
+
+#~ msgid "Upload:"
+#~ msgstr "Mise en ligne :"
+
+#~ msgid "use default"
+#~ msgstr "par défaut"
 
