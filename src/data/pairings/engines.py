@@ -67,11 +67,11 @@ class PairingEngine(ABC):
         stored_boards = self._generate_stored_boards(
             tournament, round_, partial_pairings
         )
-
-        boards = [
-            Board(tournament, round_, stored_board) for stored_board in stored_boards
-        ]
         if self.reorder_boards:
+            boards = [
+                Board(tournament, round_, stored_board)
+                for stored_board in stored_boards
+            ]
             available_indexes = tournament.get_available_board_indexes(round_)
             for board in sorted(boards, reverse=True):
                 board.stored_board.index = available_indexes.pop(0)
@@ -378,19 +378,29 @@ class BergerPairingEngine(RoundRobinPairingEngine):
             ).items()
         }
         pairings = self.get_round_pairings(tournament.player_count, round_)
-        for index, pairing in enumerate(pairings):
+        pab_player_id: int | None = None
+        index = 0
+        for pairing in pairings:
             white_player_id = player_id_by_pairing_number.get(pairing[0], None)
             black_player_id = player_id_by_pairing_number.get(pairing[1], None)
-            if not white_player_id:
-                assert black_player_id is not None
-                white_player_id = black_player_id
-                black_player_id = None
-
+            if not white_player_id or not black_player_id:
+                pab_player_id = white_player_id or black_player_id
+                continue
             stored_boards.append(
                 StoredBoard(
                     id=None,
                     white_player_id=white_player_id,
                     black_player_id=black_player_id,
+                    index=index,
+                )
+            )
+            index += 1
+        if pab_player_id:
+            stored_boards.append(
+                StoredBoard(
+                    id=None,
+                    white_player_id=pab_player_id,
+                    black_player_id=None,
                     index=index,
                 )
             )

@@ -702,6 +702,10 @@ class Tournament:
             key=by('last_name', 'first_name'),
         )
 
+    @property
+    def not_checked_in_players(self) -> list[Player]:
+        return [player for player in self.players if not player.check_in]
+
     @cached_property
     def players_by_check_in_status(self) -> dict[bool | None, list[Player]]:
         if self.finished or self.playing or not self.check_in_open:
@@ -1366,12 +1370,6 @@ class Tournament:
                 database.add_stored_tournament_player(stored_tournament_player)
         self.players_by_id[stored_player.id] = Player(self, stored_player)
 
-    def delete_player_from_tournament(self, player_id: int):
-        with EventDatabase(self.event.uniq_id, True) as database:
-            database.delete_stored_tournament_player(self.id, player_id)
-        if player_id in self.players_by_id:
-            del self.players_by_id[player_id]
-
     def get_available_board_indexes(self, round_: int) -> list[int]:
         board_indexes = [
             board.index for board in self.get_round_boards(round_) if not board.exempt
@@ -1577,7 +1575,9 @@ class Tournament:
             database.set_tournament_check_in(self.id, True)
             database.set_players_check_in(present_player_ids, False)
 
-    def close_check_in(self, zpbs_next_round: bool, zpbs_last_rounds: bool):
+    def close_check_in(
+        self, zpbs_next_round: bool, zpbs_last_rounds: bool, delete: bool
+    ):
         """Closes the check-in for the tournament and assigns a ZPB to all the players not checked-in
         for the next round (if zpbs_last_rounds, for the rest of the tournament)."""
         assert self.check_in_open, (
@@ -1593,10 +1593,11 @@ class Tournament:
 
         with EventDatabase(self.event.uniq_id, write=True) as database:
             database.set_tournament_check_in(self.id, False)
+            if delete:
+                for player in self.not_checked_in_players:
+                    database.delete_stored_tournament_player(self.id, player.id)
             if zpb_rounds:
-                for player in self.players:
-                    if player.check_in:
-                        continue
+                for player in self.not_checked_in_players:
                     pairing = player.pairings_by_round.get(self.current_round + 1, None)
                     if pairing and pairing.result.is_bye:
                         continue

@@ -277,6 +277,9 @@ msgstr "<b>1.4.8a</b> La moyenne minimale des classements des adversaires requis
 msgid "<b>1.4.8b</b> The minimum score is 35%% for all norms."
 msgstr "<b>1.4.8b</b> Le score minimum requis pour toutes les normes est de 35 %%."
 
+msgid "<b>Delete</b> from the tournament"
+msgstr "<b>Supprimer</b> du tournoi"
+
 msgid "<first> and <second>"
 msgstr "<first> et <second>"
 
@@ -1609,14 +1612,14 @@ msgstr "Afficher les adversaires"
 msgid "Displayed round: %(round)d"
 msgstr "Ronde affichée : %(round)d"
 
-msgid "Do not assign zero-point bye (players will be eligible for pairing)"
-msgstr "Ne pas marquer forfait (les joueur·euses seront apparié·es) "
-
 msgid "Do not edit this table manually, use script {script_name} instead."
 msgstr "Ne pas éditer ce tableau manuellement, utiliser plutôt le script {script_name}."
 
 msgid "Do not recover"
 msgstr "Ne pas restaurer"
+
+msgid "Do nothing (players will be eligible for pairing)"
+msgstr "Ne rien faire (les joueur·euses seront apparié·es)"
 
 msgid "Do you want to install example event databases"
 msgstr "Voulez-vous installer des bases d'évènement d'exemple"
@@ -5117,14 +5120,14 @@ msgstr "Les valeurs à prendre en compte lors du calcul du départage."
 msgid "The way to share the prizes between players with the same points."
 msgstr "La manière de partages les prix entre les joueurs ayant le même nombre de points."
 
+msgid "There are no pairings for this round (last round with pairings: #{round})."
+msgstr "Il n'y a pas d'appariement pour cette ronde (dernière ronde appariée : n°{round})."
+
 msgid "There are no public screens available for this event."
 msgstr "Aucun écran public n’est disponible pour cet évènement."
 
 msgid "There can only be one main category."
 msgstr "Il ne peut y avoir qu'une seule catégorie générale."
-
-msgid "There is no pairings for this round (last round with pairings: #{round})."
-msgstr "Il n'y a pas d'appariement pour cette ronde (dernière ronde appariée : n°{round})."
 
 msgid "These plugins can only be activated on events of their federation."
 msgstr "Ces plug-ins ne peuvent-être activés que pour les évènements de leur fédération."
@@ -5203,6 +5206,9 @@ msgstr "Cet écran rotatif est privé (non visible des spectateur·ices)."
 
 msgid "This rotator is public (visible by the spectators)."
 msgstr "Cet écran rotatif est public (visible des spectateur·ices)."
+
+msgid "This round hasn't started (current round: #{round})."
+msgstr "Cette ronde n’a pas encore commencé (ronde actuelle : #{round})."
 
 msgid "This round is not finished (last finished: #{round})."
 msgstr "Cette ronde n'est pas terminée (dernière ronde terminée : n°{round})."

@@ -277,6 +277,9 @@ msgstr ""
 msgid "<b>1.4.8b</b> The minimum score is 35%% for all norms."
 msgstr ""
 
+msgid "<b>Delete</b> from the tournament"
+msgstr ""
+
 msgid "<first> and <second>"
 msgstr ""
 
@@ -1609,13 +1612,13 @@ msgstr ""
 msgid "Displayed round: %(round)d"
 msgstr ""
 
-msgid "Do not assign zero-point bye (players will be eligible for pairing)"
-msgstr ""
-
 msgid "Do not edit this table manually, use script {script_name} instead."
 msgstr ""
 
 msgid "Do not recover"
+msgstr ""
+
+msgid "Do nothing (players will be eligible for pairing)"
 msgstr ""
 
 msgid "Do you want to install example event databases"
@@ -5117,13 +5120,13 @@ msgstr ""
 msgid "The way to share the prizes between players with the same points."
 msgstr ""
 
+msgid "There are no pairings for this round (last round with pairings: #{round})."
+msgstr ""
+
 msgid "There are no public screens available for this event."
 msgstr ""
 
 msgid "There can only be one main category."
-msgstr ""
-
-msgid "There is no pairings for this round (last round with pairings: #{round})."
 msgstr ""
 
 msgid "These plugins can only be activated on events of their federation."
@@ -5202,6 +5205,9 @@ msgid "This rotator is private (not visible by the spectators)."
 msgstr ""
 
 msgid "This rotator is public (visible by the spectators)."
+msgstr ""
+
+msgid "This round hasn't started (current round: #{round})."
 msgstr ""
 
 msgid "This round is not finished (last finished: #{round})."

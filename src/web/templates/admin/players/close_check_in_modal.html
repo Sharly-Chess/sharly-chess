@@ -53,9 +53,12 @@
                 <div class="modal-footer justify-content-start">
                     <div class="vstack gap-2 flex-shrink-1">
                         <p class="mb-2">{{ _('For players who have not checked-in:') }}</p>
-                        <div><input type="radio" class="me-2" name="action" value="zpd-tournament">{{ _('Assign a zero-point bye <b>for the rest of the tournament</b>') }}</div>
-                        <div><input type="radio" class="me-2" name="action" value="zpd-next-round">{{ _('Assign a zero-point bye <b>for the next round</b>') }}</div>
-                        <div><input type="radio" class="me-2" name="action" value="no-zpd">{{ _('Do not assign zero-point bye (players will be eligible for pairing)') }}</div>
+                        <div><input type="radio" class="me-2" name="action" value="delete">{{ _('<b>Delete</b> from the tournament') }}</div>
+                        {% if admin_tournament.pairing_system.allow_bye_definition %}
+                            <div><input type="radio" class="me-2" name="action" value="zpb-tournament">{{ _('Assign a zero-point bye <b>for the rest of the tournament</b>') }}</div>
+                            <div><input type="radio" class="me-2" name="action" value="zpb-next-round">{{ _('Assign a zero-point bye <b>for the next round</b>') }}</div>
+                        {% endif %}
+                        <div><input type="radio" class="me-2" name="action" value="no-zpb">{{ _('Do nothing (players will be eligible for pairing)') }}</div>
                     </div>
                 </div>
             {% endif %}
