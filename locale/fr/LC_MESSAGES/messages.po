@@ -683,7 +683,7 @@ msgid "Auto-upload results to FFE site"
 msgstr "Envoi automatique des résultats sur le site de la FFE"
 
 msgid "Auto-upload:"
-msgstr "Mise en ligne :"
+msgstr "Envoi automatique :"
 
 msgid "Automatic"
 msgstr "Automatique"
