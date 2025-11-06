@@ -4,7 +4,7 @@ from common.i18n import _
 from utils.entity import IdentifiableEntity
 
 
-class PlaceCardCutting(IdentifiableEntity, ABC):
+class PlaceCardCropMarks(IdentifiableEntity, ABC):
     solid_style: str = '1px solid black'
     dashed_style: str = '1px dashed black'
 
@@ -17,7 +17,7 @@ class PlaceCardCutting(IdentifiableEntity, ABC):
         return {}
 
 
-class NonePlaceCardCutting(PlaceCardCutting):
+class NonePlaceCardCropMarks(PlaceCardCropMarks):
     @staticmethod
     def static_id() -> str:
         return 'none'
@@ -27,7 +27,7 @@ class NonePlaceCardCutting(PlaceCardCutting):
         return _('No marks')
 
 
-class BorderPlaceCardCutting(PlaceCardCutting):
+class BorderPlaceCardCropMarks(PlaceCardCropMarks):
     @staticmethod
     def static_id() -> str:
         return 'border'
@@ -72,7 +72,7 @@ class BorderPlaceCardCutting(PlaceCardCutting):
         }
 
 
-class SolidBorderPlaceCardCutting(BorderPlaceCardCutting):
+class SolidBorderPlaceCardCropMarks(BorderPlaceCardCropMarks):
     @staticmethod
     def static_id() -> str:
         return 'border'
@@ -86,7 +86,7 @@ class SolidBorderPlaceCardCutting(BorderPlaceCardCutting):
         return self.solid_style
 
 
-class DashedBorderPlaceCardCutting(BorderPlaceCardCutting):
+class DashedBorderPlaceCardCropMarks(BorderPlaceCardCropMarks):
     @staticmethod
     def static_id() -> str:
         return 'dashed-border'
@@ -100,7 +100,7 @@ class DashedBorderPlaceCardCutting(BorderPlaceCardCutting):
         return self.dashed_style
 
 
-class CornersPlaceCardCutting(PlaceCardCutting):
+class CornersPlaceCardCropMarks(PlaceCardCropMarks):
     @staticmethod
     def static_id() -> str:
         return 'corners'

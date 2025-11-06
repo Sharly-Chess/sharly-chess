@@ -10,12 +10,12 @@ from data.print_documents import (
 from data.print_documents.documents import PrintDocument
 from data.print_documents.options import PrintOption
 from data.print_documents.pairing_styles import PairingStyle
-from data.print_documents.place_cards.cuttings import (
-    PlaceCardCutting,
-    CornersPlaceCardCutting,
-    SolidBorderPlaceCardCutting,
-    DashedBorderPlaceCardCutting,
-    NonePlaceCardCutting,
+from data.print_documents.place_cards.crop_marks import (
+    PlaceCardCropMarks,
+    CornersPlaceCardCropMarks,
+    SolidBorderPlaceCardCropMarks,
+    DashedBorderPlaceCardCropMarks,
+    NonePlaceCardCropMarks,
 )
 from data.print_documents.place_cards.types import (
     PlaceCardType,
@@ -63,7 +63,7 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.PlaceCardPrintOption,
             options.PlaceCardTemplatePrintOption,
             options.PlaceCardMirrorPrintOption,
-            options.PlaceCardCuttingPrintOption,
+            options.PlaceCardCropMarksPrintOption,
             options.TournamentPrintOption,
             options.TournamentsPrintOption,
             options.PlayerPrintOption,
@@ -138,12 +138,12 @@ class PrintPlaceCardTypeManager(EntityManager[PlaceCardType]):
         ]
 
 
-class PrintPlaceCardCuttingManager(EntityManager[PlaceCardCutting]):
+class PrintPlaceCardCropMarksManager(EntityManager[PlaceCardCropMarks]):
     @override
-    def entity_types(self) -> list[type[PlaceCardCutting]]:
+    def entity_types(self) -> list[type[PlaceCardCropMarks]]:
         return [
-            CornersPlaceCardCutting,
-            NonePlaceCardCutting,
-            SolidBorderPlaceCardCutting,
-            DashedBorderPlaceCardCutting,
+            CornersPlaceCardCropMarks,
+            NonePlaceCardCropMarks,
+            SolidBorderPlaceCardCropMarks,
+            DashedBorderPlaceCardCropMarks,
         ]

@@ -220,6 +220,9 @@ msgstr ""
 msgid "1st day of the month"
 msgstr ""
 
+msgid "2-sided with tournament on the back"
+msgstr ""
+
 msgid "20+"
 msgstr ""
 
@@ -1345,6 +1348,9 @@ msgstr ""
 
 #, python-format
 msgid "Criterion [%(criterion)s] successfully created!"
+msgstr ""
+
+msgid "Crop marks:"
 msgstr ""
 
 msgid "Crosstable"
@@ -4937,6 +4943,9 @@ msgid "The mail addresses."
 msgstr ""
 
 msgid "The main category is open to all the players."
+msgstr ""
+
+msgid "The marks to help with cutting the cards."
 msgstr ""
 
 #, python-format

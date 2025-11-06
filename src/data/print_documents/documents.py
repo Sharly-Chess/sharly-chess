@@ -34,9 +34,9 @@ from data.print_documents.options import (
     PlaceCardPrintOption,
     PlaceCardTemplatePrintOption,
     PlaceCardMirrorPrintOption,
-    PlaceCardCuttingPrintOption,
+    PlaceCardCropMarksPrintOption,
 )
-from data.print_documents.place_cards.cuttings import PlaceCardCutting
+from data.print_documents.place_cards.crop_marks import PlaceCardCropMarks
 from data.print_documents.place_cards.data import (
     PlaceCardEvent,
     PlaceCardTournament,
@@ -1127,8 +1127,8 @@ class PlaceCardPrintDocument(PrintDocument):
         return self.get_option_values()[4]
 
     @property
-    def cutting(self) -> PlaceCardCutting:
-        return self._get_option(PlaceCardCuttingPrintOption).place_card_cutting
+    def crop_marks(self) -> PlaceCardCropMarks:
+        return self._get_option(PlaceCardCropMarksPrintOption).place_card_crop_marks
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
@@ -1138,7 +1138,7 @@ class PlaceCardPrintDocument(PrintDocument):
             TournamentPrintOption,
             RoundPrintOption,
             PlaceCardMirrorPrintOption,
-            PlaceCardCuttingPrintOption,
+            PlaceCardCropMarksPrintOption,
         ]
 
     @property
@@ -1156,7 +1156,7 @@ class PlaceCardPrintDocument(PrintDocument):
             round_=self.at_round,
             place_card_type=self.place_card_type,
             mirror=self.mirror,
-            place_card_cutting=self.cutting,
+            place_card_crop_marks=self.crop_marks,
         )
         return document_context | card_template_context
 

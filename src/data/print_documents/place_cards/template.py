@@ -9,7 +9,7 @@ from common.i18n.utils import parse_jinja_string
 from common.logger import get_logger
 from data.board import Board
 from data.player import Player
-from data.print_documents.place_cards.cuttings import PlaceCardCutting
+from data.print_documents.place_cards.crop_marks import PlaceCardCropMarks
 from data.print_documents.place_cards.data import PlaceCardBoard, PlaceCardPlayer
 from data.print_documents.place_cards.item_style import PlaceCardItemStyle
 from data.print_documents.place_cards.items import (
@@ -145,7 +145,7 @@ class PlaceCardTemplate:
         round_: int,
         place_card_type: PlaceCardType,
         mirror: bool,
-        place_card_cutting: PlaceCardCutting,
+        place_card_crop_marks: PlaceCardCropMarks,
     ) -> dict[str, Any]:
         file: Path = self.font_file
         items: list[PlaceCardItem] = self.items
@@ -197,7 +197,7 @@ class PlaceCardTemplate:
                 'width': f'{self.width - 2 * self.padding}{self.unit}',
             },
         }
-        css |= place_card_cutting.css
+        css |= place_card_crop_marks.css
         css |= {
             '.card-content': {
                 'position': 'relative',

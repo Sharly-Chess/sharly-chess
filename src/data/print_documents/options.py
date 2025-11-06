@@ -7,9 +7,9 @@ from common.exception import OptionError
 from common.i18n import _
 from data.event import SharlyChessConfig
 from data.print_documents.pairing_styles import BoardsPairingStyle, PairingStyle
-from data.print_documents.place_cards.cuttings import (
-    CornersPlaceCardCutting,
-    PlaceCardCutting,
+from data.print_documents.place_cards.crop_marks import (
+    CornersPlaceCardCropMarks,
+    PlaceCardCropMarks,
 )
 from data.print_documents.place_cards.types import (
     PlayerCardType,
@@ -490,10 +490,10 @@ class PlaceCardMirrorPrintOption(PrintOption):
         return False
 
 
-class PlaceCardCuttingPrintOption(PrintOption):
+class PlaceCardCropMarksPrintOption(PrintOption):
     @staticmethod
     def static_id() -> str:
-        return 'place-card-cutting'
+        return 'place-card-crop-marks'
 
     @property
     def type(self) -> type | UnionType:
@@ -501,24 +501,24 @@ class PlaceCardCuttingPrintOption(PrintOption):
 
     @property
     def default_value(self) -> Any:
-        return CornersPlaceCardCutting.static_id()
+        return CornersPlaceCardCropMarks.static_id()
 
     @property
-    def place_card_cutting_options(self) -> dict[str, str]:
-        from data.print_documents import PrintPlaceCardCuttingManager
+    def place_card_crop_marks_options(self) -> dict[str, str]:
+        from data.print_documents import PrintPlaceCardCropMarksManager
 
-        return PrintPlaceCardCuttingManager().options()
+        return PrintPlaceCardCropMarksManager().options()
 
     @cached_property
-    def place_card_cutting(self) -> PlaceCardCutting:
-        from data.print_documents.managers import PrintPlaceCardCuttingManager
+    def place_card_crop_marks(self) -> PlaceCardCropMarks:
+        from data.print_documents.managers import PrintPlaceCardCropMarksManager
 
-        return PrintPlaceCardCuttingManager().get_object(self.value)
+        return PrintPlaceCardCropMarksManager().get_object(self.value)
 
     @override
     def validate(self):
         try:
-            _cutting = self.place_card_cutting
+            _crop_marks = self.place_card_crop_marks
         except KeyError:
             # Untranslated, should not happen
-            raise OptionError(f'Unknown place card cutting: {self.value}', self)
+            raise OptionError(f'Unknown place card crop marks: {self.value}', self)

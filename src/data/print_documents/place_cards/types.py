@@ -16,14 +16,14 @@ class PlaceCardType(IdentifiableEntity, ABC):
             TournamentPrintOption,
             PlaceCardTemplatePrintOption,
             PlaceCardMirrorPrintOption,
-            PlaceCardCuttingPrintOption,
+            PlaceCardCropMarksPrintOption,
         )
 
         return [
             PlaceCardTemplatePrintOption.static_id(),
             TournamentPrintOption.static_id(),
             PlaceCardMirrorPrintOption.static_id(),
-            PlaceCardCuttingPrintOption.static_id(),
+            PlaceCardCropMarksPrintOption.static_id(),
         ]
 
     @staticmethod

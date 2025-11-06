@@ -11,5 +11,5 @@ from .managers import (  # Noqa F401
     PrintPairingStyleManager,
     PrintQRCodeTypeManager,
     PrintPlaceCardTypeManager,
-    PrintPlaceCardCuttingManager,
+    PrintPlaceCardCropMarksManager,
 )

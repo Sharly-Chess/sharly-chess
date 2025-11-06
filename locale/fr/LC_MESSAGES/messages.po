@@ -220,6 +220,9 @@ msgstr "1 - 0 (NC)"
 msgid "1st day of the month"
 msgstr "1er jour du mois"
 
+msgid "2-sided with tournament on the back"
+msgstr "Recto-verso avec tournoi au dos"
+
 msgid "20+"
 msgstr "20+"
 
@@ -1346,6 +1349,9 @@ msgstr "Liste des critères"
 #, python-format
 msgid "Criterion [%(criterion)s] successfully created!"
 msgstr "Critère [%(criterion)s] créé avec succès!"
+
+msgid "Crop marks:"
+msgstr "Traits de coupe :"
 
 msgid "Crosstable"
 msgstr "Grille américaine"
@@ -4938,6 +4944,9 @@ msgstr "Les adresses mél."
 
 msgid "The main category is open to all the players."
 msgstr "La catégorie générale est ouverte à tou·tes les joueur·euses."
+
+msgid "The marks to help with cutting the cards."
+msgstr "Les marques pour faciliter le découpage des chevalets."
 
 #, python-format
 msgid "The maximum age of the results, in minutes (by default %(minutes)d minutes)."
