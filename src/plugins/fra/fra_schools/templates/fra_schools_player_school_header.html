@@ -1,11 +1,22 @@
 
 {% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
 
 {% with url=url_for('fra-schools-admin-event-players-tab', event_uniq_id=admin_event.uniq_id) %}
 <th cope="col" class="text-nowrap text-center">
     <div class="d-flex align-items-center gap-1">
         {{ _('School *** SCHOOL FOR TABLE HEADER') }}
         {% if fra_schools|length > 1 %}
+            <i
+                class="bi-sort-alpha-down {% if admin_players_sort != 'fra_schools_school' %}cursor-pointer{% else %}text-danger{%endif %}"
+                {% if admin_players_sort != 'fra_schools_school' %}
+                    hx-get="{{ url }}"
+                    hx-vals='{"admin_players_sort": "fra_schools_school"}'
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                {% endif %}
+                {{ tooltip_attributes('info', _('Sort the players by school.'), 'top') }}
+            ></i>
             <form class="d-inline-block" hx-get="{{ url }}" hx-target="body" hx-indicator="#please-wait" >
                 <span class="dropdown-center" >
                     <button

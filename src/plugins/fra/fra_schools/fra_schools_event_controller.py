@@ -12,6 +12,7 @@ from web.controllers.admin.base_event_admin_controller import (
 )
 from web.controllers.admin.player_admin_controller import PlayerAdminController
 from web.guards import EventGuard, ActionGuard
+from web.session import SessionHandler
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
@@ -28,7 +29,10 @@ class FraSchoolsAdminEventController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         fra_schools_filter: list[str] | None = None,
+        admin_players_sort: str | None = None,
     ) -> Template:
+        if admin_players_sort is not None:
+            SessionHandler.set_session_admin_players_sort(request, admin_players_sort)
         if fra_schools_filter is not None:
             FRASchoolsSessionHandler.set_session_filter_schools(
                 request,

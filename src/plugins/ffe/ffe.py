@@ -572,14 +572,16 @@ class FfePlugin(Plugin):
         FFESessionHandler.set_session_admin_players_filter_licences(request, [])
 
     @hookimpl
-    def player_club_sort_key(self, player: Player):
-        # We sort by league first
-        return (
-            FFEUtils.get_player_plugin_data(player).league or '',
-            player.club,
-            player.last_name,
-            player.first_name,
-        )
+    def player_sort_key(self, player: Player, sort_type: str):
+        if sort_type == 'club':
+            # We sort by league first
+            return (
+                FFEUtils.get_player_plugin_data(player).league or '',
+                player.club,
+                player.last_name,
+                player.first_name,
+            )
+        return None
 
     @hookimpl
     def insert_player_datasheet_columns(self, datasheet_columns: list[DatasheetColumn]):

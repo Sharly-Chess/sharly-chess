@@ -175,6 +175,16 @@ class FRASchoolsPlugin(Plugin):
         FRASchoolsSessionHandler.set_session_filter_schools(request, [])
 
     @hookimpl
+    def player_sort_key(self, player: 'Player', sort_type: str) -> tuple | None:
+        if sort_type == 'fra_schools_school':
+            return (
+                FRASchoolsUtils.get_player_plugin_data(player).school_name or '',
+                player.last_name,
+                player.first_name or '',
+            )
+        return None
+
+    @hookimpl
     def insert_player_datasheet_columns(self, datasheet_columns: list[DatasheetColumn]):
         club: type[DatasheetColumn] = player_datasheet.ClubColumn
         fra_school_columns: list[DatasheetColumn] = [

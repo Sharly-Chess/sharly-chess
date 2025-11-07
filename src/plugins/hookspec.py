@@ -162,8 +162,8 @@ class AppHookSpecs:
         """Clear any filters set on the admin players tab"""
 
     @hookspec(firstresult=True)
-    def player_club_sort_key(self, player: 'Player') -> tuple:
-        """Returns a sort key for sorting the admin player list by club"""
+    def player_sort_key(self, player: 'Player', sort_type: str) -> tuple | None:
+        """Returns a sort key for sorting the admin player"""
 
     @hookspec
     def insert_player_datasheet_columns(

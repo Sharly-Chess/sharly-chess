@@ -296,17 +296,6 @@ class SessionHandler:
 
     @classmethod
     def set_session_admin_players_sort(cls, request: HTMXRequest, players_sort: str):
-        assert players_sort in [
-            'alpha',
-            'rating_desc',
-            'rating_asc',
-            'yob_desc',
-            'yob_asc',
-            'category_desc',
-            'category_asc',
-            'club',
-            'tournament',
-        ]
         request.session[cls.ADMIN_PLAYERS_SORT_KEY] = players_sort
 
     @classmethod

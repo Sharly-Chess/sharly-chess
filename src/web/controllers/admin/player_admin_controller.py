@@ -410,6 +410,11 @@ class PlayerAdminController(BaseEventAdminController):
         event: Event, players: list[Player], sort_type: str
     ) -> list[int]:
         def get_sort_key(player: Player) -> tuple:
+            if sortkey := plugin_manager.hook_for_event(event, 'player_sort_key')(
+                player=player, sort_type=sort_type
+            ):
+                return sortkey
+
             match sort_type:
                 case 'alpha':
                     return player.last_name, player.first_name or ''
@@ -434,9 +439,7 @@ class PlayerAdminController(BaseEventAdminController):
                 case 'category_asc':
                     return player.category, player.last_name, player.first_name or ''
                 case 'club':
-                    return plugin_manager.hook_for_event(event, 'player_club_sort_key')(
-                        player=player
-                    ) or (
+                    return (
                         player.club,
                         player.last_name,
                         player.first_name or '',
