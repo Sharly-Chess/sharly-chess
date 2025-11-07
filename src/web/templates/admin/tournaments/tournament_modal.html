@@ -101,9 +101,6 @@
                         {{ admin_macros.select_input(
                             name='override_unrated_rapid_blitz',
                             label=_('Seeding of unrated rapid/blitz'),
-                            tooltip_text=_(
-                                'Handling of players without a FIDE rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating.',
-                            ),
                             doc_icon='standard-rating',
                             select_options=override_unrated_rapid_blitz_options,
                             data=data, errors=errors
