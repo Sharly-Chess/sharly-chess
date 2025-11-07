@@ -76,6 +76,18 @@ class PluginUtils:
             source_list, element, lambda elem: isinstance(elem, insert_type), after
         )
 
+    @classmethod
+    def replace_on_equals[T](
+        cls,
+        source_list: list[T],
+        element: T,
+        match_element: T,
+    ):
+        for index, e in enumerate(source_list):
+            if e == match_element:
+                source_list[index] = element
+                return
+
 
 class PluginContext:
     def __init__(self, plugin: 'Plugin'):

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from functools import partial
 from typing import Self, Any
 
+from data.event import Player
 from plugins.fra.fra_schools import PLUGIN_NAME
 from plugins.utils import PluginUtils, PluginData
 from web.controllers.base_controller import WebContext
@@ -52,3 +53,11 @@ class FRASchoolsPlayerPluginData(PluginData):
                 'fra_school': self.school_name,
             }
         )
+
+
+class FRASchoolsUtils:
+    @staticmethod
+    def get_player_plugin_data(player: Player) -> FRASchoolsPlayerPluginData:
+        plugin_data = player.plugin_data[PLUGIN_NAME]
+        assert isinstance(plugin_data, FRASchoolsPlayerPluginData)
+        return plugin_data

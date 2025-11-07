@@ -3,12 +3,21 @@ from typing import TYPE_CHECKING, override
 from packaging.version import Version
 
 from common.i18n import _
+from data.columns.player_datasheet import DatasheetColumn
+from data.print_documents import PlayerSplitter
+from data.print_documents.player_splitters import ClubPlayerSplitter
 from database.sqlite.local_source_database import LocalSourceDatabase
 from database.sqlite.event.event_store import StoredTournament
+from data.columns import player_table, player_datasheet
 from plugins import PLUGINS_DIR
 from plugins.fra.fra_schools import PLUGIN_NAME
 from plugins.fra.fra_schools.fra_schools_controller import FRASchoolsController
 from plugins.fra.fra_schools.fra_schools_database import FRASchoolsDatabase
+from plugins.fra.fra_schools.fra_schools_entity import (
+    FraSchoolDatasheetColumn,
+    FraSchoolPlayerSplitter,
+    FraSchoolTableColumn,
+)
 from plugins.fra.fra_schools.utils import FRASchoolsPlayerPluginData
 from plugins.ffe.ffe import FfePlugin
 from plugins.ffe.ffe_database import FfeDatabase
@@ -20,6 +29,7 @@ from plugins.utils import (
     PluginUtils,
 )
 from web.controllers.base_controller import BaseController
+from web.utils import PlayerColumn
 
 if TYPE_CHECKING:
     from database.sqlite.event.event_store import StoredTournament
@@ -88,67 +98,6 @@ class FRASchoolsPlugin(Plugin):
     def get_player_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         return self.id, FRASchoolsPlayerPluginData
 
-    # @hookimpl
-    # def get_player_admin_template_context(
-    #     self, web_context: PlayerAdminWebContext
-    # ) -> dict[str, Any]:
-    #     assert web_context.admin_event is not None
-    #     admin_event: 'Event' = web_context.admin_event
-
-    #     # The leagues that will be shown on the league select list
-    #     players_leagues: list[str] = sorted(
-    #         {
-    #             FFEUtils.get_player_plugin_data(player).league or ''
-    #             for player in web_context.admin_event.players_by_id.values()
-    #         }
-    #     )
-
-    #     # The leagues that will be selected on the league select list and used to filter the players
-    #     filter_leagues: list[str] = [
-    #         league
-    #         for league in FFESessionHandler.get_session_admin_players_filter_leagues(
-    #             web_context.request
-    #         )
-    #         if league in players_leagues
-    #     ]
-
-    #     # The licences that will be shown on the licence select list
-    #     players_licences: list[PlayerFFELicence] = sorted(
-    #         {
-    #             FFEUtils.get_player_plugin_data(player).ffe_licence
-    #             for player in admin_event.players_by_id.values()
-    #         }
-    #     )
-    #     # The licences that will be selected on the licence select list and used to filter the players
-    #     filter_licences: list[PlayerFFELicence] = (
-    #         FFESessionHandler.get_session_admin_players_filter_licences(
-    #             web_context.request
-    #         )
-    #     )
-
-    #     league_counts: Counter[str | None] = Counter[str | None]()
-    #     for player in web_context.admin_event.players_by_id.values():
-    #         league_counts[FFEUtils.get_player_plugin_data(player).league] += 1
-
-    #     licence_counts: Counter[PlayerFFELicence] = Counter[PlayerFFELicence]()
-    #     for player in web_context.admin_event.players_by_id.values():
-    #         licence_counts[FFEUtils.get_player_plugin_data(player).ffe_licence] += 1
-
-    #     return {
-    #         'admin_players_leagues': players_leagues,
-    #         'admin_filter_leagues': filter_leagues,
-    #         'admin_players_licences': players_licences,
-    #         'admin_filter_licences': filter_licences,
-    #         'ffe_league_counts': league_counts,
-    #         'ffe_licence_counts': licence_counts,
-    #         'admin_players_filter_leagues': FFESessionHandler.get_session_admin_players_filter_leagues(
-    #             web_context.request
-    #         ),
-    #         'admin_players_filter_licences': FFESessionHandler.get_session_admin_players_filter_licences(
-    #             web_context.request
-    #         ),
-    #     }
-
     @hookimpl
     def get_player_form_fields_template(self) -> str:
         return '/fra_schools_player_form_fields.html'
@@ -168,35 +117,38 @@ class FRASchoolsPlugin(Plugin):
     #         ),
     #     ]
 
-    # @hookimpl
-    # def get_extra_players_datasheet_columns(self) -> Iterable[ExtraColumn]:
-    #     return [
-    #         ExtraColumn(
-    #             at='tournament',
-    #             title='ffe_id',
-    #             value=lambda player: str(
-    #                 FFEUtils.get_player_plugin_data(player).ffe_id or ''
-    #             ),
-    #         ),
-    #         ExtraColumn(
-    #             at='tournament',
-    #             title='ffe_licence_number',
-    #             value=lambda player: (
-    #                 FFEUtils.get_player_plugin_data(player).ffe_licence_number or ''
-    #             ),
-    #         ),
-    #         ExtraColumn(
-    #             at='tournament',
-    #             title='ffe_licence',
-    #             value=lambda player: (
-    #                 FFEUtils.get_player_plugin_data(player).ffe_licence.short_name
-    #             ),
-    #         ),
-    #         ExtraColumn(
-    #             at='club',
-    #             title='league',
-    #             value=lambda player: (
-    #                 FFEUtils.get_player_plugin_data(player).league or ''
-    #             ),
-    #         ),
-    #     ]
+    @hookimpl
+    def insert_player_datasheet_columns(self, datasheet_columns: list[DatasheetColumn]):
+        club: type[DatasheetColumn] = player_datasheet.ClubColumn
+        fra_school_columns: list[DatasheetColumn] = [
+            FraSchoolDatasheetColumn(),
+        ]
+        for column in fra_school_columns:
+            PluginUtils.insert_on_isinstance(
+                datasheet_columns, column, club, after=True
+            )
+
+    # ---------------------------------------------------------------------------------
+    # Printing
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def alter_print_document_player_columns(self, player_columns: list[PlayerColumn]):
+        index = next(
+            (
+                i
+                for i, column in enumerate(player_columns)
+                if isinstance(column, player_table.ClubColumn)
+            ),
+            None,
+        )
+        if index is not None:
+            player_columns[index] = FraSchoolTableColumn()
+
+    @hookimpl
+    def insert_print_player_splitter_types(
+        self, player_splitter_types: list[type[PlayerSplitter]]
+    ):
+        lps: type[PlayerSplitter] = FraSchoolPlayerSplitter
+        cps: type[PlayerSplitter] = ClubPlayerSplitter
+        PluginUtils.replace_on_equals(player_splitter_types, lps, cps)
