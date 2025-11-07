@@ -405,7 +405,7 @@ with_indicator: display a loading indicator, optional
     number_max='',
     min_disabled=false,
     max_disabled=false,
-    disabled_message='',
+    input_tooltip='',
     number_step='',
     radio_value='',
     info='',
@@ -456,6 +456,12 @@ with_indicator: display a loading indicator, optional
             </div>
 
             <div
+                {% if input_type not in ['switch', 'checkbox', 'radio'] %}
+                    id="{{ id }}-input-container"
+                    {% if input_tooltip %}
+                        {{ macros.tooltip_attributes('', input_tooltip, 'top') }}
+                    {% endif %}
+                {% endif %}
                 class="
                     pw-input-group
                     {% if input_type in ['password', 'search', 'integer-range'] %}input-group{% endif %}
@@ -463,9 +469,6 @@ with_indicator: display a loading indicator, optional
                     {% if input_type == 'switch' %}form-check form-switch d-inline-block pe-3{% endif %}
                     {% if input_type == 'checkbox' %}form-check d-inline-block pe-3{% endif %}
                 "
-                {% if disabled_message %}
-                    {{ macros.tooltip_attributes('warning', disabled_message, 'top') }}
-                {% endif %}
             >
                 {% if input_type == 'select' %}
                     {{ select_content(
@@ -483,22 +486,30 @@ with_indicator: display a loading indicator, optional
                         onchange=onchange,
                     ) }}
                 {% elif input_type == 'switch' or input_type == 'checkbox' %}
-                    <input
-                        id="{{ id }}"
-                        name="{{ name }}"
-                        data-testid="{{ id }}"
-                        type="checkbox"
-                        class="form-check-input {% if error or (name in errors) %}is-invalid{% endif %} {% if valid %}is-valid{% endif %}"
-                        value="on"
-                        aria-describedby="{{ id }}-help {{ id }}-error"
-                        {% if data[name] == 'on' %}checked{% endif %}
-                        {% if disabled %}
-                            disabled
+                    <span
+                        id="{{ id }}-input-container"
+                        {% if input_tooltip %}
+                            {{ macros.tooltip_attributes('', input_tooltip, 'top') }}
                         {% endif %}
-                    />
-                    {{ placeholder }}{% if doc_icon %}<span >{{ macros.doc_icon(doc_icon, 'ms-2') }}</span>{% endif %}
+                    >
+                        <input
+                            id="{{ id }}"
+                            name="{{ name }}"
+                            data-testid="{{ id }}"
+                            type="checkbox"
+                            class="form-check-input {% if error or (name in errors) %}is-invalid{% endif %} {% if valid %}is-valid{% endif %}"
+                            value="on"
+                            aria-describedby="{{ id }}-help {{ id }}-error"
+                            {% if data[name] == 'on' %}checked{% endif %}
+                            {% if disabled %}
+                                disabled
+                            {% endif %}
+                        />
+                        {{ placeholder }}
+                    </span>
+                    {% if doc_icon %}<span >{{ macros.doc_icon(doc_icon, 'ms-2') }}</span>{% endif %}
                     {%- if tooltip_text and not label -%}
-                        <span class="text-nowrap"></span>
+                        <span class="text-nowrap">
                             <i
                                 class="bi bi-info-circle-fill ms-2"
                                 {{ macros.tooltip_attributes('', tooltip_text, 'top') }}
@@ -535,7 +546,7 @@ with_indicator: display a loading indicator, optional
                         min="{{ number_min }}"
                         value="{{ data[name ~ '_min'] }}"
                         aria-describedby="{{ id }}-help {{ id }}-error"
-                        {% if disabled_message or min_disabled %}
+                        {% if input_tooltip or min_disabled %}
                             disabled
                         {% endif %}
                     />
@@ -547,16 +558,14 @@ with_indicator: display a loading indicator, optional
                         step="1"
                         max="{{ number_max }}"
                         value="{{ data[name ~ '_max'] }}"
-                        {% if disabled_message or max_disabled %}
+                        {% if input_tooltip or max_disabled %}
                             disabled
                         {% endif %}
                     />
                 {% else %}
                     {% if disabled %}
                         <input
-                            id="{{ id }}"
                             name="{{ name }}"
-                            data-testid="{{ id }}"
                             type="hidden"
                             value="{{ value }}"
                         />
@@ -676,7 +685,7 @@ with_indicator: display a loading indicator, optional
                 {% endif %}
             </div>
             {% if input_type == 'integer-range' %}
-                {% if disabled_message or min_disabled %}
+                {% if input_tooltip or min_disabled %}
                     <input
                         id="{{ id }}-min"
                         name="{{ name }}_min"
@@ -684,7 +693,7 @@ with_indicator: display a loading indicator, optional
                         value="{{ data[name ~ '_min'] }}"
                     />
                 {% endif %}
-                {% if disabled_message or max_disabled %}
+                {% if input_tooltip or max_disabled %}
                     <input
                         id="{{ id }}-max"
                         name="{{ name }}_max"
@@ -744,6 +753,7 @@ with_indicator: display a loading indicator, optional
     default_checkbox_text='',
     default_value='',
     disabled=false,
+    input_tooltip='',
     with_indicator=false,
     autocomplete='',
     hx_get='',
@@ -773,6 +783,7 @@ with_indicator: display a loading indicator, optional
         default_checkbox_text=default_checkbox_text,
         default_value=default_value,
         disabled=disabled,
+        input_tooltip=input_tooltip,
         with_indicator=with_indicator,
         autocomplete=autocomplete,
         hx_get=hx_get,
@@ -978,7 +989,9 @@ with_indicator: display a loading indicator, optional
     searchable_select=false,
     select_all=false,
     placeholder='',
-    disabled=false
+    disabled=false,
+    input_tooltip=''
+
 ) %}
     {{ _generic_input(
         name=name,
@@ -998,6 +1011,7 @@ with_indicator: display a loading indicator, optional
         select_all=select_all,
         placeholder=placeholder,
         disabled=disabled,
+        input_tooltip=input_tooltip,
     ) }}
 {% endmacro %}
 
@@ -1012,7 +1026,8 @@ with_indicator: display a loading indicator, optional
     data={},
     errors={},
     error=false,
-    disabled=false
+    disabled=false,
+    input_tooltip=''
 ) %}
     {{ _generic_input(
         name=name,
@@ -1027,7 +1042,8 @@ with_indicator: display a loading indicator, optional
         errors=errors,
         error=error,
         disabled=disabled,
-    ) }}
+        input_tooltip=input_tooltip,
+) }}
 {% endmacro %}
 
 {% macro checkbox_input(
@@ -1167,7 +1183,7 @@ with_indicator: display a loading indicator, optional
     number_max='',
     min_disabled=false,
     max_disabled=false,
-    disabled_message='',
+    input_tooltip='',
     data={},
     errors={},
     disabled=false
@@ -1182,7 +1198,7 @@ with_indicator: display a loading indicator, optional
         number_max=number_max,
         min_disabled=min_disabled,
         max_disabled=max_disabled,
-        disabled_message=disabled_message,
+        input_tooltip=input_tooltip,
         data=data,
         errors=errors,
         disabled=disabled,
@@ -1481,31 +1497,34 @@ with_indicator: display a loading indicator, optional
     disabled=false,
     default_state=false
 ) %}
+
+
     <div class="input-block position-relative">
         <div
             class="pw-input-group form-check form-switch d-inline-block pe-3"
-            {% if used_message %}
-                {{ macros.tooltip_attributes('info', used_message, 'top') }}
-            {% endif %}
+
         >
-            <input
-                id="{{ plugin.form_key }}"
-                name="{{ plugin.form_key }}"
-                data-testid="{{ plugin.form_key }}"
-                type="checkbox"
-                class="form-check-input plugin-switch-input"
-                value="on"
-                data-dependencies="{{ ';'.join(plugin.dependency_form_keys) }}"
-                data-used="{{ 'true' if used_message else 'false' }}"
-                data-user-state="undefined"
-                data-default-state="{{ 'true' if default_state else 'false' }}"
-                {% if used_message or data[plugin.form_key] == 'on' %}
-                    checked
-                {% endif %}
-                {% if used_message or disabled %}
-                    disabled
-                {% endif %}
-            >
+            <span {% if used_message %}{{ macros.tooltip_attributes('info', used_message, 'top') }}{% endif %}>
+                <input
+                    id="{{ plugin.form_key }}"
+                    name="{{ plugin.form_key }}"
+                    data-testid="{{ plugin.form_key }}"
+                    type="checkbox"
+                    class="form-check-input plugin-switch-input"
+                    value="on"
+                    data-dependencies="{{ ';'.join(plugin.dependency_form_keys) }}"
+                    data-used="{{ 'true' if used_message else 'false' }}"
+                    data-user-state="undefined"
+                    data-default-state="{{ 'true' if default_state else 'false' }}"
+                    {% if used_message or data[plugin.form_key] == 'on' %}
+                        checked
+                    {% endif %}
+                    {% if used_message or disabled %}
+                        disabled
+                    {% endif %}
+                >
+                {{ plugin.name }}
+            </span>
             {% if used_message %}
                 <input
                     name="{{ plugin.form_key }}"
@@ -1513,7 +1532,6 @@ with_indicator: display a loading indicator, optional
                     value="on"
                 >
             {% endif %}
-            {{ plugin.name }}
             <i
                 class="bi bi-info-circle-fill ms-2"
                 {{ macros.tooltip_attributes('', plugin.description, 'top') }}

@@ -679,14 +679,11 @@ msgstr "Mise en ligne automatique désactivée"
 msgid "Auto-upload enabled"
 msgstr "Mise en ligne automatique activée"
 
-msgid "Auto-upload results to Chess-Results.com"
-msgstr "Mise en ligne automatique des résultats sur Chess-Results.com"
-
-msgid "Auto-upload results to FFE site"
-msgstr "Envoi automatique des résultats sur le site de la FFE"
+msgid "Auto-upload results"
+msgstr "Mise en ligne automatique des résultats"
 
 msgid "Auto-upload:"
-msgstr "Envoi automatique :"
+msgstr "Mise en ligne automatique :"
 
 msgid "Automatic"
 msgstr "Automatique"

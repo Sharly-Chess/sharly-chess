@@ -99,28 +99,20 @@
                 </h4>
                 <div class="row gy-2 gx-3">
                     <div class="col-12 col-sm-8">
-                        <span
-                            {% if admin_player.has_real_pairings %}
-                                {{ macros.tooltip_attributes(
-                                    'info',
-                                    _(
-                                        'The player has already been paired, '
-                                        'removing them from the tournament is impossible.'
-                                    ), 'top')
-                                }}
-                            {% endif %}
-                        >
-                            {{ admin_macros.select_input(
-                                name='tournament_id',
-                                label=_('Tournament:'),
-                                select_options=tournament_options,
-                                disabled=admin_player.has_real_pairings,
-                                data=data, errors=errors
-                            ) }}
-                            {% if admin_player.has_real_pairings %}
-                                <input type="hidden" name="tournament_id" value="{{ data['tournament_id'] }}" />
-                            {% endif %}
-                        </span>
+                        {{ admin_macros.select_input(
+                            name='tournament_id',
+                            label=_('Tournament:'),
+                            select_options=tournament_options,
+                            disabled=admin_player.has_real_pairings,
+                            input_tooltip=(
+                                _('The player has already been paired, removing them from the tournament is impossible.')
+                                if admin_player.has_real_pairings else ''
+                            ),
+                            data=data, errors=errors
+                        ) }}
+                        {% if admin_player.has_real_pairings %}
+                            <input type="hidden" name="tournament_id" value="{{ data['tournament_id'] }}" />
+                        {% endif %}
                     </div>
 
                     <div class="col-12 col-sm-4">

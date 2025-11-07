@@ -26,7 +26,7 @@
                 _('Pairing number range of players the group.')
             ),
             tooltip_text=admin_tournament.pairing_variation.get_group_a_tooltip(admin_tournament),
-            disabled_message=(
+            input_tooltip=(
                 '' if setting.are_groups_editable else
                 _('Groups can\'t be edited for this pairing system.')
             ),
