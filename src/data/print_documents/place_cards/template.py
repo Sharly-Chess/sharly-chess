@@ -149,6 +149,7 @@ class PlaceCardTemplate:
         mirror: bool,
         place_card_crop_marks: PlaceCardCropMarks,
         board_numbers: set[int],
+        player_ids: list[int],
     ) -> dict[str, Any]:
         file: Path = self.font_file
         items: list[PlaceCardItem] = self.items
@@ -234,15 +235,11 @@ class PlaceCardTemplate:
             },
         }
         players: list[Player] = place_card_type.players(tournament)
-        boards: list[Board]
+        if player_ids:
+            players = [player for player in players if player.id in player_ids]
+        boards: list[Board] = place_card_type.boards(tournament, round_)
         if board_numbers:
-            boards = [
-                board
-                for board in place_card_type.boards(tournament, round_)
-                if board.number in board_numbers
-            ]
-        else:
-            boards = place_card_type.boards(tournament, round_)
+            boards = [board for board in boards if board.number in board_numbers]
         federation_names = (
             set(
                 board.white_player.federation.name

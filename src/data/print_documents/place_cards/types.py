@@ -36,9 +36,7 @@ class PlaceCardType(IdentifiableEntity, ABC):
         return []
 
     @staticmethod
-    def players(
-        tournament: Tournament,
-    ) -> list[Player]:
+    def players(tournament: Tournament) -> list[Player]:
         return []
 
 
@@ -53,17 +51,14 @@ class PlayerCardType(PlaceCardType):
 
     @staticmethod
     def get_valid_options() -> list[str]:
-        return (
-            PlaceCardType.get_valid_options()
-            + [
-                # TODO add a player multi-select
-            ]
-        )
+        from data.print_documents.options import PlayersPrintOption
+
+        return PlaceCardType.get_valid_options() + [
+            PlayersPrintOption.static_id(),
+        ]
 
     @staticmethod
-    def players(
-        tournament: Tournament,
-    ) -> list[Player]:
+    def players(tournament: Tournament) -> list[Player]:
         return list(tournament.players_by_starting_rank.values())
 
 

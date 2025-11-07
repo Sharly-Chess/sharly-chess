@@ -65,6 +65,7 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.TournamentPrintOption,
             options.TournamentsPrintOption,
             options.PlayerPrintOption,
+            options.PlayersPrintOption,
             options.PairingStylePrintOption,
             options.RoundPrintOption,
             options.PlayerSplitPrintOption,

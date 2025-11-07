@@ -37,6 +37,7 @@ from data.print_documents.options import (
     PlaceCardMirrorPrintOption,
     PlaceCardCropMarksPrintOption,
     PlaceCardBoardNumbersPrintOption,
+    PlayersPrintOption,
 )
 from data.print_documents.place_cards.crop_marks import PlaceCardCropMarks
 from data.print_documents.place_cards.data import (
@@ -1190,6 +1191,10 @@ class PlaceCardPrintDocument(PrintDocument):
         return self._get_option(PlaceCardPrintOption).place_card_type
 
     @property
+    def player_ids(self) -> list[int]:
+        return self._get_option(PlayersPrintOption).value
+
+    @property
     def at_round(self) -> int:
         return self._get_option(RoundPrintOption).value or self.tournament.current_round
 
@@ -1211,6 +1216,7 @@ class PlaceCardPrintDocument(PrintDocument):
             PlaceCardPrintOption,
             PlaceCardTemplatePrintOption,
             TournamentPrintOption,
+            PlayersPrintOption,
             RoundPrintOption,
             PlaceCardMirrorPrintOption,
             PlaceCardCropMarksPrintOption,
@@ -1234,6 +1240,7 @@ class PlaceCardPrintDocument(PrintDocument):
             mirror=self.mirror,
             place_card_crop_marks=self.crop_marks,
             board_numbers=self.board_numbers,
+            player_ids=self.player_ids,
         )
         return document_context | card_template_context
 

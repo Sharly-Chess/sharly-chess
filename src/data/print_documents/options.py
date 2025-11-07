@@ -60,10 +60,6 @@ class TournamentPrintOption(PrintOption):
         # This is managed by the print controller
         return None
 
-    @property
-    def template_name(self) -> str:
-        return '/admin/event/print_options/tournament.html'
-
     @override
     def validate(self):
         super().validate()
@@ -85,10 +81,6 @@ class TournamentsPrintOption(PrintOption):
         # This is managed by the print controller
         return None
 
-    @property
-    def template_name(self) -> str:
-        return '/admin/event/print_options/tournaments.html'
-
 
 class PlayerPrintOption(PrintOption):
     @staticmethod
@@ -103,15 +95,43 @@ class PlayerPrintOption(PrintOption):
     def default_value(self) -> Any:
         return None
 
-    @property
-    def template_name(self) -> str:
-        return '/admin/event/print_options/player.html'
-
     @override
     def validate(self):
         super().validate()
         if self.value is None:
             raise OptionError(_('Please choose a player.'), self)
+
+    @property
+    def players_per_tournament(self) -> dict[int, list[dict[str, Any]]]:
+        if self.event is None:
+            return {}
+
+        tournaments = [tournament for tournament in self.event.tournaments]
+        return {
+            tournament.id: [
+                {'id': player.id, 'full_name': player.full_name}
+                for player in tournament.players_by_name_with_unpaired
+            ]
+            for tournament in tournaments
+        }
+
+
+class PlayersPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'players'
+
+    @property
+    def type(self) -> type | UnionType:
+        return list[int]
+
+    @property
+    def default_value(self) -> Any:
+        return []
+
+    @override
+    def validate(self):
+        self._validate_list_type(int)
 
     @property
     def players_per_tournament(self) -> dict[int, list[dict[str, Any]]]:
@@ -140,10 +160,6 @@ class RoundPrintOption(PrintOption):
     @property
     def default_value(self) -> Any:
         return None
-
-    @property
-    def template_name(self) -> str:
-        return '/admin/event/print_options/round.html'
 
     @override
     def validate(self):
@@ -281,10 +297,6 @@ class ClubThresholdPrintOption(PrintOption):
     def default_value(self) -> Any:
         return None
 
-    @property
-    def template_name(self) -> str:
-        return '/admin/event/print_options/club_threshold.html'
-
     @override
     def validate(self):
         super().validate()
@@ -365,10 +377,6 @@ class QRCodeNetworkPrintOption(PrintOption):
             for iface in config.lan_ifaces
         }
 
-    @property
-    def template_name(self) -> str:
-        return '/admin/event/print_options/qrcode_network.html'
-
 
 class PlaceCardPrintOption(PrintOption):
     @staticmethod
@@ -444,10 +452,6 @@ class PlaceCardTemplatePrintOption(PrintOption):
     def default_value(self) -> Any:
         # This is managed by the print controller
         return None
-
-    @property
-    def template_name(self) -> str:
-        return '/admin/event/print_options/place_card_template.html'
 
     @override
     def validate(self):
@@ -537,10 +541,6 @@ class PlaceCardBoardNumbersPrintOption(PrintOption):
     @property
     def default_value(self) -> Any:
         return None
-
-    @property
-    def template_name(self) -> str:
-        return '/admin/event/print_options/place_card_board_numbers.html'
 
     @cached_property
     def board_numbers(self) -> set[int]:

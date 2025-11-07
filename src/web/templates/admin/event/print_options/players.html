@@ -3,8 +3,9 @@
         name=option.id,
         label=_('Player:'),
         help_text='',
+        placeholder=_('Choose one, many or no players.'),
         select_options={},
-        searchable_select=true,
+        multiple_select=true,
         data=data, errors=errors
     ) }}
 </div>
@@ -22,13 +23,6 @@
 
             playerSelect.empty();
 
-            playerSelect.append(
-                $('<option>', {
-                    value: '',
-                    text: '-- {{ _("Select player") }} --',
-                })
-            );
-
             // Add players
             players.forEach(player => {
                 playerSelect.append(
@@ -40,6 +34,10 @@
                 playerSelect.prop('disabled', false);
             });
             playerSelect.trigger('change');
+            setTimeout(() => {
+                // Waits for the call stack to be cleared (i.e. the end of the `change` event)
+                $('.select2-search__field').css('width', '100%');
+            }, 0);
         }
         tournamentSelect.on('change', updatePlayers);
         updatePlayers();
