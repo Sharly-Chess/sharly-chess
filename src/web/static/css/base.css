@@ -114,6 +114,14 @@ body[data-bs-theme="light"] #main-wrapper {
     color: var(--bs-body-bg);
 }
 
+.sidebar .sidebar-chevron {
+    padding: 0;
+    margin: 0;
+    position: relative;
+    width: auto;
+    left: -0.6rem;
+}
+
 #sidebar-expander {
     display: none;
     position: fixed;
@@ -140,6 +148,7 @@ body[data-bs-theme="dark"] #sidebar-expander {
 
 #sidebar-expander i {
     padding: 0;
+    margin: 0;
 }
 
 #page-wrapper {
