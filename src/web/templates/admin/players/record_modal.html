@@ -11,7 +11,8 @@
                 <div>{{ admin_player.federation }}, {{ admin_player.rating_str }}{% if category %}, {{ category }}{% endif %}</div>
             </div>
             <div>
-                {% if admin_player.tournament.playing %}
+                {% set tournament = admin_player.tournament %}
+                {% if tournament.pairing_system.allow_bye_definition and not tournament.finished %}
                     {% if admin_player.has_withdrawn %}
                         <button
                             class="btn btn-sm btn-outline-primary w-100"
@@ -31,7 +32,10 @@
                         >
                             {{ _('Return to tournament') }}
                         </button>
-                    {% elif admin_player.tournament.current_round < admin_player.tournament.rounds or admin_player.pairings_by_round[admin_player.tournament.current_round].needs_pairing_or_has_bye %}
+                    {% elif (
+                        tournament.current_round < tournament.rounds
+                        or admin_player.pairings_by_round[tournament.current_round].needs_pairing_or_has_bye
+                    ) %}
                         <button
                             class="btn btn-sm btn-outline-primary w-100"
                             {% if not client.can_set_zero_point_bye(admin_player.tournament.id) %}

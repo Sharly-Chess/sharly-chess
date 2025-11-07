@@ -189,7 +189,10 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             )
 
         self.safety_mode = SafetyMode.SAFE
-        if tournament_id:
+        if not tournament_id:
+            # Reset the session safety mode if coming from another page
+            SessionHandler.set_session_admin_pairings_page_identifier(request, None)
+        else:
             page_identifier = PageIdentifier(
                 event.uniq_id, tournament_id, self.admin_round
             )

@@ -904,23 +904,19 @@ class Player:
     @property
     def has_withdrawn(self) -> bool:
         """Returns True if the player has withdrawn from the tournament."""
-        if (
-            self.tournament.current_round == self.tournament.rounds
-            and self.tournament.playing
-        ):
-            return self.pairings_by_round[self.tournament.current_round].zero_point_bye
+        if self.tournament.finished:
+            return False
+
+        # We check that the player only has zero-point byes for all future rounds
+        # We ignore the current round if they are paired
         for round_ in range(
             max(self.tournament.current_round, 1), self.tournament.rounds + 1
         ):
-            if round_ == self.tournament.rounds:
-                if self.pairings_by_round[round_].zero_point_bye:
-                    continue
-            else:
-                if (
-                    self.pairings_by_round[round_].paired
-                    or self.pairings_by_round[round_].zero_point_bye
-                ):
-                    continue
+            if (
+                round_ < self.tournament.rounds
+                and self.pairings_by_round[round_].paired
+            ) or self.pairings_by_round[round_].zero_point_bye:
+                continue
             return False
         return True
 
