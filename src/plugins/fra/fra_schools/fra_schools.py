@@ -77,7 +77,11 @@ class FRASchoolsPlugin(Plugin):
         return 'FRA'
 
     def used_by_stored_tournament(self, stored_tournament: StoredTournament) -> bool:
-        # TODO
+        players = stored_tournament.stored_players
+        for stored_player in players:
+            data = stored_player.plugin_data.get(PLUGIN_NAME, {})
+            if data.get('school_name', None) is not None:
+                return True
         return False
 
     # ---------------------------------------------------------------------------------
