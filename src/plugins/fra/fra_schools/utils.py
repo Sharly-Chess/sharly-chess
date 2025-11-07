@@ -2,12 +2,12 @@ from dataclasses import dataclass
 from functools import partial
 from typing import Self, Any
 
-from common.i18n import _
 from plugins.fra.fra_schools import PLUGIN_NAME
 from plugins.utils import PluginUtils, PluginData
 from web.controllers.base_controller import WebContext
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
+
 
 @dataclass
 class StoredSchool:
@@ -22,20 +22,17 @@ class StoredSchool:
 
 @dataclass
 class FRASchoolsPlayerPluginData(PluginData):
-    id: int | None
-    name: str | None
+    school_name: str | None
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         return cls(
-            id=stored_value.get('id', None),
-            name=stored_value.get('name', None),
+            school_name=stored_value.get('school_name', None),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
         return {
-            'id': self.id,
-            'school_name': self.name,
+            'school_name': self.school_name,
         }
 
     @classmethod
@@ -46,14 +43,12 @@ class FRASchoolsPlayerPluginData(PluginData):
         action: str | None = None,
     ) -> Self:
         return cls(
-            id=WebContext.form_data_to_int(data, 'school_id'),
-            name=WebContext.form_data_to_str(data, 'school_name'),
+            school_name=WebContext.form_data_to_str(data, 'fra_school'),
         )
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
         return WebContext.values_dict_to_form_data(
             {
-                'school_id': self.id,
-                'school_name': self.name,
+                'fra_school': self.school_name,
             }
         )

@@ -2,7 +2,7 @@
 {% import '/admin/common/macros.j2' as admin_macros %}
 
 <li class="dropdown-item text-nowrap btn"
-    onClick="$('#fra-schools-search-input').val('{{ school.school_id }} {{ school.school_name }}, {{ school.commune }}, {{ school.department_name }} ({{ school.department }})'); $('#fra-schools-search-results').hide();"
+    onClick="$('#fra-school-input').val('{{ school.school_id }} {{ school.school_name }}, {{ school.commune }}'); $('#fra-schools-search-results').hide();"
 >
     <span class="fw-bold">
         {{ school.school_id }}

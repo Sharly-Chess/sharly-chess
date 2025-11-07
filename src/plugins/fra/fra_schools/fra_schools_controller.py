@@ -1,22 +1,12 @@
 from functools import partial
 import re
-from typing import Annotated, Any
-from data.input_output.managers import DataSourceManager
-from litestar import get, post
+from typing import Any
+from litestar import get
 from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate
-from litestar.enums import RequestEncodingType
-from litestar.params import Body
 
-from common import format_timestamp_date_time
-from common.i18n import _
-from common.network import NetworkMonitor
-from data.access_levels.actions import AuthAction
+
 from plugins.ffe import PLUGIN_NAME
-from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
-from plugins.ffe.ffe_session import FFESession
-from plugins.ffe.ffe_session_handler import FFESessionHandler
-from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from plugins.fra.fra_schools.fra_schools_database import FRASchoolsDatabase
 from plugins.fra.fra_schools.utils import StoredSchool
 from plugins.utils import PluginUtils
@@ -24,10 +14,6 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
 )
-from web.controllers.admin.player_admin_controller import PlayerAdminController
-from web.controllers.admin.tournament_admin_controller import TournamentAdminWebContext
-from web.controllers.base_controller import WebContext
-from web.guards import EventGuard, ActionGuard, TournamentActionGuard
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
@@ -65,11 +51,11 @@ class FRASchoolsController(BaseEventAdminController):
         schools: list[StoredSchool] = []
         limit: int = 25
 
-        words = re.findall(r"\w+", fra_schools_search.strip().lower())
-        fts_query = " ".join(f"{w}*" for w in words)
+        words = re.findall(r'\w+', fra_schools_search.strip().lower())
+        fts_query = ' '.join(f'{w}*' for w in words)
         if fra_schools_search and database.file_path().exists():
             with database:
-                query: str = f"""
+                query: str = """
                     SELECT s.school_id, s.school_name, s.department, s.commune, d.name, s.type, s.private
                     FROM school s
                     JOIN department d ON s.department = d.id
@@ -94,7 +80,8 @@ class FRASchoolsController(BaseEventAdminController):
 
         return HTMXTemplate(
             template_name='/fra_schools_search_results.html',
-            context=web_context.template_context | {
+            context=web_context.template_context
+            | {
                 'search': fra_schools_search,
                 'search_results': schools,
                 'has_more_results': len(schools) == limit,

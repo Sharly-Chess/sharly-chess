@@ -7,11 +7,11 @@ from database.sqlite.local_source_database import LocalSourceDatabase
 from database.sqlite.event.event_store import StoredTournament
 from plugins import PLUGINS_DIR
 from plugins.fra.fra_schools import PLUGIN_NAME
-from plugins.ffe.ffe_database import FfeDatabase
 from plugins.fra.fra_schools.fra_schools_controller import FRASchoolsController
 from plugins.fra.fra_schools.fra_schools_database import FRASchoolsDatabase
 from plugins.fra.fra_schools.utils import FRASchoolsPlayerPluginData
 from plugins.ffe.ffe import FfePlugin
+from plugins.ffe.ffe_database import FfeDatabase
 from plugins.hookspec import hookimpl
 from plugins.manager import Path
 from plugins.utils import (
@@ -154,67 +154,6 @@ class FRASchoolsPlugin(Plugin):
         return '/fra_schools_player_form_fields.html'
 
     # @hookimpl
-    # def validate_player_form_fields(
-    #     self,
-    #     action: str,
-    #     tournament: 'Tournament',
-    #     data: dict[str, str],
-    #     errors: dict[str, str],
-    # ):
-    #     league: str | None = WebContext.form_data_to_str(data, field := 'ffe_league')
-    #     if league and league not in self.FFE_LEAGUES:
-    #         # should never happen, not translated.
-    #         errors[field] = f'Invalid league value [{data[field]}].'
-    #         data[field] = ''
-    #     if tournament:
-    #         # When adding a player, the tournament may not be chosen (in this case do not test)
-    #         try:
-    #             ffe_id = WebContext.form_data_to_int(data, field := 'ffe_id', minimum=1)
-    #             ffe_ids = [
-    #                 FFEUtils.get_player_plugin_data(player).ffe_id
-    #                 for player in tournament.players_by_id.values()
-    #             ]
-
-    #             if action == 'create' and ffe_id and ffe_id in ffe_ids:
-    #                 errors[field] = _(
-    #                     'The player with FFE ID [{ffe_id}] already '
-    #                     'plays tournament [{tournament}].'
-    #                 ).format(ffe_id=ffe_id, tournament=tournament.name)
-    #         except ValueError:
-    #             errors[field] = _('Invalid FFE ID [{ffe_id}].').format(
-    #                 ffe_id=data[field]
-    #             )
-    #     try:
-    #         if value := WebContext.form_data_to_int(data, field := 'ffe_licence'):
-    #             PlayerFFELicence(value)
-    #     except ValueError:
-    #         errors[field] = f'Invalid FFE licence [{data[field]}].'
-
-    #     ffe_licence_number: str | None = WebContext.form_data_to_str(
-    #         data, field := 'ffe_licence_number'
-    #     )
-    #     if ffe_licence_number:
-    #         if not re.match(r'^[A-Z]\d{5}$', ffe_licence_number):
-    #             errors[field] = _(
-    #                 'Invalid FFE licence number [{ffe_licence_number}].'
-    #             ).format(ffe_licence_number=data[field])
-    #         elif tournament:
-    #             # When adding a player, the tournament may not be chosen (in this case do not test)
-    #             ffe_licence_numbers = [
-    #                 FFEUtils.get_player_plugin_data(player).ffe_licence_number
-    #                 for player in tournament.players_by_id.values()
-    #             ]
-    #             if action == 'create' and ffe_licence_number in ffe_licence_numbers:
-    #                 errors[field] = _(
-    #                     'The player with FFE licence number '
-    #                     '[{ffe_licence_number}] already plays '
-    #                     'tournament [{tournament}].'
-    #                 ).format(
-    #                     ffe_licence_number=ffe_licence_number,
-    #                     tournament=tournament.name,
-    #                 )
-
-    # @hookimpl
     # def get_extra_player_columns(self) -> Iterable[ExtraAdminColumn]:
     #     return [
     #         ExtraAdminColumn(
@@ -228,53 +167,6 @@ class FRASchoolsPlugin(Plugin):
     #             cell_template='/ffe_player_licence_cell.html',
     #         ),
     #     ]
-
-    # @hookimpl
-    # def player_filters(
-    #     self,
-    #     web_context: PlayerAdminWebContext,
-    #     template_context: dict[str, Any],
-    # ) -> list[Callable[[Player], bool]]:
-    #     filter_leagues: list[str] = (
-    #         FFESessionHandler.get_session_admin_players_filter_leagues(
-    #             web_context.request
-    #         )
-    #     )
-    #     filter_licences: list[PlayerFFELicence] = (
-    #         FFESessionHandler.get_session_admin_players_filter_licences(
-    #             web_context.request
-    #         )
-    #     )
-
-    #     admin_players_leagues = template_context['admin_players_leagues']
-    #     admin_players_licences = template_context['admin_players_licences']
-    #     filters: list[Callable[[Player], bool]] = []
-    #     if len(filter_leagues) not in (0, len(admin_players_leagues)):
-    #         filters.append(
-    #             lambda player: FFEUtils.get_player_plugin_data(player).league
-    #             in filter_leagues
-    #         )
-    #     if len(filter_licences) not in (0, len(admin_players_licences)):
-    #         filters.append(
-    #             lambda player: FFEUtils.get_player_plugin_data(player).ffe_licence
-    #             in filter_licences
-    #         )
-    #     return filters
-
-    # @hookimpl
-    # def clear_player_filters(self, request: HTMXRequest):
-    #     FFESessionHandler.set_session_admin_players_filter_leagues(request, [])
-    #     FFESessionHandler.set_session_admin_players_filter_licences(request, [])
-
-    # @hookimpl
-    # def player_club_sort_key(self, player: Player):
-    #     # We sort by league first
-    #     return (
-    #         FFEUtils.get_player_plugin_data(player).league or '',
-    #         player.club,
-    #         player.last_name,
-    #         player.first_name,
-    #     )
 
     # @hookimpl
     # def get_extra_players_datasheet_columns(self) -> Iterable[ExtraColumn]:

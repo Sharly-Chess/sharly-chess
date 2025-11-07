@@ -6,13 +6,15 @@
         <div class="input-group">
             {{ admin_macros.search_indicator('data-source-indicator') }}
             <input
-                id="fra-schools-search-input"
-                name="fra_schools_search"
+                id="fra-school-input"
+                name="fra_school"
                 class="dropdown form-control"
                 type="search"
+                value="{{ data.fra_school or ''}}"
                 hx-trigger="keyup changed delay:400ms,focus"
                 hx-target="#fra-schools-search-results"
                 hx-get="{{ url_for('fra-schools-search', event_uniq_id=admin_event.uniq_id) }}"
+                hx-vals='js:{ fra_schools_search: $("#fra-school-input").val() }'
                 hx-on::before-request="$('#fra-schools-search-results').show();"
                 hx-on::after-request="$('#fra-schools-search-results').show();"
                 hx-sync="this:replace"
@@ -27,14 +29,14 @@
     </div>
 </div>
 <script>
-    $('#fra-schools-search-input').on('blur', function () {
+    $('#fra-school-input').on('blur', function () {
         setTimeout(function () {
             const results = $('#fra-schools-search-results');
             const active = document.activeElement;
 
             // Hide only if user didn't click inside results
             if (!results.is(':hover') && !results[0].contains(active)) {
-            results.hide();
+                results.hide();
             }
         }, 100);
     });
