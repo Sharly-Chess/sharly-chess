@@ -2455,9 +2455,6 @@ msgstr "Un demi-point joker a été attribué au·à la joueur·euse [{player}].
 msgid "Handicap games"
 msgstr "Parties à handicap"
 
-msgid "Handling of players without a FIDE rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating."
-msgstr "Gestion des joueur·euses sans classement FIDE rapide/blitz. Pour le calcul des classements FIDE, ces joueur·euses sont considéré·es comme classé·es avec leur classement FIDE standard."
-
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
 msgstr "Avoir un nombre de joueur·euses et de prix proches représente un risque qu'un prix ne soit pas attribué."
 
@@ -3889,9 +3886,6 @@ msgstr "Plug-ins"
 
 msgid "Point counting"
 msgstr "Comptage des points"
-
-msgid "Points"
-msgstr "Points"
 
 #, python-format
 msgid "Points: %(min)s or more"
@@ -6388,4 +6382,10 @@ msgstr "½ - ½ (NC)"
 
 #~ msgid "use default"
 #~ msgstr "par défaut"
+
+#~ msgid "Handling of players without a FIDE rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating."
+#~ msgstr "Gestion des joueur·euses sans classement FIDE rapide/blitz. Pour le calcul des classements FIDE, ces joueur·euses sont considéré·es comme classé·es avec leur classement FIDE standard."
+
+#~ msgid "Points"
+#~ msgstr "Points"
 

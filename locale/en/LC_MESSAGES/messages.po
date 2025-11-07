@@ -2455,9 +2455,6 @@ msgstr ""
 msgid "Handicap games"
 msgstr ""
 
-msgid "Handling of players without a FIDE rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating."
-msgstr ""
-
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
 msgstr ""
 
@@ -3888,9 +3885,6 @@ msgid "Plugins"
 msgstr ""
 
 msgid "Point counting"
-msgstr ""
-
-msgid "Points"
 msgstr ""
 
 #, python-format
@@ -6387,5 +6381,11 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "use default"
+#~ msgstr ""
+
+#~ msgid "Handling of players without a FIDE rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating."
+#~ msgstr ""
+
+#~ msgid "Points"
 #~ msgstr ""
 
