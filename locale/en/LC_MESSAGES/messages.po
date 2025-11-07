@@ -489,6 +489,9 @@ msgstr ""
 msgid "Add tournaments"
 msgstr ""
 
+msgid "Adds support for school competitions in France"
+msgstr ""
+
 msgid "Administration"
 msgstr ""
 
@@ -2346,6 +2349,12 @@ msgid "French Chess Federation"
 msgstr ""
 
 msgid "French Federation specific features (player search, results uploading, leagues, Papi import/export...)"
+msgstr ""
+
+msgid "French School"
+msgstr ""
+
+msgid "French School Competitions"
 msgstr ""
 
 msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
@@ -4388,6 +4397,15 @@ msgid "Scan to access the tournament on Chess-Results.com."
 msgstr ""
 
 msgid "Scan to access the tournament on the FFE site."
+msgstr ""
+
+msgid "School"
+msgstr ""
+
+msgid "School *** SCHOOL FOR TABLE HEADER"
+msgstr "School"
+
+msgid "Schools"
 msgstr ""
 
 msgid "Scope"

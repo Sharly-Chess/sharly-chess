@@ -30,7 +30,7 @@ class FraSchoolPlayerSplitter(PlayerSplitter):
 class FraSchoolTableColumn(PlayerColumn):
     @property
     def header_content(self) -> str:
-        return _('School *** LEAGUE FOR TABLE HEADER')
+        return _('School *** SCHOOL FOR TABLE HEADER')
 
     def get_cell_content(self, player: Player) -> Any:
         return FRASchoolsUtils.get_player_plugin_data(player).school_name or ''

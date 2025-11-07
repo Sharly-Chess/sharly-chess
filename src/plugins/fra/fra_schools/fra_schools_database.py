@@ -31,7 +31,7 @@ class FRASchoolsDatabase(LocalSourceDatabase):
 
     @staticmethod
     def static_name() -> str:
-        return _('FRA Schools')
+        return _('Schools')
 
     @staticmethod
     def _dir() -> Path:

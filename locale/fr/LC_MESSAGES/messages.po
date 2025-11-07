@@ -489,6 +489,9 @@ msgstr "Ajouter des écrans"
 msgid "Add tournaments"
 msgstr "Ajouter des tournois"
 
+msgid "Adds support for school competitions in France"
+msgstr "Ajoute la prise en charge des compétitions scolaires en France"
+
 msgid "Administration"
 msgstr "Administration"
 
@@ -2347,6 +2350,12 @@ msgstr "Fédération Française des Échecs"
 
 msgid "French Federation specific features (player search, results uploading, leagues, Papi import/export...)"
 msgstr "Fonctionnalités spécifiques à la Fédération Française (recherche de joueur·euses, envoi des résultats, ligues, compatibilité avec Papi)"
+
+msgid "French School"
+msgstr "Établissement scolaire"
+
+msgid "French School Competitions"
+msgstr "Compétitions scolaires françaises"
 
 msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
 msgstr "Depuis votre appareil principal, trouvez l’écran ou l’écran rotatif que vous souhaitez afficher, puis envoyez-le au pilote d’écran à l’aide du bouton portant cette icône :"
@@ -4390,6 +4399,15 @@ msgstr "Scannez pour accéder au tournoi sur le site Chess-Results.com."
 msgid "Scan to access the tournament on the FFE site."
 msgstr "Scannez pour accéder au tournoi sur le site de la FFE."
 
+msgid "School"
+msgstr "École"
+
+msgid "School *** SCHOOL FOR TABLE HEADER"
+msgstr "École"
+
+msgid "Schools"
+msgstr "Écoles"
+
 msgid "Scope"
 msgstr "Périmètre"
 
@@ -6382,7 +6400,3 @@ msgstr "½ - ½ (NC)"
 
 #~ msgid "Handling of players without a FIDE rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating."
 #~ msgstr "Gestion des joueur·euses sans classement FIDE rapide/blitz. Pour le calcul des classements FIDE, ces joueur·euses sont considéré·es comme classé·es avec leur classement FIDE standard."
-
-#~ msgid "Points"
-#~ msgstr "Points"
-
