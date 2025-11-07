@@ -21,7 +21,7 @@
                             {{ admin_macros.color_input(
                                 name='color_'~num,
                                 label=_('Colour #%(num)d:', num=num),
-                                help_text=timer_color_texts[num],
+                                tooltip_text=timer_color_texts[num],
                                 default_checkbox=true,
                                 default_color=sharly_chess_config.default_timer_colors[num],
                                 data=data, errors=errors
@@ -34,7 +34,6 @@
                                     name='delay_'~num,
                                     label=_('Delay #%(num)d:', num=num),
                                     placeholder=_('By default: %(minutes)d minutes', minutes=sharly_chess_config.default_timer_delays[num]),
-                                    help_text='',
                                     data=data, errors=errors
                                 ) }}
                             {% endwith %}

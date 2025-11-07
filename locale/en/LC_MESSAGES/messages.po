@@ -20,10 +20,6 @@ msgid "%%s is replaced by the time left before the hour."
 msgstr ""
 
 #, python-format
-msgid "%(color)s *** COLOR FOR PAIRINGS PRINT"
-msgstr "with %(color)s"
-
-#, python-format
 msgid "%(count)d boards without result"
 msgstr ""
 
@@ -42,12 +38,6 @@ msgstr ""
 #, python-format
 msgid "%(num).1f point group -"
 msgid_plural "%(num).1f points group -"
-msgstr[0] ""
-msgstr[1] ""
-
-#, python-format
-msgid "%(num)d arbiter"
-msgid_plural "%(num)d arbiters"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -547,7 +537,7 @@ msgstr ""
 msgid "All values may be modified by the arbiter if necessary."
 msgstr ""
 
-msgid "Allow"
+msgid "Allow links to this screen"
 msgstr ""
 
 msgid "Allows access to Screens marked as public"
@@ -1460,10 +1450,6 @@ msgstr ""
 msgid "Default: %(string)s"
 msgstr ""
 
-#, python-format
-msgid "Defaults to %(datetime)s"
-msgstr ""
-
 msgid "Define as main category"
 msgstr ""
 
@@ -1618,12 +1604,6 @@ msgstr ""
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device)."
 msgstr ""
 
-msgid "Display format for pairings."
-msgstr ""
-
-msgid "Display of a screen exit button:"
-msgstr ""
-
 msgid "Display of unpaired players:"
 msgstr ""
 
@@ -1727,10 +1707,10 @@ msgstr ""
 msgid "Duplicate without players"
 msgstr ""
 
-msgid "Duration (min)"
+msgid "Duration (min):"
 msgstr ""
 
-msgid "Duration (sec)"
+msgid "Duration (sec):"
 msgstr ""
 
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
@@ -1745,26 +1725,23 @@ msgid "E.g.: %(num)d"
 msgstr ""
 
 #, python-format
-msgid "E.g.: %(seconds)d (seconds)"
-msgstr ""
-
-#, python-format
 msgid "E.g.: %(string)s"
 msgstr ""
 
-msgid "E.g.: 20 (place 20 boards on each screen)"
+#, python-format
+msgid "E.g.: %(val)d"
 msgstr ""
 
-msgid "E.g.: 20 (place 20 players on each screen)"
+msgid "E.g.: 20 (boards per screen)"
 msgstr ""
 
-msgid "E.g.: 4 (split the boards on 4 screens)"
+msgid "E.g.: 20 (players per screen)"
 msgstr ""
 
-msgid "E.g.: 4 (split the players on 4 screens)"
+msgid "E.g.: 4 (split boards over 4 screens)"
 msgstr ""
 
-msgid "E.g.: 50 (Elo)"
+msgid "E.g.: 4 (split players over 4 screens)"
 msgstr ""
 
 msgid "E.g.: @boards, @family, another-screen"
@@ -1963,7 +1940,7 @@ msgstr "Elo"
 msgid "Elo *** STD ELO FOR TABLE HEADER"
 msgstr "Elo"
 
-msgid "Elo step (handicap):"
+msgid "Elo step:"
 msgstr ""
 
 msgid "Email:"
@@ -2106,13 +2083,13 @@ msgstr ""
 msgid "FFE Uniq ID:"
 msgstr ""
 
-msgid "FFE certification number (optional):"
-msgstr ""
-
 msgid "FFE certification number and password not defined."
 msgstr ""
 
 msgid "FFE certification number not defined."
+msgstr ""
+
+msgid "FFE certification number:"
 msgstr ""
 
 #, python-format
@@ -2325,9 +2302,6 @@ msgstr ""
 msgid "Font size adjustment (%%):"
 msgstr ""
 
-msgid "Font size adjustment for the screen."
-msgstr ""
-
 msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
 msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
 msgstr[0] ""
@@ -2520,12 +2494,6 @@ msgstr ""
 msgid "Hours"
 msgstr ""
 
-msgid "How to sort the players."
-msgstr ""
-
-msgid "How to split the results."
-msgstr ""
-
 msgid "However, the order of the results of the last round will remain the same as the ones in Sharly Chess."
 msgstr ""
 
@@ -2630,7 +2598,7 @@ msgstr ""
 msgid "Incorrect path [{path}]."
 msgstr ""
 
-msgid "Increment (sec)"
+msgid "Increment (sec):"
 msgstr ""
 
 msgid "Info"
@@ -2845,9 +2813,6 @@ msgstr ""
 msgid "Links displayed on the screen menu:"
 msgstr ""
 
-msgid "Links to this screen:"
-msgstr ""
-
 msgid "List of players"
 msgstr ""
 
@@ -3016,7 +2981,7 @@ msgstr ""
 msgid "Menus"
 msgstr ""
 
-msgid "Minimal time (handicap, seconds):"
+msgid "Minimal time (seconds):"
 msgstr ""
 
 msgid "Minimum delay between uploads (minutes):"
@@ -3052,7 +3017,7 @@ msgid_plural "Moved up %(num)d places"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "Moves"
+msgid "Moves:"
 msgstr ""
 
 #, python-format
@@ -3400,6 +3365,9 @@ msgstr ""
 msgid "Number of screens"
 msgstr ""
 
+msgid "Number of screens:"
+msgstr ""
+
 msgid "Number of wins"
 msgstr ""
 
@@ -3410,12 +3378,6 @@ msgid "OK"
 msgstr ""
 
 msgid "ORG"
-msgstr ""
-
-msgid "On a given number of screens:"
-msgstr ""
-
-msgid "On fixed size screens:"
 msgstr ""
 
 msgid "Once created, you can select the timer to display in the settings of each screen, family or rotator."
@@ -3678,7 +3640,7 @@ msgstr ""
 msgid "Penalties require a time control with a single period."
 msgstr ""
 
-msgid "Penalty (handicap, seconds):"
+msgid "Penalty (seconds):"
 msgstr ""
 
 msgid "Pending"
@@ -3771,9 +3733,6 @@ msgstr ""
 msgid "Player ratings to use by default:"
 msgstr ""
 
-msgid "Player ratings to use:"
-msgstr ""
-
 msgid "Player selection (by alphabetical order)"
 msgstr ""
 
@@ -3843,10 +3802,6 @@ msgstr ""
 #, python-format
 msgid "Playing in tournament [%(uniq_id)s]"
 msgstr ""
-
-#, python-format
-msgid "Plays %(board)d *** BOARD STRING FOR PAIRINGS PRINT"
-msgstr "Plays on board %(board)d"
 
 msgid "Please ask your administrator to set a password."
 msgstr ""
@@ -4161,6 +4116,9 @@ msgstr "Rating"
 msgid "Rating ranges"
 msgstr ""
 
+msgid "Rating to use:"
+msgstr ""
+
 msgid "Rating type"
 msgstr ""
 
@@ -4396,6 +4354,9 @@ msgstr ""
 msgid "Rounds {min_round}-{max_round}"
 msgstr ""
 
+msgid "Rows per screen:"
+msgstr ""
+
 msgid "Rpd *** RAPID RATING ACRONYM"
 msgstr "Rpd"
 
@@ -4469,6 +4430,9 @@ msgid "Screen [{screen_uniq_id}] has been updated."
 msgstr ""
 
 msgid "Screen configuration has been updated."
+msgstr ""
+
+msgid "Screen exit button:"
 msgstr ""
 
 msgid "Screen families:"
@@ -4874,12 +4838,6 @@ msgstr ""
 msgid "The average of the ratings of the opponents played over the board."
 msgstr ""
 
-msgid "The background colour for Screens."
-msgstr ""
-
-msgid "The background colour of the alert messages."
-msgstr ""
-
 msgid "The board number the player will always be assigned to (use it for disabled people)."
 msgstr ""
 
@@ -4981,15 +4939,6 @@ msgstr ""
 
 #, python-format
 msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
-msgstr ""
-
-msgid "The name of the screen set."
-msgstr ""
-
-msgid "The name of the screen, displayed on event screens."
-msgstr ""
-
-msgid "The name of the timer."
 msgstr ""
 
 msgid "The network on which the devices are connected."
@@ -5115,9 +5064,6 @@ msgstr ""
 msgid "The sum of the scores of each of the opponents of the player."
 msgstr ""
 
-msgid "The text colour of the alert messages."
-msgstr ""
-
 msgid "The threshold can't be greater than the value of the last prize of the category ({value})."
 msgstr ""
 
@@ -5139,12 +5085,6 @@ msgstr ""
 msgid "The tournament of the screens of the family."
 msgstr ""
 
-msgid "The tournament of which you want to show the pairings."
-msgstr ""
-
-msgid "The tournament to print."
-msgstr ""
-
 msgid "The tournaments for which the staff member is a deputy arbiter."
 msgstr ""
 
@@ -5154,16 +5094,7 @@ msgstr ""
 msgid "The tournaments on which the permission is applied (by default, the permission is applied to all the tournaments)."
 msgstr ""
 
-msgid "The tournaments to print."
-msgstr ""
-
-msgid "The type of QR code to print."
-msgstr ""
-
 msgid "The type of criterion used to filter the players."
-msgstr ""
-
-msgid "The type of document to print."
 msgstr ""
 
 msgid "The username / password provided are not allowed to access this ChessEvent event."
@@ -5812,9 +5743,6 @@ msgstr ""
 msgid "Upload tournaments to the FFE"
 msgstr ""
 
-msgid "Upload:"
-msgstr ""
-
 msgid "Uploading of tournaments to Chess-Results.com."
 msgstr ""
 
@@ -5824,10 +5752,13 @@ msgstr ""
 msgid "Uploading tournament…"
 msgstr ""
 
-msgid "Use Event's default - {option}"
+msgid "Use Fore Buchholz"
 msgstr ""
 
-msgid "Use Fore Buchholz"
+msgid "Use default"
+msgstr ""
+
+msgid "Use default - {option}"
 msgstr ""
 
 msgid "Use pairing engines"
@@ -5836,7 +5767,7 @@ msgstr ""
 msgid "Use standard ratings"
 msgstr ""
 
-msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system. May be overridden on a per-tournament basis."
+msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system."
 msgstr ""
 
 msgid "Use the Staff tab to declare arbiters."
@@ -6222,9 +6153,6 @@ msgstr ""
 msgid "boards {board_numbers}"
 msgstr ""
 
-msgid "by default"
-msgstr ""
-
 msgid "defined in the event"
 msgstr ""
 
@@ -6451,3 +6379,13 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "The name of the screen, displayed on event screens."
+#~ msgstr ""
+
+#~ msgid "Upload:"
+#~ msgstr ""
+
+#~ msgid "use default"
+#~ msgstr ""
+

@@ -182,7 +182,7 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
             WebContext.value_to_form_data(True): _('Enabled'),
         }
         event_auto_upload = ChessResultsUtils.get_event_plugin_data(event).auto_upload
-        auto_upload_options[''] = _("Use Event's default - {option}").format(
+        auto_upload_options[''] = _('Use default - {option}').format(
             option=auto_upload_options[WebContext.value_to_form_data(event_auto_upload)]
         )
 

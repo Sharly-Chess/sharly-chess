@@ -156,6 +156,10 @@ body[data-bs-theme="dark"] #sidebar-expander {
     padding: 12px 0;
 }
 
+#top-nav-wrapper .form-check {
+    margin-bottom: 0;
+}
+
 body[data-bs-theme="dark"] #top-nav-wrapper {
     background-color: rgba(var(--bs-body-bg-rgb), 1);
 }
@@ -180,6 +184,31 @@ body[data-bs-theme="dark"] #top-nav-wrapper {
     position: sticky;
     left: 0;
     width: calc(var(--vw, 100vw) - var(--side-bar-width));
+}
+
+.input-block {
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: .25rem;
+}
+
+.input-block .form-check-label {
+    white-space: nowrap;
+    margin-right: 1rem;
+}
+
+.row .input-block:has(.form-switch) {
+    height: 100%;
+    align-items: center;
+}
+
+.pw-input-group {
+    flex-grow: 1;
+    width: auto;
+}
+
+.pw-input-group:has(input[type="number"]) {
+    width: 0;
 }
 
 .pw-input-group:has(.is-invalid) ~ .invalid-feedback,
@@ -824,4 +853,11 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
 input[type="color"].form-control {
     height: calc(1.5em + 0.75rem + 2px); /* line-height * font-size + padding-y + border */
     padding: 0;
+}
+
+.plugin-fields-container {
+    border: 1px solid var(--bs-border-color);
+    padding: 0.5rem 1rem;;
+    margin: 1rem 0;
+    background-color: rgba(var(--bs-body-bg-rgb), 0.30) ;
 }

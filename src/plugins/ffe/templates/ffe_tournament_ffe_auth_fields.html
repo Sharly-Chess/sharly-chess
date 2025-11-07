@@ -1,13 +1,12 @@
 {% import '/admin/common/macros.j2' as admin_macros %}
 
-<div class="auth-fields row">
+<div class="auth-fields row gy-2 gx-3">
     <div class="col-12 col-md-6">
         {{ admin_macros.number_input(
             name='ffe_id',
-            label=_('FFE certification number (optional):'),
+            label=_('FFE certification number:'),
             autocomplete='off',
             placeholder=_('E.g.: %(num)d', num=68991),
-            help_text='',
             hx_post=url_for('ffe-test-auth'),
             hx_trigger='input changed delay:500ms',
             hx_target="closest .auth-fields",
@@ -25,7 +24,6 @@
             label=_('FFE password:'),
             autocomplete='new-password',
             placeholder=_('E.g.: %(string)s', string='KYNPRTZMHX'),
-            help_text='',
             valid=ffe_auth_valid,
             password_visible=ffe_password_visible,
             hx_post=url_for('ffe-test-auth'),

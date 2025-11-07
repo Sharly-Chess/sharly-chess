@@ -58,7 +58,6 @@
                             name='last_name',
                             label=_('Name:'),
                             placeholder=_('E.g.: DOE'),
-                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -67,33 +66,29 @@
                             name='first_name',
                             label=_('First name:'),
                             placeholder=_('E.g.: John'),
-                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6 col-xl-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.date_input(
                             name='date_of_birth',
                             label=_('Date of birth:'),
-                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6 col-xl-3">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
                             name='gender',
                             label=_('Gender:'),
-                            help_text='',
                             select_options=gender_options,
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-xl-6">
+                    <div class="col-12">
                         {{ admin_macros.text_input(
                             name='club',
                             label=_('Club:'),
                             placeholder=_('E.g.: My favourite club!'),
-                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -118,7 +113,6 @@
                             {{ admin_macros.select_input(
                                 name='tournament_id',
                                 label=_('Tournament:'),
-                                help_text='',
                                 select_options=tournament_options,
                                 disabled=admin_player.has_real_pairings,
                                 data=data, errors=errors
@@ -133,7 +127,6 @@
                         {{ admin_macros.number_input(
                             name='fixed',
                             label=_('Fixed board:'),
-                            help_text='',
                             tooltip_text=_('The board number the player will always be assigned to (use it for disabled people).'),
                             min=1,
                             data=data, errors=errors
@@ -242,34 +235,32 @@
                     {{ _('FIDE') }}
                 </h4>
                 <div class="row gy-2 gx-3">
-                    <div class="col-12 col-sm-4">
+                    <div class="col-12 col-sm-6">
                         {{ admin_macros.number_input(
                             name='fide_id',
                             label=_('FIDE ID:'),
-                            help_text='',
                             disabled=true,
                             min=1,
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-sm-4">
-                        {{ admin_macros.select_input(
-                            name='title',
-                            label=_('FIDE Title:'),
-                            help_text='',
-                            select_options=title_options,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-sm-4">
+                    <div class="col-12 col-sm-6">
                         {{ admin_macros.select_input(
                             name='federation',
                             label=_('Federation:'),
-                            help_text='',
                             select_options=federation_options,
                             data=data, errors=errors
                         ) }}
                     </div>
+                    <div class="col-12 col-sm-6">
+                        {{ admin_macros.select_input(
+                            name='title',
+                            label=_('FIDE Title:'),
+                            select_options=title_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+
                 </div>
 
                 {% for form_fields_template in plugin_form_fields_templates %}
@@ -285,7 +276,6 @@
                             name='mail',
                             label=_('Email:'),
                             placeholder=_('E.g.: john.doe@chess.com'),
-                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -293,7 +283,6 @@
                         {{ admin_macros.text_input(
                             name='phone',
                             label=_('Phone number:'),
-                            help_text='',
                             data=data, errors=errors
                         ) }}
                         {# TODO add an example depending on the federation placeholder=_('E.g.: %(phone_number)s', phone_number=admin_event.phone_number_example), #}
@@ -304,7 +293,6 @@
                         {{ admin_macros.number_input(
                             name='owed',
                             label=_('Owed:'),
-                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -312,7 +300,6 @@
                         {{ admin_macros.number_input(
                             name='paid',
                             label=_('Paid:'),
-                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -320,7 +307,6 @@
                         {{ admin_macros.text_input(
                             name='comment',
                             label=_('Comment:'),
-                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>

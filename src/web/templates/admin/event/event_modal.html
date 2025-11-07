@@ -34,9 +34,9 @@
                     <div class="col-12 col-md-6">
                         {{ admin_macros.switch_input(
                             name='public',
-                            label=_('Visibility:'),
+                            label='',
                             placeholder=_('Public event'),
-                            help_text=_('Only allowed users can see private events.'),
+                            tooltip_text=_('Only allowed users can see private events.'),
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -56,7 +56,7 @@
                             {{ admin_macros.select_input(
                                 name='federation',
                                 label=_('Federation:'),
-                                help_text=_(
+                                tooltip_text=_(
                                     'Sharly Chess may provide functionality specific '
                                     'to the federation chosen for each event.'
                                 ),
@@ -75,7 +75,6 @@
                             name='name',
                             label=_('Name:'),
                             placeholder=_('E.g.: World championship'),
-                            help_text='',
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -86,7 +85,6 @@
                         {{ admin_macros.datetime_input(
                             name='start',
                             label=_('Start:'),
-                            help_text='',
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -95,7 +93,6 @@
                         {{ admin_macros.datetime_input(
                             name='stop',
                             label=_('End:'),
-                            help_text='',
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -107,7 +104,7 @@
                             {{ admin_macros.select_input(
                                 name='player_rating_type',
                                 label=_('Player ratings to use by default:'),
-                                help_text=_(
+                                tooltip_text=_(
                                     'May be overridden on a per-tournament basis.',
                                 ),
                                 select_options=player_rating_type_options,
@@ -120,7 +117,6 @@
                             name='location',
                             label=_('%(string)s:', string=_('Location')),
                             placeholder=_('E.g.: Paris'),
-                            help_text='',
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -156,7 +152,7 @@
                                     ) }}
                                 </span>
                                 {% if plugin.event_form_fields_template %}
-                                    <div id="{{ plugin.form_key }}-fields-container" class="mt-2">
+                                    <div id="{{ plugin.form_key }}-fields-container" class="mt-2 plugin-fields-container">
                                         {% include plugin.event_form_fields_template %}
                                     </div>
                                     <script>
