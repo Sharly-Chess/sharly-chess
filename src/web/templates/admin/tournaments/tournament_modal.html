@@ -58,17 +58,13 @@
                         ) }}
                     </div>
                     <div class="col-12 col-md-6">
-                        <span id="player-rating-type-container">
-                            {{ admin_macros.select_input(
-                                name='player_rating_type',
-                                label=_('Rating to use:'),
-                                tooltip_text=_(
-                                    'Affects the rating that will be chosen for each player.',
-                                ),
-                                select_options=player_rating_type_options,
-                                data=data, errors=errors
-                            ) }}
-                        </span>
+                        {{ admin_macros.select_input(
+                            name='player_rating_type',
+                            label=_('Rating to use:'),
+                            tooltip_text=_('Affects the rating that will be chosen for each player.'),
+                            select_options=player_rating_type_options,
+                            data=data, errors=errors
+                        ) }}
                     </div>
                 </div>
                 <div class="row gy-2 gx-3">
@@ -132,21 +128,16 @@
                     {{ _('Pairings') }}
                 </h4>
                 <div class="row gy-2 gx-3">
-                    <div
-                        class="col-12 col-md-6"
-                        {% if admin_tournament.started %}
-                            {{ macros.tooltip_attributes(
-                                'info',
-                                _('This field can\'t be modified once the tournament has started.'),
-                                'top'
-                            ) }}
-                        {% endif %}
-                    >
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
                             name='pairing_system',
                             label=_('%(string)s:', string=_('Pairing system')),
                             select_options=pairing_system_options,
                             disabled=admin_tournament.started,
+                            input_tooltip=(
+                                _('This field can\'t be modified once the tournament has started.')
+                                if admin_tournament.started else ''
+                            ),
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -157,19 +148,16 @@
                         <div
                             class="col-12 col-md-6"
                             id="{{ pairing_system.variation_container_id }}"
-                            {% if admin_tournament.started %}
-                                {{ macros.tooltip_attributes(
-                                    'info',
-                                    _('This field can\'t be modified once the tournament has started.'),
-                                    'top'
-                                ) }}
-                            {% endif %}
                         >
                             {{ admin_macros.select_input(
                                 name=pairing_system.variation_field_id,
                                 label=_('%(string)s:', string=_('Variation')),
                                 select_options=pairing_system.variation_manager(admin_event).options(),
                                 disabled=admin_tournament.started,
+                                input_tooltip=(
+                                    _('This field can\'t be modified once the tournament has started.')
+                                    if admin_tournament.started else ''
+                                ),
                                 data=data, errors=errors
                             ) }}
                         </div>

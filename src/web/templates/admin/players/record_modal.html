@@ -169,45 +169,39 @@
                             {% if bye_modifiable_for_round %}
                                 <td colspan="5" class="text-nowrap text-start">
                                     {% if bye_definition_allowed %}
-                                        <span
-                                            {% if pairing.half_point_bye and not can_set_hpb %}
-                                                {{ macros.tooltip_attributes(
-                                                    'info', _('You are not allowed to modify Half-Point Byes.'), 'top'
-                                                ) }}
-                                            {% elif pairing.full_point_bye and not can_set_fpb %}
-                                                {{ macros.tooltip_attributes(
-                                                    'info', _('You are not allowed to modify Full-Point Byes.'), 'top'
-                                                ) }}
-                                            {% endif %}
-                                        >
-                                            {{ admin_macros.select_input(
-                                                name=name,
-                                                label='',
-                                                select_options=get_bye_options(client, admin_player, round),
-                                                tooltip_select=true,
-                                                disabled=(
-                                                    (pairing.half_point_bye and not can_set_hpb)
-                                                    or (pairing.full_point_bye and not can_set_fpb)
-                                                ),
-                                                data=data,
-                                            ) }}
-                                            <script>
-                                                $('#{{ id }}').change(function () {
-                                                    htmx.ajax('PATCH',
-                                                        "{{ url_for(
-                                                            'admin-player-set-bye',
-                                                            event_uniq_id=admin_event.uniq_id,
-                                                            player_id=admin_player.id,
-                                                            round=round
-                                                        ) }}?result=" + $(this).val(),
-                                                        {
-                                                            target: "body",
-                                                            swap: "outerHTML",
-                                                        },
-                                                    );
-                                                });
-                                            </script>
-                                        </span>
+                                        {{ admin_macros.select_input(
+                                            name=name,
+                                            label='',
+                                            select_options=get_bye_options(client, admin_player, round),
+                                            tooltip_select=true,
+                                            disabled=(
+                                                (pairing.half_point_bye and not can_set_hpb)
+                                                or (pairing.full_point_bye and not can_set_fpb)
+                                            ),
+                                            input_tooltip=(
+                                                _('You are not allowed to modify Half-Point Byes.')
+                                                if (pairing.half_point_bye and not can_set_hpb) else
+                                                _('You are not allowed to modify Full-Point Byes.')
+                                                if (pairing.full_point_bye and not can_set_fpb) else ''
+                                            ),
+                                            data=data,
+                                        ) }}
+                                        <script>
+                                            $('#{{ id }}').change(function () {
+                                                htmx.ajax('PATCH',
+                                                    "{{ url_for(
+                                                        'admin-player-set-bye',
+                                                        event_uniq_id=admin_event.uniq_id,
+                                                        player_id=admin_player.id,
+                                                        round=round
+                                                    ) }}?result=" + $(this).val(),
+                                                    {
+                                                        target: "body",
+                                                        swap: "outerHTML",
+                                                    },
+                                                );
+                                            });
+                                        </script>
                                     {% else %}
                                         {{ admin_player.not_paired_str }}
                                     {% endif %}

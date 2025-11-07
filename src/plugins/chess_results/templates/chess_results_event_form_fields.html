@@ -3,7 +3,7 @@
         {{ admin_macros.switch_input(
             name='auto_upload',
             label='',
-            placeholder=_('Auto-upload results to Chess-Results.com'),
+            placeholder=_('Auto-upload results'),
             disabled=not client.can_update_event,
             data=data, errors=errors
         ) }}

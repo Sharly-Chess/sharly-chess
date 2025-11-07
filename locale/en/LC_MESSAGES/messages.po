@@ -679,10 +679,7 @@ msgstr ""
 msgid "Auto-upload enabled"
 msgstr ""
 
-msgid "Auto-upload results to Chess-Results.com"
-msgstr ""
-
-msgid "Auto-upload results to FFE site"
+msgid "Auto-upload results"
 msgstr ""
 
 msgid "Auto-upload:"

@@ -19,7 +19,7 @@
         $('#player-rating-type').val('3');
         $('#player-rating-type').prop('disabled', true);
 
-        const ratingTypeContainer = document.getElementById('player-rating-type-container');
+        const ratingTypeContainer = document.getElementById('player-rating-type-input-container');
         new bootstrap.Tooltip(ratingTypeContainer, {
             title: '{{ _('The FFE always uses the FIDE rating when available.') }}',
             placement: 'top',
