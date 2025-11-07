@@ -5,6 +5,8 @@ from pathlib import Path
 from types import ModuleType
 from typing import TYPE_CHECKING, Any, NamedTuple, Self
 
+from pluggy import PluginManager
+
 from common import TEST_ENV
 from packaging.version import Version
 
@@ -263,6 +265,10 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
 
         assert self.base_migration_module is not None
         return PluginMigrationManager(database, self.base_migration_module, self)
+
+    def init(self, plugin_manager: PluginManager):
+        """Method called when the plugin is registered."""
+        pass
 
     def on_enable(self):
         """Method called when the plugin is enabled."""

@@ -1,12 +1,13 @@
 import copy
 from datetime import date
 import re
+from pluggy import PluginManager
 
 from collections import Counter
 from collections.abc import Callable
 
 from types import ModuleType
-from typing import Any, TYPE_CHECKING, Iterable, Optional
+from typing import Any, TYPE_CHECKING, Iterable, Optional, override
 
 from litestar.plugins.htmx import HTMXRequest
 from packaging.version import Version
@@ -41,7 +42,7 @@ from plugins.ffe.ffe_tournament_importers import (
     PapiJsonTournamentImporter,
     PapiTournamentImporter,
 )
-from plugins.ffe.papi_converter import PapiConverter
+from plugins.ffe.papi_converter import PapiConverter, PapiPlayer
 from plugins.ffe.utils import (
     FFE_DEFAULT_UPLOAD_DELAY,
     FFE_MIN_UPLOAD_DELAY,
@@ -84,7 +85,7 @@ from plugins.ffe.ffe_tie_breaks import (
     PapiBuchholzTypeOption,
 )
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
-from plugins.hookspec import ExtraAdminColumn, hookimpl
+from plugins.hookspec import ExtraAdminColumn, hookimpl, hookspec
 from plugins.migration import PluginMigrationManager
 from plugins.utils import (
     ExtraStatisticsSection,
@@ -103,6 +104,12 @@ if TYPE_CHECKING:
     from database.sqlite.event.event_store import StoredEvent
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredTournament
+
+
+class FfePluginHooks:
+    @hookspec
+    def update_papi_player(self, papi_player: PapiPlayer, player: Player):
+        """Called when a player is converted to Papi format"""
 
 
 class FfePlugin(Plugin):
@@ -127,6 +134,12 @@ class FfePlugin(Plugin):
     @property
     def version(self) -> Version:
         return Version('0.1.1')
+
+    @override
+    def init(self, plugin_manager: PluginManager):
+        super().init(plugin_manager)
+
+        plugin_manager.add_hookspecs(FfePluginHooks)
 
     @property
     def default_is_enabled(self) -> bool:

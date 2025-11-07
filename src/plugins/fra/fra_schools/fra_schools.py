@@ -14,6 +14,7 @@ from database.sqlite.local_source_database import LocalSourceDatabase
 from database.sqlite.event.event_store import StoredTournament
 from data.columns import player_table, player_datasheet
 from plugins import PLUGINS_DIR
+from plugins.ffe.papi_converter import PapiPlayer
 from plugins.fra.fra_schools import PLUGIN_NAME
 from plugins.fra.fra_schools.fra_schools_controller import FRASchoolsController
 from plugins.fra.fra_schools.fra_schools_database import FRASchoolsDatabase
@@ -219,3 +220,13 @@ class FRASchoolsPlugin(Plugin):
         lps: type[PlayerSplitter] = FraSchoolPlayerSplitter
         cps: type[PlayerSplitter] = ClubPlayerSplitter
         PluginUtils.replace_on_equals(player_splitter_types, lps, cps)
+
+    # ---------------------------------------------------------------------------------
+    # Plugin hooks
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def update_papi_player(self, papi_player: PapiPlayer, player: Player):
+        papi_player.club = (
+            FRASchoolsUtils.get_player_plugin_data(player).school_name or ''
+        )
