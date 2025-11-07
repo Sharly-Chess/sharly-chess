@@ -8,16 +8,7 @@
 {% elif search %}
     {% if search_results %}
         {% for school in search_results %}
-            <li class="dropdown-item text-nowrap btn"
-                hx-vals='js:{
-                    tournament_id: $("#tournament-id").val(),
-                    {% if admin_player %}player_id: {{ admin_player.id }}{% endif %}
-                }'
-                hx-target="body"
-                hx-indicator="#please-wait"
-            >
-                {% include "fra_schools_search_result.html" %}
-            </li>
+            {% include "fra_schools_search_result.html" %}
             {% if loop.last and has_more_results %}
                 <li
                     class="dropdown-item text-nowrap"
@@ -32,10 +23,6 @@
                 </li>
             {% endif %}
         {% endfor %}
-    {% else %}
-        <li class="dropdown-item no-hover text-nowrap">
-            <span class="fst-italic">{{ _('No results.') }}</span>
-        </li>
     {% endif %}
     <script>
         $('#fra-schools-search-results').show();

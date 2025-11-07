@@ -29,7 +29,7 @@ from data.print_documents.documents import QRCodePrintDocument, TournamentPrintO
 from data.print_documents.qrcode_types import QRCodeType
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredPlayer
-from database.sqlite.local_source_database import LocalSourceDatabase
+from database.sqlite.local_source_database import LocalSourcePlayerDatabase
 from plugins.ffe import PLUGIN_NAME, PLUGIN_DIR
 from plugins.ffe.ffe_database import FfeDatabase, PlayerFFELicence
 from plugins.ffe.ffe_sql_server import FFESqlServer
