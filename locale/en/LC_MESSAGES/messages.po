@@ -2264,6 +2264,9 @@ msgstr ""
 msgid "Filter the licences."
 msgstr ""
 
+msgid "Filter the schools."
+msgstr ""
+
 msgid "Filter the tournaments."
 msgstr ""
 
@@ -4665,6 +4668,9 @@ msgid "Sort the players by rating (less rated first)."
 msgstr ""
 
 msgid "Sort the players by rating (most rated first)."
+msgstr ""
+
+msgid "Sort the players by school."
 msgstr ""
 
 msgid "Sort the players by tournament."
