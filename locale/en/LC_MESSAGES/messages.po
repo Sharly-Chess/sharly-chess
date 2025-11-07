@@ -6394,19 +6394,3 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "The name of the screen, displayed on event screens."
-#~ msgstr ""
-
-#~ msgid "Upload:"
-#~ msgstr ""
-
-#~ msgid "use default"
-#~ msgstr ""
-
-#~ msgid "Handling of players without a FIDE rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating."
-#~ msgstr ""
-
-#~ msgid "Points"
-#~ msgstr ""
-

@@ -6394,15 +6394,3 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
-#~ msgid "The name of the screen, displayed on event screens."
-#~ msgstr "Le nom de l'écran, affiché sur les écrans des évènements."
-
-#~ msgid "Upload:"
-#~ msgstr "Mise en ligne :"
-
-#~ msgid "use default"
-#~ msgstr "par défaut"
-
-#~ msgid "Handling of players without a FIDE rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating."
-#~ msgstr "Gestion des joueur·euses sans classement FIDE rapide/blitz. Pour le calcul des classements FIDE, ces joueur·euses sont considéré·es comme classé·es avec leur classement FIDE standard."
