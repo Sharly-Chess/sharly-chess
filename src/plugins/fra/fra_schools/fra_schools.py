@@ -28,7 +28,7 @@ from plugins.fra.fra_schools.fra_schools_event_controller import (
 )
 from plugins.fra.fra_schools.fra_schools_session_handler import FRASchoolsSessionHandler
 from plugins.fra.fra_schools.utils import FRASchoolsPlayerPluginData, FRASchoolsUtils
-from plugins.ffe.ffe import FfePlugin
+from plugins.ffe.ffe import FfeLeagueTableColumn, FfePlugin
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.hookspec import ExtraAdminColumn, hookimpl
 from plugins.manager import Path
@@ -206,6 +206,14 @@ class FRASchoolsPlugin(Plugin):
 
     @hookimpl
     def alter_print_document_player_columns(self, player_columns: list[PlayerColumn]):
+        # Remove FederationColumn and LeagueColumn
+        player_columns[:] = [
+            col
+            for col in player_columns
+            if not isinstance(
+                col, (player_table.FederationColumn, FfeLeagueTableColumn)
+            )
+        ]
         index = next(
             (
                 i
