@@ -5,9 +5,9 @@ from utils.entity import IdentifiableEntity
 
 
 class PlaceCardCropMarks(IdentifiableEntity, ABC):
-    solid_style: str = '1px solid black'
-    dashed_style: str = '1px dashed black'
-    dotted_style: str = '1px dotted black'
+    solid_style: str = '1px solid #000'
+    dashed_style: str = '1px dashed #000'
+    dotted_style: str = '1px dotted #aaa'
 
     @property
     def border_style(self) -> str:
@@ -76,10 +76,10 @@ class BorderPlaceCardCropMarks(PlaceCardCropMarks):
             },
             ', '.join(
                 [
-                    '.side-back .card-cell.bottom',
+                    '.side-front',
                 ]
             ): {
-                'border-bottom': self.dotted_style,
+                'border-top': self.dotted_style,
             },
         }
 
@@ -140,10 +140,8 @@ class CornersPlaceCardCropMarks(PlaceCardCropMarks):
             },
             ', '.join(
                 [
-                    '.side-back .card-cell.top.right',
-                    '.side-front .card-cell.bottom.right',
-                    '.side-single .card-cell.top.right',
-                    '.side-single .card-cell.bottom.right',
+                    '.card-cell.top.right',
+                    '.card-cell.bottom.right',
                 ]
             ): {
                 'border-right': self.border_style,
@@ -160,12 +158,17 @@ class CornersPlaceCardCropMarks(PlaceCardCropMarks):
             },
             ', '.join(
                 [
-                    '.side-back .card-cell.top.left',
-                    '.side-single .card-cell.top.left',
-                    '.side-front .card-cell.bottom.left',
-                    '.side-single .card-cell.bottom.left',
+                    '.card-cell.top.left',
+                    '.card-cell.bottom.left',
                 ]
             ): {
                 'border-left': self.border_style,
+            },
+            ', '.join(
+                [
+                    '.side-front',
+                ]
+            ): {
+                'border-top': self.dotted_style,
             },
         }
