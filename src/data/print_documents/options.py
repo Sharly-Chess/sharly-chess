@@ -474,6 +474,7 @@ class PlaceCardTemplatePrintOption(PrintOption):
                 {
                     'id': place_card_template.id,
                     'name': place_card_template.name,
+                    'tooltip': place_card_template.tooltip,
                 }
                 for place_card_template in place_card_templates
             ]

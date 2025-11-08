@@ -1,3 +1,4 @@
+import html
 import logging
 from pathlib import Path
 from typing import Any
@@ -49,7 +50,7 @@ class PlaceCardTemplate:
         if self.embedded:
             self.id = toml_file.stem
         else:
-            self.id = f'{toml_file.parent}/{toml_file.stem}'
+            self.id = f'{toml_file.parent.name}/{toml_file.stem}'
         self.font_paths: list[Path] = [
             toml_file.parent / 'fonts',
             BASE_DIR / 'src/web/static/fonts',
@@ -123,9 +124,20 @@ class PlaceCardTemplate:
                         custom_data, section=section, default_style=default_item_style
                     )
                 )
-        self.items = [item for item in items if item.type == 'image'] + [
-            item for item in items if item.type != 'image'
-        ]
+        self.items: list[PlaceCardItem] = [
+            item for item in items if item.type == 'image'
+        ] + [item for item in items if item.type != 'image']
+        self.tooltip: str = f"""
+<div><b>{_('Name: {name}').format(name=html.escape(self.name))}</b></div>
+<div>{_('Creator: {creator}').format(creator=html.escape(self.creator))}</div>
+<iframe
+        src="/"
+        style="width: {self.width}{self.unit}; height: {(2 if any(item.back for item in self.items) else 1) * self.height}{self.unit};"
+        width="320" height="240"
+>
+</iframe>
+"""
+
         self.error = custom_data.error
 
     @property

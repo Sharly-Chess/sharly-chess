@@ -4,6 +4,7 @@
         label=_('Template:'),
         help_text=_('The Place Card template to use.'),
         select_options={},
+        tooltip_select=true,
         data=data, errors=errors
     ) }}
 </div>
@@ -12,7 +13,6 @@
     $(document).ready(function() {
         const placeCardTypeSelect = $('.modal #place-card-type');
         const placeCardTemplateSelect = $('.modal #{{option.id}}');
-
         const placeCardTemplatesPerType = {{ option.place_card_templates_per_type | tojson }};
 
         function updatePlaceCardTemplates() {
@@ -27,6 +27,7 @@
                     $('<option>', {
                         value: placeCardTemplate.id,
                         text: placeCardTemplate.name,
+                        title: placeCardTemplate.tooltip,
                     })
             );
 
