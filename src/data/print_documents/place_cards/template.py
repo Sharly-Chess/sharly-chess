@@ -40,20 +40,25 @@ class PlaceCardTemplate:
         )
 
         self.embedded: bool = embedded
-        self.image_path: Path
-        self.font_path: Path
         self.id: str
         self.default_font_file = (
             BASE_DIR / 'src/web/static/fonts/AtkinsonHyperlegibleNextVF-Variable.ttf'
         )
+        self.default_image_file = (
+            BASE_DIR / 'src/web/static/images/sharly-chess-logo.svg'
+        )
         if self.embedded:
             self.id = toml_file.stem
-            self.font_path = BASE_DIR / 'src/web/static/fonts'
-            self.image_path = BASE_DIR / 'src/web/static/images'
         else:
             self.id = f'{toml_file.parent}/{toml_file.stem}'
-            self.font_path = toml_file.parent / 'fonts'
-            self.image_path = toml_file.parent / 'images'
+        self.font_paths: list[Path] = [
+            toml_file.parent / 'fonts',
+            BASE_DIR / 'src/web/static/fonts',
+        ]
+        self.image_paths: list[Path] = [
+            toml_file.parent / 'images',
+            BASE_DIR / 'src/web/static/images',
+        ]
         custom_data = TOMLContainer(toml_file)
         for property in custom_data.get_section_properties(''):
             match property:
@@ -109,7 +114,7 @@ class PlaceCardTemplate:
                         custom_data,
                         section=section,
                         default_style=default_item_style,
-                        image_path=self.image_path,
+                        images_path=self.image_paths,
                         unit=self.unit,
                     )
                 )
@@ -132,14 +137,17 @@ class PlaceCardTemplate:
     def font_file(self) -> Path:
         if not self.font:
             return self.default_font_file
-        file: Path = self.font_path / self.font
-        if not file.parent.samefile(self.font_path):
-            logger.warning('Invalid font filename [%s].', self.font)
+        if not (Path() / self.font).parent.samefile(Path()):
+            logger.debug('Invalid font filename [%s].', self.font)
             return self.default_font_file
-        if not file.is_file():
-            logger.warning('Font file [%s] not found.', file)
-            return self.default_font_file
-        return file
+        for font_path in self.font_paths:
+            file: Path = font_path / self.font
+            if not file.is_file():
+                logger.warning('Font file [%s] not found.', file)
+                continue
+            return file
+        logger.warning('Font file [%s] not found.', self.font)
+        return self.default_font_file
 
     def template_context(
         self,

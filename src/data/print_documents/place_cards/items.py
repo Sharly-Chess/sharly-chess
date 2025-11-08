@@ -283,7 +283,7 @@ class PlaceCardImage(PlaceCardItem):
         data: TOMLContainer,
         section: str,
         default_style: PlaceCardItemStyle,
-        image_path: Path,
+        images_path: list[Path],
         unit: str,
     ):
         super().__init__(data, section, default_style)
@@ -296,7 +296,7 @@ class PlaceCardImage(PlaceCardItem):
                 self.width,
                 self.height,
             )
-        self.image_path: Path = image_path
+        self.image_paths: list[Path] = images_path
 
     @property
     def type(self) -> str:
@@ -319,27 +319,35 @@ class PlaceCardImage(PlaceCardItem):
     ) -> str:
         return f'<img class="card-item image {self.css_class}" />'
 
+    @property
+    def image_file(
+        self,
+    ) -> Path | None:
+        if not (Path() / self.image).parent.samefile(Path()):
+            logger.warning('Invalid image filename [%s].', self.image)
+            return None
+        for image_path in self.image_paths:
+            file: Path = image_path / self.image
+            if not file.is_file():
+                logger.debug('Image file [%s] not found.', file)
+                continue
+            return file
+        logger.warning('Image file [%s] not found.', self.image)
+        return None
+
     def render_js(
         self,
     ) -> str:
-        file: Path = self.image_path / self.image
-        error: bool = False
-        if not file.parent.samefile(self.image_path):
-            logger.warning('Invalid image filename [%s].', self.image)
-            error = True
-        elif not file.is_file():
-            logger.warning('Image file [%s] not found.', file)
-            error = True
-        if error:
+        if self.image_file:
             return f"""
             $(document).ready(function() {{
-                $(".card-item.{self.css_class}").addClass("error");
+                $(".card-item.{self.css_class}").attr("src", "{image_file_inline_url(self.image_file)}");
             }});
             """
         else:
             return f"""
             $(document).ready(function() {{
-                $(".card-item.{self.css_class}").attr("src", "{image_file_inline_url(file)}");
+                $(".card-item.{self.css_class}").addClass("error");
             }});
             """
 

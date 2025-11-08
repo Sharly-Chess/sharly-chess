@@ -1,5 +1,5 @@
 type = "player"
-name = "{{ _('Basic') }}"
+name = "{{ _('Standard') }}"
 creator = "Sharly Chess <support@sharly-chess.com>"
 
 [player_name]
@@ -14,9 +14,13 @@ font_size = 18.0
 bold = true
 h_align = "right"
 
-[player_category_club]
-text = "{{ player.category }} {{ player.federation }} {% if player.club %}- {{ player.club }}{% endif %}"
+[player_origin]
+text = "{{ player.federation }} {% if player.club %}- {{ player.club }}{% endif %}"
 v_pos = 8.0
+
+[player_category]
+text = "{{ player.category }}"
+v_pos = 14.0
 
 [event]
 text = "{{ event.name }}"

@@ -1335,7 +1335,10 @@ class PlaceCardPrintDocument(PrintDocument):
                     for place_card_template in place_card_templates
                     if place_card_template.type == place_card_type
                 ),
-                key=lambda template: (template.embedded, template.id),
+                key=lambda template: (
+                    template.embedded,
+                    template.id if template.embedded else template.name,
+                ),
             )
             for place_card_type in PrintPlaceCardTypeManager().objects()
         }
