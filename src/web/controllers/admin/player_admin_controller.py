@@ -1304,7 +1304,7 @@ class PlayerAdminController(BaseEventAdminController):
                 round_for_participation,
                 tournament.rounds + 1,
             )
-            if player.pairings[round_].unplayed
+            if player.pairings[round_].unpaired
         }
         tournament.set_player_byes(player, new_byes)
 
