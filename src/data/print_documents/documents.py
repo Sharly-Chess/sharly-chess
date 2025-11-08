@@ -1207,7 +1207,6 @@ class PlaceCardPrintDocument(PrintDocument):
     @property
     def mirror(self) -> bool:
         return self._get_option(PlaceCardMirrorPrintOption).value
-        return self.get_option_values()[4]
 
     @property
     def board_numbers(self) -> set[int]:
