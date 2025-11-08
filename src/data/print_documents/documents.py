@@ -536,12 +536,20 @@ class BoardPrintDocument(PrintDocument, ABC):
                 at_round,
             )
         if at_round.value > self.tournament.current_round:
-            raise OptionError(
-                _(
-                    'There is no pairings for this round (last round with pairings: #{round}).'
-                ).format(round=self.tournament.current_round),
-                at_round,
-            )
+            if self.tournament.pairing_system == SwissPairingSystem():
+                raise OptionError(
+                    _(
+                        'There are no pairings for this round (last round with pairings: #{round}).'
+                    ).format(round=self.tournament.current_round),
+                    at_round,
+                )
+            else:
+                raise OptionError(
+                    _("This round hasn't started (current round: #{round}).").format(
+                        round=self.tournament.current_round
+                    ),
+                    at_round,
+                )
 
 
 class PairingPrintDocument(PrintDocument):
@@ -649,10 +657,6 @@ class ResultPrintDocument(BoardPrintDocument):
     def title(self) -> str:
         return _('Results for round #{round}').format(round=self.at_round)
 
-    @staticmethod
-    def available_options() -> list[type[PrintOption]]:
-        return [TournamentPrintOption]
-
     @override
     @property
     def show_results(self) -> bool:
@@ -759,6 +763,8 @@ class BergerGridPrintDocument(PrintDocument):
     def template_context(self) -> dict[str, Any]:
         self.tournament.compute_player_ranks()
         return {
+            'document': self,
+            'tournament': self.tournament,
             'result_grid': self.build_result_grid(),
             'grid_id_by_player_id': self.grid_id_by_player_id,
         }

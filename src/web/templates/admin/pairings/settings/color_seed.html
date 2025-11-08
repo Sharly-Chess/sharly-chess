@@ -1,23 +1,9 @@
 <div class="row gy-2 gx-3">
-    <span
-        {% if admin_tournament.started %}
-            {{ macros.tooltip_attributes(
-                'info',
-                _("Seed color can't be modified once the tournament has started."),
-                'top'
-            ) }}
-        {% endif %}
-    >
-        {{ admin_macros.select_input(
-            name=setting.id,
-            label=_('%(string)s:', string=setting.name),
-            help_text=_('The color attributed to the highest ranked player at the first round.'),
-            select_options=setting.options,
-            disabled=admin_tournament.started,
-            data=data, errors=errors
-        ) }}
-        {% if admin_tournament.started %}
-            <input type="hidden" name="{{ setting.id }}" value="{{ data[setting.id] }}" />
-        {% endif %}
-    </span>
+    {{ admin_macros.select_input(
+        name=setting.id,
+        label=_('%(string)s:', string=setting.name),
+        tooltip_text=_('The color attributed to the highest ranked player at the first round.'),
+        select_options=setting.options,
+        data=data, errors=errors
+    ) }}
 </div>

@@ -36,7 +36,6 @@
                             name='name',
                             label=_('Name:'),
                             placeholder=_('E.g.: Main tournament'),
-                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -45,7 +44,6 @@
                         {{ admin_macros.number_input(
                             name='rounds',
                             label=_('%(string)s:', string=_('Rounds')),
-                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -55,23 +53,18 @@
                         {{ admin_macros.select_input(
                             name='rating',
                             label=_('Rating:'),
-                            help_text='',
                             select_options=rating_options,
                             data=data, errors=errors
                         ) }}
                     </div>
                     <div class="col-12 col-md-6">
-                        <span id="player-rating-type-container">
-                            {{ admin_macros.select_input(
-                                name='player_rating_type',
-                                label=_('Player ratings to use:'),
-                                help_text=_(
-                                    'Affects the rating that will be chosen for each player.',
-                                ),
-                                select_options=player_rating_type_options,
-                                data=data, errors=errors
-                            ) }}
-                        </span>
+                        {{ admin_macros.select_input(
+                            name='player_rating_type',
+                            label=_('Rating to use:'),
+                            tooltip_text=_('Affects the rating that will be chosen for each player.'),
+                            select_options=player_rating_type_options,
+                            data=data, errors=errors
+                        ) }}
                     </div>
                 </div>
                 <div class="row gy-2 gx-3">
@@ -79,7 +72,6 @@
                         {{ admin_macros.datetime_input(
                             name='start',
                             label=_('Start:'),
-                            help_text=_('Defaults to %(datetime)s', datetime=admin_event.formatted_start_date_time),
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -87,7 +79,6 @@
                         {{ admin_macros.datetime_input(
                             name='stop',
                             label=_('End:'),
-                            help_text=_('Defaults to %(datetime)s', datetime=admin_event.formatted_stop_date_time),
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -96,7 +87,6 @@
                             name='location',
                             label=_('%(string)s:', string=_('Location')),
                             placeholder=admin_event.location or _('E.g.: Paris'),
-                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -111,9 +101,6 @@
                         {{ admin_macros.select_input(
                             name='override_unrated_rapid_blitz',
                             label=_('Seeding of unrated rapid/blitz'),
-                            help_text=_(
-                                'Handling of players without a FIDE rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating.',
-                            ),
                             doc_icon='standard-rating',
                             select_options=override_unrated_rapid_blitz_options,
                             data=data, errors=errors
@@ -138,22 +125,16 @@
                     {{ _('Pairings') }}
                 </h4>
                 <div class="row gy-2 gx-3">
-                    <div
-                        class="col-12 col-md-6"
-                        {% if admin_tournament.started %}
-                            {{ macros.tooltip_attributes(
-                                'info',
-                                _('This field can\'t be modified once the tournament has started.'),
-                                'top'
-                            ) }}
-                        {% endif %}
-                    >
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
                             name='pairing_system',
                             label=_('%(string)s:', string=_('Pairing system')),
-                            help_text='',
                             select_options=pairing_system_options,
                             disabled=admin_tournament.started,
+                            input_tooltip=(
+                                _('This field can\'t be modified once the tournament has started.')
+                                if admin_tournament.started else ''
+                            ),
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -164,23 +145,16 @@
                         <div
                             class="col-12 col-md-6"
                             id="{{ pairing_system.variation_container_id }}"
-                            {% if pairing_system.id != data['pairing_system'] %}
-                                style="display:none"
-                            {% endif %}
-                            {% if admin_tournament.started %}
-                                {{ macros.tooltip_attributes(
-                                    'info',
-                                    _('This field can\'t be modified once the tournament has started.'),
-                                    'top'
-                                ) }}
-                            {% endif %}
                         >
                             {{ admin_macros.select_input(
                                 name=pairing_system.variation_field_id,
                                 label=_('%(string)s:', string=_('Variation')),
                                 select_options=pairing_system.variation_manager(admin_event).options(),
-                                help_text='',
                                 disabled=admin_tournament.started,
+                                input_tooltip=(
+                                    _('This field can\'t be modified once the tournament has started.')
+                                    if admin_tournament.started else ''
+                                ),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -194,12 +168,14 @@
                             {% for pairing_system in pairing_systems %}
                                 elements = $('#{{ pairing_system.variation_container_id }}');
                                 if ($(this).val() === '{{ pairing_system.id }}') {
+                                    $('#pab-value-container').{% if pairing_system.hide_pab_value_field %}hide(){% else %}show(){% endif %};
                                     elements.show();
                                 } else {
                                     elements.hide();
                                 }
                             {% endfor %}
                         });
+                        $('#pairing-system').trigger('change');
                     </script>
                 </div>
                 <div class="row gy-2 gx-3">
@@ -208,7 +184,6 @@
                             name='first_board_number',
                             label=_('First board number:'),
                             placeholder=sharly_chess_config.default_first_board_number,
-                            help_text='',
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -217,7 +192,7 @@
                             name='max_byes',
                             label=_('Max byes:'),
                             placeholder=sharly_chess_config.default_max_byes,
-                            help_text=_('The maximum number of byes a player can pretend to.'),
+                            tooltip_text=_('The maximum number of byes a player can pretend to.'),
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -226,7 +201,7 @@
                             name='last_rounds_no_byes',
                             label=_('No. final rounds without byes:'),
                             placeholder=sharly_chess_config.default_last_rounds_no_byes,
-                            help_text=_('The number of final rounds in which byes are not permitted.'),
+                            tooltip_text=_('The number of final rounds in which byes are not permitted.'),
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -295,7 +270,7 @@
                                 if admin_event.rules else
                                 _('E.g.: c:\\chess\\tournaments\\main\\rules.pdf')
                             ),
-                            help_text=_('A URL, or the path to the rules file on the server, in PDF format.'),
+                            tooltip_text=_('A URL, or the path to the rules file on the server, in PDF format.'),
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -306,7 +281,7 @@
                             placeholder=admin_event.record_illegal_moves,
                             min=0,
                             max=3,
-                            help_text=_(
+                            tooltip_text=_(
                                 'The maximum number of illegal moves that '
                                 'can be recorded per round for a player.',
                             ),
@@ -314,25 +289,20 @@
                         ) }}
                     </div>
                 </div>
-                <h4>
-                    {{ _('Points') }}
-                </h4>
                 <div class="row gy-2 gx-3">
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.select_input(
-                            name='pab_value',
-                            label=_('Value of the pairing allocated bye:'),
-                            help_text='',
-                            select_options=pab_value_options,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
                     <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
                             name='three_points_for_a_win',
                             label=_('%(string)s:', string=_('Point counting')),
-                            help_text='',
                             select_options=three_points_for_a_win_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div id="pab-value-container" class="col-12 col-md-6">
+                        {{ admin_macros.select_input(
+                            name='pab_value',
+                            label=_('Value of the pairing allocated bye:'),
+                            select_options=pab_value_options,
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -354,27 +324,27 @@
                     <div class="col-12 col-md-4">
                         {{ admin_macros.number_input(
                             name='time_control_handicap_penalty_value',
-                            label=_('Penalty (handicap, seconds):'),
-                            placeholder=_('E.g.: %(seconds)d (seconds)', seconds=30),
-                            help_text=_('The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players).'),
+                            label=_('Penalty (seconds):'),
+                            placeholder=_('E.g.: %(val)d', val=30),
+                            tooltip_text=_('The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players).'),
                             data=data, errors=errors
                         ) }}
                     </div>
                     <div class="col-12 col-md-4">
                         {{ admin_macros.number_input(
                             name='time_control_handicap_penalty_step',
-                            label=_('Elo step (handicap):'),
-                            placeholder=_('E.g.: 50 (Elo)'),
-                            help_text=_('The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player.'),
+                            label=_('Elo step:'),
+                            placeholder=_('E.g.: %(val)d', val=50),
+                            tooltip_text=_('The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player.'),
                             data=data, errors=errors
                         ) }}
                     </div>
                     <div class="col-12 col-md-4">
                         {{ admin_macros.number_input(
                             name='time_control_handicap_min_time',
-                            label=_('Minimal time (handicap, seconds):'),
-                            placeholder=_('E.g.: %(seconds)d (seconds)', seconds=60),
-                            help_text=_('The minimum time, whatever the ranking difference between the two players.'),
+                            label=_('Minimal time (seconds):'),
+                            placeholder=_('E.g.: %(val)d', val=60),
+                            tooltip_text=_('The minimum time, whatever the ranking difference between the two players.'),
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -427,19 +397,19 @@
         return $(`
             <div class="tc-period">
                 <div class="tc-field">
-                    <label>{{ _('Moves') }}</label>
+                    <label>{{ _('Moves:') }}</label>
                     <input type="number" class="form-control p-moves" min="0" value="${moves}">
                 </div>
                 <div class="tc-field">
-                    <label>{{ _('Duration (min)') }}</label>
+                    <label>{{ _('Duration (min):') }}</label>
                     <input type="number" class="form-control p-mins" min="0" value="${mins}">
                 </div>
                 <div class="tc-field">
-                    <label>{{ _('Duration (sec)') }}</label>
+                    <label>{{ _('Duration (sec):') }}</label>
                     <input type="number" class="form-control p-secs" min="0" max="59" value="${secs}">
                 </div>
                 <div class="tc-field">
-                    <label>{{ _('Increment (sec)') }}</label>
+                    <label>{{ _('Increment (sec):') }}</label>
                     <input type="number" class="form-control p-inc" min="0" value="${inc}">
                 </div>
                 <div class="tc-del-wrap">

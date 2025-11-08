@@ -4,7 +4,7 @@
             {{ admin_macros.color_input(
                 name='color_'~num,
                 label=_('Colour #%(num)d:', num=num),
-                help_text=timer_color_texts[num],
+                tooltip_text=timer_color_texts[num],
                 default_checkbox=true,
                 default_color=default_colors[num],
                 data=data, errors=errors

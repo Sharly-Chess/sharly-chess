@@ -48,134 +48,136 @@
                     ) else None
                 ) %}
                 {% set has_criteria=admin_prize_category and admin_prize_category.criteria %}
-                <div class="row mb-3">
-                    {{ admin_macros.text_input(
-                        name='name',
-                        label=_('Name:'),
-                        placeholder=_('E.g.: %(string)s', string=_('My category')),
-                        help_text='',
-                        data=data, errors=errors
-                    ) }}
-                </div>
-                <div class="d-flex mt-2">
-                    <span
-                        class="fit-content"
-                        {% if other_main_category or has_criteria %}
-                            {{ macros.tooltip_attributes(
-                                'warning',
-                                _('Replaces category [%(category)s].', category=other_main_category.name)
-                                if not has_criteria else
-                                _('Deletes all the criteria of this category.')
-                                if not other_main_category else
-                                _(
-                                    'Replaces category [%(category)s] and deletes all the criteria of this category.',
-                                    category=other_main_category.name
-                                ),
-                                'top'
-                            ) }}
+                <div class="row gy-2 gx-3">
+                    <div class="col-12">
+                        {{ admin_macros.text_input(
+                            name='name',
+                            label=_('Name:'),
+                            placeholder=_('E.g.: %(string)s', string=_('My category')),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12">
+                        <div class="d-flex">
+                            <span
+                                class="fit-content"
+                                {% if other_main_category or has_criteria %}
+                                    {{ macros.tooltip_attributes(
+                                        'warning',
+                                        _('Replaces category [%(category)s].', category=other_main_category.name)
+                                        if not has_criteria else
+                                        _('Deletes all the criteria of this category.')
+                                        if not other_main_category else
+                                        _(
+                                            'Replaces category [%(category)s] and deletes all the criteria of this category.',
+                                            category=other_main_category.name
+                                        ),
+                                        'top'
+                                    ) }}
+                                {% endif %}
+                            >
+                                {{ admin_macros.switch_input(
+                                    name='is_main',
+                                    label='',
+                                    placeholder=_('Define as main category'),
+                                    data=data, errors=errors
+                                ) }}
+                            </span>
+                            <i
+                                class="bi bi-info-circle-fill"
+                                {{ macros.tooltip_attributes(
+                                    'info', _('The main category is open to all the players.'), 'top'
+                                ) }}
+                            ></i>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="d-flex">
+                            <span
+                                id="share-prizes-container"
+                                {{ macros.tooltip_attributes(
+                                    'info',
+                                    _('The category contains non-monetary prizes which can not be shared.')
+                                    if admin_prize_category and admin_prize_category.has_non_monetary_prizes else
+                                    _('Prizes can only be shared for the main category.'),
+                                    'top'
+                                ) }}
+                            >
+                                {{ admin_macros.switch_input(
+                                    name='share_prizes',
+                                    label='',
+                                    placeholder=_('Share the prizes'),
+                                    data=data, errors=errors
+                                ) }}
+                            </span>
+                            <i
+                                class="bi bi-info-circle-fill"
+                                {{ macros.tooltip_attributes(
+                                    'info',
+                                    _(
+                                        'When two or more players with the same points '
+                                        'are eligible for prizes, share their prizes.'
+                                    ),
+                                    'top'
+                                ) }}
+                            ></i>
+                        </div>
+                    </div>
+                    <div
+                        id="prize-sharing-container"
+                        {% if data['share_prizes'] != 'on' %}
+                            style="display: none"
                         {% endif %}
                     >
-                        {{ admin_macros.switch_input(
-                            name='is_main',
-                            label='',
-                            placeholder=_('Define as main category'),
-                            help_text='',
-                            data=data, errors=errors
-                        ) }}
-                    </span>
-                    <i
-                        class="bi bi-info-circle-fill"
-                        {{ macros.tooltip_attributes(
-                            'info', _('The main category is open to all the players.'), 'top'
-                        ) }}
-                    ></i>
-                </div>
-                <div class="d-flex">
-                    <span
-                        id="share-prizes-container"
-                        {{ macros.tooltip_attributes(
-                            'info',
-                            _('The category contains non-monetary prizes which can not be shared.')
-                            if admin_prize_category and admin_prize_category.has_non_monetary_prizes else
-                            _('Prizes can only be shared for the main category.'),
-                            'top'
-                        ) }}
-                    >
-                        {{ admin_macros.switch_input(
-                            name='share_prizes',
-                            label='',
-                            placeholder=_('Share the prizes'),
-                            help_text='',
-                            data=data, errors=errors
-                        ) }}
-                    </span>
-                    <i
-                        class="bi bi-info-circle-fill"
-                        {{ macros.tooltip_attributes(
-                            'info',
-                            _(
-                                'When two or more players with the same points '
-                                'are eligible for prizes, share their prizes.'
-                            ),
-                            'top'
-                        ) }}
-                    ></i>
-                </div>
-                <div
-                    id="prize-sharing-container"
-                    class="mt-2"
-                    {% if data['share_prizes'] != 'on' %}
-                        style="display: none"
-                    {% endif %}
-                >
-                    <div class="row">
-                        {{ admin_macros.select_input(
-                            name='prize_sharing',
-                            label=_('%(string)s:', string=_('Prize sharing')),
-                            help_text=_(
-                                'The way to share the prizes between '
-                                'players with the same points.'
-                            ),
-                            select_options=prize_sharing_options,
-                            data=data, errors=errors
-                        ) }}
+                        <div class="col-12">
+                            {{ admin_macros.select_input(
+                                name='prize_sharing',
+                                label=_('%(string)s:', string=_('Prize sharing')),
+                                tooltip_text=_(
+                                    'The way to share the prizes between '
+                                    'players with the same points.'
+                                ),
+                                select_options=prize_sharing_options,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 mt-2">
+                            {{ admin_macros.number_input(
+                                name='sharing_threshold',
+                                label=_('%(string)s:', string=_('Sharing threshold')),
+                                tooltip_text=_(
+                                    'The minimum value of a shared prize in this category '
+                                    '(by default: no threshold).'
+                                ),
+                                step=0.01,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
                     </div>
-                    <div class="row">
-                        {{ admin_macros.number_input(
-                            name='sharing_threshold',
-                            label=_('%(string)s:', string=_('Sharing threshold')),
-                            help_text=_(
-                                'The minimum value of a shared prize in this category '
-                                '(by default: no threshold).'
-                            ),
-                            step=0.01,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
+                    <script>
+                        $('#is-main').on('change', (event) => {
+                            const tooltip = new bootstrap.Tooltip(
+                                document.getElementById('share-prizes-container')
+                            );
+                            const isMain = event.target.checked;
+                            const sharePrizes = document.getElementById('share-prizes');
+                            sharePrizes.disabled = !isMain;
+                            if (isMain) {
+                                tooltip.disable();
+                            } else {
+                                sharePrizes.checked = false;
+                                $(sharePrizes).trigger('change');
+                                tooltip.enable();
+                            }
+                        });
+                        $('#share-prizes').on('change', (event) => {
+                            $('#prize-sharing-container').css(
+                                'display', event.target.checked ? 'block' : 'none'
+                            );
+                        });
+                        setTimeout(() => $('#is-main').trigger('change'), 50);
+                    </script>
                 </div>
-                <script>
-                    $('#is-main').on('change', (event) => {
-                        const tooltip = new bootstrap.Tooltip(
-                            document.getElementById('share-prizes-container')
-                        );
-                        const isMain = event.target.checked;
-                        const sharePrizes = document.getElementById('share-prizes');
-                        sharePrizes.disabled = !isMain;
-                        if (isMain) {
-                            tooltip.disable();
-                        } else {
-                            sharePrizes.checked = false;
-                            $(sharePrizes).trigger('change');
-                            tooltip.enable();
-                        }
-                     });
-                    $('#share-prizes').on('change', (event) => {
-                        $('#prize-sharing-container').css(
-                            'display', event.target.checked ? 'block' : 'none'
-                        );
-                     });
-                    setTimeout(() => $('#is-main').trigger('change'), 50);
-                </script>
             </form>
         </div>
         <div class="modal-footer">

@@ -52,7 +52,6 @@
                                 name='name',
                                 label=_('%(string)s:', string=_('Name')),
                                 placeholder=_('E.g.: %(string)s', string=_('My timer')),
-                                help_text=_('The name of the timer.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -66,7 +65,7 @@
                                 {{ admin_macros.color_input(
                                     name='color_'~num,
                                     label=_('Colour #%(num)d:', num=num),
-                                    help_text=timer_color_texts[num],
+                                    tooltip_text=timer_color_texts[num],
                                     default_checkbox=true,
                                     default_color=admin_event.timer_colors[num],
                                     data=data, errors=errors
@@ -79,7 +78,6 @@
                                         name='delay_'~num,
                                         label=_('Delay #%(num)d:', num=num),
                                         placeholder=_('By default: %(minutes)d minutes', minutes=admin_event.timer_delays[num]),
-                                        help_text='',
                                         data=data, errors=errors
                                     ) }}
                                 {% endwith %}

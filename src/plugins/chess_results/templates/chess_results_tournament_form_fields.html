@@ -6,7 +6,6 @@
         {{ admin_macros.select_input(
             name='auto_upload',
             label=_('Auto-upload:'),
-            help_text='',
             select_options=auto_upload_options,
             data=data, errors=errors
         ) }}
@@ -15,7 +14,6 @@
         {{ admin_macros.text_input(
             name='remark',
             label=_('Remark:'),
-            help_text='',
             placeholder=(
                 admin_event.plugin_data.chess_results.remark
                 if admin_event.plugin_data.chess_results.remark else

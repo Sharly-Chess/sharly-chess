@@ -34,9 +34,9 @@
                     <div class="col-12 col-md-6">
                         {{ admin_macros.switch_input(
                             name='public',
-                            label=_('Visibility:'),
+                            label='',
                             placeholder=_('Public event'),
-                            help_text=_('Only allowed users can see private events.'),
+                            tooltip_text=_('Only allowed users can see private events.'),
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -44,38 +44,30 @@
                 </div>
                 <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6">
-                        <span
-                            {% if federation_plugin_used %}
-                                {{ macros.tooltip_attributes(
-                                    'warning',
-                                    _('A plugin specific to this federation is used, it can no longer be modified.'),
-                                    'top'
-                                ) }}
-                            {% endif %}
-                        >
-                            {{ admin_macros.select_input(
-                                name='federation',
-                                label=_('Federation:'),
-                                help_text=_(
-                                    'Sharly Chess may provide functionality specific '
-                                    'to the federation chosen for each event.'
-                                ),
-                                select_options=federation_options,
-                                disabled=not client.can_update_event or federation_plugin_used,
-                                data=data, errors=errors
-                            ) }}
-                            {% if federation_plugin_used %}
-                                <input type="hidden" name="federation" value="{{ data['federation'] }}">
-                            {% endif %}
-                        </span>
-
+                        {{ admin_macros.select_input(
+                            name='federation',
+                            label=_('Federation:'),
+                            tooltip_text=_(
+                                'Sharly Chess may provide functionality specific '
+                                'to the federation chosen for each event.'
+                            ),
+                            select_options=federation_options,
+                            disabled=not client.can_update_event or federation_plugin_used,
+                            input_tooltip=(
+                                _('A plugin specific to this federation is used, it can no longer be modified.')
+                                if federation_plugin_used else ''
+                            ),
+                            data=data, errors=errors
+                        ) }}
+                        {% if federation_plugin_used %}
+                            <input type="hidden" name="federation" value="{{ data['federation'] }}">
+                        {% endif %}
                     </div>
                     <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='name',
                             label=_('Name:'),
                             placeholder=_('E.g.: World championship'),
-                            help_text='',
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -86,7 +78,6 @@
                         {{ admin_macros.datetime_input(
                             name='start',
                             label=_('Start:'),
-                            help_text='',
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -95,7 +86,6 @@
                         {{ admin_macros.datetime_input(
                             name='stop',
                             label=_('End:'),
-                            help_text='',
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -103,24 +93,21 @@
                 </div>
                 <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6">
-                        <span id="player-rating-type-container">
-                            {{ admin_macros.select_input(
-                                name='player_rating_type',
-                                label=_('Player ratings to use by default:'),
-                                help_text=_(
-                                    'May be overridden on a per-tournament basis.',
-                                ),
-                                select_options=player_rating_type_options,
-                                data=data, errors=errors
-                            ) }}
-                        </span>
+                        {{ admin_macros.select_input(
+                            name='player_rating_type',
+                            label=_('Player ratings to use by default:'),
+                            tooltip_text=_(
+                                'May be overridden on a per-tournament basis.',
+                            ),
+                            select_options=player_rating_type_options,
+                            data=data, errors=errors
+                        ) }}
                     </div>
                     <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='location',
                             label=_('%(string)s:', string=_('Location')),
                             placeholder=_('E.g.: Paris'),
-                            help_text='',
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -156,7 +143,7 @@
                                     ) }}
                                 </span>
                                 {% if plugin.event_form_fields_template %}
-                                    <div id="{{ plugin.form_key }}-fields-container" class="mt-2">
+                                    <div id="{{ plugin.form_key }}-fields-container" class="mt-2 plugin-fields-container">
                                         {% include plugin.event_form_fields_template %}
                                     </div>
                                     <script>

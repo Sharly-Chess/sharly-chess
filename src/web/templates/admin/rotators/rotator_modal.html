@@ -1,6 +1,5 @@
 <div
     class="modal-dialog modal-dialog-scrollable admin-rotator-edit-modal"
-    style="--bs-modal-width: min(90vw, 500px);"
 >
     <div class="modal-content">
         <div class="modal-header">
@@ -33,41 +32,39 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                <div class="d-flex">
-                    {{ admin_macros.switch_input(
-                        name='public',
-                        label='',
-                        placeholder=_('Define as public'),
-                        help_text='',
-                        data=data, errors=errors
-                    ) }}
-                    <i class="bi bi-info-circle-fill"
-                        {{ macros.tooltip_attributes(
-                            'info', _('Only allowed users can view private rotators.'), 'top'
-                        ) }}
-                    ></i>
-                </div>
-                <div class="col-12">
-                    {{ admin_macros.text_input(
-                        name='name',
-                        label=_('%(string)s:', string=_('Name')),
-                        placeholder=_('E.g.: %(string)s', string=_('My rotator')),
-                        help_text='',
-                        data=data, errors=errors
-                    ) }}
-                </div>
-
-                <div class="col-12">
-                    {{ admin_macros.number_input(
-                        name='delay',
-                        label=_('Delay (seconds):'),
-                        placeholder=sharly_chess_config.default_rotator_delay,
-                        help_text=_('The rotating delay between two screens.'),
-                        data=data, errors=errors,
-                        min=1
-                    ) }}
-                </div>
                 <div class="row gy-2 gx-3">
+                    <div class="d-flex">
+                        {{ admin_macros.switch_input(
+                            name='public',
+                            label='',
+                            placeholder=_('Define as public'),
+                            data=data, errors=errors
+                        ) }}
+                        <i class="bi bi-info-circle-fill"
+                            {{ macros.tooltip_attributes(
+                                'info', _('Only allowed users can view private rotators.'), 'top'
+                            ) }}
+                        ></i>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.text_input(
+                            name='name',
+                            label=_('%(string)s:', string=_('Name')),
+                            placeholder=_('E.g.: %(string)s', string=_('My rotator')),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.number_input(
+                            name='delay',
+                            label=_('Delay (seconds):'),
+                            placeholder=sharly_chess_config.default_rotator_delay,
+                            tooltip_text=_('The rotating delay between two screens.'),
+                            data=data, errors=errors,
+                            min=1
+                        ) }}
+                    </div>
                     <div class="col-12">
                         {% include '../common/modal/alert_message.html' %}
                     </div>

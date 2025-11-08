@@ -37,28 +37,28 @@
                         {{ _('Warning: the deletion is permanent!') }}
                     </h4>
                 {% else %}
-                    <div class="col-12">
-                        {{ admin_macros.text_input(
-                            name='name',
-                            label=_('Name:'),
-                            placeholder=_('E.g.: My display controller'),
-                            help_text='',
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="d-flex">
-                        {{ admin_macros.switch_input(
-                            name='public',
-                            label='',
-                            placeholder=_('Define as public'),
-                            help_text='',
-                            data=data, errors=errors
-                        ) }}
-                        <i class="bi bi-info-circle-fill"
-                            {{ macros.tooltip_attributes(
-                                'info', _('Only allowed users can view private display controllers.'), 'top'
+                    <div class="row gy-2 gx-3">
+                       <div class="d-flex">
+                            {{ admin_macros.switch_input(
+                                name='public',
+                                label='',
+                                placeholder=_('Define as public'),
+                                data=data, errors=errors
                             ) }}
-                        ></i>
+                            <i class="bi bi-info-circle-fill"
+                                {{ macros.tooltip_attributes(
+                                    'info', _('Only allowed users can view private display controllers.'), 'top'
+                                ) }}
+                            ></i>
+                        </div>
+                        <div class="col-12">
+                            {{ admin_macros.text_input(
+                                name='name',
+                                label=_('Name:'),
+                                placeholder=_('E.g.: My display controller'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
                     </div>
                 {% endif %}
             </form>

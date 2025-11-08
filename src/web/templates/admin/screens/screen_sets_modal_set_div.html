@@ -11,7 +11,6 @@
                         {{ admin_macros.select_input(
                             name='tournament_id',
                             label=_('Tournament:'),
-                            help_text=_('The tournament of which you want to show the pairings.'),
                             select_options=tournament_options,
                             data=data, errors=errors
                         ) }}
@@ -21,7 +20,6 @@
                             name='name',
                             label=_('Name:'),
                             placeholder=_('E.g.: Boards %%f to %%l') if admin_screen.type in ['boards', 'input'] else _('E.g.: Players %%f to %%l'),
-                            help_text=_('The name of the screen set.'),
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -39,34 +37,34 @@
                     <div class="row gy-2 gx-3">
                         <div class="{% if admin_screen.type in ['boards', 'input'] %}col-4{% else %}col-6{% endif %}">
                             {% if admin_screen.type in ['boards', 'input'] %}
-                                {% set help_text=_('The number of the first board to select.') %}
+                                {% set tooltip_text=_('The number of the first board to select.') %}
                             {% elif admin_screen.type == 'players' %}
-                                {% set help_text=_('The number of the first player to select.') %}
+                                {% set tooltip_text=_('The number of the first player to select.') %}
                             {% else %}
-                                {% set help_text=_('The rank of the first player to select.') %}
+                                {% set tooltip_text=_('The rank of the first player to select.') %}
                             {% endif %}
                             {{ admin_macros.number_input(
                                 name='first',
                                 label=_('First board:') if admin_screen.type in ['boards', 'input'] else _('First player:'),
                                 placeholder=1,
-                                help_text=help_text,
+                                tooltip_text=tooltip_text,
                                 data=data, errors=errors,
                                 min=1
                             ) }}
                         </div>
                         <div class="{% if admin_screen.type in ['boards', 'input'] %}col-4{% else %}col-6{% endif %}">
                             {% if admin_screen.type in ['boards', 'input'] %}
-                                {% set help_text=_('The number of the last board to select.') %}
+                                {% set tooltip_text=_('The number of the last board to select.') %}
                             {% elif admin_screen.type == 'players' %}
-                                {% set help_text=_('The number of the last player to select.') %}
+                                {% set tooltip_text=_('The number of the last player to select.') %}
                             {% else %}
-                                {% set help_text=_('The rank of the last player to select.') %}
+                                {% set tooltip_text=_('The rank of the last player to select.') %}
                             {% endif %}
                             {{ admin_macros.number_input(
                                 name='last',
                                 label=_('Last board:') if admin_screen.type in ['boards', 'input'] else _('Last player:'),
                                 placeholder=_('last'),
-                                help_text=help_text,
+                                tooltip_text=tooltip_text,
                                 data=data, errors=errors,
                                 min=1
                             ) }}
@@ -77,7 +75,7 @@
                                     name='fixed_boards_str',
                                     label=_('Fixed boards:'),
                                     placeholder=_('E.g.: %(string)s', string='501, 502'),
-                                    help_text=_('Comma-separated board numbers; if this field is set, other fields are omitted.'),
+                                    tooltip_text=_('Comma-separated board numbers; if this field is set, other fields are omitted.'),
                                     data=data, errors=errors
                                 ) }}
                             </div>
