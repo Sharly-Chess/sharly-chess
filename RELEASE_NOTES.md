@@ -48,6 +48,7 @@ English version below
 
 - Support des départages non-compatibles avec _Papi_ lors de l'export _Papi_ et du téléversement _FFE_ (3.2.0)
 - Restauration de la suppression des données de contact des joueur·euses lors du téléversement _FFE_ (3.2.5)
+- Correction du filtre de ligue des joueur·euses (3.2.5)
 
 ## _ChessEvent_
 
@@ -110,6 +111,7 @@ English version below
 
 - Support for _Papi_ incompatible tie-breaks in the _Papi_ export and the _FFE_ upload (3.2.0)
 - Restore player contact data deletion on the _FFE_ upload (3.2.5)
+- Fixed the league player filter (3.2.5)
 
 ## _ChessEvent_
 
