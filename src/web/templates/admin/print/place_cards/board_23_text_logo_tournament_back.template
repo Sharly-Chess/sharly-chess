@@ -1,15 +1,8 @@
 type = "board"
-name = "Sharly Chess"
+name = "{{ _('Text and logo 2-sided with tournament on the back') }}"
 creator = "Sharly Chess <support@sharly-chess.com>"
 
-[default]
-font_size = 14.0
-bold = false
-italic = false
-h_align = "left"
-v_align = "top"
-h_pos = 0.0
-v_pos = 0.0
+width = 116
 
 [number]
 text = "{{ _('Board %(number)s', number=board.number) }}"
@@ -17,8 +10,16 @@ font_size = 56.0
 bold = true
 h_align = "right"
 v_align = "bottom"
-h_pos = 5
-v_pos = -5.0
+h_pos = 3
+v_pos = 0.4
+
+[tournament]
+side = "back"
+text = "{{ tournament.name }}"
+font_size = 56.0
+bold = true
+h_align = "center"
+v_align = "middle"
 
 [logo]
 image = "sharly-chess-logo.svg"
@@ -26,3 +27,4 @@ width = 25
 opacity = 0.25
 h_align = "left"
 v_align = "bottom"
+v_pos = 8.0

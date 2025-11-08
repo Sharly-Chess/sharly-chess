@@ -1,19 +1,11 @@
 type = "board"
-name = "{{ _('2-sided with tournament on the back') }}"
+name = "{{ _('Number') }}"
 creator = "Sharly Chess <support@sharly-chess.com>"
 
 width = 48
 
 [number]
 text = "{{ board.number }}"
-font_size = 56.0
-bold = true
-h_align = "center"
-v_align = "middle"
-
-[tournament]
-side = "back"
-text = "{{ tournament.name }}"
 font_size = 56.0
 bold = true
 h_align = "center"

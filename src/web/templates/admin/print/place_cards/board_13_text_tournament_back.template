@@ -1,0 +1,20 @@
+type = "board"
+name = "{{ _('Text 2-sided with tournament on the back') }}"
+creator = "Sharly Chess <support@sharly-chess.com>"
+
+width = 116
+
+[number]
+text = "{{ _('Board %(number)s', number=board.number) }}"
+font_size = 56.0
+bold = true
+h_align = "center"
+v_align = "middle"
+
+[tournament]
+side = "back"
+text = "{{ tournament.name }}"
+font_size = 56.0
+bold = true
+h_align = "center"
+v_align = "middle"

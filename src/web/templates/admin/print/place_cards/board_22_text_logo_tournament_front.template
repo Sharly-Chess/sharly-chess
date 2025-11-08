@@ -1,0 +1,28 @@
+type = "board"
+name = "{{ _('Text and logo with tournament on the front') }}"
+creator = "Sharly Chess <support@sharly-chess.com>"
+
+width = 116
+
+[number]
+text = "{{ _('Board %(number)s', number=board.number) }}"
+font_size = 56.0
+bold = true
+h_align = "right"
+v_align = "bottom"
+h_pos = 3
+v_pos = 0.4
+
+[tournament]
+text = "{{ tournament.name }}"
+font_size = 10.0
+h_align = "center"
+v_align = "top"
+
+[logo]
+image = "sharly-chess-logo.svg"
+width = 25
+opacity = 0.25
+h_align = "left"
+v_align = "bottom"
+v_pos = 8.0
