@@ -7,9 +7,10 @@ from utils.entity import IdentifiableEntity
 class PlaceCardCropMarks(IdentifiableEntity, ABC):
     solid_style: str = '1px solid black'
     dashed_style: str = '1px dashed black'
+    dotted_style: str = '1px dotted black'
 
     @property
-    def style(self) -> str:
+    def border_style(self) -> str:
         return ''
 
     @property
@@ -37,6 +38,10 @@ class BorderPlaceCardCropMarks(PlaceCardCropMarks):
         return _('Border')
 
     @property
+    def top_border_style(self) -> str:
+        return ''
+
+    @property
     def css(self) -> dict[str, dict[str, str]]:
         return {
             ', '.join(
@@ -45,14 +50,14 @@ class BorderPlaceCardCropMarks(PlaceCardCropMarks):
                     '.side-single .card-cell.top',
                 ]
             ): {
-                'border-top': self.style,
+                'border-top': self.border_style,
             },
             ', '.join(
                 [
                     '.card-cell.right',
                 ]
             ): {
-                'border-right': self.style,
+                'border-right': self.border_style,
             },
             ', '.join(
                 [
@@ -60,14 +65,21 @@ class BorderPlaceCardCropMarks(PlaceCardCropMarks):
                     '.side-single .card-cell.bottom',
                 ]
             ): {
-                'border-bottom': self.style,
+                'border-bottom': self.border_style,
             },
             ', '.join(
                 [
                     '.card-cell.left',
                 ]
             ): {
-                'border-left': self.style,
+                'border-left': self.border_style,
+            },
+            ', '.join(
+                [
+                    '.side-back .card-cell.bottom',
+                ]
+            ): {
+                'border-bottom': self.dotted_style,
             },
         }
 
@@ -82,7 +94,7 @@ class SolidBorderPlaceCardCropMarks(BorderPlaceCardCropMarks):
         return _('Border')
 
     @property
-    def style(self) -> str:
+    def border_style(self) -> str:
         return self.solid_style
 
 
@@ -96,7 +108,7 @@ class DashedBorderPlaceCardCropMarks(BorderPlaceCardCropMarks):
         return _('Dashed border')
 
     @property
-    def style(self) -> str:
+    def border_style(self) -> str:
         return self.dashed_style
 
 
@@ -110,7 +122,7 @@ class CornersPlaceCardCropMarks(PlaceCardCropMarks):
         return _('Corners')
 
     @property
-    def style(self) -> str:
+    def border_style(self) -> str:
         return self.solid_style
 
     @property
@@ -124,7 +136,7 @@ class CornersPlaceCardCropMarks(PlaceCardCropMarks):
                     '.side-single .card-cell.top.right',
                 ]
             ): {
-                'border-top': self.style,
+                'border-top': self.border_style,
             },
             ', '.join(
                 [
@@ -134,7 +146,7 @@ class CornersPlaceCardCropMarks(PlaceCardCropMarks):
                     '.side-single .card-cell.bottom.right',
                 ]
             ): {
-                'border-right': self.style,
+                'border-right': self.border_style,
             },
             ', '.join(
                 [
@@ -144,7 +156,7 @@ class CornersPlaceCardCropMarks(PlaceCardCropMarks):
                     '.side-single .card-cell.bottom.right',
                 ]
             ): {
-                'border-bottom': self.style,
+                'border-bottom': self.border_style,
             },
             ', '.join(
                 [
@@ -154,6 +166,6 @@ class CornersPlaceCardCropMarks(PlaceCardCropMarks):
                     '.side-single .card-cell.bottom.left',
                 ]
             ): {
-                'border-left': self.style,
+                'border-left': self.border_style,
             },
         }
