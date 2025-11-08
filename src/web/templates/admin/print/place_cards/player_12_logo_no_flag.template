@@ -1,9 +1,9 @@
 type = "player"
-name = "Sharly Chess"
+name = "{{ _('Standard (logo, no federation flag)') }}"
 creator = "Sharly Chess <support@sharly-chess.com>"
 
 [player_name]
-text = "{{ player.federation_flag | safe }} {{ player.full_name }}"
+text = "{{ player.title }} {{ player.full_name }}"
 font_size = 18.0
 bold = true
 max_width = 92.0
@@ -14,14 +14,13 @@ font_size = 18.0
 bold = true
 h_align = "right"
 
-[player_category_club]
-text = "{{ player.category }} {{ player.federation }} {% if player.club %}- {{ player.club }}{% endif %}"
+[player_origin]
+text = "{{ player.federation }} {% if player.club %}- {{ player.club }}{% endif %}"
 v_pos = 8.0
 
-[tournament]
-display = false
-text = "{{ tournament.name }}"
-v_pos = 20.0
+[player_category]
+text = "{{ player.category }}"
+v_pos = 14.0
 
 [event]
 text = "{{ event.name }}"
@@ -29,8 +28,8 @@ italic = true
 v_align = "bottom"
 
 [logo]
-image = "sharly-chess-logo.svg"
-width = 30
-opacity = 0.25
+image = "sharly-chess-s.png"
+height = 20
+opacity = 0.15
 h_align = "right"
 v_align = "bottom"
