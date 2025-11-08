@@ -2329,8 +2329,8 @@ msgstr "Échiquiers fixes :"
 msgid "Floats"
 msgstr "Flotteurs"
 
-msgid "Foldable place cards (mirrored top)"
-msgstr "Chevalets pliables (en miroir)"
+msgid "Foldable (mirrored top)"
+msgstr "Miroir (recto-verso)"
 
 #, python-format
 msgid "Font size adjustment (%%):"

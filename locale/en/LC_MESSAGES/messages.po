@@ -2329,7 +2329,7 @@ msgstr ""
 msgid "Floats"
 msgstr ""
 
-msgid "Foldable place cards (mirrored top)"
+msgid "Foldable (mirrored top)"
 msgstr ""
 
 #, python-format
