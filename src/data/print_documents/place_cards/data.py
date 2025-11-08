@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 
+from common.i18n import _
 from common.logger import get_logger
 
 from plugins.manager import plugin_manager
@@ -19,6 +20,7 @@ class PlaceCardPlayer:
     def __init__(
         self,
         player: Player | None,
+        color: str = '',
     ):
         self.rating: str = ''
         self.rating_type: str = ''
@@ -32,6 +34,7 @@ class PlaceCardPlayer:
         self.federation_flag: str = ''
         self.club: str = ''
         self.category: str = ''
+        self.color: str = ''
         if player:
             if player.rating:
                 self.rating = str(player.rating)
@@ -47,6 +50,7 @@ class PlaceCardPlayer:
             self.federation_flag = f'<img class="federation-flag {self.federation}" />'
             self.club = player.club.name
             self.category = player.category.short_name
+            self.color = color
             plugin_manager.hook_for_event(player.event, 'augment_place_card_player')(
                 player=player, place_card_player=self
             )
@@ -61,8 +65,12 @@ class PlaceCardBoard:
     ):
         self.id: int = board.id
         self.number: int = board.number
-        self.white_player: PlaceCardPlayer = PlaceCardPlayer(board.white_player)
-        self.black_player: PlaceCardPlayer = PlaceCardPlayer(board.black_player)
+        self.white_player: PlaceCardPlayer = PlaceCardPlayer(
+            board.white_player, color=_('W *** WHITE COLOR FOR PLACE CARDS')
+        )
+        self.black_player: PlaceCardPlayer = PlaceCardPlayer(
+            board.black_player, color=_('B *** BLACK COLOR FOR PLACE CARDS')
+        )
 
 
 class PlaceCardDate:

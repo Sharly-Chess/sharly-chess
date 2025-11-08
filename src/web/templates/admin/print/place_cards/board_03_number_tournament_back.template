@@ -1,5 +1,5 @@
 type = "board"
-name = "{{ _('Number 2-sided with tournament on the back') }}"
+name = "{{ _('Number (2-sided, tournament on back)') }}"
 creator = "Sharly Chess <support@sharly-chess.com>"
 
 width = 48

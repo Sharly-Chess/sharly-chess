@@ -216,9 +216,6 @@ msgstr "1 - 0 (NC)"
 msgid "1st day of the month"
 msgstr "1er jour du mois"
 
-msgid "2-sided with tournament on the back"
-msgstr "Recto-verso avec tournoi au dos"
-
 msgid "20+"
 msgstr "20+"
 
@@ -715,6 +712,9 @@ msgstr "Classement moyen : {rating}"
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
 msgstr "N"
 
+msgid "B *** BLACK COLOR FOR PLACE CARDS"
+msgstr "N"
+
 msgid "B - Leisure *** FFE licence"
 msgstr "B - Loisir"
 
@@ -739,9 +739,6 @@ msgstr "Image de fond :"
 
 msgid "Baku acceleration system"
 msgstr "Système d'accélération de Bakou"
-
-msgid "Basic"
-msgstr "Basique"
 
 msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
 msgstr "Ech."
@@ -1065,7 +1062,7 @@ msgid "Choose families to add"
 msgstr "Choisir des familles à ajouter"
 
 msgid "Choose one, many or no players."
-msgstr ""
+msgstr "Choisissez aucun·e, un·e ou plusieurs joueur·euses."
 
 msgid "Choose one, many or no tournaments."
 msgstr "Choisissez aucun, un ou plusieurs tournois."
@@ -2875,6 +2872,12 @@ msgstr "Couleurs spécifiques au niveau de log"
 msgid "Logged in as [%(account_name)s]"
 msgstr "Connecté en tant que [%(account_name)s]"
 
+msgid "Logo"
+msgstr "Logo"
+
+msgid "Logo (no flag)"
+msgstr "Logo (sans drapeau)"
+
 msgid "Loss"
 msgstr "Défaite"
 
@@ -3370,6 +3373,12 @@ msgstr "Notification"
 
 msgid "Number"
 msgstr "Numéro"
+
+msgid "Number (2-sided, tournament on back)"
+msgstr "Numéro (double-face, tournoi au dos)"
+
+msgid "Number (tournament on front)"
+msgstr "Numéro (tournoi devant)"
 
 #, python-format
 msgid "Number of byes: %(byes)d (maximum: %(max_byes)d)"
@@ -4746,6 +4755,9 @@ msgstr "Rôles"
 msgid "Standard"
 msgstr "Standard"
 
+msgid "Standard (no flag)"
+msgstr "Standard (pas de drapeau)"
+
 msgid "Standard points (1-0.5-0)"
 msgstr "Barème standard (1-0.5-0)"
 
@@ -4836,8 +4848,26 @@ msgstr "TRF16"
 msgid "Template:"
 msgstr "Modèle :"
 
+msgid "Text"
+msgstr "Texte"
+
+msgid "Text (2-sided, tournament on back)"
+msgstr "Texte (double-face, tournoi au dos)"
+
+msgid "Text (tournament on front)"
+msgstr "Texte (tournoi devant)"
+
 msgid "Text after the hour:"
 msgstr "Texte après l'horaire :"
+
+msgid "Text and logo"
+msgstr "Texte et logo"
+
+msgid "Text and logo (2-sided, tournament on back)"
+msgstr "Texte et logo (double-face, tournoi au dos)"
+
+msgid "Text and logo (tournament on front)"
+msgstr "Texte et logo (tournoi devant)"
 
 msgid "Text before the hour:"
 msgstr "Texte avant l'horaire :"
@@ -5921,6 +5951,9 @@ msgstr "Visibilité :"
 msgid "W *** WHITE COLOR FOR CROSSTABLE"
 msgstr "B"
 
+msgid "W *** WHITE COLOR FOR PLACE CARDS"
+msgstr "B"
+
 msgid "WCM *** SHORT NAME FOR Woman Candidate Master"
 msgstr "CMF"
 
@@ -6467,4 +6500,10 @@ msgstr "½ - ½ (NC)"
 
 #~ msgid "The type of QR code to print."
 #~ msgstr "Le type de QR Code à imprimer."
+
+#~ msgid "2-sided with tournament on the back"
+#~ msgstr "Recto-verso avec tournoi au dos"
+
+#~ msgid "Basic"
+#~ msgstr "Basique"
 

@@ -1,0 +1,126 @@
+type = "pairing"
+name = "{{ _('Standard (no flag)') }}"
+creator = "Sharly Chess <support@sharly-chess.com>"
+
+width = 148.5
+height = 50.0
+
+[default]
+font_size = 12.0
+bold = false
+italic = false
+text_align = "center"
+v_align = "top"
+
+[number]
+text = "{{ board.number }}"
+font_size = 60.0
+bold = true
+h_align = "center"
+v_align = "middle"
+
+[tournament]
+font_size = 10.0
+text = "{{ tournament.name }}"
+italic = true
+h_align = "center"
+v_align = "bottom"
+v_pos = 0.0
+
+[white_name]
+text = """
+{% with player = board.white_player %}
+    {{ player.last_name }}<br/>
+    {{ player.first_name }}<br/>
+    {{ player.title }} {{ player.rating }}{{ player.rating_type }}
+{% endwith %}
+"""
+width = 60.0
+bold = true
+h_align = "left"
+v_align = "top"
+text_align = "center"
+v_pos = 5.0
+
+[white_info]
+text = """
+{% with player = board.white_player %}
+    {% if player.club %}
+        {{ player.club }}
+    {% endif %}<br/>
+    {{ player.federation }}
+{% endwith %}
+"""
+font_size = 11.0
+width = 60.0
+h_align = "left"
+v_align = "bottom"
+text_align = "center"
+v_pos = 11.0
+
+[white_color]
+text = """
+{% with player = board.white_player %}
+    {{ player.color }}
+{% endwith %}
+"""
+font_size = 16
+width = 7
+height = 7
+bold = true
+background_color = "#fff"
+color = "#000"
+css = "border: solid 2px #000"
+h_align = "left"
+v_align = "top"
+text_align = "center"
+v_pos = 0.0
+
+[black_name]
+text = """
+{% with player = board.black_player %}
+    {{ player.last_name }}<br/>
+    {{ player.first_name }}<br/>
+    {{ player.title }} {{ player.rating }}{{ player.rating_type }}
+{% endwith %}
+"""
+width = 60.0
+bold = true
+h_align = "right"
+v_align = "top"
+text_align = "center"
+v_pos = 5.0
+
+[black_info]
+text = """
+{% with player = board.black_player %}
+    {% if player.club %}
+        {{ player.club }}
+    {% endif %}<br/>
+    {{ player.federation }}
+{% endwith %}
+"""
+font_size = 11.0
+width = 60.0
+h_align = "right"
+v_align = "bottom"
+text_align = "center"
+v_pos = 11.0
+
+[black_color]
+text = """
+{% with player = board.black_player %}
+    {{ player.color }}
+{% endwith %}
+"""
+font_size = 16
+width = 7
+height = 7
+bold = true
+background_color = "#000"
+color = "#fff"
+css = "border: solid 2px #000"
+h_align = "right"
+v_align = "top"
+text_align = "center"
+v_pos = 0.0

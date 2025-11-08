@@ -1,4 +1,3 @@
-import copy
 import logging
 from pathlib import Path
 from typing import Any
@@ -162,10 +161,11 @@ class PlaceCardTemplate:
         file: Path = self.font_file
         items: list[PlaceCardItem] = self.items
         if mirror:
-            # duplicate all the items
-            back_items: list[PlaceCardItem] = copy.deepcopy(items)
-            for item in back_items:
-                item.back = not item.back
+            # duplicate all the items on the back side
+            back_items: list[PlaceCardItem] = [
+                PlaceCardItem.mirror(item, place_card_type.mirror_rotate)
+                for item in items
+            ]
             items += back_items
         back_side: bool = any(item.back for item in items)
         css: dict[str, dict[str, str]] = {

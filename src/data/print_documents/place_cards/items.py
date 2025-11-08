@@ -1,8 +1,9 @@
+import copy
 import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
+from typing import Self
 
-from common.i18n import _
 from common.i18n.utils import parse_jinja_string
 from common.logger import get_logger
 from data.print_documents.place_cards.data import (
@@ -92,6 +93,7 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
             'max_width',
             'rotate',
             'side',
+            'css',
         ]
 
     def render_error(
@@ -168,6 +170,10 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
             item_css['max-width'] = f'{self.max_width}{unit}'
         if self.rotate:
             item_css['transform'] = f'rotate({self.rotate}deg)'
+        if self.background_color:
+            item_css['background-color'] = self.background_color
+        if self.color:
+            item_css['color'] = self.color
         return item_css
 
     def inner_css(
@@ -195,6 +201,28 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
     ) -> str:
         return ''
 
+    def mirror(
+        self,
+        mirror_rotate: bool,
+    ) -> Self:
+        mirror_item: Self = copy.deepcopy(self)
+        mirror_item.back = not self.back
+        mirror_item.id = f'{self.id}_mirror'
+        mirror_item.css_class = f'{self.css_class}-mirror'
+        if not mirror_rotate:
+            # real mirror mode (otherwise only rotate)
+            match self.h_align:
+                case 'left':
+                    mirror_item._h_align = 'right'
+                case 'right':
+                    mirror_item._h_align = 'left'
+            match self.text_align:
+                case 'left':
+                    mirror_item._text_align = 'right'
+                case 'right':
+                    mirror_item._text_align = 'left'
+        return mirror_item
+
 
 class PlaceCardText(PlaceCardItem):
     """A class to store a text item of a place card."""
@@ -207,7 +235,8 @@ class PlaceCardText(PlaceCardItem):
     ):
         super().__init__(data, section, default_style)
         self.raw_text: str = data.get_str(
-            section=section, property='text', default=_(f'[{self.id}]: No text.')
+            section=section,
+            property='text',
         )
 
     @property

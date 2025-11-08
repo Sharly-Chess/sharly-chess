@@ -216,9 +216,6 @@ msgstr ""
 msgid "1st day of the month"
 msgstr ""
 
-msgid "2-sided with tournament on the back"
-msgstr ""
-
 msgid "20+"
 msgstr ""
 
@@ -715,6 +712,9 @@ msgstr ""
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
 msgstr "B"
 
+msgid "B *** BLACK COLOR FOR PLACE CARDS"
+msgstr "B"
+
 msgid "B - Leisure *** FFE licence"
 msgstr "B - Leisure"
 
@@ -738,9 +738,6 @@ msgid "Background image:"
 msgstr ""
 
 msgid "Baku acceleration system"
-msgstr ""
-
-msgid "Basic"
 msgstr ""
 
 msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
@@ -2875,6 +2872,12 @@ msgstr ""
 msgid "Logged in as [%(account_name)s]"
 msgstr ""
 
+msgid "Logo"
+msgstr ""
+
+msgid "Logo (no flag)"
+msgstr ""
+
 msgid "Loss"
 msgstr ""
 
@@ -3369,6 +3372,12 @@ msgid "Notification"
 msgstr ""
 
 msgid "Number"
+msgstr ""
+
+msgid "Number (2-sided, tournament on back)"
+msgstr ""
+
+msgid "Number (tournament on front)"
 msgstr ""
 
 #, python-format
@@ -4746,6 +4755,9 @@ msgstr ""
 msgid "Standard"
 msgstr ""
 
+msgid "Standard (no flag)"
+msgstr ""
+
 msgid "Standard points (1-0.5-0)"
 msgstr ""
 
@@ -4836,7 +4848,25 @@ msgstr ""
 msgid "Template:"
 msgstr ""
 
+msgid "Text"
+msgstr ""
+
+msgid "Text (2-sided, tournament on back)"
+msgstr ""
+
+msgid "Text (tournament on front)"
+msgstr ""
+
 msgid "Text after the hour:"
+msgstr ""
+
+msgid "Text and logo"
+msgstr ""
+
+msgid "Text and logo (2-sided, tournament on back)"
+msgstr ""
+
+msgid "Text and logo (tournament on front)"
 msgstr ""
 
 msgid "Text before the hour:"
@@ -5921,6 +5951,9 @@ msgstr ""
 msgid "W *** WHITE COLOR FOR CROSSTABLE"
 msgstr "W"
 
+msgid "W *** WHITE COLOR FOR PLACE CARDS"
+msgstr "W"
+
 msgid "WCM *** SHORT NAME FOR Woman Candidate Master"
 msgstr "WCM"
 
@@ -6451,5 +6484,11 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "The type of QR code to print."
+#~ msgstr ""
+
+#~ msgid "2-sided with tournament on the back"
+#~ msgstr ""
+
+#~ msgid "Basic"
 #~ msgstr ""
 

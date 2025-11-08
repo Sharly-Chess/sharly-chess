@@ -1,5 +1,5 @@
 type = "player"
-name = "{{ _('No federation flag') }}"
+name = "{{ _('Standard (no flag)') }}"
 creator = "Sharly Chess <support@sharly-chess.com>"
 
 [player_name]
@@ -22,7 +22,7 @@ v_pos = 8.0
 text = "{{ player.category }}"
 v_pos = 14.0
 
-[event]
-text = "{{ event.name }}"
+[tournament]
+text = "{{ tournament.name }}"
 italic = true
 v_align = "bottom"

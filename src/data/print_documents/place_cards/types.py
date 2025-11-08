@@ -37,6 +37,10 @@ class PlaceCardType(IdentifiableEntity, ABC):
     def players(tournament: Tournament) -> list[Player]:
         return []
 
+    @property
+    def mirror_rotate(self) -> bool:
+        return True
+
 
 class PlayerCardType(PlaceCardType):
     @staticmethod
@@ -113,6 +117,10 @@ class PairingCardType(PlaceCardType):
     @staticmethod
     def static_name() -> str:
         return _('Pairing Cards')
+
+    @property
+    def mirror_rotate(self) -> bool:
+        return False
 
     @staticmethod
     def get_valid_options() -> list[str]:

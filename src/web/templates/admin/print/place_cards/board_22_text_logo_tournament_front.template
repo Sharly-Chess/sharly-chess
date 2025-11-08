@@ -1,5 +1,5 @@
 type = "board"
-name = "{{ _('Text and logo with tournament on the front') }}"
+name = "{{ _('Text and logo (tournament on front)') }}"
 creator = "Sharly Chess <support@sharly-chess.com>"
 
 width = 116
