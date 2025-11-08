@@ -1610,8 +1610,9 @@ class Tournament:
         """Updates a player's pairings with ZPB, HPB, FPB or not-paired values."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
             for round_, result in byes.items():
-                if player.pairings_by_round[round_].needs_pairing_or_has_bye:
-                    player.pairings_by_round[round_].update_result(database, result)
+                pairing = player.pairings_by_round[round_]
+                if pairing.unpaired:
+                    pairing.update_result(database, result)
 
     def set_current_round(self, round_: int):
         with EventDatabase(self.event.uniq_id, True) as database:

@@ -31,6 +31,7 @@ English version below
 - Lors de l'ajout de rondes supplémentaires, ajout de forfaits aux joueur·euses ayant quitté le tournoi pour ces nouvelles rondes (3.2.3)
 - Correction de problèmes divers sur les tournois Toutes-Rondes (3.2.4)
 - Correction de l'affichage du mode non-sécurisé (3.2.4)
+- Correction de la modification du résultat de l'exempt lors de l'attribution du forfait définitif (3.2.5)
 
 ## Écrans
 
@@ -92,6 +93,7 @@ English version below
 - When adding rounds, Add ZPBs to withdraw players for these new rounds (3.2.3)
 - Fixed various issues regarding the Round-Robin tournaments (3.2.4)
 - Fixed the display of the unsafe mode (3.2.4)
+- Fixed the modification of the PAB player's result when withdrawing a player (3.2.5)
 
 ## Screens
 
