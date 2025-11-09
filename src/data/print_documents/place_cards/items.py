@@ -1,11 +1,14 @@
 import copy
 import logging
 from abc import ABC, abstractmethod
+from functools import cached_property
 from pathlib import Path
 from typing import Self
+from PIL import Image
 
 from common.i18n.utils import parse_jinja_string
 from common.logger import get_logger
+from common.sharly_chess_config import SharlyChessConfig
 from data.print_documents.place_cards.data import (
     PlaceCardEvent,
     PlaceCardTournament,
@@ -110,10 +113,10 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
         player: PlaceCardPlayer | None = None,
     ) -> str:
         """Returns the HTML to output for the item."""
-        return f'<div class="card-item-wrapper {self.css_class}">{self.inner_html(event, tournament, board, player)}</div>'
+        return f'<div class="card-item-wrapper {self.css_class}">{self._inner_html(event, tournament, board, player)}</div>'
 
     @abstractmethod
-    def inner_html(
+    def _inner_html(
         self,
         event: PlaceCardEvent,
         tournament: PlaceCardTournament,
@@ -123,7 +126,7 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
         """Returns the inner HTML of the item."""
         pass
 
-    def wrapper_css(
+    def _wrapper_css_properties(
         self,
     ) -> dict[str, str]:
         """Returns the CSS for the wrapper of the item."""
@@ -138,7 +141,7 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
                 wrapper_css['align-items'] = 'center'
         return wrapper_css
 
-    def item_css(
+    def _item_css_properties(
         self,
         unit: str,
     ) -> dict[str, str]:
@@ -175,7 +178,7 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
             item_css['color'] = self.color
         return item_css
 
-    def inner_css(
+    def _inner_css_properties(
         self,
         unit: str,
     ) -> dict[str, str]:
@@ -190,16 +193,11 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
     ) -> str:
         """Returns the CSS to print for the item."""
         return (
-            f'.{template_css_class} .card-item-wrapper.{self.css_class} {{\n{";\n".join(f"{key}: {value};" for key, value in self.wrapper_css().items())}\n}}\n'
-            + f'.{template_css_class} .{self.css_class} .card-item {{\n{";\n".join(f"{key}: {value};" for key, value in self.item_css(unit).items())}\n}}\n'
-            + f'.{template_css_class} .{self.css_class} .card-item * {{\n{";\n".join(f"{key}: {value};" for key, value in self.inner_css(unit).items())}\n}}\n'
+            f'.{template_css_class} .card-item-wrapper.{self.css_class} {{\n{";\n".join(f"{key}: {value};" for key, value in self._wrapper_css_properties().items())}\n}}\n'
+            + f'.{template_css_class} .{self.css_class} .card-item {{\n{";\n".join(f"{key}: {value};" for key, value in self._item_css_properties(unit).items())}\n}}\n'
+            + f'.{template_css_class} .{self.css_class} .card-item * {{\n{";\n".join(f"{key}: {value};" for key, value in self._inner_css_properties(unit).items())}\n}}\n'
             + f'.{template_css_class} .{self.css_class} .card-item {{\n{self.css}\n}}\n'
         )
-
-    def render_js(
-        self,
-    ) -> str:
-        return ''
 
     def mirror(
         self,
@@ -251,7 +249,7 @@ class PlaceCardText(PlaceCardItem):
             'text',
         ]
 
-    def inner_html(
+    def _inner_html(
         self,
         event: PlaceCardEvent,
         tournament: PlaceCardTournament,
@@ -276,7 +274,7 @@ class PlaceCardText(PlaceCardItem):
             else ''
         )
 
-    def item_css(
+    def _item_css_properties(
         self,
         unit: str,
     ) -> dict[str, str]:
@@ -288,9 +286,9 @@ class PlaceCardText(PlaceCardItem):
         match self.text_align:
             case 'left' | 'center' | 'right' | 'auto':
                 item_css['text-align'] = self.text_align
-        return super().item_css(unit) | item_css
+        return super()._item_css_properties(unit) | item_css
 
-    def inner_css(
+    def _inner_css_properties(
         self,
         unit: str,
     ) -> dict[str, str]:
@@ -298,7 +296,7 @@ class PlaceCardText(PlaceCardItem):
             # the font style must be set to inner elements to apply to the federation flags.
             'font-size': f'{self.font_size}pt',
         }
-        return super().inner_css(unit) | inner_css
+        return super()._inner_css_properties(unit) | inner_css
 
     def __str__(self) -> str:
         return f'{self.__class__.__name__}({self.raw_text=}, {self.back=})'
@@ -339,7 +337,7 @@ class PlaceCardImage(PlaceCardItem):
             'image',
         ]
 
-    def inner_html(
+    def _inner_html(
         self,
         event: PlaceCardEvent,
         tournament: PlaceCardTournament,
@@ -348,7 +346,7 @@ class PlaceCardImage(PlaceCardItem):
     ) -> str:
         return f'<img class="card-item image {self.css_class}" />'
 
-    @property
+    @cached_property
     def image_file(
         self,
     ) -> Path | None:
@@ -364,21 +362,39 @@ class PlaceCardImage(PlaceCardItem):
         logger.warning('Image file [%s] not found.', self.image)
         return None
 
-    def render_js(
+    def _item_css_properties(
         self,
-    ) -> str:
-        if self.image_file:
-            return f"""
-            $(document).ready(function() {{
-                $(".card-item.{self.css_class}").attr("src", "{image_file_inline_url(self.image_file)}");
-            }});
-            """
+        unit: str,
+    ) -> dict[str, str]:
+        image_file: Path = (
+            self.image_file
+            if self.image_file
+            else SharlyChessConfig.embedded_place_cards_path
+            / 'images/sharly-chess-logo.svg'
+        )
+        item_css: dict[str, str] = {
+            'background-image': f'url("{image_file_inline_url(image_file)}")',
+            'background-size': 'contain',
+        }
+        if not self.image_file:
+            item_css['background-color'] = 'red'
+        if self.width and self.height:
+            width = self.width
+            height = self.height
         else:
-            return f"""
-            $(document).ready(function() {{
-                $(".card-item.{self.css_class}").addClass("error");
-            }});
-            """
+            image = Image.open(image_file)
+            ratio: float = image.size[0] / image.size[1]
+            if self.width:
+                width = self.width
+                height = self.width / ratio
+            else:
+                assert self.height
+                width = self.height * ratio
+                height = self.height
+        item_css['width'] = f'{width}{unit}'
+        item_css['height'] = f'{height}{unit}'
+
+        return super()._item_css_properties(unit) | item_css
 
     def __str__(self) -> str:
         return f'{self.__class__.__name__}({self.image=}, {self.back=})'

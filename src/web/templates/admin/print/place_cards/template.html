@@ -42,9 +42,6 @@
 
 {% block js %}
     {% include '/lib/jquery/jquery-' ~ sharly_chess_config.jquery_version ~'.min.js' %}
-    {% for item in items %}
-        {{ item.render_js() | safe }}
-    {% endfor %}
     {{ template_js | safe }}
 {% endblock %}
 
