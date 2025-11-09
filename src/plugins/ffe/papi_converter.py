@@ -672,11 +672,12 @@ class PapiConverter:
         self,
         tournament: Tournament,
         target_file: Path,
+        anonymize_player_data: bool = False,
     ):
         """Write the tournament data to a papi file.
         Converts a Tournament to JSON format that can be sent to papi-converter.
         Raises a SharlyChessException if the conversion fails."""
-        papi_data = self.tournament_to_papi_data(tournament)
+        papi_data = self.tournament_to_papi_data(tournament, anonymize_player_data)
         papi_data_dict = {
             'variables': {
                 key: value or '' for key, value in papi_data.variables.__dict__.items()
@@ -718,7 +719,9 @@ class PapiConverter:
                     result.stdout,
                 )
 
-    def tournament_to_papi_data(self, tournament: Tournament) -> PapiData:
+    def tournament_to_papi_data(
+        self, tournament: Tournament, anonymize_player_data: bool = False
+    ) -> PapiData:
         """Convert a Tournament object to PapiData."""
         papi_tiebreaks, manual_tiebreak_by_player_id = (
             self._tiebreaks_to_papi_tiebreaks(tournament)
@@ -769,6 +772,7 @@ class PapiConverter:
                 player_id_to_index,
                 tournament.pab_value,
                 manual_tiebreak_by_player_id.get(player.id, None),
+                anonymize_player_data,
             )
             papi_players.append(papi_player)
 
@@ -834,7 +838,8 @@ class PapiConverter:
         player: Player,
         player_id_to_index: dict[int, int],
         pab_value: Result,
-        manual_tie_break_value: int | None = None,
+        manual_tie_break_value: int | None,
+        anonymize_player_data: bool,
     ) -> PapiPlayer:
         """Convert a Player object to PapiPlayer."""
 
@@ -854,8 +859,8 @@ class PapiConverter:
             else None,
             category=PapiPlayerCategory.get_outer_value(player.category),
             gender=PapiPlayerGender.get_outer_value(player.gender),
-            email=player.mail,
-            phone=player.phone,
+            email=None if anonymize_player_data else player.mail,
+            phone=None if anonymize_player_data else player.phone,
             comment=player.comment,
             owed=player.owed if player.owed != 0 else None,
             paid=player.paid if player.paid != 0 else None,
