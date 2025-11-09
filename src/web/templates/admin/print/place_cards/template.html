@@ -1,30 +1,5 @@
 {% extends '/admin/print/base.html' %}
 
-{% macro render_card(board, player) %}
-    {% set sides={'back': true, 'front': false} if back_side else {'single': false} %}
-    <div class="card-wrapper {{ template_css_class }}">
-        {% for side_name, side_back in sides.items() %}
-            <div class="card side-{{side_name}}">
-                <div class="card-cell top left"></div>
-                <div class="card-cell top center"></div>
-                <div class="card-cell top right"></div>
-                <div class="card-cell middle left"></div>
-                <div class="card-content">
-                    {% for item in items %}
-                        {% if item.back == side_back %}
-                            {{ item.render_html(event=event, tournament=tournament, board=board, player=player) | safe }}
-                        {% endif %}
-                    {% endfor %}
-                </div>
-                <div class="card-cell middle right"></div>
-                <div class="card-cell bottom left"></div>
-                <div class="card-cell bottom center"></div>
-                <div class="card-cell bottom right"></div>
-            </div>
-        {% endfor %}
-    </div>
-{% endmacro %}
-
 {% block css %}
     @media print {
         body {
@@ -34,25 +9,11 @@
             print-color-adjust: exact;
         }
     }
-    {% for item in items %}
-        {{ item.render_css(template_css_class, unit) | safe  }}
-    {% endfor %}
-    {{ template_css | safe }}
 {% endblock %}
 
 {% block js %}
 {% endblock %}
 
 {% block content %}
-    {% if error %}
-        <div class="error">
-            {{ error }}
-        </div>
-    {% endif %}
-    {% for player in players %}
-        {{ render_card(board=none, player=player) }}
-    {% endfor %}
-    {% for board in boards %}
-        {{ render_card(board=board, player=none) }}
-    {% endfor %}
+    {% include 'preview.html' %}
 {% endblock %}

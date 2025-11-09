@@ -13,7 +13,7 @@ text_align = "center"
 v_align = "top"
 
 [number]
-text = "{{ board.number }}"
+text = "{{ pairing.number }}"
 font_size = 60.0
 bold = true
 h_align = "center"
@@ -36,7 +36,7 @@ v_align = "middle"
 
 [white_name]
 text = """
-{% with player = board.white_player %}
+{% with player = pairing.white_player %}
     {{ player.last_name }}<br/>
     {{ player.first_name }}<br/>
     {{ player.title }} {{ player.rating }}{{ player.rating_type }}
@@ -51,7 +51,7 @@ v_pos = 5.0
 
 [white_info]
 text = """
-{% with player = board.white_player %}
+{% with player = pairing.white_player %}
     {% if player.club %}
         {{ player.club }}
     {% endif %}<br/>
@@ -67,7 +67,7 @@ v_pos = 11.0
 
 [white_color]
 text = """
-{% with player = board.white_player %}
+{% with player = pairing.white_player %}
     {{ player.color }}
 {% endwith %}
 """
@@ -85,7 +85,7 @@ v_pos = 0.0
 
 [black_name]
 text = """
-{% with player = board.black_player %}
+{% with player = pairing.black_player %}
     {{ player.last_name }}<br/>
     {{ player.first_name }}<br/>
     {{ player.title }} {{ player.rating }}{{ player.rating_type }}
@@ -100,7 +100,7 @@ v_pos = 5.0
 
 [black_info]
 text = """
-{% with player = board.black_player %}
+{% with player = pairing.black_player %}
     {% if player.club %}
         {{ player.club }}
     {% endif %}<br/>
@@ -116,7 +116,7 @@ v_pos = 11.0
 
 [black_color]
 text = """
-{% with player = board.black_player %}
+{% with player = pairing.black_player %}
     {{ player.color }}
 {% endwith %}
 """

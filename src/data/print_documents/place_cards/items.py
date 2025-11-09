@@ -4,7 +4,10 @@ from abc import ABC, abstractmethod
 from functools import cached_property
 from pathlib import Path
 from typing import Self
-from PIL import Image
+from xml.etree.ElementTree import ElementTree
+
+from PIL import Image, UnidentifiedImageError
+import xml.etree.ElementTree as ET
 
 from common.i18n.utils import parse_jinja_string
 from common.logger import get_logger
@@ -14,6 +17,7 @@ from data.print_documents.place_cards.data import (
     PlaceCardTournament,
     PlaceCardPlayer,
     PlaceCardBoard,
+    PlaceCardPairing,
 )
 from data.print_documents.place_cards.item_style import PlaceCardItemStyle
 from data.print_documents.place_cards.toml_container import TOMLContainer
@@ -109,19 +113,21 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
         self,
         event: PlaceCardEvent,
         tournament: PlaceCardTournament,
-        board: PlaceCardBoard | None = None,
         player: PlaceCardPlayer | None = None,
+        board: PlaceCardBoard | None = None,
+        pairing: PlaceCardPairing | None = None,
     ) -> str:
         """Returns the HTML to output for the item."""
-        return f'<div class="card-item-wrapper {self.css_class}">{self._inner_html(event, tournament, board, player)}</div>'
+        return f'<div class="card-item-wrapper {self.css_class}">{self._inner_html(event, tournament, player, board, pairing)}</div>'
 
     @abstractmethod
     def _inner_html(
         self,
         event: PlaceCardEvent,
         tournament: PlaceCardTournament,
-        board: PlaceCardBoard | None = None,
         player: PlaceCardPlayer | None = None,
+        board: PlaceCardBoard | None = None,
+        pairing: PlaceCardPairing | None = None,
     ) -> str:
         """Returns the inner HTML of the item."""
         pass
@@ -253,8 +259,9 @@ class PlaceCardText(PlaceCardItem):
         self,
         event: PlaceCardEvent,
         tournament: PlaceCardTournament,
-        board: PlaceCardBoard | None = None,
         player: PlaceCardPlayer | None = None,
+        board: PlaceCardBoard | None = None,
+        pairing: PlaceCardPairing | None = None,
     ) -> str:
         if not self.display:
             return ''
@@ -263,8 +270,9 @@ class PlaceCardText(PlaceCardItem):
             context={
                 'event': event,
                 'tournament': tournament,
-                'board': board,
                 'player': player,
+                'board': board,
+                'pairing': pairing,
             },
             on_error=self.render_error('Jinja error'),
         )
@@ -314,16 +322,79 @@ class PlaceCardImage(PlaceCardItem):
         unit: str,
     ):
         super().__init__(data, section, default_style)
-        self.image: str = data.get_str(section=section, property='image')
+        self.image_paths: list[Path] = images_path
+        image_name: str = data.get_str(section=section, property='image')
+        image: Path | None = None
+        if not (Path() / image_name).parent.samefile(Path()):
+            logger.warning('Invalid image filename [%s].', image_name)
+        else:
+            for image_path in self.image_paths:
+                file: Path = image_path / image_name
+                if file.is_file():
+                    image = file
+                    break
+                logger.debug('Image file [%s] not found.', file)
+            if not image:
+                logger.warning('Image file [%s] not found.', image_name)
+        if not image:
+            self._background_color = 'red'
+        self.image = image or self.default_image
         if not self.width and not self.height:
             self.width = self.height = 30.0 if unit == 'mm' else 1.0
             logger.warning(
                 'Use [width] or [height] in section [%s] to size the image (defaults to %sx%s).',
-                section,
+                self.image.name,
                 self.width,
                 self.height,
             )
-        self.image_paths: list[Path] = images_path
+        elif not self.width or not self.height:
+            ratio: float = self.get_image_ratio(self.image)
+            if not ratio:
+                self._background_color = 'red'
+                logger.warning(
+                    'Could not get ratio for image [%s], defaults to [%s].',
+                    self.image.name,
+                    self.default_image.name,
+                )
+                self.image = self.default_image
+                ratio = self.get_image_ratio(self.image)
+            if self.width:
+                self.height = self.width / ratio
+            else:
+                self.width = self.height * ratio
+        self.url = image_file_inline_url(self.image)
+
+    @property
+    def default_image(self) -> Path:
+        return (
+            SharlyChessConfig.embedded_place_cards_path / 'images/sharly-chess-logo.svg'
+        )
+
+    @staticmethod
+    def get_image_ratio(image_file: Path) -> float:
+        try:
+            image = Image.open(image_file)
+            return image.size[0] / image.size[1]
+        except UnidentifiedImageError:
+            # try to get the dimensions or view box of SVG files
+            with open(image_file, 'rt') as f:
+                svg_tree: ElementTree = ET.ElementTree(ET.fromstring(f.read()))
+                svg_root: ET.Element = svg_tree.getroot()
+                try:
+                    width = int(svg_root.attrib.get('width') or '0')
+                    height = int(svg_root.attrib.get('height') or '0')
+                    if width and height:
+                        return width / height
+                except ValueError:
+                    return 0.0
+                view_box = svg_root.attrib.get('viewBox')
+                if not view_box:
+                    return 0.0
+                _, _, width, height = view_box.split()
+                try:
+                    return int(width.strip() or '0') / int(height.strip() or '0')
+                except ValueError:
+                    return 0.0
 
     @property
     def type(self) -> str:
@@ -341,8 +412,9 @@ class PlaceCardImage(PlaceCardItem):
         self,
         event: PlaceCardEvent,
         tournament: PlaceCardTournament,
-        board: PlaceCardBoard | None = None,
         player: PlaceCardPlayer | None = None,
+        board: PlaceCardBoard | None = None,
+        pairing: PlaceCardPairing | None = None,
     ) -> str:
         return f'<img class="card-item image {self.css_class}" />'
 
@@ -366,35 +438,12 @@ class PlaceCardImage(PlaceCardItem):
         self,
         unit: str,
     ) -> dict[str, str]:
-        image_file: Path = (
-            self.image_file
-            if self.image_file
-            else SharlyChessConfig.embedded_place_cards_path
-            / 'images/sharly-chess-logo.svg'
-        )
-        item_css: dict[str, str] = {
-            'background-image': f'url("{image_file_inline_url(image_file)}")',
+        return super()._item_css_properties(unit) | {
+            'background-image': f'url("{self.url}")',
             'background-size': 'contain',
+            'width': f'{self.width}{unit}',
+            'height': f'{self.height}{unit}',
         }
-        if not self.image_file:
-            item_css['background-color'] = 'red'
-        if self.width and self.height:
-            width = self.width
-            height = self.height
-        else:
-            image = Image.open(image_file)
-            ratio: float = image.size[0] / image.size[1]
-            if self.width:
-                width = self.width
-                height = self.width / ratio
-            else:
-                assert self.height
-                width = self.height * ratio
-                height = self.height
-        item_css['width'] = f'{width}{unit}'
-        item_css['height'] = f'{height}{unit}'
-
-        return super()._item_css_properties(unit) | item_css
 
     def __str__(self) -> str:
         return f'{self.__class__.__name__}({self.image=}, {self.back=})'

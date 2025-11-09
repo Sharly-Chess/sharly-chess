@@ -57,3 +57,16 @@ def parse_jinja_string(
         )
     except TemplateError as te:
         return on_error or str(te)
+
+
+def parse_jinja_template(
+    template_name: str,
+    context: dict[str, Any] | None = None,
+    on_error: str | None = None,
+) -> str:
+    from web.settings import template_engine
+
+    try:
+        return template_engine.get_template(template_name).render(context)
+    except TemplateError as te:
+        return on_error or str(te)

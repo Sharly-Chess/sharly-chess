@@ -1236,7 +1236,6 @@ class PlaceCardPrintDocument(PrintDocument):
             event=self.event,
             tournament=self.tournament,
             round_=self.at_round,
-            place_card_type=self.place_card_type,
             mirror=self.mirror,
             place_card_crop_marks=self.crop_marks,
             board_numbers=self.board_numbers,

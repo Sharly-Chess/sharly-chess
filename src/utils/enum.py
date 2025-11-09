@@ -593,6 +593,10 @@ class PlayerCategory(IntEnum):
     O50 = 9
     O65 = 10
 
+    @classmethod
+    def values(cls) -> tuple[int, ...]:
+        return tuple(item.value for item in cls)
+
     @property
     def short_name(self) -> str:
         match self:
@@ -757,6 +761,10 @@ class PlayerTitle(IntEnum):
     INTERNATIONAL_MASTER = 6
     WOMAN_GRANDMASTER = 7
     GRANDMASTER = 8
+
+    @classmethod
+    def values(cls) -> tuple[int, ...]:
+        return tuple(item.value for item in cls)
 
     @classmethod
     def from_fide_value(cls, value: str) -> 'PlayerTitle':

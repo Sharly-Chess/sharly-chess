@@ -7,17 +7,19 @@ from typing import Any
 
 from common import BASE_DIR
 from common.i18n import _
-from common.i18n.utils import parse_jinja_string
+from common.i18n.utils import parse_jinja_string, parse_jinja_template
 from common.logger import get_logger
-from data.board import Board
 from data.event import Event
-from data.player import Player
-from data.print_documents.place_cards.crop_marks import PlaceCardCropMarks
+from data.print_documents.place_cards.crop_marks import (
+    PlaceCardCropMarks,
+    CornersPlaceCardCropMarks,
+)
 from data.print_documents.place_cards.data import (
     PlaceCardBoard,
     PlaceCardPlayer,
     PlaceCardEvent,
     PlaceCardTournament,
+    PlaceCardPairing,
 )
 from data.print_documents.place_cards.item_style import PlaceCardItemStyle
 from data.print_documents.place_cards.items import (
@@ -26,7 +28,6 @@ from data.print_documents.place_cards.items import (
     PlaceCardText,
 )
 from data.print_documents.place_cards.toml_container import TOMLContainer
-from data.print_documents.place_cards.types import PlaceCardType
 from data.tournament import Tournament
 from utils.file import ttf_file_inline_url, image_file_inline_url
 
@@ -136,18 +137,16 @@ class PlaceCardTemplate:
         self.items: list[PlaceCardItem] = [
             item for item in items if item.type == 'image'
         ] + [item for item in items if item.type != 'image']
-        self.tooltip: str = f"""
-<div><b>{_('Name: {name}').format(name=html.escape(self.name))}</b></div>
-<div>{_('Creator: {creator}').format(creator=html.escape(self.creator))}</div>
-<iframe
-        src="/"
-        style="width: {self.width}{self.unit}; height: {(2 if any(item.back for item in self.items) else 1) * self.height}{self.unit};"
-        width="320" height="240"
->
-</iframe>
-"""
 
         self.error = custom_data.error
+
+    @property
+    def tooltip(self) -> str:
+        return f"""
+        <div class="place-card-template-name"><b>{_('Name: {name}').format(name=html.escape(self.name))}</b></div>
+        <div class="place-card-template-creator">{_('Creator: {creator}').format(creator=html.escape(self.creator))}</div>
+        <div class="place-card-template-preview">{self.preview(None)}</div>
+        """
 
     @property
     def template_name(self) -> str:
@@ -263,50 +262,51 @@ class PlaceCardTemplate:
             + self.css
         )
 
-    def template_context(
+    @staticmethod
+    def get_federations(
+        players: list[PlaceCardPlayer],
+        pairings: list[PlaceCardPairing],
+    ) -> set[str]:
+        """Return the federations of the players in the template data."""
+        return (
+            set(
+                pairing.white_player.federation
+                for pairing in pairings
+                if pairing.black_player
+            )
+            .union(
+                set(
+                    pairing.black_player.federation
+                    for pairing in pairings
+                    if pairing.black_player
+                )
+            )
+            .union(set(player.federation for player in players))
+        )
+
+    def _template_context(
         self,
-        event: Event,
-        tournament: Tournament,
+        event: PlaceCardEvent,
+        tournament: PlaceCardTournament,
         round_: int,
-        place_card_type: PlaceCardType,
         mirror: bool,
         place_card_crop_marks: PlaceCardCropMarks,
-        board_numbers: set[int],
-        player_ids: list[int],
+        players: list[PlaceCardPlayer],
+        boards: list[PlaceCardBoard],
+        pairings: list[PlaceCardPairing],
     ) -> dict[str, Any]:
         items: list[PlaceCardItem] = copy.deepcopy(self.items)
         if mirror:
             # duplicate all the items on the back side
             back_items: list[PlaceCardItem] = [
-                PlaceCardItem.mirror(item, place_card_type.mirror_rotate)
-                for item in items
+                PlaceCardItem.mirror(item, self.type.mirror_rotate) for item in items
             ]
             items += back_items
         back_side: bool = any(item.back for item in items)
-        players: list[Player] = place_card_type.players(tournament)
-        if player_ids:
-            players = [player for player in players if player.id in player_ids]
-        boards: list[Board] = place_card_type.boards(tournament, round_)
-        if board_numbers:
-            boards = [board for board in boards if board.number in board_numbers]
-        federations = (
-            set(
-                board.white_player.federation.name
-                for board in boards
-                if board.black_player
-            )
-            .union(
-                set(
-                    board.black_player.federation.name
-                    for board in boards
-                    if board.black_player
-                )
-            )
-            .union(set(player.federation.name for player in players))
-        )
+        federations: set[str] = self.get_federations(players, pairings)
         return {
-            'event': PlaceCardEvent(event),
-            'tournament': PlaceCardTournament(tournament),
+            'event': event,
+            'tournament': tournament,
             'round': round_,
             'error': self.error,
             'back_side': back_side,
@@ -315,10 +315,53 @@ class PlaceCardTemplate:
             'template_css': self.render_css(
                 place_card_crop_marks, back_side, federations
             ),
-            'players': (PlaceCardPlayer(player) for player in players),
-            'boards': (PlaceCardBoard(board) for board in boards),
+            'players': players,
+            'boards': boards,
+            'pairings': pairings,
             'items': items,
         }
+
+    def template_context(
+        self,
+        event: Event,
+        tournament: Tournament,
+        round_: int,
+        mirror: bool,
+        place_card_crop_marks: PlaceCardCropMarks,
+        board_numbers: set[int],
+        player_ids: list[int],
+    ) -> dict[str, Any]:
+        return self._template_context(
+            event=PlaceCardEvent(event),
+            tournament=PlaceCardTournament(tournament),
+            round_=round_,
+            mirror=mirror,
+            place_card_crop_marks=place_card_crop_marks,
+            players=self.type.players(tournament, player_ids=player_ids),
+            boards=self.type.boards(tournament, board_numbers=board_numbers),
+            pairings=self.type.pairings(
+                tournament, round_, board_numbers=board_numbers
+            ),
+        )
+
+    def preview(
+        self,
+        tournament: Tournament | None,
+    ) -> str:
+        """Returns a string to preview the template with moc data."""
+        return parse_jinja_template(
+            '/admin/print/place_cards/preview.html',
+            self._template_context(
+                event=PlaceCardEvent(tournament.event if tournament else None),
+                tournament=PlaceCardTournament(tournament),
+                round_=1,
+                mirror=False,
+                place_card_crop_marks=CornersPlaceCardCropMarks(),
+                players=self.type.preview_players(tournament),
+                boards=self.type.preview_boards(tournament),
+                pairings=self.type.preview_pairings(tournament),
+            ),
+        )
 
     def __str__(self) -> str:
         return f'{self.__class__.__name__}({self.id=}, {self.embedded=}, {self.template_name=}, {self.creator=})'

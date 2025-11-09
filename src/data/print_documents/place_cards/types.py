@@ -1,11 +1,19 @@
 from abc import ABC
+import random
+from datetime import datetime
 
 from common.i18n import _
+from common.sharly_chess_config import SharlyChessConfig
 from data.board import Board
 from data.player import Player
+from data.print_documents.place_cards.data import (
+    PlaceCardPlayer,
+    PlaceCardBoard,
+    PlaceCardPairing,
+)
 from data.tournament import Tournament
-from database.sqlite.event.event_store import StoredBoard
 from utils.entity import IdentifiableEntity
+from utils.enum import PlayerRatingType, PlayerGender, PlayerTitle, PlayerCategory
 
 
 class PlaceCardType(IdentifiableEntity, ABC):
@@ -27,14 +35,94 @@ class PlaceCardType(IdentifiableEntity, ABC):
         ]
 
     @staticmethod
-    def boards(
+    def get_random_player(
+        tournament: Tournament | None,
+        last_name: str,
+        color: str = '',
+    ) -> PlaceCardPlayer:
+        if tournament and tournament.players_by_id:
+            return PlaceCardPlayer(
+                random.choice(list(tournament.players_by_id.values()))
+            )
+        else:
+            place_card_player: PlaceCardPlayer = PlaceCardPlayer()
+            place_card_player.rating = str(random.randint(1400, 3000))
+            place_card_player.rating_type = random.choice(
+                [
+                    PlayerRatingType.FIDE,
+                    PlayerRatingType.NATIONAL,
+                    PlayerRatingType.ESTIMATED,
+                ]
+            ).short_name
+            place_card_player.last_name = last_name
+            place_card_player.first_name = _('First name')
+            place_card_player.full_name = Player.player_full_name(
+                place_card_player.first_name,
+                place_card_player.last_name,
+            )
+            year: int = datetime.now().year
+            place_card_player.year_of_birth = str(random.randint(year - 100, year - 5))
+            place_card_player.gender = PlayerGender(
+                random.choice(PlayerGender.values())
+            ).short_name
+            place_card_player.title = PlayerTitle(
+                random.choice(PlayerTitle.values())
+            ).short_name
+            place_card_player.federation = random.choice(
+                list(SharlyChessConfig().federations.keys())
+            )
+            place_card_player.club = _("Player's club")
+            place_card_player.category = PlayerCategory(
+                random.choice(PlayerCategory.values())
+            ).short_name
+            place_card_player.color = color
+            return place_card_player
+
+    @classmethod
+    def players(
+        cls,
         tournament: Tournament,
-        round_: int,
-    ) -> list[Board]:
+        player_ids: list[int] | None = None,
+    ) -> list[PlaceCardPlayer]:
         return []
 
-    @staticmethod
-    def players(tournament: Tournament) -> list[Player]:
+    @classmethod
+    def preview_players(
+        cls,
+        tournament: Tournament | None,
+    ) -> list[PlaceCardPlayer]:
+        return []
+
+    @classmethod
+    def boards(
+        cls,
+        tournament: Tournament,
+        board_numbers: set[int] | None = None,
+    ) -> list[PlaceCardBoard]:
+        return []
+
+    @classmethod
+    def preview_boards(
+        cls,
+        tournament: Tournament | None,
+    ) -> list[PlaceCardBoard]:
+        return []
+
+    @classmethod
+    def pairings(
+        cls,
+        tournament: Tournament,
+        round_: int,
+        board_numbers: set[int] | None = None,
+        preview: bool = False,
+    ) -> list[PlaceCardPairing]:
+        return []
+
+    @classmethod
+    def preview_pairings(
+        cls,
+        tournament: Tournament | None,
+    ) -> list[PlaceCardPairing]:
         return []
 
     @property
@@ -59,9 +147,23 @@ class PlayerCardType(PlaceCardType):
             PlayersPrintOption.static_id(),
         ]
 
-    @staticmethod
-    def players(tournament: Tournament) -> list[Player]:
-        return list(tournament.players_by_starting_rank.values())
+    @classmethod
+    def players(
+        cls,
+        tournament: Tournament,
+        player_ids: list[int] | None = None,
+    ) -> list[PlaceCardPlayer]:
+        players: list[Player] = list(tournament.players_by_starting_rank.values())
+        if player_ids:
+            players = [player for player in players if player.id in player_ids]
+        return [PlaceCardPlayer(player) for player in players]
+
+    @classmethod
+    def preview_players(
+        cls,
+        tournament: Tournament | None,
+    ) -> list[PlaceCardPlayer]:
+        return [cls.get_random_player(tournament, _("PLAYER'S NAME"))]
 
 
 class BoardCardType(PlaceCardType):
@@ -83,30 +185,38 @@ class BoardCardType(PlaceCardType):
             PlaceCardBoardNumbersPrintOption.static_id(),
         ]
 
-    @staticmethod
+    @classmethod
+    def get_random_board(
+        cls,
+    ) -> PlaceCardBoard:
+        return PlaceCardBoard(random.randint(1, 99))
+
+    @classmethod
     def boards(
+        cls,
         tournament: Tournament,
-        round_: int,
-    ) -> list[Board]:
-        players = tournament.players_by_id.values()
-        board_numbers = [
-            tournament.first_board_number - 1 + number
-            for number in range(tournament.player_count // 2)
-        ] + [player.fixed for player in players if player.fixed]
-        first_player_id: int = list(tournament.players_by_id.keys())[0]
-        return [
-            Board(
-                tournament,
-                1,
-                StoredBoard(
-                    board_number,
-                    first_player_id,
-                    None,
-                    board_number,
-                ),
-            )
-            for board_number in board_numbers
-        ]
+        board_numbers: set[int] | None = None,
+        preview: bool = False,
+    ) -> list[PlaceCardBoard]:
+        if preview:
+            return [cls.get_random_board()]
+        elif board_numbers:
+            return [PlaceCardBoard(board_number) for board_number in board_numbers]
+        else:
+            return [
+                PlaceCardBoard(board_number)
+                for board_number in sorted(
+                    [
+                        tournament.first_board_number - 1 + number
+                        for number in range(tournament.player_count // 2)
+                    ]
+                    + [
+                        player.fixed
+                        for player in tournament.players_by_id.values()
+                        if player.fixed
+                    ]
+                )
+            ]
 
 
 class PairingCardType(PlaceCardType):
@@ -134,9 +244,37 @@ class PairingCardType(PlaceCardType):
             PlaceCardBoardNumbersPrintOption.static_id(),
         ]
 
-    @staticmethod
-    def boards(
+    @classmethod
+    def get_random_pairing(
+        cls,
+        tournament: Tournament,
+    ) -> PlaceCardPairing:
+        place_card_pairing: PlaceCardPairing = PlaceCardPairing()
+        place_card_pairing.number = random.randint(1, 99)
+        place_card_pairing.white_player = cls.get_random_player(
+            tournament,
+            last_name=_('WHITE PLAYER'),
+            color=_('W *** WHITE COLOR FOR PLACE CARDS'),
+        )
+        place_card_pairing.white_player = cls.get_random_player(
+            tournament,
+            last_name=_('BLACK PLAYER'),
+            color=_('B *** BLACK COLOR FOR PLACE CARDS'),
+        )
+        return place_card_pairing
+
+    @classmethod
+    def pairings(
+        cls,
         tournament: Tournament,
         round_: int,
-    ) -> list[Board]:
-        return tournament.get_round_boards(round_)
+        board_numbers: set[int] | None = None,
+        preview: bool = False,
+    ) -> list[PlaceCardPairing]:
+        if preview:
+            return [cls.get_random_pairing(tournament)]
+        else:
+            boards: list[Board] = tournament.get_round_boards(round_)
+            if board_numbers:
+                boards = [board for board in boards if board.number in board_numbers]
+            return [PlaceCardPairing(board) for board in boards]

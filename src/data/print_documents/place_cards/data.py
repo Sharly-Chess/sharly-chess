@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 
+from common import today_timestamp_start_stop
 from common.i18n import _
 from common.logger import get_logger
 
@@ -19,7 +20,7 @@ class PlaceCardPlayer:
 
     def __init__(
         self,
-        player: Player | None,
+        player: Player | None = None,
         color: str = '',
     ):
         self.rating: str = ''
@@ -31,7 +32,6 @@ class PlaceCardPlayer:
         self.gender: str = ''
         self.title: str = ''
         self.federation: str = ''
-        self.federation_flag: str = ''
         self.club: str = ''
         self.category: str = ''
         self.color: str = ''
@@ -47,7 +47,6 @@ class PlaceCardPlayer:
             self.gender = player.gender.short_name
             self.title = player.title.short_name
             self.federation = player.federation.name
-            self.federation_flag = f'<img class="federation-flag {self.federation}" />'
             self.club = player.club.name
             self.category = player.category.short_name
             self.color = color
@@ -55,22 +54,47 @@ class PlaceCardPlayer:
                 player=player, place_card_player=self
             )
 
+    @property
+    def federation_flag(self) -> str:
+        return (
+            f'<img class="federation-flag {self.federation}" />'
+            if self.federation
+            else ''
+        )
+
 
 class PlaceCardBoard:
     """A utility class to pass unmodifiable boards' data to print documents."""
 
     def __init__(
         self,
-        board: Board,
+        number: int,
     ):
-        self.id: int = board.id
-        self.number: int = board.number
-        self.white_player: PlaceCardPlayer = PlaceCardPlayer(
-            board.white_player, color=_('W *** WHITE COLOR FOR PLACE CARDS')
-        )
-        self.black_player: PlaceCardPlayer = PlaceCardPlayer(
-            board.black_player, color=_('B *** BLACK COLOR FOR PLACE CARDS')
-        )
+        self.number: int = number
+
+
+class PlaceCardPairing:
+    """A utility class to pass unmodifiable pairings' data to print documents."""
+
+    def __init__(
+        self,
+        board: Board | None = None,
+    ):
+        self.number: int
+        self.white_player: PlaceCardPlayer
+        self.black_player: PlaceCardPlayer
+        if board:
+            self.number = board.number
+            self.white_player = PlaceCardPlayer(
+                board.white_player, color=_('W *** WHITE COLOR FOR PLACE CARDS')
+            )
+            self.black_player = PlaceCardPlayer(
+                board.black_player, color=_('B *** BLACK COLOR FOR PLACE CARDS')
+            )
+        else:
+            self.number = 0
+            self.white_player = PlaceCardPlayer()
+            self.black_player = PlaceCardPlayer()
 
 
 class PlaceCardDate:
@@ -91,11 +115,20 @@ class PlaceCardTournament:
 
     def __init__(
         self,
-        tournament: Tournament,
+        tournament: Tournament | None = None,
     ):
-        self.name: str = tournament.name
-        self.start: PlaceCardDate = PlaceCardDate(tournament.start_timestamp)
-        self.stop: PlaceCardDate = PlaceCardDate(tournament.stop_timestamp)
+        self.name: str
+        self.start: PlaceCardDate
+        self.stop: PlaceCardDate
+        if tournament:
+            self.name = tournament.name
+            self.start = PlaceCardDate(tournament.start_timestamp)
+            self.stop = PlaceCardDate(tournament.stop_timestamp)
+        else:
+            self.name = _('Tournament name')
+            start, stop = today_timestamp_start_stop()
+            self.start = PlaceCardDate(start)
+            self.stop = PlaceCardDate(stop)
 
 
 class PlaceCardEvent:
@@ -103,8 +136,17 @@ class PlaceCardEvent:
 
     def __init__(
         self,
-        event: Event,
+        event: Event | None = None,
     ):
-        self.name: str = event.name
-        self.start: PlaceCardDate = PlaceCardDate(event.start)
-        self.stop: PlaceCardDate = PlaceCardDate(event.stop)
+        self.name: str
+        self.start: PlaceCardDate
+        self.stop: PlaceCardDate
+        if event:
+            self.name = event.name
+            self.start = PlaceCardDate(event.start)
+            self.stop = PlaceCardDate(event.stop)
+        else:
+            self.name = _('Event name')
+            start, stop = today_timestamp_start_stop()
+            self.start = PlaceCardDate(start)
+            self.stop = PlaceCardDate(stop)

@@ -181,6 +181,15 @@ def format_timestamp_time(ts: float | None = None) -> str:
     return format_timestamp(ts, '%H:%M')
 
 
+def today_timestamp_start_stop() -> tuple[float, float]:
+    today_str: str = format_timestamp_date()
+    return time.mktime(
+        datetime.strptime(f'{today_str} 00:00', '%Y-%m-%d %H:%M').timetuple()
+    ), time.mktime(
+        datetime.strptime(f'{today_str} 23:59', '%Y-%m-%d %H:%M').timetuple()
+    )
+
+
 def show_duration(func):
     """This decorator prints the duration of methods."""
 
