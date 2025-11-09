@@ -44,6 +44,10 @@ English version below
 - Ajout de l'option _Ronde_ pour l'impression des résultats (3.2.4)
 - Correction de l'impression des grilles _Berger_ (3.2.4)
 
+## Export
+
+- Correction de l'export PGN pour les joueur·euses non classé·es FIDE (3.2.6)
+
 ## _FFE_
 
 - Support des départages non-compatibles avec _Papi_ lors de l'export _Papi_ et du téléversement _FFE_ (3.2.0)
@@ -107,6 +111,10 @@ English version below
 - Add _Round_ option for the results print view (3.2.4)
 - Fixed the Berger grid print view (3.2.4)
 
+## Export
+
+- Fixed PGN export for players with no FIDE rating (3.2.6)
+
 ## _FFE_
 
 - Support for _Papi_ incompatible tie-breaks in the _Papi_ export and the _FFE_ upload (3.2.0)
@@ -120,4 +128,4 @@ English version below
 ## _Chess-Results_
 
 - Uploading to _Chess-Results.com_ (3.2.0)
-- Fix upload (3.2.2)
+- Fixed upload (3.2.2)
