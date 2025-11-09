@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from collections import Counter
 from dataclasses import dataclass
 from functools import cached_property, partial
-from pathlib import Path
 from typing import Any, Callable, override
 
 from common import format_timestamp
@@ -13,7 +12,6 @@ from common.i18n import _, ngettext
 from common.i18n.utils import unicode_normalize
 from data.columns import player_table as columns
 from common.logger import get_logger
-from common.sharly_chess_config import SharlyChessConfig
 from data.board import Board
 from data.event import Event
 from data.pairings.engines import RoundRobinPairingEngine
@@ -1249,7 +1247,7 @@ class PlaceCardPrintDocument(PrintDocument):
     @property
     def template_name(self) -> str:
         return str(
-            self.load_place_card_template(
+            PlaceCardTemplate.load(
                 self._get_option(PlaceCardTemplatePrintOption).value
             ).template_name
         )
@@ -1258,78 +1256,8 @@ class PlaceCardPrintDocument(PrintDocument):
         super().validate_options()
         template_option = self._get_option(PlaceCardTemplatePrintOption)
         try:
-            self.load_place_card_template(template_option.value)
+            PlaceCardTemplate.load(template_option.value)
         except KeyError:
             raise OptionError(
                 f'Unknown template [{template_option.value}]', template_option
             )
-
-    @staticmethod
-    def load_place_card_template(
-        template_id: str,
-    ) -> PlaceCardTemplate:
-        """Loads a place card template."""
-        template_file: Path
-        if embedded := ('/' not in template_id):
-            template_file = (
-                SharlyChessConfig.embedded_place_cards_path
-                / f'{template_id}.{SharlyChessConfig.place_card_template_ext}'
-            )
-        else:
-            template_file = (
-                SharlyChessConfig.custom_place_cards_path
-                / f'{template_id}.{SharlyChessConfig.place_card_template_ext}'
-            )
-
-        if template_file.exists():
-            return PlaceCardTemplate(embedded, template_file)
-        # Should never happen
-        raise SharlyChessException(
-            f'Could not load place card template file [{template_file}].'
-        )
-
-    @classmethod
-    def get_place_card_templates_by_id(cls) -> dict[str, PlaceCardTemplate]:
-        """Returns a dict of all the place card templates."""
-        place_card_templates_by_id: dict[str, PlaceCardTemplate] = {}
-        # custom templates override embedded ones
-        for template_file in SharlyChessConfig.embedded_place_cards_path.glob(
-            f'*.{SharlyChessConfig.place_card_template_ext}'
-        ):
-            template_id: str = template_file.stem
-            place_card_templates_by_id[template_id] = cls.load_place_card_template(
-                template_id
-            )
-        for template_file in SharlyChessConfig.custom_place_cards_path.glob(
-            f'*/*.{SharlyChessConfig.place_card_template_ext}'
-        ):
-            template_id: str = f'{template_file.parent.name}/{template_file.stem}'
-            place_card_templates_by_id[template_id] = cls.load_place_card_template(
-                template_id
-            )
-        return place_card_templates_by_id
-
-    @classmethod
-    def get_place_card_templates_by_type(
-        cls,
-    ) -> dict[PlaceCardType, list[PlaceCardTemplate]]:
-        """Returns a dict of all the place cards templates for each type."""
-        from data.print_documents import PrintPlaceCardTypeManager
-
-        place_card_templates: list[PlaceCardTemplate] = list(
-            cls.get_place_card_templates_by_id().values()
-        )
-        return {
-            place_card_type: sorted(
-                (
-                    place_card_template
-                    for place_card_template in place_card_templates
-                    if place_card_template.type == place_card_type
-                ),
-                key=lambda template: (
-                    template.embedded,
-                    template.id if template.embedded else template.name,
-                ),
-            )
-            for place_card_type in PrintPlaceCardTypeManager().objects()
-        }

@@ -401,12 +401,11 @@ class PlaceCardPrintOption(PrintOption):
     def place_card_type_options(self) -> dict[str, str]:
         from data.print_documents import PrintPlaceCardTypeManager
         from data.print_documents.documents import (
-            PlaceCardPrintDocument,
             PlaceCardTemplate,
         )
 
         place_card_templates_by_type: dict[PlaceCardType, list[PlaceCardTemplate]] = (
-            PlaceCardPrintDocument.get_place_card_templates_by_type()
+            PlaceCardTemplate.get_place_card_templates_by_type()
         )
         return {
             place_card_type.static_id(): place_card_type.static_name()
@@ -461,13 +460,13 @@ class PlaceCardTemplatePrintOption(PrintOption):
 
     @cached_property
     def place_card_template(self) -> 'PlaceCardTemplate':
-        from data.print_documents.documents import PlaceCardPrintDocument
+        from data.print_documents.place_cards.template import PlaceCardTemplate
 
-        return PlaceCardPrintDocument.load_place_card_template(self.value)
+        return PlaceCardTemplate.load(self.value)
 
     @property
     def place_card_templates_per_type(self) -> dict[str, list[dict[str, Any]]]:
-        from data.print_documents.documents import PlaceCardPrintDocument
+        from data.print_documents.place_cards.template import PlaceCardTemplate
 
         return {
             place_card_type.static_id(): [
@@ -478,7 +477,7 @@ class PlaceCardTemplatePrintOption(PrintOption):
                 }
                 for place_card_template in place_card_templates
             ]
-            for place_card_type, place_card_templates in PlaceCardPrintDocument.get_place_card_templates_by_type().items()
+            for place_card_type, place_card_templates in PlaceCardTemplate.get_place_card_templates_by_type().items()
         }
 
 

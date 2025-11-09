@@ -66,7 +66,7 @@ def shutil_delete_onerror(func, path, exc_info):
     func(path)
 
 
-def base654_encode_file(
+def base64_encode_file(
     file: Path,
 ) -> str:
     with open(file, 'rb') as f:
@@ -92,7 +92,7 @@ def file_inline_url(
             else []
         )
         + [
-            f'base64,{base654_encode_file(file)}',
+            f'base64,{base64_encode_file(file)}',
         ]
     )
 

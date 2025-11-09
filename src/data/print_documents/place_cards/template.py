@@ -3,12 +3,13 @@ import html
 import logging
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, Self
 
-from common import BASE_DIR
+from common import BASE_DIR, SharlyChessException, TMP_DIR
 from common.i18n import _
 from common.i18n.utils import parse_jinja_string, parse_jinja_template
 from common.logger import get_logger
+from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
 from data.print_documents.place_cards.crop_marks import (
     PlaceCardCropMarks,
@@ -28,6 +29,7 @@ from data.print_documents.place_cards.items import (
     PlaceCardText,
 )
 from data.print_documents.place_cards.toml_container import TOMLContainer
+from data.print_documents.place_cards.types import PlaceCardType
 from data.tournament import Tournament
 from utils.file import ttf_file_inline_url, image_file_inline_url
 
@@ -52,9 +54,6 @@ class PlaceCardTemplate:
         self.id: str
         self.default_font_file = (
             BASE_DIR / 'src/web/static/fonts/AtkinsonHyperlegibleNextVF-Variable.ttf'
-        )
-        self.default_image_file = (
-            BASE_DIR / 'src/web/static/images/sharly-chess-logo.svg'
         )
         if self.embedded:
             self.id = toml_file.stem
@@ -142,11 +141,14 @@ class PlaceCardTemplate:
 
     @property
     def tooltip(self) -> str:
-        return f"""
+        tooltip: str = f"""
         <div class="place-card-template-name"><b>{html.escape(self.name)}</b></div>
         <div class="place-card-template-creator">{_('Creator: {creator}').format(creator=html.escape(self.creator))}</div>
-        <div class="place-card-template-preview">{self.preview(None)}</div>
+        <div class="place-card-template-preview">{self.preview()}</div>
         """
+        with open(TMP_DIR / f'{self.css_class}.html', 'w') as f:
+            f.write(tooltip)
+        return tooltip
 
     @property
     def template_name(self) -> str:
@@ -252,13 +254,14 @@ class PlaceCardTemplate:
                 'background-image': f'url("{image_file_inline_url(BASE_DIR / f"src/web/static/images/federations/{federation}.svg")}")'
             }
             for federation in federations
+            if federation in SharlyChessConfig().federations
         }
         return (
             '\n'.join(
                 f'{locator} {{\n{"\n".join(f"\t{key}: {value};" for key, value in properties.items())}\n}}'
                 for locator, properties in css_properties.items()
             )
-            + place_card_crop_marks.render_css()
+            + place_card_crop_marks.render_css(self.css_class)
             + self.css
         )
 
@@ -346,22 +349,88 @@ class PlaceCardTemplate:
 
     def preview(
         self,
-        tournament: Tournament | None,
     ) -> str:
         """Returns a string to preview the template with moc data."""
         return parse_jinja_template(
             '/admin/print/place_cards/preview.html',
             self._template_context(
-                event=PlaceCardEvent(tournament.event if tournament else None),
-                tournament=PlaceCardTournament(tournament),
+                event=PlaceCardEvent(),
+                tournament=PlaceCardTournament(),
                 round_=1,
                 mirror=False,
                 place_card_crop_marks=CornersPlaceCardCropMarks(),
-                players=self.type.preview_players(tournament),
-                boards=self.type.preview_boards(tournament),
-                pairings=self.type.preview_pairings(tournament),
+                players=self.type.preview_players(),
+                boards=self.type.preview_boards(),
+                pairings=self.type.preview_pairings(),
             ),
         )
+
+    @classmethod
+    def load(
+        cls,
+        template_id: str,
+    ) -> Self:
+        """Loads a place card template from an ID."""
+        template_file: Path
+        if embedded := ('/' not in template_id):
+            template_file = (
+                SharlyChessConfig.embedded_place_cards_path
+                / f'{template_id}.{SharlyChessConfig.place_card_template_ext}'
+            )
+        else:
+            template_file = (
+                SharlyChessConfig.custom_place_cards_path
+                / f'{template_id}.{SharlyChessConfig.place_card_template_ext}'
+            )
+
+        if template_file.exists():
+            return cls(embedded, template_file)
+        # Should never happen
+        raise SharlyChessException(
+            f'Could not load place card template file [{template_file}].'
+        )
+
+    @classmethod
+    def get_place_card_templates_by_id(cls) -> dict[str, Self]:
+        """Returns a dict of all the place card templates."""
+        place_card_templates_by_id: dict[str, PlaceCardTemplate] = {}
+        # custom templates override embedded ones
+        for template_file in SharlyChessConfig.embedded_place_cards_path.glob(
+            f'*.{SharlyChessConfig.place_card_template_ext}'
+        ):
+            template_id: str = template_file.stem
+            place_card_templates_by_id[template_id] = cls.load(template_id)
+        for template_file in SharlyChessConfig.custom_place_cards_path.glob(
+            f'*/*.{SharlyChessConfig.place_card_template_ext}'
+        ):
+            template_id: str = f'{template_file.parent.name}/{template_file.stem}'
+            place_card_templates_by_id[template_id] = cls.load(template_id)
+        return place_card_templates_by_id  # type: ignore
+
+    @classmethod
+    def get_place_card_templates_by_type(
+        cls,
+    ) -> dict[PlaceCardType, list[Self]]:
+        """Returns a dict of all the place cards templates for each type."""
+        from data.print_documents import PrintPlaceCardTypeManager
+
+        place_card_templates: list[PlaceCardTemplate] = list(
+            cls.get_place_card_templates_by_id().values()
+        )
+        return {
+            place_card_type: sorted(
+                (
+                    place_card_template  # type: ignore
+                    for place_card_template in place_card_templates
+                    if place_card_template.type == place_card_type
+                ),
+                key=lambda template: (
+                    template.embedded,
+                    template.id if template.embedded else template.name,
+                ),
+            )
+            for place_card_type in PrintPlaceCardTypeManager().objects()
+        }
 
     def __str__(self) -> str:
         return f'{self.__class__.__name__}({self.id=}, {self.embedded=}, {self.template_name=}, {self.creator=})'

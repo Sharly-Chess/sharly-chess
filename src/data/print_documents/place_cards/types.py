@@ -36,47 +36,41 @@ class PlaceCardType(IdentifiableEntity, ABC):
 
     @staticmethod
     def get_random_player(
-        tournament: Tournament | None,
         last_name: str,
         color: str = '',
     ) -> PlaceCardPlayer:
-        if tournament and tournament.players_by_id:
-            return PlaceCardPlayer(
-                random.choice(list(tournament.players_by_id.values()))
-            )
-        else:
-            place_card_player: PlaceCardPlayer = PlaceCardPlayer()
-            place_card_player.rating = str(random.randint(1400, 3000))
-            place_card_player.rating_type = random.choice(
-                [
-                    PlayerRatingType.FIDE,
-                    PlayerRatingType.NATIONAL,
-                    PlayerRatingType.ESTIMATED,
-                ]
-            ).short_name
-            place_card_player.last_name = last_name
-            place_card_player.first_name = _('First name')
-            place_card_player.full_name = Player.player_full_name(
-                place_card_player.first_name,
-                place_card_player.last_name,
-            )
-            year: int = datetime.now().year
-            place_card_player.year_of_birth = str(random.randint(year - 100, year - 5))
-            place_card_player.gender = PlayerGender(
-                random.choice(PlayerGender.values())
-            ).short_name
-            place_card_player.title = PlayerTitle(
-                random.choice(PlayerTitle.values())
-            ).short_name
-            place_card_player.federation = random.choice(
-                list(SharlyChessConfig().federations.keys())
-            )
-            place_card_player.club = _("Player's club")
-            place_card_player.category = PlayerCategory(
-                random.choice(PlayerCategory.values())
-            ).short_name
-            place_card_player.color = color
-            return place_card_player
+        place_card_player: PlaceCardPlayer = PlaceCardPlayer()
+        place_card_player.rating = str(random.randint(1400, 3000))
+        place_card_player.rating_type = random.choice(
+            [
+                PlayerRatingType.FIDE,
+                PlayerRatingType.NATIONAL,
+                PlayerRatingType.ESTIMATED,
+            ]
+        ).short_name
+        place_card_player.last_name = last_name
+        place_card_player.first_name = _('First name')
+        place_card_player.full_name = Player.player_full_name(
+            place_card_player.first_name,
+            place_card_player.last_name,
+        )
+        year: int = datetime.now().year
+        place_card_player.year_of_birth = str(random.randint(year - 100, year - 5))
+        place_card_player.gender = PlayerGender(
+            random.choice(PlayerGender.values())
+        ).short_name
+        place_card_player.title = PlayerTitle(
+            random.choice(PlayerTitle.values())
+        ).short_name
+        place_card_player.federation = random.choice(
+            list(SharlyChessConfig().federations.keys())
+        )
+        place_card_player.club = _("Player's club")
+        place_card_player.category = PlayerCategory(
+            random.choice(PlayerCategory.values())
+        ).short_name
+        place_card_player.color = color
+        return place_card_player
 
     @classmethod
     def players(
@@ -89,7 +83,6 @@ class PlaceCardType(IdentifiableEntity, ABC):
     @classmethod
     def preview_players(
         cls,
-        tournament: Tournament | None,
     ) -> list[PlaceCardPlayer]:
         return []
 
@@ -104,7 +97,6 @@ class PlaceCardType(IdentifiableEntity, ABC):
     @classmethod
     def preview_boards(
         cls,
-        tournament: Tournament | None,
     ) -> list[PlaceCardBoard]:
         return []
 
@@ -114,14 +106,12 @@ class PlaceCardType(IdentifiableEntity, ABC):
         tournament: Tournament,
         round_: int,
         board_numbers: set[int] | None = None,
-        preview: bool = False,
     ) -> list[PlaceCardPairing]:
         return []
 
     @classmethod
     def preview_pairings(
         cls,
-        tournament: Tournament | None,
     ) -> list[PlaceCardPairing]:
         return []
 
@@ -161,9 +151,10 @@ class PlayerCardType(PlaceCardType):
     @classmethod
     def preview_players(
         cls,
-        tournament: Tournament | None,
     ) -> list[PlaceCardPlayer]:
-        return [cls.get_random_player(tournament, _("PLAYER'S NAME"))]
+        return [
+            cls.get_random_player(_("PLAYER'S NAME")),
+        ]
 
 
 class BoardCardType(PlaceCardType):
@@ -218,6 +209,14 @@ class BoardCardType(PlaceCardType):
                 )
             ]
 
+    @classmethod
+    def preview_boards(
+        cls,
+    ) -> list[PlaceCardBoard]:
+        return [
+            cls.get_random_board(),
+        ]
+
 
 class PairingCardType(PlaceCardType):
     @staticmethod
@@ -247,17 +246,14 @@ class PairingCardType(PlaceCardType):
     @classmethod
     def get_random_pairing(
         cls,
-        tournament: Tournament,
     ) -> PlaceCardPairing:
         place_card_pairing: PlaceCardPairing = PlaceCardPairing()
         place_card_pairing.number = random.randint(1, 99)
         place_card_pairing.white_player = cls.get_random_player(
-            tournament,
             last_name=_('WHITE PLAYER'),
             color=_('W *** WHITE COLOR FOR PLACE CARDS'),
         )
         place_card_pairing.white_player = cls.get_random_player(
-            tournament,
             last_name=_('BLACK PLAYER'),
             color=_('B *** BLACK COLOR FOR PLACE CARDS'),
         )
@@ -269,12 +265,16 @@ class PairingCardType(PlaceCardType):
         tournament: Tournament,
         round_: int,
         board_numbers: set[int] | None = None,
-        preview: bool = False,
     ) -> list[PlaceCardPairing]:
-        if preview:
-            return [cls.get_random_pairing(tournament)]
-        else:
-            boards: list[Board] = tournament.get_round_boards(round_)
-            if board_numbers:
-                boards = [board for board in boards if board.number in board_numbers]
-            return [PlaceCardPairing(board) for board in boards]
+        boards: list[Board] = tournament.get_round_boards(round_)
+        if board_numbers:
+            boards = [board for board in boards if board.number in board_numbers]
+        return [PlaceCardPairing(board) for board in boards]
+
+    @classmethod
+    def preview_pairings(
+        cls,
+    ) -> list[PlaceCardPairing]:
+        return [
+            cls.get_random_pairing(),
+        ]
