@@ -107,12 +107,12 @@ class Pairing:
         return (self.result == Result.NO_RESULT) and (self.opponent_id is None)
 
     @property
-    def needs_pairing_or_has_bye(self) -> bool:
-        return self.opponent_id is None
+    def paired(self) -> bool:
+        return self.board is not None
 
     @property
-    def paired(self) -> bool:
-        return not self.needs_pairing_or_has_bye
+    def unpaired(self) -> bool:
+        return not self.paired
 
     @property
     def paired_no_result(self) -> bool:

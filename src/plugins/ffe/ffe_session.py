@@ -467,7 +467,9 @@ class FFESession(Session):
                     self.tournament.uniq_id,
                     tmp_papi_file,
                 )
-                PapiConverter().write_papi_file(tmp_tournament, tmp_papi_file)
+                PapiConverter().write_papi_file(
+                    tmp_tournament, tmp_papi_file, anonymize_player_data=True
+                )
             except Exception:
                 self.report_error(_('Conversion to Papi format failed.'))
                 return

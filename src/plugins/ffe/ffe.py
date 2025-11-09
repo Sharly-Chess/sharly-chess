@@ -252,14 +252,14 @@ class FfePlugin(Plugin):
     def get_player_admin_template_context(
         self, web_context: PlayerAdminWebContext
     ) -> dict[str, Any]:
-        assert web_context.admin_event is not None
-        admin_event: 'Event' = web_context.admin_event
+        event = web_context.get_admin_event()
+        request = web_context.request
 
         # The leagues that will be shown on the league select list
         players_leagues: list[str] = sorted(
             {
                 FFEUtils.get_player_plugin_data(player).league or ''
-                for player in web_context.admin_event.players_by_id.values()
+                for player in event.players_by_id.values()
             }
         )
 
@@ -267,7 +267,7 @@ class FfePlugin(Plugin):
         filter_leagues: list[str] = [
             league
             for league in FFESessionHandler.get_session_admin_players_filter_leagues(
-                web_context.request
+                request
             )
             if league in players_leagues
         ]
@@ -276,7 +276,7 @@ class FfePlugin(Plugin):
         players_licences: list[PlayerFFELicence] = sorted(
             {
                 FFEUtils.get_player_plugin_data(player).ffe_licence
-                for player in admin_event.players_by_id.values()
+                for player in event.players_by_id.values()
             }
         )
         # The licences that will be selected on the licence select list and used to filter the players
@@ -286,14 +286,13 @@ class FfePlugin(Plugin):
             )
         )
 
-        league_counts: Counter[str | None] = Counter[str | None]()
-        for player in web_context.admin_event.players_by_id.values():
-            league_counts[FFEUtils.get_player_plugin_data(player).league] += 1
+        league_counts: Counter[str] = Counter[str]()
+        for player in event.players_by_id.values():
+            league_counts[FFEUtils.get_player_plugin_data(player).league or ''] += 1
 
         licence_counts: Counter[PlayerFFELicence] = Counter[PlayerFFELicence]()
-        for player in web_context.admin_event.players_by_id.values():
+        for player in event.players_by_id.values():
             licence_counts[FFEUtils.get_player_plugin_data(player).ffe_licence] += 1
-
         return {
             'admin_players_leagues': players_leagues,
             'admin_filter_leagues': filter_leagues,
@@ -302,10 +301,10 @@ class FfePlugin(Plugin):
             'ffe_league_counts': league_counts,
             'ffe_licence_counts': licence_counts,
             'admin_players_filter_leagues': FFESessionHandler.get_session_admin_players_filter_leagues(
-                web_context.request
+                request
             ),
             'admin_players_filter_licences': FFESessionHandler.get_session_admin_players_filter_licences(
-                web_context.request
+                request
             ),
         }
 
@@ -570,7 +569,7 @@ class FfePlugin(Plugin):
         filters: list[Callable[[Player], bool]] = []
         if len(filter_leagues) not in (0, len(admin_players_leagues)):
             filters.append(
-                lambda player: FFEUtils.get_player_plugin_data(player).league
+                lambda player: (FFEUtils.get_player_plugin_data(player).league or '')
                 in filter_leagues
             )
         if len(filter_licences) not in (0, len(admin_players_licences)):

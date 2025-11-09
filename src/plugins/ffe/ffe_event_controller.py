@@ -45,11 +45,7 @@ class FfeAdminEventController(BaseEventAdminController):
         if admin_players_filter_leagues is not None:
             FFESessionHandler.set_session_admin_players_filter_leagues(
                 request,
-                [
-                    league
-                    for league in admin_players_filter_leagues
-                    if league  # '' must be ignored
-                ],
+                [league for league in admin_players_filter_leagues if league != '*'],
             )
         elif admin_players_filter_licences is not None:
             FFESessionHandler.set_session_admin_players_filter_licences(
