@@ -718,6 +718,9 @@ msgstr "N"
 msgid "B - Leisure *** FFE licence"
 msgstr "B - Loisir"
 
+msgid "BLACK PLAYER"
+msgstr "JOUEUR·EUSE NOIRS"
+
 msgid "BLACK WINS"
 msgstr "VICTOIRE NOIRS"
 
@@ -1357,6 +1360,9 @@ msgstr "Créer un tournoi"
 
 msgid "Create with default screens"
 msgstr "Créer avec les écrans par défaut"
+
+msgid "Creator: {creator}"
+msgstr "Création : {creator}"
 
 msgid "Criteria"
 msgstr "Critères"
@@ -2026,6 +2032,9 @@ msgstr "L'évènement [{uniq_id}] a été supprimé, la base de données a été
 msgid "Event [{uniq_id}] has been updated."
 msgstr "L'évènement [{uniq_id}] a été modifié."
 
+msgid "Event name"
+msgstr "Nom de l'évènement"
+
 msgid "Event not found"
 msgstr "Évènement introuvable"
 
@@ -2304,6 +2313,9 @@ msgstr "Numéro du premier échiquier : %(board_number)d"
 
 msgid "First board:"
 msgstr "Premier échiquier :"
+
+msgid "First name"
+msgstr "Prénom"
 
 msgid "First name:"
 msgstr "Prénom :"
@@ -3556,6 +3568,9 @@ msgstr "PERMUTER BLANCS/NOIRS"
 msgid "PGN"
 msgstr "PGN"
 
+msgid "PLAYER'S NAME"
+msgstr "NOM DU·DE LA JOUEUR·EUSE"
+
 msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Payé"
 
@@ -3800,6 +3815,9 @@ msgstr "Sélection des joueur·euses (par classement)"
 #, python-format
 msgid "Player sets of screen [%(screen_uniq_id)s]"
 msgstr "Ensembles de joueur·euses de l'écran [%(screen_uniq_id)s]"
+
+msgid "Player's club"
+msgstr "Club du·de la joueur·euse"
 
 msgid "Player's record"
 msgstr "Historique du·de la joueur·euse"
@@ -5503,6 +5521,9 @@ msgstr "Le tournoi n'a pas été configuré pour être utilisé avec ChessEvent.
 msgid "Tournament modified, awaiting auto-upload"
 msgstr "Tournoi mis à jour, en attente de l’envoi automatique"
 
+msgid "Tournament name"
+msgstr "Nom du tournoi"
+
 msgid "Tournament not found"
 msgstr "Tournoi introuvable"
 
@@ -5962,6 +5983,9 @@ msgstr "MFF"
 
 msgid "WGM *** SHORT NAME FOR Woman Grand Master"
 msgstr "GMF"
+
+msgid "WHITE PLAYER"
+msgstr "JOUEUR·EUSE BLANCS"
 
 msgid "WHITE WINS"
 msgstr "VICTOIRE BLANCS"

@@ -718,6 +718,9 @@ msgstr "B"
 msgid "B - Leisure *** FFE licence"
 msgstr "B - Leisure"
 
+msgid "BLACK PLAYER"
+msgstr ""
+
 msgid "BLACK WINS"
 msgstr ""
 
@@ -1356,6 +1359,9 @@ msgid "Create tournament"
 msgstr ""
 
 msgid "Create with default screens"
+msgstr ""
+
+msgid "Creator: {creator}"
 msgstr ""
 
 msgid "Criteria"
@@ -2026,6 +2032,9 @@ msgstr ""
 msgid "Event [{uniq_id}] has been updated."
 msgstr ""
 
+msgid "Event name"
+msgstr ""
+
 msgid "Event not found"
 msgstr ""
 
@@ -2303,6 +2312,9 @@ msgid "First board number: %(board_number)d"
 msgstr ""
 
 msgid "First board:"
+msgstr ""
+
+msgid "First name"
 msgstr ""
 
 msgid "First name:"
@@ -3556,6 +3568,9 @@ msgstr ""
 msgid "PGN"
 msgstr ""
 
+msgid "PLAYER'S NAME"
+msgstr ""
+
 msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Paid"
 
@@ -3799,6 +3814,9 @@ msgstr ""
 
 #, python-format
 msgid "Player sets of screen [%(screen_uniq_id)s]"
+msgstr ""
+
+msgid "Player's club"
 msgstr ""
 
 msgid "Player's record"
@@ -5503,6 +5521,9 @@ msgstr ""
 msgid "Tournament modified, awaiting auto-upload"
 msgstr ""
 
+msgid "Tournament name"
+msgstr ""
+
 msgid "Tournament not found"
 msgstr ""
 
@@ -5962,6 +5983,9 @@ msgstr "WFM"
 
 msgid "WGM *** SHORT NAME FOR Woman Grand Master"
 msgstr "WGM"
+
+msgid "WHITE PLAYER"
+msgstr ""
 
 msgid "WHITE WINS"
 msgstr ""

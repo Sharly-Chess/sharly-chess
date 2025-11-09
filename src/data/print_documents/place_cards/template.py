@@ -143,7 +143,7 @@ class PlaceCardTemplate:
     @property
     def tooltip(self) -> str:
         return f"""
-        <div class="place-card-template-name"><b>{_('Name: {name}').format(name=html.escape(self.name))}</b></div>
+        <div class="place-card-template-name"><b>{html.escape(self.name)}</b></div>
         <div class="place-card-template-creator">{_('Creator: {creator}').format(creator=html.escape(self.creator))}</div>
         <div class="place-card-template-preview">{self.preview(None)}</div>
         """
