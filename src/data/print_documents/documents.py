@@ -40,10 +40,6 @@ from data.print_documents.options import (
     PlayersPrintOption,
 )
 from data.print_documents.place_cards.crop_marks import PlaceCardCropMarks
-from data.print_documents.place_cards.data import (
-    PlaceCardEvent,
-    PlaceCardTournament,
-)
 from data.print_documents.place_cards.template import (
     PlaceCardTemplate,
 )
@@ -1197,6 +1193,10 @@ class PlaceCardPrintDocument(PrintDocument):
         return self._get_option(PlaceCardPrintOption).place_card_type
 
     @property
+    def place_card_template(self) -> PlaceCardTemplate:
+        return self._get_option(PlaceCardTemplatePrintOption).place_card_template
+
+    @property
     def player_ids(self) -> list[int]:
         return self._get_option(PlayersPrintOption).value
 
@@ -1232,14 +1232,8 @@ class PlaceCardPrintDocument(PrintDocument):
     @property
     def template_context(self) -> dict[str, Any]:
         assert self.event is not None
-        document_context: dict[str, Any] = {
-            'event': PlaceCardEvent(self.event),
-            'tournament': PlaceCardTournament(self.tournament),
-            'round': self.at_round,
-        }
-        card_template_context: dict[str, Any] = self._get_option(
-            PlaceCardTemplatePrintOption
-        ).place_card_template.template_context(
+        return self.place_card_template.template_context(
+            event=self.event,
             tournament=self.tournament,
             round_=self.at_round,
             place_card_type=self.place_card_type,
@@ -1248,7 +1242,6 @@ class PlaceCardPrintDocument(PrintDocument):
             board_numbers=self.board_numbers,
             player_ids=self.player_ids,
         )
-        return document_context | card_template_context
 
     @staticmethod
     def validate_for_tournament(tournament: Tournament) -> str | None:

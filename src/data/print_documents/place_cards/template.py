@@ -1,5 +1,6 @@
 import html
 import logging
+import re
 from pathlib import Path
 from typing import Any
 
@@ -8,9 +9,15 @@ from common.i18n import _
 from common.i18n.utils import parse_jinja_string
 from common.logger import get_logger
 from data.board import Board
+from data.event import Event
 from data.player import Player
 from data.print_documents.place_cards.crop_marks import PlaceCardCropMarks
-from data.print_documents.place_cards.data import PlaceCardBoard, PlaceCardPlayer
+from data.print_documents.place_cards.data import (
+    PlaceCardBoard,
+    PlaceCardPlayer,
+    PlaceCardEvent,
+    PlaceCardTournament,
+)
 from data.print_documents.place_cards.item_style import PlaceCardItemStyle
 from data.print_documents.place_cards.items import (
     PlaceCardItem,
@@ -51,6 +58,7 @@ class PlaceCardTemplate:
             self.id = toml_file.stem
         else:
             self.id = f'{toml_file.parent.name}/{toml_file.stem}'
+        self.css_class: str = f'template-{re.sub(r"[^a-zA-Z0-9_\-]", "-", self.id)}'
         self.font_paths: list[Path] = [
             toml_file.parent / 'fonts',
             BASE_DIR / 'src/web/static/fonts',
@@ -162,6 +170,7 @@ class PlaceCardTemplate:
 
     def template_context(
         self,
+        event: Event,
         tournament: Tournament,
         round_: int,
         place_card_type: PlaceCardType,
@@ -287,6 +296,9 @@ class PlaceCardTemplate:
     }});
 """
         return {
+            'event': PlaceCardEvent(event),
+            'tournament': PlaceCardTournament(tournament),
+            'round': round_,
             'error': self.error,
             'back_side': back_side,
             'unit': self.unit,
@@ -298,7 +310,7 @@ class PlaceCardTemplate:
             'template_js': js,
             'players': (PlaceCardPlayer(player) for player in players),
             'boards': (PlaceCardBoard(board) for board in boards),
-            'items': self.items,
+            'items': items,
         }
 
     def __str__(self) -> str:
