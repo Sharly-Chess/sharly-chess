@@ -173,6 +173,7 @@ class PlaceCardTemplate:
         self,
         place_card_crop_marks: PlaceCardCropMarks,
         back_side: bool,
+        federations: set[str],
     ) -> str:
         file: Path = self.font_file
         css_properties: dict[str, dict[str, str]] = {
@@ -238,13 +239,20 @@ class PlaceCardTemplate:
                 'max-width': f'{self.width - 2 * self.padding}{self.unit}',
             },
             f'.{self.css_class} .federation-flag': {
-                'height': '0.75em',
+                'height': '0.7em',
+                'width': '0.93em',
             },
             f'.{self.css_class} .card-item.error': {
                 'color': 'rgb(255, 0, 0)',
                 'background-color': 'rgb(255, 220, 220)',
                 'opacity': '1.0',
             },
+        }
+        css_properties |= {
+            f'.federation-flag.{federation}': {
+                'background-image': f'url("{image_file_inline_url(BASE_DIR / f"src/web/static/images/federations/{federation}.svg")}")'
+            }
+            for federation in federations
         }
         return (
             '\n'.join(
@@ -254,23 +262,6 @@ class PlaceCardTemplate:
             + place_card_crop_marks.render_css()
             + self.css
         )
-
-    def render_js(
-        self,
-        federation_names: set[str],
-    ) -> str:
-        federation_flag_urls: dict[str, str] = {
-            name: image_file_inline_url(
-                BASE_DIR / f'src/web/static/images/federations/{name}.svg'
-            )
-            for name in federation_names
-        }
-        js = f"""
-    $(document).ready(function() {{
-        {'\n'.join(f'$(".federation-flag.{name}").attr("src", "{url}");\n' for name, url in federation_flag_urls.items())}
-    }});
-"""
-        return js
 
     def template_context(
         self,
@@ -298,7 +289,7 @@ class PlaceCardTemplate:
         boards: list[Board] = place_card_type.boards(tournament, round_)
         if board_numbers:
             boards = [board for board in boards if board.number in board_numbers]
-        federation_names = (
+        federations = (
             set(
                 board.white_player.federation.name
                 for board in boards
@@ -321,8 +312,9 @@ class PlaceCardTemplate:
             'back_side': back_side,
             'unit': self.unit,
             'template_css_class': self.css_class,
-            'template_css': self.render_css(place_card_crop_marks, back_side),
-            'template_js': self.render_js(federation_names),
+            'template_css': self.render_css(
+                place_card_crop_marks, back_side, federations
+            ),
             'players': (PlaceCardPlayer(player) for player in players),
             'boards': (PlaceCardBoard(board) for board in boards),
             'items': items,
