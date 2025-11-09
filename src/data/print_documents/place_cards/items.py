@@ -361,6 +361,7 @@ class PlaceCardImage(PlaceCardItem):
             if self.width:
                 self.height = self.width / ratio
             else:
+                assert self.height
                 self.width = self.height * ratio
         self.url = image_file_inline_url(self.image)
 
@@ -379,22 +380,26 @@ class PlaceCardImage(PlaceCardItem):
             # try to get the dimensions or view box of SVG files
             with open(image_file, 'rt') as f:
                 svg_tree: ElementTree = ET.ElementTree(ET.fromstring(f.read()))
-                svg_root: ET.Element = svg_tree.getroot()
-                try:
-                    width = int(svg_root.attrib.get('width') or '0')
-                    height = int(svg_root.attrib.get('height') or '0')
-                    if width and height:
-                        return width / height
-                except ValueError:
-                    return 0.0
-                view_box = svg_root.attrib.get('viewBox')
-                if not view_box:
-                    return 0.0
-                _, _, width, height = view_box.split()
-                try:
-                    return int(width.strip() or '0') / int(height.strip() or '0')
-                except ValueError:
-                    return 0.0
+            if not svg_tree:
+                return 0.0
+            svg_root: ET.Element | None = svg_tree.getroot()
+            if svg_root is None:
+                return 0.0
+            try:
+                width = int(svg_root.attrib.get('width') or '0')
+                height = int(svg_root.attrib.get('height') or '0')
+                if width and height:
+                    return width / height
+            except ValueError:
+                return 0.0
+            view_box: str | None = svg_root.attrib.get('viewBox')
+            if not view_box:
+                return 0.0
+            _, _, width_str, height_str = view_box.split()
+            try:
+                return int(width_str.strip() or '0') / int(height_str.strip() or '0')
+            except ValueError:
+                return 0.0
 
     @property
     def type(self) -> str:
