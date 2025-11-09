@@ -15,15 +15,16 @@ class PlaceCardCropMarks(IdentifiableEntity, ABC):
 
     def render_css(
         self,
+        template_css_class: str,
     ) -> str:
         return '\n'.join(
             f'{locator} {{\n{"\n".join(f"\t{key}: {value};" for key, value in properties.items())}\n}}'
-            for locator, properties in self._css_properties.items()
+            for locator, properties in self._css_properties(template_css_class).items()
         )
 
-    @property
     def _css_properties(
         self,
+        template_css_class: str,
     ) -> dict[str, dict[str, str]]:
         return {}
 
@@ -51,42 +52,44 @@ class BorderPlaceCardCropMarks(PlaceCardCropMarks):
     def top_border_style(self) -> str:
         return ''
 
-    @property
-    def _css_properties(self) -> dict[str, dict[str, str]]:
+    def _css_properties(
+        self,
+        template_css_class: str,
+    ) -> dict[str, dict[str, str]]:
         return {
             ', '.join(
                 [
-                    '.side-back .card-cell.top',
-                    '.side-single .card-cell.top',
+                    f'.{template_css_class} .side-back .card-cell.top',
+                    f'.{template_css_class} .side-single .card-cell.top',
                 ]
             ): {
                 'border-top': self.border_style,
             },
             ', '.join(
                 [
-                    '.card-cell.right',
+                    f'.{template_css_class} .card-cell.right',
                 ]
             ): {
                 'border-right': self.border_style,
             },
             ', '.join(
                 [
-                    '.side-front .card-cell.bottom',
-                    '.side-single .card-cell.bottom',
+                    f'.{template_css_class} .side-front .card-cell.bottom',
+                    f'.{template_css_class} .side-single .card-cell.bottom',
                 ]
             ): {
                 'border-bottom': self.border_style,
             },
             ', '.join(
                 [
-                    '.card-cell.left',
+                    f'.{template_css_class} .card-cell.left',
                 ]
             ): {
                 'border-left': self.border_style,
             },
             ', '.join(
                 [
-                    '.side-front',
+                    f'.{template_css_class} .side-front',
                 ]
             ): {
                 'border-top': self.dotted_style,
@@ -135,48 +138,50 @@ class CornersPlaceCardCropMarks(PlaceCardCropMarks):
     def border_style(self) -> str:
         return self.solid_style
 
-    @property
-    def _css_properties(self) -> dict[str, dict[str, str]]:
+    def _css_properties(
+        self,
+        template_css_class: str,
+    ) -> dict[str, dict[str, str]]:
         return {
             ', '.join(
                 [
-                    '.side-back .card-cell.top.left',
-                    '.side-back .card-cell.top.right',
-                    '.side-single .card-cell.top.left',
-                    '.side-single .card-cell.top.right',
+                    f'.{template_css_class} .side-back .card-cell.top.left',
+                    f'.{template_css_class} .side-back .card-cell.top.right',
+                    f'.{template_css_class} .side-single .card-cell.top.left',
+                    f'.{template_css_class} .side-single .card-cell.top.right',
                 ]
             ): {
                 'border-top': self.border_style,
             },
             ', '.join(
                 [
-                    '.card-cell.top.right',
-                    '.card-cell.bottom.right',
+                    f'.{template_css_class} .card-cell.top.right',
+                    f'.{template_css_class} .card-cell.bottom.right',
                 ]
             ): {
                 'border-right': self.border_style,
             },
             ', '.join(
                 [
-                    '.side-front .card-cell.bottom.left',
-                    '.side-front .card-cell.bottom.right',
-                    '.side-single .card-cell.bottom.left',
-                    '.side-single .card-cell.bottom.right',
+                    f'.{template_css_class} .side-front .card-cell.bottom.left',
+                    f'.{template_css_class} .side-front .card-cell.bottom.right',
+                    f'.{template_css_class} .side-single .card-cell.bottom.left',
+                    f'.{template_css_class} .side-single .card-cell.bottom.right',
                 ]
             ): {
                 'border-bottom': self.border_style,
             },
             ', '.join(
                 [
-                    '.card-cell.top.left',
-                    '.card-cell.bottom.left',
+                    f'.{template_css_class} .card-cell.top.left',
+                    f'.{template_css_class} .card-cell.bottom.left',
                 ]
             ): {
                 'border-left': self.border_style,
             },
             ', '.join(
                 [
-                    '.side-front',
+                    f'.{template_css_class} .side-front',
                 ]
             ): {
                 'border-top': self.dotted_style,
