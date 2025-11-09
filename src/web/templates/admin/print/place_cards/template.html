@@ -2,7 +2,7 @@
 
 {% macro render_card(board, player) %}
     {% set sides={'back': true, 'front': false} if back_side else {'single': false} %}
-    <div class="card-wrapper">
+    <div class="card-wrapper {{ template_css_class }}">
         {% for side_name, side_back in sides.items() %}
             <div class="card side-{{side_name}}">
                 <div class="card-cell top left"></div>
@@ -34,10 +34,10 @@
             print-color-adjust: exact;
         }
     }
-    {{ template_css | safe }}
     {% for item in items %}
-        {{ item.render_css(unit) | safe  }}
+        {{ item.render_css(template_css_class, unit) | safe  }}
     {% endfor %}
+    {{ template_css | safe }}
 {% endblock %}
 
 {% block js %}

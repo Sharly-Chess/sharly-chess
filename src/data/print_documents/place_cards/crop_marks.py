@@ -13,8 +13,18 @@ class PlaceCardCropMarks(IdentifiableEntity, ABC):
     def border_style(self) -> str:
         return ''
 
+    def render_css(
+        self,
+    ) -> str:
+        return '\n'.join(
+            f'{locator} {{\n{"\n".join(f"\t{key}: {value};" for key, value in properties.items())}\n}}'
+            for locator, properties in self._css_properties.items()
+        )
+
     @property
-    def css(self) -> dict[str, dict[str, str]]:
+    def _css_properties(
+        self,
+    ) -> dict[str, dict[str, str]]:
         return {}
 
 
@@ -42,7 +52,7 @@ class BorderPlaceCardCropMarks(PlaceCardCropMarks):
         return ''
 
     @property
-    def css(self) -> dict[str, dict[str, str]]:
+    def _css_properties(self) -> dict[str, dict[str, str]]:
         return {
             ', '.join(
                 [
@@ -126,7 +136,7 @@ class CornersPlaceCardCropMarks(PlaceCardCropMarks):
         return self.solid_style
 
     @property
-    def css(self) -> dict[str, dict[str, str]]:
+    def _css_properties(self) -> dict[str, dict[str, str]]:
         return {
             ', '.join(
                 [

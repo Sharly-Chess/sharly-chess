@@ -1,3 +1,4 @@
+import copy
 import html
 import logging
 import re
@@ -168,6 +169,109 @@ class PlaceCardTemplate:
         logger.warning('Font file [%s] not found.', self.font)
         return self.default_font_file
 
+    def render_css(
+        self,
+        place_card_crop_marks: PlaceCardCropMarks,
+        back_side: bool,
+    ) -> str:
+        file: Path = self.font_file
+        css_properties: dict[str, dict[str, str]] = {
+            '@font-face': {
+                'font-family': f'"{file.stem}"',
+                'src': f'url("{ttf_file_inline_url(file)}") format("truetype")',
+            },
+            f'.{self.css_class} *': {
+                'font-family': f'{file.stem}, sans-serif',
+            },
+            f'.card-wrapper.{self.css_class}': {
+                'float': 'left',
+                'display': 'flex',
+                'flex-direction': 'column',
+                'width': f'{self.width}{self.unit}',
+                'height': f'{(2 if back_side else 1) * self.height}{self.unit}',
+                'page-break-inside': 'avoid',
+                'position': 'relative',
+            },
+            f'.{self.css_class} .card': {
+                'display': 'grid',
+                'width': f'{self.width}{self.unit}',
+                'height': f'{self.height}{self.unit}',
+                'grid-template-columns': f'{self.padding}{self.unit} auto {self.padding}{self.unit}',
+                'grid-auto-flow': 'row',
+            },
+            f'.{self.css_class} .card.side-back .card-content': {
+                'transform': 'rotate(180deg)',
+                'transform-origin': 'center center',
+            },
+            f'.{self.css_class} .card-cell.top, .{self.css_class} .card-cell.bottom': {
+                'height': f'{self.padding}{self.unit}',
+            },
+            f'.{self.css_class} .card-cell.middle, .{self.css_class} .card-content': {
+                'height': f'{self.height - 2 * self.padding}{self.unit}',
+            },
+            f'.{self.css_class} .card-cell.left, .{self.css_class} .card-cell.right': {
+                'width': f'{self.padding}{self.unit}',
+            },
+            f'.{self.css_class} .card-cell.center, .{self.css_class} .card-content': {
+                'width': f'{self.width - 2 * self.padding}{self.unit}',
+            },
+            f'.{self.css_class} .card-content': {
+                'position': 'relative',
+                'background-color': 'rgba(255, 255, 255, 0.6)',
+            },
+            f'.{self.css_class} .card-item-wrapper': {
+                'position': 'absolute',
+                'top': '0.0',
+                'left': '0.0',
+                'overflow': 'hidden',
+                'white-space': 'nowrap',
+                'text-overflow': 'ellipsis',
+                'background-color': 'transparent',
+                'width': f'{self.width - 2 * self.padding}{self.unit}',
+                'height': f'{self.height - 2 * self.padding}{self.unit}',
+            },
+            f'.{self.css_class} .card-item': {
+                'overflow': 'hidden',
+                'white-space': 'nowrap',
+                'text-overflow': 'ellipsis',
+                'background-color': 'transparent',
+                'max-width': f'{self.width - 2 * self.padding}{self.unit}',
+            },
+            f'.{self.css_class} .federation-flag': {
+                'height': '0.75em',
+            },
+            f'.{self.css_class} .card-item.error': {
+                'color': 'rgb(255, 0, 0)',
+                'background-color': 'rgb(255, 220, 220)',
+                'opacity': '1.0',
+            },
+        }
+        return (
+            '\n'.join(
+                f'{locator} {{\n{"\n".join(f"\t{key}: {value};" for key, value in properties.items())}\n}}'
+                for locator, properties in css_properties.items()
+            )
+            + place_card_crop_marks.render_css()
+            + self.css
+        )
+
+    def render_js(
+        self,
+        federation_names: set[str],
+    ) -> str:
+        federation_flag_urls: dict[str, str] = {
+            name: image_file_inline_url(
+                BASE_DIR / f'src/web/static/images/federations/{name}.svg'
+            )
+            for name in federation_names
+        }
+        js = f"""
+    $(document).ready(function() {{
+        {'\n'.join(f'$(".federation-flag.{name}").attr("src", "{url}");\n' for name, url in federation_flag_urls.items())}
+    }});
+"""
+        return js
+
     def template_context(
         self,
         event: Event,
@@ -179,8 +283,7 @@ class PlaceCardTemplate:
         board_numbers: set[int],
         player_ids: list[int],
     ) -> dict[str, Any]:
-        file: Path = self.font_file
-        items: list[PlaceCardItem] = self.items
+        items: list[PlaceCardItem] = copy.deepcopy(self.items)
         if mirror:
             # duplicate all the items on the back side
             back_items: list[PlaceCardItem] = [
@@ -189,80 +292,6 @@ class PlaceCardTemplate:
             ]
             items += back_items
         back_side: bool = any(item.back for item in items)
-        css: dict[str, dict[str, str]] = {
-            '@font-face': {
-                'font-family': f'"{file.stem}"',
-                'src': f'url("{ttf_file_inline_url(file)}") format("truetype")',
-            },
-            '*': {
-                'font-family': f'{file.stem}, sans-serif',
-            },
-            '.card-wrapper': {
-                'float': 'left',
-                'display': 'flex',
-                'flex-direction': 'column',
-                'width': f'{self.width}{self.unit}',
-                'height': f'{(2 if back_side else 1) * self.height}{self.unit}',
-                'page-break-inside': 'avoid',
-                'position': 'relative',
-            },
-            '.card': {
-                'display': 'grid',
-                'width': f'{self.width}{self.unit}',
-                'height': f'{self.height}{self.unit}',
-                'grid-template-columns': f'{self.padding}{self.unit} auto {self.padding}{self.unit}',
-                'grid-auto-flow': 'row',
-            },
-            '.card.side-back .card-content': {
-                'transform': 'rotate(180deg)',
-                'transform-origin': 'center center',
-            },
-            '.card-cell.top, .card-cell.bottom': {
-                'height': f'{self.padding}{self.unit}',
-            },
-            '.card-cell.middle, .card-content': {
-                'height': f'{self.height - 2 * self.padding}{self.unit}',
-            },
-            '.card-cell.left, .card-cell.right': {
-                'width': f'{self.padding}{self.unit}',
-            },
-            '.card-cell.center, .card-content': {
-                'width': f'{self.width - 2 * self.padding}{self.unit}',
-            },
-        }
-        css |= place_card_crop_marks.css
-        css |= {
-            '.card-content': {
-                'position': 'relative',
-                'background-color': 'rgba(255, 255, 255, 0.6)',
-            },
-            '.card-item-wrapper': {
-                'position': 'absolute',
-                'top': '0.0',
-                'left': '0.0',
-                'overflow': 'hidden',
-                'white-space': 'nowrap',
-                'text-overflow': 'ellipsis',
-                'background-color': 'transparent',
-                'width': f'{self.width - 2 * self.padding}{self.unit}',
-                'height': f'{self.height - 2 * self.padding}{self.unit}',
-            },
-            '.card-item': {
-                'overflow': 'hidden',
-                'white-space': 'nowrap',
-                'text-overflow': 'ellipsis',
-                'background-color': 'transparent',
-                'max-width': f'{self.width - 2 * self.padding}{self.unit}',
-            },
-            '.federation-flag': {
-                'height': '0.75em',
-            },
-            '.card-item.error': {
-                'color': 'rgb(255, 0, 0)',
-                'background-color': 'rgb(255, 220, 220)',
-                'opacity': '1.0',
-            },
-        }
         players: list[Player] = place_card_type.players(tournament)
         if player_ids:
             players = [player for player in players if player.id in player_ids]
@@ -284,17 +313,6 @@ class PlaceCardTemplate:
             )
             .union(set(player.federation.name for player in players))
         )
-        federation_flag_urls: dict[str, str] = {
-            name: image_file_inline_url(
-                BASE_DIR / f'src/web/static/images/federations/{name}.svg'
-            )
-            for name in federation_names
-        }
-        js = f"""
-    $(document).ready(function() {{
-        {'\n'.join(f'$(".federation-flag.{name}").attr("src", "{url}");\n' for name, url in federation_flag_urls.items())}
-    }});
-"""
         return {
             'event': PlaceCardEvent(event),
             'tournament': PlaceCardTournament(tournament),
@@ -302,12 +320,9 @@ class PlaceCardTemplate:
             'error': self.error,
             'back_side': back_side,
             'unit': self.unit,
-            'template_css': '\n'.join(
-                f'{target} {{\n{"\n".join(f"\t{key}: {value};" for key, value in entries.items())}\n}}'
-                for target, entries in css.items()
-            )
-            + self.css,
-            'template_js': js,
+            'template_css_class': self.css_class,
+            'template_css': self.render_css(place_card_crop_marks, back_side),
+            'template_js': self.render_js(federation_names),
             'players': (PlaceCardPlayer(player) for player in players),
             'boards': (PlaceCardBoard(board) for board in boards),
             'items': items,

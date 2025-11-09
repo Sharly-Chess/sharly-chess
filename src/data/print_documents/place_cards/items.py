@@ -125,7 +125,6 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
 
     def wrapper_css(
         self,
-        unit: str,
     ) -> dict[str, str]:
         """Returns the CSS for the wrapper of the item."""
         wrapper_css: dict[str, str] = {
@@ -186,14 +185,15 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
 
     def render_css(
         self,
+        template_css_class: str,
         unit: str,
     ) -> str:
         """Returns the CSS to print for the item."""
         return (
-            f'.card-item-wrapper.{self.css_class} {{\n{";\n".join(f"{key}: {value};" for key, value in self.wrapper_css(unit).items())}\n}}\n'
-            + f'.card-item.{self.css_class} {{\n{";\n".join(f"{key}: {value};" for key, value in self.item_css(unit).items())}\n}}\n'
-            + f'.card-item.{self.css_class} * {{\n{";\n".join(f"{key}: {value};" for key, value in self.inner_css(unit).items())}\n}}\n'
-            + f'.card-item.{self.css_class} {{\n{self.css}\n}}\n'
+            f'.{template_css_class} .card-item-wrapper.{self.css_class} {{\n{";\n".join(f"{key}: {value};" for key, value in self.wrapper_css().items())}\n}}\n'
+            + f'.{template_css_class} .{self.css_class} .card-item {{\n{";\n".join(f"{key}: {value};" for key, value in self.item_css(unit).items())}\n}}\n'
+            + f'.{template_css_class} .{self.css_class} .card-item * {{\n{";\n".join(f"{key}: {value};" for key, value in self.inner_css(unit).items())}\n}}\n'
+            + f'.{template_css_class} .{self.css_class} .card-item {{\n{self.css}\n}}\n'
         )
 
     def render_js(
