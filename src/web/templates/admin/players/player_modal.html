@@ -101,9 +101,10 @@
                         ) }}
                     </div>
                 </div>
-                {% for template in plugin_form_identity_fields_templates %}
+                {% for template in plugin_templates_by_section['identity'] %}
                     {% include template %}
                 {% endfor %}
+
                 <h4>
                     {{ _('Tournament') }}
                 </h4>
@@ -254,11 +255,9 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-
                 </div>
-
-                {% for form_fields_template in plugin_form_fields_templates %}
-                    {% include form_fields_template %}
+                {% for template in plugin_templates_by_section['fide'] %}
+                    {% include template %}
                 {% endfor %}
 
                 <h4>

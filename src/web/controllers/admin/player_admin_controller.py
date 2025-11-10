@@ -1,4 +1,5 @@
 import csv
+from collections import defaultdict
 from collections.abc import Callable
 from datetime import date
 from logging import Logger
@@ -816,19 +817,10 @@ class PlayerAdminController(BaseEventAdminController):
                     if admin_player.tournament not in tournaments:
                         tournaments.insert(0, admin_player.tournament)
                 tournament_options |= web_context.get_tournament_options(tournaments)
-
-                plugin_form_fields_templates = (
-                    plugin_manager.hook_for_event(
-                        admin_event, 'get_player_form_fields_template'
-                    )()
-                    or []
-                )
-                plugin_form_identity_fields_templates = (
-                    plugin_manager.hook_for_event(
-                        admin_event, 'get_player_form_identity_fields_template'
-                    )()
-                    or []
-                )
+                plugin_templates_by_section: dict[str, list[str]] = defaultdict(list)
+                plugin_manager.hook_for_event(
+                    admin_event, 'insert_player_form_fields_template'
+                )(templates_by_section=plugin_templates_by_section)
 
                 template_context |= {
                     'gender_options': cls._get_gender_options(),
@@ -869,8 +861,7 @@ class PlayerAdminController(BaseEventAdminController):
                         request
                     ),
                     'data_source_options': DataSourceManager().options(),
-                    'plugin_form_fields_templates': plugin_form_fields_templates,
-                    'plugin_form_identity_fields_templates': plugin_form_identity_fields_templates,
+                    'plugin_templates_by_section': plugin_templates_by_section,
                     'previous_player': (
                         admin_event.players_by_id.get(old_player_id, None)
                         if action == 'create' and old_player_id

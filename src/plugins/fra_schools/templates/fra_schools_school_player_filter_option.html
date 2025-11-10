@@ -1,0 +1,11 @@
+<div class="col-12">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('%(string)s:', string=_('Schools')),
+        select_options=option.select_options(admin_tournament),
+        multiple_select=true,
+        tooltip_select=true,
+        placeholder=_('Choose at least one school.'),
+        data=data, errors=errors
+    ) }}
+</div>

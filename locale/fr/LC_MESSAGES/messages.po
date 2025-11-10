@@ -643,6 +643,9 @@ msgstr "Au moins une catégorie d'age est attendue."
 msgid "At least one club is expected."
 msgstr "Au moins un club est attendu."
 
+msgid "At least one department is expected."
+msgstr "Au moins un département est attendu."
+
 msgid "At least one federation is expected."
 msgstr "Au moins une fédération est attendue."
 
@@ -657,6 +660,9 @@ msgstr "Au moins un·e joueur·euse doit être sélectionné·e."
 
 msgid "At least one rating type is expected."
 msgstr "Au moins un type de classement est attendu."
+
+msgid "At least one school is expected."
+msgstr "Au moins un établissement est attendu."
 
 msgid "At least one value is expected."
 msgstr "Au moins une valeur est attendue."
@@ -1030,6 +1036,9 @@ msgstr "Choisir au moins une catégorie."
 msgid "Choose at least one club."
 msgstr "Choisir au moins un club."
 
+msgid "Choose at least one department."
+msgstr "Choisir au moins un département."
+
 msgid "Choose at least one federation."
 msgstr "Choisir au moins une fédération."
 
@@ -1044,6 +1053,9 @@ msgstr "Choisissez au moins un·e joueur·euse."
 
 msgid "Choose at least one rating type."
 msgstr "Choisissez au moins un type de classement."
+
+msgid "Choose at least one school."
+msgstr "Choisir au moins un établissement."
 
 msgid "Choose families to add"
 msgstr "Choisir des familles à ajouter"
@@ -1555,6 +1567,9 @@ msgstr "Date de suppression"
 
 msgid "Department"
 msgstr "Département"
+
+msgid "Departments"
+msgstr "Départements"
 
 msgid "Deputy Chief Arbitration"
 msgstr "Arbitrage adjoint"
@@ -2091,9 +2106,6 @@ msgstr "Licence FFE"
 
 msgid "FFE Licence type"
 msgstr "Type de licence FFE"
-
-msgid "FFE Uniq ID:"
-msgstr "Identifiant unique FFE :"
 
 msgid "FFE certification number and password not defined."
 msgstr "Numéro d'homologation FFE et mot de passe non-définis."
@@ -2812,7 +2824,7 @@ msgid "Lic."
 msgstr "Lic."
 
 msgid "Licence no. *** LICENCE NUMBER"
-msgstr "N° de licence"
+msgstr "N° licence"
 
 msgid "Licence types"
 msgstr "Types de licence"
@@ -4419,6 +4431,9 @@ msgstr "Scannez pour accéder au tournoi sur le site de la FFE."
 
 msgid "School *** SCHOOL FOR TABLE HEADER"
 msgstr "Établissement"
+
+msgid "Schools"
+msgstr "Établissements"
 
 msgid "Scope"
 msgstr "Périmètre"
@@ -6408,4 +6423,7 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "FFE Uniq ID:"
+#~ msgstr "Identifiant unique FFE :"
 

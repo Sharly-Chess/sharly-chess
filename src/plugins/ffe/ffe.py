@@ -3,7 +3,7 @@ from datetime import date
 import re
 from pluggy import PluginManager
 
-from collections import Counter
+from collections import Counter, defaultdict
 from collections.abc import Callable
 
 from types import ModuleType
@@ -330,13 +330,14 @@ class FfePlugin(Plugin):
             | {code: f'{code} - {name}' for code, name in self.FFE_LEAGUES.items()},
         }
 
-    @hookimpl(tryfirst=True)
-    def get_player_form_identity_fields_template(self) -> str:
-        return '/ffe_player_form_identity_fields.html'
-
     @hookimpl
-    def get_player_form_fields_template(self) -> str:
-        return '/ffe_player_form_fields.html'
+    def insert_player_form_fields_template(
+        self, templates_by_section: defaultdict[str, list[str]]
+    ):
+        templates_by_section['identity'].insert(
+            0, '/ffe_player_form_identity_fields.html'
+        )
+        templates_by_section['fide'].append('/ffe_player_form_fields.html')
 
     @hookimpl
     def validate_player_form_fields(

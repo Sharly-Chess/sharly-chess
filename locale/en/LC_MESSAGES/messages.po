@@ -643,6 +643,9 @@ msgstr ""
 msgid "At least one club is expected."
 msgstr ""
 
+msgid "At least one department is expected."
+msgstr ""
+
 msgid "At least one federation is expected."
 msgstr ""
 
@@ -656,6 +659,9 @@ msgid "At least one player is expected."
 msgstr ""
 
 msgid "At least one rating type is expected."
+msgstr ""
+
+msgid "At least one school is expected."
 msgstr ""
 
 msgid "At least one value is expected."
@@ -1030,6 +1036,9 @@ msgstr ""
 msgid "Choose at least one club."
 msgstr ""
 
+msgid "Choose at least one department."
+msgstr ""
+
 msgid "Choose at least one federation."
 msgstr ""
 
@@ -1043,6 +1052,9 @@ msgid "Choose at least one player."
 msgstr ""
 
 msgid "Choose at least one rating type."
+msgstr ""
+
+msgid "Choose at least one school."
 msgstr ""
 
 msgid "Choose families to add"
@@ -1554,6 +1566,9 @@ msgid "Deletion date"
 msgstr ""
 
 msgid "Department"
+msgstr ""
+
+msgid "Departments"
 msgstr ""
 
 msgid "Deputy Chief Arbitration"
@@ -2090,9 +2105,6 @@ msgid "FFE Licence"
 msgstr ""
 
 msgid "FFE Licence type"
-msgstr ""
-
-msgid "FFE Uniq ID:"
 msgstr ""
 
 msgid "FFE certification number and password not defined."
@@ -4420,6 +4432,9 @@ msgstr ""
 msgid "School *** SCHOOL FOR TABLE HEADER"
 msgstr "School"
 
+msgid "Schools"
+msgstr ""
+
 msgid "Scope"
 msgstr ""
 
@@ -6422,5 +6437,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "School"
+#~ msgstr ""
+
+#~ msgid "FFE Uniq ID:"
 #~ msgstr ""
 

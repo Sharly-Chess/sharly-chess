@@ -1,5 +1,5 @@
+from collections import defaultdict
 from collections.abc import Callable
-from operator import attrgetter
 from typing import TYPE_CHECKING, Any, Iterable, override
 
 from packaging.version import Version
@@ -7,6 +7,8 @@ from packaging.version import Version
 from litestar.plugins.htmx import HTMXRequest
 from common.i18n import _
 from data.columns.player_datasheet import DatasheetColumn
+from data.criteria.player_filter_options import PlayerFilterOption, ClubsFilterOption
+from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
 from data.event import Player
 from data.print_documents import PlayerSplitter
 from data.print_documents.player_splitters import ClubPlayerSplitter
@@ -22,6 +24,10 @@ from plugins.fra_schools.fra_schools_entity import (
     FraSchoolDatasheetColumn,
     FraSchoolPlayerSplitter,
     FraSchoolTableColumn,
+    FRASchoolPlayerFilter,
+    FRASchoolsFilterOption,
+    FRADepartmentPlayerFilter,
+    FRADepartmentsFilterOption,
 )
 from plugins.fra_schools.fra_schools_event_controller import (
     FraSchoolsAdminEventController,
@@ -137,21 +143,18 @@ class FRASchoolsPlugin(Plugin):
         event = web_context.get_admin_event()
 
         school_counts = FRASchoolsUtils.get_event_school_counts(event)
-        schools_by_id = FRASchoolsUtils.get_event_plugin_data(event).fra_schools_by_id
+        plugin_data = FRASchoolsUtils.get_event_plugin_data(event)
         sorted_schools = sorted(
-            (school for school in schools_by_id.values() if school.id in school_counts),
-            key=attrgetter('name'),
+            school for school in plugin_data.fra_schools if school.id in school_counts
         )
-        sorted_school_ids: list[int] = [
-            school.id for school in sorted_schools if school.id in school_counts
-        ]
+        sorted_school_ids: list[int] = [school.id for school in sorted_schools]
         if 0 in school_counts:
             sorted_school_ids.insert(0, 0)
 
         return {
             'fra_schools_utils': FRASchoolsUtils,
             'fra_school_ids': sorted_school_ids,
-            'fra_schools_by_id': schools_by_id,
+            'fra_schools_by_id': plugin_data.fra_schools_by_id,
             'fra_school_counts': school_counts,
             'fra_schools_filter': FRASchoolsSessionHandler.get_session_filter_schools(
                 web_context.request
@@ -164,9 +167,11 @@ class FRASchoolsPlugin(Plugin):
     ) -> dict[str, Any]:
         return FRASchoolsController.get_fra_school_template_context(web_context)
 
-    @hookimpl(trylast=True)
-    def get_player_form_identity_fields_template(self) -> str:
-        return '/fra_schools_player_form_identity_fields.html'
+    @hookimpl
+    def insert_player_form_fields_template(
+        self, templates_by_section: defaultdict[str, list[str]]
+    ):
+        templates_by_section['identity'].append('/fra_schools_player_form_fields.html')
 
     @hookimpl
     def get_extra_player_columns(self) -> Iterable[ExtraAdminColumn]:
@@ -207,7 +212,7 @@ class FRASchoolsPlugin(Plugin):
         if sort_type == 'fra_schools_school':
             school = FRASchoolsUtils.get_player_school(player)
             return (
-                school.full_name_without_id if school else '',
+                school.full_name_without_code if school else '',
                 player.last_name,
                 player.first_name,
             )
@@ -256,6 +261,34 @@ class FRASchoolsPlugin(Plugin):
         lps: type[PlayerSplitter] = FraSchoolPlayerSplitter
         cps: type[PlayerSplitter] = ClubPlayerSplitter
         PluginUtils.replace_on_equals(player_splitter_types, lps, cps)
+
+    # ---------------------------------------------------------------------------------
+    # Prizes
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def insert_player_filter_types(
+        self, player_filter_types: list[type['PlayerFilter']]
+    ):
+        school: type[PlayerFilter] = FRASchoolPlayerFilter
+        club: type[PlayerFilter] = ClubPlayerFilter
+        PluginUtils.insert_on_equals(player_filter_types, school, club, False)
+        if FRASchoolsDatabase.DEPARTMENTS:
+            department: type[PlayerFilter] = FRADepartmentPlayerFilter
+            PluginUtils.insert_on_equals(player_filter_types, department, club, False)
+
+    @hookimpl
+    def insert_player_filter_option_types(
+        self, player_filter_option_types: list[type['PlayerFilterOption']]
+    ):
+        school: type[PlayerFilterOption] = FRASchoolsFilterOption
+        club: type[PlayerFilterOption] = ClubsFilterOption
+        PluginUtils.insert_on_equals(player_filter_option_types, school, club, False)
+        if FRASchoolsDatabase.DEPARTMENTS:
+            department: type[PlayerFilterOption] = FRADepartmentsFilterOption
+            PluginUtils.insert_on_equals(
+                player_filter_option_types, department, club, False
+            )
 
     # ---------------------------------------------------------------------------------
     # Plugin hooks

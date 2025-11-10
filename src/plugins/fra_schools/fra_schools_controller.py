@@ -155,7 +155,7 @@ class FRASchoolsController(BaseEventAdminController):
             'fra_school': str(school_id),
         }
         return HTMXTemplate(
-            template_name='/fra_schools_player_form_identity_fields.html',
+            template_name='/fra_schools_player_form_fields.html',
             context=(
                 web_context.template_context
                 | self.get_fra_school_template_context(web_context)

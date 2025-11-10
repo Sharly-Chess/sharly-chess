@@ -1,3 +1,4 @@
+from collections import defaultdict
 from collections.abc import Callable
 from datetime import date
 from collections.abc import Iterable
@@ -106,12 +107,11 @@ class AppHookSpecs:
         """Provide additional template context for rendering the player form."""
 
     @hookspec
-    def get_player_form_identity_fields_template(self) -> str:
-        """Provide a path to a template containing fields for the player form's `Identity` section."""
-
-    @hookspec
-    def get_player_form_fields_template(self) -> str:
-        """Provide a path to a template containing additional player form fields"""
+    def insert_player_form_fields_template(
+        self, templates_by_section: defaultdict[str, list[str]]
+    ):
+        """Provide paths of templates of fields to insert into the player form,
+        organised by the section at which to add the fields."""
 
     @hookspec
     def get_player_form_data(

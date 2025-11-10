@@ -59,13 +59,13 @@ class FRASchool(PluginData):
 
     @property
     def full_name(self) -> str:
-        full_name = self.full_name_without_id
+        full_name = self.full_name_without_code
         if self.code:
             full_name = f'{self.code} {full_name}'
         return full_name
 
     @property
-    def full_name_without_id(self) -> str:
+    def full_name_without_code(self) -> str:
         full_name = self.name
         if self.city:
             full_name += f', {self.city}'
@@ -87,6 +87,19 @@ class FRASchool(PluginData):
                 city += f' ({self.department})'
             tooltip += f'<div class="text-center text-nowrap fst-italic">{city}</div>'
         return tooltip
+
+    def __lt__(self, other):
+        if not isinstance(other, FRASchool):
+            return NotImplemented
+        return self.full_name_without_code > other.full_name_without_code
+
+    def __eq__(self, other):
+        if not isinstance(other, FRASchool):
+            return NotImplemented
+        return self.id == other.id
+
+    def __hash__(self):
+        return hash(self.id)
 
 
 @dataclass

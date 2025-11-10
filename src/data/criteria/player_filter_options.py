@@ -13,6 +13,7 @@ from utils.option import Option
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
+    from web.utils import SelectOption
 
 
 class PlayerFilterOption(Option, ABC):
@@ -59,18 +60,23 @@ class SelectPlayerFilterOption[T](PlayerFilterOption):
     def get_name(self, object_: T) -> str:
         """Get the name of the select option from an object of type [T]."""
 
+    def get_tooltip(self, object_: T) -> str | None:
+        """Get a tooltip to display on the option."""
+        return None
+
     def select_options(
         self,
         tournament: 'Tournament',
         split_tournament_others: bool = True,
         include_unknown: bool = True,
-    ) -> dict[str, str] | dict[str, dict[str, str]]:
+    ) -> dict[str, 'SelectOption'] | dict[str, dict[str, 'SelectOption']]:
         """Build the select options for the tournament *tournament*.
         If *split_tournament_others*, the options will be split into 2 option groups:
             - one with the options matching players in the tournament, including the player count
             - the other with all the other possible values
         If *include_unknown*, tournament values will be added
         to the existing options if they don't already exist."""
+        from web.utils import SelectOption
 
         player_counter = self.get_player_counter(tournament)
         all_values = self.get_all_known_values(tournament)
@@ -81,11 +87,17 @@ class SelectPlayerFilterOption[T](PlayerFilterOption):
         else:
             ordered_counters = list(player_counter.items())
         tournament_options = {
-            self.get_key(object_): f'{self.get_name(object_)} ({player_count})'
+            self.get_key(object_): SelectOption(
+                f'{self.get_name(object_)} ({player_count})',
+                self.get_tooltip(object_),
+            )
             for object_, player_count in ordered_counters
         }
         all_options = {
-            self.get_key(object_): self.get_name(object_) for object_ in all_values
+            self.get_key(object_): SelectOption(
+                self.get_name(object_), self.get_tooltip(object_)
+            )
+            for object_ in all_values
         }
         if split_tournament_others:
             other_options = {

@@ -21,7 +21,7 @@
     <div class="col-12 col-md-4 col-sm-6">
         {{ admin_macros.number_input(
             name='ffe_id',
-            label=_('FFE Uniq ID:'),
+            label=_('%(string)s:', _('FFE ID')),
             disabled=true,
             min=1,
             data=data, errors=errors
