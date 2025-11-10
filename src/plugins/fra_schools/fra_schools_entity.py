@@ -5,8 +5,8 @@ from common.i18n import _
 from data.columns.player_datasheet import DatasheetColumn
 from data.player import Player
 from data.print_documents import PlayerSplitter
-from plugins.fra.fra_schools import PLUGIN_NAME
-from plugins.fra.fra_schools.utils import FRASchoolsUtils
+from plugins.fra_schools import PLUGIN_NAME
+from plugins.fra_schools.utils import FRASchoolsUtils
 from plugins.utils import PluginUtils
 from web.utils import PlayerColumn
 
@@ -20,11 +20,13 @@ class FraSchoolPlayerSplitter(PlayerSplitter):
 
     @staticmethod
     def static_name() -> str:
-        return _('School')
+        return _('French school')
 
     @staticmethod
     def get_split_key(player: Player) -> str:
-        return FRASchoolsUtils.get_player_plugin_data(player).school_name or ''
+        return getattr(
+            FRASchoolsUtils.get_player_school(player), 'full_name_without_id', ''
+        )
 
 
 class FraSchoolTableColumn(PlayerColumn):
@@ -33,13 +35,19 @@ class FraSchoolTableColumn(PlayerColumn):
         return _('School *** SCHOOL FOR TABLE HEADER')
 
     def get_cell_content(self, player: Player) -> Any:
-        return FRASchoolsUtils.get_player_plugin_data(player).school_name or ''
+        return getattr(
+            FRASchoolsUtils.get_player_school(player), 'full_name_without_id', ''
+        )
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-start'
 
 
 class FraSchoolDatasheetColumn(DatasheetColumn):
     @property
     def header_content(self) -> str:
-        return 'school_name'
+        return 'school'
 
     def get_cell_content(self, player: Player) -> Any:
-        return FRASchoolsUtils.get_player_plugin_data(player).school_name or ''
+        return getattr(FRASchoolsUtils.get_player_school(player), 'full_name', '')

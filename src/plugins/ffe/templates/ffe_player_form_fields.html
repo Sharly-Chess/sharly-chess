@@ -2,15 +2,15 @@
     {{ _('French Chess Federation') }}
 </h4>
 <div class="row gy-2 gx-3">
-    <div class="col-12 col-sm-6">
+    <div class="col-12 col-sm-4">
         {{ admin_macros.text_input(
             name='ffe_licence_number',
-            label=_('Licence number:'),
+            label=_('%(string)s:', string=_('Licence no. *** LICENCE NUMBER')),
             placeholder=_('E.g.: %(string)s', string='R08943'),
             data=data, errors=errors
         ) }}
     </div>
-    <div class="col-12 col-sm-6">
+    <div class="col-12 col-sm-4">
         {{ admin_macros.select_input(
             name='ffe_licence',
             label=_('Licence:'),
@@ -18,17 +18,7 @@
             data=data, errors=errors
         ) }}
     </div>
-</div>
-<div class="row gy-2 gx-3">
-    <div class="col-12 col-sm-6">
-        {{ admin_macros.select_input(
-            name='ffe_league',
-            label=_('League:'),
-            select_options=ffe_leagues,
-            data=data, errors=errors
-        ) }}
-    </div>
-        <div class="col-12 col-sm-6">
+    <div class="col-12 col-sm-4">
         {{ admin_macros.number_input(
             name='ffe_id',
             label=_('FFE Uniq ID:'),

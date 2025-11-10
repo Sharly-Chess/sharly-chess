@@ -6,7 +6,7 @@
 <th cope="col" class="text-nowrap text-center">
     <div class="d-flex align-items-center gap-1">
         {{ _('School *** SCHOOL FOR TABLE HEADER') }}
-        {% if fra_schools|length > 1 %}
+        {% if fra_school_ids|length > 1 %}
             <i
                 class="bi-sort-alpha-down {% if admin_players_sort != 'fra_schools_school' %}cursor-pointer{% else %}text-danger{%endif %}"
                 {% if admin_players_sort != 'fra_schools_school' %}
@@ -29,12 +29,12 @@
                     </button>
                     <ul class="dropdown-menu table-dropdown-menu p-0">
                         {% with name='fra_schools_filter' %}
-                            {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
-                            <input type="hidden" name="{{ name }}" value="*" />
+                            {# this input is always checked with a special value (ignored) to be sure to get a list parameter. #}
+                            <input type="hidden" name="{{ name }}" value="-1" />
                             <li class="dropdown-item title text-nowrap">
                                 <input
                                     type="checkbox"
-                                    {% if fra_schools_filter|length == fra_schools|length %}checked{% endif %}
+                                    {% if fra_schools_filter|length == fra_school_ids|length %}checked{% endif %}
                                     onclick="$('input.{{ name }}').prop('checked', this.checked)"
                                 />
                                 <button type="submit" class="btn w-100 text-end py-0" data-bs-dismiss="modal">
@@ -43,18 +43,24 @@
                                 </button>
                             </li>
                             <li class="dropdown-divider m-0"></li>
-                            {% for school in fra_schools %}
-                                <li class="dropdown-item d-flex align-items-center gap-2">
+                            {% for school_id in fra_school_ids %}
+                                {% set school = fra_schools_by_id[school_id] if school_id else none %}
+                                <li
+                                    class="dropdown-item d-flex align-items-center gap-2"
+                                    {% if school and school.tooltip %}
+                                        {{ macros.tooltip_attributes('', school.tooltip, 'right') }}
+                                    {% endif %}
+                                >
                                     <input
                                         type="checkbox"
                                         id="{{ name }}-{{ loop.index }}"
                                         name="{{ name }}"
-                                        value="{{ school }}"
-                                        {% if school in fra_schools_filter %}checked{% endif %}
+                                        value="{{ school_id }}"
+                                        {% if school_id in fra_schools_filter %}checked{% endif %}
                                         class="{{ name }}"
                                     />
                                     <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
-                                        {{ school }} ({{ fra_school_counts[school] }})
+                                        {% if school %}{{ school.name }}{% endif %} ({{ fra_school_counts[school_id] }})
                                     </label>
                                 </li>
                             {% endfor %}

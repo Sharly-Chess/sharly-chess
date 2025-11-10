@@ -4,8 +4,8 @@ from litestar.response import Template
 from litestar_htmx import HTMXRequest
 
 from data.access_levels.actions import AuthAction
-from plugins.fra.fra_schools import PLUGIN_NAME
-from plugins.fra.fra_schools.fra_schools_session_handler import FRASchoolsSessionHandler
+from plugins.fra_schools import PLUGIN_NAME
+from plugins.fra_schools.fra_schools_session_handler import FRASchoolsSessionHandler
 from plugins.utils import PluginUtils
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
@@ -28,7 +28,7 @@ class FraSchoolsAdminEventController(BaseEventAdminController):
     async def htmx_fra_schools_event_tab(
         self,
         request: HTMXRequest,
-        fra_schools_filter: list[str] | None = None,
+        fra_schools_filter: list[int] | None = None,
         admin_players_sort: str | None = None,
     ) -> Template:
         if admin_players_sort is not None:
@@ -36,7 +36,7 @@ class FraSchoolsAdminEventController(BaseEventAdminController):
         if fra_schools_filter is not None:
             FRASchoolsSessionHandler.set_session_filter_schools(
                 request,
-                [school for school in fra_schools_filter if school != '*'],
+                [school_id for school_id in fra_schools_filter if school_id != -1],
             )
         PlayerAdminController.set_players_search_results(request)
         return PlayerAdminController._admin_event_players_render(

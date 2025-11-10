@@ -435,6 +435,9 @@ msgstr ""
 msgid "Add a rotator to the event."
 msgstr ""
 
+msgid "Add a school to the options."
+msgstr ""
+
 msgid "Add a screen to check-in players or enter results."
 msgstr ""
 
@@ -1057,6 +1060,9 @@ msgstr ""
 msgid "Choose your language"
 msgstr ""
 
+msgid "City"
+msgstr ""
+
 msgid "Clear Log"
 msgstr ""
 
@@ -1102,6 +1108,9 @@ msgid "Club:"
 msgstr ""
 
 msgid "Clubs"
+msgstr ""
+
+msgid "Code"
 msgstr ""
 
 msgid "Color"
@@ -1542,6 +1551,9 @@ msgid "Deletes all the criteria of this category."
 msgstr ""
 
 msgid "Deletion date"
+msgstr ""
+
+msgid "Department"
 msgstr ""
 
 msgid "Deputy Chief Arbitration"
@@ -2354,10 +2366,13 @@ msgstr ""
 msgid "French Federation specific features (player search, results uploading, leagues, Papi import/export...)"
 msgstr ""
 
-msgid "French School"
+msgid "French School Competitions"
 msgstr ""
 
-msgid "French School Competitions"
+msgid "French Schools"
+msgstr ""
+
+msgid "French school"
 msgstr ""
 
 msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
@@ -2796,8 +2811,8 @@ msgstr ""
 msgid "Lic."
 msgstr ""
 
-msgid "Licence number:"
-msgstr ""
+msgid "Licence no. *** LICENCE NUMBER"
+msgstr "Licence no."
 
 msgid "Licence types"
 msgstr ""
@@ -4402,14 +4417,8 @@ msgstr ""
 msgid "Scan to access the tournament on the FFE site."
 msgstr ""
 
-msgid "School"
-msgstr ""
-
 msgid "School *** SCHOOL FOR TABLE HEADER"
 msgstr "School"
-
-msgid "Schools"
-msgstr ""
 
 msgid "Scope"
 msgstr ""
@@ -4502,9 +4511,6 @@ msgid "See the pairings information for the start of this round."
 msgstr ""
 
 msgid "Seed color"
-msgstr ""
-
-msgid "Seed color can't be modified once the tournament has started."
 msgstr ""
 
 msgid "Seeding of unrated rapid/blitz"
@@ -4866,6 +4872,14 @@ msgid "The crosstable shows all the results of the players, while the club is pr
 msgstr ""
 
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
+msgstr ""
+
+#, python-format
+msgid "The database [%(database)s] is not installed (to install it: Menu > Data sources)."
+msgstr ""
+
+#, python-format
+msgid "The database [%(database)s] was last updated over %(age)d months ago. It is preferable to update it before proceeding (Menu > Data sources)."
 msgstr ""
 
 msgid "The date of the first hour is not defined (mandatory)."
@@ -6394,3 +6408,19 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "French School"
+#~ msgstr ""
+
+#~ msgid "Licence number:"
+#~ msgstr ""
+
+#~ msgid "Schools"
+#~ msgstr ""
+
+#~ msgid "Seed color can't be modified once the tournament has started."
+#~ msgstr ""
+
+#~ msgid "School"
+#~ msgstr ""
+

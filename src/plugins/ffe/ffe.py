@@ -177,7 +177,6 @@ class FfePlugin(Plugin):
 
     # The FFE league names.
     FFE_LEAGUES: dict[str, str] = {
-        '': '',
         'ARA': 'Auvergne-Rhône-Alpes',
         'BFC': 'Bourgogne-Franche-Comté',
         'BRE': 'Bretagne',
@@ -219,7 +218,6 @@ class FfePlugin(Plugin):
     @hookimpl
     def get_base_admin_template_context(self) -> dict[str, Any]:
         return {
-            'ffe_leagues': self.FFE_LEAGUES,
             'ffe_auth_valid': '',
             'FFE_DEFAULT_UPLOAD_DELAY': FFE_DEFAULT_UPLOAD_DELAY,
         }
@@ -319,6 +317,22 @@ class FfePlugin(Plugin):
                 request
             ),
         }
+
+    @hookimpl
+    def get_player_form_template_context(
+        self, web_context: 'PlayerAdminWebContext'
+    ) -> dict[str, Any]:
+        return {
+            'licence_options': {
+                str(licence.value): licence.compact_name for licence in PlayerFFELicence
+            },
+            'ffe_league_options': {'': '-'}
+            | {code: f'{code} - {name}' for code, name in self.FFE_LEAGUES.items()},
+        }
+
+    @hookimpl(tryfirst=True)
+    def get_player_form_identity_fields_template(self) -> str:
+        return '/ffe_player_form_identity_fields.html'
 
     @hookimpl
     def get_player_form_fields_template(self) -> str:

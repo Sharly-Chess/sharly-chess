@@ -2,6 +2,7 @@ import json
 import re
 import urllib
 from contextlib import suppress
+from dataclasses import dataclass
 from logging import Logger
 from pathlib import Path
 from typing import Any, Callable, override
@@ -14,24 +15,46 @@ from packaging.version import Version
 from common.i18n import _
 from common.logger import get_logger
 from database.sqlite.local_source_database import LocalSourceDatabase
-from database.sqlite.local_source_database.actions import NotifOutdatedAction
-from database.sqlite.local_source_database.delays import DisabledOutdatedDelay
+from database.sqlite.local_source_database.actions import AutoUpdateOutdatedAction
+from database.sqlite.local_source_database.delays import MonthFirstDayOutdatedDelay
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
 
-from plugins.fra import fra_schools
-from plugins.fra.fra_schools import PLUGIN_DIR
+from plugins import fra_schools
+from plugins.fra_schools import PLUGIN_DIR
+from utils import Utils
 
 logger: Logger = get_logger()
 
 
+@dataclass
+class StoredSchool:
+    code: str
+    name: str
+    department: str
+    city: str
+    type: str
+    private: int
+
+
 class FRASchoolsDatabase(LocalSourceDatabase):
+    DEPARTMENTS: dict[str, str] | None = None
+
+    def __init__(self, write: bool = False):
+        super().__init__(write)
+        if self.exists() and not self.DEPARTMENTS:
+            with self as database:
+                database.execute('SELECT * FROM `department`')
+                self.__class__.DEPARTMENTS = {
+                    row['id']: row['name'] for row in database.fetchall()
+                }
+
     @staticmethod
     def static_id() -> str:
         return 'fra_schools'
 
     @staticmethod
     def static_name() -> str:
-        return _('Schools')
+        return _('French Schools')
 
     @staticmethod
     def _dir() -> Path:
@@ -39,8 +62,7 @@ class FRASchoolsDatabase(LocalSourceDatabase):
 
     @property
     def min_recovery_version(self) -> Version:
-        # Last change done in https://github.com/Sharly-Chess/sharly-chess/pull/713
-        return Version('2.7.8')
+        return Version('3.3.0')
 
     @property
     def _schema_file_path(self) -> Path:
@@ -55,9 +77,16 @@ class FRASchoolsDatabase(LocalSourceDatabase):
     def default_stored_database(self) -> StoredLocalSourceDatabase:
         return StoredLocalSourceDatabase(
             name=self.id,
-            outdate_delay=DisabledOutdatedDelay.static_id(),
-            outdate_action=NotifOutdatedAction.static_id(),
+            outdate_delay=MonthFirstDayOutdatedDelay.static_id(),
+            outdate_action=AutoUpdateOutdatedAction.static_id(),
         )
+
+    @property
+    def age_in_months(self) -> int:
+        """The number of months since the database has been updated."""
+        if not self.updated_at:
+            return 0
+        return Utils.age_in_months(self.updated_at)
 
     def _download_source_file(self) -> bool:
         types: list[str] = ['Ecole', 'Collège']
@@ -107,36 +136,51 @@ class FRASchoolsDatabase(LocalSourceDatabase):
             return False
         return True
 
-    def _use_external_generator(self):
-        return False
-
-    @staticmethod
-    def normalize_name(name: str) -> str:
+    @classmethod
+    def normalize_name(cls, name: str) -> str:
+        name = cls.protect_string(name)
         name = name.lower().title()
         name = re.sub(
-            r'\b(De|Du|Des|La|Le|Les|Au|Aux|Et|En|Sur)\b',
+            r'\b(D\'|De|Du|Des|L\'|La|Le|Les|Au|Aux|Et|En|Sur)\b',
             lambda m: m.group(1).lower(),
             name,
         )
+        name = re.sub(r'[\s\t\n]+', ' ', name)
+        # All the SEGPA are written in full letters, breaking the layout.
+        # This replaces them by the acronym, taking all the misspellings into account
+        name = re.sub(
+            r'\bSection\s(d[\'])?Enseigne(me)?ment(\sProfessionnel)?\s'
+            r'Générale?(\set)?(\sProfess?ionn?el(le)?)?(\sAdaptée?)?\b',
+            'SEGPA',
+            name,
+            flags=re.IGNORECASE,
+        )
         return name
+
+    @staticmethod
+    def protect_string(string: str) -> str:
+        return string.replace('`', "'")
 
     def _populate_from_source_file(self, database: SQLiteDatabase) -> bool:
         fields: dict[str, tuple[str, Callable[[Any], Any] | None]] = {
-            'identifiant_de_l_etablissement': ('school_id', None),
-            'nom_etablissement': ('school_name', self.normalize_name),
-            'code_departement': ('department', lambda s: s.lstrip('0')),
+            'identifiant_de_l_etablissement': ('code', None),
+            'nom_etablissement': ('name', self.normalize_name),
+            'code_departement': (
+                'department',
+                lambda s: s[1:] if s.startswith('0') else s,
+            ),
             'libelle_departement': ('department_name', None),
-            'nom_commune': ('commune', None),
+            'nom_commune': ('city', self.protect_string),
             'type_etablissement': ('type', None),
             'statut_public_prive': ('private', lambda s: s == 'Privé'),
         }
 
         # Prepare insert queries
         school_columns = [
-            'school_id',
-            'school_name',
+            'code',
+            'name',
             'department',
-            'commune',
+            'city',
             'type',
             'private',
         ]
@@ -175,10 +219,10 @@ class FRASchoolsDatabase(LocalSourceDatabase):
 
                 to_write_schools.append(
                     {
-                        'school_id': row['school_id'],
-                        'school_name': row['school_name'],
+                        'code': row['code'],
+                        'name': row['name'],
                         'department': row['department'],
-                        'commune': row['commune'],
+                        'city': row['city'],
                         'type': row['type'],
                         'private': row['private'],
                     }
@@ -214,9 +258,9 @@ class FRASchoolsDatabase(LocalSourceDatabase):
                 INSERT INTO school_fts(rowid, search_text)
                 SELECT s.id,
                     lower(
-                        s.school_id || ' ' ||
-                        s.school_name || ' ' ||
-                        s.commune || ' ' ||
+                        s.code || ' ' ||
+                        s.name || ' ' ||
+                        s.city || ' ' ||
                         s.type || ' ' ||
                         s.department || ' ' ||
                         d.name

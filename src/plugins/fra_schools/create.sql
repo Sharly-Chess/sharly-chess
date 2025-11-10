@@ -8,10 +8,10 @@ CREATE TABLE `department` (
 
 CREATE TABLE `school` (
     `id` INTEGER NOT NULL,
-    `school_id` TEXT NOT NULL,
-    `school_name` TEXT NOT NULL,
+    `code` TEXT NOT NULL,
+    `name` TEXT NOT NULL,
     `department` TEXT REFERENCES department(id),
-    `commune` TEXT NOT NULL,
+    `city` TEXT NOT NULL,
     `type` TEXT NOT NULL,
     `private` INTEGER NOT NULL,
     PRIMARY KEY(`id` AUTOINCREMENT)

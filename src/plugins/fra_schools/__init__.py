@@ -4,6 +4,6 @@ import common
 from plugins import PLUGINS_DIR
 
 PLUGIN_NAME: str = 'fra_schools'
-PLUGIN_DIR: Path = PLUGINS_DIR / "fra" / PLUGIN_NAME
+PLUGIN_DIR: Path = PLUGINS_DIR / PLUGIN_NAME
 TMP_DIR: Path = common.TMP_DIR / PLUGIN_NAME
 TMP_DIR.mkdir(parents=True, exist_ok=True)

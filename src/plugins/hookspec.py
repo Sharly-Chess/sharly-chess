@@ -100,6 +100,16 @@ class AppHookSpecs:
         """Provide additional template context for rendering in PlayerAdminController"""
 
     @hookspec
+    def get_player_form_template_context(
+        self, web_context: 'PlayerAdminWebContext'
+    ) -> dict[str, Any]:
+        """Provide additional template context for rendering the player form."""
+
+    @hookspec
+    def get_player_form_identity_fields_template(self) -> str:
+        """Provide a path to a template containing fields for the player form's `Identity` section."""
+
+    @hookspec
     def get_player_form_fields_template(self) -> str:
         """Provide a path to a template containing additional player form fields"""
 

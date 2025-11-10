@@ -435,6 +435,9 @@ msgstr "Ajouter un prix à la liste."
 msgid "Add a rotator to the event."
 msgstr "Ajouter un écran rotatif à l'évènement."
 
+msgid "Add a school to the options."
+msgstr "Ajouter un établissement aux options."
+
 msgid "Add a screen to check-in players or enter results."
 msgstr "Ajouter un écran de pointage des joueur·euses ou de saisie des résultats."
 
@@ -1057,6 +1060,9 @@ msgstr "Choisir les colonnes affichées."
 msgid "Choose your language"
 msgstr "Veuillez choisir votre langue"
 
+msgid "City"
+msgstr "Ville"
+
 msgid "Clear Log"
 msgstr "Effacer le journal"
 
@@ -1103,6 +1109,9 @@ msgstr "Club :"
 
 msgid "Clubs"
 msgstr "Clubs"
+
+msgid "Code"
+msgstr "Code"
 
 msgid "Color"
 msgstr "Couleur"
@@ -1543,6 +1552,9 @@ msgstr "Supprime tous les critères de cette catégorie."
 
 msgid "Deletion date"
 msgstr "Date de suppression"
+
+msgid "Department"
+msgstr "Département"
 
 msgid "Deputy Chief Arbitration"
 msgstr "Arbitrage adjoint"
@@ -2354,11 +2366,14 @@ msgstr "Fédération Française des Échecs"
 msgid "French Federation specific features (player search, results uploading, leagues, Papi import/export...)"
 msgstr "Fonctionnalités spécifiques à la Fédération Française (recherche de joueur·euses, envoi des résultats, ligues, compatibilité avec Papi)"
 
-msgid "French School"
-msgstr "Établissement scolaire"
-
 msgid "French School Competitions"
 msgstr "Compétitions scolaires françaises"
+
+msgid "French Schools"
+msgstr "Établissements Scolaires"
+
+msgid "French school"
+msgstr "Établissement scolaire"
 
 msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
 msgstr "Depuis votre appareil principal, trouvez l’écran ou l’écran rotatif que vous souhaitez afficher, puis envoyez-le au pilote d’écran à l’aide du bouton portant cette icône :"
@@ -2796,8 +2811,8 @@ msgstr "La bibliothèque [{lib}] n'est pas installée."
 msgid "Lic."
 msgstr "Lic."
 
-msgid "Licence number:"
-msgstr "Numéro de licence :"
+msgid "Licence no. *** LICENCE NUMBER"
+msgstr "N° de licence"
 
 msgid "Licence types"
 msgstr "Types de licence"
@@ -4402,14 +4417,8 @@ msgstr "Scannez pour accéder au tournoi sur le site Chess-Results.com."
 msgid "Scan to access the tournament on the FFE site."
 msgstr "Scannez pour accéder au tournoi sur le site de la FFE."
 
-msgid "School"
-msgstr "École"
-
 msgid "School *** SCHOOL FOR TABLE HEADER"
-msgstr "École"
-
-msgid "Schools"
-msgstr "Écoles"
+msgstr "Établissement"
 
 msgid "Scope"
 msgstr "Périmètre"
@@ -4503,9 +4512,6 @@ msgstr "Voir les informations d’appariement pour le début de cette ronde."
 
 msgid "Seed color"
 msgstr "Couleur initiale"
-
-msgid "Seed color can't be modified once the tournament has started."
-msgstr "La couleur initiale ne peut être modifiée une fois que le tournoi a commencé."
 
 msgid "Seeding of unrated rapid/blitz"
 msgstr "Classement des joueur·euses sans classement FIDE rapide/blitz"
@@ -4868,6 +4874,14 @@ msgstr "La grille américaine montre tous les résultats des joueur·euses, tand
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
 msgstr "La monnaie utilisée pour représenter les prix (par défaut la monnaie de la fédération de l'évènement)."
 
+#, python-format
+msgid "The database [%(database)s] is not installed (to install it: Menu > Data sources)."
+msgstr "La base de données [%(database)s] n'est pas installée (pour l'installer : Menu > Sources de données)."
+
+#, python-format
+msgid "The database [%(database)s] was last updated over %(age)d months ago. It is preferable to update it before proceeding (Menu > Data sources)."
+msgstr "La base de données [%(database)s] a été mise à jour pour la dernière fois il y a plus de %(age)d mois. Il est préférable de la mettre à jour avant de continuer (Menu > Sources de données)."
+
 msgid "The date of the first hour is not defined (mandatory)."
 msgstr "La date du premier horaire n'est pas définie (obligatoire)."
 
@@ -5161,7 +5175,7 @@ msgid "This data source in unavailable (for more details: Menu > Data sources)."
 msgstr "Cette source de données n'est pas disponible (pour plus de détails : Menu > Sources de données)."
 
 msgid "This database is not installed (to install it: Menu > Data sources)."
-msgstr "Cette base de données n'est pas installée (pour l'installer : Menu > Sources de données)"
+msgstr "Cette base de données n'est pas installée (pour l'installer : Menu > Sources de données)."
 
 msgid "This display controller is private (not visible by the spectators)."
 msgstr "Ce pilote d'afficheurs est privé (non visible des spectateur·ices)."
@@ -6394,3 +6408,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+

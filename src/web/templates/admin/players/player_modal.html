@@ -84,7 +84,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='club',
                             label=_('Club:'),
@@ -92,8 +92,18 @@
                             data=data, errors=errors
                         ) }}
                     </div>
+                    <div class="col-12 col-sm-6">
+                        {{ admin_macros.select_input(
+                            name='federation',
+                            label=_('Federation:'),
+                            select_options=federation_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
                 </div>
-
+                {% for template in plugin_form_identity_fields_templates %}
+                    {% include template %}
+                {% endfor %}
                 <h4>
                     {{ _('Tournament') }}
                 </h4>
@@ -233,14 +243,6 @@
                             label=_('FIDE ID:'),
                             disabled=true,
                             min=1,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-sm-6">
-                        {{ admin_macros.select_input(
-                            name='federation',
-                            label=_('Federation:'),
-                            select_options=federation_options,
                             data=data, errors=errors
                         ) }}
                     </div>

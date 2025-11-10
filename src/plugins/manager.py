@@ -29,14 +29,14 @@ class AppPluginManager(PluginManager):
         from plugins.pairing_acceleration.pairing_acceleration import (
             PairingAccelerationPlugin,
         )
-        from plugins.fra.fra_schools.fra_schools import FRASchoolsPlugin
+        from plugins.fra_schools.fra_schools import FRASchoolsPlugin
 
         return [
             PairingAccelerationPlugin(),
+            ChessResultsPlugin(),
+            FfePlugin(),
             ChessEventPlugin(),
             FRASchoolsPlugin(),
-            FfePlugin(),
-            ChessResultsPlugin(),
         ]
 
     @property

@@ -1,5 +1,5 @@
-from collections import Counter
 from collections.abc import Callable
+from operator import attrgetter
 from typing import TYPE_CHECKING, Any, Iterable, override
 
 from packaging.version import Version
@@ -15,19 +15,23 @@ from database.sqlite.event.event_store import StoredTournament
 from data.columns import player_table, player_datasheet
 from plugins import PLUGINS_DIR
 from plugins.ffe.papi_converter import PapiPlayer
-from plugins.fra.fra_schools import PLUGIN_NAME
-from plugins.fra.fra_schools.fra_schools_controller import FRASchoolsController
-from plugins.fra.fra_schools.fra_schools_database import FRASchoolsDatabase
-from plugins.fra.fra_schools.fra_schools_entity import (
+from plugins.fra_schools import PLUGIN_NAME
+from plugins.fra_schools.fra_schools_controller import FRASchoolsController
+from plugins.fra_schools.fra_schools_database import FRASchoolsDatabase
+from plugins.fra_schools.fra_schools_entity import (
     FraSchoolDatasheetColumn,
     FraSchoolPlayerSplitter,
     FraSchoolTableColumn,
 )
-from plugins.fra.fra_schools.fra_schools_event_controller import (
+from plugins.fra_schools.fra_schools_event_controller import (
     FraSchoolsAdminEventController,
 )
-from plugins.fra.fra_schools.fra_schools_session_handler import FRASchoolsSessionHandler
-from plugins.fra.fra_schools.utils import FRASchoolsPlayerPluginData, FRASchoolsUtils
+from plugins.fra_schools.fra_schools_session_handler import FRASchoolsSessionHandler
+from plugins.fra_schools.utils import (
+    FRASchoolsPlayerPluginData,
+    FRASchoolsUtils,
+    FRASchoolsEventPluginData,
+)
 from plugins.ffe.ffe import FfeLeagueTableColumn, FfePlugin
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.hookspec import ExtraAdminColumn, hookimpl
@@ -69,7 +73,7 @@ class FRASchoolsPlugin(Plugin):
     @override
     @property
     def templates_path(self) -> Path:
-        return PLUGINS_DIR / 'fra' / self.id / 'templates'
+        return PLUGINS_DIR / self.id / 'templates'
 
     @override
     @property
@@ -80,9 +84,14 @@ class FRASchoolsPlugin(Plugin):
         players = stored_tournament.stored_players
         for stored_player in players:
             data = stored_player.plugin_data.get(PLUGIN_NAME, {})
-            if data.get('school_name', None) is not None:
+            if data.get('fra_school_id', None) is not None:
                 return True
         return False
+
+    def on_enable(self):
+        schools_database = FRASchoolsDatabase()
+        if not schools_database.exists():
+            schools_database.update()
 
     # ---------------------------------------------------------------------------------
     # Initialisation and configuration
@@ -106,6 +115,14 @@ class FRASchoolsPlugin(Plugin):
         PluginUtils.insert_on_equals(databases, schools, ffe, True)
 
     # ---------------------------------------------------------------------------------
+    # Events
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def get_event_plugin_data_class(self) -> tuple[str, type[PluginData]]:
+        return self.id, FRASchoolsEventPluginData
+
+    # ---------------------------------------------------------------------------------
     # Players
     # ---------------------------------------------------------------------------------
 
@@ -117,24 +134,24 @@ class FRASchoolsPlugin(Plugin):
     def get_player_admin_template_context(
         self, web_context: PlayerAdminWebContext
     ) -> dict[str, Any]:
-        assert web_context.admin_event is not None
+        event = web_context.get_admin_event()
 
-        # The schools that will be shown on the school select list
-        players_schools: list[str] = sorted(
-            {
-                FRASchoolsUtils.get_player_plugin_data(player).school_name or ''
-                for player in web_context.admin_event.players_by_id.values()
-            }
+        school_counts = FRASchoolsUtils.get_event_school_counts(event)
+        schools_by_id = FRASchoolsUtils.get_event_plugin_data(event).fra_schools_by_id
+        sorted_schools = sorted(
+            (school for school in schools_by_id.values() if school.id in school_counts),
+            key=attrgetter('name'),
         )
-
-        school_counts: Counter[str | None] = Counter[str | None]()
-        for player in web_context.admin_event.players_by_id.values():
-            school_counts[
-                FRASchoolsUtils.get_player_plugin_data(player).school_name or ''
-            ] += 1
+        sorted_school_ids: list[int] = [
+            school.id for school in sorted_schools if school.id in school_counts
+        ]
+        if 0 in school_counts:
+            sorted_school_ids.insert(0, 0)
 
         return {
-            'fra_schools': players_schools,
+            'fra_schools_utils': FRASchoolsUtils,
+            'fra_school_ids': sorted_school_ids,
+            'fra_schools_by_id': schools_by_id,
             'fra_school_counts': school_counts,
             'fra_schools_filter': FRASchoolsSessionHandler.get_session_filter_schools(
                 web_context.request
@@ -142,8 +159,14 @@ class FRASchoolsPlugin(Plugin):
         }
 
     @hookimpl
-    def get_player_form_fields_template(self) -> str:
-        return '/fra_schools_player_form_fields.html'
+    def get_player_form_template_context(
+        self, web_context: 'PlayerAdminWebContext'
+    ) -> dict[str, Any]:
+        return FRASchoolsController.get_fra_school_template_context(web_context)
+
+    @hookimpl(trylast=True)
+    def get_player_form_identity_fields_template(self) -> str:
+        return '/fra_schools_player_form_identity_fields.html'
 
     @hookimpl
     def get_extra_player_columns(self) -> Iterable[ExtraAdminColumn]:
@@ -161,15 +184,15 @@ class FRASchoolsPlugin(Plugin):
         web_context: PlayerAdminWebContext,
         template_context: dict[str, Any],
     ) -> list[Callable[[Player], bool]]:
-        filter_schools: list[str] = FRASchoolsSessionHandler.get_session_filter_schools(
+        filter_schools = FRASchoolsSessionHandler.get_session_filter_schools(
             web_context.request
         )
-        schools = template_context['fra_schools']
+        schools_ids = template_context['fra_school_ids']
         filters: list[Callable[[Player], bool]] = []
-        if len(filter_schools) not in (0, len(schools)):
+        if len(filter_schools) not in (0, len(schools_ids)):
             filters.append(
                 lambda player: (
-                    FRASchoolsUtils.get_player_plugin_data(player).school_name or ''
+                    FRASchoolsUtils.get_player_plugin_data(player).fra_school_id or 0
                 )
                 in filter_schools
             )
@@ -182,10 +205,11 @@ class FRASchoolsPlugin(Plugin):
     @hookimpl
     def player_sort_key(self, player: 'Player', sort_type: str) -> tuple | None:
         if sort_type == 'fra_schools_school':
+            school = FRASchoolsUtils.get_player_school(player)
             return (
-                FRASchoolsUtils.get_player_plugin_data(player).school_name or '',
+                school.full_name_without_id if school else '',
                 player.last_name,
-                player.first_name or '',
+                player.first_name,
             )
         return None
 
@@ -204,7 +228,7 @@ class FRASchoolsPlugin(Plugin):
     # Printing
     # ---------------------------------------------------------------------------------
 
-    @hookimpl
+    @hookimpl(trylast=True)
     def alter_print_document_player_columns(self, player_columns: list[PlayerColumn]):
         # Remove FederationColumn and LeagueColumn
         player_columns[:] = [
@@ -239,6 +263,5 @@ class FRASchoolsPlugin(Plugin):
 
     @hookimpl
     def update_papi_player(self, papi_player: PapiPlayer, player: Player):
-        papi_player.club = (
-            FRASchoolsUtils.get_player_plugin_data(player).school_name or ''
-        )
+        school = FRASchoolsUtils.get_player_school(player)
+        papi_player.club = school.full_name if school else ''

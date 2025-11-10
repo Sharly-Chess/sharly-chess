@@ -508,7 +508,7 @@ class FfeLeaguesFilterOption(SelectPlayerFilterOption[str]):
     def get_all_known_values(self, tournament: 'Tournament') -> list[str]:
         from plugins.ffe.ffe import FfePlugin
 
-        return [code for code in FfePlugin.FFE_LEAGUES.keys() if code]
+        return list(FfePlugin.FFE_LEAGUES)
 
     def get_player_counter(self, tournament: 'Tournament') -> Counter[str]:
         counter: Counter[str] = Counter[str]()
