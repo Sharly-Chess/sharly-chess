@@ -33,6 +33,10 @@ English version below
 - Correction de l'affichage du mode non-sécurisé (3.2.4)
 - Correction de la modification du résultat de l'exempt lors de l'attribution du forfait définitif (3.2.5)
 
+## Prix
+
+- Correction de la réorganisation des catégories (3.2.7)
+
 ## Écrans
 
 - Suppression de l’option d’image de fond des écrans (3.2.0)
@@ -99,6 +103,10 @@ English version below
 - Fixed various issues regarding the Round-Robin tournaments (3.2.4)
 - Fixed the display of the unsafe mode (3.2.4)
 - Fixed the modification of the PAB player's result when withdrawing a player (3.2.5)
+
+# Prizes
+
+- Fixed the category reordering (3.2.7)
 
 ## Screens
 
