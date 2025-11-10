@@ -40,6 +40,7 @@
                     $('#document').change(function() {
                         const document_containers = {{ containers_by_document|tojson }}[$(this).val()];
                         let container_id = '';
+                        default_print_document_id = $(this).val();
                         {% for option in print_options %}
                             container_id = '{{ option.container_id }}';
                             $('#' + container_id).css(
