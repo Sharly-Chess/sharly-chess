@@ -7,7 +7,7 @@ from utils.entity import IdentifiableEntity
 class PlaceCardCropMarks(IdentifiableEntity, ABC):
     solid_style: str = '1px solid #000'
     dashed_style: str = '1px dashed #000'
-    dotted_style: str = '1px dotted #aaa'
+    dotted_style: str = '1px dotted #ddd'
 
     @property
     def border_style(self) -> str:
@@ -155,8 +155,10 @@ class CornersPlaceCardCropMarks(PlaceCardCropMarks):
             },
             ', '.join(
                 [
-                    f'.{template_css_class} .card-cell.top.right',
-                    f'.{template_css_class} .card-cell.bottom.right',
+                    f'.{template_css_class} .side-back .card-cell.top.right',
+                    f'.{template_css_class} .side-front .card-cell.bottom.right',
+                    f'.{template_css_class} .side-single .card-cell.top.right',
+                    f'.{template_css_class} .side-single .card-cell.bottom.right',
                 ]
             ): {
                 'border-right': self.border_style,
@@ -173,8 +175,10 @@ class CornersPlaceCardCropMarks(PlaceCardCropMarks):
             },
             ', '.join(
                 [
-                    f'.{template_css_class} .card-cell.top.left',
-                    f'.{template_css_class} .card-cell.bottom.left',
+                    f'.{template_css_class} .side-back .card-cell.top.left',
+                    f'.{template_css_class} .side-front .card-cell.bottom.left',
+                    f'.{template_css_class} .side-single .card-cell.top.left',
+                    f'.{template_css_class} .side-single .card-cell.bottom.left',
                 ]
             ): {
                 'border-left': self.border_style,
