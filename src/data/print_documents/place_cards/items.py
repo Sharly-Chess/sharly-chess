@@ -1,13 +1,13 @@
 import copy
 import logging
+import xml.etree.ElementTree as ET
 from abc import ABC, abstractmethod
 from functools import cached_property
 from pathlib import Path
-from typing import Self
+from typing import Self, TYPE_CHECKING
 from xml.etree.ElementTree import ElementTree
 
 from PIL import Image, UnidentifiedImageError
-import xml.etree.ElementTree as ET
 
 from common.i18n.utils import parse_jinja_string
 from common.logger import get_logger
@@ -23,6 +23,10 @@ from data.print_documents.place_cards.item_style import PlaceCardItemStyle
 from data.print_documents.place_cards.toml_container import TOMLContainer
 from utils.file import image_file_inline_url
 
+if TYPE_CHECKING:
+    from data.print_documents.place_cards.template import PlaceCardTemplate
+
+
 logger: logging.Logger = get_logger()
 
 
@@ -33,13 +37,13 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
         self,
         data: TOMLContainer,
         section: str,
-        default_style: PlaceCardItemStyle,
+        template: 'PlaceCardTemplate',
     ):
         self.id: str = section
         super().__init__(
             data,
             section,
-            default_style,
+            template,
         )
         self.css_class: str = f'item-{self.id.replace("_", "-")}'
         self.display: bool = data.get_bool(
@@ -89,19 +93,24 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
         """Returns a string corresponding to the type of the item."""
         pass
 
-    @property
     def allowed_properties(
         self,
-    ) -> list[str]:
-        return super().allowed_properties + [
-            'display',
-            'width',
-            'height',
-            'max_width',
-            'rotate',
-            'side',
-            'css',
-        ]
+    ) -> set[str]:
+        return (
+            super()
+            .allowed_properties()
+            .union(
+                {
+                    'display',
+                    'width',
+                    'height',
+                    'max_width',
+                    'rotate',
+                    'side',
+                    'css',
+                }
+            )
+        )
 
     def render_error(
         self,
@@ -235,9 +244,9 @@ class PlaceCardText(PlaceCardItem):
         self,
         data: TOMLContainer,
         section: str,
-        default_style: PlaceCardItemStyle,
+        template: 'PlaceCardTemplate',
     ):
-        super().__init__(data, section, default_style)
+        super().__init__(data, section, template)
         self.raw_text: str = data.get_str(
             section=section,
             property='text',
@@ -247,13 +256,18 @@ class PlaceCardText(PlaceCardItem):
     def type(self) -> str:
         return 'text'
 
-    @property
     def allowed_properties(
         self,
-    ) -> list[str]:
-        return super().allowed_properties + [
-            'text',
-        ]
+    ) -> set[str]:
+        return (
+            super()
+            .allowed_properties()
+            .union(
+                {
+                    'text',
+                }
+            )
+        )
 
     def _inner_html(
         self,
@@ -317,12 +331,10 @@ class PlaceCardImage(PlaceCardItem):
         self,
         data: TOMLContainer,
         section: str,
-        default_style: PlaceCardItemStyle,
-        images_path: list[Path],
-        unit: str,
+        template: 'PlaceCardTemplate',
     ):
-        super().__init__(data, section, default_style)
-        self.image_paths: list[Path] = images_path
+        super().__init__(data, section, template)
+        self.image_paths: list[Path] = template.image_paths
         image_name: str = data.get_str(section=section, property='image')
         image: Path | None = None
         if not (Path() / image_name).parent.samefile(Path()):
@@ -340,7 +352,7 @@ class PlaceCardImage(PlaceCardItem):
             self._background_color = 'red'
         self.image = image or self.default_image
         if not self.width and not self.height:
-            self.width = self.height = 30.0 if unit == 'mm' else 1.0
+            self.width = self.height = 30.0 if template.unit == 'mm' else 1.0
             logger.warning(
                 'Use [width] or [height] in section [%s] to size the image (defaults to %sx%s).',
                 self.image.name,
@@ -405,13 +417,18 @@ class PlaceCardImage(PlaceCardItem):
     def type(self) -> str:
         return 'image'
 
-    @property
     def allowed_properties(
         self,
-    ) -> list[str]:
-        return super().allowed_properties + [
-            'image',
-        ]
+    ) -> set[str]:
+        return (
+            super()
+            .allowed_properties()
+            .union(
+                {
+                    'image',
+                }
+            )
+        )
 
     def _inner_html(
         self,

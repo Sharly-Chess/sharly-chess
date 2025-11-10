@@ -35,7 +35,7 @@ from utils.file import ttf_file_inline_url, image_file_inline_url
 logger: logging.Logger = get_logger()
 
 
-class PlaceCardTemplate:
+class PlaceCardTemplate(PlaceCardItemStyle):
     """A class representing the place cards templates."""
 
     def __init__(
@@ -68,22 +68,7 @@ class PlaceCardTemplate:
             BASE_DIR / 'src/web/static/images',
         ]
         custom_data = TOMLContainer(toml_file)
-        for property in custom_data.get_section_properties(''):
-            match property:
-                case (
-                    'type'
-                    | 'name'
-                    | 'creator'
-                    | 'unit'
-                    | 'width'
-                    | 'height'
-                    | 'padding'
-                    | 'css'
-                    | 'font'
-                ):
-                    pass
-                case _:
-                    logger.warning('Unknown property [%s], ignored.', property)
+        super().__init__(custom_data)
         self.type: PlaceCardType = PrintPlaceCardTypeManager().get_object(
             custom_data.get_str(
                 'type',
@@ -109,9 +94,6 @@ class PlaceCardTemplate:
         self.padding: float = custom_data.get_float('padding', default=2.0)
         self.css: str = custom_data.get_str('css', default='')
         self.font: str = custom_data.get_str('font', default='')
-        default_item_style: PlaceCardItemStyle = PlaceCardItemStyle(
-            custom_data, section='default'
-        )
         items: list[PlaceCardItem] = []
         for section in custom_data.get_sections():
             if section == 'default':
@@ -121,15 +103,15 @@ class PlaceCardTemplate:
                     PlaceCardImage(
                         custom_data,
                         section=section,
-                        default_style=default_item_style,
-                        images_path=self.image_paths,
-                        unit=self.unit,
+                        template=self,
                     )
                 )
             else:
                 items.append(
                     PlaceCardText(
-                        custom_data, section=section, default_style=default_item_style
+                        custom_data,
+                        section=section,
+                        template=self,
                     )
                 )
         self.items: list[PlaceCardItem] = [
@@ -137,6 +119,27 @@ class PlaceCardTemplate:
         ] + [item for item in items if item.type != 'image']
 
         self.error = custom_data.error
+
+    def allowed_properties(
+        self,
+    ) -> set[str]:
+        return (
+            super()
+            .allowed_properties()
+            .union(
+                {
+                    'type',
+                    'name',
+                    'creator',
+                    'unit',
+                    'width',
+                    'height',
+                    'padding',
+                    'css',
+                    'font',
+                }
+            )
+        )
 
     @property
     def template_name(self) -> str:
