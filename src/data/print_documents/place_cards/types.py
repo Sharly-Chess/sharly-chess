@@ -253,7 +253,7 @@ class PairingCardType(PlaceCardType):
             last_name=_('WHITE PLAYER'),
             color=_('W *** WHITE COLOR FOR PLACE CARDS'),
         )
-        place_card_pairing.white_player = cls.get_random_player(
+        place_card_pairing.black_player = cls.get_random_player(
             last_name=_('BLACK PLAYER'),
             color=_('B *** BLACK COLOR FOR PLACE CARDS'),
         )

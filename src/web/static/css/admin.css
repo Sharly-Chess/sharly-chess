@@ -209,3 +209,7 @@
         width: 100px !important;
     }
 }
+
+.tooltip-inner.place-card-template {
+    max-width: none;
+}

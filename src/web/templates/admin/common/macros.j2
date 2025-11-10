@@ -305,9 +305,11 @@
                         return $(this).prev().attr("data-bs-title");
                     },
                     placement: "right",
-                    container: "body",
+                    container: "#modal-wrapper",
                     html: true,
                     zIndex: 10010,
+                    template: '<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner {{ id }}"></div></div>',
+                    // delay: { "show": 0, "hide": 1000000000 }
                 });
             {% endif %}
             {% if keep_open_on_select %}

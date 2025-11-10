@@ -1,11 +1,10 @@
 import copy
-import html
 import logging
 import re
 from pathlib import Path
 from typing import Any, Self
 
-from common import BASE_DIR, SharlyChessException, TMP_DIR
+from common import BASE_DIR, SharlyChessException
 from common.i18n import _
 from common.i18n.utils import parse_jinja_string, parse_jinja_template
 from common.logger import get_logger
@@ -138,17 +137,6 @@ class PlaceCardTemplate:
         ] + [item for item in items if item.type != 'image']
 
         self.error = custom_data.error
-
-    @property
-    def tooltip(self) -> str:
-        tooltip: str = f"""
-        <div class="place-card-template-name"><b>{html.escape(self.name)}</b></div>
-        <div class="place-card-template-creator">{_('Creator: {creator}').format(creator=html.escape(self.creator))}</div>
-        <div class="place-card-template-preview">{self.preview()}</div>
-        """
-        with open(TMP_DIR / f'{self.css_class}.html', 'w') as f:
-            f.write(tooltip)
-        return tooltip
 
     @property
     def template_name(self) -> str:
@@ -297,6 +285,8 @@ class PlaceCardTemplate:
         players: list[PlaceCardPlayer],
         boards: list[PlaceCardBoard],
         pairings: list[PlaceCardPairing],
+        card_width: str,
+        card_height: str,
     ) -> dict[str, Any]:
         items: list[PlaceCardItem] = copy.deepcopy(self.items)
         if mirror:
@@ -318,6 +308,8 @@ class PlaceCardTemplate:
             'template_css': self.render_css(
                 place_card_crop_marks, back_side, federations
             ),
+            'card_width': card_width,
+            'card_height': card_height,
             'players': players,
             'boards': boards,
             'pairings': pairings,
@@ -345,6 +337,8 @@ class PlaceCardTemplate:
             pairings=self.type.pairings(
                 tournament, round_, board_numbers=board_numbers
             ),
+            card_width=f'{self.width}{self.unit}',
+            card_height=f'{(2 if any(item.back for item in self.items) else 1) * self.height}{self.unit}',
         )
 
     def preview(
@@ -352,7 +346,7 @@ class PlaceCardTemplate:
     ) -> str:
         """Returns a string to preview the template with moc data."""
         return parse_jinja_template(
-            '/admin/print/place_cards/preview.html',
+            '/admin/print/place_cards/tooltip_preview.html',
             self._template_context(
                 event=PlaceCardEvent(),
                 tournament=PlaceCardTournament(),
@@ -362,6 +356,8 @@ class PlaceCardTemplate:
                 players=self.type.preview_players(),
                 boards=self.type.preview_boards(),
                 pairings=self.type.preview_pairings(),
+                card_width=f'{self.width / 2 + 1}{self.unit}',
+                card_height=f'{(2 if any(item.back for item in self.items) else 1) * self.height / 2 + 1}{self.unit}',
             ),
         )
 

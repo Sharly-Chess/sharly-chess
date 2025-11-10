@@ -201,6 +201,10 @@ body[data-bs-theme="dark"] #top-nav-wrapper {
     row-gap: .25rem;
 }
 
+.tooltip.show {
+    opacity: 1;
+}
+
 .input-block .form-check-label {
     white-space: nowrap;
     margin-right: 1rem;
