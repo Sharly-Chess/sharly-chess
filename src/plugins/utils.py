@@ -5,6 +5,8 @@ from pathlib import Path
 from types import ModuleType
 from typing import TYPE_CHECKING, Any, NamedTuple, Self
 
+from pluggy import PluginManager
+
 from common import TEST_ENV
 from packaging.version import Version
 
@@ -75,6 +77,18 @@ class PluginUtils:
         cls.insert_on_condition(
             source_list, element, lambda elem: isinstance(elem, insert_type), after
         )
+
+    @classmethod
+    def replace_on_equals[T](
+        cls,
+        source_list: list[T],
+        element: T,
+        match_element: T,
+    ):
+        for index, e in enumerate(source_list):
+            if e == match_element:
+                source_list[index] = element
+                return
 
 
 class PluginContext:
@@ -251,6 +265,10 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
 
         assert self.base_migration_module is not None
         return PluginMigrationManager(database, self.base_migration_module, self)
+
+    def init(self, plugin_manager: PluginManager):
+        """Method called when the plugin is registered."""
+        pass
 
     def on_enable(self):
         """Method called when the plugin is enabled."""

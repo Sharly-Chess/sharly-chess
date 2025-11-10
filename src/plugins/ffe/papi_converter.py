@@ -50,6 +50,7 @@ from plugins.ffe.papi_mappers import (
 )
 from plugins.ffe.utils import FfePlayerPluginData, PlayerFFELicence, FFE_EPOCH
 from plugins.pairing_acceleration.pairing_variations import BakuSwissVariation
+from plugins.manager import plugin_manager
 from utils import Utils
 from utils.enum import (
     TournamentRating,
@@ -773,6 +774,9 @@ class PapiConverter:
                 tournament.pab_value,
                 manual_tiebreak_by_player_id.get(player.id, None),
                 anonymize_player_data,
+            )
+            plugin_manager.hook_for_event(tournament.event, 'update_papi_player')(
+                papi_player=papi_player, player=player
             )
             papi_players.append(papi_player)
 

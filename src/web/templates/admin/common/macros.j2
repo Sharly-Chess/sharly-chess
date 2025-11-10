@@ -565,6 +565,7 @@ with_indicator: display a loading indicator, optional
                 {% else %}
                     {% if disabled %}
                         <input
+                            id="{{ id }}-hidden"
                             name="{{ name }}"
                             type="hidden"
                             value="{{ value }}"

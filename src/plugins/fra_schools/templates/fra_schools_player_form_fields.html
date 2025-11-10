@@ -1,0 +1,180 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+<div id="fra-schools-container" class="mt-2 gx-3">
+    <div class="d-flex gap-2 gy-2 gx-3">
+        <div class="flex-grow-1">
+            {{ admin_macros.select_input(
+                name='fra_school',
+                label=_('%(string)s:', string=_('French school')),
+                select_options=fra_school_options,
+                tooltip_select=true,
+                data=data, errors=errors
+            ) }}
+        </div>
+
+        <div
+            {% if fra_schools_database.exists() %}
+                {% set age_in_months = fra_schools_database.age_in_months %}
+                {% if age_in_months > 1 %}
+                    {{ macros.tooltip_attributes(
+                        'warning', _(
+                            'The database [%(database)s] was last updated over %(age)d months ago. '
+                            'It is preferable to update it before proceeding (Menu > Data sources).',
+                            database=fra_schools_database.name,
+                            age=age_in_months,
+                        ), 'top'
+                    ) }}
+                {% else %}
+                    {{ macros.tooltip_attributes(
+                        'info', _('Add a school to the options.'), 'top'
+                    ) }}
+                {% endif %}
+            {% else %}
+                {{ macros.tooltip_attributes(
+                    'warning', _(
+                        'The database [%(database)s] is not installed (to install it: Menu > Data sources).',
+                        database=fra_schools_database.name,
+                    ), 'top'
+                ) }}
+            {% endif %}
+        >
+            <button
+                id="fra-school-add-button"
+                type="button"
+                class="btn btn-outline-primary text-nowrap"
+                {% if not fra_schools_database.exists() %}
+                    disabled
+                {% endif %}
+            >
+                <i class="bi-plus-circle pe-1"></i>
+                {{ _('Add') }}
+            </button>
+        </div>
+    </div>
+
+    <div id="fra-school-form-container" class="form-fields-container" style="display:none">
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="input-group">
+                    {{ admin_macros.search_indicator('fra-schools-search-indicator') }}
+                    <input
+                        id="fra-schools-search"
+                        name="fra_schools_search"
+                        class="dropdown form-control"
+                        type="search"
+                        placeholder="{{ _(
+                            'Search by: %(fields)s',
+                            fields=', '.join([_('Code'), _('City'), _('Name'), _('Department')])
+                        ) }}"
+                        hx-trigger="keyup changed delay:400ms,focus"
+                        hx-target="#fra-schools-search-results"
+                        hx-get="{{ url_for('fra-schools-search', event_uniq_id=admin_event.uniq_id) }}"
+                        hx-on::before-request="$('#fra-schools-search-results').show();"
+                        hx-on::after-request="$('#fra-schools-search-results').show();"
+                        hx-sync="this:replace"
+                        hx-indicator="#fra-schools-search-indicator"
+                    />
+                </div>
+                <ul
+                    id="fra-schools-search-results"
+                    class="dropdown-menu position-absolute end-0 search-results-dropdown"
+                    style="margin-right: 2rem"
+                >
+                </ul>
+            </div>
+        </div>
+        <form
+            id="fra-schools-form"
+            hx-indicator="#please-wait"
+            hx-post="{{ url_for('fra-schools-add-school', event_uniq_id=admin_event.uniq_id) }}"
+            hx-target="#fra-schools-container"
+            hx-swap="outerHTML"
+        >
+
+            <div class="row gy-2 gx-3">
+                <div class="col-12 col-md-4">
+                    {{ admin_macros.text_input(
+                        name='fra_school_code',
+                        label=_('%(string)s:', string=_('Code')),
+                        disabled=true,
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <div class="col-12 col-md-8">
+                    {{ admin_macros.text_input(
+                        name='fra_school_name',
+                        label=_('%(string)s:', string=_('Name')),
+                        data=data, errors=errors
+                    ) }}
+                </div>
+            </div>
+            <div class="row gy-2 gx-3">
+                <div class="col-12 col-md-6">
+                    {{ admin_macros.text_input(
+                        name='fra_school_city',
+                        label=_('%(string)s:', string=_('City')),
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <div class="col-12 col-md-6">
+                    {{ admin_macros.select_input(
+                        name='fra_school_department',
+                        label=_('%(string)s:', string=_('Department')),
+                        select_options=fra_schools_department_options,
+                        searchable_select=true,
+                        data=data, errors=errors
+                    ) }}
+                </div>
+            </div>
+            <div class="d-flex gap-2 mt-4">
+                <div class="flex-grow-1"></div>
+                <button
+                    id="fra-school-cancel-button"
+                    type="button"
+                    class="btn btn-outline-secondary btn-sm text-nowrap"
+                >
+                    <i class="bi-x-circle pe-1"></i>
+                    {{ _('Cancel') }}
+                </button>
+                <button
+                    id="fra-school-submit-button"
+                    type="submit"
+                    form="fra-schools-form"
+                    class="btn btn-outline-primary btn-sm text-nowrap"
+                    disabled
+                >
+                    <i class="bi-plus-circle pe-1"></i>
+                    {{ _('Add') }}
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        $('#fra-school-input').on('blur', function () {
+            setTimeout(function () {
+                const results = $('#fra-schools-search-results');
+                const active = document.activeElement;
+
+                // Hide only if user didn't click inside results
+                if (!results.is(':hover') && !results[0].contains(active)) {
+                    results.hide();
+                }
+            }, 100);
+        });
+
+        $('#fra-school-add-button').click(function () {
+            $(this).hide();
+            $('#fra-school-form-container').show();
+        });
+        $('#fra-school-cancel-button').click(function () {
+            $('#fra-school-form-container').hide();
+            $('#fra-school-add-button').show();
+        });
+
+        $('#fra-school-name').on('keyup', function () {
+            $('#fra-school-submit-button').prop('disabled', $(this).val() === '');
+        });
+    </script>
+</div>

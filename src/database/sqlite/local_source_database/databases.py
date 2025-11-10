@@ -115,17 +115,6 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
     def _create_indexes(self):
         """Create the indexes for the databases."""
 
-    @abstractmethod
-    def search_player(
-        self,
-        string: str,
-        federation: str,
-        page: int = 0,
-        limit: int | None = None,
-    ) -> list[StoredPlayer]:
-        """Search a player in the database.
-        Returns maximum *limit* results (no limit if *limit* is None)."""
-
     @property
     def outdate_delay(self) -> OutdatedDelay:
         from database.sqlite.local_source_database import OutdatedDelayManager
@@ -326,3 +315,18 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             database.update_stored_local_source_database(self.stored_source_database)
         logger.info(self.log_prefix + 'Database successfully updated.')
         return self.stop_update(True)
+
+
+class LocalSourcePlayerDatabase(LocalSourceDatabase):
+    """Represents a local database that provides player search functionality."""
+
+    @abstractmethod
+    def search_player(
+        self,
+        string: str,
+        federation: str,
+        page: int = 0,
+        limit: int | None = None,
+    ) -> list[StoredPlayer]:
+        """Search a player in the database.
+        Returns maximum *limit* results (no limit if *limit* is None)."""

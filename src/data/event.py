@@ -396,6 +396,10 @@ class Event:
             for player_id, player in tournament_players_id.items()
         }
 
+    @property
+    def players(self) -> Collection[Player]:
+        return self.players_by_id.values()
+
     @cached_property
     def players_sorted_by_name(self) -> list[Player]:
         return sorted(

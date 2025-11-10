@@ -31,7 +31,7 @@ from common.i18n import (
     _,
     locales,
 )
-from common.i18n.utils import locale_localized_name, by, unicode_normalize
+from common.i18n.utils import locale_localized_name, by
 from common.sharly_chess_config import SharlyChessConfig
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import (
@@ -859,14 +859,10 @@ class IndexAdminController(BaseAdminController):
             locale: locale_localized_name(locale) for locale in locales
         }
 
-        all_plugins = sorted(
-            plugin_manager.all_plugins, key=lambda p: unicode_normalize(p.name)
-        )
-
         plugins_by_federation = {
             federation: list(group)
             for federation, group in groupby(
-                all_plugins, key=lambda p: getattr(p, 'federation', None)
+                plugin_manager.all_plugins, key=lambda p: getattr(p, 'federation', None)
             )
         }
 
