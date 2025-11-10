@@ -172,7 +172,7 @@ class Board:
         field_prefix = 'White' if is_white else 'Black'
         if player is None:
             return f'[{field_prefix} ""]'
-        rating = player.rating if player.rating_type == PlayerRatingType.FIDE else '-'
+        rating = player.rating if player.rating_type == PlayerRatingType.FIDE else '0'
         name = player.last_name + (
             f', {player.first_name}' if player.first_name else ''
         )
@@ -183,7 +183,7 @@ class Board:
                 if player.title.to_fide_value
                 else ''
             )
-            + f'[{field_prefix}Elo "{rating or "-"}"]\n'
+            + f'[{field_prefix}Elo "{rating}"]\n'
         )
 
     @staticmethod
