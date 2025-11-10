@@ -421,7 +421,7 @@ class PlaceCardImage(PlaceCardItem):
         board: PlaceCardBoard | None = None,
         pairing: PlaceCardPairing | None = None,
     ) -> str:
-        return f'<img class="card-item image {self.css_class}" />'
+        return f'<div class="card-item image {self.css_class}"></div>'
 
     @cached_property
     def image_file(
