@@ -427,9 +427,6 @@ class PlaceCardImage(PlaceCardItem):
     def image_file(
         self,
     ) -> Path | None:
-        if not (Path() / self.image).parent.samefile(Path()):
-            logger.warning('Invalid image filename [%s].', self.image)
-            return None
         for image_path in self.image_paths:
             file: Path = image_path / self.image
             if not file.is_file():
