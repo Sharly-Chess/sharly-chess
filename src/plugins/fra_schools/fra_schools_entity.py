@@ -128,7 +128,7 @@ class FRASchoolsFilterOption(SelectPlayerFilterOption[FRASchool]):
         return []
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[FRASchool]:
-        return []
+        return list(FRASchoolsUtils.get_event_plugin_data(tournament.event).fra_schools)
 
     def get_player_counter(self, tournament: 'Tournament') -> Counter[FRASchool]:
         counter: Counter[FRASchool] = Counter[FRASchool]()
