@@ -179,18 +179,6 @@ class Tournament:
         return parse_time_control_trf25(self.stored_tournament.time_control_trf25)[1]
 
     @property
-    def time_control_handicap_penalty_value(self) -> int | None:
-        return 0
-
-    @property
-    def time_control_handicap_penalty_step(self) -> int | None:
-        return 0
-
-    @property
-    def time_control_handicap_min_time(self) -> int | None:
-        return 0
-
-    @property
     def record_illegal_moves(self) -> int:
         if self.stored_tournament.record_illegal_moves is not None:
             return self.stored_tournament.record_illegal_moves
@@ -245,10 +233,6 @@ class Tournament:
     @property
     def last_pairing_update(self) -> float:
         return self.stored_tournament.last_pairing_update
-
-    @property
-    def handicap(self) -> bool:
-        return bool(self.time_control_handicap_penalty_value)
 
     @property
     def rounds(self) -> int:
@@ -1020,34 +1004,6 @@ class Tournament:
                 boards_by_id[board.identifier] = board
         return boards_by_id
 
-    def _set_handicap(self, round_: int):
-        for board in self.get_round_boards(round_):
-            if not board.black_player:
-                continue
-            strong_player: Player
-            weak_player: Player
-            strong_player, weak_player = sorted(
-                (board.white_player, board.black_player),
-                key=attrgetter('rating'),
-                reverse=True,
-            )
-            weak_time = self.time_control_initial_time or 0
-            rating_diff = strong_player.rating - weak_player.rating
-            if not self.time_control_handicap_penalty_step:
-                penalties = 0
-            else:
-                penalties = rating_diff // self.time_control_handicap_penalty_step
-            strong_time = max(
-                weak_time - penalties * (self.time_control_handicap_penalty_value or 0),
-                self.time_control_handicap_min_time or 0,
-            )
-            strong_player.set_time_control(
-                strong_time, self.time_control_increment or 0, penalties > 0
-            )
-            weak_player.set_time_control(
-                weak_time, self.time_control_increment or 0, False
-            )
-
     def get_round_boards(self, round_: int) -> list[Board]:
         return sorted(
             (board for board in self.boards_by_id.values() if board.round == round_),
@@ -1078,14 +1034,15 @@ class Tournament:
             round_ = self.current_round
         for player in self.players:
             self.set_player_points(player, before_round=round_)
-        if self.handicap:
-            self._set_handicap(round_)
         for board in self.get_round_boards(round_):
             board.white_player.set_board(board.index, board.number, BoardColor.WHITE)
             if board.black_player:
                 board.black_player.set_board(
                     board.index, board.number, BoardColor.BLACK
                 )
+        plugin_manager.hook_for_event(self.event, 'set_for_round')(
+            tournament=self, round_=round_
+        )
 
     def pairings_generation_disabled_message(self, at_round: int) -> str | None:
         return self.pairing_variation.engine.pairings_generation_disabled_message(

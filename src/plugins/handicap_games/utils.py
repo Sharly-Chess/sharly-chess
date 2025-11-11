@@ -5,6 +5,7 @@ from typing import Any, Self
 
 
 from common.logger import get_logger
+from data.event import Player
 from data.tournament import Tournament
 from plugins.handicap_games import PLUGIN_NAME
 from plugins.utils import PluginData, PluginUtils
@@ -23,6 +24,16 @@ class HandicapGameUtils:
     ) -> 'HandicapGamesTournamentPluginData':
         plugin_data = tournament.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, HandicapGamesTournamentPluginData)
+        return plugin_data
+
+    @staticmethod
+    def get_transient_player_plugin_data(
+        player: Player,
+    ) -> 'HandicapGamesTransientPlayerPluginData':
+        plugin_data = player.transient_plugin_data.get(
+            PLUGIN_NAME, HandicapGamesTransientPlayerPluginData()
+        )
+        assert isinstance(plugin_data, HandicapGamesTransientPlayerPluginData)
         return plugin_data
 
 
@@ -72,3 +83,10 @@ class HandicapGamesTournamentPluginData(PluginData):
                 'handicap_games_min_time': self.min_time,
             }
         )
+
+
+@dataclass
+class HandicapGamesTransientPlayerPluginData:
+    initial_time: int | None = None
+    increment: int | None = None
+    modified: bool = False
