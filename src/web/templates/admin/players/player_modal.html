@@ -84,7 +84,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12">
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
                             name='club',
                             label=_('Club:'),
@@ -92,7 +92,18 @@
                             data=data, errors=errors
                         ) }}
                     </div>
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.select_input(
+                            name='federation',
+                            label=_('Federation:'),
+                            select_options=federation_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
                 </div>
+                {% for template in plugin_templates_by_section['identity'] %}
+                    {% include template %}
+                {% endfor %}
 
                 <h4>
                     {{ _('Tournament') }}
@@ -238,25 +249,15 @@
                     </div>
                     <div class="col-12 col-sm-6">
                         {{ admin_macros.select_input(
-                            name='federation',
-                            label=_('Federation:'),
-                            select_options=federation_options,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-sm-6">
-                        {{ admin_macros.select_input(
                             name='title',
                             label=_('FIDE Title:'),
                             select_options=title_options,
                             data=data, errors=errors
                         ) }}
                     </div>
-
                 </div>
-
-                {% for form_fields_template in plugin_form_fields_templates %}
-                    {% include form_fields_template %}
+                {% for template in plugin_templates_by_section['fide'] %}
+                    {% include template %}
                 {% endfor %}
 
                 <h4>

@@ -2,6 +2,7 @@ import re
 import subprocess
 import sys
 from abc import ABC, abstractmethod
+from datetime import datetime
 from decimal import Decimal
 from functools import lru_cache, cache
 from math import floor
@@ -219,6 +220,16 @@ class Utils:
     @staticmethod
     def concat_dicts[K, V](dict_list: list[dict[K, V]]) -> dict[K, V]:
         return {key: value for dict_ in dict_list for key, value in dict_.items()}
+
+    @staticmethod
+    def age_in_months(start: datetime) -> int:
+        """Get the age of a datetime expressed in months."""
+        end = datetime.now()
+        return (
+            12 * (end.year - start.year)
+            + (end.month - start.month)
+            - (1 if end.day < start.day else 0)
+        )
 
 
 class SupportsEquals(Protocol):

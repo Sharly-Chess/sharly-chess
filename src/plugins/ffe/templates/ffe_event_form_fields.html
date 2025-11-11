@@ -23,7 +23,7 @@
         var ratingTypeTooltip = null;
         $('#{{ plugin.form_key }}').change(function () {
             if (this.checked) {
-                $('#player-rating-type').val('3');
+                $('#player-rating-type').val('3').trigger('change');
                 const ratingTypeContainer = document.getElementById('player-rating-type-input-container');
                 ratingTypeTooltip = new bootstrap.Tooltip(ratingTypeContainer, {
                     title: '{{ _('The FFE always uses the FIDE rating when available.') }}',

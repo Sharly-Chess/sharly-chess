@@ -1,7 +1,7 @@
 <div class="row gy-2 gx-3">
     <div class="col-12">
           <div class="input-group">
-            {{ admin_macros.search_indicator('data-source-indicator') }}
+            {{ admin_macros.search_indicator('player-search-indicator') }}
             <select name="data_source" id="data-source-select" class="form-select w-auto">
                 {% for data_source in data_sources %}
                     <option
@@ -28,7 +28,7 @@
                 hx-on::before-request="$('#search-results').show();"
                 hx-on::after-request="$('#search-results').show();"
                 hx-sync="this:replace"
-                hx-indicator="#data-source-indicator"
+                hx-indicator="#player-search-indicator"
             />
         </div>
         <ul

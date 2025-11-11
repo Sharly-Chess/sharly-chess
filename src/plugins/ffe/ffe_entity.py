@@ -29,7 +29,7 @@ from data.print_documents.documents import QRCodePrintDocument, TournamentPrintO
 from data.print_documents.qrcode_types import QRCodeType
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredPlayer
-from database.sqlite.local_source_database import LocalSourceDatabase
+from database.sqlite.local_source_database import LocalSourcePlayerDatabase
 from plugins.ffe import PLUGIN_NAME, PLUGIN_DIR
 from plugins.ffe.ffe_database import FfeDatabase, PlayerFFELicence
 from plugins.ffe.ffe_sql_server import FFESqlServer
@@ -165,7 +165,7 @@ class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
         return _('FFE database (local)')
 
     @property
-    def local_database_type(self) -> type[LocalSourceDatabase]:
+    def local_database_type(self) -> type[LocalSourcePlayerDatabase]:
         return FfeDatabase
 
     @property
@@ -508,7 +508,7 @@ class FfeLeaguesFilterOption(SelectPlayerFilterOption[str]):
     def get_all_known_values(self, tournament: 'Tournament') -> list[str]:
         from plugins.ffe.ffe import FfePlugin
 
-        return [code for code in FfePlugin.FFE_LEAGUES.keys() if code]
+        return list(FfePlugin.FFE_LEAGUES)
 
     def get_player_counter(self, tournament: 'Tournament') -> Counter[str]:
         counter: Counter[str] = Counter[str]()
@@ -580,12 +580,7 @@ class FfeLicenceFilterOption(SelectPlayerFilterOption[int]):
         return []
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[int]:
-        return [
-            PlayerFFELicence.NONE.value,
-            PlayerFFELicence.N.value,
-            PlayerFFELicence.A.value,
-            PlayerFFELicence.B.value,
-        ]
+        return [licence.value for licence in PlayerFFELicence]
 
     def get_player_counter(self, tournament: 'Tournament') -> Counter[int]:
         counter: Counter[int] = Counter[int]()

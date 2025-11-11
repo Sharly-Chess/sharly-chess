@@ -55,11 +55,11 @@
                     {{ admin_macros.select_input(
                         name='tournament_ids',
                         label=_('%(string)s:', string=_('Tournaments')),
-                        tooltip_text=_('The tournaments on which the permission is applied (by default, the permission is applied to all the tournaments).'),
+                        tooltip_text=_('The tournaments on which the permission is applied.'),
                         select_all=true,
                         select_options=tournament_options,
                         multiple_select=true,
-                        placeholder=_('Choose one, many or no tournaments.'),
+                        placeholder=_('All the tournaments'),
                         data=data, errors=errors
                     ) }}
                 </div>

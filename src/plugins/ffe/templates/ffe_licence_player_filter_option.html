@@ -2,7 +2,9 @@
     {{ admin_macros.select_input(
         name=option.id,
         label=_('%(string)s:', string=_('Licence types')),
-        select_options=option.select_options(admin_tournament),
+        select_options=option.select_options(
+            admin_tournament, split_tournament_others=false
+        ),
         multiple_select=true,
         placeholder=_('Choose at least one licence type.'),
         data=data, errors=errors

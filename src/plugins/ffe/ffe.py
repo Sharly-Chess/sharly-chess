@@ -1,12 +1,13 @@
 import copy
 from datetime import date
 import re
+from pluggy import PluginManager
 
-from collections import Counter
+from collections import Counter, defaultdict
 from collections.abc import Callable
 
 from types import ModuleType
-from typing import Any, TYPE_CHECKING, Iterable, Optional
+from typing import Any, TYPE_CHECKING, Iterable, Optional, override
 
 from litestar.plugins.htmx import HTMXRequest
 from packaging.version import Version
@@ -42,7 +43,7 @@ from plugins.ffe.ffe_tournament_importers import (
     PapiJsonTournamentImporter,
     PapiTournamentImporter,
 )
-from plugins.ffe.papi_converter import PapiConverter
+from plugins.ffe.papi_converter import PapiConverter, PapiPlayer
 from plugins.ffe.utils import (
     FFE_DEFAULT_UPLOAD_DELAY,
     FFE_MIN_UPLOAD_DELAY,
@@ -85,7 +86,7 @@ from plugins.ffe.ffe_tie_breaks import (
     PapiBuchholzTypeOption,
 )
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
-from plugins.hookspec import ExtraAdminColumn, hookimpl
+from plugins.hookspec import ExtraAdminColumn, hookimpl, hookspec
 from plugins.migration import PluginMigrationManager
 from plugins.utils import (
     ExtraStatisticsSection,
@@ -104,6 +105,12 @@ if TYPE_CHECKING:
     from database.sqlite.event.event_store import StoredEvent
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredTournament
+
+
+class FfePluginHooks:
+    @hookspec
+    def update_papi_player(self, papi_player: PapiPlayer, player: Player):
+        """Called when a player is converted to Papi format"""
 
 
 class FfePlugin(Plugin):
@@ -128,6 +135,12 @@ class FfePlugin(Plugin):
     @property
     def version(self) -> Version:
         return Version('0.1.1')
+
+    @override
+    def init(self, plugin_manager: PluginManager):
+        super().init(plugin_manager)
+
+        plugin_manager.add_hookspecs(FfePluginHooks)
 
     @property
     def default_is_enabled(self) -> bool:
@@ -165,7 +178,6 @@ class FfePlugin(Plugin):
 
     # The FFE league names.
     FFE_LEAGUES: dict[str, str] = {
-        '': '',
         'ARA': 'Auvergne-Rhône-Alpes',
         'BFC': 'Bourgogne-Franche-Comté',
         'BRE': 'Bretagne',
@@ -207,7 +219,6 @@ class FfePlugin(Plugin):
     @hookimpl
     def get_base_admin_template_context(self) -> dict[str, Any]:
         return {
-            'ffe_leagues': self.FFE_LEAGUES,
             'ffe_auth_valid': '',
             'FFE_DEFAULT_UPLOAD_DELAY': FFE_DEFAULT_UPLOAD_DELAY,
         }
@@ -309,8 +320,25 @@ class FfePlugin(Plugin):
         }
 
     @hookimpl
-    def get_player_form_fields_template(self) -> str:
-        return '/ffe_player_form_fields.html'
+    def get_player_form_template_context(
+        self, web_context: 'PlayerAdminWebContext'
+    ) -> dict[str, Any]:
+        return {
+            'licence_options': {
+                str(licence.value): licence.compact_name for licence in PlayerFFELicence
+            },
+            'ffe_league_options': {'': '-'}
+            | {code: f'{code} - {name}' for code, name in self.FFE_LEAGUES.items()},
+        }
+
+    @hookimpl
+    def insert_player_form_fields_template(
+        self, templates_by_section: defaultdict[str, list[str]]
+    ):
+        templates_by_section['identity'].insert(
+            0, '/ffe_player_form_identity_fields.html'
+        )
+        templates_by_section['fide'].append('/ffe_player_form_fields.html')
 
     @hookimpl
     def validate_player_form_fields(
@@ -585,14 +613,16 @@ class FfePlugin(Plugin):
         FFESessionHandler.set_session_admin_players_filter_licences(request, [])
 
     @hookimpl
-    def player_club_sort_key(self, player: Player):
-        # We sort by league first
-        return (
-            FFEUtils.get_player_plugin_data(player).league or '',
-            player.club,
-            player.last_name,
-            player.first_name,
-        )
+    def player_sort_key(self, player: Player, sort_type: str):
+        if sort_type == 'club':
+            # We sort by league first
+            return (
+                FFEUtils.get_player_plugin_data(player).league or '',
+                player.club,
+                player.last_name,
+                player.first_name,
+            )
+        return None
 
     @hookimpl
     def insert_player_datasheet_columns(self, datasheet_columns: list[DatasheetColumn]):

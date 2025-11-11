@@ -1,3 +1,4 @@
+from collections import defaultdict
 from collections.abc import Callable
 from datetime import date
 from collections.abc import Iterable
@@ -101,8 +102,17 @@ class AppHookSpecs:
         """Provide additional template context for rendering in PlayerAdminController"""
 
     @hookspec
-    def get_player_form_fields_template(self) -> str:
-        """Provide a path to a template containing additional player form fields"""
+    def get_player_form_template_context(
+        self, web_context: 'PlayerAdminWebContext'
+    ) -> dict[str, Any]:
+        """Provide additional template context for rendering the player form."""
+
+    @hookspec
+    def insert_player_form_fields_template(
+        self, templates_by_section: defaultdict[str, list[str]]
+    ):
+        """Provide paths of templates of fields to insert into the player form,
+        organised by the section at which to add the fields."""
 
     @hookspec
     def get_player_form_data(
@@ -171,8 +181,8 @@ class AppHookSpecs:
         """Clear any filters set on the admin players tab"""
 
     @hookspec(firstresult=True)
-    def player_club_sort_key(self, player: 'Player') -> tuple:
-        """Returns a sort key for sorting the admin player list by club"""
+    def player_sort_key(self, player: 'Player', sort_type: str) -> tuple | None:
+        """Returns a sort key for sorting the admin player"""
 
     @hookspec
     def insert_player_datasheet_columns(

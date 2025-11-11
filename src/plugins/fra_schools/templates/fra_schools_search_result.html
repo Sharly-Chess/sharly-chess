@@ -1,0 +1,15 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros %}
+
+<li class="dropdown-item text-nowrap btn"
+    onClick="
+        $('#fra-school-code, #fra-school-code-hidden').val(`{{ school.code }}`);
+        $('#fra-school-name').val(`{{ school.name }}`);
+        $('#fra-school-name').trigger('keyup');
+        $('#fra-school-city').val(`{{ school.city }}`);
+        $('#fra-school-department').val(`{{ school.department }}`).trigger('change');
+        $('#fra-schools-search').val('');
+        $('#fra-schools-search-results').hide();"
+>
+    <b>{{ school.code }}</b> {{ school.name }}, <i>{{ school.city }} ({{ school.department }})</i>
+</li>

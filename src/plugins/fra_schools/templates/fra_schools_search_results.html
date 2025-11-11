@@ -1,0 +1,30 @@
+{% import '/common/macros.j2' as macros with context %}
+
+{% if connection_error %}
+    <li class="dropdown-item no-hover text-nowrap">
+        <i class="{{ data_source.search_error_icon }} text-danger pe-1"></i>
+        <span class="fst-italic">{{ connection_error }}</span>
+    </li>
+{% elif search %}
+    {% if search_results %}
+        {% for school in search_results %}
+            {% include "fra_schools_search_result.html" %}
+            {% if loop.last and has_more_results %}
+                <li
+                    class="dropdown-item text-nowrap"
+                    hx-get="{{ url_for('fra-schools-search', event_uniq_id=admin_event.uniq_id, page=page + 1,) }}"
+                    hx-vals='{"fra_schools_search": "{{ search }}"}'
+                    hx-target="this"
+                    hx-swap="outerHTML"
+                    hx-trigger="intersect once"
+                    hx-indicator="#fra-schools-search-indicator"
+                >
+                    <span class="fst-italic">{{ _('Loading more results…') }}</span>
+                </li>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    <script>
+        $('#fra-schools-search-results').show();
+    </script>
+{% endif %}

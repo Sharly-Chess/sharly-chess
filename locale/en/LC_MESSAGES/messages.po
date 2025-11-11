@@ -435,6 +435,9 @@ msgstr ""
 msgid "Add a rotator to the event."
 msgstr ""
 
+msgid "Add a school to the options."
+msgstr ""
+
 msgid "Add a screen to check-in players or enter results."
 msgstr ""
 
@@ -487,6 +490,9 @@ msgid "Add screens"
 msgstr ""
 
 msgid "Add tournaments"
+msgstr ""
+
+msgid "Adds support for school competitions in France"
 msgstr ""
 
 msgid "Administration"
@@ -640,6 +646,9 @@ msgstr ""
 msgid "At least one club is expected."
 msgstr ""
 
+msgid "At least one department is expected."
+msgstr ""
+
 msgid "At least one federation is expected."
 msgstr ""
 
@@ -653,6 +662,9 @@ msgid "At least one player is expected."
 msgstr ""
 
 msgid "At least one rating type is expected."
+msgstr ""
+
+msgid "At least one school is expected."
 msgstr ""
 
 msgid "At least one value is expected."
@@ -1046,6 +1058,9 @@ msgstr ""
 msgid "Choose at least one club."
 msgstr ""
 
+msgid "Choose at least one department."
+msgstr ""
+
 msgid "Choose at least one federation."
 msgstr ""
 
@@ -1059,6 +1074,9 @@ msgid "Choose at least one player."
 msgstr ""
 
 msgid "Choose at least one rating type."
+msgstr ""
+
+msgid "Choose at least one school."
 msgstr ""
 
 msgid "Choose families to add"
@@ -1077,6 +1095,9 @@ msgid "Choose the columns displayed."
 msgstr ""
 
 msgid "Choose your language"
+msgstr ""
+
+msgid "City"
 msgstr ""
 
 msgid "Clear Log"
@@ -1124,6 +1145,9 @@ msgid "Club:"
 msgstr ""
 
 msgid "Clubs"
+msgstr ""
+
+msgid "Code"
 msgstr ""
 
 msgid "Color"
@@ -1576,6 +1600,12 @@ msgid "Deletes all the criteria of this category."
 msgstr ""
 
 msgid "Deletion date"
+msgstr ""
+
+msgid "Department"
+msgstr ""
+
+msgid "Departments"
 msgstr ""
 
 msgid "Deputy Chief Arbitration"
@@ -2120,9 +2150,6 @@ msgstr ""
 msgid "FFE Licence type"
 msgstr ""
 
-msgid "FFE Uniq ID:"
-msgstr ""
-
 msgid "FFE certification number and password not defined."
 msgstr ""
 
@@ -2304,6 +2331,9 @@ msgstr ""
 msgid "Filter the licences."
 msgstr ""
 
+msgid "Filter the schools."
+msgstr ""
+
 msgid "Filter the tournaments."
 msgstr ""
 
@@ -2395,6 +2425,15 @@ msgid "French Chess Federation"
 msgstr ""
 
 msgid "French Federation specific features (player search, results uploading, leagues, Papi import/export...)"
+msgstr ""
+
+msgid "French School Competitions"
+msgstr ""
+
+msgid "French Schools"
+msgstr ""
+
+msgid "French school"
 msgstr ""
 
 msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
@@ -2836,8 +2875,8 @@ msgstr ""
 msgid "Lic."
 msgstr ""
 
-msgid "Licence number:"
-msgstr ""
+msgid "Licence no. *** LICENCE NUMBER"
+msgstr "Licence no."
 
 msgid "Licence types"
 msgstr ""
@@ -4475,6 +4514,12 @@ msgstr ""
 msgid "Scan to access the tournament on the FFE site."
 msgstr ""
 
+msgid "School *** SCHOOL FOR TABLE HEADER"
+msgstr "School"
+
+msgid "Schools"
+msgstr ""
+
 msgid "Scope"
 msgstr ""
 
@@ -4734,6 +4779,9 @@ msgstr ""
 msgid "Sort the players by rating (most rated first)."
 msgstr ""
 
+msgid "Sort the players by school."
+msgstr ""
+
 msgid "Sort the players by tournament."
 msgstr ""
 
@@ -4942,6 +4990,14 @@ msgid "The crosstable shows all the results of the players, while the club is pr
 msgstr ""
 
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
+msgstr ""
+
+#, python-format
+msgid "The database [%(database)s] is not installed (to install it: Menu > Data sources)."
+msgstr ""
+
+#, python-format
+msgid "The database [%(database)s] was last updated over %(age)d months ago. It is preferable to update it before proceeding (Menu > Data sources)."
 msgstr ""
 
 msgid "The date of the first hour is not defined (mandatory)."
@@ -5185,7 +5241,7 @@ msgstr ""
 msgid "The tournaments for which the staff member is the chief arbiter."
 msgstr ""
 
-msgid "The tournaments on which the permission is applied (by default, the permission is applied to all the tournaments)."
+msgid "The tournaments on which the permission is applied."
 msgstr ""
 
 msgid "The type of criterion used to filter the players."

@@ -33,15 +33,19 @@ class TestPlayersFunctionality:
         modal.get_by_test_id('last-name').fill('doe')
         modal.get_by_test_id('first-name').fill('john')
         modal.get_by_test_id('date-of-birth').fill('2000-10-30')
-        modal.get_by_test_id('gender').select_option(str(PlayerGender.MALE.value))
+        modal.get_by_test_id('gender').select_option(
+            str(PlayerGender.MALE.value), force=True
+        )
         modal.get_by_test_id('club').fill('SC Club')
+        modal.get_by_test_id('federation').select_option('FRA', force=True)
         modal.get_by_test_id('fixed').fill('100')
         TestUtils.button_by_text(modal, 'Add manual estimated ratings').click()
         modal.get_by_test_id('standard-rating-estimated').fill('1000')
         modal.get_by_test_id('rapid-rating-national').fill('1500')
         modal.get_by_test_id('blitz-rating-fide').fill('2000')
-        modal.get_by_test_id('title').select_option(str(PlayerTitle.GRANDMASTER.value))
-        modal.get_by_test_id('federation').select_option('FRA')
+        modal.get_by_test_id('title').select_option(
+            str(PlayerTitle.GRANDMASTER.value), force=True
+        )
         modal.get_by_test_id('mail').fill('john.doe@sharly-chess.com')
         # modal.get_by_test_id('phone').fill("0123456789")
         modal.get_by_test_id('owed').fill('10')

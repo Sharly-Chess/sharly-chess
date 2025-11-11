@@ -16,7 +16,7 @@
 
 <script>
     $(document).ready(function() {
-        $('#player-rating-type').val('3');
+        $('#player-rating-type').val('3').trigger('change');
         $('#player-rating-type').prop('disabled', true);
 
         const ratingTypeContainer = document.getElementById('player-rating-type-input-container');
