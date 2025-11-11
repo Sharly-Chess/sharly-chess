@@ -580,12 +580,7 @@ class FfeLicenceFilterOption(SelectPlayerFilterOption[int]):
         return []
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[int]:
-        return [
-            PlayerFFELicence.NONE.value,
-            PlayerFFELicence.N.value,
-            PlayerFFELicence.A.value,
-            PlayerFFELicence.B.value,
-        ]
+        return [licence.value for licence in PlayerFFELicence]
 
     def get_player_counter(self, tournament: 'Tournament') -> Counter[int]:
         counter: Counter[int] = Counter[int]()
