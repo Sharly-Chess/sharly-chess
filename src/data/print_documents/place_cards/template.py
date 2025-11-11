@@ -299,7 +299,7 @@ class PlaceCardTemplate(PlaceCardItemStyle):
                 PlaceCardItem.mirror(item, self.type.mirror_rotate) for item in items
             ]
             items += back_items
-        back_side: bool = any(item.back for item in items)
+        back_side: bool = any(item.back and item.display for item in items)
         federations: set[str] = self.get_federations(players, pairings)
         return {
             'event': event,
@@ -342,7 +342,7 @@ class PlaceCardTemplate(PlaceCardItemStyle):
                 tournament, round_, board_numbers=board_numbers
             ),
             card_width=f'{self.width}{self.unit}',
-            card_height=f'{(2 if any(item.back for item in self.items) else 1) * self.height}{self.unit}',
+            card_height=f'{(2 if mirror or any(item.back and item.display for item in self.items) else 1) * self.height}{self.unit}',
         )
 
     def preview(
@@ -361,7 +361,7 @@ class PlaceCardTemplate(PlaceCardItemStyle):
                 boards=self.type.preview_boards(),
                 pairings=self.type.preview_pairings(),
                 card_width=f'{self.width / 2 + 1}{self.unit}',
-                card_height=f'{(2 if any(item.back for item in self.items) else 1) * self.height / 2 + 1}{self.unit}',
+                card_height=f'{(2 if any(item.back and item.display for item in self.items) else 1) * self.height / 2 + (1.0 / (1.0 if self.unit == "mm" else 25.4))}{self.unit}',
             ),
         )
 
