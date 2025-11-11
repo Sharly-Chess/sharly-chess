@@ -156,9 +156,6 @@ class StoredTournament:
     id: int | None
     name: str
     time_control_trf25: str | None = None
-    time_control_handicap_penalty_step: int | None = None
-    time_control_handicap_penalty_value: int | None = None
-    time_control_handicap_min_time: int | None = None
     record_illegal_moves: int | None = None
     rules: str | None = None
     first_board_number: int | None = None

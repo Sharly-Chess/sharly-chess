@@ -180,15 +180,15 @@ class Tournament:
 
     @property
     def time_control_handicap_penalty_value(self) -> int | None:
-        return self.stored_tournament.time_control_handicap_penalty_value
+        return 0
 
     @property
     def time_control_handicap_penalty_step(self) -> int | None:
-        return self.stored_tournament.time_control_handicap_penalty_step
+        return 0
 
     @property
     def time_control_handicap_min_time(self) -> int | None:
-        return self.stored_tournament.time_control_handicap_min_time
+        return 0
 
     @property
     def record_illegal_moves(self) -> int:

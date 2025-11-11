@@ -49,7 +49,6 @@ from database.sqlite.event.event_store import (
     StoredPairing,
 )
 from plugins.manager import plugin_manager
-from utils.time_control import parse_time_control_trf25
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -235,9 +234,6 @@ class TournamentAdminController(BaseEventAdminController):
                 case _:
                     raise ValueError(f'action=[{action}]')
             time_control_trf25: str | None = None
-            time_control_handicap_penalty_value: int | None = None
-            time_control_handicap_penalty_step: int | None = None
-            time_control_handicap_min_time: int | None = None
             record_illegal_moves: int | None = None
             rules: str | None = None
             first_board_number: int | None = None
@@ -263,15 +259,6 @@ class TournamentAdminController(BaseEventAdminController):
                     assert admin_tournament.stored_tournament is not None
                     stored_tournament = admin_tournament.stored_tournament
                     time_control_trf25 = stored_tournament.time_control_trf25
-                    time_control_handicap_penalty_value = (
-                        stored_tournament.time_control_handicap_penalty_value
-                    )
-                    time_control_handicap_penalty_step = (
-                        stored_tournament.time_control_handicap_penalty_step
-                    )
-                    time_control_handicap_min_time = (
-                        stored_tournament.time_control_handicap_min_time
-                    )
                     record_illegal_moves = stored_tournament.record_illegal_moves
                     rules = stored_tournament.rules
                     first_board_number = stored_tournament.first_board_number
@@ -322,9 +309,6 @@ class TournamentAdminController(BaseEventAdminController):
                 {
                     'name': name,
                     'time_control_trf25': time_control_trf25,
-                    'time_control_handicap_penalty_value': time_control_handicap_penalty_value,
-                    'time_control_handicap_penalty_step': time_control_handicap_penalty_step,
-                    'time_control_handicap_min_time': time_control_handicap_min_time,
                     'record_illegal_moves': record_illegal_moves,
                     'rules': rules,
                     'first_board_number': first_board_number,
@@ -518,22 +502,6 @@ class TournamentAdminController(BaseEventAdminController):
             if name in used_names:
                 errors[field] = _('This name is already used.')
         time_control_trf25 = WebContext.form_data_to_str(data, 'time_control_trf25')
-        time_control_handicap_penalty_value = WebContext.form_data_to_int(
-            data, 'time_control_handicap_penalty_value'
-        )
-        time_control_handicap_penalty_step = WebContext.form_data_to_int(
-            data, 'time_control_handicap_penalty_step'
-        )
-        time_control_handicap_min_time = WebContext.form_data_to_int(
-            data, 'time_control_handicap_min_time'
-        )
-
-        intial_time, inc = parse_time_control_trf25(time_control_trf25)
-        if intial_time == 0 and time_control_handicap_penalty_value:
-            errors['time_control_handicap_penalty_value'] = _(
-                'Penalties require a time control with a single period.'
-            )
-
         record_illegal_moves = cls._admin_validate_record_illegal_moves_update_data(
             data, errors
         )
@@ -586,9 +554,6 @@ class TournamentAdminController(BaseEventAdminController):
             else None,
             name=name,
             time_control_trf25=time_control_trf25,
-            time_control_handicap_penalty_value=time_control_handicap_penalty_value,
-            time_control_handicap_penalty_step=time_control_handicap_penalty_step,
-            time_control_handicap_min_time=time_control_handicap_min_time,
             record_illegal_moves=record_illegal_moves,
             rules=rules,
             first_board_number=first_board_number,

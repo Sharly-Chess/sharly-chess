@@ -29,6 +29,9 @@ class AppPluginManager(PluginManager):
         from plugins.pairing_acceleration.pairing_acceleration import (
             PairingAccelerationPlugin,
         )
+        from plugins.handicap_games.handicap_games import (
+            HandicapGamesPlugin,
+        )
         from plugins.fra_schools.fra_schools import FRASchoolsPlugin
 
         return [
@@ -37,6 +40,7 @@ class AppPluginManager(PluginManager):
             FfePlugin(),
             ChessEventPlugin(),
             FRASchoolsPlugin(),
+            HandicapGamesPlugin(),
         ]
 
     @property
