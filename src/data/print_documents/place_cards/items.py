@@ -352,7 +352,7 @@ class PlaceCardImage(PlaceCardItem):
             self._background_color = 'red'
         self.image = image or self.default_image
         if not self.width and not self.height:
-            self.width = self.height = 30.0 if template.unit == 'mm' else 1.0
+            self.width = self.height = 30.0 / (1.0 if template.unit == 'mm' else 25.4)
             logger.warning(
                 'Use [width] or [height] in section [%s] to size the image (defaults to %sx%s).',
                 self.image.name,
