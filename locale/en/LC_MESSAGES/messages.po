@@ -6426,25 +6426,3 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "French School"
-#~ msgstr ""
-
-#~ msgid "Licence number:"
-#~ msgstr ""
-
-#~ msgid "Schools"
-#~ msgstr ""
-
-#~ msgid "Seed color can't be modified once the tournament has started."
-#~ msgstr ""
-
-#~ msgid "School"
-#~ msgstr ""
-
-#~ msgid "FFE Uniq ID:"
-#~ msgstr ""
-
-#~ msgid "Handicap Games"
-#~ msgstr ""
-

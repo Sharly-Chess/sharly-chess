@@ -6426,10 +6426,3 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
-#~ msgid "FFE Uniq ID:"
-#~ msgstr "Identifiant unique FFE :"
-
-#~ msgid "Handicap Games"
-#~ msgstr "Parties à handicap"
-

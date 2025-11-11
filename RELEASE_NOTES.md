@@ -1,7 +1,7 @@
 # French
 English version below
 
-## Core
+## Modules
 
 - Déplacement de la fonctionnalité de handicap vers un module (3.3.0)
 
@@ -19,7 +19,7 @@ English version below
 
 # English
 
-## Core
+## Modules
 
 - Moved the handicap feature to a plugin (3.3.0)
 
