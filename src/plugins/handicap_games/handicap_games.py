@@ -33,7 +33,7 @@ class HandicapGamesPlugin(Plugin):
 
     @staticmethod
     def static_name() -> str:
-        return _('Handicap Games')
+        return _('Handicap games')
 
     @property
     def description(self) -> str:
