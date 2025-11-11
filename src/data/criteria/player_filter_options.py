@@ -322,7 +322,7 @@ class ClubsFilterOption(SelectPlayerFilterOption[Club]):
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[Club]:
         event_club_names = {player.club.name for player in tournament.event.players}
-        return [Club(name) for name in sorted(event_club_names)]
+        return [Club(name) for name in sorted(event_club_names) if name]
 
     def get_player_counter(self, tournament: 'Tournament') -> Counter[Club]:
         counter = tournament.club_counts
