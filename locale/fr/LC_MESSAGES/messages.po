@@ -492,6 +492,9 @@ msgstr "Ajouter des écrans"
 msgid "Add tournaments"
 msgstr "Ajouter des tournois"
 
+msgid "Adds features for handicap tournaments where weaker players are given a time advantage."
+msgstr "Ajoute des fonctionnalités pour les tournois avec handicap, où les joueur·euses les moins fort·es bénéficient d’un avantage de temps."
+
 msgid "Adds support for school competitions in France"
 msgstr "Ajoute la prise en charge des compétitions scolaires en France"
 

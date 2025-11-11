@@ -1,0 +1,32 @@
+<h4>
+    {{ _('Handicap games') }}
+</h4>
+<div class="row gy-2 gx-3">
+    <div class="col-12 col-md-4">
+        {{ admin_macros.number_input(
+            name='handicap_games_penalty_value',
+            label=_('Penalty (seconds):'),
+            placeholder=_('E.g.: %(val)d', val=30),
+            tooltip_text=_('The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players).'),
+            data=data, errors=errors
+        ) }}
+    </div>
+    <div class="col-12 col-md-4">
+        {{ admin_macros.number_input(
+            name='handicap_games_penalty_step',
+            label=_('Elo step:'),
+            placeholder=_('E.g.: %(val)d', val=50),
+            tooltip_text=_('The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player.'),
+            data=data, errors=errors
+        ) }}
+    </div>
+    <div class="col-12 col-md-4">
+        {{ admin_macros.number_input(
+            name='handicap_games_min_time',
+            label=_('Minimal time (seconds):'),
+            placeholder=_('E.g.: %(val)d', val=60),
+            tooltip_text=_('The minimum time, whatever the ranking difference between the two players.'),
+            data=data, errors=errors
+        ) }}
+    </div>
+</div>

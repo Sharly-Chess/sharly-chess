@@ -1,6 +1,10 @@
 # French
 English version below
 
+## Modules
+
+- Déplacement de la fonctionnalité de handicap vers un module (3.3.0)
+
 ## Impression
 
 - Ajout des chevalets (3.3.0)
@@ -18,6 +22,10 @@ English version below
 ---
 
 # English
+
+## Modules
+
+- Moved the handicap feature to a plugin (3.3.0)
 
 ## Printing
 

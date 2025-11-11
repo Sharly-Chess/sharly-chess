@@ -492,6 +492,9 @@ msgstr ""
 msgid "Add tournaments"
 msgstr ""
 
+msgid "Adds features for handicap tournaments where weaker players are given a time advantage."
+msgstr ""
+
 msgid "Adds support for school competitions in France"
 msgstr ""
 

@@ -699,13 +699,6 @@ class EventDatabase(MigrationDatabase):
             id=row['id'],
             name=row['name'],
             time_control_trf25=row['time_control_trf25'],
-            time_control_handicap_penalty_step=row[
-                'time_control_handicap_penalty_step'
-            ],
-            time_control_handicap_penalty_value=row[
-                'time_control_handicap_penalty_value'
-            ],
-            time_control_handicap_min_time=row['time_control_handicap_min_time'],
             record_illegal_moves=row['record_illegal_moves'],
             rules=row['rules'],
             first_board_number=row['first_board_number'],
@@ -781,9 +774,6 @@ class EventDatabase(MigrationDatabase):
             [
                 'name',
                 'time_control_trf25',
-                'time_control_handicap_penalty_step',
-                'time_control_handicap_penalty_value',
-                'time_control_handicap_min_time',
                 'record_illegal_moves',
                 'rules',
                 'first_board_number',
