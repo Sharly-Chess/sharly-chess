@@ -14,6 +14,7 @@ v_align = "middle"
 [tournament]
 side = "back"
 text = "{{ tournament.name }}"
+preview_text = "U12"
 font_size = 56.0
 bold = true
 h_align = "center"

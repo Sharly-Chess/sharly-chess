@@ -125,9 +125,10 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
         player: PlaceCardPlayer | None = None,
         board: PlaceCardBoard | None = None,
         pairing: PlaceCardPairing | None = None,
+        preview: bool = False,
     ) -> str:
         """Returns the HTML to output for the item."""
-        return f'<div class="card-item-wrapper {self.css_class}">{self._inner_html(event, tournament, player, board, pairing)}</div>'
+        return f'<div class="card-item-wrapper {self.css_class}">{self._inner_html(event, tournament, player, board, pairing, preview)}</div>'
 
     @abstractmethod
     def _inner_html(
@@ -137,6 +138,7 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
         player: PlaceCardPlayer | None = None,
         board: PlaceCardBoard | None = None,
         pairing: PlaceCardPairing | None = None,
+        preview: bool = False,
     ) -> str:
         """Returns the inner HTML of the item."""
         pass
@@ -251,6 +253,11 @@ class PlaceCardText(PlaceCardItem):
             section=section,
             prop='text',
         )
+        self.preview_text: str = data.get_str(
+            section=section,
+            prop='preview_text',
+            default='',
+        )
 
     @property
     def type(self) -> str:
@@ -265,6 +272,7 @@ class PlaceCardText(PlaceCardItem):
             .union(
                 {
                     'text',
+                    'preview_text',
                 }
             )
         )
@@ -276,11 +284,14 @@ class PlaceCardText(PlaceCardItem):
         player: PlaceCardPlayer | None = None,
         board: PlaceCardBoard | None = None,
         pairing: PlaceCardPairing | None = None,
+        preview: bool = False,
     ) -> str:
         if not self.display:
             return ''
         content: str = parse_jinja_string(
-            template_string=self.raw_text,
+            template_string=self.preview_text
+            if preview and self.preview_text
+            else self.raw_text,
             context={
                 'event': event,
                 'tournament': tournament,
@@ -435,6 +446,7 @@ class PlaceCardImage(PlaceCardItem):
         player: PlaceCardPlayer | None = None,
         board: PlaceCardBoard | None = None,
         pairing: PlaceCardPairing | None = None,
+        preview: bool = False,
     ) -> str:
         return f'<div class="card-item image {self.css_class}"></div>'
 

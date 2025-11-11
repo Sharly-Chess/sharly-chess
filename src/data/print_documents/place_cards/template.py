@@ -284,6 +284,7 @@ class PlaceCardTemplate(PlaceCardItemStyle):
         pairings: list[PlaceCardPairing],
         card_width: str,
         card_height: str,
+        preview: bool,
     ) -> dict[str, Any]:
         items: list[PlaceCardItem] = copy.deepcopy(self.items)
         if mirror:
@@ -310,6 +311,7 @@ class PlaceCardTemplate(PlaceCardItemStyle):
             'boards': boards,
             'pairings': pairings,
             'items': items,
+            'preview': preview,
         }
 
     def template_context(
@@ -335,6 +337,7 @@ class PlaceCardTemplate(PlaceCardItemStyle):
             ),
             card_width=f'{self.width}{self.unit}',
             card_height=f'{(2 if mirror or any(item.back and item.display for item in self.items) else 1) * self.height}{self.unit}',
+            preview=False,
         )
 
     def preview(
@@ -354,6 +357,7 @@ class PlaceCardTemplate(PlaceCardItemStyle):
                 pairings=self.type.preview_pairings(),
                 card_width=f'{self.width / 2 + 1}{self.unit}',
                 card_height=f'{(2 if any(item.back and item.display for item in self.items) else 1) * self.height / 2 + (1.0 / (1.0 if self.unit == "mm" else 25.4))}{self.unit}',
+                preview=True,
             ),
         )
 
