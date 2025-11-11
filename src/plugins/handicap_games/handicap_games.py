@@ -89,7 +89,7 @@ class HandicapGamesPlugin(Plugin):
 
         cls = (
             'time-control-modified'
-            if player.time_control_modified
+            if transient_data.modified
             else 'time-control-unchanged'
         )
         inner = ''
