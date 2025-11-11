@@ -14,7 +14,10 @@ def generate_doc(
     output_dir: Path,
 ):
     templates_by_type: dict[PlaceCardType, list[PlaceCardTemplate]] = (
-        PlaceCardTemplate.get_place_card_templates_by_type()
+        PlaceCardTemplate.get_place_card_templates_by_type(
+            custom=False,
+            examples=True,
+        )
     )
     for locale in locales:
         set_locale(locale)

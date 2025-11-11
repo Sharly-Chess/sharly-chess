@@ -1,0 +1,17 @@
+type = "board"
+name = "Domloup"
+creator = "Pascal AUBRY <pascal.aubry@echecs35.fr>"
+
+[number]
+text = "{{ _('Board %(number)s', number=board.number) }}"
+font_size = 60.0
+bold = true
+h_align = "right"
+v_align = "bottom"
+v_pos = -5
+
+[logo]
+image = "logo.jpg"
+width = 25
+h_align = "left"
+v_align = "bottom"

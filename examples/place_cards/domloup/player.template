@@ -1,0 +1,43 @@
+type = "player"
+name = "Domloup"
+creator = "Pascal AUBRY <pascal.aubry@echecs35.fr>"
+
+font_size = 14.0
+bold = false
+italic = false
+h_align = "left"
+v_align = "top"
+h_pos = 0.0
+v_pos = 0.0
+
+[player_name]
+text = "{{ player.federation_flag | safe }} {{ player.full_name }}"
+font_size = 18.0
+bold = true
+max_width = 92.0
+
+[player_rating]
+text = "{{ player.rating }}{{ player.rating_type }}"
+font_size = 18.0
+bold = true
+h_align = "right"
+
+[player_category]
+text = "{{ player.category }}"
+v_pos = 8.0
+
+[player_club]
+text = "{{ player.federation }} {% if player.ffe_league %}- {{ player.ffe_league }}{% endif %} {% if player.club %}- {{ player.club }}{% endif %}"
+v_pos = 14.0
+
+[event]
+text = "{{ event.name }}"
+italic = true
+v_align = "bottom"
+
+[logo]
+image = "logo.jpg"
+height = 25.0
+opacity = 0.8
+h_align = "right"
+v_align = "bottom"

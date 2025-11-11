@@ -9,9 +9,9 @@ from xml.etree.ElementTree import ElementTree
 
 from PIL import Image, UnidentifiedImageError
 
+from common import BASE_DIR
 from common.i18n.utils import parse_jinja_string
 from common.logger import get_logger
-from common.sharly_chess_config import SharlyChessConfig
 from data.print_documents.place_cards.data import (
     PlaceCardEvent,
     PlaceCardTournament,
@@ -379,9 +379,7 @@ class PlaceCardImage(PlaceCardItem):
 
     @property
     def default_image(self) -> Path:
-        return (
-            SharlyChessConfig.embedded_place_cards_path / 'images/sharly-chess-logo.svg'
-        )
+        return BASE_DIR / 'src/web/static/images/sharly-chess-logo.svg'
 
     @staticmethod
     def get_image_ratio(image_file: Path) -> float:

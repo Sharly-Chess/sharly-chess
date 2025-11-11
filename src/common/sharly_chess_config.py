@@ -306,8 +306,11 @@ class SharlyChessConfig(metaclass=Singleton):
     # The path to raw SQL files.
     database_sql_path: Path = BASE_DIR / 'src' / 'database' / 'sql'
 
+    # The path of the examples.
+    examples_path = BASE_DIR / 'examples'
+
     # The path of the files used to generate example event databases.
-    example_events_path = BASE_DIR / 'example_events'
+    example_events_path = examples_path / 'events'
 
     uniq_id_regex = re.compile(r'^[0-9a-zA-Z_\-]+$')
 
@@ -318,6 +321,9 @@ class SharlyChessConfig(metaclass=Singleton):
 
     # The path of the custom place cards template files.
     custom_place_cards_path: Path = custom_path / 'place_cards'
+
+    # The path of the files used to generate example event databases.
+    example_place_cards_path = examples_path / 'place_cards'
 
     place_card_template_ext: str = 'template'
 
