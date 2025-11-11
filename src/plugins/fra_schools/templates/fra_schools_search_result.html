@@ -7,8 +7,7 @@
         $('#fra-school-name').val(`{{ school.name }}`);
         $('#fra-school-name').trigger('keyup');
         $('#fra-school-city').val(`{{ school.city }}`);
-        $('#fra-school-department').val(`{{ school.department }}`);
-        $('#fra-school-department').trigger('change');
+        $('#fra-school-department').val(`{{ school.department }}`).trigger('change');
         $('#fra-schools-search').val('');
         $('#fra-schools-search-results').hide();"
 >

@@ -260,7 +260,7 @@ class FRASchoolsPlugin(Plugin):
     ):
         lps: type[PlayerSplitter] = FraSchoolPlayerSplitter
         cps: type[PlayerSplitter] = ClubPlayerSplitter
-        PluginUtils.replace_on_equals(player_splitter_types, lps, cps)
+        PluginUtils.insert_on_equals(player_splitter_types, lps, cps, False)
 
     # ---------------------------------------------------------------------------------
     # Prizes

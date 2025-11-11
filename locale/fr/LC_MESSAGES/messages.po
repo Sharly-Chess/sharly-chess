@@ -1046,13 +1046,13 @@ msgid "Choose at least one league."
 msgstr "Choisir au moins une ligue."
 
 msgid "Choose at least one licence type."
-msgstr "Choisissez au moins un type de licence."
+msgstr "Choisir au moins un type de licence."
 
 msgid "Choose at least one player."
-msgstr "Choisissez au moins un·e joueur·euse."
+msgstr "Choisir au moins un·e joueur·euse."
 
 msgid "Choose at least one rating type."
-msgstr "Choisissez au moins un type de classement."
+msgstr "Choisir au moins un type de classement."
 
 msgid "Choose at least one school."
 msgstr "Choisir au moins un établissement."
@@ -1061,7 +1061,7 @@ msgid "Choose families to add"
 msgstr "Choisir des familles à ajouter"
 
 msgid "Choose one, many or no tournaments."
-msgstr "Choisissez aucun, un ou plusieurs tournois."
+msgstr "Choisir aucun, un ou plusieurs tournois."
 
 msgid "Choose screens to add"
 msgstr "Choisir des écrans à ajouter"
@@ -5135,8 +5135,8 @@ msgstr "Les tournois pour lesquels le membre du staff est arbitre adjoint·e."
 msgid "The tournaments for which the staff member is the chief arbiter."
 msgstr "Les tournois pour lesquels le membre du staff est arbitre principal·e."
 
-msgid "The tournaments on which the permission is applied (by default, the permission is applied to all the tournaments)."
-msgstr "Les tournois sur lesquels la permission s'applique (par défaut, la permission s'applique à tous les tournois)."
+msgid "The tournaments on which the permission is applied."
+msgstr "Les tournois sur lesquels la permission s'applique."
 
 msgid "The type of criterion used to filter the players."
 msgstr "Le type de critère utilisé pour filtrer les joueur·euses."

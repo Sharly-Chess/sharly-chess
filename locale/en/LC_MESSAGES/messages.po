@@ -5135,7 +5135,7 @@ msgstr ""
 msgid "The tournaments for which the staff member is the chief arbiter."
 msgstr ""
 
-msgid "The tournaments on which the permission is applied (by default, the permission is applied to all the tournaments)."
+msgid "The tournaments on which the permission is applied."
 msgstr ""
 
 msgid "The type of criterion used to filter the players."
