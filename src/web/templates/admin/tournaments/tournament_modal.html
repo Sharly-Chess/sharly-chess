@@ -18,8 +18,14 @@
                         event_uniq_id=admin_event.uniq_id,
                         tournament_id=admin_tournament.id
                     ) }}"
-                {% else %}
+                {% elif action == 'create' %}
                     hx-post="{{ url_for('admin-tournament-create', event_uniq_id=admin_event.uniq_id) }}"
+                {% else %}
+                    hx-post="{{ url_for(
+                        'admin-tournament-clone',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=cloned_tournament.id
+                    ) }}"
                 {% endif %}
                 hx-target="body"
                 hx-indicator="#please-wait"

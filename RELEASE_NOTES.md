@@ -10,6 +10,10 @@ English version below
 - Simplification des interfaces de gestion de l'application et des évènements (3.2.0)
 - Déplacement des options de logs sur la console (3.2.0)
 
+## Tournois
+
+- Duplication des départages et des critères lors de la duplication d'un tournoi (3.2.7)
+
 ## Joueur·euses
 
 - Possibilité d'enregistrer à la fois des classements nationaux et _FIDE_ (3.2.0)
@@ -75,6 +79,10 @@ English version below
 
 - Simplified application/event management UI (3.2.0)
 - Moved the log options to the console (3.2.0)
+
+## Tournaments
+
+- Duplicate tie-breaks and criteria when duplicating a tournament (3.2.7)
 
 ## Players
 
