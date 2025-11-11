@@ -30,11 +30,6 @@
     {{ template_css | safe }}
 </style>
 <div class="cards-wrapper">
-    {% if error %}
-        <div class="error">
-            {{ error }}
-        </div>
-    {% endif %}
     {% for player in players %}
         {{ render_card(player=player, board=none, pairing=none) }}
     {% endfor %}

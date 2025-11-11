@@ -115,8 +115,6 @@ class PlaceCardTemplate(PlaceCardItemStyle):
             item for item in items if item.type == 'image'
         ] + [item for item in items if item.type != 'image']
 
-        self.error = custom_data.error
-
     def allowed_properties(
         self,
     ) -> set[str]:
@@ -235,11 +233,6 @@ class PlaceCardTemplate(PlaceCardItemStyle):
                 'height': '0.7em',
                 'width': '0.93em',
             },
-            f'.{self.css_class} .card-item.error': {
-                'color': 'rgb(255, 0, 0)',
-                'background-color': 'rgb(255, 220, 220)',
-                'opacity': '1.0',
-            },
         }
         css_properties |= {
             f'.federation-flag.{federation}': {
@@ -305,7 +298,6 @@ class PlaceCardTemplate(PlaceCardItemStyle):
             'event': event,
             'tournament': tournament,
             'round': round_,
-            'error': self.error,
             'back_side': back_side,
             'unit': self.unit,
             'template_css_class': self.css_class,

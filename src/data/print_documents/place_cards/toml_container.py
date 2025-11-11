@@ -20,11 +20,10 @@ class TOMLContainer:
     ):
         self.toml_file = toml_file
         self.data: dict[str, str | int | float | dict[str, Any]] = {}
-        self.error: str = ''
         try:
             self.data = toml.load(toml_file)
         except TomlDecodeError as tde:
-            self.error = f'[{self.toml_file.name}]: {tde}'
+            logger.error('[%s]: %s.', self.toml_file.name, str(tde))
 
     def get_field(
         self,
