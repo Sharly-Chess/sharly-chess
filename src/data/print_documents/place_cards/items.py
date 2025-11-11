@@ -47,37 +47,37 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
         )
         self.css_class: str = f'item-{self.id.replace("_", "-")}'
         self.display: bool = data.get_bool(
-            section=section, property='display', default=True
+            section=section, prop='display', default=True
         )
         self.width: float | None = data.get_float(
             section=section,
-            property='width',
+            prop='width',
             default=None,
         )
         self.height: float | None = data.get_float(
             section=section,
-            property='height',
+            prop='height',
             default=None,
         )
         self.max_width: float | None = data.get_opt_float(
             section=section,
-            property='max_width',
+            prop='max_width',
             default=None,
         )
         self.css: str = data.get_str(
             section=section,
-            property='css',
+            prop='css',
             default='',
         )
         self.rotate: float | None = data.get_float(
             section=section,
-            property='rotate',
+            prop='rotate',
             default=None,
         )
         self.back: bool = (
             data.get_str(
                 section=section,
-                property='side',
+                prop='side',
                 default='front',
                 values=[
                     'front',
@@ -249,7 +249,7 @@ class PlaceCardText(PlaceCardItem):
         super().__init__(data, section, template)
         self.raw_text: str = data.get_str(
             section=section,
-            property='text',
+            prop='text',
         )
 
     @property
@@ -335,7 +335,7 @@ class PlaceCardImage(PlaceCardItem):
     ):
         super().__init__(data, section, template)
         self.image_paths: list[Path] = template.image_paths
-        image_name: str = data.get_str(section=section, property='image')
+        image_name: str = data.get_str(section=section, prop='image')
         image: Path | None = None
         if not (Path() / image_name).parent.samefile(Path()):
             logger.warning('Invalid image filename [%s].', image_name)

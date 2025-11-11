@@ -25,59 +25,59 @@ class PlaceCardItemStyle:
                 logger.warning('Unknown property [%s], ignored.', prop)
         self._font_size: float = data.get_float(
             section=section,
-            property='font_size',
+            prop='font_size',
             default=template.font_size if template else 14.0,
         )
         self._bold: bool = data.get_bool(
             section=section,
-            property='bold',
+            prop='bold',
             default=template.bold if template else False,
         )
         self._italic: bool = data.get_bool(
             section=section,
-            property='italic',
+            prop='italic',
             default=template.italic if template else False,
         )
         self._h_align: str = data.get_str(
             section=section,
-            property='h_align',
+            prop='h_align',
             default=template.h_align if template else 'left',
             values=['left', 'center', 'right'],
         )
         self._v_align: str = data.get_str(
             section=section,
-            property='v_align',
+            prop='v_align',
             default=template.v_align if template else 'top',
             values=['top', 'middle', 'bottom'],
         )
         self._h_pos: float = data.get_float(
             section=section,
-            property='h_pos',
+            prop='h_pos',
             default=template.h_pos if template else 0.0,
         )
         self._v_pos: float = data.get_float(
             section=section,
-            property='v_pos',
+            prop='v_pos',
             default=template.v_pos if template else 0.0,
         )
         self._opacity: float = data.get_float(
             section=section,
-            property='opacity',
+            prop='opacity',
             default=template.opacity if template else 1.0,
         )
         self._color: str = data.get_str(
             section=section,
-            property='color',
+            prop='color',
             default=template.color if template else '',
         )
         self._background_color: str = data.get_str(
             section=section,
-            property='background_color',
+            prop='background_color',
             default=template.background_color if template else '',
         )
         self._text_align: str = data.get_str(
             section=section,
-            property='text_align',
+            prop='text_align',
             default=template.text_align if template else 'left',
             values=['left', 'center', 'right'],
         )
