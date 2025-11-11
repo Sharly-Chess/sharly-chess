@@ -76,10 +76,7 @@ class PlaceCardTemplate(PlaceCardItemStyle):
                 values=PrintPlaceCardTypeManager().ids(),
             )
         )
-        self.name: str = (
-            parse_jinja_string(template_string=custom_data.get_str('name', default=''))
-            or toml_file.stem
-        )
+        self._name: str = custom_data.get_str('name', default='') or toml_file.stem
         self.creator: str = custom_data.get_str('creator', default=_('Unknown'))
         self.unit: str = custom_data.get_str(
             'unit',
@@ -140,6 +137,10 @@ class PlaceCardTemplate(PlaceCardItemStyle):
                 }
             )
         )
+
+    @property
+    def name(self) -> str:
+        return parse_jinja_string(template_string=self._name)
 
     @property
     def template_name(self) -> str:

@@ -1361,8 +1361,8 @@ msgstr "Créer un tournoi"
 msgid "Create with default screens"
 msgstr "Créer avec les écrans par défaut"
 
-msgid "Creator: {creator}"
-msgstr "Création : {creator}"
+msgid "Creator: {template_creator}"
+msgstr "Création : {template_creator}"
 
 msgid "Criteria"
 msgstr "Critères"
@@ -1680,6 +1680,9 @@ msgstr "Document :"
 
 msgid "Double-round Berger"
 msgstr "Berger aller-retour"
+
+msgid "Download"
+msgstr "Télécharger"
 
 msgid "Download fees"
 msgstr "Télécharger les droits d'homologation"
@@ -2884,12 +2887,6 @@ msgstr "Couleurs spécifiques au niveau de log"
 msgid "Logged in as [%(account_name)s]"
 msgstr "Connecté en tant que [%(account_name)s]"
 
-msgid "Logo"
-msgstr "Logo"
-
-msgid "Logo (no flag)"
-msgstr "Logo (sans drapeau)"
-
 msgid "Loss"
 msgstr "Défaite"
 
@@ -3520,6 +3517,9 @@ msgstr "Organisation"
 msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
 msgstr "Organisez vos prix en groupes pour gérer leur attribution. Un·e joueur·euse ne peut recevoir qu’un seul prix par groupe, mais peut recevoir des prix dans plusieurs groupes."
 
+msgid "Origin: {template_origin}"
+msgstr "Origine : {template_origin}"
+
 msgid "Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold."
 msgstr "Les autres joueur·euses de ce groupe de points n'entrent pas dans les prix (prix inférieur au seuil minimum)."
 
@@ -3569,7 +3569,7 @@ msgid "PGN"
 msgstr "PGN"
 
 msgid "PLAYER'S NAME"
-msgstr "NOM DU·DE LA JOUEUR·EUSE"
+msgstr "NOM JOUEUR·EUSE"
 
 msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Payé"
@@ -4683,6 +4683,9 @@ msgstr "Écrans simples ({num})"
 msgid "Site"
 msgstr "Site"
 
+msgid "Size ({unit}): {width}x{height}"
+msgstr "Dimension ({unit}) : {width}x{height}"
+
 msgid "Soft Haley system"
 msgstr "Système de Haley dégressif"
 
@@ -4878,15 +4881,6 @@ msgstr "Texte (tournoi devant)"
 msgid "Text after the hour:"
 msgstr "Texte après l'horaire :"
 
-msgid "Text and logo"
-msgstr "Texte et logo"
-
-msgid "Text and logo (2-sided, tournament on back)"
-msgstr "Texte et logo (double-face, tournoi au dos)"
-
-msgid "Text and logo (tournament on front)"
-msgstr "Texte et logo (tournoi devant)"
-
 msgid "Text before the hour:"
 msgstr "Texte avant l'horaire :"
 
@@ -4913,9 +4907,6 @@ msgstr "Le format PAPI ne supporte pas {rounds} rounds (maximum : {max})."
 
 msgid "The Papi format does not support result [{result}]."
 msgstr "Le format Papi ne supporte pas le résultat [{result}]."
-
-msgid "The Place Card template to use."
-msgstr "Me modèle de chevalet à utiliser."
 
 msgid "The URL of the image to display."
 msgstr "L'URL de l'image à afficher."
@@ -5002,9 +4993,6 @@ msgstr "Les adresses mél."
 
 msgid "The main category is open to all the players."
 msgstr "La catégorie générale est ouverte à tou·tes les joueur·euses."
-
-msgid "The marks to help with cutting the cards."
-msgstr "Les marques pour faciliter le découpage des chevalets."
 
 #, python-format
 msgid "The maximum age of the results, in minutes (by default %(minutes)d minutes)."
@@ -5199,9 +5187,6 @@ msgstr "Les tournois pour lesquels le membre du staff est arbitre principal·e."
 
 msgid "The tournaments on which the permission is applied (by default, the permission is applied to all the tournaments)."
 msgstr "Les tournois sur lesquels la permission s'applique (par défaut, la permission s'applique à tous les tournois)."
-
-msgid "The type of Place Card to print."
-msgstr "Le type de chevalet à imprimer."
 
 msgid "The type of criterion used to filter the players."
 msgstr "Le type de critère utilisé pour filtrer les joueur·euses."
@@ -6280,11 +6265,17 @@ msgstr "défini dans l'évènement"
 msgid "either the duration or the increment must be greater than 0."
 msgstr "la durée ou l’incrément doit être supérieur à 0."
 
+msgid "embedded in _Sharly Chess_"
+msgstr "inclus dans _Sharly Chess_"
+
 msgid "estimated ratings"
 msgstr "classements estimés"
 
 msgid "event"
 msgstr "évènement"
+
+msgid "example"
+msgstr "exemple"
 
 msgid "forfeits played"
 msgstr "forfaits joués"
@@ -6500,34 +6491,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
-#~ msgid "The name of the screen, displayed on event screens."
-#~ msgstr "Le nom de l'écran, affiché sur les écrans des évènements."
-
-#~ msgid "Upload:"
-#~ msgstr "Mise en ligne :"
-
-#~ msgid "use default"
-#~ msgstr "par défaut"
-
-#~ msgid "Handling of players without a FIDE rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating."
-#~ msgstr "Gestion des joueur·euses sans classement FIDE rapide/blitz. Pour le calcul des classements FIDE, ces joueur·euses sont considéré·es comme classé·es avec leur classement FIDE standard."
-
-#~ msgid "Points"
-#~ msgstr "Points"
-
-#~ msgid "Seed color can't be modified once the tournament has started."
-#~ msgstr "La couleur initiale ne peut être modifiée une fois que le tournoi a commencé."
-
-#~ msgid "The tournaments to print."
-#~ msgstr "Les tournois à imprimer."
-
-#~ msgid "The type of QR code to print."
-#~ msgstr "Le type de QR Code à imprimer."
-
-#~ msgid "2-sided with tournament on the back"
-#~ msgstr "Recto-verso avec tournoi au dos"
-
-#~ msgid "Basic"
-#~ msgstr "Basique"
 

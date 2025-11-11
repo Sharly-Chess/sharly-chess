@@ -1361,7 +1361,7 @@ msgstr ""
 msgid "Create with default screens"
 msgstr ""
 
-msgid "Creator: {creator}"
+msgid "Creator: {template_creator}"
 msgstr ""
 
 msgid "Criteria"
@@ -1679,6 +1679,9 @@ msgid "Document:"
 msgstr ""
 
 msgid "Double-round Berger"
+msgstr ""
+
+msgid "Download"
 msgstr ""
 
 msgid "Download fees"
@@ -2884,12 +2887,6 @@ msgstr ""
 msgid "Logged in as [%(account_name)s]"
 msgstr ""
 
-msgid "Logo"
-msgstr ""
-
-msgid "Logo (no flag)"
-msgstr ""
-
 msgid "Loss"
 msgstr ""
 
@@ -3518,6 +3515,9 @@ msgid "Organization"
 msgstr ""
 
 msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
+msgstr ""
+
+msgid "Origin: {template_origin}"
 msgstr ""
 
 msgid "Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold."
@@ -4683,6 +4683,9 @@ msgstr ""
 msgid "Site"
 msgstr ""
 
+msgid "Size ({unit}): {width}x{height}"
+msgstr ""
+
 msgid "Soft Haley system"
 msgstr ""
 
@@ -4878,15 +4881,6 @@ msgstr ""
 msgid "Text after the hour:"
 msgstr ""
 
-msgid "Text and logo"
-msgstr ""
-
-msgid "Text and logo (2-sided, tournament on back)"
-msgstr ""
-
-msgid "Text and logo (tournament on front)"
-msgstr ""
-
 msgid "Text before the hour:"
 msgstr ""
 
@@ -4912,9 +4906,6 @@ msgid "The PAPI format does not support {rounds} rounds (maximum: {max})."
 msgstr ""
 
 msgid "The Papi format does not support result [{result}]."
-msgstr ""
-
-msgid "The Place Card template to use."
 msgstr ""
 
 msgid "The URL of the image to display."
@@ -5001,9 +4992,6 @@ msgid "The mail addresses."
 msgstr ""
 
 msgid "The main category is open to all the players."
-msgstr ""
-
-msgid "The marks to help with cutting the cards."
 msgstr ""
 
 #, python-format
@@ -5198,9 +5186,6 @@ msgid "The tournaments for which the staff member is the chief arbiter."
 msgstr ""
 
 msgid "The tournaments on which the permission is applied (by default, the permission is applied to all the tournaments)."
-msgstr ""
-
-msgid "The type of Place Card to print."
 msgstr ""
 
 msgid "The type of criterion used to filter the players."
@@ -6280,10 +6265,16 @@ msgstr ""
 msgid "either the duration or the increment must be greater than 0."
 msgstr ""
 
+msgid "embedded in _Sharly Chess_"
+msgstr ""
+
 msgid "estimated ratings"
 msgstr ""
 
 msgid "event"
+msgstr ""
+
+msgid "example"
 msgstr ""
 
 msgid "forfeits played"
@@ -6500,19 +6491,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "Seed color can't be modified once the tournament has started."
-#~ msgstr ""
-
-#~ msgid "The tournaments to print."
-#~ msgstr ""
-
-#~ msgid "The type of QR code to print."
-#~ msgstr ""
-
-#~ msgid "2-sided with tournament on the back"
-#~ msgstr ""
-
-#~ msgid "Basic"
-#~ msgstr ""
 
