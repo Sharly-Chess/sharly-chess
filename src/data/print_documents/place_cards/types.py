@@ -198,7 +198,7 @@ class BoardCardType(PlaceCardType):
                 PlaceCardBoard(board_number)
                 for board_number in sorted(
                     [
-                        tournament.first_board_number - 1 + number
+                        tournament.first_board_number + number
                         for number in range(tournament.player_count // 2)
                     ]
                     + [
