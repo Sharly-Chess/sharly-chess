@@ -54,6 +54,7 @@ class Player:
         self.stored_tournament_player = self.stored_player.stored_tournament_player
         self.ratings = self._get_ratings()
         self.plugin_data = self._get_plugin_data()
+        self.transient_plugin_data: dict[str, object] = {}
 
         # TournamentPlayer
         self.pairings_by_round = self._get_pairings_by_round()
@@ -107,6 +108,20 @@ class Player:
     @property
     def full_name(self) -> str:
         return self.player_full_name(self.first_name, self.last_name)
+
+    @property
+    def name_for_board_view(self) -> str:
+        name = ''
+        if self.title.short_name:
+            name += f'{self.title.short_name}\u00a0'
+        name += f'{self.full_name} {self.rating_str}'
+
+        if augmented_name := plugin_manager.hook_for_event(
+            self.event, 'player_name_for_board_view'
+        )(player=self, default=name):
+            return augmented_name
+
+        return name
 
     @property
     def date_of_birth(self) -> date | None:
@@ -962,33 +977,6 @@ class Player:
     @property
     def color_str(self) -> str:
         return str(self.color or '')
-
-    @property
-    def time_control_initial_time_minutes(self) -> int | None:
-        if self.time_control_initial_time:
-            return self.time_control_initial_time // 60
-        return None
-
-    @property
-    def time_control_initial_time_seconds(self) -> int | None:
-        if self.time_control_initial_time:
-            return self.time_control_initial_time % 60
-        return None
-
-    @property
-    def handicap_str(self) -> str | None:
-        if self.time_control_initial_time is None:
-            return None
-        (minutes, seconds) = divmod(self.time_control_initial_time, 60)
-        minutes_str: str = f"{minutes}'" if minutes > 0 else ''
-        seconds_str: str = f'{seconds}"' if seconds > 0 else ''
-        class_str: str = 'modified-time' if self.time_control_modified else 'base-time'
-        return f'<span class="{class_str}">{minutes_str}{seconds_str}</span> + {self.time_control_increment}"/cp'
-
-    def set_time_control(self, initial_time: int, increment: int, modified: bool):
-        self.time_control_initial_time = initial_time
-        self.time_control_increment = increment
-        self.time_control_modified = modified
 
     # -------------------------------------------------------------------------
     # Ranking

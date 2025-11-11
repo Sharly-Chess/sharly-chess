@@ -140,6 +140,10 @@ class AppHookSpecs:
     ):
         """Add plugin specific data to a player after a successful player search"""
 
+    @hookspec
+    def player_name_for_board_view(self, player: 'Player', default: str) -> str:
+        """Return the name to display on the board view"""
+
     @hookspec(firstresult=True)
     def get_player_rating(
         self,
@@ -279,6 +283,10 @@ class AppHookSpecs:
     @hookspec
     def get_tournament_tab_action_menu_items_template(self) -> str:
         """Path to the template to be added to the 'Actions' menu of the tournament tab."""
+
+    @hookspec
+    def set_for_round(self, tournament: 'Tournament', round_: int):
+        """Called to initialise the tournament for the given round."""
 
     @hookspec(firstresult=True)
     def get_tournament_tie_breaks_warning_message(

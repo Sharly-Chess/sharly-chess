@@ -492,6 +492,9 @@ msgstr ""
 msgid "Add tournaments"
 msgstr ""
 
+msgid "Adds features for handicap tournaments where weaker players are given a time advantage."
+msgstr ""
+
 msgid "Adds support for school competitions in France"
 msgstr ""
 
@@ -6423,22 +6426,3 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "French School"
-#~ msgstr ""
-
-#~ msgid "Licence number:"
-#~ msgstr ""
-
-#~ msgid "Schools"
-#~ msgstr ""
-
-#~ msgid "Seed color can't be modified once the tournament has started."
-#~ msgstr ""
-
-#~ msgid "School"
-#~ msgstr ""
-
-#~ msgid "FFE Uniq ID:"
-#~ msgstr ""
-
