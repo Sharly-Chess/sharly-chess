@@ -26,10 +26,10 @@ from common.installation_checker import (
     InstallationChecker,
 )
 
-from project_builder import ProjectBuilder
-from linux.linux_project_builder import LinuxProjectBuilder
-from macos.mac_project_builder import MacProjectBuilder
-from windows.win_project_builder import WinProjectBuilder
+from project_builder import ProjectBuilder  # type: ignore
+from linux.linux_project_builder import LinuxProjectBuilder  # type: ignore
+from macos.mac_project_builder import MacProjectBuilder  # type: ignore
+from windows.win_project_builder import WinProjectBuilder  # type: ignore
 
 # Enable experimental features to force the installation of the experimental tools and libs before exporting
 enable_experimental_features(True)
