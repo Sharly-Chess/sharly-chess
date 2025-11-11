@@ -1,6 +1,10 @@
 # French
 English version below
 
+## Impression
+
+- Ajout des chevalets (3.3.0)
+
 ## FFE
 
 - Ajout d’une option pour mettre en ligne via le menu d’action de la fiche tournoi (3.3.0)
@@ -14,6 +18,10 @@ English version below
 ---
 
 # English
+
+## Printing
+
+- Added place cards (3.3.0)
 
 ## FFE
 
