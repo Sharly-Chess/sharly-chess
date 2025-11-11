@@ -1,0 +1,25 @@
+{% set pc %}
+<html>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+        .cards-wrapper {
+            transform: scale(0.5);
+            transform-origin: top left;
+        }
+    </style>
+    <body>
+        {% set preview=true %}
+        {% include 'place_cards.html' %}
+    </body>
+</html>
+{% endset %}
+<iframe
+    src="data:text/html;charset=UTF-8,{{ pc|urlencode }}"
+    style="width: {{card_width}}; height: {{card_height}};"
+></iframe>

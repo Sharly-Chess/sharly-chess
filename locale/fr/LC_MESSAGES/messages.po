@@ -528,6 +528,9 @@ msgstr "Tous"
 msgid "All Events"
 msgstr "Évènements"
 
+msgid "All the boards"
+msgstr "Tous les échiquiers"
+
 msgid "All the candidate ports [{ports}] are already in use, can not start Sharly Chess server."
 msgstr "Tous les ports candidats [{ports}] sont déjà utilisés, impossible de démarrer le serveur web."
 
@@ -724,8 +727,14 @@ msgstr "Classement moyen : {rating}"
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
 msgstr "N"
 
+msgid "B *** BLACK COLOR FOR PLACE CARDS"
+msgstr "N"
+
 msgid "B - Leisure *** FFE licence"
 msgstr "B - Loisir"
+
+msgid "BLACK PLAYER"
+msgstr "JOUEUR·EUSE NOIRS"
 
 msgid "BLACK WINS"
 msgstr "VICTOIRE NOIRS"
@@ -796,6 +805,10 @@ msgstr "Échiquier n°%(board_number)d avec les %(color)s"
 msgid "Board %(board_number)s"
 msgstr "Échiquier %(board_number)s"
 
+#, python-format
+msgid "Board %(number)s"
+msgstr "Table %(number)s"
+
 msgid "Board & color"
 msgstr "Échiquier & couleur"
 
@@ -803,11 +816,17 @@ msgstr "Échiquier & couleur"
 msgid "Board (%(remaining)d)"
 msgstr "Éch. (%(remaining)d)"
 
+msgid "Board Cards"
+msgstr "Chevalets des échiquiers"
+
 msgid "Board Pairings"
 msgstr "Appariements par échiquier"
 
 msgid "Board is not the same as the opponent's."
 msgstr "L'échiquier n'est pas le même que celui de l'adversaire."
+
+msgid "Board numbers:"
+msgstr "Numéros des échiquiers :"
 
 msgid "Board selection (by number)"
 msgstr "Sélection des échiquiers (par numéro)"
@@ -829,6 +848,9 @@ msgstr "échiquiers du n°%(first)d au n°%(last)d"
 
 msgid "Boards screens show pairings by board number."
 msgstr "Les écrans d'affichage des échiquiers présentent les appariements par échiquier."
+
+msgid "Border"
+msgstr "Bordure"
 
 msgid "Buchholz"
 msgstr "Buchholz"
@@ -1063,6 +1085,9 @@ msgstr "Choisir au moins un établissement."
 msgid "Choose families to add"
 msgstr "Choisir des familles à ajouter"
 
+msgid "Choose one, many or no players."
+msgstr "Choisissez aucun·e, un·e ou plusieurs joueur·euses."
+
 msgid "Choose one, many or no tournaments."
 msgstr "Choisir aucun, un ou plusieurs tournois."
 
@@ -1249,6 +1274,9 @@ msgstr "La conversion au format Papi a échoué."
 msgid "Copying to tmp .sce file failed."
 msgstr "La copie vers le fichier .sce temporaire a échoué."
 
+msgid "Corners"
+msgstr "Coins"
+
 msgid "Could not connect to data source [{data_source}]."
 msgstr "Impossible de se connecter à la source de données [{data_source}]."
 
@@ -1360,6 +1388,9 @@ msgstr "Créer un tournoi"
 msgid "Create with default screens"
 msgstr "Créer avec les écrans par défaut"
 
+msgid "Creator: {template_creator}"
+msgstr "Création : {template_creator}"
+
 msgid "Criteria"
 msgstr "Critères"
 
@@ -1369,6 +1400,9 @@ msgstr "Liste des critères"
 #, python-format
 msgid "Criterion [%(criterion)s] successfully created!"
 msgstr "Critère [%(criterion)s] créé avec succès!"
+
+msgid "Crop marks:"
+msgstr "Traits de coupe :"
 
 msgid "Crosstable"
 msgstr "Grille américaine"
@@ -1429,6 +1463,9 @@ msgstr "NULLE"
 
 msgid "Daily"
 msgstr "Un jour"
+
+msgid "Dashed border"
+msgstr "Bordure pointillée"
 
 msgid "Data is already displayed on the FFE website."
 msgstr "Les données sont déjà affichées sur le site web FFE."
@@ -1676,6 +1713,9 @@ msgstr "Document :"
 
 msgid "Double-round Berger"
 msgstr "Berger aller-retour"
+
+msgid "Download"
+msgstr "Télécharger"
 
 msgid "Download fees"
 msgstr "Télécharger les droits d'homologation"
@@ -2028,6 +2068,9 @@ msgstr "L'évènement [{uniq_id}] a été supprimé, la base de données a été
 msgid "Event [{uniq_id}] has been updated."
 msgstr "L'évènement [{uniq_id}] a été modifié."
 
+msgid "Event name"
+msgstr "Nom de l'évènement"
+
 msgid "Event not found"
 msgstr "Évènement introuvable"
 
@@ -2307,6 +2350,9 @@ msgstr "Numéro du premier échiquier : %(board_number)d"
 msgid "First board:"
 msgstr "Premier échiquier :"
 
+msgid "First name"
+msgstr "Prénom"
+
 msgid "First name:"
 msgstr "Prénom :"
 
@@ -2327,6 +2373,9 @@ msgstr "Échiquiers fixes :"
 
 msgid "Floats"
 msgstr "Flotteurs"
+
+msgid "Foldable (mirrored top)"
+msgstr "Miroir (recto-verso)"
 
 #, python-format
 msgid "Font size adjustment (%%):"
@@ -2708,6 +2757,9 @@ msgstr "Délai non valide [{delay}] (entier positif attendu)."
 
 msgid "Invalid display link text [{text}]"
 msgstr "Text du lien d'affichage non valide [{text}]."
+
+msgid "Invalid expression [{expression}]"
+msgstr "Expression non valide [{expression}]"
 
 msgid "Invalid federation [{federation}]."
 msgstr "Fédération [{federation}] non valide."
@@ -3214,6 +3266,9 @@ msgstr "Aucune connexion à internet"
 msgid "No mail defined."
 msgstr "Mél non défini."
 
+msgid "No marks"
+msgstr "Aucune marque"
+
 msgid "No pairing found for this player in the current round."
 msgstr "Aucun appariement pour ce·tte joueur·euse pour la ronde courante."
 
@@ -3370,6 +3425,12 @@ msgstr "Notification"
 msgid "Number"
 msgstr "Numéro"
 
+msgid "Number (2-sided, tournament on back)"
+msgstr "Numéro (double-face, tournoi au dos)"
+
+msgid "Number (tournament on front)"
+msgstr "Numéro (tournoi devant)"
+
 #, python-format
 msgid "Number of byes: %(byes)d (maximum: %(max_byes)d)"
 msgstr "Nombre de demi-points joker : %(byes)d (maximum : %(max_byes)d)"
@@ -3498,6 +3559,9 @@ msgstr "Organisation"
 msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
 msgstr "Organisez vos prix en groupes pour gérer leur attribution. Un·e joueur·euse ne peut recevoir qu’un seul prix par groupe, mais peut recevoir des prix dans plusieurs groupes."
 
+msgid "Origin: {template_origin}"
+msgstr "Origine : {template_origin}"
+
 msgid "Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold."
 msgstr "Les autres joueur·euses de ce groupe de points n'entrent pas dans les prix (prix inférieur au seuil minimum)."
 
@@ -3546,6 +3610,9 @@ msgstr "PERMUTER BLANCS/NOIRS"
 msgid "PGN"
 msgstr "PGN"
 
+msgid "PLAYER'S NAME"
+msgstr "NOM JOUEUR·EUSE"
+
 msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Payé"
 
@@ -3576,6 +3643,9 @@ msgstr "Appariement"
 
 msgid "Pairing Allocated Bye"
 msgstr "Exempt·e"
+
+msgid "Pairing Cards"
+msgstr "Chevalets d'appariement"
 
 #, python-format
 msgid "Pairing information for round %(round)d"
@@ -3713,11 +3783,20 @@ msgstr "Numéro de téléphone :"
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr "Téléphone : %(phone)s (cliquer pour copier dans le presse-papier)."
 
+msgid "Place Cards"
+msgstr "Chevalets"
+
+msgid "Place card type:"
+msgstr "Type de chevalet :"
+
 msgid "Player"
 msgstr "Joueur·euse"
 
 msgid "Player / Elo"
 msgstr "Joueur·euse / Elo"
+
+msgid "Player Cards"
+msgstr "Chevalets des joueur·euses"
 
 msgid "Player Elo"
 msgstr "Joueur·euse Elo"
@@ -3778,6 +3857,9 @@ msgstr "Sélection des joueur·euses (par classement)"
 #, python-format
 msgid "Player sets of screen [%(screen_uniq_id)s]"
 msgstr "Ensembles de joueur·euses de l'écran [%(screen_uniq_id)s]"
+
+msgid "Player's club"
+msgstr "Club du·de la joueur·euse"
 
 msgid "Player's record"
 msgstr "Historique du·de la joueur·euse"
@@ -3856,6 +3938,9 @@ msgstr "Veuillez choisir le document."
 
 msgid "Please choose the release to recover: "
 msgstr "Veuillez choisir la version à restaurer : "
+
+msgid "Please choose the template."
+msgstr "Veuillez choisir le modèle."
 
 msgid "Please choose the tournament."
 msgstr "Veuillez choisir le tournoi."
@@ -4646,6 +4731,9 @@ msgstr "Écrans simples ({num})"
 msgid "Site"
 msgstr "Site"
 
+msgid "Size ({unit}): {width}x{height}"
+msgstr "Dimension ({unit}) : {width}x{height}"
+
 msgid "Soft Haley system"
 msgstr "Système de Haley dégressif"
 
@@ -4739,6 +4827,9 @@ msgstr "Rôles"
 msgid "Standard"
 msgstr "Standard"
 
+msgid "Standard (no flag)"
+msgstr "Standard (pas de drapeau)"
+
 msgid "Standard points (1-0.5-0)"
 msgstr "Barème standard (1-0.5-0)"
 
@@ -4825,6 +4916,18 @@ msgstr "TRF(bx)"
 
 msgid "TRF16"
 msgstr "TRF16"
+
+msgid "Template:"
+msgstr "Modèle :"
+
+msgid "Text"
+msgstr "Texte"
+
+msgid "Text (2-sided, tournament on back)"
+msgstr "Texte (double-face, tournoi au dos)"
+
+msgid "Text (tournament on front)"
+msgstr "Texte (tournoi devant)"
 
 msgid "Text after the hour:"
 msgstr "Texte après l'horaire :"
@@ -5041,6 +5144,9 @@ msgstr "Le numéro du dernier échiquier à prendre en compte."
 
 msgid "The number of the last player to select."
 msgstr "Le numéro du·de la dernier·e joueur·euse."
+
+msgid "The numbers (or ranges of numbers) of the boards to print."
+msgstr "Les numéros (ou plages de numéros) des échiquiers à imprimer."
 
 msgid "The pairing number can't be greater than the player count."
 msgstr "Le numéro d'appariement ne peut pas être supérieur au nombre de joueur·euses."
@@ -5459,6 +5565,9 @@ msgstr "Le tournoi n'a pas été configuré pour être utilisé avec ChessEvent.
 msgid "Tournament modified, awaiting auto-upload"
 msgstr "Tournoi mis à jour, en attente de l’envoi automatique"
 
+msgid "Tournament name"
+msgstr "Nom du tournoi"
+
 msgid "Tournament not found"
 msgstr "Tournoi introuvable"
 
@@ -5640,6 +5749,9 @@ msgstr "Identifiant unique : %(uniq_id)s"
 #, python-format
 msgid "Unique ID: [%(uniq_id)s]"
 msgstr "Identifiant unique : [%(uniq_id)s]"
+
+msgid "Unknown"
+msgstr "Inconnu·e"
 
 #, python-format
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
@@ -5904,6 +6016,9 @@ msgstr "Visibilité :"
 msgid "W *** WHITE COLOR FOR CROSSTABLE"
 msgstr "B"
 
+msgid "W *** WHITE COLOR FOR PLACE CARDS"
+msgstr "B"
+
 msgid "WCM *** SHORT NAME FOR Woman Candidate Master"
 msgstr "CMF"
 
@@ -5912,6 +6027,9 @@ msgstr "MFF"
 
 msgid "WGM *** SHORT NAME FOR Woman Grand Master"
 msgstr "GMF"
+
+msgid "WHITE PLAYER"
+msgstr "JOUEUR·EUSE BLANCS"
 
 msgid "WHITE WINS"
 msgstr "VICTOIRE BLANCS"
@@ -6206,11 +6324,17 @@ msgstr "défini dans l'évènement"
 msgid "either the duration or the increment must be greater than 0."
 msgstr "la durée ou l’incrément doit être supérieur à 0."
 
+msgid "embedded in _Sharly Chess_"
+msgstr "inclus dans _Sharly Chess_"
+
 msgid "estimated ratings"
 msgstr "classements estimés"
 
 msgid "event"
 msgstr "évènement"
+
+msgid "example"
+msgstr "exemple"
 
 msgid "forfeits played"
 msgstr "forfaits joués"
@@ -6426,3 +6550,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+

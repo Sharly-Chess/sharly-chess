@@ -84,8 +84,13 @@ $(document).on('hide.bs.modal', function (e) {
     }
 });
 
+last_url = '';
+
 function preparePrintModal(print_document_id, tournament_id, print_round) {
-    default_print_document_id = print_document_id || '';
-    default_print_tournament_id = tournament_id || '';
-    default_print_round = print_round || '';
+    if (last_url !== window.location.href) {
+        default_print_document_id = print_document_id || '';
+        default_print_tournament_id = tournament_id || '';
+        default_print_round = print_round || '';
+        last_url = window.location.href;
+    }
 }

@@ -528,6 +528,9 @@ msgstr ""
 msgid "All Events"
 msgstr ""
 
+msgid "All the boards"
+msgstr ""
+
 msgid "All the candidate ports [{ports}] are already in use, can not start Sharly Chess server."
 msgstr ""
 
@@ -724,8 +727,14 @@ msgstr ""
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
 msgstr "B"
 
+msgid "B *** BLACK COLOR FOR PLACE CARDS"
+msgstr "B"
+
 msgid "B - Leisure *** FFE licence"
 msgstr "B - Leisure"
+
+msgid "BLACK PLAYER"
+msgstr ""
 
 msgid "BLACK WINS"
 msgstr ""
@@ -796,6 +805,10 @@ msgstr ""
 msgid "Board %(board_number)s"
 msgstr ""
 
+#, python-format
+msgid "Board %(number)s"
+msgstr ""
+
 msgid "Board & color"
 msgstr ""
 
@@ -803,10 +816,16 @@ msgstr ""
 msgid "Board (%(remaining)d)"
 msgstr ""
 
+msgid "Board Cards"
+msgstr ""
+
 msgid "Board Pairings"
 msgstr ""
 
 msgid "Board is not the same as the opponent's."
+msgstr ""
+
+msgid "Board numbers:"
 msgstr ""
 
 msgid "Board selection (by number)"
@@ -828,6 +847,9 @@ msgid "Boards from #%(first)d to #%(last)d"
 msgstr ""
 
 msgid "Boards screens show pairings by board number."
+msgstr ""
+
+msgid "Border"
 msgstr ""
 
 msgid "Buchholz"
@@ -1063,6 +1085,9 @@ msgstr ""
 msgid "Choose families to add"
 msgstr ""
 
+msgid "Choose one, many or no players."
+msgstr ""
+
 msgid "Choose one, many or no tournaments."
 msgstr ""
 
@@ -1249,6 +1274,9 @@ msgstr ""
 msgid "Copying to tmp .sce file failed."
 msgstr ""
 
+msgid "Corners"
+msgstr ""
+
 msgid "Could not connect to data source [{data_source}]."
 msgstr ""
 
@@ -1360,6 +1388,9 @@ msgstr ""
 msgid "Create with default screens"
 msgstr ""
 
+msgid "Creator: {template_creator}"
+msgstr ""
+
 msgid "Criteria"
 msgstr ""
 
@@ -1368,6 +1399,9 @@ msgstr ""
 
 #, python-format
 msgid "Criterion [%(criterion)s] successfully created!"
+msgstr ""
+
+msgid "Crop marks:"
 msgstr ""
 
 msgid "Crosstable"
@@ -1428,6 +1462,9 @@ msgid "DRAW"
 msgstr ""
 
 msgid "Daily"
+msgstr ""
+
+msgid "Dashed border"
 msgstr ""
 
 msgid "Data is already displayed on the FFE website."
@@ -1675,6 +1712,9 @@ msgid "Document:"
 msgstr ""
 
 msgid "Double-round Berger"
+msgstr ""
+
+msgid "Download"
 msgstr ""
 
 msgid "Download fees"
@@ -2028,6 +2068,9 @@ msgstr ""
 msgid "Event [{uniq_id}] has been updated."
 msgstr ""
 
+msgid "Event name"
+msgstr ""
+
 msgid "Event not found"
 msgstr ""
 
@@ -2307,6 +2350,9 @@ msgstr ""
 msgid "First board:"
 msgstr ""
 
+msgid "First name"
+msgstr ""
+
 msgid "First name:"
 msgstr ""
 
@@ -2326,6 +2372,9 @@ msgid "Fixed boards:"
 msgstr ""
 
 msgid "Floats"
+msgstr ""
+
+msgid "Foldable (mirrored top)"
 msgstr ""
 
 #, python-format
@@ -2707,6 +2756,9 @@ msgid "Invalid delay [{delay}] (positive integer expected)."
 msgstr ""
 
 msgid "Invalid display link text [{text}]"
+msgstr ""
+
+msgid "Invalid expression [{expression}]"
 msgstr ""
 
 msgid "Invalid federation [{federation}]."
@@ -3214,6 +3266,9 @@ msgstr ""
 msgid "No mail defined."
 msgstr ""
 
+msgid "No marks"
+msgstr ""
+
 msgid "No pairing found for this player in the current round."
 msgstr ""
 
@@ -3370,6 +3425,12 @@ msgstr ""
 msgid "Number"
 msgstr ""
 
+msgid "Number (2-sided, tournament on back)"
+msgstr ""
+
+msgid "Number (tournament on front)"
+msgstr ""
+
 #, python-format
 msgid "Number of byes: %(byes)d (maximum: %(max_byes)d)"
 msgstr ""
@@ -3498,6 +3559,9 @@ msgstr ""
 msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
 msgstr ""
 
+msgid "Origin: {template_origin}"
+msgstr ""
+
 msgid "Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold."
 msgstr ""
 
@@ -3546,6 +3610,9 @@ msgstr ""
 msgid "PGN"
 msgstr ""
 
+msgid "PLAYER'S NAME"
+msgstr ""
+
 msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
 msgstr "Paid"
 
@@ -3575,6 +3642,9 @@ msgid "Pairing"
 msgstr ""
 
 msgid "Pairing Allocated Bye"
+msgstr ""
+
+msgid "Pairing Cards"
 msgstr ""
 
 #, python-format
@@ -3713,10 +3783,19 @@ msgstr ""
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr ""
 
+msgid "Place Cards"
+msgstr ""
+
+msgid "Place card type:"
+msgstr ""
+
 msgid "Player"
 msgstr ""
 
 msgid "Player / Elo"
+msgstr ""
+
+msgid "Player Cards"
 msgstr ""
 
 msgid "Player Elo"
@@ -3777,6 +3856,9 @@ msgstr ""
 
 #, python-format
 msgid "Player sets of screen [%(screen_uniq_id)s]"
+msgstr ""
+
+msgid "Player's club"
 msgstr ""
 
 msgid "Player's record"
@@ -3855,6 +3937,9 @@ msgid "Please choose the document."
 msgstr ""
 
 msgid "Please choose the release to recover: "
+msgstr ""
+
+msgid "Please choose the template."
 msgstr ""
 
 msgid "Please choose the tournament."
@@ -4646,6 +4731,9 @@ msgstr ""
 msgid "Site"
 msgstr ""
 
+msgid "Size ({unit}): {width}x{height}"
+msgstr ""
+
 msgid "Soft Haley system"
 msgstr ""
 
@@ -4739,6 +4827,9 @@ msgstr ""
 msgid "Standard"
 msgstr ""
 
+msgid "Standard (no flag)"
+msgstr ""
+
 msgid "Standard points (1-0.5-0)"
 msgstr ""
 
@@ -4824,6 +4915,18 @@ msgid "TRF(bx)"
 msgstr ""
 
 msgid "TRF16"
+msgstr ""
+
+msgid "Template:"
+msgstr ""
+
+msgid "Text"
+msgstr ""
+
+msgid "Text (2-sided, tournament on back)"
+msgstr ""
+
+msgid "Text (tournament on front)"
 msgstr ""
 
 msgid "Text after the hour:"
@@ -5040,6 +5143,9 @@ msgid "The number of the last board to select."
 msgstr ""
 
 msgid "The number of the last player to select."
+msgstr ""
+
+msgid "The numbers (or ranges of numbers) of the boards to print."
 msgstr ""
 
 msgid "The pairing number can't be greater than the player count."
@@ -5459,6 +5565,9 @@ msgstr ""
 msgid "Tournament modified, awaiting auto-upload"
 msgstr ""
 
+msgid "Tournament name"
+msgstr ""
+
 msgid "Tournament not found"
 msgstr ""
 
@@ -5639,6 +5748,9 @@ msgstr ""
 
 #, python-format
 msgid "Unique ID: [%(uniq_id)s]"
+msgstr ""
+
+msgid "Unknown"
 msgstr ""
 
 #, python-format
@@ -5904,6 +6016,9 @@ msgstr ""
 msgid "W *** WHITE COLOR FOR CROSSTABLE"
 msgstr "W"
 
+msgid "W *** WHITE COLOR FOR PLACE CARDS"
+msgstr "W"
+
 msgid "WCM *** SHORT NAME FOR Woman Candidate Master"
 msgstr "WCM"
 
@@ -5912,6 +6027,9 @@ msgstr "WFM"
 
 msgid "WGM *** SHORT NAME FOR Woman Grand Master"
 msgstr "WGM"
+
+msgid "WHITE PLAYER"
+msgstr ""
 
 msgid "WHITE WINS"
 msgstr ""
@@ -6206,10 +6324,16 @@ msgstr ""
 msgid "either the duration or the increment must be greater than 0."
 msgstr ""
 
+msgid "embedded in _Sharly Chess_"
+msgstr ""
+
 msgid "estimated ratings"
 msgstr ""
 
 msgid "event"
+msgstr ""
+
+msgid "example"
 msgstr ""
 
 msgid "forfeits played"
@@ -6426,3 +6550,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+

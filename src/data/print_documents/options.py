@@ -1,3 +1,4 @@
+import re
 from abc import ABC
 from functools import cached_property
 from types import UnionType
@@ -7,6 +8,14 @@ from common.exception import OptionError
 from common.i18n import _
 from data.event import SharlyChessConfig
 from data.print_documents.pairing_styles import BoardsPairingStyle, PairingStyle
+from data.print_documents.place_cards.crop_marks import (
+    CornersPlaceCardCropMarks,
+    PlaceCardCropMarks,
+)
+from data.print_documents.place_cards.types import (
+    PlayerCardType,
+    PlaceCardType,
+)
 from data.print_documents.player_sorters import (
     PlayerSorter,
     NamePlayerSorter,
@@ -17,6 +26,7 @@ from utils.option import Option
 
 if TYPE_CHECKING:
     from data.event import Event
+    from data.print_documents.documents import PlaceCardTemplate
 
 
 class PrintOption(Option, ABC):
@@ -50,10 +60,6 @@ class TournamentPrintOption(PrintOption):
         # This is managed by the print controller
         return None
 
-    @property
-    def template_name(self) -> str:
-        return '/admin/event/print_options/tournament.html'
-
     @override
     def validate(self):
         super().validate()
@@ -75,10 +81,6 @@ class TournamentsPrintOption(PrintOption):
         # This is managed by the print controller
         return None
 
-    @property
-    def template_name(self) -> str:
-        return '/admin/event/print_options/tournaments.html'
-
 
 class PlayerPrintOption(PrintOption):
     @staticmethod
@@ -93,15 +95,43 @@ class PlayerPrintOption(PrintOption):
     def default_value(self) -> Any:
         return None
 
-    @property
-    def template_name(self) -> str:
-        return '/admin/event/print_options/player.html'
-
     @override
     def validate(self):
         super().validate()
         if self.value is None:
             raise OptionError(_('Please choose a player.'), self)
+
+    @property
+    def players_per_tournament(self) -> dict[int, list[dict[str, Any]]]:
+        if self.event is None:
+            return {}
+
+        tournaments = [tournament for tournament in self.event.tournaments]
+        return {
+            tournament.id: [
+                {'id': player.id, 'full_name': player.full_name}
+                for player in tournament.players_by_name_with_unpaired
+            ]
+            for tournament in tournaments
+        }
+
+
+class PlayersPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'players'
+
+    @property
+    def type(self) -> type | UnionType:
+        return list[int]
+
+    @property
+    def default_value(self) -> Any:
+        return []
+
+    @override
+    def validate(self):
+        self._validate_list_type(int)
 
     @property
     def players_per_tournament(self) -> dict[int, list[dict[str, Any]]]:
@@ -130,10 +160,6 @@ class RoundPrintOption(PrintOption):
     @property
     def default_value(self) -> Any:
         return None
-
-    @property
-    def template_name(self) -> str:
-        return '/admin/event/print_options/round.html'
 
     @override
     def validate(self):
@@ -271,10 +297,6 @@ class ClubThresholdPrintOption(PrintOption):
     def default_value(self) -> Any:
         return None
 
-    @property
-    def template_name(self) -> str:
-        return '/admin/event/print_options/club_threshold.html'
-
     @override
     def validate(self):
         super().validate()
@@ -355,6 +377,189 @@ class QRCodeNetworkPrintOption(PrintOption):
             for iface in config.lan_ifaces
         }
 
+
+class PlaceCardPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'place-card-type'
+
     @property
-    def template_name(self) -> str:
-        return '/admin/event/print_options/qrcode_network.html'
+    def type(self) -> type | UnionType:
+        return str | None
+
+    @property
+    def default_value(self) -> Any:
+        return PlayerCardType.static_id()
+
+    @property
+    def place_card_print_document_id(self) -> str:
+        from data.print_documents.documents import PlaceCardPrintDocument
+
+        return PlaceCardPrintDocument.static_id()
+
+    @property
+    def place_card_type_options(self) -> dict[str, str]:
+        from data.print_documents import PrintPlaceCardTypeManager
+        from data.print_documents.documents import (
+            PlaceCardTemplate,
+        )
+
+        place_card_templates_by_type: dict[PlaceCardType, list[PlaceCardTemplate]] = (
+            PlaceCardTemplate.get_place_card_templates_by_type()
+        )
+        return {
+            place_card_type.static_id(): place_card_type.static_name()
+            for place_card_type in PrintPlaceCardTypeManager().objects()
+            if place_card_templates_by_type[place_card_type]
+        }
+
+    @cached_property
+    def place_card_type(self) -> PlaceCardType:
+        from data.print_documents import PrintPlaceCardTypeManager
+
+        return PrintPlaceCardTypeManager().get_object(self.value)
+
+    @property
+    def valid_options_per_type(self) -> dict[str, list[str]]:
+        from data.print_documents import PrintPlaceCardTypeManager
+
+        type_options = PrintPlaceCardTypeManager().type_by_id()
+        return {
+            type_id: type_options[type_id].get_valid_options()
+            for type_id in type_options
+        }
+
+    @override
+    def validate(self):
+        try:
+            _style = self.place_card_type
+        except KeyError:
+            # Untranslated, should not happen
+            raise OptionError(f'Unknown Place Card type: {self.value}', self)
+
+
+class PlaceCardTemplatePrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'place-card-template'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str | None
+
+    @property
+    def default_value(self) -> Any:
+        # This is managed by the print controller
+        return None
+
+    @override
+    def validate(self):
+        super().validate()
+        if self.value is None:
+            raise OptionError(_('Please choose the template.'), self)
+
+    @cached_property
+    def place_card_template(self) -> 'PlaceCardTemplate':
+        from data.print_documents.place_cards.template import PlaceCardTemplate
+
+        return PlaceCardTemplate.load(self.value)
+
+    @property
+    def place_card_templates_per_type(self) -> dict[str, list[dict[str, Any]]]:
+        from data.print_documents.place_cards.template import PlaceCardTemplate
+
+        return {
+            place_card_type.static_id(): [
+                {
+                    'id': place_card_template.id,
+                    'name': place_card_template.name,
+                    'tooltip': place_card_template.preview(),
+                }
+                for place_card_template in place_card_templates
+            ]
+            for place_card_type, place_card_templates in PlaceCardTemplate.get_place_card_templates_by_type().items()
+        }
+
+
+class PlaceCardMirrorPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'place-card-mirror'
+
+    @property
+    def type(self) -> type | UnionType:
+        return bool
+
+    @property
+    def default_value(self) -> Any:
+        return False
+
+
+class PlaceCardCropMarksPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'place-card-crop-marks'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str
+
+    @property
+    def default_value(self) -> Any:
+        return CornersPlaceCardCropMarks.static_id()
+
+    @property
+    def place_card_crop_marks_options(self) -> dict[str, str]:
+        from data.print_documents import PrintPlaceCardCropMarksManager
+
+        return PrintPlaceCardCropMarksManager().options()
+
+    @cached_property
+    def place_card_crop_marks(self) -> PlaceCardCropMarks:
+        from data.print_documents.managers import PrintPlaceCardCropMarksManager
+
+        return PrintPlaceCardCropMarksManager().get_object(self.value)
+
+    @override
+    def validate(self):
+        try:
+            _crop_marks = self.place_card_crop_marks
+        except KeyError:
+            # Untranslated, should not happen
+            raise OptionError(f'Unknown place card crop marks: {self.value}', self)
+
+
+class PlaceCardBoardNumbersPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'place-card-board-numbers'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str
+
+    @property
+    def default_value(self) -> Any:
+        return None
+
+    @cached_property
+    def board_numbers(self) -> set[int]:
+        board_numbers: set[int] = set()
+        if self.value:
+            self.value = re.sub(r'\s*-\s*', '-', self.value)
+            self.value = re.sub(r'[\s,;]+', ' ', self.value)
+            for part in re.split(' ', self.value):
+                if re.match(r'^(\d*)$', part):
+                    board_numbers.add(int(part))
+                elif matches := re.match(r'^(\d*)-(\d*)$', part):
+                    board_numbers.update(range(int(matches[1]), int(matches[2]) + 1))
+                else:
+                    raise OptionError(
+                        _('Invalid expression [{expression}]').format(expression=part),
+                        self,
+                    )
+        return board_numbers
+
+    @override
+    def validate(self):
+        _board_numbers = self.board_numbers

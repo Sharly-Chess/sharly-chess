@@ -23,6 +23,7 @@ if TYPE_CHECKING:
     from data.pairings.variations import SwissVariation
     from data.player import Player, PlayerRatingAndType, PlayerRatingType
     from data.print_documents import PrintDocument, PlayerSplitter, QRCodeType
+    from data.print_documents.place_cards.data import PlaceCardPlayer
     from data.criteria.player_filter_options import PlayerFilterOption
     from data.criteria.player_filters import PlayerFilter
     from data.tie_breaks import TieBreak, TieBreakOption
@@ -139,6 +140,14 @@ class AppHookSpecs:
         self, stored_player: 'StoredPlayer', data_source: 'DataSource'
     ):
         """Add plugin specific data to a player after a successful player search"""
+
+    @hookspec
+    def augment_place_card_player(
+        self,
+        player: 'Player',
+        place_card_player: 'PlaceCardPlayer',
+    ):
+        """Add plugin specific data to a player before printing place cards."""
 
     @hookspec
     def player_name_for_board_view(self, player: 'Player', default: str) -> str:

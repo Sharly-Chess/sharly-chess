@@ -165,9 +165,29 @@
                 $("body").removeClass("d-none");
             });
 
+
             if (typeof bootstrap !== 'undefined') {
-                // Allow the tooltip content to have a style attribute
-                bootstrap.Tooltip.Default.allowList['*'].push('style')
+                const allowList = bootstrap.Tooltip.Default.allowList;
+
+                // Allow style on any element
+                allowList['*'].push('style');
+
+                // Add iframe to the allowed elements
+                allowList['iframe'] = [
+                    'src',
+                    'srcdoc',
+                    'title',
+                    'width',
+                    'height',
+                    'style',
+                    'allow',
+                    'allowfullscreen',
+                    'frameborder',
+                    'sandbox',
+                    'referrerpolicy'
+                ];
+
+                bootstrap.Tooltip.Default.allowList = allowList;
             }
         </script>
     {% endif %}

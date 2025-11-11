@@ -10,11 +10,24 @@ from data.print_documents import (
 from data.print_documents.documents import PrintDocument
 from data.print_documents.options import PrintOption
 from data.print_documents.pairing_styles import PairingStyle
+from data.print_documents.place_cards.crop_marks import (
+    PlaceCardCropMarks,
+    CornersPlaceCardCropMarks,
+    SolidBorderPlaceCardCropMarks,
+    DashedBorderPlaceCardCropMarks,
+    NonePlaceCardCropMarks,
+)
+from data.print_documents.place_cards.types import (
+    PlaceCardType,
+    PlayerCardType,
+    BoardCardType,
+    PairingCardType,
+)
 from data.print_documents.player_sorters import PlayerSorter
 from data.print_documents.player_splitters import PlayerSplitter
 from data.print_documents.qrcode_types import QRCodeType
 from plugins.manager import plugin_manager
-from utils.entity import EventBoundEntityManager
+from utils.entity import EventBoundEntityManager, EntityManager
 
 
 class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
@@ -34,6 +47,7 @@ class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
             documents.StatisticsPrintDocument,
             documents.NormReportPrintDocument,
             documents.QRCodePrintDocument,
+            documents.PlaceCardPrintDocument,
         ]
 
     @override
@@ -46,9 +60,12 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
     def entity_types(self) -> list[type[options.PrintOption]]:
         return [
             options.QRCodePrintOption,
+            options.PlaceCardPrintOption,
+            options.PlaceCardTemplatePrintOption,
             options.TournamentPrintOption,
             options.TournamentsPrintOption,
             options.PlayerPrintOption,
+            options.PlayersPrintOption,
             options.PairingStylePrintOption,
             options.RoundPrintOption,
             options.PlayerSplitPrintOption,
@@ -56,6 +73,9 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.ShowWarningsPrintOption,
             options.ClubThresholdPrintOption,
             options.QRCodeNetworkPrintOption,
+            options.PlaceCardBoardNumbersPrintOption,
+            options.PlaceCardMirrorPrintOption,
+            options.PlaceCardCropMarksPrintOption,
         ]
 
     @override
@@ -108,3 +128,24 @@ class PrintQRCodeTypeManager(EventBoundEntityManager[QRCodeType]):
             qrcode_types=types
         )
         return types
+
+
+class PrintPlaceCardTypeManager(EntityManager[PlaceCardType]):
+    @override
+    def entity_types(self) -> list[type[PlaceCardType]]:
+        return [
+            PlayerCardType,
+            BoardCardType,
+            PairingCardType,
+        ]
+
+
+class PrintPlaceCardCropMarksManager(EntityManager[PlaceCardCropMarks]):
+    @override
+    def entity_types(self) -> list[type[PlaceCardCropMarks]]:
+        return [
+            CornersPlaceCardCropMarks,
+            NonePlaceCardCropMarks,
+            SolidBorderPlaceCardCropMarks,
+            DashedBorderPlaceCardCropMarks,
+        ]

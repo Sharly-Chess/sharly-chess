@@ -1,21 +1,22 @@
+import itertools
+import logging
 from abc import ABC, abstractmethod
+from collections import Counter
 from dataclasses import dataclass
 from functools import cached_property, partial
-import itertools
 from typing import Any, Callable, override
-from collections import Counter
 
 from common import format_timestamp
 from common.exception import SharlyChessException, OptionError
 from common.i18n import _, ngettext
 from common.i18n.utils import unicode_normalize
 from data.columns import player_table as columns
-from plugins.manager import plugin_manager
+from common.logger import get_logger
 from data.board import Board
+from data.event import Event
 from data.pairings.engines import RoundRobinPairingEngine
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
 from data.player import Player, TournamentRating
-from data.event import Event
 from data.print_documents.options import (
     PairingStylePrintOption,
     PlayerPrintOption,
@@ -29,13 +30,27 @@ from data.print_documents.options import (
     ClubThresholdPrintOption,
     TournamentPrintOption,
     TournamentsPrintOption,
+    PlaceCardPrintOption,
+    PlaceCardTemplatePrintOption,
+    PlaceCardMirrorPrintOption,
+    PlaceCardCropMarksPrintOption,
+    PlaceCardBoardNumbersPrintOption,
+    PlayersPrintOption,
 )
+from data.print_documents.place_cards.crop_marks import PlaceCardCropMarks
+from data.print_documents.place_cards.template import (
+    PlaceCardTemplate,
+)
+from data.print_documents.place_cards.types import PlaceCardType
 from data.tournament import Tournament
+from plugins.manager import plugin_manager
 from utils import Utils
 from utils.enum import Result
 from utils.types import PlayerTitle
 from utils.option import Option, OptionHandler
 from web.utils import PlayerColumn
+
+logger: logging.Logger = get_logger()
 
 
 class PrintDocument(OptionHandler[PrintOption], ABC):
@@ -1156,3 +1171,93 @@ class QRCodePrintDocument(PrintDocument):
             'qrcode_url': result if success else None,
             'qrcode_base64': qrcode_base64,
         }
+
+
+class PlaceCardPrintDocument(PrintDocument):
+    @staticmethod
+    def static_id() -> str:
+        return 'place-card'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Place Cards')
+
+    @property
+    def title(self) -> str:
+        return ''
+
+    @property
+    def place_card_type(self) -> PlaceCardType:
+        return self._get_option(PlaceCardPrintOption).place_card_type
+
+    @property
+    def place_card_template(self) -> PlaceCardTemplate:
+        return self._get_option(PlaceCardTemplatePrintOption).place_card_template
+
+    @property
+    def player_ids(self) -> list[int]:
+        return self._get_option(PlayersPrintOption).value
+
+    @property
+    def at_round(self) -> int:
+        return self._get_option(RoundPrintOption).value or self.tournament.current_round
+
+    @property
+    def mirror(self) -> bool:
+        return self._get_option(PlaceCardMirrorPrintOption).value
+
+    @property
+    def board_numbers(self) -> set[int]:
+        return self._get_option(PlaceCardBoardNumbersPrintOption).board_numbers
+
+    @property
+    def crop_marks(self) -> PlaceCardCropMarks:
+        return self._get_option(PlaceCardCropMarksPrintOption).place_card_crop_marks
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [
+            PlaceCardPrintOption,
+            PlaceCardTemplatePrintOption,
+            TournamentPrintOption,
+            PlayersPrintOption,
+            RoundPrintOption,
+            PlaceCardMirrorPrintOption,
+            PlaceCardCropMarksPrintOption,
+            PlaceCardBoardNumbersPrintOption,
+        ]
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        assert self.event is not None
+        return self.place_card_template.template_context(
+            event=self.event,
+            tournament=self.tournament,
+            round_=self.at_round,
+            mirror=self.mirror,
+            place_card_crop_marks=self.crop_marks,
+            board_numbers=self.board_numbers,
+            player_ids=self.player_ids,
+        )
+
+    @staticmethod
+    def validate_for_tournament(tournament: Tournament) -> str | None:
+        return None
+
+    @property
+    def template_name(self) -> str:
+        return str(
+            PlaceCardTemplate.load(
+                self._get_option(PlaceCardTemplatePrintOption).value
+            ).template_name
+        )
+
+    def validate_options(self):
+        super().validate_options()
+        template_option = self._get_option(PlaceCardTemplatePrintOption)
+        try:
+            PlaceCardTemplate.load(template_option.value)
+        except KeyError:
+            raise OptionError(
+                f'Unknown template [{template_option.value}]', template_option
+            )

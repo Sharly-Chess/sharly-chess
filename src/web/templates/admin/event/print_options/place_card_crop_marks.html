@@ -1,0 +1,8 @@
+<div class="col-12">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('Crop marks:'),
+        select_options=option.place_card_crop_marks_options,
+        data=data, errors=errors
+    ) }}
+</div>

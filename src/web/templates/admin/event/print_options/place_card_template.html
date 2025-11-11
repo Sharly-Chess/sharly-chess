@@ -1,0 +1,40 @@
+<div class="col-12">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('Template:'),
+        select_options={},
+        tooltip_select=true,
+        data=data, errors=errors
+    ) }}
+</div>
+
+<script>
+    $(document).ready(function() {
+        const placeCardTypeSelect = $('.modal #place-card-type');
+        const placeCardTemplateSelect = $('.modal #{{option.id}}');
+        const placeCardTemplatesPerType = {{ option.place_card_templates_per_type | tojson }};
+
+        function updatePlaceCardTemplates() {
+            const placeCardTypeId = placeCardTypeSelect.val();
+            const placeCardTemplates = placeCardTemplatesPerType[placeCardTypeId] || [];
+
+            placeCardTemplateSelect.empty();
+
+            // Add templates
+            placeCardTemplates.forEach(placeCardTemplate => {
+                placeCardTemplateSelect.append(
+                    $('<option>', {
+                        value: placeCardTemplate.id,
+                        text: placeCardTemplate.name,
+                        title: placeCardTemplate.tooltip,
+                    })
+            );
+
+            placeCardTemplateSelect.prop('disabled', false);
+        });
+        }
+
+        placeCardTypeSelect.on('change', updatePlaceCardTemplates);
+        updatePlaceCardTemplates();
+    })
+</script>

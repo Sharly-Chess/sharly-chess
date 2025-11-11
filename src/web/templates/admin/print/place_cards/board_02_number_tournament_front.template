@@ -1,0 +1,19 @@
+type = "board"
+name = "{{ _('Number (tournament on front)') }}"
+creator = "Sharly Chess <support@sharly-chess.com>"
+
+width = 48
+
+[number]
+text = "{{ board.number }}"
+font_size = 56.0
+bold = true
+h_align = "center"
+v_align = "bottom"
+v_pos = 0.4
+
+[tournament]
+text = "{{ tournament.name }}"
+font_size = 10.0
+h_align = "center"
+v_align = "top"

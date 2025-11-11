@@ -204,6 +204,8 @@ class SharlyChessEnvironment(Environment):
 template_dirs: list[Path] = [
     BASE_DIR / 'src/web/templates',
     *[path for path in plugin_manager.templates_paths],
+    # lib files can be included in print view to build self-contained files
+    BASE_DIR / 'src/web/static',
 ]
 
 template_engine: JinjaTemplateEngine = JinjaTemplateEngine(

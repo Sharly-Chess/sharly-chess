@@ -10,6 +10,7 @@ from common import (
     BASE_DIR,
     format_timestamp_date,
     format_timestamp_time,
+    today_timestamp_start_stop,
 )
 from common.logger import get_logger
 from common.network import NetworkMonitor
@@ -301,13 +302,7 @@ class IndexAdminController(BaseAdminController):
             name = EventLoader.get(request).get_unused_event_name(_('New event'))
             uniq_id = EventLoader.get(request).get_unused_event_uniq_id(_('event'))
             public = False
-            today_str: str = format_timestamp_date()
-            start = time.mktime(
-                datetime.strptime(f'{today_str} 00:00', '%Y-%m-%d %H:%M').timetuple()
-            )
-            stop = time.mktime(
-                datetime.strptime(f'{today_str} 23:59', '%Y-%m-%d %H:%M').timetuple()
-            )
+            start, stop = today_timestamp_start_stop()
             config = SharlyChessConfig()
             federation = config.federation.name if config.federation else ''
             player_rating_type = PlayerRatingType.FIDE.value

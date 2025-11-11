@@ -1,0 +1,42 @@
+{% macro render_card(board, player, pairing, preview) %}
+    {% set sides={'back': true, 'front': false} if back_side else {'single': false} %}
+    <div class="card-wrapper {{ template_css_class }}" style="background-color: white">
+        {% for side_name, side_back in sides.items() %}
+            <div class="card side-{{side_name}}">
+                <div class="card-cell top left"></div>
+                <div class="card-cell top center"></div>
+                <div class="card-cell top right"></div>
+                <div class="card-cell middle left"></div>
+                <div class="card-content">
+                    {% for item in items %}
+                        {% if item.back == side_back %}
+                            {{ item.render_html(event=event, tournament=tournament, player=player, board=board, pairing=pairing, preview=preview) | safe }}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="card-cell middle right"></div>
+                <div class="card-cell bottom left"></div>
+                <div class="card-cell bottom center"></div>
+                <div class="card-cell bottom right"></div>
+            </div>
+        {% endfor %}
+    </div>
+{% endmacro %}
+
+<style>
+    {% for item in items %}
+        {{ item.render_css(template_css_class, unit) | safe  }}
+    {% endfor %}
+    {{ template_css | safe }}
+</style>
+<div class="cards-wrapper">
+    {% for player in players %}
+        {{ render_card(player=player, board=none, pairing=none, preview=preview) }}
+    {% endfor %}
+    {% for board in boards %}
+        {{ render_card(player=none, board=board, pairing=none, preview=preview) }}
+    {% endfor %}
+    {% for pairing in pairings %}
+        {{ render_card(player=none, board=none, pairing=pairing, preview=preview) }}
+    {% endfor %}
+</div>

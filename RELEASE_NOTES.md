@@ -5,6 +5,10 @@ English version below
 
 - Déplacement de la fonctionnalité de handicap vers un module (3.3.0)
 
+## Impression
+
+- Ajout des chevalets (3.3.0)
+
 ## FFE
 
 - Ajout d’une option pour mettre en ligne via le menu d’action de la fiche tournoi (3.3.0)
@@ -22,6 +26,10 @@ English version below
 ## Modules
 
 - Moved the handicap feature to a plugin (3.3.0)
+
+## Printing
+
+- Added place cards (3.3.0)
 
 ## FFE
 

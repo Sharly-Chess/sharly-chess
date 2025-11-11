@@ -103,7 +103,6 @@ class EventPrintController(BaseEventAdminController):
     async def htmx_admin_print_modal(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         document_id: str | None = None,
         tournament_id: int | None = None,
         round: int | None = None,
@@ -202,9 +201,9 @@ class EventPrintController(BaseEventAdminController):
             after='receive',
             params={
                 'event_uniq_id': event_uniq_id,
-                'document': data['document'],
+                'document': flat_data['document'],
                 'options': {
-                    option.id: data[option.id]
+                    option.id: flat_data[option.id]
                     for option in document_type().default_options()
                     if option.id in data
                 },

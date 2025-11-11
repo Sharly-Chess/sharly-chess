@@ -23,6 +23,7 @@ from data.pairings.variations import SwissVariation
 from data.print_documents import PlayerSplitter, PrintDocument
 from data.columns import player_table, player_datasheet
 from data.print_documents.documents import StatisticsPrintDocument
+from data.print_documents.place_cards.data import PlaceCardPlayer
 from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.criteria.player_filter_options import PlayerFilterOption, ClubsFilterOption
 from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
@@ -468,6 +469,18 @@ class FfePlugin(Plugin):
             stored_player.plugin_data[self.id] = copy.copy(
                 ffe_stored_player.plugin_data.get(self.id, {})
             )
+
+    @hookimpl
+    def augment_place_card_player(
+        self,
+        player: Player,
+        place_card_player: PlaceCardPlayer,
+    ):
+        setattr(
+            place_card_player,
+            'ffe_league',
+            FFEUtils.get_player_plugin_data(player).league,
+        )
 
     @hookimpl
     def get_player_rating(

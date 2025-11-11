@@ -1,0 +1,19 @@
+{% extends '/admin/print/base.html' %}
+
+{% block css %}
+    @media print {
+        body {
+            -webkit-print-color-adjust: exact;
+            -moz-print-color-adjust: exact;
+            -ms-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    }
+{% endblock %}
+
+{% block js %}
+{% endblock %}
+
+{% block content %}
+    {% include 'place_cards.html' %}
+{% endblock %}

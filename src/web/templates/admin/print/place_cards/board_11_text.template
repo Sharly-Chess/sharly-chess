@@ -1,0 +1,12 @@
+type = "board"
+name = "{{ _('Text') }}"
+creator = "Sharly Chess <support@sharly-chess.com>"
+
+width = 116
+
+[number]
+text = "{{ _('Board %(number)s', number=board.number) }}"
+font_size = 64.0
+bold = true
+h_align = "center"
+v_align = "middle"
