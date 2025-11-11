@@ -137,12 +137,6 @@
                                 <li>{{ account.full_name }}</li>
                             {% endfor %}
                         </ul>
-                        <i
-                            class="bi-info-circle-fill ps-1"
-                            {{ macros.tooltip_attributes(
-                                '', tournament.deputy_arbiters | map(attribute='full_name') | join(', '), 'right'
-                            ) }}
-                        ></i>
                     {% endif %}
                 </div>
             {% endif %}
