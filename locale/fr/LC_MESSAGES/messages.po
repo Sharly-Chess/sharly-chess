@@ -3069,7 +3069,7 @@ msgstr "Menu : aucun"
 msgid "Menus"
 msgstr "Menus"
 
-msgid "Minimal time (seconds):"
+msgid "Minimum time (secs):"
 msgstr "Temps minimal (sec.) :"
 
 msgid "Minimum delay between uploads (minutes):"
@@ -3746,7 +3746,7 @@ msgstr "Mot de passe :"
 msgid "Penalties require a time control with a single period."
 msgstr "Les pénalités nécessitent une cadence avec une seule période."
 
-msgid "Penalty (seconds):"
+msgid "Penalty (secs):"
 msgstr "Pénalité (sec.) :"
 
 msgid "Pending"

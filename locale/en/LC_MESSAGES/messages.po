@@ -3069,7 +3069,7 @@ msgstr ""
 msgid "Menus"
 msgstr ""
 
-msgid "Minimal time (seconds):"
+msgid "Minimum time (secs):"
 msgstr ""
 
 msgid "Minimum delay between uploads (minutes):"
@@ -3746,7 +3746,7 @@ msgstr ""
 msgid "Penalties require a time control with a single period."
 msgstr ""
 
-msgid "Penalty (seconds):"
+msgid "Penalty (secs):"
 msgstr ""
 
 msgid "Pending"
