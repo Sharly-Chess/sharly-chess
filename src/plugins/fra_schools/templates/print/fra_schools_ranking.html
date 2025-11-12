@@ -15,6 +15,11 @@
                 <div class="team-rank">{{ ordinal_integer(loop.index)|safe }}</div>
                 <div class="team-title">{{ team.school.name }} <span class="team-label">{{ team.label }}</span></div>
                 <div class="team-info">
+                    {% if team.avg_age_years %}
+                        <div style="margin-bottom: 0.75rem;">
+                            {{ _('Average age: %(years)s', years=localized_number(team.avg_age_years)) }}
+                        </div>
+                    {% endif %}
                     {% if team.is_complete %}
                         {{ _('Complete Team') }}</i>
                     {% else %}

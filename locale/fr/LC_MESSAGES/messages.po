@@ -709,6 +709,10 @@ msgstr "Automatique"
 msgid "Average"
 msgstr "Moyenne"
 
+#, python-format
+msgid "Average age: %(years)s"
+msgstr "Âge moyen : %(years)s ans"
+
 msgid "Average of opponents Buchholz"
 msgstr "Moyenne du Buchholz des adversaires"
 

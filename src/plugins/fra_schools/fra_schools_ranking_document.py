@@ -28,7 +28,7 @@ class SchoolTeam:
     is_complete: bool
 
     tie_break_sums: list[float] = field(default_factory=list)
-    avg_dob_ordinal: Optional[float] = None
+    avg_age_years: Optional[float] = None
     missing_girls: int = 0
     missing_boys: int = 0
     missing_slots: int = 0
@@ -165,14 +165,16 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
                         tb_sums[i] += float(val) if val is not None else 0.0
 
                 # Average age (younger is better).
-                dob_ordinals = []
+                today = date.today()
+                ages = []
                 for p in selected:
                     dob: date | None = p.date_of_birth
                     if isinstance(dob, date):
-                        dob_ordinals.append(dob.toordinal())
-                avg_dob_ordinal: float | None = (
-                    mean(dob_ordinals) if dob_ordinals else None
-                )
+                        # Compute precise age in years (fractional)
+                        age = (today - dob).days / 365.2425  # average solar year
+                        ages.append(age)
+
+                avg_age_years: float | None = mean(ages) if ages else None
 
                 teams.append(
                     SchoolTeam(
@@ -182,7 +184,7 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
                         total_points=total_points,
                         is_complete=is_complete,
                         tie_break_sums=tb_sums,
-                        avg_dob_ordinal=avg_dob_ordinal,
+                        avg_age_years=avg_age_years,
                         missing_girls=meta['missing_girls'],
                         missing_boys=meta['missing_boys'],
                         missing_slots=meta['missing_slots'],
@@ -197,7 +199,7 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
         def sort_key(t: SchoolTeam):
             base = [0 if t.is_complete else 1, -t.total_points]
             base.extend([-x for x in getattr(t, 'tie_break_sums', [])])
-            dob_key = -(t.avg_dob_ordinal or 0.0)
+            dob_key = -(t.avg_age_years or 0.0)
             base.append(dob_key)
 
             return tuple(base)
@@ -262,4 +264,5 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
             'ordered_school_teams': self.ordered_school_teams,
             'player_columns': self.player_columns,
             'ordinal_integer': Utils.ordinal_integer,
+            'localized_number': Utils.localized_number,
         }

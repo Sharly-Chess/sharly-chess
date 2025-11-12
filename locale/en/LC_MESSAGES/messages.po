@@ -709,6 +709,10 @@ msgstr ""
 msgid "Average"
 msgstr ""
 
+#, python-format
+msgid "Average age: %(years)s"
+msgstr ""
+
 msgid "Average of opponents Buchholz"
 msgstr ""
 
