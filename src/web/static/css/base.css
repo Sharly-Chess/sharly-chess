@@ -874,3 +874,10 @@ input[type="color"].form-control {
     margin: 1rem 0;
     background-color: rgba(var(--bs-body-bg-rgb), 0.30) ;
 }
+
+sup {
+    vertical-align: baseline;
+    position: relative;
+    top: -0.4em;
+    font-size: 0.85em;
+}

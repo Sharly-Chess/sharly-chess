@@ -5,6 +5,12 @@
     color: #000000;
     background-color: #FFFFFF;
 }
+sup {
+    vertical-align: baseline;
+    position: relative;
+    top: -0.4em;
+    font-size: 0.85em;
+}
 .center-wrapper {
   display: flex;
   justify-content: center;
