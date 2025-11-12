@@ -27,7 +27,6 @@ class SchoolTeam:
     total_points: float
     is_complete: bool
 
-    # Optional tiebreak aggregates
     tie_break_sums: list[float] = field(default_factory=list)
     avg_dob_ordinal: Optional[float] = None
     missing_girls: int = 0
@@ -70,9 +69,8 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
         Build one team (up to 8 contributors) from a school's pool using the 2G/2B/4ANY rule.
         Returns (selected_players, meta).
         """
-        pool = list(pool_in_order)  # preserve order (already global ranking)
-        girls = [p for p in pool if p.gender == PlayerGender.FEMALE]
-        boys = [p for p in pool if p.gender != PlayerGender.FEMALE]
+        girls = [p for p in pool_in_order if p.gender == PlayerGender.FEMALE]
+        boys = [p for p in pool_in_order if p.gender != PlayerGender.FEMALE]
 
         selected: list[Player] = []
 
@@ -91,7 +89,7 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
 
         # Fill ANY slots (do NOT compensate missing girl/boy with extra ANY; ANY is exactly 4)
         already = set(p.id for p in selected)
-        remainder = [p for p in pool if p.id not in already]
+        remainder = [p for p in pool_in_order if p.id not in already]
         any_fillers = remainder[:ANY_SLOTS]
         selected.extend(any_fillers)
 
@@ -100,9 +98,7 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
         selected.sort(key=lambda p: p.rank)
 
         # Compute meta
-        missing_slots = (
-            8 - len(selected) - missing_girls - missing_boys
-        )  # zeros for quota + any unfilled seats
+        missing_slots = 8 - len(selected) - missing_girls - missing_boys
 
         meta = {
             'missing_girls': missing_girls,
@@ -168,7 +164,7 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
                         val = p.tie_break_values[i].value
                         tb_sums[i] += float(val) if val is not None else 0.0
 
-                # Average age (younger is better). Compute in years if available.
+                # Average age (younger is better).
                 dob_ordinals = []
                 for p in selected:
                     dob: date | None = p.date_of_birth
