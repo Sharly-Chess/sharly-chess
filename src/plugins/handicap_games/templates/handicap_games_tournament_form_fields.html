@@ -5,7 +5,7 @@
     <div class="col-12 col-md-4">
         {{ admin_macros.number_input(
             name='handicap_games_penalty_value',
-            label=_('Penalty (seconds):'),
+            label=_('Penalty (secs):'),
             placeholder=_('E.g.: %(val)d', val=30),
             tooltip_text=_('The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players).'),
             data=data, errors=errors
@@ -23,7 +23,7 @@
     <div class="col-12 col-md-4">
         {{ admin_macros.number_input(
             name='handicap_games_min_time',
-            label=_('Minimal time (seconds):'),
+            label=_('Minimum time (secs):'),
             placeholder=_('E.g.: %(val)d', val=60),
             tooltip_text=_('The minimum time, whatever the ranking difference between the two players.'),
             data=data, errors=errors
