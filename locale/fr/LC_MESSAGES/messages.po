@@ -3093,7 +3093,7 @@ msgstr "Temps minimal (sec.) :"
 
 #, python-format
 msgid "Missing boys: %(count)d"
-msgstr "Missing boys: %(count)d"
+msgstr "Garçons manquants: %(count)d"
 
 #, python-format
 msgid "Missing girls: %(count)d"
@@ -6583,4 +6583,3 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
