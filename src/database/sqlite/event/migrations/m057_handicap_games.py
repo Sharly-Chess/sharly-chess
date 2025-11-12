@@ -5,15 +5,12 @@ from database.sqlite.migration import BaseMigration, PostUpgradeTask
 class Migration(BaseMigration):
     def forward(self):
         self.database.execute(
-            'SELECT id, time_control_handicap_penalty_step, time_control_handicap_penalty_value, time_control_handicap_min_time '
+            'SELECT id, plugin_data, time_control_handicap_penalty_step, time_control_handicap_penalty_value, time_control_handicap_min_time '
             'FROM tournament'
         )
         for row in self.database.fetchall():
             tournament_id = row['id']
-            try:
-                plugin_data = json.loads(row['plugin_data'] or '{}')
-            except Exception:
-                plugin_data = {}
+            plugin_data = json.loads(row['plugin_data'] or '{}')
 
             plugin_data['handicap_games'] = {
                 'penalty_step': row['time_control_handicap_penalty_step'],
@@ -53,10 +50,7 @@ class Migration(BaseMigration):
         self.database.execute('SELECT id, plugin_data FROM tournament')
         for row in self.database.fetchall():
             tournament_id = row['id']
-            try:
-                plugin_data = json.loads(row['plugin_data'] or '{}')
-            except Exception:
-                plugin_data = {}
+            plugin_data = json.loads(row['plugin_data'] or '{}')
 
             handicap_games_data = plugin_data.get('handicap_games', {}) or {}
 

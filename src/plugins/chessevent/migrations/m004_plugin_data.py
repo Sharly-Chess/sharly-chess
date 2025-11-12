@@ -10,11 +10,7 @@ class Migration(BasePluginMigration):
         )
         info = self.database.fetchone()
 
-        try:
-            plugin_data = json.loads(info['plugin_data'] or '{}')
-        except Exception:
-            plugin_data = {}
-
+        plugin_data = json.loads(info['plugin_data'] or '{}')
         plugin_data['chessevent'] = {
             'user': info['chessevent_user_id'],
             'password': info['chessevent_password'],
@@ -32,17 +28,14 @@ class Migration(BasePluginMigration):
 
         # Tournament data
         self.database.execute(
-            'SELECT id, chessevent_user_id, chessevent_password, chessevent_event_id, '
+            'SELECT id, plugin_data, chessevent_user_id, chessevent_password, chessevent_event_id, '
             'chessevent_tournament_name, chessevent_status, chessevent_last_sync '
             'FROM tournament'
         )
 
         for row in self.database.fetchall():
             tournament_id = row['id']
-            try:
-                plugin_data = json.loads(row['plugin_data'] or '{}')
-            except Exception:
-                plugin_data = {}
+            plugin_data = json.loads(row['plugin_data'] or '{}')
 
             plugin_data['chessevent'] = {
                 'user': row['chessevent_user_id'],
@@ -122,11 +115,7 @@ class Migration(BasePluginMigration):
         self.database.execute('SELECT id, plugin_data FROM tournament')
         for row in self.database.fetchall():
             tournament_id = row['id']
-            try:
-                plugin_data = json.loads(row['plugin_data'] or '{}')
-            except Exception:
-                plugin_data = {}
-
+            plugin_data = json.loads(row['plugin_data'] or '{}')
             chessevent_data = plugin_data.get('chessevent', {}) or {}
 
             self.database.execute(
