@@ -1,0 +1,52 @@
+.page-subtitle {
+    margin-bottom: 4rem;
+}
+
+.teams {
+    display: grid;
+    gap: .5rem 1rem;
+    margin: 0 auto;
+    width: max-content;
+}
+
+.team {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+    row-gap: .25rem;
+    text-align: center;
+}
+
+.team-rank {
+    grid-column: 1 / -1;
+    font-weight: bold;
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+.team-title {
+    grid-column: 1 / -1;
+    contain: inline-size;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.team-info {
+    grid-column: 1 / -1;
+    contain: inline-size;
+    font-style: italic;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.separator {
+    grid-column: 1 / -1;
+    width: 100%;
+}
+
+.total {
+    padding-top: 0.5rem;
+    font-weight: bold;
+    font-size: 1.2rem;
+}

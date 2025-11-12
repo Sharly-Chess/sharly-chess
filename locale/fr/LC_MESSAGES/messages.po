@@ -1208,6 +1208,9 @@ msgstr "Appariements complémentaires générés."
 msgid "Complementary pairings successfully generated!"
 msgstr "Appariements complémentaires générés avec succès !"
 
+msgid "Complete Team"
+msgstr "Équipe complète"
+
 msgid "Configuration"
 msgstr "Configuration"
 
@@ -2677,6 +2680,9 @@ msgstr "Inclure les catégories inférieures"
 msgid "Includes all other access levels and grants full access to the application. This access level is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network)."
 msgstr "Inclut tous les autres rôles et donne un accès complet à l'application ; ce niveau d'accès est donné seulement en accédant à Sharly Chess sur l'ordinateur sur lequel est lancé le serveur (à aucun autre appareil du réseau)."
 
+msgid "Incomplete Team"
+msgstr "Équipe incomplète"
+
 msgid "Incorrect installation, exiting."
 msgstr "Installation incorrecte, abandon."
 
@@ -3069,9 +3075,6 @@ msgstr "Menu : aucun"
 msgid "Menus"
 msgstr "Menus"
 
-msgid "Minimum time (secs):"
-msgstr "Temps minimal (sec.) :"
-
 msgid "Minimum delay between uploads (minutes):"
 msgstr "Délai minimum entre deux envois (min.) :"
 
@@ -3080,6 +3083,21 @@ msgstr "Nombre minimum de points (inclus) :"
 
 msgid "Minimum rating"
 msgstr "Elo minimum"
+
+msgid "Minimum time (secs):"
+msgstr "Temps minimal (sec.) :"
+
+#, python-format
+msgid "Missing boys: %(count)d"
+msgstr "Missing boys: %(count)d"
+
+#, python-format
+msgid "Missing girls: %(count)d"
+msgstr "Filles manquantes : %(count)d"
+
+#, python-format
+msgid "Missing players: %(count)d"
+msgstr "Joueurs·euse manquant·es : %(count)d"
 
 msgid "Missing required field [{field}]."
 msgstr "Champ requis manquant [{field}]."
@@ -4203,6 +4221,14 @@ msgstr "Classement après la ronde {round}"
 
 msgid "Ranking before the first round"
 msgstr "Classement avant la première ronde"
+
+msgid "Ranking by school"
+msgstr "Classement par établissement"
+
+# Error: tokens differ between [Ranking by school after round #{round}] and
+# [Classement par établissement après la ronde n° {{ round }}]
+msgid "Ranking by school after round #{round}"
+msgstr "Classement par établissement après la ronde #{round}"
 
 msgid "Ranking only"
 msgstr "Classement seulement"
@@ -5496,6 +5522,9 @@ msgstr "Trop de points joker pour le joueur [{player_name}]."
 
 msgid "Too much information to display on a single projector?"
 msgstr "Trop d’informations à afficher sur un seul projecteur ?"
+
+msgid "Total"
+msgstr "Total"
 
 msgid "Total prize value"
 msgstr "Valeur totale des prix"
