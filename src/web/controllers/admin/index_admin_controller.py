@@ -451,13 +451,6 @@ class IndexAdminController(BaseAdminController):
                 data, action=action, previous_object=previous_object
             ).to_stored_value()
 
-        plugin_data: dict[str, dict[str, Any]] = {
-            plugin_id: plugin_data_class.from_form_data(
-                data, action=action
-            ).to_stored_value()
-            for plugin_id, plugin_data_class in Event.plugin_data_class_by_plugin_id().items()
-        }
-
         if errors:
             return None, errors
 
