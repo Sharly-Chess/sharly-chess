@@ -248,10 +248,10 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
     def player_columns(self) -> list[PlayerColumn]:
         tournament = self.tournament
         return [
+            columns.RankColumn(),
             columns.NameColumn(),
             columns.CategoryColumn(),
             columns.GenderColumn(),
-            columns.RankOverallColumn(),
             columns.PointsColumn(),
         ] + [
             columns.TieBreakColumn(tournament, index)
