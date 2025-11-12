@@ -12,8 +12,8 @@
             {% endif %}
 
             <div class="team">
-                <div class="team-rank">{{ loop.index }}</div>
-                <div class="team-title">{{ team.school.name }} {{ team.label }}</div>
+                <div class="team-rank">{{ ordinal_integer(loop.index)|safe }}</div>
+                <div class="team-title">{{ team.school.name }} <span class="team-label">{{ team.label }}</span></div>
                 <div class="team-info">
                     {% if team.is_complete %}
                         {{ _('Complete Team') }}</i>
@@ -29,7 +29,7 @@
                         {% endif %}
                         {% if team.missing_slots %}
                             <br/>
-                            {{ _('Missing players: %(count)d', count=team.missing_slots) }}
+                            {{ _('Other missing players: %(count)d', count=team.missing_slots) }}
                         {% endif %}
                     {% endif %}
                 </div>

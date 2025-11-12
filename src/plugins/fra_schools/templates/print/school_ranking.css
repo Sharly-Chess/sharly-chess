@@ -32,6 +32,11 @@
     text-align: center;
 }
 
+.team-label {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
 .team-info {
     grid-column: 1 / -1;
     contain: inline-size;

@@ -3095,10 +3095,6 @@ msgstr ""
 msgid "Missing girls: %(count)d"
 msgstr ""
 
-#, python-format
-msgid "Missing players: %(count)d"
-msgstr ""
-
 msgid "Missing required field [{field}]."
 msgstr ""
 
@@ -3578,6 +3574,10 @@ msgid "Organize your prizes into groups to manage how they’re awarded. A playe
 msgstr ""
 
 msgid "Origin: {template_origin}"
+msgstr ""
+
+#, python-format
+msgid "Other missing players: %(count)d"
 msgstr ""
 
 msgid "Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold."

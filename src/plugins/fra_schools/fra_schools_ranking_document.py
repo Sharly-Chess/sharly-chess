@@ -6,6 +6,7 @@ from typing import Any, Optional, override
 from common.exception import OptionError
 from common.i18n import _
 from data.event import Player
+from data.player import Utils
 from data.print_documents import PrintOption
 from data.print_documents.documents import (
     PrintDocument,
@@ -100,7 +101,7 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
 
         # Compute meta
         missing_slots = (
-            8 - len(selected) + missing_girls + missing_boys
+            8 - len(selected) - missing_girls - missing_boys
         )  # zeros for quota + any unfilled seats
 
         meta = {
@@ -250,6 +251,7 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
             columns.NameColumn(),
             columns.CategoryColumn(),
             columns.GenderColumn(),
+            columns.RankOverallColumn(),
             columns.PointsColumn(),
         ] + [
             columns.TieBreakColumn(tournament, index)
@@ -263,4 +265,5 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
             'subtitle': self.tournament.name,
             'ordered_school_teams': self.ordered_school_teams,
             'player_columns': self.player_columns,
+            'ordinal_integer': Utils.ordinal_integer,
         }

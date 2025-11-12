@@ -3095,10 +3095,6 @@ msgstr "Missing boys: %(count)d"
 msgid "Missing girls: %(count)d"
 msgstr "Filles manquantes : %(count)d"
 
-#, python-format
-msgid "Missing players: %(count)d"
-msgstr "Joueurs·euse manquant·es : %(count)d"
-
 msgid "Missing required field [{field}]."
 msgstr "Champ requis manquant [{field}]."
 
@@ -3579,6 +3575,10 @@ msgstr "Organisez vos prix en groupes pour gérer leur attribution. Un·e joueur
 
 msgid "Origin: {template_origin}"
 msgstr "Origine : {template_origin}"
+
+#, python-format
+msgid "Other missing players: %(count)d"
+msgstr "Autres joueur·euses manquant·es : %(count)d"
 
 msgid "Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold."
 msgstr "Les autres joueur·euses de ce groupe de points n'entrent pas dans les prix (prix inférieur au seuil minimum)."
