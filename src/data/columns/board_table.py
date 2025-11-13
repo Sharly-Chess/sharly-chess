@@ -153,6 +153,10 @@ class ScreenResultColumn(BoardColumn):
             board_number=board.number
         )
 
+    @property
+    def shared_classes(self) -> str:
+        return 'score'
+
 
 class BlackIllegalMovesColumn(IllegalMovesColumn):
     @property

@@ -349,7 +349,7 @@ class BaseAccessLevelTest:
 
         expect(rows).to_have_count(8)
         row = rows.filter(has_text='ALYX')
-        result_cell = row.get_by_test_id('board-score')
+        result_cell = row.locator('div.score')
         if not can_enter:
             expect(result_cell).not_to_have_attribute(
                 'hx-get', re.compile(r'.*result-modal.*')
