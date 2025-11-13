@@ -70,7 +70,7 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
         Returns (selected_players, meta).
         """
         girls = [p for p in pool_in_order if p.gender == PlayerGender.FEMALE]
-        boys = [p for p in pool_in_order if p.gender != PlayerGender.FEMALE]
+        boys = [p for p in pool_in_order if p.gender == PlayerGender.MALE]
 
         selected: list[Player] = []
 

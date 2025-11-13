@@ -4229,10 +4229,8 @@ msgstr "Classement avant la première ronde"
 msgid "Ranking by school"
 msgstr "Classement par établissement"
 
-# Error: tokens differ between [Ranking by school after round #{round}] and
-# [Classement par établissement après la ronde n° {{ round }}]
 msgid "Ranking by school after round #{round}"
-msgstr "Classement par établissement après la ronde #{round}"
+msgstr "Classement par établissement après la ronde n°{round}"
 
 msgid "Ranking only"
 msgstr "Classement seulement"
