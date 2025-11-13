@@ -7,9 +7,8 @@ msgstr " [{yes_answer}/{no_answer}] ?"
 msgid "\"Niçois\" accelerated system"
 msgstr "Système accéléré niçois"
 
-#, python-format
-msgid "#%(board_number)d"
-msgstr "n°%(board_number)d"
+msgid "#{board_number}"
+msgstr "n°{board_number}"
 
 #, python-format
 msgid "%%s is replaced by the time elapsed since the hour."
@@ -3069,9 +3068,6 @@ msgstr "Menu : aucun"
 msgid "Menus"
 msgstr "Menus"
 
-msgid "Minimum time (secs):"
-msgstr "Temps minimal (sec.) :"
-
 msgid "Minimum delay between uploads (minutes):"
 msgstr "Délai minimum entre deux envois (min.) :"
 
@@ -3080,6 +3076,9 @@ msgstr "Nombre minimum de points (inclus) :"
 
 msgid "Minimum rating"
 msgstr "Elo minimum"
+
+msgid "Minimum time (secs):"
+msgstr "Temps minimal (sec.) :"
 
 msgid "Missing required field [{field}]."
 msgstr "Champ requis manquant [{field}]."
@@ -6458,9 +6457,6 @@ msgstr "classement complet"
 
 msgid "then"
 msgstr "puis"
-
-msgid "time control"
-msgstr "temps"
 
 msgid "value: {value}"
 msgstr "valeur : {value}"

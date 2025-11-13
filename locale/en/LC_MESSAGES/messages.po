@@ -7,8 +7,7 @@ msgstr ""
 msgid "\"Niçois\" accelerated system"
 msgstr ""
 
-#, python-format
-msgid "#%(board_number)d"
+msgid "#{board_number}"
 msgstr ""
 
 #, python-format
@@ -3069,9 +3068,6 @@ msgstr ""
 msgid "Menus"
 msgstr ""
 
-msgid "Minimum time (secs):"
-msgstr ""
-
 msgid "Minimum delay between uploads (minutes):"
 msgstr ""
 
@@ -3079,6 +3075,9 @@ msgid "Minimum number of points (included):"
 msgstr ""
 
 msgid "Minimum rating"
+msgstr ""
+
+msgid "Minimum time (secs):"
 msgstr ""
 
 msgid "Missing required field [{field}]."
@@ -6457,9 +6456,6 @@ msgid "the whole ranking"
 msgstr ""
 
 msgid "then"
-msgstr ""
-
-msgid "time control"
 msgstr ""
 
 msgid "value: {value}"
