@@ -150,7 +150,7 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
                     1 for p in selected if p.gender == PlayerGender.FEMALE
                 )
                 boys_selected = sum(
-                    1 for p in selected if p.gender != PlayerGender.FEMALE
+                    1 for p in selected if p.gender == PlayerGender.MALE
                 )
                 is_complete = (
                     len(selected) == 8 and girls_selected >= 2 and boys_selected >= 2
