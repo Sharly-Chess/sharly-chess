@@ -7,13 +7,11 @@ from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
+from data.columns.board_table import BoardColumn, ScreenResultColumn
+from data.columns.player_table import PlayerTableColumn, ColumnUsage
+from data.columns.handlers import PlayerColumnHandler, BoardColumnHandler
 from data.display_controller import DisplayController
 from data.family import Family
-from data.print_documents.documents import (
-    PlayerRankingPrintDocument,
-    PlayerCrosstablePrintDocument,
-)
-from data.print_documents.options import RoundPrintOption
 from data.rotator import Rotator
 from data.screen import Screen
 from utils.enum import ScreenType
@@ -23,7 +21,7 @@ from web.controllers.user.event_user_controller import (
 )
 from web.messages import Message
 from web.session import SessionHandler
-from web.utils import RequestUtils, PlayerColumn
+from web.utils import RequestUtils
 
 logger: Logger = get_logger()
 
@@ -147,7 +145,9 @@ class BaseScreenUserController(BaseUserController):
     def _user_screen_render(
         cls, web_context: ScreenEntityUserWebContext
     ) -> HTMXTemplate:
-        player_columns_by_tournament_id: dict[int, list[PlayerColumn]] = {}
+        columns_by_tournament_id: dict[
+            int, list[PlayerTableColumn] | list[BoardColumn]
+        ] = {}
         event = web_context.user_event
         if web_context.screen:
             screen = web_context.screen
@@ -155,21 +155,36 @@ class BaseScreenUserController(BaseUserController):
                 screen_set.tournament
                 for screen_set in screen.screen_sets_sorted_by_order
             }:
+                if screen.type != ScreenType.RANKING:
+                    tournament.set_for_round()
                 if screen.type == ScreenType.RANKING:
                     ranking_round = tournament.correct_ranking_round(
                         screen.ranking_round
                     )
                     tournament.compute_player_ranks(after_round=ranking_round)
-                    doc_type = (
-                        PlayerCrosstablePrintDocument
-                        if web_context.screen.ranking_crosstable
-                        else PlayerRankingPrintDocument
+                    column_handler = PlayerColumnHandler(event, ColumnUsage.SCREEN)
+                    if screen.ranking_crosstable:
+                        columns = column_handler.get_player_crosstable_columns(
+                            tournament, ranking_round
+                        )
+                    else:
+                        columns = column_handler.get_player_ranking_columns(tournament)
+                    columns_by_tournament_id[tournament.id] = columns
+                elif screen.type in (ScreenType.BOARDS, ScreenType.INPUT):
+                    if tournament.current_round == 0:
+                        continue
+                    columns_by_tournament_id[tournament.id] = BoardColumnHandler(
+                        ColumnUsage.SCREEN
+                    ).get_pairings_columns(
+                        tournament,
+                        tournament.current_round,
+                        ScreenResultColumn,
+                        show_illegal_moves=(
+                            screen.type == ScreenType.INPUT
+                            and tournament.record_illegal_moves > 0
+                        ),
                     )
-                    player_columns_by_tournament_id[tournament.id] = doc_type(
-                        event, [RoundPrintOption(event, ranking_round)]
-                    ).player_columns
-                else:
-                    tournament.set_for_round()
+
         return HTMXTemplate(
             template_name='user/screen.html',
             context=web_context.template_context
@@ -184,6 +199,6 @@ class BaseScreenUserController(BaseUserController):
                     web_context.request
                 ),
                 'messages': Message.messages(web_context.request),
-                'player_columns_by_tournament_id': player_columns_by_tournament_id,
+                'columns_by_tournament_id': columns_by_tournament_id,
             },
         )

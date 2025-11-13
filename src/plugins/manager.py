@@ -6,7 +6,6 @@ from typing import Any, Type, TypeVar, TYPE_CHECKING, Optional
 from apluggy import PluginManager  # type: ignore
 
 from common import APP_NAME
-from plugins.core_hooks import CoreHooks
 from plugins.hookspec import AppHookSpecs
 from plugins.utils import Plugin
 
@@ -147,7 +146,6 @@ def get_plugin_manager() -> AppPluginManager:
     if _plugin_manager is None:
         _plugin_manager = AppPluginManager(APP_NAME)
         _plugin_manager.add_hookspecs(AppHookSpecs)
-        _plugin_manager.register(CoreHooks(), '__core_hooks__')
         _plugin_manager.load_register()
         _plugin_manager.enable_dependencies()
     return _plugin_manager

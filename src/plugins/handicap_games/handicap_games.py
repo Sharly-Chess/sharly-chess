@@ -4,7 +4,12 @@ from typing import Any, TYPE_CHECKING
 from packaging.version import Version
 
 from common.i18n import _
+from data.columns.board_table import BoardColumn, BlackRatingColumn, WhiteTitleColumn
 from plugins.handicap_games import PLUGIN_NAME
+from plugins.handicap_games.handicap_games_entity import (
+    WhiteTimeControlColumn,
+    BlackTimeControlColumn,
+)
 from plugins.handicap_games.utils import (
     HandicapGameUtils,
     HandicapGamesTournamentPluginData,
@@ -14,10 +19,12 @@ from plugins.hookspec import hookimpl
 from plugins.utils import (
     Plugin,
     PluginData,
+    PluginUtils,
 )
 
 from utils.time_control import parse_time_control_trf25
 from web.controllers.base_controller import WebContext
+from web.utils import ColumnUsage
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -186,3 +193,24 @@ class HandicapGamesPlugin(Plugin):
                     weak_time, tournament.time_control_increment or 0, False
                 )
             )
+
+    # ---------------------------------------------------------------------------------
+    # Print / Screens
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def alter_print_and_screen_board_columns(
+        self,
+        usage: ColumnUsage,
+        board_columns: list[BoardColumn],
+        tournament: 'Tournament',
+    ):
+        plugin_data = HandicapGameUtils.get_tournament_plugin_data(tournament)
+        if not plugin_data.penalty_value:
+            return
+        PluginUtils.insert_on_isinstance(
+            board_columns, WhiteTimeControlColumn(usage), WhiteTitleColumn, False
+        )
+        PluginUtils.insert_on_isinstance(
+            board_columns, BlackTimeControlColumn(usage), BlackRatingColumn
+        )

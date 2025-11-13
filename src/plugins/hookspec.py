@@ -19,6 +19,8 @@ from utils.enum import Result, TournamentRating
 
 if TYPE_CHECKING:
     from data.columns.player_datasheet import DatasheetColumn
+    from data.columns.board_table import BoardColumn
+    from data.columns.player_table import PlayerTableColumn
     from data.input_output import DataSource, TournamentExporter, TournamentImporter
     from data.pairings.variations import SwissVariation
     from data.player import Player, PlayerRatingAndType, PlayerRatingType
@@ -38,7 +40,7 @@ if TYPE_CHECKING:
     from database.sqlite.local_source_database.databases import LocalSourceDatabase
     from plugins.migration import PluginMigrationManager
     from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
-    from web.utils import PlayerColumn
+    from web.utils import ColumnUsage
 
 hookspec = pluggy.HookspecMarker(APP_NAME)
 hookimpl = pluggy.HookimplMarker(APP_NAME)
@@ -148,10 +150,6 @@ class AppHookSpecs:
         place_card_player: 'PlaceCardPlayer',
     ):
         """Add plugin specific data to a player before printing place cards."""
-
-    @hookspec
-    def player_name_for_board_view(self, player: 'Player', default: str) -> str:
-        """Return the name to display on the board view"""
 
     @hookspec(firstresult=True)
     def get_player_rating(
@@ -328,8 +326,21 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def alter_print_document_player_columns(self, player_columns: list['PlayerColumn']):
-        """Alter the player columns of a print document."""
+    def alter_print_and_screen_player_columns(
+        self,
+        usage: 'ColumnUsage',
+        player_columns: list['PlayerTableColumn'],
+    ):
+        """Alter the player columns of print documents and screens."""
+
+    @hookspec
+    def alter_print_and_screen_board_columns(
+        self,
+        usage: 'ColumnUsage',
+        board_columns: list['BoardColumn'],
+        tournament: 'Tournament',
+    ):
+        """Alter the board columns of a print documents and screens."""
 
     @hookspec
     def insert_print_player_splitter_types(

@@ -72,12 +72,24 @@ class Board:
         return self.stored_board.index
 
     @property
+    def standard_number(self) -> int:
+        return self.tournament.first_board_number + self.index
+
+    @property
+    def fixed_number(self) -> int | None:
+        return self.white_player.fixed or getattr(self.black_player, 'fixed', None)
+
+    @property
     def number(self) -> int:
-        return (
-            self.white_player.fixed
-            or getattr(self.black_player, 'fixed', None)
-            or self.tournament.first_board_number + self.index
-        )
+        return self.fixed_number or self.standard_number
+
+    @property
+    def number_str(self) -> str:
+        fixed = self.fixed_number
+        standard = self.standard_number
+        if fixed:
+            return f'{fixed} ({standard})'
+        return str(standard)
 
     @property
     def result(self) -> Result:
