@@ -1,0 +1,69 @@
+{% extends '/admin/print/base.html' %}
+
+{% block css %}
+    {% include 'school_ranking.css' %}
+{% endblock %}
+
+{% block content %}
+    <section class="teams" style="grid-template-columns: repeat({{player_columns|length}}, max-content);">
+        {% for team in ordered_school_teams %}
+            {% if not loop.first %}
+                <div class="separator"></div>
+            {% endif %}
+
+            <div class="team">
+                <div class="team-rank">{{ ordinal_integer(loop.index)|safe }}</div>
+                <div class="team-title">{{ team.school.name }} <span class="team-label">{{ team.label }}</span></div>
+                <div class="team-info">
+                    {% if team.avg_age_years %}
+                        <div style="margin-bottom: 0.75rem;">
+                            {{ _('Average age: %(years)s', years=localized_number(team.avg_age_years)) }}
+                        </div>
+                    {% endif %}
+                    {% if team.is_complete %}
+                        {{ _('Complete Team') }}</i>
+                    {% else %}
+                        {{ _('Incomplete Team') }}</i>
+                        {% if team.missing_boys %}
+                            <br/>
+                            {{ _('Missing boys: %(count)d', count=team.missing_boys) }}
+                        {% endif %}
+                        {% if team.missing_girls %}
+                            <br/>
+                            {{ _('Missing girls: %(count)d', count=team.missing_girls) }}
+                        {% endif %}
+                        {% if team.missing_slots %}
+                            <br/>
+                            {{ _('Other missing players: %(count)d', count=team.missing_slots) }}
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+                {% for column in player_columns %}
+                    <div class="player-header {{ column.header_classes }}">
+                        {{ macros.column_header(column) }}
+                    </div>
+                {% endfor %}
+
+                {% for player in team.players %}
+                    {% for column in player_columns %}
+                        <div class="player-cell {{ column.cell_classes }}">
+                            {{ macros.column_cell(column, player) }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+                <div class="total text-start" style="grid-column: 1 / {{ player_columns|length - team.tie_break_sums|length }};">
+                    {{ _('Total') }}
+                </div>
+                <div class="total">
+                   {{ team.total_points }}
+                </div>
+                {% for tb_sum in team.tie_break_sums %}
+                     <div class="total">
+                        {{ '{:g}'.format(tb_sum) }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </section>
+{% endblock %}

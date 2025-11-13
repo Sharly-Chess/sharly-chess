@@ -33,7 +33,7 @@ from utils.entity import EventBoundEntityManager, EntityManager
 class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
     @override
     def entity_types(self) -> list[type[PrintDocument]]:
-        return [
+        print_documents = [
             documents.PlayerListPrintDocument,
             documents.PlayerCheckinListPrintDocument,
             documents.PairingPrintDocument,
@@ -49,6 +49,10 @@ class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
             documents.QRCodePrintDocument,
             documents.PlaceCardPrintDocument,
         ]
+        plugin_manager.hook_for_event(self.event, 'insert_print_document')(
+            print_documents=print_documents
+        )
+        return print_documents
 
     @override
     def objects(self) -> list[PrintDocument]:
