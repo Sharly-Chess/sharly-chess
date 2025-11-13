@@ -70,53 +70,6 @@ class HandicapGamesPlugin(Plugin):
         return False
 
     # ---------------------------------------------------------------------------------
-    # Players
-    # ---------------------------------------------------------------------------------
-
-    @hookimpl(hookwrapper=True)
-    def player_name_for_board_view(self, player: 'Player', default: str):
-        outcome = yield
-        try:
-            result = outcome.get_result()
-        except BaseException as e:
-            outcome.force_exception(e)
-            return
-
-        plugin_data = HandicapGameUtils.get_tournament_plugin_data(player.tournament)
-        if not plugin_data.penalty_value:
-            return result
-
-        transient_data = HandicapGameUtils.get_transient_player_plugin_data(player)
-        time_control_initial_time_minutes = (
-            transient_data.initial_time // 60 if transient_data.initial_time else None
-        )
-        time_control_initial_time_seconds = (
-            transient_data.initial_time % 60 if transient_data.initial_time else None
-        )
-
-        cls = (
-            'time-control-modified'
-            if transient_data.modified
-            else 'time-control-unchanged'
-        )
-        inner = ''
-
-        if time_control_initial_time_minutes:
-            inner += (
-                f'<span class="minutes">{time_control_initial_time_minutes}\'</span>'
-            )
-
-        if time_control_initial_time_seconds:
-            inner += (
-                f'<span class="seconds">{time_control_initial_time_seconds}"</span>'
-            )
-
-        if player.tournament.time_control_increment:
-            inner += f' + {player.tournament.time_control_increment}"{_("/move")}'
-
-        outcome.force_result(f'{result} (<span class="{cls}">{inner}</span>)')
-
-    # ---------------------------------------------------------------------------------
     # Tournaments
     # ---------------------------------------------------------------------------------
 

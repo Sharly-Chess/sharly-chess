@@ -195,6 +195,6 @@ class BoardColumnHandler:
             bt.BlackRatingColumn,
         ]
         if show_real_points:
-            column_types.append(bt.WhiteRealPointsColumn)
+            column_types.append(bt.BlackRealPointsColumn)
         column_types.append(bt.BlackPointsColumn)
         return self._get_columns(column_types, tournament)

@@ -54,7 +54,7 @@ class WhiteRealPointsColumn(BoardColumn):
         return ''
 
     def get_cell_content(self, board: Board) -> Any:
-        return board.white_player.points_str
+        return f'[{board.white_player.points_str}]'
 
     @property
     def shared_classes(self) -> str:
@@ -110,6 +110,9 @@ class WhiteNameColumn(BoardColumn):
     @property
     def shared_classes(self) -> str:
         return 'text-start'
+
+    def get_cell_classes(self, board: Board) -> str:
+        return 'text-start text-nowrap overflow-hidden text-ellipsis'
 
 
 class WhiteRatingColumn(BoardColumn):
@@ -195,7 +198,9 @@ class BlackNameColumn(BoardColumn):
         )
 
     def get_cell_classes(self, board: Board) -> str:
-        return 'text-start' + (' fst-italic' if board.exempt else '')
+        return 'text-start text-nowrap overflow-hidden text-ellipsis' + (
+            ' fst-italic' if board.exempt else ''
+        )
 
 
 class BlackRatingColumn(BoardColumn):
@@ -217,7 +222,8 @@ class BlackRealPointsColumn(BoardColumn):
         return ''
 
     def get_cell_content(self, board: Board) -> Any:
-        return getattr(board.black_player, 'points_str', '')
+        real_points = getattr(board.black_player, 'points_str', '')
+        return f'[{real_points}]' if real_points else ''
 
     @property
     def shared_classes(self) -> str:

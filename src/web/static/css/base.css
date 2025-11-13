@@ -874,3 +874,7 @@ input[type="color"].form-control {
     margin: 1rem 0;
     background-color: rgba(var(--bs-body-bg-rgb), 0.30) ;
 }
+
+.text-ellipsis {
+    text-overflow: ellipsis
+}
