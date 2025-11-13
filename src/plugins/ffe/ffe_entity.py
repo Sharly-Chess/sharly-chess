@@ -6,9 +6,14 @@ from types import UnionType
 from typing import override, Any
 
 from common.exception import SharlyChessException, OptionError
-from common.i18n import _
 from common.i18n.utils import unicode_normalize
 from data.columns.player_datasheet import DatasheetColumn
+from data.criteria.player_filter_options import (
+    PlayerFilterOption,
+    SelectPlayerFilterOption,
+    ExcludeFilterOption,
+)
+from data.criteria.player_filters import PlayerFilter
 from data.input_output.data_source import (
     FidePlayerComparator,
     PlayerComparator,
@@ -19,18 +24,12 @@ from data.input_output.data_source import (
 )
 from data.player import Player
 from data.print_documents import PlayerSplitter
-from data.criteria.player_filter_options import (
-    PlayerFilterOption,
-    SelectPlayerFilterOption,
-    ExcludeFilterOption,
-)
-from data.criteria.player_filters import PlayerFilter
 from data.print_documents.documents import QRCodePrintDocument, TournamentPrintOption
 from data.print_documents.qrcode_types import QRCodeType
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourcePlayerDatabase
-from plugins.ffe import PLUGIN_NAME, PLUGIN_DIR
+from plugins.ffe import _, PLUGIN_NAME, PLUGIN_DIR
 from plugins.ffe.ffe_database import FfeDatabase, PlayerFFELicence
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.utils import FFEUtils

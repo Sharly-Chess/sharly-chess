@@ -1,9 +1,9 @@
-from functools import partial
 import re
 import shutil
-import time
 import tempfile
+import time
 from datetime import datetime
+from functools import partial
 from logging import Logger
 from pathlib import Path
 from typing import Any
@@ -12,15 +12,14 @@ from AdvancedHTMLParser import AdvancedHTMLParser, AdvancedTag
 from requests import Session
 from requests.exceptions import ConnectionError, Timeout, RequestException, HTTPError
 
-from common.i18n import _
 from common.logger import get_logger
 from data.event import Event
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from plugins import ffe
-from plugins.ffe import PLUGIN_NAME
-from plugins.ffe.utils import FFEUtils
+from plugins.ffe import _, PLUGIN_NAME
 from plugins.ffe.papi_converter import PapiConverter
+from plugins.ffe.utils import FFEUtils
 from plugins.utils import PluginUtils
 
 logger: Logger = get_logger()

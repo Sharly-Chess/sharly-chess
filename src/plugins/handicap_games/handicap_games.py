@@ -3,8 +3,7 @@ from typing import Any, TYPE_CHECKING
 
 from packaging.version import Version
 
-from common.i18n import _
-from plugins.handicap_games import PLUGIN_NAME
+from plugins.handicap_games import _, PLUGIN_NAME
 from plugins.handicap_games.utils import (
     HandicapGameUtils,
     HandicapGamesTournamentPluginData,
@@ -15,7 +14,6 @@ from plugins.utils import (
     Plugin,
     PluginData,
 )
-
 from utils.time_control import parse_time_control_trf25
 from web.controllers.base_controller import WebContext
 

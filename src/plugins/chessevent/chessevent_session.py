@@ -5,8 +5,8 @@ from requests import Session, Response
 from requests.exceptions import RequestException
 
 from common import SharlyChessException
-from common.i18n import _
 from common.logger import get_logger
+from plugins.chessevent import _
 from plugins.chessevent.chessevent_status import (
     AuthErrorChessEventStatus,
     UnauthorizedErrorChessEventStatus,

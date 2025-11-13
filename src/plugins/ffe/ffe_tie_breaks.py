@@ -6,7 +6,6 @@ from types import UnionType
 from typing import TYPE_CHECKING, Any
 
 from common.exception import OptionError
-from common.i18n import _, ngettext
 from data.pairing import Pairing
 from data.pairings import PairingSystem
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
@@ -19,7 +18,7 @@ from data.tie_breaks.tie_breaks import (
     StandardBuchholzTieBreak,
     SumOfBuchholzTieBreak,
 )
-from plugins.ffe import PLUGIN_NAME
+from plugins.ffe import _, ngettext, PLUGIN_NAME
 from utils import Utils
 from utils.entity import IdentifiableEntity, EntityManager
 from utils.enum import Result

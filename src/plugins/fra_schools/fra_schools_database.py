@@ -12,7 +12,6 @@ import requests
 from database.sqlite.sqlite_database import SQLiteDatabase
 from packaging.version import Version
 
-from common.i18n import _
 from common.logger import get_logger
 from database.sqlite.local_source_database import LocalSourceDatabase
 from database.sqlite.local_source_database.actions import AutoUpdateOutdatedAction
@@ -20,7 +19,7 @@ from database.sqlite.local_source_database.delays import MonthFirstDayOutdatedDe
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
 
 from plugins import fra_schools
-from plugins.fra_schools import PLUGIN_DIR
+from plugins.fra_schools import _, PLUGIN_DIR
 from utils import Utils
 
 logger: Logger = get_logger()

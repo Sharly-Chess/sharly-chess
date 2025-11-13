@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from common.i18n import _
+from plugins.chessevent import _
 from utils.entity import IdentifiableEntity
 
 

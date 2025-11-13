@@ -6,56 +6,81 @@ from logging import Logger
 from pathlib import Path
 
 from common import BASE_DIR, TMP_DIR
+from common.i18n.babel_wrapper import BabelDomainWrapper
+from common.i18n.domains import Domain
+from common.i18n.locale_info import DomainLocaleInfo
+from common.i18n.translators import Translator
 from common.i18n.utils import locale_flag_url, locale_localized_name
-from common.i18n.babel_wrapper import BabelWrapper
-from common.i18n.locale_info import LocaleInfo
 from common.logger import get_logger
 from utils.file import text_files_fingerprint, text_file_fingerprint
 
 logger: Logger = get_logger()
 
 
-class BabelUpdater(BabelWrapper):
-    """A utility class to update translations."""
+class BabelDomainUpdater(BabelDomainWrapper):
+    """A utility class to update translations for a plugin (or the core)."""
 
     def __init__(
         self,
-        locale_infos: dict[str, LocaleInfo],
+        domain_id: str | None,
+        locales: list[str],
         default_locale: str,
     ):
-        self.tmp_dir: Path = TMP_DIR / 'i18n'
+        super().__init__(domain_id)
+        self.tmp_dir: Path = TMP_DIR / 'i18n' / self.name
         self.tmp_dir.mkdir(parents=True, exist_ok=True)
-        self.locale_infos: dict[str, LocaleInfo] = locale_infos
+        self.domain_locale_infos: dict[str, DomainLocaleInfo] = {
+            locale: DomainLocaleInfo(self.id, locale, default_locale)
+            for locale in locales
+        }
+        self.translators: dict[str, list[Translator]] = Translator.get_translators(
+            locales
+        )
         self.default_locale: str = default_locale
 
     def update(
         self,
-        generate_doc: bool,
+        clean: bool,
     ):
         """Update all the files that need to updated (POT, PO, MO), and check the translations."""
-        logger.debug('Checking if i18n source files have been updated...')
+        if clean:
+            self.pot_file.unlink(missing_ok=True)
+            for domain_locale_info in self.domain_locale_infos.values():
+                domain_locale_info.mo_file.unlink(missing_ok=True)
+        logger.debug(
+            'Domain [%s]: checking if i18n source files have been updated...', self.name
+        )
         old_sources_fingerprint: bytes = self.get_sources_fingerprint_for_pot()
         new_sources_fingerprint: bytes = text_files_fingerprint(self.sources)
         build_pot: bool = False
         if not self.pot_file.exists():
             build_pot = True
-            logger.info('POT file not found, extracting i18n strings...')
+            logger.info(
+                'Domain [%s]: POT file not found, extracting i18n strings...', self.name
+            )
         elif old_sources_fingerprint != new_sources_fingerprint:
             build_pot = True
-            logger.info('Source files have changed, extracting i18n strings...')
+            logger.info(
+                'Domain [%s]: source files have changed, extracting i18n strings...',
+                self.name,
+            )
         else:
-            logger.debug('Source files unchanged, no need to extract i18n strings.')
+            logger.debug(
+                'Domain [%s]: source files unchanged, no need to extract i18n strings.',
+                self.name,
+            )
         if build_pot:
             self.extract_i18n_strings()
-            logger.info('Wrote POT file.')
+            logger.info('Domain [%s]: wrote POT file.', self.name)
             self.store_sources_fingerprint_for_pot()
-        for locale, locale_info in self.locale_infos.items():
+        for locale, locale_info in self.domain_locale_infos.items():
             po_file: Path = self.locale_po_file(locale)
             build_po: bool = False
             if not po_file.exists():
                 build_po = True
                 logger.info(
-                    'PO file not found for locale [%s], generating from POT file...',
+                    'Domain [%s]: PO file not found for locale [%s], generating from POT file...',
+                    self.name,
                     locale,
                 )
             elif text_file_fingerprint(
@@ -63,21 +88,28 @@ class BabelUpdater(BabelWrapper):
             ) != self.get_pot_fingerprint_for_po(locale):
                 build_po = True
                 logger.info(
-                    'POT file has changed for locale [%s], updating PO file...', locale
+                    'Domain [%s]: POT file has changed for locale [%s], updating PO file...',
+                    self.name,
+                    locale,
                 )
             elif text_file_fingerprint(po_file) != self.get_po_fingerprint_for_pot(
                 locale
             ):
                 build_po = True
-                logger.info('PO file has changed for locale [%s], updating...', locale)
+                logger.info(
+                    'Domain [%s]: PO file has changed for locale [%s], updating...',
+                    self.name,
+                    locale,
+                )
             else:
                 logger.info(
-                    'POT file unchanged for locale [%s], no need to update the PO file...',
+                    'Domain [%s]: POT file unchanged for locale [%s], no need to update the PO file...',
+                    self.name,
                     locale,
                 )
             if build_po:
                 self.update_po_file(locale)
-                logger.info('Wrote PO file.')
+                logger.info('Domain [%s]: wrote PO file.', self.name)
                 self.store_pot_fingerprint_for_po(locale)
                 self.store_po_fingerprint_for_pot(locale)
             po_errors: bool = locale_info.control()
@@ -89,55 +121,68 @@ class BabelUpdater(BabelWrapper):
             if not mo_file.exists():
                 build_mo = True
                 logger.info(
-                    'MO file not found for locale [%s], generating from PO file...',
+                    'Domain [%s]: MO file not found for locale [%s], generating from PO file...',
+                    self.name,
                     locale,
                 )
             elif po_fingerprint != old_po_for_mo_fingerprint:
                 build_mo = True
                 logger.info(
-                    'PO file has changed since last MO file generation for locale [%s], updating MO file...',
+                    'Domain [%s]: PO file has changed since last MO file generation for locale [%s], updating MO file...',
+                    self.name,
                     locale,
                 )
             elif po_errors:
                 build_mo = True
                 logger.info(
-                    'Errors found for locale [%s], rebuilding MO file...', locale
+                    'Domain [%s]: errors found for locale [%s], rebuilding MO file...',
+                    self.name,
+                    locale,
                 )
             else:
                 logger.info(
-                    'PO file unchanged for locale [%s], no need to update the MO file...',
+                    'Domain [%s]: PO file unchanged for locale [%s], no need to update the MO file...',
+                    self.name,
                     locale,
                 )
             if build_mo:
                 self.store_po_for_mo_fingerprint(locale)
                 self.update_mo_file(locale)
-                logger.info('Wrote MO file.')
-                if generate_doc:
-                    self.write_markdown()
+                logger.info('Domain [%s]: wrote MO file.', self.name)
         ok: bool = True
-        logger.info('Checking the translations...')
-        for locale_info in self.locale_infos.values():
+        logger.info('Domain [%s]: checking the translations...', self.name)
+        for locale_info in self.domain_locale_infos.values():
             if locale_info.error_messages:
-                logger.error('Translations are not valid for some locales.')
+                logger.error(
+                    'Domain [%s]: translations are not valid for some locales.',
+                    self.name,
+                )
                 ok = False
                 break
-        for locale_info in self.locale_infos.values():
+        for locale_info in self.domain_locale_infos.values():
             if locale_info.empty_mandatory_messages:
-                logger.error('Mandatory translations are missing for some locales.')
+                logger.error(
+                    'Domain [%s]: mandatory translations are missing for some locales.',
+                    self.name,
+                )
                 ok = False
                 break
-        for locale_info in self.locale_infos.values():
+        for locale_info in self.domain_locale_infos.values():
             if not locale_info.default and locale_info.empty_optional_messages:
-                logger.warning('Translations are missing for some locales.')
+                logger.warning(
+                    'Domain [%s]: translations are missing for some locales.', self.name
+                )
                 ok = False
                 break
-        for locale_info in self.locale_infos.values():
+        for locale_info in self.domain_locale_infos.values():
             if locale_info.flagged_messages:
-                logger.warning('Translations are flagged for some locales.')
+                logger.warning(
+                    'Domain [%s]: translations are flagged for some locales.', self.name
+                )
                 ok = False
                 break
         if ok:
-            logger.info('Translations OK.')
+            logger.info('Domain [%s]: translations OK.', self.name)
         return ok
 
     def sources_for_pot_fingerprint_file(self) -> Path:
@@ -171,9 +216,11 @@ class BabelUpdater(BabelWrapper):
                     pattern_found = True
                     files += BASE_DIR.glob(matches.group(1))
         if not pattern_found:
-            raise FileNotFoundError(f'No file pattern found in [{self.config_file}].')
+            raise FileNotFoundError(
+                f'Domain {self.name}: no file pattern found in [{self.config_file}].'
+            )
         if not files:
-            raise FileNotFoundError('No source file found.')
+            raise FileNotFoundError(f'Domain {self.name}: No source file found.')
         return files
 
     def pot_for_po_fingerprint_file(
@@ -254,64 +301,14 @@ class BabelUpdater(BabelWrapper):
         with open(self.po_for_mo_fingerprint_file(locale), 'wb') as f:
             return f.write(text_file_fingerprint(self.locale_po_file(locale)))
 
-    def write_markdown(self):
-        """Update the i18n doc file with the status of the translations."""
-        new_signature, new_lines = self.markdown_variable_part()
-        doc_file: Path = BASE_DIR / 'docs' / 'technical-appendices' / 'i18n.md'
-        start_lines: list[str] = []
-        end_lines: list[str] = []
-        with open(doc_file, 'rt', encoding='utf-8') as f:
-            start_comment_pattern: re.Pattern = re.compile(
-                r'^<!-- DO NOT EDIT! \(START ([^)]+)\) -->'
-            )
-            start_comment: str = '<!-- DO NOT EDIT! (START {signature}) -->'
-            start_comment_found: bool = False
-            for line in f:
-                if matches := start_comment_pattern.match(line):
-                    if new_signature == matches.group(1):
-                        logger.info(f'[{doc_file}] unchanged.')
-                        return
-                    start_comment_found = True
-                    break
-                start_lines.append(line)
-            if not start_comment_found:
-                logger.error(
-                    f'Could not edit [{doc_file}] (comment [{start_comment.format(signature="signature")}] not found).'
-                )
-                return
-            end_comment: str = '<!-- DO NOT EDIT! (END) -->'
-            end_comment_found: bool = False
-            for line in f:
-                if end_comment_found:
-                    end_lines.append(line)
-                if line.startswith(end_comment):
-                    end_comment_found = True
-            if not end_comment_found:
-                logger.error(
-                    f'Could not edit [{doc_file}] (comment [{end_comment}] not found).'
-                )
-                return
-        with open(doc_file, 'w', encoding='utf-8') as f:
-            for line in (
-                start_lines
-                + [
-                    f'{start_comment.format(signature=new_signature)}\n',
-                ]
-                + new_lines
-                + [
-                    f'{end_comment}\n',
-                ]
-                + end_lines
-            ):
-                f.write(line)
-        logger.info('Wrote [%s].', doc_file)
-
-    def markdown_variable_part(self) -> tuple[str, list[str]]:
-        """Returns the variable part of the i18n doc file and a signature and a list of strings."""
+    def markdown(self) -> str:
+        """Returns the markdown associated to the plugin (or core)."""
         lines: list[str] = []
         flags: set[str] = set()
-        for locale in self.locale_infos:
-            for flag in sorted(list(self.locale_infos[locale].flagged_messages.keys())):
+        for locale in self.domain_locale_infos:
+            for flag in sorted(
+                list(self.domain_locale_infos[locale].flagged_messages.keys())
+            ):
                 flags.add(flag)
         headers: list[str] = [
             'Locale',
@@ -326,67 +323,45 @@ class BabelUpdater(BabelWrapper):
         ]
         lines.append('| ' + ' | '.join(headers) + ' |\n')
         lines.append('|--' + ('|:--:' * (len(headers) - 1)) + '|\n')
-        locale_signatures: list[str] = []
-        for locale, locale_info in self.locale_infos.items():
-            locale_signature: str = f'{locale}|{len(locale_info.messages)}|{len(locale_info.empty_optional_messages)}|{len(locale_info.empty_mandatory_messages)}'
+        for locale, locale_info in self.domain_locale_infos.items():
             line: str = f'|<img src="../../src/web{locale_flag_url(locale)}" style="height: 1em;"/>&nbsp;``{locale}``&nbsp;{locale_localized_name(locale)} '
             line += f'| {len(locale_info.messages)} '
             line += f'| {len(locale_info.empty_optional_messages)} '
             line += f'| {len(locale_info.empty_mandatory_messages)} '
             for flag in flags:
                 line += f'| {len(locale_info.flagged_messages.get(flag, []))} '
-                locale_signature += (
-                    f'|{len(locale_info.flagged_messages.get(flag, []))}'
-                )
-            locale_signatures.append(locale_signature)
-            line += (
-                f'| [{locale_info.po_file.name}]('
-                + '/'.join(
-                    reversed(
-                        [
-                            locale_info.po_file.name,
-                        ]
-                        + [d.name for d in locale_info.po_file.parents[:3]]
-                        + [
-                            '..',
-                        ]
-                    )
-                )
-                + ') '
-            )
+            line += f'| [{locale_info.po_file.name}](../../{"/".join(d.name for d in reversed(locale_info.po_file.relative_to(BASE_DIR).parents))}) '
             translator_strings: list[str] = []
-            for translator in locale_info.translators:
-                if translator['github_user']:
+            for translator in self.translators[locale]:
+                if translator.github_user:
                     translator_strings.append(
-                        f'[{translator["name"]}](https://github.com/{translator["github_user"]})'
+                        f'[{translator.name}](https://github.com/{translator.github_user})'
                     )
                 else:
-                    translator_strings.append(translator['name'] or '')
+                    translator_strings.append(translator.name)
             line += f'| {"<br/>".join(translator_strings)} |\n'
             lines.append(line)
-        lines.append(
-            f'Last update: {datetime.strftime(datetime.fromtimestamp(time.time()), "%Y-%m-%d %H:%M")}\n'
-        )
-        return '|'.join(locale_signatures), lines
+        return ''.join(lines)
 
     def create_absent_mo_files(self):
         """Creates the MO files when not found (used when first pulling the repository and for testing on GitHub)."""
-        for locale, locale_info in self.locale_infos.items():
+        for locale, locale_info in self.domain_locale_infos.items():
             mo_file: Path = self.locale_mo_file(locale)
             if not mo_file.exists():
                 logger.info(
-                    'MO file not found for locale [%s], generating from PO file...',
+                    'Domain [%s]: MO file not found for locale [%s], generating from PO file...',
+                    self.name,
                     locale,
                 )
                 self.update_mo_file(locale)
-                logger.info('Wrote MO file.')
+                logger.info('Domain [%s]: wrote MO file.', self.name)
                 self.store_po_for_mo_fingerprint(locale)
 
     def update_mo_files(
         self,
     ):
         """Only update the MO files if the PO files have changed."""
-        for locale, locale_info in self.locale_infos.items():
+        for locale, locale_info in self.domain_locale_infos.items():
             po_file: Path = self.locale_po_file(locale)
             mo_file: Path = self.locale_mo_file(locale)
             old_po_for_mo_fingerprint: bytes = self.get_po_fingerprint_for_mo(locale)
@@ -395,21 +370,120 @@ class BabelUpdater(BabelWrapper):
             if not mo_file.exists():
                 build_mo = True
                 logger.info(
-                    'MO file not found for locale [%s], generating from PO file...',
+                    'Domain [%s]: MO file not found for locale [%s], generating from PO file...',
+                    self.name,
                     locale,
                 )
             elif po_fingerprint != old_po_for_mo_fingerprint:
                 build_mo = True
                 logger.info(
-                    'PO file has changed since last MO file generation for locale [%s], updating MO file...',
+                    'Domain [%s]: PO file has changed since last MO file generation for locale [%s], updating MO file...',
+                    self.name,
                     locale,
                 )
             else:
                 logger.debug(
-                    'PO file unchanged for locale [%s], no need to update the MO file...',
+                    'Domain [%s]: PO file unchanged for locale [%s], no need to update the MO file...',
+                    self.name,
                     locale,
                 )
             if build_mo:
                 self.store_po_for_mo_fingerprint(locale)
                 self.update_mo_file(locale)
                 logger.info('Wrote MO file.')
+
+
+class BabelUpdater:
+    """A utility class to update translations."""
+
+    def __init__(
+        self,
+        domains: list['Domain'],
+        locales: list[str],
+        default_locale: str,
+    ):
+        self.babel_domain_updaters: dict['Domain', BabelDomainUpdater] = {
+            domain: BabelDomainUpdater(domain.id, locales, default_locale)
+            for domain in domains
+        }
+
+    def update(
+        self,
+        clean: bool = False,
+        generate_doc: bool = False,
+    ):
+        """For (the core and) all the plugins, update all the files that need to updated (POT, PO, MO), and check the translations."""
+        ok: bool = all(
+            babel_domain_updater.update(clean=clean)
+            for babel_domain_updater in self.babel_domain_updaters.values()
+        )
+        if generate_doc:
+            self.write_markdown()
+        return ok
+
+    def write_markdown(self):
+        """For (the core and) all the plugins, update all the files that need to updated (POT, PO, MO), and check the translations."""
+        doc_file: Path = BASE_DIR / 'docs' / 'technical-appendices' / 'i18n.md'
+        start_lines: list[str] = []
+        end_lines: list[str] = []
+        with open(doc_file, 'rt', encoding='utf-8') as f:
+            start_comment: str = '<!-- DO NOT EDIT! (START) -->'
+            start_comment_found: bool = False
+            for line in f:
+                if line.startswith(start_comment):
+                    start_comment_found = True
+                    break
+                start_lines.append(line)
+            if not start_comment_found:
+                logger.error(
+                    f'Could not edit [{doc_file}] (comment [{start_comment}] not found).'
+                )
+                return
+            end_comment: str = '<!-- DO NOT EDIT! (END) -->'
+            end_comment_found: bool = False
+            for line in f:
+                if end_comment_found:
+                    end_lines.append(line)
+                if line.startswith(end_comment):
+                    end_comment_found = True
+            if not end_comment_found:
+                logger.error(
+                    f'Could not edit [{doc_file}] (comment [{end_comment}] not found).'
+                )
+                return
+        new_content: str = ''.join(
+            [
+                f'### {babel_domain_updater.name}\n\n{babel_domain_updater.markdown()}'
+                for babel_domain_updater in self.babel_domain_updaters.values()
+            ]
+        )
+        with open(doc_file, 'w', encoding='utf-8') as f:
+            for line in (
+                [
+                    f'Last update: {datetime.strftime(datetime.fromtimestamp(time.time()), "%Y-%m-%d %H:%M")}\n\n'
+                ]
+                + start_lines
+                + [
+                    f'{start_comment}\n',
+                ]
+                + [new_content]
+                + [
+                    f'{end_comment}\n',
+                ]
+                + end_lines
+            ):
+                f.write(line)
+        logger.info('Wrote [%s].', doc_file)
+
+    def create_absent_mo_files(self):
+        """For all the domains, creates the MO files when not found
+        (used when first pulling the repository and for testing on GitHub)."""
+        for babel_plugin_updater in self.babel_domain_updaters.values():
+            babel_plugin_updater.create_absent_mo_files()
+
+    def update_mo_files(
+        self,
+    ):
+        """ ""For all the domains, only update the MO files if the PO files have changed."""
+        for babel_domain_updater in self.babel_domain_updaters.values():
+            babel_domain_updater.update_mo_files()

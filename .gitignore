@@ -40,8 +40,8 @@ __pycache__/
 .DS_Store
 
 # Messages binaries
-/locale/*/LC_MESSAGES/messages.mo
-/locale/messages.pot
+messages.mo
+messages.pot
 
 # log and mprof files
 *.log

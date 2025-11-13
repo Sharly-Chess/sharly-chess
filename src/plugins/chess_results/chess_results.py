@@ -2,13 +2,16 @@ from typing import Any, TYPE_CHECKING, Iterable
 
 from packaging.version import Version
 
-from common.i18n import _
 from data.print_documents import QRCodeType
 from database.sqlite.event.event_database import EventDatabase
+from plugins.chess_results import _, MAX_TIE_BREAKS, PLUGIN_NAME
 from plugins.chess_results.chess_results_background_uploader import (
     ChessResultsUploadStatus,
     EventLoader,
     ChessResultsBackgroundUploader,
+)
+from plugins.chess_results.chess_results_event_controller import (
+    ChessResultsAdminEventController,
 )
 from plugins.chess_results.chess_results_qrcode import ChessResultsQRCodeType
 from plugins.chess_results.chess_results_tournament_controller import (
@@ -22,19 +25,13 @@ from plugins.chess_results.utils import (
     ChessResultsTournamentPluginData,
     ChessResultsUtils,
 )
-from plugins.chess_results import MAX_TIE_BREAKS, PLUGIN_NAME
-from plugins.chess_results.chess_results_event_controller import (
-    ChessResultsAdminEventController,
-)
 from plugins.hookspec import hookimpl
 from plugins.utils import (
     NavUploadItem,
     Plugin,
     PluginData,
 )
-
 from web.controllers.base_controller import BaseController, WebContext
-
 
 if TYPE_CHECKING:
     from data.event import Event

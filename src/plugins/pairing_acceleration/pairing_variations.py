@@ -4,12 +4,11 @@ from functools import cache, partial
 from math import ceil
 from typing import Callable, Iterable
 
-from common.i18n import _
 from data.pairings.settings import PairingSetting
 from data.pairings.variations import SwissVariation
 from data.player import Player
 from data.tournament import Tournament
-from plugins.pairing_acceleration import PLUGIN_NAME
+from plugins.pairing_acceleration import _, PLUGIN_NAME
 from plugins.pairing_acceleration.pairing_settings import (
     AccelerationGroup,
     GroupA2GroupsSetting,

@@ -3,7 +3,6 @@ from types import UnionType
 from typing import Any, Counter, Callable
 
 from common.exception import OptionError
-from common.i18n import _
 from data.columns.player_datasheet import DatasheetColumn
 from data.criteria.player_filter_options import (
     SelectPlayerFilterOption,
@@ -14,7 +13,7 @@ from data.criteria.player_filters import PlayerFilter
 from data.player import Player
 from data.print_documents import PlayerSplitter
 from data.tournament import Tournament
-from plugins.fra_schools import PLUGIN_NAME
+from plugins.fra_schools import _, PLUGIN_NAME
 from plugins.fra_schools.fra_schools_database import FRASchoolsDatabase
 from plugins.fra_schools.utils import FRASchoolsUtils, FRASchool
 from plugins.utils import PluginUtils

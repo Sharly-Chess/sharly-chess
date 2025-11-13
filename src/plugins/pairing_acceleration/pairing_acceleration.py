@@ -2,13 +2,12 @@ from types import ModuleType
 
 from packaging.version import Version
 
-from common.i18n import _
 from data.pairings.variations import SwissVariation, StandardSwissVariation
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament
 from plugins.hookspec import hookimpl
 from plugins.migration import PluginMigrationManager
-from plugins.pairing_acceleration import PLUGIN_NAME, migrations
+from plugins.pairing_acceleration import _, PLUGIN_NAME, migrations
 from plugins.pairing_acceleration.pairing_variations import (
     HaleySwissVariation,
     HaleySoftSwissVariation,

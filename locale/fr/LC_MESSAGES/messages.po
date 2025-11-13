@@ -4,9 +4,6 @@ msgstr " [{default_choice} : {default_value}] : "
 msgid " [{yes_answer}/{no_answer}]?"
 msgstr " [{yes_answer}/{no_answer}] ?"
 
-msgid "\"Niçois\" accelerated system"
-msgstr "Système accéléré niçois"
-
 #, python-format
 msgid "#%(board_number)d"
 msgstr "n°%(board_number)d"
@@ -195,12 +192,6 @@ msgstr "-"
 msgid "- *** SHORT NAME FOR GENDER NONE"
 msgstr "-"
 
-msgid "/<moves>"
-msgstr "/<moves>"
-
-msgid "/move"
-msgstr "/cp"
-
 msgid "0 - 0 (U)"
 msgstr "0 - 0 (NC)"
 
@@ -276,47 +267,11 @@ msgstr "<b>1.4.8b</b> Le score minimum requis pour toutes les normes est de 35 %
 msgid "<b>Delete</b> from the tournament"
 msgstr "<b>Supprimer</b> du tournoi"
 
-msgid "<first> and <second>"
-msgstr "<first> et <second>"
-
-msgid "<first> then <second>"
-msgstr "<first> puis <second>"
-
-msgid "<first>, <second>"
-msgstr "<first>, <second>"
-
-msgid "<side>: <text>"
-msgstr "<side> : <text>"
-
-msgid "<smart_count> day |||| <smart_count> days"
-msgstr "<smart_count> jour |||| <smart_count> jours"
-
-msgid "<smart_count> hour |||| <smart_count> hours"
-msgstr "<smart_count> heure |||| <smart_count> heures"
-
-msgid "<smart_count> minute |||| <smart_count> minutes"
-msgstr "<smart_count> minute |||| <smart_count> minutes"
-
-msgid "<smart_count> move |||| <smart_count> moves"
-msgstr "<smart_count> coup |||| <smart_count> coups"
-
-msgid "<smart_count> second |||| <smart_count> seconds"
-msgstr "<smart_count> seconde |||| <smart_count> secondes"
-
-msgid "<smart_count> week |||| <smart_count> weeks"
-msgstr "<smart_count> semaine |||| <smart_count> semaines"
-
-msgid "A - Competition *** FFE licence"
-msgstr "A - Compétition"
-
 msgid "A URL, or the path to the rules file on the server, in PDF format."
 msgstr "Une URL, ou l'emplacement du règlement sur le serveur, au format PDF."
 
 msgid "A file is expected."
 msgstr "Un fichier est attendu."
-
-msgid "A non-empty string is expected"
-msgstr "Une chaîne de caractères non vide est attendue"
 
 msgid "A plugin specific to this federation is used, it can no longer be modified."
 msgstr "Un plug-in spécifique à cette fédération est utilisé, elle ne peut plus être modifiée."
@@ -338,15 +293,6 @@ msgstr "Absent·e"
 
 msgid "Absolute"
 msgstr "Préférence absolue"
-
-msgid "Accelerated pairings"
-msgstr "Appariements accélérés"
-
-msgid "Accelerated variations of the swiss pairing system."
-msgstr "Variantes accélérées du système d'appariements suisse."
-
-msgid "Acceleration groups"
-msgstr "Groupes d'accélération"
 
 msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
 msgstr "Les caractères acceptés sont les lettres, chiffres, souligné (« tiret du 8 ») et moins (« tiret du 6 »)."
@@ -435,9 +381,6 @@ msgstr "Ajouter un prix à la liste."
 msgid "Add a rotator to the event."
 msgstr "Ajouter un écran rotatif à l'évènement."
 
-msgid "Add a school to the options."
-msgstr "Ajouter un établissement aux options."
-
 msgid "Add a screen to check-in players or enter results."
 msgstr "Ajouter un écran de pointage des joueur·euses ou de saisie des résultats."
 
@@ -491,12 +434,6 @@ msgstr "Ajouter des écrans"
 
 msgid "Add tournaments"
 msgstr "Ajouter des tournois"
-
-msgid "Adds features for handicap tournaments where weaker players are given a time advantage."
-msgstr "Ajoute des fonctionnalités pour les tournois avec handicap, où les joueur·euses les moins fort·es bénéficient d’un avantage de temps."
-
-msgid "Adds support for school competitions in France"
-msgstr "Ajoute la prise en charge des compétitions scolaires en France"
 
 msgid "Administration"
 msgstr "Administration"
@@ -582,9 +519,6 @@ msgstr "Autorise l'appariement des joueur·euses, en utilisant un moteur d'appar
 msgid "An error occurred. Consult the logs for more details."
 msgstr "Une erreur s'est produite. Consultez les logs pour plus de détails."
 
-msgid "An unexpected error occurred, either in Sharly Chess or in ChessEvent. Consult the logs for more details."
-msgstr "Une erreur inattendue s'est produite, soit dans Sharly Chess soit dans ChessEvent. Consultez les logs pour plus d'informations."
-
 msgid "An unexpected error occurred."
 msgstr "Une erreur inattendue s'est produite."
 
@@ -649,26 +583,14 @@ msgstr "Au moins une catégorie d'age est attendue."
 msgid "At least one club is expected."
 msgstr "Au moins un club est attendu."
 
-msgid "At least one department is expected."
-msgstr "Au moins un département est attendu."
-
 msgid "At least one federation is expected."
 msgstr "Au moins une fédération est attendue."
-
-msgid "At least one league is expected."
-msgstr "Au moins une ligue est attendue."
-
-msgid "At least one licence type is expected."
-msgstr "Au moins un type de licence est attendu."
 
 msgid "At least one player is expected."
 msgstr "Au moins un·e joueur·euse doit être sélectionné·e."
 
 msgid "At least one rating type is expected."
 msgstr "Au moins un type de classement est attendu."
-
-msgid "At least one school is expected."
-msgstr "Au moins un établissement est attendu."
 
 msgid "At least one value is expected."
 msgstr "Au moins une valeur est attendue."
@@ -679,32 +601,8 @@ msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] "Au plus %(num)d coup illegal est enregistré."
 msgstr[1] "Au plus %(num)d coups illégaux sont enregistrés."
 
-msgid "Authentication failed"
-msgstr "Authentification échouée"
-
-msgid "Authentication failed."
-msgstr "L'authentification a échoué."
-
-msgid "Authentication failed. Please check your credentials and try again."
-msgstr "Authentification échouée. Merci de vérifier vos identifiants et réessayer."
-
 msgid "Auto-update"
 msgstr "Mise à jour"
-
-msgid "Auto-upload disabled"
-msgstr "Mise en ligne automatique désactivée"
-
-msgid "Auto-upload enabled"
-msgstr "Mise en ligne automatique activée"
-
-msgid "Auto-upload results"
-msgstr "Mise en ligne automatique des résultats"
-
-msgid "Auto-upload:"
-msgstr "Mise en ligne automatique :"
-
-msgid "Automatic"
-msgstr "Automatique"
 
 msgid "Average"
 msgstr "Moyenne"
@@ -730,9 +628,6 @@ msgstr "N"
 msgid "B *** BLACK COLOR FOR PLACE CARDS"
 msgstr "N"
 
-msgid "B - Leisure *** FFE licence"
-msgstr "B - Loisir"
-
 msgid "BLACK PLAYER"
 msgstr "JOUEUR·EUSE NOIRS"
 
@@ -755,9 +650,6 @@ msgstr "Couleur de fond : %(color)s"
 msgid "Background image:"
 msgstr "Image de fond :"
 
-msgid "Baku acceleration system"
-msgstr "Système d'accélération de Bakou"
-
 msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
 msgstr "Ech."
 
@@ -775,9 +667,6 @@ msgstr "Grille Berger"
 
 msgid "Black"
 msgstr "Noirs"
-
-msgid "Black pairings are supposed to have an opponent"
-msgstr "Les appariements avec les Noirs sont censés avoir un·e adversaire."
 
 msgid "Black wins"
 msgstr "Victoire Noirs"
@@ -855,9 +744,6 @@ msgstr "Bordure"
 msgid "Buchholz"
 msgstr "Buchholz"
 
-msgid "Buchholz cut"
-msgstr "Buchholz tronqué"
-
 msgid "Buchholz score calculated as if all paired games for the final round had ended in draws."
 msgstr "Score Buchholz calculé comme si toutes les parties appariées pour la dernière ronde s'étaient terminées en match nul."
 
@@ -869,9 +755,6 @@ msgstr "Par défaut, les autres appareils ne peuvent qu'interagir avec les écra
 
 msgid "By default, this tie-break is disabled when there are unrated players ({count} in the tournament). You must specify that the player estimation is explained in the rules."
 msgstr "Par défaut, ce départage est désactivé lorsqu'il y a des joueur·euses non-classé·es ({count} dans le tournoi). Vous devez spécifier que l'estimation des joueur·euses est expliquée dans le règlement."
-
-msgid "By default, tournaments are not visible on the FFE site."
-msgstr "Par défaut, les tournois ne sont pas visibles sur le site de la FFE."
 
 #, python-format
 msgid "By default: %(minutes)d minutes"
@@ -960,15 +843,6 @@ msgstr "Cochez la case pour autoriser les autres écrans à afficher un lien ver
 msgid "Check the box to allow other screens to display a link to this screen."
 msgstr "Cochez la case pour autoriser les autres écrans à afficher un lien vers cet écran."
 
-msgid "Check the event ID then try again."
-msgstr "Vérifiez l'identifiant de l'évènement puis réessayez."
-
-msgid "Check the tournament name then try again."
-msgstr "Vérifiez le nom du tournoi puis réessayez."
-
-msgid "Check the username and the password then try again."
-msgstr "Vérifiez l'identifiant et le mot de passe puis réessayez."
-
 msgid "Check-in"
 msgstr "Pointage"
 
@@ -1010,42 +884,6 @@ msgstr "Pointé·e"
 msgid "Chess"
 msgstr "Échecs"
 
-msgid "Chess-Results.com"
-msgstr "Chess-Results.com"
-
-msgid "Chess-Results.com only displays {max} tie-breaks. However, the rankings remain the same as in Sharly Chess."
-msgstr "Chess-Results.com n'affiche que {max} départages. Cependant, le classement reste le même  que dans Sharly Chess."
-
-msgid "ChessEvent"
-msgstr "ChessEvent"
-
-msgid "ChessEvent actions are no longer available once the tournament has started."
-msgstr "Les actions ChessEvent ne sont plus disponibles une fois le tournoi démarré."
-
-msgid "ChessEvent event not defined."
-msgstr "L'évènement ChessEvent n'est pas défini."
-
-msgid "ChessEvent event:"
-msgstr "Évènement ChessEvent :"
-
-msgid "ChessEvent password not defined."
-msgstr "Le mot de passe ChessEvent n'est pas défini."
-
-msgid "ChessEvent password:"
-msgstr "Mot de passe ChessEvent :"
-
-msgid "ChessEvent tournament"
-msgstr "Tournoi ChessEvent"
-
-msgid "ChessEvent tournament:"
-msgstr "Nom du tournoi ChessEvent :"
-
-msgid "ChessEvent user name:"
-msgstr "Identifiant ChessEvent :"
-
-msgid "ChessEvent user not defined."
-msgstr "L'identifiant ChessEvent n'est pas défini."
-
 msgid "Chief Arbitration"
 msgstr "Arbitrage en chef·fe"
 
@@ -1061,26 +899,14 @@ msgstr "Choisir au moins une catégorie."
 msgid "Choose at least one club."
 msgstr "Choisir au moins un club."
 
-msgid "Choose at least one department."
-msgstr "Choisir au moins un département."
-
 msgid "Choose at least one federation."
 msgstr "Choisir au moins une fédération."
-
-msgid "Choose at least one league."
-msgstr "Choisir au moins une ligue."
-
-msgid "Choose at least one licence type."
-msgstr "Choisir au moins un type de licence."
 
 msgid "Choose at least one player."
 msgstr "Choisir au moins un·e joueur·euse."
 
 msgid "Choose at least one rating type."
 msgstr "Choisir au moins un type de classement."
-
-msgid "Choose at least one school."
-msgstr "Choisir au moins un établissement."
 
 msgid "Choose families to add"
 msgstr "Choisir des familles à ajouter"
@@ -1099,9 +925,6 @@ msgstr "Choisir les colonnes affichées."
 
 msgid "Choose your language"
 msgstr "Veuillez choisir votre langue"
-
-msgid "City"
-msgstr "Ville"
 
 msgid "Clear Log"
 msgstr "Effacer le journal"
@@ -1149,9 +972,6 @@ msgstr "Club :"
 
 msgid "Clubs"
 msgstr "Clubs"
-
-msgid "Code"
-msgstr "Code"
 
 msgid "Color"
 msgstr "Couleur"
@@ -1211,9 +1031,6 @@ msgstr "Appariements complémentaires générés avec succès !"
 msgid "Configuration"
 msgstr "Configuration"
 
-msgid "Configure the ChessEvent settings of this tournament."
-msgstr "Configurer les paramètres ChessEvent de ce tournoi."
-
 msgid "Configure the tie-breaks of the tournament."
 msgstr "Configurer les départages du tournoi."
 
@@ -1223,9 +1040,6 @@ msgstr "Connectez-vous au réseau Sharly Chess via {type},<br />puis scannez pou
 msgid "Connect to the Sharly Chess network, then scan to access the Sharly Chess server."
 msgstr "Connectez-vous au réseau Sharly Chess, puis scannez pour accéder au serveur Sharly Chess."
 
-msgid "Connection French Chess Federation"
-msgstr "Connexion à la Fédération Française des Échecs"
-
 msgid "Connection established"
 msgstr "Connexion établie"
 
@@ -1234,9 +1048,6 @@ msgstr "Connexion échouée"
 
 msgid "Connection parameters"
 msgstr "Paramètres de connexion"
-
-msgid "Connection to the ChessEvent server failed."
-msgstr "Connection au serveur ChessEvent échouée."
 
 msgid "Connection to the data source [{data_source}] failed. Consult the logs for more details."
 msgstr "Connexion à la source de données [{data_source}] échouée. Consulter les logs pour plus de détails."
@@ -1267,12 +1078,6 @@ msgstr "Contact et inscription"
 
 msgid "Continue"
 msgstr "Continuer"
-
-msgid "Conversion to Papi format failed."
-msgstr "La conversion au format Papi a échoué."
-
-msgid "Copying to tmp .sce file failed."
-msgstr "La copie vers le fichier .sce temporaire a échoué."
 
 msgid "Corners"
 msgstr "Coins"
@@ -1443,9 +1248,6 @@ msgstr "Affiche actuellement l'écran rotatif [{uniq_id}]"
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr "Affiche actuellement l'écran [{uniq_id}]"
 
-msgid "Cut *** TIE BREAK VARIATION"
-msgstr "Tronqué"
-
 msgid "Cut values"
 msgstr "Élaguer des valeurs"
 
@@ -1466,9 +1268,6 @@ msgstr "Un jour"
 
 msgid "Dashed border"
 msgstr "Bordure pointillée"
-
-msgid "Data is already displayed on the FFE website."
-msgstr "Les données sont déjà affichées sur le site web FFE."
 
 #, python-format
 msgid "Data source: %(data_source)s"
@@ -1498,18 +1297,11 @@ msgstr "Date :"
 msgid "Default accounts have been created."
 msgstr "Les comptes par défault ont été créés."
 
-msgid "Default credentials used to import tournaments from the ChessEvent platform."
-msgstr "Identifiants par défaut utilisés pour importer des tournois depuis la plateforme ChessEvent."
-
 msgid "Default handling of players without a FIDE rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. If checked, this rating will also be used for seeding and pairings. If unchecked, they will be treated as unrated and require an estimated rating."
 msgstr "Gestion par défaut des joueur·euses sans classement FIDE rapide/blitz. Pour le calcul des classements FIDE, ces joueur·euses sont considérées comme classé·es avec leur classement FIDE standard. Lorsque cette case est cochée (par défaut), ce classement sera également utilisé pour le classement initial et les appariements. Lorsque non cochée, les joueur·euses seront traité·es comme non classé·es et nécessiteront une estimation."
 
 msgid "Default timer settings"
 msgstr "Paramètres par défaut des chronomètres"
-
-#, python-format
-msgid "Default: %(string)s"
-msgstr "Par défaut : %(string)s"
 
 msgid "Define as main category"
 msgstr "Définir comme catégorie générale"
@@ -1604,12 +1396,6 @@ msgstr "Supprime tous les critères de cette catégorie."
 
 msgid "Deletion date"
 msgstr "Date de suppression"
-
-msgid "Department"
-msgstr "Département"
-
-msgid "Departments"
-msgstr "Départements"
 
 msgid "Deputy Chief Arbitration"
 msgstr "Arbitrage adjoint"
@@ -1717,12 +1503,6 @@ msgstr "Berger aller-retour"
 msgid "Download"
 msgstr "Télécharger"
 
-msgid "Download fees"
-msgstr "Télécharger les droits d'homologation"
-
-msgid "Download the fees that the organizer should pay to the FFE."
-msgstr "Télécharger les droits d'homologation que l'organisateur·ice doit payer à la FFE."
-
 msgid "Download the information of the selected players (CSV format)."
 msgstr "Télécharger les informations des joueur·euses (format CSV)."
 
@@ -1798,10 +1578,6 @@ msgstr "Exemple : %(num)d"
 msgid "E.g.: %(string)s"
 msgstr "Exemple : %(string)s"
 
-#, python-format
-msgid "E.g.: %(val)d"
-msgstr "E.g. : %(val)d"
-
 msgid "E.g.: 20 (boards per screen)"
 msgstr "Ex. : 20 (échiquiers par écran)"
 
@@ -1874,9 +1650,6 @@ msgstr "Exemple : Début du pointage :"
 msgid "E.g.: Start of check-in in %%s"
 msgstr "Exemple : Début du pointage dans %%s"
 
-msgid "E.g.: Tournoi A"
-msgstr "Exemple : Tournoi A"
-
 msgid "E.g.: World championship"
 msgstr "Exemple: Championnat du monde"
 
@@ -1891,12 +1664,6 @@ msgstr "Exemple : https://mon.club.fr/affiche.jpg"
 
 msgid "E.g.: john.doe@chess.com"
 msgstr "Exemple : pierre.dupont@chess.com"
-
-msgid "E.g.: my_password"
-msgstr "Exemple : mon_mot_de_passe"
-
-msgid "E.g.: €1000 in prizes, FIDE rated, 2 byes 1/2 possible."
-msgstr "Exemple : 1000 € de prix, homologué FIDE, 2 exemptions à 0,5 point possibles."
 
 msgid "EXEMPT"
 msgstr "EXEMPT·E"
@@ -2010,9 +1777,6 @@ msgstr "Elo"
 msgid "Elo *** STD ELO FOR TABLE HEADER"
 msgstr "Elo"
 
-msgid "Elo step:"
-msgstr "Tranche Elo :"
-
 msgid "Email:"
 msgstr "Mél :"
 
@@ -2021,9 +1785,6 @@ msgstr "Activer ce compte"
 
 msgid "Enable/disable the details on the cards below."
 msgstr "Activer/désactiver l'affichage des détails sur les cartes ci-dessous."
-
-msgid "Enabled"
-msgstr "Activé"
 
 #, python-format
 msgid "Encounter already happened at round #%(round)d"
@@ -2044,9 +1805,6 @@ msgstr "Entrer des résultats"
 msgid "Enter the result"
 msgstr "Saisir le résultat"
 
-msgid "Error uploading tournament"
-msgstr "Erreur lors de la mise en ligne du tournoi"
-
 msgid "Error when updating database [{database}]."
 msgstr "Erreur lors de la mise à jour de la base de données [{database}]."
 
@@ -2055,9 +1813,6 @@ msgstr "Estimé"
 
 msgid "Event"
 msgstr "Évènement"
-
-msgid "Event [{event_id}] does not exist."
-msgstr "L'évènement [{event_id}] n'existe pas."
 
 msgid "Event [{uniq_id}] has been created."
 msgstr "L'évènement [{uniq_id}] a été créé."
@@ -2070,9 +1825,6 @@ msgstr "L'évènement [{uniq_id}] a été modifié."
 
 msgid "Event name"
 msgstr "Nom de l'évènement"
-
-msgid "Event not found"
-msgstr "Évènement introuvable"
 
 msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
 msgstr "L'identifiant unique de l'évènement à été renommé de [{old_uniq_id}] à [{new_uniq_id}]."
@@ -2108,20 +1860,11 @@ msgstr "Fonctionnalités expérimentales"
 msgid "Experimental features in version %(version)s are:"
 msgstr "Les fonctionnalités expérimentales en version %(version)s sont :"
 
-msgid "Expired *** FFE licence"
-msgstr "Expirée"
-
-msgid "Expired FFE licence"
-msgstr "Licence FFE expirée"
-
 msgid "Export"
 msgstr "Exporter"
 
 msgid "Export all the games of the last round of the tournament to the PGN format (usage: pairings transfer)."
 msgstr "Exporter toutes les parties de la dernère ronde du tournoi au format PGN (usage : transfert d'appariements)."
-
-msgid "Export the tournament to the PAPI format."
-msgstr "Exporter le tournoi au format PAPI."
 
 msgid "Export the tournament to the TRF(bx) format (usage: pairings generation)."
 msgstr "Exporter le tournoi au format TRF(bx) (usage : génération d'appariements)."
@@ -2135,71 +1878,8 @@ msgstr "F"
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
 
-msgid "FFE"
-msgstr "FFE"
-
-msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
-msgstr "FFE"
-
 msgid "FFE *** FFE FOR PLAYERS COLUMNS"
 msgstr "FFE"
-
-msgid "FFE ID"
-msgstr "Identifiant FFE"
-
-msgid "FFE Licence"
-msgstr "Licence FFE"
-
-msgid "FFE Licence type"
-msgstr "Type de licence FFE"
-
-msgid "FFE certification number and password not defined."
-msgstr "Numéro d'homologation FFE et mot de passe non-définis."
-
-msgid "FFE certification number not defined."
-msgstr "Numéro d'homologation FFE non-défini."
-
-msgid "FFE certification number:"
-msgstr "Numéro d'homologation :"
-
-#, python-format
-msgid "FFE certification number: %(ffe_id)d"
-msgstr "Homologation FFE : %(ffe_id)d"
-
-msgid "FFE database (local)"
-msgstr "Base de données FFE (locale)"
-
-msgid "FFE database (online)"
-msgstr "Base de données FFE (en ligne)"
-
-msgid "FFE licence A (competition)"
-msgstr "Licence FFE A (compétition)"
-
-msgid "FFE licence B (leisure)"
-msgstr "Licence FFE B (loisir)"
-
-msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament}]."
-msgstr "La licence FFE [{ffe_licence_number}] est déjà présente dans le tournoi [{tournament}]."
-
-msgid "FFE licence number"
-msgstr "Numéro de licence FFE"
-
-#, python-format
-msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
-msgstr "Licence FFE : %(ffe_licence_number)s (cliquer pour copier dans le presse-papier)."
-
-#, python-format
-msgid "FFE licence: %(ffe_licence_number)s (expired)."
-msgstr "Licence FFE : %(ffe_licence_number)s (expirée)."
-
-msgid "FFE password not defined."
-msgstr "Mot de passe FFE non-défini."
-
-msgid "FFE password:"
-msgstr "Mot de passe FFE :"
-
-msgid "FFE site"
-msgstr "Site de la FFE"
 
 msgid "FIDE"
 msgstr "FIDE"
@@ -2274,9 +1954,6 @@ msgstr "Fédération"
 msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
 msgstr "Féd."
 
-msgid "Federation [{federation}] of player [{player}] is unknown. Recreate it in ChessEvent then try again."
-msgstr "La fédération [{federation}] du·de la joueur·euse [{player}] est inconnue. Recréez le·la dans ChessEvent puis réessayez."
-
 msgid "Federation plugins"
 msgstr "Plug-ins de fédération"
 
@@ -2285,9 +1962,6 @@ msgstr "Fédération :"
 
 msgid "Federations"
 msgstr "Fédérations"
-
-msgid "Fees link not found, check that a Papi file has already been sent and that the tournament has not been archived on the FFE website."
-msgstr "Lien de facture non trouvé, vérifier qu'un fichier Papi a été envoyé et que le tournoi n'a pas été archivé sur le site web FFE."
 
 msgid "Female *** NAME FOR GENDER FEMALE"
 msgstr "Femme"
@@ -2327,15 +2001,6 @@ msgstr "Filtrer les fédérations."
 
 msgid "Filter the genders."
 msgstr "Filtrer les genres."
-
-msgid "Filter the leagues."
-msgstr "Filtrer les ligues."
-
-msgid "Filter the licences."
-msgstr "Filtrer les licences."
-
-msgid "Filter the schools."
-msgstr "Filtrer les établissements scolaires."
 
 msgid "Filter the tournaments."
 msgstr "Filtrer les tournois."
@@ -2381,16 +2046,6 @@ msgstr "Miroir (recto-verso)"
 msgid "Font size adjustment (%%):"
 msgstr "Ajustement de la taille de police (%%) :"
 
-msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
-msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
-msgstr[0] "Pour un tournoi de {rounds} rondes, la valeur la moins significative et la valeur la plus significative sont retirées."
-msgstr[1] "Pour un tournoi de {rounds} rondes, les {count} valeurs les moins significatives et les {count} valeurs les plus significatives sont retirées."
-
-msgid "For a tournament with {rounds} rounds, the least significant value is removed."
-msgid_plural "For a tournament with {rounds} rounds, the {count} least significant values are removed."
-msgstr[0] "Pour un tournoi de {rounds} rondes, la valeur la moins significative est retirée."
-msgstr[1] "Pour un tournoi de {rounds} rondes, les {count} valeurs les moins significatives sont retirées."
-
 msgid "For non-monetary prizes, the value is used for reward priority."
 msgstr "Pour les prix non-monétaires, la valeur est utiliée pour prioriser les récompenses."
 
@@ -2399,9 +2054,6 @@ msgstr "Pour les joueur·euses qui ne se sont pas pointé·es :"
 
 msgid "For these reasons, it is strongly discouraged to unpair a round. It is instead recommended to use manual pairings to handle unusual situations."
 msgstr "Pour ces raisons, il est fortement déconseillé de désapparier une ronde. Il est à la place recommandé d'utiliser les appariements manuels pour gérer les situations inhabituelles."
-
-msgid "For unrated players, a representative rating is calculated."
-msgstr "Pour les joueur·euses estimé·es, un classement représentatif est calculé."
 
 msgid "Fore"
 msgstr "Fore"
@@ -2424,21 +2076,6 @@ msgstr "Les parties gagnées ou perdues par forfait sont considérées comme jou
 msgid "Forfeits played"
 msgstr "Forfaits joués"
 
-msgid "French Chess Federation"
-msgstr "Fédération Française des Échecs"
-
-msgid "French Federation specific features (player search, results uploading, leagues, Papi import/export...)"
-msgstr "Fonctionnalités spécifiques à la Fédération Française (recherche de joueur·euses, envoi des résultats, ligues, compatibilité avec Papi)"
-
-msgid "French School Competitions"
-msgstr "Compétitions scolaires françaises"
-
-msgid "French Schools"
-msgstr "Établissements Scolaires"
-
-msgid "French school"
-msgstr "Établissement scolaire"
-
 msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
 msgstr "Depuis votre appareil principal, trouvez l’écran ou l’écran rotatif que vous souhaitez afficher, puis envoyez-le au pilote d’écran à l’aide du bouton portant cette icône :"
 
@@ -2447,9 +2084,6 @@ msgstr "Point joker entier"
 
 msgid "Full-Point Bye (deprecated)"
 msgstr "Point joker entier (obsolète)"
-
-msgid "Fédération Française des Échecs"
-msgstr "Fédération Française des Échecs"
 
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GMI"
@@ -2517,31 +2151,11 @@ msgstr "Attribuer 4 points de score pour une victoire, 2  pour un match nul, 1 p
 msgid "Group"
 msgstr "Groupe"
 
-msgid "Group {group_id}"
-msgstr "Groupe {group_id}"
-
-msgid "Groups can't be edited for this pairing system."
-msgstr "Les groupes ne peuvent être mis à jour pour ce système d'appariement."
-
-#, python-format
-msgid "Groups must be composed of at least 25%% and at most 50%% of players."
-msgstr "Les groupes doivent être composés d'au moins 25%% et d'au plus 50%% des joueur·euses."
-
-#, python-format
-msgid "Groups must be composed of at least 25%% of players."
-msgstr "Les groupes doivent être composés d'au moins 25%% des joueur·euses."
-
-msgid "Haley system"
-msgstr "Système de Haley"
-
 msgid "Half-Point Bye"
 msgstr "Demi-point joker (bye)"
 
 msgid "Half-Point Bye attributed to player [{player}]."
 msgstr "Un demi-point joker a été attribué au·à la joueur·euse [{player}]."
-
-msgid "Handicap games"
-msgstr "Parties à handicap"
 
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
 msgstr "Avoir un nombre de joueur·euses et de prix proches représente un risque qu'un prix ne soit pas attribué."
@@ -2578,12 +2192,6 @@ msgstr "Horaire :"
 
 msgid "Hours"
 msgstr "Horaires"
-
-msgid "However, the order of the results of the last round will remain the same as the ones in Sharly Chess."
-msgstr "Cependant, l'ordre des résultats de la dernière rondes restera le même que ceux de Sharly Chess."
-
-msgid "I confirm that I have read and acknowledged the warning"
-msgstr "Je confirme avoir pris connaissance de l'avertissement"
 
 msgid "I confirm that I want to archive this event."
 msgstr "Je confirme vouloir archiver cet évènement."
@@ -2628,12 +2236,6 @@ msgstr "Image : %(image)s"
 msgid "Import"
 msgstr "Importer"
 
-msgid "Import JSON file (papi-converter format)"
-msgstr "Importer un fichier JSON (format papi-converter)"
-
-msgid "Import Papi file"
-msgstr "Importer un fichier Papi"
-
 msgid "Import TRF file"
 msgstr "Importer un fichier TRF"
 
@@ -2642,9 +2244,6 @@ msgstr "Importer un tournoi"
 
 msgid "Import a tournament to the event from an external source."
 msgstr "Importer un tournoi à l'évènement depuis une source externe."
-
-msgid "Import from ChessEvent"
-msgstr "Importer depuis ChessEvent"
 
 msgid "Import is unavailable once the tournament has started."
 msgstr "L'import n'est plus disponible une fois le tournoi démarré."
@@ -2713,20 +2312,8 @@ msgstr "La bibliothèque [{lib}] a été installée."
 msgid "International Master"
 msgstr "Maître International"
 
-msgid "Invalid FFE ID [{ffe_id}]."
-msgstr "Identifiant FFE [{ffe_id}] non valide."
-
-msgid "Invalid FFE certification number or password."
-msgstr "Identifiant FFE ou mot de passe invalide."
-
-msgid "Invalid FFE licence number [{ffe_licence_number}]."
-msgstr "Numéro de licence FFE [{ffe_licence_number}] non valide."
-
 msgid "Invalid FIDE ID [{fide_id}]."
 msgstr "Identifiant FIDE [{fide_id}] non valide."
-
-msgid "Invalid TRF25 string: unexpected characters."
-msgstr "Chaîne TRF25 invalide : caractères inattendus."
 
 msgid "Invalid URL [{background_image}]."
 msgstr "URL [{background_image}] non valide."
@@ -2755,17 +2342,11 @@ msgstr "Format de date invalide [{date}] (attendu : {format})"
 msgid "Invalid delay [{delay}] (positive integer expected)."
 msgstr "Délai non valide [{delay}] (entier positif attendu)."
 
-msgid "Invalid display link text [{text}]"
-msgstr "Text du lien d'affichage non valide [{text}]."
-
 msgid "Invalid expression [{expression}]"
 msgstr "Expression non valide [{expression}]"
 
 msgid "Invalid federation [{federation}]."
 msgstr "Fédération [{federation}] non valide."
-
-msgid "Invalid fees link text [{text}]."
-msgstr "Texte du lien des droits d'homologation non valide [{text}]."
 
 msgid "Invalid fixed board number [{fixed_board}]."
 msgstr "Numéro d'échiquier [{fixed_board}] non valide."
@@ -2782,12 +2363,6 @@ msgstr "Mél [{mail}] non valide."
 msgid "Invalid password."
 msgstr "Mot de passe invalide."
 
-msgid "Invalid period:"
-msgstr "Période invalide :"
-
-msgid "Invalid response from the FFE website."
-msgstr "Réponse non valide du site FFE."
-
 msgid "Invalid time [{time_str}]."
 msgstr "Heure non valide [{time_str}]."
 
@@ -2802,9 +2377,6 @@ msgstr "Valeur [{value}] non valide."
 
 msgid "It is highly recommended to set at least one tie-break."
 msgstr "Il est fortement recommandé de définir au moins un départage."
-
-msgid "JSON file (papi-converter format)"
-msgstr "Fichier JSON (format papi-converter)"
 
 msgid "Kashdan"
 msgstr "Kashdan"
@@ -2836,9 +2408,6 @@ msgstr "Derniers résultats"
 msgid "Last results ({num})"
 msgstr "Derniers résultats ({num})"
 
-msgid "Last synchronization"
-msgstr "Dernière synchronisation"
-
 msgid "Last update"
 msgstr "Dernière mise à jour"
 
@@ -2848,44 +2417,14 @@ msgstr "Dernière mise à jour : {updated_at}"
 msgid "Last update: {updated_at} (outdated)"
 msgstr "Dernière mise à jour : {updated_at} (dépassée)"
 
-msgid "Last upload"
-msgstr "Dernière mise en ligne"
-
 msgid "Launch a browser on startup"
 msgstr "Lancer un navigateur web au démarrage"
 
 msgid "Layout"
 msgstr "Présentation"
 
-msgid "League"
-msgstr "Ligue"
-
-msgid "League *** LEAGUE FOR TABLE HEADER"
-msgstr "Ligue"
-
-msgid "League. *** LEAGUE COLUMN HEADER FOR PLAYERS"
-msgstr "Ligue"
-
-msgid "League:"
-msgstr "Ligue :"
-
-msgid "Leagues"
-msgstr "Ligues"
-
 msgid "Library [{lib}] is missing."
 msgstr "La bibliothèque [{lib}] n'est pas installée."
-
-msgid "Lic."
-msgstr "Lic."
-
-msgid "Licence no. *** LICENCE NUMBER"
-msgstr "N° licence"
-
-msgid "Licence types"
-msgstr "Types de licence"
-
-msgid "Licence:"
-msgstr "Licence :"
 
 msgid "Limit adjustment"
 msgstr "Ajustement de la limite"
@@ -2948,14 +2487,8 @@ msgstr "Catégorie générale"
 msgid "Main group"
 msgstr "Groupe principal"
 
-msgid "Make visible on FFE site"
-msgstr "Rendre visible sur le site de la FFE"
-
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Homme"
-
-msgid "Manage"
-msgstr "Gérer"
 
 msgid "Manage accounts"
 msgstr "Gestion des comptes"
@@ -3031,20 +2564,11 @@ msgstr "Nombre maximum de résultats affichés :"
 msgid "Maximum rating"
 msgstr "Elo maximum"
 
-msgid "Maximum value must be greater than the minimum value."
-msgstr "La valeur maximale doit être supérieure à la valeur minimale."
-
 msgid "May be overridden on a per-tournament basis."
 msgstr "Peut être remplacé au niveau de chaque tournoi."
 
 msgid "May be used for per-round prize giveaways etc."
 msgstr "Peut être utilisé pour des tirages au sort de prix par ronde, etc."
-
-msgid "Median"
-msgstr "Médian"
-
-msgid "Median Buchholz"
-msgstr "Buchholz médian"
 
 msgid "Median {value}"
 msgstr "Médian {value}"
@@ -3069,12 +2593,6 @@ msgstr "Menu : aucun"
 msgid "Menus"
 msgstr "Menus"
 
-msgid "Minimum time (secs):"
-msgstr "Temps minimal (sec.) :"
-
-msgid "Minimum delay between uploads (minutes):"
-msgstr "Délai minimum entre deux envois (min.) :"
-
 msgid "Minimum number of points (included):"
 msgstr "Nombre minimum de points (inclus) :"
 
@@ -3083,15 +2601,6 @@ msgstr "Elo minimum"
 
 msgid "Missing required field [{field}]."
 msgstr "Champ requis manquant [{field}]."
-
-msgid "Mode"
-msgstr "Mode"
-
-msgid "Modified since last upload"
-msgstr "Modifié depuis le dernier envoi"
-
-msgid "Modified, but no internet connection"
-msgstr "Modifié, mais pas de connexion internet"
 
 #, python-format
 msgid "Moved down %(num)d place"
@@ -3167,9 +2676,6 @@ msgstr "Réseau"
 msgid "Network:"
 msgstr "Réseau :"
 
-msgid "Never synchronized"
-msgstr "Jamais synchronisé"
-
 msgid "New category"
 msgstr "Nouvelle catégorie"
 
@@ -3206,15 +2712,6 @@ msgstr "Ronde suivante"
 msgid "Next tournament"
 msgstr "Tournoi suivant"
 
-msgid "No Chess-Results ID defined for tournament [{tournament}]."
-msgstr "Pas d'identifiant Chess-Results défini pour le tournoi [{tournament}]."
-
-msgid "No FFE ID defined for tournament [{tournament}]."
-msgstr "Aucun identifiant FFE défini pour le tournoi [{tournament}]."
-
-msgid "No FFE Licence"
-msgstr "Aucune licence FFE"
-
 msgid "No FIDE ID."
 msgstr "Identifiant FIDE non défini."
 
@@ -3223,9 +2720,6 @@ msgstr "Aucune catégorie de prix"
 
 msgid "No Prize Group"
 msgstr "Aucun groupe de prix"
-
-msgid "No acceleration."
-msgstr "Pas d'accélération."
 
 msgid "No alert message"
 msgstr "Pas de message d'alerte"
@@ -3386,9 +2880,6 @@ msgstr "Dernières rondes sans bye :"
 msgid "None"
 msgstr "Aucun"
 
-msgid "None *** FFE licence"
-msgstr "Aucune"
-
 msgid "Norm Report"
 msgstr "Rapport de norme"
 
@@ -3397,9 +2888,6 @@ msgstr "Non-attribué"
 
 msgid "Not checked-in yet"
 msgstr "Pas encore point·ée"
-
-msgid "Not configured"
-msgstr "Non configuré"
 
 msgid "Not enough byes available to set a Full-Point Bye (required: 2)."
 msgstr "Il n'y a pas assez de demi-points joker disponibles pour attribuer un point joker entier (requis : 2)."
@@ -3415,9 +2903,6 @@ msgstr "Non-apparié·e"
 
 msgid "Not paired for this round"
 msgstr "Non-apparié·e pour cette ronde"
-
-msgid "Not specified"
-msgstr "Non spécifié"
 
 msgid "Notification"
 msgstr "Notification"
@@ -3598,9 +3083,6 @@ msgstr "il y a déjà un·e joueur·euse exempt·e"
 msgid "PAI"
 msgstr "APP"
 
-msgid "PAPI"
-msgstr "PAPI"
-
 msgid "PENALTY"
 msgstr "PÉNALITÉ"
 
@@ -3656,13 +3138,6 @@ msgstr "Appariement non-trouvé."
 
 msgid "Pairing number"
 msgstr "Numéro d'appariement"
-
-msgid "Pairing number range of players the group."
-msgstr "Plage de numéros d'appariemet des joueur·euses du groupe."
-
-#, python-format
-msgid "Pairing number range of the group (recommended: %(min)d-%(max)d)."
-msgstr "Plage de numéros d'appariement du groupe (recommandé : %(min)d-%(max)d)."
 
 msgid "Pairing numbers selection"
 msgstr "Sélection des numéros d'appariements"
@@ -3725,9 +3200,6 @@ msgstr "Appariements générés avec succès."
 msgid "Pairings: %(pairing_variation)s"
 msgstr "Appariements : %(pairing_variation)s"
 
-msgid "Papi file"
-msgstr "Fichier Papi"
-
 msgid "Parings by player"
 msgstr "Appariements par ordre alphabétique"
 
@@ -3742,12 +3214,6 @@ msgstr "Évènements passés"
 
 msgid "Password:"
 msgstr "Mot de passe :"
-
-msgid "Penalties require a time control with a single period."
-msgstr "Les pénalités nécessitent une cadence avec une seule période."
-
-msgid "Penalty (secs):"
-msgstr "Pénalité (sec.) :"
 
 msgid "Pending"
 msgstr "À venir"
@@ -3951,9 +3417,6 @@ msgstr "Veuillez fermer l'éditeur de cadence avant d'enregistrer."
 msgid "Please enter a date after the start date."
 msgstr "Veuillez entrer une date postérieure à la date de début."
 
-msgid "Please enter a password for the ChessEvent connection."
-msgstr "Veuillez entrer un mot de passe pour la connexion à ChessEvent."
-
 msgid "Please enter a valid date."
 msgstr "Veuillez entrer une date valide."
 
@@ -4032,9 +3495,6 @@ msgstr "Le port [{port}] est déjà utilisé."
 msgid "Port: {port}"
 msgstr "Port : {port}"
 
-msgid "Positive values are expected."
-msgstr "Des valeurs positives sont attendues."
-
 msgid "Pref."
 msgstr "Préf."
 
@@ -4109,9 +3569,6 @@ msgstr "Continuer"
 
 msgid "Profile"
 msgstr "Profil"
-
-msgid "Progressive accelerated system"
-msgstr "Système accéléré dégressif (SAD)"
 
 msgid "Progressive scores"
 msgstr "Scores cumulés"
@@ -4274,9 +3731,6 @@ msgstr "Actualiser la page."
 msgid "Reload the page"
 msgstr "Recharger la page"
 
-msgid "Remark:"
-msgstr "Remarque :"
-
 msgid "Remove the player from the event."
 msgstr "Supprimer le·la joueur·euse de l'évènement."
 
@@ -4355,9 +3809,6 @@ msgstr "Résultats de la ronde {round}"
 
 msgid "Results screens show the last results (most recent first)."
 msgstr "Les écrans de résultats affichent les derniers résultats saisis par ordre anti-chronologique (le plus récent d'abord)."
-
-msgid "Results upload OK"
-msgstr "Mise en ligne des résultats OK"
 
 msgid "Retry"
 msgstr "Ré-essayer"
@@ -4443,9 +3894,6 @@ msgstr "Indicateurs de performance pour la ronde"
 msgid "Round skipped"
 msgstr "Absent·e"
 
-msgid "Round {round}"
-msgstr "Ronde {round}"
-
 #, python-format
 msgid "Round {} started for %s"
 msgstr "Ronde {} commencée depuis %s"
@@ -4469,9 +3917,6 @@ msgstr "Rondes"
 msgid "Rounds one Elected to Play"
 msgstr "Rondes désigné comme jouant"
 
-msgid "Rounds {min_round}-{max_round}"
-msgstr "Rondes {min_round}-{max_round}"
-
 msgid "Rows per screen:"
 msgstr "Lignes par écran :"
 
@@ -4486,12 +3931,6 @@ msgstr "Emplacement du règlement :"
 
 msgid "Rules file set"
 msgstr "Règlement défini"
-
-msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
-msgstr "Lien de mise en ligne du règlement non trouvé, vérifier que le tournoi n'est pas terminé sur le site web FFE."
-
-msgid "Rules uploaded"
-msgstr "Règlement mis en ligne"
 
 msgid "SCR"
 msgstr "ÉCR"
@@ -4510,18 +3949,6 @@ msgstr "Enregistrez l'horaire ou annulez."
 
 msgid "Save the set or cancel."
 msgstr "Enregistrez l'ensemble ou annulez."
-
-msgid "Scan to access the tournament on Chess-Results.com."
-msgstr "Scannez pour accéder au tournoi sur le site Chess-Results.com."
-
-msgid "Scan to access the tournament on the FFE site."
-msgstr "Scannez pour accéder au tournoi sur le site de la FFE."
-
-msgid "School *** SCHOOL FOR TABLE HEADER"
-msgstr "Établissement"
-
-msgid "Schools"
-msgstr "Établissements"
 
 msgid "Scope"
 msgstr "Périmètre"
@@ -4662,9 +4089,6 @@ msgstr "Changer la ronde courante"
 msgid "Settings"
 msgstr "Paramètres"
 
-msgid "Settings error"
-msgstr "Erreur de configuration"
-
 msgid "Share the prizes"
 msgstr "Partager les prix"
 
@@ -4728,20 +4152,11 @@ msgstr "Écrans simples"
 msgid "Single Screens ({num})"
 msgstr "Écrans simples ({num})"
 
-msgid "Site"
-msgstr "Site"
-
 msgid "Size ({unit}): {width}x{height}"
 msgstr "Dimension ({unit}) : {width}x{height}"
 
-msgid "Soft Haley system"
-msgstr "Système de Haley dégressif"
-
 msgid "Some accounts can have very high access levels, making them dangerous in the hands of an unaware or malicious users."
 msgstr "Certains comptes peuvent avoir des niveaux d'accès très élevés, les rendant dangereux dans les mains de personnes non-informées ou malveillantes."
-
-msgid "Some of the tie-break values will not appear in the results on the FFE website."
-msgstr "Certaines des valeurs des départages n'apparaîtront pas dans les résultats sur le site de la FFE."
 
 msgid "Something went wrong. Please ask your administrator to recreate your account."
 msgstr "Une erreur est survenue. Veuillez demander à votre administrateur⋅ice de recréer votre compte."
@@ -4781,9 +4196,6 @@ msgstr "Trier les joueur·euses par classement (moins bien classé·es en premie
 
 msgid "Sort the players by rating (most rated first)."
 msgstr "Trier les joueur·euses par classement (mieux classé·es en premier)."
-
-msgid "Sort the players by school."
-msgstr "Trier les joueur·euses par établissement scolaire."
 
 msgid "Sort the players by tournament."
 msgstr "Trier les joueur·euses par tournoi."
@@ -4852,9 +4264,6 @@ msgstr "Début de la ronde {} dans %s"
 msgid "Start:"
 msgstr "Début :"
 
-msgid "Started"
-msgstr "Démarré"
-
 msgid "Starting Sharly Chess server, Please wait…"
 msgstr "Démarrage du serveur Sharly Chess, veuillez patienter…"
 
@@ -4873,40 +4282,11 @@ msgstr "Std"
 msgid "Strong"
 msgstr "Préférence forte"
 
-msgid "Success"
-msgstr "Succès"
-
 msgid "Sum of Buchholz"
 msgstr "Somme des Buchholz"
 
-msgid "Support for the ChessEvent platform used for organising tournaments in France."
-msgstr "Support pour la plateforme ChessEvent utilsée pour l'organisation de tournois en France."
-
 msgid "Swiss"
 msgstr "Suisse"
-
-msgid "Synchronisation failed for {count} tournament"
-msgid_plural "Synchronisation failed for {count} tournaments"
-msgstr[0] "Synchronisation échouée pour {count} tournoi"
-msgstr[1] "Synchronisation échouée pour {count} tournois"
-
-msgid "Synchronization failed for tournament [{tournament}]."
-msgstr "Synchronisation échouée pour le tournoi [{tournament}]."
-
-msgid "Synchronize all tournaments"
-msgstr "Synchroniser tous les tournois"
-
-msgid "Synchronize the tournaments with the ChessEvent platform."
-msgstr "Synchroniser les tournois avec la plateforme ChessEvent."
-
-msgid "Synchronize this tournament from its ChessEvent tournament."
-msgstr "Synchroniser ce tournoi à partir de son tournoi ChessEvent."
-
-msgid "Synchronize tournaments with ChessEvent"
-msgstr "Synchroniser les tournois avec ChessEvent"
-
-msgid "Synchronize with ChessEvent"
-msgstr "Synchroniser avec ChessEvent"
 
 msgid "TRF file"
 msgstr "Fichier TRF"
@@ -4941,29 +4321,11 @@ msgstr "Couleur du texte :"
 msgid "Texts before and after the hour below are optional for round numbers, mandatory otherwise."
 msgstr "Les textes avant et après l'horaire ci-dessous sont facultatifs pour les numéros de rondes, obligatoires sinon."
 
-msgid "The Baku acceleration system is not compatible with Papi, there may be differences in the Papi pairings display."
-msgstr "Le système d'accélération de Bakou n'est pas compatible avec Papi, il peut y avoir des différences dans l'affichage des appariements Papi."
-
-msgid "The FFE ID is a positive integer."
-msgstr "L'identifiant FFE est un entier positif."
-
-msgid "The FFE always uses the FIDE rating when available."
-msgstr "La FFE utilise toujours le classement FIDE lorsqu’il est disponible."
-
 msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b> to the current one may be modified. Changes to pairings previous to this should be made at the <b>end</b> of the tournament, <b>after</b> the rankings have been published, and solely for the computation of the FIDE ratings."
 msgstr "Le règlement FIDE indique que seuls les appariements de la ronde <b>précédant</b> la ronde courante peuvent être modifiés. Les modifications des appariements antérieurs doivent être effectuées à la <b>fin</b> du tournoi, <b>après</b> la publication du classement, et uniquement pour le calcul des classements ELO FIDE."
 
-msgid "The PAPI format does not support {rounds} rounds (maximum: {max})."
-msgstr "Le format PAPI ne supporte pas {rounds} rounds (maximum : {max})."
-
-msgid "The Papi format does not support result [{result}]."
-msgstr "Le format Papi ne supporte pas le résultat [{result}]."
-
 msgid "The URL of the image to display."
 msgstr "L'URL de l'image à afficher."
-
-msgid "The [{tie_break}] tie-break as implemented in Papi."
-msgstr "Le départage [{tie_break}] tel qu'implémenté dans Papi."
 
 msgid "The account matching all the users not logged in to any account."
 msgstr "Le compte correspondant aux utilisateur·ices non-connecté·es."
@@ -4995,28 +4357,11 @@ msgstr "La grille américaine montre tous les résultats des joueur·euses, tand
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
 msgstr "La monnaie utilisée pour représenter les prix (par défaut la monnaie de la fédération de l'évènement)."
 
-#, python-format
-msgid "The database [%(database)s] is not installed (to install it: Menu > Data sources)."
-msgstr "La base de données [%(database)s] n'est pas installée (pour l'installer : Menu > Sources de données)."
-
-#, python-format
-msgid "The database [%(database)s] was last updated over %(age)d months ago. It is preferable to update it before proceeding (Menu > Data sources)."
-msgstr "La base de données [%(database)s] a été mise à jour pour la dernière fois il y a plus de %(age)d mois. Il est préférable de la mettre à jour avant de continuer (Menu > Sources de données)."
-
 msgid "The date of the first hour is not defined (mandatory)."
 msgstr "La date du premier horaire n'est pas définie (obligatoire)."
 
 msgid "The default federation for your events."
 msgstr "La fédération par défaut pour vos évènements."
-
-msgid "The delay must be at least {min_delay} minutes to avoid overloading the Chess-Results server."
-msgstr "Le délai doit au moins être de {min_delay} minutes pour éviter de surcharger le serveur Chess-Results."
-
-msgid "The delay must be at least {min_delay} minutes to avoid overloading the FFE server."
-msgstr "Le délai doit au moins être de {min_delay} minutes pour éviter de surcharger le serveur FFE."
-
-msgid "The event [{event_id}] is not accessible to the user [{user_id}]."
-msgstr "L'évènement [{event_id}] n'est pas accessible via l'identifiant [{user_id}]."
 
 msgid "The first round is ignored."
 msgid_plural "The first {rounds} rounds are ignored."
@@ -5081,9 +4426,6 @@ msgstr "Nombre minimum de joueurs requis pour qu’un club soit affiché."
 msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
 msgstr "Le nombre minimum de points réalisé par les joueur·euses affiché·es (si vide, tou·tes les joueur·euses sont affiché·es)."
 
-msgid "The minimum time, whatever the ranking difference between the two players."
-msgstr "La temps minimal, quelle que soit la différence de classement entre les deux joueur·euses."
-
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
 msgstr "La valeur minimale d'un prix partagé dans cette catégorie (pas de seuil par défaut)."
 
@@ -5118,9 +4460,6 @@ msgstr "Le nombre de joueur·euses par écran, facultatif (le nombre d'écrans s
 msgid "The number of points achieved against all players who have scored at least L points (L = {equation})."
 msgstr "Le nombre de points obtenus contre tou·tes les joueur·euses ayant atteint au moins L points (L = {equation})."
 
-msgid "The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player."
-msgstr "Le nombre de points de différence entre le classement des joueur·euses utilisé pour calculer le nombre de pénalités appliqué au·à la joueur·euse le·la mieux classé·e."
-
 msgid "The number of rounds in which a player did not receive a HPB, a ZPB or a forfeit loss."
 msgstr "Le nombre de rondes dans lesquelles un·e joueur·euse n'a pas reçu de point joker ou une défaite par forfait."
 
@@ -5154,9 +4493,6 @@ msgstr "Le numéro d'appariement ne peut pas être supérieur au nombre de joueu
 msgid "The pairing number is already attributed."
 msgstr "Le numéro d'appariement est déjà attribué."
 
-msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
-msgstr "Le mot de passe du tournoi sur le site FFE doit être composé de 10 lettres majuscules."
-
 msgid "The permissions of this account can not be updated."
 msgstr "Les permissions de ce compte ne peuvent être modifiées."
 
@@ -5165,12 +4501,6 @@ msgstr "Les numéros de téléphone."
 
 msgid "The player has already been paired, removing them from the tournament is impossible."
 msgstr "Le·la joueur·euse a déjà été apparié·e, impossible de l'enlever du tournoi."
-
-msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament}]."
-msgstr "Le·la joueur·euse avec l'identifiant FFE [{ffe_id}] joue déjà le tournoi [{tournament}]."
-
-msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament}]."
-msgstr "Le·la joueur·euse avec la licence FFE [{ffe_licence_number}] joue déjà le tournoi [{tournament}]."
 
 msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
 msgstr "Le·la joueur·euse avec l'identifiant FIDE [{fide_id}] joue déjà le tournoi [{tournament}]."
@@ -5220,9 +4550,6 @@ msgstr "La somme du score de chaque adversaire du·de la joueur·euse."
 msgid "The threshold can't be greater than the value of the last prize of the category ({value})."
 msgstr "Le seuil ne peut être supérieur à la valeur du dernier prix de la catégorie ({value})."
 
-msgid "The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players)."
-msgstr "Le temps retranché au·à la joueur·euse le·la mieux classé·e, en secondes (ce temps est multiplié par le nombre de tranches de différence entre les deux joueur·euses)."
-
 msgid "The timer displayed on the screen."
 msgstr "Le chronomètre qui sera affiché en haut de l'écran."
 
@@ -5249,9 +4576,6 @@ msgstr "Les tournois sur lesquels la permission s'applique."
 
 msgid "The type of criterion used to filter the players."
 msgstr "Le type de critère utilisé pour filtrer les joueur·euses."
-
-msgid "The username / password provided are not allowed to access this ChessEvent event."
-msgstr "L'identifiant et le mot de passe fournis ne permettent pas d'accéder à cet évènement ChessEvent."
 
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
 msgstr "La valeur doit être supérieure au seuil de partage de la catégorie ({threshold})."
@@ -5520,9 +4844,6 @@ msgstr "Le tournoi [%(tournament)s] est en cours."
 msgid "Tournament [{tournament_id}] not found."
 msgstr "Le tournoi [{tournament_id}] n'existe pas."
 
-msgid "Tournament [{tournament_name}] does not exist in event [{event_id}]."
-msgstr "Le tournoi [{tournament_name}] n'existe pas dans l'évènement [{event_id}]."
-
 msgid "Tournament [{tournament}] has been created and default screens have been added."
 msgstr "Le tournoi [{tournament}] a été créé et les écrans par défaut ont été ajoutés."
 
@@ -5541,9 +4862,6 @@ msgstr "Le tournoi [{tournament}] est terminé, on ne peut plus y ajouter de jou
 msgid "Tournament [{tournament}] successfully imported."
 msgstr "Le tournoi [{tournament}] a été importé avec succès."
 
-msgid "Tournament [{tournament}] successfully synchronized."
-msgstr "Le tournoi [{tournament}] a été synchronisé avec succès."
-
 msgid "Tournament default settings"
 msgstr "Paramètres par défaut des tournois"
 
@@ -5553,45 +4871,11 @@ msgstr "Paramètres par défaut des tournois"
 msgid "Tournament defaults have been updated."
 msgstr "Les paramètres par défaut du tournoi ont été mis à jour."
 
-msgid "Tournament exempt from registration fees."
-msgstr "Tournoi exempt de droits d'homologation."
-
-msgid "Tournament finished, upload no longer possible."
-msgstr "Tournoi terminé, mise en ligne non autorisée."
-
-msgid "Tournament has not been configured to be used with ChessEvent."
-msgstr "Le tournoi n'a pas été configuré pour être utilisé avec ChessEvent."
-
-msgid "Tournament modified, awaiting auto-upload"
-msgstr "Tournoi mis à jour, en attente de l’envoi automatique"
-
 msgid "Tournament name"
 msgstr "Nom du tournoi"
 
-msgid "Tournament not found"
-msgstr "Tournoi introuvable"
-
-msgid "Tournament not modified since last upload"
-msgstr "Tournoi non modifié depuis le dernier envoi"
-
-msgid "Tournament not yet uploaded."
-msgstr "Tournoi pas encore mis en ligne."
-
-#, python-format
-msgid "Tournament number: %(tnr)s"
-msgstr "Numéro de tournoi : %(tnr)s"
-
-msgid "Tournament on Chess-results.com"
-msgstr "Tournoi sur le site Chess-Results.com"
-
-msgid "Tournament on the FFE site"
-msgstr "Tournoi sur le site de la FFE"
-
 msgid "Tournament performance rating"
 msgstr "Performance"
-
-msgid "Tournament previously uploaded."
-msgstr "Tournoi mis en ligne précédemment."
 
 #, python-format
 msgid "Tournament rating range: %(min_rating)d - %(max_rating)d"
@@ -5599,12 +4883,6 @@ msgstr "Plage Elo du tournoi : %(min_rating)d - %(max_rating)d"
 
 msgid "Tournament record"
 msgstr "Historique"
-
-msgid "Tournament rules are not set"
-msgstr "Le règlement du tournoi n’est pas défini"
-
-msgid "Tournament visibility successfully set"
-msgstr "Visibilité du tournoi définie avec succès"
 
 msgid "Tournament {tournament} ({numbers_str})"
 msgstr "Tournoi {tournament} ({numbers_str})"
@@ -5697,21 +4975,6 @@ msgstr "L'URL [{url}] n'a pas répondu (erreur : [{error}])."
 msgid "URL [{url}] responded code [{code}]."
 msgstr "L'URL [{url}] a répondu avec le code [{code}]."
 
-msgid "Unable to download tournament fees."
-msgstr "Impossible de télécharger les droits d'homologation."
-
-msgid "Unable to set tournament visibility."
-msgstr "Impossible de définir la visibilité du tournoi."
-
-msgid "Unable to upload tournament rules."
-msgstr "Impossible de mettre en ligne le règlement du tournoi."
-
-msgid "Unable to upload tournament."
-msgstr "Impossible de mettre en ligne le tournoi."
-
-msgid "Unauthorized access"
-msgstr "Accès non-autorisé"
-
 msgid "Undefined *** PLURAL"
 msgstr "Non définis"
 
@@ -5739,9 +5002,6 @@ msgstr "Moins de 20"
 msgid "Under 8"
 msgstr "Moins de 8"
 
-msgid "Unexpected error"
-msgstr "Erreur inattendue"
-
 #, python-format
 msgid "Unique ID: %(uniq_id)s"
 msgstr "Identifiant unique : %(uniq_id)s"
@@ -5753,15 +5013,8 @@ msgstr "Identifiant unique : [%(uniq_id)s]"
 msgid "Unknown"
 msgstr "Inconnu·e"
 
-#, python-format
-msgid "Unknown FFE Licence type [%(ffe_licence)s]."
-msgstr "Type de FFE Licence FFE inconnu [%(ffe_licence)s]."
-
 msgid "Unknown color [{color}]."
 msgstr "Couleur [{color}] inconnue."
-
-msgid "Unknown error when uploading results."
-msgstr "Erreur inconnue lors de la mise en ligne des résultats."
 
 msgid "Unknown federation [{federation}]."
 msgstr "Fédération [{federation}] inconnue."
@@ -5769,17 +5022,11 @@ msgstr "Fédération [{federation}] inconnue."
 msgid "Unknown gender [{gender}]."
 msgstr "Genre [{gender}] inconnu."
 
-msgid "Unknown player ID [{player_id}]"
-msgstr "Identifiant de joueur inconnu [{player_id}]."
-
 msgid "Unknown result [{result}]."
 msgstr "Résultat [{result}] inconnu."
 
 msgid "Unknown title [{title}]."
 msgstr "Titre [{title}] inconnu."
-
-msgid "Unknown value [{value}]"
-msgstr "Valeur [{value}] inconnue."
 
 msgid "Unlike single Screens, families can only be used to display information about a single tournament."
 msgstr "Contrairement aux écrans simples, les familles d’écrans ne peuvent être utilisées que pour afficher des informations sur un seul tournoi."
@@ -5878,39 +5125,6 @@ msgstr "Mise à jour"
 msgid "Upload"
 msgstr "Mettre en ligne"
 
-msgid "Upload failed"
-msgstr "Échec de la mise en ligne"
-
-msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
-msgstr "Lien de mise en ligne introuvable, vérifiez que le tournoi n’est pas marqué comme terminé sur le site de la FFE."
-
-msgid "Upload rules"
-msgstr "Mettre en ligne le règlement"
-
-msgid "Upload to Chess-Results.com"
-msgstr "Mettre en ligne sur Chess-Results.com"
-
-msgid "Upload to the FFE site"
-msgstr "Mettre en ligne sur le site de la FFE"
-
-msgid "Upload tournaments now"
-msgstr "Mettre en ligne les tournois maintenant"
-
-msgid "Upload tournaments to Chess-Results.com"
-msgstr "Mettre en ligne les tournois sur Chess-Results.com"
-
-msgid "Upload tournaments to the FFE"
-msgstr "Mettre en ligne les tournois vers la FFE"
-
-msgid "Uploading of tournaments to Chess-Results.com."
-msgstr "Mise en ligne des tournois sur Chess-Results.com."
-
-msgid "Uploading the PDF rules file allows the players to read the rules online."
-msgstr "Envoyer le fichier PDF des règles sur le site de la FFE permet aux joueur·euses de lire les règles en ligne."
-
-msgid "Uploading tournament…"
-msgstr "Mise en ligne en cours…"
-
 msgid "Use Fore Buchholz"
 msgstr "Utiliser le Fore Buchholz"
 
@@ -6004,12 +5218,6 @@ msgstr "Voir les écrans publics"
 msgid "View the Tournaments tab"
 msgstr "Voir l'onglet Tournois"
 
-msgid "Virtual points"
-msgstr "Points virtuels"
-
-msgid "Virtual points are granted to players according to their group. Those points only are used for pairing, not for ranking."
-msgstr "Des points virtuels sont accordés aux joueur·euses selon leur groupe. Ces points ne sont utilisés que pour l'appariement, pas pour le classement."
-
 msgid "Visibility:"
 msgstr "Visibilité :"
 
@@ -6046,9 +5254,6 @@ msgstr "Avertissement : les fonctionnalités expérimentales sont activées !"
 #, python-format
 msgid "Warning: round #%(round)d is not finished."
 msgstr "Attention : la ronde n°%(round)d n'est pas terminée."
-
-msgid "Warning: synchronizing a tournament overwrites all of its player data."
-msgstr "Attention : synchroniser un tournoi écrase toutes les données de ses joueur·euses."
 
 #, python-format
 msgid "Warning: the %(player_count)d players in the tournament will be deleted."
@@ -6156,9 +5361,6 @@ msgstr "Vous n'êtes pas autorisé·e à supprimer le tournoi."
 msgid "You are not allowed to delete this account."
 msgstr "Vous n'êtes pas autorisé·e à dupliquer ce compte."
 
-msgid "You are not allowed to download fees."
-msgstr "Vous n'êtes pas autorisé·e à télécharger les droits d'homologation."
-
 msgid "You are not allowed to duplicate this account."
 msgstr "Vous n'êtes pas autorisé·e à dupliquer ce compte."
 
@@ -6186,12 +5388,6 @@ msgstr "Vous n'êtes pas autorisé·e à ouvrir/fermer le pointage."
 msgid "You are not allowed to pair players."
 msgstr "Vous n'êtes pas autorisé·e à apparier les joueur·euses."
 
-msgid "You are not allowed to publish results."
-msgstr "Vous n'êtes pas autorisé·e à publier les résultats."
-
-msgid "You are not allowed to publish rules."
-msgstr "Vous n'êtes pas autorisé·e à publier le règlement."
-
 msgid "You are not allowed to set Full-Point Byes."
 msgstr "Vous n'êtes pas autorisé·e à attribuer des points joker entiers."
 
@@ -6209,9 +5405,6 @@ msgstr "Vous n'êtes pas autorisé·e à enregistrer des absences."
 
 msgid "You are not allowed to unpair rounds."
 msgstr "Vous n'êtes pas autorisé·e à désapparier les rondes."
-
-msgid "You are not allowed to update players."
-msgstr "Vous n'êtes pas autorisé·e à modifier les joueur·euses."
 
 msgid "You are not allowed to update results."
 msgstr "Vous n'êtes pas autorisé·e à modifier les résultats."
@@ -6245,12 +5438,6 @@ msgstr "Vous ne pouvez pas pas ajouter davantage de permissions à ce compte."
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement…) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans simples seront générés automatiquement."
-
-msgid "You have to acknowledge the warning first."
-msgstr "Vous devez prendre connaissance de l'avertissement."
-
-msgid "You have to update the ChessEvent settings before being able to use synchronisation."
-msgstr "Vous devez modifier les paramètres ChessEvent avant de pouvoir utiliser la synchronisation."
 
 msgid "You may also connect to this server from other devices using"
 msgstr "Vous pouvez également vous connecter à ce serveur depuis d’autres appareils"
@@ -6318,9 +5505,6 @@ msgstr "échiquiers sur {parts} écrans"
 msgid "boards {board_numbers}"
 msgstr "échiquiers {board_numbers}"
 
-msgid "defined in the event"
-msgstr "défini dans l'évènement"
-
 msgid "either the duration or the increment must be greater than 0."
 msgstr "la durée ou l’incrément doit être supérieur à 0."
 
@@ -6339,14 +5523,8 @@ msgstr "exemple"
 msgid "forfeits played"
 msgstr "forfaits joués"
 
-msgid "from move 1"
-msgstr "dès le 1er coup"
-
 msgid "last"
 msgstr "dernier"
-
-msgid "min"
-msgstr "min"
 
 msgid "minimum: {value}"
 msgstr "minimum : {value}"
@@ -6359,9 +5537,6 @@ msgstr "ma-famille"
 
 msgid "my-screen"
 msgstr "mon-ecran"
-
-msgid "my_password"
-msgstr "mon_mot_de_passe"
 
 msgid "no"
 msgstr "non"
@@ -6393,9 +5568,6 @@ msgstr "joueur·euses du début au n°{last}, sur {parts} écrans"
 msgid "players on {parts} screens"
 msgstr "joueur·euses sur {parts} écrans"
 
-msgid "points"
-msgstr "points"
-
 msgid "ranking from #{first} to #{last}"
 msgstr "classement de {first} à {last}"
 
@@ -6407,9 +5579,6 @@ msgstr "classement du début à {last}"
 
 msgid "round_{round}"
 msgstr "ronde_{round}"
-
-msgid "s"
-msgstr "s"
 
 msgid "screens of {number} boards"
 msgstr "écrans de {number} échiquiers"
@@ -6456,9 +5625,6 @@ msgstr "le nombre de coups ne doit pas être spécifié pour la période finale.
 msgid "the whole ranking"
 msgstr "classement complet"
 
-msgid "then"
-msgstr "puis"
-
 msgid "time control"
 msgstr "temps"
 
@@ -6490,25 +5656,10 @@ msgid_plural "{count} half-points"
 msgstr[0] "{count} demi-point"
 msgstr[1] "{count} demi-points"
 
-msgid "{count} league represented"
-msgid_plural "{count} leagues represented"
-msgstr[0] "{count} ligue représentée"
-msgstr[1] "{count} ligues représentées"
-
 msgid "{count} player updated."
 msgid_plural "{count} players updated."
 msgstr[0] "{count} joueur·euse mis·e à jour."
 msgstr[1] "{count} joueur·euses mis·es à jour."
-
-msgid "{count} tournament ignored"
-msgid_plural "{count} tournaments ignored"
-msgstr[0] "{count} tournoi ignoré"
-msgstr[1] "{count} tournois ignorés"
-
-msgid "{count} tournament successfully synchronized"
-msgid_plural "{count} tournament successfully synchronized"
-msgstr[0] "{count} tournoi synchonisé avec succès"
-msgstr[1] "{count} tournois synchonisés avec succès"
 
 msgid "{days} days"
 msgstr "{days} jours"
@@ -6550,4 +5701,841 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "\"Niçois\" accelerated system"
+#~ msgstr "Système accéléré niçois"
+
+#~ msgid "/<moves>"
+#~ msgstr "/<moves>"
+
+#~ msgid "/move"
+#~ msgstr "/cp"
+
+#~ msgid "<first> and <second>"
+#~ msgstr "<first> et <second>"
+
+#~ msgid "<first> then <second>"
+#~ msgstr "<first> puis <second>"
+
+#~ msgid "<first>, <second>"
+#~ msgstr "<first>, <second>"
+
+#~ msgid "<side>: <text>"
+#~ msgstr "<side> : <text>"
+
+#~ msgid "<smart_count> day |||| <smart_count> days"
+#~ msgstr "<smart_count> jour |||| <smart_count> jours"
+
+#~ msgid "<smart_count> hour |||| <smart_count> hours"
+#~ msgstr "<smart_count> heure |||| <smart_count> heures"
+
+#~ msgid "<smart_count> minute |||| <smart_count> minutes"
+#~ msgstr "<smart_count> minute |||| <smart_count> minutes"
+
+#~ msgid "<smart_count> move |||| <smart_count> moves"
+#~ msgstr "<smart_count> coup |||| <smart_count> coups"
+
+#~ msgid "<smart_count> second |||| <smart_count> seconds"
+#~ msgstr "<smart_count> seconde |||| <smart_count> secondes"
+
+#~ msgid "<smart_count> week |||| <smart_count> weeks"
+#~ msgstr "<smart_count> semaine |||| <smart_count> semaines"
+
+#~ msgid "A - Competition *** FFE licence"
+#~ msgstr "A - Compétition"
+
+#~ msgid "A non-empty string is expected"
+#~ msgstr "Une chaîne de caractères non vide est attendue"
+
+#~ msgid "Accelerated pairings"
+#~ msgstr "Appariements accélérés"
+
+#~ msgid "Accelerated variations of the swiss pairing system."
+#~ msgstr "Variantes accélérées du système d'appariements suisse."
+
+#~ msgid "Acceleration groups"
+#~ msgstr "Groupes d'accélération"
+
+#~ msgid "Add a school to the options."
+#~ msgstr "Ajouter un établissement aux options."
+
+#~ msgid "Adds features for handicap tournaments where weaker players are given a time advantage."
+#~ msgstr "Ajoute des fonctionnalités pour les tournois avec handicap, où les joueur·euses les moins fort·es bénéficient d’un avantage de temps."
+
+#~ msgid "Adds support for school competitions in France"
+#~ msgstr "Ajoute la prise en charge des compétitions scolaires en France"
+
+#~ msgid "An unexpected error occurred, either in Sharly Chess or in ChessEvent. Consult the logs for more details."
+#~ msgstr "Une erreur inattendue s'est produite, soit dans Sharly Chess soit dans ChessEvent. Consultez les logs pour plus d'informations."
+
+#~ msgid "At least one department is expected."
+#~ msgstr "Au moins un département est attendu."
+
+#~ msgid "At least one league is expected."
+#~ msgstr "Au moins une ligue est attendue."
+
+#~ msgid "At least one licence type is expected."
+#~ msgstr "Au moins un type de licence est attendu."
+
+#~ msgid "At least one school is expected."
+#~ msgstr "Au moins un établissement est attendu."
+
+#~ msgid "Authentication failed"
+#~ msgstr "Authentification échouée"
+
+#~ msgid "Authentication failed."
+#~ msgstr "L'authentification a échoué."
+
+#~ msgid "Authentication failed. Please check your credentials and try again."
+#~ msgstr "Authentification échouée. Merci de vérifier vos identifiants et réessayer."
+
+#~ msgid "Auto-upload disabled"
+#~ msgstr "Mise en ligne automatique désactivée"
+
+#~ msgid "Auto-upload enabled"
+#~ msgstr "Mise en ligne automatique activée"
+
+#~ msgid "Auto-upload results"
+#~ msgstr "Mise en ligne automatique des résultats"
+
+#~ msgid "Auto-upload:"
+#~ msgstr "Mise en ligne automatique :"
+
+#~ msgid "Automatic"
+#~ msgstr "Automatique"
+
+#~ msgid "B - Leisure *** FFE licence"
+#~ msgstr "B - Loisir"
+
+#~ msgid "Baku acceleration system"
+#~ msgstr "Système d'accélération de Bakou"
+
+#~ msgid "Black pairings are supposed to have an opponent"
+#~ msgstr "Les appariements avec les Noirs sont censés avoir un·e adversaire."
+
+#~ msgid "Buchholz cut"
+#~ msgstr "Buchholz tronqué"
+
+#~ msgid "By default, tournaments are not visible on the FFE site."
+#~ msgstr "Par défaut, les tournois ne sont pas visibles sur le site de la FFE."
+
+#~ msgid "Check the event ID then try again."
+#~ msgstr "Vérifiez l'identifiant de l'évènement puis réessayez."
+
+#~ msgid "Check the tournament name then try again."
+#~ msgstr "Vérifiez le nom du tournoi puis réessayez."
+
+#~ msgid "Check the username and the password then try again."
+#~ msgstr "Vérifiez l'identifiant et le mot de passe puis réessayez."
+
+#~ msgid "Chess-Results.com"
+#~ msgstr "Chess-Results.com"
+
+#~ msgid "Chess-Results.com only displays {max} tie-breaks. However, the rankings remain the same as in Sharly Chess."
+#~ msgstr "Chess-Results.com n'affiche que {max} départages. Cependant, le classement reste le même  que dans Sharly Chess."
+
+#~ msgid "ChessEvent"
+#~ msgstr "ChessEvent"
+
+#~ msgid "ChessEvent actions are no longer available once the tournament has started."
+#~ msgstr "Les actions ChessEvent ne sont plus disponibles une fois le tournoi démarré."
+
+#~ msgid "ChessEvent event not defined."
+#~ msgstr "L'évènement ChessEvent n'est pas défini."
+
+#~ msgid "ChessEvent event:"
+#~ msgstr "Évènement ChessEvent :"
+
+#~ msgid "ChessEvent password not defined."
+#~ msgstr "Le mot de passe ChessEvent n'est pas défini."
+
+#~ msgid "ChessEvent password:"
+#~ msgstr "Mot de passe ChessEvent :"
+
+#~ msgid "ChessEvent tournament"
+#~ msgstr "Tournoi ChessEvent"
+
+#~ msgid "ChessEvent tournament:"
+#~ msgstr "Nom du tournoi ChessEvent :"
+
+#~ msgid "ChessEvent user name:"
+#~ msgstr "Identifiant ChessEvent :"
+
+#~ msgid "ChessEvent user not defined."
+#~ msgstr "L'identifiant ChessEvent n'est pas défini."
+
+#~ msgid "Choose at least one department."
+#~ msgstr "Choisir au moins un département."
+
+#~ msgid "Choose at least one league."
+#~ msgstr "Choisir au moins une ligue."
+
+#~ msgid "Choose at least one licence type."
+#~ msgstr "Choisir au moins un type de licence."
+
+#~ msgid "Choose at least one school."
+#~ msgstr "Choisir au moins un établissement."
+
+#~ msgid "City"
+#~ msgstr "Ville"
+
+#~ msgid "Code"
+#~ msgstr "Code"
+
+#~ msgid "Configure the ChessEvent settings of this tournament."
+#~ msgstr "Configurer les paramètres ChessEvent de ce tournoi."
+
+#~ msgid "Connection French Chess Federation"
+#~ msgstr "Connexion à la Fédération Française des Échecs"
+
+#~ msgid "Connection to the ChessEvent server failed."
+#~ msgstr "Connection au serveur ChessEvent échouée."
+
+#~ msgid "Conversion to Papi format failed."
+#~ msgstr "La conversion au format Papi a échoué."
+
+#~ msgid "Copying to tmp .sce file failed."
+#~ msgstr "La copie vers le fichier .sce temporaire a échoué."
+
+#~ msgid "Cut *** TIE BREAK VARIATION"
+#~ msgstr "Tronqué"
+
+#~ msgid "Data is already displayed on the FFE website."
+#~ msgstr "Les données sont déjà affichées sur le site web FFE."
+
+#~ msgid "Default credentials used to import tournaments from the ChessEvent platform."
+#~ msgstr "Identifiants par défaut utilisés pour importer des tournois depuis la plateforme ChessEvent."
+
+#~ msgid "Default: %(string)s"
+#~ msgstr "Par défaut : %(string)s"
+
+#~ msgid "Department"
+#~ msgstr "Département"
+
+#~ msgid "Departments"
+#~ msgstr "Départements"
+
+#~ msgid "Download fees"
+#~ msgstr "Télécharger les droits d'homologation"
+
+#~ msgid "Download the fees that the organizer should pay to the FFE."
+#~ msgstr "Télécharger les droits d'homologation que l'organisateur·ice doit payer à la FFE."
+
+#~ msgid "E.g.: %(val)d"
+#~ msgstr "E.g. : %(val)d"
+
+#~ msgid "E.g.: Tournoi A"
+#~ msgstr "Exemple : Tournoi A"
+
+#~ msgid "E.g.: my_password"
+#~ msgstr "Exemple : mon_mot_de_passe"
+
+#~ msgid "E.g.: €1000 in prizes, FIDE rated, 2 byes 1/2 possible."
+#~ msgstr "Exemple : 1000 € de prix, homologué FIDE, 2 exemptions à 0,5 point possibles."
+
+#~ msgid "Elo step:"
+#~ msgstr "Tranche Elo :"
+
+#~ msgid "Enabled"
+#~ msgstr "Activé"
+
+#~ msgid "Error uploading tournament"
+#~ msgstr "Erreur lors de la mise en ligne du tournoi"
+
+#~ msgid "Event [{event_id}] does not exist."
+#~ msgstr "L'évènement [{event_id}] n'existe pas."
+
+#~ msgid "Event not found"
+#~ msgstr "Évènement introuvable"
+
+#~ msgid "Expired *** FFE licence"
+#~ msgstr "Expirée"
+
+#~ msgid "Expired FFE licence"
+#~ msgstr "Licence FFE expirée"
+
+#~ msgid "Export the tournament to the PAPI format."
+#~ msgstr "Exporter le tournoi au format PAPI."
+
+#~ msgid "FFE"
+#~ msgstr "FFE"
+
+#~ msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
+#~ msgstr "FFE"
+
+#~ msgid "FFE ID"
+#~ msgstr "Identifiant FFE"
+
+#~ msgid "FFE Licence"
+#~ msgstr "Licence FFE"
+
+#~ msgid "FFE Licence type"
+#~ msgstr "Type de licence FFE"
+
+#~ msgid "FFE certification number and password not defined."
+#~ msgstr "Numéro d'homologation FFE et mot de passe non-définis."
+
+#~ msgid "FFE certification number not defined."
+#~ msgstr "Numéro d'homologation FFE non-défini."
+
+#~ msgid "FFE certification number:"
+#~ msgstr "Numéro d'homologation :"
+
+#~ msgid "FFE certification number: %(ffe_id)d"
+#~ msgstr "Homologation FFE : %(ffe_id)d"
+
+#~ msgid "FFE database (local)"
+#~ msgstr "Base de données FFE (locale)"
+
+#~ msgid "FFE database (online)"
+#~ msgstr "Base de données FFE (en ligne)"
+
+#~ msgid "FFE licence A (competition)"
+#~ msgstr "Licence FFE A (compétition)"
+
+#~ msgid "FFE licence B (leisure)"
+#~ msgstr "Licence FFE B (loisir)"
+
+#~ msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament}]."
+#~ msgstr "La licence FFE [{ffe_licence_number}] est déjà présente dans le tournoi [{tournament}]."
+
+#~ msgid "FFE licence number"
+#~ msgstr "Numéro de licence FFE"
+
+#~ msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
+#~ msgstr "Licence FFE : %(ffe_licence_number)s (cliquer pour copier dans le presse-papier)."
+
+#~ msgid "FFE licence: %(ffe_licence_number)s (expired)."
+#~ msgstr "Licence FFE : %(ffe_licence_number)s (expirée)."
+
+#~ msgid "FFE password not defined."
+#~ msgstr "Mot de passe FFE non-défini."
+
+#~ msgid "FFE password:"
+#~ msgstr "Mot de passe FFE :"
+
+#~ msgid "FFE site"
+#~ msgstr "Site de la FFE"
+
+#~ msgid "Federation [{federation}] of player [{player}] is unknown. Recreate it in ChessEvent then try again."
+#~ msgstr "La fédération [{federation}] du·de la joueur·euse [{player}] est inconnue. Recréez le·la dans ChessEvent puis réessayez."
+
+#~ msgid "Fees link not found, check that a Papi file has already been sent and that the tournament has not been archived on the FFE website."
+#~ msgstr "Lien de facture non trouvé, vérifier qu'un fichier Papi a été envoyé et que le tournoi n'a pas été archivé sur le site web FFE."
+
+#~ msgid "Filter the leagues."
+#~ msgstr "Filtrer les ligues."
+
+#~ msgid "Filter the licences."
+#~ msgstr "Filtrer les licences."
+
+#~ msgid "Filter the schools."
+#~ msgstr "Filtrer les établissements scolaires."
+
+#~ msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
+#~ msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
+#~ msgstr[0] "Pour un tournoi de {rounds} rondes, la valeur la moins significative et la valeur la plus significative sont retirées."
+#~ msgstr[1] "Pour un tournoi de {rounds} rondes, les {count} valeurs les moins significatives et les {count} valeurs les plus significatives sont retirées."
+
+#~ msgid "For a tournament with {rounds} rounds, the least significant value is removed."
+#~ msgid_plural "For a tournament with {rounds} rounds, the {count} least significant values are removed."
+#~ msgstr[0] "Pour un tournoi de {rounds} rondes, la valeur la moins significative est retirée."
+#~ msgstr[1] "Pour un tournoi de {rounds} rondes, les {count} valeurs les moins significatives sont retirées."
+
+#~ msgid "For unrated players, a representative rating is calculated."
+#~ msgstr "Pour les joueur·euses estimé·es, un classement représentatif est calculé."
+
+#~ msgid "French Chess Federation"
+#~ msgstr "Fédération Française des Échecs"
+
+#~ msgid "French Federation specific features (player search, results uploading, leagues, Papi import/export...)"
+#~ msgstr "Fonctionnalités spécifiques à la Fédération Française (recherche de joueur·euses, envoi des résultats, ligues, compatibilité avec Papi)"
+
+#~ msgid "French School Competitions"
+#~ msgstr "Compétitions scolaires françaises"
+
+#~ msgid "French Schools"
+#~ msgstr "Établissements Scolaires"
+
+#~ msgid "French school"
+#~ msgstr "Établissement scolaire"
+
+#~ msgid "Fédération Française des Échecs"
+#~ msgstr "Fédération Française des Échecs"
+
+#~ msgid "Group {group_id}"
+#~ msgstr "Groupe {group_id}"
+
+#~ msgid "Groups can't be edited for this pairing system."
+#~ msgstr "Les groupes ne peuvent être mis à jour pour ce système d'appariement."
+
+#~ msgid "Groups must be composed of at least 25%% and at most 50%% of players."
+#~ msgstr "Les groupes doivent être composés d'au moins 25%% et d'au plus 50%% des joueur·euses."
+
+#~ msgid "Groups must be composed of at least 25%% of players."
+#~ msgstr "Les groupes doivent être composés d'au moins 25%% des joueur·euses."
+
+#~ msgid "Haley system"
+#~ msgstr "Système de Haley"
+
+#~ msgid "Handicap games"
+#~ msgstr "Parties à handicap"
+
+#~ msgid "However, the order of the results of the last round will remain the same as the ones in Sharly Chess."
+#~ msgstr "Cependant, l'ordre des résultats de la dernière rondes restera le même que ceux de Sharly Chess."
+
+#~ msgid "I confirm that I have read and acknowledged the warning"
+#~ msgstr "Je confirme avoir pris connaissance de l'avertissement"
+
+#~ msgid "Import JSON file (papi-converter format)"
+#~ msgstr "Importer un fichier JSON (format papi-converter)"
+
+#~ msgid "Import Papi file"
+#~ msgstr "Importer un fichier Papi"
+
+#~ msgid "Import from ChessEvent"
+#~ msgstr "Importer depuis ChessEvent"
+
+#~ msgid "Invalid FFE ID [{ffe_id}]."
+#~ msgstr "Identifiant FFE [{ffe_id}] non valide."
+
+#~ msgid "Invalid FFE certification number or password."
+#~ msgstr "Identifiant FFE ou mot de passe invalide."
+
+#~ msgid "Invalid FFE licence number [{ffe_licence_number}]."
+#~ msgstr "Numéro de licence FFE [{ffe_licence_number}] non valide."
+
+#~ msgid "Invalid TRF25 string: unexpected characters."
+#~ msgstr "Chaîne TRF25 invalide : caractères inattendus."
+
+#~ msgid "Invalid display link text [{text}]"
+#~ msgstr "Text du lien d'affichage non valide [{text}]."
+
+#~ msgid "Invalid fees link text [{text}]."
+#~ msgstr "Texte du lien des droits d'homologation non valide [{text}]."
+
+#~ msgid "Invalid period:"
+#~ msgstr "Période invalide :"
+
+#~ msgid "Invalid response from the FFE website."
+#~ msgstr "Réponse non valide du site FFE."
+
+#~ msgid "JSON file (papi-converter format)"
+#~ msgstr "Fichier JSON (format papi-converter)"
+
+#~ msgid "Last synchronization"
+#~ msgstr "Dernière synchronisation"
+
+#~ msgid "Last upload"
+#~ msgstr "Dernière mise en ligne"
+
+#~ msgid "League"
+#~ msgstr "Ligue"
+
+#~ msgid "League *** LEAGUE FOR TABLE HEADER"
+#~ msgstr "Ligue"
+
+#~ msgid "League. *** LEAGUE COLUMN HEADER FOR PLAYERS"
+#~ msgstr "Ligue"
+
+#~ msgid "League:"
+#~ msgstr "Ligue :"
+
+#~ msgid "Leagues"
+#~ msgstr "Ligues"
+
+#~ msgid "Lic."
+#~ msgstr "Lic."
+
+#~ msgid "Licence no. *** LICENCE NUMBER"
+#~ msgstr "N° licence"
+
+#~ msgid "Licence types"
+#~ msgstr "Types de licence"
+
+#~ msgid "Licence:"
+#~ msgstr "Licence :"
+
+#~ msgid "Make visible on FFE site"
+#~ msgstr "Rendre visible sur le site de la FFE"
+
+#~ msgid "Manage"
+#~ msgstr "Gérer"
+
+#~ msgid "Maximum value must be greater than the minimum value."
+#~ msgstr "La valeur maximale doit être supérieure à la valeur minimale."
+
+#~ msgid "Median"
+#~ msgstr "Médian"
+
+#~ msgid "Median Buchholz"
+#~ msgstr "Buchholz médian"
+
+#~ msgid "Minimum time (secs):"
+#~ msgstr "Temps minimal (sec.) :"
+
+#~ msgid "Minimum delay between uploads (minutes):"
+#~ msgstr "Délai minimum entre deux envois (min.) :"
+
+#~ msgid "Mode"
+#~ msgstr "Mode"
+
+#~ msgid "Modified since last upload"
+#~ msgstr "Modifié depuis le dernier envoi"
+
+#~ msgid "Modified, but no internet connection"
+#~ msgstr "Modifié, mais pas de connexion internet"
+
+#~ msgid "Never synchronized"
+#~ msgstr "Jamais synchronisé"
+
+#~ msgid "No Chess-Results ID defined for tournament [{tournament}]."
+#~ msgstr "Pas d'identifiant Chess-Results défini pour le tournoi [{tournament}]."
+
+#~ msgid "No FFE ID defined for tournament [{tournament}]."
+#~ msgstr "Aucun identifiant FFE défini pour le tournoi [{tournament}]."
+
+#~ msgid "No FFE Licence"
+#~ msgstr "Aucune licence FFE"
+
+#~ msgid "No acceleration."
+#~ msgstr "Pas d'accélération."
+
+#~ msgid "None *** FFE licence"
+#~ msgstr "Aucune"
+
+#~ msgid "Not configured"
+#~ msgstr "Non configuré"
+
+#~ msgid "Not specified"
+#~ msgstr "Non spécifié"
+
+#~ msgid "PAPI"
+#~ msgstr "PAPI"
+
+#~ msgid "Pairing number range of players the group."
+#~ msgstr "Plage de numéros d'appariemet des joueur·euses du groupe."
+
+#~ msgid "Pairing number range of the group (recommended: %(min)d-%(max)d)."
+#~ msgstr "Plage de numéros d'appariement du groupe (recommandé : %(min)d-%(max)d)."
+
+#~ msgid "Papi file"
+#~ msgstr "Fichier Papi"
+
+#~ msgid "Penalties require a time control with a single period."
+#~ msgstr "Les pénalités nécessitent une cadence avec une seule période."
+
+#~ msgid "Penalty (secs):"
+#~ msgstr "Pénalité (sec.) :"
+
+#~ msgid "Please enter a password for the ChessEvent connection."
+#~ msgstr "Veuillez entrer un mot de passe pour la connexion à ChessEvent."
+
+#~ msgid "Positive values are expected."
+#~ msgstr "Des valeurs positives sont attendues."
+
+#~ msgid "Progressive accelerated system"
+#~ msgstr "Système accéléré dégressif (SAD)"
+
+#~ msgid "Remark:"
+#~ msgstr "Remarque :"
+
+#~ msgid "Results upload OK"
+#~ msgstr "Mise en ligne des résultats OK"
+
+#~ msgid "Round {round}"
+#~ msgstr "Ronde {round}"
+
+#~ msgid "Rounds {min_round}-{max_round}"
+#~ msgstr "Rondes {min_round}-{max_round}"
+
+#~ msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
+#~ msgstr "Lien de mise en ligne du règlement non trouvé, vérifier que le tournoi n'est pas terminé sur le site web FFE."
+
+#~ msgid "Rules uploaded"
+#~ msgstr "Règlement mis en ligne"
+
+#~ msgid "Scan to access the tournament on Chess-Results.com."
+#~ msgstr "Scannez pour accéder au tournoi sur le site Chess-Results.com."
+
+#~ msgid "Scan to access the tournament on the FFE site."
+#~ msgstr "Scannez pour accéder au tournoi sur le site de la FFE."
+
+#~ msgid "School *** SCHOOL FOR TABLE HEADER"
+#~ msgstr "Établissement"
+
+#~ msgid "Schools"
+#~ msgstr "Établissements"
+
+#~ msgid "Settings error"
+#~ msgstr "Erreur de configuration"
+
+#~ msgid "Site"
+#~ msgstr "Site"
+
+#~ msgid "Soft Haley system"
+#~ msgstr "Système de Haley dégressif"
+
+#~ msgid "Some of the tie-break values will not appear in the results on the FFE website."
+#~ msgstr "Certaines des valeurs des départages n'apparaîtront pas dans les résultats sur le site de la FFE."
+
+#~ msgid "Sort the players by school."
+#~ msgstr "Trier les joueur·euses par établissement scolaire."
+
+#~ msgid "Started"
+#~ msgstr "Démarré"
+
+#~ msgid "Success"
+#~ msgstr "Succès"
+
+#~ msgid "Support for the ChessEvent platform used for organising tournaments in France."
+#~ msgstr "Support pour la plateforme ChessEvent utilsée pour l'organisation de tournois en France."
+
+#~ msgid "Synchronisation failed for {count} tournament"
+#~ msgid_plural "Synchronisation failed for {count} tournaments"
+#~ msgstr[0] "Synchronisation échouée pour {count} tournoi"
+#~ msgstr[1] "Synchronisation échouée pour {count} tournois"
+
+#~ msgid "Synchronization failed for tournament [{tournament}]."
+#~ msgstr "Synchronisation échouée pour le tournoi [{tournament}]."
+
+#~ msgid "Synchronize all tournaments"
+#~ msgstr "Synchroniser tous les tournois"
+
+#~ msgid "Synchronize the tournaments with the ChessEvent platform."
+#~ msgstr "Synchroniser les tournois avec la plateforme ChessEvent."
+
+#~ msgid "Synchronize this tournament from its ChessEvent tournament."
+#~ msgstr "Synchroniser ce tournoi à partir de son tournoi ChessEvent."
+
+#~ msgid "Synchronize tournaments with ChessEvent"
+#~ msgstr "Synchroniser les tournois avec ChessEvent"
+
+#~ msgid "Synchronize with ChessEvent"
+#~ msgstr "Synchroniser avec ChessEvent"
+
+#~ msgid "The Baku acceleration system is not compatible with Papi, there may be differences in the Papi pairings display."
+#~ msgstr "Le système d'accélération de Bakou n'est pas compatible avec Papi, il peut y avoir des différences dans l'affichage des appariements Papi."
+
+#~ msgid "The FFE ID is a positive integer."
+#~ msgstr "L'identifiant FFE est un entier positif."
+
+#~ msgid "The FFE always uses the FIDE rating when available."
+#~ msgstr "La FFE utilise toujours le classement FIDE lorsqu’il est disponible."
+
+#~ msgid "The PAPI format does not support {rounds} rounds (maximum: {max})."
+#~ msgstr "Le format PAPI ne supporte pas {rounds} rounds (maximum : {max})."
+
+#~ msgid "The Papi format does not support result [{result}]."
+#~ msgstr "Le format Papi ne supporte pas le résultat [{result}]."
+
+#~ msgid "The [{tie_break}] tie-break as implemented in Papi."
+#~ msgstr "Le départage [{tie_break}] tel qu'implémenté dans Papi."
+
+#~ msgid "The database [%(database)s] is not installed (to install it: Menu > Data sources)."
+#~ msgstr "La base de données [%(database)s] n'est pas installée (pour l'installer : Menu > Sources de données)."
+
+#~ msgid "The database [%(database)s] was last updated over %(age)d months ago. It is preferable to update it before proceeding (Menu > Data sources)."
+#~ msgstr "La base de données [%(database)s] a été mise à jour pour la dernière fois il y a plus de %(age)d mois. Il est préférable de la mettre à jour avant de continuer (Menu > Sources de données)."
+
+#~ msgid "The delay must be at least {min_delay} minutes to avoid overloading the Chess-Results server."
+#~ msgstr "Le délai doit au moins être de {min_delay} minutes pour éviter de surcharger le serveur Chess-Results."
+
+#~ msgid "The delay must be at least {min_delay} minutes to avoid overloading the FFE server."
+#~ msgstr "Le délai doit au moins être de {min_delay} minutes pour éviter de surcharger le serveur FFE."
+
+#~ msgid "The event [{event_id}] is not accessible to the user [{user_id}]."
+#~ msgstr "L'évènement [{event_id}] n'est pas accessible via l'identifiant [{user_id}]."
+
+#~ msgid "The minimum time, whatever the ranking difference between the two players."
+#~ msgstr "La temps minimal, quelle que soit la différence de classement entre les deux joueur·euses."
+
+#~ msgid "The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player."
+#~ msgstr "Le nombre de points de différence entre le classement des joueur·euses utilisé pour calculer le nombre de pénalités appliqué au·à la joueur·euse le·la mieux classé·e."
+
+#~ msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
+#~ msgstr "Le mot de passe du tournoi sur le site FFE doit être composé de 10 lettres majuscules."
+
+#~ msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament}]."
+#~ msgstr "Le·la joueur·euse avec l'identifiant FFE [{ffe_id}] joue déjà le tournoi [{tournament}]."
+
+#~ msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament}]."
+#~ msgstr "Le·la joueur·euse avec la licence FFE [{ffe_licence_number}] joue déjà le tournoi [{tournament}]."
+
+#~ msgid "The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players)."
+#~ msgstr "Le temps retranché au·à la joueur·euse le·la mieux classé·e, en secondes (ce temps est multiplié par le nombre de tranches de différence entre les deux joueur·euses)."
+
+#~ msgid "The username / password provided are not allowed to access this ChessEvent event."
+#~ msgstr "L'identifiant et le mot de passe fournis ne permettent pas d'accéder à cet évènement ChessEvent."
+
+#~ msgid "Tournament [{tournament_name}] does not exist in event [{event_id}]."
+#~ msgstr "Le tournoi [{tournament_name}] n'existe pas dans l'évènement [{event_id}]."
+
+#~ msgid "Tournament [{tournament}] successfully synchronized."
+#~ msgstr "Le tournoi [{tournament}] a été synchronisé avec succès."
+
+#~ msgid "Tournament exempt from registration fees."
+#~ msgstr "Tournoi exempt de droits d'homologation."
+
+#~ msgid "Tournament finished, upload no longer possible."
+#~ msgstr "Tournoi terminé, mise en ligne non autorisée."
+
+#~ msgid "Tournament has not been configured to be used with ChessEvent."
+#~ msgstr "Le tournoi n'a pas été configuré pour être utilisé avec ChessEvent."
+
+#~ msgid "Tournament modified, awaiting auto-upload"
+#~ msgstr "Tournoi mis à jour, en attente de l’envoi automatique"
+
+#~ msgid "Tournament not found"
+#~ msgstr "Tournoi introuvable"
+
+#~ msgid "Tournament not modified since last upload"
+#~ msgstr "Tournoi non modifié depuis le dernier envoi"
+
+#~ msgid "Tournament not yet uploaded."
+#~ msgstr "Tournoi pas encore mis en ligne."
+
+#~ msgid "Tournament number: %(tnr)s"
+#~ msgstr "Numéro de tournoi : %(tnr)s"
+
+#~ msgid "Tournament on Chess-results.com"
+#~ msgstr "Tournoi sur le site Chess-Results.com"
+
+#~ msgid "Tournament on the FFE site"
+#~ msgstr "Tournoi sur le site de la FFE"
+
+#~ msgid "Tournament previously uploaded."
+#~ msgstr "Tournoi mis en ligne précédemment."
+
+#~ msgid "Tournament rules are not set"
+#~ msgstr "Le règlement du tournoi n’est pas défini"
+
+#~ msgid "Tournament visibility successfully set"
+#~ msgstr "Visibilité du tournoi définie avec succès"
+
+#~ msgid "Unable to download tournament fees."
+#~ msgstr "Impossible de télécharger les droits d'homologation."
+
+#~ msgid "Unable to set tournament visibility."
+#~ msgstr "Impossible de définir la visibilité du tournoi."
+
+#~ msgid "Unable to upload tournament rules."
+#~ msgstr "Impossible de mettre en ligne le règlement du tournoi."
+
+#~ msgid "Unable to upload tournament."
+#~ msgstr "Impossible de mettre en ligne le tournoi."
+
+#~ msgid "Unauthorized access"
+#~ msgstr "Accès non-autorisé"
+
+#~ msgid "Unexpected error"
+#~ msgstr "Erreur inattendue"
+
+#~ msgid "Unknown FFE Licence type [%(ffe_licence)s]."
+#~ msgstr "Type de FFE Licence FFE inconnu [%(ffe_licence)s]."
+
+#~ msgid "Unknown error when uploading results."
+#~ msgstr "Erreur inconnue lors de la mise en ligne des résultats."
+
+#~ msgid "Unknown player ID [{player_id}]"
+#~ msgstr "Identifiant de joueur inconnu [{player_id}]."
+
+#~ msgid "Unknown value [{value}]"
+#~ msgstr "Valeur [{value}] inconnue."
+
+#~ msgid "Upload failed"
+#~ msgstr "Échec de la mise en ligne"
+
+#~ msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
+#~ msgstr "Lien de mise en ligne introuvable, vérifiez que le tournoi n’est pas marqué comme terminé sur le site de la FFE."
+
+#~ msgid "Upload rules"
+#~ msgstr "Mettre en ligne le règlement"
+
+#~ msgid "Upload to Chess-Results.com"
+#~ msgstr "Mettre en ligne sur Chess-Results.com"
+
+#~ msgid "Upload to the FFE site"
+#~ msgstr "Mettre en ligne sur le site de la FFE"
+
+#~ msgid "Upload tournaments now"
+#~ msgstr "Mettre en ligne les tournois maintenant"
+
+#~ msgid "Upload tournaments to Chess-Results.com"
+#~ msgstr "Mettre en ligne les tournois sur Chess-Results.com"
+
+#~ msgid "Upload tournaments to the FFE"
+#~ msgstr "Mettre en ligne les tournois vers la FFE"
+
+#~ msgid "Uploading of tournaments to Chess-Results.com."
+#~ msgstr "Mise en ligne des tournois sur Chess-Results.com."
+
+#~ msgid "Uploading the PDF rules file allows the players to read the rules online."
+#~ msgstr "Envoyer le fichier PDF des règles sur le site de la FFE permet aux joueur·euses de lire les règles en ligne."
+
+#~ msgid "Uploading tournament…"
+#~ msgstr "Mise en ligne en cours…"
+
+#~ msgid "Virtual points"
+#~ msgstr "Points virtuels"
+
+#~ msgid "Virtual points are granted to players according to their group. Those points only are used for pairing, not for ranking."
+#~ msgstr "Des points virtuels sont accordés aux joueur·euses selon leur groupe. Ces points ne sont utilisés que pour l'appariement, pas pour le classement."
+
+#~ msgid "Warning: synchronizing a tournament overwrites all of its player data."
+#~ msgstr "Attention : synchroniser un tournoi écrase toutes les données de ses joueur·euses."
+
+#~ msgid "You are not allowed to download fees."
+#~ msgstr "Vous n'êtes pas autorisé·e à télécharger les droits d'homologation."
+
+#~ msgid "You are not allowed to publish results."
+#~ msgstr "Vous n'êtes pas autorisé·e à publier les résultats."
+
+#~ msgid "You are not allowed to publish rules."
+#~ msgstr "Vous n'êtes pas autorisé·e à publier le règlement."
+
+#~ msgid "You are not allowed to update players."
+#~ msgstr "Vous n'êtes pas autorisé·e à modifier les joueur·euses."
+
+#~ msgid "You have to acknowledge the warning first."
+#~ msgstr "Vous devez prendre connaissance de l'avertissement."
+
+#~ msgid "You have to update the ChessEvent settings before being able to use synchronisation."
+#~ msgstr "Vous devez modifier les paramètres ChessEvent avant de pouvoir utiliser la synchronisation."
+
+#~ msgid "defined in the event"
+#~ msgstr "défini dans l'évènement"
+
+#~ msgid "from move 1"
+#~ msgstr "dès le 1er coup"
+
+#~ msgid "min"
+#~ msgstr "min"
+
+#~ msgid "my_password"
+#~ msgstr "mon_mot_de_passe"
+
+#~ msgid "points"
+#~ msgstr "points"
+
+#~ msgid "s"
+#~ msgstr "s"
+
+#~ msgid "then"
+#~ msgstr "puis"
+
+#~ msgid "{count} league represented"
+#~ msgid_plural "{count} leagues represented"
+#~ msgstr[0] "{count} ligue représentée"
+#~ msgstr[1] "{count} ligues représentées"
+
+#~ msgid "{count} tournament ignored"
+#~ msgid_plural "{count} tournaments ignored"
+#~ msgstr[0] "{count} tournoi ignoré"
+#~ msgstr[1] "{count} tournois ignorés"
+
+#~ msgid "{count} tournament successfully synchronized"
+#~ msgid_plural "{count} tournament successfully synchronized"
+#~ msgstr[0] "{count} tournoi synchonisé avec succès"
+#~ msgstr[1] "{count} tournois synchonisés avec succès"
 

@@ -14,7 +14,7 @@ from packaging.version import Version
 
 from common import TEST_ENV, DEVEL_ENV
 from common.exception import SharlyChessException
-from common.i18n import _, ngettext
+from plugins.ffe import _, ngettext
 from data.columns.player_datasheet import DatasheetColumn
 from data.input_output import DataSource, TournamentExporter, TournamentImporter
 from data.input_output.data_source import FideDataSource

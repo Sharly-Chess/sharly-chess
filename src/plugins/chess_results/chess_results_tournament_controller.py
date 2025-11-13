@@ -4,11 +4,10 @@ from litestar import post
 from litestar.response import Template
 from litestar_htmx import HTMXRequest
 
-from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.access_levels.actions import AuthAction
-from plugins.chess_results import PLUGIN_NAME
+from plugins.chess_results import _, PLUGIN_NAME
 from plugins.chess_results.chess_results_background_uploader import (
     ChessResultsBackgroundUploader,
     ChessResultsUploadResult,

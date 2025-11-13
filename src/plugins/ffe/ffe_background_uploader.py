@@ -4,7 +4,7 @@ from functools import partial
 from threading import Thread, Timer
 from time import time
 
-from common.i18n import _, set_locale
+from common.i18n import set_locale
 from common.logger import (
     get_logger,
 )
@@ -14,7 +14,7 @@ from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredTournament, StoredEvent
-from plugins.ffe import PLUGIN_NAME
+from plugins.ffe import _, PLUGIN_NAME
 from plugins.ffe.ffe_session import FFESession
 from plugins.ffe.utils import FFEUtils, FfeEventPluginData, FfeTournamentPluginData
 from plugins.utils import PluginUtils

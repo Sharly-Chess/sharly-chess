@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import Any
 
 from common.exception import SharlyChessException
-from common.i18n import _
 from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
 from common.network import NetworkMonitor
@@ -20,7 +19,7 @@ from plugins.ffe.papi_mappers import (
 from utils.enum import TournamentRating, PlayerRatingType
 from database.sql_server.sql_server import SqlServer, SqlServerCredentials
 from plugins import PLUGINS_DIR
-from plugins.ffe import PLUGIN_NAME
+from plugins.ffe import _, PLUGIN_NAME
 from plugins.ffe.utils import FfePlayerPluginData
 
 logger: Logger = get_logger()
