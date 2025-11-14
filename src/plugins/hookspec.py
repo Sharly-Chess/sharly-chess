@@ -328,6 +328,10 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
+    def insert_print_document(self, print_documents: list[type['PrintDocument']]):
+        """Provide extra print documents"""
+
+    @hookspec
     def alter_print_document_player_columns(self, player_columns: list['PlayerColumn']):
         """Alter the player columns of a print document."""
 

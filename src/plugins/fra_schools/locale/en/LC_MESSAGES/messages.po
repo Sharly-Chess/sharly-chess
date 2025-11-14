@@ -17,6 +17,10 @@ msgstr ""
 msgid "At least one school is expected."
 msgstr ""
 
+#, python-format
+msgid "Average age: %(years)s"
+msgstr ""
+
 msgid "Cancel"
 msgstr ""
 
@@ -30,6 +34,9 @@ msgid "City"
 msgstr ""
 
 msgid "Code"
+msgstr ""
+
+msgid "Complete Team"
 msgstr ""
 
 msgid "Department"
@@ -53,13 +60,34 @@ msgstr ""
 msgid "French school"
 msgstr ""
 
+msgid "Incomplete Team"
+msgstr ""
+
 msgid "Loading more results…"
+msgstr ""
+
+#, python-format
+msgid "Missing boys: %(count)d"
+msgstr ""
+
+#, python-format
+msgid "Missing girls: %(count)d"
 msgstr ""
 
 msgid "Name"
 msgstr ""
 
 msgid "OK"
+msgstr ""
+
+#, python-format
+msgid "Other missing players: %(count)d"
+msgstr ""
+
+msgid "Ranking by school"
+msgstr ""
+
+msgid "Ranking by school after round #{round}"
 msgstr ""
 
 msgid "School *** SCHOOL FOR TABLE HEADER"
@@ -81,6 +109,18 @@ msgstr ""
 
 #, python-format
 msgid "The database [%(database)s] was last updated over %(age)d months ago. It is preferable to update it before proceeding (Menu > Data sources)."
+msgstr ""
+
+msgid "The tournament has not yet started."
+msgstr ""
+
+msgid "This round is not finished (last finished: #{round})."
+msgstr ""
+
+msgid "This round is not valid (the tournament has {rounds} rounds)."
+msgstr ""
+
+msgid "Total"
 msgstr ""
 
 #~ msgid " [{default_choice}: {default_value}]: "

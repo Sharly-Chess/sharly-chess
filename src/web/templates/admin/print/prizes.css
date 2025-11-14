@@ -23,16 +23,19 @@
     font-weight: bold;
     font-size: 1.2em;
     margin-top: 1.2em;
+    text-align: center;
 }
 
 .subheading {
     font-style: italic;
     margin-bottom: 0.5em;
+    text-align: center;
 }
 
 .warning {
     color: red;
     margin-bottom: 0.8rem;
+    text-align: center;
 }
 
 .header {

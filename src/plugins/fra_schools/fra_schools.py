@@ -11,6 +11,7 @@ from data.criteria.player_filter_options import PlayerFilterOption, ClubsFilterO
 from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
 from data.event import Player
 from data.print_documents import PlayerSplitter
+from data.print_documents.documents import PrintDocument, PlayerRankingPrintDocument
 from data.print_documents.player_splitters import ClubPlayerSplitter
 from database.sqlite.event.event_store import StoredTournament
 from database.sqlite.local_source_database import LocalSourceDatabase
@@ -32,6 +33,9 @@ from plugins.fra_schools.fra_schools_entity import (
 )
 from plugins.fra_schools.fra_schools_event_controller import (
     FraSchoolsAdminEventController,
+)
+from plugins.fra_schools.fra_schools_ranking_document import (
+    FraSchoolsRankingPrintDocument,
 )
 from plugins.fra_schools.fra_schools_session_handler import FRASchoolsSessionHandler
 from plugins.fra_schools.utils import (
@@ -231,6 +235,12 @@ class FRASchoolsPlugin(Plugin):
     # ---------------------------------------------------------------------------------
     # Printing
     # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def insert_print_document(self, print_documents: list[type['PrintDocument']]):
+        sps: type[PrintDocument] = FraSchoolsRankingPrintDocument
+        pps: type[PrintDocument] = PlayerRankingPrintDocument
+        PluginUtils.insert_on_equals(print_documents, sps, pps, True)
 
     @hookimpl(trylast=True)
     def alter_print_document_player_columns(self, player_columns: list[PlayerColumn]):
