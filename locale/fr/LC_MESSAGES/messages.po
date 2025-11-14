@@ -445,7 +445,7 @@ msgid "Affects the rating that will be chosen for each player."
 msgstr "Influe sur le classement qui sera choisi pour chaque joueur·euse."
 
 msgid "After the last round, reorder manually the tied players from the Pairings tab."
-msgstr "Après la dernière ronde, réorganiser manuellement les joueur·euses ex aequo depuis l'onglet Appariements."
+msgstr "Après la dernière ronde, réorganiser manuellement les joueur·euses ex æquo depuis l'onglet Appariements."
 
 msgid "Age"
 msgstr "Age"
@@ -4807,7 +4807,7 @@ msgid "To learn how to control your network, consult <a href=\"%(link)s\" target
 msgstr "Pour apprendre à contrôler votre réseau, consultez <a href=\"%(link)s\" target=\"_blank\">notre documentation</a>."
 
 msgid "To modify previous rounds, return to that round in the Pairings tab;<br />byes can then be changed using the buttons next to the player's name."
-msgstr "Pour modifier les rondes précédentes, retourne sur la ronde concernée dans l’onglet Appariements ;<br />les exemptions peuvent ensuite être modifiées à l’aide des boutons situés à côté du nom du·de la joueur·euse."
+msgstr "Pour modifier les rondes précédentes, retourne sur la ronde concernée dans l’onglet Appariements ;<br />les exemptions peuvent ensuite être modifiées à l’aide des boutons situés à côté du nom du·de la joueur·euse."
 
 msgid "Today"
 msgstr "Aujourd'hui"
