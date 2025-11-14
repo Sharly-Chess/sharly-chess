@@ -132,7 +132,7 @@ def set_locale(locale: str) -> bool:
         return False
 
 
-_domain_names: list[str] = Domain.get_domains()
+_domain_names: list[str] = [d.name for d in Domain.get_domains()]
 _plugins_pattern: str = (
     os.sep
     + os.sep.join(
