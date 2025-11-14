@@ -3,10 +3,10 @@ from typing import Any
 
 from data.player import Player
 from utils.enum import TournamentRating, PlayerRatingType
-from web.utils import PlayerColumn
+from web.utils import Column
 
 
-class DatasheetColumn(PlayerColumn, ABC):
+class DatasheetColumn(Column[Player], ABC):
     @property
     @abstractmethod
     def header_content(self) -> str:

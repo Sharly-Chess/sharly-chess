@@ -32,3 +32,6 @@ msgstr ""
 msgid "The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players)."
 msgstr ""
 
+msgid "Time control"
+msgstr ""
+

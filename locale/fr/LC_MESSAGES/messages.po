@@ -4,9 +4,8 @@ msgstr " [{default_choice} : {default_value}] : "
 msgid " [{yes_answer}/{no_answer}]?"
 msgstr " [{yes_answer}/{no_answer}] ?"
 
-#, python-format
-msgid "#%(board_number)d"
-msgstr "n°%(board_number)d"
+msgid "#{board_number}"
+msgstr "n°{board_number}"
 
 #, python-format
 msgid "%%s is replaced by the time elapsed since the hour."
@@ -5624,9 +5623,6 @@ msgstr "le nombre de coups ne doit pas être spécifié pour la période finale.
 
 msgid "the whole ranking"
 msgstr "classement complet"
-
-msgid "time control"
-msgstr "temps"
 
 msgid "value: {value}"
 msgstr "valeur : {value}"

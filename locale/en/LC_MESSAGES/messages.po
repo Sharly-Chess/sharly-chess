@@ -4,8 +4,7 @@ msgstr ""
 msgid " [{yes_answer}/{no_answer}]?"
 msgstr ""
 
-#, python-format
-msgid "#%(board_number)d"
+msgid "#{board_number}"
 msgstr ""
 
 #, python-format
@@ -5623,9 +5622,6 @@ msgid "the number of moves must not be specified for the final period."
 msgstr ""
 
 msgid "the whole ranking"
-msgstr ""
-
-msgid "time control"
 msgstr ""
 
 msgid "value: {value}"

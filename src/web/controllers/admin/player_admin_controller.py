@@ -1616,7 +1616,13 @@ class PlayerAdminController(BaseEventAdminController):
                 tournament=tournament.name
             ),
         )
-        return self._admin_event_players_render(request, reload_event=True)
+        return HTMXTemplate(
+            template_name='common/empty_modal_and_messages.html',
+            context={'messages': Message.messages(request)},
+            re_target='#modal-wrapper',
+            trigger_event='close_modal',
+            after='settle',
+        )
 
     def _admin_player_check_in_out(
         self,

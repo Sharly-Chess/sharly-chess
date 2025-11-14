@@ -32,3 +32,6 @@ msgstr "Le nombre de points de différence entre le classement des joueur·euses
 msgid "The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players)."
 msgstr "Le temps retranché au·à la joueur·euse le·la mieux classé·e, en secondes (ce temps est multiplié par le nombre de tranches de différence entre les deux joueur·euses)."
 
+msgid "Time control"
+msgstr "Temps"
+
