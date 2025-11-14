@@ -1,5 +1,4 @@
-from datetime import datetime
-import time
+from datetime import date
 from unittest import TestCase
 
 from data.board import Board
@@ -25,12 +24,8 @@ class PairingTestCase(TestCase):
         TestUtils.create_event(
             EVENT_ID,
             overrides={
-                'start': time.mktime(
-                    datetime.strptime('2024-12-31 23:59', '%Y-%m-%d %H:%M').timetuple()
-                ),
-                'stop': time.mktime(
-                    datetime.strptime('2025-01-01 00:00', '%Y-%m-%d %H:%M').timetuple()
-                ),
+                'start_date': date(2025, 1, 1),
+                'stop_date': date(2025, 1, 1),
             },
         )
         self.event = EventLoader().load_event(EVENT_ID)

@@ -358,7 +358,7 @@ class TimerAdminController(BaseEventAdminController):
                         data = WebContext.values_dict_to_form_data(
                             {
                                 'uniq_id': stored_timer_hour.uniq_id,
-                                'date_str': EventDatabase.load_date_from_database_field(
+                                'date_str': EventDatabase.load_optional_date_from_database_field(
                                     stored_timer_hour.date_str
                                 ),
                                 'time_str': stored_timer_hour.time_str,

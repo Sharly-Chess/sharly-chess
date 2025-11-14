@@ -716,8 +716,8 @@ class EventDatabase(MigrationDatabase):
             last_update=row['last_update'],
             last_player_update=row['last_player_update'],
             last_pairing_update=row['last_pairing_update'],
-            start_date=cls.load_date_from_database_field(row['start_date']),
-            stop_date=cls.load_date_from_database_field(row['stop_date']),
+            start_date=cls.load_optional_date_from_database_field(row['start_date']),
+            stop_date=cls.load_optional_date_from_database_field(row['stop_date']),
             location=row['location'],
             player_rating_type=row['player_rating_type'],
             three_points_for_a_win=cls.load_bool_or_none_from_database_field(
@@ -1023,7 +1023,9 @@ class EventDatabase(MigrationDatabase):
             id=row['id'],
             last_name=row['last_name'],
             first_name=row['first_name'],
-            date_of_birth=cls.load_date_from_database_field(row['date_of_birth']),
+            date_of_birth=cls.load_optional_date_from_database_field(
+                row['date_of_birth']
+            ),
             gender=row['gender'],
             mail=row['mail'],
             phone=row['phone'],

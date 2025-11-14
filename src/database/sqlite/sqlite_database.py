@@ -146,9 +146,13 @@ class SQLiteDatabase:
         """Returns True if `data` is 1, False otherwise."""
         return data == 1
 
+    @classmethod
+    def load_optional_date_from_database_field(cls, data: str | None) -> date | None:
+        return cls.load_date_from_database_field(data) if data else None
+
     @staticmethod
-    def load_date_from_database_field(data: str | None) -> date | None:
-        return datetime.strptime(data, '%Y-%m-%d').date() if data else None
+    def load_date_from_database_field(data: str) -> date | None:
+        return datetime.strptime(data, '%Y-%m-%d').date()
 
     @staticmethod
     def dump_date_to_database_field(date_: date | None) -> str | None:
