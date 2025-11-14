@@ -1,3 +1,4 @@
+import copy
 import random
 import time
 from collections import defaultdict
@@ -178,7 +179,6 @@ class TournamentAdminController(BaseEventAdminController):
             | plugin_context
             | (template_context or {})
         )
-
         return cls._admin_base_event_render(template_context)
 
     @staticmethod
@@ -256,7 +256,6 @@ class TournamentAdminController(BaseEventAdminController):
             match action:
                 case 'update' | 'clone':
                     admin_tournament = web_context.get_admin_tournament()
-                    assert admin_tournament.stored_tournament is not None
                     stored_tournament = admin_tournament.stored_tournament
                     time_control_trf25 = stored_tournament.time_control_trf25
                     record_illegal_moves = stored_tournament.record_illegal_moves
@@ -286,12 +285,6 @@ class TournamentAdminController(BaseEventAdminController):
                     rating = TournamentRating.STANDARD.value
                 case _:
                     raise ValueError(f'action=[{action}]')
-            if action in [
-                'update',
-                'clone',
-            ]:
-                assert admin_tournament is not None
-                assert admin_tournament.stored_tournament is not None
 
             plugin_form_data: dict[str, str] = {}
             for (
@@ -395,6 +388,9 @@ class TournamentAdminController(BaseEventAdminController):
             'admin_tournament': None
             if action == 'clone'
             else web_context.admin_tournament,
+            'cloned_tournament': web_context.admin_tournament
+            if action == 'clone'
+            else None,
             'player_rating_type_options': player_rating_type_options,
             'pab_value_options': pab_value_options,
             'three_points_for_a_win_options': three_points_for_a_win_options,
@@ -600,7 +596,7 @@ class TournamentAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         action: FormAction,
-        tournament_id: int | None,
+        tournament_id: int,
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id=tournament_id)
         template_context = self._prepare_tournament_modal_data(action, web_context)
@@ -621,9 +617,7 @@ class TournamentAdminController(BaseEventAdminController):
         tournament_id: int | None,
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id=tournament_id)
-        if web_context.admin_event is None:
-            raise RuntimeError('admin_event not defined')
-
+        event = web_context.get_admin_event()
         stored_tournament, errors = self._admin_get_validated_tournament_data(
             action, web_context, data
         )
@@ -636,12 +630,12 @@ class TournamentAdminController(BaseEventAdminController):
                 template_context=template_context,
             )
 
-        if message := plugin_manager.hook_for_event(
-            web_context.admin_event, 'signal_tournament_set'
-        )(event=web_context.admin_event, stored_tournament=stored_tournament):
+        if message := plugin_manager.hook_for_event(event, 'signal_tournament_set')(
+            event=event, stored_tournament=stored_tournament
+        ):
             Message.warning(request, message)
 
-        with EventDatabase(web_context.admin_event.uniq_id, write=True) as database:
+        with EventDatabase(event.uniq_id, write=True) as database:
             if action == FormAction.UPDATE:
                 tournament = web_context.get_admin_tournament()
                 if tournament.rounds < stored_tournament.rounds:
@@ -672,46 +666,59 @@ class TournamentAdminController(BaseEventAdminController):
                 ).format(tournament=stored_tournament.name)
             else:
                 stored_tournament = database.add_stored_tournament(stored_tournament)
+                tournament = Tournament(event, stored_tournament)
+                if action == FormAction.CLONE:
+                    base_tournament = web_context.get_admin_tournament()
+                    for tie_break in base_tournament.tie_breaks_with_invalid:
+                        stored_tie_break = tie_break.to_stored_value()
+                        stored_tie_break.tournament_id = tournament.id
+                        database.add_stored_tie_break(stored_tie_break)
+                    for criterion in base_tournament.criteria:
+                        stored_criterion = copy.copy(
+                            criterion.stored_tournament_criterion
+                        )
+                        stored_criterion.tournament_id = tournament.id
+                        database.add_stored_tournament_criterion(stored_criterion)
                 if 'add_screens' in data:
                     timer_id: int | None = None
-                    if len(web_context.admin_event.timers_by_id) == 1:
-                        timer_id = list(web_context.admin_event.timers_by_id.keys())[0]
+                    if len(event.timers_by_id) == 1:
+                        timer_id = list(event.timers_by_id.keys())[0]
                     for type_, menu, name in [
                         (
                             'input',
                             '@input',
                             _('Check-in / Results entry ({tournament_name})').format(
-                                tournament_name=stored_tournament.name
+                                tournament_name=tournament.name
                             ),
                         ),
                         (
                             'boards',
                             '@boards',
                             _('Pairings by board ({tournament_name})').format(
-                                tournament_name=stored_tournament.name
+                                tournament_name=tournament.name
                             ),
                         ),
                         (
                             'players',
                             '@players',
                             _('Pairings by player ({tournament_name})').format(
-                                tournament_name=stored_tournament.name
+                                tournament_name=tournament.name
                             ),
                         ),
                         (
                             'ranking',
                             '@ranking',
                             _('Ranking ({tournament_name})').format(
-                                tournament_name=stored_tournament.name
+                                tournament_name=tournament.name
                             ),
                         ),
                     ]:
                         stored_screen: StoredScreen = database.add_stored_screen(
                             StoredScreen(
                                 id=None,
-                                uniq_id=web_context.admin_event.get_unused_screen_uniq_id(
+                                uniq_id=event.get_unused_screen_uniq_id(
                                     base_uniq_id=Utils.name_to_uniq_id(
-                                        f'{stored_tournament.name}-{type_}'
+                                        f'{tournament.name}-{type_}'
                                     )
                                 ),
                                 type=type_,
@@ -736,34 +743,31 @@ class TournamentAdminController(BaseEventAdminController):
                             )
                         )
                         assert stored_screen.id is not None
-                        assert stored_tournament.id is not None
-                        database.add_stored_screen_set(
-                            stored_screen.id, stored_tournament.id
-                        )
+                        database.add_stored_screen_set(stored_screen.id, tournament.id)
                     success_message = _(
                         'Tournament [{tournament}] has been created '
                         'and default screens have been added.'
-                    ).format(tournament=stored_tournament.name)
+                    ).format(tournament=tournament.name)
                 else:
                     success_message = _(
                         'Tournament [{tournament}] has been created.'
-                    ).format(tournament=stored_tournament.name)
+                    ).format(tournament=tournament.name)
 
-                tournament_id = stored_tournament.id
+                tournament_id = tournament.id
 
         web_context = TournamentAdminWebContext(
             request, tournament_id, reload_event=True
         )
-        if action == FormAction.UPDATE:
-            Message.success(request, success_message)
-            return self._admin_event_tournaments_render(web_context)
-        return self._admin_base_event_render(
-            web_context.template_context
-            | {
-                'modal': 'tie_breaks',
-                'success_message': success_message,
-            }
-        )
+        if action == FormAction.CREATE:
+            return self._admin_base_event_render(
+                web_context.template_context
+                | {
+                    'modal': 'tie_breaks',
+                    'success_message': success_message,
+                }
+            )
+        Message.success(request, success_message)
+        return self._admin_event_tournaments_render(web_context)
 
     @post(
         path='/tournament-create/{event_uniq_id:str}',
@@ -782,6 +786,27 @@ class TournamentAdminController(BaseEventAdminController):
             request,
             action=FormAction.CREATE,
             tournament_id=None,
+            data=data,
+        )
+
+    @post(
+        path='/tournament-clone/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-tournament-clone',
+        guards=[ActionGuard(AuthAction.ADD_TOURNAMENTS)],
+    )
+    async def htmx_admin_tournament_clone(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        tournament_id: int,
+    ) -> Template:
+        return self._admin_tournament_update(
+            request,
+            action=FormAction.CLONE,
+            tournament_id=tournament_id,
             data=data,
         )
 
