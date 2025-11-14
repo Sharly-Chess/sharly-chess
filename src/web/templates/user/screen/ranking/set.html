@@ -9,7 +9,7 @@
                 {{ screen_set.name_for_ranking }}
             {% endif %}
         </h2>
-        {% set player_columns = player_columns_by_tournament_id[tournament.id] %}
+        {% set player_columns = columns_by_tournament_id[tournament.id] %}
         <div class="row gy-2 gx-3 screen-set-row mx-0 w-100">
             {% for players in screen_set.players_by_rank_lists %}
                 <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %}">
@@ -21,12 +21,7 @@
                                         {% if column.header_template %}
                                             {% include column.header_template %}
                                         {% else %}
-                                            {% set content = column.header_content %}
-                                            {% if column.is_header_content_safe %}
-                                                {{ content|safe }}
-                                            {% else %}
-                                                {{ content }}
-                                            {% endif %}
+                                            {{ macros.column_header(column) }}
                                         {% endif %}
                                     </th>
                                 {% endfor %}
@@ -37,7 +32,7 @@
                                 {% for player in players %}
                                     <tr id="player-{{ player.id }}" class="player-row {{ 'even' if loop.index is even else 'odd' }}">
                                         {% for column in player_columns %}
-                                            <td class="{{ column.cell_classes }}">
+                                            <td class="{{ column.get_cell_classes(player) }}">
                                                 {{ macros.column_cell(column, player) }}
                                             </td>
                                         {% endfor %}

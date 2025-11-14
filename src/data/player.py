@@ -110,20 +110,6 @@ class Player:
         return self.player_full_name(self.first_name, self.last_name)
 
     @property
-    def name_for_board_view(self) -> str:
-        name = ''
-        if self.title.short_name:
-            name += f'{self.title.short_name}\u00a0'
-        name += f'{self.full_name} {self.rating_str}'
-
-        if augmented_name := plugin_manager.hook_for_event(
-            self.event, 'player_name_for_board_view'
-        )(player=self, default=name):
-            return augmented_name
-
-        return name
-
-    @property
     def date_of_birth(self) -> date | None:
         return self.stored_player.date_of_birth
 

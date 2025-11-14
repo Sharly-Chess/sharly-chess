@@ -1,13 +1,21 @@
+from abc import ABC
 from typing import Any
 
 from common.i18n import _
 from data.player import Player
 from data.tournament import Tournament
 from utils import Utils
-from web.utils import PlayerColumn
+from web.utils import Column, ColumnUsage
 
 
-class CheckinColumn(PlayerColumn):
+class PlayerTableColumn(Column[Player], ABC):
+    """Base class for player table columns."""
+
+    def __init__(self, usage: ColumnUsage):
+        self.usage = usage
+
+
+class CheckinColumn(PlayerTableColumn):
     @property
     def header_content(self) -> str:
         return ''
@@ -15,12 +23,11 @@ class CheckinColumn(PlayerColumn):
     def get_cell_content(self, player: Player) -> Any:
         return '☑' if player.check_in else '☐'
 
-    @property
-    def cell_classes(self) -> str:
+    def get_cell_classes(self, player: Player) -> str:
         return 'checkin'
 
 
-class NumberColumn(PlayerColumn):
+class NumberColumn(PlayerTableColumn):
     @property
     def header_content(self) -> str:
         return _('No. *** NB FOR TABLE HEADER')
@@ -34,24 +41,20 @@ class NumberColumn(PlayerColumn):
         return 'text-end'
 
 
-class RankColumn(PlayerColumn):
+class RankColumn(PlayerTableColumn):
     @property
     def header_content(self) -> str:
         return _('Rk. *** RANK FOR TABLE HEADER')
 
     def get_cell_content(self, player: Player) -> Any:
-        return str(player.rank)
-
-    @property
-    def is_cell_content_safe(self) -> bool:
-        return True
+        return player.rank
 
     @property
     def shared_classes(self) -> str:
         return 'text-end'
 
 
-class RankOverallColumn(PlayerColumn):
+class RankOverallColumn(PlayerTableColumn):
     @property
     def header_content(self) -> str:
         return _('Rk. O. *** RANK OVERALL FOR TABLE HEADER')
@@ -68,14 +71,10 @@ class RankOverallColumn(PlayerColumn):
         return 'fw-bold text-start'
 
 
-class TitleColumn(PlayerColumn):
+class TitleColumn(PlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return '&nbsp;'
-
-    @property
-    def is_header_content_safe(self) -> bool:
-        return True
+        return '\u00a0'
 
     def get_cell_content(self, player: Player) -> Any:
         return player.title.short_name
@@ -85,7 +84,7 @@ class TitleColumn(PlayerColumn):
         return 'text-end'
 
 
-class NameColumn(PlayerColumn):
+class NameColumn(PlayerTableColumn):
     @property
     def grid_column_template(self) -> str:
         return '1fr'
@@ -102,7 +101,7 @@ class NameColumn(PlayerColumn):
         return 'fw-bold text-start'
 
 
-class RatingColumn(PlayerColumn):
+class RatingColumn(PlayerTableColumn):
     @property
     def header_template(self) -> str | None:
         return '/admin/print/headers/rating.html'
@@ -110,12 +109,11 @@ class RatingColumn(PlayerColumn):
     def get_cell_content(self, player: Player) -> Any:
         return player.rating_str
 
-    @property
-    def cell_classes(self) -> str:
+    def get_cell_classes(self, player: Player) -> str:
         return 'text-end'
 
 
-class CategoryColumn(PlayerColumn):
+class CategoryColumn(PlayerTableColumn):
     @property
     def header_content(self) -> str:
         return _('Cat *** CATEGORY FOR TABLE HEADER')
@@ -128,7 +126,7 @@ class CategoryColumn(PlayerColumn):
         return 'text-center'
 
 
-class GenderColumn(PlayerColumn):
+class GenderColumn(PlayerTableColumn):
     @property
     def header_content(self) -> str:
         return _('Gen *** GENDER FOR TABLE HEADER')
@@ -141,7 +139,7 @@ class GenderColumn(PlayerColumn):
         return 'text-center'
 
 
-class FederationColumn(PlayerColumn):
+class FederationColumn(PlayerTableColumn):
     @property
     def header_content(self) -> str:
         return _('Fed *** FEDERATION FOR TABLE HEADER')
@@ -154,7 +152,7 @@ class FederationColumn(PlayerColumn):
         return 'text-center'
 
 
-class ClubColumn(PlayerColumn):
+class ClubColumn(PlayerTableColumn):
     @property
     def header_content(self) -> str:
         return _('Club *** CLUB FOR TABLE HEADER')
@@ -167,7 +165,7 @@ class ClubColumn(PlayerColumn):
         return 'text-start'
 
 
-class PointsColumn(PlayerColumn):
+class PointsColumn(PlayerTableColumn):
     @property
     def header_content(self) -> str:
         return _('Pts *** POINTS FOR TABLE HEADER')
@@ -180,7 +178,7 @@ class PointsColumn(PlayerColumn):
         return 'fw-bold text-center'
 
 
-class PairingPointsColumn(PlayerColumn):
+class AlphaPointsColumn(PlayerTableColumn):
     @property
     def header_content(self) -> str:
         return ''
@@ -193,8 +191,9 @@ class PairingPointsColumn(PlayerColumn):
         return 'fw-bold text-center'
 
 
-class RoundColumn(PlayerColumn):
-    def __init__(self, round_: int):
+class RoundColumn(PlayerTableColumn):
+    def __init__(self, usage: ColumnUsage, round_: int):
+        super().__init__(usage)
         self.round = round_
 
     @property
@@ -203,18 +202,19 @@ class RoundColumn(PlayerColumn):
 
     def get_cell_content(self, player: Player) -> Any:
         pairing = player.pairings_by_round[self.round]
-        return (
-            f'{pairing.opponent.rank:>3}{pairing.color.to_crosstable}'
-            if pairing.opponent and pairing.color
-            else ''
-        )
+        content = pairing.result.to_crosstable
+        if opponent := pairing.opponent:
+            content += str(opponent.rank).rjust(3, '\u00a0') + getattr(
+                pairing.color, 'to_crosstable'
+            )
+        return content
 
     @property
     def shared_classes(self) -> str:
         return 'text-center'
 
 
-class TournamentColumn(PlayerColumn):
+class TournamentColumn(PlayerTableColumn):
     @property
     def header_content(self) -> str:
         return _('Tournament *** TOURNAMENT FOR PLAYERS COLUMNS')
@@ -227,8 +227,14 @@ class TournamentColumn(PlayerColumn):
         return 'text-start'
 
 
-class TieBreakColumn(PlayerColumn):
-    def __init__(self, tournament: Tournament, index: int):
+class TieBreakColumn(PlayerTableColumn):
+    def __init__(
+        self,
+        usage: ColumnUsage,
+        tournament: Tournament,
+        index: int,
+    ):
+        super().__init__(usage)
         self.tournament = tournament
         self.index = index
 
@@ -244,7 +250,7 @@ class TieBreakColumn(PlayerColumn):
         return 'text-center'
 
 
-class PaidColumn(PlayerColumn):
+class PaidColumn(PlayerTableColumn):
     @property
     def header_content(self) -> str:
         return _('Paid *** PAID COLUMN HEADER FOR PLAYERS')
@@ -257,7 +263,7 @@ class PaidColumn(PlayerColumn):
         return 'text-center'
 
 
-class OwedColumn(PlayerColumn):
+class OwedColumn(PlayerTableColumn):
     @property
     def header_content(self) -> str:
         return _('Owed *** OWED COLUMN HEADER FOR PLAYERS')
@@ -270,7 +276,7 @@ class OwedColumn(PlayerColumn):
         return 'text-center'
 
 
-class CommentsColumn(PlayerColumn):
+class CommentsColumn(PlayerTableColumn):
     @property
     def header_content(self) -> str:
         return _('Comments *** COMMENTS FOR TABLE HEADER')
@@ -281,3 +287,29 @@ class CommentsColumn(PlayerColumn):
     @property
     def shared_classes(self) -> str:
         return 'text-center'
+
+
+class PlayerColumn(PlayerTableColumn):
+    @property
+    def header_content(self) -> str:
+        return _('Player')
+
+    def get_cell_content(self, player: Player) -> Any:
+        return player.full_name
+
+    @property
+    def shared_classes(self) -> str:
+        return 'fw-bold text-start'
+
+
+class OpponentColumn(PlayerTableColumn):
+    @property
+    def header_content(self) -> str:
+        return _('Opponent')
+
+    def get_cell_content(self, player: Player) -> Any:
+        return player.full_name
+
+    @property
+    def shared_classes(self) -> str:
+        return 'fw-bold text-start'
