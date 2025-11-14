@@ -10,9 +10,11 @@ from common import format_timestamp
 from common.exception import SharlyChessException, OptionError
 from common.i18n import _, ngettext
 from common.i18n.utils import unicode_normalize
-from data.columns import player_table as columns
 from common.logger import get_logger
 from data.board import Board
+from data.columns.board_table import BoardColumn, ResultColumn, NoResultColumn
+from data.columns.player_table import ColumnUsage, PlayerTableColumn
+from data.columns.handlers import PlayerColumnHandler, BoardColumnHandler
 from data.event import Event
 from data.pairings.engines import RoundRobinPairingEngine
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
@@ -48,7 +50,6 @@ from utils import Utils
 from utils.enum import Result
 from utils.types import PlayerTitle
 from utils.option import Option, OptionHandler
-from web.utils import PlayerColumn
 
 logger: logging.Logger = get_logger()
 
@@ -61,6 +62,10 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
     ):
         self.event = event
         super().__init__(options)
+
+    def get_event(self) -> Event:
+        assert self.event is not None
+        return self.event
 
     @override
     def default_options(self) -> list[PrintOption]:
@@ -76,31 +81,30 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
     @property
     def tournament(self) -> Tournament:
         """The tournament for which the document is printed."""
-        assert self.event is not None
         tournament_id = self._get_option(TournamentPrintOption).value
         if tournament_id:
-            return self.event.tournaments_by_id[tournament_id]
+            return self.get_event().tournaments_by_id[tournament_id]
         return self.tournaments[0]
 
     @property
     def tournaments(self) -> list[Tournament]:
         """The tournaments for which the document is printed."""
-        assert self.event is not None
+        event = self.get_event()
         tournament_ids = self._get_option(TournamentsPrintOption).value
         if not tournament_ids:
-            return list(self.event.tournaments)
+            return list(event.tournaments)
         return [
-            self.event.tournaments_by_id[int(tournament_id)]
+            event.tournaments_by_id[int(tournament_id)]
             for tournament_id in tournament_ids.split(',')
         ]
 
     @property
     def subtitle(self) -> str:
         """Subtitle of the print document."""
-        assert self.event is not None
+        event = self.get_event()
         return (
-            self.event.name
-            if len(self.tournaments) == len(list(self.event.tournaments))
+            event.name
+            if len(self.tournaments) == len(list(event.tournaments))
             else ', '.join(tournament.name for tournament in self.tournaments)
         )
 
@@ -153,6 +157,10 @@ class PlayerPrintDocument(PrintDocument, ABC):
         return [TournamentsPrintOption, PlayerSplitPrintOption]
 
     @property
+    def column_handler(self) -> PlayerColumnHandler:
+        return PlayerColumnHandler(self.get_event(), ColumnUsage.PRINT)
+
+    @property
     def multiple_tournaments(self) -> bool:
         return True
 
@@ -166,28 +174,8 @@ class PlayerPrintDocument(PrintDocument, ABC):
 
     @property
     @abstractmethod
-    def base_player_columns(self) -> list[PlayerColumn]:
-        """List of columns to display in the tables of the document."""
-
-    @property
-    def player_columns(self) -> list[PlayerColumn]:
+    def player_columns(self) -> list[PlayerTableColumn]:
         """List of all the columns to display in the tables of the document."""
-        player_columns = self.base_player_columns
-        if self.multiple_tournaments and len(self.tournaments) > 1:
-            club_index = next(
-                (
-                    i
-                    for i, column in enumerate(player_columns)
-                    if isinstance(column, columns.ClubColumn)
-                ),
-                None,
-            )
-            if club_index is not None:
-                player_columns.insert(club_index + 1, columns.TournamentColumn())
-        plugin_manager.hook_for_event(
-            self.event, 'alter_print_document_player_columns'
-        )(player_columns=player_columns)
-        return player_columns
 
     @property
     def template_context(self) -> dict[str, Any]:
@@ -216,26 +204,16 @@ class PlayerListPrintDocument(PlayerPrintDocument):
 
     @property
     def ordered_players(self) -> list[Player]:
-        assert self.event is not None
         tournament_ids = [tournament.id for tournament in self.tournaments]
         return [
             player
-            for player in self.event.players_sorted_by_name
+            for player in self.get_event().players_sorted_by_name
             if player.tournament.id in tournament_ids
         ]
 
     @property
-    def base_player_columns(self) -> list[PlayerColumn]:
-        return [
-            columns.NumberColumn(),
-            columns.TitleColumn(),
-            columns.NameColumn(),
-            columns.RatingColumn(),
-            columns.CategoryColumn(),
-            columns.GenderColumn(),
-            columns.FederationColumn(),
-            columns.ClubColumn(),
-        ]
+    def player_columns(self) -> list[PlayerTableColumn]:
+        return self.column_handler.get_player_list_columns(len(self.tournaments) > 1)
 
 
 class PlayerCheckinListPrintDocument(PlayerPrintDocument):
@@ -253,29 +231,18 @@ class PlayerCheckinListPrintDocument(PlayerPrintDocument):
 
     @property
     def ordered_players(self) -> list[Player]:
-        assert self.event is not None
         tournament_ids = [tournament.id for tournament in self.tournaments]
         return [
             player
-            for player in self.event.players_sorted_by_name
+            for player in self.get_event().players_sorted_by_name
             if player.tournament.id in tournament_ids
         ]
 
     @property
-    def base_player_columns(self) -> list[PlayerColumn]:
-        return [
-            columns.CheckinColumn(),
-            columns.TitleColumn(),
-            columns.NameColumn(),
-            columns.RatingColumn(),
-            columns.CategoryColumn(),
-            columns.GenderColumn(),
-            columns.FederationColumn(),
-            columns.ClubColumn(),
-            columns.PaidColumn(),
-            columns.OwedColumn(),
-            columns.CommentsColumn(),
-        ]
+    def player_columns(self) -> list[PlayerTableColumn]:
+        return self.column_handler.get_player_checkin_list_columns(
+            len(self.tournaments) > 1
+        )
 
 
 class AbstractPlayerRankingPrintDocument(PlayerPrintDocument, ABC):
@@ -341,22 +308,8 @@ class PlayerRankingPrintDocument(AbstractPlayerRankingPrintDocument):
         return _('Ranking after round #{round}').format(round=self.ranking_round)
 
     @property
-    def base_player_columns(self) -> list[PlayerColumn]:
-        tournament = self.tournament
-        return [
-            columns.RankColumn(),
-            columns.TitleColumn(),
-            columns.NameColumn(),
-            columns.RatingColumn(),
-            columns.CategoryColumn(),
-            columns.GenderColumn(),
-            columns.FederationColumn(),
-            columns.ClubColumn(),
-            columns.PointsColumn(),
-        ] + [
-            columns.TieBreakColumn(tournament, index)
-            for index in range(len(tournament.tie_breaks))
-        ]
+    def player_columns(self) -> list[PlayerTableColumn]:
+        return self.column_handler.get_player_ranking_columns(self.tournament)
 
 
 class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument):
@@ -375,29 +328,9 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument):
         return _('Crosstable after round #{round}').format(round=self.ranking_round)
 
     @property
-    def base_player_columns(self) -> list[PlayerColumn]:
-        tournament = self.tournament
-        return (
-            [
-                columns.RankColumn(),
-                columns.TitleColumn(),
-                columns.NameColumn(),
-                columns.RatingColumn(),
-                columns.CategoryColumn(),
-                columns.GenderColumn(),
-                columns.FederationColumn(),
-            ]
-            + [
-                columns.RoundColumn(round_)
-                for round_ in range(1, self.ranking_round + 1)
-            ]
-            + [
-                columns.PointsColumn(),
-            ]
-            + [
-                columns.TieBreakColumn(tournament, index)
-                for index in range(len(tournament.tie_breaks))
-            ]
+    def player_columns(self) -> list[PlayerTableColumn]:
+        return self.column_handler.get_player_crosstable_columns(
+            self.tournament, self.ranking_round
         )
 
 
@@ -497,8 +430,15 @@ class BoardPrintDocument(PrintDocument, ABC):
         return False
 
     @property
+    def board_columns(self) -> list[BoardColumn]:
+        return BoardColumnHandler(ColumnUsage.PRINT).get_pairings_columns(
+            self.tournament,
+            self.at_round,
+            ResultColumn if self.show_results else NoResultColumn,
+        )
+
+    @property
     def boards(self) -> list[Board]:
-        assert self.event is not None
         self.tournament.set_for_round(self.at_round)
         return self.tournament.get_round_boards(self.at_round)
 
@@ -507,9 +447,8 @@ class BoardPrintDocument(PrintDocument, ABC):
         return {
             'tournament': self.tournament,
             'subtitle': self.tournament.name,
-            'show_result': self.show_results,
             'boards': self.boards,
-            'selected_round': self.at_round,
+            'board_columns': self.board_columns,
         }
 
     @property
@@ -621,13 +560,12 @@ class PlayerPairingPrintDocument(PlayerPrintDocument):
         return self.tournament.players_by_name_with_unpaired
 
     @property
-    def base_player_columns(self) -> list[PlayerColumn]:
-        return [
-            columns.TitleColumn(),
-            columns.NameColumn(),
-            columns.RatingColumn(),
-            columns.PairingPointsColumn(),
-        ]
+    def player_columns(self) -> list[PlayerTableColumn]:
+        return self.column_handler.get_alpha_board_player_columns()
+
+    @property
+    def opponent_columns(self) -> list[PlayerTableColumn]:
+        return self.column_handler.get_alpha_board_opponent_columns()
 
     @property
     def template_name(self) -> str:
@@ -635,7 +573,10 @@ class PlayerPairingPrintDocument(PlayerPrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
-        return super().template_context | {'pairings_round': self.at_round}
+        return super().template_context | {
+            'pairings_round': self.at_round,
+            'opponent_columns': self.opponent_columns,
+        }
 
 
 class ResultPrintDocument(BoardPrintDocument):
@@ -838,22 +779,11 @@ class PrizeAssignmentPrintDocument(PrintDocument):
         }
 
     @property
-    def player_columns(self) -> list[PlayerColumn]:
-        player_columns: list[PlayerColumn] = [
-            columns.RankOverallColumn(),
-            columns.TitleColumn(),
-            columns.NameColumn(),
-            columns.RatingColumn(),
-            columns.CategoryColumn(),
-            columns.GenderColumn(),
-            columns.FederationColumn(),
-            columns.ClubColumn(),
-            columns.PointsColumn(),
-        ]
-        plugin_manager.hook_for_event(
-            self.event, 'alter_print_document_player_columns'
-        )(player_columns=player_columns)
-        return player_columns
+    def player_columns(self) -> list[PlayerTableColumn]:
+        assert self.event is not None
+        return PlayerColumnHandler(
+            self.event, ColumnUsage.PRINT
+        ).get_prize_assignment_columns()
 
 
 @dataclass

@@ -9,6 +9,7 @@ from common.exception import SharlyChessException, OptionError
 from common.i18n import _
 from common.i18n.utils import unicode_normalize
 from data.columns.player_datasheet import DatasheetColumn
+from data.columns.player_table import PlayerTableColumn
 from data.input_output.data_source import (
     FidePlayerComparator,
     PlayerComparator,
@@ -40,7 +41,6 @@ from plugins.pairing_acceleration.pairing_variations import (
 )
 from plugins.utils import PluginUtils
 from utils.enum import Result
-from web.utils import PlayerColumn
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
@@ -602,7 +602,7 @@ class FfeLicenceFilterOption(SelectPlayerFilterOption[int]):
             raise OptionError(_('At least one licence type is expected.'), self)
 
 
-class FfeLeagueTableColumn(PlayerColumn):
+class FfeLeagueTableColumn(PlayerTableColumn):
     @property
     def header_content(self) -> str:
         return _('League *** LEAGUE FOR TABLE HEADER')

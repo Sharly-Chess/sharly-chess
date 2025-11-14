@@ -32,7 +32,7 @@ class PluginUtils:
         return (plugin_data or {}).get(plugin_id, {}).get(field, default)
 
     @staticmethod
-    def insert_on_condition[T](
+    def _insert_on_condition[T](
         source_list: list[T],
         element: T,
         condition: Callable[[T], bool],
@@ -40,7 +40,6 @@ class PluginUtils:
     ):
         """Inserts *element* into the list *source_list*. The insert in made at
         the position of the first element matching *condition*.
-        If no element matches *condition*, append the element to the list.
         If *after* is True, element is inserted after the matched element,
         otherwise it is inserted before.
         """
@@ -48,7 +47,6 @@ class PluginUtils:
             if condition(match_element):
                 source_list.insert(index + after, element)
                 return
-        source_list.append(element)
 
     @classmethod
     def insert_on_equals[T](
@@ -60,7 +58,7 @@ class PluginUtils:
     ):
         """Wrapper on insert_on_condition where the condition
         is an element being equal to *match_element*"""
-        cls.insert_on_condition(
+        cls._insert_on_condition(
             source_list, element, lambda elem: elem == match_element, after
         )
 
@@ -69,14 +67,27 @@ class PluginUtils:
         cls,
         source_list: list[T],
         element: T,
-        insert_type: type[T],
+        match_type: type[T],
         after: bool = True,
     ):
         """Wrapper on insert_on_condition where the condition
         is an element being an instance of *insert_type*"""
-        cls.insert_on_condition(
-            source_list, element, lambda elem: isinstance(elem, insert_type), after
+        cls._insert_on_condition(
+            source_list, element, lambda elem: isinstance(elem, match_type), after
         )
+
+    @staticmethod
+    def _replace_on_condition[T](
+        source_list: list[T],
+        element: T,
+        condition: Callable[[T], bool],
+    ):
+        """Replace with *element* first element of the
+        list *source_list* matching the condition *condition*."""
+        for index, match_element in enumerate(source_list):
+            if condition(match_element):
+                source_list[index] = element
+                return
 
     @classmethod
     def replace_on_equals[T](
@@ -85,10 +96,20 @@ class PluginUtils:
         element: T,
         match_element: T,
     ):
-        for index, e in enumerate(source_list):
-            if e == match_element:
-                source_list[index] = element
-                return
+        cls._replace_on_condition(
+            source_list, element, lambda elem: elem == match_element
+        )
+
+    @classmethod
+    def replace_on_isinstance[T](
+        cls,
+        source_list: list[T],
+        element: T,
+        match_type: type[T],
+    ):
+        cls._replace_on_condition(
+            source_list, element, lambda elem: isinstance(elem, match_type)
+        )
 
 
 class PluginContext:

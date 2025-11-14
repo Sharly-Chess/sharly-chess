@@ -23,7 +23,7 @@
                 {% for player in players[split_by] %}
                     <tr id="player-{{ player.id }}" class="player-row {{ 'even' if loop.index is even else 'odd' }}">
                         {% for column in player_columns %}
-                            <td class="{{ column.cell_classes }}">
+                            <td class="{{ column.get_cell_classes(player) }}">
                                 {{ macros.column_cell(column, player) }}
                             </td>
                         {% endfor %}

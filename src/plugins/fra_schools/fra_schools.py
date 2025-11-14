@@ -7,6 +7,7 @@ from packaging.version import Version
 from litestar.plugins.htmx import HTMXRequest
 from common.i18n import _
 from data.columns.player_datasheet import DatasheetColumn
+from data.columns.player_table import PlayerTableColumn, ColumnUsage
 from data.criteria.player_filter_options import PlayerFilterOption, ClubsFilterOption
 from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
 from data.event import Player
@@ -53,7 +54,6 @@ from plugins.utils import (
 )
 from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController
-from web.utils import PlayerColumn
 
 if TYPE_CHECKING:
     from database.sqlite.event.event_store import StoredTournament
@@ -118,7 +118,7 @@ class FRASchoolsPlugin(Plugin):
     # Input-Output
     # ---------------------------------------------------------------------------------
 
-    @hookimpl
+    @hookimpl(trylast=True)
     def insert_local_source_databases(self, databases: list[type[LocalSourceDatabase]]):
         schools: type[LocalSourceDatabase] = FRASchoolsDatabase
         ffe: type[LocalSourceDatabase] = FfeDatabase
@@ -244,7 +244,11 @@ class FRASchoolsPlugin(Plugin):
         PluginUtils.insert_on_equals(print_documents, sps, pps, True)
 
     @hookimpl(trylast=True)
-    def alter_print_document_player_columns(self, player_columns: list[PlayerColumn]):
+    def alter_print_and_screen_player_columns(
+        self,
+        usage: ColumnUsage,
+        player_columns: list['PlayerTableColumn'],
+    ):
         # Remove FederationColumn and LeagueColumn
         player_columns[:] = [
             col
@@ -253,16 +257,11 @@ class FRASchoolsPlugin(Plugin):
                 col, (player_table.FederationColumn, FfeLeagueTableColumn)
             )
         ]
-        index = next(
-            (
-                i
-                for i, column in enumerate(player_columns)
-                if isinstance(column, player_table.ClubColumn)
-            ),
-            None,
+        PluginUtils.replace_on_isinstance(
+            player_columns,
+            FraSchoolTableColumn(usage),
+            player_table.ClubColumn,
         )
-        if index is not None:
-            player_columns[index] = FraSchoolTableColumn()
 
     @hookimpl
     def insert_print_player_splitter_types(

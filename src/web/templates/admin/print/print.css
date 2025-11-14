@@ -17,9 +17,9 @@ sup {
   margin-bottom: 4rem;
 }
 {# ========== COLORS ========== #}
-tr.even td { background-color: #FFFFFF; }
-tr.odd td {
-    background-color: #E0E0E0;
+tr.even * { background-color: #FFFFFF !important; }
+tr.odd * {
+    background-color: #E0E0E0 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
 }
@@ -49,6 +49,11 @@ tr td, tr th {
 .important-cell,
 .fw-bold { font-weight: bold; text-align: center; }
 
+{# ========== FONT style ========== #}
+.fst-italic {
+    font-style: italic !important;
+}
+
 {# ========== TEXT ALIGN ========== #}
 .text-start {
     text-align: left;
@@ -61,6 +66,9 @@ tr td, tr th {
 .text-end {
     text-align: right;
     justify-self: end;
+}
+.text-nowrap {
+    white-space: nowrap !important;
 }
 
 {# ========== CELLS ========== #}
