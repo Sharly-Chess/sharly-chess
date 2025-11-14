@@ -151,7 +151,7 @@ class SQLiteDatabase:
         return cls.load_date_from_database_field(data) if data else None
 
     @staticmethod
-    def load_date_from_database_field(data: str) -> date | None:
+    def load_date_from_database_field(data: str) -> date:
         return datetime.strptime(data, '%Y-%m-%d').date()
 
     @staticmethod
