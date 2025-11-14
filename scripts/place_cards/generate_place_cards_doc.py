@@ -44,7 +44,7 @@ def generate_doc(
                                 if embedded
                                 else 'examples/place_cards'
                             )
-                            template_download_url: str = f'https://raw.githubusercontent.com/Sharly-Chess/sharly-chess/refs/heads/feature/dev/{template_sub_dir}/place_cards/{template.id}.template'
+                            template_download_url: str = f'https://raw.githubusercontent.com/Sharly-Chess/sharly-chess/refs/heads/dev/{template_sub_dir}/place_cards/{template.id}.template'
                             f.write(
                                 f'### {place_card_type.static_name()} - {template.name}\n\n'
                             )
