@@ -37,10 +37,7 @@ class Migration(BasePluginMigration):
 
         for row in self.database.fetchall():
             tournament_id = row['id']
-            try:
-                plugin_data = json.loads(row['plugin_data'] or '{}')
-            except Exception:
-                plugin_data = {}
+            plugin_data = json.loads(row['plugin_data'] or '{}')
 
             plugin_data['ffe'] = {
                 'ffe_id': row['ffe_id'],
@@ -106,10 +103,7 @@ class Migration(BasePluginMigration):
         self.database.execute('SELECT id, plugin_data FROM tournament')
         for row in self.database.fetchall():
             tournament_id = row['id']
-            try:
-                plugin_data = json.loads(row['plugin_data'] or '{}')
-            except Exception:
-                plugin_data = {}
+            plugin_data = json.loads(row['plugin_data'] or '{}')
 
             ffe_data = plugin_data.get('ffe', {}) or {}
 

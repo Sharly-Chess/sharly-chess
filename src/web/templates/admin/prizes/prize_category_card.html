@@ -4,7 +4,7 @@
     <input type='hidden' name='item' value='{{ prize_category.id }}'/>
     <div class="d-flex align-items-center">
         <div>
-            {% if not prize_category.is_main %}
+            {% if sortable and not prize_category.is_main %}
                 <i class="bi-arrows-move invisible"></i>
             {% endif %}
         </div>
@@ -18,7 +18,7 @@
             {{ prize_category.name }}
         </div>
         <div>
-            {% if not prize_category.is_main %}
+            {% if sortable and not prize_category.is_main %}
                 <i class="bi-arrows-move"></i>
             {% endif %}
         </div>

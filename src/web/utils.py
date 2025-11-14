@@ -1,5 +1,6 @@
 from abc import ABC
 from dataclasses import dataclass
+from enum import Enum, auto
 from typing import Any
 
 from litestar.exceptions import (
@@ -323,8 +324,7 @@ class Column[T](ABC):
         """The template to use for the cells. If None, the cell content is used."""
         return None
 
-    @property
-    def cell_classes(self) -> str:
+    def get_cell_classes(self, object_: T) -> str:
         """CSS classes to use for the cells."""
         return self.shared_classes
 
@@ -334,5 +334,6 @@ class Column[T](ABC):
         return ''
 
 
-class PlayerColumn(Column[Player], ABC):
-    """Base column class for player tables."""
+class ColumnUsage(Enum):
+    SCREEN = auto()
+    PRINT = auto()

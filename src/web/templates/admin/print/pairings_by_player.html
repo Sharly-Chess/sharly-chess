@@ -5,7 +5,6 @@
 {% endblock %}
 
 {% block content %}
-    {% set n = [1] %}
     {% for split_by in players.keys() %}
         <div class="section-title">
             {{ split_by }}
@@ -19,7 +18,7 @@
                         </th>
                     {% endfor %}
                     <th></th>
-                    {% for column in player_columns %}
+                    {% for column in opponent_columns %}
                         <th class="{{ column.header_classes }}">
                             {{ macros.column_header(column) }}
                         </th>
@@ -30,7 +29,7 @@
                 {% for player in players[split_by] %}
                     <tr id="player-{{ player.id }}" class="player-row {{ 'even' if loop.index is even else 'odd' }}">
                         {% for column in player_columns %}
-                            <td class="{{ column.cell_classes }}">
+                            <td class="{{ column.get_cell_classes(player) }}">
                                 {{ macros.column_cell(column, player) }}
                             </td>
                         {% endfor %}
@@ -40,18 +39,17 @@
                             <td class="board">
                                 {{ _('Board #%(board_number)d with %(color)s', board_number=player.board_number, color=player.color_str) }}
                             </td>
-                            {% for column in player_columns %}
-                                <td class="{{ column.cell_classes }}">
+                            {% for column in opponent_columns %}
+                                <td class="{{ column.get_cell_classes(opponent) }}">
                                     {{ macros.column_cell(column, opponent) }}
                                 </td>
                             {% endfor %}
                         {% else %}
-                            <td colspan="{{ 1 + player_columns | length }}" class="plays">
+                            <td colspan="{{ 1 + opponent_columns | length }}" class="plays">
                                 {{ player.exempt_str if pairing.exempt else player.not_paired_str }}
                             <td>
                         {% endif %}
                     </tr>
-                    {% set __ = n.append(1) %}
                 {% endfor %}
             </tbody>
         </table>

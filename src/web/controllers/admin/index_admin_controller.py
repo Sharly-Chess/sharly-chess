@@ -1,8 +1,8 @@
+from collections import defaultdict
 from datetime import datetime
-from itertools import groupby
 from logging import Logger
 import time
-from typing import Annotated, Any, cast
+from typing import Annotated, Any
 
 from litestar.exceptions import ClientException, NotFoundException
 
@@ -55,7 +55,7 @@ from database.sqlite.local_source_database.delays import (
     DisabledOutdatedDelay,
     OutdatedDelay,
 )
-from plugins.manager import plugin_manager
+from plugins.manager import Plugin, plugin_manager
 from utils import Utils
 from utils.enum import FormAction, Result
 from web.controllers.admin.base_admin_controller import (
@@ -450,13 +450,6 @@ class IndexAdminController(BaseAdminController):
             plugin_data[plugin_id] = plugin_data_class.from_form_data(
                 data, action=action, previous_object=previous_object
             ).to_stored_value()
-
-        plugin_data: dict[str, dict[str, Any]] = {
-            plugin_id: plugin_data_class.from_form_data(
-                data, action=action
-            ).to_stored_value()
-            for plugin_id, plugin_data_class in Event.plugin_data_class_by_plugin_id().items()
-        }
 
         if errors:
             return None, errors
@@ -854,24 +847,15 @@ class IndexAdminController(BaseAdminController):
             locale: locale_localized_name(locale) for locale in locales
         }
 
-        plugins_by_federation = {
-            federation: list(group)
-            for federation, group in groupby(
-                plugin_manager.all_plugins, key=lambda p: getattr(p, 'federation', None)
-            )
-        }
+        global_plugins: list[Plugin] = []
+        plugins_by_federation: dict[str | None, list[Plugin]] = defaultdict(list)
 
-        global_plugins = plugins_by_federation.pop(None, [])
-
-        plugins_by_federation = {
-            SharlyChessConfig.federations.get(
-                cast(str, code_key), str(code_key)
-            ): plugins
-            for code_key, plugins in sorted(
-                plugins_by_federation.items(),
-                key=lambda kv: SharlyChessConfig.federations.get(cast(str, kv[0]), ''),
-            )
-        }
+        for plugin in plugin_manager.all_plugins:
+            federation = getattr(plugin, 'federation', None)
+            if federation:
+                plugins_by_federation[federation].append(plugin)
+            else:
+                global_plugins.append(plugin)
 
         template_context = {
             'events_metadata': EventLoader.get_events_metadata(),

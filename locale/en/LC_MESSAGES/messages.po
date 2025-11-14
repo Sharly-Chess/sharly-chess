@@ -7,8 +7,7 @@ msgstr ""
 msgid "\"Niçois\" accelerated system"
 msgstr ""
 
-#, python-format
-msgid "#%(board_number)d"
+msgid "#{board_number}"
 msgstr ""
 
 #, python-format
@@ -709,6 +708,10 @@ msgstr ""
 msgid "Average"
 msgstr ""
 
+#, python-format
+msgid "Average age: %(years)s"
+msgstr ""
+
 msgid "Average of opponents Buchholz"
 msgstr ""
 
@@ -1206,6 +1209,9 @@ msgid "Complementary pairings generated."
 msgstr ""
 
 msgid "Complementary pairings successfully generated!"
+msgstr ""
+
+msgid "Complete Team"
 msgstr ""
 
 msgid "Configuration"
@@ -2677,6 +2683,9 @@ msgstr ""
 msgid "Includes all other access levels and grants full access to the application. This access level is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network)."
 msgstr ""
 
+msgid "Incomplete Team"
+msgstr ""
+
 msgid "Incorrect installation, exiting."
 msgstr ""
 
@@ -3069,9 +3078,6 @@ msgstr ""
 msgid "Menus"
 msgstr ""
 
-msgid "Minimum time (secs):"
-msgstr ""
-
 msgid "Minimum delay between uploads (minutes):"
 msgstr ""
 
@@ -3079,6 +3085,17 @@ msgid "Minimum number of points (included):"
 msgstr ""
 
 msgid "Minimum rating"
+msgstr ""
+
+msgid "Minimum time (secs):"
+msgstr ""
+
+#, python-format
+msgid "Missing boys: %(count)d"
+msgstr ""
+
+#, python-format
+msgid "Missing girls: %(count)d"
 msgstr ""
 
 msgid "Missing required field [{field}]."
@@ -3560,6 +3577,10 @@ msgid "Organize your prizes into groups to manage how they’re awarded. A playe
 msgstr ""
 
 msgid "Origin: {template_origin}"
+msgstr ""
+
+#, python-format
+msgid "Other missing players: %(count)d"
 msgstr ""
 
 msgid "Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold."
@@ -4202,6 +4223,12 @@ msgid "Ranking after round #{round}"
 msgstr ""
 
 msgid "Ranking before the first round"
+msgstr ""
+
+msgid "Ranking by school"
+msgstr ""
+
+msgid "Ranking by school after round #{round}"
 msgstr ""
 
 msgid "Ranking only"
@@ -5497,6 +5524,9 @@ msgstr ""
 msgid "Too much information to display on a single projector?"
 msgstr ""
 
+msgid "Total"
+msgstr ""
+
 msgid "Total prize value"
 msgstr ""
 
@@ -6457,9 +6487,6 @@ msgid "the whole ranking"
 msgstr ""
 
 msgid "then"
-msgstr ""
-
-msgid "time control"
 msgstr ""
 
 msgid "value: {value}"

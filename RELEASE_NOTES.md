@@ -5,9 +5,17 @@ English version below
 
 - Déplacement de la fonctionnalité de handicap vers un module (3.3.0)
 
+## Tournois
+
+- Duplication des départages et des critères lors de la duplication d'un tournoi (3.3.0)
+
 ## Impression
 
 - Ajout des chevalets (3.3.0)
+
+## Prix
+
+- Correction de la réorganisation des catégories (3.3.0)
 
 ## FFE
 
@@ -27,9 +35,17 @@ English version below
 
 - Moved the handicap feature to a plugin (3.3.0)
 
+## Tournaments
+
+- Duplicate tie-breaks and criteria when duplicating a tournament (3.3.0)
+
 ## Printing
 
 - Added place cards (3.3.0)
+
+# Prizes
+
+- Fixed the category reordering (3.3.0)
 
 ## FFE
 
