@@ -15,7 +15,7 @@ class PlayerColumnHandler:
         self.event = event
         self.usage = usage
 
-    def _get_columns(
+    def get_columns(
         self,
         column_types: list[Callable[[ColumnUsage], PlayerTableColumn]],
     ) -> list[PlayerTableColumn]:
@@ -40,7 +40,7 @@ class PlayerColumnHandler:
         ]
         if multiple_tournaments:
             column_types.append(pt.TournamentColumn)
-        return self._get_columns(column_types)
+        return self.get_columns(column_types)
 
     def get_player_checkin_list_columns(
         self, multiple_tournaments: bool
@@ -62,12 +62,12 @@ class PlayerColumnHandler:
             pt.OwedColumn,
             pt.CommentsColumn,
         ]
-        return self._get_columns(column_types)
+        return self.get_columns(column_types)
 
     def get_player_ranking_columns(
         self, tournament: Tournament
     ) -> list[PlayerTableColumn]:
-        return self._get_columns(
+        return self.get_columns(
             [
                 pt.RankColumn,
                 pt.TitleColumn,
@@ -90,7 +90,7 @@ class PlayerColumnHandler:
         tournament: Tournament,
         ranking_round: int,
     ) -> list[PlayerTableColumn]:
-        return self._get_columns(
+        return self.get_columns(
             [
                 pt.RankColumn,
                 pt.TitleColumn,
@@ -115,7 +115,7 @@ class PlayerColumnHandler:
         )
 
     def get_alpha_board_player_columns(self) -> list[PlayerTableColumn]:
-        return self._get_columns(
+        return self.get_columns(
             [
                 pt.TitleColumn,
                 pt.PlayerColumn,
@@ -125,7 +125,7 @@ class PlayerColumnHandler:
         )
 
     def get_alpha_board_opponent_columns(self) -> list[PlayerTableColumn]:
-        return self._get_columns(
+        return self.get_columns(
             [
                 pt.TitleColumn,
                 pt.OpponentColumn,
@@ -135,7 +135,7 @@ class PlayerColumnHandler:
         )
 
     def get_prize_assignment_columns(self) -> list[PlayerTableColumn]:
-        return self._get_columns(
+        return self.get_columns(
             [
                 pt.RankOverallColumn,
                 pt.TitleColumn,
@@ -154,7 +154,7 @@ class BoardColumnHandler:
     def __init__(self, usage: ColumnUsage):
         self.usage = usage
 
-    def _get_columns(
+    def get_columns(
         self,
         column_types: list[Callable[[ColumnUsage], BoardColumn]],
         tournament: Tournament,
@@ -197,4 +197,4 @@ class BoardColumnHandler:
         if show_real_points:
             column_types.append(bt.BlackRealPointsColumn)
         column_types.append(bt.BlackPointsColumn)
-        return self._get_columns(column_types, tournament)
+        return self.get_columns(column_types, tournament)
