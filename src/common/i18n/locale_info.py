@@ -22,7 +22,7 @@ class DomainLocaleInfo(Domain):
     ):
         super().__init__(domain_id)
         self.locale: str = locale
-        self.default = default_locale
+        self.default: bool = self.locale == default_locale
         self.messages: dict[str, Message] = {}
         self.error_messages: dict[str, Message] = {}
         self.empty_optional_messages: dict[str, Message] = {}
@@ -179,7 +179,7 @@ class DomainLocaleInfo(Domain):
                         self.flagged_messages[flag][msg.id] = msg
         tmp_file: Path = self.po_file.with_suffix('.tmp')
         with open(tmp_file, 'wb') as f:
-            write_po(f, catalog, width=0, omit_header=True)
+            write_po(f, catalog, width=0, omit_header=True)  # type: ignore
         # compare line by line because files differ on CR/LF
         changed: bool = False
         with open(self.po_file, 'r') as before_f, open(tmp_file, 'r') as after_f:

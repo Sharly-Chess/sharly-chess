@@ -6394,3 +6394,9 @@ msgstr[1] "{count} ligues représentées"
 #~ msgid "½ - ½ (U)"
 #~ msgstr "½ - ½ (NC)"
 
+#~ msgid "FFE String2"
+#~ msgstr "Chaîne FFE 2"
+
+#~ msgid "FFE String: %(string)s"
+#~ msgstr "Chaîne FFE: %(string)s\""
+

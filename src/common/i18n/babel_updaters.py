@@ -71,7 +71,7 @@ class BabelDomainUpdater(BabelDomainWrapper):
             )
         if build_pot:
             self.extract_i18n_strings()
-            logger.info('Domain [%s]: wrote POT file.', self.name)
+            logger.debug('Domain [%s]: wrote POT file.', self.name)
             self.store_sources_fingerprint_for_pot()
         for locale, locale_info in self.domain_locale_infos.items():
             po_file: Path = self.locale_po_file(locale)
@@ -102,7 +102,7 @@ class BabelDomainUpdater(BabelDomainWrapper):
                     locale,
                 )
             else:
-                logger.info(
+                logger.debug(
                     'Domain [%s]: POT file unchanged for locale [%s], no need to update the PO file...',
                     self.name,
                     locale,
@@ -112,6 +112,11 @@ class BabelDomainUpdater(BabelDomainWrapper):
                 logger.info('Domain [%s]: wrote PO file.', self.name)
                 self.store_pot_fingerprint_for_po(locale)
                 self.store_po_fingerprint_for_pot(locale)
+            logger.debug(
+                'Domain [%s]: checking the translations for locale [%s]...',
+                self.name,
+                locale,
+            )
             po_errors: bool = locale_info.control()
             locale_info.print_summary()
             mo_file: Path = self.locale_mo_file(locale)
@@ -140,7 +145,7 @@ class BabelDomainUpdater(BabelDomainWrapper):
                     locale,
                 )
             else:
-                logger.info(
+                logger.debug(
                     'Domain [%s]: PO file unchanged for locale [%s], no need to update the MO file...',
                     self.name,
                     locale,
@@ -150,7 +155,6 @@ class BabelDomainUpdater(BabelDomainWrapper):
                 self.update_mo_file(locale)
                 logger.info('Domain [%s]: wrote MO file.', self.name)
         ok: bool = True
-        logger.info('Domain [%s]: checking the translations...', self.name)
         for locale_info in self.domain_locale_infos.values():
             if locale_info.error_messages:
                 logger.error(
@@ -187,7 +191,7 @@ class BabelDomainUpdater(BabelDomainWrapper):
 
     def sources_for_pot_fingerprint_file(self) -> Path:
         """Returns the path of the file used to store the fingerprint of the source files."""
-        return self.tmp_dir / 'src-pot.fp'
+        return self.tmp_dir / f'{self.name}-src-pot.fp'
 
     def get_sources_fingerprint_for_pot(self) -> bytes:
         """Returns the fingerprint of the source files stored to disk."""
@@ -228,7 +232,7 @@ class BabelDomainUpdater(BabelDomainWrapper):
         locale: str,
     ) -> Path:
         """Returns the path of the file used to store the fingerprint of the POT file used to update a PO file."""
-        return self.tmp_dir / f'{locale}-pot-po.fp'
+        return self.tmp_dir / f'{self.name}-{locale}-pot-po.fp'
 
     def get_pot_fingerprint_for_po(
         self,
@@ -254,7 +258,7 @@ class BabelDomainUpdater(BabelDomainWrapper):
         locale: str,
     ) -> Path:
         """Returns the path of the file used to store the fingerprint of the PO file used to generate a MO file."""
-        return self.tmp_dir / f'{locale}-po-pot.fp'
+        return self.tmp_dir / f'{self.name}-{locale}-po-pot.fp'
 
     def get_po_fingerprint_for_pot(
         self,
@@ -280,7 +284,7 @@ class BabelDomainUpdater(BabelDomainWrapper):
         locale: str,
     ) -> Path:
         """Returns the path of the file used to store the fingerprint of the PO file used to generate a MO file."""
-        return self.tmp_dir / f'{locale}-po-mo.fp'
+        return self.tmp_dir / f'{self.name}-{locale}-po-mo.fp'
 
     def get_po_fingerprint_for_mo(
         self,
@@ -341,6 +345,7 @@ class BabelDomainUpdater(BabelDomainWrapper):
                     translator_strings.append(translator.name)
             line += f'| {"<br/>".join(translator_strings)} |\n'
             lines.append(line)
+        lines.append('\n')
         return ''.join(lines)
 
     def create_absent_mo_files(self):
@@ -459,12 +464,12 @@ class BabelUpdater:
         )
         with open(doc_file, 'w', encoding='utf-8') as f:
             for line in (
-                [
-                    f'Last update: {datetime.strftime(datetime.fromtimestamp(time.time()), "%Y-%m-%d %H:%M")}\n\n'
-                ]
-                + start_lines
+                start_lines
                 + [
                     f'{start_comment}\n',
+                ]
+                + [
+                    f'Last update: {datetime.strftime(datetime.fromtimestamp(time.time()), "%Y-%m-%d %H:%M")}\n\n'
                 ]
                 + [new_content]
                 + [
