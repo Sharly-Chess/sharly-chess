@@ -324,6 +324,9 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
     # Printing
     # ---------------------------------------------------------------------------------
+    @hookspec
+    def insert_print_document(self, print_documents: list[type['PrintDocument']]):
+        """Provide extra print documents"""
 
     @hookspec
     def alter_print_and_screen_player_columns(

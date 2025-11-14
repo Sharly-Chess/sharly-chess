@@ -5,6 +5,17 @@
     color: #000000;
     background-color: #FFFFFF;
 }
+sup {
+    vertical-align: baseline;
+    position: relative;
+    top: -0.4em;
+    font-size: 0.85em;
+}
+.center-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4rem;
+}
 {# ========== COLORS ========== #}
 tr.even * { background-color: #FFFFFF !important; }
 tr.odd * {
@@ -23,12 +34,12 @@ tr td, tr th {
 .short-separator { width: 10vw; height: 1px; margin: 30pt 0 30pt; border-top: 1px solid #CCCCCC; }
 
 {# ========== FONT SIZE ========== #}
-.page-title { font-size: 24pt; padding-top: 10pt; }
-.page-subtitle { font-size: 16pt; }
-.tournament-title { font-size: 20pt; margin-top: 30pt; }
-.error { font-size: 20pt; font-weight: bold; margin: 40pt auto;}
-.section-title { font-size: 18px; }
-.section-sub-title { font-size: 15px; }
+.page-title { font-size: 24pt; padding-top: 10pt; text-align: center; }
+.page-subtitle { font-size: 16pt; text-align: center; }
+.tournament-title { font-size: 20pt; margin-top: 30pt; text-align: center; }
+.error { font-size: 20pt; font-weight: bold; margin: 40pt auto; text-align: center; }
+.section-title { font-size: 18px; text-align: center; }
+.section-sub-title { font-size: 15px; text-align: center; }
 
 {# ========== FONT WEIGHT ========== #}
 .page-title,
@@ -36,7 +47,7 @@ tr td, tr th {
 .section-title,
 .section-sub-title,
 .important-cell,
-.fw-bold { font-weight: bold; }
+.fw-bold { font-weight: bold; text-align: center; }
 
 {# ========== FONT style ========== #}
 .fst-italic {
