@@ -7,9 +7,8 @@ msgstr " [{yes_answer}/{no_answer}] ?"
 msgid "\"Niçois\" accelerated system"
 msgstr "Système accéléré niçois"
 
-#, python-format
-msgid "#%(board_number)d"
-msgstr "n°%(board_number)d"
+msgid "#{board_number}"
+msgstr "n°{board_number}"
 
 #, python-format
 msgid "%%s is replaced by the time elapsed since the hour."
@@ -6489,9 +6488,6 @@ msgstr "classement complet"
 
 msgid "then"
 msgstr "puis"
-
-msgid "time control"
-msgstr "temps"
 
 msgid "value: {value}"
 msgstr "valeur : {value}"

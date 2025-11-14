@@ -5,6 +5,7 @@ from typing import Any, Counter, Callable
 from common.exception import OptionError
 from common.i18n import _
 from data.columns.player_datasheet import DatasheetColumn
+from data.columns.player_table import PlayerTableColumn
 from data.criteria.player_filter_options import (
     SelectPlayerFilterOption,
     PlayerFilterOption,
@@ -18,7 +19,6 @@ from plugins.fra_schools import PLUGIN_NAME
 from plugins.fra_schools.fra_schools_database import FRASchoolsDatabase
 from plugins.fra_schools.utils import FRASchoolsUtils, FRASchool
 from plugins.utils import PluginUtils
-from web.utils import PlayerColumn
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
@@ -39,7 +39,7 @@ class FraSchoolPlayerSplitter(PlayerSplitter):
         )
 
 
-class FraSchoolTableColumn(PlayerColumn):
+class FraSchoolTableColumn(PlayerTableColumn):
     @property
     def header_content(self) -> str:
         return _('School *** SCHOOL FOR TABLE HEADER')

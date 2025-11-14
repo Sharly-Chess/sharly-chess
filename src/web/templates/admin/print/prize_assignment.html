@@ -34,12 +34,7 @@
                                 {% if column.header_template %}
                                     {% include column.header_template %}
                                 {% else %}
-                                    {% set content = column.header_content %}
-                                    {% if column.is_header_content_safe %}
-                                        {{ content|safe }}
-                                    {% else %}
-                                        {{ content }}
-                                    {% endif %}
+                                    {{ macros.column_header(column) }}
                                 {% endif %}
                             </div>
                         {% endfor %}
@@ -51,23 +46,19 @@
                             </div>
                             {% if player %}
                                 {% for column in player_columns %}
-                                    <div class="cell {{ column.cell_classes }}">
+                                    <div class="cell {{ column.get_cell_classes(player) }}">
                                         {% if column.cell_template %}
                                             {% include column.cell_template %}
                                         {% else %}
-                                            {% set content = column.get_cell_content(player) %}
-                                            {% if column.is_cell_content_safe %}
-                                                {{ content|safe }}
-                                            {% else %}
-                                                {{ content }}
-                                            {% endif %}
+                                            {{ macros.column_cell(column, player) }}
                                         {% endif %}
                                     </div>
                                 {% endfor %}
                             {% else %}
                                 <div class="cell"></div>
-                                <div class="cell"><i>{{ _('Not assigned') }}</i></div>
-                                {% for i in range(player_columns|length - 2) %}
+                                <div class="cell"></div>
+                                <div class="cell text-start"><i>{{ _('Not assigned') }}</i></div>
+                                {% for i in range(player_columns|length - 3) %}
                                     <div class="cell"></div>
                                 {% endfor %}
                             {% endif %}

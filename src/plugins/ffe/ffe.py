@@ -16,6 +16,7 @@ from common import TEST_ENV, DEVEL_ENV
 from common.exception import SharlyChessException
 from common.i18n import _, ngettext
 from data.columns.player_datasheet import DatasheetColumn
+from data.columns.player_table import PlayerTableColumn, ColumnUsage
 from data.input_output import DataSource, TournamentExporter, TournamentImporter
 from data.input_output.data_source import FideDataSource
 from data.pairings.managers import PairingVariationManager
@@ -98,7 +99,6 @@ from plugins.utils import (
 
 from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController, WebContext
-from web.utils import PlayerColumn
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -863,17 +863,16 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def alter_print_document_player_columns(self, player_columns: list['PlayerColumn']):
-        index = next(
-            (
-                i
-                for i, column in enumerate(player_columns)
-                if isinstance(column, player_table.FederationColumn)
-            ),
-            None,
+    def alter_print_and_screen_player_columns(
+        self,
+        usage: ColumnUsage,
+        player_columns: list['PlayerTableColumn'],
+    ):
+        PluginUtils.insert_on_isinstance(
+            player_columns,
+            FfeLeagueTableColumn(usage),
+            player_table.FederationColumn,
         )
-        if index is not None:
-            player_columns.insert(index + 1, FfeLeagueTableColumn())
 
     @hookimpl
     def insert_print_player_splitter_types(

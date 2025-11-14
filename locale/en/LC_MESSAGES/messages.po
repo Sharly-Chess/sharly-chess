@@ -7,8 +7,7 @@ msgstr ""
 msgid "\"Niçois\" accelerated system"
 msgstr ""
 
-#, python-format
-msgid "#%(board_number)d"
+msgid "#{board_number}"
 msgstr ""
 
 #, python-format
@@ -6488,9 +6487,6 @@ msgid "the whole ranking"
 msgstr ""
 
 msgid "then"
-msgstr ""
-
-msgid "time control"
 msgstr ""
 
 msgid "value: {value}"

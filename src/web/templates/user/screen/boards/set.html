@@ -20,68 +20,25 @@
                         {{ screen_set.name_for_boards }}
                     {% endif %}
                 </h2>
+                {% set board_columns = columns_by_tournament_id[tournament.id] %}
                 <div class="row gy-2 gx-3 screen-set-row mx-0">
                     {% for boards in screen_set.boards_lists %}
                         <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %}">
                             <div
                                 class="d-grid grid-striped"
-                                style="
-                                    grid-template-columns:
-                                        auto           /* board number */
-                                        auto           /* points */
-                                        {% if tournament.print_real_points(current_round) %}
-                                            auto       /* real points */
-                                        {% endif %}
-                                        {% if screen.type == 'input' and tournament.record_illegal_moves %}
-                                            auto         /* illegal moves */
-                                        {% endif %}
-                                        1fr            /* white player */
-                                        auto           /* score */
-                                        {% if screen.type == 'input' and tournament.record_illegal_moves %}
-                                            auto         /* illegal moves */
-                                        {% endif %}
-                                        1fr            /* black player */
-                                        {% if tournament.print_real_points(current_round) %}
-                                            auto       /* real points */
-                                        {% endif %}
-                                        auto;          /* points */
-                                "
+                                style="grid-template-columns: {% for column in board_columns %}{{ column.grid_column_template }} {% endfor %};"
                             >
-                                <div class="grid-header">
-                                    {{ _('Bd. *** BOARD NUMBER FOR TABLE HEADER')}}
-                                </div>
-                                <div class="grid-header">
-                                    {{ _('Pts *** POINTS FOR TABLE HEADER')}}
-                                </div>
-                                {% if tournament.print_real_points(current_round) %}
-                                    <div class="grid-header"></div>
-                                {% endif %}
-                                {% if screen.type == 'input' and tournament.record_illegal_moves %}
-                                    <div class="grid-header"></div>
-                                {% endif %}
-                                <div class="grid-header">
-                                    {{ _('White') }}{% if tournament.handicap %} ({{ _('time control') }}){% endif %}
-                                </div>
-                                <div class="grid-header">
-                                    {{ _('Res. ** RESULT FOR TABLE HEADER') }}
-                                </div>
-                                {% if screen.type == 'input' and tournament.record_illegal_moves %}
-                                    <div class="grid-header"></div>
-                                {% endif %}
-                                <div class="grid-header">
-                                    {{ _('Black') }}{% if tournament.handicap %} ({{ _('time control') }}){% endif %}
-                                </div>
-                                {% if tournament.print_real_points(current_round) %}
-                                    <div class="grid-header"></div>
-                                {% endif %}
-                                <div class="grid-header">
-                                    {{ _('Pts *** POINTS FOR TABLE HEADER')}}
-                                </div>
+                                {% for column in board_columns %}
+                                    <div class="grid-header {{ column.header_classes }}">
+                                        {{ macros.column_header(column) }}
+                                    </div>
+                                {% endfor %}
 
                                 {% for board in boards %}
                                     {% with wp=board.white_player, bp=board.black_player %}
                                     {% set editable =
                                         screen.type == 'input'
+                                        and board.black_player
                                         and (
                                             client.can_update_results(tournament.id)
                                             or
@@ -96,103 +53,31 @@
                                             {% if client.can_set_special_results(tournament.id) %}special-results-allowed{% endif %}
                                             {% if board.result_str %}result-set{% else %}result-not-set fw-bold{% endif %}
                                             {% if last_result_updated and last_result_updated.expiration > now and last_result_updated.tournament_id == tournament.id and last_result_updated.round == tournament.current_round and last_result_updated.board_id == board.id %}last_result_updated{% endif %}"
-                                        >
-                                        <div class="board-number text-end text-nowrap"
-                                            {% if editable %}
-                                                hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
-                                                hx-target="body"
-                                                hx-indicator="#please-wait"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modal-wrapper"
-                                            {% endif %}
-                                        >
-                                            {% if board.number != board.id %}({{ board.id }}.) {% endif %}{{ board.number }}.
-                                        </div>
-                                        <div
-                                            class="points text-center text-nowrap"
-                                            {% if editable %}
-                                                hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
-                                                hx-target="body"
-                                                hx-indicator="#please-wait"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modal-wrapper"
-                                            {% endif %}
-                                        >
-                                            {{ wp.vpoints_str }}
-                                        </div>
-                                        {% if tournament.print_real_points(current_round) %}
+                                    >
+                                        {% for column in board_columns %}
                                             <div
-                                                class="points text-center text-nowrap"
-                                                {% if editable %}
-                                                    hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
+                                                class="{{ column.get_cell_classes(board) }}"
+                                                {% if editable and column.edit_result_on_click %}
+                                                    hx-get="{{ url_for(
+                                                        'user-result-modal',
+                                                        event_uniq_id=user_event.uniq_id,
+                                                        screen_uniq_id=screen.uniq_id,
+                                                        tournament_id=tournament.id,
+                                                        board_id=board.id
+                                                    ) }}"
                                                     hx-target="body"
                                                     hx-indicator="#please-wait"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#modal-wrapper"
                                                 {% endif %}
                                             >
-                                                [{{ wp.points_str }}]
-                                            </div>
-                                        {% endif %}
-                                        {% if screen.type == 'input' and tournament.record_illegal_moves %}
-                                            {% with player=wp, illegal_moves=board.white_pairing.illegal_moves %}
-                                                {% include 'board_row_illegal_moves_cell.html' %}
-                                            {% endwith %}
-                                        {% endif %}
-                                        {% with player=wp, opponent=bp %}
-                                            {% include 'board_row_player_cell.html' %}
-                                        {% endwith %}
-                                        <div
-                                            class="score text-center text-nowrap"
-                                            data-testid="board-score"
-                                            {% if editable %}
-                                                hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
-                                                hx-target="body"
-                                                hx-indicator="#please-wait"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modal-wrapper"
-                                            {% endif %}
-                                        >
-                                            {% if board.result_str %}{{ board.result_str }}{% else %}{{ _('#%(board_number)d', board_number=board.number) }}{% endif %}
-                                        </div>
-                                        {% if screen.type == 'input' and tournament.record_illegal_moves %}
-                                            {% with player=bp, illegal_moves=board.black_pairing.illegal_moves if bp else 0 %}
-                                                {% include 'board_row_illegal_moves_cell.html' %}
-                                            {% endwith %}
-                                        {% endif %}
-                                        {% with player=bp, opponent=wp %}
-                                            {% include 'board_row_player_cell.html' %}
-                                        {% endwith %}
-                                        {% if tournament.print_real_points(current_round) %}
-                                            <div
-                                                class="points text-center"
-                                                {% if editable %}
-                                                    hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
-                                                    hx-target="body"
-                                                    hx-indicator="#please-wait"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#modal-wrapper"
-                                                {% endif %}
-                                            >
-                                                {% if bp %}
-                                                    [{{ bp.points_str }}]
+                                                {% if column.cell_template %}
+                                                    {% include column.cell_template %}
+                                                {% else %}
+                                                    {{ macros.column_cell(column, board) }}
                                                 {% endif %}
                                             </div>
-                                        {% endif %}
-                                        <div
-                                            class="points text-center"
-                                            {% if editable %}
-                                                hx-get="{{ url_for('user-result-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, board_id=board.id) }}"
-                                                hx-target="body"
-                                                hx-indicator="#please-wait"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modal-wrapper"
-                                            {% endif %}
-                                        >
-                                            {% if bp %}
-                                                {{ bp.vpoints_str }}
-                                            {% endif %}
-                                        </div>
+                                        {% endfor %}
                                     </div>
                                     {% endwith %}
                                 {% endfor %}

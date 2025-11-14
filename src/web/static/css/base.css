@@ -881,3 +881,7 @@ sup {
     top: -0.4em;
     font-size: 0.85em;
 }
+
+.text-ellipsis {
+    text-overflow: ellipsis
+}

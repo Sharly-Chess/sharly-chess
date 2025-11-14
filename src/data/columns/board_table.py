@@ -1,0 +1,243 @@
+from abc import ABC, abstractmethod
+from typing import Any
+
+from common.i18n import _
+from data.board import Board
+from web.utils import Column, ColumnUsage
+
+
+class BoardColumn(Column[Board], ABC):
+    """Base class for board table columns."""
+
+    def __init__(self, usage: ColumnUsage):
+        self.usage = usage
+
+    @property
+    def grid_column_template(self) -> str:
+        return 'auto'
+
+    @property
+    def edit_result_on_click(self) -> bool:
+        """Defines if clicking on the cell opens the result modal (if the board is editable)."""
+        return True
+
+
+class NumberColumn(BoardColumn):
+    @property
+    def header_content(self) -> str:
+        return _('Bd. *** BOARD NUMBER FOR TABLE HEADER')
+
+    def get_cell_content(self, board: Board) -> Any:
+        return board.number_str
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-end'
+
+
+class WhitePointsColumn(BoardColumn):
+    @property
+    def header_content(self) -> str:
+        return _('Pts *** POINTS FOR TABLE HEADER')
+
+    def get_cell_content(self, board: Board) -> Any:
+        return board.white_player.vpoints_str
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center'
+
+
+class WhiteRealPointsColumn(BoardColumn):
+    @property
+    def header_content(self) -> str:
+        return ''
+
+    def get_cell_content(self, board: Board) -> Any:
+        return f'[{board.white_player.points_str}]'
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center'
+
+
+class IllegalMovesColumn(BoardColumn, ABC):
+    @property
+    def header_content(self) -> str:
+        return ''
+
+    @property
+    def cell_template(self) -> str | None:
+        return '/user/screen/boards/board_row_illegal_moves_cell.html'
+
+    @property
+    @abstractmethod
+    def is_black(self) -> bool:
+        """Defines if the column displays the white or black player."""
+
+    @property
+    def edit_result_on_click(self) -> bool:
+        return False
+
+
+class WhiteIllegalMovesColumn(IllegalMovesColumn):
+    @property
+    def is_black(self) -> bool:
+        return False
+
+
+class WhiteTitleColumn(BoardColumn):
+    @property
+    def header_content(self) -> str:
+        return ''
+
+    def get_cell_content(self, board: Board) -> Any:
+        return board.white_player.title.short_name
+
+
+class WhiteNameColumn(BoardColumn):
+    @property
+    def grid_column_template(self) -> str:
+        return '1fr'
+
+    @property
+    def header_content(self) -> str:
+        return _('White')
+
+    def get_cell_content(self, board: Board) -> Any:
+        return board.white_player.full_name
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-start'
+
+    def get_cell_classes(self, board: Board) -> str:
+        return 'text-start text-nowrap overflow-hidden text-ellipsis'
+
+
+class WhiteRatingColumn(BoardColumn):
+    @property
+    def header_content(self) -> str:
+        return ''
+
+    def get_cell_content(self, board: Board) -> Any:
+        return board.white_player.rating_str
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-end'
+
+
+class ResultColumn(BoardColumn):
+    @property
+    def header_content(self) -> str:
+        return _('Res. ** RESULT FOR TABLE HEADER')
+
+    def get_cell_content(self, board: Board) -> Any:
+        return board.result_str
+
+
+class NoResultColumn(BoardColumn):
+    @property
+    def header_content(self) -> str:
+        return '\u00a0' * 6
+
+    def get_cell_content(self, board: Board) -> Any:
+        return board.result_str if board.exempt else ''
+
+
+class ScreenResultColumn(BoardColumn):
+    @property
+    def header_content(self) -> str:
+        return _('Res. ** RESULT FOR TABLE HEADER')
+
+    def get_cell_content(self, board: Board) -> Any:
+        return board.result_str or _('#{board_number}').format(
+            board_number=board.number
+        )
+
+    @property
+    def shared_classes(self) -> str:
+        return 'score'
+
+
+class BlackIllegalMovesColumn(IllegalMovesColumn):
+    @property
+    def is_black(self) -> bool:
+        return True
+
+
+class BlackTitleColumn(BoardColumn):
+    @property
+    def header_content(self) -> str:
+        return ''
+
+    def get_cell_content(self, board: Board) -> Any:
+        player = board.black_player
+        if not player:
+            return ''
+        return player.title.short_name
+
+
+class BlackNameColumn(BoardColumn):
+    @property
+    def grid_column_template(self) -> str:
+        return '1fr'
+
+    @property
+    def header_content(self) -> str:
+        return _('Black')
+
+    @property
+    def header_classes(self) -> str:
+        return 'text-start'
+
+    def get_cell_content(self, board: Board) -> Any:
+        return getattr(
+            board.black_player, 'full_name', board.white_player.exempt_str.upper()
+        )
+
+    def get_cell_classes(self, board: Board) -> str:
+        return 'text-start text-nowrap overflow-hidden text-ellipsis' + (
+            ' fst-italic' if board.exempt else ''
+        )
+
+
+class BlackRatingColumn(BoardColumn):
+    @property
+    def header_content(self) -> str:
+        return ''
+
+    def get_cell_content(self, board: Board) -> Any:
+        return getattr(board.black_player, 'rating_str', '')
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-end'
+
+
+class BlackRealPointsColumn(BoardColumn):
+    @property
+    def header_content(self) -> str:
+        return ''
+
+    def get_cell_content(self, board: Board) -> Any:
+        real_points = getattr(board.black_player, 'points_str', '')
+        return f'[{real_points}]' if real_points else ''
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center'
+
+
+class BlackPointsColumn(BoardColumn):
+    @property
+    def header_content(self) -> str:
+        return _('Pts *** POINTS FOR TABLE HEADER')
+
+    def get_cell_content(self, board: Board) -> Any:
+        return getattr(board.black_player, 'vpoints_str', '')
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center'
