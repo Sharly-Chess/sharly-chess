@@ -1,10 +1,13 @@
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import date
+from functools import partial
 from statistics import mean
-from typing import Any, Optional, override
+from typing import Any, Optional, override, Callable
 from common.exception import OptionError
 from common.i18n import _
+from data.columns.handlers import PlayerColumnHandler
+from data.columns.player_table import PlayerTableColumn
 from data.event import Player
 from data.player import Utils
 from data.print_documents import PrintOption
@@ -15,7 +18,7 @@ from data.print_documents.documents import (
 )
 from plugins.fra_schools.fra_schools_controller import FRASchool, FRASchoolsUtils
 from utils.enum import PlayerGender
-from web.utils import PlayerColumn
+from web.utils import ColumnUsage
 from data.columns import player_table as columns
 
 
@@ -243,18 +246,22 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
             )
 
     @property
-    def player_columns(self) -> list[PlayerColumn]:
+    def player_columns(self) -> list[PlayerTableColumn]:
         tournament = self.tournament
-        return [
-            columns.RankColumn(),
-            columns.NameColumn(),
-            columns.CategoryColumn(),
-            columns.GenderColumn(),
-            columns.PointsColumn(),
-        ] + [
-            columns.TieBreakColumn(tournament, index)
-            for index in range(len(tournament.tie_breaks))
+        column_types: list[Callable[[ColumnUsage], PlayerTableColumn]] = [
+            columns.RankColumn,
+            columns.NameColumn,
+            columns.CategoryColumn,
+            columns.GenderColumn,
+            columns.PointsColumn,
         ]
+        for index in range(len(tournament.tie_breaks)):
+            column_types.append(
+                partial(columns.TieBreakColumn, tournament=tournament, index=index)
+            )
+        return PlayerColumnHandler(self.get_event(), ColumnUsage.PRINT).get_columns(
+            column_types
+        )
 
     @property
     def template_context(self) -> dict[str, Any]:
