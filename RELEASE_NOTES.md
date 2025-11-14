@@ -9,6 +9,10 @@ English version below
 
 - Ajout des chevalets (3.3.0)
 
+## Prix
+
+- Correction de la réorganisation des catégories (3.3.0)
+
 ## FFE
 
 - Ajout d’une option pour mettre en ligne via le menu d’action de la fiche tournoi (3.3.0)
@@ -30,6 +34,10 @@ English version below
 ## Printing
 
 - Added place cards (3.3.0)
+
+# Prizes
+
+- Fixed the category reordering (3.3.0)
 
 ## FFE
 
