@@ -94,7 +94,7 @@ class BabelDomainWrapper(Domain):
             'compile',
             [
                 '--use-fuzzy',
-                '--domain=messages',
+                f'--domain={self.name}',
                 f'--directory={self.locale_dir}',
                 f'--locale={locale}',
             ],

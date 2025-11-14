@@ -9,7 +9,7 @@ from plugins import PLUGINS_DIR
 class Domain:
     """A class to represent i18n domains (core and plugins with i18n support, name None is for the core of the app)."""
 
-    core_name: str = 'core'
+    core_name: str = 'messages'
     core_locale_dir: Path = BASE_DIR / 'locale'
 
     def __init__(
@@ -20,7 +20,7 @@ class Domain:
         self.name: str = self.id or self.core_name
         self.locale_dir: Path = self._get_domain_locale_dir(self.id)
         self.config_file: Path = self.locale_dir / 'babel.cfg'
-        self.pot_file: Path = self.locale_dir / 'messages.pot'
+        self.pot_file: Path = self.locale_dir / f'{self.name}.pot'
 
     @property
     def is_core(self) -> bool:
@@ -54,7 +54,7 @@ class Domain:
         self,
         locale: str,
     ) -> Path:
-        return self.locale_lc_messages_dir(locale) / 'messages.po'
+        return self.locale_lc_messages_dir(locale) / f'{self.name}.po'
 
     def locale_mo_file(
         self,

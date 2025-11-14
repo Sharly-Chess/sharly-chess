@@ -30,12 +30,12 @@ locales: list[str] = []
 # sort the list to ensure that the order is the same on all the OS
 for l_entry in sorted(_core_locale_dir.iterdir()):
     if l_entry.is_dir():
-        mo_file: Path = l_entry / 'LC_MESSAGES' / 'messages.mo'
+        mo_file: Path = l_entry / 'LC_MESSAGES' / f'{Domain.core_name}.mo'
         if mo_file.is_file():
             locales.append(l_entry.name)
         elif DEVEL_ENV:
             # locales are built on the PO files found if no MO files found
-            po_file: Path = l_entry / 'LC_MESSAGES' / 'messages.po'
+            po_file: Path = l_entry / 'LC_MESSAGES' / f'{Domain.core_name}.po'
             if po_file.is_file():
                 locales.append(l_entry.name)
         else:
@@ -96,7 +96,7 @@ for domain in Domain.get_domains():
     for loc in locales:
         try:
             _all_translations[domain.name][loc] = gettext_lib.translation(
-                'messages',
+                domain.name,
                 domain.locale_dir,
                 [
                     loc,
