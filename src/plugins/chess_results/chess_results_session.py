@@ -139,8 +139,8 @@ class ChessResultsSession(Session):
                     )
                 ),
                 'sortstartrank': '2',
-                'from': tournament.start_datetime.strftime('%Y%m%d'),
-                'to': tournament.stop_datetime.strftime('%Y%m%d'),
+                'from': tournament.start_date.strftime('%Y%m%d'),
+                'to': tournament.stop_date.strftime('%Y%m%d'),
                 'ratedfide': '-',
                 'ratednational': '-',
                 'replay': '1',

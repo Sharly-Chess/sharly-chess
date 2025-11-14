@@ -22,7 +22,7 @@ from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 from litestar.channels import ChannelsPlugin
 
-from common.exception import SharlyChessException
+from common.exception import SharlyChessException, FormError
 from common.i18n import _, ngettext
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
@@ -185,6 +185,10 @@ class PlayerAdminController(BaseEventAdminController):
         last_name: str | None = WebContext.form_data_to_str(data, field := 'last_name')
         if not last_name:
             errors[field] = _('This field is required.')
+        try:
+            WebContext.form_data_to_date(data, field := 'date_of_birth')
+        except FormError as e:
+            errors[field] = str(e)
         try:
             if value := WebContext.form_data_to_int(data, field := 'gender'):
                 PlayerGender(value)
@@ -796,11 +800,7 @@ class PlayerAdminController(BaseEventAdminController):
                             'owed': owed,
                             'paid': paid,
                             'fixed': fixed or None,
-                        }
-                        | {
-                            'date_of_birth': WebContext.value_to_date_form_data(
-                                date_of_birth
-                            )
+                            'date_of_birth': date_of_birth,
                         }
                         | rating_data
                         | plugin_form_data

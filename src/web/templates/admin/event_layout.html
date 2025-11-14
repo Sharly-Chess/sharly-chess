@@ -2,9 +2,9 @@
 
 {% block admin_header_back_button %}
     {% set target_tab = 'current_events' %}
-    {% if admin_event.coming(now) %}
+    {% if admin_event.coming %}
         {% set target_tab = 'coming_events' %}
-    {% elif client.can_view_passed_events and admin_event.passed(now) %}
+    {% elif client.can_view_passed_events and admin_event.passed %}
         {% set target_tab = 'passed_events' %}
     {% endif %}
     {% if not client.account.administrator %}

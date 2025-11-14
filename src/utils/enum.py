@@ -1,6 +1,6 @@
 """A file grouping all the "utility" classes/enum"""
 
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from enum import Enum, StrEnum, IntEnum, auto
 from math import ceil
 from typing import Iterator, Self, TYPE_CHECKING
@@ -657,27 +657,25 @@ class PlayerCategory(IntEnum):
     def from_year_of_birth(
         event: 'Event',
         year_of_birth: int | None,
-        tournament_start: datetime | None = None,
-        tournament_end: datetime | None = None,
+        tournament_start: date | None = None,
+        tournament_stop: date | None = None,
     ) -> 'PlayerCategory':
         from plugins.manager import plugin_manager
 
         if not year_of_birth:
             return PlayerCategory.NONE
 
-        if tournament_start and tournament_end:
-            start_d = tournament_start.date()
-            end_d = tournament_end.date()
-            if (end_d - start_d) > timedelta(days=30):
+        if tournament_start and tournament_stop:
+            if (tournament_stop - tournament_start) > timedelta(days=30):
                 base = date.today()
-                if base < start_d:
-                    ref_date = start_d
-                elif base > end_d:
-                    ref_date = end_d
+                if base < tournament_start:
+                    ref_date = tournament_start
+                elif base > tournament_stop:
+                    ref_date = tournament_stop
                 else:
                     ref_date = base
             else:
-                ref_date = start_d
+                ref_date = tournament_start
         else:
             ref_date = date.today()
 

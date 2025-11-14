@@ -121,7 +121,7 @@ class EventDatabase(MigrationDatabase):
             # Always release DB
             super().__exit__(exc_type, exc_value, tb)
 
-        # We need call the hook on all dirty tournaments after committing the changes above
+        # We need to call the hook on all dirty tournaments after committing the changes above
         for stored_tournament in dirty_tournaments:
             plugin_manager.hook.on_tournament_data_updated(
                 stored_event=stored_event,
@@ -301,8 +301,8 @@ class EventDatabase(MigrationDatabase):
             name=row['name'],
             federation=row.get('federation', ''),
             player_rating_type=row.get('player_rating_type', 3),
-            start=row['start'],
-            stop=row['stop'],
+            start_date=self.load_date_from_database_field(row['start_date']),
+            stop_date=self.load_date_from_database_field(row['stop_date']),
             public=self.load_bool_from_database_field(row['public']),
             location=row['location'],
             background_color=row['background_color'],
@@ -371,8 +371,6 @@ class EventDatabase(MigrationDatabase):
             stored_event,
             [
                 'name',
-                'start',
-                'stop',
                 'public',
                 'federation',
                 'location',
@@ -389,6 +387,8 @@ class EventDatabase(MigrationDatabase):
                 'pab_value',
             ],
         ) | {
+            'start_date': self.dump_date_to_database_field(stored_event.start_date),
+            'stop_date': self.dump_date_to_database_field(stored_event.stop_date),
             'timer_colors': self.dump_to_json_database_timer_colors(
                 stored_event.timer_colors
             ),
@@ -716,8 +716,8 @@ class EventDatabase(MigrationDatabase):
             last_update=row['last_update'],
             last_player_update=row['last_player_update'],
             last_pairing_update=row['last_pairing_update'],
-            start=row['start'],
-            stop=row['stop'],
+            start_date=cls.load_date_from_database_field(row['start_date']),
+            stop_date=cls.load_date_from_database_field(row['stop_date']),
             location=row['location'],
             player_rating_type=row['player_rating_type'],
             three_points_for_a_win=cls.load_bool_or_none_from_database_field(
@@ -784,14 +784,16 @@ class EventDatabase(MigrationDatabase):
                 'pairing',
                 'location',
                 'player_rating_type',
-                'start',
-                'stop',
                 'last_rounds_no_byes',
                 'three_points_for_a_win',
                 'override_unrated_rapid_blitz',
                 'pab_value',
             ],
         ) | {
+            'start_date': self.dump_date_to_database_field(
+                stored_tournament.start_date
+            ),
+            'stop_date': self.dump_date_to_database_field(stored_tournament.stop_date),
             'last_update': time.time(),
             'plugin_data': self.dump_to_json_database_field(
                 stored_tournament.plugin_data, {}

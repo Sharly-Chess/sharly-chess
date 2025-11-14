@@ -18,7 +18,6 @@
                 id="modal-form"
                 {% if action == 'create' %}
                     hx-post="{{ url_for('admin-tab-create-event', admin_tab=admin_tab) }}"
-                    hx-push-url="true"
                 {% elif action == 'clone' %}
                     hx-post="{{ url_for('admin-event-clone', event_uniq_id=admin_event.uniq_id or '') }}"
                 {% elif action == 'update' %}
@@ -37,6 +36,14 @@
                             label='',
                             placeholder=_('Public event'),
                             tooltip_text=_('Only allowed users can see private events.'),
+                            disabled=not client.can_update_event,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.date_range_input(
+                            name='date_range',
+                            label=_('%(string)s:', string=_('Dates')),
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
@@ -73,24 +80,7 @@
                         ) }}
                     </div>
                 </div>
-                <div class="row gy-2 gx-3">
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.datetime_input(
-                            name='start',
-                            label=_('Start:'),
-                            disabled=not client.can_update_event,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.datetime_input(
-                            name='stop',
-                            label=_('End:'),
-                            disabled=not client.can_update_event,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                </div>
+
                 <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(

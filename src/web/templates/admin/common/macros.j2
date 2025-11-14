@@ -418,6 +418,8 @@ with_indicator: display a loading indicator, optional
     select_search_placeholder='',
     select_all=false,
     file_accept='',
+    min_date='',
+    max_date='',
     number_min='',
     number_max='',
     min_disabled=false,
@@ -580,6 +582,7 @@ with_indicator: display a loading indicator, optional
                         {% endif %}
                     />
                 {% else %}
+                    {% set use_date_picker = input_type in ['time', 'date', 'date-range'] %}
                     {% if disabled %}
                         <input
                             id="{{ id }}-hidden"
@@ -601,10 +604,8 @@ with_indicator: display a loading indicator, optional
                         id="{{ id }}"
                         name="{{ name }}"
                         data-testid="{{ id }}"
-                        type="{{ input_type if not password_visible else 'text' }}"
-                        {% if autocomplete %}
-                            autocomplete="{{ autocomplete }}"
-                        {% endif %}
+                        type="{{ 'text' if password_visible or use_date_picker else input_type }}"
+                        autocomplete="{{ autocomplete or 'off' }}"
                         {% if number_min != '' %}
                             min="{{ number_min }}"
                         {% endif %}
@@ -667,6 +668,66 @@ with_indicator: display a loading indicator, optional
                             class="input-group-text {{ 'bi-eye-slash-fill' if not password_visible else 'bi-eye-fill' }} ps-2 pt-2 cursor-pointer {% if name in errors %}is-invalid{% endif %} {% if valid %}is-valid{% endif %}"
                             hx-on:click="toggle_password(event, '#{{ id }}')"
                         ></i>
+                    {% endif %}
+                    {% if use_date_picker %}
+                        <script>
+                            new AirDatepicker('#{{ id }}', {
+                                classes: 'dark',
+                                dateFormat: 'yyyy/MM/dd',
+                                timeFormat: 'HH:mm',
+                                firstDay: 1,
+                                minDate: "{{ min_date }}",
+                                maxDate: "{{ max_date }}",
+                                selectedDates: getAirDatePickerSelectedDates(`{{ data[name] }}`, '{{ input_type }}'),
+                                {% if input_type == 'date-range' %}
+                                    range: true,
+                                    multipleDatesSeparator: ' - ',
+                                {% elif input_type == 'time' %}
+                                    onlyTimepicker: true,
+                                    timepicker: true,
+                                    minutesStep: 5,
+                                {% endif %}
+                                locale: {
+                                    daysMin: [
+                                        "{{ _('Su *** SUNDAY') }}",
+                                        "{{ _('Mo *** MONDAY') }}",
+                                        "{{ _('Tu *** TUESDAY') }}",
+                                        "{{ _('We *** WEDNESDAY') }}",
+                                        "{{ _('Th *** THURSDAY') }}",
+                                        "{{ _('Fr *** FRIDAY') }}",
+                                        "{{ _('Sa *** SATURDAY') }}",
+                                    ],
+                                    months: [
+                                        "{{ _('January') }}",
+                                        "{{ _('February') }}",
+                                        "{{ _('March') }}",
+                                        "{{ _('April') }}",
+                                        "{{ _('May') }}",
+                                        "{{ _('June') }}",
+                                        "{{ _('July') }}",
+                                        "{{ _('August') }}",
+                                        "{{ _('September') }}",
+                                        "{{ _('October') }}",
+                                        "{{ _('November') }}",
+                                        "{{ _('December') }}"
+                                    ],
+                                    monthsShort: [
+                                        "{{ _('Jan *** JANUARY') }}",
+                                        "{{ _('Feb *** FEBRUARY') }}",
+                                        "{{ _('Mar *** MARCH') }}",
+                                        "{{ _('Apr *** APRIL') }}",
+                                        "{{ _('May *** MAY ACRONYM') }}",
+                                        "{{ _('Jun *** JUNE') }}",
+                                        "{{ _('Jul *** JULY') }}",
+                                        "{{ _('Aug *** AUGUST') }}",
+                                        "{{ _('Sep *** SEPTEMBER') }}",
+                                        "{{ _('Oct *** OCTOBER') }}",
+                                        "{{ _('Nov *** NOVEMBER') }}",
+                                        "{{ _('Dec *** DECEMBER') }}"
+                                    ],
+                                },
+                            });
+                        </script>
                     {% endif %}
                     {% if default_checkbox %}
                         <div class="input-group-text">
@@ -1119,11 +1180,15 @@ with_indicator: display a loading indicator, optional
     ) }}
 {% endmacro %}
 
-{% macro datetime_input(
+{% macro date_range_input(
     name,
     label='NO LABEL',
     help_text='',
     tooltip_text='',
+    placeholder='',
+    min_date='',
+    max_date='',
+    default_checkbox=false,
     data={},
     errors={},
     error=false,
@@ -1131,12 +1196,15 @@ with_indicator: display a loading indicator, optional
 ) %}
     {{ _generic_input(
         name=name,
-        input_type='datetime-local',
+        input_type='date-range',
         label=label,
         placeholder=placeholder,
         help_text=help_text,
         tooltip_text=tooltip_text,
         data=data,
+        min_date=min_date,
+        max_date=max_date,
+        default_checkbox=default_checkbox,
         errors=errors,
         error=error,
         disabled=disabled,
@@ -1148,6 +1216,9 @@ with_indicator: display a loading indicator, optional
     label='NO LABEL',
     help_text='',
     tooltip_text='',
+    placeholder='',
+    min_date='',
+    max_date='',
     data={},
     errors={},
     error=false,
@@ -1160,6 +1231,8 @@ with_indicator: display a loading indicator, optional
         placeholder=placeholder,
         help_text=help_text,
         tooltip_text=tooltip_text,
+        min_date=min_date,
+        max_date=max_date,
         data=data,
         errors=errors,
         error=error,

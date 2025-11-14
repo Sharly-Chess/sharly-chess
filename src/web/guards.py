@@ -89,7 +89,7 @@ class EventGuard(BaseGuard):
         event = RequestUtils.get_event(request)
         if not event.public:
             self._authorize_action(AuthAction.VIEW_PRIVATE_EVENTS, client)
-        if event.passed():
+        if event.passed:
             self._authorize_action(AuthAction.VIEW_PASSED_EVENTS, client)
 
 

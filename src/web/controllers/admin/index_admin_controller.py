@@ -1,7 +1,6 @@
 from collections import defaultdict
-from datetime import datetime
+from datetime import date
 from logging import Logger
-import time
 from typing import Annotated, Any
 
 from litestar.exceptions import ClientException, NotFoundException
@@ -9,9 +8,9 @@ from litestar.exceptions import ClientException, NotFoundException
 from common import (
     BASE_DIR,
     format_timestamp_date,
-    format_timestamp_time,
-    today_timestamp_start_stop,
+    format_date_range,
 )
+from common.exception import FormError
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.access_levels.actions import AuthAction
@@ -248,7 +247,7 @@ class IndexAdminController(BaseAdminController):
             | {
                 'messages': Message.messages(web_context.request),
                 'format_timestamp_date': format_timestamp_date,
-                'format_timestamp_time': format_timestamp_time,
+                'format_date_range': format_date_range,
                 'nav_tabs': nav_tabs,
                 'svg_logo': svg_logo,
                 'admin_events_show_details': (
@@ -302,7 +301,7 @@ class IndexAdminController(BaseAdminController):
             name = EventLoader.get(request).get_unused_event_name(_('New event'))
             uniq_id = EventLoader.get(request).get_unused_event_uniq_id(_('event'))
             public = False
-            start, stop = today_timestamp_start_stop()
+            date_range = WebContext.value_to_date_range_form_data(date.today())
             config = SharlyChessConfig()
             federation = config.federation.name if config.federation else ''
             player_rating_type = PlayerRatingType.FIDE.value
@@ -323,8 +322,9 @@ class IndexAdminController(BaseAdminController):
                 loader = EventLoader()
                 name = loader.get_unused_event_name(stored_event.name)
                 uniq_id = loader.get_unused_event_uniq_id(stored_event.uniq_id)
-            start = stored_event.start
-            stop = stored_event.stop
+            date_range = WebContext.value_to_date_range_form_data(
+                admin_event.start_date, admin_event.stop_date
+            )
             public = stored_event.public
             federation = stored_event.federation
             location = stored_event.location
@@ -356,12 +356,9 @@ class IndexAdminController(BaseAdminController):
                     'federation': federation,
                     'player_rating_type': player_rating_type,
                     'location': location,
+                    'date_range': date_range,
                 }
             )
-            | {
-                'start': WebContext.value_to_datetime_form_data(start),
-                'stop': WebContext.value_to_datetime_form_data(stop),
-            }
             | plugin_form_data
         )
 
@@ -378,8 +375,8 @@ class IndexAdminController(BaseAdminController):
         uniq_id: str | None
         errors: dict[str, str] = {}
         config = SharlyChessConfig()
-        start: float | None = None
-        stop: float | None = None
+        start_date: date | None = None
+        stop_date: date | None = None
 
         name = WebContext.form_data_to_str(data, field := 'name') or ''
         if not name:
@@ -397,28 +394,16 @@ class IndexAdminController(BaseAdminController):
             # should never happen, not translated.
             errors[field] = f'Invalid federation value [{data[field]}].'
             data[field] = ''
-        start_str: str | None = WebContext.form_data_to_str(data, field := 'start')
-        if not start_str:
-            errors[field] = _('Please enter the start date of the event.')
-        else:
-            start = time.mktime(
-                datetime.strptime(start_str, '%Y-%m-%dT%H:%M').timetuple()
-            )
-        stop_str: str | None = WebContext.form_data_to_str(data, field := 'stop')
-        if not stop_str:
-            errors[field] = _('Please enter the end date of the event.')
-        else:
-            stop = time.mktime(
-                datetime.strptime(stop_str, '%Y-%m-%dT%H:%M').timetuple()
-            )
-        if (
-            start
-            and stop
-            and 'start' not in errors
-            and 'stop' not in errors
-            and start > stop
-        ):
-            errors[field] = _('Please enter a date after the start date.')
+
+        try:
+            date_range = WebContext.form_data_to_date_range(data, field := 'date_range')
+            if not date_range:
+                errors[field] = _('This field is required.')
+            else:
+                start_date, stop_date = date_range
+        except FormError as e:
+            errors[field] = str(e)
+
         public = WebContext.form_data_to_bool(data, 'public')
         location = WebContext.form_data_to_str(data, 'location')
         player_rating_type: int = (
@@ -454,15 +439,15 @@ class IndexAdminController(BaseAdminController):
         if errors:
             return None, errors
 
-        assert start is not None
-        assert stop is not None
+        assert start_date is not None
+        assert stop_date is not None
 
         stored_event = StoredEvent(
             uniq_id=uniq_id,
             name=name,
             federation=federation,
-            start=start,
-            stop=stop,
+            start_date=start_date,
+            stop_date=stop_date,
             public=bool(public),
             location=location,
             player_rating_type=player_rating_type,

@@ -31,6 +31,9 @@
             <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/select2/themes/dark-bootstrap-5.css') }}?version={{ sharly_chess_config.version }}" type="text/css" />
             <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/select2/themes/bootstrap-5-' ~ sharly_chess_config.select2_bootstrap_theme_version ~ '.min.css') }}" type="text/css" />
             <script src="{{ url_for('static', file_path='/lib/select2/select2-' ~ sharly_chess_config.select2_version ~ '/dist/js/select2.full.min.js') }}"></script>
+            {# https://air-datepicker.com #}
+            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/air-datepicker/air-datepicker-' ~ sharly_chess_config.air_datepicker_version ~ '/dist/air-datepicker.css') }}" type="text/css" />
+            <script src="{{ url_for('static', file_path='/lib/air-datepicker/air-datepicker-' ~ sharly_chess_config.air_datepicker_version ~ '/dist/air-datepicker.js') }}"></script>
             <script>
                 {% include 'js/base.js' %}
                 {% include 'js/modals.js' %}

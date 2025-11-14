@@ -16,7 +16,6 @@
             name='chessevent_user',
             label=_('ChessEvent user name:'),
             placeholder=_('E.g.: %(string)s', string='Z00000'),
-            autocomplete='off',
             disabled=not client.can_update_event,
             data=data, errors=errors
         ) }}
@@ -27,7 +26,6 @@
             name='chessevent_password',
             label=_('ChessEvent password:'),
             placeholder=_('E.g.: my_password'),
-            autocomplete='off',
             disabled=not client.can_update_event,
             data=data, errors=errors
         ) }}

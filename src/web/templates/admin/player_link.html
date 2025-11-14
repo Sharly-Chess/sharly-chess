@@ -8,10 +8,8 @@
             hx-indicator="#please-wait"
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
-        >
-            {{ full_name }} {% if display_rating %}({{ player.rating_str }}){% endif %}
-        </a>
+        >{{ full_name }}{% if display_rating %} ({{ player.rating_str }}){% endif %}</a>
     {% else %}
-        {{ full_name }} {% if display_rating %}({{ player.rating_str }}){% endif %}
+        {{ full_name }}{% if display_rating %} ({{ player.rating_str }}){% endif %}
     {% endif %}
 </span>

@@ -63,6 +63,8 @@ from utils.enum import (
 
 logger = get_logger()
 
+PAPI_DATE_FORMAT = '%d/%m/%Y'
+
 
 @dataclass
 class PapiVariables:
@@ -443,7 +445,7 @@ class PapiConverter:
         if papi_player.birthDate:
             try:
                 date_of_birth = datetime.strptime(
-                    papi_player.birthDate, '%d/%m/%Y'
+                    papi_player.birthDate, PAPI_DATE_FORMAT
                 ).date()
             except ValueError:
                 raise_exception(
@@ -735,16 +737,8 @@ class PapiConverter:
             pairing=PapiPairingVariation.get_outer_value(tournament.pairing_variation),
             ratingClass=PapiTournamentRating.get_outer_value(tournament.rating),
             venue=tournament.location,
-            startDate=(
-                self._format_date_for_papi(tournament.start_timestamp)
-                if tournament.start_timestamp
-                else None
-            ),
-            endDate=(
-                self._format_date_for_papi(tournament.stop_timestamp)
-                if tournament.stop_timestamp
-                else None
-            ),
+            startDate=tournament.start_date.strftime(PAPI_DATE_FORMAT),
+            endDate=tournament.stop_date.strftime(PAPI_DATE_FORMAT),
             tiebreak1=papi_tiebreaks[0],
             tiebreak2=papi_tiebreaks[1],
             tiebreak3=papi_tiebreaks[2],
@@ -858,7 +852,7 @@ class PapiConverter:
         papi_player = PapiPlayer(
             lastName=player.last_name,
             firstName=player.first_name,
-            birthDate=player.date_of_birth.strftime('%d/%m/%Y')
+            birthDate=player.date_of_birth.strftime(PAPI_DATE_FORMAT)
             if player.date_of_birth
             else None,
             category=PapiPlayerCategory.get_outer_value(player.category),
@@ -936,7 +930,3 @@ class PapiConverter:
             }
         player_dict['rounds'] = rounds_dict
         return player_dict
-
-    def _format_date_for_papi(self, timestamp: float) -> str:
-        """Format timestamp to DD/MM/YYYY format for papi."""
-        return datetime.fromtimestamp(timestamp).strftime('%d/%m/%Y')
