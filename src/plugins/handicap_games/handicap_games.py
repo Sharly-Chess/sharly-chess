@@ -3,8 +3,9 @@ from typing import Any, TYPE_CHECKING
 
 from packaging.version import Version
 
+from common.i18n import _
 from data.columns.board_table import BoardColumn, BlackRatingColumn, WhiteTitleColumn
-from plugins.handicap_games import _, PLUGIN_NAME
+from plugins.handicap_games import PLUGIN_NAME
 from plugins.handicap_games.handicap_games_entity import (
     WhiteTimeControlColumn,
     BlackTimeControlColumn,

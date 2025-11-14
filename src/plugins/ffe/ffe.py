@@ -11,6 +11,7 @@ from packaging.version import Version
 from pluggy import PluginManager
 
 from common import TEST_ENV, DEVEL_ENV
+from common.i18n import _, ngettext
 from common.exception import SharlyChessException
 from data.columns import player_table, player_datasheet
 from data.columns.player_datasheet import DatasheetColumn
@@ -32,7 +33,7 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
-from plugins.ffe import _, ngettext, migrations, PLUGIN_NAME, ffe_tie_breaks
+from plugins.ffe import migrations, PLUGIN_NAME, ffe_tie_breaks
 from plugins.ffe.ffe_background_uploader import (
     EventLoader,
     FfeBackgroundUploader,

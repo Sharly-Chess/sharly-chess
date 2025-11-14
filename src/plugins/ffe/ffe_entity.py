@@ -6,6 +6,7 @@ from types import UnionType
 from typing import override, Any
 
 from common.exception import SharlyChessException, OptionError
+from common.i18n import _
 from common.i18n.utils import unicode_normalize
 from data.columns.player_datasheet import DatasheetColumn
 from data.columns.player_table import PlayerTableColumn
@@ -30,7 +31,7 @@ from data.print_documents.qrcode_types import QRCodeType
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourcePlayerDatabase
-from plugins.ffe import _, PLUGIN_NAME, PLUGIN_DIR
+from plugins.ffe import PLUGIN_NAME, PLUGIN_DIR
 from plugins.ffe.ffe_database import FfeDatabase, PlayerFFELicence
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.utils import FFEUtils

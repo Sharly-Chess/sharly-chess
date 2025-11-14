@@ -3,8 +3,9 @@ from enum import StrEnum
 from math import ceil
 from typing import TYPE_CHECKING
 
+from common.i18n import _
 from data.pairings.settings import PairingSetting
-from plugins.pairing_acceleration import _, PLUGIN_NAME
+from plugins.pairing_acceleration import PLUGIN_NAME
 
 if TYPE_CHECKING:
     from data.tournament import Tournament

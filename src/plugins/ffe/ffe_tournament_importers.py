@@ -4,11 +4,12 @@ from functools import partial
 from json import JSONDecodeError
 
 from common.exception import SharlyChessException, DictReaderException, ImporterError
+from common.i18n import _
 from data.event import Event
 from data.input_output.dict_reader import dict_to_dataclass
 from data.input_output.tournament_importers import FileTournamentImporter
 from database.sqlite.event.event_store import StoredTournament, StoredPlayer
-from plugins.ffe import _, PLUGIN_NAME
+from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.papi_converter import PapiConverter, PapiData
 from plugins.pairing_acceleration.utils import PairingAccelerationUtils
 

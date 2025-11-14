@@ -5,11 +5,12 @@ from litestar import post, get
 from litestar.response import Template, File
 from litestar_htmx import HTMXRequest, ClientRedirect
 
+from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.access_levels.actions import AuthAction
 from plugins import ffe
-from plugins.ffe import _, PLUGIN_NAME
+from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_background_uploader import (
     FfeBackgroundUploader,
     FfeUploadResult,

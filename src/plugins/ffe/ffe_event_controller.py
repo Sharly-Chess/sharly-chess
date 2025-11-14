@@ -8,9 +8,10 @@ from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate
 
 from common import format_timestamp_date_time
+from common.i18n import _
 from common.network import NetworkMonitor
 from data.access_levels.actions import AuthAction
-from plugins.ffe import _, PLUGIN_NAME
+from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
 from plugins.ffe.ffe_session import FFESession
 from plugins.ffe.ffe_session_handler import FFESessionHandler

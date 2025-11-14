@@ -1,9 +1,10 @@
 from pathlib import Path
 from typing import IO
 
+from common.i18n import _
 from data.input_output import TournamentExporter
 from data.tournament import Tournament
-from plugins.ffe import _, PLUGIN_NAME
+from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.papi_converter import PapiConverter
 
 

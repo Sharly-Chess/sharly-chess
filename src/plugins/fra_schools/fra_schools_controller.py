@@ -1,7 +1,8 @@
-from functools import partial
 import re
+from functools import partial
 from operator import attrgetter
 from typing import Any, Annotated
+
 from litestar import get, post
 from litestar.enums import RequestEncodingType
 from litestar.params import Body

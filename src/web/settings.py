@@ -27,7 +27,7 @@ from litestar.template import TemplateConfig
 from litestar.types import ControllerRouterHandler, Middleware
 
 from common import BASE_DIR, TMP_DIR
-from common.i18n.jinja import gettext, ngettext
+from common.i18n import gettext, ngettext
 from data.input_output import OnlineDataSourceManager
 
 from plugins.manager import plugin_manager

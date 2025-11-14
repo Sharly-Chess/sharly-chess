@@ -12,6 +12,7 @@ from common.exception import (
     SharlyChessException,
     ImporterError,
 )
+from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
 from data.input_output import TournamentImporter
@@ -27,7 +28,7 @@ from database.sqlite.event.event_store import (
     StoredPairing,
 )
 from plugins import ffe
-from plugins.chessevent import _, PLUGIN_NAME, TMP_DIR
+from plugins.chessevent import PLUGIN_NAME, TMP_DIR
 from plugins.chessevent.chessevent_session import (
     ChessEventSession,
     ChessEventTournamentRequestData,

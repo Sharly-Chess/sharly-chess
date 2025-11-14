@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Iterable, override
 from litestar.plugins.htmx import HTMXRequest
 from packaging.version import Version
 
+from common.i18n import _
 from data.columns import player_table, player_datasheet
 from data.columns.player_datasheet import DatasheetColumn
 from data.columns.player_table import PlayerTableColumn, ColumnUsage
@@ -20,7 +21,7 @@ from plugins import PLUGINS_DIR
 from plugins.ffe.ffe import FfeLeagueTableColumn, FfePlugin
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.papi_converter import PapiPlayer
-from plugins.fra_schools import _, PLUGIN_NAME
+from plugins.fra_schools import PLUGIN_NAME
 from plugins.fra_schools.fra_schools_controller import FRASchoolsController
 from plugins.fra_schools.fra_schools_database import FRASchoolsDatabase
 from plugins.fra_schools.fra_schools_entity import (

@@ -7,11 +7,12 @@ from logging import Logger
 import requests
 from requests import Session
 
+from common.i18n import _
 from common.logger import get_logger
 from data.tournament import Tournament
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.event.event_database import EventDatabase
-from plugins.chess_results import _, PLUGIN_NAME, MAX_TIE_BREAKS
+from plugins.chess_results import PLUGIN_NAME, MAX_TIE_BREAKS
 from plugins.chess_results.chess_results_mappers import (
     ChessResultsPlayerGender,
     ChessResultsTieBreak,

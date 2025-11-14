@@ -3,11 +3,12 @@ from typing import Any, TYPE_CHECKING
 
 from packaging.version import Version
 
+from common.i18n import _
 from data.input_output import TournamentImporter
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament
-from plugins.chessevent import _, migrations, PLUGIN_NAME
+from plugins.chessevent import migrations, PLUGIN_NAME
 from plugins.chessevent.chessevent_controller import ChessEventController
 from plugins.chessevent.tournament_importer.importer import ChessEventTournamentImporter
 from plugins.chessevent.utils import (

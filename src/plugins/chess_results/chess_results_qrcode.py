@@ -1,7 +1,8 @@
+from common.i18n import _
 from data.print_documents import QRCodeType
 from data.print_documents.documents import QRCodePrintDocument
 from data.print_documents.options import TournamentPrintOption
-from plugins.chess_results import _, PLUGIN_NAME, PLUGIN_DIR
+from plugins.chess_results import PLUGIN_NAME, PLUGIN_DIR
 from plugins.chess_results.utils import ChessResultsUtils
 
 

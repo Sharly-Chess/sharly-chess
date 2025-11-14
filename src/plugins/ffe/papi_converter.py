@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from common.exception import SharlyChessException, DictReaderException
+from common.i18n import _
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from common.tool_installer import PapiConverterInstaller
@@ -31,7 +32,7 @@ from database.sqlite.event.event_store import (
     StoredPairing,
     StoredTieBreak,
 )
-from plugins.ffe import _, TMP_DIR, PLUGIN_NAME
+from plugins.ffe import TMP_DIR, PLUGIN_NAME
 from plugins.ffe.papi_mappers import (
     PapiPairingVariation,
     PapiPlayerCategory,

@@ -6,10 +6,10 @@ from litestar_htmx import HTMXRequest
 
 from common import format_timestamp_date_time, SharlyChessException
 from common.exception import ImporterError
+from common.i18n import _, ngettext
 from common.logger import get_logger
 from data.access_levels.actions import AuthAction
 from data.tournament import Tournament
-from plugins.chessevent import _, ngettext
 from plugins.chessevent.tournament_importer.importer import (
     ChessEventTournamentImporter,
     ChessEventSyncTournamentImporter,
@@ -27,7 +27,6 @@ from web.controllers.admin.base_event_admin_controller import (
 )
 from web.controllers.admin.tournament_admin_controller import TournamentAdminWebContext
 from web.guards import EventGuard, ActionGuard
-
 
 logger = get_logger()
 

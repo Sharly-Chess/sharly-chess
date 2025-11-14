@@ -4,10 +4,11 @@ from enum import IntEnum
 from functools import partial
 from typing import Self, Any
 
+from common.i18n import _
 from data.event import Event
 from data.player import Player
 from data.tournament import Tournament
-from plugins.ffe import _, PLUGIN_NAME
+from plugins.ffe import PLUGIN_NAME
 from plugins.utils import PluginUtils, PluginData
 from web.controllers.base_controller import WebContext
 

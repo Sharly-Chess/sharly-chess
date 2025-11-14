@@ -12,12 +12,13 @@ from AdvancedHTMLParser import AdvancedHTMLParser, AdvancedTag
 from requests import Session
 from requests.exceptions import ConnectionError, Timeout, RequestException, HTTPError
 
+from common.i18n import _
 from common.logger import get_logger
 from data.event import Event
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from plugins import ffe
-from plugins.ffe import _, PLUGIN_NAME
+from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.papi_converter import PapiConverter
 from plugins.ffe.utils import FFEUtils
 from plugins.utils import PluginUtils
