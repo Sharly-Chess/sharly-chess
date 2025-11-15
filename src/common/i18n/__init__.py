@@ -183,7 +183,7 @@ def get_i18n_domain() -> str:
     return Domain.core_name
 
 
-def plugin_gettext(plugin_name: str, message: str, locale: str | None = None):
+def gettext(message: str, locale: str | None = None):
     """Overrides the gettext.gettext() function to use the locale of the current thread."""
     if locales:
         return _all_translations[get_i18n_domain()][locale or get_locale()].gettext(
@@ -193,9 +193,12 @@ def plugin_gettext(plugin_name: str, message: str, locale: str | None = None):
         return gettext_lib.gettext(message)
 
 
-def plugin_ngettext(
-    plugin_name: str, singular: str, plural: str, n: int, locale: str | None = None
-):
+def _(message: str, locale: str | None = None):
+    """An alias for gettext()."""
+    return gettext(message, locale)
+
+
+def ngettext(singular: str, plural: str, n: int, locale: str | None = None):
     """Overrides the gettext.ngettext() function to use the locale of the current thread."""
     if locales:
         return _all_translations[get_i18n_domain()][locale or get_locale()].ngettext(
@@ -203,19 +206,6 @@ def plugin_ngettext(
         )
     else:
         return gettext_lib.ngettext(singular, plural, n)
-
-
-def gettext(message: str, locale: str | None = None):
-    return plugin_gettext(Domain.core_name, message, locale)
-
-
-def _(message: str, locale: str | None = None):
-    """An alias for gettext()."""
-    return gettext(message, locale)
-
-
-def ngettext(singular: str, plural: str, n: int, locale: str | None = None):
-    return plugin_ngettext(Domain.core_name, singular, plural, n, locale)
 
 
 def normalize_bcp47_to_locale(tag: str) -> str:
