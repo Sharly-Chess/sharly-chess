@@ -1471,8 +1471,8 @@ class Tournament:
                 board = self.get_round_pab_board(round_nb)
                 assert board is not None
                 board_id = board.identifier
-                board.replace_player(black_player, 'black')
                 board.stored_board.index = self.get_available_board_indexes(round_nb)[0]
+                board.replace_player(black_player, 'black')
                 black_pairing.stored_pairing.result = result.value
                 black_pairing.stored_pairing.board_id = board_id
                 black_pairing.update(database)
