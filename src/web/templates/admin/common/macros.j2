@@ -272,12 +272,14 @@
                 if ($.trim(params.term) === '') return data;
                 if (
                     typeof data.text !== 'undefined' &&
-                    data.text.indexOf(params.term) > -1
+                    data.text.toLowerCase().indexOf(params.term) > -1
                 ) {
                     return data;
                 }
                 const search = $(data.element).data('search');
-                if (search && search.indexOf(params.term) > -1) return data;
+                if (search && search.toLowerCase().indexOf(params.term) > -1) {
+                    return data;
+                }
                 return null;
             },
         });
