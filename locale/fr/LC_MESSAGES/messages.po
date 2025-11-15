@@ -1803,19 +1803,19 @@ msgstr "E"
 
 #, python-format
 msgid "E.g.: %(minutes)d (minutes)"
-msgstr "Exemple : %(minutes)d (minutes)"
+msgstr "Ex. : %(minutes)d (minutes)"
 
 #, python-format
 msgid "E.g.: %(num)d"
-msgstr "Exemple : %(num)d"
+msgstr "Ex. : %(num)d"
 
 #, python-format
 msgid "E.g.: %(string)s"
-msgstr "Exemple : %(string)s"
+msgstr "Ex. : %(string)s"
 
 #, python-format
 msgid "E.g.: %(val)d"
-msgstr "E.g. : %(val)d"
+msgstr "Ex. : %(val)d"
 
 msgid "E.g.: 20 (boards per screen)"
 msgstr "Ex. : 20 (échiquiers par écran)"
@@ -1830,88 +1830,88 @@ msgid "E.g.: 4 (split players over 4 screens)"
 msgstr "Ex. : 4 (ur·euse sur 4 écrans)"
 
 msgid "E.g.: @boards, @family, another-screen"
-msgstr "Exemple : @boards, @family, un-autre-ecran"
+msgstr "Ex. : @boards, @family, un-autre-ecran"
 
 #, python-format
 msgid "E.g.: Boards %%f to %%l"
-msgstr "Exemple : Échiquiers %%f à %%l"
+msgstr "Ex. : Échiquiers %%f à %%l"
 
 #, python-format
 msgid "E.g.: Boards %%f-%%l"
-msgstr "Exemple : Échiquiers %%f-%%l"
+msgstr "Ex. : Échiquiers %%f-%%l"
 
 #, python-format
 msgid "E.g.: Check-in started for %%s"
-msgstr "Exemple : Pointage commencé depuis %%s"
+msgstr "Ex. : Pointage commencé depuis %%s"
 
 msgid "E.g.: DOE"
-msgstr "Exemple : DUPONT"
+msgstr "Ex. : DUPONT"
 
 msgid "E.g.: John"
-msgstr "Exemple : Pierre"
+msgstr "Ex. : Pierre"
 
 msgid "E.g.: Link to my screen"
-msgstr "Exemple : Lien vers mon écran"
+msgstr "Ex. : Lien vers mon écran"
 
 msgid "E.g.: Main tournament"
-msgstr "Exemple : Tournoi principal"
+msgstr "Ex. : Tournoi principal"
 
 msgid "E.g.: My display controller"
-msgstr "Exemple : Mon pilote d'afficheur"
+msgstr "Ex. : Mon pilote d'afficheur"
 
 msgid "E.g.: My favourite club!"
-msgstr "Exemple : Mon club favori !"
+msgstr "Ex. : Mon club favori !"
 
 msgid "E.g.: My screen"
-msgstr "Exemple : Mon écran"
+msgstr "Ex. : Mon écran"
 
 msgid "E.g.: My screen family"
-msgstr "Exemple : Ma famille d'écrans"
+msgstr "Ex. : Ma famille d'écrans"
 
 msgid "E.g.: Paris"
-msgstr "Exemple : Paris"
+msgstr "Ex. : Paris"
 
 #, python-format
 msgid "E.g.: Players %%f to %%l"
-msgstr "Exemple : Joueur·euses %%f à %%l"
+msgstr "Ex. : Joueur·euses %%f à %%l"
 
 #, python-format
 msgid "E.g.: Players %%f-%%l"
-msgstr "Exemple : Joueur·euses %%f-%%l"
+msgstr "Ex. : Joueur·euses %%f-%%l"
 
 msgid "E.g.: Please keep quiet until the end of the round!"
-msgstr "Exemple : Merci de bien vouloir se mettre en place !"
+msgstr "Ex. : Merci de bien vouloir se mettre en place !"
 
 msgid "E.g.: Start of check-in"
-msgstr "Exemple : Début du pointage :"
+msgstr "Ex. : Début du pointage :"
 
 #, python-format
 msgid "E.g.: Start of check-in in %%s"
-msgstr "Exemple : Début du pointage dans %%s"
+msgstr "Ex. : Début du pointage dans %%s"
 
 msgid "E.g.: Tournoi A"
-msgstr "Exemple : Tournoi A"
+msgstr "Ex. : Tournoi A"
 
 msgid "E.g.: World championship"
-msgstr "Exemple: Championnat du monde"
+msgstr "Ex.: Championnat du monde"
 
 msgid "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
-msgstr "Exemple : c:\\echecs\\tournois\\principal\\reglement.pdf"
+msgstr "Ex. : c:\\echecs\\tournois\\principal\\reglement.pdf"
 
 msgid "E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf"
-msgstr "Exemple : c:\\echecs\\tournois\\mon_tournoi\\reglement.pdf"
+msgstr "Ex. : c:\\echecs\\tournois\\mon_tournoi\\reglement.pdf"
 
 msgid "E.g.: https://my.club.us/tournament.jpg"
-msgstr "Exemple : https://mon.club.fr/affiche.jpg"
+msgstr "Ex. : https://mon.club.fr/affiche.jpg"
 
 msgid "E.g.: john.doe@chess.com"
-msgstr "Exemple : pierre.dupont@chess.com"
+msgstr "Ex. : pierre.dupont@chess.com"
 
 msgid "E.g.: my_password"
-msgstr "Exemple : mon_mot_de_passe"
+msgstr "Ex. : mon_mot_de_passe"
 
 msgid "E.g.: €1000 in prizes, FIDE rated, 2 byes 1/2 possible."
-msgstr "Exemple : 1000 € de prix, homologué FIDE, 2 exemptions à 0,5 point possibles."
+msgstr "Ex. : 1000 € de prix, homologué FIDE, 2 exemptions à 0,5 point possibles."
 
 msgid "EXEMPT"
 msgstr "EXEMPT·E"
