@@ -1,6 +1,12 @@
 # French
 English version below
 
+# Interface
+
+- Réduction de la taille des formulaires (3.3.0)
+- Déplacement des champs par défaut vers les pages concernées (3.3.0)
+- Amélioration de la séléction des dates et heures (3.3.0)
+
 ## Modules
 
 - Déplacement de la fonctionnalité de handicap vers un module (3.3.0)
@@ -16,6 +22,12 @@ English version below
 ## Prix
 
 - Correction de la réorganisation des catégories (3.3.0)
+- Ajout d'un critère sélectionnant directement les joueur·euses (3.3.0)
+
+## Staff
+
+- Ajout des rôles d'_Arbitre principal·e_ et d'_Arbitre adjoint·e_ par tournoi (3.3.0)
+- Recherche des comptes dans les bases de données de joueur·euses (3.3.0)
 
 ## FFE
 
@@ -31,6 +43,12 @@ English version below
 
 # English
 
+## Interface
+
+- Reduced the size of all forms (3.3.0)
+- Moved the default fields to the relevant pages (3.3.0)
+- Improve the date and time selection (3.3.0)
+
 ## Modules
 
 - Moved the handicap feature to a plugin (3.3.0)
@@ -43,9 +61,15 @@ English version below
 
 - Added place cards (3.3.0)
 
-# Prizes
+## Prizes
 
 - Fixed the category reordering (3.3.0)
+- Added a criterion to directly select players (3.3.0)
+
+## Staff
+
+- Added the _Chief Arbiter_ and _Deputy Chief Arbiter_ roles per tournament (3.3.0)
+- Search accounts from the player databases (3.3.0)
 
 ## FFE
 
