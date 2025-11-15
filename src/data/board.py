@@ -170,8 +170,8 @@ class Board:
         return (
             f'[Event "{self._format_pgn_string(tournament.full_name)}"]\n'
             f'[Site "{self._format_pgn_string(tournament.location or "?")}"]\n'
-            f'[Date "{format_timestamp(tournament.start_timestamp, "%Y.%m.%d")}"]\n'
-            f'[EventDate "{format_timestamp(tournament.event.start, "%Y.%m.%d")}"]\n'
+            f'[Date "{tournament.start_date.strftime("%Y.%m.%d")}"]\n'
+            f'[EventDate "{tournament.event.start_date.strftime("%Y.%m.%d")}"]\n'
             f'[Round "{round_}.{self.number}"]\n'
             + self._player_to_pgn(self.white_player, True)
             + self._player_to_pgn(self.black_player, False)

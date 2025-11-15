@@ -14,6 +14,8 @@
                                     name='date_str',
                                     label=_('Date:'),
                                     tooltip_text=_('Mandatory for the first hour, optional for next hours.'),
+                                    min_date=admin_event.start_date_str,
+                                    max_date=admin_event.stop_date_str,
                                     data=data, errors=errors
                                 ) }}
                             </div>

@@ -27,3 +27,7 @@ class OptionError(SharlyChessException):
     def __init__(self, message: str, option: 'Option'):
         super().__init__(message)
         self.option = option
+
+
+class FormError(SharlyChessException):
+    """Error raised when validating a form value."""

@@ -1,7 +1,7 @@
 import copy
-import time
 from collections import defaultdict, Counter
 from contextlib import suppress
+from datetime import date
 from functools import total_ordering, cached_property
 from logging import Logger
 from operator import attrgetter
@@ -10,8 +10,8 @@ from typing import Collection
 
 from common import (
     format_timestamp_date_time,
-    format_timestamp_date,
-    format_timestamp_time,
+    format_date_range,
+    format_date,
 )
 from common.i18n import _
 from common.i18n.utils import by
@@ -72,22 +72,36 @@ class Event:
         return self.stored_event.name
 
     @property
-    def start(self) -> float:
-        return self.stored_event.start
+    def start_date(self) -> date:
+        return self.stored_event.start_date
 
     @property
-    def stop(self) -> float:
-        return self.stored_event.stop
+    def stop_date(self) -> date:
+        return self.stored_event.stop_date
 
-    def passed(self, now: float | None = None) -> bool:
-        return self.stored_event.stop < (now or time.time())
+    @property
+    def start_date_str(self) -> str:
+        return format_date(self.start_date)
 
-    def coming(self, now: float | None = None) -> bool:
-        return self.stored_event.start > (now or time.time())
+    @property
+    def stop_date_str(self) -> str:
+        return format_date(self.stop_date)
 
-    def current(self, now: float | None = None) -> bool:
-        now = now or time.time()
-        return not self.passed(now) and not self.coming(now)
+    @property
+    def date_range_str(self) -> str:
+        return format_date_range(self.start_date, self.stop_date)
+
+    @property
+    def passed(self) -> bool:
+        return self.stop_date < date.today()
+
+    @property
+    def coming(self) -> bool:
+        return self.start_date > date.today()
+
+    @property
+    def current(self) -> bool:
+        return self.start_date <= date.today() <= self.stop_date
 
     @property
     def federation(self) -> str:
@@ -128,30 +142,6 @@ class Event:
             for plugin in plugin_manager.enabled_plugins
             if plugin.id in self.stored_event.enabled_plugins
         ]
-
-    @property
-    def formatted_start_date_time(self) -> str:
-        return format_timestamp_date_time(self.start)
-
-    @property
-    def formatted_start_date(self) -> str:
-        return format_timestamp_date(self.start)
-
-    @property
-    def formatted_start_time(self) -> str:
-        return format_timestamp_time(self.start)
-
-    @property
-    def formatted_stop_date_time(self) -> str:
-        return format_timestamp_date_time(self.stop)
-
-    @property
-    def formatted_stop_date(self) -> str:
-        return format_timestamp_date(self.stop)
-
-    @property
-    def formatted_stop_time(self) -> str:
-        return format_timestamp_time(self.stop)
 
     @property
     def location(self) -> str | None:

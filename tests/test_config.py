@@ -2,12 +2,12 @@
 
 import time
 from urllib import parse
-from common import BASE_DIR
+from common import BASE_DIR, format_date
 from data.board import PlayerRatingType
 from data.input_output.tournament_importer_options import FileOption
 from data.loader import EventLoader
 from data.pairings.variations import StandardSwissVariation
-from datetime import datetime, timedelta
+from datetime import date
 from pathlib import Path
 from typing import Callable, Dict, Optional, Any
 import re
@@ -150,18 +150,16 @@ class TestUtils:
             'uniq_id': uniq_id,
             'name': uniq_id,
         }
-        start_time = datetime.now()
-        stop_time = datetime.now() + timedelta(hours=1)
+        today = date.today()
         if via_api_request_context:
             defaults |= {
-                'start': start_time.strftime('%Y-%m-%dT%H:%M'),
-                'stop': stop_time.strftime('%Y-%m-%dT%H:%M'),
+                'date_range': format_date(today),
                 'plugin_ffe': 'on',
             }
         else:
             defaults |= {
-                'start': start_time.timestamp(),
-                'stop': stop_time.timestamp(),
+                'start_date': today,
+                'stop_date': today,
                 'enabled_plugins': ['ffe', 'pairing_acceleration'],
             }
 
@@ -223,8 +221,6 @@ class TestUtils:
             'max_byes': None,
             'last_rounds_no_byes': None,
             'location': None,
-            'start': None,
-            'stop': None,
             'pairing': StandardSwissVariation.static_id(),
             'current_round': None,
             'check_in_open': False,

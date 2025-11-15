@@ -4,7 +4,7 @@ import re
 import sys
 import time
 from collections import namedtuple
-from datetime import datetime
+from datetime import datetime, date
 from functools import wraps
 from pathlib import Path
 from packaging.version import Version
@@ -166,6 +166,20 @@ def format_timestamp(ts: float | None = None, format_: str = '%Y-%m-%d %H:%M') -
     )
 
 
+def format_date(date_: date | None = None) -> str:
+    return (date_ or date.today()).strftime('%Y/%m/%d')
+
+
+def format_date_range(start_date: date, stop_date: date | None = None) -> str:
+    if not stop_date or start_date == stop_date:
+        return format_date(start_date)
+    return f'{format_date(start_date)} - {format_date(stop_date)}'
+
+
+def get_date_timestamp(date_: date) -> float:
+    return datetime.combine(date_, datetime.min.time()).timestamp()
+
+
 def format_timestamp_date_time(ts: float | None = None) -> str:
     """Formats the given timestamp (now if None) to YYYY-mm-dd HH:MM format."""
     return format_timestamp(ts)
@@ -179,15 +193,6 @@ def format_timestamp_date(ts: float | None = None) -> str:
 def format_timestamp_time(ts: float | None = None) -> str:
     """Formats the given timestamp (now if None) to HH:MM format."""
     return format_timestamp(ts, '%H:%M')
-
-
-def today_timestamp_start_stop() -> tuple[float, float]:
-    today_str: str = format_timestamp_date()
-    return time.mktime(
-        datetime.strptime(f'{today_str} 00:00', '%Y-%m-%d %H:%M').timetuple()
-    ), time.mktime(
-        datetime.strptime(f'{today_str} 23:59', '%Y-%m-%d %H:%M').timetuple()
-    )
 
 
 def show_duration(func):

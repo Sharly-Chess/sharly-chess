@@ -5,7 +5,6 @@
         {{ admin_macros.number_input(
             name='ffe_id',
             label=_('FFE certification number:'),
-            autocomplete='off',
             placeholder=_('E.g.: %(num)d', num=68991),
             hx_post=url_for('ffe-test-auth'),
             hx_trigger='input changed delay:500ms',

@@ -312,8 +312,8 @@ class Player:
     @cached_property
     def category(self) -> PlayerCategory:
         if self.tournament:
-            tournament_start = self.tournament.start_datetime
-            tournament_end = self.tournament.stop_datetime
+            tournament_start = self.tournament.start_date
+            tournament_end = self.tournament.stop_date
         else:
             tournament_start, tournament_end = None, None
         return PlayerCategory.from_year_of_birth(

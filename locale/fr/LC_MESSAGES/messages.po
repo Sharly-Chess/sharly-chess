@@ -596,6 +596,12 @@ msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs affi
 msgid "Application"
 msgstr "Application"
 
+msgid "Apr *** APRIL"
+msgstr "Avr"
+
+msgid "April"
+msgstr "Avril"
+
 msgid "Arbiter"
 msgstr "Arbitre"
 
@@ -677,6 +683,12 @@ msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] "Au plus %(num)d coup illegal est enregistré."
 msgstr[1] "Au plus %(num)d coups illégaux sont enregistrés."
+
+msgid "Aug *** AUGUST"
+msgstr "Août"
+
+msgid "August"
+msgstr "Août"
 
 msgid "Authentication failed"
 msgstr "Authentification échouée"
@@ -1501,6 +1513,15 @@ msgstr "Date de naissance :"
 msgid "Date:"
 msgstr "Date :"
 
+msgid "Dates"
+msgstr "Dates"
+
+msgid "Dec *** DECEMBER"
+msgstr "Dec"
+
+msgid "December"
+msgstr "Décembre"
+
 msgid "Default accounts have been created."
 msgstr "Les comptes par défault ont été créés."
 
@@ -2041,12 +2062,6 @@ msgstr "La rencontre a déjà eu lieu à la ronde n°%(round)d"
 msgid "End round"
 msgstr "Terminer la ronde"
 
-msgid "End time needs to be after start time."
-msgstr "L'horaire de fin doit être après l'horaire de début."
-
-msgid "End:"
-msgstr "Fin :"
-
 msgid "Enter results"
 msgstr "Entrer des résultats"
 
@@ -2268,6 +2283,12 @@ msgstr "La famile [{family_uniq_id}] a été supprimée."
 msgid "Family [{family_uniq_id}] has been updated."
 msgstr "La famile [{family_uniq_id}] a été modifiée."
 
+msgid "Feb *** FEBRUARY"
+msgstr "Fev"
+
+msgid "February"
+msgstr "Février"
+
 msgid "Fed *** FEDERATION FOR TABLE HEADER"
 msgstr "Féd."
 
@@ -2432,6 +2453,9 @@ msgstr "Les parties gagnées ou perdues par forfait sont considérées comme jou
 
 msgid "Forfeits played"
 msgstr "Forfaits joués"
+
+msgid "Fr *** FRIDAY"
+msgstr "Ve"
 
 msgid "French Chess Federation"
 msgstr "Fédération Française des Échecs"
@@ -2761,6 +2785,9 @@ msgstr "Date non valide [{date_str}]."
 msgid "Invalid date and time [{datetime_str}]."
 msgstr "Date et heure non valides [{datetime_str}]."
 
+msgid "Invalid date format (expected: {format})."
+msgstr "Format de date invalide (attendu : {format})."
+
 msgid "Invalid date format [{date}] (expected: {format})"
 msgstr "Format de date invalide [{date}] (attendu : {format})"
 
@@ -2817,6 +2844,24 @@ msgstr "Il est fortement recommandé de définir au moins un départage."
 
 msgid "JSON file (papi-converter format)"
 msgstr "Fichier JSON (format papi-converter)"
+
+msgid "Jan *** JANUARY"
+msgstr "Jan"
+
+msgid "January"
+msgstr "Janvier"
+
+msgid "Jul *** JULY"
+msgstr "Juil"
+
+msgid "July"
+msgstr "Juillet"
+
+msgid "Jun *** JUNE"
+msgstr "Juin"
+
+msgid "June"
+msgstr "Juin"
 
 msgid "Kashdan"
 msgstr "Kashdan"
@@ -3005,6 +3050,12 @@ msgstr "Manuel"
 msgid "Manually pair players"
 msgstr "Appairer des joueur·euses manuellement"
 
+msgid "Mar *** MARCH"
+msgstr "Mars"
+
+msgid "March"
+msgstr "Mars"
+
 msgid "Mark this round as over and define the next one as the current round."
 msgstr "Marquer cette ronde comme terminée et définir la suivante comme la ronde courante."
 
@@ -3045,6 +3096,12 @@ msgstr "Elo maximum"
 
 msgid "Maximum value must be greater than the minimum value."
 msgstr "La valeur maximale doit être supérieure à la valeur minimale."
+
+msgid "May"
+msgstr "Mai"
+
+msgid "May *** MAY ACRONYM"
+msgstr "Mai"
 
 msgid "May be overridden on a per-tournament basis."
 msgstr "Peut être remplacé au niveau de chaque tournoi."
@@ -3103,6 +3160,9 @@ msgstr "Filles manquantes : %(count)d"
 
 msgid "Missing required field [{field}]."
 msgstr "Champ requis manquant [{field}]."
+
+msgid "Mo *** MONDAY"
+msgstr "Lu"
 
 msgid "Mode"
 msgstr "Mode"
@@ -3442,6 +3502,12 @@ msgstr "Non spécifié"
 msgid "Notification"
 msgstr "Notification"
 
+msgid "Nov *** NOVEMBER"
+msgstr "Nov"
+
+msgid "November"
+msgstr "Novembre"
+
 msgid "Number"
 msgstr "Numéro"
 
@@ -3496,6 +3562,12 @@ msgstr "OK"
 
 msgid "ORG"
 msgstr "ORG"
+
+msgid "Oct *** OCTOBER"
+msgstr "Oct"
+
+msgid "October"
+msgstr "Octobre"
 
 msgid "Once created, you can select the timer to display in the settings of each screen, family or rotator."
 msgstr "Une fois créés, vous pouvez sélectionner le chronomètre à afficher dans les paramètres de chaque écran, famille d’écrans ou écran rotatif."
@@ -3972,23 +4044,14 @@ msgstr "Veuillez choisir le tournoi."
 msgid "Please close the time control editor before saving."
 msgstr "Veuillez fermer l'éditeur de cadence avant d'enregistrer."
 
-msgid "Please enter a date after the start date."
-msgstr "Veuillez entrer une date postérieure à la date de début."
-
 msgid "Please enter a password for the ChessEvent connection."
 msgstr "Veuillez entrer un mot de passe pour la connexion à ChessEvent."
-
-msgid "Please enter a valid date."
-msgstr "Veuillez entrer une date valide."
 
 msgid "Please enter a valid time."
 msgstr "Veuillez entrer une heure valide."
 
 msgid "Please enter the date of the first hour."
 msgstr "Veuillez entrer la date du premier horaire."
-
-msgid "Please enter the end date of the event."
-msgstr "Veuillez entrer la date de fin de l'évènement."
 
 msgid "Please enter the image URL."
 msgstr "Veuillez entrer l'URL de l'image."
@@ -3998,9 +4061,6 @@ msgstr "Veuillez entrer le nom de l'évènement."
 
 msgid "Please enter the round number or the hour ID."
 msgstr "Veuillez entrer le numéro de ronde ou l'identifiant de l'horaire."
-
-msgid "Please enter the start date of the event."
-msgstr "Veuillez entrer la date de début de l'évènement."
 
 msgid "Please enter the text to display after the hour (mandatory except for rounds)."
 msgstr "Veuillez entrer le texte à afficher après l'horaire (obligatoire sauf pour les débuts de ronde)."
@@ -4532,6 +4592,9 @@ msgstr "SEC"
 msgid "SPE"
 msgstr "SPE"
 
+msgid "Sa *** SATURDAY"
+msgstr "Sa"
+
 msgid "Save"
 msgstr "Enregistrer"
 
@@ -4664,6 +4727,12 @@ msgstr "Sélection"
 #, python-format
 msgid "Selection: %(selection)s"
 msgstr "Sélection : %(selection)s"
+
+msgid "Sep *** SEPTEMBER"
+msgstr "Sep"
+
+msgid "September"
+msgstr "Septembre"
 
 msgid "Server Setup"
 msgstr "Configuration du serveur"
@@ -4879,9 +4948,6 @@ msgstr "Standard :"
 msgid "Start of round {} in %s"
 msgstr "Début de la ronde {} dans %s"
 
-msgid "Start:"
-msgstr "Début :"
-
 msgid "Started"
 msgstr "Démarré"
 
@@ -4902,6 +4968,9 @@ msgstr "Std"
 
 msgid "Strong"
 msgstr "Préférence forte"
+
+msgid "Su *** SUNDAY"
+msgstr "Di"
 
 msgid "Success"
 msgstr "Succès"
@@ -4970,6 +5039,9 @@ msgstr "Couleur du texte :"
 
 msgid "Texts before and after the hour below are optional for round numbers, mandatory otherwise."
 msgstr "Les textes avant et après l'horaire ci-dessous sont facultatifs pour les numéros de rondes, obligatoires sinon."
+
+msgid "Th *** THURSDAY"
+msgstr "Je"
 
 msgid "The Baku acceleration system is not compatible with Papi, there may be differences in the Papi pairings display."
 msgstr "Le système d'accélération de Bakou n'est pas compatible avec Papi, il peut y avoir des différences dans l'affichage des appariements Papi."
@@ -5456,10 +5528,10 @@ msgid "Time control:"
 msgstr "Cadence :"
 
 msgid "Time is not defined."
-msgstr "L'heure n'est pas définie"
+msgstr "L'heure n'est pas définie."
 
-msgid "Time outside of event time range ({start} - {stop})."
-msgstr "Horaire en dehors des horaires de l'évènement ({start} - {stop})."
+msgid "Time outside of event time range ({range})."
+msgstr "Horaire en dehors des horaires de l'évènement ({range})."
 
 msgid "Timer"
 msgstr "Chronomètre"
@@ -5673,6 +5745,9 @@ msgstr "Tournois : %(num)d"
 
 msgid "Trophy"
 msgstr "Trophée"
+
+msgid "Tu *** TUESDAY"
+msgstr "Ma"
 
 msgid "Type"
 msgstr "Type"
@@ -6092,6 +6167,9 @@ msgstr "Attention : la suppression est définitive !"
 
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
 msgstr "Attention : vous essayez d'exécuter une opération interdite par le règlement FIDE."
+
+msgid "We *** WEDNESDAY"
+msgstr "Me"
 
 msgid "Weak"
 msgstr "Préférence faible"
