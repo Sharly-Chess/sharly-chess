@@ -64,6 +64,10 @@ class SelectPlayerFilterOption[T](PlayerFilterOption):
         """Get a tooltip to display on the option."""
         return None
 
+    def get_search(self, object_: T) -> str | None:
+        """Get a search string for an object's select option."""
+        return None
+
     def select_options(
         self,
         tournament: 'Tournament',
@@ -90,12 +94,15 @@ class SelectPlayerFilterOption[T](PlayerFilterOption):
             self.get_key(object_): SelectOption(
                 f'{self.get_name(object_)} ({player_count})',
                 self.get_tooltip(object_),
+                search=self.get_search(object_),
             )
             for object_, player_count in ordered_counters
         }
         all_options = {
             self.get_key(object_): SelectOption(
-                self.get_name(object_), self.get_tooltip(object_)
+                self.get_name(object_),
+                self.get_tooltip(object_),
+                search=self.get_search(object_),
             )
             for object_ in all_values
         }

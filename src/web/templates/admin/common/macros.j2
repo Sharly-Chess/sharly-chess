@@ -168,6 +168,9 @@
             {% if option.tooltip %}
                 title="{{ option.tooltip }}"
             {% endif %}
+            {% if option.search %}
+                data-search="{{ option.search }}"
+            {% endif %}
             {% if option.disabled %}disabled{% endif %}
             {% if selected %}selected{% endif %}
         >
@@ -187,6 +190,7 @@
     multiple_select_all=false,
     error=false,
     tooltip_select=false,
+    search_placeholder=true,
     onchange=''
 ) %}
     <select
@@ -236,7 +240,12 @@
             theme: 'bootstrap-5',
             width: '100%',
             placeholder: $(this).data('placeholder'),
-            minimumResultsForSearch: 10,
+            language: {
+                noResults: function() {
+                    return `{{ _('No results.') }}`;
+                },
+            },
+            minimumResultsForSearch: {% if search_placeholder %}5{% else %}10{% endif %},
             dropdownParent: $('#modal-wrapper'),
             closeOnSelect: {% if keep_open_on_select %}false{% else %}true{% endif %},
             templateResult: function (data) {
@@ -249,6 +258,8 @@
                 if (tooltip) $result.attr('data-bs-title', tooltip);
                 const optionClass = $(data.element).data('class');
                 if (optionClass) $result.addClass(optionClass);
+                const search = $(data.element).data('search');
+                if (search) $result.attr('data-search', search);
                 return $result;
             },
             matcher: function(params, data) {
@@ -258,9 +269,28 @@
                         oldParams = params;
                     }
                 {% endif %}
-                return $.fn.select2.defaults.defaults.matcher(params, data);
+                if ($.trim(params.term) === '') return data;
+                const searchTerm = normalizeText(params.term);
+                if (
+                    typeof data.text !== 'undefined' &&
+                    normalizeText(data.text).indexOf(searchTerm) > -1
+                ) {
+                    return data;
+                }
+                const search = $(data.element).data('search');
+                if (search && normalizeText(search).indexOf(searchTerm) > -1) {
+                    return data;
+                }
+                return null;
             },
         });
+        {% if search_placeholder %}
+            $('#{{ id }}').one('select2:open', () => {
+                $('.select2-search__field[aria-controls="select2-{{ id }}-results"]').prop(
+                    'placeholder', `{{ search_placeholder }}`
+                );
+            });
+        {% endif %}
         // Width changes dynamically on load, needs to be reset to display the placeholder nicely
         $('.select2-search__field').css('width', '100%');
         $('#{{ id }}').on('select2:select', function (e) {
@@ -385,6 +415,7 @@ with_indicator: display a loading indicator, optional
     onchange='',
     multiple_select=false,
     tooltip_select=false,
+    select_search_placeholder='',
     select_all=false,
     file_accept='',
     number_min='',
@@ -466,6 +497,7 @@ with_indicator: display a loading indicator, optional
                         multiple=multiple_select,
                         multiple_placeholder=placeholder,
                         multiple_select_all=select_all,
+                        search_placeholder=select_search_placeholder,
                         error=error or (name in errors),
                         tooltip_select=tooltip_select,
                         onchange=onchange,
@@ -972,11 +1004,11 @@ with_indicator: display a loading indicator, optional
     onchange='',
     multiple_select=false,
     tooltip_select=false,
+    search_placeholder='',
     select_all=false,
     placeholder='',
     disabled=false,
     input_tooltip=''
-
 ) %}
     {{ _generic_input(
         name=name,
@@ -992,6 +1024,7 @@ with_indicator: display a loading indicator, optional
         onchange=onchange,
         multiple_select=multiple_select,
         tooltip_select=tooltip_select,
+        select_search_placeholder=search_placeholder,
         select_all=select_all,
         placeholder=placeholder,
         disabled=disabled,
