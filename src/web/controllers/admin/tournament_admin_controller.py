@@ -241,7 +241,8 @@ class TournamentAdminController(BaseEventAdminController):
             last_rounds_no_byes: int | None = None
             location: str | None = None
             player_rating_type: int | None = None
-            date_range_checkbox = True
+            date_range_default = True
+            date_range: str | None = None
             pairing_variations: dict[str, str | None] = {
                 system.variation_field_id: None for system in pairing_systems
             }
@@ -252,9 +253,6 @@ class TournamentAdminController(BaseEventAdminController):
             if action == 'create':
                 rounds = 7
                 rating = TournamentRating.STANDARD.value
-                date_range = WebContext.value_to_date_range_form_data(
-                    admin_event.start_date, admin_event.stop_date
-                )
             else:
                 admin_tournament = web_context.get_admin_tournament()
                 stored_tournament = admin_tournament.stored_tournament
@@ -267,12 +265,13 @@ class TournamentAdminController(BaseEventAdminController):
                 last_rounds_no_byes = stored_tournament.last_rounds_no_byes
                 location = stored_tournament.location
                 player_rating_type = stored_tournament.player_rating_type
-                date_range = WebContext.value_to_date_range_form_data(
-                    admin_tournament.start_date, admin_tournament.stop_date
-                )
-                date_range_checkbox = (
+                date_range_default = (
                     not stored_tournament.start_date and not stored_tournament.stop_date
                 )
+                if not date_range_default:
+                    date_range = WebContext.value_to_date_range_form_data(
+                        admin_tournament.start_date, admin_tournament.stop_date
+                    )
                 rating = admin_tournament.rating.value
                 rounds = admin_tournament.rounds or 1
                 pairing_system = admin_tournament.pairing_system
@@ -314,7 +313,7 @@ class TournamentAdminController(BaseEventAdminController):
                     'pab_value': pab_value,
                     'override_unrated_rapid_blitz': override_unrated_rapid_blitz,
                     'date_range': date_range,
-                    'date_range_checkbox': date_range_checkbox,
+                    'date_range_checkbox': date_range_default,
                 }
                 | {field: variation for field, variation in pairing_variations.items()}
                 | plugin_form_data

@@ -9,6 +9,7 @@ from common import (
     BASE_DIR,
     format_timestamp_date,
     format_date_range,
+    format_date,
 )
 from common.exception import FormError
 from common.logger import get_logger
@@ -248,6 +249,7 @@ class IndexAdminController(BaseAdminController):
                 'messages': Message.messages(web_context.request),
                 'format_timestamp_date': format_timestamp_date,
                 'format_date_range': format_date_range,
+                'format_date': format_date,
                 'nav_tabs': nav_tabs,
                 'svg_logo': svg_logo,
                 'admin_events_show_details': (
@@ -301,7 +303,7 @@ class IndexAdminController(BaseAdminController):
             name = EventLoader.get(request).get_unused_event_name(_('New event'))
             uniq_id = EventLoader.get(request).get_unused_event_uniq_id(_('event'))
             public = False
-            date_range = WebContext.value_to_date_range_form_data(date.today())
+            date_range = ''
             config = SharlyChessConfig()
             federation = config.federation.name if config.federation else ''
             player_rating_type = PlayerRatingType.FIDE.value
@@ -398,7 +400,7 @@ class IndexAdminController(BaseAdminController):
         try:
             date_range = WebContext.form_data_to_date_range(data, field := 'date_range')
             if not date_range:
-                errors[field] = _('This field is required.')
+                start_date, stop_date = [date.today()] * 2
             else:
                 start_date, stop_date = date_range
         except FormError as e:

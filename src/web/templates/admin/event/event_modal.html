@@ -45,6 +45,7 @@
                         {{ admin_macros.date_range_input(
                             name='date_range',
                             label=_('%(string)s:', string=_('Dates')),
+                            placeholder=format_date(),
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}

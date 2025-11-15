@@ -166,8 +166,8 @@ def format_timestamp(ts: float | None = None, format_: str = '%Y-%m-%d %H:%M') -
     )
 
 
-def format_date(date_: date) -> str:
-    return date_.strftime('%Y/%m/%d')
+def format_date(date_: date | None = None) -> str:
+    return (date_ or date.today()).strftime('%Y/%m/%d')
 
 
 def format_date_range(start_date: date, stop_date: date | None = None) -> str:
