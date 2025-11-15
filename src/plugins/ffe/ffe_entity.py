@@ -10,6 +10,12 @@ from common.i18n import _
 from common.i18n.utils import unicode_normalize
 from data.columns.player_datasheet import DatasheetColumn
 from data.columns.player_table import PlayerTableColumn
+from data.criteria.player_filter_options import (
+    PlayerFilterOption,
+    SelectPlayerFilterOption,
+    ExcludeFilterOption,
+)
+from data.criteria.player_filters import PlayerFilter
 from data.input_output.data_source import (
     FidePlayerComparator,
     PlayerComparator,
@@ -20,12 +26,6 @@ from data.input_output.data_source import (
 )
 from data.player import Player
 from data.print_documents import PlayerSplitter
-from data.criteria.player_filter_options import (
-    PlayerFilterOption,
-    SelectPlayerFilterOption,
-    ExcludeFilterOption,
-)
-from data.criteria.player_filters import PlayerFilter
 from data.print_documents.documents import QRCodePrintDocument, TournamentPrintOption
 from data.print_documents.qrcode_types import QRCodeType
 from data.tournament import Tournament

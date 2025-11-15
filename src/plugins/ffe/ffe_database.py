@@ -8,30 +8,29 @@ from logging import Logger
 from pathlib import Path
 from typing import Any, override
 
-from common.i18n.utils import unicode_normalize
 from packaging.version import Version
 from requests import Response, get
 from requests.exceptions import ConnectionError
 
 from common.i18n import _
+from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
 from data.player import PlayerRating
+from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourcePlayerDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
 from database.sqlite.local_source_database.delays import Days2OutdatedDelay
+from plugins import ffe
+from plugins.ffe import PLUGIN_NAME, PLUGIN_DIR
 from plugins.ffe.papi_converter import PapiConverter
+from plugins.ffe.utils import PlayerFFELicence, FfePlayerPluginData
 from utils.enum import (
     TournamentRating,
     PlayerRatingType,
     PlayerGender,
     PlayerTitle,
 )
-from database.sqlite.config.config_store import StoredLocalSourceDatabase
-
-from plugins import ffe
-from plugins.ffe import PLUGIN_NAME, PLUGIN_DIR
-from plugins.ffe.utils import PlayerFFELicence, FfePlayerPluginData
 
 logger: Logger = get_logger()
 

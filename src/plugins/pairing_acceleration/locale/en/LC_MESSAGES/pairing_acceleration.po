@@ -1,0 +1,70 @@
+#, python-format
+msgid "%(string)s:"
+msgstr ""
+
+msgid "Accelerated pairings"
+msgstr ""
+
+msgid "Accelerated variations of the swiss pairing system."
+msgstr ""
+
+msgid "Acceleration groups"
+msgstr ""
+
+msgid "Baku acceleration system"
+msgstr ""
+
+msgid "Group {group_id}"
+msgstr ""
+
+msgid "Groups can't be edited for this pairing system."
+msgstr ""
+
+#, python-format
+msgid "Groups must be composed of at least 25%% and at most 50%% of players."
+msgstr ""
+
+#, python-format
+msgid "Groups must be composed of at least 25%% of players."
+msgstr ""
+
+msgid "Haley system"
+msgstr ""
+
+msgid "Maximum value must be greater than the minimum value."
+msgstr ""
+
+msgid "No acceleration."
+msgstr ""
+
+msgid "Pairing number range of players the group."
+msgstr ""
+
+#, python-format
+msgid "Pairing number range of the group (recommended: %(min)d-%(max)d)."
+msgstr ""
+
+msgid "Positive values are expected."
+msgstr ""
+
+msgid "Progressive accelerated system"
+msgstr ""
+
+msgid "Round {round}"
+msgstr ""
+
+msgid "Rounds {min_round}-{max_round}"
+msgstr ""
+
+msgid "Soft Haley system"
+msgstr ""
+
+msgid "Virtual points"
+msgstr ""
+
+msgid "Virtual points are granted to players according to their group. Those points only are used for pairing, not for ranking."
+msgstr ""
+
+msgid "points"
+msgstr ""
+

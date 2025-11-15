@@ -1,0 +1,37 @@
+msgid "/move"
+msgstr ""
+
+msgid "Adds features for handicap tournaments where weaker players are given a time advantage."
+msgstr ""
+
+#, python-format
+msgid "E.g.: %(val)d"
+msgstr ""
+
+msgid "Elo step:"
+msgstr ""
+
+msgid "Handicap games"
+msgstr ""
+
+msgid "Minimum time (secs):"
+msgstr ""
+
+msgid "Penalties require a time control with a single period."
+msgstr ""
+
+msgid "Penalty (secs):"
+msgstr ""
+
+msgid "The minimum time, whatever the ranking difference between the two players."
+msgstr ""
+
+msgid "The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player."
+msgstr ""
+
+msgid "The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players)."
+msgstr ""
+
+msgid "Time control"
+msgstr ""
+

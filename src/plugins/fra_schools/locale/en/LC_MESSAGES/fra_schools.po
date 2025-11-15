@@ -1,0 +1,125 @@
+#, python-format
+msgid "%(string)s:"
+msgstr ""
+
+msgid "Add"
+msgstr ""
+
+msgid "Add a school to the options."
+msgstr ""
+
+msgid "Adds support for school competitions in France"
+msgstr ""
+
+msgid "At least one department is expected."
+msgstr ""
+
+msgid "At least one school is expected."
+msgstr ""
+
+#, python-format
+msgid "Average age: %(years)s"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Choose at least one department."
+msgstr ""
+
+msgid "Choose at least one school."
+msgstr ""
+
+msgid "City"
+msgstr ""
+
+msgid "Code"
+msgstr ""
+
+msgid "Complete Team"
+msgstr ""
+
+msgid "Department"
+msgstr ""
+
+msgid "Departments"
+msgstr ""
+
+msgid "Exclude: {values}"
+msgstr ""
+
+msgid "Filter the schools."
+msgstr ""
+
+msgid "French School Competitions"
+msgstr ""
+
+msgid "French Schools"
+msgstr ""
+
+msgid "French school"
+msgstr ""
+
+msgid "Incomplete Team"
+msgstr ""
+
+msgid "Loading more results…"
+msgstr ""
+
+#, python-format
+msgid "Missing boys: %(count)d"
+msgstr ""
+
+#, python-format
+msgid "Missing girls: %(count)d"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "OK"
+msgstr ""
+
+#, python-format
+msgid "Other missing players: %(count)d"
+msgstr ""
+
+msgid "Ranking by school"
+msgstr ""
+
+msgid "Ranking by school after round #{round}"
+msgstr ""
+
+msgid "School *** SCHOOL FOR TABLE HEADER"
+msgstr "School"
+
+msgid "Schools"
+msgstr ""
+
+#, python-format
+msgid "Search by: %(fields)s"
+msgstr ""
+
+msgid "Sort the players by school."
+msgstr ""
+
+#, python-format
+msgid "The database [%(database)s] is not installed (to install it: Menu > Data sources)."
+msgstr ""
+
+#, python-format
+msgid "The database [%(database)s] was last updated over %(age)d months ago. It is preferable to update it before proceeding (Menu > Data sources)."
+msgstr ""
+
+msgid "The tournament has not yet started."
+msgstr ""
+
+msgid "This round is not finished (last finished: #{round})."
+msgstr ""
+
+msgid "This round is not valid (the tournament has {rounds} rounds)."
+msgstr ""
+
+msgid "Total"
+msgstr ""
+

@@ -1,68 +1,44 @@
 import copy
-from datetime import date
 import re
-from pluggy import PluginManager
-
 from collections import Counter, defaultdict
 from collections.abc import Callable
-
+from datetime import date
 from types import ModuleType
 from typing import Any, TYPE_CHECKING, Iterable, Optional, override
 
 from litestar.plugins.htmx import HTMXRequest
 from packaging.version import Version
+from pluggy import PluginManager
 
 from common import TEST_ENV, DEVEL_ENV
-from common.exception import SharlyChessException
 from common.i18n import _, ngettext
+from common.exception import SharlyChessException
+from data.columns import player_table, player_datasheet
 from data.columns.player_datasheet import DatasheetColumn
 from data.columns.player_table import PlayerTableColumn, ColumnUsage
+from data.criteria.player_filter_options import PlayerFilterOption, ClubsFilterOption
+from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
 from data.input_output import DataSource, TournamentExporter, TournamentImporter
 from data.input_output.data_source import FideDataSource
 from data.pairings.managers import PairingVariationManager
 from data.pairings.variations import SwissVariation
+from data.player import Player, PlayerRating, PlayerRatingAndType
 from data.print_documents import PlayerSplitter, PrintDocument
-from data.columns import player_table, player_datasheet
 from data.print_documents.documents import StatisticsPrintDocument
 from data.print_documents.place_cards.data import PlaceCardPlayer
 from data.print_documents.player_splitters import ClubPlayerSplitter
-from data.criteria.player_filter_options import PlayerFilterOption, ClubsFilterOption
-from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
 from data.print_documents.qrcode_types import QRCodeType
 from data.tie_breaks import TieBreak, TieBreakOption
+from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
+from plugins.ffe import migrations, PLUGIN_NAME, ffe_tie_breaks
 from plugins.ffe.ffe_background_uploader import (
     EventLoader,
     FfeBackgroundUploader,
     FfeUploadStatus,
 )
-from plugins.ffe.ffe_tournament_exporters import PapiTournamentExporter
-from plugins.ffe.ffe_sql_server import FFESqlServer
-from plugins.ffe.ffe_tournament_importers import (
-    PapiJsonTournamentImporter,
-    PapiTournamentImporter,
-)
-from plugins.ffe.papi_converter import PapiConverter, PapiPlayer
-from plugins.ffe.utils import (
-    FFE_DEFAULT_UPLOAD_DELAY,
-    FFE_MIN_UPLOAD_DELAY,
-    FfeEventPluginData,
-    FfePlayerPluginData,
-    FfeTournamentPluginData,
-)
-from plugins.ffe.ffe_tournament_controller import FfeAdminTournamentController
-from plugins.pairing_acceleration.pairing_acceleration import PairingAccelerationPlugin
-from utils.enum import (
-    PlayerCategory,
-    PlayerRatingType,
-    Result,
-    TournamentRating,
-)
-from data.player import Player, PlayerRating, PlayerRatingAndType
-from database.sqlite.event.event_database import EventDatabase
-from plugins.ffe import migrations, PLUGIN_NAME, ffe_tie_breaks
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_entity import (
     FFESiteQRCodeType,
@@ -82,13 +58,29 @@ from plugins.ffe.ffe_entity import (
 )
 from plugins.ffe.ffe_event_controller import FfeAdminEventController
 from plugins.ffe.ffe_session_handler import FFESessionHandler
+from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.ffe_tie_breaks import (
     BasePapiTieBreak,
     PapiBuchholzTypeOption,
 )
+from plugins.ffe.ffe_tournament_controller import FfeAdminTournamentController
+from plugins.ffe.ffe_tournament_exporters import PapiTournamentExporter
+from plugins.ffe.ffe_tournament_importers import (
+    PapiJsonTournamentImporter,
+    PapiTournamentImporter,
+)
+from plugins.ffe.papi_converter import PapiConverter, PapiPlayer
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
+from plugins.ffe.utils import (
+    FFE_DEFAULT_UPLOAD_DELAY,
+    FFE_MIN_UPLOAD_DELAY,
+    FfeEventPluginData,
+    FfePlayerPluginData,
+    FfeTournamentPluginData,
+)
 from plugins.hookspec import ExtraAdminColumn, hookimpl, hookspec
 from plugins.migration import PluginMigrationManager
+from plugins.pairing_acceleration.pairing_acceleration import PairingAccelerationPlugin
 from plugins.utils import (
     ExtraStatisticsSection,
     NavUploadItem,
@@ -96,7 +88,12 @@ from plugins.utils import (
     PluginUtils,
     PluginData,
 )
-
+from utils.enum import (
+    PlayerCategory,
+    PlayerRatingType,
+    Result,
+    TournamentRating,
+)
 from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController, WebContext
 

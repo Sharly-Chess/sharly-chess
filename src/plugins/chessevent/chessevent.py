@@ -20,7 +20,6 @@ from plugins.ffe.ffe import FfePlugin
 from plugins.hookspec import hookimpl
 from plugins.migration import PluginMigrationManager
 from plugins.utils import Plugin, PluginData
-
 from web.controllers.base_controller import WebContext, BaseController
 
 if TYPE_CHECKING:

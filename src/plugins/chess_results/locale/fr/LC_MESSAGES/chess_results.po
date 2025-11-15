@@ -1,0 +1,136 @@
+msgid "Auto-upload disabled"
+msgstr "Mise en ligne automatique désactivée"
+
+msgid "Auto-upload enabled"
+msgstr "Mise en ligne automatique activée"
+
+msgid "Auto-upload results"
+msgstr "Mise en ligne automatique des résultats"
+
+msgid "Auto-upload:"
+msgstr "Mise en ligne automatique :"
+
+msgid "Automatic"
+msgstr "Automatique"
+
+msgid "Chess-Results.com"
+msgstr "Chess-Results.com"
+
+msgid "Chess-Results.com only displays {max} tie-breaks. However, the rankings remain the same as in Sharly Chess."
+msgstr "Chess-Results.com n'affiche que {max} départages. Cependant, le classement reste le même  que dans Sharly Chess."
+
+msgid "Close"
+msgstr "Fermer"
+
+msgid "Disabled"
+msgstr "Désactivé"
+
+msgid "E.g.: €1000 in prizes, FIDE rated, 2 byes 1/2 possible."
+msgstr "Exemple : 1000 € de prix, homologué FIDE, 2 exemptions à 0,5 point possibles."
+
+msgid "Enabled"
+msgstr "Activé"
+
+msgid "Error uploading tournament"
+msgstr "Erreur lors de la mise en ligne du tournoi"
+
+msgid "Last upload"
+msgstr "Dernière mise en ligne"
+
+msgid "Manage"
+msgstr "Gérer"
+
+msgid "Manual"
+msgstr "Manuel"
+
+msgid "Minimum delay between uploads (minutes):"
+msgstr "Délai minimum entre deux envois (min.) :"
+
+msgid "Mode"
+msgstr "Mode"
+
+msgid "Modified since last upload"
+msgstr "Modifié depuis le dernier envoi"
+
+msgid "Modified, but no internet connection"
+msgstr "Modifié, mais pas de connexion internet"
+
+msgid "No Chess-Results ID defined for tournament [{tournament}]."
+msgstr "Pas d'identifiant Chess-Results défini pour le tournoi [{tournament}]."
+
+msgid "No internet connection"
+msgstr "Aucune connexion à internet"
+
+msgid "Remark:"
+msgstr "Remarque :"
+
+msgid "Results upload OK"
+msgstr "Mise en ligne des résultats OK"
+
+msgid "Scan to access the tournament on Chess-Results.com."
+msgstr "Scannez pour accéder au tournoi sur le site Chess-Results.com."
+
+msgid "Site"
+msgstr "Site"
+
+msgid "Status"
+msgstr "Statut"
+
+msgid "The delay must be at least {min_delay} minutes to avoid overloading the Chess-Results server."
+msgstr "Le délai doit au moins être de {min_delay} minutes pour éviter de surcharger le serveur Chess-Results."
+
+msgid "Tournament"
+msgstr "Tournoi"
+
+msgid "Tournament finished, upload no longer possible."
+msgstr "Tournoi terminé, mise en ligne non autorisée."
+
+msgid "Tournament modified, awaiting auto-upload"
+msgstr "Tournoi mis à jour, en attente de l’envoi automatique"
+
+msgid "Tournament not modified since last upload"
+msgstr "Tournoi non modifié depuis le dernier envoi"
+
+msgid "Tournament not yet uploaded."
+msgstr "Tournoi pas encore mis en ligne."
+
+#, python-format
+msgid "Tournament number: %(tnr)s"
+msgstr "Numéro de tournoi : %(tnr)s"
+
+msgid "Tournament on Chess-results.com"
+msgstr "Tournoi sur le site Chess-Results.com"
+
+msgid "Tournament previously uploaded."
+msgstr "Tournoi mis en ligne précédemment."
+
+msgid "Unable to upload tournament."
+msgstr "Impossible de mettre en ligne le tournoi."
+
+msgid "Unknown error when uploading results."
+msgstr "Erreur inconnue lors de la mise en ligne des résultats."
+
+msgid "Upload"
+msgstr "Mettre en ligne"
+
+msgid "Upload to Chess-Results.com"
+msgstr "Mettre en ligne sur Chess-Results.com"
+
+msgid "Upload tournaments now"
+msgstr "Mettre en ligne les tournois maintenant"
+
+msgid "Upload tournaments to Chess-Results.com"
+msgstr "Mettre en ligne les tournois sur Chess-Results.com"
+
+msgid "Uploading of tournaments to Chess-Results.com."
+msgstr "Mise en ligne des tournois sur Chess-Results.com."
+
+msgid "Uploading tournament…"
+msgstr "Mise en ligne en cours…"
+
+msgid "Use default - {option}"
+msgstr "Par défaut – {option}"
+
+msgid "You are not allowed to publish results."
+msgstr "Vous n'êtes pas autorisé·e à publier les résultats."
+

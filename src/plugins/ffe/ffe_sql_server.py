@@ -10,18 +10,18 @@ from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.player import PlayerRating
+from database.sql_server.sql_server import SqlServer, SqlServerCredentials
 from database.sqlite.event.event_store import StoredPlayer
+from plugins import PLUGINS_DIR
+from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.papi_mappers import (
     PapiPlayerTitle,
     PapiPlayerGender,
     PapiPlayerRatingType,
     PapiPlayerFFELicence,
 )
-from utils.enum import TournamentRating, PlayerRatingType
-from database.sql_server.sql_server import SqlServer, SqlServerCredentials
-from plugins import PLUGINS_DIR
-from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.utils import FfePlayerPluginData
+from utils.enum import TournamentRating, PlayerRatingType
 
 logger: Logger = get_logger()
 

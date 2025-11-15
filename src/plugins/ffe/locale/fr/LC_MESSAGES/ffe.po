@@ -1,0 +1,476 @@
+msgid "\"Niçois\" accelerated system"
+msgstr "Système accéléré niçois"
+
+#, python-format
+msgid "%(string)s:"
+msgstr "%(string)s :"
+
+msgid "A - Competition *** FFE licence"
+msgstr "A - Compétition"
+
+msgid "A non-empty string is expected"
+msgstr "Une chaîne de caractères non vide est attendue"
+
+msgid "A positive integer is expected."
+msgstr "Un entier positif est attendu."
+
+msgid "At least one league is expected."
+msgstr "Au moins une ligue est attendue."
+
+msgid "At least one licence type is expected."
+msgstr "Au moins un type de licence est attendu."
+
+msgid "Authentication failed."
+msgstr "L'authentification a échoué."
+
+msgid "Auto-upload disabled"
+msgstr "Mise en ligne automatique désactivée"
+
+msgid "Auto-upload enabled"
+msgstr "Mise en ligne automatique activée"
+
+msgid "Auto-upload results"
+msgstr "Mise en ligne automatique des résultats"
+
+msgid "Auto-upload:"
+msgstr "Mise en ligne automatique :"
+
+msgid "Automatic"
+msgstr "Automatique"
+
+msgid "B - Leisure *** FFE licence"
+msgstr "B - Loisir"
+
+msgid "Black pairings are supposed to have an opponent"
+msgstr "Les appariements avec les Noirs sont censés avoir un·e adversaire."
+
+msgid "Buchholz"
+msgstr "Buchholz"
+
+msgid "Buchholz cut"
+msgstr "Buchholz tronqué"
+
+msgid "By default, tournaments are not visible on the FFE site."
+msgstr "Par défaut, les tournois ne sont pas visibles sur le site de la FFE."
+
+msgid "Choose at least one league."
+msgstr "Choisir au moins une ligue."
+
+msgid "Choose at least one licence type."
+msgstr "Choisir au moins un type de licence."
+
+msgid "Close"
+msgstr "Fermer"
+
+msgid "Connection French Chess Federation"
+msgstr "Connexion à la Fédération Française des Échecs"
+
+msgid "Conversion to Papi format failed."
+msgstr "La conversion au format Papi a échoué."
+
+msgid "Copying to tmp .sce file failed."
+msgstr "La copie vers le fichier .sce temporaire a échoué."
+
+msgid "Cut *** TIE BREAK VARIATION"
+msgstr "Tronqué"
+
+msgid "Data is already displayed on the FFE website."
+msgstr "Les données sont déjà affichées sur le site web FFE."
+
+msgid "Disabled"
+msgstr "Désactivé"
+
+msgid "Download fees"
+msgstr "Télécharger les droits d'homologation"
+
+msgid "Download the fees that the organizer should pay to the FFE."
+msgstr "Télécharger les droits d'homologation que l'organisateur·ice doit payer à la FFE."
+
+#, python-format
+msgid "E.g.: %(num)d"
+msgstr "Exemple : %(num)d"
+
+#, python-format
+msgid "E.g.: %(string)s"
+msgstr "Exemple : %(string)s"
+
+msgid "Enabled"
+msgstr "Activé"
+
+msgid "Error uploading tournament"
+msgstr "Erreur lors de la mise en ligne du tournoi"
+
+msgid "Exclude: {values}"
+msgstr "Exclure : {values}"
+
+msgid "Expired *** FFE licence"
+msgstr "Expirée"
+
+msgid "Expired FFE licence"
+msgstr "Licence FFE expirée"
+
+msgid "Export the tournament to the PAPI format."
+msgstr "Exporter le tournoi au format PAPI."
+
+msgid "FFE"
+msgstr "FFE"
+
+msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
+msgstr "FFE"
+
+msgid "FFE ID"
+msgstr "Identifiant FFE"
+
+msgid "FFE Licence"
+msgstr "Licence FFE"
+
+msgid "FFE Licence type"
+msgstr "Type de licence FFE"
+
+msgid "FFE certification number and password not defined."
+msgstr "Numéro d'homologation FFE et mot de passe non-définis."
+
+msgid "FFE certification number not defined."
+msgstr "Numéro d'homologation FFE non-défini."
+
+msgid "FFE certification number:"
+msgstr "Numéro d'homologation :"
+
+#, python-format
+msgid "FFE certification number: %(ffe_id)d"
+msgstr "Homologation FFE : %(ffe_id)d"
+
+msgid "FFE database (local)"
+msgstr "Base de données FFE (locale)"
+
+msgid "FFE database (online)"
+msgstr "Base de données FFE (en ligne)"
+
+msgid "FFE licence A (competition)"
+msgstr "Licence FFE A (compétition)"
+
+msgid "FFE licence B (leisure)"
+msgstr "Licence FFE B (loisir)"
+
+msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament}]."
+msgstr "La licence FFE [{ffe_licence_number}] est déjà présente dans le tournoi [{tournament}]."
+
+msgid "FFE licence number"
+msgstr "Numéro de licence FFE"
+
+#, python-format
+msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
+msgstr "Licence FFE : %(ffe_licence_number)s (cliquer pour copier dans le presse-papier)."
+
+#, python-format
+msgid "FFE licence: %(ffe_licence_number)s (expired)."
+msgstr "Licence FFE : %(ffe_licence_number)s (expirée)."
+
+msgid "FFE password not defined."
+msgstr "Mot de passe FFE non-défini."
+
+msgid "FFE password:"
+msgstr "Mot de passe FFE :"
+
+msgid "FFE site"
+msgstr "Site de la FFE"
+
+msgid "FIDE ID"
+msgstr "Identifiant FIDE"
+
+msgid "Fees link not found, check that a Papi file has already been sent and that the tournament has not been archived on the FFE website."
+msgstr "Lien de facture non trouvé, vérifier qu'un fichier Papi a été envoyé et que le tournoi n'a pas été archivé sur le site web FFE."
+
+msgid "Filter the leagues."
+msgstr "Filtrer les ligues."
+
+msgid "Filter the licences."
+msgstr "Filtrer les licences."
+
+msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
+msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
+msgstr[0] "Pour un tournoi de {rounds} rondes, la valeur la moins significative et la valeur la plus significative sont retirées."
+msgstr[1] "Pour un tournoi de {rounds} rondes, les {count} valeurs les moins significatives et les {count} valeurs les plus significatives sont retirées."
+
+msgid "For a tournament with {rounds} rounds, the least significant value is removed."
+msgid_plural "For a tournament with {rounds} rounds, the {count} least significant values are removed."
+msgstr[0] "Pour un tournoi de {rounds} rondes, la valeur la moins significative est retirée."
+msgstr[1] "Pour un tournoi de {rounds} rondes, les {count} valeurs les moins significatives sont retirées."
+
+msgid "For unrated players, a representative rating is calculated."
+msgstr "Pour les joueur·euses estimé·es, un classement représentatif est calculé."
+
+msgid "French Chess Federation"
+msgstr "Fédération Française des Échecs"
+
+msgid "French Federation specific features (player search, results uploading, leagues, Papi import/export...)"
+msgstr "Fonctionnalités spécifiques à la Fédération Française (recherche de joueur·euses, envoi des résultats, ligues, compatibilité avec Papi)"
+
+msgid "Fédération Française des Échecs"
+msgstr "Fédération Française des Échecs"
+
+msgid "However, the order of the results of the last round will remain the same as the ones in Sharly Chess."
+msgstr "Cependant, l'ordre des résultats de la dernière rondes restera le même que ceux de Sharly Chess."
+
+msgid "Import JSON file (papi-converter format)"
+msgstr "Importer un fichier JSON (format papi-converter)"
+
+msgid "Import Papi file"
+msgstr "Importer un fichier Papi"
+
+msgid "Invalid FFE ID [{ffe_id}]."
+msgstr "Identifiant FFE [{ffe_id}] non valide."
+
+msgid "Invalid FFE certification number or password."
+msgstr "Identifiant FFE ou mot de passe invalide."
+
+msgid "Invalid FFE licence number [{ffe_licence_number}]."
+msgstr "Numéro de licence FFE [{ffe_licence_number}] non valide."
+
+msgid "Invalid date format [{date}] (expected: {format})"
+msgstr "Format de date invalide [{date}] (attendu : {format})"
+
+msgid "Invalid display link text [{text}]"
+msgstr "Text du lien d'affichage non valide [{text}]."
+
+msgid "Invalid fees link text [{text}]."
+msgstr "Texte du lien des droits d'homologation non valide [{text}]."
+
+msgid "Invalid response from the FFE website."
+msgstr "Réponse non valide du site FFE."
+
+msgid "JSON file (papi-converter format)"
+msgstr "Fichier JSON (format papi-converter)"
+
+msgid "Last upload"
+msgstr "Dernière mise en ligne"
+
+msgid "League"
+msgstr "Ligue"
+
+msgid "League *** LEAGUE FOR TABLE HEADER"
+msgstr "Ligue"
+
+msgid "League. *** LEAGUE COLUMN HEADER FOR PLAYERS"
+msgstr "Ligue"
+
+msgid "League:"
+msgstr "Ligue :"
+
+msgid "Leagues"
+msgstr "Ligues"
+
+msgid "Lic."
+msgstr "Lic."
+
+msgid "Licence no. *** LICENCE NUMBER"
+msgstr "N° licence"
+
+msgid "Licence types"
+msgstr "Types de licence"
+
+msgid "Licence:"
+msgstr "Licence :"
+
+msgid "Make visible on FFE site"
+msgstr "Rendre visible sur le site de la FFE"
+
+msgid "Manual"
+msgstr "Manuel"
+
+msgid "Median"
+msgstr "Médian"
+
+msgid "Median Buchholz"
+msgstr "Buchholz médian"
+
+msgid "Minimum delay between uploads (minutes):"
+msgstr "Délai minimum entre deux envois (min.) :"
+
+msgid "Mode"
+msgstr "Mode"
+
+msgid "Modified since last upload"
+msgstr "Modifié depuis le dernier envoi"
+
+msgid "Modified, but no internet connection"
+msgstr "Modifié, mais pas de connexion internet"
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "No FFE ID defined for tournament [{tournament}]."
+msgstr "Aucun identifiant FFE défini pour le tournoi [{tournament}]."
+
+msgid "No FFE Licence"
+msgstr "Aucune licence FFE"
+
+msgid "No internet connection"
+msgstr "Aucune connexion à internet"
+
+msgid "None *** FFE licence"
+msgstr "Aucune"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "PAPI"
+msgstr "PAPI"
+
+msgid "Papi file"
+msgstr "Fichier Papi"
+
+#, python-format
+msgid "Replace [%(old)s] by [%(new)s]"
+msgstr "Remplacer [%(old)s] par [%(new)s]"
+
+msgid "Results upload OK"
+msgstr "Mise en ligne des résultats OK"
+
+msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
+msgstr "Lien de mise en ligne du règlement non trouvé, vérifier que le tournoi n'est pas terminé sur le site web FFE."
+
+msgid "Rules uploaded"
+msgstr "Règlement mis en ligne"
+
+msgid "Scan to access the tournament on the FFE site."
+msgstr "Scannez pour accéder au tournoi sur le site de la FFE."
+
+msgid "Some of the tie-break values will not appear in the results on the FFE website."
+msgstr "Certaines des valeurs des départages n'apparaîtront pas dans les résultats sur le site de la FFE."
+
+msgid "Standard"
+msgstr "Standard"
+
+msgid "Status"
+msgstr "Statut"
+
+msgid "The Baku acceleration system is not compatible with Papi, there may be differences in the Papi pairings display."
+msgstr "Le système d'accélération de Bakou n'est pas compatible avec Papi, il peut y avoir des différences dans l'affichage des appariements Papi."
+
+msgid "The FFE ID is a positive integer."
+msgstr "L'identifiant FFE est un entier positif."
+
+msgid "The FFE always uses the FIDE rating when available."
+msgstr "La FFE utilise toujours le classement FIDE lorsqu’il est disponible."
+
+msgid "The PAPI format does not support {rounds} rounds (maximum: {max})."
+msgstr "Le format PAPI ne supporte pas {rounds} rounds (maximum : {max})."
+
+msgid "The Papi format does not support result [{result}]."
+msgstr "Le format Papi ne supporte pas le résultat [{result}]."
+
+msgid "The [{tie_break}] tie-break as implemented in Papi."
+msgstr "Le départage [{tie_break}] tel qu'implémenté dans Papi."
+
+msgid "The delay must be at least {min_delay} minutes to avoid overloading the FFE server."
+msgstr "Le délai doit au moins être de {min_delay} minutes pour éviter de surcharger le serveur FFE."
+
+msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
+msgstr "Le mot de passe du tournoi sur le site FFE doit être composé de 10 lettres majuscules."
+
+msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament}]."
+msgstr "Le·la joueur·euse avec l'identifiant FFE [{ffe_id}] joue déjà le tournoi [{tournament}]."
+
+msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament}]."
+msgstr "Le·la joueur·euse avec la licence FFE [{ffe_licence_number}] joue déjà le tournoi [{tournament}]."
+
+msgid "Tournament"
+msgstr "Tournoi"
+
+msgid "Tournament exempt from registration fees."
+msgstr "Tournoi exempt de droits d'homologation."
+
+msgid "Tournament modified, awaiting auto-upload"
+msgstr "Tournoi mis à jour, en attente de l’envoi automatique"
+
+msgid "Tournament not modified since last upload"
+msgstr "Tournoi non modifié depuis le dernier envoi"
+
+msgid "Tournament not yet uploaded."
+msgstr "Tournoi pas encore mis en ligne."
+
+msgid "Tournament on the FFE site"
+msgstr "Tournoi sur le site de la FFE"
+
+msgid "Tournament previously uploaded."
+msgstr "Tournoi mis en ligne précédemment."
+
+msgid "Tournament rules are not set"
+msgstr "Le règlement du tournoi n’est pas défini"
+
+msgid "Tournament visibility successfully set"
+msgstr "Visibilité du tournoi définie avec succès"
+
+msgid "Unable to download tournament fees."
+msgstr "Impossible de télécharger les droits d'homologation."
+
+msgid "Unable to set tournament visibility."
+msgstr "Impossible de définir la visibilité du tournoi."
+
+msgid "Unable to upload tournament rules."
+msgstr "Impossible de mettre en ligne le règlement du tournoi."
+
+msgid "Unable to upload tournament."
+msgstr "Impossible de mettre en ligne le tournoi."
+
+#, python-format
+msgid "Unknown FFE Licence type [%(ffe_licence)s]."
+msgstr "Type de FFE Licence FFE inconnu [%(ffe_licence)s]."
+
+msgid "Unknown player ID [{player_id}]"
+msgstr "Identifiant de joueur inconnu [{player_id}]."
+
+msgid "Unknown value [{value}]"
+msgstr "Valeur [{value}] inconnue."
+
+msgid "Unrated *** SINGULAR"
+msgstr "Non-classé·e"
+
+msgid "Upload"
+msgstr "Mettre en ligne"
+
+msgid "Upload failed"
+msgstr "Échec de la mise en ligne"
+
+msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
+msgstr "Lien de mise en ligne introuvable, vérifiez que le tournoi n’est pas marqué comme terminé sur le site de la FFE."
+
+msgid "Upload rules"
+msgstr "Mettre en ligne le règlement"
+
+msgid "Upload to the FFE site"
+msgstr "Mettre en ligne sur le site de la FFE"
+
+msgid "Upload tournaments now"
+msgstr "Mettre en ligne les tournois maintenant"
+
+msgid "Upload tournaments to the FFE"
+msgstr "Mettre en ligne les tournois vers la FFE"
+
+msgid "Uploading the PDF rules file allows the players to read the rules online."
+msgstr "Envoyer le fichier PDF des règles sur le site de la FFE permet aux joueur·euses de lire les règles en ligne."
+
+msgid "Uploading tournament…"
+msgstr "Mise en ligne en cours…"
+
+msgid "Use default - {option}"
+msgstr "Par défaut – {option}"
+
+msgid "Variation"
+msgstr "Variante"
+
+msgid "You are not allowed to download fees."
+msgstr "Vous n'êtes pas autorisé·e à télécharger les droits d'homologation."
+
+msgid "You are not allowed to publish results."
+msgstr "Vous n'êtes pas autorisé·e à publier les résultats."
+
+msgid "You are not allowed to publish rules."
+msgstr "Vous n'êtes pas autorisé·e à publier le règlement."
+
+msgid "{count} league represented"
+msgid_plural "{count} leagues represented"
+msgstr[0] "{count} ligue représentée"
+msgstr[1] "{count} ligues représentées"
+

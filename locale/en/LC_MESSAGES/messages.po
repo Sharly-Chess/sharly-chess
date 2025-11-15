@@ -4,9 +4,6 @@ msgstr ""
 msgid " [{yes_answer}/{no_answer}]?"
 msgstr ""
 
-msgid "\"Niçois\" accelerated system"
-msgstr ""
-
 msgid "#{board_number}"
 msgstr ""
 
@@ -194,12 +191,6 @@ msgstr "-"
 msgid "- *** SHORT NAME FOR GENDER NONE"
 msgstr "-"
 
-msgid "/<moves>"
-msgstr ""
-
-msgid "/move"
-msgstr ""
-
 msgid "0 - 0 (U)"
 msgstr ""
 
@@ -275,46 +266,10 @@ msgstr ""
 msgid "<b>Delete</b> from the tournament"
 msgstr ""
 
-msgid "<first> and <second>"
-msgstr ""
-
-msgid "<first> then <second>"
-msgstr ""
-
-msgid "<first>, <second>"
-msgstr ""
-
-msgid "<side>: <text>"
-msgstr ""
-
-msgid "<smart_count> day |||| <smart_count> days"
-msgstr ""
-
-msgid "<smart_count> hour |||| <smart_count> hours"
-msgstr ""
-
-msgid "<smart_count> minute |||| <smart_count> minutes"
-msgstr ""
-
-msgid "<smart_count> move |||| <smart_count> moves"
-msgstr ""
-
-msgid "<smart_count> second |||| <smart_count> seconds"
-msgstr ""
-
-msgid "<smart_count> week |||| <smart_count> weeks"
-msgstr ""
-
-msgid "A - Competition *** FFE licence"
-msgstr "A - Competition"
-
 msgid "A URL, or the path to the rules file on the server, in PDF format."
 msgstr ""
 
 msgid "A file is expected."
-msgstr ""
-
-msgid "A non-empty string is expected"
 msgstr ""
 
 msgid "A plugin specific to this federation is used, it can no longer be modified."
@@ -336,15 +291,6 @@ msgid "Absent"
 msgstr ""
 
 msgid "Absolute"
-msgstr ""
-
-msgid "Accelerated pairings"
-msgstr ""
-
-msgid "Accelerated variations of the swiss pairing system."
-msgstr ""
-
-msgid "Acceleration groups"
 msgstr ""
 
 msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
@@ -434,9 +380,6 @@ msgstr ""
 msgid "Add a rotator to the event."
 msgstr ""
 
-msgid "Add a school to the options."
-msgstr ""
-
 msgid "Add a screen to check-in players or enter results."
 msgstr ""
 
@@ -489,12 +432,6 @@ msgid "Add screens"
 msgstr ""
 
 msgid "Add tournaments"
-msgstr ""
-
-msgid "Adds features for handicap tournaments where weaker players are given a time advantage."
-msgstr ""
-
-msgid "Adds support for school competitions in France"
 msgstr ""
 
 msgid "Administration"
@@ -581,9 +518,6 @@ msgstr ""
 msgid "An error occurred. Consult the logs for more details."
 msgstr ""
 
-msgid "An unexpected error occurred, either in Sharly Chess or in ChessEvent. Consult the logs for more details."
-msgstr ""
-
 msgid "An unexpected error occurred."
 msgstr ""
 
@@ -654,25 +588,13 @@ msgstr ""
 msgid "At least one club is expected."
 msgstr ""
 
-msgid "At least one department is expected."
-msgstr ""
-
 msgid "At least one federation is expected."
-msgstr ""
-
-msgid "At least one league is expected."
-msgstr ""
-
-msgid "At least one licence type is expected."
 msgstr ""
 
 msgid "At least one player is expected."
 msgstr ""
 
 msgid "At least one rating type is expected."
-msgstr ""
-
-msgid "At least one school is expected."
 msgstr ""
 
 msgid "At least one value is expected."
@@ -690,38 +612,10 @@ msgstr "Aug"
 msgid "August"
 msgstr ""
 
-msgid "Authentication failed"
-msgstr ""
-
-msgid "Authentication failed."
-msgstr ""
-
-msgid "Authentication failed. Please check your credentials and try again."
-msgstr ""
-
 msgid "Auto-update"
 msgstr ""
 
-msgid "Auto-upload disabled"
-msgstr ""
-
-msgid "Auto-upload enabled"
-msgstr ""
-
-msgid "Auto-upload results"
-msgstr ""
-
-msgid "Auto-upload:"
-msgstr ""
-
-msgid "Automatic"
-msgstr ""
-
 msgid "Average"
-msgstr ""
-
-#, python-format
-msgid "Average age: %(years)s"
 msgstr ""
 
 msgid "Average of opponents Buchholz"
@@ -745,9 +639,6 @@ msgstr "B"
 msgid "B *** BLACK COLOR FOR PLACE CARDS"
 msgstr "B"
 
-msgid "B - Leisure *** FFE licence"
-msgstr "B - Leisure"
-
 msgid "BLACK PLAYER"
 msgstr ""
 
@@ -770,9 +661,6 @@ msgstr ""
 msgid "Background image:"
 msgstr ""
 
-msgid "Baku acceleration system"
-msgstr ""
-
 msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
 msgstr "Bd."
 
@@ -789,9 +677,6 @@ msgid "Berger grid"
 msgstr ""
 
 msgid "Black"
-msgstr ""
-
-msgid "Black pairings are supposed to have an opponent"
 msgstr ""
 
 msgid "Black wins"
@@ -870,9 +755,6 @@ msgstr ""
 msgid "Buchholz"
 msgstr ""
 
-msgid "Buchholz cut"
-msgstr ""
-
 msgid "Buchholz score calculated as if all paired games for the final round had ended in draws."
 msgstr ""
 
@@ -883,9 +765,6 @@ msgid "By default, other devices can only interact with public screens. This tab
 msgstr ""
 
 msgid "By default, this tie-break is disabled when there are unrated players ({count} in the tournament). You must specify that the player estimation is explained in the rules."
-msgstr ""
-
-msgid "By default, tournaments are not visible on the FFE site."
 msgstr ""
 
 #, python-format
@@ -975,15 +854,6 @@ msgstr ""
 msgid "Check the box to allow other screens to display a link to this screen."
 msgstr ""
 
-msgid "Check the event ID then try again."
-msgstr ""
-
-msgid "Check the tournament name then try again."
-msgstr ""
-
-msgid "Check the username and the password then try again."
-msgstr ""
-
 msgid "Check-in"
 msgstr ""
 
@@ -1025,42 +895,6 @@ msgstr ""
 msgid "Chess"
 msgstr ""
 
-msgid "Chess-Results.com"
-msgstr ""
-
-msgid "Chess-Results.com only displays {max} tie-breaks. However, the rankings remain the same as in Sharly Chess."
-msgstr ""
-
-msgid "ChessEvent"
-msgstr ""
-
-msgid "ChessEvent actions are no longer available once the tournament has started."
-msgstr ""
-
-msgid "ChessEvent event not defined."
-msgstr ""
-
-msgid "ChessEvent event:"
-msgstr ""
-
-msgid "ChessEvent password not defined."
-msgstr ""
-
-msgid "ChessEvent password:"
-msgstr ""
-
-msgid "ChessEvent tournament"
-msgstr ""
-
-msgid "ChessEvent tournament:"
-msgstr ""
-
-msgid "ChessEvent user name:"
-msgstr ""
-
-msgid "ChessEvent user not defined."
-msgstr ""
-
 msgid "Chief Arbitration"
 msgstr ""
 
@@ -1076,25 +910,13 @@ msgstr ""
 msgid "Choose at least one club."
 msgstr ""
 
-msgid "Choose at least one department."
-msgstr ""
-
 msgid "Choose at least one federation."
-msgstr ""
-
-msgid "Choose at least one league."
-msgstr ""
-
-msgid "Choose at least one licence type."
 msgstr ""
 
 msgid "Choose at least one player."
 msgstr ""
 
 msgid "Choose at least one rating type."
-msgstr ""
-
-msgid "Choose at least one school."
 msgstr ""
 
 msgid "Choose families to add"
@@ -1113,9 +935,6 @@ msgid "Choose the columns displayed."
 msgstr ""
 
 msgid "Choose your language"
-msgstr ""
-
-msgid "City"
 msgstr ""
 
 msgid "Clear Log"
@@ -1163,9 +982,6 @@ msgid "Club:"
 msgstr ""
 
 msgid "Clubs"
-msgstr ""
-
-msgid "Code"
 msgstr ""
 
 msgid "Color"
@@ -1223,13 +1039,7 @@ msgstr ""
 msgid "Complementary pairings successfully generated!"
 msgstr ""
 
-msgid "Complete Team"
-msgstr ""
-
 msgid "Configuration"
-msgstr ""
-
-msgid "Configure the ChessEvent settings of this tournament."
 msgstr ""
 
 msgid "Configure the tie-breaks of the tournament."
@@ -1241,9 +1051,6 @@ msgstr ""
 msgid "Connect to the Sharly Chess network, then scan to access the Sharly Chess server."
 msgstr ""
 
-msgid "Connection French Chess Federation"
-msgstr ""
-
 msgid "Connection established"
 msgstr ""
 
@@ -1251,9 +1058,6 @@ msgid "Connection failed"
 msgstr ""
 
 msgid "Connection parameters"
-msgstr ""
-
-msgid "Connection to the ChessEvent server failed."
 msgstr ""
 
 msgid "Connection to the data source [{data_source}] failed. Consult the logs for more details."
@@ -1284,12 +1088,6 @@ msgid "Contact and registration"
 msgstr ""
 
 msgid "Continue"
-msgstr ""
-
-msgid "Conversion to Papi format failed."
-msgstr ""
-
-msgid "Copying to tmp .sce file failed."
 msgstr ""
 
 msgid "Corners"
@@ -1461,9 +1259,6 @@ msgstr ""
 msgid "Currently displaying screen [{uniq_id}]"
 msgstr ""
 
-msgid "Cut *** TIE BREAK VARIATION"
-msgstr "Cut"
-
 msgid "Cut values"
 msgstr ""
 
@@ -1483,9 +1278,6 @@ msgid "Daily"
 msgstr ""
 
 msgid "Dashed border"
-msgstr ""
-
-msgid "Data is already displayed on the FFE website."
 msgstr ""
 
 #, python-format
@@ -1525,17 +1317,10 @@ msgstr ""
 msgid "Default accounts have been created."
 msgstr ""
 
-msgid "Default credentials used to import tournaments from the ChessEvent platform."
-msgstr ""
-
 msgid "Default handling of players without a FIDE rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. If checked, this rating will also be used for seeding and pairings. If unchecked, they will be treated as unrated and require an estimated rating."
 msgstr ""
 
 msgid "Default timer settings"
-msgstr ""
-
-#, python-format
-msgid "Default: %(string)s"
 msgstr ""
 
 msgid "Define as main category"
@@ -1632,12 +1417,6 @@ msgstr ""
 msgid "Deletion date"
 msgstr ""
 
-msgid "Department"
-msgstr ""
-
-msgid "Departments"
-msgstr ""
-
 msgid "Deputy Chief Arbitration"
 msgstr ""
 
@@ -1732,12 +1511,6 @@ msgstr ""
 msgid "Download"
 msgstr ""
 
-msgid "Download fees"
-msgstr ""
-
-msgid "Download the fees that the organizer should pay to the FFE."
-msgstr ""
-
 msgid "Download the information of the selected players (CSV format)."
 msgstr ""
 
@@ -1813,10 +1586,6 @@ msgstr ""
 msgid "E.g.: %(string)s"
 msgstr ""
 
-#, python-format
-msgid "E.g.: %(val)d"
-msgstr ""
-
 msgid "E.g.: 20 (boards per screen)"
 msgstr ""
 
@@ -1889,9 +1658,6 @@ msgstr ""
 msgid "E.g.: Start of check-in in %%s"
 msgstr ""
 
-msgid "E.g.: Tournoi A"
-msgstr ""
-
 msgid "E.g.: World championship"
 msgstr ""
 
@@ -1905,12 +1671,6 @@ msgid "E.g.: https://my.club.us/tournament.jpg"
 msgstr ""
 
 msgid "E.g.: john.doe@chess.com"
-msgstr ""
-
-msgid "E.g.: my_password"
-msgstr ""
-
-msgid "E.g.: €1000 in prizes, FIDE rated, 2 byes 1/2 possible."
 msgstr ""
 
 msgid "EXEMPT"
@@ -2028,9 +1788,6 @@ msgstr "Elo"
 msgid "Elo *** STD ELO FOR TABLE HEADER"
 msgstr "Elo"
 
-msgid "Elo step:"
-msgstr ""
-
 msgid "Email:"
 msgstr ""
 
@@ -2038,9 +1795,6 @@ msgid "Enable this account"
 msgstr ""
 
 msgid "Enable/disable the details on the cards below."
-msgstr ""
-
-msgid "Enabled"
 msgstr ""
 
 #, python-format
@@ -2056,9 +1810,6 @@ msgstr ""
 msgid "Enter the result"
 msgstr ""
 
-msgid "Error uploading tournament"
-msgstr ""
-
 msgid "Error when updating database [{database}]."
 msgstr ""
 
@@ -2066,9 +1817,6 @@ msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr "Estimated"
 
 msgid "Event"
-msgstr ""
-
-msgid "Event [{event_id}] does not exist."
 msgstr ""
 
 msgid "Event [{uniq_id}] has been created."
@@ -2081,9 +1829,6 @@ msgid "Event [{uniq_id}] has been updated."
 msgstr ""
 
 msgid "Event name"
-msgstr ""
-
-msgid "Event not found"
 msgstr ""
 
 msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
@@ -2120,19 +1865,10 @@ msgstr ""
 msgid "Experimental features in version %(version)s are:"
 msgstr ""
 
-msgid "Expired *** FFE licence"
-msgstr "Expired"
-
-msgid "Expired FFE licence"
-msgstr ""
-
 msgid "Export"
 msgstr ""
 
 msgid "Export all the games of the last round of the tournament to the PGN format (usage: pairings transfer)."
-msgstr ""
-
-msgid "Export the tournament to the PAPI format."
 msgstr ""
 
 msgid "Export the tournament to the TRF(bx) format (usage: pairings generation)."
@@ -2147,71 +1883,8 @@ msgstr "F"
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
 
-msgid "FFE"
-msgstr ""
-
-msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
-msgstr "FFE"
-
 msgid "FFE *** FFE FOR PLAYERS COLUMNS"
 msgstr "FFE"
-
-msgid "FFE ID"
-msgstr ""
-
-msgid "FFE Licence"
-msgstr ""
-
-msgid "FFE Licence type"
-msgstr ""
-
-msgid "FFE certification number and password not defined."
-msgstr ""
-
-msgid "FFE certification number not defined."
-msgstr ""
-
-msgid "FFE certification number:"
-msgstr ""
-
-#, python-format
-msgid "FFE certification number: %(ffe_id)d"
-msgstr ""
-
-msgid "FFE database (local)"
-msgstr ""
-
-msgid "FFE database (online)"
-msgstr ""
-
-msgid "FFE licence A (competition)"
-msgstr ""
-
-msgid "FFE licence B (leisure)"
-msgstr ""
-
-msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament}]."
-msgstr ""
-
-msgid "FFE licence number"
-msgstr ""
-
-#, python-format
-msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
-msgstr ""
-
-#, python-format
-msgid "FFE licence: %(ffe_licence_number)s (expired)."
-msgstr ""
-
-msgid "FFE password not defined."
-msgstr ""
-
-msgid "FFE password:"
-msgstr ""
-
-msgid "FFE site"
-msgstr ""
 
 msgid "FIDE"
 msgstr ""
@@ -2292,9 +1965,6 @@ msgstr ""
 msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
 msgstr "Fed."
 
-msgid "Federation [{federation}] of player [{player}] is unknown. Recreate it in ChessEvent then try again."
-msgstr ""
-
 msgid "Federation plugins"
 msgstr ""
 
@@ -2302,9 +1972,6 @@ msgid "Federation:"
 msgstr ""
 
 msgid "Federations"
-msgstr ""
-
-msgid "Fees link not found, check that a Papi file has already been sent and that the tournament has not been archived on the FFE website."
 msgstr ""
 
 msgid "Female *** NAME FOR GENDER FEMALE"
@@ -2344,15 +2011,6 @@ msgid "Filter the federations."
 msgstr ""
 
 msgid "Filter the genders."
-msgstr ""
-
-msgid "Filter the leagues."
-msgstr ""
-
-msgid "Filter the licences."
-msgstr ""
-
-msgid "Filter the schools."
 msgstr ""
 
 msgid "Filter the tournaments."
@@ -2399,16 +2057,6 @@ msgstr ""
 msgid "Font size adjustment (%%):"
 msgstr ""
 
-msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
-msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "For a tournament with {rounds} rounds, the least significant value is removed."
-msgid_plural "For a tournament with {rounds} rounds, the {count} least significant values are removed."
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "For non-monetary prizes, the value is used for reward priority."
 msgstr ""
 
@@ -2416,9 +2064,6 @@ msgid "For players who have not checked-in:"
 msgstr ""
 
 msgid "For these reasons, it is strongly discouraged to unpair a round. It is instead recommended to use manual pairings to handle unusual situations."
-msgstr ""
-
-msgid "For unrated players, a representative rating is calculated."
 msgstr ""
 
 msgid "Fore"
@@ -2445,21 +2090,6 @@ msgstr ""
 msgid "Fr *** FRIDAY"
 msgstr "Fr"
 
-msgid "French Chess Federation"
-msgstr ""
-
-msgid "French Federation specific features (player search, results uploading, leagues, Papi import/export...)"
-msgstr ""
-
-msgid "French School Competitions"
-msgstr ""
-
-msgid "French Schools"
-msgstr ""
-
-msgid "French school"
-msgstr ""
-
 msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
 msgstr ""
 
@@ -2467,9 +2097,6 @@ msgid "Full-Point Bye"
 msgstr ""
 
 msgid "Full-Point Bye (deprecated)"
-msgstr ""
-
-msgid "Fédération Française des Échecs"
 msgstr ""
 
 msgid "GM *** SHORT NAME FOR Grand Master"
@@ -2538,30 +2165,10 @@ msgstr ""
 msgid "Group"
 msgstr ""
 
-msgid "Group {group_id}"
-msgstr ""
-
-msgid "Groups can't be edited for this pairing system."
-msgstr ""
-
-#, python-format
-msgid "Groups must be composed of at least 25%% and at most 50%% of players."
-msgstr ""
-
-#, python-format
-msgid "Groups must be composed of at least 25%% of players."
-msgstr ""
-
-msgid "Haley system"
-msgstr ""
-
 msgid "Half-Point Bye"
 msgstr ""
 
 msgid "Half-Point Bye attributed to player [{player}]."
-msgstr ""
-
-msgid "Handicap games"
 msgstr ""
 
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
@@ -2595,12 +2202,6 @@ msgid "Hour:"
 msgstr ""
 
 msgid "Hours"
-msgstr ""
-
-msgid "However, the order of the results of the last round will remain the same as the ones in Sharly Chess."
-msgstr ""
-
-msgid "I confirm that I have read and acknowledged the warning"
 msgstr ""
 
 msgid "I confirm that I want to archive this event."
@@ -2646,12 +2247,6 @@ msgstr ""
 msgid "Import"
 msgstr ""
 
-msgid "Import JSON file (papi-converter format)"
-msgstr ""
-
-msgid "Import Papi file"
-msgstr ""
-
 msgid "Import TRF file"
 msgstr ""
 
@@ -2659,9 +2254,6 @@ msgid "Import a tournament"
 msgstr ""
 
 msgid "Import a tournament to the event from an external source."
-msgstr ""
-
-msgid "Import from ChessEvent"
 msgstr ""
 
 msgid "Import is unavailable once the tournament has started."
@@ -2693,9 +2285,6 @@ msgid "Include lower categories"
 msgstr ""
 
 msgid "Includes all other access levels and grants full access to the application. This access level is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network)."
-msgstr ""
-
-msgid "Incomplete Team"
 msgstr ""
 
 msgid "Incorrect installation, exiting."
@@ -2734,19 +2323,7 @@ msgstr ""
 msgid "International Master"
 msgstr ""
 
-msgid "Invalid FFE ID [{ffe_id}]."
-msgstr ""
-
-msgid "Invalid FFE certification number or password."
-msgstr ""
-
-msgid "Invalid FFE licence number [{ffe_licence_number}]."
-msgstr ""
-
 msgid "Invalid FIDE ID [{fide_id}]."
-msgstr ""
-
-msgid "Invalid TRF25 string: unexpected characters."
 msgstr ""
 
 msgid "Invalid URL [{background_image}]."
@@ -2779,16 +2356,10 @@ msgstr ""
 msgid "Invalid delay [{delay}] (positive integer expected)."
 msgstr ""
 
-msgid "Invalid display link text [{text}]"
-msgstr ""
-
 msgid "Invalid expression [{expression}]"
 msgstr ""
 
 msgid "Invalid federation [{federation}]."
-msgstr ""
-
-msgid "Invalid fees link text [{text}]."
 msgstr ""
 
 msgid "Invalid fixed board number [{fixed_board}]."
@@ -2806,12 +2377,6 @@ msgstr ""
 msgid "Invalid password."
 msgstr ""
 
-msgid "Invalid period:"
-msgstr ""
-
-msgid "Invalid response from the FFE website."
-msgstr ""
-
 msgid "Invalid time [{time_str}]."
 msgstr ""
 
@@ -2825,9 +2390,6 @@ msgid "Invalid value [{value}]."
 msgstr ""
 
 msgid "It is highly recommended to set at least one tie-break."
-msgstr ""
-
-msgid "JSON file (papi-converter format)"
 msgstr ""
 
 msgid "Jan *** JANUARY"
@@ -2878,9 +2440,6 @@ msgstr ""
 msgid "Last results ({num})"
 msgstr ""
 
-msgid "Last synchronization"
-msgstr ""
-
 msgid "Last update"
 msgstr ""
 
@@ -2890,43 +2449,13 @@ msgstr ""
 msgid "Last update: {updated_at} (outdated)"
 msgstr ""
 
-msgid "Last upload"
-msgstr ""
-
 msgid "Launch a browser on startup"
 msgstr ""
 
 msgid "Layout"
 msgstr ""
 
-msgid "League"
-msgstr ""
-
-msgid "League *** LEAGUE FOR TABLE HEADER"
-msgstr "League"
-
-msgid "League. *** LEAGUE COLUMN HEADER FOR PLAYERS"
-msgstr "League"
-
-msgid "League:"
-msgstr ""
-
-msgid "Leagues"
-msgstr ""
-
 msgid "Library [{lib}] is missing."
-msgstr ""
-
-msgid "Lic."
-msgstr ""
-
-msgid "Licence no. *** LICENCE NUMBER"
-msgstr "Licence no."
-
-msgid "Licence types"
-msgstr ""
-
-msgid "Licence:"
 msgstr ""
 
 msgid "Limit adjustment"
@@ -2990,14 +2519,8 @@ msgstr ""
 msgid "Main group"
 msgstr ""
 
-msgid "Make visible on FFE site"
-msgstr ""
-
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Male"
-
-msgid "Manage"
-msgstr ""
 
 msgid "Manage accounts"
 msgstr ""
@@ -3079,9 +2602,6 @@ msgstr ""
 msgid "Maximum rating"
 msgstr ""
 
-msgid "Maximum value must be greater than the minimum value."
-msgstr ""
-
 msgid "May"
 msgstr ""
 
@@ -3092,12 +2612,6 @@ msgid "May be overridden on a per-tournament basis."
 msgstr ""
 
 msgid "May be used for per-round prize giveaways etc."
-msgstr ""
-
-msgid "Median"
-msgstr ""
-
-msgid "Median Buchholz"
 msgstr ""
 
 msgid "Median {value}"
@@ -3123,24 +2637,10 @@ msgstr ""
 msgid "Menus"
 msgstr ""
 
-msgid "Minimum delay between uploads (minutes):"
-msgstr ""
-
 msgid "Minimum number of points (included):"
 msgstr ""
 
 msgid "Minimum rating"
-msgstr ""
-
-msgid "Minimum time (secs):"
-msgstr ""
-
-#, python-format
-msgid "Missing boys: %(count)d"
-msgstr ""
-
-#, python-format
-msgid "Missing girls: %(count)d"
 msgstr ""
 
 msgid "Missing required field [{field}]."
@@ -3148,15 +2648,6 @@ msgstr ""
 
 msgid "Mo *** MONDAY"
 msgstr "Mo"
-
-msgid "Mode"
-msgstr ""
-
-msgid "Modified since last upload"
-msgstr ""
-
-msgid "Modified, but no internet connection"
-msgstr ""
 
 #, python-format
 msgid "Moved down %(num)d place"
@@ -3232,9 +2723,6 @@ msgstr ""
 msgid "Network:"
 msgstr ""
 
-msgid "Never synchronized"
-msgstr ""
-
 msgid "New category"
 msgstr ""
 
@@ -3271,15 +2759,6 @@ msgstr ""
 msgid "Next tournament"
 msgstr ""
 
-msgid "No Chess-Results ID defined for tournament [{tournament}]."
-msgstr ""
-
-msgid "No FFE ID defined for tournament [{tournament}]."
-msgstr ""
-
-msgid "No FFE Licence"
-msgstr ""
-
 msgid "No FIDE ID."
 msgstr ""
 
@@ -3287,9 +2766,6 @@ msgid "No Prize Bracket"
 msgstr ""
 
 msgid "No Prize Category"
-msgstr ""
-
-msgid "No acceleration."
 msgstr ""
 
 msgid "No alert message"
@@ -3451,9 +2927,6 @@ msgstr ""
 msgid "None"
 msgstr ""
 
-msgid "None *** FFE licence"
-msgstr "None"
-
 msgid "Norm Report"
 msgstr ""
 
@@ -3461,9 +2934,6 @@ msgid "Not assigned"
 msgstr ""
 
 msgid "Not checked-in yet"
-msgstr ""
-
-msgid "Not configured"
 msgstr ""
 
 msgid "Not enough byes available to set a Full-Point Bye (required: 2)."
@@ -3479,9 +2949,6 @@ msgid "Not paired"
 msgstr ""
 
 msgid "Not paired for this round"
-msgstr ""
-
-msgid "Not specified"
 msgstr ""
 
 msgid "Notification"
@@ -3639,10 +3106,6 @@ msgstr ""
 msgid "Origin: {template_origin}"
 msgstr ""
 
-#, python-format
-msgid "Other missing players: %(count)d"
-msgstr ""
-
 msgid "Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold."
 msgstr ""
 
@@ -3677,9 +3140,6 @@ msgid "PAB is already assigned"
 msgstr ""
 
 msgid "PAI"
-msgstr ""
-
-msgid "PAPI"
 msgstr ""
 
 msgid "PENALTY"
@@ -3736,13 +3196,6 @@ msgid "Pairing not found."
 msgstr ""
 
 msgid "Pairing number"
-msgstr ""
-
-msgid "Pairing number range of players the group."
-msgstr ""
-
-#, python-format
-msgid "Pairing number range of the group (recommended: %(min)d-%(max)d)."
 msgstr ""
 
 msgid "Pairing numbers selection"
@@ -3806,9 +3259,6 @@ msgstr ""
 msgid "Pairings: %(pairing_variation)s"
 msgstr ""
 
-msgid "Papi file"
-msgstr ""
-
 msgid "Parings by player"
 msgstr ""
 
@@ -3822,12 +3272,6 @@ msgid "Passed events"
 msgstr ""
 
 msgid "Password:"
-msgstr ""
-
-msgid "Penalties require a time control with a single period."
-msgstr ""
-
-msgid "Penalty (secs):"
 msgstr ""
 
 msgid "Pending"
@@ -4029,9 +3473,6 @@ msgstr ""
 msgid "Please close the time control editor before saving."
 msgstr ""
 
-msgid "Please enter a password for the ChessEvent connection."
-msgstr ""
-
 msgid "Please enter a valid time."
 msgstr ""
 
@@ -4099,9 +3540,6 @@ msgid "Port [{port}] already in use."
 msgstr ""
 
 msgid "Port: {port}"
-msgstr ""
-
-msgid "Positive values are expected."
 msgstr ""
 
 msgid "Pref."
@@ -4177,9 +3615,6 @@ msgid "Proceed"
 msgstr ""
 
 msgid "Profile"
-msgstr ""
-
-msgid "Progressive accelerated system"
 msgstr ""
 
 msgid "Progressive scores"
@@ -4273,12 +3708,6 @@ msgstr ""
 msgid "Ranking before the first round"
 msgstr ""
 
-msgid "Ranking by school"
-msgstr ""
-
-msgid "Ranking by school after round #{round}"
-msgstr ""
-
 msgid "Ranking only"
 msgstr ""
 
@@ -4347,9 +3776,6 @@ msgid "Refresh this page."
 msgstr ""
 
 msgid "Reload the page"
-msgstr ""
-
-msgid "Remark:"
 msgstr ""
 
 msgid "Remove the player from the event."
@@ -4429,9 +3855,6 @@ msgid "Results for round #{round}"
 msgstr ""
 
 msgid "Results screens show the last results (most recent first)."
-msgstr ""
-
-msgid "Results upload OK"
 msgstr ""
 
 msgid "Retry"
@@ -4518,9 +3941,6 @@ msgstr ""
 msgid "Round skipped"
 msgstr ""
 
-msgid "Round {round}"
-msgstr ""
-
 #, python-format
 msgid "Round {} started for %s"
 msgstr ""
@@ -4544,9 +3964,6 @@ msgstr ""
 msgid "Rounds one Elected to Play"
 msgstr ""
 
-msgid "Rounds {min_round}-{max_round}"
-msgstr ""
-
 msgid "Rows per screen:"
 msgstr ""
 
@@ -4560,12 +3977,6 @@ msgid "Rules file location:"
 msgstr ""
 
 msgid "Rules file set"
-msgstr ""
-
-msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
-msgstr ""
-
-msgid "Rules uploaded"
 msgstr ""
 
 msgid "SCR"
@@ -4587,18 +3998,6 @@ msgid "Save the hour or cancel."
 msgstr ""
 
 msgid "Save the set or cancel."
-msgstr ""
-
-msgid "Scan to access the tournament on Chess-Results.com."
-msgstr ""
-
-msgid "Scan to access the tournament on the FFE site."
-msgstr ""
-
-msgid "School *** SCHOOL FOR TABLE HEADER"
-msgstr "School"
-
-msgid "Schools"
 msgstr ""
 
 msgid "Scope"
@@ -4743,9 +4142,6 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-msgid "Settings error"
-msgstr ""
-
 msgid "Share the prizes"
 msgstr ""
 
@@ -4809,19 +4205,10 @@ msgstr ""
 msgid "Single Screens ({num})"
 msgstr ""
 
-msgid "Site"
-msgstr ""
-
 msgid "Size ({unit}): {width}x{height}"
 msgstr ""
 
-msgid "Soft Haley system"
-msgstr ""
-
 msgid "Some accounts can have very high access levels, making them dangerous in the hands of an unaware or malicious users."
-msgstr ""
-
-msgid "Some of the tie-break values will not appear in the results on the FFE website."
 msgstr ""
 
 msgid "Something went wrong. Please ask your administrator to recreate your account."
@@ -4861,9 +4248,6 @@ msgid "Sort the players by rating (less rated first)."
 msgstr ""
 
 msgid "Sort the players by rating (most rated first)."
-msgstr ""
-
-msgid "Sort the players by school."
 msgstr ""
 
 msgid "Sort the players by tournament."
@@ -4930,9 +4314,6 @@ msgstr ""
 msgid "Start of round {} in %s"
 msgstr ""
 
-msgid "Started"
-msgstr ""
-
 msgid "Starting Sharly Chess server, Please wait…"
 msgstr ""
 
@@ -4954,39 +4335,10 @@ msgstr ""
 msgid "Su *** SUNDAY"
 msgstr "Su"
 
-msgid "Success"
-msgstr ""
-
 msgid "Sum of Buchholz"
 msgstr ""
 
-msgid "Support for the ChessEvent platform used for organising tournaments in France."
-msgstr ""
-
 msgid "Swiss"
-msgstr ""
-
-msgid "Synchronisation failed for {count} tournament"
-msgid_plural "Synchronisation failed for {count} tournaments"
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "Synchronization failed for tournament [{tournament}]."
-msgstr ""
-
-msgid "Synchronize all tournaments"
-msgstr ""
-
-msgid "Synchronize the tournaments with the ChessEvent platform."
-msgstr ""
-
-msgid "Synchronize this tournament from its ChessEvent tournament."
-msgstr ""
-
-msgid "Synchronize tournaments with ChessEvent"
-msgstr ""
-
-msgid "Synchronize with ChessEvent"
 msgstr ""
 
 msgid "TRF file"
@@ -5025,28 +4377,10 @@ msgstr ""
 msgid "Th *** THURSDAY"
 msgstr "Th"
 
-msgid "The Baku acceleration system is not compatible with Papi, there may be differences in the Papi pairings display."
-msgstr ""
-
-msgid "The FFE ID is a positive integer."
-msgstr ""
-
-msgid "The FFE always uses the FIDE rating when available."
-msgstr ""
-
 msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b> to the current one may be modified. Changes to pairings previous to this should be made at the <b>end</b> of the tournament, <b>after</b> the rankings have been published, and solely for the computation of the FIDE ratings."
 msgstr ""
 
-msgid "The PAPI format does not support {rounds} rounds (maximum: {max})."
-msgstr ""
-
-msgid "The Papi format does not support result [{result}]."
-msgstr ""
-
 msgid "The URL of the image to display."
-msgstr ""
-
-msgid "The [{tie_break}] tie-break as implemented in Papi."
 msgstr ""
 
 msgid "The account matching all the users not logged in to any account."
@@ -5079,27 +4413,10 @@ msgstr ""
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
 msgstr ""
 
-#, python-format
-msgid "The database [%(database)s] is not installed (to install it: Menu > Data sources)."
-msgstr ""
-
-#, python-format
-msgid "The database [%(database)s] was last updated over %(age)d months ago. It is preferable to update it before proceeding (Menu > Data sources)."
-msgstr ""
-
 msgid "The date of the first hour is not defined (mandatory)."
 msgstr ""
 
 msgid "The default federation for your events."
-msgstr ""
-
-msgid "The delay must be at least {min_delay} minutes to avoid overloading the Chess-Results server."
-msgstr ""
-
-msgid "The delay must be at least {min_delay} minutes to avoid overloading the FFE server."
-msgstr ""
-
-msgid "The event [{event_id}] is not accessible to the user [{user_id}]."
 msgstr ""
 
 msgid "The first round is ignored."
@@ -5165,9 +4482,6 @@ msgstr ""
 msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
 msgstr ""
 
-msgid "The minimum time, whatever the ranking difference between the two players."
-msgstr ""
-
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
 msgstr ""
 
@@ -5200,9 +4514,6 @@ msgid "The number of players per screen, optional (the number of screens adapts 
 msgstr ""
 
 msgid "The number of points achieved against all players who have scored at least L points (L = {equation})."
-msgstr ""
-
-msgid "The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player."
 msgstr ""
 
 msgid "The number of rounds in which a player did not receive a HPB, a ZPB or a forfeit loss."
@@ -5238,9 +4549,6 @@ msgstr ""
 msgid "The pairing number is already attributed."
 msgstr ""
 
-msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
-msgstr ""
-
 msgid "The permissions of this account can not be updated."
 msgstr ""
 
@@ -5248,12 +4556,6 @@ msgid "The phone numbers."
 msgstr ""
 
 msgid "The player has already been paired, removing them from the tournament is impossible."
-msgstr ""
-
-msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament}]."
-msgstr ""
-
-msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament}]."
 msgstr ""
 
 msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
@@ -5304,9 +4606,6 @@ msgstr ""
 msgid "The threshold can't be greater than the value of the last prize of the category ({value})."
 msgstr ""
 
-msgid "The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players)."
-msgstr ""
-
 msgid "The timer displayed on the screen."
 msgstr ""
 
@@ -5332,9 +4631,6 @@ msgid "The tournaments on which the permission is applied."
 msgstr ""
 
 msgid "The type of criterion used to filter the players."
-msgstr ""
-
-msgid "The username / password provided are not allowed to access this ChessEvent event."
 msgstr ""
 
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
@@ -5581,9 +4877,6 @@ msgstr ""
 msgid "Too much information to display on a single projector?"
 msgstr ""
 
-msgid "Total"
-msgstr ""
-
 msgid "Total prize value"
 msgstr ""
 
@@ -5607,9 +4900,6 @@ msgstr ""
 msgid "Tournament [{tournament_id}] not found."
 msgstr ""
 
-msgid "Tournament [{tournament_name}] does not exist in event [{event_id}]."
-msgstr ""
-
 msgid "Tournament [{tournament}] has been created and default screens have been added."
 msgstr ""
 
@@ -5628,9 +4918,6 @@ msgstr ""
 msgid "Tournament [{tournament}] successfully imported."
 msgstr ""
 
-msgid "Tournament [{tournament}] successfully synchronized."
-msgstr ""
-
 msgid "Tournament default settings"
 msgstr ""
 
@@ -5640,44 +4927,10 @@ msgstr ""
 msgid "Tournament defaults have been updated."
 msgstr ""
 
-msgid "Tournament exempt from registration fees."
-msgstr ""
-
-msgid "Tournament finished, upload no longer possible."
-msgstr ""
-
-msgid "Tournament has not been configured to be used with ChessEvent."
-msgstr ""
-
-msgid "Tournament modified, awaiting auto-upload"
-msgstr ""
-
 msgid "Tournament name"
 msgstr ""
 
-msgid "Tournament not found"
-msgstr ""
-
-msgid "Tournament not modified since last upload"
-msgstr ""
-
-msgid "Tournament not yet uploaded."
-msgstr ""
-
-#, python-format
-msgid "Tournament number: %(tnr)s"
-msgstr ""
-
-msgid "Tournament on Chess-results.com"
-msgstr ""
-
-msgid "Tournament on the FFE site"
-msgstr ""
-
 msgid "Tournament performance rating"
-msgstr ""
-
-msgid "Tournament previously uploaded."
 msgstr ""
 
 #, python-format
@@ -5685,12 +4938,6 @@ msgid "Tournament rating range: %(min_rating)d - %(max_rating)d"
 msgstr ""
 
 msgid "Tournament record"
-msgstr ""
-
-msgid "Tournament rules are not set"
-msgstr ""
-
-msgid "Tournament visibility successfully set"
 msgstr ""
 
 msgid "Tournament {tournament} ({numbers_str})"
@@ -5787,21 +5034,6 @@ msgstr ""
 msgid "URL [{url}] responded code [{code}]."
 msgstr ""
 
-msgid "Unable to download tournament fees."
-msgstr ""
-
-msgid "Unable to set tournament visibility."
-msgstr ""
-
-msgid "Unable to upload tournament rules."
-msgstr ""
-
-msgid "Unable to upload tournament."
-msgstr ""
-
-msgid "Unauthorized access"
-msgstr ""
-
 msgid "Undefined *** PLURAL"
 msgstr "Undefined"
 
@@ -5829,9 +5061,6 @@ msgstr ""
 msgid "Under 8"
 msgstr ""
 
-msgid "Unexpected error"
-msgstr ""
-
 #, python-format
 msgid "Unique ID: %(uniq_id)s"
 msgstr ""
@@ -5843,14 +5072,7 @@ msgstr ""
 msgid "Unknown"
 msgstr ""
 
-#, python-format
-msgid "Unknown FFE Licence type [%(ffe_licence)s]."
-msgstr ""
-
 msgid "Unknown color [{color}]."
-msgstr ""
-
-msgid "Unknown error when uploading results."
 msgstr ""
 
 msgid "Unknown federation [{federation}]."
@@ -5859,16 +5081,10 @@ msgstr ""
 msgid "Unknown gender [{gender}]."
 msgstr ""
 
-msgid "Unknown player ID [{player_id}]"
-msgstr ""
-
 msgid "Unknown result [{result}]."
 msgstr ""
 
 msgid "Unknown title [{title}]."
-msgstr ""
-
-msgid "Unknown value [{value}]"
 msgstr ""
 
 msgid "Unlike single Screens, families can only be used to display information about a single tournament."
@@ -5968,39 +5184,6 @@ msgstr ""
 msgid "Upload"
 msgstr ""
 
-msgid "Upload failed"
-msgstr ""
-
-msgid "Upload link not found, check that the tournament is not marked as finished on the FFE website."
-msgstr ""
-
-msgid "Upload rules"
-msgstr ""
-
-msgid "Upload to Chess-Results.com"
-msgstr ""
-
-msgid "Upload to the FFE site"
-msgstr ""
-
-msgid "Upload tournaments now"
-msgstr ""
-
-msgid "Upload tournaments to Chess-Results.com"
-msgstr ""
-
-msgid "Upload tournaments to the FFE"
-msgstr ""
-
-msgid "Uploading of tournaments to Chess-Results.com."
-msgstr ""
-
-msgid "Uploading the PDF rules file allows the players to read the rules online."
-msgstr ""
-
-msgid "Uploading tournament…"
-msgstr ""
-
 msgid "Use Fore Buchholz"
 msgstr ""
 
@@ -6094,12 +5277,6 @@ msgstr ""
 msgid "View the Tournaments tab"
 msgstr ""
 
-msgid "Virtual points"
-msgstr ""
-
-msgid "Virtual points are granted to players according to their group. Those points only are used for pairing, not for ranking."
-msgstr ""
-
 msgid "Visibility:"
 msgstr ""
 
@@ -6135,9 +5312,6 @@ msgstr ""
 
 #, python-format
 msgid "Warning: round #%(round)d is not finished."
-msgstr ""
-
-msgid "Warning: synchronizing a tournament overwrites all of its player data."
 msgstr ""
 
 #, python-format
@@ -6249,9 +5423,6 @@ msgstr ""
 msgid "You are not allowed to delete this account."
 msgstr ""
 
-msgid "You are not allowed to download fees."
-msgstr ""
-
 msgid "You are not allowed to duplicate this account."
 msgstr ""
 
@@ -6279,12 +5450,6 @@ msgstr ""
 msgid "You are not allowed to pair players."
 msgstr ""
 
-msgid "You are not allowed to publish results."
-msgstr ""
-
-msgid "You are not allowed to publish rules."
-msgstr ""
-
 msgid "You are not allowed to set Full-Point Byes."
 msgstr ""
 
@@ -6301,9 +5466,6 @@ msgid "You are not allowed to set/unset Zero-Point Byes."
 msgstr ""
 
 msgid "You are not allowed to unpair rounds."
-msgstr ""
-
-msgid "You are not allowed to update players."
 msgstr ""
 
 msgid "You are not allowed to update results."
@@ -6337,12 +5499,6 @@ msgid "You can't add any more permission to this account."
 msgstr ""
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
-msgstr ""
-
-msgid "You have to acknowledge the warning first."
-msgstr ""
-
-msgid "You have to update the ChessEvent settings before being able to use synchronisation."
 msgstr ""
 
 msgid "You may also connect to this server from other devices using"
@@ -6411,9 +5567,6 @@ msgstr ""
 msgid "boards {board_numbers}"
 msgstr ""
 
-msgid "defined in the event"
-msgstr ""
-
 msgid "either the duration or the increment must be greater than 0."
 msgstr ""
 
@@ -6432,13 +5585,7 @@ msgstr ""
 msgid "forfeits played"
 msgstr ""
 
-msgid "from move 1"
-msgstr ""
-
 msgid "last"
-msgstr ""
-
-msgid "min"
 msgstr ""
 
 msgid "minimum: {value}"
@@ -6451,9 +5598,6 @@ msgid "my-family"
 msgstr ""
 
 msgid "my-screen"
-msgstr ""
-
-msgid "my_password"
 msgstr ""
 
 msgid "no"
@@ -6486,9 +5630,6 @@ msgstr ""
 msgid "players on {parts} screens"
 msgstr ""
 
-msgid "points"
-msgstr ""
-
 msgid "ranking from #{first} to #{last}"
 msgstr ""
 
@@ -6499,9 +5640,6 @@ msgid "ranking from start to #{last}"
 msgstr ""
 
 msgid "round_{round}"
-msgstr ""
-
-msgid "s"
 msgstr ""
 
 msgid "screens of {number} boards"
@@ -6549,9 +5687,6 @@ msgstr ""
 msgid "the whole ranking"
 msgstr ""
 
-msgid "then"
-msgstr ""
-
 msgid "value: {value}"
 msgstr ""
 
@@ -6580,23 +5715,8 @@ msgid_plural "{count} half-points"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "{count} league represented"
-msgid_plural "{count} leagues represented"
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "{count} player updated."
 msgid_plural "{count} players updated."
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "{count} tournament ignored"
-msgid_plural "{count} tournaments ignored"
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "{count} tournament successfully synchronized"
-msgid_plural "{count} tournament successfully synchronized"
 msgstr[0] ""
 msgstr[1] ""
 

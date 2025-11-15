@@ -1,0 +1,200 @@
+msgid "A value is expected."
+msgstr ""
+
+msgid "An unexpected error occurred, either in Sharly Chess or in ChessEvent. Consult the logs for more details."
+msgstr ""
+
+msgid "Authentication failed"
+msgstr ""
+
+msgid "Authentication failed. Please check your credentials and try again."
+msgstr ""
+
+msgid "Check the event ID then try again."
+msgstr ""
+
+msgid "Check the tournament name then try again."
+msgstr ""
+
+msgid "Check the username and the password then try again."
+msgstr ""
+
+msgid "ChessEvent"
+msgstr ""
+
+msgid "ChessEvent actions are no longer available once the tournament has started."
+msgstr ""
+
+msgid "ChessEvent event not defined."
+msgstr ""
+
+msgid "ChessEvent event:"
+msgstr ""
+
+msgid "ChessEvent password not defined."
+msgstr ""
+
+msgid "ChessEvent password:"
+msgstr ""
+
+msgid "ChessEvent tournament"
+msgstr ""
+
+msgid "ChessEvent tournament:"
+msgstr ""
+
+msgid "ChessEvent user name:"
+msgstr ""
+
+msgid "ChessEvent user not defined."
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+msgid "Configure the ChessEvent settings of this tournament."
+msgstr ""
+
+msgid "Connection failed"
+msgstr ""
+
+msgid "Connection to the ChessEvent server failed."
+msgstr ""
+
+msgid "Default credentials used to import tournaments from the ChessEvent platform."
+msgstr ""
+
+#, python-format
+msgid "Default: %(string)s"
+msgstr ""
+
+#, python-format
+msgid "E.g.: %(string)s"
+msgstr ""
+
+msgid "E.g.: Tournoi A"
+msgstr ""
+
+msgid "E.g.: my_password"
+msgstr ""
+
+msgid "Event [{event_id}] does not exist."
+msgstr ""
+
+msgid "Event not found"
+msgstr ""
+
+msgid "Federation [{federation}] of player [{player}] is unknown. Recreate it in ChessEvent then try again."
+msgstr ""
+
+msgid "I confirm that I have read and acknowledged the warning"
+msgstr ""
+
+msgid "Import from ChessEvent"
+msgstr ""
+
+msgid "Last synchronization"
+msgstr ""
+
+msgid "Never synchronized"
+msgstr ""
+
+msgid "Not configured"
+msgstr ""
+
+msgid "Please enter a password for the ChessEvent connection."
+msgstr ""
+
+msgid "Settings error"
+msgstr ""
+
+msgid "Started"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Success"
+msgstr ""
+
+msgid "Support for the ChessEvent platform used for organising tournaments in France."
+msgstr ""
+
+msgid "Synchronisation failed for {count} tournament"
+msgid_plural "Synchronisation failed for {count} tournaments"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Synchronization failed for tournament [{tournament}]."
+msgstr ""
+
+msgid "Synchronize all tournaments"
+msgstr ""
+
+msgid "Synchronize the tournaments with the ChessEvent platform."
+msgstr ""
+
+msgid "Synchronize this tournament from its ChessEvent tournament."
+msgstr ""
+
+msgid "Synchronize tournaments with ChessEvent"
+msgstr ""
+
+msgid "Synchronize with ChessEvent"
+msgstr ""
+
+msgid "The event [{event_id}] is not accessible to the user [{user_id}]."
+msgstr ""
+
+msgid "The username / password provided are not allowed to access this ChessEvent event."
+msgstr ""
+
+msgid "Tournament"
+msgstr ""
+
+msgid "Tournament [{tournament_name}] does not exist in event [{event_id}]."
+msgstr ""
+
+msgid "Tournament [{tournament}] successfully synchronized."
+msgstr ""
+
+msgid "Tournament has not been configured to be used with ChessEvent."
+msgstr ""
+
+msgid "Tournament not found"
+msgstr ""
+
+msgid "Unauthorized access"
+msgstr ""
+
+msgid "Unexpected error"
+msgstr ""
+
+msgid "Warning: synchronizing a tournament overwrites all of its player data."
+msgstr ""
+
+msgid "You are not allowed to update players."
+msgstr ""
+
+msgid "You have to acknowledge the warning first."
+msgstr ""
+
+msgid "You have to update the ChessEvent settings before being able to use synchronisation."
+msgstr ""
+
+msgid "defined in the event"
+msgstr ""
+
+msgid "my_password"
+msgstr ""
+
+msgid "{count} tournament ignored"
+msgid_plural "{count} tournaments ignored"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{count} tournament successfully synchronized"
+msgid_plural "{count} tournament successfully synchronized"
+msgstr[0] ""
+msgstr[1] ""
+
