@@ -1,7 +1,7 @@
-{{ admin_macros.select_input(
+{{ admin_macros.switch_input(
     name='players_show_unpaired',
-    label=_('Display of unpaired players:'),
+    placeholder=_('Display the unpaired players'),
     tooltip_text=_('When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a Half-Point Bye).'),
-    select_options=players_show_unpaired_options,
+    label='',
     data=data, errors=errors
 ) }}

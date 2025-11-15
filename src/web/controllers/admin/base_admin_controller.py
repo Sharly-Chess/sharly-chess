@@ -130,30 +130,6 @@ class BaseAdminController(BaseController):
         }
 
     @staticmethod
-    def _get_input_exit_button_options() -> dict[str, str]:
-        options: dict[str, str] = {
-            'on': _('Display the exit button'),
-            'off': _('Hide the exit button'),
-        }
-        return options
-
-    @staticmethod
-    def _get_players_show_unpaired_options() -> dict[str, str]:
-        options: dict[str, str] = {
-            'off': _('Display only paired players'),
-            'on': _('Display all the players, paired and unpaired'),
-        }
-        return options
-
-    @staticmethod
-    def _get_players_show_opponent_options() -> dict[str, str]:
-        options: dict[str, str] = {
-            'off': _('Display only color and board number'),
-            'on': _('Display color, board number and opponent'),
-        }
-        return options
-
-    @staticmethod
     def _get_ranking_crosstable_options() -> dict[str, str]:
         options: dict[str, str] = {
             'on': _('Crosstable'),

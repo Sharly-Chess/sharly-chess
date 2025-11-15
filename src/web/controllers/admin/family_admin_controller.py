@@ -473,9 +473,6 @@ class FamilyAdminController(BaseEventAdminController):
                         family_screens_only=True
                     ),
                     'timer_options': cls._get_timer_options(event),
-                    'input_exit_button_options': cls._get_input_exit_button_options(),
-                    'players_show_unpaired_options': cls._get_players_show_unpaired_options(),
-                    'players_show_opponent_options': cls._get_players_show_opponent_options(),
                     'ranking_crosstable_options': cls._get_ranking_crosstable_options(),
                     'family_uniq_ids': list(event.families_by_uniq_id.keys()),
                     'modal': modal,
