@@ -425,7 +425,7 @@ msgstr ""
 msgid "Add a player to the event."
 msgstr ""
 
-msgid "Add a prize category to the prize group."
+msgid "Add a prize category to the prize bracket."
 msgstr ""
 
 msgid "Add a prize to the list."
@@ -1289,10 +1289,13 @@ msgstr ""
 msgid "Create"
 msgstr ""
 
-msgid "Create a Prize Category now to continue."
+msgid "Create a Prize Bracket"
 msgstr ""
 
-msgid "Create a Prize Group now to get started."
+msgid "Create a Prize Bracket now to get started."
+msgstr ""
+
+msgid "Create a Prize Category now to continue."
 msgstr ""
 
 msgid "Create a category"
@@ -1307,10 +1310,7 @@ msgstr ""
 msgid "Create a family now to get started."
 msgstr ""
 
-msgid "Create a prize group"
-msgstr ""
-
-msgid "Create a prize group in which you will then be able to create categories, and then prizes."
+msgid "Create a prize bracket in which you will then be able to create categories, and then prizes."
 msgstr ""
 
 msgid "Create a rotator"
@@ -1911,7 +1911,10 @@ msgstr ""
 msgid "EXEMPT (already received at round #%(round)d)"
 msgstr ""
 
-msgid "Each group should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
+msgid "Each bracket should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
+msgstr ""
+
+msgid "Each player can only be awarded one prize per bracket."
 msgstr ""
 
 msgid "Edit"
@@ -2987,10 +2990,10 @@ msgstr ""
 msgid "Manage source databases"
 msgstr ""
 
-msgid "Manage the prize groups"
+msgid "Manage the prize brackets"
 msgstr ""
 
-msgid "Manage the prize groups of the tournament."
+msgid "Manage the prize brackets of the tournament (1 player = 1 prize per bracket)."
 msgstr ""
 
 msgid "Mandatory for the first hour, optional for next hours."
@@ -3235,10 +3238,10 @@ msgstr ""
 msgid "No FIDE ID."
 msgstr ""
 
-msgid "No Prize Category"
+msgid "No Prize Bracket"
 msgstr ""
 
-msgid "No Prize Group"
+msgid "No Prize Category"
 msgstr ""
 
 msgid "No acceleration."
@@ -3322,7 +3325,7 @@ msgstr ""
 msgid "No players."
 msgstr ""
 
-msgid "No prize groups."
+msgid "No prize brackets."
 msgstr ""
 
 msgid "No prizes defined"
@@ -3573,7 +3576,7 @@ msgstr ""
 msgid "Organization"
 msgstr ""
 
-msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
+msgid "Organize your prizes into brackets to manage how they’re awarded. A player can win only one prize per bracket, but can win prizes in multiple brackets."
 msgstr ""
 
 msgid "Origin: {template_origin}"
@@ -4080,6 +4083,9 @@ msgstr ""
 msgid "Prize *** PRIZE FOR TABLE HEADER"
 msgstr "Prize"
 
+msgid "Prize Brackets"
+msgstr ""
+
 msgid "Prize assignment"
 msgstr ""
 
@@ -4102,9 +4108,6 @@ msgid "Prize defaults have been updated."
 msgstr ""
 
 msgid "Prize group [{prize_group}] successfully created."
-msgstr ""
-
-msgid "Prize groups"
 msgstr ""
 
 msgid "Prize list"
@@ -6288,13 +6291,13 @@ msgstr ""
 msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on your local network."
 msgstr ""
 
-msgid "You must create a prize group before creating a prize category."
+msgid "You must create a prize bracket before creating a prize category."
 msgstr ""
 
 msgid "You must create a screen or a family of screens before creating a rotator."
 msgstr ""
 
-msgid "You must create a tournament before creating a prize group."
+msgid "You must create a tournament before creating a prize bracket."
 msgstr ""
 
 msgid "You must create a tournament before creating a screen family."
@@ -6577,4 +6580,46 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "Add a prize category to the prize group."
+#~ msgstr ""
+
+#~ msgid "Create a Prize Group now to get started."
+#~ msgstr ""
+
+#~ msgid "Create a prize group"
+#~ msgstr ""
+
+#~ msgid "Create a prize group in which you will then be able to create categories, and then prizes."
+#~ msgstr ""
+
+#~ msgid "Each group should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
+#~ msgstr ""
+
+#~ msgid "Manage the prize groups"
+#~ msgstr ""
+
+#~ msgid "Manage the prize groups of the tournament."
+#~ msgstr ""
+
+#~ msgid "No Prize Group"
+#~ msgstr ""
+
+#~ msgid "No prize groups."
+#~ msgstr ""
+
+#~ msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
+#~ msgstr ""
+
+#~ msgid "Prize groups"
+#~ msgstr ""
+
+#~ msgid "You must create a prize group before creating a prize category."
+#~ msgstr ""
+
+#~ msgid "You must create a tournament before creating a prize group."
+#~ msgstr ""
+
+#~ msgid "Create a prize bracket"
+#~ msgstr ""
 
