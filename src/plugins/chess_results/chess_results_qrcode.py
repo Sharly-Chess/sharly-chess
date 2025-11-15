@@ -37,7 +37,7 @@ class ChessResultsQRCodeType(QRCodeType):
             return False, _(
                 'No Chess-Results ID defined for tournament [{tournament}].'
             ).format(tournament=tournament.uniq_id)
-        url = f'https://s3.chess-results.com/tnr{tnr}.aspx'
+        url = f'https://chess-results.com/tnr{tnr}.aspx'
         return True, url
 
     @staticmethod
