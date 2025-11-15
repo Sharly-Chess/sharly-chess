@@ -425,8 +425,8 @@ msgstr "Ajouter une permission au compte."
 msgid "Add a player to the event."
 msgstr "Ajouter un·e joueur·euse à l'évènement."
 
-msgid "Add a prize category to the prize group."
-msgstr "Ajouter une catégorie au groupe de prix."
+msgid "Add a prize category to the prize bracket."
+msgstr "Ajouter une catégorie au groupe non-cumulable."
 
 msgid "Add a prize to the list."
 msgstr "Ajouter un prix à la liste."
@@ -1289,11 +1289,14 @@ msgstr "Impossible de se connecter à la source de données [{data_source}]."
 msgid "Create"
 msgstr "Créer"
 
+msgid "Create a Prize Bracket"
+msgstr "Créer un Groupe Non-Cumulable"
+
+msgid "Create a Prize Bracket now to get started."
+msgstr "Créer un Groupe Non-Cumulable pour commencer."
+
 msgid "Create a Prize Category now to continue."
 msgstr "Créez une catégorie de prix pour continuer."
-
-msgid "Create a Prize Group now to get started."
-msgstr "Créez un groupe de prix pour commencer."
 
 msgid "Create a category"
 msgstr "Créer une catégorie"
@@ -1307,11 +1310,8 @@ msgstr "Créez un pilote d'afficheurs maintenant commencer."
 msgid "Create a family now to get started."
 msgstr "Créer une famille d’écrans pour commencer."
 
-msgid "Create a prize group"
-msgstr "Créer un groupe de prix"
-
-msgid "Create a prize group in which you will then be able to create categories, and then prizes."
-msgstr "Créer un groupe de prix dans lequel vous pourrez ensuite créer des catégories, puis des prix."
+msgid "Create a prize bracket in which you will then be able to create categories, and then prizes."
+msgstr "Créer un Groupe de prix non-cumulables dans lequel vous pourrez ensuite créer des catégories, puis des prix."
 
 msgid "Create a rotator"
 msgstr "Créer un écran rotatif"
@@ -1911,8 +1911,11 @@ msgstr "EXEMPT·E"
 msgid "EXEMPT (already received at round #%(round)d)"
 msgstr "EXEMPT·E (déjà reçu à la ronde n°%(round)d)"
 
-msgid "Each group should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
+msgid "Each bracket should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
 msgstr "Chaque groupe doit contenir une ou plusieurs catégories (par exemple : U12, Meilleure Féminine) avec des critères et des places (1er, 2e, etc.). Les prix sont attribués selon leur valeur (et l’ordre des catégories en cas d’égalité)."
+
+msgid "Each player can only be awarded one prize per bracket."
+msgstr "Chaque joueur·euse ne peut se voir attribuer qu'un prix par groupe."
 
 msgid "Edit"
 msgstr "Modifier"
@@ -2987,11 +2990,11 @@ msgstr "Gestion des écrans"
 msgid "Manage source databases"
 msgstr "Gestion des bases de données sources"
 
-msgid "Manage the prize groups"
-msgstr "Gérer les groupes de prix"
+msgid "Manage the prize brackets"
+msgstr "Gérer les groupes non-cumulables"
 
-msgid "Manage the prize groups of the tournament."
-msgstr "Gérer les groupes de prix du tournoi."
+msgid "Manage the prize brackets of the tournament (1 player = 1 prize per bracket)."
+msgstr "Gérer les groupes de prix non-cumulables du tournoi (1 joueur·euse = 1 prix par groupe)."
 
 msgid "Mandatory for the first hour, optional for next hours."
 msgstr "Obligatoire pour le premier horaire, facultative pour les horaires suivants."
@@ -3235,11 +3238,11 @@ msgstr "Aucune licence FFE"
 msgid "No FIDE ID."
 msgstr "Identifiant FIDE non défini."
 
+msgid "No Prize Bracket"
+msgstr "Aucun Groupe de Prix Non-Cumulables"
+
 msgid "No Prize Category"
 msgstr "Aucune catégorie de prix"
-
-msgid "No Prize Group"
-msgstr "Aucun groupe de prix"
 
 msgid "No acceleration."
 msgstr "Pas d'accélération."
@@ -3322,8 +3325,8 @@ msgstr "Aucun·e joueur·euse mis·e à jour."
 msgid "No players."
 msgstr "Aucun·e joueur·euse."
 
-msgid "No prize groups."
-msgstr "Aucun groupe de prix."
+msgid "No prize brackets."
+msgstr "Aucun groupe non-cumulable."
 
 msgid "No prizes defined"
 msgstr "Aucun prix défini"
@@ -3573,7 +3576,7 @@ msgstr "Organisateur·trice"
 msgid "Organization"
 msgstr "Organisation"
 
-msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
+msgid "Organize your prizes into brackets to manage how they’re awarded. A player can win only one prize per bracket, but can win prizes in multiple brackets."
 msgstr "Organisez vos prix en groupes pour gérer leur attribution. Un·e joueur·euse ne peut recevoir qu’un seul prix par groupe, mais peut recevoir des prix dans plusieurs groupes."
 
 msgid "Origin: {template_origin}"
@@ -4080,6 +4083,9 @@ msgstr "Impression"
 msgid "Prize *** PRIZE FOR TABLE HEADER"
 msgstr "Prix"
 
+msgid "Prize Brackets"
+msgstr "Groupes Non-Cumulables"
+
 msgid "Prize assignment"
 msgstr "Attribution des prix"
 
@@ -4103,9 +4109,6 @@ msgstr "Les paramètres par défaut des prix ont été mis à jour."
 
 msgid "Prize group [{prize_group}] successfully created."
 msgstr "Le groupe de prix [{prize_group}] a été créé avec succès."
-
-msgid "Prize groups"
-msgstr "Groupes de prix"
 
 msgid "Prize list"
 msgstr "Liste des prix"
@@ -6288,14 +6291,14 @@ msgstr "Vous pouvez également vous connecter à ce serveur depuis d’autres ap
 msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on your local network."
 msgstr "Vous pouvez créer différents types de pages web, appelées <i>Écrans</i>, accessibles depuis d’autres appareils sur votre réseau local."
 
-msgid "You must create a prize group before creating a prize category."
-msgstr "Vous devez créer un groupe de prix avant de créer une catégorie de prix."
+msgid "You must create a prize bracket before creating a prize category."
+msgstr "Vous devez créer un groupe non-cumulable avant de créer une catégorie de prix."
 
 msgid "You must create a screen or a family of screens before creating a rotator."
 msgstr "Vous devez créer un écran ou une famille d'écrans avant de pouvoir créer des écrans rotatifs."
 
-msgid "You must create a tournament before creating a prize group."
-msgstr "Vous devez créer un tournoi avant de créer un groupe de prix."
+msgid "You must create a tournament before creating a prize bracket."
+msgstr "Vous devez créer un tournoi avant de créer un groupe non-cumulable."
 
 msgid "You must create a tournament before creating a screen family."
 msgstr "Vous devez créer un tournoi avant de pouvoir créer des familles d'écrans."
@@ -6577,3 +6580,46 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "Add a prize category to the prize group."
+#~ msgstr "Ajouter une catégorie au groupe de prix."
+
+#~ msgid "Create a Prize Group now to get started."
+#~ msgstr "Créez un groupe de prix pour commencer."
+
+#~ msgid "Create a prize group"
+#~ msgstr "Créer un groupe de prix"
+
+#~ msgid "Create a prize group in which you will then be able to create categories, and then prizes."
+#~ msgstr "Créer un groupe de prix dans lequel vous pourrez ensuite créer des catégories, puis des prix."
+
+#~ msgid "Each group should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
+#~ msgstr "Chaque groupe doit contenir une ou plusieurs catégories (par exemple : U12, Meilleure Féminine) avec des critères et des places (1er, 2e, etc.). Les prix sont attribués selon leur valeur (et l’ordre des catégories en cas d’égalité)."
+
+#~ msgid "Manage the prize groups"
+#~ msgstr "Gérer les groupes de prix"
+
+#~ msgid "Manage the prize groups of the tournament."
+#~ msgstr "Gérer les groupes de prix du tournoi."
+
+#~ msgid "No Prize Group"
+#~ msgstr "Aucun groupe de prix"
+
+#~ msgid "No prize groups."
+#~ msgstr "Aucun groupe de prix."
+
+#~ msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
+#~ msgstr "Organisez vos prix en groupes pour gérer leur attribution. Un·e joueur·euse ne peut recevoir qu’un seul prix par groupe, mais peut recevoir des prix dans plusieurs groupes."
+
+#~ msgid "Prize groups"
+#~ msgstr "Groupes de prix"
+
+#~ msgid "You must create a prize group before creating a prize category."
+#~ msgstr "Vous devez créer un groupe de prix avant de créer une catégorie de prix."
+
+#~ msgid "You must create a tournament before creating a prize group."
+#~ msgstr "Vous devez créer un tournoi avant de créer un groupe de prix."
+
+#~ msgid "Create a prize bracket"
+#~ msgstr "Créer un group non-cumulable"
+

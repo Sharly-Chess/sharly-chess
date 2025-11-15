@@ -55,9 +55,9 @@
             {% if not client.can_manage_prizes %}
                 {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
             {% elif not admin_prize_group %}
-                {{ macros.tooltip_attributes('info', _('You must create a prize group before creating a prize category.'), 'bottom') }}
+                {{ macros.tooltip_attributes('info', _('You must create a prize bracket before creating a prize category.'), 'bottom') }}
             {% else %}
-                {{ macros.tooltip_attributes('info', _('Add a prize category to the prize group.'), 'bottom') }}
+                {{ macros.tooltip_attributes('info', _('Add a prize category to the prize bracket.'), 'bottom') }}
             {% endif %}
         >
             <button
@@ -87,7 +87,11 @@
             {% if not client.can_manage_prizes %}
                 {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
             {% else %}
-                {{ macros.tooltip_attributes('info', _('Manage the prize groups of the tournament.'), 'bottom') }}
+                {{ macros.tooltip_attributes(
+                    'info',
+                    _('Manage the prize brackets of the tournament (1 player = 1 prize per bracket).'),
+                    'bottom'
+                ) }}
             {% endif %}
         >
             <button
@@ -107,13 +111,13 @@
                 {% endif %}
             >
                 <i class="bi-gear-fill pe-1"></i>
-                {{ _('Manage the prize groups') }}
+                {{ _('Manage the prize brackets') }}
             </button>
         </span>
     {% elif admin_prize_group %}
         <div class="d-flex flex-column">
             <div style="font-size: 0.8rem;">
-                {{ _('%(string)s:', string=_('Prize groups')) }}
+                {{ _('%(string)s:', string=_('Prize Brackets')) }}
             </div>
             <div class="d-flex align-items-end">
                 <select
@@ -140,7 +144,11 @@
                     {% if not client.can_manage_prizes %}
                         {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
                     {% else %}
-                        {{ macros.tooltip_attributes('info', _('Manage the prize groups of the tournament.'), 'bottom') }}
+                        {{ macros.tooltip_attributes(
+                            'info',
+                            _('Manage the prize brackets of the tournament (1 player = 1 prize per bracket).'),
+                            'bottom'
+                        ) }}
                     {% endif %}
                 >
                     <button
@@ -170,9 +178,9 @@
                 {% if not client.can_manage_prizes %}
                     {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
                 {% elif not admin_tournament %}
-                    {{ macros.tooltip_attributes('info', _('You must create a tournament before creating a prize group.'), 'bottom') }}
+                    {{ macros.tooltip_attributes('info', _('You must create a tournament before creating a prize bracket.'), 'bottom') }}
                 {% else %}
-                    {{ macros.tooltip_attributes('info', _('Create a prize group in which you will then be able to create categories, and then prizes.'), 'bottom') }}
+                    {{ macros.tooltip_attributes('info', _('Create a prize bracket in which you will then be able to create categories, and then prizes.'), 'bottom') }}
                 {% endif %}
             >
                 <form
@@ -196,7 +204,7 @@
                         {% endif %}
                     >
                         <i class="bi-plus-square pe-1"></i>
-                        {{ _('Create a prize group') }}
+                        {{ _('Create a Prize Bracket') }}
                     </button>
                 </form>
             </span>
@@ -242,16 +250,24 @@
             {% if not admin_prize_group %}
                 <div class="mx-auto" style="max-width: 500px;">
                     <h5 class="mt-2 my-5 text-center">
-                        {{ _('No Prize Group') }}
+                        {{ _('No Prize Bracket') }}
                     </h5>
                     <p>
-                        {{ _('Sharly Chess offers a powerful and flexible prize management system to handle a wide variety of tournament prize structures.') }}
+                        {{ _(
+                            'Sharly Chess offers a powerful and flexible '
+                            'prize management system to handle a wide '
+                            'variety of tournament prize structures.'
+                        ) }}
                     </p>
                     <p>
-                        {{ _('Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups.') }}
+                        {{ _(
+                            'Organize your prizes into brackets to manage how '
+                            'they’re awarded. A player can win only one prize '
+                            'per bracket, but can win prizes in multiple brackets.'
+                        ) }}
                     </p>
                     <p>
-                        {{ _('Create a Prize Group now to get started.') }}
+                        {{ _('Create a Prize Bracket now to get started.') }}
                     </p>
                 </div>
             {% elif not admin_prize_group.categories %}
@@ -260,10 +276,19 @@
                         {{ _('No Prize Category') }}
                     </h5>
                     <p>
-                        {{ _('Each group should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal).') }}
+                        {{ _(
+                            'Each bracket should contain one or more categories '
+                            '(e.g. U12, Best Female) with criteria and places '
+                            '(1st, 2nd, etc.). Prizes are awarded based on value '
+                            '(and category order if values are equal).'
+                        ) }}
                     </p>
                     <p>
-                        {{ _('One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system.') }}
+                        {{ _(
+                            'One category can be marked as the main prize '
+                            'category for overall rankings, with tie options: '
+                            'no sharing, equal sharing, or Hort system.'
+                        ) }}
                     </p>
                     <p>
                         {{ _('Create a Prize Category now to continue.') }}
