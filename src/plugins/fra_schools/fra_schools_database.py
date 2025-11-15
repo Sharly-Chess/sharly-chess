@@ -64,7 +64,7 @@ class FRASchoolsDatabase(LocalSourceDatabase):
 
     @property
     def _schema_file_path(self) -> Path:
-        return PLUGIN_DIR / 'create.sql'
+        return PLUGIN_DIR / 'create_fra_schools.sql'
 
     @property
     def _source_file_path(self) -> Path:
