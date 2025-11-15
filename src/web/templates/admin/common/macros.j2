@@ -270,14 +270,15 @@
                     }
                 {% endif %}
                 if ($.trim(params.term) === '') return data;
+                const searchTerm = normalizeText(params.term);
                 if (
                     typeof data.text !== 'undefined' &&
-                    data.text.toLowerCase().indexOf(params.term) > -1
+                    normalizeText(data.text).indexOf(searchTerm) > -1
                 ) {
                     return data;
                 }
                 const search = $(data.element).data('search');
-                if (search && search.toLowerCase().indexOf(params.term) > -1) {
+                if (search && normalizeText(search).indexOf(searchTerm) > -1) {
                     return data;
                 }
                 return null;
