@@ -200,6 +200,11 @@
 
 .select2-selection__rendered {
     width: 100%;
+    pointer-events: none;
+}
+
+.select2-selection__rendered .select2-selection__choice__remove {
+    pointer-events: auto;
 }
 
 #data-source-select {

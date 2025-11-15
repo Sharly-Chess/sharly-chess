@@ -146,6 +146,9 @@ class FRASchoolsFilterOption(SelectPlayerFilterOption[FRASchool]):
     def get_tooltip(self, object_: FRASchool) -> str | None:
         return object_.tooltip
 
+    def get_search(self, object_: FRASchool) -> str | None:
+        return object_.full_name
+
     def validate(self):
         self._validate_list_type(int)
         if not self.value:
