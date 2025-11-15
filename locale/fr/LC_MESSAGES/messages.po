@@ -1674,12 +1674,6 @@ msgstr "Affichage"
 msgid "Display Controller"
 msgstr "Pilote d'afficheurs"
 
-msgid "Display all the players, paired and unpaired"
-msgstr "Afficher tou·tes les joueur·euses, apparié·es et non apparié·es"
-
-msgid "Display color, board number and opponent"
-msgstr "Afficher la couleur, l'échiquier et l'adversaire"
-
 msgid "Display controller [{display_controller}] has been created."
 msgstr "Le pilote d'afficheurs [{display_controller}] a été créé."
 
@@ -1698,20 +1692,14 @@ msgstr "Pilotes d'afficheurs ({num})"
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device)."
 msgstr "Les pilotes d'afficheurs vous permettent de contrôler les afficheurs de votre évènement depuis le serveur (ou n'importe quel appareil autorisé)."
 
-msgid "Display of unpaired players:"
-msgstr "Affichage des joueur·euses non apparié·es"
-
-msgid "Display only color and board number"
-msgstr "N'afficher que la couleur et l'échiquier"
-
-msgid "Display only paired players"
-msgstr "Afficher seulement les joueur·euses apparié·es"
-
 msgid "Display the exit button"
 msgstr "Afficher un bouton de sortie d'écran"
 
-msgid "Display the players' opponent:"
+msgid "Display the players' opponent"
 msgstr "Afficher les adversaires"
+
+msgid "Display the unpaired players"
+msgstr "Afficher les joueur·euses non-apparié·es"
 
 #, python-format
 msgid "Displayed round: %(round)d"
@@ -2587,9 +2575,6 @@ msgstr "Cacher les logs"
 
 msgid "Hide Networks"
 msgstr "Masquer les réseaux"
-
-msgid "Hide the exit button"
-msgstr "Ne pas afficher de bouton de sortie d'écran"
 
 msgid "Highlight"
 msgstr "Surbrillance"
@@ -4649,9 +4634,6 @@ msgstr "L'écran [{screen_uniq_id}] a été modifié."
 msgid "Screen configuration has been updated."
 msgstr "La configuration des écrans a été mise à jour."
 
-msgid "Screen exit button:"
-msgstr "Bouton de sortie d'écran :"
-
 msgid "Screen families:"
 msgstr "Familles d'écrans :"
 
@@ -6190,7 +6172,7 @@ msgid "When not displaying the exit button, users can not accidentally exit inpu
 msgstr "Lorsque l'on n'affiche pas le bouton de sortie, les utilisateur·ices ne peuvent quitter l'écran accidentellement."
 
 msgid "When not displaying the players' opponent (color and board numbers only), less screens are needed (with several columns)."
-msgstr "Lorsque les adversaires ne sont pas affiché·es, moins d'écrans sont nécessaires pour afficher l'ensemble des joueur·euses (nulti-colonnes)."
+msgstr "Lorsque les adversaires ne sont pas affiché·es, moins d'écrans sont nécessaires pour afficher l'ensemble des joueur·euses (multi-colonnes)."
 
 msgid "When there are unrated players, FIDE rules stipulate that rating-based tie-breaks can only be used if the tournament rules explains how the estimations are decided."
 msgstr "Lorsqu'il y a des joueur·euses non-classées, le règlement FIDE stipule que les départages basés sur le classement ne peuvent être utilisés que si le règlement du tournoi explique comment les classements estimés sont attribués."
@@ -6659,45 +6641,4 @@ msgstr "½ - 0 (NC)"
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
 
-#~ msgid "Add a prize category to the prize group."
-#~ msgstr "Ajouter une catégorie au groupe de prix."
-
-#~ msgid "Create a Prize Group now to get started."
-#~ msgstr "Créez un groupe de prix pour commencer."
-
-#~ msgid "Create a prize group"
-#~ msgstr "Créer un groupe de prix"
-
-#~ msgid "Create a prize group in which you will then be able to create categories, and then prizes."
-#~ msgstr "Créer un groupe de prix dans lequel vous pourrez ensuite créer des catégories, puis des prix."
-
-#~ msgid "Each group should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
-#~ msgstr "Chaque groupe doit contenir une ou plusieurs catégories (par exemple : U12, Meilleure Féminine) avec des critères et des places (1er, 2e, etc.). Les prix sont attribués selon leur valeur (et l’ordre des catégories en cas d’égalité)."
-
-#~ msgid "Manage the prize groups"
-#~ msgstr "Gérer les groupes de prix"
-
-#~ msgid "Manage the prize groups of the tournament."
-#~ msgstr "Gérer les groupes de prix du tournoi."
-
-#~ msgid "No Prize Group"
-#~ msgstr "Aucun groupe de prix"
-
-#~ msgid "No prize groups."
-#~ msgstr "Aucun groupe de prix."
-
-#~ msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
-#~ msgstr "Organisez vos prix en groupes pour gérer leur attribution. Un·e joueur·euse ne peut recevoir qu’un seul prix par groupe, mais peut recevoir des prix dans plusieurs groupes."
-
-#~ msgid "Prize groups"
-#~ msgstr "Groupes de prix"
-
-#~ msgid "You must create a prize group before creating a prize category."
-#~ msgstr "Vous devez créer un groupe de prix avant de créer une catégorie de prix."
-
-#~ msgid "You must create a tournament before creating a prize group."
-#~ msgstr "Vous devez créer un tournoi avant de créer un groupe de prix."
-
-#~ msgid "Create a prize bracket"
-#~ msgstr "Créer un group non-cumulable"
 

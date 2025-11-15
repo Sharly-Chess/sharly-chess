@@ -1674,12 +1674,6 @@ msgstr ""
 msgid "Display Controller"
 msgstr ""
 
-msgid "Display all the players, paired and unpaired"
-msgstr ""
-
-msgid "Display color, board number and opponent"
-msgstr ""
-
 msgid "Display controller [{display_controller}] has been created."
 msgstr ""
 
@@ -1698,19 +1692,13 @@ msgstr ""
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device)."
 msgstr ""
 
-msgid "Display of unpaired players:"
-msgstr ""
-
-msgid "Display only color and board number"
-msgstr ""
-
-msgid "Display only paired players"
-msgstr ""
-
 msgid "Display the exit button"
 msgstr ""
 
-msgid "Display the players' opponent:"
+msgid "Display the players' opponent"
+msgstr ""
+
+msgid "Display the unpaired players"
 msgstr ""
 
 #, python-format
@@ -2586,9 +2574,6 @@ msgid "Hide Log"
 msgstr ""
 
 msgid "Hide Networks"
-msgstr ""
-
-msgid "Hide the exit button"
 msgstr ""
 
 msgid "Highlight"
@@ -4649,9 +4634,6 @@ msgstr ""
 msgid "Screen configuration has been updated."
 msgstr ""
 
-msgid "Screen exit button:"
-msgstr ""
-
 msgid "Screen families:"
 msgstr ""
 
@@ -6659,45 +6641,4 @@ msgstr ""
 msgid "½ - ½ (U)"
 msgstr ""
 
-#~ msgid "Add a prize category to the prize group."
-#~ msgstr ""
-
-#~ msgid "Create a Prize Group now to get started."
-#~ msgstr ""
-
-#~ msgid "Create a prize group"
-#~ msgstr ""
-
-#~ msgid "Create a prize group in which you will then be able to create categories, and then prizes."
-#~ msgstr ""
-
-#~ msgid "Each group should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
-#~ msgstr ""
-
-#~ msgid "Manage the prize groups"
-#~ msgstr ""
-
-#~ msgid "Manage the prize groups of the tournament."
-#~ msgstr ""
-
-#~ msgid "No Prize Group"
-#~ msgstr ""
-
-#~ msgid "No prize groups."
-#~ msgstr ""
-
-#~ msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
-#~ msgstr ""
-
-#~ msgid "Prize groups"
-#~ msgstr ""
-
-#~ msgid "You must create a prize group before creating a prize category."
-#~ msgstr ""
-
-#~ msgid "You must create a tournament before creating a prize group."
-#~ msgstr ""
-
-#~ msgid "Create a prize bracket"
-#~ msgstr ""
 
