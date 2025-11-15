@@ -633,6 +633,7 @@ class SharlyChessServerToga(toga.App):
 
         # Show/hide networks view
         assert self.networks_section is not None
+        assert self.info_view is not None
         if self.networks_visible:
             assert self.info_view is not None
             if self.networks_section not in self.info_view.children:
