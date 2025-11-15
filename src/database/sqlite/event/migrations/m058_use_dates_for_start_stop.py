@@ -81,4 +81,4 @@ class Migration(BaseMigration):
                 ),
             )
         self.database.execute('ALTER TABLE `tournament` DROP COLUMN `start_date`')
-        self.database.execute('ALTER TABLE `tournament` DROP COLUMN `stop`')
+        self.database.execute('ALTER TABLE `tournament` DROP COLUMN `stop_date`')
