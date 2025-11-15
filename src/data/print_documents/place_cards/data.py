@@ -1,7 +1,6 @@
 import logging
-from datetime import datetime
+from datetime import date
 
-from common import today_timestamp_start_stop
 from common.i18n import _
 from common.logger import get_logger
 
@@ -100,14 +99,10 @@ class PlaceCardPairing:
 class PlaceCardDate:
     """A utility class to pass unmodifiable dates to print documents."""
 
-    def __init__(
-        self,
-        timestamp: float,
-    ):
-        dt: datetime = datetime.fromtimestamp(timestamp)
-        self.year: int = dt.year
-        self.month: int = dt.month
-        self.day: int = dt.day
+    def __init__(self, date_: date):
+        self.year: int = date_.year
+        self.month: int = date_.month
+        self.day: int = date_.day
 
 
 class PlaceCardTournament:
@@ -122,13 +117,13 @@ class PlaceCardTournament:
         self.stop: PlaceCardDate
         if tournament:
             self.name = tournament.name
-            self.start = PlaceCardDate(tournament.start_timestamp)
-            self.stop = PlaceCardDate(tournament.stop_timestamp)
+            self.start = PlaceCardDate(tournament.stop_date)
+            self.stop = PlaceCardDate(tournament.stop_date)
         else:
             self.name = _('Tournament name')
-            start, stop = today_timestamp_start_stop()
-            self.start = PlaceCardDate(start)
-            self.stop = PlaceCardDate(stop)
+            today = date.today()
+            self.start = PlaceCardDate(today)
+            self.stop = PlaceCardDate(today)
 
 
 class PlaceCardEvent:
@@ -143,10 +138,10 @@ class PlaceCardEvent:
         self.stop: PlaceCardDate
         if event:
             self.name = event.name
-            self.start = PlaceCardDate(event.start)
-            self.stop = PlaceCardDate(event.stop)
+            self.start = PlaceCardDate(event.start_date)
+            self.stop = PlaceCardDate(event.stop_date)
         else:
             self.name = _('Event name')
-            start, stop = today_timestamp_start_stop()
-            self.start = PlaceCardDate(start)
-            self.stop = PlaceCardDate(stop)
+            today = date.today()
+            self.start = PlaceCardDate(today)
+            self.stop = PlaceCardDate(today)

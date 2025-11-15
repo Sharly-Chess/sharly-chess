@@ -269,6 +269,7 @@ class SelectOption:
     tooltip: str | None = None
     disabled: bool = False
     classes: str = ''
+    search: str | None = None
 
 
 class Column[T](ABC):

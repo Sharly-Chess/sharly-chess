@@ -51,7 +51,9 @@ class FRASchoolsController(BaseEventAdminController):
             option_name = school.name
             if school.id in school_counts:
                 option_name += f' ({school_counts[school.id]})'
-            school_options[str(school.id)] = SelectOption(option_name, school.tooltip)
+            school_options[str(school.id)] = SelectOption(
+                option_name, school.tooltip, search=school.full_name
+            )
         database = FRASchoolsDatabase()
         department_options: dict[str, str] = {}
         if database.DEPARTMENTS:

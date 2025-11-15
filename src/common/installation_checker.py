@@ -81,6 +81,19 @@ class InstallationChecker:
             'select2-{version}.zip',
             licence_type='MIT',
         ),
+        WebLibArchiveInstaller(
+            'Air Datepicker',
+            SharlyChessConfig.air_datepicker_version,
+            'air-datepicker',
+            'air-datepicker-{version}',
+            {
+                'dist/air-datepicker.js',
+                'dist/air-datepicker.css',
+            },
+            'https://github.com/t1m0n/air-datepicker/archive/refs/tags/v{version}.zip',
+            'air-datepicker-{version}.zip',
+            licence_type='MIT',
+        ),
         WebLibFileInstaller(
             'Select2 Bootstrap Theme',
             SharlyChessConfig.select2_bootstrap_theme_version,

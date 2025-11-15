@@ -14,10 +14,12 @@ from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.controller import Controller
 from litestar.response import Template
 
-from common import check_rgb_str, DEVEL_ENV
+from common import check_rgb_str, DEVEL_ENV, format_date, format_date_range
+from common.exception import FormError
 from common.i18n import (
     set_locale,
     locales,
+    _,
 )
 from common.i18n.utils import (
     locale_localized_name,
@@ -234,25 +236,55 @@ class WebContext:
     ) -> str | None:
         if data is None:
             return empty_value
-        data[field] = data.get(field, '')
-        if data[field] is not None:
-            data[field] = data[field].strip().lower()
+        data[field] = data.get(field, '').strip().lower()
         if not data[field]:
             return empty_value
         return check_rgb_str(data[field])
 
     @staticmethod
-    def form_data_to_date(
-        data: dict[str, str] | None, field: str, empty_value: datetime | None = None
-    ) -> date | None:
-        if data is None:
-            return empty_value
-        data[field] = data.get(field, '')
-        if data[field] is not None:
-            data[field] = data[field].strip().lower()
+    def form_data_to_date(data: dict[str, str], field: str) -> date | None:
+        data[field] = data.get(field, '').strip()
         if not data[field]:
-            return empty_value
-        return datetime.strptime(data[field], '%Y-%m-%d').date()
+            return None
+        try:
+            return datetime.strptime(data[field], '%Y/%m/%d').date()
+        except ValueError:
+            raise FormError(
+                _('Invalid date format (expected: {format}).').format(
+                    format='YYYY/MM/DD'
+                )
+            )
+
+    @staticmethod
+    def form_data_to_date_range(
+        data: dict[str, str], field: str
+    ) -> tuple[date, date] | None:
+        data[field] = data.get(field, '').strip()
+        if not data[field]:
+            return None
+        if ' - ' not in data[field]:
+            try:
+                date_ = datetime.strptime(data[field], '%Y/%m/%d').date()
+                return date_, date_
+            except ValueError:
+                raise FormError(
+                    _('Invalid date format (expected: {format}).').format(
+                        format='YYYY/MM/DD'
+                    )
+                )
+        start_date_str, stop_date_str = data[field].split(' - ', 1)
+        try:
+            start_date = datetime.strptime(start_date_str, '%Y/%m/%d').date()
+            stop_date = datetime.strptime(stop_date_str, '%Y/%m/%d').date()
+        except ValueError:
+            raise FormError(
+                _('Invalid date format (expected: {format}).').format(
+                    format='YYYY/MM/DD - YYYY/MM/DD'
+                )
+            )
+        if start_date > stop_date:
+            return stop_date, start_date
+        return start_date, stop_date
 
     @classmethod
     def form_data_to_mail(cls, data: dict[str, str] | None, field: str) -> str | None:
@@ -267,8 +299,8 @@ class WebContext:
             return data[field]
         raise ValueError(f'data[{field}]=[{data[field]}] (mail expected)')
 
-    @staticmethod
-    def value_to_form_data(value: Any) -> str:
+    @classmethod
+    def value_to_form_data(cls, value: Any) -> str:
         if value is None:
             return ''
         if isinstance(value, str):
@@ -279,6 +311,8 @@ class WebContext:
             return str(value)
         if isinstance(value, float):
             return f'{value:.2f}'
+        if isinstance(value, date):
+            return format_date(value)
         if isinstance(value, Path):
             return str(value)
         if isinstance(value, Federation):
@@ -300,16 +334,24 @@ class WebContext:
         if value is None:
             return ''
         if isinstance(value, float):
-            return datetime.strftime(datetime.fromtimestamp(value), '%Y-%m-%dT%H:%M')
+            return datetime.strftime(datetime.fromtimestamp(value), '%Y-%m-%d %H:%M')
         if isinstance(value, datetime):
-            return datetime.strftime(value, '%Y-%m-%dT%H:%M')
+            return datetime.strftime(value, '%Y-%m-%d %H:%M')
         raise ValueError(f'unknown type for value [{value}]')
 
     @staticmethod
-    def value_to_date_form_data(value: date | None) -> str | None:
+    def value_to_date_form_data(value: date | None) -> str:
         if value is None:
             return ''
-        return f'{value.year}-{value.month:02d}-{value.day:02d}'
+        return format_date(value)
+
+    @staticmethod
+    def value_to_date_range_form_data(
+        start_date: date | None = None, stop_date: date | None = None
+    ) -> str:
+        if not start_date:
+            return ''
+        return format_date_range(start_date, stop_date)
 
     @property
     def template_context(self) -> dict[str, Any]:

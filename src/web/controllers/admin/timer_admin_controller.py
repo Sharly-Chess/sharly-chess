@@ -11,6 +11,7 @@ from litestar.params import Body
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 
+from common.exception import FormError
 from common.sharly_chess_config import SharlyChessConfig
 from common.i18n import _
 from data.access_levels.actions import AuthAction
@@ -144,6 +145,7 @@ class TimerAdminController(BaseEventAdminController):
         previous_valid_timer_hour: TimerHour | None,
         data: dict[str, str] | None = None,
     ) -> StoredTimerHour:
+        event = web_context.get_admin_event()
         errors: dict[str, str] = {}
         if data is None:
             data = {}
@@ -151,7 +153,6 @@ class TimerAdminController(BaseEventAdminController):
         if not uniq_id:
             errors['uniq_id'] = _('Please enter the round number or the hour ID.')
         time_str: str | None = WebContext.form_data_to_str(data, 'time_str')
-        date_str: str | None = WebContext.form_data_to_str(data, 'date_str')
         if not time_str:
             errors['time_str'] = _('Please enter the time.')
         else:
@@ -160,14 +161,22 @@ class TimerAdminController(BaseEventAdminController):
             )
             if not matches:
                 errors['time_str'] = _('Please enter a valid time.')
-        if not previous_valid_timer_hour and not date_str:
-            errors['date_str'] = _('Please enter the date of the first hour.')
-        elif date_str:
-            if not re.match(
-                '^#?(?P<year>[0-9]{4})-(?P<month>[0-9]{1,2})-(?P<day>[0-9]{1,2})$',
-                date_str,
-            ):
-                errors['date_str'] = _('Please enter a valid date.')
+        date_str: str | None = None
+        field = 'date_str'
+        try:
+            date_ = WebContext.form_data_to_date(data, field)
+            if date_:
+                if not (event.start_date <= date_ <= event.stop_date):
+                    errors[field] = _(
+                        'Time outside of event time range ({range}).'
+                    ).format(range=event.date_range_str)
+                # TODO (Molrn) Use a date / datetime object to store the timer hour date
+                date_str = EventDatabase.dump_date_to_database_field(date_)
+            elif not previous_valid_timer_hour:
+                errors[field] = _('Please enter the date of the first hour.')
+        except FormError as e:
+            errors[field] = str(e)
+
         if 'time_str' not in errors and 'date_str' not in errors:
             datetime_str: str
             if date_str:
@@ -342,34 +351,21 @@ class TimerAdminController(BaseEventAdminController):
                     'errors': errors,
                 }
             case 'timer_hours':
-                timer = web_context.get_admin_timer()
                 if data is None:
                     if web_context.admin_timer_hour:
                         timer_hour = web_context.get_admin_timer_hour()
                         stored_timer_hour = timer_hour.stored_timer_hour
-                        data = {
-                            'uniq_id': WebContext.value_to_form_data(
-                                stored_timer_hour.uniq_id
-                            ),
-                            'date_str': WebContext.value_to_form_data(
-                                stored_timer_hour.date_str
-                            ),
-                            'time_str': WebContext.value_to_form_data(
-                                stored_timer_hour.time_str
-                            ),
-                            'text_before': WebContext.value_to_form_data(
-                                stored_timer_hour.text_before
-                            ),
-                            'text_after': WebContext.value_to_form_data(
-                                stored_timer_hour.text_after
-                            ),
-                        }
-                        stored_timer_hour = cls._admin_validate_timer_hour_update_data(
-                            web_context,
-                            timer.get_previous_timer_hour(timer_hour),
-                            data,
+                        data = WebContext.values_dict_to_form_data(
+                            {
+                                'uniq_id': stored_timer_hour.uniq_id,
+                                'date_str': EventDatabase.load_optional_date_from_database_field(
+                                    stored_timer_hour.date_str
+                                ),
+                                'time_str': stored_timer_hour.time_str,
+                                'text_before': stored_timer_hour.text_before,
+                                'text_after': stored_timer_hour.text_after,
+                            }
                         )
-                        errors = stored_timer_hour.errors
                     else:
                         data = {}
                 if errors is None:

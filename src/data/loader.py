@@ -1,8 +1,8 @@
 import re
 import shutil
-import time
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import date
 from functools import cached_property
 from logging import Logger
 from pathlib import Path
@@ -16,6 +16,7 @@ from common import (
     format_timestamp_date_time,
     SHARLY_CHESS_VERSION,
     EVENTS_DIR,
+    get_date_timestamp,
 )
 from common.exception import SharlyChessException
 from common.sharly_chess_config import SharlyChessConfig
@@ -175,21 +176,23 @@ class EventLoader:
         conditions: list[Callable[[EventMetadata], bool]] = []
         if public_only:
             conditions.append(lambda event: event.public)
-        now = time.time()
+        today = date.today()
         sort_order = 1
         match status:
             case 'passed':
-                conditions.append(lambda event: event.stop < now)
+                conditions.append(lambda event: event.stop_date < today)
                 sort_order = -1
             case 'current':
-                conditions.append(lambda event: event.start <= now <= event.stop)
+                conditions.append(
+                    lambda event: event.start_date <= today <= event.stop_date
+                )
             case 'coming':
-                conditions.append(lambda event: now < event.start)
+                conditions.append(lambda event: today < event.start_date)
         return sorted(
             cls._filter_events_metadata(conditions),
             key=lambda event: (
-                event.stop * sort_order,
-                event.start * sort_order,
+                get_date_timestamp(event.stop_date) * sort_order,
+                get_date_timestamp(event.start_date) * sort_order,
                 normalized_key('name'),
             ),
         )

@@ -5,7 +5,14 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                {{ _('Prize groups') }}
+                {{ _('Prize Brackets') }}
+                <i
+                    class="bi-info-circle-fill ps-1"
+                    style="font-size: 70%"
+                    {{ macros.tooltip_attributes(
+                        '', _('Each player can only be awarded one prize per bracket.'), 'right')
+                    }}
+                ></i>
             </h2>
         </div>
         <div class="modal-body">
@@ -15,7 +22,7 @@
             </h4>
             <div class="d-flex flex-column gap-2">
                 {% if not admin_tournament.prize_groups %}
-                    <div class="text-danger">{{ _('No prize groups.') }}</div>
+                    <div class="text-danger">{{ _('No prize brackets.') }}</div>
                 {% endif %}
                 {% for prize_group in admin_tournament.sorted_prize_groups %}
                     {% set base_id = 'prize-group-' ~ prize_group.id|string %}

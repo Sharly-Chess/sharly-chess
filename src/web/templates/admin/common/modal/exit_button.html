@@ -1,7 +1,7 @@
-{{ admin_macros.select_input(
+{{ admin_macros.switch_input(
     name='input_exit_button',
-    label=_('Screen exit button:'),
+    placeholder=_('Display the exit button'),
     tooltip_text=_('When not displaying the exit button, users can not accidentally exit input screens.'),
-    select_options=input_exit_button_options,
+    label='',
     data=data, errors=errors
 ) }}

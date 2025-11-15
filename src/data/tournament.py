@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 import weakref
 from babel.lists import format_list
 from common.i18n import get_locale
@@ -13,7 +13,7 @@ from _weakref import ReferenceType
 from common.i18n.utils import by
 from trf import Tournament as TrfTournament
 
-from common import format_timestamp
+from common import format_date, format_date_range
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
@@ -145,20 +145,34 @@ class Tournament:
         return f'Event [{self.event.uniq_id}] - Tournament [{self.uniq_id}] - '
 
     @property
-    def start_timestamp(self) -> float:
-        return self.stored_tournament.start or self.event.start
+    def start_date(self) -> date:
+        if not self.stored_tournament.start_date:
+            return self.event.start_date
+        return min(
+            max(self.stored_tournament.start_date, self.event.start_date),
+            self.event.stop_date,
+        )
 
     @property
-    def stop_timestamp(self) -> float:
-        return self.stored_tournament.stop or self.event.stop
+    def stop_date(self) -> date:
+        if not self.stored_tournament.stop_date:
+            return self.event.stop_date
+        return max(
+            min(self.stored_tournament.stop_date, self.event.stop_date),
+            self.event.start_date,
+        )
 
     @property
-    def start_datetime(self) -> datetime:
-        return datetime.fromtimestamp(self.start_timestamp)
+    def date_range_str(self) -> str:
+        return format_date_range(self.start_date, self.stop_date)
 
     @property
-    def stop_datetime(self) -> datetime:
-        return datetime.fromtimestamp(self.stop_timestamp)
+    def start_date_str(self) -> str:
+        return format_date(self.start_date)
+
+    @property
+    def stop_date_str(self) -> str:
+        return format_date(self.stop_date)
 
     @property
     def location(self) -> str | None:
@@ -1100,8 +1114,8 @@ class Tournament:
         return TrfTournament(
             name=self.name,
             city=self.location,
-            startdate=format_timestamp(self.start_timestamp, '%Y/%m/%d'),
-            enddate=format_timestamp(self.stop_timestamp, '%Y/%m/%d'),
+            startdate=self.start_date.strftime('%Y/%m/%d'),
+            enddate=self.stop_date.strftime('%Y/%m/%d'),
             numplayers=len(self.players_by_id),
             chiefarbiter=self.chief_arbiter.full_name_and_id
             if self.chief_arbiter
@@ -1471,8 +1485,8 @@ class Tournament:
                 board = self.get_round_pab_board(round_nb)
                 assert board is not None
                 board_id = board.identifier
-                board.replace_player(black_player, 'black')
                 board.stored_board.index = self.get_available_board_indexes(round_nb)[0]
+                board.replace_player(black_player, 'black')
                 black_pairing.stored_pairing.result = result.value
                 black_pairing.stored_pairing.board_id = board_id
                 black_pairing.update(database)

@@ -9,6 +9,10 @@
                 label=_('%(string)s:', string=_('French school')),
                 select_options=fra_school_options,
                 tooltip_select=true,
+                search_placeholder=_(
+                    'Search by: %(fields)s',
+                    fields=', '.join([_('Code'), _('City'), _('Name'), _('Department')])
+                ),
                 data=data, errors=errors
             ) }}
         </div>
@@ -74,6 +78,7 @@
                         hx-on::after-request="$('#fra-schools-search-results').show();"
                         hx-sync="this:replace"
                         hx-indicator="#fra-schools-search-indicator"
+                        autocomplete="off"
                     />
                 </div>
                 <ul

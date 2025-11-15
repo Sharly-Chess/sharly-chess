@@ -304,3 +304,23 @@ async function downloadFile(el) {
         alert('Export failed: ' + err.message);
     }
 }
+
+const dateRegex = /^\d{4}\/\d{2}\/\d{2}$/;
+const timeRegex = /\d{2}:\d{2}$/;
+
+function getAirDatePickerSelectedDates(value, inputType) {
+    if (inputType === 'time') {
+        if (timeRegex.test(value)) return ['1970/01/01 ' + value];
+    } else if (inputType === 'date') {
+        if (dateRegex.test(value)) return [value];
+    } else if (inputType === 'date-range') {
+        if (dateRegex.test(value)) return [value];
+        if (value.includes(' - ')) {
+            const [start, stop] = value.split(' - ');
+            if (dateRegex.test(start) && dateRegex.test(stop)) {
+                return [start, stop];
+            }
+        }
+    }
+    return [];
+}

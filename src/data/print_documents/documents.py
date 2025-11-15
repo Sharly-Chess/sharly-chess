@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from functools import cached_property, partial
 from typing import Any, Callable, override
 
-from common import format_timestamp
 from common.exception import SharlyChessException, OptionError
 from common.i18n import _, ngettext
 from common.i18n.utils import unicode_normalize
@@ -1057,8 +1056,8 @@ class NormReportPrintDocument(PrintDocument):
             'event': self.event,
             'tournament': self.tournament,
             'is_swiss': self.tournament.pairing_system == SwissPairingSystem(),
-            'start': format_timestamp(self.tournament.start_timestamp, '%Y.%m.%d'),
-            'end': format_timestamp(self.tournament.stop_timestamp, '%Y.%m.%d'),
+            'start': self.tournament.start_date.strftime('%Y.%m.%d'),
+            'end': self.tournament.stop_date.strftime('%Y.%m.%d'),
             'norms': norms,
             'player': player,
         }

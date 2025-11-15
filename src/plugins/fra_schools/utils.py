@@ -79,13 +79,13 @@ class FRASchool(PluginData):
             return ''
         tooltip = ''
         if self.code:
-            tooltip += f'<div class="text-center text-nowrap fw-bold">{self.code}</div>'
-        tooltip += f'<div class="text-center text-nowrap">{self.name}</div>'
+            tooltip += f'<div class="text-center fw-bold">{self.code}</div>'
+        tooltip += f'<div class="text-center">{self.name}</div>'
         if self.city:
             city = self.city
             if self.department:
                 city += f' ({self.department})'
-            tooltip += f'<div class="text-center text-nowrap fst-italic">{city}</div>'
+            tooltip += f'<div class="text-center fst-italic">{city}</div>'
         return tooltip
 
     def __lt__(self, other):

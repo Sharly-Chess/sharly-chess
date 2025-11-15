@@ -135,7 +135,7 @@ class WebLibInstaller(ToolInstaller, ABC):
         )
 
 
-class WebLibArchiveInstaller(WebLibInstaller, ABC):
+class WebLibArchiveInstaller(WebLibInstaller):
     """A utility class to install web libraries from archives."""
 
     def __init__(

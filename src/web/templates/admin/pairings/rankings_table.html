@@ -78,7 +78,7 @@
         <tr id="player-{{ player.id }}" class="player-row {{ row_class }} {% if not sortable %}non-sortable{% endif %} {% if new_point_group %}separator{% endif %}">
             <td class="rank text-end">{{ player.rank }}</td>
             <td class="title text-end">{{ player.title.short_name }}</td>
-            <td class="name text-start{{ "fw-bold" if not pairings_list}}">
+            <td class="name text-start">
                 {% include '/admin/player_link.html' %}
                 <button
                     type="button"

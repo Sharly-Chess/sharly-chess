@@ -60,6 +60,7 @@ __pycache__/
 
 # PyInstaller spec files
 /*.spec
+/src/web/static/lib/air-datepicker
 /src/web/static/lib/bootstrap
 /src/web/static/lib/bootstrap-icons
 /src/web/static/lib/jquery

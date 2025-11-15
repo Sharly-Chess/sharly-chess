@@ -371,8 +371,8 @@ msgstr "Ajouter une permission au compte."
 msgid "Add a player to the event."
 msgstr "Ajouter un·e joueur·euse à l'évènement."
 
-msgid "Add a prize category to the prize group."
-msgstr "Ajouter une catégorie au groupe de prix."
+msgid "Add a prize category to the prize bracket."
+msgstr "Ajouter une catégorie au groupe non-cumulable."
 
 msgid "Add a prize to the list."
 msgstr "Ajouter un prix à la liste."
@@ -530,6 +530,12 @@ msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs affi
 msgid "Application"
 msgstr "Application"
 
+msgid "Apr *** APRIL"
+msgstr "Avr"
+
+msgid "April"
+msgstr "Avril"
+
 msgid "Arbiter"
 msgstr "Arbitre"
 
@@ -599,6 +605,12 @@ msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] "Au plus %(num)d coup illegal est enregistré."
 msgstr[1] "Au plus %(num)d coups illégaux sont enregistrés."
+
+msgid "Aug *** AUGUST"
+msgstr "Août"
+
+msgid "August"
+msgstr "Août"
 
 msgid "Auto-update"
 msgstr "Mise à jour"
@@ -1087,11 +1099,14 @@ msgstr "Impossible de se connecter à la source de données [{data_source}]."
 msgid "Create"
 msgstr "Créer"
 
+msgid "Create a Prize Bracket"
+msgstr "Créer un Groupe Non-Cumulable"
+
+msgid "Create a Prize Bracket now to get started."
+msgstr "Créer un Groupe Non-Cumulable pour commencer."
+
 msgid "Create a Prize Category now to continue."
 msgstr "Créez une catégorie de prix pour continuer."
-
-msgid "Create a Prize Group now to get started."
-msgstr "Créez un groupe de prix pour commencer."
 
 msgid "Create a category"
 msgstr "Créer une catégorie"
@@ -1105,11 +1120,8 @@ msgstr "Créez un pilote d'afficheurs maintenant commencer."
 msgid "Create a family now to get started."
 msgstr "Créer une famille d’écrans pour commencer."
 
-msgid "Create a prize group"
-msgstr "Créer un groupe de prix"
-
-msgid "Create a prize group in which you will then be able to create categories, and then prizes."
-msgstr "Créer un groupe de prix dans lequel vous pourrez ensuite créer des catégories, puis des prix."
+msgid "Create a prize bracket in which you will then be able to create categories, and then prizes."
+msgstr "Créer un Groupe de prix non-cumulables dans lequel vous pourrez ensuite créer des catégories, puis des prix."
 
 msgid "Create a rotator"
 msgstr "Créer un écran rotatif"
@@ -1293,6 +1305,15 @@ msgstr "Date de naissance :"
 msgid "Date:"
 msgstr "Date :"
 
+msgid "Dates"
+msgstr "Dates"
+
+msgid "Dec *** DECEMBER"
+msgstr "Dec"
+
+msgid "December"
+msgstr "Décembre"
+
 msgid "Default accounts have been created."
 msgstr "Les comptes par défault ont été créés."
 
@@ -1432,12 +1453,6 @@ msgstr "Affichage"
 msgid "Display Controller"
 msgstr "Pilote d'afficheurs"
 
-msgid "Display all the players, paired and unpaired"
-msgstr "Afficher tou·tes les joueur·euses, apparié·es et non apparié·es"
-
-msgid "Display color, board number and opponent"
-msgstr "Afficher la couleur, l'échiquier et l'adversaire"
-
 msgid "Display controller [{display_controller}] has been created."
 msgstr "Le pilote d'afficheurs [{display_controller}] a été créé."
 
@@ -1456,20 +1471,14 @@ msgstr "Pilotes d'afficheurs ({num})"
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device)."
 msgstr "Les pilotes d'afficheurs vous permettent de contrôler les afficheurs de votre évènement depuis le serveur (ou n'importe quel appareil autorisé)."
 
-msgid "Display of unpaired players:"
-msgstr "Affichage des joueur·euses non apparié·es"
-
-msgid "Display only color and board number"
-msgstr "N'afficher que la couleur et l'échiquier"
-
-msgid "Display only paired players"
-msgstr "Afficher seulement les joueur·euses apparié·es"
-
 msgid "Display the exit button"
 msgstr "Afficher un bouton de sortie d'écran"
 
-msgid "Display the players' opponent:"
+msgid "Display the players' opponent"
 msgstr "Afficher les adversaires"
+
+msgid "Display the unpaired players"
+msgstr "Afficher les joueur·euses non-apparié·es"
 
 #, python-format
 msgid "Displayed round: %(round)d"
@@ -1567,15 +1576,15 @@ msgstr "E"
 
 #, python-format
 msgid "E.g.: %(minutes)d (minutes)"
-msgstr "Exemple : %(minutes)d (minutes)"
+msgstr "Ex. : %(minutes)d (minutes)"
 
 #, python-format
 msgid "E.g.: %(num)d"
-msgstr "Exemple : %(num)d"
+msgstr "Ex. : %(num)d"
 
 #, python-format
 msgid "E.g.: %(string)s"
-msgstr "Exemple : %(string)s"
+msgstr "Ex. : %(string)s"
 
 msgid "E.g.: 20 (boards per screen)"
 msgstr "Ex. : 20 (échiquiers par écran)"
@@ -1590,79 +1599,79 @@ msgid "E.g.: 4 (split players over 4 screens)"
 msgstr "Ex. : 4 (ur·euse sur 4 écrans)"
 
 msgid "E.g.: @boards, @family, another-screen"
-msgstr "Exemple : @boards, @family, un-autre-ecran"
+msgstr "Ex. : @boards, @family, un-autre-ecran"
 
 #, python-format
 msgid "E.g.: Boards %%f to %%l"
-msgstr "Exemple : Échiquiers %%f à %%l"
+msgstr "Ex. : Échiquiers %%f à %%l"
 
 #, python-format
 msgid "E.g.: Boards %%f-%%l"
-msgstr "Exemple : Échiquiers %%f-%%l"
+msgstr "Ex. : Échiquiers %%f-%%l"
 
 #, python-format
 msgid "E.g.: Check-in started for %%s"
-msgstr "Exemple : Pointage commencé depuis %%s"
+msgstr "Ex. : Pointage commencé depuis %%s"
 
 msgid "E.g.: DOE"
-msgstr "Exemple : DUPONT"
+msgstr "Ex. : DUPONT"
 
 msgid "E.g.: John"
-msgstr "Exemple : Pierre"
+msgstr "Ex. : Pierre"
 
 msgid "E.g.: Link to my screen"
-msgstr "Exemple : Lien vers mon écran"
+msgstr "Ex. : Lien vers mon écran"
 
 msgid "E.g.: Main tournament"
-msgstr "Exemple : Tournoi principal"
+msgstr "Ex. : Tournoi principal"
 
 msgid "E.g.: My display controller"
-msgstr "Exemple : Mon pilote d'afficheur"
+msgstr "Ex. : Mon pilote d'afficheur"
 
 msgid "E.g.: My favourite club!"
-msgstr "Exemple : Mon club favori !"
+msgstr "Ex. : Mon club favori !"
 
 msgid "E.g.: My screen"
-msgstr "Exemple : Mon écran"
+msgstr "Ex. : Mon écran"
 
 msgid "E.g.: My screen family"
-msgstr "Exemple : Ma famille d'écrans"
+msgstr "Ex. : Ma famille d'écrans"
 
 msgid "E.g.: Paris"
-msgstr "Exemple : Paris"
+msgstr "Ex. : Paris"
 
 #, python-format
 msgid "E.g.: Players %%f to %%l"
-msgstr "Exemple : Joueur·euses %%f à %%l"
+msgstr "Ex. : Joueur·euses %%f à %%l"
 
 #, python-format
 msgid "E.g.: Players %%f-%%l"
-msgstr "Exemple : Joueur·euses %%f-%%l"
+msgstr "Ex. : Joueur·euses %%f-%%l"
 
 msgid "E.g.: Please keep quiet until the end of the round!"
-msgstr "Exemple : Merci de bien vouloir se mettre en place !"
+msgstr "Ex. : Merci de bien vouloir se mettre en place !"
 
 msgid "E.g.: Start of check-in"
-msgstr "Exemple : Début du pointage :"
+msgstr "Ex. : Début du pointage :"
 
 #, python-format
 msgid "E.g.: Start of check-in in %%s"
-msgstr "Exemple : Début du pointage dans %%s"
+msgstr "Ex. : Début du pointage dans %%s"
 
 msgid "E.g.: World championship"
-msgstr "Exemple: Championnat du monde"
+msgstr "Ex.: Championnat du monde"
 
 msgid "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
-msgstr "Exemple : c:\\echecs\\tournois\\principal\\reglement.pdf"
+msgstr "Ex. : c:\\echecs\\tournois\\principal\\reglement.pdf"
 
 msgid "E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf"
-msgstr "Exemple : c:\\echecs\\tournois\\mon_tournoi\\reglement.pdf"
+msgstr "Ex. : c:\\echecs\\tournois\\mon_tournoi\\reglement.pdf"
 
 msgid "E.g.: https://my.club.us/tournament.jpg"
-msgstr "Exemple : https://mon.club.fr/affiche.jpg"
+msgstr "Ex. : https://mon.club.fr/affiche.jpg"
 
 msgid "E.g.: john.doe@chess.com"
-msgstr "Exemple : pierre.dupont@chess.com"
+msgstr "Ex. : pierre.dupont@chess.com"
 
 msgid "EXEMPT"
 msgstr "EXEMPT·E"
@@ -1671,8 +1680,11 @@ msgstr "EXEMPT·E"
 msgid "EXEMPT (already received at round #%(round)d)"
 msgstr "EXEMPT·E (déjà reçu à la ronde n°%(round)d)"
 
-msgid "Each group should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
+msgid "Each bracket should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
 msgstr "Chaque groupe doit contenir une ou plusieurs catégories (par exemple : U12, Meilleure Féminine) avec des critères et des places (1er, 2e, etc.). Les prix sont attribués selon leur valeur (et l’ordre des catégories en cas d’égalité)."
+
+msgid "Each player can only be awarded one prize per bracket."
+msgstr "Chaque joueur·euse ne peut se voir attribuer qu'un prix par groupe."
 
 msgid "Edit"
 msgstr "Modifier"
@@ -1791,12 +1803,6 @@ msgstr "La rencontre a déjà eu lieu à la ronde n°%(round)d"
 
 msgid "End round"
 msgstr "Terminer la ronde"
-
-msgid "End time needs to be after start time."
-msgstr "L'horaire de fin doit être après l'horaire de début."
-
-msgid "End:"
-msgstr "Fin :"
 
 msgid "Enter results"
 msgstr "Entrer des résultats"
@@ -1938,6 +1944,12 @@ msgstr "La famile [{family_uniq_id}] a été supprimée."
 msgid "Family [{family_uniq_id}] has been updated."
 msgstr "La famile [{family_uniq_id}] a été modifiée."
 
+msgid "Feb *** FEBRUARY"
+msgstr "Fev"
+
+msgid "February"
+msgstr "Février"
+
 msgid "Fed *** FEDERATION FOR TABLE HEADER"
 msgstr "Féd."
 
@@ -2075,6 +2087,9 @@ msgstr "Les parties gagnées ou perdues par forfait sont considérées comme jou
 msgid "Forfeits played"
 msgstr "Forfaits joués"
 
+msgid "Fr *** FRIDAY"
+msgstr "Ve"
+
 msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
 msgstr "Depuis votre appareil principal, trouvez l’écran ou l’écran rotatif que vous souhaitez afficher, puis envoyez-le au pilote d’écran à l’aide du bouton portant cette icône :"
 
@@ -2167,9 +2182,6 @@ msgstr "Cacher les logs"
 
 msgid "Hide Networks"
 msgstr "Masquer les réseaux"
-
-msgid "Hide the exit button"
-msgstr "Ne pas afficher de bouton de sortie d'écran"
 
 msgid "Highlight"
 msgstr "Surbrillance"
@@ -2335,6 +2347,9 @@ msgstr "Date non valide [{date_str}]."
 msgid "Invalid date and time [{datetime_str}]."
 msgstr "Date et heure non valides [{datetime_str}]."
 
+msgid "Invalid date format (expected: {format})."
+msgstr "Format de date invalide (attendu : {format})."
+
 msgid "Invalid date format [{date}] (expected: {format})"
 msgstr "Format de date invalide [{date}] (attendu : {format})"
 
@@ -2376,6 +2391,24 @@ msgstr "Valeur [{value}] non valide."
 
 msgid "It is highly recommended to set at least one tie-break."
 msgstr "Il est fortement recommandé de définir au moins un départage."
+
+msgid "Jan *** JANUARY"
+msgstr "Jan"
+
+msgid "January"
+msgstr "Janvier"
+
+msgid "Jul *** JULY"
+msgstr "Juil"
+
+msgid "July"
+msgstr "Juillet"
+
+msgid "Jun *** JUNE"
+msgstr "Juin"
+
+msgid "June"
+msgstr "Juin"
 
 msgid "Kashdan"
 msgstr "Kashdan"
@@ -2510,11 +2543,11 @@ msgstr "Gestion des écrans"
 msgid "Manage source databases"
 msgstr "Gestion des bases de données sources"
 
-msgid "Manage the prize groups"
-msgstr "Gérer les groupes de prix"
+msgid "Manage the prize brackets"
+msgstr "Gérer les groupes non-cumulables"
 
-msgid "Manage the prize groups of the tournament."
-msgstr "Gérer les groupes de prix du tournoi."
+msgid "Manage the prize brackets of the tournament (1 player = 1 prize per bracket)."
+msgstr "Gérer les groupes de prix non-cumulables du tournoi (1 joueur·euse = 1 prix par groupe)."
 
 msgid "Mandatory for the first hour, optional for next hours."
 msgstr "Obligatoire pour le premier horaire, facultative pour les horaires suivants."
@@ -2524,6 +2557,12 @@ msgstr "Manuel"
 
 msgid "Manually pair players"
 msgstr "Appairer des joueur·euses manuellement"
+
+msgid "Mar *** MARCH"
+msgstr "Mars"
+
+msgid "March"
+msgstr "Mars"
 
 msgid "Mark this round as over and define the next one as the current round."
 msgstr "Marquer cette ronde comme terminée et définir la suivante comme la ronde courante."
@@ -2563,6 +2602,12 @@ msgstr "Nombre maximum de résultats affichés :"
 msgid "Maximum rating"
 msgstr "Elo maximum"
 
+msgid "May"
+msgstr "Mai"
+
+msgid "May *** MAY ACRONYM"
+msgstr "Mai"
+
 msgid "May be overridden on a per-tournament basis."
 msgstr "Peut être remplacé au niveau de chaque tournoi."
 
@@ -2600,6 +2645,9 @@ msgstr "Elo minimum"
 
 msgid "Missing required field [{field}]."
 msgstr "Champ requis manquant [{field}]."
+
+msgid "Mo *** MONDAY"
+msgstr "Lu"
 
 #, python-format
 msgid "Moved down %(num)d place"
@@ -2714,11 +2762,11 @@ msgstr "Tournoi suivant"
 msgid "No FIDE ID."
 msgstr "Identifiant FIDE non défini."
 
+msgid "No Prize Bracket"
+msgstr "Aucun Groupe de Prix Non-Cumulables"
+
 msgid "No Prize Category"
 msgstr "Aucune catégorie de prix"
-
-msgid "No Prize Group"
-msgstr "Aucun groupe de prix"
 
 msgid "No alert message"
 msgstr "Pas de message d'alerte"
@@ -2798,8 +2846,8 @@ msgstr "Aucun·e joueur·euse mis·e à jour."
 msgid "No players."
 msgstr "Aucun·e joueur·euse."
 
-msgid "No prize groups."
-msgstr "Aucun groupe de prix."
+msgid "No prize brackets."
+msgstr "Aucun groupe non-cumulable."
 
 msgid "No prizes defined"
 msgstr "Aucun prix défini"
@@ -2906,6 +2954,12 @@ msgstr "Non-apparié·e pour cette ronde"
 msgid "Notification"
 msgstr "Notification"
 
+msgid "Nov *** NOVEMBER"
+msgstr "Nov"
+
+msgid "November"
+msgstr "Novembre"
+
 msgid "Number"
 msgstr "Numéro"
 
@@ -2960,6 +3014,12 @@ msgstr "OK"
 
 msgid "ORG"
 msgstr "ORG"
+
+msgid "Oct *** OCTOBER"
+msgstr "Oct"
+
+msgid "October"
+msgstr "Octobre"
 
 msgid "Once created, you can select the timer to display in the settings of each screen, family or rotator."
 msgstr "Une fois créés, vous pouvez sélectionner le chronomètre à afficher dans les paramètres de chaque écran, famille d’écrans ou écran rotatif."
@@ -3040,7 +3100,7 @@ msgstr "Organisateur·trice"
 msgid "Organization"
 msgstr "Organisation"
 
-msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
+msgid "Organize your prizes into brackets to manage how they’re awarded. A player can win only one prize per bracket, but can win prizes in multiple brackets."
 msgstr "Organisez vos prix en groupes pour gérer leur attribution. Un·e joueur·euse ne peut recevoir qu’un seul prix par groupe, mais peut recevoir des prix dans plusieurs groupes."
 
 msgid "Origin: {template_origin}"
@@ -3413,20 +3473,11 @@ msgstr "Veuillez choisir le tournoi."
 msgid "Please close the time control editor before saving."
 msgstr "Veuillez fermer l'éditeur de cadence avant d'enregistrer."
 
-msgid "Please enter a date after the start date."
-msgstr "Veuillez entrer une date postérieure à la date de début."
-
-msgid "Please enter a valid date."
-msgstr "Veuillez entrer une date valide."
-
 msgid "Please enter a valid time."
 msgstr "Veuillez entrer une heure valide."
 
 msgid "Please enter the date of the first hour."
 msgstr "Veuillez entrer la date du premier horaire."
-
-msgid "Please enter the end date of the event."
-msgstr "Veuillez entrer la date de fin de l'évènement."
 
 msgid "Please enter the image URL."
 msgstr "Veuillez entrer l'URL de l'image."
@@ -3436,9 +3487,6 @@ msgstr "Veuillez entrer le nom de l'évènement."
 
 msgid "Please enter the round number or the hour ID."
 msgstr "Veuillez entrer le numéro de ronde ou l'identifiant de l'horaire."
-
-msgid "Please enter the start date of the event."
-msgstr "Veuillez entrer la date de début de l'évènement."
 
 msgid "Please enter the text to display after the hour (mandatory except for rounds)."
 msgstr "Veuillez entrer le texte à afficher après l'horaire (obligatoire sauf pour les débuts de ronde)."
@@ -3518,6 +3566,9 @@ msgstr "Impression"
 msgid "Prize *** PRIZE FOR TABLE HEADER"
 msgstr "Prix"
 
+msgid "Prize Brackets"
+msgstr "Groupes Non-Cumulables"
+
 msgid "Prize assignment"
 msgstr "Attribution des prix"
 
@@ -3541,9 +3592,6 @@ msgstr "Les paramètres par défaut des prix ont été mis à jour."
 
 msgid "Prize group [{prize_group}] successfully created."
 msgstr "Le groupe de prix [{prize_group}] a été créé avec succès."
-
-msgid "Prize groups"
-msgstr "Groupes de prix"
 
 msgid "Prize list"
 msgstr "Liste des prix"
@@ -3940,6 +3988,9 @@ msgstr "SEC"
 msgid "SPE"
 msgstr "SPE"
 
+msgid "Sa *** SATURDAY"
+msgstr "Sa"
+
 msgid "Save"
 msgstr "Enregistrer"
 
@@ -3981,9 +4032,6 @@ msgstr "L'écran [{screen_uniq_id}] a été modifié."
 
 msgid "Screen configuration has been updated."
 msgstr "La configuration des écrans a été mise à jour."
-
-msgid "Screen exit button:"
-msgstr "Bouton de sortie d'écran :"
 
 msgid "Screen families:"
 msgstr "Familles d'écrans :"
@@ -4060,6 +4108,12 @@ msgstr "Sélection"
 #, python-format
 msgid "Selection: %(selection)s"
 msgstr "Sélection : %(selection)s"
+
+msgid "Sep *** SEPTEMBER"
+msgstr "Sep"
+
+msgid "September"
+msgstr "Septembre"
 
 msgid "Server Setup"
 msgstr "Configuration du serveur"
@@ -4260,9 +4314,6 @@ msgstr "Standard :"
 msgid "Start of round {} in %s"
 msgstr "Début de la ronde {} dans %s"
 
-msgid "Start:"
-msgstr "Début :"
-
 msgid "Starting Sharly Chess server, Please wait…"
 msgstr "Démarrage du serveur Sharly Chess, veuillez patienter…"
 
@@ -4280,6 +4331,9 @@ msgstr "Std"
 
 msgid "Strong"
 msgstr "Préférence forte"
+
+msgid "Su *** SUNDAY"
+msgstr "Di"
 
 msgid "Sum of Buchholz"
 msgstr "Somme des Buchholz"
@@ -4319,6 +4373,9 @@ msgstr "Couleur du texte :"
 
 msgid "Texts before and after the hour below are optional for round numbers, mandatory otherwise."
 msgstr "Les textes avant et après l'horaire ci-dessous sont facultatifs pour les numéros de rondes, obligatoires sinon."
+
+msgid "Th *** THURSDAY"
+msgstr "Je"
 
 msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b> to the current one may be modified. Changes to pairings previous to this should be made at the <b>end</b> of the tournament, <b>after</b> the rankings have been published, and solely for the computation of the FIDE ratings."
 msgstr "Le règlement FIDE indique que seuls les appariements de la ronde <b>précédant</b> la ronde courante peuvent être modifiés. Les modifications des appariements antérieurs doivent être effectuées à la <b>fin</b> du tournoi, <b>après</b> la publication du classement, et uniquement pour le calcul des classements ELO FIDE."
@@ -4749,10 +4806,10 @@ msgid "Time control:"
 msgstr "Cadence :"
 
 msgid "Time is not defined."
-msgstr "L'heure n'est pas définie"
+msgstr "L'heure n'est pas définie."
 
-msgid "Time outside of event time range ({start} - {stop})."
-msgstr "Horaire en dehors des horaires de l'évènement ({start} - {stop})."
+msgid "Time outside of event time range ({range})."
+msgstr "Horaire en dehors des horaires de l'évènement ({range})."
 
 msgid "Timer"
 msgstr "Chronomètre"
@@ -4917,6 +4974,9 @@ msgstr "Tournois : %(num)d"
 
 msgid "Trophy"
 msgstr "Trophée"
+
+msgid "Tu *** TUESDAY"
+msgstr "Ma"
 
 msgid "Type"
 msgstr "Type"
@@ -5264,6 +5324,9 @@ msgstr "Attention : la suppression est définitive !"
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
 msgstr "Attention : vous essayez d'exécuter une opération interdite par le règlement FIDE."
 
+msgid "We *** WEDNESDAY"
+msgstr "Me"
+
 msgid "Weak"
 msgstr "Préférence faible"
 
@@ -5283,7 +5346,7 @@ msgid "When not displaying the exit button, users can not accidentally exit inpu
 msgstr "Lorsque l'on n'affiche pas le bouton de sortie, les utilisateur·ices ne peuvent quitter l'écran accidentellement."
 
 msgid "When not displaying the players' opponent (color and board numbers only), less screens are needed (with several columns)."
-msgstr "Lorsque les adversaires ne sont pas affiché·es, moins d'écrans sont nécessaires pour afficher l'ensemble des joueur·euses (nulti-colonnes)."
+msgstr "Lorsque les adversaires ne sont pas affiché·es, moins d'écrans sont nécessaires pour afficher l'ensemble des joueur·euses (multi-colonnes)."
 
 msgid "When there are unrated players, FIDE rules stipulate that rating-based tie-breaks can only be used if the tournament rules explains how the estimations are decided."
 msgstr "Lorsqu'il y a des joueur·euses non-classées, le règlement FIDE stipule que les départages basés sur le classement ne peuvent être utilisés que si le règlement du tournoi explique comment les classements estimés sont attribués."
@@ -5444,14 +5507,14 @@ msgstr "Vous pouvez également vous connecter à ce serveur depuis d’autres ap
 msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on your local network."
 msgstr "Vous pouvez créer différents types de pages web, appelées <i>Écrans</i>, accessibles depuis d’autres appareils sur votre réseau local."
 
-msgid "You must create a prize group before creating a prize category."
-msgstr "Vous devez créer un groupe de prix avant de créer une catégorie de prix."
+msgid "You must create a prize bracket before creating a prize category."
+msgstr "Vous devez créer un groupe non-cumulable avant de créer une catégorie de prix."
 
 msgid "You must create a screen or a family of screens before creating a rotator."
 msgstr "Vous devez créer un écran ou une famille d'écrans avant de pouvoir créer des écrans rotatifs."
 
-msgid "You must create a tournament before creating a prize group."
-msgstr "Vous devez créer un tournoi avant de créer un groupe de prix."
+msgid "You must create a tournament before creating a prize bracket."
+msgstr "Vous devez créer un tournoi avant de créer un groupe non-cumulable."
 
 msgid "You must create a tournament before creating a screen family."
 msgstr "Vous devez créer un tournoi avant de pouvoir créer des familles d'écrans."

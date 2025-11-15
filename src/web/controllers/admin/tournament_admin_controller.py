@@ -1,8 +1,7 @@
 import copy
 import random
-import time
 from collections import defaultdict
-from datetime import datetime
+from datetime import date
 from functools import partial
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
@@ -15,7 +14,7 @@ from litestar.params import Body
 from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
-from common.exception import SharlyChessException, OptionError, ImporterError
+from common.exception import SharlyChessException, OptionError, ImporterError, FormError
 from common.logger import get_logger
 from common.i18n import _
 from data.access_levels.actions import AuthAction
@@ -242,10 +241,8 @@ class TournamentAdminController(BaseEventAdminController):
             last_rounds_no_byes: int | None = None
             location: str | None = None
             player_rating_type: int | None = None
-            start: float | None = None
-            stop: float | None = None
-            rounds: int | None = None
-            rating: int | None = None
+            date_range_default = True
+            date_range: str | None = None
             pairing_variations: dict[str, str | None] = {
                 system.variation_field_id: None for system in pairing_systems
             }
@@ -253,38 +250,40 @@ class TournamentAdminController(BaseEventAdminController):
             pab_value: int | None = None
             override_unrated_rapid_blitz: bool | None = None
             stored_plugin_data: dict[str, dict[str, Any]] = {}
-            match action:
-                case 'update' | 'clone':
-                    admin_tournament = web_context.get_admin_tournament()
-                    stored_tournament = admin_tournament.stored_tournament
-                    time_control_trf25 = stored_tournament.time_control_trf25
-                    record_illegal_moves = stored_tournament.record_illegal_moves
-                    rules = stored_tournament.rules
-                    first_board_number = stored_tournament.first_board_number
-                    paired_bye_result = stored_tournament.paired_bye_result
-                    max_byes = stored_tournament.max_byes
-                    last_rounds_no_byes = stored_tournament.last_rounds_no_byes
-                    location = stored_tournament.location
-                    player_rating_type = stored_tournament.player_rating_type
-                    start = stored_tournament.start
-                    stop = stored_tournament.stop
-                    rating = admin_tournament.rating.value
-                    rounds = admin_tournament.rounds or 1
-                    pairing_system = admin_tournament.pairing_system
-                    pairing_variations[
-                        admin_tournament.pairing_system.variation_field_id
-                    ] = admin_tournament.pairing_variation.id
-                    three_points_for_a_win = stored_tournament.three_points_for_a_win
-                    pab_value = stored_tournament.pab_value
-                    override_unrated_rapid_blitz = (
-                        stored_tournament.override_unrated_rapid_blitz
+            if action == 'create':
+                rounds = 7
+                rating = TournamentRating.STANDARD.value
+            else:
+                admin_tournament = web_context.get_admin_tournament()
+                stored_tournament = admin_tournament.stored_tournament
+                time_control_trf25 = stored_tournament.time_control_trf25
+                record_illegal_moves = stored_tournament.record_illegal_moves
+                rules = stored_tournament.rules
+                first_board_number = stored_tournament.first_board_number
+                paired_bye_result = stored_tournament.paired_bye_result
+                max_byes = stored_tournament.max_byes
+                last_rounds_no_byes = stored_tournament.last_rounds_no_byes
+                location = stored_tournament.location
+                player_rating_type = stored_tournament.player_rating_type
+                date_range_default = (
+                    not stored_tournament.start_date and not stored_tournament.stop_date
+                )
+                if not date_range_default:
+                    date_range = WebContext.value_to_date_range_form_data(
+                        admin_tournament.start_date, admin_tournament.stop_date
                     )
-                    stored_plugin_data = stored_tournament.plugin_data
-                case 'create':
-                    rounds = 1
-                    rating = TournamentRating.STANDARD.value
-                case _:
-                    raise ValueError(f'action=[{action}]')
+                rating = admin_tournament.rating.value
+                rounds = admin_tournament.rounds or 1
+                pairing_system = admin_tournament.pairing_system
+                pairing_variations[
+                    admin_tournament.pairing_system.variation_field_id
+                ] = admin_tournament.pairing_variation.id
+                three_points_for_a_win = stored_tournament.three_points_for_a_win
+                pab_value = stored_tournament.pab_value
+                override_unrated_rapid_blitz = (
+                    stored_tournament.override_unrated_rapid_blitz
+                )
+                stored_plugin_data = stored_tournament.plugin_data
 
             plugin_form_data: dict[str, str] = {}
             for (
@@ -295,10 +294,7 @@ class TournamentAdminController(BaseEventAdminController):
                     stored_plugin_data.get(plugin_id, {})
                 ).to_form_data(action=action)
 
-            data: dict[str, str] = {
-                'start': WebContext.value_to_datetime_form_data(start),
-                'stop': WebContext.value_to_datetime_form_data(stop),
-            } | WebContext.values_dict_to_form_data(
+            data: dict[str, str] = WebContext.values_dict_to_form_data(
                 {
                     'name': name,
                     'time_control_trf25': time_control_trf25,
@@ -316,6 +312,8 @@ class TournamentAdminController(BaseEventAdminController):
                     'three_points_for_a_win': three_points_for_a_win,
                     'pab_value': pab_value,
                     'override_unrated_rapid_blitz': override_unrated_rapid_blitz,
+                    'date_range': date_range,
+                    'date_range_checkbox': date_range_default,
                 }
                 | {field: variation for field, variation in pairing_variations.items()}
                 | plugin_form_data
@@ -414,8 +412,8 @@ class TournamentAdminController(BaseEventAdminController):
         if data is None:
             data = {}
         check_in_open: bool = False
-        start: float | None = None
-        stop: float | None = None
+        start_date: date | None = None
+        stop_date: date | None = None
         rounds = WebContext.form_data_to_int(data, field := 'rounds') or 1
         tournament: Tournament | None = None
         if rounds < 1:
@@ -437,32 +435,17 @@ class TournamentAdminController(BaseEventAdminController):
         except ValueError:
             errors[field] = f'Unknown rating [{rating}]'
         event = web_context.admin_event
-        start_str = WebContext.form_data_to_str(data, field := 'start')
-        if start_str:
-            start = time.mktime(
-                datetime.strptime(start_str, '%Y-%m-%dT%H:%M').timetuple()
-            )
-            if not event.start <= start <= event.stop:
-                errors[field] = _(
-                    'Time outside of event time range ({start} - {stop}).'
-                ).format(
-                    start=event.formatted_start_date_time,
-                    stop=event.formatted_stop_date_time,
-                )
-        stop_str = WebContext.form_data_to_str(data, field := 'stop')
-        if stop_str:
-            stop = time.mktime(
-                datetime.strptime(stop_str, '%Y-%m-%dT%H:%M').timetuple()
-            )
-            if not event.start <= stop <= event.stop:
-                errors[field] = _(
-                    'Time outside of event time range ({start} - {stop}).'
-                ).format(
-                    start=event.formatted_start_date_time,
-                    stop=event.formatted_stop_date_time,
-                )
-            elif start and stop < start:
-                errors[field] = _('End time needs to be after start time.')
+        try:
+            date_range = WebContext.form_data_to_date_range(data, field := 'date_range')
+            if date_range:
+                for date_ in date_range:
+                    if not event.start_date <= date_ <= event.stop_date:
+                        errors[field] = _(
+                            'Time outside of event time range ({range}).'
+                        ).format(range=event.date_range_str)
+                start_date, stop_date = date_range
+        except FormError as e:
+            errors[field] = str(e)
 
         pairing_system = PairingSystemManager(web_context.admin_event).get_object(
             WebContext.form_data_to_str(data, 'pairing_system')
@@ -559,8 +542,8 @@ class TournamentAdminController(BaseEventAdminController):
             check_in_open=check_in_open,
             location=location,
             player_rating_type=player_rating_type,
-            start=start,
-            stop=stop,
+            start_date=start_date,
+            stop_date=stop_date,
             rounds=rounds or 1,
             rating=rating or TournamentRating.STANDARD.value,
             pairing=pairing or '',
@@ -569,7 +552,7 @@ class TournamentAdminController(BaseEventAdminController):
             override_unrated_rapid_blitz=override_unrated_rapid_blitz,
             plugin_data=plugin_data,
         )
-        return (stored_tournament, errors)
+        return stored_tournament, errors
 
     @get(
         path='/tournament-modal/create/{event_uniq_id:str}',

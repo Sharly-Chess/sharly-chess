@@ -371,7 +371,7 @@ msgstr ""
 msgid "Add a player to the event."
 msgstr ""
 
-msgid "Add a prize category to the prize group."
+msgid "Add a prize category to the prize bracket."
 msgstr ""
 
 msgid "Add a prize to the list."
@@ -530,6 +530,12 @@ msgstr ""
 msgid "Application"
 msgstr ""
 
+msgid "Apr *** APRIL"
+msgstr "Apr"
+
+msgid "April"
+msgstr ""
+
 msgid "Arbiter"
 msgstr ""
 
@@ -599,6 +605,12 @@ msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "Aug *** AUGUST"
+msgstr "Aug"
+
+msgid "August"
+msgstr ""
 
 msgid "Auto-update"
 msgstr ""
@@ -1087,10 +1099,13 @@ msgstr ""
 msgid "Create"
 msgstr ""
 
-msgid "Create a Prize Category now to continue."
+msgid "Create a Prize Bracket"
 msgstr ""
 
-msgid "Create a Prize Group now to get started."
+msgid "Create a Prize Bracket now to get started."
+msgstr ""
+
+msgid "Create a Prize Category now to continue."
 msgstr ""
 
 msgid "Create a category"
@@ -1105,10 +1120,7 @@ msgstr ""
 msgid "Create a family now to get started."
 msgstr ""
 
-msgid "Create a prize group"
-msgstr ""
-
-msgid "Create a prize group in which you will then be able to create categories, and then prizes."
+msgid "Create a prize bracket in which you will then be able to create categories, and then prizes."
 msgstr ""
 
 msgid "Create a rotator"
@@ -1293,6 +1305,15 @@ msgstr ""
 msgid "Date:"
 msgstr ""
 
+msgid "Dates"
+msgstr ""
+
+msgid "Dec *** DECEMBER"
+msgstr "Dec"
+
+msgid "December"
+msgstr ""
+
 msgid "Default accounts have been created."
 msgstr ""
 
@@ -1432,12 +1453,6 @@ msgstr ""
 msgid "Display Controller"
 msgstr ""
 
-msgid "Display all the players, paired and unpaired"
-msgstr ""
-
-msgid "Display color, board number and opponent"
-msgstr ""
-
 msgid "Display controller [{display_controller}] has been created."
 msgstr ""
 
@@ -1456,19 +1471,13 @@ msgstr ""
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device)."
 msgstr ""
 
-msgid "Display of unpaired players:"
-msgstr ""
-
-msgid "Display only color and board number"
-msgstr ""
-
-msgid "Display only paired players"
-msgstr ""
-
 msgid "Display the exit button"
 msgstr ""
 
-msgid "Display the players' opponent:"
+msgid "Display the players' opponent"
+msgstr ""
+
+msgid "Display the unpaired players"
 msgstr ""
 
 #, python-format
@@ -1671,7 +1680,10 @@ msgstr ""
 msgid "EXEMPT (already received at round #%(round)d)"
 msgstr ""
 
-msgid "Each group should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
+msgid "Each bracket should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
+msgstr ""
+
+msgid "Each player can only be awarded one prize per bracket."
 msgstr ""
 
 msgid "Edit"
@@ -1790,12 +1802,6 @@ msgid "Encounter already happened at round #%(round)d"
 msgstr ""
 
 msgid "End round"
-msgstr ""
-
-msgid "End time needs to be after start time."
-msgstr ""
-
-msgid "End:"
 msgstr ""
 
 msgid "Enter results"
@@ -1938,6 +1944,12 @@ msgstr ""
 msgid "Family [{family_uniq_id}] has been updated."
 msgstr ""
 
+msgid "Feb *** FEBRUARY"
+msgstr "Feb"
+
+msgid "February"
+msgstr ""
+
 msgid "Fed *** FEDERATION FOR TABLE HEADER"
 msgstr "Fed."
 
@@ -2075,6 +2087,9 @@ msgstr ""
 msgid "Forfeits played"
 msgstr ""
 
+msgid "Fr *** FRIDAY"
+msgstr "Fr"
+
 msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
 msgstr ""
 
@@ -2166,9 +2181,6 @@ msgid "Hide Log"
 msgstr ""
 
 msgid "Hide Networks"
-msgstr ""
-
-msgid "Hide the exit button"
 msgstr ""
 
 msgid "Highlight"
@@ -2335,6 +2347,9 @@ msgstr ""
 msgid "Invalid date and time [{datetime_str}]."
 msgstr ""
 
+msgid "Invalid date format (expected: {format})."
+msgstr ""
+
 msgid "Invalid date format [{date}] (expected: {format})"
 msgstr ""
 
@@ -2375,6 +2390,24 @@ msgid "Invalid value [{value}]."
 msgstr ""
 
 msgid "It is highly recommended to set at least one tie-break."
+msgstr ""
+
+msgid "Jan *** JANUARY"
+msgstr "Jan"
+
+msgid "January"
+msgstr ""
+
+msgid "Jul *** JULY"
+msgstr "Jul"
+
+msgid "July"
+msgstr ""
+
+msgid "Jun *** JUNE"
+msgstr "Jun"
+
+msgid "June"
 msgstr ""
 
 msgid "Kashdan"
@@ -2510,10 +2543,10 @@ msgstr ""
 msgid "Manage source databases"
 msgstr ""
 
-msgid "Manage the prize groups"
+msgid "Manage the prize brackets"
 msgstr ""
 
-msgid "Manage the prize groups of the tournament."
+msgid "Manage the prize brackets of the tournament (1 player = 1 prize per bracket)."
 msgstr ""
 
 msgid "Mandatory for the first hour, optional for next hours."
@@ -2523,6 +2556,12 @@ msgid "Manual"
 msgstr ""
 
 msgid "Manually pair players"
+msgstr ""
+
+msgid "Mar *** MARCH"
+msgstr "Mar"
+
+msgid "March"
 msgstr ""
 
 msgid "Mark this round as over and define the next one as the current round."
@@ -2563,6 +2602,12 @@ msgstr ""
 msgid "Maximum rating"
 msgstr ""
 
+msgid "May"
+msgstr ""
+
+msgid "May *** MAY ACRONYM"
+msgstr "May"
+
 msgid "May be overridden on a per-tournament basis."
 msgstr ""
 
@@ -2600,6 +2645,9 @@ msgstr ""
 
 msgid "Missing required field [{field}]."
 msgstr ""
+
+msgid "Mo *** MONDAY"
+msgstr "Mo"
 
 #, python-format
 msgid "Moved down %(num)d place"
@@ -2714,10 +2762,10 @@ msgstr ""
 msgid "No FIDE ID."
 msgstr ""
 
-msgid "No Prize Category"
+msgid "No Prize Bracket"
 msgstr ""
 
-msgid "No Prize Group"
+msgid "No Prize Category"
 msgstr ""
 
 msgid "No alert message"
@@ -2798,7 +2846,7 @@ msgstr ""
 msgid "No players."
 msgstr ""
 
-msgid "No prize groups."
+msgid "No prize brackets."
 msgstr ""
 
 msgid "No prizes defined"
@@ -2906,6 +2954,12 @@ msgstr ""
 msgid "Notification"
 msgstr ""
 
+msgid "Nov *** NOVEMBER"
+msgstr "Nov"
+
+msgid "November"
+msgstr ""
+
 msgid "Number"
 msgstr ""
 
@@ -2959,6 +3013,12 @@ msgid "OK"
 msgstr ""
 
 msgid "ORG"
+msgstr ""
+
+msgid "Oct *** OCTOBER"
+msgstr "Oct"
+
+msgid "October"
 msgstr ""
 
 msgid "Once created, you can select the timer to display in the settings of each screen, family or rotator."
@@ -3040,7 +3100,7 @@ msgstr ""
 msgid "Organization"
 msgstr ""
 
-msgid "Organize your prizes into groups to manage how they’re awarded. A player can win only one prize per group, but can win prizes in multiple groups."
+msgid "Organize your prizes into brackets to manage how they’re awarded. A player can win only one prize per bracket, but can win prizes in multiple brackets."
 msgstr ""
 
 msgid "Origin: {template_origin}"
@@ -3413,19 +3473,10 @@ msgstr ""
 msgid "Please close the time control editor before saving."
 msgstr ""
 
-msgid "Please enter a date after the start date."
-msgstr ""
-
-msgid "Please enter a valid date."
-msgstr ""
-
 msgid "Please enter a valid time."
 msgstr ""
 
 msgid "Please enter the date of the first hour."
-msgstr ""
-
-msgid "Please enter the end date of the event."
 msgstr ""
 
 msgid "Please enter the image URL."
@@ -3435,9 +3486,6 @@ msgid "Please enter the name of the event."
 msgstr ""
 
 msgid "Please enter the round number or the hour ID."
-msgstr ""
-
-msgid "Please enter the start date of the event."
 msgstr ""
 
 msgid "Please enter the text to display after the hour (mandatory except for rounds)."
@@ -3518,6 +3566,9 @@ msgstr ""
 msgid "Prize *** PRIZE FOR TABLE HEADER"
 msgstr "Prize"
 
+msgid "Prize Brackets"
+msgstr ""
+
 msgid "Prize assignment"
 msgstr ""
 
@@ -3540,9 +3591,6 @@ msgid "Prize defaults have been updated."
 msgstr ""
 
 msgid "Prize group [{prize_group}] successfully created."
-msgstr ""
-
-msgid "Prize groups"
 msgstr ""
 
 msgid "Prize list"
@@ -3940,6 +3988,9 @@ msgstr ""
 msgid "SPE"
 msgstr ""
 
+msgid "Sa *** SATURDAY"
+msgstr "Sa"
+
 msgid "Save"
 msgstr ""
 
@@ -3980,9 +4031,6 @@ msgid "Screen [{screen_uniq_id}] has been updated."
 msgstr ""
 
 msgid "Screen configuration has been updated."
-msgstr ""
-
-msgid "Screen exit button:"
 msgstr ""
 
 msgid "Screen families:"
@@ -4059,6 +4107,12 @@ msgstr ""
 
 #, python-format
 msgid "Selection: %(selection)s"
+msgstr ""
+
+msgid "Sep *** SEPTEMBER"
+msgstr "Sep"
+
+msgid "September"
 msgstr ""
 
 msgid "Server Setup"
@@ -4260,9 +4314,6 @@ msgstr ""
 msgid "Start of round {} in %s"
 msgstr ""
 
-msgid "Start:"
-msgstr ""
-
 msgid "Starting Sharly Chess server, Please wait…"
 msgstr ""
 
@@ -4280,6 +4331,9 @@ msgstr "Std"
 
 msgid "Strong"
 msgstr ""
+
+msgid "Su *** SUNDAY"
+msgstr "Su"
 
 msgid "Sum of Buchholz"
 msgstr ""
@@ -4319,6 +4373,9 @@ msgstr ""
 
 msgid "Texts before and after the hour below are optional for round numbers, mandatory otherwise."
 msgstr ""
+
+msgid "Th *** THURSDAY"
+msgstr "Th"
 
 msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b> to the current one may be modified. Changes to pairings previous to this should be made at the <b>end</b> of the tournament, <b>after</b> the rankings have been published, and solely for the computation of the FIDE ratings."
 msgstr ""
@@ -4751,7 +4808,7 @@ msgstr ""
 msgid "Time is not defined."
 msgstr ""
 
-msgid "Time outside of event time range ({start} - {stop})."
+msgid "Time outside of event time range ({range})."
 msgstr ""
 
 msgid "Timer"
@@ -4917,6 +4974,9 @@ msgstr ""
 
 msgid "Trophy"
 msgstr ""
+
+msgid "Tu *** TUESDAY"
+msgstr "Tu"
 
 msgid "Type"
 msgstr ""
@@ -5264,6 +5324,9 @@ msgstr ""
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
 msgstr ""
 
+msgid "We *** WEDNESDAY"
+msgstr "We"
+
 msgid "Weak"
 msgstr ""
 
@@ -5444,13 +5507,13 @@ msgstr ""
 msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on your local network."
 msgstr ""
 
-msgid "You must create a prize group before creating a prize category."
+msgid "You must create a prize bracket before creating a prize category."
 msgstr ""
 
 msgid "You must create a screen or a family of screens before creating a rotator."
 msgstr ""
 
-msgid "You must create a tournament before creating a prize group."
+msgid "You must create a tournament before creating a prize bracket."
 msgstr ""
 
 msgid "You must create a tournament before creating a screen family."
