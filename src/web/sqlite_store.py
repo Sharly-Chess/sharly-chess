@@ -74,7 +74,7 @@ class SQLiteStore(Store):
 
     async def delete_expired(self):
         async with self.pool.connection() as db:
-            await db.execute("DELETE FROM store WHERE exprires_at >= datetime('now')")
+            await db.execute("DELETE FROM store WHERE expires_at >= datetime('now')")
             await db.commit()
 
     async def exists(self, key: str) -> bool:
